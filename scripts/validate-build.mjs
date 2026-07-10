@@ -52,4 +52,6 @@ for (const asset of assets) {
   if (info.size > 1_500_000) throw new Error(`Image exceeds prototype budget: ${asset}`);
 }
 
+await access(join(dist, "_headers"));
+
 console.log(`Validated static prototype: ${required.length} content checks, ${assets.length} image assets, no external form action.`);
