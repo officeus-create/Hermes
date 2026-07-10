@@ -1,0 +1,21 @@
+---
+import { ArrowUp } from "lucide-astro";
+import { site } from "../data/site";
+---
+
+<footer class="site-footer">
+  <div class="shell footer-main">
+    <div>
+      <p class="footer-brand">{site.brand}</p>
+      <p>Business, education, and logistics working with one practical standard.</p>
+    </div>
+    <nav aria-label="Footer navigation">
+      {site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <a class="back-to-top" href="#top" aria-label="Back to top"><ArrowUp size={20} aria-hidden="true" /></a>
+  </div>
+  <div class="shell footer-meta">
+    <span>Prototype v0.1 · No form submissions enabled</span>
+    <span>© 2026 Hermes</span>
+  </div>
+</footer>

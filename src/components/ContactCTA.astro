@@ -1,0 +1,54 @@
+---
+import { ArrowRight } from "lucide-astro";
+import { site } from "../data/site";
+---
+
+<section class="section contact-section" id="contact">
+  <div class="shell contact-layout">
+    <div class="contact-copy">
+      <p class="eyebrow">{site.contact.eyebrow}</p>
+      <h2>{site.contact.title}</h2>
+      <p>{site.contact.body}</p>
+    </div>
+    <form class="contact-form" data-preview-form>
+      <div class="field-row">
+        <label>
+          Your name
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+      </div>
+      <label>
+        I am interested in
+        <select name="path" required>
+          <option value="">Choose a path</option>
+          <option>Logistics</option>
+          <option>Marketing</option>
+          <option>Business Academy</option>
+          <option>I am not sure yet</option>
+        </select>
+      </label>
+      <label>
+        What are you trying to build?
+        <textarea name="message" rows="4" required></textarea>
+      </label>
+      <button class="button button-primary" type="submit">
+        Preview request
+        <ArrowRight size={18} aria-hidden="true" />
+      </button>
+      <p class="form-status" role="status" data-form-status></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-preview-form]");
+  const status = document.querySelector<HTMLElement>("[data-form-status]");
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (status) status.textContent = "Prototype only. Your information was not sent or stored.";
+  });
+</script>

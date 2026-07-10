@@ -1,0 +1,23 @@
+---
+import { ArrowDown, ArrowUpRight } from "lucide-astro";
+import { site } from "../data/site";
+---
+
+<section class="hero" id="top" style={`--hero-image: url('${site.hero.image}')`}>
+  <div class="hero-shade"></div>
+  <div class="hero-content shell">
+    <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
+    <h1>{site.hero.title}</h1>
+    <p class="hero-copy">{site.hero.body}</p>
+    <div class="hero-actions">
+      <a class="button button-primary" href={site.hero.primaryCta.href}>
+        {site.hero.primaryCta.label}
+        <ArrowDown size={18} aria-hidden="true" />
+      </a>
+      <a class="button button-ghost" href={site.hero.secondaryCta.href}>
+        {site.hero.secondaryCta.label}
+        <ArrowUpRight size={18} aria-hidden="true" />
+      </a>
+    </div>
+  </div>
+</section>

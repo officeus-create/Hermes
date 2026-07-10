@@ -1,0 +1,49 @@
+---
+import { ArrowUpRight, Menu } from "lucide-astro";
+import { site } from "../data/site";
+---
+
+<header class="site-header" data-header>
+  <a class="wordmark" href="#top" aria-label="Hermes home">
+    <span class="wordmark-mark">H</span>
+    <span>{site.brand}</span>
+  </a>
+
+  <nav class="desktop-nav" aria-label="Primary navigation">
+    {site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+  </nav>
+
+  <a class="header-cta" href="#contact">
+    Start a conversation
+    <ArrowUpRight size={17} aria-hidden="true" />
+  </a>
+
+  <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu" data-menu-button>
+    <Menu size={23} aria-hidden="true" />
+  </button>
+
+  <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
+    {site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+    <a href="#contact">Start a conversation</a>
+  </nav>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLElement>("[data-menu-button]");
+  const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
+
+  button?.addEventListener("click", () => {
+    const isOpen = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!isOpen));
+    button.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
+    if (menu) menu.hidden = isOpen;
+  });
+
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      button?.setAttribute("aria-expanded", "false");
+      button?.setAttribute("aria-label", "Open navigation");
+      if (menu) menu.hidden = true;
+    });
+  });
+</script>

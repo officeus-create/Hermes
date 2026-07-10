@@ -1,0 +1,24 @@
+---
+import { site } from "../data/site";
+---
+
+<section class="section journey-section" id="journey">
+  <div class="shell">
+    <div class="section-heading split-heading">
+      <div>
+        <p class="eyebrow">A shared way forward</p>
+        <h2>From intention to useful action.</h2>
+      </div>
+      <p>Each path is different. The operating principle stays simple: understand the goal, connect the right people, and build the next workable step.</p>
+    </div>
+    <ol class="journey-grid">
+      {site.journey.map((step) => (
+        <li>
+          <span>{step.number}</span>
+          <h3>{step.title}</h3>
+          <p>{step.body}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

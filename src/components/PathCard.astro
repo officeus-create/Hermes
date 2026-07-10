@@ -1,0 +1,41 @@
+---
+import { ArrowUpRight, Check } from "lucide-astro";
+
+interface Props {
+  path: {
+    id: string;
+    number: string;
+    category: string;
+    title: string;
+    body: string;
+    points: string[];
+    cta: string;
+    image: string;
+    imageAlt: string;
+    tone: string;
+  };
+}
+
+const { path } = Astro.props;
+---
+
+<article class={`path-card path-card-${path.tone}`} id={path.id}>
+  <div class="path-media">
+    <img src={path.image} alt={path.imageAlt} width="960" height="720" loading="lazy" decoding="async" />
+    <span class="path-number">{path.number}</span>
+  </div>
+  <div class="path-content">
+    <p class="path-category">{path.category}</p>
+    <h3>{path.title}</h3>
+    <p>{path.body}</p>
+    <ul>
+      {path.points.map((point) => (
+        <li><Check size={17} aria-hidden="true" />{point}</li>
+      ))}
+    </ul>
+    <a href="#contact">
+      {path.cta}
+      <ArrowUpRight size={18} aria-hidden="true" />
+    </a>
+  </div>
+</article>

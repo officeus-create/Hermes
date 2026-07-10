@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import HeroEditorial from "../components/HeroEditorial.astro";
+import JourneySteps from "../components/JourneySteps.astro";
+import PathCard from "../components/PathCard.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import TrustBand from "../components/TrustBand.astro";
+import { site } from "../data/site";
+---
+
+<BaseLayout
+  title="Hermes | Business, Education & Logistics"
+  description="Explore the Hermes ecosystem across logistics, marketing, and practical business education."
+>
+  <SiteHeader />
+  <main id="main-content">
+    <HeroEditorial />
+
+    <section class="section paths-section" id="paths">
+      <div class="shell">
+        <div class="section-heading paths-heading">
+          <p class="eyebrow">Choose your path</p>
+          <h2>Three directions. One clear next step.</h2>
+          <p>Start with what you need today. Each direction has its own team, focus, and working rhythm.</p>
+        </div>
+        <div class="paths-grid">
+          {site.paths.map((path) => <PathCard path={path} />)}
+        </div>
+      </div>
+    </section>
+
+    <JourneySteps />
+    <TrustBand />
+    <ContactCTA />
+  </main>
+  <SiteFooter />
+</BaseLayout>
