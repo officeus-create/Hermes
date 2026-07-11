@@ -1,10 +1,10 @@
 # Zero-Cost Hosting Comparison
 
-Reviewed: 2026-07-10
+Reviewed: 2026-07-11
 
 ## Recommendation
 
-Use GitHub Free for source control and Cloudflare Pages Free for future preview hosting. Do not connect `hermeslogisticus.com` or publish production without Vladimir's approval.
+Use a private GitHub repository for source control and Cloudflare Pages for preview and production hosting. Do not connect `hermeslogisticus.com` or publish production without Vladimir's approval.
 
 ## GitHub Pages
 
@@ -52,7 +52,7 @@ Official references:
 1. Create or identify the GitHub repository after Vladimir approves repository visibility and ownership.
 2. Push the `prototype/editorial-v1` branch.
 3. Connect the repository to Cloudflare Pages Free.
-4. Use build command `npm run build` and output directory `dist`.
+4. Use production branch `main`, build command `npm run build`, output directory `dist`, and Node 22.
 5. Review the generated `pages.dev` preview.
 6. Keep the live domain and DNS untouched.
 7. Record rollback and preview evidence before requesting production approval.

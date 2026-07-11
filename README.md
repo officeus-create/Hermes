@@ -35,3 +35,7 @@ npm run dev
 npm run build
 npm test
 ```
+
+## Publication
+
+The recommended zero-cost path is a private GitHub repository connected to Cloudflare Pages. See `docs/PUBLISHING_RUNBOOK.md` for the exact approval-gated sequence.
