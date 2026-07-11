@@ -1,55 +1,43 @@
 # Codex Website Handoff
 
-STATUS: READY_FOR_REVIEW
+STATUS: LOCAL_V1_COMPLETE
 
 LOCAL_PATH: `/Users/progressopro/Documents/hermeslogisticus.com`
 
-REPOSITORY: local Git repository; no GitHub remote configured
-
 BRANCH: `prototype/editorial-v1`
 
-COMMIT: `522df18` plus final validation/documentation commit
+SCOPE_COMPLETED:
 
-CURRENT_TASK: minimal editorial/path-first Astro prototype for `hermeslogisticus.com`
+- ecosystem homepage with four clear directions;
+- dedicated Logistics, ProgressoPro, Academy, and IT Development pages;
+- mobile and desktop navigation;
+- direction-aware contact preview form;
+- canonical and social metadata;
+- custom 404 page, robots file, and sitemap;
+- responsive layout and reduced-motion support;
+- unsupported-claim and no-external-form safeguards.
 
-## Files Created Or Changed
+VERIFICATION:
 
-- Astro and Tailwind project configuration.
-- Structured copy and claim register in `src/data/site.ts`.
-- Reusable header, hero, path, journey, trust, contact, and footer components.
-- Responsive design system and reduced-motion handling.
-- Four local website images.
-- Static build validator.
-- Zero-cost hosting comparison.
+- Astro diagnostics: zero errors, warnings, or hints;
+- six static HTML routes generated;
+- automated route, content, asset, sitemap, and form checks passed;
+- desktop 1440px: no overflow, broken images, or console errors;
+- mobile 390px: no overflow, broken images, or console errors;
+- mobile menu and path selection verified.
 
-## Tests Run
+INTENTIONALLY NOT CONNECTED:
 
-- `astro check`: 0 errors, 0 warnings, 0 hints.
-- `astro build`: static homepage generated successfully.
-- `npm test`: content, unsupported-claim, form-action, reduced-motion, and image checks passed.
-- Desktop browser: no horizontal overflow; first viewport reveals the next section.
-- Mobile browser at 390 x 844: no horizontal overflow; menu and layout verified.
-- Prototype form: confirmation shown; no request sent or stored.
-- Browser console: no errors or warnings.
+- public hosting and DNS;
+- live form delivery or storage;
+- analytics;
+- CRM, Google Sheets, Telegram, or external APIs.
 
-BUILD_RESULT: PASS
+PUBLICATION GATE:
 
-PREVIEW_URL: `http://127.0.0.1:4321/` local only
-
-BLOCKERS:
-
-- Final homepage copy and claims need ChatGPT/Vladimir review.
-- No GitHub repository or remote is connected.
-- No public preview is deployed because publication requires approval.
-- Form backend is intentionally absent.
-
-REQUEST_TO_CHATGPT:
-
-- Review homepage copy and information hierarchy.
-- Mark any approved business claims with evidence status.
-- Confirm whether the three paths remain equal or one becomes primary.
-- Return only required copy/structure changes; do not regenerate the design research.
-
-NEXT_STEP:
-
-Apply review changes locally, rerun build/mobile checks, then request approval for a Cloudflare Pages preview deployment.
+1. Vladimir approves the visible V1.
+2. Choose the approved zero-cost host.
+3. Connect a GitHub remote if required by the host.
+4. Deploy a preview and verify it.
+5. Connect the domain only after preview approval.
+6. Connect a form endpoint only after destination and data-handling rules are approved.

@@ -1,0 +1,57 @@
+---
+import { ArrowLeft, ArrowRight, Check } from "lucide-astro";
+import type { PathDetail } from "../data/site";
+
+interface Props {
+  path: PathDetail;
+}
+
+const { path } = Astro.props;
+---
+
+<main id="main-content">
+  <section class="detail-hero" id="top">
+    <img src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" />
+    <div class="detail-hero-shade"></div>
+    <div class="shell detail-hero-content">
+      <a class="detail-back" href="/#paths"><ArrowLeft size={18} aria-hidden="true" />All directions</a>
+      <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
+      <h1>{path.title}</h1>
+      <p>{path.audience}</p>
+      <a class="button button-primary" href="#contact">Start with a conversation<ArrowRight size={18} aria-hidden="true" /></a>
+    </div>
+  </section>
+
+  <section class="section detail-overview">
+    <div class="shell detail-intro">
+      <p class="eyebrow">The direction</p>
+      <h2>A practical starting point.</h2>
+      <p>{path.overview}</p>
+    </div>
+  </section>
+
+  <section class="section detail-offerings" aria-labelledby="offerings-title">
+    <div class="shell">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">What we focus on</p><h2 id="offerings-title">Built around useful work.</h2></div>
+        <p>The final scope is confirmed with the relevant team before any engagement begins.</p>
+      </div>
+      <div class="offering-grid">
+        {path.offerings.map((item) => (
+          <article><Check size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p></article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section detail-process" aria-labelledby="process-title">
+    <div class="shell">
+      <div class="section-heading"><p class="eyebrow">How to begin</p><h2 id="process-title">From question to next step.</h2></div>
+      <ol class="detail-process-grid">
+        {path.process.map((step, index) => (
+          <li><span>0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</main>

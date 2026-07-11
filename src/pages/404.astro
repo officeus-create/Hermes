@@ -1,0 +1,19 @@
+---
+import { ArrowLeft } from "lucide-astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+---
+
+<BaseLayout title="Page not found | Hermes" description="The requested Hermes page could not be found.">
+  <SiteHeader />
+  <main class="not-found" id="main-content">
+    <div class="shell">
+      <p class="eyebrow">404 · Page not found</p>
+      <h1>This path does not exist.</h1>
+      <p>Return to the Hermes ecosystem and choose one of the four available directions.</p>
+      <a class="button button-primary" href="/"><ArrowLeft size={18} aria-hidden="true" />Back to Hermes</a>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>

@@ -33,7 +33,7 @@ const { path } = Astro.props;
         <li><Check size={17} aria-hidden="true" />{point}</li>
       ))}
     </ul>
-    <a href="#contact">
+    <a href={`/paths/${path.id}/`} aria-label={`${path.cta}: ${path.category}`}>
       {path.cta}
       <ArrowUpRight size={18} aria-hidden="true" />
     </a>

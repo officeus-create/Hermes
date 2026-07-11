@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ContactCTA from "../../components/ContactCTA.astro";
+import PathDetailPage from "../../components/PathDetailPage.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { site } from "../../data/site";
+
+export function getStaticPaths() {
+  return site.paths.map((path) => ({ params: { slug: path.id }, props: { path } }));
+}
+
+const { path } = Astro.props;
+---
+
+<BaseLayout title={`${path.category} | Hermes`} description={path.body} image={path.image}>
+  <SiteHeader />
+  <PathDetailPage path={path} />
+  <ContactCTA selectedPath={path.category} />
+  <SiteFooter />
+</BaseLayout>

@@ -1,6 +1,12 @@
 ---
 import { ArrowRight } from "lucide-astro";
 import { site } from "../data/site";
+
+interface Props {
+  selectedPath?: string;
+}
+
+const { selectedPath = "" } = Astro.props;
 ---
 
 <section class="section contact-section" id="contact">
@@ -25,9 +31,7 @@ import { site } from "../data/site";
         I am interested in
         <select name="path" required>
           <option value="">Choose a path</option>
-          <option>Logistics</option>
-          <option>Marketing</option>
-          <option>Business Academy</option>
+          {site.paths.map((path) => <option selected={selectedPath === path.category}>{path.category}</option>)}
           <option>I am not sure yet</option>
         </select>
       </label>

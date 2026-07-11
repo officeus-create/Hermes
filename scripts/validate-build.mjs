@@ -4,6 +4,12 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
+const routes = [
+  { path: "paths/logistics/index.html", required: ["Hermes Logistics", "Carrier support"] },
+  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Positioning and message"] },
+  { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director"] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and internal tools"] },
+];
 const assets = [
   "images/hermes-hero.jpg",
   "images/path-logistics.jpg",
@@ -13,7 +19,11 @@ const assets = [
 ];
 
 await access(indexPath);
+await access(join(dist, "404.html"));
+await access(join(dist, "robots.txt"));
+await access(join(dist, "sitemap.xml"));
 const html = await readFile(indexPath, "utf8");
+const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
 
 const required = [
   "Hermes. One ecosystem. Four ways forward.",
@@ -27,6 +37,20 @@ const required = [
 
 for (const text of required) {
   if (!html.includes(text)) throw new Error(`Missing required content: ${text}`);
+}
+
+for (const route of routes) {
+  const routeHtml = await readFile(join(dist, route.path), "utf8");
+  for (const text of route.required) {
+    if (!routeHtml.includes(text)) throw new Error(`Missing ${text} in ${route.path}`);
+  }
+  if (!routeHtml.includes('<link rel="canonical"')) throw new Error(`Canonical URL missing in ${route.path}`);
+  if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
+}
+
+for (const slug of ["logistics", "marketing", "academy", "technology"]) {
+  if (!html.includes(`/paths/${slug}/`)) throw new Error(`Homepage link missing for ${slug}`);
+  if (!sitemap.includes(`/paths/${slug}/`)) throw new Error(`Sitemap entry missing for ${slug}`);
 }
 
 const forbidden = [
@@ -57,4 +81,4 @@ for (const asset of assets) {
 
 await access(join(dist, "_headers"));
 
-console.log(`Validated static prototype: ${required.length} content checks, ${assets.length} image assets, no external form action.`);
+console.log(`Validated static website: ${routes.length + 1} routes, ${required.length} homepage checks, ${assets.length} image assets, no external form action.`);

@@ -4,13 +4,13 @@ import { site } from "../data/site";
 ---
 
 <header class="site-header" data-header>
-  <a class="wordmark" href="#top" aria-label="Hermes home">
+  <a class="wordmark" href="/#top" aria-label="Hermes home">
     <span class="wordmark-mark">H</span>
     <span>{site.brand}</span>
   </a>
 
   <nav class="desktop-nav" aria-label="Primary navigation">
-    {site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+    {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
   </nav>
 
   <a class="header-cta" href="#contact">
@@ -23,7 +23,7 @@ import { site } from "../data/site";
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
-    {site.navigation.map((item) => <a href={item.href}>{item.label}</a>)}
+    {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
     <a href="#contact">Start a conversation</a>
   </nav>
 </header>
