@@ -1,6 +1,6 @@
 {
   "name": "hermeslogisticus-com",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,7 +11,8 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "node scripts/validate-build.mjs"
+    "test": "node scripts/validate-build.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@lucide/astro": "^1.24.0",
@@ -21,6 +22,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.6",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1",
     "typescript": "^6.0.3"
   }
 }

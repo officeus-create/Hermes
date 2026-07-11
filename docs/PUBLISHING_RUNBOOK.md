@@ -19,6 +19,8 @@ Cloudflare Pages settings:
 
 The current static website does not need the Cloudflare Astro server adapter.
 
+Keep `PUBLIC_CONTACT_MODE=preview` for the first deployment. Live contact delivery is a separate release because the endpoint domain must also be added to the Content Security Policy `connect-src` directive.
+
 ## Publication Sequence
 
 1. Confirm the GitHub account or organization that will own the repository.
@@ -41,6 +43,7 @@ The current static website does not need the Cloudflare Astro server adapter.
 - the contact form shows the local preview message and sends no request;
 - canonical URLs point to `https://hermeslogisticus.com`;
 - no secrets or environment variables are configured;
+- the form remains in preview mode and produces no POST request;
 - deployed commit matches the approved local commit.
 
 ## Rollback

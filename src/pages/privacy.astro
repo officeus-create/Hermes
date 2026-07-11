@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+---
+
+<BaseLayout title="Privacy notice | Hermes" description="Privacy information for the Hermes website contact workflow.">
+  <SiteHeader />
+  <main class="legal-page" id="main-content">
+    <div class="shell legal-content">
+      <p class="eyebrow">Privacy notice</p>
+      <h1>How the contact form works.</h1>
+      <p class="legal-lead">The current website runs the contact form in preview mode. Information entered into the form is not sent to Hermes and is not stored by the website.</p>
+      <section>
+        <h2>When delivery is connected</h2>
+        <p>Before live delivery is enabled, this notice will identify the receiving company, contact destination, purpose, retention approach, and available privacy contact.</p>
+      </section>
+      <section>
+        <h2>Information requested</h2>
+        <p>The form asks for a name, email address, area of interest, and a short description of the request. It does not request passwords, payment details, identity documents, or confidential credentials.</p>
+      </section>
+      <section>
+        <h2>External services</h2>
+        <p>No CRM, analytics, advertising tracker, or form-delivery service is connected in the current version.</p>
+      </section>
+      <a class="button button-primary" href="/#contact">Return to the contact form</a>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>

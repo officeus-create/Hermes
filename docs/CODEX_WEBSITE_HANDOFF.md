@@ -1,6 +1,6 @@
 # Codex Website Handoff
 
-STATUS: LOCAL_V1_COMPLETE
+STATUS: LOCAL_V1_1_FUNCTIONALLY_COMPLETE
 
 LOCAL_PATH: `/Users/progressopro/Documents/hermeslogisticus.com`
 
@@ -12,6 +12,8 @@ SCOPE_COMPLETED:
 - dedicated Logistics, ProgressoPro, Academy, and IT Development pages;
 - mobile and desktop navigation;
 - direction-aware contact preview form;
+- configurable preview/live contact workflow with validation, consent, idempotency, timeout, and failure handling;
+- privacy notice;
 - canonical and social metadata;
 - custom 404 page, robots file, and sitemap;
 - responsive layout and reduced-motion support;
@@ -25,11 +27,12 @@ VERIFICATION:
 - desktop 1440px: no overflow, broken images, or console errors;
 - mobile 390px: no overflow, broken images, or console errors;
 - mobile menu and path selection verified.
+- Playwright: 17 desktop/mobile workflow tests passed; one desktop-only skip expected.
 
 INTENTIONALLY NOT CONNECTED:
 
 - public hosting and DNS;
-- live form delivery or storage;
+- approved live form receiver and storage;
 - analytics;
 - CRM, Google Sheets, Telegram, or external APIs.
 

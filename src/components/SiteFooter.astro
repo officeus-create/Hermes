@@ -11,6 +11,7 @@ import { site } from "../data/site";
     </div>
     <nav aria-label="Footer navigation">
       {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
+      <a href="/privacy/">Privacy</a>
     </nav>
     <a class="back-to-top" href="#top" aria-label="Back to top"><ArrowUp size={20} aria-hidden="true" /></a>
   </div>

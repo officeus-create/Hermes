@@ -162,6 +162,13 @@ h3 { font-size: 1.75rem; }
 .not-found { display: flex; align-items: center; min-height: 75svh; padding: 10rem 0 5rem; background: var(--color-navy-950); color: white; }
 .not-found h1 { max-width: 850px; margin-bottom: 1.5rem; }
 .not-found p:not(.eyebrow) { max-width: 610px; margin-bottom: 2rem; color: rgba(255,255,255,.72); font-size: 1.12rem; }
+.legal-page { min-height: 75svh; padding: 10rem 0 var(--space-section); background: white; }
+.legal-content { max-width: 900px; }
+.legal-content h1 { margin-bottom: 2rem; color: var(--color-navy-900); }
+.legal-lead { max-width: 760px; color: var(--color-muted); font-size: 1.18rem; }
+.legal-content section { padding: 2rem 0; border-top: 1px solid #dcddea; }
+.legal-content section h2 { margin-bottom: .8rem; font-size: 1.65rem; }
+.legal-content section p { max-width: 760px; color: var(--color-muted); }
 
 .journey-section { background: white; }
 .split-heading { display: grid; grid-template-columns: 1.15fr .85fr; align-items: end; gap: 4rem; }
@@ -196,7 +203,13 @@ h3 { font-size: 1.75rem; }
 .contact-form input, .contact-form select { min-height: 48px; }
 .contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { border-color: var(--color-violet-600); box-shadow: 0 0 0 3px rgba(106,32,217,.14); }
 .contact-form .button { justify-self: start; border: 0; }
+.contact-form .button:disabled { cursor: wait; opacity: .7; transform: none; }
+.form-alert { padding: .8rem 1rem; border-left: 3px solid #b42318; background: #fff1f0; color: #7a271a; font-size: .88rem; }
 .form-status { min-height: 1.5rem; margin: 0; color: var(--color-navy-700); font-size: .86rem; }
+.honeypot { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; white-space: nowrap !important; }
+.consent-field { grid-template-columns: 20px 1fr !important; align-items: start; gap: .65rem !important; font-weight: 550 !important; line-height: 1.45; }
+.consent-field input { width: 18px; min-height: 18px; margin-top: .1rem; padding: 0; }
+.consent-field a { color: var(--color-violet-600); text-decoration: underline; text-underline-offset: 2px; }
 
 .site-footer { padding: 4rem 0 1.5rem; background: #050b2b; color: white; }
 .footer-main { display: grid; grid-template-columns: 1.3fr .7fr auto; gap: 2rem; align-items: start; }

@@ -1,6 +1,8 @@
 ---
 import { ArrowUpRight, Menu } from "@lucide/astro";
 import { site } from "../data/site";
+
+const navigation = site.navigation.map((item) => ({ ...item, url: `/${item.href}` }));
 ---
 
 <header class="site-header" data-header>
@@ -10,7 +12,7 @@ import { site } from "../data/site";
   </a>
 
   <nav class="desktop-nav" aria-label="Primary navigation">
-    {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
+    {navigation.map((item) => <a href={item.url}>{item.label}</a>)}
   </nav>
 
   <a class="header-cta" href="#contact">
@@ -23,7 +25,7 @@ import { site } from "../data/site";
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
-    {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
+    {navigation.map((item) => <a href={item.url}>{item.label}</a>)}
     <a href="#contact">Start a conversation</a>
   </nav>
 </header>
@@ -32,18 +34,38 @@ import { site } from "../data/site";
   const button = document.querySelector<HTMLElement>("[data-menu-button]");
   const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
 
+  const closeMenu = (restoreFocus = false) => {
+    button?.setAttribute("aria-expanded", "false");
+    button?.setAttribute("aria-label", "Open navigation");
+    if (menu) menu.hidden = true;
+    if (restoreFocus) button?.focus();
+  };
+
   button?.addEventListener("click", () => {
     const isOpen = button.getAttribute("aria-expanded") === "true";
-    button.setAttribute("aria-expanded", String(!isOpen));
-    button.setAttribute("aria-label", isOpen ? "Open navigation" : "Close navigation");
-    if (menu) menu.hidden = isOpen;
+    if (isOpen) {
+      closeMenu();
+      return;
+    }
+    button.setAttribute("aria-expanded", "true");
+    button.setAttribute("aria-label", "Close navigation");
+    if (menu) {
+      menu.hidden = false;
+      menu.querySelector<HTMLElement>("a")?.focus();
+    }
   });
 
   menu?.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      button?.setAttribute("aria-expanded", "false");
-      button?.setAttribute("aria-label", "Open navigation");
-      if (menu) menu.hidden = true;
-    });
+    link.addEventListener("click", () => closeMenu());
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && button?.getAttribute("aria-expanded") === "true") closeMenu(true);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (button?.getAttribute("aria-expanded") !== "true") return;
+    const target = event.target;
+    if (target instanceof Node && !menu?.contains(target) && !button.contains(target)) closeMenu();
   });
 </script>

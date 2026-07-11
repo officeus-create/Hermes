@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { selectedPath = "" } = Astro.props;
+const contactMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
+const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
 ---
 
 <section class="section contact-section" id="contact">
@@ -16,15 +18,22 @@ const { selectedPath = "" } = Astro.props;
       <h2>{site.contact.title}</h2>
       <p>{site.contact.body}</p>
     </div>
-    <form class="contact-form" data-preview-form>
+    <form
+      class="contact-form"
+      data-contact-form
+      data-contact-mode={contactMode}
+      data-contact-endpoint={contactEndpoint}
+      novalidate
+    >
+      <div class="form-alert" role="alert" data-form-alert hidden></div>
       <div class="field-row">
         <label>
           Your name
-          <input type="text" name="name" autocomplete="name" required />
+          <input type="text" name="name" autocomplete="name" minlength="2" maxlength="100" required />
         </label>
         <label>
           Email
-          <input type="email" name="email" autocomplete="email" required />
+          <input type="email" name="email" autocomplete="email" maxlength="160" required />
         </label>
       </div>
       <label>
@@ -37,10 +46,18 @@ const { selectedPath = "" } = Astro.props;
       </label>
       <label>
         What are you trying to build?
-        <textarea name="message" rows="4" required></textarea>
+        <textarea name="message" rows="4" minlength="10" maxlength="2000" required></textarea>
+      </label>
+      <label class="honeypot" aria-hidden="true">
+        Leave this field empty
+        <input type="text" name="website" tabindex="-1" autocomplete="off" />
+      </label>
+      <label class="consent-field">
+        <input type="checkbox" name="consent" required />
+        <span>I agree that Hermes may use these details to respond to this request. <a href="/privacy/">Privacy notice</a>.</span>
       </label>
       <button class="button button-primary" type="submit">
-        Preview request
+        <span data-submit-label>{contactMode === "live" ? "Send request" : "Preview request"}</span>
         <ArrowRight size={18} aria-hidden="true" />
       </button>
       <p class="form-status" role="status" data-form-status></p>
@@ -49,10 +66,81 @@ const { selectedPath = "" } = Astro.props;
 </section>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>("[data-preview-form]");
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   const status = document.querySelector<HTMLElement>("[data-form-status]");
+  const alert = document.querySelector<HTMLElement>("[data-form-alert]");
+  const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
+
+  const setAlert = (message = "") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.hidden = !message;
+  };
+
+  const setSubmitting = (submitting: boolean) => {
+    if (!submitButton || !submitLabel) return;
+    submitButton.disabled = submitting;
+    submitButton.setAttribute("aria-busy", String(submitting));
+    submitLabel.textContent = submitting ? "Sending..." : form?.dataset.contactMode === "live" ? "Send request" : "Preview request";
+  };
+
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (status) status.textContent = "Prototype only. Your information was not sent or stored.";
+    setAlert();
+    if (!form.reportValidity()) return;
+
+    const data = new FormData(form);
+    if (String(data.get("website") ?? "")) return;
+
+    const payload = {
+      request_id: crypto.randomUUID(),
+      submitted_at: new Date().toISOString(),
+      source_path: window.location.pathname,
+      name: String(data.get("name") ?? "").trim(),
+      email: String(data.get("email") ?? "").trim(),
+      interest: String(data.get("path") ?? "").trim(),
+      message: String(data.get("message") ?? "").trim(),
+      consent: data.get("consent") === "on",
+    };
+
+    if (form.dataset.contactMode !== "live") {
+      if (status) status.textContent = `Preview ready for ${payload.interest}. Your information was not sent or stored.`;
+      return;
+    }
+
+    const endpoint = form.dataset.contactEndpoint;
+    if (!endpoint) {
+      setAlert("Contact delivery is temporarily unavailable. Please try again later.");
+      return;
+    }
+
+    try {
+      if (new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
+    } catch {
+      setAlert("Contact delivery is temporarily unavailable. Please try again later.");
+      return;
+    }
+
+    setSubmitting(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Idempotency-Key": payload.request_id },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("delivery_failed");
+        form.reset();
+        if (status) status.textContent = "Thank you. Your request was sent successfully.";
+      })
+      .catch(() => setAlert("We could not send the request. Your details were not confirmed as received. Please try again later."))
+      .finally(() => {
+        window.clearTimeout(timeout);
+        setSubmitting(false);
+      });
   });
 </script>

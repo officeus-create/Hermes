@@ -150,7 +150,7 @@ export const site = {
   contact: {
     eyebrow: "Not sure where to begin?",
     title: "Tell us what you are building.",
-    body: "Share your goal and we will help identify the most relevant Hermes path. This prototype form does not send or store data.",
+    body: "Share your goal and we will help identify the most relevant Hermes path. Until contact delivery is connected, the form remains in preview mode and does not send or store data.",
   },
   claimRegister: [
     { claim: "Hermes operates as a multi-division business ecosystem", status: "VERIFIED_INTERNAL" as ClaimStatus },

@@ -9,6 +9,7 @@ const routes = [
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Positioning and message"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director"] },
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and internal tools"] },
+  { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
 const assets = [
   "images/hermes-hero.jpg",
@@ -32,7 +33,7 @@ const required = [
   "Hermes Business Academy",
   "IT Development",
   "COO / Operational Director Program",
-  "Prototype only. Your information was not sent or stored.",
+  "Your information was not sent or stored.",
 ];
 
 for (const text of required) {
@@ -66,6 +67,8 @@ for (const claim of forbidden) {
 }
 
 if (/<form[^>]+action=/i.test(html)) throw new Error("Prototype form must not have an action endpoint");
+if (!html.includes('data-contact-mode="preview"')) throw new Error("Safe preview contact mode is not active by default");
+if (!html.includes('name="consent"')) throw new Error("Contact consent field is missing");
 if (!html.includes('id="main-content"')) throw new Error("Skip-link target is missing");
 const cssFiles = (await readdir(join(dist, "_astro"))).filter((file) => file.endsWith(".css"));
 const css = (await Promise.all(cssFiles.map((file) => readFile(join(dist, "_astro", file), "utf8")))).join("\n");
