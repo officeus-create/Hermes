@@ -9,16 +9,19 @@ const assets = [
   "images/path-logistics.jpg",
   "images/path-marketing.jpg",
   "images/path-academy.jpg",
+  "images/path-technology.jpg",
 ];
 
 await access(indexPath);
 const html = await readFile(indexPath, "utf8");
 
 const required = [
-  "Hermes. One ecosystem. Three ways forward.",
+  "Hermes. One ecosystem. Four ways forward.",
   "Hermes Logistics",
   "ProgressoPro",
   "Hermes Business Academy",
+  "IT Development",
+  "COO / Operational Director Program",
   "Prototype only. Your information was not sent or stored.",
 ];
 
