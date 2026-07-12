@@ -1,6 +1,6 @@
 # Hermes Website
 
-Production-ready static Astro website for `hermeslogisticus.com`.
+Production-ready static Astro website for `hermeslogisticsus.com`.
 
 ## Status
 

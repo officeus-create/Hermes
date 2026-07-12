@@ -24,13 +24,13 @@ Keep `PUBLIC_CONTACT_MODE=preview` for the first deployment. Live contact delive
 ## Publication Sequence
 
 1. Confirm the GitHub account or organization that will own the repository.
-2. Create a private repository named `hermeslogisticus.com`.
+2. Use the private GitHub repository for the Hermes website.
 3. Add the repository as `origin` and push the reviewed V1 commit.
 4. Confirm the GitHub Actions `Website checks` workflow passes.
 5. In Cloudflare Pages, import the repository and apply the settings above.
 6. Review the generated `*.pages.dev` URL on desktop and mobile.
 7. Record the deployed commit and preview URL.
-8. Keep `hermeslogisticus.com` DNS unchanged until Vladimir approves the preview.
+8. Connect `hermeslogisticsus.com` only after Vladimir approves the preview.
 9. After approval, attach the custom domain in Cloudflare and verify HTTPS.
 
 ## Preview Acceptance Checks
@@ -41,7 +41,7 @@ Keep `PUBLIC_CONTACT_MODE=preview` for the first deployment. Live contact delive
 - desktop and mobile have no horizontal overflow;
 - navigation and direction links work;
 - the contact form shows the local preview message and sends no request;
-- canonical URLs point to `https://hermeslogisticus.com`;
+- canonical URLs point to `https://hermeslogisticsus.com`;
 - no secrets or environment variables are configured;
 - the form remains in preview mode and produces no POST request;
 - deployed commit matches the approved local commit.

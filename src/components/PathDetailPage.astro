@@ -54,4 +54,55 @@ const { path } = Astro.props;
       </ol>
     </div>
   </section>
+
+  {path.equipment && (
+    <section class="section logistics-equipment" aria-labelledby="equipment-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Equipment</p><h2 id="equipment-title">Truck types we can discuss.</h2></div>
+          <p>Eligibility depends on authority, insurance, equipment condition, operating area, and the current freight market.</p>
+        </div>
+        <div class="equipment-grid">
+          {path.equipment.map((item) => <article><h3>{item.title}</h3><p>{item.body}</p></article>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {path.serviceGroups && (
+    <section class="section logistics-services" aria-labelledby="service-groups-title">
+      <div class="shell">
+        <div class="section-heading"><p class="eyebrow">Services</p><h2 id="service-groups-title">The operating support behind every load.</h2></div>
+        <div class="service-group-grid">
+          {path.serviceGroups.map((group) => (
+            <article><h3>{group.title}</h3><ul>{group.items.map((item) => <li><Check size={18} aria-hidden="true" />{item}</li>)}</ul></article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {path.faq && (
+    <section class="section logistics-faq" aria-labelledby="faq-title">
+      <div class="shell faq-layout">
+        <div><p class="eyebrow">FAQ</p><h2 id="faq-title">Before you get started.</h2></div>
+        <div class="faq-list">
+          {path.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {path.directContacts && (
+    <section class="section logistics-contacts" aria-labelledby="direct-contact-title">
+      <div class="shell">
+        <div class="section-heading"><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">Reach the right logistics team.</h2></div>
+        <div class="direct-contact-grid">
+          {path.directContacts.map((contact) => (
+            <article><p>{contact.label}</p><a href={contact.href}>{contact.value}</a><span>{contact.note}</span></article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </main>

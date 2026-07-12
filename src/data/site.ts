@@ -19,11 +19,15 @@ export type PathDetail = {
   overview: string;
   offerings: { title: string; body: string }[];
   process: { title: string; body: string }[];
+  equipment?: { title: string; body: string }[];
+  serviceGroups?: { title: string; items: string[] }[];
+  faq?: { question: string; answer: string }[];
+  directContacts?: { label: string; value: string; href: string; note: string }[];
 };
 
 export const site = {
   brand: "Hermes",
-  domain: "hermeslogisticus.com",
+  domain: "hermeslogisticsus.com",
   navigation: [
     { label: "Paths", href: "#paths" },
     { label: "How it works", href: "#journey" },
@@ -51,16 +55,42 @@ export const site = {
       imageAlt: "Professional freight truck on an open highway",
       tone: "violet",
       audience: "For carriers, shippers, and logistics partners operating in the U.S. market.",
-      overview: "Hermes Logistics focuses on the practical work behind freight movement: clear coordination, useful communication, and disciplined follow-through. The exact scope is defined with the team before work begins.",
+      overview: "Hermes Logistics provides dispatch and back-office support for owner-operators and small fleets. The team coordinates loads, broker paperwork, rate negotiation, invoicing, and day-to-day communication around the carrier's equipment and operating goals.",
       offerings: [
-        { title: "Carrier support", body: "Operational coordination shaped around the carrier's equipment, lanes, and current needs." },
-        { title: "Shipper coordination", body: "A clear starting point for discussing freight requirements and the right operational route." },
-        { title: "Partner communication", body: "Structured follow-up that keeps responsibilities and next actions visible." },
+        { title: "Dispatch operations", body: "Dedicated load search, broker communication, rate negotiation, and operational follow-through." },
+        { title: "Carrier back office", body: "Support with setup packets, insurance certificates, documents, invoicing, and accounts receivable." },
+        { title: "Shippers and brokers", body: "A structured point of contact for freight requirements, carrier coordination, and load updates." },
       ],
       process: [
-        { title: "Share the need", body: "Tell us what you move, where you operate, and what support you are looking for." },
-        { title: "Confirm the fit", body: "The logistics team reviews the request and clarifies the workable scope." },
-        { title: "Set the next action", body: "If there is a fit, both sides agree on the immediate operational step." },
+        { title: "Request an agreement", body: "Tell us about your authority, equipment, preferred lanes, and current operating needs." },
+        { title: "Send carrier documents", body: "The team reviews the signed agreement, W-9, authority, insurance, and driver information required for setup." },
+        { title: "Meet your dispatcher", body: "Confirm the working plan, communication routine, and the first loads the team should pursue." },
+      ],
+      equipment: [
+        { title: "Dry Van", body: "53 ft trailers, with equipment details confirmed during onboarding." },
+        { title: "Reefer", body: "Temperature-controlled freight support based on trailer and lane requirements." },
+        { title: "Flatbed", body: "Open-deck freight coordination, including equipment and securement requirements." },
+        { title: "Step Deck", body: "Dispatch support for loads that need additional height clearance." },
+        { title: "Power Only", body: "Hook-and-drop, trailer moves, round trips, and other compatible power-only work." },
+        { title: "Hotshot", body: "Load search and dispatch coordination for eligible hotshot equipment." },
+        { title: "Box Truck", body: "Dedicated support route for straight trucks and local or regional opportunities." },
+        { title: "Cargo Van", body: "Expedited and smaller-load opportunities based on equipment and operating area." },
+      ],
+      serviceGroups: [
+        { title: "Dispatch", items: ["Dedicated dispatcher", "Load search and booking", "Rate negotiation", "Broker and shipper communication", "After-hours support"] },
+        { title: "Documents and billing", items: ["Broker setup packets", "Insurance certificate coordination", "Invoicing and billing", "Accounts receivable follow-up", "Carrier document organization"] },
+        { title: "Carrier growth", items: ["Lane and equipment fit review", "New-authority onboarding review", "Broker relationship support", "Dedicated freight conversations", "Operational reputation focus"] },
+      ],
+      faq: [
+        { question: "Is the service month-to-month?", answer: "The historical Hermes service model was month-to-month rather than a long-term commitment. Final commercial terms are confirmed in the current agreement." },
+        { question: "What documents are usually needed?", answer: "Typical onboarding includes a signed dispatch agreement, W-9, MC authority, insurance information, and driver or equipment details relevant to the service." },
+        { question: "Do carriers keep control of load decisions?", answer: "The operating model is built around carrier approval and clear communication. Specific booking and approval rules are confirmed during onboarding." },
+        { question: "Can I choose only part of the service?", answer: "Requests can begin with dispatch, documents, invoicing, or another defined need. The team confirms the available scope before work starts." },
+      ],
+      directContacts: [
+        { label: "Freight Department", value: "(718) 223-4736", href: "tel:+17182234736", note: "Carrier, shipper, and freight inquiries" },
+        { label: "Box Truck Department", value: "(475) 441-4301", href: "tel:+14754414301", note: "Box truck and cargo van inquiries" },
+        { label: "Dispatch Operations", value: "freight_301@hermeslogisticsus.com", href: "mailto:freight_301@hermeslogisticsus.com", note: "Documents and dispatch questions" },
       ],
     },
     {

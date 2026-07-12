@@ -5,7 +5,10 @@ const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
 const routes = [
-  { path: "paths/logistics/index.html", required: ["Hermes Logistics", "Carrier support"] },
+  {
+    path: "paths/logistics/index.html",
+    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com"],
+  },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Positioning and message"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director"] },
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and internal tools"] },

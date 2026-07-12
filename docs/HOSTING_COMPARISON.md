@@ -4,7 +4,7 @@ Reviewed: 2026-07-11
 
 ## Recommendation
 
-Use a private GitHub repository for source control and Cloudflare Pages for preview and production hosting. Do not connect `hermeslogisticus.com` or publish production without Vladimir's approval.
+Use a private GitHub repository for source control and Cloudflare Pages for preview and production hosting. The approved production domain is `hermeslogisticsus.com`.
 
 ## GitHub Pages
 
