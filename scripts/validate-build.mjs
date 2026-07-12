@@ -16,7 +16,7 @@ const routes = [
 ];
 const assets = [
   "images/hermes-ecosystem-hero.jpg",
-  "images/path-logistics.jpg",
+  "images/path-logistics-system.jpg",
   "images/path-marketing.jpg",
   "images/path-academy.jpg",
   "images/path-technology-portal.jpg",
