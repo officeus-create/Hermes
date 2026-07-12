@@ -60,7 +60,7 @@ const { path } = Astro.props;
       <div class="shell">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Equipment</p><h2 id="equipment-title">Truck types we can discuss.</h2></div>
-          <p>Eligibility depends on authority, insurance, equipment condition, operating area, and the current freight market.</p>
+          <p>Eligibility depends on authority, insurance, equipment and trailer configuration, operating area, and the current freight market.</p>
         </div>
         <div class="equipment-grid">
           {path.equipment.map((item) => <article><h3>{item.title}</h3><p>{item.body}</p></article>)}

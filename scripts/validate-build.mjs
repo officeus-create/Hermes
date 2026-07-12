@@ -9,9 +9,9 @@ const routes = [
     path: "paths/logistics/index.html",
     required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com"],
   },
-  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Positioning and message"] },
+  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and internal tools"] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
 const assets = [
@@ -30,11 +30,12 @@ const html = await readFile(indexPath, "utf8");
 const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
 
 const required = [
-  "Hermes. One ecosystem. Four ways forward.",
+  "Four businesses. One place to move forward.",
   "Hermes Logistics",
   "ProgressoPro",
   "Hermes Business Academy",
   "IT Development",
+  "Car Hauling",
   "COO / Operational Director Program",
   "Your information was not sent or stored.",
 ];
