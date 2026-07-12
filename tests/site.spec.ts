@@ -67,3 +67,11 @@ test("mobile menu supports keyboard close", async ({ page, isMobile }) => {
   await expect(button).toHaveAttribute("aria-expanded", "false");
   await expect(button).toBeFocused();
 });
+
+test("academy program chooser switches accessible panels", async ({ page }) => {
+  await page.goto("/paths/academy/");
+  const tab = page.getByRole("tab", { name: "03 COO / Director" });
+  await tab.click();
+  await expect(tab).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel", { name: "03 COO / Director" })).toContainText("Operational leadership capability");
+});
