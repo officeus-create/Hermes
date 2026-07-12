@@ -13,10 +13,13 @@ import { site } from "../data/site";
       {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
       <a href="/privacy/">Privacy</a>
     </nav>
+    <nav class="footer-social" aria-label="Social media">
+      {site.social.map((item) => <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>)}
+    </nav>
     <a class="back-to-top" href="#top" aria-label="Back to top"><ArrowUp size={20} aria-hidden="true" /></a>
   </div>
   <div class="shell footer-meta">
     <span>Website v1 · Contact submission pending connection</span>
-    <span>© 2026 Hermes</span>
+    <span>© 2026 Hermes · Facebook pending verification</span>
   </div>
 </footer>

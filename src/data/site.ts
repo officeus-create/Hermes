@@ -93,6 +93,7 @@ export const site = {
         { question: "Can I choose only part of the service?", answer: "Requests can begin with dispatch, documents, invoicing, or another defined need. The team confirms the available scope before work starts." },
       ],
       directContacts: [
+        { label: "General Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Public contact listed by Hermes Logistics on Instagram" },
         { label: "Freight Department", value: "(718) 223-4736", href: "tel:+17182234736", note: "Carrier, shipper, and freight inquiries" },
         { label: "Box Truck Department", value: "(475) 441-4301", href: "tel:+14754414301", note: "Box truck and cargo van inquiries" },
         { label: "Dispatch Operations", value: "freight_301@hermeslogisticsus.com", href: "mailto:freight_301@hermeslogisticsus.com", note: "Documents and dispatch questions" },
@@ -229,6 +230,11 @@ export const site = {
     title: "Tell us what you are building.",
     body: "Share your goal and we will help identify the most relevant Hermes path. Until contact delivery is connected, the form remains in preview mode and does not send or store data.",
   },
+  social: [
+    { label: "Instagram", href: "https://www.instagram.com/hermes.logistics/" },
+    { label: "Threads", href: "https://www.threads.com/@hermes.logistics" },
+    { label: "Telegram", href: "https://t.me/+R-GepRJDbEQ1NjVi" },
+  ],
   claimRegister: [
     { claim: "Hermes operates as a multi-division business ecosystem", status: "VERIFIED_INTERNAL" as ClaimStatus },
     { claim: "Specific performance metrics and partner counts", status: "PLACEHOLDER_DO_NOT_PUBLISH" as ClaimStatus },

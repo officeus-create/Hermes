@@ -7,7 +7,7 @@ const indexPath = join(dist, "index.html");
 const routes = [
   {
     path: "paths/logistics/index.html",
-    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com"],
+    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com", "+1 (351) 777-5337"],
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive"] },
@@ -42,6 +42,8 @@ const required = [
   "IT Development",
   "Car Hauling",
   "COO / Operational Director Program",
+  "https://www.instagram.com/hermes.logistics/",
+  "https://www.threads.com/@hermes.logistics",
   "Your information was not sent or stored.",
 ];
 
