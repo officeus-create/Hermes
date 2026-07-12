@@ -1,0 +1,43 @@
+---
+import { CalendarCheck2, ChartNoAxesCombined, CreditCard, Database, Workflow } from "@lucide/astro";
+
+const stages = [
+  { label: "Booking", detail: "Customer chooses a service", icon: CalendarCheck2 },
+  { label: "Payment", detail: "Prepayment confirms intent", icon: CreditCard },
+  { label: "CRM", detail: "The client record stays organized", icon: Database },
+  { label: "Automation", detail: "Routine follow-up moves automatically", icon: Workflow },
+  { label: "Analytics", detail: "The team sees what needs attention", icon: ChartNoAxesCombined },
+];
+---
+
+<section class="section technology-flow" aria-labelledby="technology-flow-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-flow-heading">
+      <div>
+        <p class="eyebrow">A system, not a collection of screens</p>
+        <h2 id="technology-flow-title">One customer action. One connected business flow.</h2>
+      </div>
+      <p>We design the visible experience and the operational system behind it, so information keeps moving after a customer clicks.</p>
+    </div>
+
+    <ol class="system-flow" aria-label="Example connected customer workflow">
+      {stages.map((stage, index) => {
+        const Icon = stage.icon;
+        return (
+          <li tabindex="0">
+            <span>0{index + 1}</span>
+            <Icon size={23} aria-hidden="true" />
+            <h3>{stage.label}</h3>
+            <p>{stage.detail}</p>
+          </li>
+        );
+      })}
+    </ol>
+
+    <div class="studio-proof">
+      <p>Designed around the business</p>
+      <strong>From the public website to the internal decision.</strong>
+      <a href="#contact">Map your workflow <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>

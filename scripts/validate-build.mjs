@@ -11,11 +11,11 @@ const routes = [
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration"] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Booking", "Analytics"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
 const assets = [
-  "images/hermes-hero.jpg",
+  "images/hermes-ecosystem-hero.jpg",
   "images/path-logistics.jpg",
   "images/path-marketing.jpg",
   "images/path-academy.jpg",

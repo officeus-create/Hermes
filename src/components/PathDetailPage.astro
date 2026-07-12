@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Check } from "@lucide/astro";
 import type { PathDetail } from "../data/site";
+import TechnologySystemFlow from "./TechnologySystemFlow.astro";
 
 interface Props {
   path: PathDetail;
@@ -43,6 +44,8 @@ const { path } = Astro.props;
       </div>
     </div>
   </section>
+
+  {path.id === "technology" && <TechnologySystemFlow />}
 
   <section class="section detail-process" aria-labelledby="process-title">
     <div class="shell">
