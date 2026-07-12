@@ -283,6 +283,15 @@ h3 { font-size: 1.75rem; }
 .direct-contact-grid p { margin: 0; color: var(--color-muted); font-size: .78rem; font-weight: 760; text-transform: uppercase; }
 .direct-contact-grid a { color: var(--color-navy-900); font-size: clamp(1rem, 2vw, 1.3rem); font-weight: 780; overflow-wrap: anywhere; }
 .direct-contact-grid span { color: var(--color-muted); font-size: .9rem; }
+.direction-socials { background: #f7f4ff; }
+.direction-socials-layout { display: grid; grid-template-columns: .7fr 1.3fr; gap: clamp(2rem, 7vw, 7rem); align-items: start; }
+.direction-socials h2 { max-width: 520px; color: var(--color-navy-900); }
+.direction-social-grid { display: grid; border-top: 1px solid #d8d5e5; }
+.direction-social-grid a { display: grid; grid-template-columns: .65fr 1fr auto; gap: 1rem; align-items: center; min-height: 76px; padding: .8rem 0; border-bottom: 1px solid #d8d5e5; transition: color 180ms ease, padding 180ms ease; }
+.direction-social-grid a:hover, .direction-social-grid a:focus-visible { padding-left: .7rem; color: var(--color-magenta-500); }
+.direction-social-grid span { color: var(--color-muted); font-family: var(--font-mono); font-size: .72rem; text-transform: uppercase; }
+.direction-social-grid strong { font-size: 1.05rem; }
+.direction-social-grid small { font-size: 1.1rem; }
 .academy-progression { background: #f8f6ef; }
 .progression-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; border: 1px solid #ded8c8; list-style: none; }
 .progression-grid li { min-height: 260px; padding: 1.5rem; border-right: 1px solid #ded8c8; border-bottom: 1px solid #ded8c8; }
@@ -325,7 +334,7 @@ h3 { font-size: 1.75rem; }
   .paths-grid { grid-template-columns: 1fr; }
   .path-card { display: grid; grid-template-columns: .9fr 1.1fr; }
   .path-media { min-height: 100%; aspect-ratio: auto; }
-  .split-heading, .trust-inner, .contact-layout, .faq-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+  .split-heading, .trust-inner, .contact-layout, .faq-layout, .direction-socials-layout { grid-template-columns: 1fr; gap: 2.5rem; }
   .equipment-grid { grid-template-columns: repeat(2, 1fr); }
   .service-group-grid, .direct-contact-grid { grid-template-columns: 1fr; }
   .progression-grid { grid-template-columns: repeat(2, 1fr); }
@@ -397,6 +406,8 @@ h3 { font-size: 1.75rem; }
   .progression-grid { grid-template-columns: 1fr; }
   .progression-grid li, .progression-grid li:nth-child(2n), .progression-grid li:nth-child(3n), .progression-grid li:nth-child(n+5) { min-height: 0; border-right: 0; border-bottom: 1px solid #ded8c8; }
   .progression-grid li:last-child { border-bottom: 0; }
+  .direction-social-grid a { grid-template-columns: 1fr auto; }
+  .direction-social-grid span { grid-column: 1 / -1; }
   .footer-main { grid-template-columns: 1fr auto; }
   .footer-main nav { grid-column: 1; }
   .footer-main .footer-social { grid-column: 1; }

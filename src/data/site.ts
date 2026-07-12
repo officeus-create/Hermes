@@ -24,6 +24,7 @@ export type PathDetail = {
   serviceGroups?: { title: string; items: string[] }[];
   faq?: { question: string; answer: string }[];
   directContacts?: { label: string; value: string; href: string; note: string }[];
+  socialLinks?: { label: string; handle: string; href: string }[];
   progression?: { level: string; focus: string; responsibility: string }[];
 };
 
@@ -132,6 +133,11 @@ export const site = {
         { question: "Do we need a complete rebrand to begin?", answer: "No. Work can begin with one business goal, offer, campaign, or sales bottleneck before a wider brand decision." },
         { question: "Is this only social media management?", answer: "No. ProgressoPro connects positioning, content, lead generation, sales workflow, and measurement around the selected outcome." },
         { question: "Can marketing connect to our CRM?", answer: "Yes. The marketing and IT teams can define the lead journey and the technical handoff into a CRM or internal workflow." },
+      ],
+      socialLinks: [
+        { label: "Instagram", handle: "@progressopro", href: "https://www.instagram.com/progressopro/" },
+        { label: "Threads", handle: "@progressopro", href: "https://www.threads.com/@progressopro" },
+        { label: "Telegram", handle: "@SMMProgressoPro", href: "https://t.me/SMMProgressoPro" },
       ],
     },
     {

@@ -129,4 +129,24 @@ const { path } = Astro.props;
       </div>
     </section>
   )}
+
+  {path.socialLinks && (
+    <section class="section direction-socials" aria-labelledby="direction-socials-title">
+      <div class="shell direction-socials-layout">
+        <div>
+          <p class="eyebrow">Official channels</p>
+          <h2 id="direction-socials-title">Follow {path.category}.</h2>
+        </div>
+        <div class="direction-social-grid">
+          {path.socialLinks.map((item) => (
+            <a href={item.href} target="_blank" rel="noreferrer">
+              <span>{item.label}</span>
+              <strong>{item.handle}</strong>
+              <small aria-hidden="true">↗</small>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
 </main>
