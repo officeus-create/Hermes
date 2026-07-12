@@ -2,10 +2,15 @@
 import { ArrowUpRight, Menu } from "@lucide/astro";
 import { site } from "../data/site";
 
+interface Props {
+  theme?: "dark" | "light";
+}
+
+const { theme = "dark" } = Astro.props;
 const navigation = site.navigation.map((item) => ({ ...item, url: `/${item.href}` }));
 ---
 
-<header class="site-header" data-header>
+<header class={`site-header site-header-${theme}`} data-header>
   <a class="wordmark" href="/#top" aria-label="Hermes home">
     <span class="wordmark-mark">H</span>
     <span>{site.brand}</span>

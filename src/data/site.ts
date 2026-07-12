@@ -23,6 +23,7 @@ export type PathDetail = {
   serviceGroups?: { title: string; items: string[] }[];
   faq?: { question: string; answer: string }[];
   directContacts?: { label: string; value: string; href: string; note: string }[];
+  progression?: { level: string; focus: string; responsibility: string }[];
 };
 
 export const site = {
@@ -162,6 +163,14 @@ export const site = {
         { question: "How does the methodology work?", answer: "Each path moves through awareness, understanding, and application, with progressively more practical responsibility." },
         { question: "Is employment guaranteed?", answer: "No employment promise is made. The goal is to build practical capability and evidence of readiness for the selected professional path." },
       ],
+      progression: [
+        { level: "Student", focus: "Language and context", responsibility: "Understand the role, terminology, and how work moves through the operating system." },
+        { level: "Trainee", focus: "Guided execution", responsibility: "Complete defined tasks with examples, review, and correction." },
+        { level: "Specialist", focus: "Reliable ownership", responsibility: "Perform a repeatable area of work and communicate status clearly." },
+        { level: "Manager", focus: "Team coordination", responsibility: "Control priorities, quality, handoffs, and performance inside a department." },
+        { level: "Director", focus: "Operating system", responsibility: "Connect departments, KPI, process control, resources, and execution rhythm." },
+        { level: "Executive", focus: "Business decisions", responsibility: "Use systems thinking, analytics, and leadership to guide the wider organization." },
+      ],
     },
     {
       id: "technology",
@@ -171,8 +180,8 @@ export const site = {
       body: "Practical software for service businesses, from customer journeys and payments to the internal workflows behind them.",
       points: ["CRM systems", "Websites, apps, and online booking", "Automation and internal tools"],
       cta: "Explore IT Development",
-      image: "/images/path-technology.jpg",
-      imageAlt: "Product team designing a business workflow and mobile application",
+      image: "/images/path-technology-portal.jpg",
+      imageAlt: "Sculptural glass ribbon with blue light accents",
       tone: "teal",
       audience: "For service businesses that need software shaped around their actual customer and internal workflows.",
       overview: "IT Development turns a defined business process into a practical digital tool. Initial focus areas include CRM systems, websites and applications, online booking, prepayments, automation, and internal operations.",

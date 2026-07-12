@@ -9,7 +9,7 @@ interface Props {
 const { path } = Astro.props;
 ---
 
-<main id="main-content">
+<main id="main-content" class={`detail-page detail-page-${path.id}`}>
   <section class="detail-hero" id="top">
     <img src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" />
     <div class="detail-hero-shade"></div>
@@ -89,6 +89,27 @@ const { path } = Astro.props;
         <div class="faq-list">
           {path.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
         </div>
+      </div>
+    </section>
+  )}
+
+  {path.progression && (
+    <section class="section academy-progression" aria-labelledby="progression-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Operating Career System</p><h2 id="progression-title">Responsibility grows with capability.</h2></div>
+          <p>This is a learning progression model, not an employment or promotion guarantee. Each step represents a higher level of operating responsibility.</p>
+        </div>
+        <ol class="progression-grid">
+          {path.progression.map((item, index) => (
+            <li>
+              <span>0{index + 1}</span>
+              <p>{item.focus}</p>
+              <h3>{item.level}</h3>
+              <div>{item.responsibility}</div>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   )}

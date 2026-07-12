@@ -10,7 +10,7 @@ const routes = [
     required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com"],
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations"] },
-  { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director"] },
+  { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive"] },
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
@@ -19,7 +19,7 @@ const assets = [
   "images/path-logistics.jpg",
   "images/path-marketing.jpg",
   "images/path-academy.jpg",
-  "images/path-technology.jpg",
+  "images/path-technology-portal.jpg",
 ];
 
 await access(indexPath);

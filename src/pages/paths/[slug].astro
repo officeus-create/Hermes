@@ -14,7 +14,7 @@ const { path } = Astro.props;
 ---
 
 <BaseLayout title={`${path.category} | Hermes`} description={path.body} image={path.image}>
-  <SiteHeader />
+  <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
   <ContactCTA selectedPath={path.category} />
   <SiteFooter />
