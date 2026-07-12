@@ -10,6 +10,7 @@ export type PathDetail = {
   category: string;
   title: string;
   body: string;
+  shortValue: string;
   points: string[];
   cta: string;
   image: string;
@@ -51,6 +52,7 @@ export const site = {
       category: "Hermes Logistics",
       title: "Move freight with a team built around clear operations.",
       body: "A practical route for carriers, shippers, and logistics partners looking for coordinated support in the U.S. market.",
+      shortValue: "Move freight",
       points: ["Freight dispatch", "Car Hauling", "Carrier back office"],
       cta: "Explore logistics",
       image: "/images/path-logistics.jpg",
@@ -102,6 +104,7 @@ export const site = {
       category: "ProgressoPro",
       title: "Turn attention into a repeatable growth system.",
       body: "A marketing path for teams that want clearer positioning, useful content, and a disciplined way to learn from results.",
+      shortValue: "Grow demand",
       points: ["Organic growth systems", "Campaign structure", "Practical automation"],
       cta: "Explore marketing",
       image: "/images/path-marketing.jpg",
@@ -136,6 +139,7 @@ export const site = {
       category: "Hermes Business Academy",
       title: "Learn skills that connect to real business work.",
       body: "A structured education path focused on practical operations, sales, leadership, and modern digital workflows.",
+      shortValue: "Build capability",
       points: ["Logistics Program", "Marketing Program", "COO / Operational Director Program"],
       cta: "Explore the Academy",
       image: "/images/path-academy.jpg",
@@ -178,6 +182,7 @@ export const site = {
       category: "IT Development",
       title: "Build the digital system your business actually needs.",
       body: "Practical software for service businesses, from customer journeys and payments to the internal workflows behind them.",
+      shortValue: "Build systems",
       points: ["CRM systems", "Websites, apps, and online booking", "Automation and internal tools"],
       cta: "Explore IT Development",
       image: "/images/path-technology-portal.jpg",
@@ -208,10 +213,11 @@ export const site = {
     },
   ] satisfies PathDetail[],
   journey: [
-    { number: "01", title: "Choose", body: "Start with the outcome you want, not a generic funnel." },
-    { number: "02", title: "Connect", body: "Meet the right team, program, or business direction." },
-    { number: "03", title: "Build", body: "Turn the next step into a clear, workable plan." },
-    { number: "04", title: "Grow", body: "Review results and keep improving what works." },
+    { number: "01", title: "Choose", body: "Start with the outcome you need, not a generic package." },
+    { number: "02", title: "Connect", body: "Reach the team, program, or business direction built for that goal." },
+    { number: "03", title: "Plan", body: "Define the smallest useful next step, responsibilities, and expected result." },
+    { number: "04", title: "Build", body: "Put the plan into practical work with clear communication and review." },
+    { number: "05", title: "Improve", body: "Use real feedback and results to decide what should happen next." },
   ],
   principles: [
     { title: "People first", body: "Clear communication and practical support shape every path." },

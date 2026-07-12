@@ -31,6 +31,11 @@ const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
 
 const required = [
   "Four businesses. One place to move forward.",
+  "Four paths. One ecosystem.",
+  "Move freight",
+  "Grow demand",
+  "Build capability",
+  "Build systems",
   "Hermes Logistics",
   "ProgressoPro",
   "Hermes Business Academy",

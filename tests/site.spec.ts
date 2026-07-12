@@ -34,7 +34,7 @@ for (const route of routes) {
 
 test("direction card opens the matching page and preselects the form", async ({ page }) => {
   await page.goto("/");
-  await page.locator('a[href="/paths/technology/"]').first().click();
+  await page.getByRole("link", { name: "Explore IT Development: IT Development" }).click();
   await expect(page).toHaveURL(/\/paths\/technology\/$/);
   await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
 });

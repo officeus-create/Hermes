@@ -1,0 +1,19 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import { site } from "../data/site";
+---
+
+<nav class="ecosystem-rail" aria-label="Hermes business directions">
+  <div class="shell ecosystem-rail-inner">
+    {site.paths.map((path) => (
+      <a class={`ecosystem-link ecosystem-link-${path.tone}`} href={`#${path.id}`}>
+        <span>{path.number}</span>
+        <span>
+          <strong>{path.category}</strong>
+          <small>{path.shortValue}</small>
+        </span>
+        <ArrowUpRight size={17} aria-hidden="true" />
+      </a>
+    ))}
+  </div>
+</nav>
