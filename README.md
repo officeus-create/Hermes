@@ -43,6 +43,8 @@ The form uses `preview` mode by default and performs no network request. A futur
 
 The workflow includes native validation, length limits, consent, a honeypot, request IDs, idempotency headers, a ten-second timeout, and honest delivery-failure messaging.
 
+Visual redesigns must preserve the contracts in `docs/DESIGN_INTEGRATION_CONTRACT.md` and pass the build, static, and browser test suites.
+
 ## Publication
 
 The recommended zero-cost path is a private GitHub repository connected to Cloudflare Pages. See `docs/PUBLISHING_RUNBOOK.md` for the exact approval-gated sequence.
