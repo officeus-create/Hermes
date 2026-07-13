@@ -60,6 +60,7 @@ Updated: 2026-07-13
 - IT Development public delivery rate: `$25-$45/hour`; complex architecture and production responsibility should be planned near the upper end. Package ranges were recalibrated to this rate on 2026-07-13.
 - Wisconsin-first SEO foundation for all four directions: unique metadata, visible service-area language, Organization and Service schema, sitemap dates, and machine-readable business summary implemented on 2026-07-13. Thin city pages and invented location claims are rejected.
 - Public owner-name references removed. IT Development now presents a Digital Workforce lineup with role-specific setup and training ranges, approval-first positioning, and a dedicated inquiry path.
+- Public information boundary enforced: internal prototype names, AI assignments, routing processes, CRM logic, and employee-only details must not appear on the website. The internal portfolio block was removed and generated HTML now has a blocked-term check.
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.
 - Live contact form, analytics, verified social channels, and corporate mailbox aliases: pending.

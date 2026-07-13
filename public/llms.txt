@@ -19,5 +19,4 @@ Canonical site: https://hermeslogisticsus.com/
 
 - Contact submission is currently preview-only and does not transmit or store visitor information.
 - Public performance claims, fleet counts, student counts, and guaranteed outcomes are not published without verification.
-- Working prototypes are labeled separately from live public products.
-
+- Internal systems, employee-only processes, credentials, and private project details are not part of the public website.

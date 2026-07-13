@@ -15,6 +15,7 @@ SCOPE_COMPLETED:
 - IT Development case study, AI-assisted delivery roles, explicit product maturity labels, a flagship Company Digital Operating System, standalone service modules, controlled improvement partnership, planning ranges, and estimate request workflow;
 - Wisconsin-first SEO metadata and service-area signals for all four directions, Organization / Service structured data, updated sitemap, and `llms.txt`;
 - Digital Workforce lineup for operations, SEO, finance, HR, sales, analytics, design, and department roles, with typical setup and training ranges and no public owner-name references;
+- public-information release gate that blocks internal project names, AI-team assignments, and employee-only system details from production HTML;
 - mobile and desktop navigation;
 - direction-aware contact preview form;
 - configurable preview/live contact workflow with validation, consent, idempotency, timeout, and failure handling;

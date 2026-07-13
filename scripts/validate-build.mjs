@@ -11,7 +11,7 @@ const routes = [
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "do not guarantee employment"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes corporate digital platform", "Carrier Operations Database", "Working prototype", "AI Command Center", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "Company Digital Operating System", "$25-$45 per hour", "$30k-$90k", "Continuous Improvement Partnership", "$3k-$8k / month", "Digital Presence System", "$6k-$18k", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system."] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "Company Digital Operating System", "$25-$45 per hour", "$30k-$90k", "Continuous Improvement Partnership", "$3k-$8k / month", "Digital Presence System", "$6k-$18k", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system."] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
 const assets = [
@@ -85,8 +85,26 @@ const forbidden = [
   "operating in all 48 states",
 ];
 
+const publicForbiddenInternalTerms = [
+  "ChatGPT / Digital CEO",
+  "Codex",
+  "Claude",
+  "AI Command Center",
+  "Carrier Operations Database",
+  "Database Carrier",
+  "DCA-",
+];
+
 for (const claim of forbidden) {
   if (html.toLowerCase().includes(claim)) throw new Error(`Unsupported claim found: ${claim}`);
+}
+
+for (const term of publicForbiddenInternalTerms) {
+  if (html.includes(term)) throw new Error(`Internal term found on homepage: ${term}`);
+  for (const route of routes) {
+    const routeHtml = await readFile(join(dist, route.path), "utf8");
+    if (routeHtml.includes(term)) throw new Error(`Internal term found in ${route.path}: ${term}`);
+  }
 }
 
 if (/<form[^>]+action=/i.test(html)) throw new Error("Prototype form must not have an action endpoint");

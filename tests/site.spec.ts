@@ -99,8 +99,8 @@ test("technology package request pre-fills the estimate context", async ({ page 
 
 test("company operating system request pre-fills the full program context", async ({ page }) => {
   await page.goto("/paths/technology/");
-  await expect(page.getByRole("heading", { name: "Carrier Operations Database" })).toBeVisible();
-  await expect(page.getByText("Working prototype", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Hermes IT Development" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Quality assurance" })).toBeVisible();
   await page.getByRole("link", { name: "Request an estimate for Company Digital Operating System" }).click();
   await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
   await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Company Digital Operating System.");

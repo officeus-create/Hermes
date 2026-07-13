@@ -232,17 +232,6 @@ h3 { font-size: 1.75rem; }
 .delivery-role-list p { margin-bottom: .35rem; color: var(--color-muted); font-family: var(--font-mono); font-size: .68rem; text-transform: uppercase; }
 .delivery-role-list h3 { margin-bottom: .55rem; color: var(--color-navy-900); font-size: 1.25rem; }
 .delivery-role-list article div div { color: var(--color-muted); font-size: .9rem; }
-.technology-products { background: #101114; color: white; }
-.technology-products-heading h2 { max-width: 730px; color: white; }
-.technology-products-heading > p { color: rgba(255,255,255,.62); }
-.technology-product-list { border-top: 1px solid rgba(255,255,255,.16); }
-.technology-product-list article { display: grid; grid-template-columns: 180px .8fr 1.2fr; gap: clamp(1.5rem, 4vw, 4rem); align-items: start; min-height: 190px; padding: 2rem 0; border-bottom: 1px solid rgba(255,255,255,.16); }
-.technology-product-list article > div p { margin: 0 0 .6rem; color: rgba(255,255,255,.42); font-family: var(--font-mono); font-size: .66rem; text-transform: uppercase; }
-.technology-product-list h3 { margin: 0; color: white; font-size: 1.45rem; }
-.technology-product-list article > p { max-width: 660px; margin: 0; color: rgba(255,255,255,.62); }
-.product-status { justify-self: start; padding: .45rem .65rem; border: 1px solid currentColor; color: #67e8a8; font-family: var(--font-mono); font-size: .65rem; font-weight: 800; text-transform: uppercase; }
-.product-status-working-prototype { color: #79b8ff; }
-.product-status-in-development { color: #f3c969; }
 .digital-workforce { background: #fff; }
 .digital-workforce-heading h2 { max-width: 760px; color: var(--color-navy-900); }
 .digital-employee-list { border-top: 1px solid #dcddea; }
@@ -500,8 +489,6 @@ h3 { font-size: 1.75rem; }
   .studio-proof p { grid-column: 1 / -1; }
   .technology-case-layout { grid-template-columns: 1fr; }
   .technology-case-copy { position: static; }
-  .technology-product-list article { grid-template-columns: 150px 1fr; }
-  .technology-product-list article > p { grid-column: 2; }
   .digital-employee-list article { grid-template-columns: 36px 44px 1fr; }
   .employee-training { grid-column: 3; padding: .9rem 0 0; border-top: 1px solid #dcddea; border-left: 0; }
   .flagship-package { grid-template-columns: .9fr 1.1fr; }
@@ -561,8 +548,6 @@ h3 { font-size: 1.75rem; }
   .growth-stage-panels article { grid-template-columns: 1fr; min-height: 0; }
   .growth-output { min-height: 210px; border-top: 1px solid #dedbe3; border-left: 0; }
   .technology-package-list > article { grid-template-columns: 1fr; min-height: 0; }
-  .technology-product-list article { grid-template-columns: 1fr; min-height: 0; }
-  .technology-product-list article > p { grid-column: auto; }
   .digital-employee-list article { grid-template-columns: 30px 1fr; min-height: 0; }
   .digital-employee-list article > svg { justify-self: end; }
   .digital-employee-list article > div { grid-column: 1 / -1; }

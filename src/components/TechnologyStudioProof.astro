@@ -2,37 +2,10 @@
 import { ArrowRight, Bot, Braces, ChartNoAxesCombined, CircleDollarSign, Database, LayoutTemplate, Network, Palette, Search, Settings, ShieldCheck, UserRoundSearch, Users, Workflow } from "@lucide/astro";
 
 const deliveryRoles = [
-  { role: "Business direction", owner: "Hermes business team", detail: "Goals, operating reality, priorities, and final decisions." },
-  { role: "Product strategy", owner: "ChatGPT / Digital CEO", detail: "Business structure, service logic, content, and task definition." },
-  { role: "Engineering", owner: "Codex", detail: "Architecture, implementation, testing, deployment, and technical handoff." },
-  { role: "Independent review", owner: "Claude and specialist AI", detail: "QA, source review, risks, alternative ideas, and bounded design research." },
-];
-
-const builtSystems = [
-  {
-    status: "Live",
-    name: "Hermes corporate digital platform",
-    description: "The website you are using: a four-business corporate experience with original visual systems, responsive engineering, automated QA, version control, and continuous deployment.",
-    proof: "Public product",
-  },
-  {
-    status: "Working prototype",
-    name: "Carrier Operations Database",
-    description: "A logistics lead system for structured intake, noise filtering, duplicate review, capacity-aware assignment previews, and approval-first CRM preparation.",
-    proof: "Test-backed internal system",
-  },
-  {
-    status: "Working prototype",
-    name: "AI Command Center",
-    description: "A local operating framework for task routing, AI handoffs, cross-review, decision records, approval gates, and controlled takeover when another specialist is unavailable.",
-    proof: "Internal operations product",
-  },
-  {
-    status: "In development",
-    name: "Continuous Improvement Workflow",
-    description: "A governed method for turning operating signals and AI recommendations into a reviewed backlog, tested releases, and documented improvements instead of uncontrolled production changes.",
-    proof: "Reusable delivery method",
-  },
+  { role: "Business direction", owner: "Client leadership", detail: "Goals, operating reality, priorities, and final decisions." },
+  { role: "Product strategy", owner: "Product and content team", detail: "Business structure, service logic, customer journey, and delivery scope." },
+  { role: "Engineering", owner: "Hermes IT Development", detail: "Architecture, implementation, testing, deployment, and technical handoff." },
+  { role: "Independent review", owner: "Quality assurance", detail: "Accessibility, risk review, source checks, responsive behavior, and release readiness." },
 ];
 
 const companySystemStages = [
@@ -152,24 +125,6 @@ const packages = [
         <article>
           <span>0{index + 1}</span>
           <div><p>{item.role}</p><h3>{item.owner}</h3><div>{item.detail}</div></div>
-        </article>
-      ))}
-    </div>
-  </div>
-</section>
-
-<section class="section technology-products" aria-labelledby="technology-products-title">
-  <div class="shell">
-    <div class="section-heading split-heading technology-products-heading">
-      <div><p class="eyebrow">Systems we are building</p><h2 id="technology-products-title">Our portfolio starts with our own operating work.</h2></div>
-      <p>We distinguish live products from working prototypes. The same building blocks can be adapted to another company after its real workflows, risks, and approval boundaries are understood.</p>
-    </div>
-    <div class="technology-product-list">
-      {builtSystems.map((item, index) => (
-        <article>
-          <span class={`product-status product-status-${item.status.toLowerCase().replaceAll(" ", "-")}`}>{item.status}</span>
-          <div><p>0{index + 1} · {item.proof}</p><h3>{item.name}</h3></div>
-          <p>{item.description}</p>
         </article>
       ))}
     </div>
