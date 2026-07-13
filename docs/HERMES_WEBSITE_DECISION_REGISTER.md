@@ -62,6 +62,7 @@ Updated: 2026-07-13
 - Public owner-name references removed. IT Development now presents a Digital Workforce lineup with role-specific setup and training ranges, approval-first positioning, and a dedicated inquiry path.
 - Public information boundary enforced: internal prototype names, AI assignments, routing processes, CRM logic, and employee-only details must not appear on the website. The internal portfolio block was removed and generated HTML now has a blocked-term check.
 - IT pricing changed from large public ranges to accessible starting prices: $3k entry point, $25-$45/hour delivery, and staged estimates for larger programs. Public maximum figures were removed.
+- Claude conversion review accepted: every direction now has a working direct-contact fallback while form delivery remains preview-only; Academy pricing language is transparent, IT offers industry-specific starting workflows, and unsupported-claim validation covers every public route.
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.
 - Live contact form, analytics, verified social channels, and corporate mailbox aliases: pending.

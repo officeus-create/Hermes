@@ -54,7 +54,29 @@ test("preview contact workflow validates and sends no request", async ({ page })
   await page.locator('button[type="submit"]').click();
 
   await expect(page.locator("[data-form-status]")).toContainText("Your information was not sent or stored");
+  await expect(page.getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+13517775337");
   expect(posts).toEqual([]);
+});
+
+test("each non-logistics direction exposes a working direct contact route", async ({ page }) => {
+  const cases = [
+    { slug: "marketing", link: "Message Marketing", href: "https://t.me/SMMProgressoPro" },
+    { slug: "academy", link: "Call about Academy", href: "tel:+13517775337" },
+    { slug: "technology", link: "Call about IT", href: "tel:+13517775337" },
+  ];
+
+  for (const item of cases) {
+    await page.goto(`/paths/${item.slug}/#contact`);
+    await expect(page.getByRole("link", { name: item.link })).toHaveAttribute("href", item.href);
+  }
+});
+
+test("technology page offers concrete industry starting points", async ({ page }) => {
+  await page.goto("/paths/technology/");
+  await expect(page.getByRole("heading", { name: "Fitness and wellness" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Beauty and salon" })).toBeVisible();
+  await page.getByRole("link", { name: "Request an estimate for Beauty and Salon Starter System" }).click();
+  await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Beauty and Salon Starter System.");
 });
 
 test("mobile menu supports keyboard close", async ({ page, isMobile }) => {

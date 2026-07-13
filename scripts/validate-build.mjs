@@ -9,9 +9,9 @@ const routes = [
     path: "paths/logistics/index.html",
     required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com", "+1 (351) 777-5337"],
   },
-  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
-  { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "do not guarantee employment"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "Company Digital Operating System", "$25-$45 per hour", "From $12k", "staged delivery", "Continuous Improvement Partnership", "From $3k / month", "Digital Presence System", "From $3k", "CRM and Operations Control", "From $5k", "AI Assistant and Workflow", "Connected Business Platform", "From $8k", "The capabilities behind a connected company system."] },
+  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
+  { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment"] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "$25-$45 per hour", "From $12k", "staged delivery", "Continuous Improvement Partnership", "From $3k / month", "Digital Presence System", "From $3k", "CRM and Operations Control", "From $5k", "AI Assistant and Workflow", "Connected Business Platform", "From $8k", "The capabilities behind a connected company system."] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
 const assets = [
@@ -83,6 +83,11 @@ const forbidden = [
   "10,000+ students",
   "4,400+ trucks",
   "operating in all 48 states",
+  "1m+ loads moved",
+  "800+ students trained",
+  "300%+ average growth",
+  "job opportunity after completion",
+  "anastasia, logistics student",
 ];
 
 const publicForbiddenInternalTerms = [
@@ -95,8 +100,15 @@ const publicForbiddenInternalTerms = [
   "DCA-",
 ];
 
+const publicPages = [["homepage", html]];
+for (const route of routes) {
+  publicPages.push([route.path, await readFile(join(dist, route.path), "utf8")]);
+}
+
 for (const claim of forbidden) {
-  if (html.toLowerCase().includes(claim)) throw new Error(`Unsupported claim found: ${claim}`);
+  for (const [pageName, pageHtml] of publicPages) {
+    if (pageHtml.toLowerCase().includes(claim)) throw new Error(`Unsupported claim found in ${pageName}: ${claim}`);
+  }
 }
 
 for (const term of publicForbiddenInternalTerms) {

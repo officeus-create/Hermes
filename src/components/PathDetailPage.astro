@@ -11,6 +11,12 @@ interface Props {
 }
 
 const { path } = Astro.props;
+const directContactTitle = {
+  logistics: "Reach the right logistics team.",
+  marketing: "Reach ProgressoPro directly.",
+  academy: "Ask about the right Academy path.",
+  technology: "Discuss the system you want to build.",
+}[path.id] ?? "Reach the relevant team.";
 ---
 
 <main id="main-content" class={`detail-page detail-page-${path.id}`}>
@@ -127,7 +133,7 @@ const { path } = Astro.props;
   {path.directContacts && (
     <section class="section logistics-contacts" aria-labelledby="direct-contact-title">
       <div class="shell">
-        <div class="section-heading"><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">Reach the right logistics team.</h2></div>
+        <div class="section-heading"><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">{directContactTitle}</h2></div>
         <div class="direct-contact-grid">
           {path.directContacts.map((contact) => (
             <article><p>{contact.label}</p><a href={contact.href}>{contact.value}</a><span>{contact.note}</span></article>

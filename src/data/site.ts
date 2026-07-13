@@ -146,6 +146,11 @@ export const site = {
         { question: "Is this only social media management?", answer: "No. ProgressoPro connects positioning, content, lead generation, sales workflow, and measurement around the selected outcome." },
         { question: "Can marketing connect to our CRM?", answer: "Yes. The marketing and IT teams can define the lead journey and the technical handoff into a CRM or internal workflow." },
       ],
+      directContacts: [
+        { label: "Marketing Telegram", value: "@SMMProgressoPro", href: "https://t.me/SMMProgressoPro", note: "Send a message about strategy, content, lead generation, or sales systems" },
+        { label: "Marketing Instagram", value: "@progressopro", href: "https://www.instagram.com/progressopro/", note: "Public ProgressoPro channel for messages and current work" },
+        { label: "General Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Call and mention ProgressoPro or Marketing" },
+      ],
       socialLinks: [
         { label: "Instagram", handle: "@progressopro", href: "https://www.instagram.com/progressopro/" },
         { label: "Threads", handle: "@progressopro", href: "https://www.threads.com/@progressopro" },
@@ -188,7 +193,13 @@ export const site = {
       faq: [
         { question: "Is this a generic course marketplace?", answer: "No. The Academy is structured around three professional paths and the operating systems, responsibilities, and practice behind them." },
         { question: "How does the methodology work?", answer: "Each path moves through awareness, understanding, and application, with progressively more practical responsibility." },
+        { question: "When are program prices confirmed?", answer: "Program dates, scope, and prices are published before enrollment for each available program or cohort. The current website does not accept enrollment or payment." },
         { question: "Is employment guaranteed?", answer: "No employment promise is made. The goal is to build practical capability and evidence of readiness for the selected professional path." },
+      ],
+      directContacts: [
+        { label: "Academy Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Call and mention Hermes Business Academy" },
+        { label: "Hermes Telegram", value: "Open public channel", href: "https://t.me/+R-GepRJDbEQ1NjVi", note: "Use the public Hermes channel for current contact information" },
+        { label: "Hermes Instagram", value: "@hermes.logistics", href: "https://www.instagram.com/hermes.logistics/", note: "Send a message and mention the Academy program" },
       ],
       progression: [
         { level: "Student", focus: "Language and context", responsibility: "Understand the role, terminology, and how work moves through the operating system." },
@@ -237,6 +248,10 @@ export const site = {
         { question: "Do we have to build a large platform first?", answer: "No. Work begins with the smallest useful version of the customer or internal workflow, followed by real testing." },
         { question: "Can existing tools be connected?", answer: "Where suitable, the system can connect Google Workspace, CRM, booking, payment, communication, and reporting tools through supported integrations." },
       ],
+      directContacts: [
+        { label: "IT Development Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Call and mention IT Development or the system you want to build" },
+        { label: "Hermes Instagram", value: "@hermes.logistics", href: "https://www.instagram.com/hermes.logistics/", note: "Send a message and mention IT Development" },
+      ],
     },
   ] satisfies PathDetail[],
   journey: [
@@ -254,7 +269,7 @@ export const site = {
   contact: {
     eyebrow: "Not sure where to begin?",
     title: "Tell us what you are building.",
-    body: "Share your goal and we will help identify the most relevant Hermes path. Until contact delivery is connected, the form remains in preview mode and does not send or store data.",
+    body: "Use the preview to organize your request, then choose a direct contact route below. Until contact delivery is connected, the form does not send or store data.",
   },
   social: [
     { label: "Instagram", href: "https://www.instagram.com/hermes.logistics/" },
