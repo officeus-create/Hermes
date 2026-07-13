@@ -1,11 +1,47 @@
 ---
-import { ArrowRight, Bot, Braces, CircleDollarSign, LayoutTemplate, Network, ShieldCheck } from "@lucide/astro";
+import { ArrowRight, Bot, Braces, CircleDollarSign, Database, LayoutTemplate, Network, ShieldCheck, Workflow } from "@lucide/astro";
 
 const deliveryRoles = [
   { role: "Business direction", owner: "Vladimir and Hermes", detail: "Goals, operating reality, priorities, and final decisions." },
   { role: "Product strategy", owner: "ChatGPT / Digital CEO", detail: "Business structure, service logic, content, and task definition." },
   { role: "Engineering", owner: "Codex", detail: "Architecture, implementation, testing, deployment, and technical handoff." },
   { role: "Independent review", owner: "Claude and specialist AI", detail: "QA, source review, risks, alternative ideas, and bounded design research." },
+];
+
+const builtSystems = [
+  {
+    status: "Live",
+    name: "Hermes corporate digital platform",
+    description: "The website you are using: a four-business corporate experience with original visual systems, responsive engineering, automated QA, version control, and continuous deployment.",
+    proof: "Public product",
+  },
+  {
+    status: "Working prototype",
+    name: "Carrier Operations Database",
+    description: "A logistics lead system for structured intake, noise filtering, duplicate review, capacity-aware assignment previews, and approval-first CRM preparation.",
+    proof: "Test-backed internal system",
+  },
+  {
+    status: "Working prototype",
+    name: "AI Command Center",
+    description: "A local operating framework for task routing, AI handoffs, cross-review, decision records, approval gates, and controlled takeover when another specialist is unavailable.",
+    proof: "Internal operations product",
+  },
+  {
+    status: "In development",
+    name: "Continuous Improvement Workflow",
+    description: "A governed method for turning operating signals and AI recommendations into a reviewed backlog, tested releases, and documented improvements instead of uncontrolled production changes.",
+    proof: "Reusable delivery method",
+  },
+];
+
+const companySystemStages = [
+  "Business and workflow map",
+  "Corporate website and conversion journey",
+  "CRM, roles, pipelines, and management views",
+  "Automation and supported integrations",
+  "AI assistants, knowledge, QA, and approval gates",
+  "Launch, training, and controlled improvement cycles",
 ];
 
 const packages = [
@@ -71,12 +107,57 @@ const packages = [
   </div>
 </section>
 
+<section class="section technology-products" aria-labelledby="technology-products-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-products-heading">
+      <div><p class="eyebrow">Systems we are building</p><h2 id="technology-products-title">Our portfolio starts with our own operating work.</h2></div>
+      <p>We distinguish live products from working prototypes. The same building blocks can be adapted to another company after its real workflows, risks, and approval boundaries are understood.</p>
+    </div>
+    <div class="technology-product-list">
+      {builtSystems.map((item, index) => (
+        <article>
+          <span class={`product-status product-status-${item.status.toLowerCase().replaceAll(" ", "-")}`}>{item.status}</span>
+          <div><p>0{index + 1} · {item.proof}</p><h3>{item.name}</h3></div>
+          <p>{item.description}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
 <section class="section technology-packages" aria-labelledby="technology-packages-title">
   <div class="shell">
     <div class="section-heading split-heading technology-packages-heading">
-      <div><p class="eyebrow">Planning ranges</p><h2 id="technology-packages-title">Start with a useful system, then improve it in real work.</h2></div>
-      <p>Ranges include discovery, design, implementation, QA, and handoff. Final scope, schedule, and price are confirmed after the workflow and integration requirements are understood.</p>
+      <div><p class="eyebrow">One company. One coordinated build.</p><h2 id="technology-packages-title">Build the digital operating system a modern company needs.</h2></div>
+      <p>We can begin with one useful module or take responsibility for the connected customer, operations, and AI foundation as a complete program.</p>
     </div>
+
+    <article class="flagship-package">
+      <div class="flagship-package-heading">
+        <span>Flagship company package</span>
+        <Workflow size={30} aria-hidden="true" />
+        <h3>Company Digital Operating System</h3>
+        <p>For an established company that needs its public experience, sales process, operating data, automation, and AI-assisted work to function as one controlled system.</p>
+      </div>
+      <ol>
+        {companySystemStages.map((stage, index) => <li><span>0{index + 1}</span>{stage}</li>)}
+      </ol>
+      <div class="flagship-package-estimate">
+        <p><CircleDollarSign size={17} aria-hidden="true" />Program planning range</p>
+        <strong>$65k-$150k</strong>
+        <span>20-36 weeks</span>
+        <a href="#contact" data-estimate-service="Company Digital Operating System" aria-label="Request an estimate for Company Digital Operating System">Request company assessment <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </article>
+
+    <div class="continuous-improvement-note">
+      <Database size={24} aria-hidden="true" />
+      <div><p>After launch · Continuous Improvement Partnership</p><h3>Improve the system through evidence, review, and controlled releases.</h3></div>
+      <p>AI can surface opportunities, prepare recommendations, and assist QA. It does not rewrite production by itself: people approve priorities and every release is tested and documented.</p>
+      <strong>$4k-$12k / month</strong>
+    </div>
+
+    <div class="module-heading"><p class="eyebrow">Start with one module</p><h3>Build what removes the most friction first.</h3></div>
 
     <div class="technology-package-list">
       {packages.map((item, index) => {
@@ -107,7 +188,7 @@ const packages = [
         );
       })}
     </div>
-    <p class="pricing-note">USD planning ranges, not binding quotes. Hosting, paid third-party services, data migration, and unusually complex integrations are estimated separately.</p>
+    <p class="pricing-note">USD planning ranges, not binding quotes. Hosting, paid third-party services, data migration, compliance work, content production, and unusually complex integrations are estimated separately.</p>
   </div>
 </section>
 

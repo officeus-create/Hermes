@@ -8,16 +8,22 @@ Hermes IT Development builds business systems, not isolated screens. The public 
 
 The Hermes corporate website is the first public case study. It was led by Vladimir and delivered through a coordinated workflow using ChatGPT / Digital CEO for product strategy, Codex for engineering and deployment, Claude for independent QA, and specialist AI tools for bounded research and review.
 
+The public portfolio also identifies the Carrier Operations Database and AI Command Center as working prototypes, and the Continuous Improvement Workflow as in development. These labels are intentional: they demonstrate reusable engineering capability without presenting internal prototypes as finished production products.
+
 ## Published Planning Ranges
 
 | Package | Timeline | Planning range |
 | --- | --- | --- |
+| Company Digital Operating System | 20-36 weeks | $65,000-$150,000 |
 | Digital Presence System | 6-10 weeks | $12,000-$25,000 |
 | CRM and Operations Control | 10-18 weeks | $25,000-$60,000 |
 | AI Assistant and Workflow | 6-12 weeks | $15,000-$35,000 |
 | Connected Business Platform | 16-28 weeks | $45,000-$120,000 |
+| Continuous Improvement Partnership | Monthly after launch | $4,000-$12,000/month |
 
-Timelines deliberately include discovery, approvals, revisions, QA, launch, and handoff rather than extrapolating only from coding time. Final estimates require discovery and depend on integrations, migration, compliance, content, and third-party services.
+The Company Digital Operating System is the flagship full-company engagement: business mapping, corporate website and conversion flow, CRM and operating controls, automation, supported integrations, AI assistance, approval gates, launch, and training. Specialized packages remain available as standalone entry points.
+
+Timelines deliberately include discovery, approvals, revisions, QA, launch, and handoff rather than extrapolating only from coding time. Final estimates require discovery and depend on integrations, migration, compliance, content, and third-party services. Continuous improvement means reviewed backlog work and controlled releases, not autonomous AI changes to production.
 
 ## Market Benchmarks
 
