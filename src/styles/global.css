@@ -243,6 +243,22 @@ h3 { font-size: 1.75rem; }
 .product-status { justify-self: start; padding: .45rem .65rem; border: 1px solid currentColor; color: #67e8a8; font-family: var(--font-mono); font-size: .65rem; font-weight: 800; text-transform: uppercase; }
 .product-status-working-prototype { color: #79b8ff; }
 .product-status-in-development { color: #f3c969; }
+.digital-workforce { background: #fff; }
+.digital-workforce-heading h2 { max-width: 760px; color: var(--color-navy-900); }
+.digital-employee-list { border-top: 1px solid #dcddea; }
+.digital-employee-list article { display: grid; grid-template-columns: 36px 44px 1fr 150px; gap: clamp(1rem, 2.5vw, 2.5rem); align-items: start; min-height: 150px; padding: 1.6rem 0; border-bottom: 1px solid #dcddea; }
+.digital-employee-list article > span { color: #2563eb; font-family: var(--font-mono); font-size: .68rem; }
+.digital-employee-list article > svg { color: #2563eb; }
+.digital-employee-list h3 { margin: 0 0 .5rem; color: var(--color-navy-900); font-size: 1.25rem; }
+.digital-employee-list article > div > p { max-width: 760px; margin: 0; color: var(--color-muted); font-size: .9rem; }
+.employee-training { padding-left: 1.25rem; border-left: 1px solid #dcddea; }
+.employee-training p { color: var(--color-muted); font-family: var(--font-mono); font-size: .65rem !important; text-transform: uppercase; }
+.employee-training strong { display: block; margin-top: .5rem; color: var(--color-navy-900); font-size: 1.1rem; }
+.digital-workforce-cta { display: flex; justify-content: space-between; gap: 2rem; align-items: center; padding-top: 1.5rem; }
+.digital-workforce-cta > div, .digital-workforce-cta a { display: flex; gap: .7rem; align-items: center; }
+.digital-workforce-cta p { margin: 0; color: var(--color-navy-900); font-weight: 700; }
+.digital-workforce-cta svg { flex: 0 0 auto; color: #2563eb; }
+.digital-workforce-cta a { min-height: 44px; color: #2563eb; font-family: var(--font-mono); font-size: .76rem; font-weight: 800; }
 .technology-packages { background: #f5f7fb; }
 .technology-packages-heading h2 { max-width: 790px; }
 .flagship-package { display: grid; grid-template-columns: 1fr 1.1fr .55fr; gap: clamp(1.5rem, 4vw, 4rem); margin-bottom: 3rem; padding: 2.5rem 0; border-top: 2px solid var(--color-navy-950); border-bottom: 1px solid #cfd4de; }
@@ -486,6 +502,8 @@ h3 { font-size: 1.75rem; }
   .technology-case-copy { position: static; }
   .technology-product-list article { grid-template-columns: 150px 1fr; }
   .technology-product-list article > p { grid-column: 2; }
+  .digital-employee-list article { grid-template-columns: 36px 44px 1fr; }
+  .employee-training { grid-column: 3; padding: .9rem 0 0; border-top: 1px solid #dcddea; border-left: 0; }
   .flagship-package { grid-template-columns: .9fr 1.1fr; }
   .flagship-package-estimate { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto auto; gap: .5rem 1rem; align-items: center; padding: 1.2rem 0 0; border-top: 1px solid #cfd4de; border-left: 0; }
   .flagship-package-estimate p { grid-column: 1; margin: 0; }
@@ -545,6 +563,11 @@ h3 { font-size: 1.75rem; }
   .technology-package-list > article { grid-template-columns: 1fr; min-height: 0; }
   .technology-product-list article { grid-template-columns: 1fr; min-height: 0; }
   .technology-product-list article > p { grid-column: auto; }
+  .digital-employee-list article { grid-template-columns: 30px 1fr; min-height: 0; }
+  .digital-employee-list article > svg { justify-self: end; }
+  .digital-employee-list article > div { grid-column: 1 / -1; }
+  .employee-training { grid-column: 1 / -1; }
+  .digital-workforce-cta { align-items: flex-start; flex-direction: column; }
   .flagship-package { grid-template-columns: 1fr; }
   .flagship-package ol { grid-template-columns: 1fr; }
   .flagship-package-estimate { grid-column: auto; display: flex; align-items: flex-start; padding: 1.5rem 0 0; }

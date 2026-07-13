@@ -34,4 +34,4 @@ These are naming proposals only. They are not published as working addresses unt
 
 ## Social channels
 
-No verified official Instagram or public Telegram account was found in the supplied source material. Do not invent or publish handles. Once Vladimir confirms the official accounts, add them to the website footer and contact section.
+No verified official Instagram or public Telegram account was found in the supplied source material. Do not invent or publish handles. Once the owner confirms the official accounts, add them to the website footer and contact section.

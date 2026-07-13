@@ -6,7 +6,7 @@ Updated: 2026-07-13
 
 Hermes IT Development builds business systems, not isolated screens. The public offer combines websites, CRM and operations control, AI-assisted workflows, automation, integrations, and decision visibility.
 
-The Hermes corporate website is the first public case study. It was led by Vladimir and delivered through a coordinated workflow using ChatGPT / Digital CEO for product strategy, Codex for engineering and deployment, Claude for independent QA, and specialist AI tools for bounded research and review.
+The Hermes corporate website is the first public case study. It was led by the Hermes business team and delivered through a coordinated workflow using AI-assisted product strategy, engineering, independent QA, and bounded specialist research.
 
 The public portfolio also identifies the Carrier Operations Database and AI Command Center as working prototypes, and the Continuous Improvement Workflow as in development. These labels are intentional: they demonstrate reusable engineering capability without presenting internal prototypes as finished production products.
 

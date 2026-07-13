@@ -1,8 +1,8 @@
 ---
-import { ArrowRight, Bot, Braces, CircleDollarSign, Database, LayoutTemplate, Network, ShieldCheck, Workflow } from "@lucide/astro";
+import { ArrowRight, Bot, Braces, ChartNoAxesCombined, CircleDollarSign, Database, LayoutTemplate, Network, Palette, Search, Settings, ShieldCheck, UserRoundSearch, Users, Workflow } from "@lucide/astro";
 
 const deliveryRoles = [
-  { role: "Business direction", owner: "Vladimir and Hermes", detail: "Goals, operating reality, priorities, and final decisions." },
+  { role: "Business direction", owner: "Hermes business team", detail: "Goals, operating reality, priorities, and final decisions." },
   { role: "Product strategy", owner: "ChatGPT / Digital CEO", detail: "Business structure, service logic, content, and task definition." },
   { role: "Engineering", owner: "Codex", detail: "Architecture, implementation, testing, deployment, and technical handoff." },
   { role: "Independent review", owner: "Claude and specialist AI", detail: "QA, source review, risks, alternative ideas, and bounded design research." },
@@ -42,6 +42,57 @@ const companySystemStages = [
   "Automation and supported integrations",
   "AI assistants, knowledge, QA, and approval gates",
   "Launch, training, and controlled improvement cycles",
+];
+
+const digitalEmployees = [
+  {
+    role: "Digital Operations Director",
+    timeline: "4-8 weeks",
+    icon: Settings,
+    description: "Coordinates priorities, task routing, SOP checks, management summaries, cross-team handoffs, and exception review.",
+  },
+  {
+    role: "SEO & Content Intelligence Specialist",
+    timeline: "2-4 weeks",
+    icon: Search,
+    description: "Monitors approved sources, prepares keyword maps, content briefs, optimization previews, and search-performance reviews.",
+  },
+  {
+    role: "Finance Operations Assistant",
+    timeline: "3-6 weeks",
+    icon: CircleDollarSign,
+    description: "Organizes invoice intake, reconciliation drafts, cash-flow summaries, document checks, and alerts without unsupervised payments.",
+  },
+  {
+    role: "HR & Recruiting Assistant",
+    timeline: "2-5 weeks",
+    icon: UserRoundSearch,
+    description: "Creates role drafts, structures candidate intake, prepares screening summaries, interview packs, and onboarding checklists.",
+  },
+  {
+    role: "Sales Workflow Assistant",
+    timeline: "3-6 weeks",
+    icon: Users,
+    description: "Supports lead qualification, CRM previews, follow-up drafts, sales scripts, pipeline summaries, and next-action reminders.",
+  },
+  {
+    role: "Business Analyst",
+    timeline: "2-5 weeks",
+    icon: ChartNoAxesCombined,
+    description: "Defines KPI, checks data quality, prepares dashboards, identifies operating patterns, and creates decision briefs.",
+  },
+  {
+    role: "Design & Content Assistant",
+    timeline: "2-5 weeks",
+    icon: Palette,
+    description: "Turns approved direction into briefs, content variants, organized assets, production checklists, and visual QA support.",
+  },
+  {
+    role: "Department Operations Assistant",
+    timeline: "3-6 weeks",
+    icon: Workflow,
+    description: "Adapts to a defined department role using its documents, tools, routing rules, approval gates, and performance standards.",
+  },
 ];
 
 const packages = [
@@ -121,6 +172,34 @@ const packages = [
           <p>{item.description}</p>
         </article>
       ))}
+    </div>
+  </div>
+</section>
+
+<section class="section digital-workforce" aria-labelledby="digital-workforce-title">
+  <div class="shell">
+    <div class="section-heading split-heading digital-workforce-heading">
+      <div><p class="eyebrow">Digital workforce</p><h2 id="digital-workforce-title">A digital employee designed for each business role.</h2></div>
+      <p>We configure each role around the company's SOP, source material, tools, decisions, and approval boundaries. Typical setup time begins after the required process knowledge and system access are ready.</p>
+    </div>
+
+    <div class="digital-employee-list">
+      {digitalEmployees.map((employee, index) => {
+        const Icon = employee.icon;
+        return (
+          <article>
+            <span>0{index + 1}</span>
+            <Icon size={23} aria-hidden="true" />
+            <div><h3>{employee.role}</h3><p>{employee.description}</p></div>
+            <div class="employee-training"><p>Setup & training</p><strong>{employee.timeline}</strong></div>
+          </article>
+        );
+      })}
+    </div>
+
+    <div class="digital-workforce-cta">
+      <div><Bot size={25} aria-hidden="true" /><p>Start with one role, test it in real work, then expand the digital team.</p></div>
+      <a href="#contact" data-estimate-service="Digital Employee Program" aria-label="Request an estimate for Digital Employee Program">Design your digital team <ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </div>
 </section>

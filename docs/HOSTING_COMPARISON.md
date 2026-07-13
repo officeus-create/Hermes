@@ -49,7 +49,7 @@ Official references:
 
 ## Safe First Test
 
-1. Create or identify the GitHub repository after Vladimir approves repository visibility and ownership.
+1. Create or identify the GitHub repository after the owner approves repository visibility and ownership.
 2. Push the `prototype/editorial-v1` branch.
 3. Connect the repository to Cloudflare Pages Free.
 4. Use production branch `main`, build command `npm run build`, output directory `dist`, and Node 22.

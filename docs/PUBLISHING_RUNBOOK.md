@@ -2,7 +2,7 @@
 
 STATUS: READY_FOR_EXTERNAL_SETUP
 
-This runbook starts only after Vladimir approves creation or use of the external accounts and repository.
+This runbook starts only after owner approval for creation or use of the external accounts and repository.
 
 ## Recommended Path
 
@@ -30,7 +30,7 @@ Keep `PUBLIC_CONTACT_MODE=preview` for the first deployment. Live contact delive
 5. In Cloudflare Pages, import the repository and apply the settings above.
 6. Review the generated `*.pages.dev` URL on desktop and mobile.
 7. Record the deployed commit and preview URL.
-8. Connect `hermeslogisticsus.com` only after Vladimir approves the preview.
+8. Connect `hermeslogisticsus.com` only after the owner approves the preview.
 9. After approval, attach the custom domain in Cloudflare and verify HTTPS.
 
 ## Preview Acceptance Checks
