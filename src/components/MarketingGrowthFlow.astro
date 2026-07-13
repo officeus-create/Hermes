@@ -1,0 +1,137 @@
+---
+import { ArrowRight, ChartSpline, Crosshair, FileText, RadioTower, UserCheck } from "@lucide/astro";
+
+const stages = [
+  {
+    number: "01",
+    title: "Strategy",
+    label: "Choose the signal",
+    body: "Define the audience, offer, market position, and business outcome before choosing channels.",
+    proof: "Clear offer and priority audience",
+    icon: Crosshair,
+  },
+  {
+    number: "02",
+    title: "Content",
+    label: "Build the message",
+    body: "Turn the strategy into useful communication people can understand, remember, and act on.",
+    proof: "Message system and content direction",
+    icon: FileText,
+  },
+  {
+    number: "03",
+    title: "Distribution",
+    label: "Reach the market",
+    body: "Select the organic and paid routes that fit the audience instead of publishing everywhere by default.",
+    proof: "Focused channel and campaign plan",
+    icon: RadioTower,
+  },
+  {
+    number: "04",
+    title: "Qualified lead",
+    label: "Connect demand to sales",
+    body: "Create a clear next action, qualification path, and handoff so attention can become a real conversation.",
+    proof: "Lead journey and follow-up logic",
+    icon: UserCheck,
+  },
+  {
+    number: "05",
+    title: "Learning",
+    label: "Improve with evidence",
+    body: "Review useful signals, identify the weak point, and decide the smallest valuable change for the next cycle.",
+    proof: "Decision-ready performance review",
+    icon: ChartSpline,
+  },
+];
+---
+
+<section class="section marketing-flow" aria-labelledby="marketing-flow-title" data-marketing-flow>
+  <div class="shell">
+    <div class="section-heading split-heading marketing-flow-heading">
+      <div>
+        <p class="eyebrow">Growth operating system</p>
+        <h2 id="marketing-flow-title">One signal, carried all the way to learning.</h2>
+      </div>
+      <p>Select a stage to see how strategy, execution, sales, and evidence stay connected.</p>
+    </div>
+
+    <div class="growth-console">
+      <div class="growth-stage-list" role="tablist" aria-label="Marketing growth stages">
+        {stages.map((stage, index) => {
+          const Icon = stage.icon;
+          return (
+            <button
+              type="button"
+              role="tab"
+              id={`growth-tab-${index}`}
+              aria-controls={`growth-panel-${index}`}
+              aria-selected={index === 0 ? "true" : "false"}
+              tabindex={index === 0 ? 0 : -1}
+              data-growth-tab
+            >
+              <span>{stage.number}</span>
+              <Icon size={20} aria-hidden="true" />
+              <strong>{stage.title}</strong>
+            </button>
+          );
+        })}
+      </div>
+
+      <div class="growth-stage-panels">
+        {stages.map((stage, index) => (
+          <article
+            role="tabpanel"
+            id={`growth-panel-${index}`}
+            aria-labelledby={`growth-tab-${index}`}
+            hidden={index !== 0}
+            data-growth-panel
+          >
+            <div>
+              <p>{stage.label}</p>
+              <h3>{stage.title}</h3>
+              <div>{stage.body}</div>
+            </div>
+            <div class="growth-output">
+              <span>Working output</span>
+              <strong>{stage.proof}</strong>
+              <ArrowRight size={22} aria-hidden="true" />
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const flows = document.querySelectorAll<HTMLElement>("[data-marketing-flow]");
+
+  for (const flow of flows) {
+    const tabs = [...flow.querySelectorAll<HTMLButtonElement>("[data-growth-tab]")];
+    const panels = [...flow.querySelectorAll<HTMLElement>("[data-growth-panel]")];
+
+    const activate = (nextIndex: number, moveFocus = false) => {
+      tabs.forEach((tab, index) => {
+        const selected = index === nextIndex;
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+        panels[index].hidden = !selected;
+      });
+      if (moveFocus) tabs[nextIndex].focus();
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => activate(index));
+      tab.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? tabs.length - 1
+            : (index + (event.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length;
+        activate(nextIndex, true);
+      });
+    });
+  }
+</script>

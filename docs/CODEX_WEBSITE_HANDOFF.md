@@ -1,6 +1,6 @@
 # Codex Website Handoff
 
-STATUS: LOCAL_V1_1_FUNCTIONALLY_COMPLETE
+STATUS: PRODUCTION_V1_1_ACTIVE_AND_ITERATING
 
 LOCAL_PATH: `/Users/progressopro/Documents/hermeslogisticus.com`
 
@@ -10,6 +10,8 @@ SCOPE_COMPLETED:
 
 - ecosystem homepage with four clear directions;
 - dedicated Logistics, ProgressoPro, Academy, and IT Development pages;
+- custom system visuals for the ecosystem, Logistics, Marketing, Academy, and IT Development;
+- interactive Marketing growth flow, Academy program chooser, and IT system flow;
 - mobile and desktop navigation;
 - direction-aware contact preview form;
 - configurable preview/live contact workflow with validation, consent, idempotency, timeout, and failure handling;
@@ -27,20 +29,25 @@ VERIFICATION:
 - desktop 1440px: no overflow, broken images, or console errors;
 - mobile 390px: no overflow, broken images, or console errors;
 - mobile menu and path selection verified.
-- Playwright: 17 desktop/mobile workflow tests passed; one desktop-only skip expected.
+- Playwright: 21 desktop/mobile workflow tests passed; one desktop-only skip expected.
+
+PRODUCTION:
+
+- URL: `https://hermeslogisticsus.com`;
+- source: private GitHub repository `officeus-create/Hermes`;
+- deployment: automatic production build from the GitHub `main` branch;
+- local development continues on `prototype/editorial-v1` and is pushed deliberately to production.
 
 INTENTIONALLY NOT CONNECTED:
 
-- public hosting and DNS;
 - approved live form receiver and storage;
 - analytics;
 - CRM, Google Sheets, Telegram, or external APIs.
 
-PUBLICATION GATE:
+NEXT RELEASE GATE:
 
-1. Vladimir approves the visible V1.
-2. Choose the approved zero-cost host.
-3. Connect a GitHub remote if required by the host.
-4. Deploy a preview and verify it.
-5. Connect the domain only after preview approval.
-6. Connect a form endpoint only after destination and data-handling rules are approved.
+1. Keep visual and content changes small enough to review and roll back.
+2. Run static checks and desktop/mobile browser tests before every release.
+3. Push only the verified commit to the production branch.
+4. Verify the production URL after automatic deployment.
+5. Connect a form endpoint only after destination and data-handling rules are approved.

@@ -75,3 +75,16 @@ test("academy program chooser switches accessible panels", async ({ page }) => {
   await expect(tab).toHaveAttribute("aria-selected", "true");
   await expect(page.getByRole("tabpanel", { name: "03 COO / Director" })).toContainText("Operational leadership capability");
 });
+
+test("marketing growth flow supports click and keyboard navigation", async ({ page }) => {
+  await page.goto("/paths/marketing/");
+  const contentTab = page.getByRole("tab", { name: "02 Content" });
+  await contentTab.click();
+  await expect(contentTab).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel", { name: "02 Content" })).toContainText("Message system and content direction");
+
+  await contentTab.press("ArrowRight");
+  const distributionTab = page.getByRole("tab", { name: "03 Distribution" });
+  await expect(distributionTab).toBeFocused();
+  await expect(distributionTab).toHaveAttribute("aria-selected", "true");
+});

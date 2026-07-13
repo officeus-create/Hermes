@@ -1,6 +1,6 @@
 # Hermes website decision register
 
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 ## Current architecture
 
@@ -13,6 +13,7 @@ Updated: 2026-07-12
 
 - A visitor should understand the four choices in 3-5 seconds.
 - Premium editorial presentation with strong typography, generous whitespace, clear hierarchy, and restrained depth.
+- Custom architectural system visuals replace generic stock imagery across all four business directions.
 - Directional paths or portal-like entrances are preferred over a literal transportation collage.
 - Mobile-first layouts, 44px interaction targets, reduced-motion support, and progressive disclosure.
 - Every important page follows a decision journey: recognize the need, understand the offer, verify fit, take one next action.
@@ -52,8 +53,8 @@ Updated: 2026-07-12
 - Four-path homepage: implemented.
 - Four detail pages: implemented.
 - Logistics equipment, services, FAQ, direct contacts, and Car Hauling: implemented.
-- Marketing service divisions and FAQ: implemented.
-- Academy program divisions, methodology, and FAQ: implemented.
+- Marketing service divisions, FAQ, official channels, and interactive growth flow: implemented.
+- Academy program divisions, methodology, FAQ, accessible program chooser, and original direction visual: implemented.
 - IT Development solution divisions and FAQ: implemented.
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.

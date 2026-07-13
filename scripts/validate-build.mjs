@@ -9,7 +9,7 @@ const routes = [
     path: "paths/logistics/index.html",
     required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com", "+1 (351) 777-5337"],
   },
-  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
+  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "do not guarantee employment"] },
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Booking", "Analytics"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
@@ -17,8 +17,8 @@ const routes = [
 const assets = [
   "images/hermes-ecosystem-hero.jpg",
   "images/path-logistics-system.jpg",
-  "images/path-marketing.jpg",
-  "images/path-academy.jpg",
+  "images/path-marketing-system.jpg",
+  "images/path-academy-system.jpg",
   "images/path-technology-portal.jpg",
 ];
 
