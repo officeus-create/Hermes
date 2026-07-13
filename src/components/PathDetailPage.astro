@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Check } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, Check, MapPin } from "@lucide/astro";
 import type { PathDetail } from "../data/site";
 import TechnologySystemFlow from "./TechnologySystemFlow.astro";
 import AcademyProgramChooser from "./AcademyProgramChooser.astro";
@@ -31,6 +31,7 @@ const { path } = Astro.props;
       <p class="eyebrow">The direction</p>
       <h2>A practical starting point.</h2>
       <p>{path.overview}</p>
+      <p class="detail-service-area"><MapPin size={18} aria-hidden="true" />{path.localFocus}</p>
     </div>
   </section>
 

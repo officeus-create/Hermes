@@ -1,0 +1,23 @@
+# Hermes
+
+> Wisconsin-first business ecosystem serving clients and partners across the United States.
+
+Canonical site: https://hermeslogisticsus.com/
+
+## Business directions
+
+- Hermes Logistics: truck dispatch, carrier back-office support, freight coordination, and car hauling support.
+  https://hermeslogisticsus.com/paths/logistics/
+- ProgressoPro: positioning, content, social media, lead generation, sales workflow, and marketing automation.
+  https://hermeslogisticsus.com/paths/marketing/
+- Hermes Business Academy: practical logistics, marketing, and operational leadership education. Employment is not guaranteed.
+  https://hermeslogisticsus.com/paths/academy/
+- Hermes IT Development: websites, CRM systems, AI-assisted workflows, automation, and connected business platforms.
+  https://hermeslogisticsus.com/paths/technology/
+
+## Current boundaries
+
+- Contact submission is currently preview-only and does not transmit or store visitor information.
+- Public performance claims, fleet counts, student counts, and guaranteed outcomes are not published without verification.
+- Working prototypes are labeled separately from live public products.
+

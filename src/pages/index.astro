@@ -9,11 +9,29 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import TrustBand from "../components/TrustBand.astro";
 import { site } from "../data/site";
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Hermes",
+  url: "https://hermeslogisticsus.com/",
+  logo: "https://hermeslogisticsus.com/favicon.svg",
+  areaServed: [
+    { "@type": "State", name: "Wisconsin" },
+    { "@type": "Country", name: "United States" },
+  ],
+  sameAs: [
+    "https://www.instagram.com/hermes.logistics/",
+    "https://www.threads.com/@hermes.logistics",
+    "https://www.instagram.com/progressopro/",
+  ],
+};
 ---
 
 <BaseLayout
-  title="Hermes | Logistics, Growth, Education & Technology"
-  description="Explore the Hermes ecosystem across logistics, marketing, practical business education, and IT development."
+  title="Hermes Wisconsin | Logistics, Marketing, Academy & IT"
+  description="Wisconsin-first logistics, marketing, practical business education, CRM, AI automation, and web development services available across the United States."
+  schema={organizationSchema}
 >
   <SiteHeader />
   <main id="main-content">

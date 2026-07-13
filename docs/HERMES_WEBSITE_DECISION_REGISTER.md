@@ -58,6 +58,7 @@ Updated: 2026-07-13
 - IT Development solution divisions and FAQ: implemented.
 - IT Development public case study, human-led AI-assisted delivery model, internal product portfolio with explicit maturity labels, flagship Company Digital Operating System, four standalone modules, continuous improvement partnership, planning ranges, and estimate request workflow: implemented.
 - IT Development public delivery rate: `$25-$45/hour`; complex architecture and production responsibility should be planned near the upper end. Package ranges were recalibrated to this rate on 2026-07-13.
+- Wisconsin-first SEO foundation for all four directions: unique metadata, visible service-area language, Organization and Service schema, sitemap dates, and machine-readable business summary implemented on 2026-07-13. Thin city pages and invented location claims are rejected.
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.
 - Live contact form, analytics, verified social channels, and corporate mailbox aliases: pending.

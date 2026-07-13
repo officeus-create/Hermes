@@ -11,9 +11,27 @@ export function getStaticPaths() {
 }
 
 const { path } = Astro.props;
+const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: path.seoServiceName,
+  description: path.seoDescription,
+  url: canonicalUrl,
+  areaServed: [
+    { "@type": "State", name: "Wisconsin" },
+    { "@type": "Country", name: "United States" },
+  ],
+  provider: {
+    "@type": "Organization",
+    name: "Hermes",
+    url: "https://hermeslogisticsus.com/",
+  },
+  serviceType: path.offerings.map((item) => item.title),
+};
 ---
 
-<BaseLayout title={`${path.category} | Hermes`} description={path.body} image={path.image}>
+<BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={serviceSchema}>
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
   <ContactCTA selectedPath={path.category} />

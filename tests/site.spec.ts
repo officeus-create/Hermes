@@ -106,3 +106,12 @@ test("company operating system request pre-fills the full program context", asyn
   await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Company Digital Operating System.");
   await expect(page).toHaveURL(/#contact$/);
 });
+
+test("each business direction exposes Wisconsin SEO signals and service schema", async ({ page }) => {
+  for (const slug of ["logistics", "marketing", "academy", "technology"]) {
+    await page.goto(`/paths/${slug}/`);
+    await expect(page).toHaveTitle(/Wisconsin/);
+    await expect(page.getByText(/Wisconsin first/)).toBeVisible();
+    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  }
+});

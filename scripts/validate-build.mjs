@@ -26,8 +26,15 @@ await access(indexPath);
 await access(join(dist, "404.html"));
 await access(join(dist, "robots.txt"));
 await access(join(dist, "sitemap.xml"));
+await access(join(dist, "llms.txt"));
 const html = await readFile(indexPath, "utf8");
 const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
+
+function validateStructuredData(pageHtml, pageName) {
+  const matches = [...pageHtml.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
+  if (matches.length === 0) throw new Error(`Structured data missing in ${pageName}`);
+  for (const match of matches) JSON.parse(match[1]);
+}
 
 const required = [
   "Four businesses. One place to move forward.",
@@ -59,6 +66,9 @@ for (const route of routes) {
     if (!routeHtml.includes(text)) throw new Error(`Missing ${text} in ${route.path}`);
   }
   if (!routeHtml.includes('<link rel="canonical"')) throw new Error(`Canonical URL missing in ${route.path}`);
+  if (route.path.startsWith("paths/")) validateStructuredData(routeHtml, route.path);
+  if (route.path.startsWith("paths/") && !routeHtml.includes("Wisconsin first")) throw new Error(`Wisconsin service-area signal missing in ${route.path}`);
+  if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
 }
 
@@ -83,6 +93,8 @@ if (/<form[^>]+action=/i.test(html)) throw new Error("Prototype form must not ha
 if (!html.includes('data-contact-mode="preview"')) throw new Error("Safe preview contact mode is not active by default");
 if (!html.includes('name="consent"')) throw new Error("Contact consent field is missing");
 if (!html.includes('id="main-content"')) throw new Error("Skip-link target is missing");
+validateStructuredData(html, "homepage");
+if (!html.includes("Hermes Wisconsin")) throw new Error("Wisconsin homepage title is missing");
 const cssFiles = (await readdir(join(dist, "_astro"))).filter((file) => file.endsWith(".css"));
 const css = (await Promise.all(cssFiles.map((file) => readFile(join(dist, "_astro", file), "utf8")))).join("\n");
 if (!css.includes("prefers-reduced-motion")) throw new Error("Reduced-motion stylesheet was not emitted");

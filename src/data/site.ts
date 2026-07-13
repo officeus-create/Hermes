@@ -18,6 +18,10 @@ export type PathDetail = {
   tone: string;
   audience: string;
   overview: string;
+  seoTitle: string;
+  seoDescription: string;
+  seoServiceName: string;
+  localFocus: string;
   offerings: { title: string; body: string }[];
   process: { title: string; body: string }[];
   equipment?: { title: string; body: string }[];
@@ -61,6 +65,10 @@ export const site = {
       tone: "violet",
       audience: "For carriers, shippers, and logistics partners operating in the U.S. market.",
       overview: "Hermes Logistics provides dispatch and back-office support for owner-operators and small fleets. The team coordinates loads, broker paperwork, rate negotiation, invoicing, and day-to-day communication around the carrier's equipment and operating goals.",
+      seoTitle: "Truck Dispatch Services Wisconsin | Hermes Logistics",
+      seoDescription: "Wisconsin-first truck dispatch, carrier back-office support, freight coordination, and car hauling for owner-operators and small fleets across the USA.",
+      seoServiceName: "Truck dispatch and carrier operations support",
+      localFocus: "Wisconsin first · Supporting eligible carriers and freight partners across the United States",
       offerings: [
         { title: "Dispatch operations", body: "Dedicated load search, broker communication, rate negotiation, and operational follow-through." },
         { title: "Carrier back office", body: "Support with setup packets, insurance certificates, documents, invoicing, and accounts receivable." },
@@ -114,6 +122,10 @@ export const site = {
       tone: "magenta",
       audience: "For companies and specialists who need a clearer, more consistent growth system.",
       overview: "ProgressoPro connects positioning, content, campaigns, and practical automation. Work begins with the business objective and current constraints, then moves toward a focused plan rather than a collection of disconnected tactics.",
+      seoTitle: "Digital Marketing Agency Wisconsin | ProgressoPro",
+      seoDescription: "Wisconsin digital marketing strategy, social content, lead generation, sales workflows, and practical automation for service businesses across the USA.",
+      seoServiceName: "Digital marketing, content, and sales systems",
+      localFocus: "Wisconsin first · Available to service businesses and specialists across the United States",
       offerings: [
         { title: "Strategy and positioning", body: "Clarify the offer, audience, market position, and language people should understand quickly." },
         { title: "Content and demand", body: "Build useful communication, organic distribution, and campaigns around a measurable business goal." },
@@ -154,6 +166,10 @@ export const site = {
       tone: "gold",
       audience: "For learners and working professionals building practical business capabilities.",
       overview: "Hermes Business Academy is designed around applied learning. Programs connect concepts to real workflows, decisions, and communication used in logistics, marketing, and operational leadership.",
+      seoTitle: "Business & Logistics Training Wisconsin | Hermes Academy",
+      seoDescription: "Practical Wisconsin-first training in logistics operations, marketing, and operational leadership, with programs available to learners across the USA.",
+      seoServiceName: "Practical logistics, marketing, and operations education",
+      localFocus: "Wisconsin first · Practical online learning available across the United States",
       offerings: [
         { title: "Logistics Operations", body: "Dispatch, communication, documents, equipment logic, and operating routines connected to real logistics work." },
         { title: "Marketing Worldwide", body: "Positioning, content, campaigns, sales workflow, and practical growth execution for international work." },
@@ -197,6 +213,10 @@ export const site = {
       tone: "teal",
       audience: "For service businesses that need software shaped around their actual customer and internal workflows.",
       overview: "IT Development turns a defined business process into a practical digital tool. Initial focus areas include CRM systems, websites and applications, online booking, prepayments, automation, and internal operations.",
+      seoTitle: "CRM, AI & Web Development Wisconsin | Hermes",
+      seoDescription: "Wisconsin CRM development, AI-assisted automation, websites, applications, and connected business systems for service companies across the USA.",
+      seoServiceName: "CRM, AI automation, and web development",
+      localFocus: "Wisconsin first · Building digital systems for service companies across the United States",
       offerings: [
         { title: "CRM and business systems", body: "Systems for customer pipelines, responsibilities, status, documents, and operational information." },
         { title: "Websites and applications", body: "Digital products designed around a specific service, audience, conversion path, and internal workflow." },
