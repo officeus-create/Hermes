@@ -248,12 +248,17 @@ test("mobile menu supports keyboard close", async ({ page, isMobile }) => {
   await expect(button).toBeFocused();
 });
 
-test("academy program chooser switches accessible panels", async ({ page }) => {
+test("academy screen flow selects track and advances layers", async ({ page }) => {
   await page.goto("/paths/academy/");
-  const tab = page.getByRole("tab", { name: "03 COO / Director" });
-  await tab.click();
-  await expect(tab).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel", { name: "03 COO / Director" })).toContainText("Operational leadership capability");
+  await page.getByRole("button", { name: /Choose a track/i }).click();
+  const coo = page.getByRole("tab", { name: /COO \/ Operational Director/i });
+  await coo.click();
+  await expect(coo).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("button", { name: /^Next$/i }).click();
+  await expect(page.getByText(/Problem: The company runs on heroics/i)).toBeVisible();
+  await page.getByRole("button", { name: /See the 6 layers/i }).click();
+  await expect(page.getByText("Operating Career System")).toBeVisible();
+  await expect(page.getByText("Executive", { exact: true }).first()).toBeVisible();
 });
 
 test("marketing growth flow supports click and keyboard navigation", async ({ page }) => {
