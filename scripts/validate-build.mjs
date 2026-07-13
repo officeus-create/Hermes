@@ -11,7 +11,7 @@ const routes = [
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "do not guarantee employment"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Booking", "Analytics"] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Digital Presence System", "$12k-$25k", "AI Assistant and Workflow", "Connected Business Platform"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
 const assets = [
@@ -44,6 +44,8 @@ const required = [
   "COO / Operational Director Program",
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
+  "Hermes IT Development",
+  "Human-led, AI-assisted",
   "Your information was not sent or stored.",
 ];
 

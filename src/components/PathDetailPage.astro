@@ -4,6 +4,7 @@ import type { PathDetail } from "../data/site";
 import TechnologySystemFlow from "./TechnologySystemFlow.astro";
 import AcademyProgramChooser from "./AcademyProgramChooser.astro";
 import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
+import TechnologyStudioProof from "./TechnologyStudioProof.astro";
 
 interface Props {
   path: PathDetail;
@@ -48,6 +49,7 @@ const { path } = Astro.props;
   </section>
 
   {path.id === "technology" && <TechnologySystemFlow />}
+  {path.id === "technology" && <TechnologyStudioProof />}
   {path.id === "marketing" && <MarketingGrowthFlow />}
   {path.id === "academy" && <AcademyProgramChooser />}
 

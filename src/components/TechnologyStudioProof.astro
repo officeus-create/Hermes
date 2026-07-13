@@ -1,0 +1,132 @@
+---
+import { ArrowRight, Bot, Braces, CircleDollarSign, LayoutTemplate, Network, ShieldCheck } from "@lucide/astro";
+
+const deliveryRoles = [
+  { role: "Business direction", owner: "Vladimir and Hermes", detail: "Goals, operating reality, priorities, and final decisions." },
+  { role: "Product strategy", owner: "ChatGPT / Digital CEO", detail: "Business structure, service logic, content, and task definition." },
+  { role: "Engineering", owner: "Codex", detail: "Architecture, implementation, testing, deployment, and technical handoff." },
+  { role: "Independent review", owner: "Claude and specialist AI", detail: "QA, source review, risks, alternative ideas, and bounded design research." },
+];
+
+const packages = [
+  {
+    name: "Digital Presence System",
+    eyebrow: "Website and conversion path",
+    price: "$12k-$25k",
+    timeline: "6-10 weeks",
+    icon: LayoutTemplate,
+    description: "A custom corporate website with content architecture, responsive development, deployment, analytics plan, and a clear path from attention to inquiry.",
+    includes: ["Discovery and information architecture", "Custom responsive website", "Content and conversion workflow", "QA, launch, and handoff"],
+  },
+  {
+    name: "CRM and Operations Control",
+    eyebrow: "Internal operating system",
+    price: "$25k-$60k",
+    timeline: "10-18 weeks",
+    icon: Network,
+    description: "A practical CRM or operations system shaped around real roles, statuses, approvals, documents, dashboards, and management decisions.",
+    includes: ["Workflow and data model", "Roles, queues, and approvals", "Dashboards and management views", "Integrations and operating documentation"],
+  },
+  {
+    name: "AI Assistant and Workflow",
+    eyebrow: "Human-controlled intelligence",
+    price: "$15k-$35k",
+    timeline: "6-12 weeks",
+    icon: Bot,
+    description: "An AI-assisted workflow for research, summaries, knowledge retrieval, task routing, quality checks, and draft actions with human approval gates.",
+    includes: ["Structured business context", "Assistant and routing workflow", "Review and approval controls", "Logging, fallback, and team training"],
+  },
+  {
+    name: "Connected Business Platform",
+    eyebrow: "Website, CRM, automation, and AI",
+    price: "$45k-$120k",
+    timeline: "16-28 weeks",
+    icon: Braces,
+    description: "A connected customer and operations platform combining the public experience with CRM, booking or payments, automation, AI assistance, and analytics.",
+    includes: ["Customer-facing product", "CRM and internal workflows", "Automation and supported integrations", "AI assistance and decision visibility"],
+  },
+];
+---
+
+<section class="section technology-case" aria-labelledby="technology-case-title">
+  <div class="shell technology-case-layout">
+    <div class="technology-case-copy">
+      <p class="eyebrow">Our first public product</p>
+      <h2 id="technology-case-title">This website was built inside the system it represents.</h2>
+      <p>Hermes IT Development combined human business direction with a coordinated AI-assisted delivery team. The result is not a generated template: it is a versioned product with original assets, responsive interactions, automated tests, independent review, and a live deployment workflow.</p>
+      <div class="technology-case-principle">
+        <ShieldCheck size={22} aria-hidden="true" />
+        <div><strong>Human-led. AI-assisted. Continuously reviewable.</strong><span>AI accelerates research, implementation, and QA. People retain business judgment and final authority.</span></div>
+      </div>
+    </div>
+
+    <div class="delivery-role-list" aria-label="Website delivery roles">
+      {deliveryRoles.map((item, index) => (
+        <article>
+          <span>0{index + 1}</span>
+          <div><p>{item.role}</p><h3>{item.owner}</h3><div>{item.detail}</div></div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="section technology-packages" aria-labelledby="technology-packages-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-packages-heading">
+      <div><p class="eyebrow">Planning ranges</p><h2 id="technology-packages-title">Start with a useful system, then improve it in real work.</h2></div>
+      <p>Ranges include discovery, design, implementation, QA, and handoff. Final scope, schedule, and price are confirmed after the workflow and integration requirements are understood.</p>
+    </div>
+
+    <div class="technology-package-list">
+      {packages.map((item, index) => {
+        const Icon = item.icon;
+        return (
+          <article>
+            <div class="package-identity">
+              <span>0{index + 1}</span>
+              <Icon size={24} aria-hidden="true" />
+              <p>{item.eyebrow}</p>
+              <h3>{item.name}</h3>
+            </div>
+            <div class="package-description">
+              <p>{item.description}</p>
+              <ul>{item.includes.map((included) => <li>{included}</li>)}</ul>
+            </div>
+            <div class="package-estimate">
+              <p><CircleDollarSign size={17} aria-hidden="true" />Planning range</p>
+              <strong>{item.price}</strong>
+              <span>{item.timeline}</span>
+              <a
+                href="#contact"
+                data-estimate-service={item.name}
+                aria-label={`Request an estimate for ${item.name}`}
+              >Request estimate <ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+    <p class="pricing-note">USD planning ranges, not binding quotes. Hosting, paid third-party services, data migration, and unusually complex integrations are estimated separately.</p>
+  </div>
+</section>
+
+<script>
+  const estimateLinks = document.querySelectorAll<HTMLAnchorElement>("[data-estimate-service]");
+  const interest = document.querySelector<HTMLSelectElement>('[data-contact-form] select[name="path"]');
+  const message = document.querySelector<HTMLTextAreaElement>('[data-contact-form] textarea[name="message"]');
+
+  for (const link of estimateLinks) {
+    link.addEventListener("click", () => {
+      const service = link.dataset.estimateService;
+      if (!service) return;
+      if (interest) interest.value = "IT Development";
+      if (message) {
+        const request = `I would like a planning estimate for the ${service}.`;
+        const current = message.value.trim();
+        if (!current) message.value = request;
+        else if (!current.includes(service)) message.value = `${request}\n\n${current}`;
+      }
+    });
+  }
+</script>

@@ -12,6 +12,7 @@ SCOPE_COMPLETED:
 - dedicated Logistics, ProgressoPro, Academy, and IT Development pages;
 - custom system visuals for the ecosystem, Logistics, Marketing, Academy, and IT Development;
 - interactive Marketing growth flow, Academy program chooser, and IT system flow;
+- IT Development case study, AI-assisted delivery roles, service packages, planning ranges, and estimate request workflow;
 - mobile and desktop navigation;
 - direction-aware contact preview form;
 - configurable preview/live contact workflow with validation, consent, idempotency, timeout, and failure handling;
@@ -29,7 +30,7 @@ VERIFICATION:
 - desktop 1440px: no overflow, broken images, or console errors;
 - mobile 390px: no overflow, broken images, or console errors;
 - mobile menu and path selection verified.
-- Playwright: 21 desktop/mobile workflow tests passed; one desktop-only skip expected.
+- Playwright: 23 desktop/mobile workflow tests passed; one desktop-only skip expected.
 
 PRODUCTION:
 

@@ -88,3 +88,11 @@ test("marketing growth flow supports click and keyboard navigation", async ({ pa
   await expect(distributionTab).toBeFocused();
   await expect(distributionTab).toHaveAttribute("aria-selected", "true");
 });
+
+test("technology package request pre-fills the estimate context", async ({ page }) => {
+  await page.goto("/paths/technology/");
+  await page.getByRole("link", { name: "Request an estimate for AI Assistant and Workflow" }).click();
+  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
+  await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the AI Assistant and Workflow.");
+  await expect(page).toHaveURL(/#contact$/);
+});
