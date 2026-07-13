@@ -12,18 +12,24 @@ The public portfolio also identifies the Carrier Operations Database and AI Comm
 
 ## Published Planning Ranges
 
+The public delivery rate is `$25-$45/hour`. The lower end is appropriate for clearly defined, repeatable, or long-running implementation work. Architecture, complex integration, production debugging, and high-responsibility delivery should normally be planned near `$45/hour`. The internal monthly revenue goal is not a public claim and is not included on the website.
+
 | Package | Timeline | Planning range |
 | --- | --- | --- |
-| Company Digital Operating System | 20-36 weeks | $65,000-$150,000 |
-| Digital Presence System | 6-10 weeks | $12,000-$25,000 |
-| CRM and Operations Control | 10-18 weeks | $25,000-$60,000 |
-| AI Assistant and Workflow | 6-12 weeks | $15,000-$35,000 |
-| Connected Business Platform | 16-28 weeks | $45,000-$120,000 |
-| Continuous Improvement Partnership | Monthly after launch | $4,000-$12,000/month |
+| Company Digital Operating System | 16-32 weeks | $30,000-$90,000 |
+| Digital Presence System | 6-10 weeks | $6,000-$18,000 |
+| CRM and Operations Control | 10-18 weeks | $10,000-$35,000 |
+| AI Assistant and Workflow | 6-12 weeks | $7,000-$25,000 |
+| Connected Business Platform | 16-28 weeks | $20,000-$65,000 |
+| Continuous Improvement Partnership | Monthly after launch | $3,000-$8,000/month |
 
 The Company Digital Operating System is the flagship full-company engagement: business mapping, corporate website and conversion flow, CRM and operating controls, automation, supported integrations, AI assistance, approval gates, launch, and training. Specialized packages remain available as standalone entry points.
 
 Timelines deliberately include discovery, approvals, revisions, QA, launch, and handoff rather than extrapolating only from coding time. Final estimates require discovery and depend on integrations, migration, compliance, content, and third-party services. Continuous improvement means reviewed backlog work and controlled releases, not autonomous AI changes to production.
+
+## Revenue Capacity Note
+
+At `$45/hour`, an `$8,000` month requires about `178` billable hours. At `$25/hour`, it requires `320` billable hours and is not sustainable for one full-time builder. The operating plan should therefore use `$45/hour` for most complex work, fixed-scope packages with clear change control, and one or more monthly improvement partnerships. AI-assisted delivery increases throughput, but it does not make unpriced scope free.
 
 ## Market Benchmarks
 

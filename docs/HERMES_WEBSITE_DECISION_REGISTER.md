@@ -57,6 +57,7 @@ Updated: 2026-07-13
 - Academy program divisions, methodology, FAQ, accessible program chooser, and original direction visual: implemented.
 - IT Development solution divisions and FAQ: implemented.
 - IT Development public case study, human-led AI-assisted delivery model, internal product portfolio with explicit maturity labels, flagship Company Digital Operating System, four standalone modules, continuous improvement partnership, planning ranges, and estimate request workflow: implemented.
+- IT Development public delivery rate: `$25-$45/hour`; complex architecture and production responsibility should be planned near the upper end. Package ranges were recalibrated to this rate on 2026-07-13.
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.
 - Live contact form, analytics, verified social channels, and corporate mailbox aliases: pending.
