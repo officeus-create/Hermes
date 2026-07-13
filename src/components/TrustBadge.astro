@@ -1,0 +1,67 @@
+---
+import { site } from "../data/site";
+
+const logistics = site.paths.find((p) => p.id === "logistics")!;
+const phones = logistics.directContacts?.filter((c) => c.href.startsWith("tel:")) ?? [];
+const badges = [
+  { label: "Directions", value: "4", note: "Logistics · Marketing · Academy · IT" },
+  { label: "Service area", value: "WI → USA", note: "Wisconsin-first language; national support where eligible" },
+  { label: "Academy structure", value: "3 × 6", note: "3 tracks · 6 capability layers · no job guarantee" },
+  { label: "IT planning rate", value: "$25-$45/hr", note: "Public delivery range; packages from $3k" },
+  { label: "Contact mode", value: "Preview", note: site.contact.previewStatus },
+];
+---
+
+<section class="trust-badge section" id="about" data-analytics-scope="home-trust">
+  <div class="shell">
+    <div class="section-heading">
+      <p class="eyebrow">Trust architecture</p>
+      <h2>Proof you can verify on this site — not slogans.</h2>
+    </div>
+    <ul class="trust-badge-grid">
+      {
+        badges.map((b) => (
+          <li>
+            <p class="trust-label">{b.label}</p>
+            <strong class="trust-value">{b.value}</strong>
+            <p class="trust-note">{b.note}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <details class="trust-optional" data-case-id="home-trust-channels">
+      <summary>Optional — public Logistics channels already published</summary>
+      <ul>
+        {
+          phones.map((c) => (
+            <li>
+              <a href={c.href}>
+                {c.label}: {c.value}
+              </a>
+              — {c.note}
+            </li>
+          ))
+        }
+        {
+          site.social.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener noreferrer">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </details>
+  </div>
+</section>
+
+<script>
+  import { trackCaseOpened } from "../lib/analytics.ts";
+
+  document.querySelectorAll<HTMLDetailsElement>("[data-analytics-scope='home-trust'] [data-case-id]").forEach((el) => {
+    el.addEventListener("toggle", () => {
+      if (el.open && el.dataset.caseId) trackCaseOpened(el.dataset.caseId);
+    });
+  });
+</script>

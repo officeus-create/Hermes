@@ -1,0 +1,258 @@
+---
+import { ArrowRight } from "@lucide/astro";
+
+const stages = [
+  {
+    id: "1",
+    title: "Business & workflow map",
+    problem: "Nobody agrees on how work actually moves.",
+    body: "Document users, steps, information, and the business result the system must support.",
+  },
+  {
+    id: "2",
+    title: "Website & conversion journey",
+    problem: "The public site does not lead to a qualified next action.",
+    body: "Corporate presence, content architecture, and a clear path from attention to inquiry. Digital Presence System planning range: From $3k · 4-8 weeks.",
+  },
+  {
+    id: "3",
+    title: "Booking capture",
+    problem: "Demand arrives but appointments or requests are lost in chat threads.",
+    body: "Customer chooses a service; the request becomes a tracked operating object.",
+  },
+  {
+    id: "4",
+    title: "Payment / prepayment",
+    problem: "Intent is verbal; no-shows and unpaid work destroy margin.",
+    body: "Prepayment confirms intent and feeds the client record.",
+  },
+  {
+    id: "5",
+    title: "CRM & management views",
+    problem: "Status lives in heads and spreadsheets.",
+    body: "Roles, pipelines, approvals, documents, dashboards. CRM and Operations Control: From $5k · 6-12 weeks.",
+  },
+  {
+    id: "6",
+    title: "Automation & integrations",
+    problem: "People re-type the same data across tools.",
+    body: "Routine follow-up and supported Google Workspace / API integrations with human-owned exceptions.",
+  },
+  {
+    id: "7",
+    title: "Analytics & decisions",
+    problem: "Leaders cannot see what needs attention this week.",
+    body: "KPI definitions, data quality checks, dashboards, and decision briefs.",
+  },
+  {
+    id: "8",
+    title: "AI gates, launch & improvement",
+    problem: "AI demos do not survive real operations.",
+    body: "AI assistants with approval gates; launch, training, and Continuous Improvement Partnership From $3k / month. Delivery planned at $25-$45 per hour or fixed-scope packages. Flagship Company Digital Operating System From $12k · 12-24 weeks staged delivery.",
+  },
+];
+
+const industries = [
+  {
+    id: "fitness",
+    title: "Fitness and wellness",
+    problem: "Leads, memberships, and trainer booking live in different chats.",
+    body: "Connect lead intake, memberships, class or trainer booking, reminders, and client follow-up.",
+    service: "Fitness and Wellness Starter System",
+  },
+  {
+    id: "beauty",
+    title: "Beauty and salon",
+    problem: "No-shows and missing deposits hurt the calendar.",
+    body: "Appointment booking, deposits, no-show controls, service history, and repeat-visit communication.",
+    service: "Beauty and Salon Starter System",
+  },
+  {
+    id: "logistics",
+    title: "Logistics operations",
+    problem: "Carrier onboarding and dispatch status are fragmented.",
+    body: "Carrier acquisition, onboarding documents, manager queues, dispatch status, and operational reporting.",
+    service: "Logistics Operations Starter System",
+  },
+  {
+    id: "professional",
+    title: "Professional services",
+    problem: "Proposals and delivery status are invisible after the first call.",
+    body: "Inquiries, qualification, proposals, approvals, documents, delivery status, and client updates.",
+    service: "Professional Services Starter System",
+  },
+];
+---
+
+<section class="it-flow-screens" data-it-flow data-analytics-scope="it" aria-label="IT business operating flow">
+  <div class="it-screen is-active" data-it-screen="0">
+    <div class="shell">
+      <p class="eyebrow">IT Development · One connected business flow</p>
+      <h2>Stop buying disconnected tools. Map the work that makes money.</h2>
+      <p class="problem-banner">
+        Problem: the customer path and the internal system do not share one state, so revenue leaks between website,
+        inbox, CRM, and people.
+      </p>
+      <p>
+        Hermes IT builds the smallest useful connected flow first — then expands with staged estimates. Public planning
+        ranges use <strong>$25-$45 per hour</strong> or package starts listed on this page.
+      </p>
+      <button type="button" class="button button-primary" data-it-next data-cta="it_start_flow">
+        See the 8-stage flow <ArrowRight size={18} aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="it-screen" data-it-screen="1" hidden>
+    <div class="shell">
+      <p class="eyebrow">Primary · 8 stages</p>
+      <h2>One company flow. Eight control points.</h2>
+      <ol class="it-stage-rail">
+        {
+          stages.map((stage) => (
+            <li>
+              <button type="button" data-it-stage={stage.id} aria-selected={stage.id === "1" ? "true" : "false"}>
+                <span>{stage.id.padStart(2, "0")}</span>
+                <strong>{stage.title}</strong>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="it-screen-nav">
+        <button type="button" class="button button-ghost" data-it-prev>Back</button>
+        <button type="button" class="button button-primary" data-it-next data-cta="it_next_stage_detail">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="it-screen" data-it-screen="2" hidden>
+    <div class="shell">
+      <p class="eyebrow">Primary · Stage detail</p>
+      {
+        stages.map((stage, index) => (
+          <article data-it-stage-detail={stage.id} hidden={index !== 0}>
+            <p class="problem-banner">Problem: {stage.problem}</p>
+            <h2>{stage.title}</h2>
+            <p>{stage.body}</p>
+          </article>
+        ))
+      }
+      <div class="it-screen-nav">
+        <button type="button" class="button button-ghost" data-it-prev>Back</button>
+        <button type="button" class="button button-primary" data-it-next data-cta="it_next_industry">Industry fit</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="it-screen" data-it-screen="3" hidden>
+    <div class="shell">
+      <p class="eyebrow">Supporting · Industry starts</p>
+      <h2>A concrete first step where the pain is already paid for daily.</h2>
+      <div class="it-industry-grid">
+        {
+          industries.map((item) => (
+            <details data-case-id={`it-industry-${item.id}`}>
+              <summary>{item.title}</summary>
+              <p class="problem-banner">Problem: {item.problem}</p>
+              <p>{item.body}</p>
+              <a href="#contact" data-estimate-service={item.service} data-cta={`it_estimate_${item.id}`}>
+                Discuss this workflow
+              </a>
+            </details>
+          ))
+        }
+      </div>
+      <div class="it-screen-nav">
+        <button type="button" class="button button-ghost" data-it-prev>Back</button>
+        <button type="button" class="button button-primary" data-it-next data-cta="it_next_packages">
+          Continue to packages <ArrowRight size={18} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="it-screen" data-it-screen="4" hidden>
+    <div class="shell">
+      <p class="eyebrow">Primary · Planning ranges</p>
+      <h2>Start small or run the full company system.</h2>
+      <p>
+        USD starting prices, not binding quotes. Larger programs are divided into approved stages and estimated at
+        <strong> $25-$45 per hour</strong>. Package detail and workforce options continue below.
+      </p>
+      <a class="button button-primary" href="#technology-packages-title" data-cta="it_view_packages">
+        View package details <ArrowRight size={18} aria-hidden="true" />
+      </a>
+      <div class="it-screen-nav">
+        <button type="button" class="button button-ghost" data-it-prev>Back</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    trackCaseOpened,
+    trackCtaClicked,
+    trackEvent,
+    trackSimulationStarted,
+    trackTrackSelected,
+  } from "../lib/analytics.ts";
+
+  const root = document.querySelector<HTMLElement>("[data-it-flow]");
+  if (root) {
+    let screen = 0;
+    let started = false;
+    const screens = [...root.querySelectorAll<HTMLElement>("[data-it-screen]")];
+
+    const show = (i: number) => {
+      screen = i;
+      if (!started && i > 0) {
+        started = true;
+        trackSimulationStarted();
+      }
+      screens.forEach((n) => {
+        const on = Number(n.dataset.itScreen) === i;
+        n.hidden = !on;
+        n.classList.toggle("is-active", on);
+      });
+    };
+
+    const showStage = (id: string) => {
+      trackTrackSelected(`it-stage-${id}`);
+      trackEvent("it_flow_stage_select", { stage: id });
+      root.querySelectorAll<HTMLElement>("[data-it-stage-detail]").forEach((n) => {
+        n.hidden = n.dataset.itStageDetail !== id;
+      });
+      root.querySelectorAll<HTMLButtonElement>("[data-it-stage]").forEach((b) => {
+        b.setAttribute("aria-selected", String(b.dataset.itStage === id));
+      });
+    };
+
+    root.querySelectorAll("[data-it-next]").forEach((b) =>
+      b.addEventListener("click", () => {
+        const el = b as HTMLElement;
+        if (el.dataset.cta) trackCtaClicked(el.dataset.cta);
+        show(Math.min(screen + 1, screens.length - 1));
+      }),
+    );
+    root.querySelectorAll("[data-it-prev]").forEach((b) =>
+      b.addEventListener("click", () => show(Math.max(screen - 1, 0))),
+    );
+    root.querySelectorAll<HTMLButtonElement>("[data-it-stage]").forEach((b) =>
+      b.addEventListener("click", () => showStage(b.dataset.itStage || "1")),
+    );
+    root.querySelectorAll<HTMLDetailsElement>("[data-case-id]").forEach((el) => {
+      el.addEventListener("toggle", () => {
+        if (el.open && el.dataset.caseId) trackCaseOpened(el.dataset.caseId);
+      });
+    });
+    root.querySelectorAll<HTMLElement>("[data-cta]").forEach((el) => {
+      if (el.tagName === "A") {
+        el.addEventListener("click", () => {
+          if (el.dataset.cta) trackCtaClicked(el.dataset.cta);
+        });
+      }
+    });
+  }
+</script>

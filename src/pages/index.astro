@@ -1,13 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "../components/ContactCTA.astro";
-import EcosystemRail from "../components/EcosystemRail.astro";
 import HeroEditorial from "../components/HeroEditorial.astro";
-import JourneySteps from "../components/JourneySteps.astro";
 import PathPillars from "../components/PathPillars.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import TrustBand from "../components/TrustBand.astro";
+import TrustBadge from "../components/TrustBadge.astro";
+import WhyItMatters from "../components/WhyItMatters.astro";
 import { site } from "../data/site";
 
 const organizationSchema = {
@@ -36,7 +35,6 @@ const organizationSchema = {
   <SiteHeader />
   <main id="main-content">
     <HeroEditorial />
-    <EcosystemRail />
 
     <section class="section paths-section" id="paths">
       <div class="shell">
@@ -49,8 +47,8 @@ const organizationSchema = {
       </div>
     </section>
 
-    <JourneySteps />
-    <TrustBand />
+    <WhyItMatters />
+    <TrustBadge />
     <ContactCTA />
   </main>
   <SiteFooter />

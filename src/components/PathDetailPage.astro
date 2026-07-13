@@ -1,8 +1,8 @@
 ---
 import { ArrowLeft, ArrowRight, Check, MapPin } from "@lucide/astro";
 import type { PathDetail } from "../data/site";
-import TechnologySystemFlow from "./TechnologySystemFlow.astro";
-import AcademyProgramChooser from "./AcademyProgramChooser.astro";
+import AcademyScreenFlow from "./AcademyScreenFlow.astro";
+import ItOperatingFlow from "./ItOperatingFlow.astro";
 import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
 import TechnologyStudioProof from "./TechnologyStudioProof.astro";
 
@@ -11,6 +11,7 @@ interface Props {
 }
 
 const { path } = Astro.props;
+const isAcademy = path.id === "academy";
 const directContactTitle = {
   logistics: "Reach the right logistics team.",
   marketing: "Reach ProgressoPro directly.",
@@ -41,94 +42,138 @@ const directContactTitle = {
     </div>
   </section>
 
-  <section class="section detail-offerings" aria-labelledby="offerings-title">
-    <div class="shell">
-      <div class="section-heading split-heading">
-        <div><p class="eyebrow">What we focus on</p><h2 id="offerings-title">Built around useful work.</h2></div>
-        <p>The final scope is confirmed with the relevant team before any engagement begins.</p>
-      </div>
-      <div class="offering-grid">
-        {path.offerings.map((item) => (
-          <article><Check size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p></article>
-        ))}
-      </div>
-    </div>
-  </section>
+  {isAcademy && <AcademyScreenFlow />}
 
-  {path.id === "technology" && <TechnologySystemFlow />}
+  {
+    !isAcademy && (
+      <section class="section detail-offerings" aria-labelledby="offerings-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">What we focus on</p>
+              <h2 id="offerings-title">Built around useful work.</h2>
+            </div>
+            <p>The final scope is confirmed with the relevant team before any engagement begins.</p>
+          </div>
+          <div class="offering-grid">
+            {path.offerings.map((item) => (
+              <article>
+                <Check size={22} aria-hidden="true" />
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {path.id === "technology" && <ItOperatingFlow />}
   {path.id === "technology" && <TechnologyStudioProof />}
   {path.id === "marketing" && <MarketingGrowthFlow />}
-  {path.id === "academy" && <AcademyProgramChooser />}
 
-  <section class="section detail-process" aria-labelledby="process-title">
-    <div class="shell">
-      <div class="section-heading"><p class="eyebrow">How to begin</p><h2 id="process-title">From question to next step.</h2></div>
-      <ol class="detail-process-grid">
-        {path.process.map((step, index) => (
-          <li><span>0{index + 1}</span><h3>{step.title}</h3><p>{step.body}</p></li>
-        ))}
-      </ol>
-    </div>
-  </section>
+  {
+    !isAcademy && (
+      <section class="section detail-process" aria-labelledby="process-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="eyebrow">How to begin</p>
+            <h2 id="process-title">From question to next step.</h2>
+          </div>
+          <ol class="detail-process-grid">
+            {path.process.map((step, index) => (
+              <li>
+                <span>0{index + 1}</span>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
 
-  {path.equipment && (
-    <section class="section logistics-equipment" aria-labelledby="equipment-title">
-      <div class="shell">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Equipment</p><h2 id="equipment-title">Truck types we can discuss.</h2></div>
-          <p>Eligibility depends on authority, insurance, equipment and trailer configuration, operating area, and the current freight market.</p>
+  {
+    path.equipment && (
+      <section class="section logistics-equipment" aria-labelledby="equipment-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Equipment</p>
+              <h2 id="equipment-title">Truck types we can discuss.</h2>
+            </div>
+            <p>
+              Eligibility depends on authority, insurance, equipment and trailer configuration, operating area, and the
+              current freight market.
+            </p>
+          </div>
+          <div class="equipment-grid">
+            {path.equipment.map((item) => (
+              <article>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))}
+          </div>
         </div>
-        <div class="equipment-grid">
-          {path.equipment.map((item) => <article><h3>{item.title}</h3><p>{item.body}</p></article>)}
-        </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )
+  }
 
-  {path.serviceGroups && (
-    <section class="section logistics-services" aria-labelledby="service-groups-title">
-      <div class="shell">
-        <div class="section-heading"><p class="eyebrow">Services</p><h2 id="service-groups-title">{path.id === "technology" ? "The capabilities behind a connected company system." : "The operating support behind every load."}</h2></div>
-        <div class="service-group-grid">
-          {path.serviceGroups.map((group) => (
-            <article><h3>{group.title}</h3><ul>{group.items.map((item) => <li><Check size={18} aria-hidden="true" />{item}</li>)}</ul></article>
-          ))}
+  {
+    path.serviceGroups && !isAcademy && (
+      <section class="section logistics-services" aria-labelledby="service-groups-title">
+        <div class="shell">
+          <div class="section-heading">
+            <p class="eyebrow">Services</p>
+            <h2 id="service-groups-title">
+              {path.id === "technology"
+                ? "The capabilities behind a connected company system."
+                : "The operating support behind every load."}
+            </h2>
+          </div>
+          <div class="service-group-grid">
+            {path.serviceGroups.map((group) => (
+              <article>
+                <h3>{group.title}</h3>
+                <ul>
+                  {group.items.map((item) => (
+                    <li>
+                      <Check size={18} aria-hidden="true" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )
+  }
 
-  {path.faq && (
-    <section class="section logistics-faq" aria-labelledby="faq-title">
-      <div class="shell faq-layout">
-        <div><p class="eyebrow">FAQ</p><h2 id="faq-title">Before you get started.</h2></div>
-        <div class="faq-list">
-          {path.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+  {
+    path.faq && !isAcademy && (
+      <section class="section logistics-faq" aria-labelledby="faq-title">
+        <div class="shell faq-layout">
+          <div>
+            <p class="eyebrow">FAQ</p>
+            <h2 id="faq-title">Before you get started.</h2>
+          </div>
+          <div class="faq-list">
+            {path.faq.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
-  )}
-
-  {path.progression && (
-    <section class="section academy-progression" aria-labelledby="progression-title">
-      <div class="shell">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Operating Career System</p><h2 id="progression-title">Responsibility grows with capability.</h2></div>
-          <p>This is a learning progression model, not an employment or promotion guarantee. Each step represents a higher level of operating responsibility.</p>
-        </div>
-        <ol class="progression-grid">
-          {path.progression.map((item, index) => (
-            <li>
-              <span>0{index + 1}</span>
-              <p>{item.focus}</p>
-              <h3>{item.level}</h3>
-              <div>{item.responsibility}</div>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  )}
+      </section>
+    )
+  }
 
   {path.directContacts && (
     <section class="section logistics-contacts" aria-labelledby="direct-contact-title">

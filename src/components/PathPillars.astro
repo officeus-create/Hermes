@@ -62,6 +62,8 @@ const { paths } = Astro.props;
 </div>
 
 <script>
+  import { trackCtaClicked, trackTrackSelected } from "../lib/analytics.ts";
+
   const root = document.querySelector<HTMLElement>("[data-path-pillars]");
   const triggers = [...(root?.querySelectorAll<HTMLButtonElement>("[data-path-trigger]") ?? [])];
 
@@ -88,6 +90,7 @@ const { paths } = Astro.props;
     trigger.addEventListener("click", () => {
       const id = trigger.dataset.pathTrigger;
       if (!id) return;
+      trackTrackSelected(id);
       selectPillar(id);
       history.replaceState(null, "", `#${id}`);
     });
@@ -114,4 +117,10 @@ const { paths } = Astro.props;
 
   selectFromHash();
   window.addEventListener("hashchange", selectFromHash);
+
+  root?.querySelectorAll<HTMLAnchorElement>("a[href^='/paths/']").forEach((link) => {
+    link.addEventListener("click", () => {
+      trackCtaClicked(`home_path_cta_${link.getAttribute("href") || "path"}`);
+    });
+  });
 </script>

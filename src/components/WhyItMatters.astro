@@ -1,0 +1,51 @@
+---
+import { ArrowRight } from "@lucide/astro";
+---
+
+<section class="why-matters section" id="why" data-analytics-scope="home">
+  <div class="shell why-matters-grid">
+    <div class="why-primary">
+      <p class="eyebrow">Why this matters</p>
+      <h2>Most companies do not need more noise. They need one clear next step.</h2>
+      <p class="problem-banner">
+        Problem: logistics, marketing, training, and software are sold as disconnected packages — so owners buy activity
+        instead of an operating path.
+      </p>
+      <p>
+        Hermes keeps four businesses separate on purpose, then connects them only when the work requires it. You choose
+        one direction first.
+      </p>
+      <a class="button button-primary" href="#paths" data-cta="home_why_cta">
+        Choose your direction <ArrowRight size={18} aria-hidden="true" />
+      </a>
+    </div>
+    <aside class="why-supporting" aria-label="What changes when the path is clear">
+      <h3>Supporting context</h3>
+      <ol>
+        <li><strong>One decision in seconds</strong> — logistics ops, growth, education, or systems.</li>
+        <li><strong>One conversation owner</strong> — the matching team, not a generic inbox story.</li>
+        <li><strong>One smallest useful next step</strong> — no multi-year fantasy plan on day one.</li>
+      </ol>
+      <details class="why-optional" data-case-id="home-journey-optional">
+        <summary>Optional detail — how the five journey steps work</summary>
+        <p>Choose → Connect → Plan → Build → Improve. Full journey remains available as a process, not as competing homepage cards.</p>
+      </details>
+    </aside>
+  </div>
+</section>
+
+<script>
+  import { trackCaseOpened, trackCtaClicked } from "../lib/analytics.ts";
+
+  document.querySelectorAll<HTMLElement>("[data-analytics-scope='home'] [data-cta]").forEach((el) => {
+    el.addEventListener("click", () => {
+      if (el.dataset.cta) trackCtaClicked(el.dataset.cta);
+    });
+  });
+
+  document.querySelectorAll<HTMLDetailsElement>("[data-analytics-scope='home'] [data-case-id]").forEach((el) => {
+    el.addEventListener("toggle", () => {
+      if (el.open && el.dataset.caseId) trackCaseOpened(el.dataset.caseId);
+    });
+  });
+</script>

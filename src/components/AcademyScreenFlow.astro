@@ -1,0 +1,262 @@
+---
+import { ArrowRight, BriefcaseBusiness, ChartNoAxesCombined, CircleHelp, Route } from "@lucide/astro";
+import { site } from "../data/site";
+
+const academy = site.paths.find((p) => p.id === "academy")!;
+const tracks = [
+  {
+    id: "logistics",
+    label: "Logistics",
+    icon: Route,
+    problem:
+      "Freight work feels like constant firefighting: unclear messages, weak document rhythm, and no standard load lifecycle.",
+    title: "Learn how freight work moves from conversation to completed load.",
+    body: academy.offerings[0].body,
+    practice: ["Call and message review", "Load lifecycle exercises", "Document and exception scenarios"],
+  },
+  {
+    id: "marketing",
+    label: "Marketing",
+    icon: ChartNoAxesCombined,
+    problem: "Attention does not convert because content, campaigns, and sales follow-up are disconnected.",
+    title: "Connect positioning, content, campaigns, and sales follow-up.",
+    body: academy.offerings[1].body,
+    practice: ["Offer and audience diagnosis", "Content and campaign briefs", "Lead journey and reporting exercises"],
+  },
+  {
+    id: "coo",
+    label: "COO / Operational Director",
+    icon: BriefcaseBusiness,
+    problem: "The company runs on heroics instead of departments, KPI, process control, and decision rhythm.",
+    title: "See the company as one operating system, not isolated departments.",
+    body: academy.offerings[2].body,
+    practice: ["Department and responsibility maps", "KPI and process diagnosis", "Case decisions and operating reviews"],
+  },
+];
+const layers = academy.progression ?? [];
+const method = academy.process;
+---
+
+<section class="academy-screens" data-academy-screens data-analytics-scope="academy" aria-label="Academy guided path">
+  <div class="academy-screen is-active" data-screen="0" id="academy-screen-0">
+    <div class="shell academy-screen-inner">
+      <p class="eyebrow">Hermes Business Academy · LearnSkill</p>
+      <h2>Skills only matter if they connect to real operating work.</h2>
+      <p class="academy-primary">Primary decision: which professional track matches the problem you need to solve.</p>
+      <ul class="academy-trust-facts" aria-label="Verified program facts">
+        <li><strong>3</strong> professional tracks (Logistics, Marketing, COO / Operational Director)</li>
+        <li><strong>6</strong> capability layers from Student to Executive</li>
+        <li>Method: Awareness → Understanding → Application</li>
+        <li>We do not guarantee employment (stated publicly)</li>
+      </ul>
+      <button type="button" class="button button-primary" data-academy-next data-cta="academy_start">
+        Choose a track <ArrowRight size={18} aria-hidden="true" />
+      </button>
+    </div>
+  </div>
+
+  <div class="academy-screen" data-screen="1" id="academy-screen-1" hidden>
+    <div class="shell academy-screen-inner">
+      <p class="eyebrow">Primary · Track selection</p>
+      <h2>Three programs. Different responsibilities.</h2>
+      <p>Start from the problem, not the brochure.</p>
+      <div class="academy-track-grid" role="tablist" aria-label="Academy tracks">
+        {
+          tracks.map((track) => {
+            const Icon = track.icon;
+            return (
+              <button type="button" class="academy-track-card" role="tab" data-academy-track={track.id}>
+                <Icon size={22} aria-hidden="true" />
+                <strong>{track.label}</strong>
+                <span class="problem-lead">Problem: {track.problem}</span>
+              </button>
+            );
+          })
+        }
+        <button type="button" class="academy-track-card academy-track-compare" role="tab" data-academy-track="compare">
+          <CircleHelp size={22} aria-hidden="true" />
+          <strong>Not sure</strong>
+          <span class="problem-lead">Compare all three tracks, then talk to the team.</span>
+        </button>
+      </div>
+      <div class="academy-screen-nav">
+        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
+        <button type="button" class="button button-primary" data-academy-next data-cta="academy_next_track">
+          Next <ArrowRight size={18} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="academy-screen" data-screen="2" id="academy-screen-2" hidden>
+    <div class="shell academy-screen-inner">
+      <p class="eyebrow">Primary · Selected track</p>
+      {
+        tracks.map((track, index) => (
+          <article class="academy-track-detail" data-track-detail={track.id} hidden={index !== 0}>
+            <p class="problem-banner">Problem: {track.problem}</p>
+            <h2>{track.title}</h2>
+            <p>{track.body}</p>
+            <details class="academy-optional" data-case-id={`academy-${track.id}-practice`}>
+              <summary>Practice environment</summary>
+              <ul>
+                {track.practice.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </details>
+          </article>
+        ))
+      }
+      <article class="academy-track-detail" data-track-detail="compare" hidden>
+        <h2>Three programs. Different responsibilities.</h2>
+        <p>
+          Logistics builds operating execution. Marketing builds demand systems. COO / Operational Director builds
+          department and company control. Program dates, scope, and prices are published before enrollment; this site
+          does not accept payment.
+        </p>
+      </article>
+      <div class="academy-screen-nav">
+        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
+        <button type="button" class="button button-primary" data-academy-next data-cta="academy_next_layers">
+          See the 6 layers <ArrowRight size={18} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="academy-screen" data-screen="3" id="academy-screen-3" hidden>
+    <div class="shell academy-screen-inner">
+      <p class="eyebrow">Operating Career System</p>
+      <h2>Responsibility grows with capability.</h2>
+      <p>This is a learning progression model, not an employment or promotion guarantee.</p>
+      <ol class="academy-layer-list">
+        {
+          layers.map((item, index) => (
+            <li>
+              <details data-case-id={`academy-layer-${item.level}`}>
+                <summary>
+                  <span>0{index + 1}</span>
+                  <strong>{item.level}</strong>
+                  <em>{item.focus}</em>
+                </summary>
+                <p>{item.responsibility}</p>
+              </details>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="academy-screen-nav">
+        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
+        <button type="button" class="button button-primary" data-academy-next data-cta="academy_next_method">
+          Method &amp; FAQ <ArrowRight size={18} aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="academy-screen" data-screen="4" id="academy-screen-4" hidden>
+    <div class="shell academy-screen-inner">
+      <p class="eyebrow">Supporting · Method</p>
+      <h2>How learning moves into practice.</h2>
+      <ol class="academy-method">
+        {
+          method.map((step, index) => (
+            <li>
+              <span>0{index + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+      <details class="academy-optional">
+        <summary>FAQ (optional)</summary>
+        <div class="faq-list">
+          {
+            academy.faq?.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))
+          }
+        </div>
+      </details>
+      <a class="button button-primary" href="#contact" data-cta="academy_contact_intent">
+        Ask about the right Academy path <ArrowRight size={18} aria-hidden="true" />
+      </a>
+      <div class="academy-screen-nav">
+        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    trackCaseOpened,
+    trackCtaClicked,
+    trackSimulationStarted,
+    trackTrackSelected,
+  } from "../lib/analytics.ts";
+
+  const root = document.querySelector<HTMLElement>("[data-academy-screens]");
+  if (root) {
+    let screen = 0;
+    let started = false;
+    const screens = [...root.querySelectorAll<HTMLElement>("[data-screen]")];
+
+    const showScreen = (index: number) => {
+      screen = index;
+      if (!started && index > 0) {
+        started = true;
+        trackSimulationStarted();
+      }
+      screens.forEach((node) => {
+        const active = Number(node.dataset.screen) === index;
+        node.hidden = !active;
+        node.classList.toggle("is-active", active);
+      });
+    };
+
+    const showTrack = (id: string) => {
+      trackTrackSelected(id);
+      root.querySelectorAll<HTMLElement>("[data-track-detail]").forEach((node) => {
+        node.hidden = node.dataset.trackDetail !== id;
+      });
+      root.querySelectorAll<HTMLButtonElement>("[data-academy-track]").forEach((btn) => {
+        btn.setAttribute("aria-selected", String(btn.dataset.academyTrack === id));
+      });
+    };
+
+    root.querySelectorAll<HTMLButtonElement>("[data-academy-next]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const cta = btn.dataset.cta;
+        if (cta) trackCtaClicked(cta);
+        showScreen(Math.min(screen + 1, screens.length - 1));
+      });
+    });
+
+    root.querySelectorAll<HTMLButtonElement>("[data-academy-prev]").forEach((btn) => {
+      btn.addEventListener("click", () => showScreen(Math.max(screen - 1, 0)));
+    });
+
+    root.querySelectorAll<HTMLButtonElement>("[data-academy-track]").forEach((btn) => {
+      btn.addEventListener("click", () => showTrack(btn.dataset.academyTrack || "logistics"));
+    });
+
+    root.querySelectorAll<HTMLDetailsElement>("[data-case-id]").forEach((el) => {
+      el.addEventListener("toggle", () => {
+        if (el.open && el.dataset.caseId) trackCaseOpened(el.dataset.caseId);
+      });
+    });
+
+    root.querySelectorAll<HTMLAnchorElement>("[data-cta]").forEach((link) => {
+      if (link.tagName !== "A") return;
+      link.addEventListener("click", () => {
+        if (link.dataset.cta) trackCtaClicked(link.dataset.cta);
+      });
+    });
+  }
+</script>

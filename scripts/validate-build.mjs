@@ -58,6 +58,9 @@ const required = [
   "https://www.threads.com/@hermes.logistics",
   "Hermes IT Development",
   "Human-led, AI-assisted",
+  "Why this matters",
+  "Trust architecture",
+  "$25-$45/hr",
 ];
 
 for (const text of required) {
