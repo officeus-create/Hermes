@@ -61,6 +61,7 @@ Updated: 2026-07-13
 - Wisconsin-first SEO foundation for all four directions: unique metadata, visible service-area language, Organization and Service schema, sitemap dates, and machine-readable business summary implemented on 2026-07-13. Thin city pages and invented location claims are rejected.
 - Public owner-name references removed. IT Development now presents a Digital Workforce lineup with role-specific setup and training ranges, approval-first positioning, and a dedicated inquiry path.
 - Public information boundary enforced: internal prototype names, AI assignments, routing processes, CRM logic, and employee-only details must not appear on the website. The internal portfolio block was removed and generated HTML now has a blocked-term check.
+- IT pricing changed from large public ranges to accessible starting prices: $3k entry point, $25-$45/hour delivery, and staged estimates for larger programs. Public maximum figures were removed.
 - Production domain and automatic Cloudflare deployment: implemented.
 - Final approved visual system and final logos: pending design handoff.
 - Live contact form, analytics, verified social channels, and corporate mailbox aliases: pending.

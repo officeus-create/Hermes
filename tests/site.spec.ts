@@ -120,7 +120,7 @@ test("digital workforce roles show training time and pre-fill a request", async 
   await page.goto("/paths/technology/");
   await expect(page.getByRole("heading", { name: "Digital Operations Director" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "HR & Recruiting Assistant" })).toBeVisible();
-  await expect(page.getByText("4-8 weeks", { exact: true })).toBeVisible();
+  await expect(page.locator(".digital-workforce").getByText("4-8 weeks", { exact: true })).toBeVisible();
   await page.getByRole("link", { name: "Request an estimate for Digital Employee Program" }).click();
   await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
   await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Digital Employee Program.");
