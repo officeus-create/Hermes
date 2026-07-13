@@ -8,6 +8,8 @@ export type PathDetail = {
   id: string;
   number: string;
   category: string;
+  brandLabel: string;
+  programLabel: string;
   title: string;
   body: string;
   shortValue: string;
@@ -55,10 +57,12 @@ export const site = {
       id: "logistics",
       number: "01",
       category: "Hermes Logistics",
+      brandLabel: "Hermes Logistics",
+      programLabel: "Freight operations",
       title: "Move freight with a team built around clear operations.",
-      body: "A practical route for carriers, shippers, and logistics partners looking for coordinated support in the U.S. market.",
+      body: "Dispatch, back-office, and Car Hauling support for carriers, shippers, dealers, fleets, and owner-operators in the U.S. market.",
       shortValue: "Move freight",
-      points: ["Freight dispatch", "Car Hauling", "Carrier back office"],
+      points: ["Shippers and dealers", "Carriers and fleets", "Owner-operators"],
       cta: "Explore logistics",
       image: "/images/path-logistics-system.jpg",
       imageAlt: "Abstract logistics operations network with connected route lines",
@@ -112,10 +116,12 @@ export const site = {
       id: "marketing",
       number: "02",
       category: "ProgressoPro",
+      brandLabel: "Hermes Marketing",
+      programLabel: "ProgressoPro · Organic Target",
       title: "Turn attention into a repeatable growth system.",
       body: "A marketing path for teams that want clearer positioning, useful content, and a disciplined way to learn from results.",
       shortValue: "Grow demand",
-      points: ["Organic growth systems", "Campaign structure", "Practical automation"],
+      points: ["Organic content and distribution", "Targeted campaigns", "3/6/9/12-month media plans"],
       cta: "Explore marketing",
       image: "/images/path-marketing-system.jpg",
       imageAlt: "Architectural marketing system connecting content, audiences, and analytics",
@@ -147,9 +153,7 @@ export const site = {
         { question: "Can marketing connect to our CRM?", answer: "Yes. The marketing and IT teams can define the lead journey and the technical handoff into a CRM or internal workflow." },
       ],
       directContacts: [
-        { label: "Marketing Telegram", value: "@SMMProgressoPro", href: "https://t.me/SMMProgressoPro", note: "Send a message about strategy, content, lead generation, or sales systems" },
-        { label: "Marketing Instagram", value: "@progressopro", href: "https://www.instagram.com/progressopro/", note: "Public ProgressoPro channel for messages and current work" },
-        { label: "General Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Call and mention ProgressoPro or Marketing" },
+        { label: "Marketing Inquiries", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com?subject=ProgressoPro%20Marketing%20Inquiry", note: "Email your business goal, channels, timeline, and current marketing challenge" },
       ],
       socialLinks: [
         { label: "Instagram", handle: "@progressopro", href: "https://www.instagram.com/progressopro/" },
@@ -161,10 +165,12 @@ export const site = {
       id: "academy",
       number: "03",
       category: "Hermes Business Academy",
+      brandLabel: "Hermes Academy",
+      programLabel: "LearnSkill",
       title: "Learn skills that connect to real business work.",
       body: "A structured education path focused on practical operations, sales, leadership, and modern digital workflows.",
       shortValue: "Build capability",
-      points: ["Logistics Program", "Marketing Program", "COO / Operational Director Program"],
+      points: ["LearnSkill practical model", "Logistics and marketing tracks", "COO / Operational Director Program"],
       cta: "Explore the Academy",
       image: "/images/path-academy-system.jpg",
       imageAlt: "Architectural learning environment with connected workspaces and an ascending path",
@@ -197,9 +203,7 @@ export const site = {
         { question: "Is employment guaranteed?", answer: "No employment promise is made. The goal is to build practical capability and evidence of readiness for the selected professional path." },
       ],
       directContacts: [
-        { label: "Academy Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Call and mention Hermes Business Academy" },
-        { label: "Hermes Telegram", value: "Open public channel", href: "https://t.me/+R-GepRJDbEQ1NjVi", note: "Use the public Hermes channel for current contact information" },
-        { label: "Hermes Instagram", value: "@hermes.logistics", href: "https://www.instagram.com/hermes.logistics/", note: "Send a message and mention the Academy program" },
+        { label: "Academy Inquiries", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Business%20Academy%20Inquiry", note: "Email the program, role, or practical skill you want to develop" },
       ],
       progression: [
         { level: "Student", focus: "Language and context", responsibility: "Understand the role, terminology, and how work moves through the operating system." },
@@ -214,10 +218,12 @@ export const site = {
       id: "technology",
       number: "04",
       category: "IT Development",
+      brandLabel: "Hermes IT Development",
+      programLabel: "Systems for service businesses",
       title: "Build the digital system your business actually needs.",
       body: "Practical software for service businesses, from customer journeys and payments to the internal workflows behind them.",
       shortValue: "Build systems",
-      points: ["CRM systems", "Websites, apps, and online booking", "Automation and internal tools"],
+      points: ["Fitness trainers and studios", "Beauty professionals and salons", "Booking, prepayments, and CRM"],
       cta: "Explore IT Development",
       image: "/images/path-technology-portal.jpg",
       imageAlt: "Sculptural glass ribbon with blue light accents",
@@ -249,8 +255,7 @@ export const site = {
         { question: "Can existing tools be connected?", answer: "Where suitable, the system can connect Google Workspace, CRM, booking, payment, communication, and reporting tools through supported integrations." },
       ],
       directContacts: [
-        { label: "IT Development Inquiries", value: "+1 (351) 777-5337", href: "tel:+13517775337", note: "Call and mention IT Development or the system you want to build" },
-        { label: "Hermes Instagram", value: "@hermes.logistics", href: "https://www.instagram.com/hermes.logistics/", note: "Send a message and mention IT Development" },
+        { label: "IT Development Inquiries", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com?subject=IT%20Development%20Inquiry", note: "Email the workflow, system, or automation you want to build" },
       ],
     },
   ] satisfies PathDetail[],
@@ -269,7 +274,14 @@ export const site = {
   contact: {
     eyebrow: "Not sure where to begin?",
     title: "Tell us what you are building.",
-    body: "Use the preview to organize your request, then choose a direct contact route below. Until contact delivery is connected, the form does not send or store data.",
+    body: "Use the preview to organize your request, copy the summary, and open the matching contact route below. Until contact delivery is connected, the form does not send or store data.",
+    previewStatus: "Your information was not sent or stored.",
+    handoffTitle: "Next step: copy and contact",
+    handoffBody: "Copy the request summary, then open the approved contact route for your direction.",
+    copyRequestLabel: "Copy request",
+    copySuccess: "Request copied. Paste it into your email or message.",
+    copyFailure: "Copy did not work in this browser. Select the summary below and copy it manually.",
+    unsureRoute: "Choose a business direction above to reveal the matching contact route.",
   },
   social: [
     { label: "Instagram", href: "https://www.instagram.com/hermes.logistics/" },

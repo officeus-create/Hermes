@@ -1,0 +1,15 @@
+---
+description: Core operating rules for the Hermes corporate website
+alwaysApply: true
+---
+
+# Hermes website core
+
+- Read `AGENTS.md` before making changes.
+- Current priority is revenue readiness and lead conversion, not visual redesign.
+- Keep Logistics, Marketing, Academy, and IT Development public content separate from internal project data.
+- Preserve preview-first contact behavior until a live receiver is explicitly configured.
+- Never add secrets, credentials, private contacts, internal revenue targets, or unsupported claims.
+- Never deploy or push to the production branch from an implementation task.
+- Run `npm test`, `npm run build`, and `npm run test:e2e` before reporting completion.
+- Record evidence in `docs/CURSOR_WORK_LOG.md`.

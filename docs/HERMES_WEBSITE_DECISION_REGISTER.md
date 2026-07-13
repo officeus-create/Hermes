@@ -4,7 +4,10 @@ Updated: 2026-07-13
 
 ## Current architecture
 
-- The homepage is the entry point for four first-class businesses: Hermes Logistics, ProgressoPro, Hermes Business Academy, and IT Development.
+- The homepage is the entry point for four first-class businesses: Hermes
+  Logistics, Hermes Marketing, Hermes Academy, and Hermes IT Development.
+- ProgressoPro / Organic Target and LearnSkill remain visible programs or
+  sub-brands inside their corresponding Hermes pillars.
 - Each business has its own page, audience, services, operating model, and CTA.
 - Hermes Logistics includes freight dispatch, carrier back office, box truck and cargo van operations, and Car Hauling.
 - The registered production domain is `hermeslogisticsus.com`.
@@ -51,6 +54,13 @@ Updated: 2026-07-13
 ## Current implementation status
 
 - Four-path homepage: implemented.
+- Corporate header now clusters Logistics, Marketing, Academy, and IT
+  Development directly beside the Hermes wordmark. The homepage choice area
+  uses four interactive vertical pillars with click, keyboard, and mobile
+  accordion behavior instead of four large cards.
+- Current division colors are provisional implementation tokens. The shared
+  AI review task `HERMES-BRAND-COLOR-20260713` must be reviewed before a final
+  multi-division brand book is approved.
 - Four detail pages: implemented.
 - Logistics equipment, services, FAQ, direct contacts, and Car Hauling: implemented.
 - Marketing service divisions, FAQ, official channels, and interactive growth flow: implemented.

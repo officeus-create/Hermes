@@ -39,7 +39,9 @@ npm run test:e2e
 
 ## Contact Workflow
 
-The form uses `preview` mode by default and performs no network request. A future approved HTTPS receiver can be enabled with `PUBLIC_CONTACT_MODE=live` and `PUBLIC_CONTACT_ENDPOINT`; see `.env.example`. The receiving endpoint, privacy details, and `connect-src` policy must be reviewed before live activation.
+The form uses `preview` mode by default and performs no network request. After a valid preview submission, the site shows a compact handoff panel with a plain-text request summary, a `Copy request` button, and the approved contact route for the selected business direction. Hermes Logistics may expose phone and email routes; Marketing, Academy, and IT Development use email only.
+
+A future approved HTTPS receiver can be enabled with `PUBLIC_CONTACT_MODE=live` and `PUBLIC_CONTACT_ENDPOINT`; see `.env.example`. The receiving endpoint, privacy details, and `connect-src` policy must be reviewed before live activation.
 
 The workflow includes native validation, length limits, consent, a honeypot, request IDs, idempotency headers, a ten-second timeout, and honest delivery-failure messaging.
 

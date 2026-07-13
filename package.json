@@ -11,7 +11,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "node scripts/validate-build.mjs",
+    "test": "node scripts/validate-build.mjs && node --experimental-strip-types scripts/contact-handoff.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

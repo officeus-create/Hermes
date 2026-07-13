@@ -34,9 +34,27 @@ for (const route of routes) {
 
 test("direction card opens the matching page and preselects the form", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("link", { name: "Explore IT Development: IT Development" }).click();
+  await page.getByRole("tab", { name: /Hermes IT Development/ }).click();
+  await page.getByRole("link", { name: "Explore IT Development: Hermes IT Development" }).click();
   await expect(page).toHaveURL(/\/paths\/technology\/$/);
   await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
+});
+
+test("business pillars reveal one direction at a time and support keyboard navigation", async ({ page }) => {
+  await page.goto("/#paths");
+  const logistics = page.getByRole("tab", { name: /Hermes Logistics/ });
+  const marketing = page.getByRole("tab", { name: /Hermes Marketing/ });
+
+  await expect(logistics).toHaveAttribute("aria-selected", "true");
+  await marketing.click();
+  await expect(marketing).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tabpanel", { name: /Hermes Marketing/ })).toContainText("Organic content and distribution");
+  await expect(page.getByRole("tabpanel", { name: /Hermes Logistics/ })).toBeHidden();
+
+  await marketing.press("ArrowRight");
+  const academy = page.getByRole("tab", { name: /Hermes Academy/ });
+  await expect(academy).toBeFocused();
+  await expect(academy).toHaveAttribute("aria-selected", "true");
 });
 
 test("preview contact workflow validates and sends no request", async ({ page }) => {
@@ -49,26 +67,166 @@ test("preview contact workflow validates and sends no request", async ({ page })
   await page.locator('input[name="name"]').fill("Test User");
   await page.locator('input[name="email"]').fill("test@example.com");
   await page.locator('select[name="path"]').selectOption("Hermes Logistics");
+  await expect(page.locator('input[name="phone"]')).toBeVisible();
+  await page.locator('input[name="phone"]').fill("+1 (351) 777-5337");
   await page.locator('textarea[name="message"]').fill("I would like to discuss a logistics workflow.");
   await page.locator('input[name="consent"]').check();
   await page.locator('button[type="submit"]').click();
 
   await expect(page.locator("[data-form-status]")).toContainText("Your information was not sent or stored");
-  await expect(page.getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+13517775337");
+  await expect(page.locator("[data-contact-handoff]")).toBeVisible();
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Direction: Hermes Logistics");
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Phone: +1 (351) 777-5337");
+  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "tel:+13517775337");
+  await expect(page.locator(".contact-direct-routes").getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+13517775337");
   expect(posts).toEqual([]);
+});
+
+test("preview handoff exposes the approved email route for marketing", async ({ page }) => {
+  await page.goto("/paths/marketing/#contact");
+  await page.locator('input[name="name"]').fill("Marketing Lead");
+  await page.locator('input[name="email"]').fill("lead@example.com");
+  await page.locator('select[name="path"]').selectOption("ProgressoPro");
+  await expect(page.locator('input[name="phone"]')).toHaveCount(0);
+  await page.locator('textarea[name="message"]').fill("We need a clearer growth system for our service business.");
+  await page.locator('input[name="consent"]').check();
+  await page.locator('button[type="submit"]').click();
+
+  await expect(page.locator("[data-contact-handoff]")).toBeVisible();
+  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute(
+    "href",
+    "mailto:officeus@hermeslogisticsus.com?subject=ProgressoPro%20Marketing%20Inquiry",
+  );
+  await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+});
+
+test("copy request places sanitized plain text on the clipboard", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/#contact");
+  await page.locator('input[name="name"]').fill("Clipboard User");
+  await page.locator('input[name="email"]').fill("copy@example.com");
+  await page.locator('select[name="path"]').selectOption("IT Development");
+  await page.locator('textarea[name="tech_system_or_workflow_needed"]').fill("A CRM workflow for client follow-up.");
+  await page.locator('textarea[name="tech_integrations_needed"]').fill("<script>alert(1)</script> Zapier + webhooks.");
+  await page.locator('textarea[name="message"]').fill("I need a CRM workflow for client follow-up.");
+  await page.locator('input[name="consent"]').check();
+  await page.locator('button[type="submit"]').click();
+
+  await page.locator("[data-copy-request]").click();
+  await expect(page.locator("[data-copy-status]")).toContainText("Request copied");
+
+  const clipboardText = await page.evaluate(async () => navigator.clipboard.readText());
+  expect(clipboardText).toContain("Hermes Contact Request (Preview)");
+  expect(clipboardText).toContain("Direction: IT Development");
+  expect(clipboardText).toContain("Name: Clipboard User");
+  expect(clipboardText).toContain("I need a CRM workflow for client follow-up.");
+  expect(clipboardText).toContain("System/workflow needed: A CRM workflow for client follow-up.");
+  expect(clipboardText).not.toContain("<");
+  expect(clipboardText).not.toMatch(/<script/i);
+});
+
+test("clipboard failure shows recoverable manual-copy guidance", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: { writeText: () => Promise.reject(new Error("denied")) },
+    });
+  });
+
+  await page.goto("/#contact");
+  await page.locator('input[name="name"]').fill("Manual Copy User");
+  await page.locator('input[name="email"]').fill("manual@example.com");
+  await page.locator('select[name="path"]').selectOption("Hermes Business Academy");
+  await expect(page.locator('input[name="academy_preferred_language"]')).toBeVisible();
+  await expect(page.locator('input[name="phone"]')).toHaveCount(0);
+  await page.locator('textarea[name="message"]').fill("I want to explore the logistics program.");
+  await page.locator('input[name="consent"]').check();
+  await page.locator('button[type="submit"]').click();
+  await page.locator("[data-copy-request]").click();
+
+  await expect(page.locator("[data-copy-status]")).toContainText("Copy did not work");
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Direction: Hermes Business Academy");
+});
+
+test("changing direction clears a stale preview handoff", async ({ page }) => {
+  await page.goto("/#contact");
+  await page.locator('input[name="name"]').fill("Stale Handoff User");
+  await page.locator('input[name="email"]').fill("stale@example.com");
+  await page.locator('select[name="path"]').selectOption("Hermes Logistics");
+  await page.locator('input[name="phone"]').fill("+1 (351) 777-5337");
+  await page.locator('textarea[name="message"]').fill("I would like to discuss carrier onboarding.");
+  await page.locator('input[name="consent"]').check();
+  await page.locator('button[type="submit"]').click();
+  await expect(page.locator("[data-contact-handoff]")).toBeVisible();
+
+  await page.locator('select[name="path"]').selectOption("ProgressoPro");
+  await expect(page.locator("[data-contact-handoff]")).toBeHidden();
+  await expect(page.locator('input[name="phone"]')).toHaveCount(0);
 });
 
 test("each non-logistics direction exposes a working direct contact route", async ({ page }) => {
   const cases = [
-    { slug: "marketing", link: "Message Marketing", href: "https://t.me/SMMProgressoPro" },
-    { slug: "academy", link: "Call about Academy", href: "tel:+13517775337" },
-    { slug: "technology", link: "Call about IT", href: "tel:+13517775337" },
+    { slug: "marketing", link: "Email Marketing", subject: "ProgressoPro%20Marketing%20Inquiry" },
+    { slug: "academy", link: "Email the Academy", subject: "Hermes%20Business%20Academy%20Inquiry" },
+    { slug: "technology", link: "Email IT Development", subject: "IT%20Development%20Inquiry" },
   ];
 
   for (const item of cases) {
     await page.goto(`/paths/${item.slug}/#contact`);
-    await expect(page.getByRole("link", { name: item.link })).toHaveAttribute("href", item.href);
+    await expect(page.getByRole("link", { name: item.link })).toHaveAttribute(
+      "href",
+      `mailto:officeus@hermeslogisticsus.com?subject=${item.subject}`,
+    );
+    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+    await expect(page.locator('input[name="phone"]')).toHaveCount(0);
   }
+});
+
+test("marketing field group supports multiple platforms + 3/6/9/12 horizon and includes direction details in summary", async ({ page }, testInfo) => {
+  const posts: string[] = [];
+  page.on("request", (request) => {
+    if (request.method() === "POST") posts.push(request.url());
+  });
+
+  await page.goto("/paths/marketing/#contact");
+  await page.locator('input[name="name"]').fill("Marketing Discovery");
+  await page.locator('input[name="email"]').fill("lead@example.com");
+  await page.locator('textarea[name="message"]').fill("We need a clearer growth system for our service business.");
+  await page.locator('input[name="consent"]').check();
+
+  await page.locator('select[name="path"]').selectOption("ProgressoPro");
+  await page.locator('input[name="platforms"][value="Google"]').check();
+  await page.locator('input[name="platforms"][value="YouTube"]').check();
+  await page.locator('select[name="planning_horizon"]').selectOption("6 months");
+  await page.locator('input[name="primary_goal"]').fill("More qualified leads <script>alert(1)</script>");
+
+  if (testInfo.project.name === "desktop") {
+    await page.locator("[data-direction-fields]").screenshot({ path: "docs/screenshots/intake02-marketing-desktop.png" });
+  }
+
+  await page.locator('button[type="submit"]').click();
+
+  await expect(page.locator("[data-contact-handoff]")).toBeVisible();
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Platforms: Google, YouTube");
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Planning horizon: 6 months");
+  await expect(page.locator("[data-handoff-summary]")).not.toContainText("<");
+
+  expect(posts).toEqual([]);
+});
+
+test("direction-specific input changes clear stale preview handoff", async ({ page }) => {
+  await page.goto("/paths/logistics/#contact");
+  await page.locator('input[name="name"]').fill("Logistics Discovery");
+  await page.locator('input[name="email"]').fill("fleet@example.com");
+  await page.locator('textarea[name="message"]').fill("We need dispatch + document coordination.");
+  await page.locator('input[name="consent"]').check();
+
+  await page.locator('input[name="phone"]').fill("+1 (351) 777-5337");
+  await page.locator('button[type="submit"]').click();
+  await expect(page.locator("[data-contact-handoff]")).toBeVisible();
+
+  await page.locator('input[name="phone"]').fill("+1 (555) 123-4567");
+  await expect(page.locator("[data-contact-handoff]")).toBeHidden();
 });
 
 test("technology page offers concrete industry starting points", async ({ page }) => {

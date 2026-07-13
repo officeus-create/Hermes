@@ -14,6 +14,11 @@ const routes = [
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "$25-$45 per hour", "From $12k", "staged delivery", "Continuous Improvement Partnership", "From $3k / month", "Digital Presence System", "From $3k", "CRM and Operations Control", "From $5k", "AI Assistant and Workflow", "Connected Business Platform", "From $8k", "The capabilities behind a connected company system."] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
 ];
+const emailOnlyRoutes = [
+  "paths/marketing/index.html",
+  "paths/academy/index.html",
+  "paths/technology/index.html",
+];
 const assets = [
   "images/hermes-ecosystem-hero.jpg",
   "images/path-logistics-system.jpg",
@@ -53,11 +58,14 @@ const required = [
   "https://www.threads.com/@hermes.logistics",
   "Hermes IT Development",
   "Human-led, AI-assisted",
-  "Your information was not sent or stored.",
 ];
 
 for (const text of required) {
   if (!html.includes(text)) throw new Error(`Missing required content: ${text}`);
+}
+
+if (!html.includes('data-preview-status="Your information was not sent or stored."')) {
+  throw new Error("Preview honesty message is missing from contact form");
 }
 
 for (const route of routes) {
@@ -70,6 +78,12 @@ for (const route of routes) {
   if (route.path.startsWith("paths/") && !routeHtml.includes("Wisconsin first")) throw new Error(`Wisconsin service-area signal missing in ${route.path}`);
   if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
+}
+
+for (const path of emailOnlyRoutes) {
+  const routeHtml = await readFile(join(dist, path), "utf8");
+  if (!routeHtml.includes("mailto:officeus@hermeslogisticsus.com")) throw new Error(`Email contact missing in ${path}`);
+  if (routeHtml.includes('href="tel:')) throw new Error(`Phone contact must be logistics-only: ${path}`);
 }
 
 for (const slug of ["logistics", "marketing", "academy", "technology"]) {
@@ -121,6 +135,8 @@ for (const term of publicForbiddenInternalTerms) {
 
 if (/<form[^>]+action=/i.test(html)) throw new Error("Prototype form must not have an action endpoint");
 if (!html.includes('data-contact-mode="preview"')) throw new Error("Safe preview contact mode is not active by default");
+if (!html.includes("data-contact-handoff")) throw new Error("Preview contact handoff panel is missing");
+if (!html.includes("data-copy-request")) throw new Error("Copy request control is missing");
 if (!html.includes('name="consent"')) throw new Error("Contact consent field is missing");
 if (!html.includes('id="main-content"')) throw new Error("Skip-link target is missing");
 validateStructuredData(html, "homepage");

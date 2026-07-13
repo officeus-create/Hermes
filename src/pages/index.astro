@@ -4,7 +4,7 @@ import ContactCTA from "../components/ContactCTA.astro";
 import EcosystemRail from "../components/EcosystemRail.astro";
 import HeroEditorial from "../components/HeroEditorial.astro";
 import JourneySteps from "../components/JourneySteps.astro";
-import PathCard from "../components/PathCard.astro";
+import PathPillars from "../components/PathPillars.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import TrustBand from "../components/TrustBand.astro";
@@ -42,12 +42,10 @@ const organizationSchema = {
       <div class="shell">
         <div class="section-heading paths-heading">
           <p class="eyebrow">Four paths. One ecosystem.</p>
-          <h2>Choose the business direction that fits your goal.</h2>
-          <p>Start with what you need today. Each direction has its own team, focus, and working rhythm.</p>
+          <h2>Choose your direction.</h2>
+          <p>Four pillars support one Hermes ecosystem. Open a direction to see who it serves, what it builds, and the next practical step.</p>
         </div>
-        <div class="paths-grid">
-          {site.paths.map((path) => <PathCard path={path} />)}
-        </div>
+        <PathPillars paths={site.paths} />
       </div>
     </section>
 

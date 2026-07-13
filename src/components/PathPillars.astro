@@ -1,0 +1,117 @@
+---
+import { ArrowUpRight, Check, Plus } from "@lucide/astro";
+import type { PathDetail } from "../data/site";
+
+interface Props {
+  paths: PathDetail[];
+}
+
+const { paths } = Astro.props;
+---
+
+<div class="path-pillars" role="tablist" aria-label="Hermes business directions" data-path-pillars>
+  {paths.map((path, index) => (
+    <article
+      class={`path-pillar path-pillar-${path.tone}`}
+      id={path.id}
+      data-path-pillar={path.id}
+      data-active={index === 0 ? "true" : "false"}
+    >
+      <img src={path.image} alt="" width="960" height="720" loading="lazy" decoding="async" />
+      <button
+        class="path-pillar-trigger"
+        id={`path-tab-${path.id}`}
+        type="button"
+        role="tab"
+        aria-selected={index === 0 ? "true" : "false"}
+        aria-controls={`path-panel-${path.id}`}
+        tabindex={index === 0 ? "0" : "-1"}
+        data-path-trigger={path.id}
+      >
+        <span class="path-pillar-number">{path.number}</span>
+        <span class="path-pillar-label">
+          <strong>{path.brandLabel}</strong>
+          <small>{path.programLabel}</small>
+        </span>
+        <Plus size={19} aria-hidden="true" />
+      </button>
+
+      <div
+        class="path-pillar-panel"
+        id={`path-panel-${path.id}`}
+        role="tabpanel"
+        aria-labelledby={`path-tab-${path.id}`}
+        hidden={index !== 0}
+        data-path-panel={path.id}
+      >
+        <p>{path.shortValue}</p>
+        <h3>{path.title}</h3>
+        <p>{path.body}</p>
+        <ul>
+          {path.points.map((point) => (
+            <li><Check size={16} aria-hidden="true" />{point}</li>
+          ))}
+        </ul>
+        <a href={`/paths/${path.id}/`} aria-label={`${path.cta}: ${path.brandLabel}`}>
+          {path.cta}
+          <ArrowUpRight size={18} aria-hidden="true" />
+        </a>
+      </div>
+    </article>
+  ))}
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-path-pillars]");
+  const triggers = [...(root?.querySelectorAll<HTMLButtonElement>("[data-path-trigger]") ?? [])];
+
+  const selectPillar = (id: string, moveFocus = false) => {
+    if (!root || !triggers.some((trigger) => trigger.dataset.pathTrigger === id)) return;
+
+    root.querySelectorAll<HTMLElement>("[data-path-pillar]").forEach((pillar) => {
+      pillar.dataset.active = String(pillar.dataset.pathPillar === id);
+    });
+
+    root.querySelectorAll<HTMLElement>("[data-path-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.pathPanel !== id;
+    });
+
+    triggers.forEach((trigger) => {
+      const selected = trigger.dataset.pathTrigger === id;
+      trigger.setAttribute("aria-selected", String(selected));
+      trigger.tabIndex = selected ? 0 : -1;
+      if (selected && moveFocus) trigger.focus();
+    });
+  };
+
+  triggers.forEach((trigger, index) => {
+    trigger.addEventListener("click", () => {
+      const id = trigger.dataset.pathTrigger;
+      if (!id) return;
+      selectPillar(id);
+      history.replaceState(null, "", `#${id}`);
+    });
+
+    trigger.addEventListener("keydown", (event) => {
+      let nextIndex: number | undefined;
+      if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (index + 1) % triggers.length;
+      if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (index - 1 + triggers.length) % triggers.length;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = triggers.length - 1;
+      if (nextIndex === undefined) return;
+
+      event.preventDefault();
+      const next = triggers[nextIndex];
+      const id = next?.dataset.pathTrigger;
+      if (id) selectPillar(id, true);
+    });
+  });
+
+  const selectFromHash = () => {
+    const id = window.location.hash.slice(1);
+    if (id) selectPillar(id);
+  };
+
+  selectFromHash();
+  window.addEventListener("hashchange", selectFromHash);
+</script>

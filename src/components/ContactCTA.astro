@@ -1,5 +1,6 @@
 ---
 import { ArrowRight } from "@lucide/astro";
+import { contactHandoffRoutes } from "../lib/contact";
 import { site } from "../data/site";
 
 interface Props {
@@ -9,13 +10,9 @@ interface Props {
 const { selectedPath = "" } = Astro.props;
 const contactMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
-const directRoutes = [
-  { path: "Hermes Logistics", label: "Call Logistics", detail: "+1 (351) 777-5337", href: "tel:+13517775337" },
-  { path: "ProgressoPro", label: "Message Marketing", detail: "@SMMProgressoPro", href: "https://t.me/SMMProgressoPro" },
-  { path: "Hermes Business Academy", label: "Call about Academy", detail: "+1 (351) 777-5337", href: "tel:+13517775337" },
-  { path: "IT Development", label: "Call about IT", detail: "+1 (351) 777-5337", href: "tel:+13517775337" },
-];
-const visibleRoutes = selectedPath ? directRoutes.filter((route) => route.path === selectedPath) : directRoutes;
+const visibleRoutes = selectedPath
+  ? contactHandoffRoutes.filter((route) => route.category === selectedPath)
+  : contactHandoffRoutes;
 ---
 
 <section class="section contact-section" id="contact">
@@ -40,6 +37,7 @@ const visibleRoutes = selectedPath ? directRoutes.filter((route) => route.path =
       data-contact-form
       data-contact-mode={contactMode}
       data-contact-endpoint={contactEndpoint}
+      data-preview-status={site.contact.previewStatus}
       novalidate
     >
       <div class="form-alert" role="alert" data-form-alert hidden></div>
@@ -61,6 +59,7 @@ const visibleRoutes = selectedPath ? directRoutes.filter((route) => route.path =
           <option>I am not sure yet</option>
         </select>
       </label>
+      <div data-direction-fields hidden></div>
       <label>
         What are you trying to build?
         <textarea name="message" rows="4" minlength="10" maxlength="2000" required></textarea>
@@ -78,21 +77,73 @@ const visibleRoutes = selectedPath ? directRoutes.filter((route) => route.path =
         <ArrowRight size={18} aria-hidden="true" />
       </button>
       <p class="form-status" role="status" data-form-status></p>
+      <div class="contact-handoff" data-contact-handoff hidden>
+        <p class="contact-handoff-eyebrow">{site.contact.handoffTitle}</p>
+        <p class="contact-handoff-copy">{site.contact.handoffBody}</p>
+        <pre class="contact-handoff-summary" data-handoff-summary tabindex="0" aria-label="Request summary"></pre>
+        <div class="contact-handoff-actions">
+          <button class="button" type="button" data-copy-request>{site.contact.copyRequestLabel}</button>
+          <p class="contact-handoff-copy-status" role="status" aria-live="polite" data-copy-status></p>
+        </div>
+        <div class="contact-handoff-route" data-handoff-route hidden>
+          <p class="contact-handoff-route-label">Approved contact route</p>
+          <a data-handoff-route-link href="#">
+            <span data-handoff-route-label></span>
+            <strong data-handoff-route-detail></strong>
+            <ArrowRight size={17} aria-hidden="true" />
+          </a>
+        </div>
+        <p class="contact-handoff-unsure" data-handoff-unsure hidden>{site.contact.unsureRoute}</p>
+      </div>
     </form>
   </div>
 </section>
 
 <script>
+  import {
+    buildContactPayload,
+    buildRequestSummary,
+    getContactHandoffRoute,
+  } from "../lib/contact";
+  import { site } from "../data/site";
+
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   const status = document.querySelector<HTMLElement>("[data-form-status]");
   const alert = document.querySelector<HTMLElement>("[data-form-alert]");
+  const handoff = document.querySelector<HTMLElement>("[data-contact-handoff]");
+  const handoffSummary = document.querySelector<HTMLElement>("[data-handoff-summary]");
+  const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-request]");
+  const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]");
+  const handoffRoute = document.querySelector<HTMLElement>("[data-handoff-route]");
+  const handoffRouteLink = document.querySelector<HTMLAnchorElement>("[data-handoff-route-link]");
+  const handoffRouteLabel = document.querySelector<HTMLElement>("[data-handoff-route-label]");
+  const handoffRouteDetail = document.querySelector<HTMLElement>("[data-handoff-route-detail]");
+  const handoffUnsure = document.querySelector<HTMLElement>("[data-handoff-unsure]");
+  const directionFieldsRoot = document.querySelector<HTMLElement>("[data-direction-fields]");
+  const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
   const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
   const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
+
+  let activeSummary = "";
 
   const setAlert = (message = "") => {
     if (!alert) return;
     alert.textContent = message;
     alert.hidden = !message;
+  };
+
+  const setCopyStatus = (message = "") => {
+    if (copyStatus) copyStatus.textContent = message;
+  };
+
+  const clearHandoff = () => {
+    activeSummary = "";
+    if (handoff) handoff.hidden = true;
+    if (handoffSummary) handoffSummary.textContent = "";
+    if (handoffRoute) handoffRoute.hidden = true;
+    if (handoffUnsure) handoffUnsure.hidden = true;
+    if (handoffRouteLink) handoffRouteLink.removeAttribute("href");
+    setCopyStatus();
   };
 
   const setSubmitting = (submitting: boolean) => {
@@ -102,32 +153,288 @@ const visibleRoutes = selectedPath ? directRoutes.filter((route) => route.path =
     submitLabel.textContent = submitting ? "Sending..." : form?.dataset.contactMode === "live" ? "Send request" : "Preview request";
   };
 
+  const clearDirectionFields = () => {
+    if (!directionFieldsRoot) return;
+    directionFieldsRoot.hidden = true;
+    while (directionFieldsRoot.firstChild) directionFieldsRoot.removeChild(directionFieldsRoot.firstChild);
+  };
+
+  const addTextInput = (container: HTMLElement, name: string, labelText: string, inputType = "text", placeholder?: string) => {
+    const label = document.createElement("label");
+    const span = document.createElement("span");
+    span.textContent = labelText;
+    label.appendChild(span);
+
+    const input = document.createElement("input");
+    input.name = name;
+    input.type = inputType;
+    if (placeholder) input.placeholder = placeholder;
+    label.appendChild(input);
+    container.appendChild(label);
+    return input;
+  };
+
+  const addTextArea = (container: HTMLElement, name: string, labelText: string, rows = 3, placeholder?: string) => {
+    const label = document.createElement("label");
+    const span = document.createElement("span");
+    span.textContent = labelText;
+    label.appendChild(span);
+
+    const textarea = document.createElement("textarea");
+    textarea.name = name;
+    textarea.rows = rows;
+    if (placeholder) textarea.placeholder = placeholder;
+    label.appendChild(textarea);
+    container.appendChild(label);
+    return textarea;
+  };
+
+  const addSelect = (container: HTMLElement, name: string, labelText: string, options: Array<{ value: string; label: string }>) => {
+    const label = document.createElement("label");
+    const span = document.createElement("span");
+    span.textContent = labelText;
+    label.appendChild(span);
+
+    const select = document.createElement("select");
+    select.name = name;
+    for (const opt of options) {
+      const option = document.createElement("option");
+      option.value = opt.value;
+      option.textContent = opt.label;
+      select.appendChild(option);
+    }
+    label.appendChild(select);
+    container.appendChild(label);
+    return select;
+  };
+
+  const addCheckbox = (container: HTMLElement, name: string, value: string, labelText: string) => {
+    const wrapper = document.createElement("label");
+    wrapper.className = "contact-direction-checkbox";
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.name = name;
+    input.value = value;
+    input.id = `${name}-${value}`.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9-_]/g, "");
+
+    const span = document.createElement("span");
+    span.textContent = labelText;
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(span);
+    container.appendChild(wrapper);
+    return input;
+  };
+
+  const renderDirectionFields = (interest: string) => {
+    if (!directionFieldsRoot) return;
+    clearDirectionFields();
+    if (!interest) return;
+
+    // Keep this as a "single active group" so we never render every direction’s fields at once.
+    const group = document.createElement("div");
+    group.className = "contact-direction-group";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.textContent = interest === "Hermes Logistics" ? "Logistics details" : interest === "ProgressoPro" ? "Marketing details" : interest === "Hermes Business Academy" ? "Academy details" : "IT Development details";
+    eyebrow.className = "contact-direction-eyebrow";
+    group.appendChild(eyebrow);
+
+    if (interest === "Hermes Logistics") {
+      addTextInput(group, "phone", "Optional phone", "tel");
+      addTextInput(group, "mc_dot", "MC/DOT", "text");
+
+      addSelect(group, "equipment_type", "Equipment type", [
+        { value: "", label: "Choose equipment type (optional)" },
+        { value: "Dry Van", label: "Dry Van" },
+        { value: "Reefer", label: "Reefer" },
+        { value: "Flatbed", label: "Flatbed" },
+        { value: "Step Deck", label: "Step Deck" },
+        { value: "Power Only", label: "Power Only" },
+        { value: "Hotshot", label: "Hotshot" },
+        { value: "Box Truck", label: "Box Truck" },
+        { value: "Cargo Van", label: "Cargo Van" },
+        { value: "Car Hauling", label: "Car Hauling" },
+      ]);
+
+      addTextInput(group, "fleet_size", "Fleet size", "text");
+      addTextInput(group, "preferred_lanes", "Preferred lanes or operating area", "text");
+      addTextArea(group, "service_needed", "Service needed", 3);
+    } else if (interest === "ProgressoPro") {
+      const platformsContainer = document.createElement("fieldset");
+      platformsContainer.className = "contact-direction-platforms";
+      const platformsLegend = document.createElement("legend");
+      platformsLegend.textContent = "Platforms (select all that apply)";
+      platformsContainer.appendChild(platformsLegend);
+
+      const platforms = ["Google", "YouTube", "TikTok", "Threads", "Facebook", "Instagram", "X", "LinkedIn"] as const;
+      for (const p of platforms) addCheckbox(platformsContainer, "platforms", p, p);
+      addCheckbox(platformsContainer, "platforms", "Other", "Other");
+      group.appendChild(platformsContainer);
+
+      addSelect(group, "planning_horizon", "Planning horizon", [
+        { value: "", label: "Choose a planning horizon (optional)" },
+        { value: "3 months", label: "3 months" },
+        { value: "6 months", label: "6 months" },
+        { value: "9 months", label: "9 months" },
+        { value: "12 months", label: "12 months" },
+      ]);
+
+      addTextInput(group, "primary_goal", "Primary goal", "text");
+      addTextInput(group, "target_audience", "Target audience", "text");
+      addTextArea(group, "current_channels_results", "Current channels/results", 3);
+      addTextInput(group, "monthly_budget_range", "Monthly budget range", "text");
+    } else if (interest === "Hermes Business Academy") {
+      addTextInput(group, "academy_target_role_or_skill", "Target role or skill", "text");
+
+      addSelect(group, "academy_current_level", "Current level (optional)", [
+        { value: "", label: "Choose current level (optional)" },
+        { value: "Student", label: "Student" },
+        { value: "Trainee", label: "Trainee" },
+        { value: "Specialist", label: "Specialist" },
+        { value: "Manager", label: "Manager" },
+        { value: "Director", label: "Director" },
+        { value: "Executive", label: "Executive" },
+      ]);
+
+      addTextInput(group, "academy_weekly_learning_availability", "Weekly learning availability", "text");
+      addTextInput(group, "academy_preferred_language", "Preferred language", "text");
+
+      addSelect(group, "academy_desired_start_period", "Desired start period", [
+        { value: "", label: "Choose start period (optional)" },
+        { value: "This month", label: "This month" },
+        { value: "Next month", label: "Next month" },
+        { value: "In 2-3 months", label: "In 2-3 months" },
+        { value: "Flexible", label: "Flexible" },
+      ]);
+    } else if (interest === "IT Development") {
+      addTextArea(group, "tech_system_or_workflow_needed", "System or workflow needed", 3);
+      addTextArea(group, "tech_current_tools", "Current tools", 3);
+      addTextInput(group, "tech_number_of_users", "Number of users", "number");
+      addTextArea(group, "tech_integrations_needed", "Integrations needed", 3);
+
+      addSelect(group, "tech_data_sensitivity", "Data sensitivity", [
+        { value: "", label: "Choose sensitivity (optional)" },
+        { value: "Low", label: "Low" },
+        { value: "Medium", label: "Medium" },
+        { value: "High", label: "High" },
+      ]);
+
+      addTextInput(group, "tech_timeline", "Timeline", "text");
+      addTextInput(group, "tech_budget_range", "Budget range", "text");
+    } else {
+      // "I am not sure yet" or unknown direction: keep direction-specific fields hidden.
+      return;
+    }
+
+    directionFieldsRoot.hidden = false;
+    directionFieldsRoot.appendChild(group);
+  };
+
+  const renderHandoffRoute = (interest: string) => {
+    const route = getContactHandoffRoute(interest);
+    if (!handoffRoute || !handoffRouteLink || !handoffRouteLabel || !handoffRouteDetail || !handoffUnsure) return;
+
+    if (!route) {
+      handoffRoute.hidden = true;
+      handoffUnsure.hidden = false;
+      handoffRouteLink.removeAttribute("href");
+      return;
+    }
+
+    handoffUnsure.hidden = true;
+    handoffRoute.hidden = false;
+    handoffRouteLink.href = route.href;
+    handoffRouteLabel.textContent = route.label;
+    handoffRouteDetail.textContent = route.detail;
+  };
+
+  const showHandoff = (summary: string, interest: string) => {
+    if (!handoff || !handoffSummary) return;
+    activeSummary = summary;
+    handoffSummary.textContent = summary;
+    handoff.hidden = false;
+    renderHandoffRoute(interest);
+    copyButton?.focus();
+  };
+
+  const formIsValid = () => Boolean(form?.checkValidity());
+
+  form?.addEventListener("input", (event) => {
+    if (!formIsValid()) {
+      clearHandoff();
+      return;
+    }
+    if (handoff && !handoff.hidden && event.target instanceof HTMLElement) {
+      // Any change to summary-relevant inputs invalidates the previous preview handoff.
+      if (event.target instanceof HTMLInputElement && event.target.name === "website") return;
+      clearHandoff();
+    }
+  });
+
+  form?.addEventListener("change", (event) => {
+    const target = event.target;
+    if (target instanceof HTMLSelectElement && target.name === "path") {
+      clearHandoff();
+      renderDirectionFields(target.value);
+      return;
+    }
+
+    if (target instanceof HTMLElement && handoff && !handoff.hidden && directionFieldsRoot?.contains(target)) {
+      clearHandoff();
+    }
+
+    if (!formIsValid()) clearHandoff();
+  });
+
+  // Initial direction-specific rendering for direction pages with preselected `path`.
+  renderDirectionFields(pathSelect?.value ?? "");
+
+  copyButton?.addEventListener("click", async () => {
+    if (!activeSummary) return;
+    setCopyStatus();
+
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("clipboard_unavailable");
+      await navigator.clipboard.writeText(activeSummary);
+      setCopyStatus(site.contact.copySuccess);
+    } catch {
+      setCopyStatus(site.contact.copyFailure);
+      handoffSummary?.focus();
+    }
+  });
+
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
     setAlert();
-    if (!form.reportValidity()) return;
+    if (!form.reportValidity()) {
+      clearHandoff();
+      return;
+    }
 
     const data = new FormData(form);
     if (String(data.get("website") ?? "")) return;
 
-    const payload = {
-      request_id: crypto.randomUUID(),
-      submitted_at: new Date().toISOString(),
-      source_path: window.location.pathname,
-      name: String(data.get("name") ?? "").trim(),
-      email: String(data.get("email") ?? "").trim(),
-      interest: String(data.get("path") ?? "").trim(),
-      message: String(data.get("message") ?? "").trim(),
-      consent: data.get("consent") === "on",
-    };
+    const payload = buildContactPayload(data, window.location.pathname);
+    if (!payload.consent) {
+      clearHandoff();
+      return;
+    }
 
     if (form.dataset.contactMode !== "live") {
-      if (status) status.textContent = `Preview ready for ${payload.interest}. Your information was not sent or stored. Use the direct contact option on this page to reach the team.`;
+      const summary = buildRequestSummary(payload);
+      if (status) {
+        const previewStatus = form.dataset.previewStatus ?? site.contact.previewStatus;
+        status.textContent = `Preview ready for ${payload.interest}. ${previewStatus} Copy the summary below and open the matching contact route.`;
+      }
+      showHandoff(summary, payload.interest);
       return;
     }
 
     const endpoint = form.dataset.contactEndpoint;
     if (!endpoint) {
+      clearHandoff();
       setAlert("Contact delivery is temporarily unavailable. Please try again later.");
       return;
     }
@@ -135,10 +442,12 @@ const visibleRoutes = selectedPath ? directRoutes.filter((route) => route.path =
     try {
       if (new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
     } catch {
+      clearHandoff();
       setAlert("Contact delivery is temporarily unavailable. Please try again later.");
       return;
     }
 
+    clearHandoff();
     setSubmitting(true);
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 10000);
