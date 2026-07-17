@@ -1,0 +1,56 @@
+---
+import { MapPin, Phone, Send } from "@lucide/astro";
+import { site } from "../data/site";
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<section class:list={["contact-block", compact && "contact-block-compact"]} aria-labelledby="contact-block-title">
+  <div class:list={[!compact && "shell"]}>
+    <div class="contact-block-heading">
+      <p class="eyebrow">Contact</p>
+      <h2 id="contact-block-title">{compact ? "Reach Hermes" : "Public contact channels"}</h2>
+      <p class="contact-block-location">
+        <MapPin size={18} aria-hidden="true" />
+        <span>{site.location}</span>
+      </p>
+    </div>
+
+    <div class="contact-block-grid">
+      <div>
+        <h3><Phone size={18} aria-hidden="true" /> Phones</h3>
+        <ul class="contact-block-list">
+          {
+            site.publicPhones.map((phone) => (
+              <li>
+                <a href={phone.href}>{phone.value}</a>
+                <strong>{phone.label}</strong>
+                <span>{phone.note}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h3><Send size={18} aria-hidden="true" /> Telegram groups</h3>
+        <ul class="contact-block-list">
+          {
+            site.telegramGroups.map((group) => (
+              <li>
+                <a href={group.href} target="_blank" rel="noopener noreferrer">
+                  {group.label}
+                </a>
+                <span>Opens in a new tab</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

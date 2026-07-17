@@ -4,11 +4,11 @@ Production-ready static Astro website for `hermeslogisticsus.com`.
 
 ## Status
 
-- Local V1 is complete and ready for publication approval.
+- Production V1 is published at `https://hermeslogisticsus.com` through Cloudflare Pages.
 - Five public routes plus a custom 404 page.
 - No form submission or data storage.
 - No unsupported numeric claims or partner logos.
-- No production publishing or DNS changes have been made.
+- The contact workflow remains in preview mode and performs no external write.
 
 ## Structure
 
@@ -49,4 +49,4 @@ Visual redesigns must preserve the contracts in `docs/DESIGN_INTEGRATION_CONTRAC
 
 ## Publication
 
-The recommended zero-cost path is a private GitHub repository connected to Cloudflare Pages. See `docs/PUBLISHING_RUNBOOK.md` for the exact approval-gated sequence.
+The site is hosted in the Cloudflare Pages project `hermes` with the production domain `hermeslogisticsus.com`. See `docs/PUBLISHING_RUNBOOK.md` for release and rollback checks.

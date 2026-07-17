@@ -38,6 +38,11 @@ const navigation = site.navigation.map((item) => ({ ...item, url: `/${item.href}
 <script>
   const button = document.querySelector<HTMLElement>("[data-menu-button]");
   const menu = document.querySelector<HTMLElement>("[data-mobile-menu]");
+  const header = document.querySelector<HTMLElement>("[data-header]");
+
+  const updateHeader = () => header?.classList.toggle("site-header-scrolled", window.scrollY > 28);
+  updateHeader();
+  window.addEventListener("scroll", updateHeader, { passive: true });
 
   const closeMenu = (restoreFocus = false) => {
     button?.setAttribute("aria-expanded", "false");

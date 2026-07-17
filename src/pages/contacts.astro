@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactBlock from "../components/ContactBlock.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import { site } from "../data/site";
+
+const contactSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Hermes",
+  url: "https://hermeslogisticsus.com/",
+  address: {
+    "@type": "PostalAddress",
+    addressRegion: "WI",
+    addressCountry: "US",
+  },
+  areaServed: [
+    { "@type": "State", name: "Wisconsin" },
+    { "@type": "Country", name: "United States" },
+  ],
+  contactPoint: site.publicPhones.map((phone) => ({
+    "@type": "ContactPoint",
+    telephone: phone.href.replace("tel:", ""),
+    contactType: phone.label,
+    areaServed: "US",
+    availableLanguage: ["English", "Russian"],
+  })),
+};
+---
+
+<BaseLayout
+  title="Contact Hermes | Wisconsin USA"
+  description="Public Hermes contact phones for shippers, dealers, carriers, and owner-operators, plus Telegram learning groups and Wisconsin USA location."
+  schema={contactSchema}
+>
+  <SiteHeader />
+  <main id="main-content" class="contacts-page">
+    <section class="section contacts-hero">
+      <div class="shell">
+        <p class="eyebrow">Wisconsin first · USA coverage</p>
+        <h1>Contact Hermes</h1>
+        <p>
+          Use the published phones for partnership questions, join the relevant Telegram learning group, or send a
+          structured request with the preview form below.
+        </p>
+      </div>
+    </section>
+    <ContactBlock />
+    <ContactCTA />
+  </main>
+  <SiteFooter />
+</BaseLayout>

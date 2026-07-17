@@ -21,8 +21,8 @@ const directContactTitle = {
 ---
 
 <main id="main-content" class={`detail-page detail-page-${path.id}`}>
-  <section class="detail-hero" id="top">
-    <img src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" />
+  <section class="detail-hero" id="top" data-motion-hero>
+    <img class="detail-hero-media" src={path.image} alt={path.imageAlt} width="1400" height="1050" decoding="async" />
     <div class="detail-hero-shade"></div>
     <div class="shell detail-hero-content">
       <a class="detail-back" href="/#paths"><ArrowLeft size={18} aria-hidden="true" />All directions</a>
@@ -34,7 +34,7 @@ const directContactTitle = {
   </section>
 
   <section class="section detail-overview">
-    <div class="shell detail-intro">
+    <div class="shell detail-intro" data-reveal>
       <p class="eyebrow">The direction</p>
       <h2>A practical starting point.</h2>
       <p>{path.overview}</p>
@@ -48,14 +48,14 @@ const directContactTitle = {
     !isAcademy && (
       <section class="section detail-offerings" aria-labelledby="offerings-title">
         <div class="shell">
-          <div class="section-heading split-heading">
+          <div class="section-heading split-heading" data-reveal>
             <div>
               <p class="eyebrow">What we focus on</p>
               <h2 id="offerings-title">Built around useful work.</h2>
             </div>
             <p>The final scope is confirmed with the relevant team before any engagement begins.</p>
           </div>
-          <div class="offering-grid">
+          <div class="offering-grid" data-reveal>
             {path.offerings.map((item) => (
               <article>
                 <Check size={22} aria-hidden="true" />
@@ -77,11 +77,11 @@ const directContactTitle = {
     !isAcademy && (
       <section class="section detail-process" aria-labelledby="process-title">
         <div class="shell">
-          <div class="section-heading">
+          <div class="section-heading" data-reveal>
             <p class="eyebrow">How to begin</p>
             <h2 id="process-title">From question to next step.</h2>
           </div>
-          <ol class="detail-process-grid">
+          <ol class="detail-process-grid" data-reveal>
             {path.process.map((step, index) => (
               <li>
                 <span>0{index + 1}</span>
@@ -99,7 +99,7 @@ const directContactTitle = {
     path.equipment && (
       <section class="section logistics-equipment" aria-labelledby="equipment-title">
         <div class="shell">
-          <div class="section-heading split-heading">
+          <div class="section-heading split-heading" data-reveal>
             <div>
               <p class="eyebrow">Equipment</p>
               <h2 id="equipment-title">Truck types we can discuss.</h2>
@@ -109,7 +109,7 @@ const directContactTitle = {
               current freight market.
             </p>
           </div>
-          <div class="equipment-grid">
+          <div class="equipment-grid" data-reveal>
             {path.equipment.map((item) => (
               <article>
                 <h3>{item.title}</h3>
@@ -126,7 +126,7 @@ const directContactTitle = {
     path.serviceGroups && !isAcademy && (
       <section class="section logistics-services" aria-labelledby="service-groups-title">
         <div class="shell">
-          <div class="section-heading">
+          <div class="section-heading" data-reveal>
             <p class="eyebrow">Services</p>
             <h2 id="service-groups-title">
               {path.id === "technology"
@@ -134,7 +134,7 @@ const directContactTitle = {
                 : "The operating support behind every load."}
             </h2>
           </div>
-          <div class="service-group-grid">
+          <div class="service-group-grid" data-reveal>
             {path.serviceGroups.map((group) => (
               <article>
                 <h3>{group.title}</h3>
@@ -157,7 +157,7 @@ const directContactTitle = {
   {
     path.faq && !isAcademy && (
       <section class="section logistics-faq" aria-labelledby="faq-title">
-        <div class="shell faq-layout">
+        <div class="shell faq-layout" data-reveal>
           <div>
             <p class="eyebrow">FAQ</p>
             <h2 id="faq-title">Before you get started.</h2>
@@ -178,8 +178,8 @@ const directContactTitle = {
   {path.directContacts && (
     <section class="section logistics-contacts" aria-labelledby="direct-contact-title">
       <div class="shell">
-        <div class="section-heading"><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">{directContactTitle}</h2></div>
-        <div class="direct-contact-grid">
+        <div class="section-heading" data-reveal><p class="eyebrow">Direct contacts</p><h2 id="direct-contact-title">{directContactTitle}</h2></div>
+        <div class="direct-contact-grid" data-reveal>
           {path.directContacts.map((contact) => (
             <article><p>{contact.label}</p><a href={contact.href}>{contact.value}</a><span>{contact.note}</span></article>
           ))}
@@ -190,7 +190,7 @@ const directContactTitle = {
 
   {path.socialLinks && (
     <section class="section direction-socials" aria-labelledby="direction-socials-title">
-      <div class="shell direction-socials-layout">
+      <div class="shell direction-socials-layout" data-reveal>
         <div>
           <p class="eyebrow">Official channels</p>
           <h2 id="direction-socials-title">Follow {path.category}.</h2>

@@ -3,7 +3,10 @@ import { ArrowDown, ArrowUpRight } from "@lucide/astro";
 import { site } from "../data/site";
 ---
 
-<section class="hero" id="top" style={`--hero-image: url('${site.hero.image}')`}>
+<section class="hero" id="top" data-motion-hero>
+  <div class="hero-media" aria-hidden="true">
+    <img src={site.hero.image} alt="" width="1920" height="1080" fetchpriority="high" decoding="async" />
+  </div>
   <div class="hero-shade"></div>
   <div class="hero-content shell">
     <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
@@ -20,4 +23,8 @@ import { site } from "../data/site";
       </a>
     </div>
   </div>
+  <a class="hero-scroll-cue" href="#paths" aria-label="Scroll to choose a Hermes direction">
+    <span>Choose a direction</span>
+    <ArrowDown size={18} aria-hidden="true" />
+  </a>
 </section>

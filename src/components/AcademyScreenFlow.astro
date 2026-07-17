@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, BriefcaseBusiness, ChartNoAxesCombined, CircleHelp, Route } from "@lucide/astro";
+import { ArrowRight, BriefcaseBusiness, ChartNoAxesCombined, CircleQuestionMark, Route } from "@lucide/astro";
 import { site } from "../data/site";
 
 const academy = site.paths.find((p) => p.id === "academy")!;
@@ -74,7 +74,7 @@ const method = academy.process;
           })
         }
         <button type="button" class="academy-track-card academy-track-compare" role="tab" data-academy-track="compare">
-          <CircleHelp size={22} aria-hidden="true" />
+          <CircleQuestionMark size={22} aria-hidden="true" />
           <strong>Not sure</strong>
           <span class="problem-lead">Compare all three tracks, then talk to the team.</span>
         </button>
@@ -183,9 +183,29 @@ const method = academy.process;
           }
         </div>
       </details>
+
+      <div class="academy-community" aria-labelledby="academy-community-title">
+        <p class="eyebrow">Community</p>
+        <h3 id="academy-community-title">Telegram learning groups</h3>
+        <p>Join the public group that matches your track. Groups open in a new tab.</p>
+        <ul class="academy-community-list">
+          {
+            site.telegramGroups.map((group) => (
+              <li>
+                <a href={group.href} target="_blank" rel="noopener noreferrer" data-cta={`academy_tg_${group.tracks.join("_")}`}>
+                  {group.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="academy-community-location">Location: {site.location}</p>
+      </div>
+
       <a class="button button-primary" href="#contact" data-cta="academy_contact_intent">
         Ask about the right Academy path <ArrowRight size={18} aria-hidden="true" />
       </a>
+      <a class="button button-ghost" href="/contacts/" data-cta="academy_all_contacts">All contacts</a>
       <div class="academy-screen-nav">
         <button type="button" class="button button-ghost" data-academy-prev>Back</button>
       </div>

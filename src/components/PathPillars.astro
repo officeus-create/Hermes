@@ -9,7 +9,7 @@ interface Props {
 const { paths } = Astro.props;
 ---
 
-<div class="path-pillars" role="tablist" aria-label="Hermes business directions" data-path-pillars>
+<div class="path-pillars" role="tablist" aria-label="Hermes business directions" data-path-pillars data-reveal>
   {paths.map((path, index) => (
     <article
       class={`path-pillar path-pillar-${path.tone}`}
@@ -35,7 +35,6 @@ const { paths } = Astro.props;
         </span>
         <Plus size={19} aria-hidden="true" />
       </button>
-
       <div
         class="path-pillar-panel"
         id={`path-panel-${path.id}`}
@@ -87,6 +86,17 @@ const { paths } = Astro.props;
   };
 
   triggers.forEach((trigger, index) => {
+    trigger.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "touch" || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      const id = trigger.dataset.pathTrigger;
+      if (id) selectPillar(id);
+    });
+
+    trigger.addEventListener("focus", () => {
+      const id = trigger.dataset.pathTrigger;
+      if (id) selectPillar(id);
+    });
+
     trigger.addEventListener("click", () => {
       const id = trigger.dataset.pathTrigger;
       if (!id) return;

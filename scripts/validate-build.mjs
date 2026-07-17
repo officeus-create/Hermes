@@ -13,6 +13,20 @@ const routes = [
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment"] },
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "$25-$45 per hour", "From $12k", "staged delivery", "Continuous Improvement Partnership", "From $3k / month", "Digital Presence System", "From $3k", "CRM and Operations Control", "From $5k", "AI Assistant and Workflow", "Connected Business Platform", "From $8k", "The capabilities behind a connected company system."] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
+  {
+    path: "contacts/index.html",
+    required: [
+      "Contact Hermes",
+      "Wisconsin, USA",
+      "+1 (717) 696-6829",
+      "+1 (262) 302-3626",
+      "Shippers and dealers",
+      "Carriers and owner-operators",
+      "https://t.me/SMMProgressoPro",
+      "https://t.me/+GL3L-WkP55NmYzVi",
+      "Logistics school",
+    ],
+  },
 ];
 const emailOnlyRoutes = [
   "paths/marketing/index.html",
@@ -93,6 +107,8 @@ for (const slug of ["logistics", "marketing", "academy", "technology"]) {
   if (!html.includes(`/paths/${slug}/`)) throw new Error(`Homepage link missing for ${slug}`);
   if (!sitemap.includes(`/paths/${slug}/`)) throw new Error(`Sitemap entry missing for ${slug}`);
 }
+if (!html.includes("/contacts/") && !html.includes("contacts/")) throw new Error("Homepage/footer contacts link missing");
+if (!sitemap.includes("/contacts/")) throw new Error("Sitemap entry missing for contacts");
 
 const forbidden = [
   "guaranteed income",

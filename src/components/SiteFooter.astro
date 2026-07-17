@@ -8,18 +8,32 @@ import { site } from "../data/site";
     <div>
       <p class="footer-brand">{site.brand}</p>
       <p>Logistics, growth, education, and technology working with one practical standard.</p>
+      <p class="footer-location">{site.location}</p>
     </div>
     <nav aria-label="Footer navigation">
       {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
       <a href="/privacy/">Privacy</a>
     </nav>
+    <div class="footer-contacts" aria-label="Contact options">
+      <p class="footer-contacts-label">Contact</p>
+      <a href="/contacts/">Choose the right contact route</a>
+      <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
+    </div>
     <nav class="footer-social" aria-label="Social media">
-      {site.social.map((item) => <a href={item.href} target="_blank" rel="noreferrer">{item.label}</a>)}
+      {site.social.map((item) => (
+        <a href={item.href} target="_blank" rel="noreferrer">
+          {item.label}
+        </a>
+      ))}
     </nav>
-    <a class="back-to-top" href="#top" aria-label="Back to top"><ArrowUp size={20} aria-hidden="true" /></a>
+    <a class="back-to-top" href="#top" aria-label="Back to top">
+      <ArrowUp size={20} aria-hidden="true" />
+    </a>
   </div>
   <div class="shell footer-meta">
-    <span>Designed and engineered by <a href="/paths/technology/">Hermes IT Development</a> · Human-led, AI-assisted</span>
-    <span>© 2026 Hermes · Contact submission pending connection</span>
+    <span>
+      Designed and engineered by <a href="/paths/technology/">Hermes IT Development</a> · Human-led, AI-assisted
+    </span>
+    <span>© 2026 Hermes · {site.location} · Contact submission pending connection</span>
   </div>
 </footer>

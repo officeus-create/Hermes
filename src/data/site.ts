@@ -37,6 +37,33 @@ export type PathDetail = {
 export const site = {
   brand: "Hermes",
   domain: "hermeslogisticsus.com",
+  location: "Wisconsin, USA",
+  publicPhones: [
+    {
+      label: "Shippers and dealers",
+      value: "+1 (717) 696-6829",
+      href: "tel:+17176966829",
+      note: "Hermes Logistics inquiries",
+    },
+    {
+      label: "Carriers and owner-operators",
+      value: "+1 (262) 302-3626",
+      href: "tel:+12623023626",
+      note: "Hermes Logistics inquiries",
+    },
+  ],
+  telegramGroups: [
+    {
+      label: "Marketing community",
+      href: "https://t.me/SMMProgressoPro",
+      tracks: ["marketing"],
+    },
+    {
+      label: "Logistics school",
+      href: "https://t.me/+GL3L-WkP55NmYzVi",
+      tracks: ["logistics", "academy"],
+    },
+  ],
   navigation: [
     { label: "Logistics", href: "paths/logistics/" },
     { label: "Marketing", href: "paths/marketing/" },
@@ -292,4 +319,16 @@ export const site = {
     { claim: "Hermes operates as a multi-division business ecosystem", status: "VERIFIED_INTERNAL" as ClaimStatus },
     { claim: "Specific performance metrics and partner counts", status: "PLACEHOLDER_DO_NOT_PUBLISH" as ClaimStatus },
   ],
+};
+
+export const contacts = {
+  phones: {
+    shipperDealer: site.publicPhones[0].value,
+    carrierOwner: site.publicPhones[1].value,
+  },
+  telegram: {
+    marketing: site.telegramGroups[0].href,
+    logistics: site.telegramGroups[1].href,
+  },
+  location: site.location,
 };
