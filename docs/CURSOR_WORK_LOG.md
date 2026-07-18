@@ -189,6 +189,53 @@ npx playwright test tests/site.spec.ts --project=desktop --grep '/ru/ renders wi
 
 Add a controlled local submission ledger and a carrier-match fixture so approved previews can be tested end-to-end without touching production data or sending messages.
 
+## Session 05 - Four-direction Home Entry Scene
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Objective
+
+Turn the existing 1.3-second four-rail flash into a readable first-session entrance where visitors can understand Logistics, Marketing, Academy, and IT Development before choosing a path or opening the regular Home page.
+
+### Changes delivered
+
+- Rebuilt `SiteIntro` as an interactive four-direction scene with real links to every business path.
+- Added the color-coded Hermes ideology line `Move. Grow. Learn. Build.` and a direction-specific statement.
+- Added a 3.2-second focus interval per direction; the cycle continues without forcing navigation.
+- Added always-available `Open Home`, footer Home, direct path selection, keyboard focus behavior, and Escape close.
+- Kept the scene to one direct homepage view per browser session and skipped it for Home hash links.
+- Kept `prefers-reduced-motion: reduce` visitors on the regular Home page.
+- Added a 2 x 2 mobile composition and desktop/mobile local screenshots.
+- Added browser coverage for automatic progression, four route links, one-session behavior, Home access, and reduced motion.
+
+### Verification
+
+```bash
+npm test
+# Validated static website: 17 routes, 18 homepage checks, 5 image assets, no external form action.
+# Contact handoff unit checks passed.
+# Load Board unit checks passed.
+
+npm run build
+# Result (47 files): 0 errors, 0 warnings, 0 hints
+# 18 pages built
+
+npm run test:e2e
+# 80 passed, 2 skipped
+# exit_code: 0
+```
+
+### Visual evidence
+
+- `docs/screenshots/home-entry-scene-desktop.png`
+- `docs/screenshots/home-entry-scene-mobile.png`
+
+### Boundaries
+
+- No deployment, push, DNS change, analytics, form delivery, message, CRM write, or other external side effect was performed.
+- The existing Home page remains intact and available immediately.
+- Existing Load Board and concurrent Logistics work were preserved and included in regression testing.
+
 ## Session 05 - Logistics Audience Router
 
 STATUS: CODEX_IMPLEMENTED_VERIFIED_RELEASE_CANDIDATE

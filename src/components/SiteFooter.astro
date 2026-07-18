@@ -1,9 +1,10 @@
 ---
 import { ArrowUp } from "@lucide/astro";
 import { site } from "../data/site";
+import { localeConfig, type SiteLocale } from "../data/locales";
 
 interface Props {
-  locale?: "en" | "uk" | "ru";
+  locale?: SiteLocale;
 }
 
 const { locale = "en" } = Astro.props;
@@ -44,7 +45,35 @@ const localized = {
     method: "Под управлением людей, с поддержкой AI",
     status: "Обращения отправляются по электронной почте",
   },
+  es: {
+    statement: "Logística, crecimiento, formación y tecnología con un mismo estándar práctico.",
+    nav: [
+      { label: "Logística", href: "/es/#logistics" }, { label: "Marketing", href: "/es/#marketing" },
+      { label: "Academia", href: "/es/#academy" }, { label: "Desarrollo IT", href: "/es/#technology" },
+    ],
+    privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto",
+    designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
+  },
+  it: {
+    statement: "Logistica, crescita, formazione e tecnologia con un unico standard pratico.",
+    nav: [
+      { label: "Logistica", href: "/it/#logistics" }, { label: "Marketing", href: "/it/#marketing" },
+      { label: "Academy", href: "/it/#academy" }, { label: "Sviluppo IT", href: "/it/#technology" },
+    ],
+    privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto",
+    designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
+  },
+  fr: {
+    statement: "Logistique, croissance, formation et technologie selon un même standard pratique.",
+    nav: [
+      { label: "Logistique", href: "/fr/#logistics" }, { label: "Marketing", href: "/fr/#marketing" },
+      { label: "Académie", href: "/fr/#academy" }, { label: "Développement IT", href: "/fr/#technology" },
+    ],
+    privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact",
+    designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
+  },
 }[locale];
+const localePath = localeConfig[locale].path;
 ---
 
 <footer class="site-footer">
@@ -60,7 +89,7 @@ const localized = {
     </nav>
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
-      <a href={locale === "en" ? "/contacts/" : `/${locale === "uk" ? "ua" : "ru"}/#contact`}>{localized.route}</a>
+      <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">
@@ -76,7 +105,7 @@ const localized = {
   </div>
   <div class="shell footer-meta">
     <span>
-      {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `/${locale === "uk" ? "ua" : "ru"}/#technology`}>Hermes IT Development</a> · {localized.method}
+      {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `${localePath}#technology`}>Hermes IT Development</a> · {localized.method}
     </span>
     <span>© 2026 Hermes · {site.location} · {localized.status}</span>
   </div>

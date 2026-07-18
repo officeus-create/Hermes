@@ -1,41 +1,153 @@
-<div class="site-intro" data-site-intro aria-hidden="true">
+---
+const directions = [
+  {
+    id: "logistics",
+    number: "01",
+    name: "Logistics",
+    verb: "Move.",
+    idea: "Keep freight moving with clear operations.",
+    detail: "For carriers, shippers, dealers, fleets, and owner-operators.",
+    href: "/paths/logistics/",
+    cta: "Open Logistics",
+  },
+  {
+    id: "marketing",
+    number: "02",
+    name: "Marketing",
+    verb: "Grow.",
+    idea: "Turn attention into accountable growth.",
+    detail: "For businesses that need positioning, content, and customer demand.",
+    href: "/paths/marketing/",
+    cta: "Open Marketing",
+  },
+  {
+    id: "academy",
+    number: "03",
+    name: "Academy",
+    verb: "Learn.",
+    idea: "Turn knowledge into practical capability.",
+    detail: "For people building useful business and logistics skills.",
+    href: "/paths/academy/",
+    cta: "Open Academy",
+  },
+  {
+    id: "technology",
+    number: "04",
+    name: "IT Development",
+    verb: "Build.",
+    idea: "Build systems that make work simpler.",
+    detail: "For teams that need websites, CRM, automation, and AI systems.",
+    href: "/paths/technology/",
+    cta: "Open IT Development",
+  },
+];
+---
+
+<section class="site-intro" data-site-intro role="dialog" aria-modal="true" aria-labelledby="site-intro-title">
   <div class="site-intro-heading">
-    <a class="site-intro-wordmark" href="/" tabindex="-1">
+    <div class="site-intro-wordmark" aria-label="Hermes">
       <span>H</span>
       <strong>Hermes</strong>
-    </a>
-    <p><span data-intro-count>01</span> / 04</p>
+    </div>
+    <div class="site-intro-heading-actions">
+      <p><span data-intro-count>01</span> / 04</p>
+      <button type="button" class="site-intro-skip" data-intro-close>Open Home <span aria-hidden="true">↘</span></button>
+    </div>
   </div>
 
-  <div class="site-intro-rails" aria-hidden="true">
-    <span class="site-intro-rail site-intro-rail-logistics"><small>Logistics</small></span>
-    <span class="site-intro-rail site-intro-rail-marketing"><small>Marketing</small></span>
-    <span class="site-intro-rail site-intro-rail-academy"><small>Academy</small></span>
-    <span class="site-intro-rail site-intro-rail-technology"><small>IT Development</small></span>
+  <div class="site-intro-ideology">
+    <p class="site-intro-verbs" id="site-intro-title" aria-label="Move. Grow. Learn. Build.">
+      {directions.map((direction) => <span data-intro-verb={direction.id}>{direction.verb}</span>)}
+    </p>
+    <p class="site-intro-idea" data-intro-idea aria-live="polite">{directions[0].idea}</p>
   </div>
-</div>
+
+  <div class="site-intro-rails" aria-label="Choose a Hermes direction">
+    {directions.map((direction, index) => (
+      <a
+        class={`site-intro-rail site-intro-rail-${direction.id}`}
+        href={direction.href}
+        data-intro-rail={direction.id}
+        data-active={index === 0 ? "true" : "false"}
+        aria-label={`${direction.cta}: ${direction.detail}`}
+      >
+        <span class="site-intro-rail-top">
+          <small>{direction.number}</small>
+          <small>{direction.name}</small>
+        </span>
+        <span class="site-intro-rail-copy">
+          <strong>{direction.idea}</strong>
+          <span>{direction.detail}</span>
+        </span>
+        <span class="site-intro-rail-cta">{direction.cta} <span aria-hidden="true">↗</span></span>
+      </a>
+    ))}
+  </div>
+
+  <div class="site-intro-footer">
+    <p>Four businesses. One practical standard.</p>
+    <button type="button" class="site-intro-home" data-intro-close>Open regular Home <span aria-hidden="true">→</span></button>
+  </div>
+</section>
 
 <script>
   const intro = document.querySelector<HTMLElement>("[data-site-intro]");
   const count = intro?.querySelector<HTMLElement>("[data-intro-count]");
+  const idea = intro?.querySelector<HTMLElement>("[data-intro-idea]");
+  const rails = [...(intro?.querySelectorAll<HTMLElement>("[data-intro-rail]") ?? [])];
+  const verbs = [...(intro?.querySelectorAll<HTMLElement>("[data-intro-verb]") ?? [])];
+  const closeButtons = [...(intro?.querySelectorAll<HTMLButtonElement>("[data-intro-close]") ?? [])];
 
   if (intro && document.documentElement.classList.contains("intro-pending")) {
-    try {
-      sessionStorage.setItem("hermes-intro-seen", "true");
-    } catch {
-      // The animation still exits safely when browser storage is unavailable.
-    }
+    const ideas = rails.map((rail) => rail.querySelector<HTMLElement>(".site-intro-rail-copy strong")?.textContent?.trim() ?? "");
+    const inertSiblings = [...document.body.children].filter((element) => element !== intro);
+    let activeIndex = 0;
+    let cycle: number | undefined;
 
-    [2, 3, 4].forEach((step, index) => {
+    inertSiblings.forEach((element) => element.setAttribute("inert", ""));
+
+    const setActive = (index: number) => {
+      activeIndex = index;
+      rails.forEach((rail, railIndex) => rail.dataset.active = String(railIndex === index));
+      verbs.forEach((verb, verbIndex) => verb.dataset.active = String(verbIndex === index));
+      if (count) count.textContent = String(index + 1).padStart(2, "0");
+      if (idea) idea.textContent = ideas[index];
+    };
+
+    const rememberIntro = () => {
+      try {
+        sessionStorage.setItem("hermes-intro-seen", "true");
+      } catch {
+        // The visitor can still continue when browser storage is unavailable.
+      }
+    };
+
+    const closeIntro = () => {
+      if (cycle) window.clearInterval(cycle);
+      rememberIntro();
+      intro.dataset.closing = "true";
+      inertSiblings.forEach((element) => element.removeAttribute("inert"));
       window.setTimeout(() => {
-        if (count) count.textContent = `0${step}`;
-      }, 190 * (index + 1));
+        document.documentElement.classList.remove("intro-pending");
+        intro.remove();
+        document.querySelector<HTMLElement>(".site-header a")?.focus({ preventScroll: true });
+      }, 520);
+    };
+
+    rails.forEach((rail, index) => {
+      rail.addEventListener("focus", () => setActive(index));
+      rail.addEventListener("pointerenter", () => setActive(index));
+      rail.addEventListener("click", rememberIntro);
     });
 
-    window.setTimeout(() => {
-      document.documentElement.classList.remove("intro-pending");
-      intro.remove();
-    }, 1320);
+    closeButtons.forEach((button) => button.addEventListener("click", closeIntro));
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && document.documentElement.classList.contains("intro-pending")) closeIntro();
+    });
+
+    setActive(0);
+    cycle = window.setInterval(() => setActive((activeIndex + 1) % rails.length), 3200);
+    closeButtons[0]?.focus({ preventScroll: true });
   } else {
     intro?.remove();
   }

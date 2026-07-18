@@ -16,6 +16,9 @@ const routes = [
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
   { path: "ua/index.html", required: ["Чотири напрями. Одна екосистема для зростання.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Партнерство для розвитку компанії", "AI та messaging-асистенти", "mailto:officeus@hermeslogisticsus.com"] },
   { path: "ru/index.html", required: ["Четыре направления. Одна экосистема для роста.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Партнёрство для развития компании", "AI и messaging-ассистенты", "mailto:officeus@hermeslogisticsus.com"] },
+  { path: "es/index.html", required: ["Cuatro áreas. Un ecosistema para crecer.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Una alianza para desarrollar su empresa", "mailto:officeus@hermeslogisticsus.com"] },
+  { path: "it/index.html", required: ["Quattro aree. Un ecosistema per crescere.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Una partnership per sviluppare", "mailto:officeus@hermeslogisticsus.com"] },
+  { path: "fr/index.html", required: ["Quatre pôles. Un écosystème pour grandir.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Un partenariat pour développer", "mailto:officeus@hermeslogisticsus.com"] },
   {
     path: "contacts/index.html",
     required: [
@@ -113,7 +116,7 @@ for (const route of routes) {
   }
   if (!routeHtml.includes('<link rel="canonical"')) throw new Error(`Canonical URL missing in ${route.path}`);
   if (route.path.startsWith("paths/")) validateStructuredData(routeHtml, route.path);
-  if (route.path === "ua/index.html" || route.path === "ru/index.html") validateStructuredData(routeHtml, route.path);
+  if (["ua/index.html", "ru/index.html", "es/index.html", "it/index.html", "fr/index.html"].includes(route.path)) validateStructuredData(routeHtml, route.path);
   if (route.path.startsWith("paths/") && !routeHtml.includes("Wisconsin first")) throw new Error(`Wisconsin service-area signal missing in ${route.path}`);
   if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
@@ -121,14 +124,19 @@ for (const route of routes) {
 }
 
 const localizedRouteChecks = [
-  { path: "ua/index.html", lang: "uk", counterpart: "https://hermeslogisticsus.com/ru/" },
-  { path: "ru/index.html", lang: "ru", counterpart: "https://hermeslogisticsus.com/ua/" },
+  { path: "ua/index.html", lang: "uk" },
+  { path: "ru/index.html", lang: "ru" },
+  { path: "es/index.html", lang: "es" },
+  { path: "it/index.html", lang: "it" },
+  { path: "fr/index.html", lang: "fr" },
 ];
 for (const localized of localizedRouteChecks) {
   const localizedHtml = await readFile(join(dist, localized.path), "utf8");
   if (!localizedHtml.includes(`<html lang="${localized.lang}">`)) throw new Error(`Language metadata missing in ${localized.path}`);
   if (!localizedHtml.includes(`hreflang="en"`)) throw new Error(`English hreflang missing in ${localized.path}`);
-  if (!localizedHtml.includes(localized.counterpart)) throw new Error(`Localized counterpart missing in ${localized.path}`);
+  for (const localePath of ["/ua/", "/ru/", "/es/", "/it/", "/fr/"]) {
+    if (!localizedHtml.includes(`https://hermeslogisticsus.com${localePath}`)) throw new Error(`Localized counterpart ${localePath} missing in ${localized.path}`);
+  }
 }
 
 for (const path of emailOnlyRoutes) {
@@ -141,7 +149,7 @@ for (const slug of ["logistics", "marketing", "academy", "technology"]) {
   if (!html.includes(`/paths/${slug}/`)) throw new Error(`Homepage link missing for ${slug}`);
   if (!sitemap.includes(`/paths/${slug}/`)) throw new Error(`Sitemap entry missing for ${slug}`);
 }
-for (const localePath of ["/ua/", "/ru/"]) {
+for (const localePath of ["/ua/", "/ru/", "/es/", "/it/", "/fr/"]) {
   if (!html.includes(localePath)) throw new Error(`Homepage language link missing for ${localePath}`);
   if (!sitemap.includes(localePath)) throw new Error(`Sitemap entry missing for ${localePath}`);
 }

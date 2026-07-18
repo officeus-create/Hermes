@@ -1,19 +1,23 @@
 ---
-import { ArrowUpRight, Menu } from "@lucide/astro";
+import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
+import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
 
 interface Props {
   theme?: "dark" | "light";
   activePath?: string;
-  locale?: "en" | "uk" | "ru";
+  locale?: SiteLocale;
 }
 
 const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
-const localeBase = locale === "uk" ? "/ua/" : locale === "ru" ? "/ru/" : "/";
+const localeBase = localeConfig[locale].path;
 const localizedLabels = {
   uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
   ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
+  es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Desarrollo IT", contact: "Iniciar una conversación", home: "Inicio" },
+  it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home" },
+  fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil" },
 };
 const navigation = locale === "en"
   ? site.navigation.map((item) => {
@@ -24,11 +28,11 @@ const navigation = locale === "en"
 const contactLabel = locale === "en" ? "Start a conversation" : localizedLabels[locale].contact;
 const section = ["logistics", "marketing", "academy", "technology"].find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
-const languageLinks = [
-  { code: "EN", locale: "en", href: "/" },
-  { code: "UA", locale: "uk", href: `/ua/${locale === "en" ? localizedHash : ""}` },
-  { code: "RU", locale: "ru", href: `/ru/${locale === "en" ? localizedHash : ""}` },
-];
+const languageLinks = siteLocales.map((language) => ({
+  locale: language,
+  name: localeConfig[language].name,
+  href: `${localeConfig[language].path}${locale === "en" && language !== "en" ? localizedHash : ""}`,
+}));
 ---
 
 <header class={`site-header site-header-${theme}`} data-header>
@@ -42,11 +46,20 @@ const languageLinks = [
   </nav>
 
   <div class="header-actions">
-    <nav class="language-switcher" aria-label="Language">
-      {languageLinks.map((item) => item.locale === locale
-        ? <span aria-current="page">{item.code}</span>
-        : <a href={item.href} lang={item.locale}>{item.code}</a>)}
-    </nav>
+    <details class="language-menu" data-language-menu>
+      <summary aria-label={`Language: ${localeConfig[locale].name}`}>
+        <Languages size={16} aria-hidden="true" />
+        <span>{localeConfig[locale].name}</span>
+        <ChevronDown size={15} aria-hidden="true" />
+      </summary>
+      <nav aria-label="Choose language">
+        {languageLinks.map((item) => (
+          <a href={item.href} lang={item.locale} aria-current={item.locale === locale ? "page" : undefined}>
+            <span>{item.name}</span>{item.locale === locale && <Check size={15} aria-hidden="true" />}
+          </a>
+        ))}
+      </nav>
+    </details>
     <a class="header-cta" href="#contact">
       {contactLabel}
       <ArrowUpRight size={17} aria-hidden="true" />
@@ -60,10 +73,13 @@ const languageLinks = [
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">{contactLabel}</a>
-    <div class="mobile-language-switcher" aria-label="Language">
-      {languageLinks.map((item) => item.locale === locale
-        ? <span aria-current="page">{item.code}</span>
-        : <a href={item.href} lang={item.locale}>{item.code}</a>)}
+    <div class="mobile-language-switcher" aria-label="Choose language">
+      <strong>{localeConfig[locale].name}</strong>
+      {languageLinks.map((item) => (
+        <a href={item.href} lang={item.locale} aria-current={item.locale === locale ? "page" : undefined}>
+          <span>{item.name}</span>{item.locale === locale && <Check size={15} aria-hidden="true" />}
+        </a>
+      ))}
     </div>
   </nav>
 </header>
@@ -110,5 +126,14 @@ const languageLinks = [
     if (button?.getAttribute("aria-expanded") !== "true") return;
     const target = event.target;
     if (target instanceof Node && !menu?.contains(target) && !button.contains(target)) closeMenu();
+  });
+
+  const languageMenus = document.querySelectorAll<HTMLDetailsElement>("[data-language-menu]");
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    languageMenus.forEach((languageMenu) => {
+      if (!languageMenu.contains(target)) languageMenu.open = false;
+    });
   });
 </script>

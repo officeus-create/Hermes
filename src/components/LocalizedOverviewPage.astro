@@ -4,24 +4,24 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { LocalizedOverview } from "../data/localized-overviews";
+import { languageAlternates } from "../data/locales";
 
 interface Props {
   content: LocalizedOverview;
 }
 
 const { content } = Astro.props;
-const mailSubject = content.locale === "uk" ? "Запит до Hermes" : "Запрос в Hermes";
-const mailBody = content.locale === "uk"
-  ? "Компанія:\nКраїна та місто:\nНапрям:\nЩо потрібно покращити:\nТри бажані проєкти:\nПриклади, які подобаються:\nОрієнтовний бюджет або щомісячний ритм:"
-  : "Компания:\nСтрана и город:\nНаправление:\nЧто нужно улучшить:\nТри желаемых проекта:\nПримеры, которые нравятся:\nОриентировочный бюджет или ежемесячный ритм:";
+const mailCopy = {
+  uk: { subject: "Запит до Hermes", body: "Компанія:\nКраїна та місто:\nНапрям:\nЩо потрібно покращити:\nТри бажані проєкти:\nПриклади, які подобаються:\nОрієнтовний бюджет або щомісячний ритм:" },
+  ru: { subject: "Запрос в Hermes", body: "Компания:\nСтрана и город:\nНаправление:\nЧто нужно улучшить:\nТри желаемых проекта:\nПримеры, которые нравятся:\nОриентировочный бюджет или ежемесячный ритм:" },
+  es: { subject: "Consulta para Hermes", body: "Empresa:\nPaís y ciudad:\nÁrea de interés:\nQué necesita mejorar:\nTres proyectos deseados:\nEjemplos que le gustan:\nPresupuesto estimado o inversión mensual:" },
+  it: { subject: "Richiesta per Hermes", body: "Azienda:\nPaese e città:\nArea di interesse:\nCosa deve migliorare:\nTre progetti desiderati:\nEsempi che le piacciono:\nBudget stimato o investimento mensile:" },
+  fr: { subject: "Demande pour Hermes", body: "Entreprise :\nPays et ville :\nDomaine recherché :\nCe qui doit être amélioré :\nTrois projets souhaités :\nExemples appréciés :\nBudget estimé ou investissement mensuel :" },
+}[content.locale];
+const mailSubject = mailCopy.subject;
+const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
-const alternates = [
-  { lang: "en", href: "/" },
-  { lang: "uk", href: "/ua/" },
-  { lang: "ru", href: "/ru/" },
-  { lang: "x-default", href: "/" },
-];
 const schema = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -31,7 +31,7 @@ const schema = {
 };
 ---
 
-<BaseLayout title={content.metaTitle} description={content.metaDescription} locale={content.locale} alternates={alternates} schema={schema}>
+<BaseLayout title={content.metaTitle} description={content.metaDescription} locale={content.locale} alternates={languageAlternates} schema={schema}>
   <SiteHeader locale={content.locale} />
   <main id="main-content" class="localized-overview">
     <section class="localized-hero" id="top" data-motion-hero>

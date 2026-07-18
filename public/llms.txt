@@ -7,6 +7,9 @@ Canonical site: https://hermeslogisticsus.com/
 Localized overviews:
 - Ukrainian: https://hermeslogisticsus.com/ua/
 - Russian: https://hermeslogisticsus.com/ru/
+- Spanish: https://hermeslogisticsus.com/es/
+- Italian: https://hermeslogisticsus.com/it/
+- French: https://hermeslogisticsus.com/fr/
 
 ## Business directions
 

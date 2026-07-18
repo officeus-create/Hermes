@@ -9,6 +9,7 @@ import TrustBadge from "../components/TrustBadge.astro";
 import WebsiteProofBand from "../components/WebsiteProofBand.astro";
 import WhyItMatters from "../components/WhyItMatters.astro";
 import { site } from "../data/site";
+import { languageAlternates } from "../data/locales";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -32,12 +33,7 @@ const organizationSchema = {
   title="Hermes Wisconsin | Logistics, Marketing, Academy & IT"
   description="Wisconsin-first logistics, marketing, practical business education, CRM, AI automation, and web development services available across the United States."
   schema={organizationSchema}
-  alternates={[
-    { lang: "en", href: "/" },
-    { lang: "uk", href: "/ua/" },
-    { lang: "ru", href: "/ru/" },
-    { lang: "x-default", href: "/" },
-  ]}
+  alternates={languageAlternates}
 >
   <SiteHeader />
   <main id="main-content">

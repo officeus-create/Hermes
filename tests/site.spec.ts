@@ -19,6 +19,9 @@ const routes = [
   "/privacy/",
   "/ua/",
   "/ru/",
+  "/es/",
+  "/it/",
+  "/fr/",
 ];
 
 for (const route of routes) {
@@ -91,8 +94,8 @@ test("premium opening explains four directions, supports choice, and runs once p
   await expect(page.getByRole("link", { name: /Open Academy/ })).toHaveAttribute("href", "/paths/academy/");
   await expect(page.getByRole("link", { name: /Open IT Development/ })).toHaveAttribute("href", "/paths/technology/");
 
-  await expect(page.locator('[data-intro-rail="marketing"]')).toHaveAttribute("data-active", "true", { timeout: 4000 });
-  await expect(page.locator("[data-intro-idea]")).toHaveText("Turn attention into accountable growth.");
+  await expect.poll(() => page.locator("[data-intro-count]").textContent(), { timeout: 5000 }).not.toBe("01");
+  await expect(page.locator('[data-intro-rail][data-active="true"]')).toHaveCount(1);
 
   await page.getByRole("button", { name: /Open Home/ }).click();
   await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-intro-seen"))).toBe("true");
@@ -105,7 +108,7 @@ test("premium opening explains four directions, supports choice, and runs once p
 test("premium opening honors the visitor's reduced-motion preference", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator("[data-site-intro]")).toHaveCount(0);
+  await expect(page.locator("[data-site-intro]")).toBeHidden();
   await expect(page.getByRole("heading", { name: "Four businesses. One place to move forward." })).toBeVisible();
 });
 
@@ -137,10 +140,18 @@ test("direction navigation identifies the current business", async ({ page }) =>
   await expect(page.locator('.site-header a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(2);
 });
 
-test("language switcher opens real Ukrainian and Russian pages", async ({ page }) => {
+test("language menu opens all localized overview pages", async ({ page, isMobile }) => {
   await page.goto("/paths/technology/");
-  await expect(page.locator('a[href="/ua/#technology"]')).toHaveCount(2);
-  await expect(page.locator('a[href="/ru/#technology"]')).toHaveCount(2);
+  const languageMenu = isMobile ? page.locator(".mobile-language-switcher") : page.locator("[data-language-menu]");
+  if (isMobile) {
+    await page.locator("[data-menu-button]").click();
+  } else {
+    await expect(languageMenu.locator("summary")).toContainText("English");
+    await languageMenu.locator("summary").click();
+  }
+  for (const path of ["ua", "ru", "es", "it", "fr"]) {
+    await expect(languageMenu.locator(`a[href="/${path}/#technology"]`)).toHaveCount(1);
+  }
 
   await page.goto("/ua/");
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
@@ -153,6 +164,18 @@ test("language switcher opens real Ukrainian and Russian pages", async ({ page }
   await expect(page.getByRole("heading", { name: "Четыре направления. Одна экосистема для роста." })).toBeVisible();
   await expect(page.locator('link[rel="alternate"][hreflang="uk"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/ua/");
   await expect(page.getByText("AI и messaging-ассистенты", { exact: true })).toBeVisible();
+
+  await page.goto("/es/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+  await expect(page.getByRole("heading", { name: "Cuatro áreas. Un ecosistema para crecer." })).toBeVisible();
+
+  await page.goto("/it/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "it");
+  await expect(page.getByRole("heading", { name: "Quattro aree. Un ecosistema per crescere." })).toBeVisible();
+
+  await page.goto("/fr/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.getByRole("heading", { name: "Quatre pôles. Un écosystème pour grandir." })).toBeVisible();
 });
 
 test("preview contact workflow validates and sends no request", async ({ page }) => {
@@ -203,6 +226,34 @@ test("Load Board approves a standard car-hauling preview with zero external deli
   await expect(page.locator("[data-load-decision]")).toHaveText("approved");
   await expect(page.locator("[data-load-routing]")).toContainText("Dispatch Assist dry-run queue");
   await expect(page.locator("[data-load-preview]")).toContainText("no email, CRM write, or carrier notification was sent");
+  expect(writes).toEqual([]);
+});
+
+test("Load Board prepares a carrier vehicle for dispatcher review with zero external delivery", async ({ page }) => {
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+  });
+
+  await page.goto("/load-board/");
+  const vehicleForm = page.locator("[data-vehicle-form]");
+  await vehicleForm.locator('input[name="authority_number"]').fill("MC 123456");
+  await vehicleForm.locator('select[name="equipment_class"]').selectOption("car_hauler");
+  await vehicleForm.locator('input[name="carrier_email"]').fill("driver@example.com");
+  await vehicleForm.locator('input[name="carrier_phone"]').fill("+1 (312) 555-0182");
+  await vehicleForm.locator('input[name="capacity_units"]').fill("3");
+  await vehicleForm.locator('input[name="available_from"]').fill("2026-08-03");
+  await vehicleForm.locator('input[name="origin_location"]').fill("Chicago, IL");
+  await vehicleForm.locator('input[name="origin_radius"]').fill("150");
+  await vehicleForm.locator('input[name="anywhere"]').check();
+  await vehicleForm.locator('input[name="carrier_consent"]').check();
+  await vehicleForm.getByRole("button", { name: "Preview vehicle review" }).click();
+
+  await expect(page.locator("[data-vehicle-result]")).toBeVisible();
+  await expect(page.locator("[data-vehicle-decision]")).toHaveText("dispatcher review");
+  await expect(page.locator("[data-vehicle-state]")).toContainText("submitted for review");
+  await expect(page.locator("[data-vehicle-actions]")).toContainText("Dispatcher decides");
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("no account, vehicle, call, message, CRM write, or dispatcher assignment was created");
   expect(writes).toEqual([]);
 });
 
