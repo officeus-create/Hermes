@@ -1,0 +1,101 @@
+---
+import { ArrowRight } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+---
+
+<BaseLayout title="Logistics Application | Hermes" description="Prepare an application for a Hermes logistics career or remote agency conversation.">
+  <div class="logistics-application-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <section class="logistics-audience-hero logistics-application-hero">
+        <div class="shell">
+          <p class="eyebrow">Hermes Logistics · Application preview</p>
+          <h1>Tell us what path you want to explore.</h1>
+          <p>Prepare a structured application for a role or a remote agency conversation. Preview mode does not send or store your information.</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="shell logistics-application-grid">
+          <form class="load-board-form" data-logistics-application novalidate>
+            <label>Application type *
+              <select name="application_type" required>
+                <option value="">Choose one</option>
+                <option value="career">Work with Hermes</option>
+                <option value="agency">Open a remote agency</option>
+              </select>
+            </label>
+            <div class="field-row">
+              <label>Full name *<input name="name" maxlength="100" required /></label>
+              <label>Email *<input name="email" type="email" maxlength="160" required /></label>
+            </div>
+            <div class="field-row">
+              <label>Country and city *<input name="location" maxlength="160" required /></label>
+              <label>Languages *<input name="languages" maxlength="160" required /></label>
+            </div>
+            <label>Role or agency interest *<input name="interest" maxlength="180" required /></label>
+            <label>Relevant experience and measurable results *<textarea name="experience" rows="5" minlength="20" maxlength="1800" required></textarea></label>
+            <label>Availability and preferred working hours *<textarea name="availability" rows="3" minlength="10" maxlength="800" required></textarea></label>
+            <label class="consent-field"><input type="checkbox" name="consent" required /><span>I agree that Hermes may use these details to review this application. This pilot only creates a local preview.</span></label>
+            <button class="button button-primary" type="submit">Preview application <ArrowRight size={18} aria-hidden="true" /></button>
+          </form>
+          <aside class="load-board-result" data-application-result hidden aria-live="polite">
+            <p class="eyebrow">Application preview</p>
+            <h2>Ready to copy</h2>
+            <p>Your information was not sent or stored.</p>
+            <pre data-application-preview tabindex="0"></pre>
+            <button class="button" type="button" data-copy-application>Copy application</button>
+            <p role="status" data-application-copy-status></p>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-logistics-application]");
+  const result = document.querySelector<HTMLElement>("[data-application-result]");
+  const preview = document.querySelector<HTMLElement>("[data-application-preview]");
+  const copy = document.querySelector<HTMLButtonElement>("[data-copy-application]");
+  const copyStatus = document.querySelector<HTMLElement>("[data-application-copy-status]");
+  const type = form?.querySelector<HTMLSelectElement>('select[name="application_type"]');
+  let activePreview = "";
+
+  const sanitize = (value: FormDataEntryValue | null, max = 1800) => String(value ?? "").replace(/[<>\u0000-\u001f\u007f]/g, "").trim().slice(0, max);
+  const requestedType = new URLSearchParams(window.location.search).get("for");
+  if (type && ["career", "agency"].includes(requestedType ?? "")) type.value = requestedType ?? "";
+
+  form?.addEventListener("input", () => {
+    if (result) result.hidden = true;
+    activePreview = "";
+    if (copyStatus) copyStatus.textContent = "";
+  });
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!form.checkValidity()) return form.reportValidity();
+    const data = new FormData(form);
+    activePreview = [
+      "Hermes Logistics Application (Preview)",
+      `Application type: ${sanitize(data.get("application_type"))}`,
+      `Name: ${sanitize(data.get("name"), 100)}`,
+      `Email: ${sanitize(data.get("email"), 160)}`,
+      `Location: ${sanitize(data.get("location"), 160)}`,
+      `Languages: ${sanitize(data.get("languages"), 160)}`,
+      `Interest: ${sanitize(data.get("interest"), 180)}`,
+      `Experience/results: ${sanitize(data.get("experience"))}`,
+      `Availability: ${sanitize(data.get("availability"), 800)}`,
+      "Delivery: preview only — no application was sent or stored.",
+    ].join("\n");
+    if (preview) preview.textContent = activePreview;
+    if (result) result.hidden = false;
+  });
+  copy?.addEventListener("click", async () => {
+    if (!activePreview || !copyStatus) return;
+    try { await navigator.clipboard.writeText(activePreview); copyStatus.textContent = "Application copied."; }
+    catch { copyStatus.textContent = "Copy did not work. Select the preview text and copy it manually."; }
+  });
+</script>
+

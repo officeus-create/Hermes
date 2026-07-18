@@ -47,6 +47,20 @@ The workflow includes native validation, length limits, consent, a honeypot, req
 
 Visual redesigns must preserve the contracts in `docs/DESIGN_INTEGRATION_CONTRACT.md` and pass the build, static, and browser test suites.
 
+## Homepage Entry Scene
+
+The first direct homepage visit in a browser session opens an optional four-direction scene for Logistics, Marketing, Academy, and IT Development. Each direction receives a 3.2-second focus interval with a short audience statement and a direct route. The visitor can choose a direction, press Escape, skip immediately, or open the regular homepage. The scene does not run on hash links, repeat in the same session, or run when reduced motion is requested.
+
+## Car Hauling Load Board Pilot
+
+`/load-board/` is a local-first dry-run intake for car-hauling requests from private parties, dealers, shippers, brokers, and other businesses. It validates the request in the browser and returns an explainable `approved`, `needs_more_information`, `quarantine`, or `rejected` decision with proposed internal routing and carrier-match tags.
+
+The pilot performs no network write, storage, email delivery, CRM update, load publication, or carrier notification. Standard operable vehicles can pass the preview rules; tractors, unusual commodities, inoperable vehicles, multi-unit loads, incomplete requests, and bot-like submissions are held or rejected by explicit rules.
+
+## Logistics Visitor Paths
+
+The Logistics page begins with a visitor router for shippers/dealers, brokers, carriers/owner-operators, remote-agency candidates, job candidates, and students. Each audience has a dedicated static page and next action. Shippers, dealers, and brokers can open the Load Board preview; carriers can reach the carrier intake; agency and career candidates can prepare a local application preview; training routes to Hermes Business Academy.
+
 ## Publication
 
 The site is hosted in the Cloudflare Pages project `hermes` with the production domain `hermeslogisticsus.com`. See `docs/PUBLISHING_RUNBOOK.md` for release and rollback checks.

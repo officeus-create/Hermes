@@ -1,0 +1,45 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import { logisticsAudiences } from "../data/logistics-audiences";
+
+const training = {
+  label: "Training",
+  eyebrow: "Hermes Business Academy",
+  summary: "Build practical logistics, sales, dispatch, and operations capability before or alongside a role.",
+  href: "/paths/academy/",
+};
+---
+
+<section class="section logistics-audience-hub" id="choose-your-path" aria-labelledby="logistics-audience-title">
+  <div class="shell">
+    <div class="section-heading split-heading">
+      <div>
+        <p class="eyebrow">Choose your logistics path</p>
+        <h2 id="logistics-audience-title">Start with who you are and what you need.</h2>
+      </div>
+      <p>Each path gives you relevant information and one clear next action.</p>
+    </div>
+    <div class="logistics-audience-grid">
+      {logisticsAudiences.map((audience) => (
+        <a href={`/logistics/${audience.slug}/`}>
+          <span>{audience.eyebrow}</span>
+          <h3>{audience.label}</h3>
+          <p>{audience.summary}</p>
+          <strong>Open this path <ArrowUpRight size={18} aria-hidden="true" /></strong>
+        </a>
+      ))}
+      <a href={training.href}>
+        <span>{training.eyebrow}</span>
+        <h3>{training.label}</h3>
+        <p>{training.summary}</p>
+        <strong>Explore training <ArrowUpRight size={18} aria-hidden="true" /></strong>
+      </a>
+      <a class="logistics-audience-load-board" href="/load-board/">
+        <span>Car Hauling Load Board</span>
+        <h3>Post a load</h3>
+        <p>Preview a vehicle transport request and see how it would be reviewed and routed.</p>
+        <strong>Open Load Board <ArrowUpRight size={18} aria-hidden="true" /></strong>
+      </a>
+    </div>
+  </div>
+</section>

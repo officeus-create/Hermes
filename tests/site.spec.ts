@@ -1,4 +1,13 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+async function openRegularHome(page: Page) {
+  await page.goto("/");
+  const intro = page.locator("[data-site-intro]");
+  if (await intro.isVisible()) {
+    await page.getByRole("button", { name: /Open Home/ }).click();
+    await expect(intro).toHaveCount(0);
+  }
+}
 
 const routes = [
   "/",
@@ -36,7 +45,7 @@ for (const route of routes) {
 }
 
 test("direction card opens the matching page and preselects the form", async ({ page }) => {
-  await page.goto("/");
+  await openRegularHome(page);
   await page.getByRole("tab", { name: /Hermes IT Development/ }).click();
   await page.getByRole("link", { name: "Explore IT Development: Hermes IT Development" }).click();
   await expect(page).toHaveURL(/\/paths\/technology\/$/);
@@ -71,17 +80,37 @@ test("desktop business portals expand on hover and keep click navigation", async
   await expect(marketing.locator("xpath=.." )).toHaveAttribute("data-active", "true");
 });
 
-test("premium opening runs once per session and exits without blocking the page", async ({ page }) => {
+test("premium opening explains four directions, supports choice, and runs once per session", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  const intro = page.locator("[data-site-intro]");
+  await expect(intro).toBeVisible();
+  await expect(intro.getByText("Move.", { exact: true })).toHaveAttribute("data-active", "true");
+  await expect(page.locator('[data-intro-rail="logistics"]')).toHaveAttribute("data-active", "true");
+  await expect(page.getByRole("link", { name: /Open Logistics/ })).toHaveAttribute("href", "/paths/logistics/");
+  await expect(page.getByRole("link", { name: /Open Marketing/ })).toHaveAttribute("href", "/paths/marketing/");
+  await expect(page.getByRole("link", { name: /Open Academy/ })).toHaveAttribute("href", "/paths/academy/");
+  await expect(page.getByRole("link", { name: /Open IT Development/ })).toHaveAttribute("href", "/paths/technology/");
+
+  await expect(page.locator('[data-intro-rail="marketing"]')).toHaveAttribute("data-active", "true", { timeout: 4000 });
+  await expect(page.locator("[data-intro-idea]")).toHaveText("Turn attention into accountable growth.");
+
+  await page.getByRole("button", { name: /Open Home/ }).click();
   await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-intro-seen"))).toBe("true");
-  await expect(page.locator("[data-site-intro]")).toHaveCount(0, { timeout: 2500 });
+  await expect(intro).toHaveCount(0, { timeout: 1000 });
   await page.reload();
   await expect(page.locator("[data-site-intro]")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Four businesses. One place to move forward." })).toBeVisible();
 });
 
-test("homepage proves the website product and routes to IT Development", async ({ page }) => {
+test("premium opening honors the visitor's reduced-motion preference", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await expect(page.locator("[data-site-intro]")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Four businesses. One place to move forward." })).toBeVisible();
+});
+
+test("homepage proves the website product and routes to IT Development", async ({ page }) => {
+  await openRegularHome(page);
   const proof = page.getByRole("heading", { name: "This website is our first live product." });
   await proof.scrollIntoViewIfNeeded();
   await expect(proof).toBeVisible();
@@ -149,6 +178,86 @@ test("preview contact workflow validates and sends no request", async ({ page })
   await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "tel:+13517775337");
   await expect(page.locator(".contact-direct-routes").getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+13517775337");
   expect(posts).toEqual([]);
+});
+
+test("Load Board approves a standard car-hauling preview with zero external delivery", async ({ page }) => {
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+  });
+
+  await page.goto("/load-board/");
+  await page.locator('select[name="submitter_type"]').selectOption("private_party");
+  await page.locator('input[name="contact_name"]').fill("Test Customer");
+  await page.locator('input[name="email"]').fill("customer@example.com");
+  await page.locator('input[name="pickup_location"]').fill("Madison, WI");
+  await page.locator('input[name="delivery_location"]').fill("Chicago, IL");
+  await page.locator('input[name="ready_date"]').fill("2026-08-01");
+  await page.locator('select[name="commodity_type"]').selectOption("passenger_vehicle");
+  await page.locator('input[name="year_make_model"]').fill("2021 Toyota Camry");
+  await page.locator('select[name="condition"]').selectOption("operable");
+  await page.locator('input[name="consent"]').check();
+  await page.getByRole("button", { name: "Review load" }).click();
+
+  await expect(page.locator("[data-load-result]")).toBeVisible();
+  await expect(page.locator("[data-load-decision]")).toHaveText("approved");
+  await expect(page.locator("[data-load-routing]")).toContainText("Dispatch Assist dry-run queue");
+  await expect(page.locator("[data-load-preview]")).toContainText("no email, CRM write, or carrier notification was sent");
+  expect(writes).toEqual([]);
+});
+
+test("Load Board quarantines an inoperable tractor for equipment review", async ({ page }) => {
+  await page.goto("/load-board/");
+  await page.locator('select[name="submitter_type"]').selectOption("dealer");
+  await page.locator('input[name="company_name"]').fill("Test Dealer");
+  await page.locator('input[name="contact_name"]').fill("Dealer Contact");
+  await page.locator('input[name="email"]').fill("dealer@example.com");
+  await page.locator('input[name="pickup_location"]').fill("Green Bay, WI");
+  await page.locator('input[name="delivery_location"]').fill("Milwaukee, WI");
+  await page.locator('input[name="ready_date"]').fill("2026-08-02");
+  await page.locator('select[name="commodity_type"]').selectOption("tractor");
+  await page.locator('input[name="year_make_model"]').fill("2019 Freightliner Cascadia");
+  await page.locator('select[name="condition"]').selectOption("inoperable_non_rolling");
+  await page.locator('input[name="consent"]').check();
+  await page.getByRole("button", { name: "Review load" }).click();
+
+  await expect(page.locator("[data-load-decision]")).toHaveText("quarantine");
+  await expect(page.locator("[data-load-actions]")).toContainText("dimensions");
+  await expect(page.locator("[data-load-routing]")).toContainText("Dealer and shipper sales queue");
+});
+
+test("logistics page routes each visitor type to a dedicated path", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+  const hub = page.locator("#choose-your-path");
+  await expect(hub.getByRole("link", { name: /Shipper or dealer/ })).toHaveAttribute("href", "/logistics/shipper-dealer/");
+  await expect(hub.getByRole("link", { name: /Broker/ })).toHaveAttribute("href", "/logistics/broker/");
+  await expect(hub.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("href", "/logistics/carrier/");
+  await expect(hub.getByRole("link", { name: /Open an agency/ })).toHaveAttribute("href", "/logistics/agency/");
+  await expect(hub.getByRole("link", { name: /Work with us/ })).toHaveAttribute("href", "/logistics/careers/");
+  await expect(hub.getByRole("link", { name: /Training/ })).toHaveAttribute("href", "/paths/academy/");
+  await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/");
+});
+
+test("agency and career applications create local previews without sending", async ({ page }) => {
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+  });
+  await page.goto("/logistics/apply/?for=agency");
+  await expect(page.locator('select[name="application_type"]')).toHaveValue("agency");
+  await page.locator('input[name="name"]').fill("Agency Candidate");
+  await page.locator('input[name="email"]').fill("agency@example.com");
+  await page.locator('input[name="location"]').fill("Milwaukee, WI");
+  await page.locator('input[name="languages"]').fill("English, Russian");
+  await page.locator('input[name="interest"]').fill("Remote car-hauling agency");
+  await page.locator('textarea[name="experience"]').fill("Five years in logistics operations with documented team leadership results.");
+  await page.locator('textarea[name="availability"]').fill("Available full time in Central Time.");
+  await page.locator('input[name="consent"]').check();
+  await page.getByRole("button", { name: "Preview application" }).click();
+  await expect(page.locator("[data-application-result]")).toBeVisible();
+  await expect(page.locator("[data-application-preview]")).toContainText("Application type: agency");
+  await expect(page.locator("[data-application-preview]")).toContainText("no application was sent or stored");
+  expect(writes).toEqual([]);
 });
 
 test("preview handoff exposes the approved email route for marketing", async ({ page }) => {
@@ -309,7 +418,7 @@ test("technology page offers concrete industry starting points", async ({ page }
 
 test("mobile menu supports keyboard close", async ({ page, isMobile }) => {
   test.skip(!isMobile, "Mobile-only behavior");
-  await page.goto("/");
+  await openRegularHome(page);
   const button = page.locator("[data-menu-button]");
   await button.click();
   await expect(button).toHaveAttribute("aria-expanded", "true");

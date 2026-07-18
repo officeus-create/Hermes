@@ -12,6 +12,8 @@ Localized overviews:
 
 - Hermes Logistics: truck dispatch, carrier back-office support, freight coordination, and car hauling support.
   https://hermeslogisticsus.com/paths/logistics/
+- Car Hauling Load Board preview: local-only request validation and dry-run routing; no load is published or sent.
+  https://hermeslogisticsus.com/load-board/
 - ProgressoPro: positioning, content, social media, lead generation, sales workflow, and marketing automation.
   https://hermeslogisticsus.com/paths/marketing/
 - Hermes Business Academy: practical logistics, marketing, and operational leadership education. Employment is not guaranteed.
@@ -27,5 +29,6 @@ Localized overviews:
 ## Current boundaries
 
 - Contact submission is currently preview-only and does not transmit or store visitor information.
+- Load Board review is currently preview-only and does not publish, transmit, or store load information.
 - Public performance claims, fleet counts, student counts, and guaranteed outcomes are not published without verification.
 - Internal systems, employee-only processes, credentials, and private project details are not part of the public website.

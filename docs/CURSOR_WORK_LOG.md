@@ -134,3 +134,99 @@ npm run test:e2e
 
 ### Remaining gaps
 - Live contact delivery still blocked pending destination and data-handling approval.
+
+## Session 04 - Car Hauling Load Board Dry-run
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Objective
+
+Deliver the smallest testable Load Board slice without a backend or external side effect: car-hauling intake, explainable automatic review, dry-run routing, and a copyable preview package.
+
+### Changes delivered
+
+- Added `/load-board/` with a responsive intake for private parties, dealers, shippers, brokers, and other businesses.
+- Added typed parsing and sanitization in `src/lib/load-board.ts`.
+- Added explicit decisions: `approved`, `needs_more_information`, `quarantine`, and `rejected`.
+- Added rule-based handling for incomplete forms, past dates, bot honeypot, tractors/other commodities, inoperable vehicles, and multi-unit loads.
+- Added proposed routing to Load Board operations, dealer/shipper sales, and Dispatch Assist dry-run queues without exposing internal details publicly.
+- Added copyable dry-run package and explicit notice that no email, CRM write, publication, or carrier notification occurred.
+- Added sitemap and `llms.txt` entries, static route validation, unit tests, and desktop/mobile browser tests.
+
+### Verification
+
+```bash
+npm run build
+# Astro: 0 errors, 0 warnings, 0 hints
+# 12 pages built, including /load-board/
+
+npm test
+# Validated static website: 11 routes
+# Contact handoff unit checks passed.
+# Load Board unit checks passed.
+
+npm run test:e2e
+# Load Board desktop/mobile scenarios passed.
+# Full run: 73 passed, 2 skipped, 1 unrelated /ru/ parallel timeout.
+
+npx playwright test tests/site.spec.ts --project=desktop --grep '/ru/ renders without broken layout'
+# 1 passed in 2.7s; isolated scenario completed in 851ms.
+```
+
+### Visual evidence
+
+- `docs/screenshots/load-board-preview-desktop.png`
+- `docs/screenshots/load-board-preview-mobile.png`
+
+### Boundaries
+
+- No backend, database, email, CRM, analytics, or carrier matching source was connected.
+- No deployment, DNS change, push, or production publication was performed.
+- The automatic decision is a browser-local preview, not a production approval.
+- Existing unrelated uncommitted files and screenshots were preserved.
+
+### Recommended next task
+
+Add a controlled local submission ledger and a carrier-match fixture so approved previews can be tested end-to-end without touching production data or sending messages.
+
+## Session 05 - Logistics Audience Router
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_RELEASE_CANDIDATE
+
+### Changes delivered
+
+- Added a seven-card Logistics visitor router for shipper/dealer, broker, carrier/owner-operator, remote agency, careers, training, and Load Board.
+- Added dedicated pages for five logistics audiences with relevant information and next actions.
+- Routed training to Hermes Business Academy.
+- Routed shipper/dealer and broker visitors to the Load Board preview.
+- Added a shared local-only application preview for careers and remote-agency interest.
+- Added sitemap coverage, static content checks, and desktop/mobile browser tests.
+
+### Verification
+
+```bash
+npm run build
+# 0 Astro errors, warnings, or hints; 18 pages built.
+
+npm test
+# 17 static routes validated; contact and Load Board unit checks passed.
+
+npm run test:e2e
+# New audience-routing and application tests passed on desktop and mobile.
+# Parallel full run: 75 passed, 2 skipped; 3 unrelated old mobile interactions timed out.
+
+npx playwright test tests/site.spec.ts --project=mobile --workers=1 --grep 'direction-specific input changes|academy screen flow|marketing growth flow'
+# All 3 old mobile scenarios passed with one worker.
+```
+
+### Visual evidence
+
+- `docs/screenshots/logistics-audience-router-desktop.png`
+- `docs/screenshots/logistics-audience-router-mobile.png`
+
+### Release boundary
+
+- Applications and Load Board remain preview-only.
+- No user data is transmitted or stored.
+- No real carrier list or live loads are exposed.
+- External delivery remains a later controlled integration.

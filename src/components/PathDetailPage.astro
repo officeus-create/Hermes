@@ -7,6 +7,7 @@ import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
 import TechnologyStudioProof from "./TechnologyStudioProof.astro";
 import TechnologyProjectBrief from "./TechnologyProjectBrief.astro";
 import TechnologyPartnershipShowcase from "./TechnologyPartnershipShowcase.astro";
+import LogisticsAudienceHub from "./LogisticsAudienceHub.astro";
 
 interface Props {
   path: PathDetail;
@@ -14,6 +15,7 @@ interface Props {
 
 const { path } = Astro.props;
 const isAcademy = path.id === "academy";
+const isLogistics = path.id === "logistics";
 const directContactTitle = {
   logistics: "Reach the right logistics team.",
   marketing: "Reach ProgressoPro directly.",
@@ -31,9 +33,11 @@ const directContactTitle = {
       <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
       <h1>{path.title}</h1>
       <p>{path.audience}</p>
-      <a class="button button-primary" href={path.id === "technology" ? "#project-brief" : "#contact"}>{path.id === "technology" ? "Build your project brief" : "Start with a conversation"}<ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="button button-primary" href={path.id === "technology" ? "#project-brief" : isLogistics ? "#choose-your-path" : "#contact"}>{path.id === "technology" ? "Build your project brief" : isLogistics ? "Choose your logistics path" : "Start with a conversation"}<ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </section>
+
+  {isLogistics && <LogisticsAudienceHub />}
 
   <section class="section detail-overview">
     <div class="shell detail-intro" data-reveal>

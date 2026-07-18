@@ -30,6 +30,25 @@ const routes = [
       "Logistics school",
     ],
   },
+  {
+    path: "load-board/index.html",
+    required: [
+      "Car Hauling Load Board Preview",
+      "Describe a car-hauling load.",
+      "Dry-run only",
+      "Who is posting?",
+      "Private party",
+      "Truck tractor",
+      "data-load-board-form",
+      "data-load-result",
+    ],
+  },
+  { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review"] },
+  { path: "logistics/broker/index.html", required: ["Broker", "Post a broker load", "Carrier capacity"] },
+  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Find loads", "Call carriers team"] },
+  { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
+  { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
+  { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "Your information was not sent or stored"] },
 ];
 const emailOnlyRoutes = [
   "paths/marketing/index.html",
@@ -128,6 +147,11 @@ for (const localePath of ["/ua/", "/ru/"]) {
 }
 if (!html.includes("/contacts/") && !html.includes("contacts/")) throw new Error("Homepage/footer contacts link missing");
 if (!sitemap.includes("/contacts/")) throw new Error("Sitemap entry missing for contacts");
+if (!sitemap.includes("/load-board/")) throw new Error("Sitemap entry missing for Load Board");
+for (const path of ["shipper-dealer", "broker", "carrier", "agency", "careers"]) {
+  if (!sitemap.includes(`/logistics/${path}/`)) throw new Error(`Sitemap entry missing for logistics audience: ${path}`);
+}
+if (!sitemap.includes("/logistics/apply/")) throw new Error("Sitemap entry missing for logistics application");
 
 const forbidden = [
   "guaranteed income",

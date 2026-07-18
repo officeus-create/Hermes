@@ -1,0 +1,222 @@
+---
+import { ArrowRight, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+---
+
+<BaseLayout
+  title="Car Hauling Load Board Preview | Hermes Logistics"
+  description="Preview a car-hauling transport request and see how Hermes validation and carrier matching would classify it. No request is sent or stored."
+>
+  <div class="load-board-page">
+    <SiteHeader theme="dark" activePath="/load-board/" />
+    <main id="main-content">
+      <section class="load-board-hero">
+        <div class="shell load-board-hero-grid">
+          <div>
+            <p class="eyebrow">Hermes Logistics · Preview</p>
+            <h1>Describe a car-hauling load.</h1>
+            <p>Test how a vehicle transport request would be checked and routed. This pilot does not publish a load, send email, or contact a carrier.</p>
+          </div>
+          <div class="load-board-safety">
+            <ShieldCheck size={28} aria-hidden="true" />
+            <strong>Dry-run only</strong>
+            <span>Automatic review with explainable reasons and zero external delivery.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section load-board-workspace">
+        <div class="shell load-board-grid">
+          <form class="load-board-form" data-load-board-form novalidate>
+            <div class="form-alert" role="alert" data-load-alert hidden></div>
+            <h2>Load details</h2>
+            <p class="load-board-form-note">Required fields are marked. Standard operable vehicles can pass automatically; unusual or incomplete requests are held for more information.</p>
+
+            <div class="field-row">
+              <label>Who is posting? *
+                <select name="submitter_type" required>
+                  <option value="">Choose one</option>
+                  <option value="private_party">Private party</option>
+                  <option value="dealer">Dealer</option>
+                  <option value="shipper">Shipper</option>
+                  <option value="broker">Broker</option>
+                  <option value="other_business">Other business</option>
+                </select>
+              </label>
+              <label>Company name
+                <input name="company_name" maxlength="160" autocomplete="organization" />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>Contact name *
+                <input name="contact_name" maxlength="100" autocomplete="name" required />
+              </label>
+              <label>Email *
+                <input name="email" type="email" maxlength="160" autocomplete="email" required />
+              </label>
+            </div>
+            <label>Phone
+              <input name="phone" type="tel" maxlength="40" autocomplete="tel" />
+            </label>
+
+            <div class="field-row">
+              <label>Pickup city, state or ZIP *
+                <input name="pickup_location" maxlength="180" required />
+              </label>
+              <label>Delivery city, state or ZIP *
+                <input name="delivery_location" maxlength="180" required />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>Ready date *
+                <input name="ready_date" type="date" required />
+              </label>
+              <label>Commodity *
+                <select name="commodity_type" required>
+                  <option value="">Choose one</option>
+                  <option value="passenger_vehicle">Passenger vehicle</option>
+                  <option value="motorcycle">Motorcycle</option>
+                  <option value="pickup_suv">Pickup / SUV</option>
+                  <option value="light_truck">Light truck</option>
+                  <option value="tractor">Truck tractor</option>
+                  <option value="other">Other car-hauling commodity</option>
+                </select>
+              </label>
+            </div>
+
+            <label>Year, make and model *
+              <input name="year_make_model" maxlength="180" placeholder="Example: 2021 Toyota Camry" required />
+            </label>
+
+            <div class="field-row">
+              <label>Quantity *
+                <input name="quantity" type="number" min="1" max="20" value="1" required />
+              </label>
+              <label>Condition *
+                <select name="condition" required>
+                  <option value="">Choose one</option>
+                  <option value="operable">Operable</option>
+                  <option value="inoperable_rolls">Inoperable, rolls and steers</option>
+                  <option value="inoperable_non_rolling">Inoperable, does not roll or steer</option>
+                </select>
+              </label>
+            </div>
+
+            <label>Price offered (optional)
+              <input name="offered_price" maxlength="80" placeholder="Leave blank to collect carrier offers" />
+            </label>
+            <label>Notes
+              <textarea name="notes" rows="4" maxlength="1200" placeholder="Pickup access, auction hours, keys, dimensions, or other useful details"></textarea>
+            </label>
+            <label class="honeypot" aria-hidden="true">Website
+              <input name="website" tabindex="-1" autocomplete="off" />
+            </label>
+            <label class="consent-field">
+              <input type="checkbox" name="consent" required />
+              <span>I agree that Hermes may use these details to prepare this transport-request preview. No request is sent in pilot mode.</span>
+            </label>
+            <button class="button button-primary" type="submit">Review load <ArrowRight size={18} aria-hidden="true" /></button>
+          </form>
+
+          <aside class="load-board-result" data-load-result hidden aria-live="polite">
+            <p class="eyebrow">Automatic review</p>
+            <h2 data-load-decision></h2>
+            <p data-load-confidence></p>
+            <div class="load-board-result-group">
+              <h3>Why</h3>
+              <ul data-load-reasons></ul>
+            </div>
+            <div class="load-board-result-group">
+              <h3>Next actions</h3>
+              <ul data-load-actions></ul>
+            </div>
+            <div class="load-board-result-group">
+              <h3>Dry-run routing</h3>
+              <ul data-load-routing></ul>
+            </div>
+            <details>
+              <summary>Open complete preview package</summary>
+              <pre data-load-preview tabindex="0"></pre>
+            </details>
+            <button class="button" type="button" data-copy-load-preview>Copy preview package</button>
+            <p role="status" data-load-copy-status></p>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import { buildLoadBoardPayload, buildLoadBoardPreview, reviewLoadBoardPayload } from "../lib/load-board";
+
+  const form = document.querySelector<HTMLFormElement>("[data-load-board-form]");
+  const alert = document.querySelector<HTMLElement>("[data-load-alert]");
+  const result = document.querySelector<HTMLElement>("[data-load-result]");
+  const decision = document.querySelector<HTMLElement>("[data-load-decision]");
+  const confidence = document.querySelector<HTMLElement>("[data-load-confidence]");
+  const preview = document.querySelector<HTMLElement>("[data-load-preview]");
+  const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-load-preview]");
+  const copyStatus = document.querySelector<HTMLElement>("[data-load-copy-status]");
+  let activePreview = "";
+
+  const fillList = (selector: string, values: string[]) => {
+    const list = document.querySelector<HTMLElement>(selector);
+    if (!list) return;
+    list.replaceChildren(...values.map((value) => {
+      const item = document.createElement("li");
+      item.textContent = value;
+      return item;
+    }));
+  };
+
+  form?.addEventListener("input", () => {
+    if (result) result.hidden = true;
+    if (alert) alert.hidden = true;
+    activePreview = "";
+    if (copyStatus) copyStatus.textContent = "";
+  });
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      if (alert) {
+        alert.textContent = "Complete the required fields before reviewing this load.";
+        alert.hidden = false;
+      }
+      return;
+    }
+
+    const payload = buildLoadBoardPayload(new FormData(form));
+    const review = reviewLoadBoardPayload(payload);
+    activePreview = buildLoadBoardPreview(payload, review);
+    if (decision) decision.textContent = review.decision.replaceAll("_", " ");
+    if (confidence) confidence.textContent = `Confidence: ${review.confidence}`;
+    fillList("[data-load-reasons]", review.reasons);
+    fillList("[data-load-actions]", review.required_actions);
+    fillList("[data-load-routing]", review.routing.length ? review.routing : ["No routing — submission rejected."]);
+    if (preview) preview.textContent = activePreview;
+    if (result) {
+      result.dataset.decision = review.decision;
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  copyButton?.addEventListener("click", async () => {
+    if (!activePreview || !copyStatus) return;
+    try {
+      await navigator.clipboard.writeText(activePreview);
+      copyStatus.textContent = "Preview package copied.";
+    } catch {
+      copyStatus.textContent = "Copy did not work. Select the preview text and copy it manually.";
+    }
+  });
+</script>
+
