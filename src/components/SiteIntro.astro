@@ -1,0 +1,42 @@
+<div class="site-intro" data-site-intro aria-hidden="true">
+  <div class="site-intro-heading">
+    <a class="site-intro-wordmark" href="/" tabindex="-1">
+      <span>H</span>
+      <strong>Hermes</strong>
+    </a>
+    <p><span data-intro-count>01</span> / 04</p>
+  </div>
+
+  <div class="site-intro-rails" aria-hidden="true">
+    <span class="site-intro-rail site-intro-rail-logistics"><small>Logistics</small></span>
+    <span class="site-intro-rail site-intro-rail-marketing"><small>Marketing</small></span>
+    <span class="site-intro-rail site-intro-rail-academy"><small>Academy</small></span>
+    <span class="site-intro-rail site-intro-rail-technology"><small>IT Development</small></span>
+  </div>
+</div>
+
+<script>
+  const intro = document.querySelector<HTMLElement>("[data-site-intro]");
+  const count = intro?.querySelector<HTMLElement>("[data-intro-count]");
+
+  if (intro && document.documentElement.classList.contains("intro-pending")) {
+    try {
+      sessionStorage.setItem("hermes-intro-seen", "true");
+    } catch {
+      // The animation still exits safely when browser storage is unavailable.
+    }
+
+    [2, 3, 4].forEach((step, index) => {
+      window.setTimeout(() => {
+        if (count) count.textContent = `0${step}`;
+      }, 190 * (index + 1));
+    });
+
+    window.setTimeout(() => {
+      document.documentElement.classList.remove("intro-pending");
+      intro.remove();
+    }, 1320);
+  } else {
+    intro?.remove();
+  }
+</script>

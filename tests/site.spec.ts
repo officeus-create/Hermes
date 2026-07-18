@@ -68,6 +68,30 @@ test("desktop business portals expand on hover and keep click navigation", async
   await expect(marketing.locator("xpath=.." )).toHaveAttribute("data-active", "true");
 });
 
+test("premium opening runs once per session and exits without blocking the page", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-intro-seen"))).toBe("true");
+  await expect(page.locator("[data-site-intro]")).toHaveCount(0, { timeout: 2500 });
+  await page.reload();
+  await expect(page.locator("[data-site-intro]")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Four businesses. One place to move forward." })).toBeVisible();
+});
+
+test("homepage proves the website product and routes to IT Development", async ({ page }) => {
+  await page.goto("/");
+  const proof = page.getByRole("heading", { name: "This website is our first live product." });
+  await proof.scrollIntoViewIfNeeded();
+  await expect(proof).toBeVisible();
+  await page.getByRole("link", { name: "See how it was built" }).click();
+  await expect(page).toHaveURL(/\/paths\/technology\/#technology-case-title$/);
+  await expect(page.getByRole("heading", { name: "This website was built inside the system it represents." })).toBeVisible();
+});
+
+test("direction navigation identifies the current business", async ({ page }) => {
+  await page.goto("/paths/marketing/");
+  await expect(page.locator('.site-header a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(2);
+});
+
 test("preview contact workflow validates and sends no request", async ({ page }) => {
   const posts: string[] = [];
   page.on("request", (request) => {

@@ -1,0 +1,41 @@
+---
+import { ArrowRight, Check, ExternalLink } from "@lucide/astro";
+
+const proofPoints = [
+  "Original visual system",
+  "Responsive interaction design",
+  "Automated quality checks",
+  "Controlled production deployment",
+];
+---
+
+<section class="website-proof-band" aria-labelledby="website-proof-title">
+  <div class="shell website-proof-layout">
+    <div class="website-proof-copy" data-reveal>
+      <p class="eyebrow">Built by Hermes IT Development</p>
+      <h2 id="website-proof-title">This website is our first live product.</h2>
+      <p>Strategy, original design, responsive engineering, automated review, and production delivery were built as one coordinated product. We can bring the same discipline to your website, CRM, or AI-assisted business workflow.</p>
+
+      <ul aria-label="Website delivery proof">
+        {proofPoints.map((point) => <li><Check size={16} aria-hidden="true" />{point}</li>)}
+      </ul>
+
+      <div class="website-proof-actions">
+        <a class="website-proof-primary" href="/paths/technology/#technology-case-title">
+          See how it was built
+          <ArrowRight size={18} aria-hidden="true" />
+        </a>
+        <a href="/paths/technology/#contact">
+          Discuss your website
+          <ExternalLink size={17} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+
+    <a class="website-proof-media" href="/paths/technology/#technology-case-title" data-reveal style="--reveal-delay: 100ms" aria-label="Open the Hermes IT Development website case study">
+      <img src="/images/hermes-live-product.jpg" alt="The live Hermes website showing its four interactive business portals" width="1440" height="900" loading="lazy" decoding="async" />
+      <span class="website-proof-live"><i aria-hidden="true"></i>Live product</span>
+      <span class="website-proof-domain">hermeslogisticsus.com <ArrowRight size={17} aria-hidden="true" /></span>
+    </a>
+  </div>
+</section>

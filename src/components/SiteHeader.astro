@@ -7,7 +7,11 @@ interface Props {
 }
 
 const { theme = "dark" } = Astro.props;
-const navigation = site.navigation.map((item) => ({ ...item, url: `/${item.href}` }));
+const currentPath = Astro.url.pathname;
+const navigation = site.navigation.map((item) => {
+  const url = `/${item.href}`;
+  return { ...item, url, active: currentPath === url };
+});
 ---
 
 <header class={`site-header site-header-${theme}`} data-header>
@@ -17,7 +21,7 @@ const navigation = site.navigation.map((item) => ({ ...item, url: `/${item.href}
   </a>
 
   <nav class="desktop-nav" aria-label="Primary navigation">
-    {navigation.map((item) => <a href={item.url}>{item.label}</a>)}
+    {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
   </nav>
 
   <a class="header-cta" href="#contact">
@@ -30,7 +34,7 @@ const navigation = site.navigation.map((item) => ({ ...item, url: `/${item.href}
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
-    {navigation.map((item) => <a href={item.url}>{item.label}</a>)}
+    {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">Start a conversation</a>
   </nav>
 </header>
