@@ -7,6 +7,7 @@ const directions = [
     verb: "Move.",
     idea: "Keep freight moving with clear operations.",
     detail: "For carriers, shippers, dealers, fleets, and owner-operators.",
+    story: ["Start with the right operating path.", "Match real freight to real capacity.", "Keep the next handoff clear."],
     href: "/paths/logistics/",
     cta: "Open Logistics",
   },
@@ -17,6 +18,7 @@ const directions = [
     verb: "Grow.",
     idea: "Turn attention into accountable growth.",
     detail: "For businesses that need positioning, content, and customer demand.",
+    story: ["Clarify the offer and audience.", "Connect website, search, and social.", "Turn attention into qualified demand."],
     href: "/paths/marketing/",
     cta: "Open Marketing",
   },
@@ -27,6 +29,7 @@ const directions = [
     verb: "Learn.",
     idea: "Turn knowledge into practical capability.",
     detail: "For people building useful business and logistics skills.",
+    story: ["Understand the role.", "Practice the real workflow.", "Grow into greater responsibility."],
     href: "/paths/academy/",
     cta: "Open Academy",
   },
@@ -37,6 +40,7 @@ const directions = [
     verb: "Build.",
     idea: "Build systems that make work simpler.",
     detail: "For teams that need websites, CRM, automation, and AI systems.",
+    story: ["Map the process that matters.", "Build the smallest useful core.", "Connect the system as the business grows."],
     href: "/paths/technology/",
     cta: "Open IT Development",
   },
@@ -59,7 +63,7 @@ const directions = [
     <p class="site-intro-verbs" id="site-intro-title" aria-label="Move. Grow. Learn. Build.">
       {directions.map((direction) => <span data-intro-verb={direction.id}>{direction.verb}</span>)}
     </p>
-    <p class="site-intro-idea" data-intro-idea aria-live="polite">{directions[0].idea}</p>
+    <p class="site-intro-idea" data-intro-idea>{directions[0].idea}</p>
   </div>
 
   <div class="site-intro-rails" aria-label="Choose a Hermes direction">
@@ -69,6 +73,7 @@ const directions = [
         href={direction.href}
         data-intro-rail={direction.id}
         data-active={index === 0 ? "true" : "false"}
+        data-story-step="0"
         aria-label={`${direction.cta}: ${direction.detail}`}
       >
         <span class="site-intro-rail-top">
@@ -78,6 +83,11 @@ const directions = [
         <span class="site-intro-rail-copy">
           <strong>{direction.idea}</strong>
           <span>{direction.detail}</span>
+          <span class="site-intro-rail-story" aria-label={`How ${direction.name} moves from idea to result`}>
+            {direction.story.map((line, storyIndex) => (
+              <span data-intro-story-line data-visible="false"><small>0{storyIndex + 1}</small>{line}</span>
+            ))}
+          </span>
         </span>
         <span class="site-intro-rail-cta">{direction.cta} <span aria-hidden="true">↗</span></span>
       </a>
@@ -100,18 +110,54 @@ const directions = [
 
   if (intro && document.documentElement.classList.contains("intro-pending")) {
     const ideas = rails.map((rail) => rail.querySelector<HTMLElement>(".site-intro-rail-copy strong")?.textContent?.trim() ?? "");
+    const stories = rails.map((rail) => [...rail.querySelectorAll<HTMLElement>("[data-intro-story-line]")]);
     const inertSiblings = [...document.body.children].filter((element) => element !== intro);
     let activeIndex = 0;
     let cycle: number | undefined;
+    let storyTimers: number[] = [];
 
     inertSiblings.forEach((element) => element.setAttribute("inert", ""));
+
+    const clearStoryTimers = () => {
+      storyTimers.forEach((timer) => window.clearTimeout(timer));
+      storyTimers = [];
+    };
+
+    const setStoryStep = (index: number, step: number) => {
+      const rail = rails[index];
+      if (!rail || activeIndex !== index) return;
+      rail.dataset.storyStep = String(step);
+      stories[index].forEach((line, lineIndex) => line.dataset.visible = String(lineIndex < step));
+      if (idea) idea.textContent = step > 0
+        ? stories[index][Math.min(step - 1, stories[index].length - 1)]?.textContent?.replace(/^0\d/, "").trim() ?? ideas[index]
+        : ideas[index];
+    };
+
+    const playStory = (index: number) => {
+      clearStoryTimers();
+      stories[index].forEach((line) => line.dataset.visible = "false");
+      setStoryStep(index, 0);
+      [650, 1700, 2900].forEach((delay, storyIndex) => {
+        storyTimers.push(window.setTimeout(() => setStoryStep(index, storyIndex + 1), delay));
+      });
+    };
 
     const setActive = (index: number) => {
       activeIndex = index;
       rails.forEach((rail, railIndex) => rail.dataset.active = String(railIndex === index));
       verbs.forEach((verb, verbIndex) => verb.dataset.active = String(verbIndex === index));
       if (count) count.textContent = String(index + 1).padStart(2, "0");
-      if (idea) idea.textContent = ideas[index];
+      playStory(index);
+    };
+
+    const pauseCycle = () => {
+      if (cycle) window.clearInterval(cycle);
+      cycle = undefined;
+    };
+
+    const startCycle = () => {
+      pauseCycle();
+      cycle = window.setInterval(() => setActive((activeIndex + 1) % rails.length), 5200);
     };
 
     const rememberIntro = () => {
@@ -123,7 +169,8 @@ const directions = [
     };
 
     const closeIntro = () => {
-      if (cycle) window.clearInterval(cycle);
+      pauseCycle();
+      clearStoryTimers();
       rememberIntro();
       intro.dataset.closing = "true";
       inertSiblings.forEach((element) => element.removeAttribute("inert"));
@@ -135,8 +182,16 @@ const directions = [
     };
 
     rails.forEach((rail, index) => {
-      rail.addEventListener("focus", () => setActive(index));
-      rail.addEventListener("pointerenter", () => setActive(index));
+      rail.addEventListener("focus", () => {
+        pauseCycle();
+        if (activeIndex !== index) setActive(index);
+      });
+      rail.addEventListener("blur", startCycle);
+      rail.addEventListener("pointerenter", () => {
+        pauseCycle();
+        if (activeIndex !== index) setActive(index);
+      });
+      rail.addEventListener("pointerleave", startCycle);
       rail.addEventListener("click", rememberIntro);
     });
 
@@ -146,7 +201,7 @@ const directions = [
     });
 
     setActive(0);
-    cycle = window.setInterval(() => setActive((activeIndex + 1) % rails.length), 3200);
+    startCycle();
     closeButtons[0]?.focus({ preventScroll: true });
   } else {
     intro?.remove();

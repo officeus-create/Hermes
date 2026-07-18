@@ -122,22 +122,30 @@ img { display: block; max-width: 100%; }
 .site-intro-verbs span:nth-child(3) { --intro-accent: #d99a25; }
 .site-intro-verbs span:nth-child(4) { --intro-accent: #26a7aa; }
 .site-intro-idea { max-width: 420px; margin: 0; color: rgba(255,255,255,.8); font: 600 clamp(.9rem, 1.5vw, 1.2rem)/1.35 var(--font-display); }
-.site-intro-rails { display: grid; grid-template-columns: repeat(4, 1fr); min-height: 0; gap: 1px; overflow: hidden; background: rgba(255,255,255,.16); }
-.site-intro-rail { --rail-delay: 0ms; position: relative; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; height: 100%; padding: clamp(.9rem, 2vw, 1.5rem); overflow: hidden; background: color-mix(in srgb, var(--intro-accent) 43%, var(--color-navy-950)); color: white; opacity: .62; transform: translateY(100%); animation: intro-rail 760ms cubic-bezier(.22,.75,.2,1) var(--rail-delay) forwards; transition: opacity 500ms ease, background 500ms ease, transform 500ms ease, filter 500ms ease; }
+.site-intro-rails { display: flex; min-height: 0; gap: 1px; overflow: hidden; background: rgba(255,255,255,.16); }
+.site-intro-rail { --rail-delay: 0ms; position: relative; display: flex; flex: .82 1 0; flex-direction: column; justify-content: space-between; min-width: 0; height: 100%; padding: clamp(.9rem, 2vw, 1.5rem); overflow: hidden; background: color-mix(in srgb, var(--intro-accent) 43%, var(--color-navy-950)); color: white; opacity: .58; transform: translateY(100%); animation: intro-rail 760ms cubic-bezier(.22,.75,.2,1) var(--rail-delay) forwards; transition: flex-grow 820ms cubic-bezier(.22,.75,.2,1), opacity 620ms ease, background 620ms ease, transform 620ms ease, filter 620ms ease; }
 .site-intro-rail:nth-child(2) { --rail-delay: 110ms; }
 .site-intro-rail:nth-child(3) { --rail-delay: 220ms; }
 .site-intro-rail:nth-child(4) { --rail-delay: 330ms; }
 .site-intro-rail::after { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, transparent 5%, rgba(3,7,28,.15) 45%, rgba(3,7,28,.68) 100%); pointer-events: none; }
-.site-intro-rail[data-active="true"] { z-index: 1; opacity: 1; background: var(--intro-accent); filter: saturate(1.08); transform: translateY(-.45rem); }
+.site-intro-rail[data-active="true"] { z-index: 1; flex-grow: 1.42; opacity: 1; background: var(--intro-accent); filter: saturate(1.08); transform: translateY(-.45rem); }
 .site-intro-rail:focus-visible { z-index: 2; outline: 3px solid white; outline-offset: -4px; }
 .site-intro-rail-top, .site-intro-rail-copy, .site-intro-rail-cta { position: relative; z-index: 1; }
 .site-intro-rail-top { display: flex; justify-content: space-between; gap: .5rem; color: rgba(255,255,255,.82); font: 600 .66rem/1.2 var(--font-mono); }
 .site-intro-rail-copy { display: grid; gap: .7rem; margin-top: auto; padding-top: 2rem; transform: translateY(.6rem); transition: transform 500ms ease; }
 .site-intro-rail-copy strong { font: 700 clamp(1rem, 1.8vw, 1.55rem)/1.05 var(--font-display); }
-.site-intro-rail-copy > span { max-width: 26ch; color: rgba(255,255,255,.76); font-size: clamp(.72rem, 1vw, .88rem); line-height: 1.4; opacity: 0; transition: opacity 400ms ease; }
+.site-intro-rail-copy > span:not(.site-intro-rail-story) { max-width: 26ch; color: rgba(255,255,255,.76); font-size: clamp(.72rem, 1vw, .88rem); line-height: 1.4; opacity: 0; transition: opacity 400ms ease; }
+.site-intro-rail-story { display: grid; gap: .32rem; max-width: 31ch; margin-top: .15rem; opacity: 0; transform: translateY(.4rem); transition: opacity 360ms ease, transform 460ms ease; }
+.site-intro-rail-story > span { display: grid; grid-template-columns: 22px 1fr; gap: .5rem; max-height: 0; overflow: hidden; color: rgba(255,255,255,.82); font-size: clamp(.64rem, .78vw, .76rem); line-height: 1.3; opacity: 0; transform: translateY(.55rem); transition: max-height 520ms ease, opacity 420ms ease, transform 520ms ease; }
+.site-intro-rail-story > span:nth-child(1) { transition-delay: 140ms; }
+.site-intro-rail-story > span:nth-child(2) { transition-delay: 70ms; }
+.site-intro-rail-story > span:nth-child(3) { transition-delay: 0ms; }
+.site-intro-rail-story > span[data-visible="true"] { max-height: 3em; opacity: 1; transform: translateY(0); transition-delay: 0ms; }
+.site-intro-rail-story small { color: rgba(255,255,255,.5); font: 650 .56rem/1.4 var(--font-mono); }
 .site-intro-rail-cta { display: flex; justify-content: space-between; gap: .5rem; margin-top: 1.2rem; padding-top: .8rem; border-top: 1px solid rgba(255,255,255,.4); font: 650 .7rem/1.2 var(--font-mono); opacity: 0; transform: translateY(.5rem); transition: opacity 400ms ease, transform 400ms ease; }
 .site-intro-rail[data-active="true"] .site-intro-rail-copy { transform: translateY(0); }
-.site-intro-rail[data-active="true"] .site-intro-rail-copy > span, .site-intro-rail[data-active="true"] .site-intro-rail-cta { opacity: 1; transform: translateY(0); }
+.site-intro-rail[data-active="true"] .site-intro-rail-story { opacity: 1; transform: translateY(0); }
+.site-intro-rail[data-active="true"] .site-intro-rail-copy > span:not(.site-intro-rail-story), .site-intro-rail[data-active="true"] .site-intro-rail-cta { opacity: 1; transform: translateY(0); }
 .site-intro-rail-logistics { --intro-accent: #5634c8; }
 .site-intro-rail-marketing { --intro-accent: #c51b72; }
 .site-intro-rail-academy { --intro-accent: #a56b00; }
@@ -1033,12 +1041,13 @@ h3 { font-size: 1.75rem; }
   .site-intro-ideology { grid-template-columns: 1fr; gap: .5rem; }
   .site-intro-verbs { font-size: clamp(1.75rem, 9.5vw, 3rem); }
   .site-intro-idea { min-height: 2.5em; font-size: .82rem; }
-  .site-intro-rails { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .site-intro-rails { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
   .site-intro-rail { min-height: 0; padding: .8rem; }
   .site-intro-rail[data-active="true"] { transform: translateY(0); }
   .site-intro-rail-copy { padding-top: .5rem; }
   .site-intro-rail-copy strong { font-size: .92rem; }
   .site-intro-rail-copy > span { font-size: .65rem; }
+  .site-intro-rail-story { display: none; }
   .site-intro-rail-cta { margin-top: .55rem; padding-top: .5rem; font-size: .58rem; }
   .site-intro-footer p { display: none; }
   .site-intro-home { width: 100%; }
