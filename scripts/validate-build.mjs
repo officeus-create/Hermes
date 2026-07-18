@@ -9,9 +9,9 @@ const routes = [
     path: "paths/logistics/index.html",
     required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com", "+1 (351) 777-5337"],
   },
-  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
+  { path: "paths/marketing/index.html", required: ["ProgressoPro", "Website and SEO", "Social media marketing", "Four connected marketing pillars", "SEO Optimization", "Growth &amp; Sales System", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "A company-building partnership", "One partner that can keep building as your company grows.", "Technology", "Marketing", "Academy", "Logistics", "Live product", "Working prototype", "Build-ready capability", "WhatsApp", "Google Chat", "Our first public product", "Hermes IT Development", "Quality assurance", "AI assistants", "Operations AI Assistant", "SEO and Content AI Assistant", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "Built in stages", "Continuous Improvement Partnership", "Digital Presence System", "CRM and Operations Control", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system.", "Build your project brief", "Tell us what should work better next.", "Up to three projects", "What have you seen that feels right?", "Budget approach", "Where does the business operate", "Your project brief is ready."] },
+  { path: "paths/technology/index.html", required: ["IT Development", "Digital presence and portals", "CRM and operations systems", "Automation and industry products", "One connected business flow", "A company-building partnership", "One partner that can keep building as your company grows.", "Technology", "Marketing", "Academy", "Logistics", "Live product", "Working prototype", "Build-ready capability", "Local preview", "Implemented capability", "Carrier and dispatcher workspace", "Multilingual website foundation", "Controlled intake and review", "WhatsApp", "Google Chat", "Our first public product", "Hermes IT Development", "Quality assurance", "AI assistants", "Operations AI Assistant", "SEO and Content AI Assistant", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "Built in stages", "Continuous Improvement Partnership", "Digital Presence System", "CRM and Operations Control", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system.", "Build your project brief", "Tell us what should work better next.", "Up to three projects", "What have you seen that feels right?", "Budget approach", "Where does the business operate", "Your project brief is ready."] },
   { path: "case/it-development/index.html", required: ["One digital front door for four businesses.", "Build your brief", "Start your project brief"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
   { path: "ua/index.html", required: ["Чотири напрями. Одна екосистема для зростання.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Партнерство для розвитку компанії", "AI та messaging-асистенти", "mailto:officeus@hermeslogisticsus.com"] },
@@ -37,8 +37,11 @@ const routes = [
     path: "load-board/index.html",
     required: [
       "Car Hauling Load Board Preview",
-      "Describe a car-hauling load.",
+      "One board. The right workspace for your role.",
       "Dry-run only",
+      "Available Loads · Demo data",
+      "Request dispatch",
+      "Fictional examples",
       "Who is posting?",
       "Private party",
       "Truck tractor",
@@ -47,8 +50,8 @@ const routes = [
     ],
   },
   { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review"] },
-  { path: "logistics/broker/index.html", required: ["Broker", "Post a broker load", "Carrier capacity"] },
-  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Find loads", "Call carriers team"] },
+  { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity"] },
+  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Call carriers team"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "Your information was not sent or stored"] },
@@ -59,6 +62,7 @@ const emailOnlyRoutes = [
   "paths/technology/index.html",
 ];
 const assets = [
+  "images/hermes-social-share-2026.jpg",
   "images/hermes-ecosystem-hero.jpg",
   "images/path-logistics-system.jpg",
   "images/path-marketing-system.jpg",
@@ -99,6 +103,12 @@ const required = [
   "Human-led, AI-assisted",
   "Why this matters",
   "Trust architecture",
+  "Products built by Hermes IT Development",
+  "CRM & Operations Control",
+  "Hermes Connect",
+  "Working prototype",
+  "Product discovery",
+  "No account, booking, calendar, payment, or AI action is connected",
 ];
 
 for (const text of required) {
@@ -108,6 +118,10 @@ for (const text of required) {
 if (!html.includes('data-preview-status="Your information was not sent or stored."')) {
   throw new Error("Preview honesty message is missing from contact form");
 }
+
+if (!html.includes("/images/hermes-social-share-2026.jpg")) throw new Error("Updated social preview image missing");
+if (!html.includes('property="og:image:width" content="2048"')) throw new Error("Social image width metadata missing");
+if (!html.includes('property="og:image:height" content="1152"')) throw new Error("Social image height metadata missing");
 
 for (const route of routes) {
   const routeHtml = await readFile(join(dist, route.path), "utf8");
