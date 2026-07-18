@@ -8,28 +8,32 @@ interface Props {
   description: string;
   image?: string;
   schema?: Record<string, unknown> | Record<string, unknown>[];
+  locale?: "en" | "uk" | "ru";
+  alternates?: { lang: string; href: string }[];
 }
 
-const { title, description, image = "/images/hermes-ecosystem-hero.jpg", schema } = Astro.props;
+const { title, description, image = "/images/hermes-ecosystem-hero.jpg", schema, locale = "en", alternates = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
+const ogLocale = locale === "uk" ? "uk_UA" : locale === "ru" ? "ru_RU" : "en_US";
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href={canonical} />
+    {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
     <meta property="og:site_name" content="Hermes" />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

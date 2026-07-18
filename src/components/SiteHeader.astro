@@ -5,14 +5,30 @@ import { site } from "../data/site";
 interface Props {
   theme?: "dark" | "light";
   activePath?: string;
+  locale?: "en" | "uk" | "ru";
 }
 
-const { theme = "dark", activePath } = Astro.props;
+const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
-const navigation = site.navigation.map((item) => {
-  const url = `/${item.href}`;
-  return { ...item, url, active: (activePath ?? currentPath) === url };
-});
+const localeBase = locale === "uk" ? "/ua/" : locale === "ru" ? "/ru/" : "/";
+const localizedLabels = {
+  uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
+  ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
+};
+const navigation = locale === "en"
+  ? site.navigation.map((item) => {
+      const url = `/${item.href}`;
+      return { ...item, url, active: (activePath ?? currentPath) === url };
+    })
+  : site.paths.map((path) => ({ label: localizedLabels[locale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
+const contactLabel = locale === "en" ? "Start a conversation" : localizedLabels[locale].contact;
+const section = ["logistics", "marketing", "academy", "technology"].find((slug) => currentPath.includes(`/paths/${slug}`));
+const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
+const languageLinks = [
+  { code: "EN", locale: "en", href: "/" },
+  { code: "UA", locale: "uk", href: `/ua/${locale === "en" ? localizedHash : ""}` },
+  { code: "RU", locale: "ru", href: `/ru/${locale === "en" ? localizedHash : ""}` },
+];
 ---
 
 <header class={`site-header site-header-${theme}`} data-header>
@@ -25,10 +41,17 @@ const navigation = site.navigation.map((item) => {
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
   </nav>
 
-  <a class="header-cta" href="#contact">
-    Start a conversation
-    <ArrowUpRight size={17} aria-hidden="true" />
-  </a>
+  <div class="header-actions">
+    <nav class="language-switcher" aria-label="Language">
+      {languageLinks.map((item) => item.locale === locale
+        ? <span aria-current="page">{item.code}</span>
+        : <a href={item.href} lang={item.locale}>{item.code}</a>)}
+    </nav>
+    <a class="header-cta" href="#contact">
+      {contactLabel}
+      <ArrowUpRight size={17} aria-hidden="true" />
+    </a>
+  </div>
 
   <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-menu" data-menu-button>
     <Menu size={23} aria-hidden="true" />
@@ -36,7 +59,12 @@ const navigation = site.navigation.map((item) => {
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
-    <a href="#contact">Start a conversation</a>
+    <a href="#contact">{contactLabel}</a>
+    <div class="mobile-language-switcher" aria-label="Language">
+      {languageLinks.map((item) => item.locale === locale
+        ? <span aria-current="page">{item.code}</span>
+        : <a href={item.href} lang={item.locale}>{item.code}</a>)}
+    </div>
   </nav>
 </header>
 

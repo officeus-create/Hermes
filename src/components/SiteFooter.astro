@@ -1,22 +1,66 @@
 ---
 import { ArrowUp } from "@lucide/astro";
 import { site } from "../data/site";
+
+interface Props {
+  locale?: "en" | "uk" | "ru";
+}
+
+const { locale = "en" } = Astro.props;
+const localized = {
+  en: {
+    statement: "Logistics, growth, education, and technology working with one practical standard.",
+    nav: site.navigation.map((item) => ({ label: item.label, href: `/${item.href}` })),
+    privacy: "Privacy",
+    contact: "Contact",
+    route: "Choose the right contact route",
+    designed: "Designed and engineered by",
+    method: "Human-led, AI-assisted",
+    status: "Contact submission pending connection",
+  },
+  uk: {
+    statement: "Логістика, розвиток, освіта й технології за одним практичним стандартом.",
+    nav: [
+      { label: "Логістика", href: "/ua/#logistics" }, { label: "Маркетинг", href: "/ua/#marketing" },
+      { label: "Академія", href: "/ua/#academy" }, { label: "IT-розробка", href: "/ua/#technology" },
+    ],
+    privacy: "Конфіденційність",
+    contact: "Контакт",
+    route: "Обрати напрям звернення",
+    designed: "Дизайн і розробка",
+    method: "Під керівництвом людей, з підтримкою AI",
+    status: "Звернення надсилаються електронною поштою",
+  },
+  ru: {
+    statement: "Логистика, развитие, образование и технологии по единому практическому стандарту.",
+    nav: [
+      { label: "Логистика", href: "/ru/#logistics" }, { label: "Маркетинг", href: "/ru/#marketing" },
+      { label: "Академия", href: "/ru/#academy" }, { label: "IT-разработка", href: "/ru/#technology" },
+    ],
+    privacy: "Конфиденциальность",
+    contact: "Контакт",
+    route: "Выбрать направление обращения",
+    designed: "Дизайн и разработка",
+    method: "Под управлением людей, с поддержкой AI",
+    status: "Обращения отправляются по электронной почте",
+  },
+}[locale];
 ---
 
 <footer class="site-footer">
   <div class="shell footer-main">
     <div>
       <p class="footer-brand">{site.brand}</p>
-      <p>Logistics, growth, education, and technology working with one practical standard.</p>
+      <p>{localized.statement}</p>
       <p class="footer-location">{site.location}</p>
     </div>
     <nav aria-label="Footer navigation">
-      {site.navigation.map((item) => <a href={`/${item.href}`}>{item.label}</a>)}
-      <a href="/privacy/">Privacy</a>
+      {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      <a href="/privacy/">{localized.privacy}</a>
     </nav>
     <div class="footer-contacts" aria-label="Contact options">
-      <p class="footer-contacts-label">Contact</p>
-      <a href="/contacts/">Choose the right contact route</a>
+      <p class="footer-contacts-label">{localized.contact}</p>
+      <a href={locale === "en" ? "/contacts/" : `/${locale === "uk" ? "ua" : "ru"}/#contact`}>{localized.route}</a>
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">
@@ -32,8 +76,8 @@ import { site } from "../data/site";
   </div>
   <div class="shell footer-meta">
     <span>
-      Designed and engineered by <a href="/paths/technology/">Hermes IT Development</a> · Human-led, AI-assisted
+      {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `/${locale === "uk" ? "ua" : "ru"}/#technology`}>Hermes IT Development</a> · {localized.method}
     </span>
-    <span>© 2026 Hermes · {site.location} · Contact submission pending connection</span>
+    <span>© 2026 Hermes · {site.location} · {localized.status}</span>
   </div>
 </footer>

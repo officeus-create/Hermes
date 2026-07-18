@@ -1,0 +1,111 @@
+---
+import { ArrowDown, ArrowRight, Check, Mail, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import type { LocalizedOverview } from "../data/localized-overviews";
+
+interface Props {
+  content: LocalizedOverview;
+}
+
+const { content } = Astro.props;
+const mailSubject = content.locale === "uk" ? "Запит до Hermes" : "Запрос в Hermes";
+const mailBody = content.locale === "uk"
+  ? "Компанія:\nКраїна та місто:\nНапрям:\nЩо потрібно покращити:\nТри бажані проєкти:\nПриклади, які подобаються:\nОрієнтовний бюджет або щомісячний ритм:"
+  : "Компания:\nСтрана и город:\nНаправление:\nЧто нужно улучшить:\nТри желаемых проекта:\nПримеры, которые нравятся:\nОриентировочный бюджет или ежемесячный ритм:";
+const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
+const alternates = [
+  { lang: "en", href: "/" },
+  { lang: "uk", href: "/ua/" },
+  { lang: "ru", href: "/ru/" },
+  { lang: "x-default", href: "/" },
+];
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Hermes",
+  url: `https://hermeslogisticsus.com${content.path}`,
+  areaServed: [{ "@type": "State", name: "Wisconsin" }, { "@type": "Country", name: "United States" }],
+};
+---
+
+<BaseLayout title={content.metaTitle} description={content.metaDescription} locale={content.locale} alternates={alternates} schema={schema}>
+  <SiteHeader locale={content.locale} />
+  <main id="main-content" class="localized-overview">
+    <section class="localized-hero" id="top" data-motion-hero>
+      <img src="/images/hermes-ecosystem-hero.jpg" alt="" width="1920" height="1080" fetchpriority="high" decoding="async" />
+      <div class="localized-hero-shade"></div>
+      <div class="shell localized-hero-content">
+        <p class="eyebrow">{content.hero.eyebrow}</p>
+        <h1>{content.hero.title}</h1>
+        <p>{content.hero.body}</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#paths">{content.hero.primary}<ArrowDown size={18} aria-hidden="true" /></a>
+          <a class="button button-ghost" href={mailto}>{content.hero.secondary}<Mail size={18} aria-hidden="true" /></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section localized-intro" id="paths">
+      <div class="shell section-heading split-heading" data-reveal>
+        <div><p class="eyebrow">{content.intro.eyebrow}</p><h2>{content.intro.title}</h2></div>
+        <p>{content.intro.body}</p>
+      </div>
+    </section>
+
+    <div class="localized-direction-list">
+      {content.directions.map((direction, index) => (
+        <section class:list={["section localized-direction", `localized-direction-${direction.id}`]} id={direction.id}>
+          <div class:list={["shell localized-direction-layout", { "is-reversed": index % 2 === 1 }]}>
+            <div class="localized-direction-media" data-reveal>
+              <img src={direction.image} alt={direction.imageAlt} width="1400" height="1050" loading="lazy" decoding="async" />
+              <span>{direction.number}</span>
+            </div>
+            <div class="localized-direction-copy" data-reveal>
+              <p class="eyebrow">{direction.brand}</p>
+              <h2>{direction.title}</h2>
+              <p>{direction.body}</p>
+              <ul>{direction.points.map((point) => <li><Check size={17} aria-hidden="true" />{point}</li>)}</ul>
+              <a href={directionMailto(direction.brand)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <section class="section localized-partnership" aria-labelledby="localized-partnership-title">
+      <div class="shell">
+        <div class="section-heading split-heading" data-reveal>
+          <div><p class="eyebrow">{content.partnership.eyebrow}</p><h2 id="localized-partnership-title">{content.partnership.title}</h2></div>
+          <p>{content.partnership.body}</p>
+        </div>
+        <div class="localized-partnership-grid" data-reveal>
+          {content.partnership.items.map((item, index) => <article><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.body}</p></article>)}
+        </div>
+        <div class="localized-partnership-note" data-reveal><ShieldCheck size={21} aria-hidden="true" /><p>{content.partnership.note}</p></div>
+      </div>
+    </section>
+
+    <section class="section localized-capabilities" aria-labelledby="localized-capabilities-title">
+      <div class="shell">
+        <div class="section-heading split-heading" data-reveal>
+          <div><p class="eyebrow">{content.capabilities.eyebrow}</p><h2 id="localized-capabilities-title">{content.capabilities.title}</h2></div>
+          <p>{content.capabilities.body}</p>
+        </div>
+        <div class="localized-capability-list" data-reveal>
+          {content.capabilities.items.map((item, index) => <article><span>0{index + 1}</span><strong>{item.status}</strong><h3>{item.title}</h3><p>{item.body}</p></article>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section localized-contact" id="contact">
+      <div class="shell localized-contact-layout" data-reveal>
+        <div><p class="eyebrow">{content.contact.eyebrow}</p><h2>{content.contact.title}</h2><p>{content.contact.body}</p></div>
+        <div><a class="button button-primary" href={mailto}><Mail size={18} aria-hidden="true" />{content.contact.button}</a><p>{content.contact.note}</p></div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter locale={content.locale} />
+</BaseLayout>

@@ -4,6 +4,10 @@
 
 Canonical site: https://hermeslogisticsus.com/
 
+Localized overviews:
+- Ukrainian: https://hermeslogisticsus.com/ua/
+- Russian: https://hermeslogisticsus.com/ru/
+
 ## Business directions
 
 - Hermes Logistics: truck dispatch, carrier back-office support, freight coordination, and car hauling support.

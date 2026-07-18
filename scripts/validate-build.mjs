@@ -14,6 +14,8 @@ const routes = [
   { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "A company-building partnership", "One partner that can keep building as your company grows.", "Technology", "Marketing", "Academy", "Logistics", "Live product", "Working prototype", "Build-ready capability", "WhatsApp", "Google Chat", "Our first public product", "Hermes IT Development", "Quality assurance", "AI assistants", "Operations AI Assistant", "SEO and Content AI Assistant", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "Built in stages", "Continuous Improvement Partnership", "Digital Presence System", "CRM and Operations Control", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system.", "Build your project brief", "Tell us what should work better next.", "Up to three projects", "What have you seen that feels right?", "Budget approach", "Where does the business operate", "Your project brief is ready."] },
   { path: "case/it-development/index.html", required: ["One digital front door for four businesses.", "Build your brief", "Start your project brief"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
+  { path: "ua/index.html", required: ["Чотири напрями. Одна екосистема для зростання.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Партнерство для розвитку компанії", "AI та messaging-асистенти", "mailto:officeus@hermeslogisticsus.com"] },
+  { path: "ru/index.html", required: ["Четыре направления. Одна экосистема для роста.", "Hermes Logistics", "Hermes Marketing", "Hermes Business Academy", "Hermes IT Development", "Партнёрство для развития компании", "AI и messaging-ассистенты", "mailto:officeus@hermeslogisticsus.com"] },
   {
     path: "contacts/index.html",
     required: [
@@ -92,10 +94,22 @@ for (const route of routes) {
   }
   if (!routeHtml.includes('<link rel="canonical"')) throw new Error(`Canonical URL missing in ${route.path}`);
   if (route.path.startsWith("paths/")) validateStructuredData(routeHtml, route.path);
+  if (route.path === "ua/index.html" || route.path === "ru/index.html") validateStructuredData(routeHtml, route.path);
   if (route.path.startsWith("paths/") && !routeHtml.includes("Wisconsin first")) throw new Error(`Wisconsin service-area signal missing in ${route.path}`);
   if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
   if (route.path === "paths/technology/index.html" && /digital employee/i.test(routeHtml)) throw new Error("Legacy digital employee wording found on the IT page");
+}
+
+const localizedRouteChecks = [
+  { path: "ua/index.html", lang: "uk", counterpart: "https://hermeslogisticsus.com/ru/" },
+  { path: "ru/index.html", lang: "ru", counterpart: "https://hermeslogisticsus.com/ua/" },
+];
+for (const localized of localizedRouteChecks) {
+  const localizedHtml = await readFile(join(dist, localized.path), "utf8");
+  if (!localizedHtml.includes(`<html lang="${localized.lang}">`)) throw new Error(`Language metadata missing in ${localized.path}`);
+  if (!localizedHtml.includes(`hreflang="en"`)) throw new Error(`English hreflang missing in ${localized.path}`);
+  if (!localizedHtml.includes(localized.counterpart)) throw new Error(`Localized counterpart missing in ${localized.path}`);
 }
 
 for (const path of emailOnlyRoutes) {
@@ -107,6 +121,10 @@ for (const path of emailOnlyRoutes) {
 for (const slug of ["logistics", "marketing", "academy", "technology"]) {
   if (!html.includes(`/paths/${slug}/`)) throw new Error(`Homepage link missing for ${slug}`);
   if (!sitemap.includes(`/paths/${slug}/`)) throw new Error(`Sitemap entry missing for ${slug}`);
+}
+for (const localePath of ["/ua/", "/ru/"]) {
+  if (!html.includes(localePath)) throw new Error(`Homepage language link missing for ${localePath}`);
+  if (!sitemap.includes(localePath)) throw new Error(`Sitemap entry missing for ${localePath}`);
 }
 if (!html.includes("/contacts/") && !html.includes("contacts/")) throw new Error("Homepage/footer contacts link missing");
 if (!sitemap.includes("/contacts/")) throw new Error("Sitemap entry missing for contacts");

@@ -8,6 +8,8 @@ const routes = [
   "/paths/technology/",
   "/case/it-development/",
   "/privacy/",
+  "/ua/",
+  "/ru/",
 ];
 
 for (const route of routes) {
@@ -91,7 +93,7 @@ test("homepage proves the website product and routes to IT Development", async (
 test("IT case presents verified delivery evidence and a working inquiry route", async ({ page }) => {
   await page.goto("/case/it-development/");
   await expect(page.getByRole("heading", { name: "Quality was tested as part of the product." })).toBeVisible();
-  await expect(page.getByText("64", { exact: true })).toBeVisible();
+  await expect(page.getByText("70", { exact: true })).toBeVisible();
   await expect(page.getByText("browser scenarios passed", { exact: true })).toBeVisible();
   await expect(page.locator('.site-header a[href="/paths/technology/"][aria-current="page"]')).toHaveCount(2);
   await page.getByRole("link", { name: "Start your project brief" }).click();
@@ -104,6 +106,24 @@ test("IT case presents verified delivery evidence and a working inquiry route", 
 test("direction navigation identifies the current business", async ({ page }) => {
   await page.goto("/paths/marketing/");
   await expect(page.locator('.site-header a[href="/paths/marketing/"][aria-current="page"]')).toHaveCount(2);
+});
+
+test("language switcher opens real Ukrainian and Russian pages", async ({ page }) => {
+  await page.goto("/paths/technology/");
+  await expect(page.locator('a[href="/ua/#technology"]')).toHaveCount(2);
+  await expect(page.locator('a[href="/ru/#technology"]')).toHaveCount(2);
+
+  await page.goto("/ua/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "uk");
+  await expect(page.getByRole("heading", { name: "Чотири напрями. Одна екосистема для зростання." })).toBeVisible();
+  await expect(page.locator('link[rel="alternate"][hreflang="ru"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/ru/");
+  await expect(page.getByRole("link", { name: "Надіслати опис електронною поштою" })).toHaveAttribute("href", /mailto:officeus@hermeslogisticsus.com/);
+
+  await page.goto("/ru/");
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.getByRole("heading", { name: "Четыре направления. Одна экосистема для роста." })).toBeVisible();
+  await expect(page.locator('link[rel="alternate"][hreflang="uk"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/ua/");
+  await expect(page.getByText("AI и messaging-ассистенты", { exact: true })).toBeVisible();
 });
 
 test("preview contact workflow validates and sends no request", async ({ page }) => {
