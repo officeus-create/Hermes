@@ -11,7 +11,8 @@ const routes = [
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Strategy and positioning", "Sales operations", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment"] },
-  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "$25-$45 per hour", "From $12k", "staged delivery", "Continuous Improvement Partnership", "From $3k / month", "Digital Presence System", "From $3k", "CRM and Operations Control", "From $5k", "AI Assistant and Workflow", "Connected Business Platform", "From $8k", "The capabilities behind a connected company system."] },
+  { path: "paths/technology/index.html", required: ["IT Development", "CRM and business systems", "Automation and integration", "One connected business flow", "Our first public product", "Hermes IT Development", "Quality assurance", "Digital workforce", "Digital Operations Director", "SEO &amp; Content Intelligence Specialist", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "Built in stages", "Continuous Improvement Partnership", "Digital Presence System", "CRM and Operations Control", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system.", "Build your project brief", "Tell us what should work better next.", "Up to three projects", "What have you seen that feels right?", "Budget approach", "Where does the business operate", "Your project brief is ready."] },
+  { path: "case/it-development/index.html", required: ["One digital front door for four businesses.", "Build your brief", "Start your project brief"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
   {
     path: "contacts/index.html",
@@ -74,7 +75,6 @@ const required = [
   "Human-led, AI-assisted",
   "Why this matters",
   "Trust architecture",
-  "$25-$45/hr",
 ];
 
 for (const text of required) {

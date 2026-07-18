@@ -12,7 +12,7 @@ const stages = [
     id: "2",
     title: "Website & conversion journey",
     problem: "The public site does not lead to a qualified next action.",
-    body: "Corporate presence, content architecture, and a clear path from attention to inquiry. Digital Presence System planning range: From $3k · 4-8 weeks.",
+    body: "Corporate presence, content architecture, and a clear path from attention to a qualified inquiry.",
   },
   {
     id: "3",
@@ -30,7 +30,7 @@ const stages = [
     id: "5",
     title: "CRM & management views",
     problem: "Status lives in heads and spreadsheets.",
-    body: "Roles, pipelines, approvals, documents, dashboards. CRM and Operations Control: From $5k · 6-12 weeks.",
+    body: "Roles, pipelines, approvals, documents, dashboards, and the management views needed for daily decisions.",
   },
   {
     id: "6",
@@ -48,7 +48,7 @@ const stages = [
     id: "8",
     title: "AI gates, launch & improvement",
     problem: "AI demos do not survive real operations.",
-    body: "AI assistants with approval gates; launch, training, and Continuous Improvement Partnership From $3k / month. Delivery planned at $25-$45 per hour or fixed-scope packages. Flagship Company Digital Operating System From $12k · 12-24 weeks staged delivery.",
+    body: "AI assistants with approval gates, launch controls, team training, and an improvement plan shaped around the company's real operating priorities.",
   },
 ];
 
@@ -94,8 +94,8 @@ const industries = [
         inbox, CRM, and people.
       </p>
       <p>
-        Hermes IT builds the smallest useful connected flow first — then expands with staged estimates. Public planning
-        ranges use <strong>$25-$45 per hour</strong> or package starts listed on this page.
+        Hermes IT builds the smallest useful connected flow first, then expands through an agreed roadmap. Your project
+        brief helps us understand the business result, useful references, market, and investment rhythm before proposing that roadmap.
       </p>
       <button type="button" class="button button-primary" data-it-next data-cta="it_start_flow">
         See the 8-stage flow <ArrowRight size={18} aria-hidden="true" />
@@ -156,8 +156,8 @@ const industries = [
               <summary>{item.title}</summary>
               <p class="problem-banner">Problem: {item.problem}</p>
               <p>{item.body}</p>
-              <a href="#contact" data-estimate-service={item.service} data-cta={`it_estimate_${item.id}`}>
-                Discuss this workflow
+              <a href="#project-brief" data-brief-service={item.service} data-cta={`it_brief_${item.id}`}>
+                Add this workflow to your brief
               </a>
             </details>
           ))
@@ -166,7 +166,7 @@ const industries = [
       <div class="it-screen-nav">
         <button type="button" class="button button-ghost" data-it-prev>Back</button>
         <button type="button" class="button button-primary" data-it-next data-cta="it_next_packages">
-          Continue to packages <ArrowRight size={18} aria-hidden="true" />
+          Continue to solutions <ArrowRight size={18} aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -174,14 +174,11 @@ const industries = [
 
   <div class="it-screen" data-it-screen="4" hidden>
     <div class="shell">
-      <p class="eyebrow">Primary · Planning ranges</p>
-      <h2>Start small or run the full company system.</h2>
-      <p>
-        USD starting prices, not binding quotes. Larger programs are divided into approved stages and estimated at
-        <strong> $25-$45 per hour</strong>. Package detail and workforce options continue below.
-      </p>
-      <a class="button button-primary" href="#technology-packages-title" data-cta="it_view_packages">
-        View package details <ArrowRight size={18} aria-hidden="true" />
+      <p class="eyebrow">Primary · Your project brief</p>
+      <h2>Turn your ideas into a practical implementation path.</h2>
+      <p>Share up to three priorities, references you like, your location, and the investment approach that works for your company. We will use that context to prepare the next realistic stage.</p>
+      <a class="button button-primary" href="#project-brief" data-cta="it_start_brief">
+        Build your project brief <ArrowRight size={18} aria-hidden="true" />
       </a>
       <div class="it-screen-nav">
         <button type="button" class="button button-ghost" data-it-prev>Back</button>

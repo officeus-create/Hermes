@@ -5,6 +5,7 @@ import AcademyScreenFlow from "./AcademyScreenFlow.astro";
 import ItOperatingFlow from "./ItOperatingFlow.astro";
 import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
 import TechnologyStudioProof from "./TechnologyStudioProof.astro";
+import TechnologyProjectBrief from "./TechnologyProjectBrief.astro";
 
 interface Props {
   path: PathDetail;
@@ -29,7 +30,7 @@ const directContactTitle = {
       <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
       <h1>{path.title}</h1>
       <p>{path.audience}</p>
-      <a class="button button-primary" href="#contact">Start with a conversation<ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="button button-primary" href={path.id === "technology" ? "#project-brief" : "#contact"}>{path.id === "technology" ? "Build your project brief" : "Start with a conversation"}<ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </section>
 
@@ -71,6 +72,7 @@ const directContactTitle = {
 
   {path.id === "technology" && <ItOperatingFlow />}
   {path.id === "technology" && <TechnologyStudioProof />}
+  {path.id === "technology" && <TechnologyProjectBrief />}
   {path.id === "marketing" && <MarketingGrowthFlow />}
 
   {

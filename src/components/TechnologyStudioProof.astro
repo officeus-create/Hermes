@@ -72,7 +72,6 @@ const packages = [
   {
     name: "Digital Presence System",
     eyebrow: "Website and conversion path",
-    price: "From $3k",
     timeline: "4-8 weeks",
     icon: LayoutTemplate,
     description: "A custom corporate website with content architecture, responsive development, deployment, analytics plan, and a clear path from attention to inquiry.",
@@ -81,7 +80,6 @@ const packages = [
   {
     name: "CRM and Operations Control",
     eyebrow: "Internal operating system",
-    price: "From $5k",
     timeline: "6-12 weeks",
     icon: Network,
     description: "A practical CRM or operations system shaped around real roles, statuses, approvals, documents, dashboards, and management decisions.",
@@ -90,7 +88,6 @@ const packages = [
   {
     name: "AI Assistant and Workflow",
     eyebrow: "Human-controlled intelligence",
-    price: "From $3k",
     timeline: "3-8 weeks",
     icon: Bot,
     description: "An AI-assisted workflow for research, summaries, knowledge retrieval, task routing, quality checks, and draft actions with human approval gates.",
@@ -99,7 +96,6 @@ const packages = [
   {
     name: "Connected Business Platform",
     eyebrow: "Website, CRM, automation, and AI",
-    price: "From $8k",
     timeline: "8-16 weeks",
     icon: Braces,
     description: "A connected customer and operations platform combining the public experience with CRM, booking or payments, automation, AI assistance, and analytics.",
@@ -182,7 +178,7 @@ const industryStarts = [
 
     <div class="digital-workforce-cta">
       <div><Bot size={25} aria-hidden="true" /><p>Start with one role, test it in real work, then expand the digital team.</p></div>
-      <a href="#contact" data-estimate-service="Digital Employee Program" aria-label="Request an estimate for Digital Employee Program">Design your digital team <ArrowRight size={18} aria-hidden="true" /></a>
+      <a href="#project-brief" data-brief-service="Digital Employee Program" aria-label="Add Digital Employee Program to your project brief">Design your digital team <ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </div>
 </section>
@@ -201,7 +197,7 @@ const industryStarts = [
             <Icon size={24} aria-hidden="true" />
             <h3>{item.title}</h3>
             <p>{item.body}</p>
-            <a href="#contact" data-estimate-service={item.service} aria-label={`Request an estimate for ${item.service}`}>Discuss this workflow <ArrowRight size={17} aria-hidden="true" /></a>
+            <a href="#project-brief" data-brief-service={item.service} aria-label={`Add ${item.service} to your project brief`}>Add to your brief <ArrowRight size={17} aria-hidden="true" /></a>
           </article>
         );
       })}
@@ -213,7 +209,7 @@ const industryStarts = [
   <div class="shell">
     <div class="section-heading split-heading technology-packages-heading">
       <div><p class="eyebrow">One company. One coordinated build.</p><h2 id="technology-packages-title">Build the digital operating system a modern company needs.</h2></div>
-      <p>We can begin with one useful module or take responsibility for the connected customer, operations, and AI foundation as a complete program. Delivery is planned at <strong>$25-$45 per hour</strong> or as an agreed fixed-scope package.</p>
+      <p>We can begin with one useful module or map the connected customer, operations, and AI foundation as a complete program. Your brief gives us the context to divide the work into realistic stages.</p>
     </div>
 
     <article class="flagship-package">
@@ -227,10 +223,10 @@ const industryStarts = [
         {companySystemStages.map((stage, index) => <li><span>0{index + 1}</span>{stage}</li>)}
       </ol>
       <div class="flagship-package-estimate">
-        <p><CircleDollarSign size={17} aria-hidden="true" />Program planning range</p>
-        <strong>From $12k</strong>
-        <span>12-24 weeks · staged delivery</span>
-        <a href="#contact" data-estimate-service="Company Digital Operating System" aria-label="Request an estimate for Company Digital Operating System">Request company assessment <ArrowRight size={18} aria-hidden="true" /></a>
+        <p><Workflow size={17} aria-hidden="true" />Project planning</p>
+        <strong>Built in stages</strong>
+        <span>Priorities · roadmap · implementation</span>
+        <a href="#project-brief" data-brief-service="Company Digital Operating System" aria-label="Add Company Digital Operating System to your project brief">Start the company brief <ArrowRight size={18} aria-hidden="true" /></a>
       </div>
     </article>
 
@@ -238,7 +234,7 @@ const industryStarts = [
       <Database size={24} aria-hidden="true" />
       <div><p>After launch · Continuous Improvement Partnership</p><h3>Improve the system through evidence, review, and controlled releases.</h3></div>
       <p>AI can surface opportunities, prepare recommendations, and assist QA. It does not rewrite production by itself: people approve priorities and every release is tested and documented.</p>
-      <strong>From $3k / month</strong>
+      <strong>Planned after launch</strong>
     </div>
 
     <div class="module-heading"><p class="eyebrow">Start with one module</p><h3>Build what removes the most friction first.</h3></div>
@@ -259,39 +255,19 @@ const industryStarts = [
               <ul>{item.includes.map((included) => <li>{included}</li>)}</ul>
             </div>
             <div class="package-estimate">
-              <p><CircleDollarSign size={17} aria-hidden="true" />Planning range</p>
-              <strong>{item.price}</strong>
+              <p><Workflow size={17} aria-hidden="true" />Best first step</p>
+              <strong>Define the scope</strong>
               <span>{item.timeline}</span>
               <a
-                href="#contact"
-                data-estimate-service={item.name}
-                aria-label={`Request an estimate for ${item.name}`}
-              >Request estimate <ArrowRight size={18} aria-hidden="true" /></a>
+                href="#project-brief"
+                data-brief-service={item.name}
+                aria-label={`Add ${item.name} to your project brief`}
+              >Add to your brief <ArrowRight size={18} aria-hidden="true" /></a>
             </div>
           </article>
         );
       })}
     </div>
-    <p class="pricing-note">USD starting prices, not binding quotes. Larger programs are divided into approved stages and estimated at $25-$45 per hour. Hosting, paid third-party services, data migration, compliance work, content production, and unusually complex integrations are estimated separately.</p>
+    <p class="pricing-note">The project roadmap is prepared from your priorities, references, market, budget approach, and planning horizon. Final scope is reviewed with the responsible decision-maker before implementation begins.</p>
   </div>
 </section>
-
-<script>
-  const estimateLinks = document.querySelectorAll<HTMLAnchorElement>("[data-estimate-service]");
-  const interest = document.querySelector<HTMLSelectElement>('[data-contact-form] select[name="path"]');
-  const message = document.querySelector<HTMLTextAreaElement>('[data-contact-form] textarea[name="message"]');
-
-  for (const link of estimateLinks) {
-    link.addEventListener("click", () => {
-      const service = link.dataset.estimateService;
-      if (!service) return;
-      if (interest) interest.value = "IT Development";
-      if (message) {
-        const request = `I would like a planning estimate for the ${service}.`;
-        const current = message.value.trim();
-        if (!current) message.value = request;
-        else if (!current.includes(service)) message.value = `${request}\n\n${current}`;
-      }
-    });
-  }
-</script>

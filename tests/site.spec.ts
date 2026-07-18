@@ -91,12 +91,14 @@ test("homepage proves the website product and routes to IT Development", async (
 test("IT case presents verified delivery evidence and a working inquiry route", async ({ page }) => {
   await page.goto("/case/it-development/");
   await expect(page.getByRole("heading", { name: "Quality was tested as part of the product." })).toBeVisible();
-  await expect(page.getByText("58", { exact: true })).toBeVisible();
+  await expect(page.getByText("62", { exact: true })).toBeVisible();
   await expect(page.getByText("browser scenarios passed", { exact: true })).toBeVisible();
   await expect(page.locator('.site-header a[href="/paths/technology/"][aria-current="page"]')).toHaveCount(2);
-  await page.getByRole("link", { name: "Discuss your website" }).click();
-  await expect(page).toHaveURL(/\/case\/it-development\/#contact$/);
-  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
+  await page.getByRole("link", { name: "Start your project brief" }).click();
+  await expect(page).toHaveURL(/\/paths\/technology\/#project-brief$/);
+  await expect(page.locator("[data-it-project-brief]")).toBeVisible();
+  await expect.poll(() => page.locator("[data-it-project-brief]").evaluate((element) => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(60);
+  await expect.poll(() => page.locator("[data-it-project-brief]").evaluate((element) => element.getBoundingClientRect().top)).toBeLessThan(100);
 });
 
 test("direction navigation identifies the current business", async ({ page }) => {
@@ -280,8 +282,9 @@ test("technology page offers concrete industry starting points", async ({ page }
   await page.goto("/paths/technology/");
   await expect(page.getByRole("heading", { name: "Fitness and wellness" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Beauty and salon" })).toBeVisible();
-  await page.getByRole("link", { name: "Request an estimate for Beauty and Salon Starter System" }).click();
-  await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Beauty and Salon Starter System.");
+  await page.getByRole("link", { name: "Add Beauty and Salon Starter System to your project brief" }).click();
+  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("Beauty and Salon Starter System");
+  await expect(page).toHaveURL(/#project-brief$/);
 });
 
 test("mobile menu supports keyboard close", async ({ page, isMobile }) => {
@@ -321,22 +324,20 @@ test("marketing growth flow supports click and keyboard navigation", async ({ pa
   await expect(distributionTab).toHaveAttribute("aria-selected", "true");
 });
 
-test("technology package request pre-fills the estimate context", async ({ page }) => {
+test("technology solution pre-fills the project brief", async ({ page }) => {
   await page.goto("/paths/technology/");
-  await page.getByRole("link", { name: "Request an estimate for AI Assistant and Workflow" }).click();
-  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
-  await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the AI Assistant and Workflow.");
-  await expect(page).toHaveURL(/#contact$/);
+  await page.getByRole("link", { name: "Add AI Assistant and Workflow to your project brief" }).click();
+  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("AI Assistant and Workflow");
+  await expect(page).toHaveURL(/#project-brief$/);
 });
 
-test("company operating system request pre-fills the full program context", async ({ page }) => {
+test("company operating system starts the full project brief", async ({ page }) => {
   await page.goto("/paths/technology/");
   await expect(page.getByRole("heading", { name: "Hermes IT Development" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Quality assurance" })).toBeVisible();
-  await page.getByRole("link", { name: "Request an estimate for Company Digital Operating System" }).click();
-  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
-  await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Company Digital Operating System.");
-  await expect(page).toHaveURL(/#contact$/);
+  await page.getByRole("link", { name: "Add Company Digital Operating System to your project brief" }).click();
+  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("Company Digital Operating System");
+  await expect(page).toHaveURL(/#project-brief$/);
 });
 
 test("each business direction exposes Wisconsin SEO signals and service schema", async ({ page }) => {
@@ -348,12 +349,53 @@ test("each business direction exposes Wisconsin SEO signals and service schema",
   }
 });
 
-test("digital workforce roles show training time and pre-fill a request", async ({ page }) => {
+test("digital workforce roles show training time and pre-fill the brief", async ({ page }) => {
   await page.goto("/paths/technology/");
   await expect(page.getByRole("heading", { name: "Digital Operations Director" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "HR & Recruiting Assistant" })).toBeVisible();
   await expect(page.locator(".digital-workforce").getByText("4-8 weeks", { exact: true })).toBeVisible();
-  await page.getByRole("link", { name: "Request an estimate for Digital Employee Program" }).click();
-  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
-  await expect(page.locator('textarea[name="message"]')).toHaveValue("I would like a planning estimate for the Digital Employee Program.");
+  await page.getByRole("link", { name: "Add Digital Employee Program to your project brief" }).click();
+  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("Digital Employee Program");
+});
+
+test("IT project brief turns unstructured ideas into an email-ready summary", async ({ page }) => {
+  await page.goto("/paths/technology/#project-brief");
+  const brief = page.locator("[data-it-project-brief]");
+
+  await brief.locator('select[name="company_stage"]').selectOption({ label: "Small company ready to grow" });
+  await brief.locator('textarea[name="business_goal"]').fill("Increase qualified sales while reducing manual administrative work.");
+  await brief.locator('textarea[name="project_1"]').fill("A corporate website that qualifies customer requests.");
+  await brief.locator('textarea[name="project_2"]').fill("A CRM with a clear sales pipeline.");
+  await brief.getByRole("button", { name: "Continue" }).click();
+
+  await brief.locator('input[name="example_1"]').fill("https://example.com");
+  await brief.locator('textarea[name="example_1_detail"]').fill("The service selection is simple and clear.");
+  await brief.getByRole("button", { name: "Continue" }).click();
+
+  await brief.locator('select[name="budget_mode"]').selectOption("monthly");
+  await brief.locator('input[name="budget_amount"]').fill("USD 2,500 per month");
+  await brief.locator('select[name="investment_horizon"]').selectOption({ label: "6 months" });
+  await brief.getByRole("button", { name: "Continue" }).click();
+
+  await brief.locator('input[name="company_name"]').fill("Example Services");
+  await brief.locator('input[name="contact_name"]').fill("Alex Morgan");
+  await brief.locator('input[name="contact_role"]').fill("Owner");
+  await brief.locator('input[name="contact_email"]').fill("alex@example.com");
+  await brief.locator('input[name="country"]').fill("United States");
+  await brief.locator('input[name="region_city"]').fill("Milwaukee, Wisconsin");
+  await brief.locator('textarea[name="public_presence"]').fill("https://example.com");
+  await brief.locator('input[name="brief_consent"]').check();
+  await brief.getByRole("button", { name: "Continue" }).click();
+
+  await expect(brief.locator("[data-brief-summary]")).toContainText("Example Services");
+  await expect(brief.locator("[data-brief-summary]")).toContainText("USD 2,500 per month");
+  await expect(brief.locator("[data-brief-summary]")).toContainText("A CRM with a clear sales pipeline.");
+  await expect(brief.locator("[data-brief-email]")).toHaveAttribute("href", /^mailto:officeus@hermeslogisticsus\.com\?subject=/);
+});
+
+test("IT pages publish no fixed prices", async ({ page }) => {
+  for (const route of ["/paths/technology/", "/case/it-development/"]) {
+    await page.goto(route);
+    await expect(page.locator("body")).not.toContainText("$");
+  }
 });

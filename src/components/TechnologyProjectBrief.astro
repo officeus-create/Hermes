@@ -1,0 +1,319 @@
+---
+import { ArrowLeft, ArrowRight, Clipboard, Mail, RotateCcw } from "@lucide/astro";
+
+const steps = ["Priorities", "References", "Investment", "Company", "Review"];
+---
+
+<section class="section it-project-brief" id="project-brief" aria-labelledby="project-brief-title" data-it-project-brief>
+  <div class="shell">
+    <div class="section-heading split-heading it-brief-heading" data-reveal>
+      <div>
+        <p class="eyebrow">Start with your business, not a price list</p>
+        <h2 id="project-brief-title">Tell us what should work better next.</h2>
+      </div>
+      <p>Share the ideas in your own words. The result is a structured brief that gives our team enough context to prepare a realistic development path around your market and investment capacity.</p>
+    </div>
+
+    <div class="it-brief-tool" data-reveal>
+      <ol class="it-brief-progress" aria-label="Project brief progress">
+        {steps.map((step, index) => (
+          <li data-brief-progress={index} aria-current={index === 0 ? "step" : undefined}>
+            <span>0{index + 1}</span>
+            <strong>{step}</strong>
+          </li>
+        ))}
+      </ol>
+
+      <form class="it-brief-form" data-brief-form novalidate>
+        <fieldset class="it-brief-panel" data-brief-step="0">
+          <legend><span>01 · Priorities</span>What would you like your company to become?</legend>
+          <p class="it-brief-prompt">Describe the result you need now. Perfect terminology is not required.</p>
+
+          <div class="it-brief-field-grid">
+            <label>
+              Company stage
+              <select name="company_stage" required>
+                <option value="">Choose the closest stage</option>
+                <option>Starting a new company</option>
+                <option>Small company ready to grow</option>
+                <option>Established company improving operations</option>
+                <option>Multi-location or multi-department company</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+            <label>
+              Main business goal
+              <textarea name="business_goal" rows="4" minlength="20" maxlength="900" placeholder="For example: attract better clients, reduce manual work, open a new location, or make sales easier to manage." required></textarea>
+            </label>
+          </div>
+
+          <div class="it-brief-projects">
+            <p>Up to three projects you would like to explore</p>
+            <label><span>01</span><textarea name="project_1" rows="3" minlength="8" maxlength="600" placeholder="Website, CRM, booking system, AI employee, automation, client portal, or another idea." required></textarea></label>
+            <label><span>02</span><textarea name="project_2" rows="3" maxlength="600" placeholder="Second priority, if you have one."></textarea></label>
+            <label><span>03</span><textarea name="project_3" rows="3" maxlength="600" placeholder="Third priority, if you have one."></textarea></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="it-brief-panel" data-brief-step="1" hidden>
+          <legend><span>02 · References</span>What have you seen that feels right?</legend>
+          <p class="it-brief-prompt">Share competitors, websites, products, or companies you remember. Tell us which exact part caught your attention.</p>
+
+          <div class="it-brief-reference-list">
+            <label><span>01</span><input name="example_1" maxlength="500" placeholder="Company name, URL, app, or product" /><textarea name="example_1_detail" rows="3" maxlength="600" placeholder="What do you like about it?"></textarea></label>
+            <label><span>02</span><input name="example_2" maxlength="500" placeholder="Second reference, if any" /><textarea name="example_2_detail" rows="3" maxlength="600" placeholder="Which idea should we study?"></textarea></label>
+            <label><span>03</span><input name="example_3" maxlength="500" placeholder="Third reference, if any" /><textarea name="example_3_detail" rows="3" maxlength="600" placeholder="What would you adapt for your company?"></textarea></label>
+          </div>
+          <label class="it-brief-check"><input type="checkbox" name="no_examples" /><span>I do not have examples yet. I want Hermes to research the market.</span></label>
+        </fieldset>
+
+        <fieldset class="it-brief-panel" data-brief-step="2" hidden>
+          <legend><span>03 · Investment</span>What investment rhythm works for your company?</legend>
+          <p class="it-brief-prompt">This helps us divide the roadmap into useful stages instead of forcing every idea into one project.</p>
+
+          <div class="it-brief-field-grid it-brief-budget-grid">
+            <label>
+              Budget approach
+              <select name="budget_mode" required data-budget-mode>
+                <option value="">Choose an approach</option>
+                <option value="total">We have a total project budget</option>
+                <option value="monthly">We can invest monthly</option>
+                <option value="range">We have an approximate range</option>
+                <option value="not_sure">We need help defining the budget</option>
+              </select>
+            </label>
+            <label>
+              Amount and currency
+              <input name="budget_amount" maxlength="120" inputmode="decimal" placeholder="For example: USD 5,000 total or USD 2,000 per month" data-budget-amount />
+            </label>
+            <label>
+              Planning horizon
+              <select name="investment_horizon" required>
+                <option value="">Choose a horizon</option>
+                <option>One focused launch</option>
+                <option>3 months</option>
+                <option>6 months</option>
+                <option>12 months</option>
+                <option>18-24 months</option>
+                <option>Ongoing improvement</option>
+                <option>Not sure yet</option>
+              </select>
+            </label>
+            <label>
+              Timing or constraints
+              <textarea name="timing_notes" rows="3" maxlength="500" placeholder="Launch date, seasonal deadline, existing contract, or anything else we should plan around."></textarea>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="it-brief-panel" data-brief-step="3" hidden>
+          <legend><span>04 · Company</span>Where does the business operate, and who should we speak with?</legend>
+          <p class="it-brief-prompt">Location helps us compare the right market, competitors, tools, and implementation costs.</p>
+
+          <div class="it-brief-field-grid">
+            <label>Company name<input name="company_name" autocomplete="organization" maxlength="160" required /></label>
+            <label>Your name<input name="contact_name" autocomplete="name" maxlength="120" required /></label>
+            <label>Your role<input name="contact_role" autocomplete="organization-title" maxlength="120" placeholder="Owner, CEO, operations, marketing, or another role" required /></label>
+            <label>Business email<input type="email" name="contact_email" autocomplete="email" maxlength="180" required /></label>
+            <label>Phone, optional<input type="tel" name="contact_phone" autocomplete="tel" maxlength="60" /></label>
+            <label>Country<input name="country" autocomplete="country-name" maxlength="100" required /></label>
+            <label>State, region, and city<input name="region_city" autocomplete="address-level1" maxlength="180" required /></label>
+            <label class="it-brief-wide">Current website or public profiles<textarea name="public_presence" rows="3" maxlength="1000" placeholder="Website, Instagram, Facebook, LinkedIn, Google Business Profile, or another public link."></textarea></label>
+          </div>
+          <label class="it-brief-check"><input type="checkbox" name="brief_consent" required /><span>I agree that Hermes may use this brief to respond to my project inquiry.</span></label>
+        </fieldset>
+
+        <fieldset class="it-brief-panel it-brief-review" data-brief-step="4" hidden>
+          <legend><span>05 · Review</span>Your project brief is ready.</legend>
+          <p class="it-brief-prompt">Review the summary before opening your email. The website has not sent or stored your answers.</p>
+          <pre data-brief-summary tabindex="0" aria-label="IT project brief summary"></pre>
+          <div class="it-brief-review-actions">
+            <button class="button it-brief-copy" type="button" data-brief-copy><Clipboard size={18} aria-hidden="true" />Copy brief</button>
+            <a class="button button-primary" href="mailto:officeus@hermeslogisticsus.com" data-brief-email><Mail size={18} aria-hidden="true" />Open email with brief</a>
+            <button class="it-brief-reset" type="button" data-brief-reset><RotateCcw size={17} aria-hidden="true" />Start again</button>
+          </div>
+          <p class="it-brief-status" role="status" aria-live="polite" data-brief-status></p>
+        </fieldset>
+
+        <div class="it-brief-nav" data-brief-nav>
+          <button type="button" data-brief-back hidden><ArrowLeft size={18} aria-hidden="true" />Back</button>
+          <p><span data-brief-position>1</span> / {steps.length}</p>
+          <button class="button button-primary" type="button" data-brief-next>Continue <ArrowRight size={18} aria-hidden="true" /></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  const briefRoot = document.querySelector<HTMLElement>("[data-it-project-brief]");
+
+  if (briefRoot) {
+    const form = briefRoot.querySelector<HTMLFormElement>("[data-brief-form]");
+    const panels = [...briefRoot.querySelectorAll<HTMLElement>("[data-brief-step]")];
+    const progress = [...briefRoot.querySelectorAll<HTMLElement>("[data-brief-progress]")];
+    const next = briefRoot.querySelector<HTMLButtonElement>("[data-brief-next]");
+    const back = briefRoot.querySelector<HTMLButtonElement>("[data-brief-back]");
+    const nav = briefRoot.querySelector<HTMLElement>("[data-brief-nav]");
+    const position = briefRoot.querySelector<HTMLElement>("[data-brief-position]");
+    const summary = briefRoot.querySelector<HTMLElement>("[data-brief-summary]");
+    const email = briefRoot.querySelector<HTMLAnchorElement>("[data-brief-email]");
+    const status = briefRoot.querySelector<HTMLElement>("[data-brief-status]");
+    const budgetMode = briefRoot.querySelector<HTMLSelectElement>("[data-budget-mode]");
+    const budgetAmount = briefRoot.querySelector<HTMLInputElement>("[data-budget-amount]");
+    let current = 0;
+
+    const alignDirectLink = () => {
+      if (window.location.hash !== "#project-brief") return;
+      const root = document.documentElement;
+      const previousBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = "auto";
+      const targetTop = briefRoot.getBoundingClientRect().top + window.scrollY - 70;
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: "auto" });
+      requestAnimationFrame(() => {
+        root.style.scrollBehavior = previousBehavior;
+      });
+    };
+
+    const scheduleDirectLinkAlignment = () => {
+      [0, 250, 1000].forEach((delay) => window.setTimeout(alignDirectLink, delay));
+    };
+
+    scheduleDirectLinkAlignment();
+    window.addEventListener("pageshow", scheduleDirectLinkAlignment);
+    window.addEventListener("hashchange", scheduleDirectLinkAlignment);
+    document.fonts?.ready.then(scheduleDirectLinkAlignment);
+
+    const clean = (value: FormDataEntryValue | null, max = 1000) =>
+      String(value ?? "").replace(/[<>\u0000-\u001f\u007f]/g, "").trim().slice(0, max);
+
+    const updateBudgetRequirement = () => {
+      if (!budgetAmount || !budgetMode) return;
+      budgetAmount.required = Boolean(budgetMode.value && budgetMode.value !== "not_sure");
+    };
+
+    const validatePanel = () => {
+      const panel = panels[current];
+      if (!panel) return false;
+
+      if (current === 1 && form) {
+        const reference = form.elements.namedItem("example_1") as HTMLInputElement | null;
+        const noExamples = form.elements.namedItem("no_examples") as HTMLInputElement | null;
+        reference?.setCustomValidity(reference.value.trim() || noExamples?.checked ? "" : "Add one example or choose market research.");
+      }
+
+      const fields = [...panel.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, textarea, select")];
+      for (const field of fields) {
+        if (!field.reportValidity()) return false;
+      }
+      return true;
+    };
+
+    const value = (data: FormData, name: string, max = 1000) => clean(data.get(name), max);
+
+    const buildSummary = () => {
+      if (!form) return "";
+      const data = new FormData(form);
+      const projects = [1, 2, 3].map((n) => value(data, `project_${n}`, 600)).filter(Boolean);
+      const references = [1, 2, 3]
+        .map((n) => {
+          const source = value(data, `example_${n}`, 500);
+          const detail = value(data, `example_${n}_detail`, 600);
+          return source ? `${source}${detail ? ` — ${detail}` : ""}` : "";
+        })
+        .filter(Boolean);
+
+      const lines = [
+        "Hermes IT Project Brief",
+        "=======================",
+        "",
+        `Company: ${value(data, "company_name", 160)}`,
+        `Company stage: ${value(data, "company_stage", 120)}`,
+        `Location: ${value(data, "region_city", 180)}, ${value(data, "country", 100)}`,
+        "",
+        "Business goal:",
+        value(data, "business_goal", 900),
+        "",
+        "Project priorities:",
+        ...projects.map((project, index) => `${index + 1}. ${project}`),
+        "",
+        "References and ideas:",
+        ...(references.length ? references.map((reference, index) => `${index + 1}. ${reference}`) : ["Hermes market research requested."]),
+        "",
+        `Investment approach: ${value(data, "budget_mode", 80).replaceAll("_", " ")}`,
+        `Budget: ${value(data, "budget_amount", 120) || "Needs definition"}`,
+        `Planning horizon: ${value(data, "investment_horizon", 80)}`,
+        `Timing or constraints: ${value(data, "timing_notes", 500) || "Not provided"}`,
+        "",
+        "Current public presence:",
+        value(data, "public_presence", 1000) || "Not provided",
+        "",
+        "Contact:",
+        `${value(data, "contact_name", 120)} · ${value(data, "contact_role", 120)}`,
+        value(data, "contact_email", 180),
+        value(data, "contact_phone", 60) || "Phone not provided",
+        "",
+        "Prepared on hermeslogisticsus.com. Not automatically sent or stored by the website.",
+      ];
+
+      const output = lines.join("\n");
+      if (summary) summary.textContent = output;
+      if (email) {
+        const company = value(data, "company_name", 160) || "New company";
+        email.href = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`Hermes IT Project Brief — ${company}`)}&body=${encodeURIComponent(output.slice(0, 6000))}`;
+      }
+      return output;
+    };
+
+    const show = (index: number) => {
+      current = Math.max(0, Math.min(index, panels.length - 1));
+      panels.forEach((panel, panelIndex) => (panel.hidden = panelIndex !== current));
+      progress.forEach((item, itemIndex) => {
+        if (itemIndex === current) item.setAttribute("aria-current", "step");
+        else item.removeAttribute("aria-current");
+        item.dataset.complete = String(itemIndex < current);
+      });
+      if (back) back.hidden = current === 0 || current === panels.length - 1;
+      if (nav) nav.hidden = current === panels.length - 1;
+      if (position) position.textContent = String(current + 1);
+      if (current === panels.length - 1) buildSummary();
+      briefRoot.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    budgetMode?.addEventListener("change", updateBudgetRequirement);
+    updateBudgetRequirement();
+
+    next?.addEventListener("click", () => {
+      if (validatePanel()) show(current + 1);
+    });
+    back?.addEventListener("click", () => show(current - 1));
+
+    briefRoot.querySelector<HTMLButtonElement>("[data-brief-copy]")?.addEventListener("click", async () => {
+      const output = summary?.textContent ?? buildSummary();
+      try {
+        await navigator.clipboard.writeText(output);
+        if (status) status.textContent = "Brief copied. You can paste it into any email or message.";
+      } catch {
+        if (status) status.textContent = "Copy did not work. Select the brief above and copy it manually.";
+      }
+    });
+
+    briefRoot.querySelector<HTMLButtonElement>("[data-brief-reset]")?.addEventListener("click", () => {
+      form?.reset();
+      updateBudgetRequirement();
+      if (status) status.textContent = "";
+      show(0);
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>("[data-brief-service]").forEach((link) => {
+      link.addEventListener("click", () => {
+        const service = link.dataset.briefService;
+        if (!form || !service) return;
+        const projectFields = [1, 2, 3].map((n) => form.elements.namedItem(`project_${n}`) as HTMLTextAreaElement | null);
+        const target = projectFields.find((field) => field && !field.value.trim());
+        if (target) target.value = service;
+        show(0);
+      });
+    });
+  }
+</script>
