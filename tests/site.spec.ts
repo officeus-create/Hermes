@@ -6,6 +6,7 @@ const routes = [
   "/paths/marketing/",
   "/paths/academy/",
   "/paths/technology/",
+  "/case/it-development/",
   "/privacy/",
 ];
 
@@ -83,8 +84,19 @@ test("homepage proves the website product and routes to IT Development", async (
   await proof.scrollIntoViewIfNeeded();
   await expect(proof).toBeVisible();
   await page.getByRole("link", { name: "See how it was built" }).click();
-  await expect(page).toHaveURL(/\/paths\/technology\/#technology-case-title$/);
-  await expect(page.getByRole("heading", { name: "This website was built inside the system it represents." })).toBeVisible();
+  await expect(page).toHaveURL(/\/case\/it-development\/$/);
+  await expect(page.getByRole("heading", { name: "One digital front door for four businesses." })).toBeVisible();
+});
+
+test("IT case presents verified delivery evidence and a working inquiry route", async ({ page }) => {
+  await page.goto("/case/it-development/");
+  await expect(page.getByRole("heading", { name: "Quality was tested as part of the product." })).toBeVisible();
+  await expect(page.getByText("58", { exact: true })).toBeVisible();
+  await expect(page.getByText("browser scenarios passed", { exact: true })).toBeVisible();
+  await expect(page.locator('.site-header a[href="/paths/technology/"][aria-current="page"]')).toHaveCount(2);
+  await page.getByRole("link", { name: "Discuss your website" }).click();
+  await expect(page).toHaveURL(/\/case\/it-development\/#contact$/);
+  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
 });
 
 test("direction navigation identifies the current business", async ({ page }) => {

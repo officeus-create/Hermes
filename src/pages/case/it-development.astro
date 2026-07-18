@@ -1,0 +1,161 @@
+---
+import { ArrowLeft, ArrowRight, Braces, Check, CircleDollarSign, Gauge, MonitorSmartphone, PanelsTopLeft, Rocket, SearchCheck, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ContactCTA from "../../components/ContactCTA.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+const stages = [
+  { title: "Business discovery", body: "Defined the four business directions, their audiences, public boundaries, and the action each visitor should take.", icon: SearchCheck },
+  { title: "Information architecture", body: "Organized one corporate entrance, four focused service paths, direct contact routes, and a consistent customer journey.", icon: PanelsTopLeft },
+  { title: "Original interface system", body: "Created a restrained corporate design language, direction-specific colors, interactive portals, and responsive motion.", icon: MonitorSmartphone },
+  { title: "Product engineering", body: "Built a fast static Astro website with reusable content, components, structured metadata, and controlled contact previews.", icon: Braces },
+  { title: "Quality assurance", body: "Checked desktop and mobile layouts, keyboard behavior, reduced motion, images, overflow, routing, forms, and browser errors.", icon: ShieldCheck },
+  { title: "Production delivery", body: "Created a repeatable build, test, and deployment flow for the live domain with changes preserved in version history.", icon: Rocket },
+];
+
+const outcomes = [
+  "One corporate entrance for Logistics, Marketing, Academy, and IT Development",
+  "Dedicated customer journey and contact route for every direction",
+  "Responsive portal interactions across desktop and mobile",
+  "Search metadata, structured service data, sitemap, robots, and AI-readable context",
+  "Public-content boundaries that keep employee-only information off the website",
+  "A tested production release that can continue evolving without rebuilding from zero",
+];
+
+const caseSchema = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  name: "Hermes Corporate Website Case Study",
+  url: "https://hermeslogisticsus.com/case/it-development/",
+  description: "A verified case study covering the strategy, design, engineering, QA, and deployment of the Hermes four-business corporate website.",
+  creator: {
+    "@type": "Organization",
+    name: "Hermes IT Development",
+    url: "https://hermeslogisticsus.com/paths/technology/",
+  },
+};
+---
+
+<BaseLayout
+  title="Hermes Website Case Study | IT Development"
+  description="See how Hermes IT Development planned, designed, engineered, tested, and deployed a responsive corporate website for four connected business directions."
+  image="/images/hermes-live-product.jpg"
+  schema={caseSchema}
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <main id="main-content" class="case-study-page">
+    <section class="case-study-hero" id="top">
+      <img src="/images/path-technology-portal.jpg" alt="A luminous technology portal representing connected business systems" width="1400" height="1050" decoding="async" />
+      <div class="case-study-hero-shade"></div>
+      <div class="shell case-study-hero-content">
+        <a class="detail-back" href="/paths/technology/"><ArrowLeft size={18} aria-hidden="true" />Hermes IT Development</a>
+        <p class="eyebrow hero-eyebrow">Case 01 · Live product</p>
+        <h1>One digital front door for four businesses.</h1>
+        <p>Hermes needed a corporate website that made four different directions easy to understand while presenting one serious operating standard.</p>
+        <div class="case-study-hero-actions">
+          <a class="button button-primary" href="https://hermeslogisticsus.com/" target="_blank" rel="noreferrer">View live product <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-ghost" href="#case-process">See the process</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-study-brief section" aria-labelledby="case-brief-title">
+      <div class="shell case-study-brief-layout">
+        <div data-reveal>
+          <p class="eyebrow">The assignment</p>
+          <h2 id="case-brief-title">Make a complex company feel clear, credible, and ready for conversation.</h2>
+        </div>
+        <div class="case-study-brief-copy" data-reveal>
+          <p>The public experience had to introduce Logistics, Marketing, Business Academy, and IT Development without blending their audiences or exposing internal company knowledge.</p>
+          <p>The solution uses progressive disclosure: visitors first choose a direction, then see its services, process, evidence, and correct contact route.</p>
+        </div>
+        <dl class="case-study-facts" data-reveal>
+          <div><dt>Product</dt><dd>Corporate website</dd></div>
+          <div><dt>Scope</dt><dd>Strategy to production</dd></div>
+          <div><dt>Market</dt><dd>Wisconsin first · USA</dd></div>
+          <div><dt>Status</dt><dd><span></span>Live and evolving</dd></div>
+        </dl>
+        <figure class="case-study-product-shot" data-reveal>
+          <a href="https://hermeslogisticsus.com/" target="_blank" rel="noreferrer" aria-label="Open the live Hermes website">
+            <img src="/images/hermes-live-product.jpg" alt="The live Hermes website showing its four interactive business portals" width="1440" height="900" loading="lazy" decoding="async" />
+          </a>
+          <figcaption><span>Live interface · Current release</span><a href="https://hermeslogisticsus.com/" target="_blank" rel="noreferrer">Open hermeslogisticsus.com <ArrowRight size={17} aria-hidden="true" /></a></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="case-study-process section" id="case-process" aria-labelledby="case-process-title">
+      <div class="shell">
+        <div class="section-heading split-heading" data-reveal>
+          <div><p class="eyebrow">Development process</p><h2 id="case-process-title">A complete product cycle, not a generated template.</h2></div>
+          <p>Each stage connects business decisions to a visible customer result. AI assists research, implementation, and review; final product decisions remain human-led.</p>
+        </div>
+        <ol class="case-stage-list">
+          {stages.map((stage, index) => {
+            const Icon = stage.icon;
+            return (
+              <li data-reveal style={`--reveal-delay: ${Math.min(index, 3) * 70}ms`}>
+                <span>0{index + 1}</span>
+                <Icon size={24} aria-hidden="true" />
+                <div><h3>{stage.title}</h3><p>{stage.body}</p></div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+
+    <section class="case-study-qa section" aria-labelledby="case-qa-title">
+      <div class="shell case-study-qa-layout">
+        <div class="case-study-qa-copy" data-reveal>
+          <p class="eyebrow">Release evidence · July 18, 2026</p>
+          <h2 id="case-qa-title">Quality was tested as part of the product.</h2>
+          <p>The release was checked after implementation and again on the production domain. These are release results, not customer-performance claims.</p>
+        </div>
+        <div class="case-study-metrics" data-reveal aria-label="Verified release results">
+          <article><strong>58</strong><span>browser scenarios passed</span></article>
+          <article><strong>0</strong><span>build errors or warnings</span></article>
+          <article><strong>2</strong><span>responsive test modes</span></article>
+          <article><strong>200</strong><span>production response status</span></article>
+        </div>
+        <div class="case-study-qa-note" data-reveal>
+          <Gauge size={25} aria-hidden="true" />
+          <p><strong>Checked beyond appearance.</strong> Navigation, keyboard use, contact previews, reduced motion, broken images, overflow, routes, and console errors are covered by the release process.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="case-study-results section" aria-labelledby="case-results-title">
+      <div class="shell case-study-results-layout">
+        <div data-reveal>
+          <p class="eyebrow">What was delivered</p>
+          <h2 id="case-results-title">A public product the company can build on.</h2>
+        </div>
+        <ul data-reveal>
+          {outcomes.map((outcome) => <li><Check size={18} aria-hidden="true" />{outcome}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="case-study-commercial section" aria-labelledby="case-commercial-title">
+      <div class="shell case-study-commercial-layout" data-reveal>
+        <div>
+          <p class="eyebrow">Commercial planning reference</p>
+          <h2 id="case-commercial-title">Build your digital presence around the way your company actually works.</h2>
+          <p>This was an internal Hermes product, so no client invoice is presented as a case metric. A comparable Digital Presence System is planned from the public range below after discovery and scope confirmation.</p>
+        </div>
+        <div class="case-study-commercial-range">
+          <CircleDollarSign size={24} aria-hidden="true" />
+          <span>Starting range</span>
+          <strong>From $3k</strong>
+          <p>Typical planning window: 4-8 weeks</p>
+          <a href="#contact">Discuss your website <ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+      </div>
+    </section>
+
+    <ContactCTA selectedPath="IT Development" />
+  </main>
+  <SiteFooter />
+</BaseLayout>

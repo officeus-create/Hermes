@@ -15,6 +15,11 @@ Canonical site: https://hermeslogisticsus.com/
 - Hermes IT Development: websites, CRM systems, AI-assisted workflows, automation, and connected business platforms.
   https://hermeslogisticsus.com/paths/technology/
 
+## Verified case study
+
+- Hermes corporate website: strategy, original interface system, responsive engineering, QA, and production delivery for four business directions.
+  https://hermeslogisticsus.com/case/it-development/
+
 ## Current boundaries
 
 - Contact submission is currently preview-only and does not transmit or store visitor information.

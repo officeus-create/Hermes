@@ -4,13 +4,14 @@ import { site } from "../data/site";
 
 interface Props {
   theme?: "dark" | "light";
+  activePath?: string;
 }
 
-const { theme = "dark" } = Astro.props;
+const { theme = "dark", activePath } = Astro.props;
 const currentPath = Astro.url.pathname;
 const navigation = site.navigation.map((item) => {
   const url = `/${item.href}`;
-  return { ...item, url, active: currentPath === url };
+  return { ...item, url, active: (activePath ?? currentPath) === url };
 });
 ---
 

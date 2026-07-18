@@ -363,6 +363,9 @@ h3 { font-size: 1.75rem; }
 .technology-case-principle strong, .technology-case-principle span { display: block; }
 .technology-case-principle strong { color: var(--color-navy-900); }
 .technology-case-principle span { margin-top: .35rem; color: var(--color-muted); font-size: .88rem; }
+.technology-case-link { display: inline-flex; gap: .5rem; align-items: center; min-height: 44px; margin-top: 1.2rem; color: #2563eb; font-family: var(--font-mono); font-size: .76rem; font-weight: 800; }
+.technology-case-link svg { transition: transform 180ms ease; }
+.technology-case-link:hover svg { transform: translateX(3px); }
 .delivery-role-list { border-top: 1px solid #dcddea; }
 .delivery-role-list article { display: grid; grid-template-columns: 44px 1fr; gap: 1rem; min-height: 150px; padding: 1.5rem 0; border-bottom: 1px solid #dcddea; }
 .delivery-role-list article > span { color: #2563eb; font-family: var(--font-mono); font-size: .7rem; }
@@ -428,6 +431,70 @@ h3 { font-size: 1.75rem; }
 .package-estimate > span { color: var(--color-muted); font-size: .88rem; }
 .package-estimate a { display: inline-flex; gap: .5rem; align-items: center; min-height: 44px; margin-top: auto; color: #2563eb; font-family: var(--font-mono); font-size: .76rem; font-weight: 800; }
 .pricing-note { max-width: 850px; margin: 1.4rem 0 0; color: var(--color-muted); font-size: .78rem; }
+.case-study-hero { position: relative; display: flex; align-items: flex-end; min-height: min(820px, 88svh); overflow: hidden; background: var(--color-navy-950); color: white; }
+.case-study-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(.82) contrast(1.04); }
+.case-study-hero-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,8,34,.97) 0%, rgba(5,10,40,.82) 48%, rgba(5,10,40,.22) 100%), linear-gradient(0deg, rgba(4,8,34,.72), transparent 55%); }
+.case-study-hero-content { position: relative; z-index: 2; padding-top: 9rem; padding-bottom: clamp(3rem, 7vw, 6rem); }
+.case-study-hero-content h1 { max-width: 880px; margin-bottom: 1.4rem; }
+.case-study-hero-content > p:not(.eyebrow) { max-width: 660px; color: rgba(255,255,255,.78); font-size: 1.14rem; }
+.case-study-hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2rem; }
+.case-study-brief { background: #fff; }
+.case-study-brief-layout { display: grid; grid-template-columns: .9fr 1.1fr; gap: 2.5rem clamp(3rem, 8vw, 8rem); }
+.case-study-brief-layout h2 { max-width: 690px; color: var(--color-navy-900); }
+.case-study-brief-copy { color: var(--color-muted); font-size: 1.04rem; }
+.case-study-brief-copy p:last-child { margin-bottom: 0; }
+.case-study-facts { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); margin: 1.5rem 0 0; border-top: 1px solid #dcddea; border-bottom: 1px solid #dcddea; }
+.case-study-facts div { min-width: 0; padding: 1.4rem; border-right: 1px solid #dcddea; }
+.case-study-facts div:first-child { padding-left: 0; }
+.case-study-facts div:last-child { border-right: 0; }
+.case-study-facts dt { color: var(--color-muted); font-family: var(--font-mono); font-size: .65rem; }
+.case-study-facts dd { margin: .55rem 0 0; color: var(--color-navy-900); font-weight: 750; }
+.case-study-facts dd span { display: inline-block; width: 7px; height: 7px; margin-right: .45rem; border-radius: 50%; background: #128b8a; box-shadow: 0 0 0 4px rgba(18,139,138,.12); }
+.case-study-product-shot { grid-column: 1 / -1; margin: 2rem 0 0; }
+.case-study-product-shot > a { display: block; overflow: hidden; border: 1px solid #d4d7df; border-radius: 8px; box-shadow: 0 28px 70px rgba(15,20,55,.15); }
+.case-study-product-shot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform 600ms cubic-bezier(.22,.75,.2,1); }
+.case-study-product-shot > a:hover img, .case-study-product-shot > a:focus-visible img { transform: scale(1.018); }
+.case-study-product-shot figcaption { display: flex; justify-content: space-between; gap: 1rem; padding-top: .85rem; color: var(--color-muted); font-family: var(--font-mono); font-size: .68rem; }
+.case-study-product-shot figcaption a { display: inline-flex; gap: .45rem; align-items: center; color: #2563eb; font-weight: 800; }
+.case-study-process { background: #f4f5f8; }
+.case-stage-list { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; border-top: 1px solid #cfd4de; list-style: none; }
+.case-stage-list li { display: grid; grid-template-columns: auto 1fr; align-content: start; gap: 1.2rem; min-height: 300px; padding: 1.7rem; border-right: 1px solid #cfd4de; border-bottom: 1px solid #cfd4de; }
+.case-stage-list li:nth-child(3n) { border-right: 0; }
+.case-stage-list li > span { color: #2563eb; font-family: var(--font-mono); font-size: .68rem; }
+.case-stage-list li > svg { justify-self: end; color: #2563eb; }
+.case-stage-list li > div { grid-column: 1 / -1; align-self: end; }
+.case-stage-list h3 { margin-bottom: .7rem; color: var(--color-navy-900); font-size: 1.25rem; }
+.case-stage-list p { margin: 0; color: var(--color-muted); font-size: .9rem; }
+.case-study-qa { background: var(--color-navy-950); color: white; }
+.case-study-qa-layout { display: grid; grid-template-columns: .7fr 1.3fr; gap: clamp(2.5rem, 7vw, 7rem); }
+.case-study-qa-copy h2 { margin-bottom: 1.2rem; color: white; }
+.case-study-qa-copy > p:last-child { color: rgba(255,255,255,.64); }
+.case-study-metrics { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid rgba(255,255,255,.2); }
+.case-study-metrics article { min-height: 180px; padding: 1.5rem; border-right: 1px solid rgba(255,255,255,.2); border-bottom: 1px solid rgba(255,255,255,.2); }
+.case-study-metrics article:nth-child(2n) { border-right: 0; }
+.case-study-metrics strong, .case-study-metrics span { display: block; }
+.case-study-metrics strong { color: #63d9d3; font-family: var(--font-display); font-size: 3.5rem; line-height: 1; }
+.case-study-metrics span { max-width: 150px; margin-top: 1rem; color: rgba(255,255,255,.68); font-size: .83rem; }
+.case-study-qa-note { grid-column: 1 / -1; display: grid; grid-template-columns: 32px 1fr; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,.2); }
+.case-study-qa-note svg { color: #63d9d3; }
+.case-study-qa-note p { max-width: 900px; margin: 0; color: rgba(255,255,255,.68); }
+.case-study-qa-note strong { color: white; }
+.case-study-results { background: #fff; }
+.case-study-results-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(3rem, 8vw, 8rem); }
+.case-study-results-layout h2 { color: var(--color-navy-900); }
+.case-study-results-layout ul { margin: 0; padding: 0; border-top: 1px solid #dcddea; list-style: none; }
+.case-study-results-layout li { display: flex; gap: .8rem; align-items: flex-start; min-height: 70px; padding: 1.2rem 0; border-bottom: 1px solid #dcddea; color: var(--color-navy-900); font-weight: 700; }
+.case-study-results-layout li svg { flex: 0 0 auto; margin-top: .2rem; color: #128b8a; }
+.case-study-commercial { background: #eef1f6; }
+.case-study-commercial-layout { display: grid; grid-template-columns: 1.25fr .75fr; gap: clamp(3rem, 8vw, 8rem); }
+.case-study-commercial-layout h2 { max-width: 800px; color: var(--color-navy-900); }
+.case-study-commercial-layout > div:first-child > p:last-child { max-width: 760px; color: var(--color-muted); }
+.case-study-commercial-range { display: flex; flex-direction: column; align-items: flex-start; padding-left: 2rem; border-left: 1px solid #cbd1dc; }
+.case-study-commercial-range svg { color: #2563eb; }
+.case-study-commercial-range > span { margin-top: 1rem; color: var(--color-muted); font-family: var(--font-mono); font-size: .67rem; }
+.case-study-commercial-range strong { margin-top: .35rem; color: var(--color-navy-900); font-size: 2.4rem; }
+.case-study-commercial-range p { color: var(--color-muted); }
+.case-study-commercial-range a { display: inline-flex; gap: .5rem; align-items: center; min-height: 48px; margin-top: auto; color: #2563eb; font-family: var(--font-mono); font-size: .78rem; font-weight: 800; }
 .marketing-flow { overflow: hidden; background: #f4f0f5; }
 .marketing-flow-heading h2 { max-width: 790px; color: var(--color-navy-900); }
 .growth-console { border: 1px solid #cbc7d2; background: #fff; }
@@ -692,6 +759,10 @@ h3 { font-size: 1.75rem; }
   .studio-proof { grid-template-columns: 1fr auto; }
   .studio-proof p { grid-column: 1 / -1; }
   .technology-case-layout { grid-template-columns: 1fr; }
+  .case-stage-list { grid-template-columns: 1fr 1fr; }
+  .case-stage-list li:nth-child(3n) { border-right: 1px solid #cfd4de; }
+  .case-stage-list li:nth-child(2n) { border-right: 0; }
+  .case-study-qa-layout, .case-study-results-layout { grid-template-columns: 1fr; }
   .website-proof-layout { grid-template-columns: 1fr; }
   .website-proof-copy { max-width: 720px; }
   .technology-case-copy { position: static; }
@@ -732,6 +803,19 @@ h3 { font-size: 1.75rem; }
   .website-proof-copy h2 { font-size: 2.45rem; }
   .website-proof-copy ul { grid-template-columns: 1fr; }
   .website-proof-domain { display: none; }
+  .case-study-hero { min-height: 82svh; }
+  .case-study-hero-shade { background: linear-gradient(0deg, rgba(4,8,34,.96) 0%, rgba(5,10,40,.78) 72%, rgba(5,10,40,.38) 100%); }
+  .case-study-brief-layout, .case-study-commercial-layout { grid-template-columns: 1fr; }
+  .case-study-facts { grid-template-columns: 1fr 1fr; }
+  .case-study-facts div, .case-study-facts div:first-child { padding: 1rem; border-bottom: 1px solid #dcddea; }
+  .case-study-facts div:nth-child(2n) { border-right: 0; }
+  .case-study-facts div:nth-last-child(-n+2) { border-bottom: 0; }
+  .case-study-product-shot figcaption { display: grid; }
+  .case-stage-list { grid-template-columns: 1fr; }
+  .case-stage-list li, .case-stage-list li:nth-child(2n), .case-stage-list li:nth-child(3n) { min-height: 0; border-right: 0; }
+  .case-study-metrics article { min-height: 150px; }
+  .case-study-commercial-range { padding: 1.5rem 0 0; border-top: 1px solid #cbd1dc; border-left: 0; }
+  .case-study-commercial-range a { margin-top: 1rem; }
   .hero { min-height: 82svh; }
   .hero-media { inset: -2%; transform: scale(1.04); }
   .hero-media img { object-position: 62% center; }
