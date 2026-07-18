@@ -6,6 +6,7 @@ import ItOperatingFlow from "./ItOperatingFlow.astro";
 import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
 import TechnologyStudioProof from "./TechnologyStudioProof.astro";
 import TechnologyProjectBrief from "./TechnologyProjectBrief.astro";
+import TechnologyPartnershipShowcase from "./TechnologyPartnershipShowcase.astro";
 
 interface Props {
   path: PathDetail;
@@ -71,6 +72,7 @@ const directContactTitle = {
   }
 
   {path.id === "technology" && <ItOperatingFlow />}
+  {path.id === "technology" && <TechnologyPartnershipShowcase />}
   {path.id === "technology" && <TechnologyStudioProof />}
   {path.id === "technology" && <TechnologyProjectBrief />}
   {path.id === "marketing" && <MarketingGrowthFlow />}

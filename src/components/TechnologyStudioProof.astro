@@ -17,51 +17,51 @@ const companySystemStages = [
   "Launch, training, and controlled improvement cycles",
 ];
 
-const digitalEmployees = [
+const aiAssistants = [
   {
-    role: "Digital Operations Director",
+    role: "Operations AI Assistant",
     timeline: "4-8 weeks",
     icon: Settings,
     description: "Coordinates priorities, task routing, SOP checks, management summaries, cross-team handoffs, and exception review.",
   },
   {
-    role: "SEO & Content Intelligence Specialist",
+    role: "SEO and Content AI Assistant",
     timeline: "2-4 weeks",
     icon: Search,
     description: "Monitors approved sources, prepares keyword maps, content briefs, optimization previews, and search-performance reviews.",
   },
   {
-    role: "Finance Operations Assistant",
+    role: "Finance Operations AI Assistant",
     timeline: "3-6 weeks",
     icon: CircleDollarSign,
     description: "Organizes invoice intake, reconciliation drafts, cash-flow summaries, document checks, and alerts without unsupervised payments.",
   },
   {
-    role: "HR & Recruiting Assistant",
+    role: "HR and Recruiting AI Assistant",
     timeline: "2-5 weeks",
     icon: UserRoundSearch,
     description: "Creates role drafts, structures candidate intake, prepares screening summaries, interview packs, and onboarding checklists.",
   },
   {
-    role: "Sales Workflow Assistant",
+    role: "Sales Workflow AI Assistant",
     timeline: "3-6 weeks",
     icon: Users,
     description: "Supports lead qualification, CRM previews, follow-up drafts, sales scripts, pipeline summaries, and next-action reminders.",
   },
   {
-    role: "Business Analyst",
+    role: "Business Analysis AI Assistant",
     timeline: "2-5 weeks",
     icon: ChartNoAxesCombined,
     description: "Defines KPI, checks data quality, prepares dashboards, identifies operating patterns, and creates decision briefs.",
   },
   {
-    role: "Design & Content Assistant",
+    role: "Design and Content AI Assistant",
     timeline: "2-5 weeks",
     icon: Palette,
     description: "Turns approved direction into briefs, content variants, organized assets, production checklists, and visual QA support.",
   },
   {
-    role: "Department Operations Assistant",
+    role: "Department Operations AI Assistant",
     timeline: "3-6 weeks",
     icon: Workflow,
     description: "Adapts to a defined department role using its documents, tools, routing rules, approval gates, and performance standards.",
@@ -158,27 +158,27 @@ const industryStarts = [
 <section class="section digital-workforce" aria-labelledby="digital-workforce-title">
   <div class="shell">
     <div class="section-heading split-heading digital-workforce-heading">
-      <div><p class="eyebrow">Digital workforce</p><h2 id="digital-workforce-title">A digital employee designed for each business role.</h2></div>
-      <p>We configure each role around the company's SOP, source material, tools, decisions, and approval boundaries. Typical setup time begins after the required process knowledge and system access are ready.</p>
+      <div><p class="eyebrow">AI assistants</p><h2 id="digital-workforce-title">An AI assistant designed around a defined business role.</h2></div>
+      <p>We configure each assistant around the company's approved process material, tools, decisions, and review boundaries. Typical setup time begins after the required process knowledge and system access are ready.</p>
     </div>
 
     <div class="digital-employee-list">
-      {digitalEmployees.map((employee, index) => {
-        const Icon = employee.icon;
+      {aiAssistants.map((assistant, index) => {
+        const Icon = assistant.icon;
         return (
           <article>
             <span>0{index + 1}</span>
             <Icon size={23} aria-hidden="true" />
-            <div><h3>{employee.role}</h3><p>{employee.description}</p></div>
-            <div class="employee-training"><p>Setup & training</p><strong>{employee.timeline}</strong></div>
+            <div><h3>{assistant.role}</h3><p>{assistant.description}</p></div>
+            <div class="employee-training"><p>Setup & training</p><strong>{assistant.timeline}</strong></div>
           </article>
         );
       })}
     </div>
 
     <div class="digital-workforce-cta">
-      <div><Bot size={25} aria-hidden="true" /><p>Start with one role, test it in real work, then expand the digital team.</p></div>
-      <a href="#project-brief" data-brief-service="Digital Employee Program" aria-label="Add Digital Employee Program to your project brief">Design your digital team <ArrowRight size={18} aria-hidden="true" /></a>
+      <div><Bot size={25} aria-hidden="true" /><p>Start with one assistant, test it in real work, then expand the supported workflows.</p></div>
+      <a href="#project-brief" data-brief-service="AI Assistant Program" aria-label="Add AI Assistant Program to your project brief">Design your AI assistant <ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </div>
 </section>

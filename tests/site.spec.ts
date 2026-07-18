@@ -91,7 +91,7 @@ test("homepage proves the website product and routes to IT Development", async (
 test("IT case presents verified delivery evidence and a working inquiry route", async ({ page }) => {
   await page.goto("/case/it-development/");
   await expect(page.getByRole("heading", { name: "Quality was tested as part of the product." })).toBeVisible();
-  await expect(page.getByText("62", { exact: true })).toBeVisible();
+  await expect(page.getByText("64", { exact: true })).toBeVisible();
   await expect(page.getByText("browser scenarios passed", { exact: true })).toBeVisible();
   await expect(page.locator('.site-header a[href="/paths/technology/"][aria-current="page"]')).toHaveCount(2);
   await page.getByRole("link", { name: "Start your project brief" }).click();
@@ -340,6 +340,30 @@ test("company operating system starts the full project brief", async ({ page }) 
   await expect(page).toHaveURL(/#project-brief$/);
 });
 
+test("technology partnership presents four growth layers and evidence statuses", async ({ page }) => {
+  await page.goto("/paths/technology/");
+  const partnership = page.locator(".technology-partnership");
+  await expect(partnership.getByRole("heading", { name: "One partner that can keep building as your company grows." })).toBeVisible();
+  for (const heading of [
+    "Build the products your next stage needs.",
+    "Create demand around the new capability.",
+    "Prepare people to operate the system.",
+    "Support the physical operation behind growth.",
+  ]) {
+    await expect(partnership.getByRole("heading", { name: heading })).toBeVisible();
+  }
+
+  await expect(page.getByText("Live product", { exact: true })).toHaveCount(2);
+  await expect(page.getByText("Working prototype", { exact: true })).toBeVisible();
+  await expect(page.getByText("Build-ready capability", { exact: true })).toHaveCount(2);
+  await expect(page.getByText("WhatsApp", { exact: true })).toBeVisible();
+  await expect(page.getByText("Google Chat", { exact: true })).toBeVisible();
+  await expect(page.getByText(/digital employee/i)).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Add operations control to your brief" }).click();
+  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("CRM and Operations Control");
+});
+
 test("each business direction exposes Wisconsin SEO signals and service schema", async ({ page }) => {
   for (const slug of ["logistics", "marketing", "academy", "technology"]) {
     await page.goto(`/paths/${slug}/`);
@@ -349,13 +373,13 @@ test("each business direction exposes Wisconsin SEO signals and service schema",
   }
 });
 
-test("digital workforce roles show training time and pre-fill the brief", async ({ page }) => {
+test("AI assistant roles show setup time and pre-fill the brief", async ({ page }) => {
   await page.goto("/paths/technology/");
-  await expect(page.getByRole("heading", { name: "Digital Operations Director" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "HR & Recruiting Assistant" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Operations AI Assistant", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "HR and Recruiting AI Assistant" })).toBeVisible();
   await expect(page.locator(".digital-workforce").getByText("4-8 weeks", { exact: true })).toBeVisible();
-  await page.getByRole("link", { name: "Add Digital Employee Program to your project brief" }).click();
-  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("Digital Employee Program");
+  await page.getByRole("link", { name: "Add AI Assistant Program to your project brief" }).click();
+  await expect(page.locator('textarea[name="project_1"]')).toHaveValue("AI Assistant Program");
 });
 
 test("IT project brief turns unstructured ideas into an email-ready summary", async ({ page }) => {

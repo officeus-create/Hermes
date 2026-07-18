@@ -1,0 +1,160 @@
+---
+import { ArrowRight, Bot, Braces, ChartNoAxesCombined, Check, GraduationCap, LayoutTemplate, MessagesSquare, Network, Truck, Workflow } from "@lucide/astro";
+
+const growthLayers = [
+  {
+    number: "01",
+    name: "Technology",
+    promise: "Build the products your next stage needs.",
+    detail: "Websites, client portals, applications, CRM, booking, payments, data flows, automation, and supported integrations designed around the way your company actually works.",
+    items: ["Customer-facing products", "Operations and CRM", "Automation and analytics"],
+    service: "Technology Growth Partnership",
+  },
+  {
+    number: "02",
+    name: "Marketing",
+    promise: "Create demand around the new capability.",
+    detail: "Positioning, channel strategy, content systems, campaign infrastructure, lead qualification, and measurement connected to the products we build.",
+    items: ["Market positioning", "Lead and content systems", "Performance visibility"],
+    service: "Technology and Marketing Growth Partnership",
+  },
+  {
+    number: "03",
+    name: "Academy",
+    promise: "Prepare people to operate the system.",
+    detail: "Role-based onboarding, internal learning paths, practical playbooks, assessment workflows, and recruiting support shaped around the company's processes.",
+    items: ["Role-based training", "Onboarding systems", "Recruiting workflows"],
+    service: "Technology and Team Capability Partnership",
+  },
+  {
+    number: "04",
+    name: "Logistics",
+    promise: "Support the physical operation behind growth.",
+    detail: "For the right partnership, we can map shipping workflows, carrier or vendor coordination, and evaluate a local logistics operation or partner network around the client's market.",
+    items: ["Supply-chain workflow", "Carrier and vendor coordination", "Market and operating feasibility"],
+    service: "Connected Company Growth Partnership",
+  },
+];
+
+const proofCases = [
+  {
+    status: "Live product",
+    icon: LayoutTemplate,
+    title: "Corporate digital front door",
+    body: "A deployed multi-business website with original visual direction, responsive interactions, structured content, automated browser QA, and a controlled release workflow.",
+    proof: "View the verified website case",
+    href: "/case/it-development/",
+  },
+  {
+    status: "Live product",
+    icon: Braces,
+    title: "Guided project qualification",
+    body: "A multi-step brief that turns unstructured business ideas, examples, market, timing, and investment capacity into an email-ready project summary.",
+    proof: "Open the project brief",
+    href: "#project-brief",
+  },
+  {
+    status: "Working prototype",
+    icon: Network,
+    title: "CRM and operations control",
+    body: "Structured intake, duplicate checks, review queues, routing previews, status controls, and management-ready outputs before approved records enter a working system.",
+    proof: "Add operations control to your brief",
+    href: "#project-brief",
+    service: "CRM and Operations Control",
+  },
+  {
+    status: "Workflow in use",
+    icon: Workflow,
+    title: "AI-assisted product delivery",
+    body: "Business direction, implementation, independent QA, decision records, approval gates, automated tests, and release verification coordinated as one delivery process.",
+    proof: "Plan a connected delivery system",
+    href: "#project-brief",
+    service: "AI-assisted Product Delivery System",
+  },
+  {
+    status: "Build-ready capability",
+    icon: MessagesSquare,
+    title: "Conversational assistants",
+    body: "Customer intake, internal Q&A, task routing, summaries, reminders, and approved actions delivered through the channels people already use.",
+    proof: "Add a messaging assistant to your brief",
+    href: "#project-brief",
+    service: "Conversational AI and Messaging Assistant",
+  },
+  {
+    status: "Build-ready capability",
+    icon: Bot,
+    title: "AI knowledge and decision support",
+    body: "Assistants grounded in approved company material that prepare answers, research, summaries, checks, and recommendations while people retain final decisions.",
+    proof: "Explore an AI knowledge system",
+    href: "#project-brief",
+    service: "AI Knowledge and Decision Support System",
+  },
+];
+
+const customerChannels = ["Web", "Email", "Telegram", "WhatsApp", "Instagram", "Messenger"];
+const teamChannels = ["Google Chat", "Google Workspace", "CRM", "Dashboards"];
+---
+
+<section class="section technology-partnership" aria-labelledby="technology-partnership-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-partnership-heading" data-reveal>
+      <div>
+        <p class="eyebrow">A company-building partnership</p>
+        <h2 id="technology-partnership-title">One partner that can keep building as your company grows.</h2>
+      </div>
+      <div class="technology-partnership-intro">
+        <p>Start with one useful product. Then connect demand, team capability, and operations around it. We adapt the roadmap to the company's stage and investment capacity instead of forcing every business into the same package.</p>
+        <p><strong>Already operating at scale?</strong> Bring us the difficult workflow, disconnected systems, or growth idea your current tools cannot solve cleanly.</p>
+      </div>
+    </div>
+
+    <div class="partnership-rails" data-reveal aria-label="Hermes growth partnership layers">
+      {growthLayers.map((layer, index) => (
+        <article class:list={[`partnership-rail partnership-rail-${index + 1}`, { "is-primary": index === 0 }]} tabindex="0">
+          <div class="partnership-rail-label"><span>{layer.number}</span><strong>{layer.name}</strong></div>
+          <div class="partnership-rail-content">
+            <h3>{layer.promise}</h3>
+            <p>{layer.detail}</p>
+            <ul>{layer.items.map((item) => <li><Check size={15} aria-hidden="true" />{item}</li>)}</ul>
+            <a href="#project-brief" data-brief-service={layer.service}>Add this layer to your brief <ArrowRight size={17} aria-hidden="true" /></a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <div class="partnership-condition" data-reveal>
+      <Truck size={23} aria-hidden="true" />
+      <p>International logistics expansion is evaluated separately and proceeds only where market demand, local licensing, operating partners, and unit economics support it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section technology-proof-library" aria-labelledby="technology-proof-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-proof-heading" data-reveal>
+      <div><p class="eyebrow">What we can build</p><h2 id="technology-proof-title">Real work, clearly labeled.</h2></div>
+      <p>We distinguish deployed products from working prototypes and build-ready capabilities. That gives you a useful picture of what exists today without pretending every idea is already a finished client case.</p>
+    </div>
+
+    <div class="technology-proof-grid" data-reveal>
+      {proofCases.map((item, index) => {
+        const Icon = item.icon;
+        return (
+          <article class:list={["technology-proof-item", `technology-proof-item-${index + 1}`]}>
+            <div class="technology-proof-meta"><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.status}</strong></div>
+            <Icon size={25} aria-hidden="true" />
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            <a href={item.href} data-brief-service={item.service}>{item.proof} <ArrowRight size={17} aria-hidden="true" /></a>
+          </article>
+        );
+      })}
+    </div>
+
+    <div class="technology-channel-map" data-reveal>
+      <div><ChartNoAxesCombined size={22} aria-hidden="true" /><p><span>Customer channels</span>{customerChannels.map((channel) => <strong>{channel}</strong>)}</p></div>
+      <div><GraduationCap size={22} aria-hidden="true" /><p><span>Team and operations</span>{teamChannels.map((channel) => <strong>{channel}</strong>)}</p></div>
+      <p>Channel availability depends on official platform access, account eligibility, approved use cases, and the client's operating requirements.</p>
+    </div>
+  </div>
+</section>
