@@ -1,0 +1,1463 @@
+{
+  "mode": "local_static_audit",
+  "sourceLabel": "Validated local website build",
+  "generatedAt": "2026-07-28T18:45:23.723Z",
+  "pageCount": 23,
+  "averageScore": 99,
+  "checksPassed": 205,
+  "needsReview": 2,
+  "externalCrawlPerformed": false,
+  "websiteWritePerformed": false,
+  "messagesSent": false,
+  "pages": [
+    {
+      "route": "/404.html",
+      "title": "Page not found | Hermes",
+      "score": 78,
+      "passed": 7,
+      "needsReview": 2,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "23 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "needs_review",
+          "detail": "45 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/404/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "needs_review",
+          "detail": "0 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "3 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/case/it-development/",
+      "title": "Hermes Website Case Study | IT Development",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "42 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "152 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/case/it-development/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "6 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "6 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 2 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/contacts/",
+      "title": "Contact Hermes | USA & International",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "36 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "143 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/contacts/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "2 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "4 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/demos/crm-validation/",
+      "title": "Hermes CRM Validation Dashboard · Preview",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "41 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "131 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/demos/crm-validation/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "4 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "1 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/demos/hermes-connect/",
+      "title": "Hermes Connect · Profile & Availability v0.2",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "44 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "120 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/demos/hermes-connect/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "1 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/es/",
+      "title": "Hermes | Logística, marketing, academia y desarrollo IT",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "55 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "141 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/es/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "8 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 5 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/fr/",
+      "title": "Hermes | Logistique, marketing, académie et développement IT",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "60 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "162 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/fr/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "8 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 5 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "title": "Hermes | Logistics, Marketing, Academy & IT",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "43 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "156 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "10 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "7 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 6 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/it/",
+      "title": "Hermes | Logistica, marketing, academy e sviluppo IT",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "52 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "135 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/it/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "8 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 5 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/load-board/",
+      "title": "Car Hauling Load Board Preview | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "49 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "139 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/load-board/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "5 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "7 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/logistics/agency/",
+      "title": "Open an agency | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "33 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "132 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/logistics/agency/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "3 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/logistics/apply/",
+      "title": "Logistics Application | Hermes",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "30 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "83 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/logistics/apply/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "4 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/logistics/broker/",
+      "title": "Broker | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "25 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "130 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/logistics/broker/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "4 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/logistics/careers/",
+      "title": "Work with us | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "31 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "135 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/logistics/careers/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "4 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/logistics/carrier/",
+      "title": "Carrier or owner-operator | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "44 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "144 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/logistics/carrier/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "4 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/logistics/shipper-dealer/",
+      "title": "Shipper or dealer | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "36 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "119 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/logistics/shipper-dealer/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "1 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "4 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/paths/academy/",
+      "title": "Practical Business & Logistics Training | Hermes Academy",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "56 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "123 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/paths/academy/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "12 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "15 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 1 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/paths/logistics/",
+      "title": "Truck Dispatch Services Wisconsin | Hermes Logistics",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "52 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "151 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/paths/logistics/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "10 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 1 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/paths/marketing/",
+      "title": "Website, SEO & Social Media Marketing | ProgressoPro",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "52 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "133 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/paths/marketing/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "11 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 1 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/paths/technology/",
+      "title": "AI Automation, CRM and Custom Software Development | Hermes",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "59 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "146 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/paths/technology/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "30 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "19 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 1 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/privacy/",
+      "title": "Privacy notice | Hermes",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "23 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "60 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/privacy/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "3 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "3 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 0 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "0 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/ru/",
+      "title": "Hermes | Логистика, маркетинг, академия и IT",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "44 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "133 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/ru/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "8 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 5 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    },
+    {
+      "route": "/ua/",
+      "title": "Hermes | Логістика, маркетинг, академія та IT",
+      "score": 100,
+      "passed": 9,
+      "needsReview": 0,
+      "checks": [
+        {
+          "id": "title",
+          "label": "Page title",
+          "status": "pass",
+          "detail": "45 characters"
+        },
+        {
+          "id": "description",
+          "label": "Meta description",
+          "status": "pass",
+          "detail": "120 characters"
+        },
+        {
+          "id": "canonical",
+          "label": "Canonical URL",
+          "status": "pass",
+          "detail": "https://hermeslogisticsus.com/ua/"
+        },
+        {
+          "id": "h1",
+          "label": "Primary heading",
+          "status": "pass",
+          "detail": "1 H1 elements"
+        },
+        {
+          "id": "h2",
+          "label": "Section headings",
+          "status": "pass",
+          "detail": "8 H2 elements"
+        },
+        {
+          "id": "cta",
+          "label": "Calls to action",
+          "status": "pass",
+          "detail": "5 visible CTA candidates"
+        },
+        {
+          "id": "images",
+          "label": "Image alternative text",
+          "status": "pass",
+          "detail": "0 of 5 images missing alt"
+        },
+        {
+          "id": "forms",
+          "label": "External form actions",
+          "status": "pass",
+          "detail": "No external form action"
+        },
+        {
+          "id": "structured_data",
+          "label": "Structured data",
+          "status": "pass",
+          "detail": "1 blocks · 0 invalid"
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Hermes
 
-> Wisconsin-first business ecosystem serving clients and partners across the United States.
+> U.S. logistics and internationally coordinated marketing, education, and technology services in one business ecosystem.
 
 Canonical site: https://hermeslogisticsus.com/
 
@@ -17,6 +17,12 @@ Localized overviews:
   https://hermeslogisticsus.com/paths/logistics/
 - Car Hauling Load Board preview: local-only request validation and dry-run routing; no load is published or sent.
   https://hermeslogisticsus.com/load-board/
+- Appleton, Wisconsin vehicle transport guide: request preparation for dealer, auction, business, private-customer, carrier, and car-hauler needs. Submission does not guarantee price, timing, or carrier availability.
+  https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/
+- Auction vehicle pickup checklist: release, facility access, condition, storage deadline, delivery, and equipment information to prepare before requesting transport.
+  https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/
+- Car hauler capacity checklist: equipment, available spaces, operating area, route, dates, authority, and vehicle-fit information carriers can prepare for review.
+  https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/
 - ProgressoPro: positioning, content, social media, lead generation, sales workflow, and marketing automation.
   https://hermeslogisticsus.com/paths/marketing/
 - Hermes Business Academy: practical logistics, marketing, and operational leadership education. Employment is not guaranteed.

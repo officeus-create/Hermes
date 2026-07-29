@@ -1,0 +1,69 @@
+---
+import { ArrowRight, ChartNoAxesCombined, ClipboardCheck, Gauge, Link2, Radar, SearchCheck, UserRoundCheck } from "@lucide/astro";
+
+interface Props {
+  direction: "logistics" | "marketing" | "academy";
+}
+
+const { direction } = Astro.props;
+
+const content = {
+  logistics: {
+    eyebrow: "Logistics systems",
+    title: "Add visibility and control behind every operating handoff.",
+    cards: [
+      { icon: SearchCheck, title: "Carrier and load validation", body: "Normalize records, detect duplicates, check required fields, and route exceptions for review." },
+      { icon: Link2, title: "API and board connections", body: "Prepare controlled synchronization between approved freight, CRM, document, and communication systems." },
+      { icon: Gauge, title: "Operations dashboard", body: "Combine load status, carrier capacity, exceptions, documents, and next actions in one management view." },
+    ],
+  },
+  marketing: {
+    eyebrow: "Marketing intelligence",
+    title: "Turn websites, competitors, and content into a measurable learning system.",
+    cards: [
+      { icon: ClipboardCheck, title: "Automated Website Audit", body: "Review page structure, headings, metadata, calls to action, screenshots, and visible usability signals.", href: "/demos/website-audit/", cta: "Open the Hermes audit report" },
+      { icon: Radar, title: "Competitor Monitoring", body: "Track important website and content changes, organize evidence, and prepare focused alerts." },
+      { icon: ChartNoAxesCombined, title: "Marketing Dashboard", body: "Connect traffic, leads, campaigns, content activity, and conversion signals in one reporting view." },
+    ],
+  },
+  academy: {
+    eyebrow: "Academy operations",
+    title: "Support candidates and programs with clearer information before human decisions.",
+    cards: [
+      { icon: UserRoundCheck, title: "Candidate Validation", body: "Check required contact fields, detect duplicates, and prepare a structured candidate profile for review." },
+      { icon: ClipboardCheck, title: "Document and Knowledge Automation", body: "Classify learning material, extract information, create summaries, and organize searchable knowledge." },
+      { icon: ChartNoAxesCombined, title: "Learning Operations Dashboard", body: "Monitor applications, participation, review queues, completion signals, and follow-up needs." },
+    ],
+  },
+}[direction];
+---
+
+<section class={`section department-technology-bridge department-technology-bridge-${direction}`} id={`${direction}-systems`} aria-labelledby={`${direction}-technology-title`}>
+  <div class="shell">
+    <div class="section-heading split-heading" data-reveal>
+      <div>
+        <p class="eyebrow">{content.eyebrow}</p>
+        <h2 id={`${direction}-technology-title`}>{content.title}</h2>
+      </div>
+      <p>These systems can be scoped as a focused prototype before any integration, automation, or production data connection is approved.</p>
+    </div>
+    <div class="department-technology-grid" data-reveal>
+      {content.cards.map((card) => {
+        const Icon = card.icon;
+        const cardHref = "href" in card ? card.href : undefined;
+        const cardCta = "cta" in card ? card.cta : undefined;
+        return (
+          <article>
+            <Icon size={23} aria-hidden="true" />
+            <h3>{card.title}</h3>
+            <p>{card.body}</p>
+            {cardHref && <a class="department-technology-card-link" href={cardHref}>{cardCta} <ArrowRight size={15} aria-hidden="true" /></a>}
+          </article>
+        );
+      })}
+    </div>
+    <a class="department-technology-link" href="/paths/technology/#project-brief">
+      Discuss a connected system with Hermes IT <ArrowRight size={17} aria-hidden="true" />
+    </a>
+  </div>
+</section>

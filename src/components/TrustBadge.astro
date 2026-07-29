@@ -5,7 +5,7 @@ const logistics = site.paths.find((p) => p.id === "logistics")!;
 const phones = logistics.directContacts?.filter((c) => c.href.startsWith("tel:")) ?? [];
 const badges = [
   { label: "Directions", value: "4", note: "Logistics · Marketing · Academy · IT" },
-  { label: "Service area", value: "WI → USA", note: "Wisconsin-first language; national support where eligible" },
+  { label: "Service area", value: "USA + International", note: "Logistics phone in the USA; other directions coordinated internationally by email" },
   { label: "Academy structure", value: "3 × 6", note: "3 tracks · 6 capability layers · no job guarantee" },
   { label: "IT discovery", value: "Brief-first", note: "Your goals, references, market, and budget shape the roadmap" },
   { label: "Contact mode", value: "Preview", note: site.contact.previewStatus },
@@ -30,7 +30,7 @@ const badges = [
       }
     </ul>
     <details class="trust-optional" data-case-id="home-trust-channels">
-      <summary>Optional — public Logistics channels already published</summary>
+      <summary>Optional — approved public Logistics contacts</summary>
       <ul>
         {
           phones.map((c) => (

@@ -1,0 +1,63 @@
+{
+  "mode": "preview",
+  "source": "DCA intake preview CSV",
+  "total_records": 3,
+  "ready_for_review": 1,
+  "needs_review": 2,
+  "reason_counts": {
+    "intake:hold_missing_identifier": 1,
+    "missing authority identifier": 1,
+    "missing_authority_identifier": 1,
+    "missing_contact": 1,
+    "possible_duplicate": 1,
+    "routing:hold_needs_review": 1
+  },
+  "approval_status": "not_approved",
+  "crm_write_performed": false,
+  "records": [
+    {
+      "source_row": "2",
+      "company": "North Ridge Transport",
+      "mc": "1482019",
+      "dot": "",
+      "state": "WI",
+      "equipment": "Dry Van",
+      "queue": "ready_for_review",
+      "reasons": [],
+      "approval_status": "not_approved",
+      "crm_write_performed": false
+    },
+    {
+      "source_row": "3",
+      "company": "Atlas Freight Group",
+      "mc": "",
+      "dot": "4120938",
+      "state": "IL",
+      "equipment": "Reefer",
+      "queue": "needs_review",
+      "reasons": [
+        "possible_duplicate"
+      ],
+      "approval_status": "not_approved",
+      "crm_write_performed": false
+    },
+    {
+      "source_row": "4",
+      "company": "Blue Road Logistics",
+      "mc": "",
+      "dot": "",
+      "state": "TX",
+      "equipment": "Flatbed",
+      "queue": "needs_review",
+      "reasons": [
+        "missing authority identifier",
+        "intake:hold_missing_identifier",
+        "routing:hold_needs_review",
+        "missing_authority_identifier",
+        "missing_contact"
+      ],
+      "approval_status": "not_approved",
+      "crm_write_performed": false
+    }
+  ]
+}

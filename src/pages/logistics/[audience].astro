@@ -26,6 +26,11 @@ const { audience } = Astro.props;
             <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
             {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
           </div>
+          {(audience.slug === "shipper-dealer" || audience.slug === "carrier") && (
+            <a class="logistics-local-guide-link" href="/logistics/appleton-wi-vehicle-transport/">
+              Appleton, Wisconsin vehicle transport guide <ArrowRight size={16} aria-hidden="true" />
+            </a>
+          )}
         </div>
       </section>
 
@@ -49,4 +54,3 @@ const { audience } = Astro.props;
     <SiteFooter />
   </div>
 </BaseLayout>
-

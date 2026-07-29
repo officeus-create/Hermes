@@ -277,3 +277,437 @@ npx playwright test tests/site.spec.ts --project=mobile --workers=1 --grep 'dire
 - No user data is transmitted or stored.
 - No real carrier list or live loads are exposed.
 - External delivery remains a later controlled integration.
+
+## Session 06 - Carrier Vehicle Workspace Preview
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Source audit
+
+- Reviewed the complete supplied Telegram `messages.html`, the six-slide `LoadBoard.pptx`, 14 original screenshots, and both voice messages.
+- Stored the auditable source manifest and a Verified / Inference / Needs Review product brief under `/Users/progressopro/Documents/Сайт Hermes/01_Logistics`.
+- Kept the Telegram dispatcher quiz in the Academy backlog rather than mixing it into Load Board MVP.
+
+### Changes delivered
+
+- Preserved the existing shipper/broker/private-party load intake.
+- Added a separate carrier workspace preview with the proposed `Create access → Add vehicle → Dispatcher review → Available Loads` flow.
+- Added a progressive minimum for MC/USDOT, email, phone, equipment class, capacity, availability, origin/radius, and destination or `Anywhere`.
+- Added all discussed equipment classes as preview taxonomy; non-car-hauling classes route to `scope_review` instead of silently expanding the approved first vertical.
+- Added explainable `dispatcher_review`, `scope_review`, `needs_more_information`, and `rejected` decisions plus vehicle states.
+- Added a copy-visible dry-run package that explicitly confirms no account, vehicle, call, message, CRM write, or dispatcher assignment was created.
+- Added unit and desktop/mobile browser coverage for the carrier vehicle flow and zero external writes.
+
+### Verification
+
+```bash
+npm test
+# Static validation, contact handoff checks, and Load Board unit checks passed.
+
+npm run build
+# 0 Astro errors, warnings, or hints; 21 pages built.
+
+npm run test:e2e
+# 88 passed, 2 skipped; exit code 0.
+```
+
+### Visual evidence
+
+- `docs/screenshots/load-board-carrier-workspace-desktop.png`
+- `docs/screenshots/load-board-carrier-workspace-mobile.png`
+
+### Boundaries and open decisions
+
+- No deployment, authentication, backend, database, external publication, message, call, CRM/ELD integration, advertising, or carrier outreach was performed.
+- `Dispatch` remains a request state, not an automatic booking or phone call.
+- Production authority/insurance verification, dispatcher data visibility, negotiation behavior, full equipment scope, and live integrations require Vladimir's explicit decision.
+
+## Session 07 - Marketing Service Pillars and IT Proof Library
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Business structure
+
+- Added approved local requirements for a four-pillar Marketing offer and a category-based IT service/case catalog.
+- Marketing now connects Website & Conversion, SEO Optimization, Social Media Marketing, and Growth & Sales System.
+- IT developments are grouped into Digital Presence, CRM & Operations, Workflow Automation, Business Assistants, and Industry Platforms.
+- Small modules remain inside a clear service category; related modules can become a package or the wider Company Digital Operating System.
+
+### Changes delivered
+
+- Added a responsive four-column Marketing service scene with a concrete promise, scope, and next action for every pillar.
+- Updated homepage Marketing points, metadata, offerings, service groups, and FAQ to include website marketing, SEO, and social media explicitly.
+- Expanded the IT proof library from six to nine fact-based cards.
+- Added `Why we built it`, category, maturity status, delivery description, and proof/brief action to each IT case.
+- Added public-safe cases for the Carrier and Dispatcher Workspace, Multilingual Website Foundation, and Controlled Intake and Review workflow.
+- Repositioned the public website case around custom software and controlled delivery rather than exposing internal implementation mechanics.
+- Preserved explicit maturity labels and did not invent clients, seminars, metrics, or production status.
+
+### Verification
+
+```bash
+npm run build
+# 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# Static validation, contact handoff checks, and Load Board unit checks passed.
+
+npm run test:e2e
+# 90 passed, 2 skipped; exit code 0.
+```
+
+### Visual evidence
+
+- `docs/screenshots/marketing-service-pillars-section.png`
+- `docs/screenshots/technology-case-library-section.png`
+
+### Boundaries
+
+- No deployment, DNS change, campaign, social publication, analytics connection, form delivery, message, CRM write, or other external side effect was performed.
+- Search rankings, lead volume, audience growth, and sales are not guaranteed.
+- Internal project names, private architecture, prompts, records, people, and credentials remain excluded from public copy.
+
+## Session 08 - Progressive Home Direction Story
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Direction
+
+- Preserved the approved full-screen four-column composition from the visual reference.
+- Kept the regular Home page behind explicit `Open Home` actions and the one-view-per-session rule.
+
+### Changes delivered
+
+- Changed the desktop rails from equal static columns to a fluid layout where the active business expands from about 293 px to 472 px at the 1440 px reference viewport.
+- Increased the automatic reading interval from 3.2 to 5.2 seconds.
+- Added three progressive story lines per business; they reveal in sequence and the top ideology statement advances with the active story step.
+- Added reverse fade behavior when a direction loses focus.
+- Added hover and keyboard-focus pause so a visitor can keep reading a selected business; the automatic cycle resumes after leaving.
+- Preserved direct links for Logistics, Marketing, Academy, and IT Development.
+- Preserved the mobile 2 × 2 composition; mobile keeps the compact primary copy while the top statement continues to progress.
+- Preserved Escape, reduced-motion bypass, session storage, and both Home exits.
+
+### Verification
+
+```bash
+npm run build
+# 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# Static validation, contact handoff checks, and Load Board unit checks passed.
+
+npm run test:e2e
+# 90 passed, 2 skipped; exit code 0.
+```
+
+### Browser evidence
+
+- Local in-app browser confirmed progressive `0 → 3` story-line reveal.
+- Keyboard focus held IT Development active beyond the 5.2-second automatic interval.
+- Desktop reference viewport confirmed a visibly wider active rail and readable inactive summaries.
+- `docs/screenshots/home-entry-scene-desktop.png`
+- `docs/screenshots/home-entry-scene-mobile.png`
+
+### Boundary
+
+- No deployment, DNS change, analytics connection, message, form delivery, or external write was performed.
+
+## Session 09 - Role-Based Logistics Load Board Entry
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Direction
+
+- Routed shipper/dealer, broker, and carrier/owner-operator visitors into different first jobs inside one Hermes Load Board.
+- Used official U.S. carrier-platform patterns as product references without copying their interfaces.
+
+### Changes delivered
+
+- Added a three-role Load Board router.
+- Added a fictional four-load carrier board with lane, timing, equipment, units, mileage, rate/RPM or offer status, posted age, source/payment context, and special requirements.
+- Added safe demo search, `Request dispatch`, and `Make an offer` interactions; all remain local and non-operational.
+- Changed shipper/dealer, broker, and carrier audience CTAs to open their matching workspace and preselect shipper/broker form roles when relevant.
+- Preserved the carrier vehicle-review workflow and the shipper/broker posting-review form.
+- Documented verified benchmarks, product inferences, and production decisions still requiring review.
+
+### Boundary
+
+- All loads are fictional demo data.
+- No real search, registration, authentication, load publication, booking, bid, call, notification, CRM/ELD integration, or external write was performed.
+
+### Verification
+
+```bash
+npm run build
+# 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# Static validation, contact handoff checks, and Load Board unit checks passed.
+
+npm run test:e2e
+# 94 passed, 2 skipped; exit code 0.
+```
+
+### Browser evidence
+
+- Local browser confirmed the carrier-role route opens directly at `Available Loads`.
+- Desktop view confirmed readable demo filters, route/rate cards, and the non-operational detail panel.
+- Mobile layout and role-specific actions passed browser automation coverage.
+
+## Session 10 - Hermes IT Product Portfolio and Connect Preview
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Source and maturity model
+
+- Read the supplied `HERMES_CONNECT_SAAS_PLATFORM_MASTER_BRIEF` from Google Docs without modifying it.
+- Kept three distinct maturity labels: Website `Live product`, CRM `Working prototype`, Hermes Connect `Product discovery`.
+- Preserved the source boundary that the public IT portal, future SaaS application, and later mobile application are separate surfaces.
+
+### Changes delivered
+
+- Expanded the single website proof band into three full-width horizontal product lines with separate color systems.
+- Preserved the existing website case and live-product claim.
+- Added an original enterprise-style CRM and operations visual with navigation, KPI, pipeline stages, controlled records, owners, statuses, and next actions.
+- Added an original Hermes Connect dashboard concept for Fit, Beauty, Studio, Pro, and Events with appointments, availability, clients, team context, and a safe `Hermes Flow AI` action preview.
+- Added visible maturity and demo-data boundaries; no third-party UI was copied.
+
+### Boundary
+
+- No Hermes Connect app, account, booking, calendar sync, payment, AI execution, mobile app, backend, repository, integration, or deployment was created.
+
+### Verification
+
+```bash
+npm run build
+# 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# 20 static routes and 24 homepage checks passed; contact and Load Board unit checks passed.
+
+npm run test:e2e
+# 96 passed, 2 skipped; exit code 0.
+```
+
+### Browser evidence
+
+- Desktop browser confirmed the CRM prototype remains readable at product-card scale with visible navigation, KPI, pipeline, and record states.
+- Desktop browser confirmed Hermes Connect has its own coral, cream, and violet identity and clearly shows schedule, operating context, and safe AI preview.
+- Desktop and mobile automated checks confirmed three product lines, maturity labels, concept boundary, and no horizontal overflow.
+
+## Session 11 - Hermes Load Board Product Line and Distribution Concept
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Direction
+
+- Expanded the IT product portfolio from three to four products by adding Hermes Load Board.
+- Recorded Vladimir's future `publish once → approved external boards → scheduled reconciliation` direction separately from the working local preview.
+
+### Changes delivered
+
+- Added Product 04 with a dedicated purple/navy freight-workspace visual.
+- Added shipper/dealer, broker, and carrier/owner-operator role cues.
+- Added public-safe load search, demo lanes, rates, dispatch/offer actions, and equipment taxonomy.
+- Added a visible future distribution concept while explicitly stating that no external-board synchronization or schedule is connected.
+- Added a detailed adapter, state, reconciliation, audit, and 06:00 Central Time schedule requirement for later review.
+
+### Boundary
+
+- No load, truck, offer, dispatch request, external-board record, API connection, scheduled job, credential, email, or partner contact was created.
+
+### Verification
+
+```bash
+npm run build
+# 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# 20 static routes, 27 homepage checks, 6 image assets, contact checks, and Load Board unit checks passed.
+
+npm run test:e2e
+# 95 passed, 2 skipped; one unrelated animated-form click timed out.
+# The timed-out scenario then passed independently on desktop and mobile: 2 passed.
+```
+
+### Browser evidence
+
+- Desktop browser confirmed the fourth product line is readable and visually distinct from Website, CRM, and Hermes Connect.
+- The local preview shows role tabs, freight search, three fictional lane cards, equipment coverage, and the future adapter concept.
+- Desktop and mobile automation confirmed Product 04, its honest `Working prototype` label, route links, and the no-external-sync boundary.
+
+## Session 12 - Public Contact Routing Correction
+
+STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
+
+### Owner direction
+
+- Route Car Hauling inquiries from shippers, dealers, carriers, and owner-operators to `+1 (351) 777-5337`.
+- Route general freight inquiries across supported equipment types to `+1 (262) 302-3626`.
+- Remove the incorrect `General Inquiries`/Instagram attribution and the historical `Box Truck Department` line.
+- Keep Marketing, Academy, and IT Development on email and preview-form routes only.
+
+### Changes delivered
+
+- Published the confirmed department labels and numbers in the local Contacts and Logistics data contracts.
+- Retained `+1 (717) 696-6829` as `Additional Logistics Line`; its specific Google Voice label remains unconfirmed.
+- Updated shipper/dealer and carrier audience pages to Car Hauling; broker routing now uses Freight Department.
+- Updated Marketing discovery choices to distinguish SEO/Google Search, Google Ads/Paid Search, and Twitter/X while preserving the existing budget and planning-horizon structure.
+- Removed the optional telephone field from the IT project brief.
+- Did not publish a Natalia number because available source matches were customer/carrier records, not a verified personal contact.
+
+### Verification
+
+```bash
+npm run build
+# 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# Static website, contact handoff, and Load Board checks passed.
+
+npm run test:e2e
+# 98 passed, 2 expected skips; exit code 0.
+```
+
+### Boundary
+
+- No site deployment, telephone call, message, form delivery, or external integration was performed.
+## 2026-07-28 — Load Board sales lead intake v0.1
+
+### Business behavior
+
+- Split the Load Board conversion into two clear sales paths:
+  - `LOAD BOARD ACCESS / CARRIER` for carriers, owner-operators, dispatchers, free access requests, and interest in a specific demo load;
+  - `POSTED LOAD / CUSTOMER|SHIPPER|DEALER|BROKER` for people and companies asking Hermes to arrange transportation.
+- Added contact name, company, role, MC/USDOT, phone, email, equipment, capacity, availability, geography, and optional load reference to the carrier lead.
+- Made phone required for posted-load requests because the approved next step is a Logistics Sales call.
+- Demo-load actions now carry the selected `HLB-*` reference into the carrier-access request.
+- Kept public equipment wording simple and recognizable: Carrier, Owner-operator, Car Hauler, MC/USDOT, Pickup, Delivery.
+
+### Delivery boundary
+
+- Preview mode prepares a pre-addressed email with the correct sales subject and requires the visitor to review and send it from their email application.
+- Automatic delivery is implemented behind the existing `PUBLIC_CONTACT_MODE=live` and approved HTTPS `PUBLIC_CONTACT_ENDPOINT` contract.
+- No endpoint was configured, no email was sent, no lead was stored, and no production deployment was performed.
+
+### Verification
+
+- `npm run build`: 62 Astro files checked with zero errors, warnings, or hints; 21 routes built.
+- `npm test`: static website, contact handoff, and Load Board unit checks passed.
+- Focused Playwright coverage: 10 desktop/mobile Load Board scenarios passed.
+- Full Playwright regression after refreshing the stale IT checks: 106 passed and 2 expected device-specific skips.
+
+### Production release
+
+- Owner approval to publish was received on 2026-07-28.
+- Cloudflare preview: `48ce1887-4664-4aa3-ad1f-eb15883cedaa`.
+- Production deployment: `d8c81528-f6b0-4aa6-8ad2-00fa12f47991`.
+- Public domain: `https://hermeslogisticsus.com`.
+- Verified 23 public routes plus the custom 404.
+- Verified on production: homepage entry scene, Load Board city search, tagged dealer email handoff, Academy AI Automation lab, Hermes Connect, CRM and Candidate Validation content.
+- Production contact audit found only `tel:+12623023626`.
+- Load Board and contact forms remain in preview/email-handoff mode; no Hermes form endpoint was connected.
+
+## 2026-07-28 — Protected Logistics Sales receiver prepared
+
+### Implemented locally
+
+- Added a same-origin server receiver for Load Board access and posted-load requests.
+- The receiver sends only to the fixed Logistics Sales destination
+  `officeus@hermeslogisticsus.com`; a visitor cannot replace the recipient or
+  email subject.
+- Added strict lead-type and sales-tag allowlists, request-size limits,
+  required phone/email checks, 24-hour duplicate protection, and a five-request
+  per-hour limit.
+- Request IDs and visitor addresses are hashed before the temporary protection
+  records are written. Lead content is not logged.
+- A failed or unavailable delivery never returns a false success message.
+- Preview wording is replaced with an accurate server-delivery record only
+  after the email provider accepts the message.
+
+### Activation boundary
+
+- The public site remains on the working prepared-email handoff.
+- Cloudflare Email Sending is not available to the current project credentials
+  (`2036 Unauthorized`) and Email Routing for the domain is unconfigured.
+- Email Routing was not enabled because changing MX records could disrupt the
+  existing corporate mailbox.
+- `wrangler.toml.example` records the restricted sender, recipient, and KV
+  bindings that must be verified before live activation.
+
+### Verification
+
+```bash
+npm run build
+# 64 files checked; 0 errors, 0 warnings, 0 hints; 21 pages built.
+
+npm test
+# Static website, contact handoff, Load Board, and protected receiver checks passed.
+
+npm run test:e2e
+# 106 passed, 2 expected device-specific skips; exit code 0.
+```
+
+### Source synchronization
+
+- The configured GitHub remote currently returns `Repository not found`.
+- GitHub CLI is not installed in this workspace, so no source push or pull
+  request was attempted.
+
+## 2026-07-29 — Logistics USA organic SEO pilots
+
+### Appleton vehicle transport
+
+- Added `/logistics/appleton-wi-vehicle-transport/` as one substantive local
+  service pilot rather than a reusable city-page generator.
+- Connected private-customer, dealer, shipper, and carrier calls to action to
+  the existing Load Board request forms.
+- Added safe Appleton/Fox Valley prefill through non-sensitive URL parameters.
+- Added Service, BreadcrumbList, and visible-FAQ-matched FAQPage structured
+  data without a local office, address, rating, price, partnership, or
+  guaranteed carrier claim.
+
+### National supporting resources
+
+- Added `/logistics/resources/auction-vehicle-pickup-checklist/` with release,
+  pickup access, storage deadline, condition, equipment, delivery, and record
+  preparation guidance.
+- Added `/logistics/resources/car-hauler-capacity-checklist/` with carrier,
+  authority, route, equipment, vehicle-fit, timing, privacy, and availability
+  guidance.
+- Connected both resources to Appleton, the Logistics hub, shipper/dealer and
+  carrier paths, and the existing preview/email-handoff forms.
+- Added truthful Article and BreadcrumbList structured data, canonical
+  metadata, sitemap entries, `llms.txt` entries, static checks, and desktop and
+  mobile browser coverage.
+
+### Verification
+
+```bash
+npm run build
+# 67 Astro files; 0 errors, 0 warnings, 0 hints; 24 pages built.
+
+npm test
+# 24 static routes validated; contact, Load Board, and protected receiver checks passed.
+
+npm run test:e2e
+# 120 browser scenarios completed with no failures.
+```
+
+### Publication boundary
+
+- No advertising, paid service, Google Business Profile, external message,
+  CRM/Sheets write, local address, auction affiliation, or guaranteed price,
+  timing, load, rate, revenue, or carrier availability was added.
+- The public forms remain in their existing preview/prepared-email handoff
+  state; no live CRM or automatic carrier matching was activated.
+
+### Production
+
+- Appleton production deployment: `f511048a-b598-48b8-bc02-6ed7c867be81`.
+- National resource production deployment: `400d81a7-f144-4479-823f-18a010951efa`.
+- The Appleton page, both resource pages, and the updated sitemap returned HTTP
+  200 with the expected production content and canonical URLs.
+- Search Console opened under the browser's active Google account with no
+  existing Hermes website property. No property, DNS record, or verification
+  method was created.

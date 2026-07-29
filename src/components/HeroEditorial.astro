@@ -4,13 +4,18 @@ import { site } from "../data/site";
 ---
 
 <section class="hero" id="top" data-motion-hero>
-  <div class="hero-media" aria-hidden="true">
-    <img src={site.hero.image} alt="" width="1920" height="1080" fetchpriority="high" decoding="async" />
+  <div class="hero-media">
+    <img src={site.hero.image} alt={site.hero.imageAlt} width="1920" height="1080" fetchpriority="high" decoding="async" />
   </div>
   <div class="hero-shade"></div>
   <div class="hero-content shell">
     <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
-    <h1>{site.hero.title}</h1>
+    <h1 class="hero-title" aria-label={site.hero.title}>
+      <span class="hero-title-office" aria-hidden="true">
+        Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.
+      </span>
+      <em class="hero-title-script" aria-hidden="true">One way forward.</em>
+    </h1>
     <p class="hero-copy">{site.hero.body}</p>
     <div class="hero-actions">
       <a class="button button-primary" href={site.hero.primaryCta.href}>

@@ -1,8 +1,11 @@
 ---
-import { ArrowRight, ShieldCheck } from "@lucide/astro";
+import { ArrowRight, Building2, Search, ShieldCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+
+const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
+const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
 ---
 
 <BaseLayout
@@ -16,8 +19,8 @@ import SiteFooter from "../components/SiteFooter.astro";
         <div class="shell load-board-hero-grid">
           <div>
             <p class="eyebrow">Hermes Logistics · Preview</p>
-            <h1>Describe a car-hauling load.</h1>
-            <p>Test how a vehicle transport request would be checked and routed. This pilot does not publish a load, send email, or contact a carrier.</p>
+            <h1>One board. The right workspace for your role.</h1>
+            <p>Post a vehicle move, bring broker freight, or find car-hauling opportunities that fit your equipment. This local preview does not publish a load, register an account, or contact a carrier.</p>
           </div>
           <div class="load-board-safety">
             <ShieldCheck size={28} aria-hidden="true" />
@@ -27,18 +30,270 @@ import SiteFooter from "../components/SiteFooter.astro";
         </div>
       </section>
 
-      <section class="section load-board-workspace">
+      <section class="load-board-role-router" aria-labelledby="load-board-role-title">
+        <div class="shell">
+          <div class="load-board-section-heading">
+            <p class="eyebrow">Choose your workspace</p>
+            <h2 id="load-board-role-title">Start with the job you need to do.</h2>
+          </div>
+          <div class="load-board-role-grid">
+            <a href="?role=shipper#post-load" data-role-link="shipper">
+              <Building2 size={25} aria-hidden="true" />
+              <span>Shipper or dealer</span>
+              <strong>Post a vehicle load</strong>
+              <small>Add the route, vehicles, timing, condition, and target price.</small>
+            </a>
+            <a href="?role=broker#post-load" data-role-link="broker">
+              <Search size={25} aria-hidden="true" />
+              <span>Freight broker</span>
+              <strong>Post and manage capacity</strong>
+              <small>Bring a verified opportunity to compatible car-hauling capacity.</small>
+            </a>
+            <a href="?role=carrier#available-loads" data-role-link="carrier">
+              <Truck size={25} aria-hidden="true" />
+              <span>Carrier or owner-operator</span>
+              <strong>Find available loads</strong>
+              <small>Search by lane, equipment, date, units, miles, and offered rate.</small>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section available-loads-preview" id="available-loads" aria-labelledby="available-loads-title">
+        <div class="shell">
+          <div class="load-board-section-heading available-loads-heading">
+            <div>
+              <p class="eyebrow">Available Loads · Demo data</p>
+              <h2 id="available-loads-title">See the lane before you spend time on it.</h2>
+            </div>
+            <p>Fictional examples demonstrate the proposed carrier view. No load below is available to book.</p>
+          </div>
+
+          <div class="load-search-bar" aria-label="Demo load filters">
+            <label>From <input value="Chicago, IL" list="demo-load-cities" aria-label="Load origin" data-demo-origin /></label>
+            <label>Radius <select aria-label="Origin radius"><option>150 miles</option><option>250 miles</option><option>Anywhere</option></select></label>
+            <label>To <input placeholder="City, state or anywhere" list="demo-load-cities" aria-label="Load destination" data-demo-destination /></label>
+            <label>Equipment <select aria-label="Equipment"><option>Car Hauler</option><option>Hotshot / Gooseneck</option><option>All compatible</option></select></label>
+            <button class="button button-primary" type="button" data-demo-search>Search demo loads</button>
+          </div>
+          <datalist id="demo-load-cities">
+            <option value="Chicago, IL"></option><option value="Milwaukee, WI"></option>
+            <option value="Madison, WI"></option><option value="Indianapolis, IN"></option>
+            <option value="Rockford, IL"></option><option value="Nashville, TN"></option>
+            <option value="Green Bay, WI"></option><option value="Des Moines, IA"></option>
+          </datalist>
+          <div class="demo-city-choices" aria-label="Cities available in the demonstration">
+            <span>Try a demo city:</span>
+            {["Chicago, IL", "Madison, WI", "Rockford, IL", "Green Bay, WI"].map((city) => (
+              <button type="button" data-demo-city={city}>{city}</button>
+            ))}
+          </div>
+          <p class="demo-search-status" role="status" data-demo-search-status>Enter a demo city and search. Results are fictional and cannot be booked.</p>
+
+          <div class="available-loads-layout">
+            <div class="available-load-list" aria-label="Fictional available loads">
+              <article class="available-load-card" data-demo-load-card data-origin="chicago il" data-destination="milwaukee wi">
+                <div class="load-card-route"><span>Chicago, IL</span><ArrowRight size={18} aria-hidden="true" /><span>Milwaukee, WI</span></div>
+                <div class="load-card-price"><strong>$620</strong><span>$6.74 / mi</span></div>
+                <p>2 operable sedans · Open car hauler · 92 mi</p>
+                <dl><div><dt>Pickup</dt><dd>Jul 22 · 8 AM–2 PM</dd></div><div><dt>Posted</dt><dd>18 min ago</dd></div><div><dt>Source</dt><dd>Verified dealer · Demo</dd></div></dl>
+                <button type="button" data-demo-load="HLB-1042">Request dispatch</button>
+              </article>
+              <article class="available-load-card" data-demo-load-card data-origin="madison wi" data-destination="indianapolis in">
+                <div class="load-card-route"><span>Madison, WI</span><ArrowRight size={18} aria-hidden="true" /><span>Indianapolis, IN</span></div>
+                <div class="load-card-price"><strong>$1,080</strong><span>$3.28 / mi</span></div>
+                <p>3 operable vehicles · 3-car wedge · 329 mi</p>
+                <dl><div><dt>Pickup</dt><dd>Jul 23</dd></div><div><dt>Posted</dt><dd>41 min ago</dd></div><div><dt>Payment</dt><dd>Quick Pay eligible · Demo</dd></div></dl>
+                <button type="button" data-demo-load="HLB-1047">Make an offer</button>
+              </article>
+              <article class="available-load-card" data-demo-load-card data-origin="rockford il" data-destination="nashville tn">
+                <div class="load-card-route"><span>Rockford, IL</span><ArrowRight size={18} aria-hidden="true" /><span>Nashville, TN</span></div>
+                <div class="load-card-price"><strong>$1,350</strong><span>$2.35 / mi</span></div>
+                <p>1 operable SUV · Hotshot compatible · 575 mi</p>
+                <dl><div><dt>Pickup</dt><dd>Jul 24 · appointment</dd></div><div><dt>Posted</dt><dd>1 hr ago</dd></div><div><dt>Stops</dt><dd>Direct · Demo</dd></div></dl>
+                <button type="button" data-demo-load="HLB-1051">Request dispatch</button>
+              </article>
+              <article class="available-load-card" data-demo-load-card data-origin="green bay wi" data-destination="des moines ia">
+                <div class="load-card-route"><span>Green Bay, WI</span><ArrowRight size={18} aria-hidden="true" /><span>Des Moines, IA</span></div>
+                <div class="load-card-price"><strong>Offer</strong><span>carrier bid</span></div>
+                <p>1 inoperable pickup · Winch required · 390 mi</p>
+                <dl><div><dt>Pickup</dt><dd>Jul 25–26</dd></div><div><dt>Posted</dt><dd>2 hr ago</dd></div><div><dt>Review</dt><dd>Equipment check · Demo</dd></div></dl>
+                <button type="button" data-demo-load="HLB-1058">Make an offer</button>
+              </article>
+            </div>
+            <aside class="load-board-demo-panel" aria-live="polite">
+              <p class="eyebrow">Load detail preview</p>
+              <h3 data-demo-load-title>Select a demo load</h3>
+              <p data-demo-load-copy>Review route, equipment fit, timing, units, rate, source, and special requirements before asking a dispatcher to act.</p>
+              <ul>
+                <li>Request dispatch does not book automatically.</li>
+                <li>Offers and counteroffers require a confirmed carrier account.</li>
+                <li>Contact details stay hidden until the operating team approves access.</li>
+              </ul>
+              <a class="button button-primary" href="#carrier-access">Add your vehicle first</a>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section carrier-workspace-preview" id="carrier-access" aria-labelledby="carrier-workspace-title">
+        <div class="shell">
+          <div class="load-board-section-heading">
+            <p class="eyebrow">Carrier workspace · Local preview</p>
+            <h2 id="carrier-workspace-title">Get free Load Board access or ask about a load.</h2>
+            <p>Leave the minimum carrier and equipment information. Logistics Sales reviews the request, calls you, and explains access, the carrier agreement, and the next step.</p>
+          </div>
+
+          <ol class="carrier-flow" aria-label="Proposed carrier flow">
+            <li><span>01</span><strong>Create access</strong><small>MC/DOT and contact</small></li>
+            <li><span>02</span><strong>Add vehicle</strong><small>Availability and capacity</small></li>
+            <li><span>03</span><strong>Dispatcher review</strong><small>Verify and select loads</small></li>
+            <li><span>04</span><strong>Available Loads</strong><small>Only assigned matches</small></li>
+          </ol>
+
+          <div class="load-board-grid">
+            <form class="load-board-form" data-vehicle-form data-lead-mode={leadMode} data-lead-endpoint={leadEndpoint} novalidate>
+              <div class="form-alert" role="alert" data-vehicle-alert hidden></div>
+              <p class="eyebrow">Carrier / Owner-operator</p>
+              <h3>Request free access</h3>
+              <p class="load-board-form-note">Simple information for a Logistics Sales follow-up. Equipment-specific details can be confirmed during the call.</p>
+
+              <div class="field-row">
+                <label>Your role *
+                  <select name="carrier_role" required>
+                    <option value="">Choose one</option>
+                    <option value="carrier">Carrier</option>
+                    <option value="owner_operator">Owner-operator</option>
+                    <option value="dispatcher">Dispatcher for a carrier</option>
+                  </select>
+                </label>
+                <label>Company name *
+                  <input name="carrier_company_name" maxlength="160" autocomplete="organization" required />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>Contact name *
+                  <input name="carrier_contact_name" maxlength="100" autocomplete="name" required />
+                </label>
+                <label>Load reference (optional)
+                  <input name="interested_load" maxlength="40" placeholder="Example: HLB-1042" data-interested-load />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>MC or USDOT number *
+                  <input name="authority_number" maxlength="40" placeholder="MC 123456 or USDOT 1234567" required />
+                </label>
+                <label>Equipment class *
+                  <select name="equipment_class" required>
+                    <option value="">Choose one</option>
+                    <option value="car_hauler">Car Hauler / Auto Transport</option>
+                    <option value="box_truck">Box Truck / Straight Truck</option>
+                    <option value="dry_van">Dry Van</option>
+                    <option value="flatbed">Flatbed</option>
+                    <option value="reefer">Reefer</option>
+                    <option value="step_deck">Step Deck</option>
+                    <option value="hotshot">Hotshot / Gooseneck</option>
+                    <option value="power_only">Power Only</option>
+                    <option value="sprinter_van">Sprinter Van</option>
+                    <option value="pickup_truck">Pickup Truck</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>Email *
+                  <input name="carrier_email" type="email" maxlength="160" autocomplete="email" required />
+                </label>
+                <label>Phone *
+                  <input name="carrier_phone" type="tel" maxlength="40" autocomplete="tel" required />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>Capacity / unit count *
+                  <input name="capacity_units" type="number" min="1" max="20" value="1" required />
+                </label>
+                <label>Available from *
+                  <input name="available_from" type="date" required />
+                </label>
+              </div>
+
+              <div class="field-row">
+                <label>Origin city, state or ZIP *
+                  <input name="origin_location" maxlength="180" required />
+                </label>
+                <label>Origin radius (miles) *
+                  <input name="origin_radius" type="number" min="1" max="1000" value="100" required />
+                </label>
+              </div>
+
+              <label>Preferred destination
+                <input name="destination_location" maxlength="180" placeholder="City, state, ZIP or region" />
+              </label>
+              <label class="consent-field">
+                <input type="checkbox" name="anywhere" />
+                <span>Open to loads going anywhere</span>
+              </label>
+              <label>Vehicle name (optional)
+                <input name="vehicle_name" maxlength="100" placeholder="Example: Blue 3-car wedge" />
+              </label>
+              <label class="honeypot" aria-hidden="true">Website
+                <input name="carrier_website" tabindex="-1" autocomplete="off" />
+              </label>
+              <label class="consent-field">
+                <input type="checkbox" name="carrier_consent" required />
+                <span>I agree that Hermes may use these details to contact me about Load Board access, available freight, and logistics services. <a href="/privacy/">Privacy notice</a>.</span>
+              </label>
+              <button class="button button-primary" type="submit">Review access request <ArrowRight size={18} aria-hidden="true" /></button>
+            </form>
+
+            <aside class="load-board-result" data-vehicle-result hidden aria-live="polite">
+              <p class="eyebrow">Logistics Sales lead preview</p>
+              <h3 data-vehicle-decision></h3>
+              <p data-vehicle-state></p>
+              <div class="load-board-result-group">
+                <h4>Why</h4>
+                <ul data-vehicle-reasons></ul>
+              </div>
+              <div class="load-board-result-group">
+                <h4>Next actions</h4>
+                <ul data-vehicle-actions></ul>
+              </div>
+              <div class="load-board-result-group">
+                <h4>Dry-run routing</h4>
+                <ul data-vehicle-routing></ul>
+              </div>
+              <details>
+                <summary>Open complete sales lead</summary>
+                <pre data-vehicle-preview tabindex="0"></pre>
+              </details>
+              <div class="sales-lead-handoff">
+                <strong>Sales tag: LOAD BOARD ACCESS / CARRIER</strong>
+                <a class="button button-primary" href="#" data-vehicle-email>Open email to Logistics Sales</a>
+                <button class="button button-primary" type="button" data-send-vehicle-lead hidden>Send to Logistics Sales</button>
+                <p role="status" data-vehicle-delivery-status></p>
+              </div>
+              <p class="load-board-preview-boundary" data-vehicle-boundary>No account, email, call, CRM write, or dispatcher assignment is created in preview mode.</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="section load-board-workspace" id="post-load">
         <div class="shell load-board-grid">
-          <form class="load-board-form" data-load-board-form novalidate>
+          <form class="load-board-form" data-load-board-form data-lead-mode={leadMode} data-lead-endpoint={leadEndpoint} novalidate>
             <div class="form-alert" role="alert" data-load-alert hidden></div>
-            <h2>Load details</h2>
-            <p class="load-board-form-note">Required fields are marked. Standard operable vehicles can pass automatically; unusual or incomplete requests are held for more information.</p>
+            <p class="eyebrow">Customer / Shipper / Dealer / Broker</p>
+            <h2>Post a load request</h2>
+            <p class="load-board-form-note">Tell us what needs to move. Logistics Sales will call to confirm the route, vehicle, timing, and transport requirements before carrier search begins.</p>
 
             <div class="field-row">
               <label>Who is posting? *
                 <select name="submitter_type" required>
                   <option value="">Choose one</option>
-                  <option value="private_party">Private party</option>
+                  <option value="private_party">Customer / private party</option>
                   <option value="dealer">Dealer</option>
                   <option value="shipper">Shipper</option>
                   <option value="broker">Broker</option>
@@ -58,8 +313,8 @@ import SiteFooter from "../components/SiteFooter.astro";
                 <input name="email" type="email" maxlength="160" autocomplete="email" required />
               </label>
             </div>
-            <label>Phone
-              <input name="phone" type="tel" maxlength="40" autocomplete="tel" />
+            <label>Phone *
+              <input name="phone" type="tel" maxlength="40" autocomplete="tel" required />
             </label>
 
             <div class="field-row">
@@ -117,9 +372,9 @@ import SiteFooter from "../components/SiteFooter.astro";
             </label>
             <label class="consent-field">
               <input type="checkbox" name="consent" required />
-              <span>I agree that Hermes may use these details to prepare this transport-request preview. No request is sent in pilot mode.</span>
+              <span>I agree that Hermes may use these details to contact me about this transport request and search for a suitable carrier. <a href="/privacy/">Privacy notice</a>.</span>
             </label>
-            <button class="button button-primary" type="submit">Review load <ArrowRight size={18} aria-hidden="true" /></button>
+            <button class="button button-primary" type="submit">Review posted load <ArrowRight size={18} aria-hidden="true" /></button>
           </form>
 
           <aside class="load-board-result" data-load-result hidden aria-live="polite">
@@ -144,6 +399,13 @@ import SiteFooter from "../components/SiteFooter.astro";
             </details>
             <button class="button" type="button" data-copy-load-preview>Copy preview package</button>
             <p role="status" data-load-copy-status></p>
+            <div class="sales-lead-handoff">
+              <strong data-load-sales-tag>Sales tag: POSTED LOAD / CUSTOMER</strong>
+              <a class="button button-primary" href="#" data-load-email>Open email to Logistics Sales</a>
+              <button class="button button-primary" type="button" data-send-load-lead hidden>Send to Logistics Sales</button>
+              <p role="status" data-load-delivery-status></p>
+            </div>
+            <p class="load-board-preview-boundary" data-load-boundary>No email, CRM write, load publication, or carrier notification is created in preview mode.</p>
           </aside>
         </div>
       </section>
@@ -153,7 +415,88 @@ import SiteFooter from "../components/SiteFooter.astro";
 </BaseLayout>
 
 <script>
-  import { buildLoadBoardPayload, buildLoadBoardPreview, reviewLoadBoardPayload } from "../lib/load-board";
+  import {
+    buildLoadBoardPayload,
+    buildLoadBoardPreview,
+    buildCarrierSalesLead,
+    buildLogisticsSalesMailto,
+    buildPostedLoadSalesLead,
+    buildVehicleAvailabilityPayload,
+    buildVehicleAvailabilityPreview,
+    reviewLoadBoardPayload,
+    reviewVehicleAvailabilityPayload,
+  } from "../lib/load-board";
+
+  const vehicleForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+  const vehicleAlert = document.querySelector<HTMLElement>("[data-vehicle-alert]");
+  const vehicleResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
+  const vehicleDecision = document.querySelector<HTMLElement>("[data-vehicle-decision]");
+  const vehicleState = document.querySelector<HTMLElement>("[data-vehicle-state]");
+  const vehiclePreview = document.querySelector<HTMLElement>("[data-vehicle-preview]");
+  const interestedLoad = document.querySelector<HTMLInputElement>("[data-interested-load]");
+  const vehicleEmail = document.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+  const vehicleSendButton = document.querySelector<HTMLButtonElement>("[data-send-vehicle-lead]");
+  const vehicleDeliveryStatus = document.querySelector<HTMLElement>("[data-vehicle-delivery-status]");
+  const vehicleBoundary = document.querySelector<HTMLElement>("[data-vehicle-boundary]");
+  let activeVehicleLead: ReturnType<typeof buildCarrierSalesLead> | null = null;
+
+  const fillVehicleList = (selector: string, values: string[]) => {
+    const list = document.querySelector<HTMLElement>(selector);
+    if (!list) return;
+    list.replaceChildren(...values.map((value) => {
+      const item = document.createElement("li");
+      item.textContent = value;
+      return item;
+    }));
+  };
+
+  vehicleForm?.addEventListener("input", () => {
+    if (vehicleResult) vehicleResult.hidden = true;
+    if (vehicleAlert) vehicleAlert.hidden = true;
+    activeVehicleLead = null;
+    if (vehicleDeliveryStatus) vehicleDeliveryStatus.textContent = "";
+  });
+
+  vehicleForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!vehicleForm.checkValidity()) {
+      vehicleForm.reportValidity();
+      if (vehicleAlert) {
+        vehicleAlert.textContent = "Complete the required fields before preparing dispatcher review.";
+        vehicleAlert.hidden = false;
+      }
+      return;
+    }
+
+    const payload = buildVehicleAvailabilityPayload(new FormData(vehicleForm));
+    const review = reviewVehicleAvailabilityPayload(payload);
+    activeVehicleLead = buildCarrierSalesLead(payload, review);
+    if (vehicleDecision) vehicleDecision.textContent = review.decision.replaceAll("_", " ");
+    if (vehicleState) vehicleState.textContent = `Vehicle state: ${review.vehicle_state.replaceAll("_", " ")}`;
+    fillVehicleList("[data-vehicle-reasons]", review.reasons);
+    fillVehicleList("[data-vehicle-actions]", review.required_actions);
+    fillVehicleList("[data-vehicle-routing]", review.routing.length ? review.routing : ["No routing — preview rejected."]);
+    if (vehiclePreview) vehiclePreview.textContent = buildVehicleAvailabilityPreview(payload, review);
+    if (vehicleEmail) vehicleEmail.href = buildLogisticsSalesMailto(activeVehicleLead);
+    const vehicleLive = vehicleForm.dataset.leadMode === "live";
+    if (vehicleEmail) vehicleEmail.hidden = vehicleLive;
+    if (vehicleSendButton) vehicleSendButton.hidden = !vehicleLive;
+    if (vehicleDeliveryStatus) {
+      vehicleDeliveryStatus.textContent = vehicleLive
+        ? "Review the lead, then send it securely to Logistics Sales."
+        : "Email is prepared with the sales tag. Review it and press Send in your email application.";
+    }
+    if (vehicleBoundary) {
+      vehicleBoundary.textContent = vehicleLive
+        ? "The request is not delivered until you press Send to Logistics Sales and receive confirmation."
+        : "Preview mode does not send or store the request automatically.";
+    }
+    if (vehicleResult) {
+      vehicleResult.dataset.decision = review.decision;
+      vehicleResult.hidden = false;
+      vehicleResult.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
 
   const form = document.querySelector<HTMLFormElement>("[data-load-board-form]");
   const alert = document.querySelector<HTMLElement>("[data-load-alert]");
@@ -163,7 +506,92 @@ import SiteFooter from "../components/SiteFooter.astro";
   const preview = document.querySelector<HTMLElement>("[data-load-preview]");
   const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-load-preview]");
   const copyStatus = document.querySelector<HTMLElement>("[data-load-copy-status]");
+  const loadEmail = document.querySelector<HTMLAnchorElement>("[data-load-email]");
+  const loadSendButton = document.querySelector<HTMLButtonElement>("[data-send-load-lead]");
+  const loadDeliveryStatus = document.querySelector<HTMLElement>("[data-load-delivery-status]");
+  const loadBoundary = document.querySelector<HTMLElement>("[data-load-boundary]");
+  const loadSalesTag = document.querySelector<HTMLElement>("[data-load-sales-tag]");
   let activePreview = "";
+  let activeLoadLead: ReturnType<typeof buildPostedLoadSalesLead> | null = null;
+
+  const activeRole = new URLSearchParams(window.location.search).get("role");
+  const sourceOrigin = new URLSearchParams(window.location.search).get("origin");
+  const sourceArea = new URLSearchParams(window.location.search).get("area");
+  if (activeRole) {
+    document.querySelector(`[data-role-link="${activeRole}"]`)?.setAttribute("aria-current", "page");
+    const submitter = document.querySelector<HTMLSelectElement>('select[name="submitter_type"]');
+    if (submitter && activeRole === "broker") submitter.value = "broker";
+    if (submitter && activeRole === "shipper") submitter.value = "shipper";
+    if (submitter && activeRole === "dealer") submitter.value = "dealer";
+    if (submitter && activeRole === "private_party") submitter.value = "private_party";
+  }
+  const pickupLocation = document.querySelector<HTMLInputElement>('input[name="pickup_location"]');
+  const carrierOrigin = document.querySelector<HTMLInputElement>('input[name="origin_location"]');
+  if (pickupLocation && sourceOrigin) pickupLocation.value = sourceOrigin.slice(0, 180);
+  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);
+
+  const demoSearchButton = document.querySelector<HTMLButtonElement>("[data-demo-search]");
+  const demoSearchStatus = document.querySelector<HTMLElement>("[data-demo-search-status]");
+  const demoOrigin = document.querySelector<HTMLInputElement>("[data-demo-origin]");
+  const demoDestination = document.querySelector<HTMLInputElement>("[data-demo-destination]");
+  const demoCards = [...document.querySelectorAll<HTMLElement>("[data-demo-load-card]")];
+  const normalizeCity = (value: string) => value.toLowerCase().replace(/[^a-z]/g, " ").replace(/\s+/g, " ").trim();
+
+  const searchDemoLoads = () => {
+    const origin = normalizeCity(demoOrigin?.value || "");
+    const destination = normalizeCity(demoDestination?.value || "");
+    const matches = demoCards.filter((card) => {
+      const cardOrigin = card.dataset.origin || "";
+      const cardDestination = card.dataset.destination || "";
+      const originMatch = !origin || cardOrigin.includes(origin) || cardDestination.includes(origin);
+      const destinationMatch = !destination || cardDestination.includes(destination) || cardOrigin.includes(destination);
+      return originMatch && destinationMatch;
+    });
+
+    demoCards.forEach((card) => {
+      const visible = matches.includes(card);
+      card.hidden = !visible;
+      card.classList.toggle("is-demo-result", visible && matches.length === 1);
+    });
+
+    if (!demoSearchStatus) return;
+    if (!origin && !destination) {
+      demoSearchStatus.textContent = "Enter one of the demo cities shown above. No live load search is connected.";
+    } else if (matches.length === 1) {
+      demoSearchStatus.textContent = "1 fictional demonstration load found. It is not available to book or dispatch.";
+      matches[0]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else if (matches.length > 1) {
+      demoSearchStatus.textContent = `${matches.length} fictional demonstration loads found. No live search was performed.`;
+    } else {
+      demoSearchStatus.textContent = "No fictional demo load matches that city. Try Chicago, Madison, Rockford, or Green Bay.";
+    }
+  };
+
+  demoSearchButton?.addEventListener("click", searchDemoLoads);
+  [demoOrigin, demoDestination].forEach((input) => input?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchDemoLoads();
+    }
+  }));
+  document.querySelectorAll<HTMLButtonElement>("[data-demo-city]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (demoOrigin) demoOrigin.value = button.dataset.demoCity || "";
+      if (demoDestination) demoDestination.value = "";
+      searchDemoLoads();
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>("[data-demo-load]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const reference = button.dataset.demoLoad;
+      const title = document.querySelector<HTMLElement>("[data-demo-load-title]");
+      const copy = document.querySelector<HTMLElement>("[data-demo-load-copy]");
+      if (interestedLoad) interestedLoad.value = reference || "";
+      if (title) title.textContent = `${button.textContent}: ${reference}`;
+      if (copy) copy.textContent = "The load reference is ready in the carrier access form. Submit the sales request so the team can verify your company, discuss the agreement, and call about next steps.";
+    });
+  });
 
   const fillList = (selector: string, values: string[]) => {
     const list = document.querySelector<HTMLElement>(selector);
@@ -179,7 +607,9 @@ import SiteFooter from "../components/SiteFooter.astro";
     if (result) result.hidden = true;
     if (alert) alert.hidden = true;
     activePreview = "";
+    activeLoadLead = null;
     if (copyStatus) copyStatus.textContent = "";
+    if (loadDeliveryStatus) loadDeliveryStatus.textContent = "";
   });
 
   form?.addEventListener("submit", (event) => {
@@ -196,12 +626,28 @@ import SiteFooter from "../components/SiteFooter.astro";
     const payload = buildLoadBoardPayload(new FormData(form));
     const review = reviewLoadBoardPayload(payload);
     activePreview = buildLoadBoardPreview(payload, review);
+    activeLoadLead = buildPostedLoadSalesLead(payload, review);
     if (decision) decision.textContent = review.decision.replaceAll("_", " ");
     if (confidence) confidence.textContent = `Confidence: ${review.confidence}`;
     fillList("[data-load-reasons]", review.reasons);
     fillList("[data-load-actions]", review.required_actions);
     fillList("[data-load-routing]", review.routing.length ? review.routing : ["No routing — submission rejected."]);
     if (preview) preview.textContent = activePreview;
+    if (loadEmail) loadEmail.href = buildLogisticsSalesMailto(activeLoadLead);
+    const loadLive = form.dataset.leadMode === "live";
+    if (loadEmail) loadEmail.hidden = loadLive;
+    if (loadSendButton) loadSendButton.hidden = !loadLive;
+    if (loadSalesTag) loadSalesTag.textContent = `Sales tag: ${activeLoadLead.sales_tag}`;
+    if (loadDeliveryStatus) {
+      loadDeliveryStatus.textContent = loadLive
+        ? "Review the posted load, then send it securely to Logistics Sales."
+        : "Email is prepared with the posted-load sales tag. Review it and press Send in your email application.";
+    }
+    if (loadBoundary) {
+      loadBoundary.textContent = loadLive
+        ? "The load is not published and carrier search does not begin until Sales confirms the request."
+        : "Preview mode does not send, store, or publish this load automatically.";
+    }
     if (result) {
       result.dataset.decision = review.decision;
       result.hidden = false;
@@ -218,5 +664,54 @@ import SiteFooter from "../components/SiteFooter.astro";
       copyStatus.textContent = "Copy did not work. Select the preview text and copy it manually.";
     }
   });
-</script>
 
+  const sendLead = async (
+    leadForm: HTMLFormElement | null,
+    lead: ReturnType<typeof buildCarrierSalesLead> | ReturnType<typeof buildPostedLoadSalesLead> | null,
+    button: HTMLButtonElement | null,
+    deliveryStatus: HTMLElement | null,
+  ) => {
+    if (!leadForm || !lead || !button || !deliveryStatus) return;
+    const endpoint = leadForm.dataset.leadEndpoint || "";
+    try {
+      if (!endpoint || new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
+    } catch {
+      deliveryStatus.textContent = "Secure delivery is not connected yet. Use the prepared email option or call Logistics Sales.";
+      return;
+    }
+
+    button.disabled = true;
+    deliveryStatus.textContent = "Sending the request securely…";
+    const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+        body: JSON.stringify({
+          request_id: requestId,
+          submitted_at: new Date().toISOString(),
+          page_path: window.location.pathname,
+          ...lead,
+        }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("delivery_failed");
+      deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review it and follow up.";
+      button.hidden = true;
+    } catch {
+      deliveryStatus.textContent = "Delivery was not confirmed. Your request may not have been received; please try again or use the prepared email option.";
+    } finally {
+      window.clearTimeout(timeout);
+      button.disabled = false;
+    }
+  };
+
+  vehicleSendButton?.addEventListener("click", () => {
+    void sendLead(vehicleForm, activeVehicleLead, vehicleSendButton, vehicleDeliveryStatus);
+  });
+  loadSendButton?.addEventListener("click", () => {
+    void sendLead(form, activeLoadLead, loadSendButton, loadDeliveryStatus);
+  });
+</script>

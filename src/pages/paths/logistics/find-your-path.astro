@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import HermesPathEngine from "../../../components/HermesPathEngine.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Find Your Hermes Logistics Path",
+  description: "Choose a logistics role, need, and current situation to receive a permanent Hermes Logistics recommendation.",
+  url: "https://hermeslogisticsus.com/paths/logistics/find-your-path/",
+};
+---
+
+<BaseLayout
+  title="Find Your Logistics Path | Hermes Logistics"
+  description="Choose your logistics role, equipment, primary need, and current situation to receive the right Hermes Logistics recommendation."
+  schema={schema}
+>
+  <div class="logistics-application-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <section class="logistics-audience-hero logistics-path-entry-hero">
+        <div class="shell">
+          <p class="eyebrow">Hermes Logistics · Guided decision system</p>
+          <h1>One clear path for the work you need to do.</h1>
+          <p>The result is shown before contact details are requested. Private carrier, vehicle, route, and customer data stays out of the decision URL.</p>
+        </div>
+      </section>
+      <HermesPathEngine />
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

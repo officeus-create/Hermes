@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Interactive Hermes CRM validation preview showing DCA intake checks, ready records, review queues and explicit approval boundaries.">
+  <link rel="canonical" href="https://hermeslogisticsus.com/demos/crm-validation/">
+  <title>Hermes CRM Validation Dashboard · Preview</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;background:#edf1f7;color:#0a164f;font:15px/1.5 Arial,sans-serif}
+    main{width:min(1180px,calc(100% - 32px));margin:auto;padding:48px 0 72px}
+    .eyebrow,small{color:#4665bb;font:700 11px/1.2 monospace;text-transform:uppercase}
+    h1{max-width:800px;margin:8px 0 14px;font-size:clamp(38px,7vw,76px);line-height:.95}
+    .boundary{max-width:760px;color:#566078} .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:34px 0;background:#cbd3e1;border:1px solid #cbd3e1}
+    .metrics div{padding:20px;background:#fff} .metrics span{display:block;color:#68738a} .metrics strong{font-size:34px}
+    .layout{display:grid;grid-template-columns:1fr 280px;gap:22px;align-items:start} .records{display:grid;gap:10px}
+    .record{display:grid;grid-template-columns:1fr 270px;gap:20px;padding:18px;border:1px solid #d1d8e5;border-radius:9px;background:#fff}
+    .record h2{margin:5px 0;font-size:20px} .record p{margin:0;color:#68738a;font-size:13px}
+    .status{display:grid;align-content:center;gap:4px;padding:12px;border-radius:7px} .status.ready{background:#daf4e9;color:#0b684a} .status.review{background:#fff0d8;color:#7b4b08}
+    .status span{font-size:12px} aside{position:sticky;top:20px;padding:18px;border-radius:9px;background:#0b1749;color:#fff}
+    aside h2{margin-top:0} aside ul{margin:0;padding:0;list-style:none} aside li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid #273561;font-size:12px}
+    .back{display:inline-flex;margin:18px 0 0;padding:10px 13px;border-radius:6px;background:#0b1749;color:#fff;text-decoration:none;font-weight:700} footer{margin-top:24px;padding:14px;border:1px solid #d1d8e5;background:#fff;color:#68738a;font-size:12px}
+    @media(max-width:760px){.metrics,.layout,.record{grid-template-columns:1fr} aside{position:static}}
+  </style>
+</head>
+<body><main>
+  <p class="eyebrow">Hermes CRM · DCA Validation Pipeline v0.2</p>
+  <h1>Review the records before anything enters CRM.</h1>
+  <p class="boundary">Local preview built from the DCA intake format. Automated checks provide review indicators, not carrier approval or identity guarantees.</p>
+  <a class="back button" href="/paths/technology/#working-prototypes">Explore CRM &amp; Operations development</a>
+  <section class="metrics"><div><span>Total</span><strong>3</strong></div><div><span>Ready for review</span><strong>1</strong></div><div><span>Needs review</span><strong>2</strong></div></section>
+  <div class="layout"><section class="records">
+            <article class="record">
+              <div><small>ROW 2</small><h2>North Ridge Transport</h2>
+              <p>MC 1482019 · WI · Dry Van</p></div>
+              <div class="status ready"><strong>Ready For Review</strong><span>Automated checks complete</span></div>
+            </article>
+
+            <article class="record">
+              <div><small>ROW 3</small><h2>Atlas Freight Group</h2>
+              <p>DOT 4120938 · IL · Reefer</p></div>
+              <div class="status review"><strong>Needs Review</strong><span>possible_duplicate</span></div>
+            </article>
+
+            <article class="record">
+              <div><small>ROW 4</small><h2>Blue Road Logistics</h2>
+              <p>Authority identifier missing · TX · Flatbed</p></div>
+              <div class="status review"><strong>Needs Review</strong><span>missing authority identifier, intake:hold_missing_identifier, routing:hold_needs_review, missing_authority_identifier, missing_contact</span></div>
+            </article>
+            </section><aside><h2>Review reasons</h2><ul><li><span>intake:hold_missing_identifier</span><strong>1</strong></li><li><span>missing authority identifier</span><strong>1</strong></li><li><span>missing_authority_identifier</span><strong>1</strong></li><li><span>missing_contact</span><strong>1</strong></li><li><span>possible_duplicate</span><strong>1</strong></li><li><span>routing:hold_needs_review</span><strong>1</strong></li></ul></aside></div>
+  <footer>Mode: preview · Approval: not approved · CRM write performed: false · No messages or external records created.</footer>
+</main></body></html>

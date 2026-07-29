@@ -1,7 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Clipboard, Mail, RotateCcw } from "@lucide/astro";
 
-const steps = ["Priorities", "References", "Investment", "Company", "Review"];
+const steps = ["Priorities", "References", "Timing", "Company", "Review"];
 ---
 
 <section class="section it-project-brief" id="project-brief" aria-labelledby="project-brief-title" data-it-project-brief>
@@ -42,8 +42,16 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
               </select>
             </label>
             <label>
+              Industry
+              <input name="industry" maxlength="140" placeholder="For example: logistics, recruiting, marketing, education, or professional services" required />
+            </label>
+            <label>
               Main business goal
               <textarea name="business_goal" rows="4" minlength="20" maxlength="900" placeholder="For example: attract better clients, reduce manual work, open a new location, or make sales easier to manage." required></textarea>
+            </label>
+            <label>
+              Current software
+              <textarea name="current_software" rows="4" maxlength="700" placeholder="CRM, spreadsheets, Google Workspace, Telegram, booking tools, or anything else you use today."></textarea>
             </label>
           </div>
 
@@ -68,14 +76,14 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
         </fieldset>
 
         <fieldset class="it-brief-panel" data-brief-step="2" hidden>
-          <legend><span>03 · Investment</span>What investment rhythm works for your company?</legend>
-          <p class="it-brief-prompt">This helps us divide the roadmap into useful stages instead of forcing every idea into one project.</p>
+          <legend><span>03 · Timing</span>When should the first useful version be ready?</legend>
+          <p class="it-brief-prompt">Budget information is optional at this stage. Timing and constraints help us propose a realistic first version.</p>
 
           <div class="it-brief-field-grid it-brief-budget-grid">
             <label>
-              Budget approach
-              <select name="budget_mode" required data-budget-mode>
-                <option value="">Choose an approach</option>
+              Budget approach · optional
+              <select name="budget_mode" data-budget-mode>
+                <option value="">Prefer not to specify yet</option>
                 <option value="total">We have a total project budget</option>
                 <option value="monthly">We can invest monthly</option>
                 <option value="range">We have an approximate range</option>
@@ -83,7 +91,7 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
               </select>
             </label>
             <label>
-              Amount and currency
+              Amount and currency · optional
               <input name="budget_amount" maxlength="120" inputmode="decimal" placeholder="For example: USD 5,000 total or USD 2,000 per month" data-budget-amount />
             </label>
             <label>
@@ -115,7 +123,6 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
             <label>Your name<input name="contact_name" autocomplete="name" maxlength="120" required /></label>
             <label>Your role<input name="contact_role" autocomplete="organization-title" maxlength="120" placeholder="Owner, CEO, operations, marketing, or another role" required /></label>
             <label>Business email<input type="email" name="contact_email" autocomplete="email" maxlength="180" required /></label>
-            <label>Phone, optional<input type="tel" name="contact_phone" autocomplete="tel" maxlength="60" /></label>
             <label>Country<input name="country" autocomplete="country-name" maxlength="100" required /></label>
             <label>State, region, and city<input name="region_city" autocomplete="address-level1" maxlength="180" required /></label>
             <label class="it-brief-wide">Current website or public profiles<textarea name="public_presence" rows="3" maxlength="1000" placeholder="Website, Instagram, Facebook, LinkedIn, Google Business Profile, or another public link."></textarea></label>
@@ -188,8 +195,7 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
       String(value ?? "").replace(/[<>\u0000-\u001f\u007f]/g, "").trim().slice(0, max);
 
     const updateBudgetRequirement = () => {
-      if (!budgetAmount || !budgetMode) return;
-      budgetAmount.required = Boolean(budgetMode.value && budgetMode.value !== "not_sure");
+      if (budgetAmount) budgetAmount.required = false;
     };
 
     const validatePanel = () => {
@@ -229,10 +235,14 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
         "",
         `Company: ${value(data, "company_name", 160)}`,
         `Company stage: ${value(data, "company_stage", 120)}`,
+        `Industry: ${value(data, "industry", 140)}`,
         `Location: ${value(data, "region_city", 180)}, ${value(data, "country", 100)}`,
         "",
         "Business goal:",
         value(data, "business_goal", 900),
+        "",
+        "Current software:",
+        value(data, "current_software", 700) || "Not provided",
         "",
         "Project priorities:",
         ...projects.map((project, index) => `${index + 1}. ${project}`),
@@ -240,7 +250,7 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
         "References and ideas:",
         ...(references.length ? references.map((reference, index) => `${index + 1}. ${reference}`) : ["Hermes market research requested."]),
         "",
-        `Investment approach: ${value(data, "budget_mode", 80).replaceAll("_", " ")}`,
+        `Investment approach: ${value(data, "budget_mode", 80).replaceAll("_", " ") || "Not provided"}`,
         `Budget: ${value(data, "budget_amount", 120) || "Needs definition"}`,
         `Planning horizon: ${value(data, "investment_horizon", 80)}`,
         `Timing or constraints: ${value(data, "timing_notes", 500) || "Not provided"}`,
@@ -251,7 +261,6 @@ const steps = ["Priorities", "References", "Investment", "Company", "Review"];
         "Contact:",
         `${value(data, "contact_name", 120)} · ${value(data, "contact_role", 120)}`,
         value(data, "contact_email", 180),
-        value(data, "contact_phone", 60) || "Phone not provided",
         "",
         "Prepared on hermeslogisticsus.com. Not automatically sent or stored by the website.",
       ];

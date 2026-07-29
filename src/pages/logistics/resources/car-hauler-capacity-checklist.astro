@@ -1,0 +1,228 @@
+---
+import { ArrowLeft, ArrowRight, Check, MapPin, Route, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Car Hauler Capacity Checklist | Hermes Logistics";
+const description =
+  "Share useful car-hauler capacity details: equipment, available spaces, origin, destination, dates, operating authority, and vehicle restrictions.";
+const canonicalUrl = new URL("/logistics/resources/car-hauler-capacity-checklist/", Astro.site).toString();
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Car Hauler Capacity Checklist",
+    description,
+    datePublished: "2026-07-29",
+    dateModified: "2026-07-29",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Resources", item: "https://hermeslogisticsus.com/paths/logistics/#logistics-resources" },
+      { "@type": "ListItem", position: 4, name: "Car Hauler Capacity Checklist", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Car hauler capacity checklist</span>
+            </nav>
+            <a class="detail-back" href="/paths/logistics/#logistics-resources"><ArrowLeft size={18} aria-hidden="true" />Logistics resources</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · Carriers</p>
+                <h1>Car Hauler Capacity Checklist</h1>
+                <p>
+                  “Truck available” is rarely enough information for a useful vehicle-transport match. A clear update
+                  explains where the equipment is, what it can carry, where it is going, and when it is available.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="/load-board/?role=carrier#carrier-access">
+                    Share available capacity <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href="/logistics/carrier/">Open the carrier path</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Availability begins a review.</h2>
+                <p>Sharing capacity does not establish approval, onboarding, a load assignment, a rate, revenue, or a booking.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Truck size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Before sharing availability</p>
+              <h2>Describe practical fit, not only the number of spaces.</h2>
+              <p>Units, dimensions, weight distribution, equipment, route, dates, access, and operating requirements all affect whether capacity is useful for a particular opportunity.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="capacity-pillars-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div>
+                <p class="eyebrow">Capacity details</p>
+                <h2 id="capacity-pillars-title">Six parts of an actionable update.</h2>
+              </div>
+              <p>Share business information through the approved Hermes form. Do not post private home addresses, unnecessary live-location history, credentials, or customer data.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              <article>
+                <span>01</span><ShieldCheck size={23} aria-hidden="true" />
+                <h3>Carrier and authority</h3>
+                <ul>
+                  <li>Legal or operating business name</li>
+                  <li>Active coordination contact</li>
+                  <li>Applicable USDOT and MC information</li>
+                  <li>Documents only when requested through the approved process</li>
+                </ul>
+              </article>
+              <article>
+                <span>02</span><MapPin size={23} aria-hidden="true" />
+                <h3>Current area and radius</h3>
+                <ul>
+                  <li>Current city/state or origin ZIP</li>
+                  <li>Acceptable pickup radius</li>
+                  <li>No private home address</li>
+                  <li>No unnecessary location history</li>
+                </ul>
+              </article>
+              <article>
+                <span>03</span><Route size={23} aria-hidden="true" />
+                <h3>Preferred route</h3>
+                <ul>
+                  <li>Destination, region, or lane</li>
+                  <li>Backhaul or partial-route interest</li>
+                  <li>Date flexibility</li>
+                  <li>Known route constraints</li>
+                </ul>
+              </article>
+              <article>
+                <span>04</span><Truck size={23} aria-hidden="true" />
+                <h3>Equipment and spaces</h3>
+                <ul>
+                  <li>Open or enclosed equipment</li>
+                  <li>Trailer type and practical capacity</li>
+                  <li>Available positions</li>
+                  <li>Size, weight, height, and clearance restrictions</li>
+                </ul>
+              </article>
+              <article>
+                <span>05</span><Check size={23} aria-hidden="true" />
+                <h3>Vehicle fit</h3>
+                <ul>
+                  <li>Operable or inoperable capability</li>
+                  <li>Loading assistance or special equipment</li>
+                  <li>Modified or damaged vehicle restrictions</li>
+                  <li>Classic, specialty, or high-value limits</li>
+                </ul>
+              </article>
+              <article>
+                <span>06</span><ShieldCheck size={23} aria-hidden="true" />
+                <h3>Timing and access</h3>
+                <ul>
+                  <li>Realistic availability window</li>
+                  <li>Appointment and facility hours</li>
+                  <li>Multi-stop sequencing</li>
+                  <li>Legal, weather, traffic, and access constraints</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="capacity-example-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Useful structure</p>
+              <h2 id="capacity-example-title">What makes a capacity update actionable.</h2>
+              <p>This is a structure for preparing information, not a public posting format and not an automatic load match.</p>
+            </div>
+            <dl>
+              <div><dt>Equipment</dt><dd>Open or enclosed car hauler, available spaces, and important restrictions</dd></div>
+              <div><dt>Available</dt><dd>Date and realistic time window</dd></div>
+              <div><dt>Origin</dt><dd>City/state or ZIP plus radius</dd></div>
+              <div><dt>Preferred route</dt><dd>Destination, lane, or operating region</dd></div>
+              <div><dt>Vehicle fit</dt><dd>Operable or inoperable capability and size limits</dd></div>
+              <div><dt>Authority</dt><dd>Information required for carrier review</dd></div>
+              <div><dt>Contact</dt><dd>Approved business coordination channel</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="capacity-review-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">How Hermes uses the information</p>
+              <h2 id="capacity-review-title">Every opportunity still requires review and confirmation.</h2>
+              <p>Hermes reviews carrier information, route, timing, equipment, vehicle fit, compliance, and the current operating process before an opportunity can move forward.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article><strong>No guaranteed load</strong><p>Sharing availability does not guarantee that an appropriate opportunity exists.</p></article>
+              <article><strong>No guaranteed rate or revenue</strong><p>A capacity update is not a promise of price, payment, earnings, or utilization.</p></article>
+              <article><strong>No automatic verification</strong><p>The update does not replace carrier review, documents, compliance, or onboarding decisions.</p></article>
+              <article><strong>No automatic booking</strong><p>Nothing is booked until the applicable parties complete and confirm the operating process.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="capacity-related-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Continue planning</p>
+              <h2 id="capacity-related-title">Related Hermes Logistics paths.</h2>
+            </div>
+            <div class="resource-related-grid">
+              <a href="/logistics/carrier/"><Truck size={22} aria-hidden="true" /><h3>Carrier and owner-operator</h3><p>See the current review path and the information Hermes needs.</p><strong>Open carrier path <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/appleton-wi-vehicle-transport/"><MapPin size={22} aria-hidden="true" /><h3>Appleton vehicle transport</h3><p>Share Appleton and Fox Valley capacity when that area fits your route.</p><strong>Open guide <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/auction-vehicle-pickup-checklist/"><ShieldCheck size={22} aria-hidden="true" /><h3>Auction pickup checklist</h3><p>Review the information customers can prepare before a vehicle pickup.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Carrier capacity review</p>
+              <h2>Share current equipment, route, timing, and available capacity.</h2>
+              <p>The existing form prepares a Logistics Sales request. It does not create an account, approve a carrier, assign a load, or make a booking.</p>
+            </div>
+            <a class="button button-primary" href="/load-board/?role=carrier#carrier-access">
+              Open carrier intake <ArrowRight size={18} aria-hidden="true" />
+            </a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

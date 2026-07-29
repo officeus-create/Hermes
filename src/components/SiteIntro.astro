@@ -55,6 +55,17 @@ const directions = [
     </div>
     <div class="site-intro-heading-actions">
       <p><span data-intro-count>01</span> / 04</p>
+      <button
+        type="button"
+        class="site-intro-sound"
+        data-intro-sound
+        aria-pressed="true"
+        aria-label="Turn direction sounds off"
+        title="Direction sounds on"
+      >
+        <span aria-hidden="true" data-intro-sound-icon>♪</span>
+        <span data-intro-sound-label>Sound on</span>
+      </button>
       <button type="button" class="site-intro-skip" data-intro-close>Open Home <span aria-hidden="true">↘</span></button>
     </div>
   </div>
@@ -107,6 +118,9 @@ const directions = [
   const rails = [...(intro?.querySelectorAll<HTMLElement>("[data-intro-rail]") ?? [])];
   const verbs = [...(intro?.querySelectorAll<HTMLElement>("[data-intro-verb]") ?? [])];
   const closeButtons = [...(intro?.querySelectorAll<HTMLButtonElement>("[data-intro-close]") ?? [])];
+  const soundButton = intro?.querySelector<HTMLButtonElement>("[data-intro-sound]");
+  const soundLabel = soundButton?.querySelector<HTMLElement>("[data-intro-sound-label]");
+  const soundIcon = soundButton?.querySelector<HTMLElement>("[data-intro-sound-icon]");
 
   if (intro && document.documentElement.classList.contains("intro-pending")) {
     const ideas = rails.map((rail) => rail.querySelector<HTMLElement>(".site-intro-rail-copy strong")?.textContent?.trim() ?? "");
@@ -115,8 +129,111 @@ const directions = [
     let activeIndex = 0;
     let cycle: number | undefined;
     let storyTimers: number[] = [];
+    let soundEnabled = true;
+    let audioContext: AudioContext | undefined;
+    let navigationTimer: number | undefined;
+
+    try {
+      soundEnabled = localStorage.getItem("hermes-intro-sound") !== "off";
+    } catch {
+      // Sound remains available when browser storage is unavailable.
+    }
 
     inertSiblings.forEach((element) => element.setAttribute("inert", ""));
+
+    const updateSoundControl = () => {
+      if (!soundButton) return;
+      soundButton.setAttribute("aria-pressed", String(soundEnabled));
+      soundButton.setAttribute("aria-label", soundEnabled ? "Turn direction sounds off" : "Turn direction sounds on");
+      soundButton.title = soundEnabled ? "Direction sounds on" : "Direction sounds off";
+      if (soundLabel) soundLabel.textContent = soundEnabled ? "Sound on" : "Sound off";
+      if (soundIcon) soundIcon.textContent = soundEnabled ? "♪" : "×";
+    };
+
+    const getAudioContext = () => {
+      if (!audioContext) {
+        const AudioContextClass = window.AudioContext
+          ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioContextClass) return;
+        audioContext = new AudioContextClass();
+      }
+      if (audioContext.state === "suspended") void audioContext.resume();
+      return audioContext;
+    };
+
+    const createTone = (
+      context: AudioContext,
+      destination: AudioNode,
+      frequency: number,
+      start: number,
+      duration: number,
+      volume: number,
+      type: OscillatorType = "sine",
+      endFrequency = frequency,
+    ) => {
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, start);
+      oscillator.frequency.exponentialRampToValueAtTime(Math.max(endFrequency, 1), start + duration);
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(volume, start + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+      oscillator.connect(gain).connect(destination);
+      oscillator.start(start);
+      oscillator.stop(start + duration + 0.03);
+    };
+
+    const playDirectionSound = (direction: string) => {
+      if (!soundEnabled) return false;
+      const context = getAudioContext();
+      if (!context) return false;
+
+      const master = context.createGain();
+      const now = context.currentTime + 0.015;
+      master.gain.setValueAtTime(0.72, now);
+      master.connect(context.destination);
+
+      if (direction === "logistics") {
+        const buffer = context.createBuffer(1, Math.ceil(context.sampleRate * 0.68), context.sampleRate);
+        const samples = buffer.getChannelData(0);
+        for (let index = 0; index < samples.length; index += 1) {
+          const envelope = Math.sin(Math.PI * index / samples.length);
+          samples[index] = (Math.random() * 2 - 1) * envelope * 0.16;
+        }
+        const road = context.createBufferSource();
+        const roadFilter = context.createBiquadFilter();
+        const roadGain = context.createGain();
+        road.buffer = buffer;
+        roadFilter.type = "bandpass";
+        roadFilter.frequency.setValueAtTime(180, now);
+        roadFilter.frequency.exponentialRampToValueAtTime(420, now + 0.68);
+        roadFilter.Q.value = 0.8;
+        roadGain.gain.setValueAtTime(0.0001, now);
+        roadGain.gain.exponentialRampToValueAtTime(0.45, now + 0.12);
+        roadGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.68);
+        road.connect(roadFilter).connect(roadGain).connect(master);
+        road.start(now);
+        createTone(context, master, 84, now, 0.66, 0.12, "sine", 116);
+      } else if (direction === "marketing") {
+        createTone(context, master, 392, now, 0.26, 0.13, "triangle", 523.25);
+        createTone(context, master, 523.25, now + 0.12, 0.3, 0.11, "sine", 659.25);
+        createTone(context, master, 783.99, now + 0.27, 0.34, 0.09, "sine", 880);
+      } else if (direction === "academy") {
+        createTone(context, master, 523.25, now, 0.42, 0.12, "sine");
+        createTone(context, master, 1046.5, now, 0.48, 0.045, "sine");
+        createTone(context, master, 659.25, now + 0.24, 0.42, 0.11, "sine");
+        createTone(context, master, 1318.5, now + 0.24, 0.42, 0.04, "sine");
+      } else {
+        [220, 293.66, 440, 587.33].forEach((frequency, index) => {
+          createTone(context, master, frequency, now + index * 0.105, 0.22, 0.065, index % 2 ? "square" : "triangle", frequency * 1.03);
+        });
+        createTone(context, master, 880, now + 0.38, 0.28, 0.055, "sine", 1174.66);
+      }
+
+      window.dispatchEvent(new CustomEvent("hermes:intro-sound", { detail: { direction } }));
+      return true;
+    };
 
     const clearStoryTimers = () => {
       storyTimers.forEach((timer) => window.clearTimeout(timer));
@@ -171,6 +288,7 @@ const directions = [
     const closeIntro = () => {
       pauseCycle();
       clearStoryTimers();
+      if (navigationTimer) window.clearTimeout(navigationTimer);
       rememberIntro();
       intro.dataset.closing = "true";
       inertSiblings.forEach((element) => element.removeAttribute("inert"));
@@ -192,7 +310,45 @@ const directions = [
         if (activeIndex !== index) setActive(index);
       });
       rail.addEventListener("pointerleave", startCycle);
-      rail.addEventListener("click", rememberIntro);
+      rail.addEventListener("click", (event) => {
+        rememberIntro();
+        if (navigationTimer) {
+          event.preventDefault();
+          return;
+        }
+        if (
+          !soundEnabled
+          || event.defaultPrevented
+          || event.button !== 0
+          || event.metaKey
+          || event.ctrlKey
+          || event.shiftKey
+          || event.altKey
+        ) return;
+
+        const href = rail.getAttribute("href");
+        const direction = rail.dataset.introRail;
+        if (!href || !direction || !playDirectionSound(direction)) return;
+
+        event.preventDefault();
+        pauseCycle();
+        clearStoryTimers();
+        rail.dataset.soundPlaying = "true";
+        navigationTimer = window.setTimeout(() => {
+          window.location.assign(href);
+        }, 480);
+      });
+    });
+
+    soundButton?.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      try {
+        localStorage.setItem("hermes-intro-sound", soundEnabled ? "on" : "off");
+      } catch {
+        // The control still works for the current page.
+      }
+      updateSoundControl();
+      if (soundEnabled) playDirectionSound(rails[activeIndex]?.dataset.introRail ?? "technology");
     });
 
     closeButtons.forEach((button) => button.addEventListener("click", closeIntro));
@@ -200,6 +356,7 @@ const directions = [
       if (event.key === "Escape" && document.documentElement.classList.contains("intro-pending")) closeIntro();
     });
 
+    updateSoundControl();
     setActive(0);
     startCycle();
     closeButtons[0]?.focus({ preventScroll: true });

@@ -1,0 +1,68 @@
+---
+import { ArrowRight, ChartNoAxesCombined, PanelsTopLeft, SearchCheck, Share2 } from "@lucide/astro";
+
+const pillars = [
+  {
+    number: "01",
+    name: "Website & Conversion",
+    promise: "Turn the website into a clear path from attention to inquiry.",
+    detail: "Marketing strategy and IT development work together on the offer, page structure, landing experiences, conversion actions, and measurement plan.",
+    items: ["Website and landing-page strategy", "Message and conversion journey", "Analytics and improvement plan"],
+    icon: PanelsTopLeft,
+  },
+  {
+    number: "02",
+    name: "SEO Optimization",
+    promise: "Build search visibility on a technically sound foundation.",
+    detail: "We connect technical checks, search intent, page optimization, local relevance, content priorities, and performance review without promising artificial rankings.",
+    items: ["Technical and on-page review", "Keyword and content architecture", "Local SEO and search reporting"],
+    icon: SearchCheck,
+  },
+  {
+    number: "03",
+    name: "Social Media Marketing",
+    promise: "Create a repeatable social presence around a business goal.",
+    detail: "Channel strategy, content themes, production workflow, campaign planning, and community response are organized as one operating system.",
+    items: ["Channel and audience strategy", "Content system and calendar", "Campaign and community workflow"],
+    icon: Share2,
+  },
+  {
+    number: "04",
+    name: "Growth & Sales System",
+    promise: "Connect marketing activity to qualified conversations and learning.",
+    detail: "Positioning, lead capture, qualification, CRM handoff, follow-up, and reporting create a visible path from campaign activity to the next commercial action.",
+    items: ["Positioning and offer", "Lead journey and CRM handoff", "Performance review and next actions"],
+    icon: ChartNoAxesCombined,
+  },
+];
+---
+
+<section class="section marketing-service-system" aria-labelledby="marketing-service-system-title" data-marketing-service-pillars>
+  <div class="shell">
+    <div class="section-heading split-heading marketing-service-heading" data-reveal>
+      <div>
+        <p class="eyebrow">Four connected marketing pillars</p>
+        <h2 id="marketing-service-system-title">Start with one priority. Connect the system as you grow.</h2>
+      </div>
+      <p>Each pillar can begin as a focused engagement. When the business needs more, the website, search, social channels, and sales workflow can operate as one measurable growth system.</p>
+    </div>
+
+    <div class="marketing-service-rails" data-reveal>
+      {pillars.map((pillar) => {
+        const Icon = pillar.icon;
+        return (
+          <article>
+            <div class="marketing-service-meta"><span>{pillar.number}</span><Icon size={23} aria-hidden="true" /></div>
+            <h3>{pillar.name}</h3>
+            <strong>{pillar.promise}</strong>
+            <p>{pillar.detail}</p>
+            <ul>{pillar.items.map((item) => <li>{item}</li>)}</ul>
+            <a href="#contact">Discuss this pillar <ArrowRight size={17} aria-hidden="true" /></a>
+          </article>
+        );
+      })}
+    </div>
+
+    <p class="marketing-service-boundary">Scope begins with discovery. Search position, lead volume, sales, and audience growth are not guaranteed before the market, offer, channels, and measurement baseline are reviewed.</p>
+  </div>
+</section>

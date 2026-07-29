@@ -53,9 +53,18 @@ The first direct homepage visit in a browser session opens an optional four-dire
 
 ## Car Hauling Load Board Pilot
 
-`/load-board/` is a local-first dry-run intake for car-hauling requests from private parties, dealers, shippers, brokers, and other businesses. It validates the request in the browser and returns an explainable `approved`, `needs_more_information`, `quarantine`, or `rejected` decision with proposed internal routing and carrier-match tags.
+`/load-board/` has two local-first sales intake paths. Carriers and owner-operators can prepare a request for free Load Board access or identify a demo load they want to discuss. Customers, shippers, dealers, and brokers can prepare a posted-load request with route, vehicle, timing, condition, price, and contact details. The generated email subjects use clear Logistics Sales tags so the receiving team can distinguish `LOAD BOARD ACCESS / CARRIER` from `POSTED LOAD / CUSTOMER`, `SHIPPER`, `DEALER`, or `BROKER`.
 
-The pilot performs no network write, storage, email delivery, CRM update, load publication, or carrier notification. Standard operable vehicles can pass the preview rules; tractors, unusual commodities, inoperable vehicles, multi-unit loads, incomplete requests, and bot-like submissions are held or rejected by explicit rules.
+Preview mode performs no network write, storage, automatic email delivery, CRM update, load publication, or carrier notification. It prepares a addressed email that the visitor can review and send from their email application. Automatic HTTPS delivery remains controlled by `PUBLIC_CONTACT_MODE=live` and an approved `PUBLIC_CONTACT_ENDPOINT`. Standard operable vehicles can pass the preview rules; tractors, unusual commodities, inoperable vehicles, multi-unit loads, incomplete requests, and bot-like submissions are held or rejected by explicit rules.
+
+The protected same-origin receiver is implemented in
+`functions/api/logistics-lead.ts` and covered by
+`scripts/sales-lead-receiver.test.mjs`. It uses a fixed sales recipient and
+server-built subjects, validates lead categories, rejects oversized or
+cross-origin requests, and requires KV-backed deduplication/rate limiting.
+Keep preview mode active until Cloudflare Email Sending, the verified sender,
+and the restricted bindings from `wrangler.toml.example` are available and a
+real delivery test has passed.
 
 ## Logistics Visitor Paths
 

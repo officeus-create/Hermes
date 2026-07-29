@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Interactive Hermes Connect preview for specialist profiles, services, availability and simulated personal booking paths.">
+  <link rel="canonical" href="https://hermeslogisticsus.com/demos/hermes-connect/">
+  <title>Hermes Connect · Profile & Availability v0.2</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main>
+    <section class="editor">
+      <p class="eyebrow">Hermes Connect · local prototype v0.2</p>
+      <h1>Build the specialist page before connecting the platform.</h1>
+      <p class="intro">Edit the profile, choose services and availability, then generate a simulated personal booking preview.</p>
+      <a class="back-link" href="/paths/technology/#working-prototypes">Explore Hermes Connect development →</a>
+
+      <form data-profile-form>
+        <div class="fields">
+          <label>Name<input name="name" value="Maya Santos" required></label>
+          <label>Professional role<input name="role" value="Business consultant" required></label>
+          <label>Location<input name="location" value="Miami / Remote" required></label>
+          <label class="wide">Short profile<textarea name="bio" rows="3" required>Operations, customer journey, and practical growth systems.</textarea></label>
+        </div>
+
+        <fieldset>
+          <legend>Services</legend>
+          <div class="choices" data-services></div>
+        </fieldset>
+        <fieldset>
+          <legend>Availability</legend>
+          <div class="choices" data-availability></div>
+        </fieldset>
+        <button type="submit">Generate profile preview <span>→</span></button>
+        <p class="status" role="status" data-status>Preview mode · nothing is saved or sent.</p>
+      </form>
+    </section>
+
+    <aside class="profile-card" data-profile-preview>
+      <div class="preview-bar"><span></span><span></span><span></span><p>Personal booking preview</p></div>
+      <div class="profile-avatar">MS</div>
+      <p class="profile-location" data-preview-location>Miami / Remote</p>
+      <h2 data-preview-name>Maya Santos</h2>
+      <strong data-preview-role>Business consultant</strong>
+      <p data-preview-bio>Operations, customer journey, and practical growth systems.</p>
+      <div class="preview-section"><span>Services</span><div data-preview-services></div></div>
+      <div class="preview-section"><span>Available times</span><div data-preview-times></div></div>
+      <div class="personal-path"><span>Personal preview path</span><code data-preview-path>Generate the profile to create a path</code></div>
+      <p class="boundary">No account, database record, calendar event, payment, or message is created.</p>
+    </aside>
+  </main>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

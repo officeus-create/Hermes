@@ -1,0 +1,126 @@
+---
+import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import { logisticsRecommendations } from "../../../data/logistics-path-engine";
+
+export function getStaticPaths() {
+  return logisticsRecommendations.map((recommendation) => ({
+    params: { result: recommendation.route.replace("/paths/logistics/", "").replace(/\/$/, "") },
+    props: { recommendation },
+  }));
+}
+
+const { recommendation } = Astro.props;
+const canonicalUrl = new URL(recommendation.route, Astro.site).toString();
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: recommendation.title,
+  description: recommendation.summary,
+  url: canonicalUrl,
+  provider: {
+    "@type": "Organization",
+    name: "Hermes Logistics",
+    url: "https://hermeslogisticsus.com/paths/logistics/",
+  },
+  areaServed: { "@type": "Country", name: "United States" },
+};
+---
+
+<BaseLayout title={`${recommendation.title} | Hermes Logistics`} description={recommendation.summary} schema={schema}>
+  <div class="logistics-recommendation-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <section class="logistics-audience-hero logistics-recommendation-hero">
+        <div class="shell">
+          <a class="detail-back" href="/paths/logistics/find-your-path/"><ArrowLeft size={18} aria-hidden="true" />Restart the Logistics Path</a>
+          <p class="eyebrow">{recommendation.eyebrow}</p>
+          <h1>{recommendation.title}</h1>
+          <p>{recommendation.summary}</p>
+          <div class="logistics-audience-actions">
+            <a class="button button-primary" href={recommendation.primaryCta.href} data-recommendation-primary>
+              {recommendation.primaryCta.label}<ArrowRight size={18} aria-hidden="true" />
+            </a>
+            {recommendation.secondaryCta && <a class="button" href={recommendation.secondaryCta.href}>{recommendation.secondaryCta.label}</a>}
+          </div>
+        </div>
+      </section>
+
+      <section class="section recommendation-explanation" aria-labelledby="recommendation-reasons-title">
+        <div class="shell recommendation-explanation-grid">
+          <div>
+            <p class="eyebrow">Why this path</p>
+            <h2 id="recommendation-reasons-title">A recommendation you can evaluate.</h2>
+          </div>
+          <ul>{recommendation.reasons.map((reason) => <li><Check size={20} aria-hidden="true" />{reason}</li>)}</ul>
+        </div>
+      </section>
+
+      <section class="section recommendation-scope" aria-labelledby="recommendation-scope-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Recommended scope</p><h2 id="recommendation-scope-title">What this path can include.</h2></div>
+            <p>The final scope is confirmed only after authority, insurance, equipment, request details, operating fit, and current company capacity are reviewed where applicable.</p>
+          </div>
+          <div class="recommendation-included-grid">
+            {recommendation.included.map((item, index) => <article><span>0{index + 1}</span><p>{item}</p></article>)}
+          </div>
+        </div>
+      </section>
+
+      {recommendation.caseStudy && (
+        <section class="section recommendation-case" aria-labelledby="recommendation-case-title">
+          <div class="shell recommendation-case-grid">
+            <div>
+              <p class="eyebrow">{recommendation.caseStudy.label}</p>
+              <h2 id="recommendation-case-title">{recommendation.caseStudy.title}</h2>
+              <p>{recommendation.caseStudy.body}</p>
+            </div>
+            <ul>{recommendation.caseStudy.checks.map((item) => <li><ShieldCheck size={19} aria-hidden="true" />{item}</li>)}</ul>
+          </div>
+        </section>
+      )}
+
+      <section class="section recommendation-next" aria-labelledby="recommendation-next-title">
+        <div class="shell recommendation-next-grid">
+          <div>
+            <p class="eyebrow">Next action</p>
+            <h2 id="recommendation-next-title">Move from recommendation to qualification.</h2>
+            {recommendation.eligibilityNote && <p class="recommendation-note"><ShieldCheck size={20} aria-hidden="true" />{recommendation.eligibilityNote}</p>}
+          </div>
+          <ol>{recommendation.nextSteps.map((step, index) => <li><span>0{index + 1}</span><p>{step}</p></li>)}</ol>
+        </div>
+      </section>
+
+      <section class="recommendation-cta">
+        <div class="shell">
+          <div>
+            <p class="eyebrow">Hermes Logistics</p>
+            <h2>Ready for the correct operating conversation?</h2>
+            <p>Contact and private operational details are collected only now—after the recommendation is clear.</p>
+          </div>
+          <div>
+            <a class="button button-primary" href={recommendation.primaryCta.href} data-recommendation-primary-bottom>{recommendation.primaryCta.label}<ArrowRight size={18} aria-hidden="true" /></a>
+            {recommendation.secondaryCta && <a class="button" href={recommendation.secondaryCta.href}>{recommendation.secondaryCta.label}</a>}
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import { trackEvent } from "../../../lib/analytics";
+
+  trackEvent("path_recommendation_viewed", { direction: "logistics", resultRoute: window.location.pathname });
+  document.querySelectorAll<HTMLAnchorElement>("[data-recommendation-primary], [data-recommendation-primary-bottom]").forEach((link) => {
+    link.addEventListener("click", () => trackEvent("contact_route_clicked", {
+      direction: "logistics",
+      resultRoute: window.location.pathname,
+      contactRoute: link.getAttribute("href")?.startsWith("tel:") ? "phone" : "form",
+    }));
+  });
+</script>

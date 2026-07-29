@@ -1,0 +1,185 @@
+---
+import {
+  ArrowRight,
+  Bot,
+  ChartNoAxesCombined,
+  BriefcaseBusiness,
+  DatabaseZap,
+  FileStack,
+  MapPinned,
+  Megaphone,
+  SearchCheck,
+  ShieldCheck,
+  Truck,
+  UserRoundCheck,
+  Workflow,
+} from "@lucide/astro";
+import TechnologySolutionCard from "./TechnologySolutionCard.astro";
+
+const solutionGroups = [
+  {
+    title: "AI Assistants and Business Bots",
+    icon: Bot,
+    description: "Custom assistants for company knowledge, customer support, tasks, reports, voice transcription, and controlled actions.",
+    services: ["AI Telegram assistants", "Knowledge-base assistants", "Sales and onboarding bots", "Document and voice analysis"],
+  },
+  {
+    title: "CRM and Sales Automation",
+    icon: Workflow,
+    description: "Organize leads, validate contact data, automate defined pipeline steps, and give managers a reliable operating view.",
+    services: ["Custom CRM development", "Lead enrichment and scoring", "Duplicate detection", "Sales dashboards"],
+  },
+  {
+    title: "Logistics Technology",
+    icon: Truck,
+    description: "Connect official transportation data, vehicles, routes, loads, carriers, risk signals, and dispatcher decisions.",
+    services: ["Carrier intelligence", "Vehicle data automation", "Route-risk monitoring", "Dispatch control centers"],
+  },
+  {
+    title: "Recruiting and HR Systems",
+    icon: UserRoundCheck,
+    description: "Candidate intake, validation, recruiter review, onboarding, and decision visibility.",
+    services: ["Job-market monitoring", "Recruiting dashboards", "AI candidate summaries", "Automated onboarding"],
+  },
+  {
+    title: "Marketing and Content Systems",
+    icon: Megaphone,
+    description: "Monitor websites, competitors, content, calls to action, and campaign performance.",
+    services: ["Automated website audit", "Competitor monitoring", "Content intelligence", "Marketing dashboards"],
+  },
+  {
+    title: "Data and API Integrations",
+    icon: DatabaseZap,
+    description: "Connect fragmented software and data sources into one reliable operating flow.",
+    services: ["Custom APIs and webhooks", "Google Workspace integrations", "Data synchronization", "Scheduled imports"],
+  },
+  {
+    title: "Data Validation and Security",
+    icon: ShieldCheck,
+    description: "Improve data quality and surface risk indicators before important records are accepted.",
+    services: ["Contact and domain checks", "Duplicate detection", "Access control", "Audit logs"],
+  },
+  {
+    title: "Document Automation",
+    icon: FileStack,
+    description: "Generate, classify, search, extract, and summarize business documents.",
+    services: ["PDF and report generation", "Contracts and proposals", "Information extraction", "Knowledge bases"],
+  },
+  {
+    title: "Maps and Location Systems",
+    icon: MapPinned,
+    description: "Turn address and route data into practical customer and operating interfaces.",
+    services: ["Geocoding", "Service-area maps", "Nearest-provider search", "Route-time estimates"],
+  },
+  {
+    title: "Analytics and Executive Dashboards",
+    icon: ChartNoAxesCombined,
+    description: "Bring operational KPI, exceptions, and daily reporting into one management view.",
+    services: ["CEO dashboards", "Sales and recruiting analytics", "Logistics and marketing KPI", "Exception alerts"],
+  },
+];
+
+const industries = [
+  "Logistics and Transportation",
+  "Sales Organizations",
+  "Recruiting and HR",
+  "Marketing Agencies",
+  "Education and Training",
+  "Professional Services",
+  "Small and Mid-Sized Businesses",
+];
+
+const deliverySteps = [
+  ["Business Process Audit", "Identify the problem, users, data sources, and expected result."],
+  ["Prototype", "Create a focused working version before expanding the system."],
+  ["Integration", "Connect the required APIs, databases, and existing tools."],
+  ["Testing", "Test workflows, permissions, data quality, and failure scenarios."],
+  ["Launch and Improvement", "Deploy and improve the system based on actual usage."],
+];
+
+const capabilities = [
+  "AI Agents",
+  "Telegram Bots",
+  "API Integration",
+  "CRM Development",
+  "Business Automation",
+  "Data Enrichment",
+  "Google Workspace",
+  "Dashboards",
+  "PostgreSQL",
+  "Supabase",
+  "Python",
+  "TypeScript",
+  "FastAPI",
+  "Webhooks",
+  "Cloud Deployment",
+];
+---
+
+<section class="section technology-capability-catalog" id="capabilities" aria-labelledby="capability-catalog-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-capability-heading" data-reveal>
+      <div>
+        <p class="eyebrow">Business systems we can design and build</p>
+        <h2 id="capability-catalog-title">From one operating problem to a connected working system.</h2>
+      </div>
+      <p>Start with one useful workflow. Add integrations, automation, dashboards, and controlled AI only where they improve the result.</p>
+    </div>
+
+    <article class="candidate-pipeline-feature" data-reveal>
+      <div class="candidate-pipeline-copy">
+        <p><BriefcaseBusiness size={18} aria-hidden="true" />Featured solution</p>
+        <h3>Candidate Validation Pipeline</h3>
+        <div>Validate candidate contact details, detect duplicates, organize applications, and create structured candidate profiles before recruiter review.</div>
+        <a href="#project-brief" data-brief-service="Candidate Validation Pipeline">Discuss this workflow <ArrowRight size={17} aria-hidden="true" /></a>
+      </div>
+      <div class="candidate-pipeline-visual" aria-label="Candidate validation workflow preview">
+        <div><span>01</span><strong>Application intake</strong><small>New candidate</small></div>
+        <ArrowRight size={17} aria-hidden="true" />
+        <div><span>02</span><strong>Automated checks</strong><small>Contact · duplicate · fields</small></div>
+        <ArrowRight size={17} aria-hidden="true" />
+        <div><span>03</span><strong>Structured profile</strong><small>Ready for recruiter review</small></div>
+      </div>
+    </article>
+
+    <div class="technology-solution-grid" data-reveal>
+      {solutionGroups.map((group) => {
+        return <TechnologySolutionCard {...group} />;
+      })}
+    </div>
+
+    <p class="technology-risk-note" data-reveal>
+      <SearchCheck size={19} aria-hidden="true" />
+      Validation systems provide automated checks and risk indicators. Additional human review may be required; they do not guarantee legal, financial, identity, or fraud-prevention outcomes.
+    </p>
+
+    <div class="technology-industries" data-reveal>
+      <div>
+        <p class="eyebrow">Industries</p>
+        <h3>Built around the workflow, not a generic template.</h3>
+      </div>
+      <ul>{industries.map((industry) => <li>{industry}</li>)}</ul>
+    </div>
+
+    <div class="technology-delivery-process" data-reveal>
+      <div class="module-heading">
+        <p class="eyebrow">How we work</p>
+        <h3>A clear path from audit to improvement.</h3>
+      </div>
+      <ol>
+        {deliverySteps.map(([title, description], index) => (
+          <li>
+            <span>0{index + 1}</span>
+            <strong>{title}</strong>
+            <p>{description}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="technology-capability-badges" data-reveal>
+      <p><DatabaseZap size={18} aria-hidden="true" />Technical capabilities</p>
+      <div>{capabilities.map((capability) => <span>{capability}</span>)}</div>
+    </div>
+  </div>
+</section>

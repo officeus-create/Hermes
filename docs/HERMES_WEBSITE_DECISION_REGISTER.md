@@ -1,6 +1,6 @@
 # Hermes website decision register
 
-Updated: 2026-07-13
+Updated: 2026-07-22
 
 ## Current architecture
 
@@ -63,12 +63,12 @@ Updated: 2026-07-13
   multi-division brand book is approved.
 - Four detail pages: implemented.
 - Logistics equipment, services, FAQ, direct contacts, and Car Hauling: implemented.
-- Marketing service divisions, FAQ, official channels, and interactive growth flow: implemented.
+- Marketing service architecture implemented as four connected pillars: Website & Conversion, SEO Optimization, Social Media Marketing, and Growth & Sales System. FAQ, official channels, and interactive growth flow remain integrated.
 - Academy program divisions, methodology, FAQ, accessible program chooser, and original direction visual: implemented.
 - IT Development solution divisions and FAQ: implemented.
-- IT Development public case study, human-led AI-assisted delivery model, internal product portfolio with explicit maturity labels, flagship Company Digital Operating System, four standalone modules, continuous improvement partnership, planning ranges, and estimate request workflow: implemented.
+- IT Development public case study, custom-software positioning, category-based proof library with explicit maturity labels, flagship Company Digital Operating System, four standalone modules, continuous improvement partnership, planning ranges, and estimate request workflow: implemented. Public-safe examples now include the Load Board preview, multilingual website foundation, and controlled intake/review workflow.
 - IT Development public delivery rate: `$25-$45/hour`; complex architecture and production responsibility should be planned near the upper end. Package ranges were recalibrated to this rate on 2026-07-13.
-- Wisconsin-first SEO foundation for all four directions: unique metadata, visible service-area language, Organization and Service schema, sitemap dates, and machine-readable business summary implemented on 2026-07-13. Thin city pages and invented location claims are rejected.
+- Service-area model updated on 2026-07-22: Logistics remains U.S.-only and uses one Sales Department telephone plus Logistics email; Marketing, Academy, and IT are email-only and show the owner-approved locations Milan, Berlin, Paris, Miami, California, New York, and England. No street address is invented. Structured data reflects countries only where a postal address is not verified.
 - Public owner-name references removed. IT Development now presents a Digital Workforce lineup with role-specific setup and training ranges, approval-first positioning, and a dedicated inquiry path.
 - Public information boundary enforced: internal prototype names, AI assignments, routing processes, CRM logic, and employee-only details must not appear on the website. The internal portfolio block was removed and generated HTML now has a blocked-term check.
 - IT pricing changed from large public ranges to accessible starting prices: $3k entry point, $25-$45/hour delivery, and staged estimates for larger programs. Public maximum figures were removed.

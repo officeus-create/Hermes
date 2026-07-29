@@ -1,0 +1,26 @@
+---
+import { ArrowRight, Bot, CalendarDays, Network, Truck } from "@lucide/astro";
+
+const systems = [
+  { title: "AI Assistants", body: "Company knowledge, Telegram workflows, structured tasks, and human-controlled actions.", icon: Bot },
+  { title: "CRM & Automation", body: "Intake, validation, pipelines, review queues, dashboards, and approved integrations.", icon: Network },
+  { title: "Logistics Technology", body: "Carrier intelligence, route risk, dispatch visibility, and Load Board workflows.", icon: Truck },
+  { title: "Hermes Connect", body: "Specialist profiles, services, availability, and a clear path into a test booking.", icon: CalendarDays },
+];
+---
+
+<section class="section home-technology-preview" aria-labelledby="home-technology-title">
+  <div class="shell">
+    <div class="section-heading split-heading" data-reveal>
+      <div><p class="eyebrow">Digital systems we build</p><h2 id="home-technology-title">Start with one workflow. Build the connected system around it.</h2></div>
+      <p>Hermes designs custom AI, CRM, automation, logistics, recruiting, marketing, and customer-facing products in controlled stages.</p>
+    </div>
+    <div class="home-technology-grid" data-reveal>
+      {systems.map((system) => {
+        const Icon = system.icon;
+        return <article><Icon size={22} aria-hidden="true" /><h3>{system.title}</h3><p>{system.body}</p></article>;
+      })}
+    </div>
+    <a class="home-technology-link" href="/paths/technology/#capabilities">Explore IT & Development solutions <ArrowRight size={18} aria-hidden="true" /></a>
+  </div>
+</section>

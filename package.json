@@ -10,8 +10,9 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "sync:product-demos": "node scripts/sync-product-demos.mjs",
     "check": "astro check",
-    "test": "node scripts/validate-build.mjs && node --experimental-strip-types scripts/contact-handoff.test.mjs && node --experimental-strip-types scripts/load-board.test.mjs",
+    "test": "node scripts/validate-build.mjs && node --experimental-strip-types scripts/path-engine.test.mjs && node --experimental-strip-types scripts/p0-data-layer.test.mjs && node --experimental-strip-types scripts/contact-handoff.test.mjs && node --experimental-strip-types scripts/load-board.test.mjs && node --experimental-strip-types scripts/load-operations.test.mjs && node --experimental-strip-types scripts/sales-lead-receiver.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

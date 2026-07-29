@@ -268,7 +268,7 @@ const visibleRoutes = selectedPath
       platformsLegend.textContent = "Platforms (select all that apply)";
       platformsContainer.appendChild(platformsLegend);
 
-      const platforms = ["Google", "YouTube", "TikTok", "Threads", "Facebook", "Instagram", "X", "LinkedIn"] as const;
+      const platforms = ["SEO / Google Search", "Google Ads / Paid Search", "YouTube", "TikTok", "Threads", "Facebook", "Instagram", "Twitter / X", "LinkedIn"] as const;
       for (const p of platforms) addCheckbox(platformsContainer, "platforms", p, p);
       addCheckbox(platformsContainer, "platforms", "Other", "Other");
       group.appendChild(platformsContainer);

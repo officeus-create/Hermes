@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Bot, Braces, ChartNoAxesCombined, Check, GraduationCap, LayoutTemplate, MessagesSquare, Network, Truck, Workflow } from "@lucide/astro";
+import { ArrowRight, Bot, Braces, CalendarDays, ChartNoAxesCombined, Check, ClipboardCheck, GraduationCap, Languages, LayoutTemplate, MessagesSquare, Network, Truck, Workflow } from "@lucide/astro";
 
 const growthLayers = [
   {
@@ -39,42 +39,62 @@ const growthLayers = [
 const proofCases = [
   {
     status: "Live product",
+    category: "Digital presence",
     icon: LayoutTemplate,
     title: "Corporate digital front door",
-    body: "A deployed multi-business website with original visual direction, responsive interactions, structured content, automated browser QA, and a controlled release workflow.",
+    reason: "Four business directions needed one clear public entrance without losing their individual customer journeys.",
+    body: "A multi-business website with original visual direction, responsive interactions, structured content, automated browser QA, and a controlled release workflow.",
     proof: "View the verified website case",
     href: "/case/it-development/",
   },
   {
     status: "Live product",
+    category: "Customer journey",
     icon: Braces,
     title: "Guided project qualification",
+    reason: "Unstructured ideas were difficult to turn into a useful first technical conversation.",
     body: "A multi-step brief that turns unstructured business ideas, examples, market, timing, and investment capacity into an email-ready project summary.",
     proof: "Open the project brief",
     href: "#project-brief",
   },
   {
     status: "Working prototype",
+    category: "CRM & operations",
     icon: Network,
     title: "CRM and operations control",
+    reason: "Records needed duplicate checks, review queues, clear ownership, and approval before entering an operating system.",
     body: "Structured intake, duplicate checks, review queues, routing previews, status controls, and management-ready outputs before approved records enter a working system.",
-    proof: "Add operations control to your brief",
-    href: "#project-brief",
+    proof: "Open the working CRM preview",
+    href: "#working-prototypes",
     service: "CRM and Operations Control",
   },
   {
+    status: "Interactive prototype",
+    category: "Booking platform",
+    icon: CalendarDays,
+    title: "Hermes Connect",
+    reason: "Independent specialists need a simpler way to present services, show availability, and guide a client into a clear first booking.",
+    body: "A mobile-first product flow connecting a specialist profile, service selection, availability, a personal booking path, and a simulated booking summary.",
+    proof: "Open the Hermes Connect preview",
+    href: "#working-prototypes",
+  },
+  {
     status: "Workflow in use",
+    category: "Product delivery",
     icon: Workflow,
-    title: "AI-assisted product delivery",
-    body: "Business direction, implementation, independent QA, decision records, approval gates, automated tests, and release verification coordinated as one delivery process.",
+    title: "Controlled product delivery",
+    reason: "Fast development still needed traceable decisions, quality checks, and a safe release boundary.",
+    body: "Business direction, custom implementation, independent QA, decision records, approval gates, automated tests, and release verification coordinated as one delivery process.",
     proof: "Plan a connected delivery system",
     href: "#project-brief",
-    service: "AI-assisted Product Delivery System",
+    service: "Controlled Product Delivery System",
   },
   {
     status: "Build-ready capability",
+    category: "Business assistants",
     icon: MessagesSquare,
     title: "Conversational assistants",
+    reason: "Customer and team requests often arrive through channels where context, ownership, and the next action can be lost.",
     body: "Customer intake, internal Q&A, task routing, summaries, reminders, and approved actions delivered through the channels people already use.",
     proof: "Add a messaging assistant to your brief",
     href: "#project-brief",
@@ -82,12 +102,46 @@ const proofCases = [
   },
   {
     status: "Build-ready capability",
+    category: "Knowledge systems",
     icon: Bot,
-    title: "AI knowledge and decision support",
+    title: "Business knowledge and decision support",
+    reason: "Approved company knowledge needed to become searchable, reviewable, and useful inside daily decisions.",
     body: "Assistants grounded in approved company material that prepare answers, research, summaries, checks, and recommendations while people retain final decisions.",
-    proof: "Explore an AI knowledge system",
+    proof: "Explore a business knowledge system",
     href: "#project-brief",
-    service: "AI Knowledge and Decision Support System",
+    service: "Business Knowledge and Decision Support System",
+  },
+  {
+    status: "Local preview",
+    category: "Industry platform",
+    icon: Truck,
+    title: "Carrier and dispatcher workspace",
+    reason: "Drivers needed a lighter way to place available equipment while dispatchers retained control over which loads become visible.",
+    body: "A Load Board preview with carrier identity, vehicle availability, geography, equipment scope, dispatcher review states, and zero external writes during validation.",
+    proof: "Open the Load Board preview",
+    href: "/load-board/",
+  },
+  {
+    status: "Implemented capability",
+    category: "Digital presence",
+    icon: Languages,
+    title: "Multilingual website foundation",
+    reason: "One company needed consistent public overviews for audiences using different languages.",
+    body: "Localized routes, language navigation, metadata, responsive layouts, shared content structure, and automated checks designed to keep future expansion controlled.",
+    proof: "Add multilingual delivery to your brief",
+    href: "#project-brief",
+    service: "Multilingual Website Foundation",
+  },
+  {
+    status: "Working prototype",
+    category: "Workflow automation",
+    icon: ClipboardCheck,
+    title: "Controlled intake and review",
+    reason: "Incoming records and requests needed a reliable path through validation, needs-review states, routing previews, and explicit approval.",
+    body: "A reusable workflow pattern for structured intake, data-quality checks, exception handling, assignment previews, audit packages, and conservative writes.",
+    proof: "Add controlled intake to your brief",
+    href: "#project-brief",
+    service: "Controlled Intake and Review Workflow",
   },
 ];
 
@@ -142,8 +196,10 @@ const teamChannels = ["Google Chat", "Google Workspace", "CRM", "Dashboards"];
         return (
           <article class:list={["technology-proof-item", `technology-proof-item-${index + 1}`]}>
             <div class="technology-proof-meta"><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.status}</strong></div>
+            <small class="technology-proof-category">{item.category}</small>
             <Icon size={25} aria-hidden="true" />
             <h3>{item.title}</h3>
+            <p class="technology-proof-reason"><strong>Why we built it:</strong> {item.reason}</p>
             <p>{item.body}</p>
             <a href={item.href} data-brief-service={item.service}>{item.proof} <ArrowRight size={17} aria-hidden="true" /></a>
           </article>

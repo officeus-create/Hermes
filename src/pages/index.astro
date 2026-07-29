@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import HeroEditorial from "../components/HeroEditorial.astro";
+import HomeTechnologyPreview from "../components/HomeTechnologyPreview.astro";
 import PathPillars from "../components/PathPillars.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
@@ -18,8 +19,11 @@ const organizationSchema = {
   url: "https://hermeslogisticsus.com/",
   logo: "https://hermeslogisticsus.com/favicon.svg",
   areaServed: [
-    { "@type": "State", name: "Wisconsin" },
     { "@type": "Country", name: "United States" },
+    { "@type": "Country", name: "Italy" },
+    { "@type": "Country", name: "Germany" },
+    { "@type": "Country", name: "France" },
+    { "@type": "Country", name: "United Kingdom" },
   ],
   sameAs: [
     "https://www.instagram.com/hermes.logistics/",
@@ -30,8 +34,8 @@ const organizationSchema = {
 ---
 
 <BaseLayout
-  title="Hermes Wisconsin | Logistics, Marketing, Academy & IT"
-  description="Wisconsin-first logistics, marketing, practical business education, CRM, AI automation, and web development services available across the United States."
+  title="Hermes | Logistics, Marketing, Academy & IT"
+  description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
   schema={organizationSchema}
   alternates={languageAlternates}
 >
@@ -51,6 +55,7 @@ const organizationSchema = {
     </section>
 
     <WebsiteProofBand />
+    <HomeTechnologyPreview />
     <WhyItMatters />
     <TrustBadge />
     <ContactCTA />

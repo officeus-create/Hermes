@@ -12,16 +12,22 @@ export function getStaticPaths() {
 
 const { path } = Astro.props;
 const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
+const areaServed = path.id === "logistics"
+  ? [{ "@type": "Country", name: "United States" }]
+  : [
+      { "@type": "Country", name: "United States" },
+      { "@type": "Country", name: "Italy" },
+      { "@type": "Country", name: "Germany" },
+      { "@type": "Country", name: "France" },
+      { "@type": "Country", name: "United Kingdom" },
+    ];
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
   name: path.seoServiceName,
   description: path.seoDescription,
   url: canonicalUrl,
-  areaServed: [
-    { "@type": "State", name: "Wisconsin" },
-    { "@type": "Country", name: "United States" },
-  ],
+  areaServed,
   provider: {
     "@type": "Organization",
     name: "Hermes",

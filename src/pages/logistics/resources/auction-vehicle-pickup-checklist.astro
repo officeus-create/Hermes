@@ -1,0 +1,217 @@
+---
+import { ArrowLeft, ArrowRight, Check, ClipboardCheck, FileCheck, MapPin, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Auction Vehicle Pickup Checklist | Hermes Logistics";
+const description =
+  "Prepare an auction vehicle for transport with a practical checklist covering release status, condition, pickup access, deadlines, contacts, and equipment needs.";
+const canonicalUrl = new URL("/logistics/resources/auction-vehicle-pickup-checklist/", Astro.site).toString();
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Auction Vehicle Pickup Checklist",
+    description,
+    datePublished: "2026-07-29",
+    dateModified: "2026-07-29",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Resources", item: "https://hermeslogisticsus.com/paths/logistics/#logistics-resources" },
+      { "@type": "ListItem", position: 4, name: "Auction Vehicle Pickup Checklist", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Auction pickup checklist</span>
+            </nav>
+            <a class="detail-back" href="/paths/logistics/#logistics-resources"><ArrowLeft size={18} aria-hidden="true" />Logistics resources</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · USA</p>
+                <h1>Auction Vehicle Pickup Checklist</h1>
+                <p>
+                  Buying or selling a vehicle at auction is only the first step. Before transport can be coordinated,
+                  the pickup must be released, accessible, correctly documented, and matched with appropriate equipment.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="/load-board/?role=shipper#post-load">
+                    Prepare an auction transport request <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href="/logistics/appleton-wi-vehicle-transport/">See the Appleton planning example</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Confirm the actual facility rules.</h2>
+                <p>Requirements vary by auction and location. This checklist does not replace facility instructions, auction terms, or a transport agreement.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <ClipboardCheck size={34} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Before requesting transport</p>
+              <h2>Use the checklist before a carrier is asked to act.</h2>
+              <p>A complete pickup package helps identify missing release, condition, access, timing, and equipment information before coordination begins.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-content">
+          <div class="shell resource-article-grid">
+            <nav class="resource-toc" aria-label="Checklist sections">
+              <p>Checklist</p>
+              <a href="#release">1. Release</a>
+              <a href="#location">2. Pickup location</a>
+              <a href="#deadline">3. Storage deadline</a>
+              <a href="#condition">4. Vehicle condition</a>
+              <a href="#equipment">5. Equipment request</a>
+              <a href="#delivery">6. Delivery details</a>
+              <a href="#records">7. Condition records</a>
+            </nav>
+            <div class="resource-sections">
+              <section id="release">
+                <p class="resource-step">01</p>
+                <h2>Confirm the vehicle is released.</h2>
+                <p>Verify that payment, buyer or seller requirements, and any required authorization are complete. A carrier should not be dispatched while the vehicle remains on hold.</p>
+                <p>Prepare the applicable buyer number, stock number, lot number, gate pass, release reference, or other facility-specific authorization. Do not send passwords or sensitive account credentials.</p>
+              </section>
+
+              <section id="location">
+                <p class="resource-step">02</p>
+                <h2>Record the exact pickup location.</h2>
+                <p>Provide the full facility name and pickup address. Confirm:</p>
+                <ul>
+                  <li><Check size={18} aria-hidden="true" />Vehicle pickup hours and closed days</li>
+                  <li><Check size={18} aria-hidden="true" />Appointment or check-in requirements</li>
+                  <li><Check size={18} aria-hidden="true" />Equipment, entrance, or loading restrictions</li>
+                  <li><Check size={18} aria-hidden="true" />Where the driver reports and the correct facility contact</li>
+                </ul>
+                <p>An auction’s office address, preview entrance, and vehicle pickup gate may not be the same.</p>
+              </section>
+
+              <section id="deadline">
+                <p class="resource-step">03</p>
+                <h2>Check the storage deadline.</h2>
+                <p>Record the last date for pickup before additional storage charges or other consequences may apply. Share it as a planning constraint, not as a guaranteed pickup date.</p>
+                <p>Transport availability, route, equipment, legal operating limits, weather, and facility access can affect timing.</p>
+              </section>
+
+              <section id="condition">
+                <p class="resource-step">04</p>
+                <h2>Describe the vehicle accurately.</h2>
+                <ul>
+                  <li><Check size={18} aria-hidden="true" />Year, make, model, keys, and visible damage or loose parts</li>
+                  <li><Check size={18} aria-hidden="true" />Whether it starts, rolls, steers, and brakes</li>
+                  <li><Check size={18} aria-hidden="true" />Dimensions or modifications affecting loading</li>
+                  <li><Check size={18} aria-hidden="true" />Special loading equipment that may be required</li>
+                </ul>
+                <p>“Inoperable” can describe very different conditions. A vehicle that does not start but rolls and steers may need different handling from one with locked wheels or damaged suspension.</p>
+              </section>
+
+              <section id="equipment">
+                <p class="resource-step">05</p>
+                <h2>Choose the appropriate transport request.</h2>
+                <p>Open transport is commonly considered for standard vehicle moves. Enclosed transport may be requested when additional protection is needed.</p>
+                <p>Inoperable, oversized, heavily damaged, modified, classic, specialty, or high-value vehicles may require different equipment. The final equipment decision depends on the vehicle, route, access, timing, and available qualified capacity.</p>
+              </section>
+
+              <section id="delivery">
+                <p class="resource-step">06</p>
+                <h2>Prepare delivery information.</h2>
+                <p>Confirm the delivery ZIP code, full address when appropriate, receiving hours, site access, and a reliable contact. Residential streets, storage facilities, dealerships, ports, and commercial properties can have different access limitations.</p>
+                <p>If large equipment cannot safely or legally reach the exact address, a suitable nearby meeting location may need to be coordinated.</p>
+              </section>
+
+              <section id="records">
+                <p class="resource-step">07</p>
+                <h2>Keep condition records.</h2>
+                <p>Retain available auction photos and records. Pickup and delivery condition should be documented through the applicable operating process, including the bill of lading or inspection record when required.</p>
+                <p>Do not rely on this article as a substitute for auction terms, the transport agreement, or actual condition documentation.</p>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-submit" aria-labelledby="auction-submit-title">
+          <div class="shell resource-submit-grid">
+            <div>
+              <p class="eyebrow">Information to submit to Hermes</p>
+              <h2 id="auction-submit-title">Prepare a complete auction transport review.</h2>
+              <p>Hermes reviews the request for completeness, route, timing, equipment fit, and current carrier availability.</p>
+            </div>
+            <ul>
+              <li><Check size={18} aria-hidden="true" />Pickup facility and ZIP; delivery ZIP</li>
+              <li><Check size={18} aria-hidden="true" />Vehicle details, condition, and non-sensitive release reference</li>
+              <li><Check size={18} aria-hidden="true" />Storage deadline, requested timing, and flexibility</li>
+              <li><Check size={18} aria-hidden="true" />Pickup and delivery access information</li>
+              <li><Check size={18} aria-hidden="true" />Open, enclosed, or special-equipment needs</li>
+              <li><Check size={18} aria-hidden="true" />Coordination contacts shared through the approved form</li>
+            </ul>
+          </div>
+          <div class="shell resource-warning">
+            <FileCheck size={22} aria-hidden="true" />
+            <p>Submission does not guarantee a price, pickup date, delivery date, successful pickup, or carrier assignment.</p>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="auction-related-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Continue planning</p>
+              <h2 id="auction-related-title">Related Hermes Logistics paths.</h2>
+            </div>
+            <div class="resource-related-grid">
+              <a href="/logistics/appleton-wi-vehicle-transport/"><MapPin size={22} aria-hidden="true" /><h3>Appleton vehicle transport</h3><p>A local example for dealer, auction, business, and private moves.</p><strong>Open guide <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/shipper-dealer/"><ClipboardCheck size={22} aria-hidden="true" /><h3>Shipper and dealer path</h3><p>See what helps Hermes review and route a vehicle transport request.</p><strong>Open path <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/car-hauler-capacity-checklist/"><ShieldCheck size={22} aria-hidden="true" /><h3>Car hauler capacity checklist</h3><p>What carriers can prepare when sharing equipment and availability.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Request review</p>
+              <h2>Prepare the auction vehicle, route, release, condition, access, and timing details.</h2>
+              <p>The current form prepares a structured email for Logistics Sales review. It does not automatically publish a load or contact a carrier.</p>
+            </div>
+            <a class="button button-primary" href="/load-board/?role=shipper#post-load">
+              Open transport request <ArrowRight size={18} aria-hidden="true" />
+            </a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

@@ -1,0 +1,173 @@
+---
+import { ArrowRight, CalendarDays, Check, CircleAlert, Network, RotateCcw, ShieldCheck, UserRound } from "@lucide/astro";
+
+const crmRecords = [
+  { id: "HLC-104", name: "North Ridge Transport", detail: "MC 1482019 · Wisconsin", result: "Ready for review", state: "ready" },
+  { id: "HLC-105", name: "Atlas Freight Group", detail: "MC 923184 · Illinois", result: "Possible duplicate", state: "review" },
+  { id: "HLC-106", name: "Blue Road Logistics", detail: "Authority information missing", result: "Needs additional review", state: "review" },
+];
+
+const connectServices = ["Strategy session", "Operations review", "Website consultation"];
+const connectTimes = ["Tue · 10:30 AM", "Tue · 2:00 PM", "Wed · 9:00 AM"];
+---
+
+<section class="section technology-interactive-prototypes" id="working-prototypes" aria-labelledby="working-prototypes-title">
+  <div class="shell">
+    <div class="section-heading split-heading technology-prototype-heading" data-reveal>
+      <div>
+        <p class="eyebrow">Working product previews</p>
+        <h2 id="working-prototypes-title">See the workflow before connecting real data.</h2>
+      </div>
+      <p>These interactive previews demonstrate the product logic with simulated records. They do not create CRM entries, reservations, messages, payments, or external integrations.</p>
+    </div>
+
+    <div class="technology-prototype-stack">
+      <article class="technology-product-prototype crm-product-prototype" data-crm-prototype data-reveal>
+        <div class="technology-prototype-copy">
+          <div class="technology-prototype-label"><Network size={19} aria-hidden="true" /><span>CRM and Operations Control</span><strong>Working v0.2</strong></div>
+          <h3>Turn incoming records into a controlled review queue.</h3>
+          <p>The local v0.2 adapter now reads the existing DCA preview format, applies deterministic review indicators, and produces a management dashboard without writing to CRM.</p>
+          <ul>
+            <li><Check size={16} aria-hidden="true" />Structured intake</li>
+            <li><Check size={16} aria-hidden="true" />Duplicate and missing-field indicators</li>
+            <li><Check size={16} aria-hidden="true" />Ready and needs-review queues</li>
+          </ul>
+          <div class="technology-prototype-actions">
+            <button type="button" class="button button-primary" data-crm-run>Run sample validation <ArrowRight size={17} aria-hidden="true" /></button>
+            <button type="button" class="technology-prototype-reset" data-crm-reset><RotateCcw size={15} aria-hidden="true" />Reset</button>
+            <a class="technology-prototype-demo-link" href="/demos/crm-validation/">Open full CRM dashboard <ArrowRight size={16} aria-hidden="true" /></a>
+          </div>
+          <p class="technology-prototype-status" role="status" aria-live="polite" data-crm-status>Three simulated records are waiting for validation.</p>
+        </div>
+
+        <div class="crm-preview-window" aria-label="CRM validation dashboard preview">
+          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes CRM · Validation Queue</p></div>
+          <div class="crm-preview-metrics">
+            <div><span>Total</span><strong>3</strong></div>
+            <div><span>Ready</span><strong data-crm-ready>0</strong></div>
+            <div><span>Needs review</span><strong data-crm-review>0</strong></div>
+          </div>
+          <div class="crm-preview-table">
+            <div class="crm-preview-table-head"><span>Record</span><span>Automated checks</span></div>
+            {crmRecords.map((record) => (
+              <div class="crm-preview-row" data-crm-record data-final-state={record.state} data-result={record.result}>
+                <div><small>{record.id}</small><strong>{record.name}</strong><span>{record.detail}</span></div>
+                <div class="crm-preview-result" data-crm-result data-state="pending"><span class="crm-result-icon"><CircleAlert size={15} aria-hidden="true" /></span><strong data-crm-result-text>Waiting</strong></div>
+              </div>
+            ))}
+          </div>
+          <div class="crm-preview-footer"><ShieldCheck size={16} aria-hidden="true" /><span>Preview only · approval required before any CRM write</span></div>
+        </div>
+      </article>
+
+      <article class="technology-product-prototype connect-product-prototype" data-connect-prototype data-reveal>
+        <div class="technology-prototype-copy">
+          <div class="technology-prototype-label"><CalendarDays size={19} aria-hidden="true" /><span>Hermes Connect</span><strong>Working v0.2</strong></div>
+          <h3>Give every specialist a clear path from profile to booking.</h3>
+          <p>v0.2 adds a working local profile editor, controlled services, availability management, a personal preview path, and test booking rules before accounts or integrations.</p>
+          <div class="connect-prototype-flow" aria-label="Hermes Connect first product flow">
+            <span>Profile</span><ArrowRight size={14} aria-hidden="true" /><span>Service</span><ArrowRight size={14} aria-hidden="true" /><span>Availability</span><ArrowRight size={14} aria-hidden="true" /><span>Test booking</span>
+          </div>
+          <a class="technology-prototype-demo-link" href="/demos/hermes-connect/">Open profile & availability workspace <ArrowRight size={16} aria-hidden="true" /></a>
+          <p class="technology-prototype-status" role="status" aria-live="polite" data-connect-status>Choose a service and an available time to create a test booking.</p>
+        </div>
+
+        <div class="connect-preview-window" aria-label="Hermes Connect booking preview">
+          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes Connect · Specialist page</p></div>
+          <div class="connect-profile">
+            <div class="connect-avatar"><UserRound size={30} aria-hidden="true" /></div>
+            <div><small>Business consultant · Miami / Remote</small><h4>Maya Santos</h4><p>Operations, customer journey, and practical growth systems.</p></div>
+          </div>
+          <div class="connect-choice-group">
+            <p>Choose a service</p>
+            <div>{connectServices.map((service, index) => <button type="button" data-connect-service aria-pressed={index === 0} data-selected={String(index === 0)}>{service}</button>)}</div>
+          </div>
+          <div class="connect-choice-group">
+            <p>Available times</p>
+            <div>{connectTimes.map((time) => <button type="button" data-connect-time aria-pressed="false">{time}</button>)}</div>
+          </div>
+          <button type="button" class="connect-book-button" data-connect-book disabled>Create test booking <ArrowRight size={17} aria-hidden="true" /></button>
+          <div class="connect-booking-result" data-connect-result hidden>
+            <Check size={18} aria-hidden="true" />
+            <div><strong>Test booking created</strong><span data-connect-summary></span></div>
+          </div>
+          <p class="connect-preview-note">Simulated data · no calendar event, payment, account, or message is created.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script>
+  const crmPrototype = document.querySelector<HTMLElement>("[data-crm-prototype]");
+  if (crmPrototype) {
+    const records = [...crmPrototype.querySelectorAll<HTMLElement>("[data-crm-record]")];
+    const ready = crmPrototype.querySelector<HTMLElement>("[data-crm-ready]");
+    const review = crmPrototype.querySelector<HTMLElement>("[data-crm-review]");
+    const status = crmPrototype.querySelector<HTMLElement>("[data-crm-status]");
+    const setCrmState = (validated: boolean) => {
+      let readyCount = 0;
+      let reviewCount = 0;
+      records.forEach((record) => {
+        const result = record.querySelector<HTMLElement>("[data-crm-result]");
+        const resultText = record.querySelector<HTMLElement>("[data-crm-result-text]");
+        const finalState = record.dataset.finalState;
+        if (!result || !resultText) return;
+        result.dataset.state = validated ? finalState : "pending";
+        if (validated) {
+          resultText.textContent = record.dataset.result ?? "Needs review";
+          finalState === "ready" ? readyCount++ : reviewCount++;
+        } else {
+          resultText.textContent = "Waiting";
+        }
+      });
+      if (ready) ready.textContent = String(readyCount);
+      if (review) review.textContent = String(reviewCount);
+      if (status) status.textContent = validated
+        ? "Validation complete: one record is ready and two require additional review."
+        : "Three simulated records are waiting for validation.";
+    };
+    crmPrototype.querySelector("[data-crm-run]")?.addEventListener("click", () => setCrmState(true));
+    crmPrototype.querySelector("[data-crm-reset]")?.addEventListener("click", () => setCrmState(false));
+  }
+
+  const connectPrototype = document.querySelector<HTMLElement>("[data-connect-prototype]");
+  if (connectPrototype) {
+    const serviceButtons = [...connectPrototype.querySelectorAll<HTMLButtonElement>("[data-connect-service]")];
+    const timeButtons = [...connectPrototype.querySelectorAll<HTMLButtonElement>("[data-connect-time]")];
+    const bookingButton = connectPrototype.querySelector<HTMLButtonElement>("[data-connect-book]");
+    const status = connectPrototype.querySelector<HTMLElement>("[data-connect-status]");
+    const result = connectPrototype.querySelector<HTMLElement>("[data-connect-result]");
+    const summary = connectPrototype.querySelector<HTMLElement>("[data-connect-summary]");
+    let selectedService = serviceButtons[0]?.textContent?.trim() ?? "";
+    let selectedTime = "";
+    const updateBookingButton = () => {
+      if (bookingButton instanceof HTMLButtonElement) bookingButton.disabled = !selectedService || !selectedTime;
+      if (result instanceof HTMLElement) result.hidden = true;
+    };
+    serviceButtons.forEach((button) => button.addEventListener("click", () => {
+      serviceButtons.forEach((item) => {
+        item.dataset.selected = String(item === button);
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+      selectedService = button.textContent?.trim() ?? "";
+      updateBookingButton();
+    }));
+    timeButtons.forEach((button) => button.addEventListener("click", () => {
+      timeButtons.forEach((item) => {
+        item.dataset.selected = String(item === button);
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+      selectedTime = button.textContent?.trim() ?? "";
+      if (status) status.textContent = `${selectedService} selected for ${selectedTime}.`;
+      updateBookingButton();
+    }));
+    bookingButton?.addEventListener("click", () => {
+      if (!selectedService || !selectedTime) return;
+      if (summary) summary.textContent = `${selectedService} · ${selectedTime} · Maya Santos`;
+      if (result instanceof HTMLElement) result.hidden = false;
+      if (status) status.textContent = "Test booking created locally. Nothing was sent or saved.";
+    });
+    updateBookingButton();
+  }
+</script>

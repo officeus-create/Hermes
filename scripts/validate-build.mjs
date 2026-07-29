@@ -4,10 +4,14 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
+const headers = await readFile(join(root, "public/_headers"), "utf8");
+if (!headers.includes("Strict-Transport-Security: max-age=31536000")) {
+  throw new Error("HSTS header is missing from public/_headers");
+}
 const routes = [
   {
     path: "paths/logistics/index.html",
-    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Freight Department", "freight_301@hermeslogisticsus.com", "+1 (351) 777-5337"],
+    required: ["Hermes Logistics", "Dispatch operations", "Dry Van", "Power Only", "Logistics Sales Department", "freight_301@hermeslogisticsus.com", "+1 (262) 302-3626"],
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Website and SEO", "Social media marketing", "Four connected marketing pillars", "SEO Optimization", "Growth &amp; Sales System", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment"] },
@@ -23,11 +27,12 @@ const routes = [
     path: "contacts/index.html",
     required: [
       "Contact Hermes",
-      "Wisconsin, USA",
-      "+1 (717) 696-6829",
+      "Logistics contact · USA",
       "+1 (262) 302-3626",
-      "Shippers and dealers",
-      "Carriers and owner-operators",
+      "Logistics Sales Department",
+      "freight_301@hermeslogisticsus.com",
+      "Email-only international coordination",
+      "Milan · Berlin · Paris · Miami · California · New York · England",
       "https://t.me/SMMProgressoPro",
       "https://t.me/+GL3L-WkP55NmYzVi",
       "Logistics school",
@@ -40,21 +45,75 @@ const routes = [
       "One board. The right workspace for your role.",
       "Dry-run only",
       "Available Loads · Demo data",
+      "Try a demo city:",
       "Request dispatch",
       "Fictional examples",
+      "Get free Load Board access or ask about a load.",
+      "Request free access",
+      "Sales tag: LOAD BOARD ACCESS / CARRIER",
+      "Post a load request",
+      "Sales tag: POSTED LOAD / CUSTOMER",
       "Who is posting?",
-      "Private party",
+      "Customer / private party",
       "Truck tractor",
       "data-load-board-form",
       "data-load-result",
     ],
   },
-  { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review"] },
-  { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity"] },
-  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Call carriers team"] },
+  { path: "logistics/shipper-dealer/index.html", required: ["Shipper or dealer", "Post a load", "Automatic review", "Call Logistics Sales", "tel:+12623023626"] },
+  { path: "logistics/broker/index.html", required: ["Broker", "Open broker Load Board", "Carrier capacity", "Call Logistics Sales", "tel:+12623023626"] },
+  { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Call Logistics Sales", "tel:+12623023626"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "Your information was not sent or stored"] },
+  {
+    path: "logistics/appleton-wi-vehicle-transport/index.html",
+    required: [
+      "Vehicle transport to and from Appleton, Wisconsin.",
+      "Prepare a transport request",
+      "Carrier: share capacity",
+      "does not guarantee price, timing",
+      "Auction and dealer planning",
+      "Hermes is not presented as affiliated",
+      "How much does vehicle transport to or from Appleton cost?",
+      "Does submitting a request guarantee a carrier?",
+      "application/ld+json",
+      "/load-board/?role=dealer",
+      "/load-board/?role=carrier",
+    ],
+  },
+  {
+    path: "logistics/resources/auction-vehicle-pickup-checklist/index.html",
+    required: [
+      "Auction Vehicle Pickup Checklist",
+      "Confirm the actual facility rules.",
+      "Confirm the vehicle is released.",
+      "Check the storage deadline.",
+      "Describe the vehicle accurately.",
+      "Prepare delivery information.",
+      "does not guarantee a price, pickup date",
+      "/logistics/appleton-wi-vehicle-transport/",
+      "/logistics/shipper-dealer/",
+      "/load-board/?role=shipper",
+    ],
+  },
+  {
+    path: "logistics/resources/car-hauler-capacity-checklist/index.html",
+    required: [
+      "Car Hauler Capacity Checklist",
+      "Availability begins a review.",
+      "Carrier and authority",
+      "Current area and radius",
+      "Equipment and spaces",
+      "No guaranteed load",
+      "No guaranteed rate or revenue",
+      "does not create an account, approve a carrier",
+      "/logistics/carrier/",
+      "/logistics/appleton-wi-vehicle-transport/",
+      "/load-board/?role=carrier",
+    ],
+  },
+  { path: "paths/academy/index.html", required: ["Learn AI automation by building one useful assistant.", "Fitness AI Telegram Assistant", "Learning preview only", "Ask about learning AI automation"] },
 ];
 const emailOnlyRoutes = [
   "paths/marketing/index.html",
@@ -78,6 +137,13 @@ await access(join(dist, "llms.txt"));
 const html = await readFile(indexPath, "utf8");
 const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
 
+if (/<img\b[^>]*\balt=""/i.test(html)) {
+  throw new Error("Homepage contains an image without a descriptive alt value");
+}
+if (!html.includes('hreflang="it"')) {
+  throw new Error('Valid Italian hreflang="it" is missing from the homepage');
+}
+
 function validateStructuredData(pageHtml, pageName) {
   const matches = [...pageHtml.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
   if (matches.length === 0) throw new Error(`Structured data missing in ${pageName}`);
@@ -85,7 +151,7 @@ function validateStructuredData(pageHtml, pageName) {
 }
 
 const required = [
-  "Four businesses. One place to move forward.",
+  "Four directions. One way forward.",
   "Four paths. One ecosystem.",
   "Move freight",
   "Grow demand",
@@ -109,6 +175,9 @@ const required = [
   "Working prototype",
   "Product discovery",
   "No account, booking, calendar, payment, or AI action is connected",
+  "Hermes Load Board",
+  "Box Truck 26 ft",
+  "No load, truck, offer, dispatch, external-board sync, or scheduled update is live",
 ];
 
 for (const text of required) {
@@ -131,10 +200,92 @@ for (const route of routes) {
   if (!routeHtml.includes('<link rel="canonical"')) throw new Error(`Canonical URL missing in ${route.path}`);
   if (route.path.startsWith("paths/")) validateStructuredData(routeHtml, route.path);
   if (["ua/index.html", "ru/index.html", "es/index.html", "it/index.html", "fr/index.html"].includes(route.path)) validateStructuredData(routeHtml, route.path);
-  if (route.path.startsWith("paths/") && !routeHtml.includes("Wisconsin first")) throw new Error(`Wisconsin service-area signal missing in ${route.path}`);
+  if (route.path === "paths/logistics/index.html" && !routeHtml.includes("Wisconsin first")) throw new Error(`U.S. Logistics service-area signal missing in ${route.path}`);
+  if (emailOnlyRoutes.includes(route.path) && !routeHtml.includes("Email coordination only")) throw new Error(`International email-only signal missing in ${route.path}`);
   if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
   if (route.path === "paths/technology/index.html" && /digital employee/i.test(routeHtml)) throw new Error("Legacy digital employee wording found on the IT page");
+}
+
+const technologyHtml = await readFile(join(dist, "paths/technology/index.html"), "utf8");
+for (const text of [
+  "Hermes Connect · Prototype work started",
+  "Product architecture",
+  "Prototype brief",
+  "Specialist booking flow",
+  "First prototype target · Mobile-first PWA",
+  "Personal booking link",
+  "Defined prototype scope · Simulated data and test booking only",
+  "No public Hermes Connect app, account, booking, payment, calendar, or integration is live yet",
+  "Candidate Validation Pipeline",
+  "Marketing and Content Systems",
+  "Data and API Integrations",
+  "Data Validation and Security",
+  "Document Automation",
+  "Maps and Location Systems",
+  "Analytics and Executive Dashboards",
+  "risk indicators",
+  "Business Process Audit",
+  "Cloud Deployment",
+  "Working product previews",
+  "Run sample validation",
+  "Create test booking",
+  "no calendar event, payment, account, or message is created",
+  "Working v0.2",
+  "Open full CRM dashboard",
+  "Open profile & availability workspace",
+  "AI Assistants and Business Bots",
+  "CRM and Sales Automation",
+  "Logistics Technology",
+  "Carrier Profile Card",
+  "AI Telegram Assistant",
+  "Route Risk Panel",
+  "Recruiting Pipeline",
+  "Executive Dashboard",
+  "Available for custom development",
+]) {
+  if (!technologyHtml.includes(text)) throw new Error(`Technology capability signal missing: ${text}`);
+}
+
+for (const demoPath of ["demos/crm-validation/index.html", "demos/hermes-connect/index.html", "demos/website-audit/index.html"]) {
+  const demoHtml = await readFile(join(dist, demoPath), "utf8");
+  if (!demoHtml.toLowerCase().includes("preview") && !demoHtml.toLowerCase().includes("prototype")) {
+    throw new Error(`Product demo boundary missing in ${demoPath}`);
+  }
+}
+
+const auditReport = JSON.parse(await readFile(join(dist, "demos/website-audit/report.json"), "utf8"));
+if (auditReport.averageScore !== 99 || auditReport.needsReview !== 2) {
+  throw new Error("Published Website Audit report does not match the reviewed local result.");
+}
+if (auditReport.externalCrawlPerformed !== false || auditReport.websiteWritePerformed !== false) {
+  throw new Error("Published Website Audit report is missing its read-only boundaries.");
+}
+
+const homepageTechnologySignals = [
+  "Digital systems we build",
+  "AI Assistants",
+  "CRM &amp; Automation",
+  "Logistics Technology",
+  "Hermes Connect",
+];
+for (const text of homepageTechnologySignals) {
+  if (!html.includes(text)) throw new Error(`Homepage technology signal missing: ${text}`);
+}
+
+if (!technologyHtml.includes("Budget approach · optional")) throw new Error("IT brief still appears to require an initial budget.");
+if (/name=\"budget_mode\" required/.test(technologyHtml)) throw new Error("IT brief budget mode must not be required.");
+
+const departmentSystemChecks = [
+  { path: "paths/logistics/index.html", texts: ["Carrier and load validation", "API and board connections", "Operations dashboard"] },
+  { path: "paths/marketing/index.html", texts: ["Automated Website Audit", "Competitor Monitoring", "Marketing Dashboard", "Open the Hermes audit report", "/demos/website-audit/"] },
+  { path: "paths/academy/index.html", texts: ["Candidate Validation", "Document and Knowledge Automation", "Learning Operations Dashboard"] },
+];
+for (const check of departmentSystemChecks) {
+  const pageHtml = await readFile(join(dist, check.path), "utf8");
+  for (const text of check.texts) {
+    if (!pageHtml.includes(text)) throw new Error(`Department technology signal missing in ${check.path}: ${text}`);
+  }
 }
 
 const localizedRouteChecks = [
@@ -174,6 +325,9 @@ for (const path of ["shipper-dealer", "broker", "carrier", "agency", "careers"])
   if (!sitemap.includes(`/logistics/${path}/`)) throw new Error(`Sitemap entry missing for logistics audience: ${path}`);
 }
 if (!sitemap.includes("/logistics/apply/")) throw new Error("Sitemap entry missing for logistics application");
+if (!sitemap.includes("/logistics/appleton-wi-vehicle-transport/")) throw new Error("Sitemap entry missing for Appleton vehicle transport");
+if (!sitemap.includes("/logistics/resources/auction-vehicle-pickup-checklist/")) throw new Error("Sitemap entry missing for auction pickup checklist");
+if (!sitemap.includes("/logistics/resources/car-hauler-capacity-checklist/")) throw new Error("Sitemap entry missing for car hauler capacity checklist");
 
 const forbidden = [
   "guaranteed income",
@@ -186,6 +340,14 @@ const forbidden = [
   "300%+ average growth",
   "job opportunity after completion",
   "anastasia, logistics student",
+  "+17182234736",
+  "+14754414301",
+  "+13517775337",
+  "+17176966829",
+  "+1 (351) 777-5337",
+  "+1 (717) 696-6829",
+  "Box Truck Department",
+  "Public contact listed by Hermes Logistics on Instagram",
 ];
 
 const publicForbiddenInternalTerms = [
@@ -209,6 +371,13 @@ for (const claim of forbidden) {
   }
 }
 
+const publicTelephoneTargets = new Set(
+  publicPages.flatMap(([, pageHtml]) => [...pageHtml.matchAll(/href="tel:([^"]+)"/g)].map((match) => match[1])),
+);
+if (publicTelephoneTargets.size !== 1 || !publicTelephoneTargets.has("+12623023626")) {
+  throw new Error(`Only the approved Logistics Sales telephone may be public: ${[...publicTelephoneTargets].join(", ")}`);
+}
+
 for (const term of publicForbiddenInternalTerms) {
   if (html.includes(term)) throw new Error(`Internal term found on homepage: ${term}`);
   for (const route of routes) {
@@ -224,7 +393,7 @@ if (!html.includes("data-copy-request")) throw new Error("Copy request control i
 if (!html.includes('name="consent"')) throw new Error("Contact consent field is missing");
 if (!html.includes('id="main-content"')) throw new Error("Skip-link target is missing");
 validateStructuredData(html, "homepage");
-if (!html.includes("Hermes Wisconsin")) throw new Error("Wisconsin homepage title is missing");
+if (!html.includes("Hermes | Logistics, Marketing, Academy &amp; IT")) throw new Error("Hermes ecosystem homepage title is missing");
 const cssFiles = (await readdir(join(dist, "_astro"))).filter((file) => file.endsWith(".css"));
 const css = (await Promise.all(cssFiles.map((file) => readFile(join(dist, "_astro", file), "utf8")))).join("\n");
 if (!css.includes("prefers-reduced-motion")) throw new Error("Reduced-motion stylesheet was not emitted");
@@ -239,4 +408,66 @@ for (const asset of assets) {
 
 await access(join(dist, "_headers"));
 
-console.log(`Validated static website: ${routes.length + 1} routes, ${required.length} homepage checks, ${assets.length} image assets, no external form action.`);
+async function collectHtmlFiles(directory, relative = "") {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const nextRelative = join(relative, entry.name);
+    if (entry.isDirectory()) files.push(...await collectHtmlFiles(join(directory, entry.name), nextRelative));
+    else if (entry.name.endsWith(".html")) files.push(nextRelative);
+  }
+  return files;
+}
+
+const allHtmlFiles = await collectHtmlFiles(dist);
+const generatedPages = await Promise.all(
+  allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")]),
+);
+
+for (const [pageName, pageHtml] of generatedPages) {
+  if (pageHtml.includes("/cdn-cgi/l/email-protection")) {
+    throw new Error(`Cloudflare email-protection link found in ${pageName}`);
+  }
+
+  const mailtoPositions = [...pageHtml.matchAll(/href="mailto:/g)].map((match) => match.index ?? -1);
+  if (mailtoPositions.length === 0) continue;
+
+  const protectionStart = pageHtml.indexOf("<!--email_off-->");
+  const protectionEnd = pageHtml.indexOf("<!--/email_off-->");
+  if (
+    protectionStart === -1 ||
+    protectionEnd === -1 ||
+    protectionEnd <= protectionStart ||
+    mailtoPositions.some((position) => position < protectionStart || position > protectionEnd)
+  ) {
+    throw new Error(`Static email link is not protected from Cloudflare obfuscation in ${pageName}`);
+  }
+}
+
+const routeFromHtmlPath = (path) => {
+  if (path === "index.html") return "/";
+  if (path.endsWith("/index.html")) return `/${path.slice(0, -"index.html".length)}`;
+  return `/${path}`;
+};
+const htmlTargets = new Set(allHtmlFiles.map(routeFromHtmlPath));
+const brokenInternalLinks = [];
+for (const [pageName, pageHtml] of generatedPages) {
+  const pageUrl = new URL(routeFromHtmlPath(pageName), "https://hermeslogisticsus.com");
+  for (const match of pageHtml.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)) {
+    const href = match[1];
+    if (!href || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
+    const target = new URL(href, pageUrl);
+    if (target.hostname !== "hermeslogisticsus.com") continue;
+    const targetPath = target.pathname.endsWith("/")
+      ? target.pathname
+      : target.pathname.endsWith(".html")
+        ? target.pathname
+        : `${target.pathname}/`;
+    if (!htmlTargets.has(targetPath)) brokenInternalLinks.push(`${pageName} -> ${href}`);
+  }
+}
+if (brokenInternalLinks.length) {
+  throw new Error(`Broken internal links:\n${brokenInternalLinks.slice(0, 30).join("\n")}`);
+}
+
+console.log(`Validated static website: ${allHtmlFiles.length} generated pages, ${required.length} homepage checks, ${assets.length} image assets, zero broken internal links, no external form action.`);

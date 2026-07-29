@@ -1,0 +1,4 @@
+offer_id,source_name,source_record_id,observed_at,expires_at,pickup_date,origin_city,origin_state,destination_city,destination_state,equipment_class,posted_rate,negotiated_rate,booked_rate,loaded_miles,deadhead_miles
+SYN-OFFER-001,Mock Board Alpha,MOCK-A-1001,2026-07-29T12:00:00Z,2026-07-30T18:00:00Z,2026-07-31,Chicago,IL,Nashville,TN,car_hauler,1400,1450,,485,35
+SYN-OFFER-002,Mock Board Beta,MOCK-B-8841,2026-07-29T12:15:00Z,2026-07-30T16:00:00Z,2026-07-31,Chicago,IL,Nashville,TN,car_hauler,1425,,,485,28
+SYN-OFFER-003,Mock Board Alpha,MOCK-A-0997,2026-07-28T08:00:00Z,2026-07-28T20:00:00Z,2026-07-30,Appleton,WI,Milwaukee,WI,car_hauler,620,,650,106,18

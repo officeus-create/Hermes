@@ -1,19 +1,26 @@
 # Hermes Logistics contact and division plan
 
-## Published contacts
+## Current approved public contacts
+
+Owner update: 2026-07-22. This section supersedes the previously published multi-phone routing.
 
 | Division | Contact | Source status | Website use |
 | --- | --- | --- | --- |
-| Freight Department | (718) 223-4736 | Historical Hermes website discussion, 2022 | Published as freight inquiry line |
-| Box Truck Department | (475) 441-4301 | Historical Hermes website discussion and Hermes.pdf | Published as box truck and cargo van line |
-| Dispatch Operations | freight_301@hermeslogisticsus.com | Hermes.pdf | Published for dispatch documents and questions |
+| Logistics Sales Department · USA | +1 (262) 302-3626 | Owner confirmed, 2026-07-22 | The single public telephone for every incoming Logistics call: shipper, dealer, broker, carrier, owner-operator, Car Hauling, freight, and operating-support inquiries |
+| Logistics Email · USA | freight_301@hermeslogisticsus.com | Previously verified and retained by owner direction | Freight, documents, dispatch, and operating-support questions |
 
-These contacts should be operationally confirmed. They are retained because they came from Hermes source material, but the source is historical.
+All other previously published Hermes telephone numbers are removed from the website. Marketing, Academy, and IT remain email-only.
+
+## International office-location presentation
+
+Marketing, Academy, and IT may display these owner-provided locations: Milan, Berlin, Paris, Miami, California, New York, and England. Their public contact channel is email only through `officeus@hermeslogisticsus.com`.
+
+No street addresses were supplied. The website therefore lists office locations/coordination areas without inventing postal addresses.
 
 ## Proposed operating divisions
 
 1. Freight Dispatch Operations
-2. Box Truck and Cargo Van Operations
+2. Freight Equipment Operations
 3. Carrier Onboarding and Documents
 4. Billing and Accounts Receivable
 5. Shipper and Broker Relations

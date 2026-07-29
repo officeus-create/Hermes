@@ -1,0 +1,89 @@
+---
+import { ArrowRight, Bot, ChartNoAxesCombined, CloudSun, RadioTower, ShieldCheck, UserRoundCheck } from "@lucide/astro";
+
+const profileFields = [
+  ["MC", "1482019"],
+  ["DOT", "4120938"],
+  ["Authority Status", "Active · simulated"],
+  ["Truck Type", "Dry Van"],
+  ["Location", "Madison, WI"],
+  ["Data Quality", "92% · 2 fields for review"],
+  ["Last Updated", "Preview dataset"],
+];
+
+const recruitingStages = ["New", "Validated", "Reviewed", "Interview", "Offer"];
+const dashboardMetrics = [
+  ["Leads", "184", "+12% sample"],
+  ["Conversions", "28", "15.2% sample"],
+  ["Active Tasks", "46", "8 due today"],
+  ["Risks", "7", "Needs review"],
+  ["Revenue Pipeline", "$284K", "Illustrative"],
+];
+---
+
+<section class="section technology-solution-mockups" id="solution-previews" aria-labelledby="solution-previews-title">
+  <div class="shell">
+    <div class="section-heading split-heading" data-reveal>
+      <div>
+        <p class="eyebrow">Interface concepts</p>
+        <h2 id="solution-previews-title">Five ways a custom system can make work visible.</h2>
+      </div>
+      <p>These lightweight mockups explain possible workflows. Values are simulated and every concept remains available for custom development—not presented as a completed client deployment.</p>
+    </div>
+
+    <div class="solution-mockup-grid">
+      <article class="solution-mockup solution-mockup-carrier" data-reveal>
+        <div class="solution-mockup-heading"><RadioTower size={20} aria-hidden="true" /><span>Carrier Intelligence</span><strong>Interface concept</strong></div>
+        <h3>Carrier Profile Card</h3>
+        <div class="carrier-profile-fields">
+          {profileFields.map(([label, value]) => <div><span>{label}</span><strong>{value}</strong></div>)}
+        </div>
+        <p><ShieldCheck size={15} aria-hidden="true" />Official transportation data can be connected after source and access approval.</p>
+      </article>
+
+      <article class="solution-mockup solution-mockup-bot" data-reveal>
+        <div class="solution-mockup-heading"><Bot size={20} aria-hidden="true" /><span>Business assistant</span><strong>Interface concept</strong></div>
+        <h3>AI Telegram Assistant</h3>
+        <div class="telegram-chat-preview">
+          <div class="telegram-user"><span>User</span><p>Check this carrier and create a short profile.</p></div>
+          <div class="telegram-bot"><span>Hermes Assistant · simulated</span><p>Sample check complete. Authority: active. Data quality: 92%. Two fields require review.</p></div>
+        </div>
+        <a href="#project-brief" data-brief-service="AI Telegram Assistant">Build this solution <ArrowRight size={16} aria-hidden="true" /></a>
+      </article>
+
+      <article class="solution-mockup solution-mockup-route" data-reveal>
+        <div class="solution-mockup-heading"><CloudSun size={20} aria-hidden="true" /><span>Logistics technology</span><strong>Interface concept</strong></div>
+        <h3>Route Risk Panel</h3>
+        <div class="route-risk-map">
+          <div><span>Origin</span><strong>Milwaukee, WI</strong></div>
+          <i></i>
+          <div><span>Destination</span><strong>Chicago, IL</strong></div>
+        </div>
+        <dl>
+          <div><dt>Distance</dt><dd>93 mi · sample</dd></div>
+          <div><dt>Weather Risk</dt><dd data-risk="low">Low</dd></div>
+          <div><dt>Route Risk</dt><dd data-risk="medium">Moderate</dd></div>
+          <div><dt>Recommended Action</dt><dd>Review delivery window</dd></div>
+        </dl>
+      </article>
+
+      <article class="solution-mockup solution-mockup-recruiting" data-reveal>
+        <div class="solution-mockup-heading"><UserRoundCheck size={20} aria-hidden="true" /><span>Recruiting technology</span><strong>Interface concept</strong></div>
+        <h3>Recruiting Pipeline</h3>
+        <ol class="recruiting-pipeline">
+          {recruitingStages.map((stage, index) => <li data-active={String(index < 3)}><span>0{index + 1}</span><strong>{stage}</strong></li>)}
+        </ol>
+        <p>Automated checks organize the queue; recruiter review remains a human decision.</p>
+      </article>
+
+      <article class="solution-mockup solution-mockup-dashboard" data-reveal>
+        <div class="solution-mockup-heading"><ChartNoAxesCombined size={20} aria-hidden="true" /><span>Management visibility</span><strong>Interface concept</strong></div>
+        <h3>Executive Dashboard</h3>
+        <div class="executive-dashboard-grid">
+          {dashboardMetrics.map(([label, value, note]) => <div><span>{label}</span><strong>{value}</strong><small>{note}</small></div>)}
+        </div>
+        <p>Connect only the approved data sources and metrics relevant to the client’s operating decisions.</p>
+      </article>
+    </div>
+  </div>
+</section>

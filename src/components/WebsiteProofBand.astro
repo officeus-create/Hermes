@@ -1,41 +1,201 @@
 ---
-import { ArrowRight, Check, ExternalLink } from "@lucide/astro";
+import { ArrowRight, Bot, CalendarDays, Check, ExternalLink, PackageOpen, Truck, Users } from "@lucide/astro";
 
-const proofPoints = [
+const websiteProof = [
   "Original visual system",
   "Responsive interaction design",
   "Automated quality checks",
-  "Controlled production deployment",
+  "Controlled production delivery",
+];
+
+const crmStages = [
+  { name: "New", count: 18, color: "#5c7cfa" },
+  { name: "Qualified", count: 11, color: "#20c997" },
+  { name: "Review", count: 7, color: "#f59f00" },
+  { name: "Next action", count: 4, color: "#d6336c" },
 ];
 ---
 
-<section class="website-proof-band" aria-labelledby="website-proof-title">
-  <div class="shell website-proof-layout">
-    <div class="website-proof-copy" data-reveal>
-      <p class="eyebrow">Built by Hermes IT Development</p>
-      <h2 id="website-proof-title">This website is our first live product.</h2>
-      <p>Strategy, original design, responsive engineering, automated review, and production delivery were built as one coordinated product. We can bring the same discipline to your website, CRM, or AI-assisted business workflow.</p>
+<section class="product-showcase" id="product-portfolio" aria-labelledby="website-proof-title">
+  <div class="shell product-showcase-heading" data-reveal>
+    <p class="eyebrow">Products built by Hermes IT Development</p>
+    <h2>From one live website to a connected product portfolio.</h2>
+    <p>Each product starts with a real business process, a clear maturity label, and an interface people can understand before a larger system is built.</p>
+  </div>
 
-      <ul aria-label="Website delivery proof">
-        {proofPoints.map((point) => <li><Check size={16} aria-hidden="true" />{point}</li>)}
-      </ul>
+  <article class="product-line product-line-website" data-product-line="website">
+    <div class="product-line-accent" aria-hidden="true"></div>
+    <div class="shell product-line-layout">
+      <div class="product-line-copy" data-reveal>
+        <div class="product-line-meta"><span>Product 01</span><strong><i aria-hidden="true"></i>Live product</strong></div>
+        <p class="eyebrow">Hermes Website Platform</p>
+        <h2 id="website-proof-title">This website is our first live product.</h2>
+        <p>Strategy, original design, responsive engineering, automated review, and controlled delivery were built as one coordinated product.</p>
+        <ul aria-label="Website delivery proof">
+          {websiteProof.map((point) => <li><Check size={16} aria-hidden="true" />{point}</li>)}
+        </ul>
+        <div class="product-line-actions">
+          <a class="product-line-primary" href="/case/it-development/">See how it was built <ArrowRight size={18} aria-hidden="true" /></a>
+          <a href="/paths/technology/#project-brief">Discuss your website <ExternalLink size={17} aria-hidden="true" /></a>
+        </div>
+      </div>
 
-      <div class="website-proof-actions">
-        <a class="website-proof-primary" href="/case/it-development/">
-          See how it was built
-          <ArrowRight size={18} aria-hidden="true" />
-        </a>
-        <a href="/paths/technology/#contact">
-          Discuss your website
-          <ExternalLink size={17} aria-hidden="true" />
-        </a>
+      <a class="product-visual website-product-visual" href="/case/it-development/" data-reveal style="--reveal-delay: 100ms" aria-label="Open the Hermes IT Development website case study">
+        <img src="/images/hermes-live-product.jpg" alt="The live Hermes website showing its four interactive business portals" width="1440" height="900" loading="lazy" decoding="async" />
+        <span>hermeslogisticsus.com <ArrowRight size={17} aria-hidden="true" /></span>
+      </a>
+    </div>
+  </article>
+
+  <article class="product-line product-line-crm" data-product-line="crm">
+    <div class="product-line-accent" aria-hidden="true"></div>
+    <div class="shell product-line-layout is-reversed">
+      <div class="product-line-copy" data-reveal>
+        <div class="product-line-meta"><span>Product 02</span><strong><i aria-hidden="true"></i>Working prototype</strong></div>
+        <p class="eyebrow">CRM & Operations Control</p>
+        <h2>A serious operating workspace built around your real process.</h2>
+        <p>Structured intake, client and lead pipelines, ownership, review queues, next actions, documents, and management visibility in one controlled workspace.</p>
+        <ul>
+          <li><Check size={16} aria-hidden="true" />Role-based workspaces</li>
+          <li><Check size={16} aria-hidden="true" />Pipelines and review queues</li>
+          <li><Check size={16} aria-hidden="true" />Duplicate and status control</li>
+          <li><Check size={16} aria-hidden="true" />Management dashboards</li>
+        </ul>
+        <div class="product-line-actions">
+          <a class="product-line-primary" href="/paths/technology/#project-brief">Build a CRM for your process <ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+      </div>
+
+      <div class="product-visual crm-product-visual" data-reveal style="--reveal-delay: 100ms" role="img" aria-label="Concept preview of the Hermes CRM and operations workspace">
+        <div class="crm-window-bar"><i></i><i></i><i></i><span>Hermes Operations CRM</span></div>
+        <div class="crm-app-shell">
+          <nav aria-label="CRM preview navigation">
+            <b>H</b>
+            <span class="is-active">Overview</span>
+            <span>Contacts</span>
+            <span>Pipeline</span>
+            <span>Tasks</span>
+            <span>Reports</span>
+          </nav>
+          <div class="crm-workspace">
+            <header><div><small>OPERATIONS / OVERVIEW</small><h3>Good morning, team.</h3></div><button type="button">+ New record</button></header>
+            <div class="crm-kpis">
+              <div><small>Active records</small><strong>40</strong><span>Current preview</span></div>
+              <div><small>Needs review</small><strong>07</strong><span>Owner assigned</span></div>
+              <div><small>Next actions</small><strong>12</strong><span>Due this week</span></div>
+            </div>
+            <div class="crm-pipeline">
+              <div class="crm-panel-title"><strong>Pipeline control</strong><span>Demo workspace</span></div>
+              <div class="crm-stage-grid">
+                {crmStages.map((stage) => <div><i style={`--stage-color:${stage.color}`}></i><span>{stage.name}</span><strong>{stage.count}</strong></div>)}
+              </div>
+            </div>
+            <div class="crm-records">
+              <div class="crm-records-head"><span>Record</span><span>Owner</span><span>Status</span><span>Next step</span></div>
+              <div><b>HC-1042</b><span>Operations</span><em>Qualified</em><span>Review details</span></div>
+              <div><b>HC-1047</b><span>Sales team</span><em class="is-review">Needs review</em><span>Confirm route</span></div>
+            </div>
+          </div>
+        </div>
+        <span class="product-visual-note">Original interface concept · Demo data</span>
       </div>
     </div>
+  </article>
 
-    <a class="website-proof-media" href="/case/it-development/" data-reveal style="--reveal-delay: 100ms" aria-label="Open the Hermes IT Development website case study">
-      <img src="/images/hermes-live-product.jpg" alt="The live Hermes website showing its four interactive business portals" width="1440" height="900" loading="lazy" decoding="async" />
-      <span class="website-proof-live"><i aria-hidden="true"></i>Live product</span>
-      <span class="website-proof-domain">hermeslogisticsus.com <ArrowRight size={17} aria-hidden="true" /></span>
-    </a>
-  </div>
+  <article class="product-line product-line-connect" data-product-line="connect">
+    <div class="product-line-accent" aria-hidden="true"></div>
+    <div class="shell product-line-layout">
+      <div class="product-line-copy" data-reveal>
+        <div class="product-line-meta"><span>Product 03</span><strong><i aria-hidden="true"></i>Product discovery</strong></div>
+        <p class="eyebrow">Hermes Connect</p>
+        <h2>One intelligent workspace for appointments, clients, teams, and growth.</h2>
+        <p>An AI-first platform concept for fitness, beauty, studios, experts, education, events, and other appointment-based service businesses.</p>
+        <ul>
+          <li><CalendarDays size={16} aria-hidden="true" />Appointments and availability</li>
+          <li><Users size={16} aria-hidden="true" />Clients, staff, services, and roles</li>
+          <li><Bot size={16} aria-hidden="true" />AI intake with preview and confirmation</li>
+          <li><Check size={16} aria-hidden="true" />History and auditable actions</li>
+        </ul>
+        <div class="product-segments" aria-label="Proposed Hermes Connect segments"><span>Fit</span><span>Beauty</span><span>Studio</span><span>Pro</span><span>Events</span></div>
+        <div class="product-line-actions">
+          <a class="product-line-primary" href="/paths/technology/#project-brief">Discuss a Hermes Connect pilot <ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+      </div>
+
+      <div class="product-visual connect-product-visual" data-reveal style="--reveal-delay: 100ms" role="img" aria-label="Concept preview of the Hermes Connect service business platform">
+        <div class="connect-topbar"><strong><i>H</i>Connect</strong><span>Wellness Studio · Preview</span><b>VM</b></div>
+        <div class="connect-dashboard">
+          <aside><span class="is-active">Today</span><span>Calendar</span><span>Clients</span><span>Services</span><span>Team</span><span>Insights</span></aside>
+          <div class="connect-main">
+            <header><div><small>TUESDAY · WORKSPACE PREVIEW</small><h3>Your day, connected.</h3></div><button type="button">New appointment</button></header>
+            <div class="connect-summary">
+              <div><small>Appointments</small><strong>08</strong><span>2 awaiting confirmation</span></div>
+              <div><small>Available time</small><strong>2h</strong><span>Across 3 specialists</span></div>
+              <div><small>Return clients</small><strong>64%</strong><span>Preview metric</span></div>
+            </div>
+            <div class="connect-content-grid">
+              <section class="connect-calendar">
+                <div><strong>Today’s schedule</strong><span>July 21</span></div>
+                <article style="--appointment:#f06b50"><time>09:00</time><p><b>Personal training</b><span>Anna · Alex</span></p></article>
+                <article style="--appointment:#7657d6"><time>11:30</time><p><b>Consultation</b><span>Mia · Sofia</span></p></article>
+                <article style="--appointment:#2b9a8d"><time>14:00</time><p><b>Recovery session</b><span>Noah · Emma</span></p></article>
+              </section>
+              <section class="connect-ai-card">
+                <p><Bot size={17} aria-hidden="true" />Hermes Flow AI</p>
+                <blockquote>“Book Anna for Friday after 3 PM and send the intake form.”</blockquote>
+                <div><span>1. Check availability</span><span>2. Prepare appointment</span><span>3. Ask for confirmation</span></div>
+                <button type="button">Preview action</button>
+              </section>
+            </div>
+          </div>
+        </div>
+        <span class="product-visual-note">Concept only · No account, booking, calendar, payment, or AI action is connected</span>
+      </div>
+    </div>
+  </article>
+
+  <article class="product-line product-line-load-board" data-product-line="load-board">
+    <div class="product-line-accent" aria-hidden="true"></div>
+    <div class="shell product-line-layout is-reversed">
+      <div class="product-line-copy" data-reveal>
+        <div class="product-line-meta"><span>Product 04</span><strong><i aria-hidden="true"></i>Working prototype</strong></div>
+        <p class="eyebrow">Hermes Load Board</p>
+        <h2>One freight workspace for the people posting loads and the people moving them.</h2>
+        <p>A role-based U.S. freight marketplace concept for shippers, dealers, brokers, carriers, owner-operators, and dispatch teams.</p>
+        <ul>
+          <li><PackageOpen size={16} aria-hidden="true" />Post and review loads</li>
+          <li><Truck size={16} aria-hidden="true" />Add trucks and availability</li>
+          <li><Check size={16} aria-hidden="true" />Search compatible opportunities</li>
+          <li><Check size={16} aria-hidden="true" />Request dispatch or make an offer</li>
+        </ul>
+        <div class="equipment-chip-list" aria-label="Proposed Hermes Load Board equipment classes">
+          <span>Car Hauler</span><span>Box Truck 26 ft</span><span>Dry Van</span><span>Flatbed</span><span>Reefer</span><span>Step Deck</span><span>Hotshot</span><span>Power Only</span><span>Sprinter Van</span><span>Pickup Truck</span>
+        </div>
+        <p class="product-future-note">Future architecture: publish once, then distribute through approved partner connections. External board access and schedule remain unconnected.</p>
+        <div class="product-line-actions">
+          <a class="product-line-primary" href="/load-board/">Open Hermes Load Board <ArrowRight size={18} aria-hidden="true" /></a>
+          <a href="/logistics/carrier/">Carrier workspace <ExternalLink size={17} aria-hidden="true" /></a>
+        </div>
+      </div>
+
+      <div class="product-visual load-board-product-visual" data-reveal style="--reveal-delay: 100ms" role="img" aria-label="Concept preview of the Hermes Load Board for U.S. freight">
+        <div class="load-board-product-topbar"><strong><i>H</i>Load Board</strong><span>U.S. freight workspace · Preview</span><b>04</b></div>
+        <div class="load-board-product-app">
+          <aside><span class="is-active">Available loads</span><span>Post a load</span><span>My trucks</span><span>Offers</span><span>Dispatch</span></aside>
+          <div class="load-board-product-main">
+            <header><div><small>AVAILABLE LOADS · DEMO DATA</small><h3>Find freight that fits.</h3></div><button type="button">Post a load</button></header>
+            <div class="load-board-product-roles"><span>Shipper / Dealer</span><span>Broker</span><span class="is-active">Carrier / Owner-operator</span></div>
+            <div class="load-board-product-search"><span>Chicago, IL</span><span>150 mi</span><span>Anywhere</span><span>Car Hauler</span><button type="button">Search</button></div>
+            <div class="load-board-product-list">
+              <article><div><strong>Chicago, IL <ArrowRight size={13} aria-hidden="true" /> Milwaukee, WI</strong><span>2 operable sedans · Open car hauler · 92 mi</span></div><div><b>$620</b><span>$6.74 / mi</span></div><button type="button">Request dispatch</button></article>
+              <article><div><strong>Madison, WI <ArrowRight size={13} aria-hidden="true" /> Indianapolis, IN</strong><span>3 vehicles · 3-car wedge · 329 mi</span></div><div><b>$1,080</b><span>$3.28 / mi</span></div><button type="button">Make an offer</button></article>
+              <article><div><strong>Rockford, IL <ArrowRight size={13} aria-hidden="true" /> Nashville, TN</strong><span>1 SUV · Hotshot compatible · 575 mi</span></div><div><b>$1,350</b><span>$2.35 / mi</span></div><button type="button">Request dispatch</button></article>
+            </div>
+            <div class="load-board-distribution-preview"><span><i></i>Hermes source of truth</span><ArrowRight size={14} aria-hidden="true" /><span>Approved board adapters</span><ArrowRight size={14} aria-hidden="true" /><span>Scheduled refresh · Concept</span></div>
+          </div>
+        </div>
+        <span class="product-visual-note">Demo only · No load, truck, offer, dispatch, external-board sync, or scheduled update is live</span>
+      </div>
+    </div>
+  </article>
 </section>

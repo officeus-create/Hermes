@@ -60,9 +60,11 @@ const ogLocale = localeConfig[locale].ogLocale;
     <title>{title}</title>
   </head>
   <body>
+    <!--email_off-->
     <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
     <MotionLayer />
+    <!--/email_off-->
   </body>
 </html>

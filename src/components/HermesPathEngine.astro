@@ -1,0 +1,222 @@
+---
+import { ArrowLeft, ArrowRight, RotateCcw } from "@lucide/astro";
+---
+
+<section class="section hermes-path-engine" id="find-your-path" aria-labelledby="path-engine-title" data-path-engine>
+  <div class="shell">
+    <div class="section-heading split-heading">
+      <div>
+        <p class="eyebrow">Hermes Path Engine · Logistics</p>
+        <h2 id="path-engine-title">Find the right logistics path.</h2>
+      </div>
+      <p>Make one decision at a time. You receive a useful recommendation before contact or private operating details are requested.</p>
+    </div>
+
+    <div class="path-engine-shell">
+      <div class="path-engine-toolbar">
+        <div>
+          <span data-path-progress-label>Step 1 of 4</span>
+          <div class="path-engine-progress" role="progressbar" aria-label="Path progress" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" data-path-progress><i></i></div>
+        </div>
+        <button type="button" data-path-restart><RotateCcw size={17} aria-hidden="true" />Restart</button>
+      </div>
+
+      <div class="path-engine-question" data-path-question aria-live="polite">
+        <p class="eyebrow" data-path-step>Step 1 · Role</p>
+        <h3 data-path-title>Who are you?</h3>
+        <p data-path-helper>Choose the role that best describes the work you need to do today.</p>
+        <div class="path-engine-options" data-path-options></div>
+        <p class="path-engine-error" role="alert" data-path-error hidden></p>
+      </div>
+
+      <div class="path-engine-actions">
+        <button class="button" type="button" data-path-back hidden><ArrowLeft size={18} aria-hidden="true" />Back</button>
+        <button class="button button-primary" type="button" data-path-continue hidden>Continue<ArrowRight size={18} aria-hidden="true" /></button>
+      </div>
+      <p class="path-engine-privacy">Refresh recovery stores only non-sensitive choice IDs in this browser session—never names, email, phone, MC/DOT, VIN, exact addresses, or free text.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  import {
+    logisticsPathNodes,
+    logisticsRecommendationsById,
+    resolveLogisticsRecommendation,
+    type PathSelections,
+  } from "../data/logistics-path-engine";
+  import { trackEvent } from "../lib/analytics";
+
+  const STORAGE_KEY = "hermes:logistics-path:v1";
+  const root = document.querySelector<HTMLElement>("[data-path-engine]");
+  const question = root?.querySelector<HTMLElement>("[data-path-question]");
+  const stepLabel = root?.querySelector<HTMLElement>("[data-path-step]");
+  const title = root?.querySelector<HTMLElement>("[data-path-title]");
+  const helper = root?.querySelector<HTMLElement>("[data-path-helper]");
+  const optionsRoot = root?.querySelector<HTMLElement>("[data-path-options]");
+  const error = root?.querySelector<HTMLElement>("[data-path-error]");
+  const back = root?.querySelector<HTMLButtonElement>("[data-path-back]");
+  const restart = root?.querySelector<HTMLButtonElement>("[data-path-restart]");
+  const continueButton = root?.querySelector<HTMLButtonElement>("[data-path-continue]");
+  const progress = root?.querySelector<HTMLElement>("[data-path-progress]");
+  const progressLabel = root?.querySelector<HTMLElement>("[data-path-progress-label]");
+
+  type StoredState = { currentNodeId: string; history: string[]; selections: PathSelections };
+  let state: StoredState = { currentNodeId: "role", history: [], selections: {} };
+
+  const restore = (): StoredState | null => {
+    try {
+      const parsed = JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "null") as StoredState | null;
+      if (!parsed || !logisticsPathNodes[parsed.currentNodeId] || !Array.isArray(parsed.history) || typeof parsed.selections !== "object") return null;
+      return {
+        currentNodeId: parsed.currentNodeId,
+        history: parsed.history.filter((item) => Boolean(logisticsPathNodes[item])).slice(-8),
+        selections: Object.fromEntries(Object.entries(parsed.selections)
+          .filter(([key]) => Boolean(logisticsPathNodes[key]))
+          .map(([key, value]) => [key, Array.isArray(value) ? value.map(String).slice(0, 10) : String(value)])),
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  const persist = () => {
+    try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch { /* Storage is optional. */ }
+  };
+  const clearError = () => {
+    if (!error) return;
+    error.hidden = true;
+    error.textContent = "";
+  };
+  const setError = (message: string) => {
+    if (!error) return;
+    error.textContent = message;
+    error.hidden = false;
+  };
+  const selected = (nodeId: string, optionId: string) => {
+    const value = state.selections[nodeId];
+    return Array.isArray(value) ? value.includes(optionId) : value === optionId;
+  };
+
+  const complete = (recommendationId: string) => {
+    const recommendation = logisticsRecommendationsById[recommendationId];
+    if (!recommendation) return setError("We could not resolve this path. Please restart and try again.");
+    try {
+      sessionStorage.setItem("hermes:path-result:v1", JSON.stringify({
+        direction: "logistics",
+        selections: state.selections,
+        recommendationId,
+        resultRoute: recommendation.route,
+        completedAt: new Date().toISOString(),
+      }));
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch { /* Stable routing does not depend on storage. */ }
+    trackEvent("path_completed", { direction: "logistics", recommendationId, resultRoute: recommendation.route });
+    window.location.assign(recommendation.route);
+  };
+
+  const advance = (nextNodeId?: string, recommendationId?: string) => {
+    if (recommendationId) return complete(recommendationId);
+    if (!nextNodeId || !logisticsPathNodes[nextNodeId]) return setError("This path needs a Logistics Sales fit review.");
+    state.history.push(state.currentNodeId);
+    state.currentNodeId = nextNodeId;
+    persist();
+    render();
+    question?.focus({ preventScroll: true });
+  };
+
+  const chooseSingle = (optionId: string) => {
+    const node = logisticsPathNodes[state.currentNodeId];
+    const option = node.options.find((item) => item.id === optionId);
+    if (!option) return;
+    clearError();
+    state.selections[node.id] = option.id;
+    trackEvent(node.id === "role" ? "path_role_selected" : node.id.includes("need") || node.id.includes("cargo") ? "path_need_selected" : "path_situation_selected", {
+      direction: "logistics",
+      role: String(state.selections.role ?? ""),
+      selection: option.id,
+      stepNumber: node.step,
+    });
+    if (node.resolver) return complete(resolveLogisticsRecommendation(state.selections));
+    advance(option.nextNodeId ?? node.nextNodeId, option.recommendationId);
+  };
+
+  const toggleMultiple = (optionId: string, button: HTMLButtonElement) => {
+    const node = logisticsPathNodes[state.currentNodeId];
+    const current = Array.isArray(state.selections[node.id]) ? [...state.selections[node.id] as string[]] : [];
+    const next = current.includes(optionId) ? current.filter((item) => item !== optionId) : [...current, optionId];
+    state.selections[node.id] = next;
+    button.setAttribute("aria-pressed", String(next.includes(optionId)));
+    button.dataset.selected = String(next.includes(optionId));
+    clearError();
+    persist();
+  };
+
+  const render = () => {
+    if (!root || !optionsRoot || !title || !helper || !stepLabel || !continueButton || !back || !progress || !progressLabel) return;
+    const node = logisticsPathNodes[state.currentNodeId];
+    const stepName = node.id === "role" ? "Role" : node.id === "equipment" || node.id.includes("cargo") || node.id.includes("need") ? "Need" : "Situation";
+    const progressStep = Math.min(node.step, 4);
+    stepLabel.textContent = `Step ${progressStep} · ${stepName}`;
+    title.textContent = node.question;
+    helper.textContent = node.helperText;
+    progressLabel.textContent = `Step ${progressStep} of 4`;
+    progress.setAttribute("aria-valuenow", String(progressStep));
+    progress.style.setProperty("--path-progress", `${progressStep / 4 * 100}%`);
+    optionsRoot.replaceChildren();
+    clearError();
+
+    for (const option of node.options) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "path-option-card";
+      button.dataset.optionId = option.id;
+      button.dataset.selected = String(selected(node.id, option.id));
+      if (node.selectionMode === "multiple") button.setAttribute("aria-pressed", String(selected(node.id, option.id)));
+      const strong = document.createElement("strong");
+      strong.textContent = option.label;
+      button.appendChild(strong);
+      if (option.description) {
+        const span = document.createElement("span");
+        span.textContent = option.description;
+        button.appendChild(span);
+      }
+      button.addEventListener("click", () => node.selectionMode === "multiple" ? toggleMultiple(option.id, button) : chooseSingle(option.id));
+      optionsRoot.appendChild(button);
+    }
+    back.hidden = state.history.length === 0;
+    continueButton.hidden = node.selectionMode !== "multiple";
+    persist();
+  };
+
+  continueButton?.addEventListener("click", () => {
+    const node = logisticsPathNodes[state.currentNodeId];
+    const values = state.selections[node.id];
+    if (!Array.isArray(values) || values.length === 0) return setError("Choose at least one equipment type to continue.");
+    trackEvent("path_need_selected", { direction: "logistics", role: String(state.selections.role ?? ""), selectionCount: values.length, stepNumber: node.step });
+    advance(node.nextNodeId);
+  });
+  back?.addEventListener("click", () => {
+    const previous = state.history.pop();
+    if (!previous) return;
+    delete state.selections[state.currentNodeId];
+    state.currentNodeId = previous;
+    trackEvent("path_back_clicked", { direction: "logistics", stepNumber: logisticsPathNodes[previous].step });
+    persist();
+    render();
+  });
+  restart?.addEventListener("click", () => {
+    state = { currentNodeId: "role", history: [], selections: {} };
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem("hermes:path-result:v1");
+    } catch { /* Continue without storage. */ }
+    trackEvent("path_restarted", { direction: "logistics" });
+    render();
+  });
+
+  state = restore() ?? state;
+  trackEvent("path_started", { direction: "logistics", stepNumber: logisticsPathNodes[state.currentNodeId].step });
+  question?.setAttribute("tabindex", "-1");
+  render();
+</script>

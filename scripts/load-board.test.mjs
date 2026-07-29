@@ -1,10 +1,21 @@
 import assert from "node:assert/strict";
-import { buildLoadBoardPayload, buildLoadBoardPreview, reviewLoadBoardPayload } from "../src/lib/load-board.ts";
+import {
+  buildLoadBoardPayload,
+  buildLoadBoardPreview,
+  buildCarrierSalesLead,
+  buildLogisticsSalesMailto,
+  buildPostedLoadSalesLead,
+  buildVehicleAvailabilityPayload,
+  buildVehicleAvailabilityPreview,
+  reviewLoadBoardPayload,
+  reviewVehicleAvailabilityPayload,
+} from "../src/lib/load-board.ts";
 
 const standard = new FormData();
 standard.set("submitter_type", "private_party");
 standard.set("contact_name", "Test Customer");
 standard.set("email", "TEST@example.com");
+standard.set("phone", "+1 (312) 555-0182");
 standard.set("pickup_location", "Madison, WI");
 standard.set("delivery_location", "Chicago, IL");
 standard.set("ready_date", "2026-08-01");
@@ -21,7 +32,43 @@ assert.equal(approved.decision, "approved");
 assert.ok(approved.routing.includes("Dispatch Assist dry-run queue"));
 const preview = buildLoadBoardPreview(payload, approved);
 assert.match(preview, /Decision: approved/);
-assert.match(preview, /no email, CRM write, or carrier notification was sent/i);
+assert.match(preview, /POSTED LOAD \/ CUSTOMER/i);
+assert.match(preview, /no email, CRM write, load publication, or carrier notification was sent/i);
+const postedLead = buildPostedLoadSalesLead(payload, approved);
+assert.match(postedLead.email_subject, /^\[HERMES SALES\] \[POSTED LOAD\] \[CUSTOMER\]/);
+assert.match(buildLogisticsSalesMailto(postedLead), /^mailto:officeus@hermeslogisticsus.com\?/);
+
+const carHauler = new FormData();
+carHauler.set("carrier_role", "owner_operator");
+carHauler.set("carrier_contact_name", "Test Driver");
+carHauler.set("carrier_company_name", "Test Carrier LLC");
+carHauler.set("authority_number", "MC 123456");
+carHauler.set("carrier_email", "DRIVER@example.com");
+carHauler.set("carrier_phone", "+1 (312) 555-0182");
+carHauler.set("equipment_class", "car_hauler");
+carHauler.set("capacity_units", "3");
+carHauler.set("available_from", "2026-08-03");
+carHauler.set("origin_location", "Chicago, IL");
+carHauler.set("origin_radius", "150");
+carHauler.set("anywhere", "on");
+carHauler.set("interested_load", "hlb-1042");
+carHauler.set("carrier_consent", "on");
+const vehiclePayload = buildVehicleAvailabilityPayload(carHauler);
+assert.equal(vehiclePayload.email, "driver@example.com");
+const vehicleReview = reviewVehicleAvailabilityPayload(vehiclePayload, new Date("2026-07-18T00:00:00Z"));
+assert.equal(vehicleReview.decision, "dispatcher_review");
+assert.equal(vehicleReview.vehicle_state, "submitted_for_review");
+const vehiclePreview = buildVehicleAvailabilityPreview(vehiclePayload, vehicleReview);
+assert.match(vehiclePreview, /LOAD BOARD ACCESS \/ CARRIER/i);
+assert.match(vehiclePreview, /Interested load: HLB-1042/i);
+assert.match(vehiclePreview, /no email, account, call, CRM write, or dispatcher assignment was created/i);
+const carrierLead = buildCarrierSalesLead(vehiclePayload, vehicleReview);
+assert.match(carrierLead.email_subject, /^\[HERMES SALES\] \[LOAD BOARD ACCESS\] \[CARRIER\] \[HLB-1042\]/);
+
+carHauler.set("equipment_class", "box_truck");
+const boxTruckReview = reviewVehicleAvailabilityPayload(buildVehicleAvailabilityPayload(carHauler), new Date("2026-07-18T00:00:00Z"));
+assert.equal(boxTruckReview.decision, "scope_review");
+assert.match(boxTruckReview.required_actions.join(" "), /dimensions/i);
 
 const tractor = new FormData();
 for (const [key, value] of standard.entries()) tractor.set(key, value);
@@ -46,4 +93,3 @@ assert.equal(rejected.decision, "rejected");
 assert.deepEqual(rejected.routing, []);
 
 console.log("Load Board unit checks passed.");
-

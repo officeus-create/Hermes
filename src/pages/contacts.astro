@@ -11,14 +11,12 @@ const contactSchema = {
   "@type": "Organization",
   name: "Hermes",
   url: "https://hermeslogisticsus.com/",
-  address: {
-    "@type": "PostalAddress",
-    addressRegion: "WI",
-    addressCountry: "US",
-  },
   areaServed: [
-    { "@type": "State", name: "Wisconsin" },
     { "@type": "Country", name: "United States" },
+    { "@type": "Country", name: "Italy" },
+    { "@type": "Country", name: "Germany" },
+    { "@type": "Country", name: "France" },
+    { "@type": "Country", name: "United Kingdom" },
   ],
   contactPoint: site.publicPhones.map((phone) => ({
     "@type": "ContactPoint",
@@ -31,19 +29,19 @@ const contactSchema = {
 ---
 
 <BaseLayout
-  title="Contact Hermes | Wisconsin USA"
-  description="Public Hermes contact phones for shippers, dealers, carriers, and owner-operators, plus Telegram learning groups and Wisconsin USA location."
+  title="Contact Hermes | USA & International"
+  description="Contact Hermes Logistics in the United States by phone or email. Marketing, Academy, and IT inquiries are coordinated internationally by email."
   schema={contactSchema}
 >
   <SiteHeader />
   <main id="main-content" class="contacts-page">
     <section class="section contacts-hero">
       <div class="shell">
-        <p class="eyebrow">Wisconsin first · USA coverage</p>
+        <p class="eyebrow">USA Logistics · International email coordination</p>
         <h1>Contact Hermes</h1>
         <p>
-          Use the published phones for partnership questions, join the relevant Telegram learning group, or send a
-          structured request with the preview form below.
+          Call or email the U.S. Logistics Sales Department. Marketing, Academy, and IT inquiries are handled by email
+          across the listed international office locations. The structured form below remains a safe preview.
         </p>
       </div>
     </section>

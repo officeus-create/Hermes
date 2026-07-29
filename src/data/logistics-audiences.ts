@@ -23,8 +23,8 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Automatic review", body: "The preview checks completeness and whether the commodity fits the car-hauling pilot." },
       { title: "Collect options", body: "Approved production requests will be matched with relevant carrier capacity." },
     ],
-    primary: { label: "Post a load", href: "/load-board/" },
-    secondary: { label: "Contact the freight team", href: "tel:+17182234736" },
+    primary: { label: "Post a load", href: "/load-board/?role=shipper#post-load" },
+    secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
   {
     slug: "broker",
@@ -38,8 +38,8 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Check compatibility", body: "Unusual, oversized, or inoperable equipment is held for additional requirements." },
       { title: "Route by fit", body: "The production workflow will route approved loads to relevant car-hauling capacity." },
     ],
-    primary: { label: "Post a broker load", href: "/load-board/" },
-    secondary: { label: "Discuss freight coordination", href: "tel:+17182234736" },
+    primary: { label: "Open broker Load Board", href: "/load-board/?role=broker#post-load" },
+    secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
   {
     slug: "carrier",
@@ -53,8 +53,8 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Confirm the fit", body: "Hermes reviews the service path and the kind of opportunities that may fit." },
       { title: "Choose the relationship", body: "Discuss loads, dispatch support, or a broader operating relationship without giving up load approval." },
     ],
-    primary: { label: "Find loads — pilot access", href: "/paths/logistics/#contact" },
-    secondary: { label: "Call carriers team", href: "tel:+12623023626" },
+    primary: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" },
+    secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
   {
     slug: "agency",
@@ -86,4 +86,3 @@ export const logisticsAudiences: LogisticsAudience[] = [
     secondary: { label: "Explore training first", href: "/paths/academy/" },
   },
 ];
-

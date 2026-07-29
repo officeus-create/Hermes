@@ -4,10 +4,17 @@ import type { PathDetail } from "../data/site";
 import AcademyScreenFlow from "./AcademyScreenFlow.astro";
 import ItOperatingFlow from "./ItOperatingFlow.astro";
 import MarketingGrowthFlow from "./MarketingGrowthFlow.astro";
+import MarketingServicePillars from "./MarketingServicePillars.astro";
 import TechnologyStudioProof from "./TechnologyStudioProof.astro";
 import TechnologyProjectBrief from "./TechnologyProjectBrief.astro";
 import TechnologyPartnershipShowcase from "./TechnologyPartnershipShowcase.astro";
+import TechnologyBuildPulse from "./TechnologyBuildPulse.astro";
+import TechnologyCapabilityCatalog from "./TechnologyCapabilityCatalog.astro";
+import TechnologyInteractivePrototypes from "./TechnologyInteractivePrototypes.astro";
+import TechnologySolutionMockups from "./TechnologySolutionMockups.astro";
 import LogisticsAudienceHub from "./LogisticsAudienceHub.astro";
+import DepartmentTechnologyBridge from "./DepartmentTechnologyBridge.astro";
+import HermesPathEngine from "./HermesPathEngine.astro";
 
 interface Props {
   path: PathDetail;
@@ -33,11 +40,12 @@ const directContactTitle = {
       <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
       <h1>{path.title}</h1>
       <p>{path.audience}</p>
-      <a class="button button-primary" href={path.id === "technology" ? "#project-brief" : isLogistics ? "#choose-your-path" : "#contact"}>{path.id === "technology" ? "Build your project brief" : isLogistics ? "Choose your logistics path" : "Start with a conversation"}<ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="button button-primary" href={path.id === "technology" ? "#project-brief" : isLogistics ? "#find-your-path" : "#contact"}>{path.id === "technology" ? "Build your project brief" : isLogistics ? "Find your logistics path" : "Start with a conversation"}<ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </section>
 
   {isLogistics && <LogisticsAudienceHub />}
+  {isLogistics && <HermesPathEngine />}
 
   <section class="section detail-overview">
     <div class="shell detail-intro" data-reveal>
@@ -47,6 +55,8 @@ const directContactTitle = {
       <p class="detail-service-area"><MapPin size={18} aria-hidden="true" />{path.localFocus}</p>
     </div>
   </section>
+
+  {path.id === "technology" && <TechnologyBuildPulse />}
 
   {isAcademy && <AcademyScreenFlow />}
 
@@ -76,10 +86,17 @@ const directContactTitle = {
   }
 
   {path.id === "technology" && <ItOperatingFlow />}
+  {path.id === "technology" && <TechnologyCapabilityCatalog />}
+  {path.id === "technology" && <TechnologySolutionMockups />}
+  {path.id === "technology" && <TechnologyInteractivePrototypes />}
   {path.id === "technology" && <TechnologyPartnershipShowcase />}
   {path.id === "technology" && <TechnologyStudioProof />}
   {path.id === "technology" && <TechnologyProjectBrief />}
+  {path.id === "marketing" && <MarketingServicePillars />}
   {path.id === "marketing" && <MarketingGrowthFlow />}
+  {path.id === "logistics" && <DepartmentTechnologyBridge direction="logistics" />}
+  {path.id === "marketing" && <DepartmentTechnologyBridge direction="marketing" />}
+  {path.id === "academy" && <DepartmentTechnologyBridge direction="academy" />}
 
   {
     !isAcademy && (

@@ -1,0 +1,21 @@
+# Generated from the current Cloudflare Pages project settings.
+# Copy to wrangler.toml only after Email Sending is enabled and the sender domain is verified.
+name = "hermes"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-07-12"
+
+[vars]
+ALLOWED_ORIGIN = "https://hermeslogisticsus.com"
+SALES_DESTINATION = "officeus@hermeslogisticsus.com"
+SALES_SENDER = "website@hermeslogisticsus.com"
+
+# Add the verified KV namespace id before live activation.
+[[kv_namespaces]]
+binding = "LEAD_LIMITS"
+id = "REPLACE_WITH_APPROVED_KV_NAMESPACE_ID"
+
+# Cloudflare Email Service must first onboard hermeslogisticsus.com.
+[[send_email]]
+name = "LEAD_EMAIL"
+destination_address = "officeus@hermeslogisticsus.com"
+allowed_sender_addresses = ["website@hermeslogisticsus.com"]

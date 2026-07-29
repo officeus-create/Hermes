@@ -1,0 +1,24 @@
+---
+import { CircleCheck } from "@lucide/astro";
+
+interface Props {
+  title: string;
+  description: string;
+  services: string[];
+  icon: any;
+  availability?: string;
+}
+
+const { title, description, services, icon: Icon, availability = "Available for custom development" } = Astro.props;
+---
+
+<article class="technology-solution-card">
+  <div class="technology-solution-card-top">
+    <Icon size={23} aria-hidden="true" />
+    <span>{availability}</span>
+  </div>
+  <h3>{title}</h3>
+  <p>{description}</p>
+  <ul>{services.map((service) => <li><CircleCheck size={14} aria-hidden="true" />{service}</li>)}</ul>
+  <a href="#project-brief" data-brief-service={title}>Build this solution <span aria-hidden="true">→</span></a>
+</article>

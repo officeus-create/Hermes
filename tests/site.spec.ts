@@ -22,6 +22,9 @@ const routes = [
   "/es/",
   "/it/",
   "/fr/",
+  "/logistics/appleton-wi-vehicle-transport/",
+  "/logistics/resources/auction-vehicle-pickup-checklist/",
+  "/logistics/resources/car-hauler-capacity-checklist/",
 ];
 
 for (const route of routes) {
@@ -63,7 +66,7 @@ test("business pillars reveal one direction at a time and support keyboard navig
   await expect(logistics).toHaveAttribute("aria-selected", "true");
   await marketing.click();
   await expect(marketing).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel", { name: /Hermes Marketing/ })).toContainText("Organic content and distribution");
+  await expect(page.getByRole("tabpanel", { name: /Hermes Marketing/ })).toContainText("Website and conversion");
   await expect(page.getByRole("tabpanel", { name: /Hermes Logistics/ })).toBeHidden();
 
   await marketing.press("ArrowRight");
@@ -79,7 +82,7 @@ test("desktop business portals expand on hover and keep click navigation", async
   const marketing = page.getByRole("tab", { name: /Hermes Marketing/ });
   await marketing.hover();
   await expect(marketing).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel", { name: /Hermes Marketing/ })).toContainText("Organic content and distribution");
+  await expect(page.getByRole("tabpanel", { name: /Hermes Marketing/ })).toContainText("Website and conversion");
   await expect(marketing.locator("xpath=.." )).toHaveAttribute("data-active", "true");
 });
 
@@ -94,22 +97,141 @@ test("premium opening explains four directions, supports choice, and runs once p
   await expect(page.getByRole("link", { name: /Open Academy/ })).toHaveAttribute("href", "/paths/academy/");
   await expect(page.getByRole("link", { name: /Open IT Development/ })).toHaveAttribute("href", "/paths/technology/");
 
-  await expect.poll(() => page.locator("[data-intro-count]").textContent(), { timeout: 5000 }).not.toBe("01");
+  await expect.poll(() => page.locator("[data-intro-count]").textContent(), { timeout: 7000 }).not.toBe("01");
   await expect(page.locator('[data-intro-rail][data-active="true"]')).toHaveCount(1);
+
+  const marketingRail = page.locator('[data-intro-rail="marketing"]');
+  await marketingRail.focus();
+  await expect(marketingRail).toHaveAttribute("data-active", "true");
+  const marketingStory = marketingRail.locator("[data-intro-story-line]");
+  await expect.poll(() => marketingStory.nth(0).getAttribute("data-visible"), { timeout: 1500 }).toBe("true");
+  await expect.poll(() => marketingStory.nth(2).getAttribute("data-visible"), { timeout: 4000 }).toBe("true");
+  await page.waitForTimeout(2500);
+  await expect(page.locator("[data-intro-count]")).toHaveText("02");
 
   await page.getByRole("button", { name: /Open Home/ }).click();
   await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-intro-seen"))).toBe("true");
   await expect(intro).toHaveCount(0, { timeout: 1000 });
   await page.reload();
   await expect(page.locator("[data-site-intro]")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Four businesses. One place to move forward." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
 });
 
 test("premium opening honors the visitor's reduced-motion preference", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("[data-site-intro]")).toBeHidden();
-  await expect(page.getByRole("heading", { name: "Four businesses. One place to move forward." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
+});
+
+test("homepage hero combines office and handwritten typography with a restrained living i-dot", async ({ page }) => {
+  await openRegularHome(page);
+  const title = page.getByRole("heading", { name: "Four directions. One way forward." });
+  await expect(title).toBeVisible();
+  await expect(title.locator(".hero-title-office")).toHaveText("Four dırections.");
+  await expect(title.locator(".hero-title-script")).toHaveText("One way forward.");
+  await expect(title.locator(".hero-letter-i > i")).toHaveCount(1);
+  await expect(title.locator(".hero-letter-i > i")).not.toHaveCSS("animation-name", "none");
+});
+
+test("Load Board demo search reveals a fictional load for a presented city", async ({ page }) => {
+  await page.goto("/load-board/");
+  await page.getByRole("button", { name: "Rockford, IL" }).click();
+  await expect(page.getByRole("status")).toContainText("1 fictional demonstration load found");
+  await expect(page.locator("[data-demo-load-card]:visible")).toHaveCount(1);
+  await expect(page.locator("[data-demo-load-card]:visible")).toContainText("Nashville, TN");
+  await expect(page.getByRole("status")).toContainText("not available to book or dispatch");
+});
+
+test("Appleton guide routes customers, dealers, and carriers into the existing Logistics forms", async ({ page }) => {
+  await page.goto("/logistics/appleton-wi-vehicle-transport/");
+  await expect(page).toHaveTitle("Appleton Vehicle Transport | Hermes Logistics");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+  );
+  await expect(page.getByRole("heading", { name: "Vehicle transport to and from Appleton, Wisconsin." })).toBeVisible();
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+
+  await page.getByRole("link", { name: /Dealer request/ }).click();
+  await expect(page).toHaveURL(/\/load-board\/\?role=dealer&origin=Appleton%2C%20WI#post-load$/);
+  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("dealer");
+  await expect(page.locator('input[name="pickup_location"]')).toHaveValue("Appleton, WI");
+
+  await page.goto("/logistics/appleton-wi-vehicle-transport/");
+  const carrierIntakeLink = page.getByRole("link", { name: "Carrier: share capacity" });
+  await expect(carrierIntakeLink).toHaveAttribute(
+    "href",
+    "/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access",
+  );
+  await page.goto("/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access");
+  await expect(page).toHaveURL(/\/load-board\/\?role=carrier&area=Appleton%2C%20WI#carrier-access$/);
+  await expect(page.locator('input[name="origin_location"]')).toHaveValue("Appleton, WI");
+});
+
+test("auction pickup checklist stays non-affiliated and opens the existing shipper intake", async ({ page }) => {
+  await page.goto("/logistics/resources/auction-vehicle-pickup-checklist/");
+  await expect(page).toHaveTitle("Auction Vehicle Pickup Checklist | Hermes Logistics");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+  );
+  await expect(page.getByText(/Requirements vary by auction and location/)).toBeVisible();
+  await expect(page.getByText(/does not guarantee a price, pickup date/)).toBeVisible();
+  await page.getByRole("link", { name: /Open transport request/ }).click();
+  await expect(page).toHaveURL(/\/load-board\/\?role=shipper#post-load$/);
+  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("shipper");
+});
+
+test("car hauler checklist keeps load claims safe and opens the existing carrier intake", async ({ page }) => {
+  await page.goto("/logistics/resources/car-hauler-capacity-checklist/");
+  await expect(page).toHaveTitle("Car Hauler Capacity Checklist | Hermes Logistics");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+  );
+  await expect(page.getByText("No guaranteed load", { exact: true })).toBeVisible();
+  await expect(page.getByText("No guaranteed rate or revenue", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /Open carrier intake/ }).click();
+  await expect(page).toHaveURL(/\/load-board\/\?role=carrier#carrier-access$/);
+  await expect(page.locator('select[name="carrier_role"]')).toHaveValue("");
+});
+
+test("Academy presents AI automation as a safe practical learning lab", async ({ page }) => {
+  await page.goto("/paths/academy/");
+  await page.getByRole("button", { name: /Choose a track/ }).click();
+  await page.getByRole("button", { name: /^Next/ }).click();
+  await page.getByRole("button", { name: /See the 6 layers/ }).click();
+  await page.getByRole("button", { name: /Method & FAQ/ }).click();
+  await expect(page.getByRole("heading", { name: "Learn AI automation by building one useful assistant." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Fitness AI Telegram Assistant" })).toBeVisible();
+  await expect(page.getByText(/no live bot, member data, messages, enrollment, or payment/i)).toBeVisible();
+});
+
+test("premium opening plays a direction cue after consented interaction and keeps sound optional", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const soundButton = page.getByRole("button", { name: "Turn direction sounds off" });
+  await expect(soundButton).toHaveAttribute("aria-pressed", "true");
+
+  await page.evaluate(() => {
+    window.addEventListener("hermes:intro-sound", (event) => {
+      const direction = (event as CustomEvent<{ direction: string }>).detail.direction;
+      sessionStorage.setItem("hermes-last-intro-sound", direction);
+    });
+  });
+
+  await page.locator('[data-intro-rail="marketing"]').click();
+  await expect(page).toHaveURL(/\/paths\/marketing\/$/, { timeout: 2500 });
+  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-last-intro-sound"))).toBe("marketing");
+
+  await page.evaluate(() => {
+    sessionStorage.removeItem("hermes-intro-seen");
+    localStorage.setItem("hermes-intro-sound", "off");
+  });
+  await page.goto("/");
+  const mutedButton = page.getByRole("button", { name: "Turn direction sounds on" });
+  await expect(mutedButton).toHaveAttribute("aria-pressed", "false");
+  await expect(mutedButton).toContainText("Sound off");
 });
 
 test("homepage proves the website product and routes to IT Development", async ({ page }) => {
@@ -120,6 +242,25 @@ test("homepage proves the website product and routes to IT Development", async (
   await page.getByRole("link", { name: "See how it was built" }).click();
   await expect(page).toHaveURL(/\/case\/it-development\/$/);
   await expect(page.getByRole("heading", { name: "One digital front door for four businesses." })).toBeVisible();
+});
+
+test("homepage presents four Hermes products with honest maturity labels", async ({ page }) => {
+  await openRegularHome(page);
+  const portfolio = page.locator(".product-showcase");
+  await expect(portfolio.getByText("Product 01", { exact: true })).toBeVisible();
+  await expect(portfolio.getByText("Live product", { exact: true })).toBeVisible();
+  await expect(portfolio.getByText("Product 02", { exact: true })).toBeVisible();
+  await expect(portfolio.getByText("Working prototype", { exact: true })).toHaveCount(2);
+  await expect(portfolio.getByText("Product 03", { exact: true })).toBeVisible();
+  await expect(portfolio.getByText("Product discovery", { exact: true })).toBeVisible();
+  await expect(portfolio.getByText("Product 04", { exact: true })).toBeVisible();
+  await expect(portfolio.getByText("Hermes Load Board", { exact: true })).toBeVisible();
+  await expect(portfolio.getByRole("heading", { name: "A serious operating workspace built around your real process." })).toBeVisible();
+  await expect(portfolio.getByRole("heading", { name: "One intelligent workspace for appointments, clients, teams, and growth." })).toBeVisible();
+  await expect(portfolio.getByText("No account, booking, calendar, payment, or AI action is connected", { exact: false })).toBeVisible();
+  await expect(portfolio.getByText("No load, truck, offer, dispatch, external-board sync, or scheduled update is live", { exact: false })).toBeVisible();
+  await expect(portfolio.getByRole("link", { name: "Open Hermes Load Board" })).toHaveAttribute("href", "/load-board/");
+  await expect(portfolio.locator("[data-product-line]")).toHaveCount(4);
 });
 
 test("IT case presents verified delivery evidence and a working inquiry route", async ({ page }) => {
@@ -149,7 +290,15 @@ test("language menu opens all localized overview pages", async ({ page, isMobile
     await expect(languageMenu.locator("summary")).toContainText("English");
     await languageMenu.locator("summary").click();
   }
-  for (const path of ["ua", "ru", "es", "it", "fr"]) {
+  await expect(languageMenu.locator("a")).toHaveText([
+    "English",
+    "Español",
+    "Français",
+    "Українська",
+    "Italiano",
+    "Русский",
+  ]);
+  for (const path of ["es", "fr", "ua", "it", "ru"]) {
     await expect(languageMenu.locator(`a[href="/${path}/#technology"]`)).toHaveCount(1);
   }
 
@@ -189,7 +338,7 @@ test("preview contact workflow validates and sends no request", async ({ page })
   await page.locator('input[name="email"]').fill("test@example.com");
   await page.locator('select[name="path"]').selectOption("Hermes Logistics");
   await expect(page.locator('input[name="phone"]')).toBeVisible();
-  await page.locator('input[name="phone"]').fill("+1 (351) 777-5337");
+  await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('textarea[name="message"]').fill("I would like to discuss a logistics workflow.");
   await page.locator('input[name="consent"]').check();
   await page.locator('button[type="submit"]').click();
@@ -197,9 +346,9 @@ test("preview contact workflow validates and sends no request", async ({ page })
   await expect(page.locator("[data-form-status]")).toContainText("Your information was not sent or stored");
   await expect(page.locator("[data-contact-handoff]")).toBeVisible();
   await expect(page.locator("[data-handoff-summary]")).toContainText("Direction: Hermes Logistics");
-  await expect(page.locator("[data-handoff-summary]")).toContainText("Phone: +1 (351) 777-5337");
-  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "tel:+13517775337");
-  await expect(page.locator(".contact-direct-routes").getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+13517775337");
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Phone: +1 (312) 555-0182");
+  await expect(page.locator("[data-handoff-route-link]")).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.locator(".contact-direct-routes").getByRole("link", { name: "Call Logistics" })).toHaveAttribute("href", "tel:+12623023626");
   expect(posts).toEqual([]);
 });
 
@@ -213,6 +362,7 @@ test("Load Board approves a standard car-hauling preview with zero external deli
   await page.locator('select[name="submitter_type"]').selectOption("private_party");
   await page.locator('input[name="contact_name"]').fill("Test Customer");
   await page.locator('input[name="email"]').fill("customer@example.com");
+  await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('input[name="pickup_location"]').fill("Madison, WI");
   await page.locator('input[name="delivery_location"]').fill("Chicago, IL");
   await page.locator('input[name="ready_date"]').fill("2026-08-01");
@@ -220,12 +370,36 @@ test("Load Board approves a standard car-hauling preview with zero external deli
   await page.locator('input[name="year_make_model"]').fill("2021 Toyota Camry");
   await page.locator('select[name="condition"]').selectOption("operable");
   await page.locator('input[name="consent"]').check();
-  await page.getByRole("button", { name: "Review load" }).click();
+  await page.getByRole("button", { name: "Review posted load" }).click();
 
   await expect(page.locator("[data-load-result]")).toBeVisible();
   await expect(page.locator("[data-load-decision]")).toHaveText("approved");
   await expect(page.locator("[data-load-routing]")).toContainText("Dispatch Assist dry-run queue");
-  await expect(page.locator("[data-load-preview]")).toContainText("no email, CRM write, or carrier notification was sent");
+  await expect(page.locator("[data-load-preview]")).toContainText("Sales tag: POSTED LOAD / CUSTOMER");
+  await expect(page.locator("[data-load-preview]")).toContainText("no email, CRM write, load publication, or carrier notification was sent");
+  await expect(page.locator("[data-load-email]")).toHaveAttribute("href", /subject=%5BHERMES%20SALES%5D%20%5BPOSTED%20LOAD%5D/);
+  expect(writes).toEqual([]);
+});
+
+test("Load Board routes each role to the right workspace and keeps demo loads non-operational", async ({ page }) => {
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+  });
+
+  await page.goto("/load-board/?role=carrier#available-loads");
+  await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("heading", { name: "See the lane before you spend time on it." })).toBeVisible();
+  await expect(page.locator(".available-load-card")).toHaveCount(4);
+  await expect(page.getByText("Demo data", { exact: false }).first()).toBeVisible();
+  await page.getByRole("button", { name: "Request dispatch" }).first().click();
+  await expect(page.locator("[data-demo-load-title]")).toContainText("HLB-1042");
+  await expect(page.locator("[data-demo-load-copy]")).toContainText("sales request");
+  await expect(page.locator('input[name="interested_load"]')).toHaveValue("HLB-1042");
+
+  await page.goto("/load-board/?role=broker#post-load");
+  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("broker");
+  await expect(page.locator("#post-load")).toBeVisible();
   expect(writes).toEqual([]);
 });
 
@@ -237,6 +411,9 @@ test("Load Board prepares a carrier vehicle for dispatcher review with zero exte
 
   await page.goto("/load-board/");
   const vehicleForm = page.locator("[data-vehicle-form]");
+  await vehicleForm.locator('select[name="carrier_role"]').selectOption("owner_operator");
+  await vehicleForm.locator('input[name="carrier_company_name"]').fill("Test Carrier LLC");
+  await vehicleForm.locator('input[name="carrier_contact_name"]').fill("Test Driver");
   await vehicleForm.locator('input[name="authority_number"]').fill("MC 123456");
   await vehicleForm.locator('select[name="equipment_class"]').selectOption("car_hauler");
   await vehicleForm.locator('input[name="carrier_email"]').fill("driver@example.com");
@@ -247,13 +424,15 @@ test("Load Board prepares a carrier vehicle for dispatcher review with zero exte
   await vehicleForm.locator('input[name="origin_radius"]').fill("150");
   await vehicleForm.locator('input[name="anywhere"]').check();
   await vehicleForm.locator('input[name="carrier_consent"]').check();
-  await vehicleForm.getByRole("button", { name: "Preview vehicle review" }).click();
+  await vehicleForm.getByRole("button", { name: "Review access request" }).click();
 
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
   await expect(page.locator("[data-vehicle-decision]")).toHaveText("dispatcher review");
   await expect(page.locator("[data-vehicle-state]")).toContainText("submitted for review");
   await expect(page.locator("[data-vehicle-actions]")).toContainText("Dispatcher decides");
-  await expect(page.locator("[data-vehicle-preview]")).toContainText("no account, vehicle, call, message, CRM write, or dispatcher assignment was created");
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("Sales tag: LOAD BOARD ACCESS / CARRIER");
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("no email, account, call, CRM write, or dispatcher assignment was created");
+  await expect(page.locator("[data-vehicle-email]")).toHaveAttribute("href", /subject=%5BHERMES%20SALES%5D%20%5BLOAD%20BOARD%20ACCESS%5D/);
   expect(writes).toEqual([]);
 });
 
@@ -263,6 +442,7 @@ test("Load Board quarantines an inoperable tractor for equipment review", async 
   await page.locator('input[name="company_name"]').fill("Test Dealer");
   await page.locator('input[name="contact_name"]').fill("Dealer Contact");
   await page.locator('input[name="email"]').fill("dealer@example.com");
+  await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('input[name="pickup_location"]').fill("Green Bay, WI");
   await page.locator('input[name="delivery_location"]').fill("Milwaukee, WI");
   await page.locator('input[name="ready_date"]').fill("2026-08-02");
@@ -270,7 +450,7 @@ test("Load Board quarantines an inoperable tractor for equipment review", async 
   await page.locator('input[name="year_make_model"]').fill("2019 Freightliner Cascadia");
   await page.locator('select[name="condition"]').selectOption("inoperable_non_rolling");
   await page.locator('input[name="consent"]').check();
-  await page.getByRole("button", { name: "Review load" }).click();
+  await page.getByRole("button", { name: "Review posted load" }).click();
 
   await expect(page.locator("[data-load-decision]")).toHaveText("quarantine");
   await expect(page.locator("[data-load-actions]")).toContainText("dimensions");
@@ -286,7 +466,18 @@ test("logistics page routes each visitor type to a dedicated path", async ({ pag
   await expect(hub.getByRole("link", { name: /Open an agency/ })).toHaveAttribute("href", "/logistics/agency/");
   await expect(hub.getByRole("link", { name: /Work with us/ })).toHaveAttribute("href", "/logistics/careers/");
   await expect(hub.getByRole("link", { name: /Training/ })).toHaveAttribute("href", "/paths/academy/");
-  await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/");
+  await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
+});
+
+test("logistics audience pages open role-specific Load Board workspaces", async ({ page }) => {
+  await page.goto("/logistics/shipper-dealer/");
+  await expect(page.getByRole("link", { name: "Post a load" })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
+
+  await page.goto("/logistics/broker/");
+  await expect(page.getByRole("link", { name: "Open broker Load Board" })).toHaveAttribute("href", "/load-board/?role=broker#post-load");
+
+  await page.goto("/logistics/carrier/");
+  await expect(page.getByRole("link", { name: "Open Load Board" })).toHaveAttribute("href", "/load-board/?role=carrier#available-loads");
 });
 
 test("agency and career applications create local previews without sending", async ({ page }) => {
@@ -382,7 +573,7 @@ test("changing direction clears a stale preview handoff", async ({ page }) => {
   await page.locator('input[name="name"]').fill("Stale Handoff User");
   await page.locator('input[name="email"]').fill("stale@example.com");
   await page.locator('select[name="path"]').selectOption("Hermes Logistics");
-  await page.locator('input[name="phone"]').fill("+1 (351) 777-5337");
+  await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('textarea[name="message"]').fill("I would like to discuss carrier onboarding.");
   await page.locator('input[name="consent"]').check();
   await page.locator('button[type="submit"]').click();
@@ -407,8 +598,25 @@ test("each non-logistics direction exposes a working direct contact route", asyn
       `mailto:officeus@hermeslogisticsus.com?subject=${item.subject}`,
     );
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
-    await expect(page.locator('input[name="phone"]')).toHaveCount(0);
+    await expect(page.locator('input[type="tel"]')).toHaveCount(0);
   }
+});
+
+test("public logistics contacts use the approved department routing", async ({ page }) => {
+  await page.goto("/contacts/");
+  const contacts = page.locator(".contact-block-list");
+
+  await expect(contacts.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(contacts.getByText("Logistics Sales Department", { exact: true })).toBeVisible();
+  await expect(contacts.getByRole("link", { name: "freight_301@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:freight_301@hermeslogisticsus.com");
+  await expect(contacts.getByText("Email-only international coordination", { exact: true })).toBeVisible();
+  await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
+  const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
+  expect(telephoneTargets).toEqual(["tel:+12623023626"]);
+  await expect(page.getByText("+1 (351) 777-5337", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("+1 (717) 696-6829", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Box Truck Department", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("General Inquiries", { exact: true })).toHaveCount(0);
 });
 
 test("marketing field group supports multiple platforms + 3/6/9/12 horizon and includes direction details in summary", async ({ page }, testInfo) => {
@@ -424,8 +632,8 @@ test("marketing field group supports multiple platforms + 3/6/9/12 horizon and i
   await page.locator('input[name="consent"]').check();
 
   await page.locator('select[name="path"]').selectOption("ProgressoPro");
-  await page.locator('input[name="platforms"][value="Google"]').check();
-  await page.locator('input[name="platforms"][value="YouTube"]').check();
+  await page.locator('input[name="platforms"][value="SEO / Google Search"]').check();
+  await page.locator('input[name="platforms"][value="Google Ads / Paid Search"]').check();
   await page.locator('select[name="planning_horizon"]').selectOption("6 months");
   await page.locator('input[name="primary_goal"]').fill("More qualified leads <script>alert(1)</script>");
 
@@ -436,7 +644,7 @@ test("marketing field group supports multiple platforms + 3/6/9/12 horizon and i
   await page.locator('button[type="submit"]').click();
 
   await expect(page.locator("[data-contact-handoff]")).toBeVisible();
-  await expect(page.locator("[data-handoff-summary]")).toContainText("Platforms: Google, YouTube");
+  await expect(page.locator("[data-handoff-summary]")).toContainText("Platforms: SEO / Google Search, Google Ads / Paid Search");
   await expect(page.locator("[data-handoff-summary]")).toContainText("Planning horizon: 6 months");
   await expect(page.locator("[data-handoff-summary]")).not.toContainText("<");
 
@@ -450,7 +658,7 @@ test("direction-specific input changes clear stale preview handoff", async ({ pa
   await page.locator('textarea[name="message"]').fill("We need dispatch + document coordination.");
   await page.locator('input[name="consent"]').check();
 
-  await page.locator('input[name="phone"]').fill("+1 (351) 777-5337");
+  await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('button[type="submit"]').click();
   await expect(page.locator("[data-contact-handoff]")).toBeVisible();
 
@@ -534,21 +742,42 @@ test("technology partnership presents four growth layers and evidence statuses",
   }
 
   await expect(page.getByText("Live product", { exact: true })).toHaveCount(2);
-  await expect(page.getByText("Working prototype", { exact: true })).toBeVisible();
+  await expect(page.getByText("Working prototype", { exact: true })).toHaveCount(2);
   await expect(page.getByText("Build-ready capability", { exact: true })).toHaveCount(2);
+  await expect(page.getByText("Local preview", { exact: true })).toBeVisible();
+  await expect(page.getByText("Implemented capability", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Carrier and dispatcher workspace" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Multilingual website foundation" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Controlled intake and review" })).toBeVisible();
   await expect(page.getByText("WhatsApp", { exact: true })).toBeVisible();
   await expect(page.getByText("Google Chat", { exact: true })).toBeVisible();
   await expect(page.getByText(/digital employee/i)).toHaveCount(0);
 
-  await page.getByRole("link", { name: "Add operations control to your brief" }).click();
+  await page.getByRole("link", { name: "Open the working CRM preview" }).click();
   await expect(page.locator('textarea[name="project_1"]')).toHaveValue("CRM and Operations Control");
 });
 
-test("each business direction exposes Wisconsin SEO signals and service schema", async ({ page }) => {
-  for (const slug of ["logistics", "marketing", "academy", "technology"]) {
+test("marketing presents website, SEO, social media, and growth as connected service pillars", async ({ page }) => {
+  await page.goto("/paths/marketing/");
+  const pillars = page.locator("[data-marketing-service-pillars]");
+  for (const heading of ["Website & Conversion", "SEO Optimization", "Social Media Marketing", "Growth & Sales System"]) {
+    await expect(pillars.getByRole("heading", { name: heading })).toBeVisible();
+  }
+  await expect(pillars.getByText(/not guaranteed/i)).toBeVisible();
+  await expect(pillars.getByRole("link", { name: "Discuss this pillar" })).toHaveCount(4);
+});
+
+test("business directions expose the approved service areas and service schema", async ({ page }) => {
+  await page.goto("/paths/logistics/");
+  await expect(page).toHaveTitle(/Wisconsin/);
+  await expect(page.getByText(/Wisconsin first/)).toBeVisible();
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+
+  for (const slug of ["marketing", "academy", "technology"]) {
     await page.goto(`/paths/${slug}/`);
-    await expect(page).toHaveTitle(/Wisconsin/);
-    await expect(page.getByText(/Wisconsin first/)).toBeVisible();
+    await expect(page).not.toHaveTitle(/Wisconsin/);
+    await expect(page.getByText(/Email coordination only/)).toBeVisible();
+    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
     await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
   }
 });
@@ -565,8 +794,10 @@ test("AI assistant roles show setup time and pre-fill the brief", async ({ page 
 test("IT project brief turns unstructured ideas into an email-ready summary", async ({ page }) => {
   await page.goto("/paths/technology/#project-brief");
   const brief = page.locator("[data-it-project-brief]");
+  await expect(brief.locator('input[type="tel"]')).toHaveCount(0);
 
   await brief.locator('select[name="company_stage"]').selectOption({ label: "Small company ready to grow" });
+  await brief.locator('input[name="industry"]').fill("Professional services");
   await brief.locator('textarea[name="business_goal"]').fill("Increase qualified sales while reducing manual administrative work.");
   await brief.locator('textarea[name="project_1"]').fill("A corporate website that qualifies customer requests.");
   await brief.locator('textarea[name="project_2"]').fill("A CRM with a clear sales pipeline.");
@@ -600,6 +831,7 @@ test("IT project brief turns unstructured ideas into an email-ready summary", as
 test("IT pages publish no fixed prices", async ({ page }) => {
   for (const route of ["/paths/technology/", "/case/it-development/"]) {
     await page.goto(route);
-    await expect(page.locator("body")).not.toContainText("$");
+    const publicCopy = await page.locator("body").innerText();
+    expect(publicCopy).not.toMatch(/\$\s?\d[\d,.]*\s*(?:\/|per\s+(?:month|project|hour)|monthly|one-time)/i);
   }
 });

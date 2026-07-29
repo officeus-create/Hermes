@@ -1,0 +1,3 @@
+shipment_id,proof_status,origin_city,origin_state,destination_city,destination_state,equipment_class,pickup_date,delivery_date,booked_rate,loaded_miles,deadhead_miles,source_record_id,delivery_confirmed,bol_or_pod_confirmed,manual_operational_confirmed,cancellations_and_claims_reviewed
+SYN-SHIP-001,completed,Appleton,WI,Milwaukee,WI,car_hauler,2026-07-10,2026-07-10,650,106,18,MOCK-HISTORY-001,true,true,false,true
+SYN-SHIP-002,verified,Chicago,IL,Nashville,TN,car_hauler,2026-07-12,2026-07-13,1460,485,31,MOCK-HISTORY-002,true,false,true,true
