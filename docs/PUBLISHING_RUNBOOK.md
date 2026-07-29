@@ -1,55 +1,127 @@
 # Hermes Website Publishing Runbook
 
-STATUS: READY_FOR_EXTERNAL_SETUP
+This runbook publishes the verified Astro release to the existing Cloudflare
+Pages project `hermes`. It must not create a second Pages project, change DNS,
+or activate live lead delivery.
 
-This runbook starts only after owner approval for creation or use of the external accounts and repository.
+## Release contract
 
-## Recommended Path
+- Existing Pages project: `hermes`
+- Existing production domain: `hermeslogisticsus.com`
+- Build output: `dist`
+- Current release inventory: 58 generated Astro routes and 61 HTML pages
+- Lead workflow: preview only
+- Disabled production bindings: `LEAD_LIMITS` and `LEAD_EMAIL`
 
-Use a private GitHub repository for source control and Cloudflare Pages for static hosting.
+Stop if the authenticated account does not expose exactly the intended
+`hermes` project or if its production domain does not match
+`hermeslogisticsus.com`.
 
-Cloudflare Pages settings:
+## 1. Authenticate and identify the existing project
 
-- production branch: `main`;
-- build command: `npm run build`;
-- build directory: `dist`;
-- Node version: `22`;
-- framework preset: `Astro` when available;
-- environment variables: none required for V1.
+```bash
+npm run cf:whoami
+npx wrangler pages project list --json
+npx wrangler pages deployment list --project-name hermes --environment production --json
+```
 
-The current static website does not need the Cloudflare Astro server adapter.
+Record the current production deployment ID, URL, creation time, and the
+project's confirmed production branch before uploading anything. Do not run
+`wrangler pages project create`.
 
-Keep `PUBLIC_CONTACT_MODE=preview` for the first deployment. Live contact delivery is a separate release because the endpoint domain must also be added to the Content Security Policy `connect-src` directive.
+## 2. Reproduce the verified release
 
-## Publication Sequence
+```bash
+npm ci
+npm run cf:types
+npm run cf:validate
+npm test
+npm run test:e2e
+```
 
-1. Confirm the GitHub account or organization that will own the repository.
-2. Use the private GitHub repository for the Hermes website.
-3. Add the repository as `origin` and push the reviewed V1 commit.
-4. Confirm the GitHub Actions `Website checks` workflow passes.
-5. In Cloudflare Pages, import the repository and apply the settings above.
-6. Review the generated `*.pages.dev` URL on desktop and mobile.
-7. Record the deployed commit and preview URL.
-8. Connect `hermeslogisticsus.com` only after the owner approves the preview.
-9. After approval, attach the custom domain in Cloudflare and verify HTTPS.
+Required results:
 
-## Preview Acceptance Checks
+- Astro diagnostics: 0 errors, 0 warnings, 0 hints
+- Static inventory: 61 HTML pages
+- Broken internal links: 0
+- Pages Function: compiled successfully
+- Playwright: 112 passed, 2 intentionally skipped, 0 failed
 
-- all five public routes return HTTP 200;
-- the custom 404 page is served for an invalid route;
-- images and favicon load;
-- desktop and mobile have no horizontal overflow;
-- navigation and direction links work;
-- the contact form shows the local preview message and sends no request;
-- canonical URLs point to `https://hermeslogisticsus.com`;
-- no secrets or environment variables are configured;
-- the form remains in preview mode and produces no POST request;
-- deployed commit matches the approved local commit.
+Do not deploy if the generated route count, sitemap, canonical URLs, schema
+metadata, or test totals differ unexpectedly.
 
-## Rollback
+## 3. Create and verify a preview deployment
 
-Before connecting the domain, rollback means selecting the previous successful Cloudflare deployment. After domain connection, preserve the previous verified deployment and its commit ID before every production update.
+```bash
+npm run cf:deploy:staging
+npx wrangler pages deployment list --project-name hermes --environment preview --json
+```
 
-## Separate Future Decision
+Open the new staging deployment and verify:
 
-The V1 form intentionally does not send data. Connecting email, CRM, Google Sheets, or another form service requires a separate destination, retention, and approval decision.
+1. `/`, `/paths/logistics/`, `/paths/marketing/`, `/paths/academy/`, and
+   `/paths/technology/`
+2. `/load-board/` and the audience routes under `/logistics/`
+3. Appleton plus all 13 approved vehicle-transport market routes
+4. Desktop and mobile navigation, forms, CTA routing, language pages, and 404
+5. `/sitemap.xml`, canonical links, FAQ schema, breadcrumb schema, `_headers`,
+   and the `/it-development` redirect
+6. No local-office, terminal, yard, storage, guaranteed-capacity, fixed-rate,
+   or guaranteed-result claims
+7. Contact and Load Board workflows remain in preview mode and perform no
+   external delivery
+
+The protected `/api/logistics-lead` endpoint must remain unconfigured until the
+approved KV and Email Sending bindings exist. A GET request should return
+`405 method_not_allowed`; the public forms must not call the endpoint in
+preview mode.
+
+## 4. Publish to production
+
+Read the production branch recorded in step 1. Use it explicitly:
+
+```bash
+npx wrangler pages deploy dist \
+  --project-name hermes \
+  --branch <CONFIRMED_PRODUCTION_BRANCH> \
+  --commit-message "Hermes logistics locations release 2026-07-29"
+```
+
+Do not substitute `main` or another branch name without confirming the current
+Pages project configuration. Do not add bindings, secrets, or environment
+variables during this release.
+
+## 5. Production smoke test
+
+After deployment:
+
+1. Confirm the newest production deployment is healthy in Cloudflare.
+2. Check `https://hermeslogisticsus.com/`, the five primary direction pages,
+   `/load-board/`, one audience page, Appleton, and at least three new market
+   pages.
+3. Confirm the canonical domain is `https://hermeslogisticsus.com`.
+4. Confirm response headers, redirect behavior, sitemap, and 404.
+5. Submit only a local preview form flow; verify that no network delivery,
+   storage, CRM update, or email occurs.
+6. Re-run the browser smoke suite against the production domain if a
+   production-base-URL test profile is available.
+
+## 6. Rollback
+
+If a production defect appears, open Cloudflare:
+
+`Workers & Pages` → `hermes` → `Deployments` → select the previously recorded
+healthy production deployment → `Rollback to this deployment`.
+
+Only successful production deployments are valid rollback targets; preview
+deployments cannot be selected. After rollback, repeat the production smoke
+test and document the failed deployment ID and symptom before attempting a new
+release.
+
+## Live lead delivery remains a separate release
+
+Do not enable `LEAD_LIMITS`, `LEAD_EMAIL`, `PUBLIC_CONTACT_MODE=live`, or a live
+contact endpoint as part of this website release. Activation requires the
+verified sender and destination, restricted KV namespace, staging delivery
+test, privacy review, and endpoint/security review described in
+`CLOUDFLARE_READINESS.md`.

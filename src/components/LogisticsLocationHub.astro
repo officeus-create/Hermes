@@ -1,0 +1,26 @@
+---
+import { ArrowUpRight, MapPin } from "@lucide/astro";
+import { publishedLogisticsLocations } from "../data/logistics-locations";
+---
+
+<section class="section logistics-location-hub" id="transport-markets" aria-labelledby="transport-markets-title">
+  <div class="shell">
+    <div class="section-heading split-heading">
+      <div>
+        <p class="eyebrow">Vehicle transport markets</p>
+        <h2 id="transport-markets-title">Prepare a city-specific request.</h2>
+      </div>
+      <p>These pages explain request and route considerations. They do not represent Hermes offices, terminals, guaranteed capacity, or live prices.</p>
+    </div>
+    <div class="logistics-location-grid">
+      {publishedLogisticsLocations.map((location) => (
+        <a href={`/logistics/${location.slug}/`}>
+          <span><MapPin size={16} aria-hidden="true" />{location.market}</span>
+          <h3>{location.city}, {location.state}</h3>
+          <strong>Open market guide <ArrowUpRight size={17} aria-hidden="true" /></strong>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+

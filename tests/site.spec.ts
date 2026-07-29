@@ -22,9 +22,6 @@ const routes = [
   "/es/",
   "/it/",
   "/fr/",
-  "/logistics/appleton-wi-vehicle-transport/",
-  "/logistics/resources/auction-vehicle-pickup-checklist/",
-  "/logistics/resources/car-hauler-capacity-checklist/",
 ];
 
 for (const route of routes) {
@@ -141,60 +138,6 @@ test("Load Board demo search reveals a fictional load for a presented city", asy
   await expect(page.locator("[data-demo-load-card]:visible")).toHaveCount(1);
   await expect(page.locator("[data-demo-load-card]:visible")).toContainText("Nashville, TN");
   await expect(page.getByRole("status")).toContainText("not available to book or dispatch");
-});
-
-test("Appleton guide routes customers, dealers, and carriers into the existing Logistics forms", async ({ page }) => {
-  await page.goto("/logistics/appleton-wi-vehicle-transport/");
-  await expect(page).toHaveTitle("Appleton Vehicle Transport | Hermes Logistics");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
-  );
-  await expect(page.getByRole("heading", { name: "Vehicle transport to and from Appleton, Wisconsin." })).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
-
-  await page.getByRole("link", { name: /Dealer request/ }).click();
-  await expect(page).toHaveURL(/\/load-board\/\?role=dealer&origin=Appleton%2C%20WI#post-load$/);
-  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("dealer");
-  await expect(page.locator('input[name="pickup_location"]')).toHaveValue("Appleton, WI");
-
-  await page.goto("/logistics/appleton-wi-vehicle-transport/");
-  const carrierIntakeLink = page.getByRole("link", { name: "Carrier: share capacity" });
-  await expect(carrierIntakeLink).toHaveAttribute(
-    "href",
-    "/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access",
-  );
-  await page.goto("/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access");
-  await expect(page).toHaveURL(/\/load-board\/\?role=carrier&area=Appleton%2C%20WI#carrier-access$/);
-  await expect(page.locator('input[name="origin_location"]')).toHaveValue("Appleton, WI");
-});
-
-test("auction pickup checklist stays non-affiliated and opens the existing shipper intake", async ({ page }) => {
-  await page.goto("/logistics/resources/auction-vehicle-pickup-checklist/");
-  await expect(page).toHaveTitle("Auction Vehicle Pickup Checklist | Hermes Logistics");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
-  );
-  await expect(page.getByText(/Requirements vary by auction and location/)).toBeVisible();
-  await expect(page.getByText(/does not guarantee a price, pickup date/)).toBeVisible();
-  await page.getByRole("link", { name: /Open transport request/ }).click();
-  await expect(page).toHaveURL(/\/load-board\/\?role=shipper#post-load$/);
-  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("shipper");
-});
-
-test("car hauler checklist keeps load claims safe and opens the existing carrier intake", async ({ page }) => {
-  await page.goto("/logistics/resources/car-hauler-capacity-checklist/");
-  await expect(page).toHaveTitle("Car Hauler Capacity Checklist | Hermes Logistics");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
-  );
-  await expect(page.getByText("No guaranteed load", { exact: true })).toBeVisible();
-  await expect(page.getByText("No guaranteed rate or revenue", { exact: true })).toBeVisible();
-  await page.getByRole("link", { name: /Open carrier intake/ }).click();
-  await expect(page).toHaveURL(/\/load-board\/\?role=carrier#carrier-access$/);
-  await expect(page.locator('select[name="carrier_role"]')).toHaveValue("");
 });
 
 test("Academy presents AI automation as a safe practical learning lab", async ({ page }) => {
@@ -467,6 +410,54 @@ test("logistics page routes each visitor type to a dedicated path", async ({ pag
   await expect(hub.getByRole("link", { name: /Work with us/ })).toHaveAttribute("href", "/logistics/careers/");
   await expect(hub.getByRole("link", { name: /Training/ })).toHaveAttribute("href", "/paths/academy/");
   await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
+});
+
+test("logistics market hub links the approved location set without claiming local offices", async ({ page }) => {
+  await page.goto("/paths/logistics/#transport-markets");
+  const hub = page.locator("#transport-markets");
+
+  await expect(hub.getByRole("heading", { name: "Prepare a city-specific request." })).toBeVisible();
+  await expect(hub.locator(".logistics-location-grid > a")).toHaveCount(14);
+  await expect(hub.getByRole("link", { name: /Appleton, WI/ })).toHaveAttribute(
+    "href",
+    "/logistics/appleton-wi-vehicle-transport/",
+  );
+  await expect(hub.getByText(/do not represent Hermes offices, terminals, guaranteed capacity, or live prices/i)).toBeVisible();
+});
+
+test("location page exposes truthful multi-audience CTAs and complete SEO metadata", async ({ page }) => {
+  await page.goto("/logistics/appleton-wi-vehicle-transport/");
+
+  await expect(page.getByRole("heading", { name: "Vehicle transport requests to and from Appleton, Wisconsin." })).toBeVisible();
+  await expect(page.getByText("Request review only.", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Auto dealers and auctions" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Commercial shippers" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Private customers" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Carriers and fleets" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Prepare a transport request/ })).toHaveAttribute(
+    "href",
+    "/load-board/?role=shipper#post-load",
+  );
+  await expect(page.getByRole("link", { name: "Carrier: share capacity" })).toHaveAttribute(
+    "href",
+    "/load-board/?role=carrier#carrier-access",
+  );
+  await expect(page.locator(".location-verified-detail")).toHaveCount(0);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+  );
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+  const schemas = await page.locator('script[type="application/ld+json"]').evaluate((element) => JSON.parse(element.textContent ?? "[]"));
+  expect(schemas.map((schema: { "@type": string }) => schema["@type"])).toEqual(["Service", "BreadcrumbList", "FAQPage"]);
+});
+
+test("shipper-focused location omits the dealer CTA but keeps private and carrier paths", async ({ page }) => {
+  await page.goto("/logistics/saint-paul-mn-vehicle-transport/");
+  await expect(page.getByRole("heading", { name: "Commercial shippers" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Auto dealers and auctions" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Private customers" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Carriers and fleets" })).toBeVisible();
 });
 
 test("logistics audience pages open role-specific Load Board workspaces", async ({ page }) => {

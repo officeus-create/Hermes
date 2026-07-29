@@ -3,54 +3,64 @@ import { ArrowLeft, ArrowRight, Check } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
+import LogisticsLocationPage from "../../components/LogisticsLocationPage.astro";
 import { logisticsAudiences } from "../../data/logistics-audiences";
+import { publishedLogisticsLocations } from "../../data/logistics-locations";
 
 export function getStaticPaths() {
-  return logisticsAudiences.map((audience) => ({ params: { audience: audience.slug }, props: { audience } }));
+  return [
+    ...logisticsAudiences.map((audience) => ({
+      params: { audience: audience.slug },
+      props: { pageKind: "audience" as const, audience },
+    })),
+    ...publishedLogisticsLocations.map((location) => ({
+      params: { audience: location.slug },
+      props: { pageKind: "location" as const, location },
+    })),
+  ];
 }
 
-const { audience } = Astro.props;
+const { pageKind, audience, location } = Astro.props;
 ---
 
-<BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary}>
-  <div class="logistics-audience-page">
-    <SiteHeader theme="dark" activePath="/paths/logistics/" />
-    <main id="main-content">
-      <section class="logistics-audience-hero">
-        <div class="shell">
-          <a class="detail-back" href="/paths/logistics/#choose-your-path"><ArrowLeft size={18} aria-hidden="true" />All logistics paths</a>
-          <p class="eyebrow">Hermes Logistics · {audience.eyebrow}</p>
-          <h1>{audience.title}</h1>
-          <p>{audience.summary}</p>
-          <div class="logistics-audience-actions">
-            <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
-            {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
+{pageKind === "location" && location ? (
+  <LogisticsLocationPage location={location} />
+) : audience ? (
+  <BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary}>
+    <div class="logistics-audience-page">
+      <SiteHeader theme="dark" activePath="/paths/logistics/" />
+      <main id="main-content">
+        <section class="logistics-audience-hero">
+          <div class="shell">
+            <a class="detail-back" href="/paths/logistics/#choose-your-path"><ArrowLeft size={18} aria-hidden="true" />All logistics paths</a>
+            <p class="eyebrow">Hermes Logistics · {audience.eyebrow}</p>
+            <h1>{audience.title}</h1>
+            <p>{audience.summary}</p>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+              {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
+            </div>
           </div>
-          {(audience.slug === "shipper-dealer" || audience.slug === "carrier") && (
-            <a class="logistics-local-guide-link" href="/logistics/appleton-wi-vehicle-transport/">
-              Appleton, Wisconsin vehicle transport guide <ArrowRight size={16} aria-hidden="true" />
-            </a>
-          )}
-        </div>
-      </section>
+        </section>
 
-      <section class="section">
-        <div class="shell logistics-audience-content">
-          <div>
-            <p class="eyebrow">Prepare these details</p>
-            <h2>What helps us route the request.</h2>
-            <ul class="logistics-audience-needs">
-              {audience.needs.map((need) => <li><Check size={19} aria-hidden="true" />{need}</li>)}
-            </ul>
+        <section class="section">
+          <div class="shell logistics-audience-content">
+            <div>
+              <p class="eyebrow">Prepare these details</p>
+              <h2>What helps us route the request.</h2>
+              <ul class="logistics-audience-needs">
+                {audience.needs.map((need) => <li><Check size={19} aria-hidden="true" />{need}</li>)}
+              </ul>
+            </div>
+            <ol class="logistics-audience-steps">
+              {audience.steps.map((step, index) => (
+                <li><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.body}</p></div></li>
+              ))}
+            </ol>
           </div>
-          <ol class="logistics-audience-steps">
-            {audience.steps.map((step, index) => (
-              <li><span>0{index + 1}</span><div><h3>{step.title}</h3><p>{step.body}</p></div></li>
-            ))}
-          </ol>
-        </div>
-      </section>
-    </main>
-    <SiteFooter />
-  </div>
-</BaseLayout>
+        </section>
+      </main>
+      <SiteFooter />
+    </div>
+  </BaseLayout>
+) : null}

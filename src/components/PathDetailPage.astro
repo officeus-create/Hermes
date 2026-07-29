@@ -13,8 +13,9 @@ import TechnologyCapabilityCatalog from "./TechnologyCapabilityCatalog.astro";
 import TechnologyInteractivePrototypes from "./TechnologyInteractivePrototypes.astro";
 import TechnologySolutionMockups from "./TechnologySolutionMockups.astro";
 import LogisticsAudienceHub from "./LogisticsAudienceHub.astro";
-import DepartmentTechnologyBridge from "./DepartmentTechnologyBridge.astro";
+import LogisticsLocationHub from "./LogisticsLocationHub.astro";
 import HermesPathEngine from "./HermesPathEngine.astro";
+import DepartmentTechnologyBridge from "./DepartmentTechnologyBridge.astro";
 
 interface Props {
   path: PathDetail;
@@ -44,8 +45,9 @@ const directContactTitle = {
     </div>
   </section>
 
-  {isLogistics && <LogisticsAudienceHub />}
   {isLogistics && <HermesPathEngine />}
+  {isLogistics && <LogisticsAudienceHub />}
+  {isLogistics && <LogisticsLocationHub />}
 
   <section class="section detail-overview">
     <div class="shell detail-intro" data-reveal>

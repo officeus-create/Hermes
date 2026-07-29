@@ -10,10 +10,15 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "cf:whoami": "wrangler whoami",
+    "cf:types": "wrangler types ./src/worker-configuration.d.ts --include-runtime=false",
+    "cf:validate": "npm run build && wrangler pages functions build functions --outdir .wrangler/functions --project-directory . --build-output-directory dist",
+    "cf:dev": "npm run build && wrangler pages dev dist",
+    "cf:deploy:staging": "npm run build && wrangler pages deploy dist --project-name hermes --branch staging",
     "sync:product-demos": "node scripts/sync-product-demos.mjs",
     "check": "astro check",
-    "test": "node scripts/validate-build.mjs && node --experimental-strip-types scripts/path-engine.test.mjs && node --experimental-strip-types scripts/p0-data-layer.test.mjs && node --experimental-strip-types scripts/contact-handoff.test.mjs && node --experimental-strip-types scripts/load-board.test.mjs && node --experimental-strip-types scripts/load-operations.test.mjs && node --experimental-strip-types scripts/sales-lead-receiver.test.mjs",
-    "test:e2e": "playwright test"
+    "test": "node scripts/validate-build.mjs && node --experimental-strip-types scripts/path-engine.test.mjs && node --experimental-strip-types scripts/logistics-locations.test.mjs && node --experimental-strip-types scripts/p0-data-layer.test.mjs && node --experimental-strip-types scripts/contact-handoff.test.mjs && node --experimental-strip-types scripts/load-board.test.mjs && node --experimental-strip-types scripts/sales-lead-receiver.test.mjs",
+    "test:e2e": "npm run build && playwright test"
   },
   "dependencies": {
     "@lucide/astro": "^1.24.0",
@@ -25,6 +30,7 @@
     "@astrojs/check": "^0.9.6",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "^4.115.0"
   }
 }

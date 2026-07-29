@@ -105,3 +105,4 @@ export function toAnalyticsDimensions(lead: HermesPathLead) {
     resultRoute: lead.resultRoute,
   };
 }
+

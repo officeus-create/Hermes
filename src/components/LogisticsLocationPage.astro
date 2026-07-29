@@ -1,0 +1,250 @@
+---
+import { ArrowLeft, ArrowRight, Building2, Check, MapPin, ShieldCheck, Truck } from "@lucide/astro";
+import type { LogisticsLocation } from "../data/logistics-locations";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+
+interface Props {
+  location: LogisticsLocation;
+}
+
+const { location } = Astro.props;
+const canonicalUrl = new URL(`/logistics/${location.slug}/`, Astro.site).toString();
+const verifiedDetail = location.publicLocationDetail?.verificationStatus === "HERMES_VERIFIED"
+  ? location.publicLocationDetail
+  : undefined;
+const showVerifiedDetail = Boolean(verifiedDetail?.exactAddress || verifiedDetail?.zipCode);
+const schemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: `${location.city}, ${location.state} vehicle transport request review`,
+    description: location.metaDescription,
+    url: canonicalUrl,
+    serviceType: "Vehicle transport request review and carrier coordination",
+    provider: {
+      "@type": "Organization",
+      name: "Hermes Logistics",
+      url: "https://hermeslogisticsus.com/paths/logistics/",
+    },
+    areaServed: [
+      { "@type": "City", name: location.city },
+      { "@type": "AdministrativeArea", name: location.stateName },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: `${location.city}, ${location.state}`, item: canonicalUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: location.faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={location.metaTitle} description={location.metaDescription} schema={schemas}>
+  <div class="logistics-audience-page logistics-location-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <section class="logistics-audience-hero logistics-location-hero">
+        <div class="shell">
+          <nav aria-label="Breadcrumb">
+            <a class="detail-back" href="/paths/logistics/#transport-markets"><ArrowLeft size={18} aria-hidden="true" />Vehicle transport markets</a>
+          </nav>
+          <p class="eyebrow">Hermes Logistics · {location.market}</p>
+          <h1>{location.title}</h1>
+          <p>{location.summary}</p>
+          <div class="logistics-audience-actions">
+            <a class="button button-primary" href="/load-board/?role=shipper#post-load">
+              Prepare a transport request <ArrowRight size={18} aria-hidden="true" />
+            </a>
+            <a class="button" href="/load-board/?role=carrier#carrier-access">Carrier: share capacity</a>
+          </div>
+          <p class="location-hero-boundary">
+            Request review only. This page is not a local office, terminal, storage yard, booking confirmation, price quote, or guarantee of capacity.
+          </p>
+        </div>
+      </section>
+
+      {showVerifiedDetail && (
+        <section class="location-verified-detail" aria-label="Verified Hermes location detail">
+          <div class="shell">
+            <ShieldCheck size={19} aria-hidden="true" />
+            <div>
+              <strong>Verified Hermes location detail</strong>
+              {verifiedDetail?.exactAddress && <span>{verifiedDetail.exactAddress}</span>}
+              {verifiedDetail?.zipCode && <span>ZIP {verifiedDetail.zipCode}</span>}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section class="section location-audiences" aria-labelledby="location-audiences-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Choose your request type</p>
+              <h2 id="location-audiences-title">The page adapts to the work you need.</h2>
+            </div>
+            <p>Exact pickup and delivery addresses are collected in the private request, not published as assumed Hermes facilities.</p>
+          </div>
+          <div class="location-audience-grid">
+            {location.targetAudiences.includes("DEALER") && (
+              <article>
+                <Building2 size={23} aria-hidden="true" />
+                <h3>Auto dealers and auctions</h3>
+                <p>Prepare recurring or one-time vehicle moves with a complete unit list, release status, site hours, and responsible contacts.</p>
+                <a href="/load-board/?role=dealer#post-load">Start a dealer request <ArrowRight size={17} aria-hidden="true" /></a>
+              </article>
+            )}
+            {location.targetAudiences.includes("SHIPPER") && (
+              <article>
+                <Truck size={23} aria-hidden="true" />
+                <h3>Commercial shippers</h3>
+                <p>Describe the lane, volume, vehicle condition, operating constraints, timing, and equipment needs for review.</p>
+                <a href="/load-board/?role=shipper#post-load">Start a shipper request <ArrowRight size={17} aria-hidden="true" /></a>
+              </article>
+            )}
+            <article>
+              <MapPin size={23} aria-hidden="true" />
+              <h3>Private customers</h3>
+              <p>Prepare a one-vehicle or multi-vehicle move without turning the submission into an unconfirmed booking.</p>
+              <a href="/load-board/?role=shipper#post-load">Prepare a private request <ArrowRight size={17} aria-hidden="true" /></a>
+            </article>
+            <article>
+              <ShieldCheck size={23} aria-hidden="true" />
+              <h3>Carriers and fleets</h3>
+              <p>Share authority, insurance, equipment, current area, preferred lanes, and availability for qualification.</p>
+              <a href="/load-board/?role=carrier#carrier-access">Share carrier capacity <ArrowRight size={17} aria-hidden="true" /></a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section location-planning" aria-labelledby="location-planning-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">{location.city} planning context</p>
+              <h2 id="location-planning-title">What can change the operating plan.</h2>
+            </div>
+            <p>These are planning considerations, not claims of a permanent local facility or guaranteed service.</p>
+          </div>
+          <div class="location-planning-grid">
+            {location.planningNotes.map((note, index) => (
+              <article>
+                <span>0{index + 1}</span>
+                <h3>{note.title}</h3>
+                <p>{note.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section location-request-checklist" aria-labelledby="location-checklist-title">
+        <div class="shell location-checklist-layout">
+          <div>
+            <p class="eyebrow">Before you submit</p>
+            <h2 id="location-checklist-title">Prepare the facts a carrier needs.</h2>
+            <p>A complete request can be evaluated more reliably and avoids publishing or assuming private operational details.</p>
+          </div>
+          <ul>
+            {[
+              "Exact pickup and delivery addresses, shared privately",
+              "Year, make, model, VIN or unit identifier, and quantity",
+              "Operable status: starts, steers, brakes, and rolls",
+              "Ready date, acceptable date range, and facility hours",
+              "Keys, release documents, gate instructions, and contacts",
+              "Modifications, dimensions, low clearance, or special handling",
+            ].map((item) => <li><Check size={19} aria-hidden="true" />{item}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section class="section location-review" aria-labelledby="location-review-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Route-first review</p>
+              <h2 id="location-review-title">From request to a qualified next step.</h2>
+            </div>
+            <p>Hermes does not represent a submitted route as covered until the details and current capacity have been reviewed.</p>
+          </div>
+          <ol class="location-review-grid">
+            {[
+              ["Request", "You provide the route, vehicle, condition, timing, access, and contact details."],
+              ["Completeness", "The information is checked for missing release, condition, or site-access facts."],
+              ["Equipment fit", "Open, enclosed, winch-capable, or other requirements are considered."],
+              ["Carrier review", "Authority, insurance, operating area, equipment, and availability are evaluated."],
+              ["Confirmation", "Only an agreed next step can establish price, timing, scope, and responsibilities."],
+            ].map(([title, body], index) => (
+              <li><span>0{index + 1}</span><div><h3>{title}</h3><p>{body}</p></div></li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="section location-equipment" aria-labelledby="location-equipment-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Equipment context</p>
+              <h2 id="location-equipment-title">Open or enclosed is a fit decision.</h2>
+            </div>
+            <p>The right equipment depends on the vehicle, condition, dimensions, value, handling needs, route, access, and available qualified capacity.</p>
+          </div>
+          <div class="location-equipment-grid">
+            <article><h3>Open transport</h3><p>Common for standard vehicles when dimensions, condition, loading access, and carrier fit are compatible.</p></article>
+            <article><h3>Enclosed transport</h3><p>May be considered for vehicles that need additional exposure protection or handling controls; availability and requirements still need review.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section logistics-faq location-faq" aria-labelledby="location-faq-title">
+        <div class="shell faq-layout">
+          <div>
+            <p class="eyebrow">FAQ</p>
+            <h2 id="location-faq-title">Before you request transport.</h2>
+          </div>
+          <div class="faq-list">
+            {location.faqs.map((faq) => (
+              <details>
+                <summary>{faq.question}</summary>
+                <p>{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="recommendation-cta">
+        <div class="shell">
+          <div>
+            <p class="eyebrow">Hermes Logistics · {location.city}</p>
+            <h2>Prepare the route before discussing capacity.</h2>
+            <p>Your submission begins a review. Contact, exact addresses, and other private operating details stay in the request workflow.</p>
+          </div>
+          <div>
+            <a class="button button-primary" href="/load-board/?role=shipper#post-load">Prepare request <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button" href="tel:+12623023626">Call Logistics Sales</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+

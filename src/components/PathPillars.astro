@@ -17,7 +17,7 @@ const { paths } = Astro.props;
       data-path-pillar={path.id}
       data-active={index === 0 ? "true" : "false"}
     >
-      <img src={path.image} alt={path.imageAlt} width="960" height="720" loading="lazy" decoding="async" />
+      <img src={path.image} alt="" width="960" height="720" loading="lazy" decoding="async" />
       <button
         class="path-pillar-trigger"
         id={`path-tab-${path.id}`}
