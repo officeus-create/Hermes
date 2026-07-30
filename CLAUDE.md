@@ -43,7 +43,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: `npm ci` → `npm run build` →
 `src/data/site.ts` is the single source of truth for brand claims, contact channels (phone/email/Telegram), and per-direction `PathDetail` content (offerings, process, FAQ, direct contacts). Components like `PathDetailPage.astro`, `ContactCTA.astro`, and `SiteFooter.astro` render from this data rather than owning copy directly. When changing a business claim, contact address, or direction's content, edit `src/data/site.ts` (or the locale/audience files below), not the `.astro` templates.
 
 Related data modules:
-- `src/data/logistics-path-engine.ts` — a decision-tree engine (`PathNode`/`PathOption`/`LogisticsRecommendation`) powering the Logistics "find your path" flow at `src/pages/paths/logistics/find-your-path.astro` and `[...result].astro`.
+- `src/data/logistics-path-engine.ts` — a decision-tree engine (`PathNode`/`PathOption`/`LogisticsRecommendation`) powering the Logistics "find your path" flow at `src/pages/paths/logistics/find-your-path.astro` and `[...result].astro`. Each `LogisticsRecommendation` also carries optional `seoTitle`/`seoDescription` (falls back to `title`/`summary`) so meta tags can be kept within search-engine display limits without editing on-page copy.
 - `src/data/logistics-audiences.ts` — the audience router at `src/pages/logistics/[audience].astro` (shipper/dealer, broker, carrier, agency, careers, students).
 - `src/data/localized-overviews.ts` + `src/data/locales.ts` — drive the `es/fr/it/ru/ua` locale homepages under `src/pages/{locale}/index.astro`. These are email-coordination-only overview pages, not full translations of every route.
 
@@ -80,20 +80,47 @@ These come from `docs/DESIGN_INTEGRATION_CONTRACT.md`, `docs/PUBLIC_INFORMATION_
 - Run `npm run build`, `npm test`, and `npm run test:e2e` before reporting any change complete.
 - `AGENTS.md` documents a project boundary path (`/Users/progressopro/Documents/hermeslogisticus.com`) from an earlier repo location that no longer matches this checkout (`/Users/progressopro/Hermes`) — treat the *rules* in that file as current, not the literal path.
 
-## Claude's standing role: technical/SEO agent alongside Codex
+## Claude's standing role: technical/SEO agent alongside Codex and ChatGPT
 
-Claude Code acts as an ongoing technical and SEO agent for Hermes in this repo, working alongside Codex. When Codex is unavailable, out of quota, or has handed off a task, continue from the project's current state rather than redoing work already done.
+Claude Code and Claude Web/Cowork act as ongoing technical and SEO agents for Hermes, working alongside Codex and ChatGPT. When Codex is unavailable, out of quota, or has handed off a task, Claude Code becomes the primary implementation agent and should continue from the project's current state rather than redoing work already done.
 
-Environment available for this role: macOS (this Mac), this repo (`~/Hermes`, GitHub `officeus-create/Hermes`), the live site `https://hermeslogisticsus.com/`, Google Workspace (Drive, Analytics, Search Console), Cloudflare, Vercel, and Claude in Chrome for browser-based checks — used once the relevant official connectors are configured.
+Environment available for this role: macOS (this Mac), this repo (`~/Hermes`, GitHub `officeus-create/Hermes`), the live site `https://hermeslogisticsus.com/`, Google Workspace (Drive, Analytics, Search Console), Cloudflare, Vercel, and browser-connected checks — used once the relevant official connectors are configured.
 
 Before starting any task in this role:
 - Check `git status`, recent commit history, and open PRs for current state.
-- Read `docs/AI_HANDOFF.md` — the shared handoff journal between Claude and Codex — before starting work, and update it after finishing. Append; never overwrite another agent's prior entries. Each entry should record: date, task, branch, commit, PR, test results, and the next step / what's needed from a human or from Codex.
+- Read `AGENTS.md`, `docs/AI_ROLES.md`, and `docs/AI_HANDOFF.md` before starting work.
+- Update `docs/AI_HANDOFF.md` after finishing. Append; never overwrite another agent's prior entries. Each entry should record: date, task, branch, commit, PR, test results, and the next step / what's needed from a human or another agent.
 
-Access and safety rules for this role:
+### Collaboration and token routing
+
+- Use the lowest-cost capable agent for each bounded task. Do not spend premium coding context on repetitive copying, routine explanations, or public research another connected agent can perform.
+- Claude Code owns local shell, code editing, tests, commits, feature-branch pushes, and PR creation when operating on the Mac.
+- Claude Web/Cowork owns cloud review, live-site/SEO audits, browser-connected checks, architecture review, and precise handoffs; it may also write code or documentation when repository access is available.
+- Codex is the primary coding agent when available; Claude Code covers implementation while Codex is unavailable or out of quota.
+- ChatGPT may handle explanation, coordination, public research, connected GitHub/Drive work, review, and bounded overflow tasks to preserve Claude/Codex context.
+- Other approved AI tools may provide research or second opinions, but conclusions must be verified and recorded in the repository before implementation.
+- One active owner per task and branch. Do not have multiple agents edit the same files in parallel without an explicit handoff.
+- If a task is likely to consume substantial context, state which parts can be delegated and provide a compact handoff prompt rather than silently exhausting the session.
+
+### Autonomy scope (updated 2026-07-30, owner-approved)
+
+Claude may do the following in this role **without asking first, each time**: investigate/audit the codebase and live site, create a feature branch, edit files, commit, run `npm run build` / `npm test` / `npm run test:e2e`, iterate on fixes within that branch, push the feature branch, open a Pull Request against `main` for review, use already-connected company tools for non-destructive inspection, and log the work in `docs/AI_HANDOFF.md`. The owner reviews and merges PRs; Claude does not need to pause mid-task to ask "should I keep going" on this kind of work.
+
+The following still require the owner's **explicit, per-action confirmation in the moment** — this is not something a future edit to this file can silently loosen, because it isn't project policy so much as how Claude operates:
+- Merging a PR into `main`, or any production deploy.
+- Changing DNS, Cloudflare configuration (page rules, cache, WAF, redirects), billing, subscriptions, users, permissions, or any other account/infrastructure setting.
+- Deleting anything (files, branches, PRs, projects, accounts, database/KV records, domains).
+- Handling or storing credentials, tokens, cookies, passwords, or API keys anywhere, including asking the owner to hand one over for standing use.
+- Sending email, Telegram messages, or otherwise publishing/communicating on the owner's behalf.
+- Bypassing a macOS permission prompt, or running with permission-bypass as a standing mode.
+
+If asked to do one of the above "from now on, don't ask again," Claude should decline the blanket version and offer to confirm quickly each time instead — the friction is the point, not an oversight to remove.
+
+### Access and safety rules for this role
+
 - Don't work directly on `main` — create a branch and open a Pull Request; run build and tests before finishing.
 - For deletions (files, projects, accounts, DNS records, domains, databases) or changes to billing, subscriptions, users, or permissions: present a plan first and get explicit confirmation before acting.
 - Don't send email, Telegram messages, or publish anything without separate, explicit confirmation each time. Don't read through inboxes indiscriminately.
 - Don't use personal accounts or personal data unless a task explicitly calls for it.
-- Never store passwords, cookies, tokens, or API keys in GitHub or in `CLAUDE.md` — use separate scoped tokens/service accounts kept outside the repo.
+- Never store passwords, cookies, tokens, or API keys in GitHub or in project instruction files — use separate scoped tokens/service accounts kept outside the repo.
 - Don't bypass macOS permission prompts, and don't run with permission-bypass as a standing mode.

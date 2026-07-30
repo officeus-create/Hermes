@@ -1,5 +1,23 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// GA4 (gtag.js) is the one approved external telemetry integration on this site (see
+// public/_headers connect-src / script-src). "Zero external delivery" checks below assert
+// that no form submission, CRM write, or operational request leaves the browser — they must
+// keep failing on any other outbound request, so only these known GA4 hosts are excluded.
+const APPROVED_ANALYTICS_HOSTS = [/^https:\/\/(www\.)?google-analytics\.com$/, /^https:\/\/www\.googletagmanager\.com$/, /^https:\/\/www\.google\.com$/];
+
+function isApprovedAnalyticsRequest(url: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (!APPROVED_ANALYTICS_HOSTS.some((pattern) => pattern.test(parsed.origin))) return false;
+  if (parsed.origin === "https://www.google.com") return parsed.pathname === "/g/collect";
+  return true;
+}
+
 async function openRegularHome(page: Page) {
   await page.goto("/");
   const intro = page.locator("[data-site-intro]");
@@ -330,7 +348,7 @@ test("language menu opens all localized overview pages", async ({ page, isMobile
 test("preview contact workflow validates and sends no request", async ({ page }) => {
   const posts: string[] = [];
   page.on("request", (request) => {
-    if (request.method() === "POST") posts.push(request.url());
+    if (request.method() === "POST" && !isApprovedAnalyticsRequest(request.url())) posts.push(request.url());
   });
 
   await page.goto("/#contact");
@@ -355,7 +373,9 @@ test("preview contact workflow validates and sends no request", async ({ page })
 test("Load Board approves a standard car-hauling preview with zero external delivery", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
 
   await page.goto("/load-board/");
@@ -384,7 +404,9 @@ test("Load Board approves a standard car-hauling preview with zero external deli
 test("Load Board routes each role to the right workspace and keeps demo loads non-operational", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
 
   await page.goto("/load-board/?role=carrier#available-loads");
@@ -406,7 +428,9 @@ test("Load Board routes each role to the right workspace and keeps demo loads no
 test("Load Board prepares a carrier vehicle for dispatcher review with zero external delivery", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
 
   await page.goto("/load-board/");
@@ -483,7 +507,9 @@ test("logistics audience pages open role-specific Load Board workspaces", async 
 test("agency and career applications create local previews without sending", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
   await page.goto("/logistics/apply/?for=agency");
   await expect(page.locator('select[name="application_type"]')).toHaveValue("agency");
@@ -622,7 +648,7 @@ test("public logistics contacts use the approved department routing", async ({ p
 test("marketing field group supports multiple platforms + 3/6/9/12 horizon and includes direction details in summary", async ({ page }, testInfo) => {
   const posts: string[] = [];
   page.on("request", (request) => {
-    if (request.method() === "POST") posts.push(request.url());
+    if (request.method() === "POST" && !isApprovedAnalyticsRequest(request.url())) posts.push(request.url());
   });
 
   await page.goto("/paths/marketing/#contact");

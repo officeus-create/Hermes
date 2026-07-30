@@ -314,7 +314,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
     locale: "fr",
     path: "/fr/",
     metaTitle: "Hermes | Logistique, marketing, académie et développement IT",
-    metaDescription: "Hermes réunit logistique, marketing, formation professionnelle pratique et développement IT pour les entreprises aux États-Unis et les partenaires internationaux.",
+    metaDescription: "Hermes réunit logistique, marketing, formation professionnelle et développement IT pour les entreprises aux États-Unis et leurs partenaires internationaux.",
     hero: {
       eyebrow: "Logistique · Croissance · Formation · Technologie",
       title: "Quatre pôles. Un écosystème pour grandir.",
