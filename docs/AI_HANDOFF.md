@@ -54,3 +54,14 @@ entries — append only.
 - Tests run: none — documentation-only change.
 - Remaining / open items: not yet committed (see above).
 - Next step / what's needed from a human or Codex: commit this alongside the SEO fix; Codex sessions should read the updated "Autonomy scope" section before assuming what does/doesn't need owner sign-off.
+
+## 2026-07-30 — Claude (Cowork) — Fix Playwright regression from GA4 CSP restoration
+
+- Branch: fix/seo-meta-csp
+- Commit(s): 7a27107
+- PR: none yet (branch has local commits ahead of `origin/fix/seo-meta-csp`, not yet pushed/opened)
+- What was done: After GA4 was unblocked under CSP in 81a9595 (see the SEO audit entry above), 12 Playwright tests (6 "zero external delivery" assertions × desktop/mobile) started failing because `expect(posts).toEqual([])` / `expect(writes).toEqual([])` in `tests/site.spec.ts` now also caught GA4's own outbound requests to `google-analytics.com`, `googletagmanager.com`, and `google.com/g/collect`. Added a shared `isApprovedAnalyticsRequest()` helper (matches only those three known GA4 hosts, `/g/collect` path-checked) and used it to filter the `posts`/`writes` request trackers in all 6 affected tests, so genuine form submissions, CRM writes, or any other outbound request still fail the check — GA4 itself was not disabled or weakened.
+- Files changed: `tests/site.spec.ts`
+- Tests run (and result): `npm run build` (47 pages, 0 diagnostics) passed; `npm test` (validate-build + all 6 unit scripts) passed; `npm run test:e2e` passed — 118 passed, 2 expected skips (mobile-only/desktop-only tests), 0 failures.
+- Remaining / open items: `docs/screenshots/intake02-marketing-desktop.png` and `package-lock.json` show as locally modified (screenshot regenerated as a side effect of running the marketing e2e test; package-lock.json was already modified before this session started) — left uncommitted/untouched since they're outside this task's scope. Branch not yet pushed; no PR opened.
+- Next step / what's needed from a human or Codex: push `fix/seo-meta-csp` and open a PR (or fold into the existing SEO-fix PR work) for owner review; owner should confirm whether the pre-existing `package-lock.json`/screenshot diffs are wanted before anyone commits those separately.
