@@ -65,3 +65,14 @@ entries — append only.
 - Tests run (and result): `npm run build` (47 pages, 0 diagnostics) passed; `npm test` (validate-build + all 6 unit scripts) passed; `npm run test:e2e` passed — 118 passed, 2 expected skips (mobile-only/desktop-only tests), 0 failures.
 - Remaining / open items: `docs/screenshots/intake02-marketing-desktop.png` and `package-lock.json` show as locally modified (screenshot regenerated as a side effect of running the marketing e2e test; package-lock.json was already modified before this session started) — left uncommitted/untouched since they're outside this task's scope. Branch not yet pushed; no PR opened.
 - Next step / what's needed from a human or Codex: push `fix/seo-meta-csp` and open a PR (or fold into the existing SEO-fix PR work) for owner review; owner should confirm whether the pre-existing `package-lock.json`/screenshot diffs are wanted before anyone commits those separately.
+
+## 2026-07-30 — ChatGPT — Establish shared AI team operating system
+
+- Branch: fix/seo-meta-csp
+- Commit(s): `41f331c`, `3378873`, `7e5d4b1`, plus this handoff commit
+- PR: to be opened after this entry is committed
+- What was done: Converted the owner's multi-agent working model into repository-level rules. Added a shared AI team document defining the owner/Digital CEO, Claude Code, Claude Web/Cowork, Codex, ChatGPT, and other specialist tools; added token/workload routing; authorized autonomous audit/edit/test/commit/push-feature-branch/open-PR work; and preserved explicit approval gates for merge, deploy, infrastructure/account changes, deletions, credentials, and owner communications. Updated Claude and cross-agent instructions so future sessions continue from GitHub rather than requesting the full history again. Confirmed the branch is already pushed and the earlier SEO/GA4 test work is online.
+- Files changed: `docs/AI_ROLES.md` (new), `CLAUDE.md`, `AGENTS.md`, `docs/AI_HANDOFF.md`.
+- Tests run (and result): none — documentation-only coordination changes made through GitHub after the previously recorded successful build/unit/e2e run. No production code changed in these commits.
+- Remaining / open items: local Mac may still show unrelated `package-lock.json` and generated screenshot modifications; do not commit them as part of this work. Claude Web's ability to write directly depends on whether the Hermes repository is enabled in that specific Claude cloud session; repository policy cannot bypass a product/account access boundary.
+- Next step / what's needed from a human or another agent: open the PR for `fix/seo-meta-csp`, review the combined SEO/test/documentation changes, and request explicit owner approval before merge. After merge/deploy, verify `window.gtag` on production and log the result.
