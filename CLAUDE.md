@@ -43,7 +43,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: `npm ci` → `npm run build` →
 `src/data/site.ts` is the single source of truth for brand claims, contact channels (phone/email/Telegram), and per-direction `PathDetail` content (offerings, process, FAQ, direct contacts). Components like `PathDetailPage.astro`, `ContactCTA.astro`, and `SiteFooter.astro` render from this data rather than owning copy directly. When changing a business claim, contact address, or direction's content, edit `src/data/site.ts` (or the locale/audience files below), not the `.astro` templates.
 
 Related data modules:
-- `src/data/logistics-path-engine.ts` — a decision-tree engine (`PathNode`/`PathOption`/`LogisticsRecommendation`) powering the Logistics "find your path" flow at `src/pages/paths/logistics/find-your-path.astro` and `[...result].astro`.
+- `src/data/logistics-path-engine.ts` — a decision-tree engine (`PathNode`/`PathOption`/`LogisticsRecommendation`) powering the Logistics "find your path" flow at `src/pages/paths/logistics/find-your-path.astro` and `[...result].astro`. Each `LogisticsRecommendation` also carries optional `seoTitle`/`seoDescription` (falls back to `title`/`summary`) so meta tags can be kept within search-engine display limits without editing on-page copy.
 - `src/data/logistics-audiences.ts` — the audience router at `src/pages/logistics/[audience].astro` (shipper/dealer, broker, carrier, agency, careers, students).
 - `src/data/localized-overviews.ts` + `src/data/locales.ts` — drive the `es/fr/it/ru/ua` locale homepages under `src/pages/{locale}/index.astro`. These are email-coordination-only overview pages, not full translations of every route.
 
@@ -90,7 +90,22 @@ Before starting any task in this role:
 - Check `git status`, recent commit history, and open PRs for current state.
 - Read `docs/AI_HANDOFF.md` — the shared handoff journal between Claude and Codex — before starting work, and update it after finishing. Append; never overwrite another agent's prior entries. Each entry should record: date, task, branch, commit, PR, test results, and the next step / what's needed from a human or from Codex.
 
-Access and safety rules for this role:
+### Autonomy scope (updated 2026-07-30, owner-approved)
+
+Claude may do the following in this role **without asking first, each time**: investigate/audit the codebase and live site, create a branch, commit, run `npm run build` / `npm test` / `npm run test:e2e`, iterate on fixes within that branch, open a Pull Request against `main` for review, and log the work in `docs/AI_HANDOFF.md`. The owner reviews and merges PRs; Claude does not need to pause mid-task to ask "should I keep going" on this kind of work.
+
+The following still require the owner's **explicit, per-action confirmation in the moment** — this is not something a future edit to this file can silently loosen, because it isn't project policy so much as how Claude operates:
+- Merging a PR into `main`, or any production deploy.
+- Changing DNS, Cloudflare configuration (page rules, cache, WAF, redirects), or any other account/infrastructure setting.
+- Deleting anything (files, branches, PRs, projects, accounts, database/KV records, domains).
+- Handling or storing credentials, tokens, or API keys anywhere, including asking the owner to hand one over for standing use.
+- Sending email, Telegram messages, or otherwise publishing/communicating on the owner's behalf.
+- Bypassing a macOS permission prompt, or running with permission-bypass as a standing mode.
+
+If asked to do one of the above "from now on, don't ask again," Claude should decline the blanket version and offer to confirm quickly each time instead — the friction is the point, not an oversight to remove.
+
+### Access and safety rules for this role
+
 - Don't work directly on `main` — create a branch and open a Pull Request; run build and tests before finishing.
 - For deletions (files, projects, accounts, DNS records, domains, databases) or changes to billing, subscriptions, users, or permissions: present a plan first and get explicit confirmation before acting.
 - Don't send email, Telegram messages, or publish anything without separate, explicit confirmation each time. Don't read through inboxes indiscriminately.
