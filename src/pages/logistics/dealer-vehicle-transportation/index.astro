@@ -1,0 +1,49 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+const content = {
+  title: "Dealer Vehicle Transportation | Hermes Logistics",
+  description: "Vehicle transportation coordination for dealerships, auctions, brokers, and repeat inventory movement across the United States.",
+  eyebrow: "Hermes Logistics · Dealer Transportation",
+  h1: "Dealer Vehicle Transportation Coordination",
+  intro: "Hermes helps dealerships and vehicle-market partners organize transportation requests, match requirements with qualified carrier capacity, coordinate documentation, and maintain clear communication from pickup planning through delivery updates.",
+  image: "/images/path-logistics-system.jpg",
+  imageAlt: "Dealer vehicle transportation and carrier coordination network",
+  audience: [
+    "Dealerships moving inventory between locations",
+    "Dealers buying vehicles from auctions or other dealers",
+    "Brokers and shippers coordinating repeat vehicle movement",
+    "Businesses that need open, enclosed, multi-vehicle, or specialty capacity",
+  ],
+  benefits: [
+    { title: "Dealer-to-dealer movement", body: "Coordination for inventory transfers between dealerships, customer-selected storage facilities, recon facilities, and customer-delivery points." },
+    { title: "Auction pickup coordination", body: "Pickup requirements, release information, vehicle condition, operability, timing, and delivery expectations are organized before carrier matching." },
+    { title: "Multi-vehicle planning", body: "Requests involving several vehicles can be reviewed by count, dimensions, operability, pickup windows, and destination requirements." },
+    { title: "Open and enclosed options", body: "Capacity is matched to the vehicle type, value, condition, timing, and actual carrier availability. Availability is never guaranteed before confirmation." },
+    { title: "Qualified carrier review", body: "Carrier authority, insurance, equipment, operating history, service area, and documentation are reviewed before assignment when data is available." },
+    { title: "Clear information flow", body: "Hermes acts as a coordination layer between the transportation request and available carrier capacity, without claiming ownership of trucks that are not owned by Hermes." },
+  ],
+  process: [
+    { title: "Request intake", body: "We collect origin, destination, vehicle count, year, make, model, operability, open or enclosed preference, timing, contact rules, and access requirements." },
+    { title: "Requirement review", body: "The request is checked for missing release details, special equipment needs, restricted access, inoperable units, and realistic pickup and delivery expectations." },
+    { title: "Carrier matching", body: "Qualified capacity is evaluated based on authority, insurance, equipment, geography, schedule, and the available shipment information." },
+    { title: "Confirmation", body: "The dealer or authorized customer confirms the transportation arrangement after reviewing the available terms and carrier information." },
+    { title: "Coordination", body: "Hermes supports communication and document flow through pickup and delivery while the motor carrier remains responsible for transportation and safety." },
+  ],
+  faq: [
+    { question: "Can Hermes guarantee same-day pickup?", answer: "No. Pickup timing depends on carrier availability, location, vehicle readiness, release requirements, weather, market conditions, and access. Timing is confirmed only after a carrier accepts the shipment." },
+    { question: "Do you support auction pickups?", answer: "Auction pickup coordination may be available when the release information, buyer details, vehicle condition, lot rules, timing, and destination are provided." },
+    { question: "Can several vehicles move together?", answer: "Yes, when compatible carrier capacity is available. Vehicle count, size, operability, pickup location, delivery location, and timing must be reviewed first." },
+    { question: "Is enclosed transportation available?", answer: "Enclosed capacity may be available for luxury, classic, specialty, or higher-protection requests, subject to route, timing, equipment, and carrier availability." },
+    { question: "Does Hermes own the transporting fleet?", answer: "Hermes coordinates transportation information and carrier relationships. Unless explicitly stated for a specific transaction, transportation is performed by independent authorized motor carriers." },
+    { question: "What information is needed for a quote or capacity review?", answer: "Provide origin and destination, vehicle year, make, model, number of vehicles, operability, desired timing, open or enclosed preference, and authorized contact details. VIN and sensitive release details should be exchanged through a secure direct channel." },
+  ],
+  related: [
+    { label: "Car Hauling Dispatch and Operations Support", href: "/logistics/car-hauling-dispatch/" },
+    { label: "Hermes Logistics overview", href: "/paths/logistics/" },
+    { label: "Contact Hermes", href: "/contacts/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />
