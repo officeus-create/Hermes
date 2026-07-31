@@ -18,6 +18,10 @@ const { title, description, image = "/images/hermes-social-share-2026.jpg", sche
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
+const alternateOgLocales = alternates
+.filter((alternate) => alternate.lang !== locale && alternate.lang !== "x-default")
+.map((alternate) => localeConfig[alternate.lang as SiteLocale]?.ogLocale)
+.filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
 ---
 
 <!doctype html>
@@ -29,6 +33,8 @@ const ogLocale = localeConfig[locale].ogLocale;
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
+<link rel="preconnect" href="https://www.googletagmanager.com" />
+<link rel="preconnect" href="https://www.google-analytics.com" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -41,6 +47,7 @@ const ogLocale = localeConfig[locale].ogLocale;
     <meta property="og:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />
+{alternateOgLocales.map((altLocale) => <meta property="og:locale:alternate" content={altLocale} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
