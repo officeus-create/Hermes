@@ -1894,6 +1894,10 @@ h3 { font-size: 1.75rem; }
 .logistics-audience-steps span { color: #b00072; font-family: var(--font-mono); }
 .logistics-audience-steps h3 { margin: 0 0 .35rem; }
 .logistics-audience-steps p { margin: 0; color: var(--color-muted); }
+.logistics-audience-faq dl { display: grid; gap: 1rem; margin: 1.5rem 0 0; }
+.logistics-audience-faq-item { padding: 1.2rem; border: 1px solid #d6dce8; border-radius: 9px; background: #fff; }
+.logistics-audience-faq-item dt { margin: 0 0 .4rem; font-weight: 700; color: var(--color-navy-900); }
+.logistics-audience-faq-item dd { margin: 0; color: var(--color-muted); }
 .logistics-application-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr); gap: 2rem; align-items: start; }
 .logistics-application-grid .load-board-result { position: sticky; top: 6rem; }
 .logistics-application-grid pre { max-height: 540px; overflow: auto; white-space: pre-wrap; }
