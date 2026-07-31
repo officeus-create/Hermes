@@ -35,18 +35,19 @@ The 100-task growth sprint has completed every task that can be implemented safe
 - Careers and recruitment governance.
 - Data, localization, analytics, performance, and release governance.
 - Cross-AI recommendation acceptance and rejection register.
+- Reproducible historical-route source discovery and explicit exclusion rules.
 
 ## CI evidence
 
-GitHub Actions `Website checks` run #221 completed successfully on commit:
+GitHub Actions `Website checks` run #222 completed successfully on commit:
 
-`0bfecdae73c22e159303210bc3ad0b1164f58e62`
+`f889a7f069d5905643cee048b9ba176700e6f8fc`
 
 Result: `success`.
 
-This confirms the current reviewed PR head builds and passes the available website checks, including the Careers sitemap and focused regression-test coverage.
+This confirms the reviewed PR head before the route-source documentation commit builds and passes the available website checks, including Careers sitemap and focused regression-test coverage.
 
-A new CI run is expected after this documentation-only accuracy update. That later run must also be green before merge review.
+The route-source discovery changes are documentation-only. Their follow-up CI must also be green before merge review.
 
 ## Conflict review
 
@@ -63,27 +64,37 @@ No files from the previously identified Claude PRs #15–#17 were modified in PR
 
 ## Remaining blocker: verified pilot lanes
 
-The repository and accessible file sources do not contain the complete historical carrier route export required for task 23.
+A reproducible discovery pass is documented in:
+
+`docs/ROUTE_SOURCE_DISCOVERY_2026-07-31.md`
+
+Sources checked included the repository, ChatGPT File Library, and connected Google Drive searches for carrier routes, load history, and pickup/delivery records.
+
+Candidate Drive spreadsheets included carrier-database and HL40 sales-team backups. The inspected `HL40_BACKUP_2026-07-23_13-21` workbook contains carrier-lead and CRM fields, but no pickup origin, delivery destination, movement date, or completed-load history fields. It therefore cannot support task 23.
+
+An anonymized JFK-area to Wilmington, North Carolina inbound request was also excluded from historical lane frequency because it is documented as a request, not a verified completed carrier movement.
 
 Required minimum fields:
 
 - origin city/state or ZIP;
 - destination city/state or ZIP;
 - movement date or month;
+- booked/completed status or equivalent movement evidence;
 - equipment type/capacity when known;
-- internal source reference;
+- stable internal source reference;
 - optional carrier identifier stored only in a private analysis dataset.
 
 Required processing before publication:
 
 1. remove personal and customer-identifying information;
 2. normalize city/state/ZIP values;
-3. deduplicate repeated movements;
-4. count recurrence and directionality;
-5. identify possible return-lane gaps;
-6. verify search demand and competition;
-7. score each candidate lane under the 7/10 publication gate;
-8. publish only lanes supported by real Hermes capacity and unique local value.
+3. separate completed/booked movements from inquiries, demos, and cancellations;
+4. deduplicate repeated movements;
+5. count recurrence and directionality;
+6. identify possible return-lane gaps as hypotheses;
+7. verify search demand and competition;
+8. score each candidate lane under the 7/10 publication gate;
+9. publish only lanes supported by real Hermes capacity and unique local value.
 
 No lane, demand level, or ranking opportunity has been guessed.
 
