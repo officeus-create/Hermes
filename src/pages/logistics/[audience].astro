@@ -11,7 +11,7 @@ export function getStaticPaths() {
 
 const { audience } = Astro.props;
 const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toString();
-const schema = {
+const breadcrumbSchema = {
 "@context": "https://schema.org",
 "@type": "BreadcrumbList",
 itemListElement: [
@@ -20,6 +20,8 @@ itemListElement: [
 { "@type": "ListItem", position: 3, name: audience.label, item: canonicalUrl },
 ],
 };
+const faqSchema = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: audience.faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) };
+const schema = [breadcrumbSchema, faqSchema];
 ---
 
 <BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary} schema={schema}>
@@ -60,6 +62,7 @@ itemListElement: [
           </ol>
         </div>
       </section>
+<section class="section logistics-audience-faq" aria-labelledby="logistics-audience-faq-title"><div class="shell"><p class="eyebrow">Common questions</p><h2 id="logistics-audience-faq-title">Before you start.</h2><dl>{audience.faq.map((item) => <div class="logistics-audience-faq-item"><dt>{item.question}</dt><dd>{item.answer}</dd></div>)}</dl></div></section>
     </main>
     <SiteFooter />
   </div>
