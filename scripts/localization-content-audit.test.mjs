@@ -4,11 +4,31 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const pages = [
-  { route: "/ua/", path: "ua/index.html", lang: "uk" },
-  { route: "/ru/", path: "ru/index.html", lang: "ru" },
-  { route: "/es/", path: "es/index.html", lang: "es" },
-  { route: "/it/", path: "it/index.html", lang: "it" },
-  { route: "/fr/", path: "fr/index.html", lang: "fr" },
+  {
+    route: "/ua/", path: "ua/index.html", lang: "uk",
+    requiredLabels: ["Технології", "Маркетинг", "Академія", "Логістика"],
+    requiredCtas: ["Обрати напрям", "Написати команді", "Надіслати опис електронною поштою"],
+  },
+  {
+    route: "/ru/", path: "ru/index.html", lang: "ru",
+    requiredLabels: ["Технологии", "Маркетинг", "Академия", "Логистика"],
+    requiredCtas: ["Выбрать направление", "Написать команде", "Отправить описание по электронной почте"],
+  },
+  {
+    route: "/es/", path: "es/index.html", lang: "es",
+    requiredLabels: ["Tecnología", "Marketing", "Academia", "Logística"],
+    requiredCtas: ["Elegir un área", "Escribir al equipo", "Enviar el resumen por correo"],
+  },
+  {
+    route: "/it/", path: "it/index.html", lang: "it",
+    requiredLabels: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
+    requiredCtas: ["Scegliere un'area", "Scrivere al team", "Inviare il brief via email"],
+  },
+  {
+    route: "/fr/", path: "fr/index.html", lang: "fr",
+    requiredLabels: ["Technologie", "Marketing", "Académie", "Logistique"],
+    requiredCtas: ["Choisir un domaine", "Écrire à l'équipe", "Envoyer le brief par email"],
+  },
 ];
 
 const knownEnglishLeakage = [
@@ -25,21 +45,6 @@ const knownEnglishLeakage = [
   "Discuss the system you want to build.",
   "Return to Hermes",
   "Page not found",
-];
-const allowedIndustryTerms = [
-  "Hermes",
-  "ProgressoPro",
-  "AI",
-  "CRM",
-  "SEO",
-  "SMM",
-  "IT",
-  "MC",
-  "DOT",
-  "USDOT",
-  "BOL",
-  "POD",
-  "Load Board",
 ];
 const errors = [];
 const titles = new Map();
@@ -70,6 +75,12 @@ for (const page of pages) {
   for (const phrase of knownEnglishLeakage) {
     if (visible.includes(phrase)) errors.push(`${page.route}: untranslated English phrase found: ${phrase}`);
   }
+  for (const label of page.requiredLabels) {
+    if (!visible.includes(label)) errors.push(`${page.route}: localized partnership label is missing: ${label}`);
+  }
+  for (const cta of page.requiredCtas) {
+    if (!visible.includes(cta)) errors.push(`${page.route}: natural-language CTA is missing: ${cta}`);
+  }
 
   const title = getTagText(html, "title");
   const description = getMetaDescription(html);
@@ -86,14 +97,10 @@ for (const page of pages) {
   if (/<a\b[^>]*>\s*(Learn more|Read more|Contact us|Get started)\s*<\/a>/i.test(html)) {
     errors.push(`${page.route}: untranslated generic English CTA found`);
   }
-
-  for (const term of allowedIndustryTerms) {
-    if (visible.includes(term)) continue;
-  }
 }
 
 if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Localization content audit passed: ${pages.length} localized pages have unique metadata and no known English UI leakage.`);
+console.log(`Localization content audit passed: ${pages.length} localized pages have unique metadata, localized partnership labels, natural CTAs, and no known English UI leakage.`);
