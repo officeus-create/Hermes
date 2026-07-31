@@ -1,0 +1,111 @@
+<div
+  class="contact-link-status"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  data-contact-link-status
+  hidden
+></div>
+
+<script>
+  const status = document.querySelector<HTMLElement>("[data-contact-link-status]");
+  let statusTimer = 0;
+
+  const showStatus = (message: string) => {
+    if (!status) return;
+    window.clearTimeout(statusTimer);
+    status.textContent = message;
+    status.hidden = false;
+    statusTimer = window.setTimeout(() => {
+      status.hidden = true;
+      status.textContent = "";
+    }, 4200);
+  };
+
+  const copyTextSynchronously = (text: string) => {
+    const input = document.createElement("input");
+    input.value = text;
+    input.setAttribute("readonly", "");
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    input.style.pointerEvents = "none";
+    document.body.appendChild(input);
+    input.select();
+    input.setSelectionRange(0, input.value.length);
+
+    let copied = false;
+    try {
+      copied = document.execCommand("copy");
+    } catch {
+      copied = false;
+    } finally {
+      input.remove();
+    }
+    return copied;
+  };
+
+  const isLikelyMobileDevice = () => {
+    const navigatorWithUAData = navigator as Navigator & { userAgentData?: { mobile?: boolean } };
+    return (
+      navigatorWithUAData.userAgentData?.mobile === true ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints > 1 && window.matchMedia("(max-width: 1024px)").matches)
+    );
+  };
+
+  document.addEventListener("click", (event) => {
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+
+    const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    const href = link.getAttribute("href") || "";
+    const isPhone = href.startsWith("tel:");
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "contact_click",
+      contact_method: isPhone ? "phone" : "email",
+      page_path: window.location.pathname,
+    });
+
+    if (!isPhone) return;
+
+    const internationalNumber = href.slice(4).trim();
+    const displayNumber = link.textContent?.trim() || internationalNumber;
+
+    if (isLikelyMobileDevice()) {
+      showStatus(`Opening your phone app for ${displayNumber}.`);
+      return;
+    }
+
+    const copied = copyTextSynchronously(internationalNumber);
+    showStatus(
+      copied
+        ? `Phone number copied: ${displayNumber}. Open FaceTime, Skype, or your calling app to place the call.`
+        : `Call Hermes Logistics at ${displayNumber}. Your browser may require a configured calling app.`,
+    );
+  });
+</script>
+
+<style>
+  .contact-link-status {
+    position: fixed;
+    z-index: 1200;
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(1rem, 3vw, 2rem);
+    max-width: min(420px, calc(100vw - 2rem));
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 6px;
+    background: #071038;
+    color: #fff;
+    box-shadow: 0 18px 50px rgba(7, 16, 56, 0.28);
+    font: 600 0.88rem/1.45 var(--font-body);
+  }
+
+  .contact-link-status[hidden] {
+    display: none;
+  }
+</style>
