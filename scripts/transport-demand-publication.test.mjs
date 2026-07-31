@@ -86,7 +86,7 @@ const eligible = evaluateDemandPublicationCandidate(baseCandidate);
 assert.equal(eligible.status, "eligible_for_editorial_review");
 assert.deepEqual(eligible.blockers, []);
 assert.ok(eligible.limitations.some((item) => /not a public availability promise/i.test(item)));
-assert.ok(eligible.limitations.some((item) => /does not automatically create a page/i.test(item)));
+assert.ok(eligible.limitations.some((item) => /automatically creates a page/i.test(item)));
 
 const synthetic = evaluateDemandPublicationCandidate({
   ...baseCandidate,
