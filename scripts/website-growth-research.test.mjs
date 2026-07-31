@@ -11,6 +11,11 @@ import {
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const routeFile = (route) => join(dist, route.slice(1), "index.html");
+const normalizeHtml = (html) => html
+  .replaceAll("&amp;", "&")
+  .replaceAll("&quot;", '"')
+  .replaceAll("&#39;", "'")
+  .toLowerCase();
 
 assert.equal(websiteServiceScopes.length, 6);
 assert.equal(new Set(websiteServiceScopes.map((scope) => scope.id)).size, 6);
@@ -20,11 +25,11 @@ assert.deepEqual(
 );
 
 for (const scope of websiteServiceScopes) {
-  assert.ok(scope.label.trim().length > 0);
+  assert.ok(scope.label.trim());
   assert.ok(scope.included.length >= 4);
   assert.ok(scope.optionalByAgreement.length >= 2);
   assert.ok(scope.excludedUnlessApproved.length >= 3);
-  assert.ok(scope.controlBoundary.trim().length > 0);
+  assert.ok(scope.controlBoundary.trim());
 }
 
 const seoScope = websiteServiceScopes.find((scope) => scope.id === "seo");
@@ -50,39 +55,31 @@ assert.equal(new Set(websiteProofRegister.map((proof) => proof.id)).size, 4);
 for (const proof of websiteProofRegister) {
   await access(routeFile(proof.evidencePath));
   assert.ok(proof.requiredVisibleEvidence.length >= 2);
-  assert.ok(proof.publicClaimBoundary.trim().length > 0);
+  assert.ok(proof.publicClaimBoundary.trim());
 }
 
 const technologyHtml = await readFile(routeFile("/paths/technology/"), "utf8");
+const normalizedTechnologyHtml = normalizeHtml(technologyHtml);
 for (const proof of websiteProofRegister.filter((item) => item.evidencePath === "/paths/technology/")) {
   for (const visible of proof.requiredVisibleEvidence) {
-    assert.ok(technologyHtml.toLowerCase().includes(visible.toLowerCase()), `${proof.id} missing visible evidence: ${visible}`);
+    assert.ok(normalizedTechnologyHtml.includes(visible.toLowerCase()), `${proof.id} missing visible evidence: ${visible}`);
   }
 }
 
-const websiteCaseHtml = await readFile(routeFile("/case/it-development/"), "utf8");
-assert.ok(websiteCaseHtml.includes("One digital front door for four businesses"));
-assert.ok(technologyHtml.includes("Live product"));
+const websiteCaseHtml = normalizeHtml(await readFile(routeFile("/case/it-development/"), "utf8"));
+assert.ok(websiteCaseHtml.includes("one digital front door for four businesses"));
+assert.ok(normalizedTechnologyHtml.includes("live product"));
 
-const loadBoardHtml = await readFile(routeFile("/load-board/"), "utf8");
-assert.ok(/preview/i.test(loadBoardHtml));
-assert.ok(/demo/i.test(loadBoardHtml));
+const loadBoardHtml = normalizeHtml(await readFile(routeFile("/load-board/"), "utf8"));
+assert.ok(loadBoardHtml.includes("preview"));
+assert.ok(loadBoardHtml.includes("demo"));
 
 assert.ok(caseStudyEvidenceStandard.requiredFields.length >= 8);
-assert.ok(caseStudyEvidenceStandard.prohibitedWithoutEvidence.includes("rankings"));
-assert.ok(caseStudyEvidenceStandard.prohibitedWithoutEvidence.includes("leads or qualified inquiries"));
-assert.ok(caseStudyEvidenceStandard.prohibitedWithoutEvidence.includes("revenue or ROI"));
+for (const claim of ["rankings", "leads or qualified inquiries", "revenue or ROI"]) {
+  assert.ok(caseStudyEvidenceStandard.prohibitedWithoutEvidence.includes(claim));
+}
 assert.ok(caseStudyEvidenceStandard.allowedMaturityLabels.includes("verified_case_study"));
 assert.ok(caseStudyEvidenceStandard.allowedMaturityLabels.includes("working_prototype"));
-
-const score = {
-  relevantBusinessDensity: 2,
-  competitionGap: 1,
-  demandAndServiceFit: 2,
-  uniqueNicheLocalValue: 1,
-  conversionPath: 1,
-  evidenceAndReviewDate: 1,
-};
 
 const baseOpportunity = {
   marketId: "fixture-market-001",
@@ -100,7 +97,14 @@ const baseOpportunity = {
     "Local transport and acquisition inquiry paths",
     "Mobile lead and call measurement boundaries",
   ],
-  score,
+  score: {
+    relevantBusinessDensity: 2,
+    competitionGap: 1,
+    demandAndServiceFit: 2,
+    uniqueNicheLocalValue: 1,
+    conversionPath: 1,
+    evidenceAndReviewDate: 1,
+  },
   responseCapacityConfirmed: true,
   privacyAndClaimsReviewed: true,
 };
