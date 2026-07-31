@@ -22,26 +22,14 @@
     }, 4200);
   };
 
-  const copyTextSynchronously = (text: string) => {
-    const input = document.createElement("input");
-    input.value = text;
-    input.setAttribute("readonly", "");
-    input.style.position = "fixed";
-    input.style.opacity = "0";
-    input.style.pointerEvents = "none";
-    document.body.appendChild(input);
-    input.select();
-    input.setSelectionRange(0, input.value.length);
-
-    let copied = false;
+  const copyPhoneNumber = async (text: string) => {
+    if (!navigator.clipboard?.writeText || !window.isSecureContext) return false;
     try {
-      copied = document.execCommand("copy");
+      await navigator.clipboard.writeText(text);
+      return true;
     } catch {
-      copied = false;
-    } finally {
-      input.remove();
+      return false;
     }
-    return copied;
   };
 
   const isLikelyMobileDevice = () => {
@@ -53,7 +41,7 @@
     );
   };
 
-  document.addEventListener("click", (event) => {
+  document.addEventListener("click", async (event) => {
     const source = event.target;
     if (!(source instanceof Element)) return;
 
@@ -80,11 +68,12 @@
       return;
     }
 
-    const copied = copyTextSynchronously(internationalNumber);
+    event.preventDefault();
+    const copied = await copyPhoneNumber(internationalNumber);
     showStatus(
       copied
         ? `Phone number copied: ${displayNumber}. Open FaceTime, Skype, or your calling app to place the call.`
-        : `Call Hermes Logistics at ${displayNumber}. Your browser may require a configured calling app.`,
+        : `Call Hermes Logistics at ${displayNumber}. Copy the number or configure a calling app in your browser.`,
     );
   });
 </script>
