@@ -38,26 +38,26 @@ The 100-task growth sprint has completed every task that can be implemented safe
 
 ## CI evidence
 
-GitHub Actions `Website checks` run #218 completed successfully on commit:
+GitHub Actions `Website checks` run #220 completed successfully on commit:
 
-`5a36312cfaafc22c02a501df5871a9b24f9aa4cb`
+`07e7b259bdc2bcb69a983615468deeda3a491a95`
 
 Result: `success`.
 
-This closes the Careers sitemap and regression-test task.
+This confirms the current PR head builds and passes the available website checks, including the Careers sitemap and focused regression-test coverage.
 
 ## Conflict review
 
-Active technical SEO PR #13 and growth PR #19 overlap on only two files:
+The latest changed-file comparison between technical SEO PR #13 and growth PR #19 shows exactly two overlapping paths:
 
 - `package.json`
 - `public/sitemap.xml`
 
-All other PR #19 files are separate from PR #13.
+All other PR #19 paths are separate from PR #13.
 
-Before any merge, these two files must be reconciled intentionally. Do not accept one branch wholesale because that could remove the other branch's test commands or sitemap entries.
+Before any merge, these two files must be reconciled intentionally. Do not accept either branch wholesale because that could remove the other branch's test commands, scripts, or sitemap entries.
 
-No files from the previously identified Claude PRs #15–#17 were modified in PR #19.
+No files from the previously identified Claude PRs #15–#17 were modified in PR #19. Those PRs are no longer open, but their merged or closed work must still be respected when rebasing onto the latest `main`.
 
 ## Remaining blocker: verified pilot lanes
 
