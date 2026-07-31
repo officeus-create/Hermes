@@ -11,17 +11,25 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByRole("tab")).toHaveCount(2);
     await expect(page.getByRole("tab", { name: /U.S. Logistics Operations/ })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Marketing/ })).toBeVisible();
-    await expect(page.getByText("COO / Multi-business leadership")).toHaveCount(0);
+    await expect(page.getByRole("tab", { name: /COO|Multi-business leadership/ })).toHaveCount(0);
 
     await page.getByRole("button", { name: /Next:/ }).click();
     await page.getByRole("button", { name: /See the 6 layers/ }).click();
     await page.getByRole("button", { name: /Method & FAQ/ }).click();
 
-    await expect(page.getByText("Paid cohort", { exact: true })).toBeVisible();
-    await expect(page.getByText("Free practice opportunity", { exact: true })).toBeVisible();
-    await expect(page.getByText("No fixed price is published", { exact: false })).toBeVisible();
-    await expect(page.getByText("employment, income, clients, certification", { exact: false })).toBeVisible();
-    await expect(page.getByText("not a third Academy program", { exact: false })).toBeVisible();
+    const methodScreen = page.locator('[data-academy-screen="4"]');
+    await expect(methodScreen.getByText("Paid cohort", { exact: true })).toBeVisible();
+    await expect(methodScreen.getByText("Free practice opportunity", { exact: true })).toBeVisible();
+    await expect(methodScreen.getByText("not a third Academy program", { exact: false })).toBeVisible();
+
+    const pricingFaq = methodScreen.getByRole("button", { name: "Are current prices published?" });
+    await pricingFaq.click();
+    await expect(methodScreen.getByText("No fixed price is published", { exact: false })).toBeVisible();
+
+    const employmentFaq = methodScreen.getByRole("button", { name: "Is employment or income guaranteed?" });
+    await employmentFaq.click();
+    await expect(methodScreen.getByText("employment, income, clients, certification", { exact: false })).toBeVisible();
+
     await expect(page.locator('[data-contact-form]')).toHaveAttribute("data-contact-mode", "preview");
     await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
   });
