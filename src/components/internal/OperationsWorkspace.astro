@@ -1,0 +1,79 @@
+---
+import type { OperationsWorkspaceView } from "../../lib/private-operations-workspace";
+
+type Props = {
+  workspace: OperationsWorkspaceView;
+  title?: string;
+};
+
+const {
+  workspace,
+  title = workspace.role === "dispatcher" ? "Dispatcher Operations Preview" : "Carrier Operations Preview",
+} = Astro.props;
+---
+
+<section class="operations-workspace" aria-labelledby="operations-workspace-title" data-private-workspace={workspace.role}>
+  <header>
+    <p class="eyebrow">Synthetic data · private preview · read only</p>
+    <h2 id="operations-workspace-title">{title}</h2>
+    <p>
+      No booking, messaging, negotiation, public export, or external action is available from this workspace.
+    </p>
+  </header>
+
+  <dl class="summary" aria-label="Workspace summary">
+    <div><dt>Rows</dt><dd>{workspace.summary.total}</dd></div>
+    <div><dt>Needs review</dt><dd>{workspace.summary.needsReview}</dd></div>
+    <div><dt>Duplicates</dt><dd>{workspace.summary.duplicates}</dd></div>
+    <div><dt>Quarantined</dt><dd>{workspace.summary.quarantined}</dd></div>
+  </dl>
+
+  <div class="table-wrap" tabindex="0" aria-label="Synthetic shipment history preview">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Reference</th>
+          <th scope="col">Route</th>
+          <th scope="col">Equipment</th>
+          <th scope="col">Date</th>
+          <th scope="col">Status</th>
+          <th scope="col">Freshness</th>
+          <th scope="col">Decision</th>
+          <th scope="col">Review</th>
+        </tr>
+      </thead>
+      <tbody>
+        {workspace.rows.map((row) => (
+          <tr data-review-required={String(row.requiresReview)}>
+            <td><code>{row.recordRef}</code></td>
+            <td>{row.origin} → {row.destination}</td>
+            <td>{row.equipmentClass.replaceAll("_", " ")}</td>
+            <td>{row.eventDate}</td>
+            <td>{row.lifecycleStatus}</td>
+            <td>{row.freshness}</td>
+            <td>{row.decision}</td>
+            <td>{row.requiresReview ? "Required" : "Clear"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>Public export: disabled. External actions: disabled.</p>
+  </footer>
+</section>
+
+<style>
+  .operations-workspace { display: grid; gap: 1rem; }
+  .eyebrow { font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr)); gap: .75rem; margin: 0; }
+  .summary div { border: 1px solid currentColor; border-radius: .75rem; padding: .75rem; }
+  .summary dt { font-size: .75rem; opacity: .7; }
+  .summary dd { margin: .25rem 0 0; font-size: 1.5rem; font-weight: 700; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 58rem; }
+  th, td { padding: .75rem; border-bottom: 1px solid currentColor; text-align: left; vertical-align: top; }
+  th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; }
+  code { font-size: .8rem; }
+</style>
