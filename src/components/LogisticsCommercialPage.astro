@@ -22,17 +22,21 @@ export type CommercialPageContent = {
 interface Props { content: CommercialPageContent; }
 const { content } = Astro.props;
 const canonical = Astro.url.pathname;
+const absoluteUrl = `https://hermeslogisticsus.com${canonical}`;
 const email = "mailto:freight_301@hermeslogisticsus.com";
 const phone = "tel:+12623023626";
+const organizationId = "https://hermeslogisticsus.com/#organization";
 const schema = [
   {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${absoluteUrl}#service`,
     name: content.h1,
     description: content.description,
-    provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" },
+    image: new URL(content.image, "https://hermeslogisticsus.com").toString(),
+    provider: { "@id": organizationId },
     areaServed: { "@type": "Country", name: "United States" },
-    url: `https://hermeslogisticsus.com${canonical}`,
+    url: absoluteUrl,
   },
   {
     "@context": "https://schema.org",
@@ -40,7 +44,7 @@ const schema = [
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
       { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
-      { "@type": "ListItem", position: 3, name: content.h1, item: `https://hermeslogisticsus.com${canonical}` },
+      { "@type": "ListItem", position: 3, name: content.h1, item: absoluteUrl },
     ],
   },
   {
@@ -55,7 +59,7 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={content.title} description={content.description} image={content.image} schema={schema}>
+<BaseLayout title={content.title} description={content.description} image={content.image} preloadImage={content.image} schema={schema}>
   <SiteHeader />
   <main id="main-content" class="commercial-page">
     <section class="commercial-hero">
