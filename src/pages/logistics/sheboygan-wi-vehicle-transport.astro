@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Sheboygan Vehicle Transport | Hermes Logistics";
+const description = "Request vehicle transport to or from Sheboygan, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, access, timing, condition, and equipment.";
+const canonicalUrl = new URL("/logistics/sheboygan-wi-vehicle-transport/", Astro.site).toString();
+
+const faq = [
+  { question: "What affects vehicle transport pricing in Sheboygan?", answer: "The exact origin and destination, vehicle size and condition, equipment type, access, timing, season, and carrier availability all affect review and pricing." },
+  { question: "Can dealers submit multiple vehicles?", answer: "Yes. Include the complete unit list, vehicle conditions, pickup and delivery access, preferred timing, and any required delivery sequence." },
+  { question: "What is needed for an auction pickup?", answer: "Provide the exact facility, lot or stock reference, release status, pickup hours, storage deadline, vehicle condition, and pickup contact." },
+  { question: "Is transport booked when the form is submitted?", answer: "No. The request must first be reviewed. A move is not represented as booked until the applicable arrangement is accepted and confirmed." },
+];
+
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Sheboygan vehicle transport request coordination", description, url: canonicalUrl, serviceType: "Vehicle transport request review and carrier coordination", areaServed: [{ "@type": "City", name: "Sheboygan", containedInPlace: { "@type": "State", name: "Wisconsin" } }, { "@type": "AdministrativeArea", name: "Eastern Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" }, { "@type": "ListItem", position: 3, name: "Sheboygan Vehicle Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell">
+      <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/paths/logistics/">Logistics</a> / <span aria-current="page">Sheboygan vehicle transport</span></nav>
+      <p class="eyebrow">Hermes Logistics · Sheboygan, Wisconsin</p>
+      <h1>Vehicle transport to and from Sheboygan, Wisconsin.</h1>
+      <p>Hermes reviews vehicle moves for dealers, auction customers, businesses, and private parties. Complete routing, condition, timing, release, and access details help determine the correct next step.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Sheboygan%2C%20WI#post-load">Prepare a transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=Sheboygan%2C%20WI#carrier-access">Carrier: share capacity</a></div>
+      <p>Submission begins a review and does not guarantee a carrier, price, or pickup window.</p>
+    </div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">Who we help</p><h2>Single-vehicle and multi-unit requests.</h2><div class="appleton-card-grid"><article><h3>Dealers</h3><p>Inventory purchases, sales, trades, transfers, and multi-unit moves with complete unit details.</p></article><article><h3>Auction customers</h3><p>Pickup planning with release status, facility rules, storage deadlines, and vehicle condition.</p></article><article><h3>Private customers</h3><p>Relocation, purchase, sale, or another planned vehicle move involving Sheboygan.</p></article><article><h3>Carriers</h3><p>Equipment, operating area, authority, capacity, and availability submitted for review.</p></article></div></div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">Related Wisconsin locations</p><h2>Build a connected local transport plan.</h2><p><a href="/logistics/fond-du-lac-wi-vehicle-transport/">Fond du Lac vehicle transport</a> · <a href="/logistics/milwaukee-wi-vehicle-transport/">Milwaukee vehicle transport</a> · <a href="/logistics/green-bay-wi-vehicle-transport/">Green Bay vehicle transport</a></p></div></section>
+
+    <section class="section logistics-faq" aria-labelledby="sheboygan-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="sheboygan-faq-title">Before you submit.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
