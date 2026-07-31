@@ -25,11 +25,11 @@ The latest verified CI before this extension was Website checks run #225, comple
 
 101. [x] Re-check Claude PRs #15–#17 and record their merged scope before continuing.
 102. [x] Re-check file overlap between PR #13 and PR #19 and document the reconciliation paths.
-103. [ ] Create a current-main synchronization plan that preserves Claude changes and both PR implementations.
-104. [ ] Create an executable lane-opportunity scoring module using only evidence fields, never guessed values.
-105. [ ] Add isolated automated tests for lane scoring, publish thresholds, and blocked records.
-106. [ ] Create a typed logistics language-eligibility registry for English, Spanish, Russian, Ukrainian, Romanian, Lithuanian, Hindi, Punjabi, and Gujarati.
-107. [ ] Create a typed car-hauler keyword registry by equipment, operating stage, problem, lane intent, and language.
+103. [x] Create a current-main synchronization plan that preserves Claude changes and both PR implementations.
+104. [x] Create an executable lane-opportunity scoring module using only evidence fields, never guessed values.
+105. [x] Add isolated automated tests for lane scoring, publish thresholds, and blocked records.
+106. [x] Create a typed logistics language-eligibility registry for English, Spanish, Russian, Ukrainian, Romanian, Lithuanian, Hindi, Punjabi, and Gujarati.
+107. [x] Create a typed car-hauler keyword registry by equipment, operating stage, problem, lane intent, and language.
 108. [ ] Create a carrier-page research-record schema with source, review date, demand evidence, competition evidence, and publication status.
 109. [ ] Create a paired dealer/shipper demand-record schema linked to verified carrier lanes.
 110. [ ] Produce the first evidence-only pilot-lane queue after the historical route export is located; keep blocked until then.
