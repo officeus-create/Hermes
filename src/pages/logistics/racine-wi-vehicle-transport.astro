@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Racine Vehicle Transport | Hermes Logistics";
+const description = "Request vehicle transport to or from Racine, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, timing, condition, and equipment needs.";
+const canonicalUrl = new URL("/logistics/racine-wi-vehicle-transport/", Astro.site).toString();
+const faq = [
+  { question: "What affects vehicle transport pricing in Racine?", answer: "Route distance, vehicle size and condition, open or enclosed equipment, facility access, timing, season, and current carrier availability all affect review." },
+  { question: "Can Hermes review auction pickups near Racine?", answer: "Yes. Provide the exact facility, release status, pickup hours, storage deadline, vehicle condition, and correct contact information." },
+  { question: "Can multiple vehicles be included in one request?", answer: "Yes. Include the complete unit list, condition of each vehicle, pickup and delivery requirements, and any required sequence." },
+  { question: "Does submitting a request create a booking?", answer: "No. A request must be reviewed and any next step confirmed separately based on route, equipment, compliance, timing, and capacity." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Racine vehicle transport request coordination", description, url: canonicalUrl, serviceType: "Vehicle transport request review and carrier coordination", areaServed: [{ "@type": "City", name: "Racine", containedInPlace: { "@type": "State", name: "Wisconsin" } }, { "@type": "AdministrativeArea", name: "Racine County, Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" }, { "@type": "ListItem", position: 3, name: "Racine Vehicle Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell">
+      <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/paths/logistics/">Logistics</a> / <span aria-current="page">Racine vehicle transport</span></nav>
+      <p class="eyebrow">Hermes Logistics · Racine, Wisconsin</p>
+      <h1>Vehicle transport to and from Racine, Wisconsin.</h1>
+      <p>Hermes reviews requests for dealer inventory, auction pickups, business moves, and private vehicle transport. Provide route, condition, timing, access, and equipment details for review.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Racine%2C%20WI#post-load">Prepare a transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=Racine%2C%20WI#carrier-access">Carrier: share capacity</a></div>
+      <p>Submitting a request does not guarantee price, timing, equipment, or carrier availability.</p>
+    </div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Complete request details</p><h2>Route, condition, access, and timing determine the next step.</h2><p>Prepare pickup and delivery city or ZIP, vehicle details, operability, requested dates, open or enclosed preference, release references, facility hours, and reliable contacts.</p><p>Use the <a href="/logistics/resources/auction-vehicle-pickup-checklist/">Auction Vehicle Pickup Checklist</a> and <a href="/logistics/resources/car-hauler-capacity-checklist/">Car Hauler Capacity Checklist</a> when applicable.</p></div></section>
+    <section class="section logistics-faq" aria-labelledby="racine-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="racine-faq-title">Before you submit.</h2></div><div class="faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
