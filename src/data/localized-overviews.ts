@@ -3,6 +3,7 @@ export type LocalizedOverview = {
   path: "/ua/" | "/ru/" | "/es/" | "/it/" | "/fr/";
   metaTitle: string;
   metaDescription: string;
+  heroImageAlt: string;
   hero: { eyebrow: string; title: string; body: string; primary: string; secondary: string };
   intro: { eyebrow: string; title: string; body: string };
   directions: {
@@ -27,6 +28,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
     path: "/ua/",
     metaTitle: "Hermes | Логістика, маркетинг, академія та IT",
     metaDescription: "Hermes об'єднує логістику, маркетинг, практичну бізнес-освіту й IT-розробку для компаній у США та міжнародних партнерів.",
+    heroImageAlt: "Чотири освітлені архітектурні портали, що символізують напрями бізнесу Hermes",
     hero: {
       eyebrow: "Логістика · Розвиток · Освіта · Технології",
       title: "Чотири напрями. Одна екосистема для зростання.",
@@ -99,6 +101,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
     path: "/ru/",
     metaTitle: "Hermes | Логистика, маркетинг, академия и IT",
     metaDescription: "Hermes объединяет логистику, маркетинг, практическое бизнес-образование и IT-разработку для компаний в США и международных партнёров.",
+    heroImageAlt: "Четыре освещённых архитектурных портала, символизирующих направления бизнеса Hermes",
     hero: {
       eyebrow: "Логистика · Развитие · Образование · Технологии",
       title: "Четыре направления. Одна экосистема для роста.",
@@ -171,6 +174,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
     path: "/es/",
     metaTitle: "Hermes | Logística, marketing, academia y desarrollo IT",
     metaDescription: "Hermes integra logística, marketing, formación empresarial práctica y desarrollo IT para empresas de Estados Unidos y socios internacionales.",
+    heroImageAlt: "Cuatro portales arquitectónicos iluminados que representan las direcciones de negocio de Hermes",
     hero: {
       eyebrow: "Logística · Crecimiento · Formación · Tecnología",
       title: "Cuatro áreas. Un ecosistema para crecer.",
@@ -243,6 +247,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
     path: "/it/",
     metaTitle: "Hermes | Logistica, marketing, academy e sviluppo IT",
     metaDescription: "Hermes integra logistica, marketing, formazione aziendale pratica e sviluppo IT per imprese negli Stati Uniti e partner internazionali.",
+    heroImageAlt: "Quattro portali architettonici illuminati che rappresentano le direzioni di business di Hermes",
     hero: {
       eyebrow: "Logistica · Crescita · Formazione · Tecnologia",
       title: "Quattro aree. Un ecosistema per crescere.",
@@ -315,6 +320,7 @@ export const localizedOverviews: Record<"uk" | "ru" | "es" | "it" | "fr", Locali
     path: "/fr/",
     metaTitle: "Hermes | Logistique, marketing, académie et développement IT",
     metaDescription: "Hermes réunit logistique, marketing, formation professionnelle et développement IT pour les entreprises aux États-Unis et leurs partenaires internationaux.",
+    heroImageAlt: "Quatre portails architecturaux illuminés représentant les directions commerciales de Hermes",
     hero: {
       eyebrow: "Logistique · Croissance · Formation · Technologie",
       title: "Quatre pôles. Un écosystème pour grandir.",
