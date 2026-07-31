@@ -12,21 +12,21 @@ const routes = [
     required: [
       "Hermes Case Studies",
       "/case/it-development/",
-      "/case/logistics-seo-foundation/",
+      "/case/appleton-vehicle-transport-seo/",
       "CollectionPage",
       "BreadcrumbList",
     ],
   },
   {
-    route: "/case/logistics-seo-foundation/",
-    file: "case/logistics-seo-foundation/index.html",
+    route: "/case/appleton-vehicle-transport-seo/",
+    file: "case/appleton-vehicle-transport-seo/index.html",
     required: [
-      "Logistics SEO Foundation",
+      "Appleton Vehicle Transport SEO Case Study",
       "/logistics/appleton-wi-vehicle-transport/",
       "/logistics/resources/auction-vehicle-pickup-checklist/",
       "/logistics/resources/car-hauler-capacity-checklist/",
-      "Search Console",
-      "Article",
+      "Measurement in progress",
+      "CreativeWork",
       "BreadcrumbList",
     ],
   },
@@ -42,9 +42,9 @@ for (const page of routes) {
   assert.ok(!/MC\s*\d+|DOT\s*\d+|BOL|POD|commission|live truck position/i.test(html), `${page.route} must not expose protected operational details`);
 }
 
-const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
+const sitemap = await readFile(join(dist, "sitemap-cases.xml"), "utf8");
 for (const page of routes) {
-  assert.ok(sitemap.includes(`https://hermeslogisticsus.com${page.route}`), `${page.route} must be in sitemap.xml`);
+  assert.ok(sitemap.includes(`https://hermeslogisticsus.com${page.route}`), `${page.route} must be in sitemap-cases.xml`);
 }
 
 console.log("Case studies growth checks passed.");
