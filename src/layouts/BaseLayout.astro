@@ -17,6 +17,10 @@ const { title, description, image = "/images/hermes-social-share-2026.jpg", sche
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
+const alternateOgLocales = alternates
+  .map((alternate) => alternate.lang)
+  .filter((lang): lang is SiteLocale => lang in localeConfig && lang !== locale)
+  .map((lang) => localeConfig[lang].ogLocale);
 ---
 
 <!doctype html>
@@ -26,6 +30,7 @@ const ogLocale = localeConfig[locale].ogLocale;
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="color-scheme" content="light" />
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     <meta property="og:type" content="website" />
@@ -40,6 +45,7 @@ const ogLocale = localeConfig[locale].ogLocale;
     <meta property="og:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />
+    {alternateOgLocales.map((alternateLocale) => <meta property="og:locale:alternate" content={alternateLocale} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
