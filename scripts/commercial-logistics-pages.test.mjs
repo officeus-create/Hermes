@@ -11,13 +11,13 @@ const pages = [
   {
     route: "/logistics/car-hauling-dispatch/",
     file: join(dist, "logistics", "car-hauling-dispatch", "index.html"),
-    title: "Car Hauling Dispatch Services | Hermes Logistics",
-    h1: "Car Hauling Dispatch and Operations Support",
+    title: "Car Hauling Dispatch Services for Owner-Operators | Hermes Logistics",
+    h1: "Car Hauling Dispatch Services for Owner-Operators and Small Fleets",
     required: [
       "carrier reviews and approves every load before booking",
       "The carrier makes the final operating decision",
       "MC, DOT, operating authority, insurance status",
-      "Does Hermes guarantee loads or revenue?",
+      "Does Hermes guarantee loads, rates, or revenue?",
       "/logistics/dealer-vehicle-transportation/",
       "/contacts/",
     ],
@@ -25,8 +25,8 @@ const pages = [
   {
     route: "/logistics/dealer-vehicle-transportation/",
     file: join(dist, "logistics", "dealer-vehicle-transportation", "index.html"),
-    title: "Dealer Vehicle Transportation | Hermes Logistics",
-    h1: "Dealer Vehicle Transportation Coordination",
+    title: "Dealer Vehicle Transportation Services | Hermes Logistics",
+    h1: "Dealer Vehicle Transportation Services",
     required: [
       "qualified carrier capacity",
       "Availability is never guaranteed before confirmation",
