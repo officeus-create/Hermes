@@ -4,26 +4,34 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 ---
 
-<BaseLayout title="Privacy notice | Hermes" description="Privacy information for the Hermes website contact workflow.">
+<BaseLayout title="Privacy notice | Hermes" description="Learn how the Hermes website handles preview forms, direct contact links, limited analytics events, personal information, and future live form delivery.">
   <SiteHeader />
   <main class="legal-page" id="main-content">
     <div class="shell legal-content">
       <p class="eyebrow">Privacy notice</p>
-      <h1>How the contact form works.</h1>
-      <p class="legal-lead">The current website runs the contact form in preview mode. Information entered into the form is not sent to Hermes and is not stored by the website.</p>
+      <h1>How website contact and analytics currently work.</h1>
+      <p class="legal-lead">The general website contact form currently runs in preview mode. Information entered into that preview is not sent to Hermes and is not stored by the website.</p>
       <section>
-        <h2>When delivery is connected</h2>
-        <p>Before live delivery is enabled, this notice will identify the receiving company, contact destination, purpose, retention approach, and available privacy contact.</p>
+        <h2>Direct phone and email contact</h2>
+        <p>When you choose a public phone or email link, your device opens the relevant calling or email application. Information you send through those applications is handled by the selected provider and received through the published Hermes contact route.</p>
+      </section>
+      <section>
+        <h2>When live form delivery is connected</h2>
+        <p>Before a preview form is changed to live delivery, the page and this notice must identify the receiving company, contact destination, purpose, required consent, retention approach, security controls, and available privacy contact.</p>
       </section>
       <section>
         <h2>Information requested</h2>
-        <p>The form asks for a name, email address, area of interest, and a short description of the request. It does not request passwords, payment details, identity documents, or confidential credentials.</p>
+        <p>Preview and intake interfaces may ask for a name, business contact details, area of interest, role, equipment, or a short description of the request. Do not enter passwords, payment credentials, identity documents, VINs, exact private addresses, or confidential records unless a secure live workflow explicitly requests them.</p>
       </section>
       <section>
-        <h2>External services</h2>
-        <p>No CRM, analytics, advertising tracker, or form-delivery service is connected in the current version.</p>
+        <h2>Website analytics</h2>
+        <p>Google Analytics 4 is used to understand page visits and limited website interactions. Approved events may include the page path and whether a visitor selected a phone or email contact method. Names, email addresses, telephone numbers, VINs, authority numbers, exact routes, exact addresses, document contents, and free-form messages must not be sent in analytics events or URL parameters.</p>
       </section>
-      <a class="button button-primary" href="/#contact">Return to the contact form</a>
+      <section>
+        <h2>Preview boundaries</h2>
+        <p>A preview, prototype, or dry-run interface does not create an account, booking, payment, calendar event, CRM record, load, carrier approval, or external message unless the page explicitly confirms that a live delivery workflow is active.</p>
+      </section>
+      <a class="button button-primary" href="/#contact">Return to the contact options</a>
     </div>
   </main>
   <SiteFooter />
