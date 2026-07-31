@@ -12,32 +12,54 @@ import WhyItMatters from "../components/WhyItMatters.astro";
 import { site } from "../data/site";
 import { languageAlternates } from "../data/locales";
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Hermes",
-  url: "https://hermeslogisticsus.com/",
-  logo: "https://hermeslogisticsus.com/favicon.svg",
-  areaServed: [
-    { "@type": "Country", name: "United States" },
-    { "@type": "Country", name: "Italy" },
-    { "@type": "Country", name: "Germany" },
-    { "@type": "Country", name: "France" },
-    { "@type": "Country", name: "United Kingdom" },
-  ],
-  sameAs: [
-    "https://www.instagram.com/hermes.logistics/",
-    "https://www.threads.com/@hermes.logistics",
-    "https://www.instagram.com/progressopro/",
-  ],
-};
+const organizationId = "https://hermeslogisticsus.com/#organization";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": organizationId,
+    name: "Hermes",
+    url: "https://hermeslogisticsus.com/",
+    logo: "https://hermeslogisticsus.com/favicon.svg",
+    email: "officeus@hermeslogisticsus.com",
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        telephone: "+1-262-302-3626",
+        contactType: "sales",
+        areaServed: "US",
+      },
+    ],
+    areaServed: [
+      { "@type": "Country", name: "United States" },
+      { "@type": "Country", name: "Italy" },
+      { "@type": "Country", name: "Germany" },
+      { "@type": "Country", name: "France" },
+      { "@type": "Country", name: "United Kingdom" },
+    ],
+    sameAs: [
+      "https://www.instagram.com/hermes.logistics/",
+      "https://www.threads.com/@hermes.logistics",
+      "https://www.instagram.com/progressopro/",
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://hermeslogisticsus.com/#website",
+    name: "Hermes",
+    url: "https://hermeslogisticsus.com/",
+    publisher: { "@id": organizationId },
+    inLanguage: ["en", "es", "fr", "uk", "it", "ru"],
+  },
+];
 ---
 
 <BaseLayout
   title="Hermes | Logistics, Marketing, Academy & IT"
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
   preloadImage={site.hero.image}
-  schema={organizationSchema}
+  schema={schema}
   alternates={languageAlternates}
 >
   <SiteHeader />
