@@ -19,7 +19,7 @@ export const academyPublicPathOverrides: Partial<PathDetail> = {
     { title: "Marketing path", items: ["Positioning and offer", "Content and campaigns", "Lead journey", "Sales follow-up", "Analytics and improvement"] },
   ],
   faq: [
-    { question: "Which public programs are currently presented?", answer: "The public Academy page presents two programs: U.S. Logistics Operations and Marketing. Other internal leadership or technology topics are not presented as separate public Academy programs." },
+    { question: "Which public programs are currently presented?", answer: "The public Academy page presents two programs: U.S. Logistics Operations and Marketing. The former COO / Operational Director Program and other multi-business leadership or technology topics are not presented as separate public Academy programs." },
     { question: "What is the difference between a paid cohort and free practice?", answer: "A paid cohort is a separately approved education offer with published scope, dates, price, enrollment terms, and refund terms. Free practice is a separate application-based learning opportunity with eligibility, participation, feedback, and removal rules. One does not imply the other." },
     { question: "Are current prices published on this website?", answer: "No fixed Academy price is published until the owner approves the exact program, cohort, scope, dates, payment terms, and public offer. This website does not accept Academy payment." },
     { question: "Is employment, income, certification, or promotion guaranteed?", answer: "No. Training and practice are intended to build capability and evidence of readiness. Employment, income, clients, certification, promotion, and business results are not guaranteed." },
