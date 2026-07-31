@@ -38,13 +38,15 @@ The 100-task growth sprint has completed every task that can be implemented safe
 
 ## CI evidence
 
-GitHub Actions `Website checks` run #220 completed successfully on commit:
+GitHub Actions `Website checks` run #221 completed successfully on commit:
 
-`07e7b259bdc2bcb69a983615468deeda3a491a95`
+`0bfecdae73c22e159303210bc3ad0b1164f58e62`
 
 Result: `success`.
 
-This confirms the current PR head builds and passes the available website checks, including the Careers sitemap and focused regression-test coverage.
+This confirms the current reviewed PR head builds and passes the available website checks, including the Careers sitemap and focused regression-test coverage.
+
+A new CI run is expected after this documentation-only accuracy update. That later run must also be green before merge review.
 
 ## Conflict review
 
