@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Wisconsin Multi-Vehicle Dealer Transport | Hermes Logistics";
+const description = "Prepare multi-vehicle dealer transport requests in Wisconsin with complete unit lists, condition, route, access, timing, and delivery sequence details.";
+const canonicalUrl = new URL("/logistics/wisconsin-multi-vehicle-dealer-transport/", Astro.site).toString();
+const faq = [
+  { question: "What is needed for a multi-vehicle dealer request?", answer: "Provide a complete unit list, vehicle condition, pickup and delivery locations, facility access, timing, required sequence, and reliable contacts." },
+  { question: "Can operable and inoperable vehicles be combined?", answer: "They can be submitted together for review, but loading requirements may differ. Clearly state whether every unit starts, rolls, steers, and brakes." },
+  { question: "Can delivery order be requested?", answer: "Yes. State the preferred sequence, but final feasibility depends on equipment layout, route, access, compliance, and carrier acceptance." },
+  { question: "Does submitting a unit list guarantee one truck?", answer: "No. The request may require one or more equipment options depending on vehicle count, dimensions, condition, route, timing, and capacity." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Wisconsin multi-vehicle dealer transport request coordination", description, url: canonicalUrl, serviceType: "Multi-vehicle dealer transport request review and carrier coordination", areaServed: [{ "@type": "State", name: "Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" }, audience: { "@type": "BusinessAudience", audienceType: "Auto dealers and automotive businesses" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Wisconsin Dealer Vehicle Transport", item: "https://hermeslogisticsus.com/logistics/wisconsin-dealer-vehicle-transport/" }, { "@type": "ListItem", position: 3, name: "Wisconsin Multi-Vehicle Dealer Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell"><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/logistics/wisconsin-dealer-vehicle-transport/">Wisconsin dealer transport</a> / <span aria-current="page">Multi-vehicle transport</span></nav><p class="eyebrow">Hermes Logistics · Wisconsin dealer inventory</p><h1>Multi-vehicle dealer transport in Wisconsin.</h1><p>Hermes reviews multi-unit requests for dealer purchases, sales, transfers, trades, and auction inventory. A complete unit list, disclosed condition, route, timing, access, and delivery sequence are required before equipment fit can be evaluated.</p><div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=dealer&amp;origin=Wisconsin&amp;quantity=multiple#post-load">Prepare a multi-vehicle request</a><a class="button" href="/logistics/wisconsin-dealer-vehicle-transport/">Dealer transport overview</a></div><p>Vehicle count does not guarantee one truck or one pickup window.</p></div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Unit-list preparation</p><h2>Every vehicle must be individually clear.</h2><div class="appleton-card-grid"><article><h3>Identity</h3><p>Year, make, model, internal stock reference, dimensions when unusual, and quantity.</p></article><article><h3>Condition</h3><p>Whether each unit starts, rolls, steers, and brakes, plus disclosed damage or modifications.</p></article><article><h3>Access</h3><p>Facility hours, release status, loading restrictions, appointment rules, and contacts.</p></article><article><h3>Sequence</h3><p>Requested pickup and delivery order, deadlines, and any location-specific receiving rules.</p></article></div></div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Related planning</p><h2>Connect inventory to the right workflow.</h2><p><a href="/logistics/wisconsin-auction-vehicle-pickup/">Auction pickup</a> · <a href="/logistics/wisconsin-enclosed-vehicle-transport/">Enclosed vehicle transport</a> · <a href="/logistics/wisconsin-vehicle-transport/">Wisconsin location hub</a></p></div></section>
+    <section class="section logistics-faq" aria-labelledby="multi-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="multi-faq-title">Multi-vehicle transport questions.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main><SiteFooter />
+</BaseLayout>
