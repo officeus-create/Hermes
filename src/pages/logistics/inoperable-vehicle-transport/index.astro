@@ -1,0 +1,52 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+const content = {
+  title: "Inoperable Vehicle Transport Services | Hermes Logistics",
+  description: "Inoperable vehicle transport request coordination for non-running cars, auction vehicles, dealer inventory, restoration projects, and special loading needs.",
+  eyebrow: "Hermes Logistics · Inoperable Vehicle Transport",
+  h1: "Inoperable Vehicle Transport Services",
+  intro: "Hermes reviews transport requests for vehicles that do not start, roll, steer, or brake normally. Accurate condition disclosure, loading access, dimensions, route, timing, and equipment requirements are essential before carrier coordination begins.",
+  image: "/images/path-logistics-system.jpg",
+  imageAlt: "Inoperable vehicle transport and specialized loading coordination",
+  audience: [
+    "Auction buyers with non-running or damaged vehicles",
+    "Dealers moving inoperable inventory or trade-ins",
+    "Restoration customers transporting project vehicles",
+    "Businesses coordinating authorized moves with special loading needs",
+  ],
+  benefits: [
+    { title: "Operability detail review", body: "The request records whether the vehicle starts, rolls, steers, and brakes and identifies missing wheels, locked steering, severe damage, or unusual dimensions." },
+    { title: "Loading requirement review", body: "Winch needs, forklift availability, loading surfaces, access, keys, and facility capabilities are considered before equipment matching." },
+    { title: "Auction and storage coordination", body: "Release status, pickup hours, storage deadlines, facility rules, and reliable contacts are organized before the next step." },
+    { title: "Equipment-aware matching", body: "Compatible open, enclosed, hotshot, or other equipment is evaluated against the actual condition, dimensions, route, access, and carrier capability." },
+    { title: "Clear handling boundaries", body: "Special handling requirements must be disclosed. No assumption is made that every carrier or trailer can load every inoperable vehicle." },
+    { title: "Carrier confirmation required", body: "No move is represented as booked until a compatible carrier reviews the disclosed condition and accepts the arrangement." },
+  ],
+  process: [
+    { title: "Describe the condition", body: "State exactly whether the vehicle starts, rolls, steers, and brakes and disclose damage, missing parts, locked wheels, dimensions, and ground-clearance concerns." },
+    { title: "Confirm loading access", body: "Provide pickup surface, space, facility equipment, winch or forklift availability, keys, contacts, hours, and restrictions." },
+    { title: "Review route and timing", body: "Pickup readiness, storage deadline, destination access, requested windows, and route requirements are evaluated." },
+    { title: "Match equipment capability", body: "Carrier and equipment options are reviewed against the actual loading and handling requirements." },
+    { title: "Confirm the arrangement", body: "The move proceeds only after compatible equipment, terms, and carrier acceptance are confirmed." },
+  ],
+  faq: [
+    { question: "What makes a vehicle inoperable?", answer: "A vehicle may be inoperable if it does not start, roll, steer, or brake normally. Damage, missing wheels, locked steering, or other conditions can also affect loading." },
+    { question: "Can every inoperable vehicle be transported?", answer: "No. Feasibility depends on condition, dimensions, loading access, equipment capability, route, compliance, timing, and carrier acceptance." },
+    { question: "Is a winch always enough?", answer: "No. Some conditions may require different equipment or facility assistance. The exact vehicle and loading environment must be reviewed." },
+    { question: "Can a damaged auction vehicle be picked up?", answer: "It may be reviewed when release status, facility rules, condition, keys, loading access, storage deadlines, and route details are provided." },
+    { question: "What photos or details help?", answer: "Clear condition descriptions and secure direct sharing of current photos can help. Do not place VINs, documents, or sensitive release information in public URLs." },
+    { question: "Is timing guaranteed?", answer: "No. Timing depends on compatible equipment, route, facility access, condition, compliance, capacity, weather, traffic, and final confirmation." },
+  ],
+  related: [
+    { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
+    { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
+    { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
+    { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
+    { label: "Auction Vehicle Pickup Checklist", href: "/logistics/resources/auction-vehicle-pickup-checklist/" },
+    { label: "Contact Hermes", href: "/contacts/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />
