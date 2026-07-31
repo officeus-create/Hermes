@@ -1,0 +1,120 @@
+---
+import { ArrowRight, Braces, SearchCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+const cases = [
+  {
+    number: "01",
+    eyebrow: "IT Development · Live product",
+    title: "Hermes corporate website: one digital front door for four businesses",
+    description:
+      "Strategy, information architecture, original design, Astro engineering, automated QA, and controlled production delivery for the Hermes corporate website.",
+    href: "/case/it-development/",
+    icon: Braces,
+    status: "Live and evolving",
+  },
+  {
+    number: "02",
+    eyebrow: "Logistics SEO · Published resource cluster",
+    title: "Appleton vehicle transport SEO: service page plus two operational checklists",
+    description:
+      "An evidence-first logistics content release combining a commercial local page, auction pickup guidance, carrier-capacity guidance, structured data, and internal links.",
+    href: "/case/appleton-vehicle-transport-seo/",
+    icon: Truck,
+    status: "Published · Measurement started",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Hermes Case Studies",
+    description:
+      "Verified Hermes case studies covering live website development and evidence-first logistics SEO releases.",
+    url: "https://hermeslogisticsus.com/case/",
+    hasPart: cases.map((item) => ({
+      "@type": "CreativeWork",
+      name: item.title,
+      url: new URL(item.href, "https://hermeslogisticsus.com").toString(),
+      description: item.description,
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Case Studies", item: "https://hermeslogisticsus.com/case/" },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Hermes Case Studies | Websites, SEO and Logistics"
+  description="Review verified Hermes case studies for website development and evidence-first logistics SEO. Results are separated from work delivered and added only after measurement."
+  schema={schema}
+>
+  <SiteHeader />
+  <main id="main-content" class="case-hub">
+    <section class="case-hub-hero" id="top">
+      <div class="shell">
+        <nav class="case-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span aria-current="page">Case Studies</span></nav>
+        <p class="eyebrow">Hermes · Verified work</p>
+        <h1>Case studies built from released work, not promises.</h1>
+        <p class="case-hub-lead">
+          Each case separates what was implemented, what was verified, and what still requires Search Console, analytics,
+          customer, or operational evidence. We do not convert unfinished work or synthetic data into public results claims.
+        </p>
+        <a class="button button-primary" href="#published-cases">Review published cases <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+
+    <section class="section" id="published-cases" aria-labelledby="published-cases-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Published cases</p><h2 id="published-cases-title">Delivery evidence first. Performance evidence second.</h2></div>
+          <p>Search rankings, impressions, clicks, inquiries, and commercial outcomes are added only after a dated, reviewable source is available.</p>
+        </div>
+        <div class="case-grid">
+          {cases.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article>
+                <div class="case-card-top"><span>{item.number}</span><Icon size={27} aria-hidden="true" /></div>
+                <p class="eyebrow">{item.eyebrow}</p>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+                <div class="case-card-status"><i aria-hidden="true"></i>{item.status}</div>
+                <a href={item.href}>Open case study <ArrowRight size={17} aria-hidden="true" /></a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <section class="section case-method" aria-labelledby="case-method-title">
+      <div class="shell case-method-layout">
+        <SearchCheck size={38} aria-hidden="true" />
+        <div>
+          <p class="eyebrow">Evidence standard</p>
+          <h2 id="case-method-title">What qualifies as a result.</h2>
+          <p>
+            A public performance statement needs a source date, defined comparison period, correct page or query scope,
+            and a privacy review. Until then, the case reports implementation, release quality, and measurement status only.
+          </p>
+        </div>
+        <a class="button" href="/contacts/">Discuss a measurable project <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .case-hub{background:#fff}.case-hub-hero{padding:9rem 0 5rem;background:#071038;color:#fff}.case-breadcrumbs{display:flex;gap:.55rem;margin-bottom:2rem;color:rgba(255,255,255,.66);font-size:.84rem}.case-breadcrumbs a{color:inherit}.case-hub-hero h1{max-width:14ch;font-size:clamp(3rem,7vw,6.2rem)}.case-hub-lead{max-width:68ch;color:rgba(255,255,255,.78);font-size:1.15rem}.case-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}.case-grid article{display:flex;flex-direction:column;padding:clamp(1.4rem,3vw,2.2rem);border:1px solid #ded9ec;border-radius:10px;background:#fff}.case-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;color:#6a20d9}.case-card-top span{font-family:var(--font-mono);font-size:.82rem}.case-grid h3{font-size:clamp(1.45rem,2.5vw,2rem)}.case-grid article>p:not(.eyebrow){flex:1}.case-card-status{display:flex;gap:.55rem;align-items:center;margin:1rem 0;font-size:.86rem;font-weight:700}.case-card-status i{width:.6rem;height:.6rem;border-radius:50%;background:#1d9f69}.case-grid a{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid #eee;font-weight:750}.case-method{background:#f7f4ff}.case-method-layout{display:grid;grid-template-columns:auto 1fr auto;gap:1.5rem;align-items:center}.case-method-layout>svg{color:#6a20d9}.case-method h2{margin-bottom:.7rem}@media(max-width:800px){.case-grid,.case-method-layout{grid-template-columns:1fr}.case-hub-hero{padding-top:7.5rem}.case-method-layout .button{justify-self:start}}
+</style>
