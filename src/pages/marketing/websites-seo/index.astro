@@ -1,0 +1,382 @@
+---
+import {
+  ArrowRight,
+  BarChart3,
+  Check,
+  Code2,
+  FileSearch,
+  Languages,
+  MapPin,
+  Search,
+  ShieldCheck,
+  Workflow,
+} from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Website Development & SEO for U.S. Businesses | Hermes";
+const description = "Website builds, redesigns, technical SEO, Local SEO, multilingual content, analytics, and CRM handoff for businesses serving the U.S. market.";
+const canonicalUrl = new URL("/marketing/websites-seo/", Astro.site).toString();
+const inquiryHref = "mailto:officeus@hermeslogisticsus.com?subject=Website%20and%20SEO%20Project%20Inquiry&body=Company%3A%0AWebsite%20URL%3A%0ATarget%20market%3A%0AMain%20service%20or%20product%3A%0ACurrent%20priority%3A%0ATimeline%3A";
+
+const faq = [
+  {
+    question: "Can Hermes build a new website and handle SEO together?",
+    answer: "Yes. A project can combine information architecture, design, development, technical search foundations, page optimization, analytics, and a post-launch content plan. The exact scope is confirmed after reviewing the business, existing assets, and market.",
+  },
+  {
+    question: "Do you guarantee first-page rankings or a fixed number of leads?",
+    answer: "No. Search visibility and lead volume depend on competition, demand, the offer, website quality, authority, local relevance, investment, and execution. Hermes defines measurable work, baseline conditions, and review points without promising a specific ranking or lead count.",
+  },
+  {
+    question: "Can you improve an existing website instead of rebuilding it?",
+    answer: "Yes. The first step can be a focused audit covering technical issues, page structure, conversion paths, search intent, content gaps, analytics, and maintainability. A rebuild is recommended only when the current platform or structure prevents practical improvement.",
+  },
+  {
+    question: "Can the website support English, Spanish, Russian, or Ukrainian audiences?",
+    answer: "Multilingual architecture can be included when the business can genuinely serve the selected audience. Each language needs natural copy, a clear service scope, correct canonical and hreflang implementation, and a realistic communication process after the inquiry.",
+  },
+  {
+    question: "Is Local SEO included?",
+    answer: "Local SEO can be included for businesses with a legitimate service area or physical presence. Work may cover location signals, service pages, Google Business Profile guidance, structured data, internal links, and review workflows. Mass-produced city pages are not part of the approach.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Website development and SEO for U.S. businesses",
+    description,
+    url: canonicalUrl,
+    serviceType: [
+      "Website development",
+      "Website redesign",
+      "Technical SEO",
+      "Local SEO",
+      "Multilingual website architecture",
+      "Analytics and CRM handoff",
+    ],
+    areaServed: { "@type": "Country", name: "United States" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Marketing", item: "https://hermeslogisticsus.com/paths/marketing/" },
+      { "@type": "ListItem", position: 3, name: "Website Development and SEO", item: canonicalUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+
+const services = [
+  {
+    icon: Code2,
+    title: "New website or focused redesign",
+    body: "Structure the offer, customer journey, navigation, design system, mobile experience, content model, and maintainable implementation around the business objective.",
+  },
+  {
+    icon: Search,
+    title: "Technical and on-page SEO",
+    body: "Build crawlable pages with clear titles, headings, canonicals, internal links, structured data, performance standards, and content mapped to real search intent.",
+  },
+  {
+    icon: MapPin,
+    title: "Local SEO with evidence",
+    body: "Develop useful service-area content and local signals only where the company has a legitimate market fit, real service capability, and enough unique value for the visitor.",
+  },
+  {
+    icon: Languages,
+    title: "Multilingual architecture",
+    body: "Plan language-specific URLs, natural terminology, hreflang, conversion paths, and communication boundaries for businesses serving more than one language audience.",
+  },
+  {
+    icon: BarChart3,
+    title: "Analytics and conversion review",
+    body: "Define privacy-conscious events, baseline measurements, inquiry routes, and review cycles that show where visitors progress, hesitate, or leave.",
+  },
+  {
+    icon: Workflow,
+    title: "CRM and operational handoff",
+    body: "Connect the inquiry structure to the sales or operations workflow so qualified information reaches the right person without promising an integration before it is tested.",
+  },
+];
+
+const niches = [
+  "Logistics companies and carriers",
+  "Independent auto dealers and vehicle businesses",
+  "Beauty, wellness, and aesthetic services",
+  "Education and training businesses",
+  "Professional and home services",
+  "Multilingual and immigrant-owned businesses",
+];
+
+const process = [
+  {
+    step: "01",
+    title: "Business and website review",
+    body: "Confirm the offer, customer, service area, existing website, sales workflow, languages, evidence, constraints, and the most important business outcome.",
+  },
+  {
+    step: "02",
+    title: "Scope and priority map",
+    body: "Separate launch requirements from later improvements. Define page architecture, content responsibilities, technical requirements, measurements, and review gates.",
+  },
+  {
+    step: "03",
+    title: "Design, build, and technical QA",
+    body: "Implement the approved pages and conversion paths, then test accessibility, responsive behavior, metadata, schema, internal links, forms, and performance.",
+  },
+  {
+    step: "04",
+    title: "Launch review and search foundation",
+    body: "Confirm canonical URLs, sitemap coverage, analytics, inquiry routing, indexation settings, and the first evidence-based content priorities before release.",
+  },
+  {
+    step: "05",
+    title: "Measure and improve",
+    body: "Use Search Console, analytics, lead quality, technical checks, and sales feedback to decide what to improve next instead of generating pages without evidence.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="webseo-page">
+    <SiteHeader theme="dark" activePath="/paths/marketing/" />
+    <main id="main-content">
+      <section class="webseo-hero">
+        <div class="webseo-shell">
+          <nav class="webseo-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <a href="/paths/marketing/">Marketing</a><span aria-hidden="true">/</span>
+            <span aria-current="page">Websites & SEO</span>
+          </nav>
+          <div class="webseo-hero-grid">
+            <div>
+              <p class="webseo-kicker">Hermes Marketing + IT Development · U.S. market</p>
+              <h1>Website development and SEO built as one practical growth system.</h1>
+              <p class="webseo-lead">
+                Plan, build, improve, and measure a website around the real offer, search demand, customer journey, and sales handoff—without ranking guarantees or mass-produced location pages.
+              </p>
+              <div class="webseo-actions">
+                <a class="webseo-button webseo-button-primary" href={inquiryHref}>
+                  Start a project inquiry <ArrowRight size={18} aria-hidden="true" />
+                </a>
+                <a class="webseo-button" href="/paths/technology/">Review IT Development</a>
+              </div>
+              <p class="webseo-note">The email draft opens on your device. Sending it is your action; the website does not silently submit or store the message.</p>
+            </div>
+            <aside class="webseo-proof-card">
+              <ShieldCheck size={34} aria-hidden="true" />
+              <p>Scope before promises</p>
+              <h2>Clear deliverables. Honest boundaries.</h2>
+              <ul>
+                <li>Website and conversion architecture</li>
+                <li>Technical and content SEO foundation</li>
+                <li>Local and multilingual planning when justified</li>
+                <li>Analytics and operational handoff</li>
+                <li>No guaranteed rankings, traffic, leads, or revenue</li>
+              </ul>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="webseo-section" aria-labelledby="services-title">
+        <div class="webseo-shell">
+          <div class="webseo-section-heading">
+            <div>
+              <p class="webseo-kicker">Service scope</p>
+              <h2 id="services-title">Build the parts that need to work together.</h2>
+            </div>
+            <p>A project can include one focused improvement or a coordinated build. The final scope depends on the current platform, evidence, market, timeline, and internal capacity.</p>
+          </div>
+          <div class="webseo-service-grid">
+            {services.map(({ icon: Icon, title: serviceTitle, body }) => (
+              <article>
+                <Icon size={28} aria-hidden="true" />
+                <h3>{serviceTitle}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="webseo-section webseo-niches" aria-labelledby="niches-title">
+        <div class="webseo-shell webseo-two-column">
+          <div>
+            <p class="webseo-kicker">Niche-first research</p>
+            <h2 id="niches-title">Start where industry knowledge creates a better page.</h2>
+            <p>
+              Hermes prioritizes businesses where the team can understand the inquiry, workflow, terminology, compliance boundaries, and conversion path—not generic city pages with a location name swapped in.
+            </p>
+            <a class="webseo-text-link" href="/paths/marketing/">See the complete marketing system <ArrowRight size={17} aria-hidden="true" /></a>
+          </div>
+          <ul class="webseo-check-list">
+            {niches.map((niche) => <li><Check size={18} aria-hidden="true" />{niche}</li>)}
+          </ul>
+        </div>
+      </section>
+
+      <section class="webseo-section" aria-labelledby="process-title">
+        <div class="webseo-shell">
+          <div class="webseo-section-heading">
+            <div>
+              <p class="webseo-kicker">Working process</p>
+              <h2 id="process-title">From business reality to a tested launch.</h2>
+            </div>
+            <p>Each phase produces a reviewable output. A larger build does not move forward on assumptions that should have been confirmed earlier.</p>
+          </div>
+          <ol class="webseo-process">
+            {process.map((item) => (
+              <li>
+                <span>{item.step}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="webseo-section webseo-audit" aria-labelledby="audit-title">
+        <div class="webseo-shell webseo-audit-card">
+          <FileSearch size={38} aria-hidden="true" />
+          <div>
+            <p class="webseo-kicker">Not sure whether to rebuild?</p>
+            <h2 id="audit-title">Begin with a focused website and search review.</h2>
+            <p>
+              Review the current technical foundation, mobile experience, page structure, search intent, conversion path, analytics, maintainability, and content gaps before deciding between targeted repairs and a full rebuild.
+            </p>
+          </div>
+          <a class="webseo-button webseo-button-primary" href={inquiryHref}>Request project review</a>
+        </div>
+      </section>
+
+      <section class="webseo-section webseo-faq" aria-labelledby="faq-title">
+        <div class="webseo-shell">
+          <div class="webseo-section-heading">
+            <div>
+              <p class="webseo-kicker">FAQ</p>
+              <h2 id="faq-title">Before the first project conversation.</h2>
+            </div>
+          </div>
+          <div class="webseo-faq-list">
+            {faq.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="webseo-section webseo-final" aria-labelledby="final-title">
+        <div class="webseo-shell webseo-final-grid">
+          <div>
+            <p class="webseo-kicker">Prepare the inquiry</p>
+            <h2 id="final-title">Send enough context for a useful first review.</h2>
+            <p>Include the company, current website, target market, main service, priority, timeline, languages, and the sales or operational workflow the website should support.</p>
+            <p class="webseo-reviewed"><time datetime="2026-07-31">Reviewed July 31, 2026</time> · Operational and claims review required before material changes.</p>
+          </div>
+          <div class="webseo-final-actions">
+            <a class="webseo-button webseo-button-primary" href={inquiryHref}>Open structured email <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="webseo-button" href="/contacts/">Choose another contact route</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .webseo-page { min-height: 100vh; background: #f7f8fc; color: #11172a; }
+  .webseo-shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+  .webseo-hero { padding: 148px 0 86px; background: radial-gradient(circle at 80% 10%, rgba(229, 164, 70, .27), transparent 32%), linear-gradient(145deg, #071337, #111f52 62%, #243879); color: #fff; }
+  .webseo-breadcrumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 54px; font-size: .84rem; color: #cdd7f7; }
+  .webseo-breadcrumbs a { color: inherit; text-decoration: none; }
+  .webseo-hero-grid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(300px, .75fr); gap: 50px; align-items: end; }
+  .webseo-kicker { margin: 0 0 12px; color: #d68a2c; font-size: .76rem; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+  .webseo-hero .webseo-kicker { color: #f4bd64; }
+  h1 { max-width: 850px; margin: 0; font-size: clamp(2.6rem, 6vw, 5.7rem); line-height: .98; letter-spacing: -.055em; }
+  .webseo-lead { max-width: 780px; margin: 26px 0 0; color: #dfe6fb; font-size: clamp(1.05rem, 1.8vw, 1.26rem); line-height: 1.72; }
+  .webseo-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .webseo-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 19px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; color: inherit; font-weight: 800; text-decoration: none; transition: transform .2s ease, background .2s ease; }
+  .webseo-button:hover, .webseo-button:focus-visible { transform: translateY(-2px); }
+  .webseo-button-primary { border-color: #e4a447; background: #e4a447; color: #15111a; }
+  .webseo-note { max-width: 720px; margin: 18px 0 0; color: #bfc9e8; font-size: .86rem; line-height: 1.55; }
+  .webseo-proof-card { padding: 30px; border: 1px solid rgba(255,255,255,.2); border-radius: 26px; background: rgba(5, 12, 38, .56); backdrop-filter: blur(14px); }
+  .webseo-proof-card > p { margin: 15px 0 8px; color: #f4bd64; font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; }
+  .webseo-proof-card h2 { margin: 0; font-size: 1.7rem; line-height: 1.16; }
+  .webseo-proof-card ul { margin: 22px 0 0; padding-left: 20px; color: #dae3ff; line-height: 1.8; }
+  .webseo-section { padding: 78px 0; }
+  .webseo-section-heading { display: flex; justify-content: space-between; gap: 44px; align-items: end; margin-bottom: 32px; }
+  .webseo-section-heading h2, .webseo-two-column h2, .webseo-audit-card h2, .webseo-final h2 { max-width: 760px; margin: 0; font-size: clamp(2rem, 4.2vw, 3.6rem); line-height: 1.04; letter-spacing: -.045em; }
+  .webseo-section-heading > p { max-width: 520px; margin: 0; color: #626b80; line-height: 1.7; }
+  .webseo-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+  .webseo-service-grid article { padding: 26px; border: 1px solid #dfe4ee; border-radius: 22px; background: #fff; box-shadow: 0 18px 45px rgba(24, 38, 83, .06); }
+  .webseo-service-grid svg { color: #ad6519; }
+  .webseo-service-grid h3 { margin: 20px 0 10px; font-size: 1.25rem; }
+  .webseo-service-grid p, .webseo-two-column > div > p:not(.webseo-kicker), .webseo-process p, .webseo-audit-card p:not(.webseo-kicker), .webseo-final p { color: #626b80; line-height: 1.7; }
+  .webseo-niches { background: #e9edf7; }
+  .webseo-two-column { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 64px; align-items: center; }
+  .webseo-text-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; color: #253f8c; font-weight: 850; text-decoration: none; }
+  .webseo-check-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .webseo-check-list li { display: flex; gap: 12px; align-items: center; padding: 15px 17px; border: 1px solid #d8deea; border-radius: 14px; background: rgba(255,255,255,.72); font-weight: 750; }
+  .webseo-check-list svg { flex: 0 0 auto; color: #2a7658; }
+  .webseo-process { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .webseo-process li { display: grid; grid-template-columns: 74px 1fr; gap: 22px; padding: 22px; border: 1px solid #e0e4ed; border-radius: 18px; background: #fff; }
+  .webseo-process li > span { color: #3150a1; font-size: 1.25rem; font-weight: 900; }
+  .webseo-process h3 { margin: 0 0 7px; font-size: 1.25rem; }
+  .webseo-process p { margin: 0; }
+  .webseo-audit { padding-top: 0; }
+  .webseo-audit-card { display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: center; padding: 34px; border: 1px solid #ead1a2; border-radius: 26px; background: #fff8e9; }
+  .webseo-audit-card svg { color: #a75e17; }
+  .webseo-audit-card p:not(.webseo-kicker) { margin-bottom: 0; }
+  .webseo-audit-card .webseo-button { border-color: #d39945; color: #15111a; }
+  .webseo-faq { background: #101a43; color: #fff; }
+  .webseo-faq .webseo-kicker { color: #f4bd64; }
+  .webseo-faq-list { display: grid; gap: 10px; }
+  .webseo-faq details { border: 1px solid rgba(255,255,255,.16); border-radius: 16px; background: rgba(255,255,255,.06); }
+  .webseo-faq summary { padding: 19px 22px; cursor: pointer; font-weight: 800; }
+  .webseo-faq details p { margin: 0; padding: 0 22px 22px; color: #dce4ff; line-height: 1.7; }
+  .webseo-final { background: #fff; }
+  .webseo-final-grid { display: grid; grid-template-columns: 1.4fr .6fr; gap: 48px; align-items: center; }
+  .webseo-final-actions { display: grid; gap: 10px; }
+  .webseo-final .webseo-button { border-color: #cad2e5; color: #172142; }
+  .webseo-final .webseo-button-primary { border-color: #e4a447; color: #15111a; }
+  .webseo-reviewed { font-size: .82rem; }
+  @media (max-width: 900px) {
+    .webseo-hero-grid, .webseo-two-column, .webseo-final-grid { grid-template-columns: 1fr; }
+    .webseo-service-grid { grid-template-columns: 1fr 1fr; }
+    .webseo-section-heading { display: block; }
+    .webseo-section-heading > p { margin-top: 16px; }
+    .webseo-audit-card { grid-template-columns: auto 1fr; }
+    .webseo-audit-card .webseo-button { grid-column: 1 / -1; justify-self: start; }
+  }
+  @media (max-width: 600px) {
+    .webseo-shell { width: min(100% - 24px, 1180px); }
+    .webseo-hero { padding-top: 120px; }
+    .webseo-service-grid { grid-template-columns: 1fr; }
+    .webseo-process li { grid-template-columns: 1fr; gap: 8px; }
+    .webseo-audit-card { display: block; }
+    .webseo-audit-card svg { margin-bottom: 18px; }
+  }
+</style>
