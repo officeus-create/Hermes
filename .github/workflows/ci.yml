@@ -37,6 +37,9 @@ jobs:
       - name: Validate logistics growth registries
         run: node --experimental-strip-types scripts/logistics-growth-registry.test.mjs
 
+      - name: Validate evidence-only growth research registries
+        run: node --experimental-strip-types scripts/growth-research-registry.test.mjs
+
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
