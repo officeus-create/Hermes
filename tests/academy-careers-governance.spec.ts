@@ -22,12 +22,10 @@ test.describe("Academy and careers governance", () => {
     await expect(methodScreen.getByText("Free practice opportunity", { exact: true })).toBeVisible();
     await expect(methodScreen.getByText("not a third Academy program", { exact: false })).toBeVisible();
 
-    const pricingFaq = methodScreen.getByRole("button", { name: "Are current prices published?" });
-    await pricingFaq.click();
+    await methodScreen.locator("summary", { hasText: "Are current prices published?" }).click();
     await expect(methodScreen.getByText("No fixed price is published", { exact: false })).toBeVisible();
 
-    const employmentFaq = methodScreen.getByRole("button", { name: "Is employment or income guaranteed?" });
-    await employmentFaq.click();
+    await methodScreen.locator("summary", { hasText: "Is employment or income guaranteed?" }).click();
     await expect(methodScreen.getByText("employment, income, clients, certification", { exact: false })).toBeVisible();
 
     await expect(page.locator('[data-contact-form]')).toHaveAttribute("data-contact-mode", "preview");
