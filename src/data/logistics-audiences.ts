@@ -75,14 +75,14 @@ export const logisticsAudiences: LogisticsAudience[] = [
     label: "Work with us",
     eyebrow: "Careers",
     title: "Apply for a logistics, sales, or operations role.",
-    summary: "For candidates interested in carrier sales, dealer and shipper outreach, dispatch support, operations, or another relevant Hermes role.",
+    summary: "For candidates interested in carrier sales, dealer and shipper outreach, dispatch support, operations, websites, SEO, or another relevant Hermes role.",
     needs: ["Location and time zone", "Languages", "Relevant experience", "Role interest and availability"],
     steps: [
-      { title: "Complete the application", body: "Share factual experience, results, availability, and the role you want to explore." },
+      { title: "Review current vacancies", body: "Read the actual responsibilities, language expectations, and application requirements before applying." },
       { title: "Role review", body: "The team compares your background with current needs; an application does not guarantee placement." },
       { title: "Interview or training path", body: "A suitable candidate may be invited to an interview, test, or relevant Academy path." },
     ],
-    primary: { label: "Start job application", href: "/logistics/apply/?for=career" },
-    secondary: { label: "Explore training first", href: "/paths/academy/" },
+    primary: { label: "See current Hermes vacancies", href: "/careers/" },
+    secondary: { label: "Start a logistics application", href: "/logistics/apply/?for=career" },
   },
 ];
