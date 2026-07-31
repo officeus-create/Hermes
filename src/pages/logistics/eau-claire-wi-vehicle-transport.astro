@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Eau Claire Vehicle Transport | Hermes Logistics";
+const description = "Request vehicle transport to or from Eau Claire, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, vehicle condition, timing, and equipment needs.";
+const canonicalUrl = new URL("/logistics/eau-claire-wi-vehicle-transport/", Astro.site).toString();
+
+const faq = [
+  { question: "How is Eau Claire vehicle transport reviewed?", answer: "Hermes reviews the exact route, vehicle size and condition, pickup readiness, access, timing, requested equipment, and current carrier availability." },
+  { question: "Can a private customer request transport?", answer: "Yes. Private customers can submit planned moves for a purchase, sale, relocation, or another known pickup and delivery arrangement." },
+  { question: "Can enclosed transport be requested?", answer: "Yes. State the preference and explain any special handling needs. The workable option depends on the vehicle, route, timing, and available equipment." },
+  { question: "Does Hermes guarantee delivery dates?", answer: "No. Requested dates are reviewed, but timing depends on route, equipment, compliance, weather, traffic, capacity, and final confirmation." },
+];
+
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Eau Claire vehicle transport request coordination", description, url: canonicalUrl, serviceType: "Vehicle transport request review and carrier coordination", areaServed: [{ "@type": "City", name: "Eau Claire", containedInPlace: { "@type": "State", name: "Wisconsin" } }, { "@type": "AdministrativeArea", name: "Western Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" }, { "@type": "ListItem", position: 3, name: "Eau Claire Vehicle Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell">
+      <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/paths/logistics/">Logistics</a> / <span aria-current="page">Eau Claire vehicle transport</span></nav>
+      <p class="eyebrow">Hermes Logistics · Eau Claire, Wisconsin</p>
+      <h1>Vehicle transport to and from Eau Claire, Wisconsin.</h1>
+      <p>Hermes reviews transport requests involving Eau Claire for dealers, auction customers, businesses, and private parties. Accurate route, condition, access, timing, and contact information supports a clearer review.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Eau%20Claire%2C%20WI#post-load">Prepare a transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=Eau%20Claire%2C%20WI#carrier-access">Carrier: share capacity</a></div>
+      <p>No shipment is represented as booked until the applicable arrangement is accepted and confirmed.</p>
+    </div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">What to prepare</p><h2>Route, condition, access, and timing matter.</h2><ul><li>Exact pickup and delivery city, state, or ZIP code</li><li>Vehicle year, make, model, quantity, and dimensions when unusual</li><li>Whether each vehicle starts, rolls, steers, and brakes</li><li>Pickup readiness, release status, facility hours, and storage deadlines</li><li>Earliest pickup date and any required delivery window</li><li>Open or enclosed equipment preference</li></ul><p>Facility pickups can be prepared with the <a href="/logistics/resources/auction-vehicle-pickup-checklist/">Auction Vehicle Pickup Checklist</a>.</p></div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">Related Wisconsin locations</p><h2>Explore connected service areas.</h2><p><a href="/logistics/la-crosse-wi-vehicle-transport/">La Crosse vehicle transport</a> · <a href="/logistics/madison-wi-vehicle-transport/">Madison vehicle transport</a> · <a href="/logistics/green-bay-wi-vehicle-transport/">Green Bay vehicle transport</a></p></div></section>
+
+    <section class="section logistics-faq" aria-labelledby="eau-claire-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="eau-claire-faq-title">Before you submit.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
