@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import ContactLinkEnhancer from "../components/ContactLinkEnhancer.astro";
 import MotionLayer from "../components/MotionLayer.astro";
 import SiteIntro from "../components/SiteIntro.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
@@ -72,6 +73,7 @@ const ogLocale = localeConfig[locale].ogLocale;
     <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
+    <ContactLinkEnhancer />
     <MotionLayer />
     <!--/email_off-->
   </body>
