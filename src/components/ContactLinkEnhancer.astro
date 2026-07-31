@@ -41,9 +41,55 @@
     );
   };
 
+  const pushAnalyticsEvent = (payload: Record<string, string>) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  };
+
+  const classifyPageCluster = (path: string) => {
+    if (path.includes("-wi-vehicle-transport") || path.includes("/logistics/wisconsin-")) return "wisconsin_local_seo";
+    if (path.startsWith("/logistics/")) return "logistics_service";
+    if (path.startsWith("/paths/logistics/")) return "logistics_path";
+    return "other";
+  };
+
+  const trackLoadBoardClick = (link: HTMLAnchorElement) => {
+    const href = link.getAttribute("href") || "";
+    let target: URL;
+    try {
+      target = new URL(href, window.location.origin);
+    } catch {
+      return;
+    }
+    if (target.origin !== window.location.origin || target.pathname !== "/load-board/") return;
+
+    const role = target.searchParams.get("role") || "unspecified";
+    const ctaType = role === "carrier"
+      ? "carrier_capacity"
+      : role === "dealer"
+        ? "dealer_transport_request"
+        : role === "shipper"
+          ? "shipper_transport_request"
+          : role === "private_party"
+            ? "private_transport_request"
+            : "load_board_entry";
+
+    pushAnalyticsEvent({
+      event: "logistics_cta_click",
+      cta_type: ctaType,
+      audience_role: role,
+      page_cluster: classifyPageCluster(window.location.pathname),
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  };
+
   document.addEventListener("click", async (event) => {
     const source = event.target;
     if (!(source instanceof Element)) return;
+
+    const anyLink = source.closest("a[href]");
+    if (anyLink instanceof HTMLAnchorElement) trackLoadBoardClick(anyLink);
 
     const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
     if (!(link instanceof HTMLAnchorElement)) return;
@@ -51,10 +97,10 @@
     const href = link.getAttribute("href") || "";
     const isPhone = href.startsWith("tel:");
 
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
+    pushAnalyticsEvent({
       event: "contact_click",
       contact_method: isPhone ? "phone" : "email",
+      page_cluster: classifyPageCluster(window.location.pathname),
       page_path: window.location.pathname,
     });
 
