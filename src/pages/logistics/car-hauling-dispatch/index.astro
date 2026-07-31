@@ -1,0 +1,49 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+const content = {
+  title: "Car Hauling Dispatch Services | Hermes Logistics",
+  description: "Car hauling dispatch and operations support for owner-operators and small fleets across the United States, with carrier-controlled load approval.",
+  eyebrow: "Hermes Logistics · Car Hauling",
+  h1: "Car Hauling Dispatch and Operations Support",
+  intro: "Hermes supports car-hauling carriers with load search, broker communication, paperwork coordination, invoicing follow-through, and a structured process for developing stronger freight relationships. The carrier reviews and approves every load before booking.",
+  image: "/images/path-logistics-system.jpg",
+  imageAlt: "Vehicle transportation routes and car hauling operations network",
+  audience: [
+    "Owner-operators running hotshot, open, enclosed, or multi-car equipment",
+    "Small fleets that need consistent dispatch and back-office coordination",
+    "Carriers seeking support with broker setup, documents, invoicing, and communication",
+    "New authorities that need a realistic readiness review before active dispatch",
+  ],
+  benefits: [
+    { title: "Daily dispatch support", body: "Load search, route review, broker calls, rate discussion, pickup and delivery coordination, and operational follow-through around the carrier's equipment and preferences." },
+    { title: "Carrier back office", body: "Support with setup packets, insurance certificates, rate confirmations, document organization, invoicing, and accounts-receivable follow-up." },
+    { title: "Direct freight development", body: "A separate long-term process for identifying repeat dealer, auction, broker, and shipper relationships. No guaranteed lanes or revenue claims." },
+    { title: "Equipment-aware matching", body: "Hotshot, one- to three-car, open multi-car, enclosed, inoperable-capable, and specialty equipment are handled according to actual capacity and restrictions." },
+    { title: "Authority and insurance checks", body: "MC, DOT, operating authority, insurance status, equipment, service area, and documentation are reviewed before active work begins." },
+    { title: "Carrier control", body: "Hermes coordinates information and communication. The carrier makes the final operating decision and approves each load before booking." },
+  ],
+  process: [
+    { title: "Qualification", body: "We review MC and DOT details, authority status, insurance, equipment, preferred lanes, availability, and operating constraints." },
+    { title: "Operating profile", body: "We document truck and trailer capacity, home base, preferred regions, minimum rate expectations, communication rules, and required paperwork." },
+    { title: "Load review", body: "Potential loads are checked against equipment, timing, route, pickup and delivery requirements, and available information." },
+    { title: "Carrier approval", body: "The carrier receives the available load details and makes the final decision before anything is booked." },
+    { title: "Execution and follow-through", body: "Hermes coordinates documents and communication while the carrier remains responsible for safe and lawful transportation." },
+  ],
+  faq: [
+    { question: "Does Hermes guarantee loads or revenue?", answer: "No. Freight availability, rates, timing, and lane consistency change with the market. Hermes provides dispatch and coordination support without guaranteeing revenue, mileage, or specific loads." },
+    { question: "Who makes the final decision on a load?", answer: "The carrier does. Hermes can research, communicate, negotiate, and coordinate information, but the carrier approves every load before booking." },
+    { question: "What equipment can be supported?", answer: "Support may be available for hotshot, open car haulers, enclosed trailers, multi-car equipment, and other vehicle-transport configurations after capacity and operating requirements are reviewed." },
+    { question: "Can a new authority start immediately?", answer: "Not always. Broker requirements, insurance, safety profile, authority age, documentation, and equipment readiness must be reviewed first." },
+    { question: "Does Hermes operate the trucks?", answer: "Hermes provides dispatch, information, communication, and back-office support. The motor carrier controls the truck, driver, safety decisions, and transportation service." },
+    { question: "How do we begin?", answer: "Contact the logistics team with your MC, DOT, equipment, home base, preferred lanes, availability, and best contact information. Do not place sensitive shipment details in public URLs." },
+  ],
+  related: [
+    { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
+    { label: "Hermes Logistics overview", href: "/paths/logistics/" },
+    { label: "Contact Hermes", href: "/contacts/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />
