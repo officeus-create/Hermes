@@ -17,17 +17,17 @@ const pages = [
   {
     route: "/es/", path: "es/index.html", lang: "es",
     requiredLabels: ["Tecnología", "Marketing", "Academia", "Logística"],
-    requiredCtas: ["Elegir un área", "Escribir al equipo", "Enviar el resumen por correo"],
+    requiredCtas: ["Elegir un área", "Escribir al equipo", "Enviar la descripción por email"],
   },
   {
     route: "/it/", path: "it/index.html", lang: "it",
     requiredLabels: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
-    requiredCtas: ["Scegliere un'area", "Scrivere al team", "Inviare il brief via email"],
+    requiredCtas: ["Scegli un'area", "Scrivi al team", "Invia la descrizione via email"],
   },
   {
     route: "/fr/", path: "fr/index.html", lang: "fr",
     requiredLabels: ["Technologie", "Marketing", "Académie", "Logistique"],
-    requiredCtas: ["Choisir un domaine", "Écrire à l'équipe", "Envoyer le brief par email"],
+    requiredCtas: ["Choisir un pôle", "Écrire à l'équipe", "Envoyer la description par email"],
   },
 ];
 
