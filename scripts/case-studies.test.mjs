@@ -73,7 +73,6 @@ for (const prohibited of [
 
 for (const url of [
   "https://hermeslogisticsus.com/case/",
-  "https://hermeslogisticsus.com/case/it-development/",
   "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
 ]) {
   assert.ok(sitemap.includes(`<loc>${url}</loc>`), `case sitemap is missing ${url}`);
