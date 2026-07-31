@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Wisconsin Vehicle Transport | Hermes Logistics";
+const description = "Request vehicle transport in Wisconsin for dealer, auction, business, or private moves. Explore Hermes vehicle transport pages for major Wisconsin service areas.";
+const canonicalUrl = new URL("/logistics/wisconsin-vehicle-transport/", Astro.site).toString();
+
+const locations = [
+  ["Milwaukee", "/logistics/milwaukee-wi-vehicle-transport/", "Southeastern Wisconsin dealer, auction, business, and private vehicle requests."],
+  ["Madison", "/logistics/madison-wi-vehicle-transport/", "Vehicle transport request review involving Madison and south-central Wisconsin."],
+  ["Green Bay", "/logistics/green-bay-wi-vehicle-transport/", "Dealer, auction, carrier, and private vehicle requests in northeastern Wisconsin."],
+  ["Appleton", "/logistics/appleton-wi-vehicle-transport/", "Vehicle transport request coordination involving Appleton and Fox Valley."],
+  ["Oshkosh", "/logistics/oshkosh-wi-vehicle-transport/", "Vehicle moves for dealers, auctions, businesses, and private customers."],
+  ["Waukesha", "/logistics/waukesha-wi-vehicle-transport/", "Vehicle transport request review in the Milwaukee metropolitan area."],
+  ["Kenosha", "/logistics/kenosha-wi-vehicle-transport/", "Vehicle transport requests involving southeastern Wisconsin routes."],
+  ["Racine", "/logistics/racine-wi-vehicle-transport/", "Dealer, auction, and private vehicle transport request coordination."],
+  ["Fond du Lac", "/logistics/fond-du-lac-wi-vehicle-transport/", "Vehicle transport request review involving east-central Wisconsin."],
+  ["Sheboygan", "/logistics/sheboygan-wi-vehicle-transport/", "Single-vehicle and multi-unit transport requests involving eastern Wisconsin."],
+  ["Eau Claire", "/logistics/eau-claire-wi-vehicle-transport/", "Vehicle transport request review involving western Wisconsin."],
+  ["La Crosse", "/logistics/la-crosse-wi-vehicle-transport/", "Dealer, auction, business, and private vehicle requests involving western Wisconsin."],
+];
+
+const faq = [
+  { question: "Does Hermes provide vehicle transport throughout Wisconsin?", answer: "Hermes reviews transport requests involving Wisconsin locations. Service fit depends on the exact route, vehicle condition, equipment, timing, compliance, and carrier availability." },
+  { question: "Can dealers request transport for multiple vehicles?", answer: "Yes. Dealers should provide a complete unit list, condition for every vehicle, pickup and delivery access, timing, and any required delivery sequence." },
+  { question: "Can auction pickups be reviewed?", answer: "Yes. Include the exact facility, release status, lot or stock reference, pickup hours, storage deadline, vehicle condition, and pickup contact." },
+  { question: "Does submitting a request guarantee a carrier?", answer: "No. Submission begins a review. Any coordination depends on route, equipment, compliance, timing, capacity, and final confirmation." },
+];
+
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Wisconsin vehicle transport request coordination", description, url: canonicalUrl, serviceType: "Vehicle transport request review and carrier coordination", areaServed: [{ "@type": "State", name: "Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" }, { "@type": "ListItem", position: 3, name: "Wisconsin Vehicle Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell">
+      <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/paths/logistics/">Logistics</a> / <span aria-current="page">Wisconsin vehicle transport</span></nav>
+      <p class="eyebrow">Hermes Logistics · Wisconsin</p>
+      <h1>Vehicle transport across Wisconsin.</h1>
+      <p>Hermes reviews vehicle transport requests for dealers, auction buyers and sellers, businesses, and private customers. Use the closest local page or submit the exact route directly for review.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Wisconsin#post-load">Prepare a Wisconsin transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=Wisconsin#carrier-access">Carrier: share Wisconsin capacity</a></div>
+      <p>Submitting a request does not guarantee price, timing, equipment, or carrier availability.</p>
+    </div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">Wisconsin service areas</p><h2>Choose a local vehicle transport page.</h2><div class="appleton-card-grid">{locations.map(([name, href, copy]) => (<article><h3>{name}</h3><p>{copy}</p><a href={href}>Open {name} vehicle transport</a></article>))}</div></div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">Request preparation</p><h2>Start with complete route and vehicle information.</h2><ul><li>Pickup and delivery city, state, or ZIP code</li><li>Vehicle year, make, model, quantity, and condition</li><li>Whether every vehicle starts, rolls, steers, and brakes</li><li>Pickup readiness, release status, facility hours, and storage deadlines</li><li>Earliest pickup date and required delivery window</li><li>Open or enclosed transport preference</li></ul><p>For facility moves, use the <a href="/logistics/resources/auction-vehicle-pickup-checklist/">Auction Vehicle Pickup Checklist</a>. Carriers can prepare with the <a href="/logistics/resources/car-hauler-capacity-checklist/">Car Hauler Capacity Checklist</a>.</p></div></section>
+
+    <section class="section logistics-faq" aria-labelledby="wisconsin-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="wisconsin-faq-title">Wisconsin vehicle transport questions.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
