@@ -48,7 +48,7 @@ const schema = {
   <SiteHeader locale={content.locale} />
   <main id="main-content" class="localized-overview">
     <section class="localized-hero" id="top" data-motion-hero>
-      <img src="/images/hermes-ecosystem-hero.jpg" alt="" width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" sizes="100vw" />
+                <img src="/images/hermes-ecosystem-hero.jpg" alt={content.heroImageAlt} width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" sizes="100vw" />
       <div class="localized-hero-shade"></div>
       <div class="shell localized-hero-content">
         <p class="eyebrow">{content.hero.eyebrow}</p>

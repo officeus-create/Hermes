@@ -32,9 +32,19 @@ const serviceSchema = {
   provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
 };
+const breadcrumbName = site.navigation.find((item) => item.href === `paths/${path.id}/`)?.label ?? path.category;
+const breadcrumbSchema = {
+"@context": "https://schema.org",
+"@type": "BreadcrumbList",
+itemListElement: [
+{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+{ "@type": "ListItem", position: 2, name: breadcrumbName, item: canonicalUrl },
+],
+};
+const schema = [serviceSchema, breadcrumbSchema];
 ---
 
-<BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={serviceSchema}>
+<BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema}>
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
   {path.id === "logistics" && <LogisticsCommercialLinks />}

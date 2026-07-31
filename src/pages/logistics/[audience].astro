@@ -10,9 +10,19 @@ export function getStaticPaths() {
 }
 
 const { audience } = Astro.props;
+const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toString();
+const schema = {
+"@context": "https://schema.org",
+"@type": "BreadcrumbList",
+itemListElement: [
+{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+{ "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+{ "@type": "ListItem", position: 3, name: audience.label, item: canonicalUrl },
+],
+};
 ---
 
-<BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary}>
+<BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary} schema={schema}>
   <div class="logistics-audience-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">

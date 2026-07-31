@@ -35,13 +35,23 @@ const caseSchema = {
     url: "https://hermeslogisticsus.com/paths/technology/",
   },
 };
+const breadcrumbSchema = {
+"@context": "https://schema.org",
+"@type": "BreadcrumbList",
+itemListElement: [
+{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+{ "@type": "ListItem", position: 2, name: "IT Development", item: "https://hermeslogisticsus.com/paths/technology/" },
+{ "@type": "ListItem", position: 3, name: "Website Case Study", item: "https://hermeslogisticsus.com/case/it-development/" },
+],
+};
+const schema = [caseSchema, breadcrumbSchema];
 ---
 
 <BaseLayout
   title="Hermes Website Case Study | IT Development"
   description="See how Hermes IT Development planned, designed, engineered, tested, and deployed a responsive corporate website for four connected business directions."
   image="/images/hermes-live-product.jpg"
-  schema={caseSchema}
+  schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
   <main id="main-content" class="case-study-page">
@@ -54,7 +64,7 @@ const caseSchema = {
         <h1>One digital front door for four businesses.</h1>
         <p>Hermes needed a corporate website that made four different directions easy to understand while presenting one serious operating standard.</p>
         <div class="case-study-hero-actions">
-          <a class="button button-primary" href="https://hermeslogisticsus.com/" target="_blank" rel="noreferrer">View live product <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-primary" href="https://hermeslogisticsus.com/" target="_blank" rel="noopener noreferrer">View live product <ArrowRight size={18} aria-hidden="true" /></a>
           <a class="button button-ghost" href="#case-process">See the process</a>
         </div>
       </div>
@@ -77,10 +87,10 @@ const caseSchema = {
           <div><dt>Status</dt><dd><span></span>Live and evolving</dd></div>
         </dl>
         <figure class="case-study-product-shot" data-reveal>
-          <a href="https://hermeslogisticsus.com/" target="_blank" rel="noreferrer" aria-label="Open the live Hermes website">
+          <a href="https://hermeslogisticsus.com/" target="_blank" rel="noopener noreferrer" aria-label="Open the live Hermes website">
             <img src="/images/hermes-live-product.jpg" alt="The live Hermes website showing its four interactive business portals" width="1440" height="900" loading="lazy" decoding="async" />
           </a>
-          <figcaption><span>Live interface · Current release</span><a href="https://hermeslogisticsus.com/" target="_blank" rel="noreferrer">Open hermeslogisticsus.com <ArrowRight size={17} aria-hidden="true" /></a></figcaption>
+          <figcaption><span>Live interface · Current release</span><a href="https://hermeslogisticsus.com/" target="_blank" rel="noopener noreferrer">Open hermeslogisticsus.com <ArrowRight size={17} aria-hidden="true" /></a></figcaption>
         </figure>
       </div>
     </section>
