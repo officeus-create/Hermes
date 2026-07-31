@@ -76,3 +76,17 @@ entries — append only.
 - Tests run (and result): none — documentation-only coordination changes made through GitHub after the previously recorded successful build/unit/e2e run. No production code changed in these commits.
 - Remaining / open items: local Mac may still show unrelated `package-lock.json` and generated screenshot modifications; do not commit them as part of this work. Claude Web's ability to write directly depends on whether the Hermes repository is enabled in that specific Claude cloud session; repository policy cannot bypass a product/account access boundary.
 - Next step / what's needed from a human or another agent: open the PR for `fix/seo-meta-csp`, review the combined SEO/test/documentation changes, and request explicit owner approval before merge. After merge/deploy, verify `window.gtag` on production and log the result.
+
+
+## 2026-07-31 — Claude (Cowork) — Fix missing alt text on localized hero images
+
+
+
+- Branch: officeus-create-patch-1
+- Commit(s): 5243581 (add heroImageAlt to localized-overviews), 19c5db3 (wire heroImageAlt into LocalizedOverviewPage.astro)
+- PR: #15 (open, "Able to merge", not yet merged)
+- What was done: Live-site audit found the shared hero image (/images/hermes-ecosystem-hero.jpg) on all 5 localized overview pages (/es/, /fr/, /it/, /ua/, /ru/) had alt="" hardcoded in LocalizedOverviewPage.astro, unlike the English homepage which uses a proper descriptive alt for the same image. Added a heroImageAlt field to the LocalizedOverview type with a translated description per locale (uk, ru, es, it, fr), and updated LocalizedOverviewPage.astro to render alt={content.heroImageAlt} instead of the empty string.
+- Files changed: src/data/localized-overviews.ts, src/components/LocalizedOverviewPage.astro
+- Tests run (and result): npm run build (47 pages, 0 errors) passed; confirmed correct localized alt text in the built HTML for all 5 locale pages; npm test (validate-build + all unit scripts) passed.
+- Remaining / open items: PR #15 needs review/merge. This work does not overlap with the concurrent ChatGPT/Codex "100-task SEO growth sprint" (PR #13, issue #14) — confirmed by reviewing that PR's scope before starting.
+- Next step / what's needed from a human or another agent: owner or another agent to review and merge PR #15.
