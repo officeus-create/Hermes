@@ -31,7 +31,16 @@ const privacyCsv = [
 const privacyPreview = previewShipmentHistoryCsv(privacyCsv, now);
 assert.equal(privacyPreview.rows[0].proposedAction, "reject");
 assert.deepEqual(privacyPreview.rows[0].privacyFlags.sort(), ["booked_rate", "email", "mc"]);
-assert.ok(privacyPreview.rows[0].quarantineReasons.includes("prohibited_private_columns"));
+assert.ok(privacyPreview.rows[0].quarantineReasons.includes("prohibited_private_data"));
+
+const exactAddressCsv = [
+  "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
+  "SYN-ADDRESS,123 Main Street,WI,Chicago,IL,car_hauler,2026-07-20,booked,false",
+].join("\n");
+const exactAddressPreview = previewShipmentHistoryCsv(exactAddressCsv, now);
+assert.equal(exactAddressPreview.rows[0].proposedAction, "reject");
+assert.ok(exactAddressPreview.rows[0].privacyFlags.includes("origin_city_exact_address"));
+assert.ok(exactAddressPreview.rows[0].quarantineReasons.includes("prohibited_private_data"));
 
 const publicationCsv = [
   "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
@@ -53,4 +62,23 @@ assert.ok(incompletePreview.rows[0].quarantineReasons.includes("missing_provenan
 assert.ok(incompletePreview.rows[0].quarantineReasons.includes("invalid_event_date"));
 assert.ok(incompletePreview.rows[0].quarantineReasons.includes("completion_requires_review"));
 
-console.log("Shipment History import-preview privacy, lifecycle, dedupe, freshness and quarantine checks passed.");
+const conflictingSourceCsv = [
+  "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
+  "SYN-CONFLICT,Appleton,WI,Chicago,IL,car_hauler,2026-07-20,booked,false",
+  "SYN-CONFLICT,Appleton,WI,Detroit,MI,car_hauler,2026-07-20,completed,true",
+].join("\n");
+const conflictingSourcePreview = previewShipmentHistoryCsv(conflictingSourceCsv, now);
+assert.equal(conflictingSourcePreview.rows[0].proposedAction, "needs_review");
+assert.equal(conflictingSourcePreview.rows[1].proposedAction, "needs_review");
+assert.ok(conflictingSourcePreview.rows.every((row) => row.quarantineReasons.includes("conflicting_source_record")));
+
+const futureDateCsv = [
+  "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
+  "SYN-FUTURE,Appleton,WI,Chicago,IL,car_hauler,2026-08-15,observed,false",
+].join("\n");
+const futureDatePreview = previewShipmentHistoryCsv(futureDateCsv, now);
+assert.equal(futureDatePreview.rows[0].freshness, "invalid");
+assert.equal(futureDatePreview.rows[0].proposedAction, "needs_review");
+assert.ok(futureDatePreview.rows[0].quarantineReasons.includes("future_event_date"));
+
+console.log("Shipment History import-preview privacy, lifecycle, dedupe, provenance, freshness and quarantine checks passed.");
