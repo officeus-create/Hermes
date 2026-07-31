@@ -34,16 +34,16 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 23. [x] Verify each localized page canonical points to the same-language URL.
 24. [x] Verify `x-default` is present where appropriate.
 25. [x] Verify Ukrainian public routes use `/ua/`, not `/uk/`.
-26. [ ] Detect untranslated body sections on localized pages.
-27. [ ] Detect mixed-language navigation labels.
-28. [ ] Detect localized title and description duplication.
+26. [x] Detect untranslated body sections on localized pages.
+27. [x] Detect mixed-language navigation labels.
+28. [x] Detect localized title and description duplication.
 29. [x] Add language-specific Open Graph locale alternatives.
 30. [x] Add multilingual sitemap annotations when route parity is stable.
 31. [x] Create localization QA rules for industry terms that should remain English.
 32. [x] Create translation glossary for carrier, broker, shipper, dispatch, load board, and owner-operator.
 33. [x] Add tests preventing accidental `/uk/` links.
 34. [x] Add tests preventing missing localized home links.
-35. [ ] Review localized CTAs for natural search language rather than literal translation.
+35. [x] Review localized CTAs for natural search language rather than literal translation.
 
 ## Phase 3 — Structured data and search appearance
 
@@ -135,6 +135,8 @@ The third batch defined the Load Board indexation policy, established stable Org
 
 The fourth batch implemented two approved commercial logistics pages with visible breadcrumbs, Service/BreadcrumbList/FAQPage schema, carrier-decision and non-guarantee boundaries, direct contact fallbacks, sitemap entries, regression tests, cross-links, and a crawlable directory to every public Logistics Path Engine result.
 
+The fifth batch connected localized pages to stable site entities, localized partnership labels, added natural-language CTA and English-leakage regression checks, and made localized hero image priority explicit.
+
 The release checklist now also enforces claim governance, indexation policy, crawlable inbound links, click depth, commercial-to-intake architecture, privacy-safe analytics, performance budgets, and the full automated audit suite.
 
-GitHub Actions `Website checks` run #177 passed completely on the implementation head: build and static SEO tests passed, internal-link warnings reached zero, metadata warnings reached zero, commercial-page checks passed, and 118 Playwright tests passed with 2 intentionally skipped. No production merge or deployment has been performed.
+GitHub Actions `Website checks` run #191 passed completely after the multilingual fixes. No production merge or deployment has been performed.
