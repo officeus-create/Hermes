@@ -28,7 +28,8 @@ const pages = [
     title: "Dealer Vehicle Transportation Services | Hermes Logistics",
     h1: "Dealer Vehicle Transportation Services",
     required: [
-      "qualified carrier capacity",
+      "Qualified carrier review",
+      "Qualified capacity is evaluated",
       "Availability is never guaranteed before confirmation",
       "Carrier authority, insurance, equipment",
       "Does Hermes own the transporting fleet?",
