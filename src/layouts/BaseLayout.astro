@@ -40,6 +40,7 @@ const alternateOgLocales = alternates
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
     <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="color-scheme" content="light" />
     <link rel="canonical" href={canonical} />
     {priorityImage && <link rel="preload" as="image" href={priorityImage} fetchpriority="high" />}
@@ -81,6 +82,21 @@ const alternateOgLocales = alternates
       } catch {
         // Continue directly to the page when browser storage is unavailable.
       }
+    </script>
+    <script is:inline>
+      document.addEventListener("click", (event) => {
+        const source = event.target;
+        if (!(source instanceof Element)) return;
+        const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
+        if (!(link instanceof HTMLAnchorElement)) return;
+        const href = link.getAttribute("href") || "";
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "contact_click",
+          contact_method: href.startsWith("tel:") ? "phone" : "email",
+          page_path: window.location.pathname,
+        });
+      });
     </script>
     {schema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />}
     <title>{title}</title>
