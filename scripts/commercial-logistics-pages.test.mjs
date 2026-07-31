@@ -38,6 +38,18 @@ const pages = [
   },
 ];
 
+const decode = (value = "") => value
+  .replaceAll("&amp;", "&")
+  .replaceAll("&quot;", '"')
+  .replaceAll("&#39;", "'")
+  .replace(/<[^>]+>/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+const getTagText = (html, tagName) => decode(html.match(new RegExp(`<${tagName}\\b[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "i"))?.[1] ?? "");
+const getLinkHref = (html, rel) => [...html.matchAll(/<link\b[^>]*>/gi)]
+  .map((match) => match[0])
+  .find((tag) => new RegExp(`\\brel=["'][^"']*\\b${rel}\\b[^"']*["']`, "i").test(tag))
+  ?.match(/\bhref=["']([^"']+)["']/i)?.[1] ?? "";
 const parseJsonLd = (html) => [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .flatMap((match) => {
     const parsed = JSON.parse(match[1]);
@@ -46,11 +58,11 @@ const parseJsonLd = (html) => [...html.matchAll(/<script[^>]+type=["']applicatio
 
 for (const page of pages) {
   const html = await readFile(page.file, "utf8");
-  assert.match(html, new RegExp(`<title>${page.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</title>`));
-  assert.ok(html.includes(`<h1>${page.h1}</h1>`), `${page.route} H1 is missing`);
-  assert.ok(html.includes(`<link rel="canonical" href="https://hermeslogisticsus.com${page.route}"`), `${page.route} canonical is missing`);
-  assert.ok(html.includes('name="robots" content="index,follow,max-image-preview:large"'), `${page.route} must remain indexable`);
-  assert.ok(html.includes('aria-label="Breadcrumb"'), `${page.route} visible breadcrumb is missing`);
+  assert.equal(getTagText(html, "title"), page.title, `${page.route} title is incorrect`);
+  assert.equal(getTagText(html, "h1"), page.h1, `${page.route} H1 is missing or incorrect`);
+  assert.equal(getLinkHref(html, "canonical"), `https://hermeslogisticsus.com${page.route}`, `${page.route} canonical is missing`);
+  assert.ok(/<meta\b[^>]*name=["']robots["'][^>]*content=["']index,follow,max-image-preview:large["'][^>]*>/i.test(html), `${page.route} must remain indexable`);
+  assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} visible breadcrumb is missing`);
   assert.ok(html.includes('href="mailto:freight_301@hermeslogisticsus.com"'), `${page.route} logistics email fallback is missing`);
   assert.ok(html.includes('href="tel:+12623023626"'), `${page.route} approved phone fallback is missing`);
   assert.ok(!/<form\b[^>]*action=/i.test(html), `${page.route} contains an unreviewed form action`);
