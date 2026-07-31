@@ -392,6 +392,7 @@ if (!html.includes("data-contact-handoff")) throw new Error("Preview contact han
 if (!html.includes("data-copy-request")) throw new Error("Copy request control is missing");
 if (!html.includes('name="consent"')) throw new Error("Contact consent field is missing");
 if (!html.includes('id="main-content"')) throw new Error("Skip-link target is missing");
+if (!html.includes('id="paths"')) throw new Error("Frozen #paths anchor is missing from the homepage (DESIGN_INTEGRATION_CONTRACT.md)"); if (!html.includes('id="journey"')) throw new Error("Frozen #journey anchor is missing from the homepage (DESIGN_INTEGRATION_CONTRACT.md)"); if (!html.includes('id="about"')) throw new Error("Frozen #about anchor is missing from the homepage (DESIGN_INTEGRATION_CONTRACT.md)"); if (!html.includes('id="contact"')) throw new Error("Frozen #contact anchor is missing from the homepage (DESIGN_INTEGRATION_CONTRACT.md)");
 validateStructuredData(html, "homepage");
 if (!html.includes("Hermes | Logistics, Marketing, Academy &amp; IT")) throw new Error("Hermes ecosystem homepage title is missing");
 const cssFiles = (await readdir(join(dist, "_astro"))).filter((file) => file.endsWith(".css"));
