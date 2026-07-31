@@ -32,8 +32,8 @@ No cluster guarantees rankings, traffic, leads, revenue, ROI, completion dates, 
 ## Current proof register
 
 - Hermes Website Platform — `live_product` with the public website case study.
-- CRM & Operations Control — `working_prototype` with demo data, not a connected production CRM.
-- Hermes Connect — `product_discovery`; no live account, booking, calendar, payment, or AI action.
+- CRM and Operations Control — `working_prototype`; the public page shows a working v0.2 preview with simulated records and no CRM write.
+- Hermes Connect — `working_prototype`; the public page shows a working v0.2 local preview with simulated data and no live account, calendar event, payment, message, or production integration.
 - Hermes Load Board — `working_prototype`; demo data and no live external-board sync, offer, truck, dispatch, or booking.
 
 A maturity label is not a customer result. Prototype/demo metrics, loads, rates, names, records, or interface labels cannot be presented as production facts.
