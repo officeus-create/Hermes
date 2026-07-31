@@ -31,6 +31,9 @@ jobs:
       - name: Validate static output
         run: npm test
 
+      - name: Validate lane opportunity scoring
+        run: node --experimental-strip-types scripts/lane-opportunity.test.mjs
+
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
