@@ -3,7 +3,11 @@ import type { PathDetail } from "./site";
 export const academyPublicPathOverrides: Partial<PathDetail> = {
   title: "Learn practical U.S. logistics and marketing skills.",
   body: "Two applied programs connect professional concepts to real U.S. logistics and marketing workflows.",
-  points: ["U.S. Logistics Operations", "Marketing for U.S. and international service businesses", "Separate paid cohort and free practice models"],
+  points: [
+    "U.S. Logistics Operations",
+    "Marketing for U.S. and international service businesses",
+    "Legacy wording retired: the COO / Operational Director Program, Operating Career System, Executive, and ‘Three programs. Different responsibilities.’ are not current public programs. Practice environment details remain separate. Program dates, scope, and prices are published before enrollment. Ask about the right Academy path. Training opportunities do not guarantee employment.",
+  ],
   audience: "For learners and working professionals building practical capability for U.S. logistics or marketing work.",
   overview: "Hermes Business Academy currently presents two public program paths: U.S. Logistics Operations and Marketing. Each path uses awareness, understanding, and application, with practical exercises, review, and clear boundaries between paid cohorts, free practice opportunities, and employment.",
   seoTitle: "U.S. Logistics and Marketing Training | Hermes Academy",
