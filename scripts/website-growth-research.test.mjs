@@ -37,7 +37,8 @@ assert.ok(localSeoScope.excludedUnlessApproved.some((item) => /low keyword diffi
 
 const multilingualScope = websiteServiceScopes.find((scope) => scope.id === "multilingual_website");
 assert.ok(multilingualScope.excludedUnlessApproved.some((item) => /machine-translated thin pages/i.test(item)));
-assert.match(multilingualScope.controlBoundary, /capable human reviewer/i);
+assert.ok(multilingualScope.excludedUnlessApproved.some((item) => /capable human reviewer/i.test(item)));
+assert.match(multilingualScope.controlBoundary, /natural-copy review/i);
 assert.match(multilingualScope.controlBoundary, /response capacity/i);
 
 const crmScope = websiteServiceScopes.find((scope) => scope.id === "crm_automation");
