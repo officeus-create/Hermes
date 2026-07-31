@@ -17,7 +17,7 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 9. [x] Verify `robots.txt` references the canonical sitemap URL.
 10. [x] Verify no important page contains `noindex`.
 11. [x] Detect accidental indexable preview, demo, or test pages.
-12. [~] Decide index/noindex policy for `/load-board/` preview content.
+12. [x] Decide index/noindex policy for `/load-board/` preview content.
 13. [x] Detect duplicate titles across built pages.
 14. [x] Detect duplicate meta descriptions across built pages.
 15. [x] Detect duplicate H1 headings across pages where search intent differs.
@@ -48,9 +48,9 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 ## Phase 3 — Structured data and search appearance
 
 36. [x] Validate every JSON-LD block parses successfully.
-37. [ ] Maintain one stable Organization `@id` across the site.
-38. [ ] Maintain one stable WebSite `@id` linked to Organization.
-39. [ ] Validate Organization name, URL, logo, phone, email, and `sameAs` values.
+37. [x] Maintain one stable Organization `@id` across the site.
+38. [x] Maintain one stable WebSite `@id` linked to Organization.
+39. [x] Validate Organization name, URL, logo, phone, email, and `sameAs` values.
 40. [ ] Add visible breadcrumbs to deep commercial pages.
 41. [ ] Add matching `BreadcrumbList` markup to deep commercial pages.
 42. [~] Ensure structured data represents visible page content only.
@@ -60,8 +60,8 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 46. [x] Validate schema URLs are absolute HTTPS URLs.
 47. [x] Add structured-data regression tests to CI.
 48. [x] Document Rich Results Test and URL Inspection release checks.
-49. [ ] Review logo dimensions and crawlability for Organization markup.
-50. [ ] Review site-name signals: WebSite name, alternateName, title consistency, and favicon.
+49. [x] Review logo dimensions and crawlability for Organization markup.
+50. [x] Review site-name signals: WebSite name, alternateName, title consistency, and favicon.
 
 ## Phase 4 — Internal architecture and commercial landing pages
 
@@ -109,13 +109,13 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 86. [ ] Identify the LCP element for each major template.
 87. [ ] Convert oversized hero images to modern formats.
 88. [ ] Generate responsive image widths and correct `srcset`/`sizes`.
-89. [ ] Keep dimensions on all images to prevent layout shift.
-90. [ ] Lazy-load below-the-fold images only.
+89. [~] Keep dimensions on all images to prevent layout shift.
+90. [~] Lazy-load below-the-fold images only.
 91. [ ] Preload only the true above-the-fold LCP image.
 92. [ ] Reduce unused CSS and avoid template-wide blocking styles where practical.
 93. [ ] Reduce unnecessary client JavaScript and hydration.
 94. [ ] Validate mobile navigation, tap targets, and keyboard access.
-95. [ ] Add performance budgets to CI for image size and generated page weight.
+95. [~] Add performance budgets to CI for image size and generated page weight.
 
 ## Phase 7 — Measurement, Search Console, and scalable growth
 
@@ -131,4 +131,6 @@ The first implementation batch completed the build-output SEO validator, canonic
 
 The second low-risk batch added orphan-page and internal click-depth reporting, five additional logistics content briefs, a claims-to-evidence governance register, and an audience-specific conversion copy matrix.
 
-GitHub Actions `Website checks` run #151 passed before the second batch. The active PR must remain green after every new batch. No production merge or deployment has been performed.
+The third batch defined the Load Board indexation policy, established stable Organization and WebSite entities, added contact/logo/site-name schema validation, and introduced generated asset performance budgets with image-loading review warnings.
+
+GitHub Actions `Website checks` run #151 passed before the later batches. The active PR must remain green after every new batch. No production merge or deployment has been performed.
