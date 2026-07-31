@@ -5,6 +5,7 @@ import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
+import WebsiteSeoCommercialLinks from "../../components/WebsiteSeoCommercialLinks.astro";
 import { site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -34,12 +35,12 @@ const serviceSchema = {
 };
 const breadcrumbName = site.navigation.find((item) => item.href === `paths/${path.id}/`)?.label ?? path.category;
 const breadcrumbSchema = {
-"@context": "https://schema.org",
-"@type": "BreadcrumbList",
-itemListElement: [
-{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-{ "@type": "ListItem", position: 2, name: breadcrumbName, item: canonicalUrl },
-],
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: breadcrumbName, item: canonicalUrl },
+  ],
 };
 const schema = [serviceSchema, breadcrumbSchema];
 ---
@@ -48,6 +49,8 @@ const schema = [serviceSchema, breadcrumbSchema];
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
   {path.id === "logistics" && <LogisticsCommercialLinks />}
+  {path.id === "marketing" && <WebsiteSeoCommercialLinks context="marketing" />}
+  {path.id === "technology" && <WebsiteSeoCommercialLinks context="technology" />}
   <ContactCTA selectedPath={path.category} />
   <SiteFooter />
 </BaseLayout>
