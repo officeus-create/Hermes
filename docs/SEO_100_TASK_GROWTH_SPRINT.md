@@ -135,4 +135,6 @@ The third batch defined the Load Board indexation policy, established stable Org
 
 The fourth batch implemented two approved commercial logistics pages with visible breadcrumbs, Service/BreadcrumbList/FAQPage schema, carrier-decision and non-guarantee boundaries, direct contact fallbacks, sitemap entries, regression tests, cross-links, and a crawlable directory to every public Logistics Path Engine result.
 
-GitHub Actions `Website checks` run #177 passed completely on the current implementation head: build and static SEO tests passed, internal-link warnings reached zero, metadata warnings reached zero, commercial-page checks passed, and 118 Playwright tests passed with 2 intentionally skipped. No production merge or deployment has been performed.
+The release checklist now also enforces claim governance, indexation policy, crawlable inbound links, click depth, commercial-to-intake architecture, privacy-safe analytics, performance budgets, and the full automated audit suite.
+
+GitHub Actions `Website checks` run #177 passed completely on the implementation head: build and static SEO tests passed, internal-link warnings reached zero, metadata warnings reached zero, commercial-page checks passed, and 118 Playwright tests passed with 2 intentionally skipped. No production merge or deployment has been performed.
