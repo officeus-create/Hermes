@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Wisconsin Dealer Vehicle Transport | Hermes Logistics";
+const description = "Wisconsin dealer vehicle transport request review for purchases, sales, trades, transfers, auction pickups, and multi-unit inventory moves.";
+const canonicalUrl = new URL("/logistics/wisconsin-dealer-vehicle-transport/", Astro.site).toString();
+const faq = [
+  { question: "Can a Wisconsin dealer submit multiple vehicles?", answer: "Yes. Provide the complete unit list, vehicle condition, pickup and delivery locations, timing, facility access, and any required delivery sequence." },
+  { question: "What dealer information is required?", answer: "Include business contact details, exact route, vehicle list, pickup readiness, release references when applicable, access restrictions, and timing requirements." },
+  { question: "Can auction purchases be included?", answer: "Yes. Add the exact auction facility, lot or stock reference, release status, pickup hours, storage deadline, and vehicle condition." },
+  { question: "Does submitting inventory guarantee capacity?", answer: "No. Coordination depends on route, equipment, compliance, timing, capacity, and final confirmation." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Wisconsin dealer vehicle transport request coordination", description, url: canonicalUrl, serviceType: "Dealer vehicle transport request review and carrier coordination", areaServed: [{ "@type": "State", name: "Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" }, audience: { "@type": "BusinessAudience", audienceType: "Auto dealers and automotive businesses" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Wisconsin Vehicle Transport", item: "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/" }, { "@type": "ListItem", position: 3, name: "Wisconsin Dealer Vehicle Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell"><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/logistics/wisconsin-vehicle-transport/">Wisconsin vehicle transport</a> / <span aria-current="page">Dealer vehicle transport</span></nav><p class="eyebrow">Hermes Logistics · Wisconsin dealers</p><h1>Dealer vehicle transport across Wisconsin.</h1><p>Hermes reviews transport requests for dealer purchases, sales, trades, transfers, auction pickups, and multi-unit inventory moves. Complete unit, route, timing, release, and access details support a more accurate review.</p><div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=dealer&amp;origin=Wisconsin#post-load">Prepare a dealer transport request</a><a class="button" href="/logistics/wisconsin-multi-vehicle-dealer-transport/">Review multi-vehicle planning</a></div><p>Submission begins a review and does not guarantee a carrier, price, equipment, or pickup window.</p></div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Dealer request checklist</p><h2>Prepare the inventory before routing begins.</h2><ul><li>Pickup and delivery location for every unit</li><li>Year, make, model, VIN-free internal unit reference, and vehicle condition</li><li>Whether each unit starts, rolls, steers, and brakes</li><li>Release status, facility hours, storage deadlines, and access restrictions</li><li>Preferred pickup window and required delivery sequence</li><li>Open or enclosed equipment preference</li></ul><p>Use the <a href="/logistics/wisconsin-auction-vehicle-pickup/">Wisconsin auction vehicle pickup guide</a> for auction purchases.</p></div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Local planning</p><h2>Connect dealer requests to Wisconsin service areas.</h2><p><a href="/logistics/milwaukee-wi-vehicle-transport/">Milwaukee</a> · <a href="/logistics/madison-wi-vehicle-transport/">Madison</a> · <a href="/logistics/green-bay-wi-vehicle-transport/">Green Bay</a> · <a href="/logistics/appleton-wi-vehicle-transport/">Appleton</a> · <a href="/logistics/wisconsin-vehicle-transport/">All Wisconsin locations</a></p></div></section>
+    <section class="section logistics-faq" aria-labelledby="dealer-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="dealer-faq-title">Dealer transport questions.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main><SiteFooter />
+</BaseLayout>
