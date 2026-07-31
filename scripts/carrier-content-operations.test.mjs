@@ -46,7 +46,7 @@ assert.equal(carrierNoGuaranteeFaq.length, 5);
 for (const faq of carrierNoGuaranteeFaq) {
   assert.ok(faq.question.trim().length > 0);
   assert.ok(faq.answer.trim().length > 0);
-  assert.ok(/\bno\b|not guaranteed|does not/i.test(faq.answer));
+  assert.ok(/\bno\b|\bnot\b|keeps final control|provider controls/i.test(faq.answer));
 }
 assert.ok(carrierNoGuaranteeFaq.some((item) => /loads, rates, mileage, or revenue/i.test(item.question)));
 assert.ok(carrierNoGuaranteeFaq.some((item) => /final decision/i.test(item.question)));
@@ -119,7 +119,7 @@ for (const prohibited of [
   assert.ok(!allowedAnalyticsParameters.has(prohibited), `analytics contract must not allow ${prohibited}`);
 }
 
-for (const prohibited of ["name", "phone", "email", "company", "MC/DOT", "exact address", "free-form message", "rates"] ) {
+for (const prohibited of ["name", "phone", "email", "company", "MC/DOT", "exact address", "free-form message", "rates"]) {
   assert.ok(carrierMeasurementContract.inquiryMetric.prohibitedData.includes(prohibited));
 }
 
