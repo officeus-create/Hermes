@@ -1,6 +1,6 @@
 ---
-import { ArrowLeft, ArrowRight, Building2, Check, MapPin, ShieldCheck, Truck } from "@lucide/astro";
-import type { LogisticsLocation } from "../data/logistics-locations";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Building2, Check, MapPin, ShieldCheck, Truck } from "@lucide/astro";
+import { publishedLogisticsLocations, type LogisticsLocation } from "../data/logistics-locations";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
@@ -10,6 +10,17 @@ interface Props {
 }
 
 const { location } = Astro.props;
+
+// Same-state markets surface first (most relevant to a shared route), then
+// other published markets fill any remaining slots so every location page
+// links out to peer pages instead of only back to the hub.
+const sameState = publishedLogisticsLocations.filter(
+  (candidate) => candidate.slug !== location.slug && candidate.state === location.state,
+);
+const otherMarkets = publishedLogisticsLocations.filter(
+  (candidate) => candidate.slug !== location.slug && candidate.state !== location.state,
+);
+const relatedLocations = [...sameState, ...otherMarkets].slice(0, 4);
 const canonicalUrl = new URL(`/logistics/${location.slug}/`, Astro.site).toString();
 const verifiedDetail = location.publicLocationDetail?.verificationStatus === "HERMES_VERIFIED"
   ? location.publicLocationDetail
@@ -229,6 +240,31 @@ const schemas = [
           </div>
         </div>
       </section>
+
+      {relatedLocations.length > 0 && (
+        <section class="section logistics-location-hub" aria-labelledby="nearby-markets-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div>
+                <p class="eyebrow">Other transport markets</p>
+                <h2 id="nearby-markets-title">Prepare a request for a nearby or connected market.</h2>
+              </div>
+              <p>{sameState.length > 0
+                ? `Other ${location.stateName} markets Hermes reviews, plus connected lanes.`
+                : "Other markets Hermes reviews for vehicle transport requests."}</p>
+            </div>
+            <div class="logistics-location-grid">
+              {relatedLocations.map((related) => (
+                <a href={`/logistics/${related.slug}/`}>
+                  <span><MapPin size={16} aria-hidden="true" />{related.market}</span>
+                  <h3>{related.city}, {related.state}</h3>
+                  <strong>Open market guide <ArrowUpRight size={17} aria-hidden="true" /></strong>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section class="recommendation-cta">
         <div class="shell">
