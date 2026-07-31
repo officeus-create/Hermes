@@ -6,6 +6,7 @@ export type LogisticsAudience = {
   summary: string;
   needs: string[];
   steps: { title: string; body: string }[];
+    faq: { question: string; answer: string }[];
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
 };
@@ -23,6 +24,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Automatic review", body: "The preview checks completeness and whether the commodity fits the car-hauling pilot." },
       { title: "Collect options", body: "Approved production requests will be matched with relevant carrier capacity." },
     ],
+    faq: [{ question: "Is a carrier match guaranteed once I post a load?", answer: "No. Posting starts a review for fit and availability; matching depends on route, timing, and carrier capacity at that moment." }, { question: "What if my vehicle is inoperable?", answer: "Note the condition when you post. Inoperable units are reviewed the same way but may need different equipment or timing." }, { question: "Can I set a target price?", answer: "Yes, a target price is optional on the load form and is used as context during the review, not as a guaranteed rate." }],
     primary: { label: "Post a load", href: "/load-board/?role=shipper#post-load" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
@@ -38,6 +40,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Check compatibility", body: "Unusual, oversized, or inoperable equipment is held for additional requirements." },
       { title: "Route by fit", body: "The production workflow will route approved loads to relevant car-hauling capacity." },
     ],
+    faq: [{ question: "Do you guarantee capacity for every load I post?", answer: "No. Each opportunity is checked for equipment and route fit before it is routed to relevant carrier capacity; availability is not guaranteed." }, { question: "What verification details do you need?", answer: "Standard broker and load verification details, along with the commodity and equipment fit, so the opportunity can be reviewed accurately." }, { question: "How are oversized or unusual loads handled?", answer: "They are held for additional requirements rather than routed automatically, since equipment fit varies by carrier." }],
     primary: { label: "Open broker Load Board", href: "/load-board/?role=broker#post-load" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
@@ -53,6 +56,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Confirm the fit", body: "Hermes reviews the service path and the kind of opportunities that may fit." },
       { title: "Choose the relationship", body: "Discuss loads, dispatch support, or a broader operating relationship without giving up load approval." },
     ],
+    faq: [{ question: "Do I have to accept every load Hermes sends?", answer: "No. You review and approve every load; nothing is booked without your confirmation." }, { question: "What do you need from me to get started?", answer: "MC/DOT and authority status, trailer type and capacity, current location, preferred lanes, and availability." }, { question: "Can new authorities apply?", answer: "Yes, subject to a readiness review covering authority age, insurance, documentation, and equipment." }],
     primary: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
@@ -68,6 +72,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Initial fit review", body: "Hermes evaluates the operating fit before discussing structure or commercial terms." },
       { title: "Define a pilot", body: "Any approved path begins with responsibilities, training, controls, and measurable expectations." },
     ],
+    faq: [{ question: "Does applying guarantee an agency will open?", answer: "No. Hermes reviews operating fit, experience, and market before any structure or terms are discussed." }, { question: "What experience is required?", answer: "Relevant logistics and management experience, an existing team or hiring capacity, and clear business goals." }, { question: "What happens after the initial review?", answer: "An approved application moves to a defined pilot with responsibilities, training, and measurable expectations." }],
     primary: { label: "Start agency application", href: "/logistics/apply/?for=agency" },
   },
   {
@@ -82,6 +87,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Role review", body: "The team compares your background with current needs; an application does not guarantee placement." },
       { title: "Interview or training path", body: "A suitable candidate may be invited to an interview, test, or relevant Academy path." },
     ],
+    faq: [{ question: "Does submitting an application guarantee an interview or a job?", answer: "No. Applications are compared against current needs, and not every applicant is invited to interview." }, { question: "What should I include in my application?", answer: "Your location and time zone, languages, relevant experience, and the role you're interested in." }, { question: "Is training available if I don't have direct experience?", answer: "Some candidates may be invited to a relevant Academy training path instead of, or before, an operating role." }],
     primary: { label: "Start job application", href: "/logistics/apply/?for=career" },
     secondary: { label: "Explore training first", href: "/paths/academy/" },
   },
