@@ -16,7 +16,7 @@ assert.match(serviceHtml, /mailto:officeus@hermeslogisticsus\.com\?subject=Websi
 assert.match(serviceHtml, /"@type":"Service"/);
 assert.match(serviceHtml, /"@type":"BreadcrumbList"/);
 assert.match(serviceHtml, /"@type":"FAQPage"/);
-assert.equal((serviceHtml.match(/<details>/g) ?? []).length, 5);
+assert.equal((serviceHtml.match(/<details\b/g) ?? []).length, 5);
 assert.equal(/guarantee first-page rankings/i.test(serviceHtml), true);
 assert.equal(/guarantee.*first page|guaranteed first page/i.test(serviceHtml), false);
 
