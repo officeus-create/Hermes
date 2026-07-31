@@ -5,7 +5,11 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 ---
 
-<BaseLayout title="Page not found | Hermes" description="The requested Hermes page could not be found.">
+<BaseLayout
+  title="Page not found | Hermes"
+  description="The requested Hermes page could not be found."
+  robots="noindex,nofollow"
+>
   <SiteHeader />
   <main class="not-found" id="main-content">
     <div class="shell">

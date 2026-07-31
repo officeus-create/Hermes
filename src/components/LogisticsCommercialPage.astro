@@ -1,0 +1,127 @@
+---
+import { ArrowRight, Check, Mail, Phone } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+
+export type CommercialPageContent = {
+  title: string;
+  description: string;
+  eyebrow: string;
+  h1: string;
+  intro: string;
+  image: string;
+  imageAlt: string;
+  audience: string[];
+  benefits: { title: string; body: string }[];
+  process: { title: string; body: string }[];
+  faq: { question: string; answer: string }[];
+  related: { label: string; href: string }[];
+};
+
+interface Props { content: CommercialPageContent; }
+const { content } = Astro.props;
+const canonicalPath = Astro.url.pathname;
+const absoluteUrl = `https://hermeslogisticsus.com${canonicalPath}`;
+const email = "mailto:freight_301@hermeslogisticsus.com";
+const phone = "tel:+12623023626";
+const organizationId = "https://hermeslogisticsus.com/#organization";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${absoluteUrl}#service`,
+    name: content.h1,
+    description: content.description,
+    image: new URL(content.image, "https://hermeslogisticsus.com").toString(),
+    provider: { "@id": organizationId },
+    areaServed: { "@type": "Country", name: "United States" },
+    url: absoluteUrl,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: content.h1, item: absoluteUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: content.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={content.title} description={content.description} image={content.image} preloadImage={content.image} schema={schema}>
+  <SiteHeader />
+  <main id="main-content" class="commercial-page">
+    <section class="commercial-hero">
+      <div class="shell">
+        <nav class="commercial-breadcrumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a><span aria-hidden="true">/</span>
+          <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+          <span aria-current="page">{content.h1}</span>
+        </nav>
+        <div class="commercial-hero-grid">
+          <div>
+            <p class="eyebrow">{content.eyebrow}</p>
+            <h1>{content.h1}</h1>
+            <p class="commercial-lead">{content.intro}</p>
+            <div class="commercial-actions">
+              <a class="button button-primary" href={email}><Mail size={18} aria-hidden="true" />Request logistics support</a>
+              <a class="button button-ghost commercial-phone" href={phone}><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
+            </div>
+          </div>
+          <img src={content.image} alt={content.imageAlt} width="1400" height="1050" loading="eager" fetchpriority="high" decoding="async" sizes="(max-width: 800px) 100vw, 48vw" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell commercial-narrow">
+        <p class="eyebrow">Who this is for</p>
+        <ul class="commercial-checks">{content.audience.map((item) => <li><Check size={18} aria-hidden="true" />{item}</li>)}</ul>
+      </div>
+    </section>
+
+    <section class="section commercial-soft">
+      <div class="shell">
+        <div class="section-heading"><p class="eyebrow">Operational value</p><h2>Clear coordination around real vehicle movement.</h2></div>
+        <div class="commercial-grid">{content.benefits.map((item) => <article><h3>{item.title}</h3><p>{item.body}</p></article>)}</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <div class="section-heading"><p class="eyebrow">How it works</p><h2>A practical process with carrier control at every step.</h2></div>
+        <ol class="commercial-process">{content.process.map((item, index) => <li><span>0{index + 1}</span><div><h3>{item.title}</h3><p>{item.body}</p></div></li>)}</ol>
+      </div>
+    </section>
+
+    <section class="section commercial-soft">
+      <div class="shell commercial-narrow">
+        <div class="section-heading"><p class="eyebrow">Frequently asked questions</p><h2>Important details before starting.</h2></div>
+        <div class="commercial-faq">{content.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell commercial-narrow">
+        <p class="eyebrow">Related logistics pages</p>
+        <nav class="commercial-related" aria-label="Related logistics services">{content.related.map((item) => <a href={item.href}>{item.label}<ArrowRight size={17} aria-hidden="true" /></a>)}</nav>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .commercial-page{background:#fff}.commercial-hero{padding:8.5rem 0 5rem;background:#071038;color:#fff}.commercial-breadcrumbs{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-bottom:2.2rem;color:rgba(255,255,255,.68);font-size:.82rem}.commercial-breadcrumbs a{color:inherit}.commercial-breadcrumbs a:hover{color:#fff}.commercial-breadcrumbs span[aria-current="page"]{max-width:46ch;color:#fff}.commercial-hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,5rem);align-items:center}.commercial-hero h1{max-width:13ch;font-size:clamp(2.7rem,6vw,5.4rem)}.commercial-lead{max-width:62ch;color:rgba(255,255,255,.78);font-size:1.18rem}.commercial-hero img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px}.commercial-actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:2rem}.commercial-phone{border-color:rgba(255,255,255,.45);color:#fff}.commercial-narrow{max-width:900px}.commercial-soft{background:#f7f4ff}.commercial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.commercial-grid article{padding:1.5rem;background:#fff;border:1px solid #e8e2f6;border-radius:8px}.commercial-grid h3{font-size:1.25rem}.commercial-checks{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;padding:0;list-style:none}.commercial-checks li{display:flex;gap:.65rem;align-items:flex-start}.commercial-process{display:grid;gap:1rem;padding:0;list-style:none}.commercial-process li{display:grid;grid-template-columns:54px 1fr;gap:1rem;padding:1.35rem;border-top:1px solid #ddd}.commercial-process span{font-family:var(--font-mono);color:#6a20d9}.commercial-faq details{padding:1rem 0;border-bottom:1px solid #ddd}.commercial-faq summary{cursor:pointer;font-weight:700}.commercial-related{display:grid;gap:.6rem}.commercial-related a{display:flex;justify-content:space-between;align-items:center;padding:1rem;border:1px solid #ddd;border-radius:6px}@media(max-width:800px){.commercial-hero-grid,.commercial-grid,.commercial-checks{grid-template-columns:1fr}.commercial-hero{padding-top:7.5rem}.commercial-hero h1{font-size:clamp(2.5rem,13vw,4rem)}}
+</style>

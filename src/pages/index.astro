@@ -12,12 +12,33 @@ import WhyItMatters from "../components/WhyItMatters.astro";
 import { site } from "../data/site";
 import { languageAlternates } from "../data/locales";
 
+const organizationId = "https://hermeslogisticsus.com/#organization";
+const websiteId = "https://hermeslogisticsus.com/#website";
+
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": organizationId,
   name: "Hermes",
+  alternateName: "Hermes Ecosystem",
   url: "https://hermeslogisticsus.com/",
-  logo: "https://hermeslogisticsus.com/favicon.svg",
+  logo: {
+    "@type": "ImageObject",
+    "@id": "https://hermeslogisticsus.com/#logo",
+    url: "https://hermeslogisticsus.com/favicon.svg",
+    contentUrl: "https://hermeslogisticsus.com/favicon.svg",
+    caption: "Hermes",
+  },
+  image: "https://hermeslogisticsus.com/images/hermes-social-share-2026.jpg",
+  email: "officeus@hermeslogisticsus.com",
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+1-262-302-3626",
+    email: "freight_301@hermeslogisticsus.com",
+    contactType: "Logistics Sales",
+    areaServed: "US",
+    availableLanguage: ["English", "Russian", "Ukrainian"],
+  },
   areaServed: [
     { "@type": "Country", name: "United States" },
     { "@type": "Country", name: "Italy" },
@@ -31,12 +52,24 @@ const organizationSchema = {
     "https://www.instagram.com/progressopro/",
   ],
 };
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": websiteId,
+  url: "https://hermeslogisticsus.com/",
+  name: "Hermes",
+  alternateName: "Hermes Ecosystem",
+  inLanguage: ["en", "uk", "ru", "es", "it", "fr"],
+  publisher: { "@id": organizationId },
+};
 ---
 
 <BaseLayout
   title="Hermes | Logistics, Marketing, Academy & IT"
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
-  schema={organizationSchema}
+  preloadImage={site.hero.image}
+  schema={[organizationSchema, websiteSchema]}
   alternates={languageAlternates}
 >
   <SiteHeader />
