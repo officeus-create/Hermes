@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import ContactLinkEnhancer from "../components/ContactLinkEnhancer.astro";
 import MotionLayer from "../components/MotionLayer.astro";
 import SiteIntro from "../components/SiteIntro.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
@@ -83,21 +84,6 @@ const alternateOgLocales = alternates
         // Continue directly to the page when browser storage is unavailable.
       }
     </script>
-    <script is:inline>
-      document.addEventListener("click", (event) => {
-        const source = event.target;
-        if (!(source instanceof Element)) return;
-        const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
-        if (!(link instanceof HTMLAnchorElement)) return;
-        const href = link.getAttribute("href") || "";
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          event: "contact_click",
-          contact_method: href.startsWith("tel:") ? "phone" : "email",
-          page_path: window.location.pathname,
-        });
-      });
-    </script>
     {schema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />}
     <title>{title}</title>
   </head>
@@ -106,6 +92,7 @@ const alternateOgLocales = alternates
     <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
+    <ContactLinkEnhancer />
     <MotionLayer />
     <!--/email_off-->
   </body>
