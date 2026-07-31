@@ -41,7 +41,7 @@ itemListElement: [
 { "@type": "ListItem", position: 2, name: breadcrumbName, item: canonicalUrl },
 ],
 };
-const schema = [serviceSchema, breadcrumbSchema];
+const faqSchema = path.faq ? { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: path.faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) } : null; const schema = faqSchema ? [serviceSchema, breadcrumbSchema, faqSchema] : [serviceSchema, breadcrumbSchema];
 ---
 
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema}>
