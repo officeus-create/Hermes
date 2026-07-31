@@ -48,11 +48,13 @@ export type AdapterAccessDecision = Readonly<{
   reason: string;
 }>;
 
+const transportList = (...transports: AdapterTransport[]): readonly AdapterTransport[] => Object.freeze(transports);
+
 export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoardAdapterDefinition>> = Object.freeze({
   central_dispatch: Object.freeze({
     id: "central_dispatch",
     label: "Central Dispatch",
-    transports: Object.freeze(["rest_api", "webhook", "partner_integration"]),
+    transports: transportList("rest_api", "webhook", "partner_integration"),
     readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
@@ -63,7 +65,7 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
   super_dispatch: Object.freeze({
     id: "super_dispatch",
     label: "Super Dispatch",
-    transports: Object.freeze(["rest_api", "webhook", "partner_integration"]),
+    transports: transportList("rest_api", "webhook", "partner_integration"),
     readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
@@ -74,7 +76,7 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
   truckstop: Object.freeze({
     id: "truckstop",
     label: "Truckstop",
-    transports: Object.freeze(["rest_api", "partner_integration"]),
+    transports: transportList("rest_api", "partner_integration"),
     readiness: "contract_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
@@ -85,7 +87,7 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
   dat: Object.freeze({
     id: "dat",
     label: "DAT",
-    transports: Object.freeze(["rest_api", "partner_integration"]),
+    transports: transportList("rest_api", "partner_integration"),
     readiness: "owner_approval_required",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
@@ -96,7 +98,7 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
   ship_cars: Object.freeze({
     id: "ship_cars",
     label: "Ship.Cars",
-    transports: Object.freeze(["rest_api", "csv_export", "partner_integration"]),
+    transports: transportList("rest_api", "csv_export", "partner_integration"),
     readiness: "research_only",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
@@ -107,7 +109,7 @@ export const LOAD_BOARD_ADAPTERS: Readonly<Record<LoadBoardProviderId, LoadBoard
   sanitized_csv: Object.freeze({
     id: "sanitized_csv",
     label: "Owner-approved sanitized CSV",
-    transports: Object.freeze(["manual_csv"]),
+    transports: transportList("manual_csv"),
     readiness: "preview_ready",
     providerConnectionEnabled: false,
     requiresOwnerApproval: true,
