@@ -1,4 +1,15 @@
-# AI Handoff Log
+
+## 2026-07-30 — Claude (Cowork) — Restore #journey anchor (frozen contract regression)
+
+- Branch: fix/restore-journey-anchor
+- - Commit(s): landed via GitHub web editor (this session has no git push/API access — see prior entries); see PR
+  - - PR: #7 (open, not merged, "Able to merge")
+    - - What was done: Live-site QA pass (checking site functionality against `docs/DESIGN_INTEGRATION_CONTRACT.md`) found the homepage redesign had silently renamed the "why matters" section's id from `journey` to `why`, dropping the `#journey` anchor the contract requires ("Keep `#main-content`, `#paths`, `#journey`, `#about`, and `#contact` targets"). No internal link currently points at `#journey`, but any external link (ads, email, bookmark) using it would land at the top of the page instead. Fixed by adding an empty, visually-hidden `<span id="journey">` immediately before `<section id="why">` in `WhyItMatters.astro` — purely additive, `id="why"` and everything depending on it untouched. Also confirmed during the same QA pass: the homepage's animated H1 renders "Four dırections." with a literal dotless-i (U+0131) in the visible/indexable text as part of a letter-animation effect (`aria-label` on the `<h1>` is correctly spelled, so no accessibility issue) — flagging as a minor, low-severity cosmetic item, not fixed here since it's a deliberate design choice that needs a design-workstream call, not a one-line fix.
+      - - Files changed: `src/components/WhyItMatters.astro`.
+        - - Tests run (and result): `npm run build` (47 pages, 0 errors, 0 warnings, 1 pre-existing unrelated hint) and `npm test` (all unit + validate-build checks) passed in this session's local clone before landing the change via GitHub's web editor. `npm run test:e2e` not run — recommend running before merge.
+          - - Remaining / open items: PR #7 needs review/merge; `test:e2e` should be confirmed green first. The dotless-i H1 styling is unreviewed — worth a quick design check, not urgent.
+            - - Next step / what's needed from a human or another agent: run `test:e2e` on PR #7 (or trust CI), then owner merge decision; separately decide whether the H1 letter-animation glyph needs a different implementation approach (e.g. CSS `::before`/`content` instead of a real Unicode substitution) so indexed/copyable text stays spelled correctly.
+              - # AI Handoff Log
 
 Shared journal between Claude Code and Codex for continuing work on the Hermes
 website across sessions and across agents. Read this before starting work;
