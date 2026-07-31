@@ -82,7 +82,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Role review", body: "The team compares your background with current needs; an application does not guarantee placement." },
       { title: "Interview or training path", body: "A suitable candidate may be invited to an interview, test, or relevant Academy path." },
     ],
-    primary: { label: "See current Hermes vacancies", href: "/careers/" },
-    secondary: { label: "Start a logistics application", href: "/logistics/apply/?for=career" },
+    primary: { label: "Start job application", href: "/careers/#international-sales-manager" },
+    secondary: { label: "Explore training first", href: "/paths/academy/" },
   },
 ];
