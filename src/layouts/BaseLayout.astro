@@ -8,14 +8,24 @@ interface Props {
   title: string;
   description: string;
   image?: string;
+  preloadImage?: string;
   schema?: Record<string, unknown> | Record<string, unknown>[];
   locale?: SiteLocale;
   alternates?: { lang: string; href: string }[];
 }
 
-const { title, description, image = "/images/hermes-social-share-2026.jpg", schema, locale = "en", alternates = [] } = Astro.props;
+const {
+  title,
+  description,
+  image = "/images/hermes-social-share-2026.jpg",
+  preloadImage,
+  schema,
+  locale = "en",
+  alternates = [],
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
+const priorityImage = preloadImage ? new URL(preloadImage, Astro.site) : null;
 const ogLocale = localeConfig[locale].ogLocale;
 const alternateOgLocales = alternates
   .map((alternate) => alternate.lang)
@@ -32,12 +42,14 @@ const alternateOgLocales = alternates
     <meta name="robots" content="index,follow,max-image-preview:large" />
     <meta name="color-scheme" content="light" />
     <link rel="canonical" href={canonical} />
+    {priorityImage && <link rel="preload" as="image" href={priorityImage} fetchpriority="high" />}
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:url" content={socialImage} />
     <meta property="og:image:secure_url" content={socialImage} />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="2048" />
