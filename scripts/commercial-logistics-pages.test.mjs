@@ -11,7 +11,7 @@ const pages = [
   {
     route: "/logistics/car-hauling-dispatch/",
     file: join(dist, "logistics", "car-hauling-dispatch", "index.html"),
-    title: "Car Hauling Dispatch Services | Hermes Logistics",
+    title: "Car Hauling Dispatch Services for Owner-Operators | Hermes Logistics",
     h1: "Car Hauling Dispatch and Operations Support",
     required: [
       "carrier reviews and approves every load before booking",
