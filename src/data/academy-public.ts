@@ -6,10 +6,10 @@ export const academyPublicPathOverrides: Partial<PathDetail> = {
   points: [
     "U.S. Logistics Operations",
     "Marketing for U.S. and international service businesses",
-    "Legacy wording retired: the COO / Operational Director Program, Operating Career System, Executive, and ‘Three programs. Different responsibilities.’ are not current public programs. Practice environment details remain separate. Program dates, scope, and prices are published before enrollment. Ask about the right Academy path. Training opportunities do not guarantee employment.",
+    "Separate paid cohort and free practice models",
   ],
   audience: "For learners and working professionals building practical capability for U.S. logistics or marketing work.",
-  overview: "Hermes Business Academy currently presents two public program paths: U.S. Logistics Operations and Marketing. Each path uses awareness, understanding, and application, with practical exercises, review, and clear boundaries between paid cohorts, free practice opportunities, and employment.",
+  overview: "Hermes Business Academy currently presents two public program paths: U.S. Logistics Operations and Marketing. The former COO / Operational Director Program, including the shorter COO / Operational Director wording, Operating Career System, Executive, and ‘Three programs. Different responsibilities.’ language, is retired and is not a current public program. The Practice environment remains part of the two approved paths. Program dates, scope, and prices are published before enrollment. Ask about the right Academy path. Training and practice do not guarantee employment.",
   seoTitle: "U.S. Logistics and Marketing Training | Hermes Academy",
   seoDescription: "Practical U.S. logistics and marketing education with separate paid cohort and free practice models, email coordination, and no employment or income guarantee.",
   seoServiceName: "Practical U.S. logistics and marketing education",
