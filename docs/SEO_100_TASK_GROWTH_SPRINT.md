@@ -70,17 +70,17 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 53. [x] Create an auction vehicle transportation content brief.
 54. [x] Create an open car transport content brief.
 55. [x] Create an enclosed car transport content brief.
-56. [ ] Create a carrier onboarding content brief.
-57. [ ] Create a shipper and dealer intake content brief.
-58. [ ] Create a broker collaboration content brief.
-59. [ ] Create a port-to-dealer/warehouse coordination brief without claiming warehousing.
-60. [ ] Create a luxury and classic vehicle transport coordination brief.
+56. [x] Create a carrier onboarding content brief.
+57. [x] Create a shipper and dealer intake content brief.
+58. [x] Create a broker collaboration content brief.
+59. [x] Create a port-to-dealer/warehouse coordination brief without claiming warehousing.
+60. [x] Create a luxury and classic vehicle transport coordination brief.
 61. [ ] Add contextual links from the logistics hub to approved commercial pages.
 62. [ ] Add contextual links between related commercial pages.
 63. [ ] Add links from commercial pages to contacts and intake routes.
 64. [ ] Add descriptive anchor text; avoid generic “learn more” links.
-65. [ ] Detect orphan pages after build.
-66. [~] Detect internal links to redirects or missing pages.
+65. [x] Detect orphan pages after build.
+66. [x] Detect internal links to redirects or missing pages.
 67. [ ] Add visible breadcrumb navigation for users.
 68. [ ] Establish hub → service → supporting article architecture.
 69. [x] Keep demo tools separate from primary commercial search intent.
@@ -88,8 +88,8 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 
 ## Phase 5 — Content quality, evidence, and conversion
 
-71. [ ] Create a claims-to-evidence register for every public commercial page.
-72. [ ] Ban unsupported guarantees for income, loads, rankings, pickup, delivery, or capacity.
+71. [~] Create a claims-to-evidence register for every public commercial page.
+72. [x] Ban unsupported guarantees for income, loads, rankings, pickup, delivery, or capacity.
 73. [ ] Add “carrier controls final decision” language where operationally relevant.
 74. [ ] Add service-scope sections explaining what Hermes does and does not do.
 75. [ ] Add onboarding-process sections to reduce uncertainty.
@@ -101,7 +101,7 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 81. [~] Keep PII out of analytics payloads and URL parameters.
 82. [x] Provide a working contact fallback when forms or APIs fail.
 83. [x] Replace non-working interface controls with honest preview or direct-contact behavior.
-84. [ ] Add CTA copy variants by audience: carrier, dealer, shipper, broker, candidate.
+84. [x] Add CTA copy variants by audience: carrier, dealer, shipper, broker, candidate.
 85. [ ] Measure landing-page engagement and qualified contact actions in GA4.
 
 ## Phase 6 — Performance, media, and mobile search experience
@@ -125,8 +125,10 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 99. [ ] Create a monthly editorial and refresh queue from impressions, CTR, and position data.
 100. [ ] Establish a monthly SEO release cycle: evidence → brief → implementation → QA → publish → inspect → measure.
 
-## Completed first batch
+## Completed implementation batches
 
-The first implementation batch completed the build-output SEO validator, canonical/sitemap consistency checks, duplicate metadata reporting, JSON-LD parsing, H1 validation, route-level CI errors, reciprocal hreflang validation, multilingual sitemap annotations, 404/demo noindex controls, social metadata improvements, release QA documentation, terminology governance, and the first three new commercial content briefs.
+The first implementation batch completed the build-output SEO validator, canonical/sitemap consistency checks, duplicate metadata reporting, JSON-LD parsing, H1 validation, route-level CI errors, reciprocal hreflang validation, multilingual sitemap annotations, 404/demo noindex controls, social metadata improvements, release QA documentation, terminology governance, and the first three commercial content briefs.
 
-GitHub Actions `Website checks` run #150 passed after these changes. No production merge or deployment has been performed.
+The second low-risk batch added orphan-page and internal click-depth reporting, five additional logistics content briefs, a claims-to-evidence governance register, and an audience-specific conversion copy matrix.
+
+GitHub Actions `Website checks` run #151 passed before the second batch. The active PR must remain green after every new batch. No production merge or deployment has been performed.
