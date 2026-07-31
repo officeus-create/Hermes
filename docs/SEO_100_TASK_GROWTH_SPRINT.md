@@ -51,11 +51,11 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 37. [x] Maintain one stable Organization `@id` across the site.
 38. [x] Maintain one stable WebSite `@id` linked to Organization.
 39. [x] Validate Organization name, URL, logo, phone, email, and `sameAs` values.
-40. [ ] Add visible breadcrumbs to deep commercial pages.
-41. [ ] Add matching `BreadcrumbList` markup to deep commercial pages.
-42. [~] Ensure structured data represents visible page content only.
-43. [ ] Add `Service` schema to approved logistics service pages.
-44. [~] Remove or avoid unsupported service claims in schema.
+40. [x] Add visible breadcrumbs to deep commercial pages.
+41. [x] Add matching `BreadcrumbList` markup to deep commercial pages.
+42. [x] Ensure structured data represents visible page content only.
+43. [x] Add `Service` schema to approved logistics service pages.
+44. [x] Remove or avoid unsupported service claims in schema.
 45. [x] Add FAQ markup only where the FAQ is visible on the page.
 46. [x] Validate schema URLs are absolute HTTPS URLs.
 47. [x] Add structured-data regression tests to CI.
@@ -65,8 +65,8 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 
 ## Phase 4 — Internal architecture and commercial landing pages
 
-51. [ ] Build and validate `/logistics/car-hauling-dispatch/`.
-52. [ ] Build and validate `/logistics/dealer-vehicle-transportation/`.
+51. [x] Build and validate `/logistics/car-hauling-dispatch/`.
+52. [x] Build and validate `/logistics/dealer-vehicle-transportation/`.
 53. [x] Create an auction vehicle transportation content brief.
 54. [x] Create an open car transport content brief.
 55. [x] Create an enclosed car transport content brief.
@@ -75,14 +75,14 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 58. [x] Create a broker collaboration content brief.
 59. [x] Create a port-to-dealer/warehouse coordination brief without claiming warehousing.
 60. [x] Create a luxury and classic vehicle transport coordination brief.
-61. [ ] Add contextual links from the logistics hub to approved commercial pages.
-62. [ ] Add contextual links between related commercial pages.
-63. [ ] Add links from commercial pages to contacts and intake routes.
-64. [ ] Add descriptive anchor text; avoid generic “learn more” links.
+61. [x] Add contextual links from the logistics hub to approved commercial pages.
+62. [x] Add contextual links between related commercial pages.
+63. [x] Add links from commercial pages to contacts and intake routes.
+64. [x] Add descriptive anchor text; avoid generic “learn more” links.
 65. [x] Detect orphan pages after build.
 66. [x] Detect internal links to redirects or missing pages.
-67. [ ] Add visible breadcrumb navigation for users.
-68. [ ] Establish hub → service → supporting article architecture.
+67. [x] Add visible breadcrumb navigation for users.
+68. [x] Establish hub → service → supporting article architecture.
 69. [x] Keep demo tools separate from primary commercial search intent.
 70. [x] Add a release checklist for new commercial landing pages.
 
@@ -90,11 +90,11 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 
 71. [~] Create a claims-to-evidence register for every public commercial page.
 72. [x] Ban unsupported guarantees for income, loads, rankings, pickup, delivery, or capacity.
-73. [ ] Add “carrier controls final decision” language where operationally relevant.
-74. [ ] Add service-scope sections explaining what Hermes does and does not do.
-75. [ ] Add onboarding-process sections to reduce uncertainty.
-76. [ ] Add equipment compatibility sections based on verified operations.
-77. [ ] Add qualification requirements using approved MC/DOT/insurance language.
+73. [~] Add “carrier controls final decision” language where operationally relevant.
+74. [~] Add service-scope sections explaining what Hermes does and does not do.
+75. [~] Add onboarding-process sections to reduce uncertainty.
+76. [~] Add equipment compatibility sections based on verified operations.
+77. [~] Add qualification requirements using approved MC/DOT/insurance language.
 78. [ ] Add visible updated/reviewed dates where editorial maintenance matters.
 79. [ ] Add author/reviewer attribution for expert operational articles when evidence exists.
 80. [~] Add conversion events for phone, email, and approved form submission.
@@ -106,16 +106,16 @@ The sprint is ordered from low-risk technical hygiene to higher-complexity conte
 
 ## Phase 6 — Performance, media, and mobile search experience
 
-86. [ ] Identify the LCP element for each major template.
+86. [~] Identify the LCP element for each major template.
 87. [ ] Convert oversized hero images to modern formats.
 88. [ ] Generate responsive image widths and correct `srcset`/`sizes`.
 89. [~] Keep dimensions on all images to prevent layout shift.
 90. [~] Lazy-load below-the-fold images only.
-91. [ ] Preload only the true above-the-fold LCP image.
+91. [~] Preload only the true above-the-fold LCP image.
 92. [ ] Reduce unused CSS and avoid template-wide blocking styles where practical.
 93. [ ] Reduce unnecessary client JavaScript and hydration.
-94. [ ] Validate mobile navigation, tap targets, and keyboard access.
-95. [~] Add performance budgets to CI for image size and generated page weight.
+94. [~] Validate mobile navigation, tap targets, and keyboard access.
+95. [x] Add performance budgets to CI for image size and generated page weight.
 
 ## Phase 7 — Measurement, Search Console, and scalable growth
 
@@ -133,4 +133,6 @@ The second low-risk batch added orphan-page and internal click-depth reporting, 
 
 The third batch defined the Load Board indexation policy, established stable Organization and WebSite entities, added contact/logo/site-name schema validation, and introduced generated asset performance budgets with image-loading review warnings.
 
-GitHub Actions `Website checks` run #151 passed before the later batches. The active PR must remain green after every new batch. No production merge or deployment has been performed.
+The fourth batch implemented two approved commercial logistics pages with visible breadcrumbs, Service/BreadcrumbList/FAQPage schema, carrier-decision and non-guarantee boundaries, direct contact fallbacks, sitemap entries, regression tests, cross-links, and a crawlable directory to every public Logistics Path Engine result.
+
+GitHub Actions `Website checks` run #177 passed completely on the current implementation head: build and static SEO tests passed, internal-link warnings reached zero, metadata warnings reached zero, commercial-page checks passed, and 118 Playwright tests passed with 2 intentionally skipped. No production merge or deployment has been performed.
