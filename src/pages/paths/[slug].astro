@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
+import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
@@ -28,11 +29,7 @@ const serviceSchema = {
   description: path.seoDescription,
   url: canonicalUrl,
   areaServed,
-  provider: {
-    "@type": "Organization",
-    name: "Hermes",
-    url: "https://hermeslogisticsus.com/",
-  },
+  provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
 };
 ---
@@ -40,6 +37,7 @@ const serviceSchema = {
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={serviceSchema}>
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
+  {path.id === "logistics" && <LogisticsCommercialLinks />}
   <ContactCTA selectedPath={path.category} />
   <SiteFooter />
 </BaseLayout>
