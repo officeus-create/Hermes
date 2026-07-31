@@ -29,8 +29,8 @@ const schema = {
           <h1>Build business systems, markets, and client relationships with Hermes.</h1>
           <p class="careers-lead">We publish roles only when there is a defined business need. An application begins a review and does not guarantee an interview, training place, contract, or employment.</p>
           <div class="careers-actions">
-            <a class="button button-primary" href="#international-sales-manager">View the priority vacancy<ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="button" href={applicationHref}><Mail size={18} aria-hidden="true" />Send an application</a>
+            <a class="button button-primary" href="#international-sales-manager" data-career-action="open_vacancy">View the priority vacancy<ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button" href={applicationHref} data-career-action="start_email_application"><Mail size={18} aria-hidden="true" />Send an application</a>
           </div>
         </div>
         <aside class="careers-principles" aria-label="How Hermes evaluates applications">
@@ -71,7 +71,7 @@ const schema = {
             </ul></section>
           </div>
           <div class="vacancy-boundary"><ShieldCheck size={22} aria-hidden="true" /><p>Compensation structure, schedule, targets, trial tasks, contractor or employment status, and commercial terms are discussed only after role fit is reviewed. This page does not promise hiring, earnings, client volume, or a specific start date.</p></div>
-          <div class="vacancy-apply"><div><Globe size={22} aria-hidden="true" /><p><strong>Application language:</strong> English, Russian, or Ukrainian. Include your city, time zone, language levels, recent results, and availability.</p></div><a class="button button-primary" href={applicationHref}>Apply by email<ArrowRight size={18} aria-hidden="true" /></a></div>
+          <div class="vacancy-apply"><div><Globe size={22} aria-hidden="true" /><p><strong>Application language:</strong> English, Russian, or Ukrainian. Include your city, time zone, language levels, recent results, and availability.</p></div><a class="button button-primary" href={applicationHref} data-career-action="start_email_application">Apply by email<ArrowRight size={18} aria-hidden="true" /></a></div>
         </article>
       </div>
     </section>
@@ -85,6 +85,23 @@ const schema = {
   </main>
   <SiteFooter />
 </BaseLayout>
+
+<script>
+  type AnalyticsWindow = Window & { gtag?: (...args: unknown[]) => void };
+
+  document.querySelectorAll<HTMLElement>("[data-career-action]").forEach((element) => {
+    element.addEventListener("click", () => {
+      const action = element.dataset.careerAction;
+      if (!action) return;
+
+      (window as AnalyticsWindow).gtag?.("event", "career_action", {
+        role_key: "website_seo_sales",
+        action,
+        page_path: window.location.pathname,
+      });
+    });
+  });
+</script>
 
 <style>
   .careers-page{background:#f6f3eb;color:#071038}.careers-hero{padding:clamp(8rem,14vw,12rem) 0 clamp(4rem,8vw,7rem);background:radial-gradient(circle at 80% 10%,rgba(79,117,255,.22),transparent 32%),#071038;color:#fff}.careers-hero-layout,.vacancy-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.75fr);gap:clamp(2rem,6vw,5rem);align-items:start}.careers-hero h1{max-width:880px;font-size:clamp(2.8rem,7vw,6.4rem);line-height:.94;margin:.8rem 0 1.5rem}.careers-lead{max-width:760px;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.65;color:rgba(255,255,255,.78)}.careers-actions,.vacancy-apply{display:flex;flex-wrap:wrap;gap:.9rem;align-items:center;margin-top:2rem}.careers-principles{padding:1.5rem;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07)}.careers-principles h2{margin:1rem 0;font-size:1.35rem}.careers-principles ul,.vacancy-card ul{display:grid;gap:.8rem;padding:0;margin:0;list-style:none}.careers-principles li,.vacancy-card li{display:grid;grid-template-columns:auto 1fr;gap:.65rem;align-items:start;line-height:1.5}.vacancy-layout{grid-template-columns:1fr}.vacancy-card{background:#fff;border:1px solid rgba(7,16,56,.12);padding:clamp(1.5rem,4vw,3.5rem);box-shadow:0 24px 70px rgba(7,16,56,.08)}.vacancy-heading{display:flex;justify-content:space-between;gap:2rem;align-items:start;margin-bottom:1.5rem}.vacancy-heading h2{max-width:900px;font-size:clamp(2rem,4vw,3.6rem);line-height:1.04;margin:.5rem 0}.vacancy-heading>span{white-space:nowrap;border:1px solid rgba(7,16,56,.18);padding:.55rem .75rem;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}.vacancy-card>p{max-width:920px;font-size:1.08rem;line-height:1.75}.vacancy-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;margin:2.5rem 0}.vacancy-grid section{padding:1.5rem;background:#f6f3eb}.vacancy-grid h3{margin-top:0;font-size:1.25rem}.vacancy-boundary{display:grid;grid-template-columns:auto 1fr;gap:.9rem;padding:1.2rem;border-left:3px solid #334fdd;background:#eef1ff}.vacancy-boundary p{margin:0;line-height:1.6}.vacancy-apply{justify-content:space-between}.vacancy-apply>div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.7rem;max-width:760px}.vacancy-apply p{margin:0}.careers-process{background:#fff}.careers-process ol{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;padding:0;margin:2rem 0 0;list-style:none;background:rgba(7,16,56,.12)}.careers-process li{background:#fff;padding:1.4rem}.careers-process li>span{font-weight:800;color:#334fdd}.careers-process h3{margin:.8rem 0 .45rem}.careers-process p{margin:0;line-height:1.55}@media(max-width:900px){.careers-hero-layout,.vacancy-grid{grid-template-columns:1fr}.careers-process ol{grid-template-columns:repeat(2,minmax(0,1fr))}.vacancy-heading{flex-direction:column}}@media(max-width:560px){.careers-process ol{grid-template-columns:1fr}.careers-actions .button,.vacancy-apply .button{width:100%;justify-content:center}}
