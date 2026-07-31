@@ -1,0 +1,189 @@
+---
+import { ArrowLeft, ArrowRight, Check, ClipboardCheck, Link2, MapPin, SearchCheck, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+const publishedResources = [
+  {
+    title: "Appleton vehicle transport",
+    href: "/logistics/appleton-wi-vehicle-transport/",
+    purpose: "Commercial local-intent page for dealers, auction participants, businesses, private customers, and carriers.",
+  },
+  {
+    title: "Auction Vehicle Pickup Checklist",
+    href: "/logistics/resources/auction-vehicle-pickup-checklist/",
+    purpose: "National preparation guidance covering release, condition, access, timing, and pickup information.",
+  },
+  {
+    title: "Car Hauler Capacity Checklist",
+    href: "/logistics/resources/car-hauler-capacity-checklist/",
+    purpose: "Carrier-facing guidance for equipment, authority, geography, capacity, schedule, and operating constraints.",
+  },
+];
+
+const delivery = [
+  "One focused local commercial page with a self-referencing canonical URL",
+  "Two supporting resources addressing customer and carrier preparation questions",
+  "Visible breadcrumbs plus Service, BreadcrumbList, and FAQPage structured data where applicable",
+  "Internal links connecting local intent, auction preparation, carrier capacity, logistics overview, and the load-board request path",
+  "No invented rates, active-capacity claims, guaranteed pickup dates, customer identities, or private shipment records",
+  "A Search Console review plan that separates indexation, query discovery, CTR, and conversion evidence",
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: "Appleton Vehicle Transport SEO Case Study",
+    url: "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
+    description:
+      "A verified implementation case covering an Appleton vehicle transport landing page, two supporting logistics checklists, structured data, internal linking, privacy boundaries, and Search Console measurement status.",
+    creator: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+    },
+    about: publishedResources.map((resource) => ({
+      "@type": "WebPage",
+      name: resource.title,
+      url: new URL(resource.href, "https://hermeslogisticsus.com").toString(),
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Case Studies", item: "https://hermeslogisticsus.com/case/" },
+      { "@type": "ListItem", position: 3, name: "Appleton Vehicle Transport SEO", item: "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/" },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Appleton Vehicle Transport SEO Case Study | Hermes"
+  description="See how Hermes published an Appleton vehicle transport page with two logistics checklists, structured data, internal links, privacy controls, and a Search Console measurement plan."
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="seo-case-page">
+    <section class="seo-case-hero" id="top">
+      <div class="shell">
+        <nav class="case-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/case/">Case Studies</a><span>/</span><span aria-current="page">Appleton Vehicle Transport SEO</span></nav>
+        <a class="detail-back" href="/case/"><ArrowLeft size={18} aria-hidden="true" />All case studies</a>
+        <p class="eyebrow">Case 02 · Logistics SEO release</p>
+        <h1>From one local service query to a useful logistics resource cluster.</h1>
+        <p class="seo-case-lead">
+          Hermes published an Appleton vehicle transport page supported by separate auction-pickup and carrier-capacity
+          checklists. The case documents what is live and testable today; search performance remains a measured next stage,
+          not a promised outcome.
+        </p>
+        <div class="seo-case-actions">
+          <a class="button button-primary" href="/logistics/appleton-wi-vehicle-transport/">Open the Appleton page <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-ghost" href="#measurement">Review measurement status</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="case-brief-title">
+      <div class="shell case-brief-grid">
+        <div>
+          <p class="eyebrow">The assignment</p>
+          <h2 id="case-brief-title">Create indexable value without publishing private operational data.</h2>
+        </div>
+        <div>
+          <p>
+            A useful local logistics page needs more than a city name. It must answer who the page serves, what information
+            is required, what can affect equipment and timing, and where the visitor should go next.
+          </p>
+          <p>
+            Supporting checklists were separated from the city page so the same preparation guidance can serve national
+            searches without duplicating the Appleton commercial intent.
+          </p>
+        </div>
+        <dl class="case-facts">
+          <div><dt>Market</dt><dd>Appleton and Fox Valley, Wisconsin</dd></div>
+          <div><dt>Cluster</dt><dd>1 local page + 2 national resources</dd></div>
+          <div><dt>Published</dt><dd>July 2026</dd></div>
+          <div><dt>Performance status</dt><dd>Measurement in progress</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="section case-soft" aria-labelledby="resources-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Published resources</p><h2 id="resources-title">Three pages with separate jobs.</h2></div>
+          <p>Each URL has its own intent and links to the next useful action rather than repeating one generic article.</p>
+        </div>
+        <div class="resource-grid">
+          {publishedResources.map((resource, index) => (
+            <article>
+              <span>0{index + 1}</span>
+              {index === 0 ? <MapPin size={25} aria-hidden="true" /> : <ClipboardCheck size={25} aria-hidden="true" />}
+              <h3>{resource.title}</h3>
+              <p>{resource.purpose}</p>
+              <a href={resource.href}>Open published resource <ArrowRight size={17} aria-hidden="true" /></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="delivery-title">
+      <div class="shell delivery-grid">
+        <div>
+          <p class="eyebrow">What was delivered</p>
+          <h2 id="delivery-title">A crawlable, claims-controlled content system.</h2>
+        </div>
+        <ul>
+          {delivery.map((item) => <li><Check size={18} aria-hidden="true" />{item}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section case-boundaries" aria-labelledby="boundaries-title">
+      <div class="shell boundary-grid">
+        <ShieldCheck size={36} aria-hidden="true" />
+        <div>
+          <p class="eyebrow">Publication boundary</p>
+          <h2 id="boundaries-title">Operational history can suggest research. It does not automatically become content.</h2>
+          <p>
+            This release does not use customer names, carrier identities, MC/DOT numbers, exact addresses, shipment IDs,
+            documents, rates, commissions, live locations, or current load-board observations as public proof. No route,
+            capacity, pickup, ranking, or lead result is guaranteed.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="measurement" aria-labelledby="measurement-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Search Console stage</p><h2 id="measurement-title">The case is published before the result is claimed.</h2></div>
+          <p>Search evidence will be added only from dated exports for the exact URL and relevant query group.</p>
+        </div>
+        <div class="measurement-grid">
+          <article><SearchCheck size={24} aria-hidden="true" /><span>Baseline</span><h3>URL inspection and sitemap discovery</h3><p>Confirm Google discovery, canonical selection, crawl status, and index eligibility after release.</p><strong>Pending dated export</strong></article>
+          <article><Link2 size={24} aria-hidden="true" /><span>7-day review</span><h3>First queries and impressions</h3><p>Review whether Appleton, vehicle transport, dealer, auction, or carrier-preparation terms begin appearing.</p><strong>No public metric yet</strong></article>
+          <article><SearchCheck size={24} aria-hidden="true" /><span>30-day review</span><h3>CTR, position, pages, and actions</h3><p>Compare query intent, impressions, clicks, average position, and privacy-safe CTA events without over-attributing causation.</p><strong>Measurement window open</strong></article>
+        </div>
+        <p class="measurement-note">A future result update must state the date range, source, URL/query scope, and whether the number is absolute or a comparison.</p>
+      </div>
+    </section>
+
+    <section class="section case-cta">
+      <div class="shell case-cta-layout">
+        <div><p class="eyebrow">Next step</p><h2>Build the next release around verified intent and a measurable action.</h2></div>
+        <a class="button button-primary" href="/contacts/">Discuss an SEO or logistics project <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .seo-case-page{background:#fff}.seo-case-hero{padding:8.5rem 0 5rem;background:#071038;color:#fff}.case-breadcrumbs{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2rem;color:rgba(255,255,255,.65);font-size:.82rem}.case-breadcrumbs a{color:inherit}.seo-case-hero .detail-back{color:rgba(255,255,255,.78)}.seo-case-hero h1{max-width:15ch;font-size:clamp(3rem,6.8vw,6rem)}.seo-case-lead{max-width:72ch;color:rgba(255,255,255,.78);font-size:1.15rem}.seo-case-actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:2rem}.seo-case-actions .button-ghost{border-color:rgba(255,255,255,.45);color:#fff}.case-brief-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:2rem}.case-facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);margin:1rem 0 0}.case-facts div{padding:1.2rem;border-top:1px solid #ddd}.case-facts dt{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:#6a20d9}.case-facts dd{margin:.45rem 0 0;font-weight:750}.case-soft{background:#f7f4ff}.resource-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.resource-grid article{display:flex;flex-direction:column;padding:1.5rem;background:#fff;border:1px solid #e5def4;border-radius:8px}.resource-grid article>span{font-family:var(--font-mono);font-size:.8rem;color:#6a20d9}.resource-grid article>svg{margin:1.2rem 0;color:#6a20d9}.resource-grid h3{font-size:1.3rem}.resource-grid p{flex:1}.resource-grid a{display:flex;justify-content:space-between;align-items:center;padding-top:1rem;border-top:1px solid #eee;font-weight:700}.delivery-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem}.delivery-grid ul{display:grid;gap:.8rem;padding:0;list-style:none}.delivery-grid li{display:flex;gap:.65rem;align-items:flex-start}.delivery-grid li svg{flex:0 0 auto;color:#6a20d9}.case-boundaries{background:#071038;color:#fff}.boundary-grid{display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start}.boundary-grid>svg{color:#9e7af2}.boundary-grid p:not(.eyebrow){max-width:75ch;color:rgba(255,255,255,.75)}.measurement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.measurement-grid article{padding:1.4rem;border:1px solid #ddd;border-radius:8px}.measurement-grid svg{color:#6a20d9}.measurement-grid span{display:block;margin:.8rem 0 .35rem;font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#6a20d9}.measurement-grid h3{font-size:1.2rem}.measurement-grid strong{display:block;margin-top:1rem}.measurement-note{margin-top:1rem;padding:1rem;background:#f7f4ff;border-left:3px solid #6a20d9}.case-cta{background:#f7f4ff}.case-cta-layout{display:flex;justify-content:space-between;gap:2rem;align-items:center}.case-cta h2{max-width:18ch}@media(max-width:800px){.case-brief-grid,.delivery-grid,.resource-grid,.measurement-grid,.boundary-grid{grid-template-columns:1fr}.case-facts{grid-template-columns:1fr 1fr}.case-cta-layout{align-items:flex-start;flex-direction:column}.seo-case-hero{padding-top:7.5rem}}
+</style>
