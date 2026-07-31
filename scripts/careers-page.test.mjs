@@ -39,6 +39,8 @@ for (const signal of [
   'name="robots" content="index,follow,max-image-preview:large"',
   '<link rel="canonical" href="https://hermeslogisticsus.com/careers/"',
   'type="application/ld+json"',
+  'data-career-action="open_vacancy"',
+  'data-career-action="start_email_application"',
 ]) {
   if (!careersHtml.includes(signal)) throw new Error(`Careers page regression: missing markup ${signal}`);
 }
@@ -60,4 +62,4 @@ const jsonLdBlocks = [...careersHtml.matchAll(/<script[^>]+type="application\/ld
 if (jsonLdBlocks.length === 0) throw new Error("Careers page structured data is missing");
 for (const block of jsonLdBlocks) JSON.parse(block[1]);
 
-console.log("Careers page regression checks passed: content, safety boundaries, canonical, schema, internal route, and sitemap coverage are present.");
+console.log("Careers page regression checks passed: content, safety boundaries, analytics hooks, canonical, schema, internal route, and sitemap coverage are present.");
