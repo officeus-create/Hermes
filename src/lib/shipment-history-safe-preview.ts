@@ -34,6 +34,30 @@ const privateHeaderTokens = new Set([
   "token",
 ]);
 
+const compactPrivateHeaderFragments = [
+  "name",
+  "phone",
+  "email",
+  "company",
+  "carrier",
+  "broker",
+  "customer",
+  "dealer",
+  "shipper",
+  "address",
+  "order",
+  "invoice",
+  "note",
+  "comment",
+  "rate",
+  "commission",
+  "position",
+  "latitude",
+  "longitude",
+  "credential",
+  "token",
+];
+
 const approvedOperationalHeaders = new Set([
   "source_record_id",
   "origin_city",
@@ -85,6 +109,25 @@ function headerTokens(header: string): string[] {
     .filter(Boolean);
 }
 
+function compactHeader(header: string): string {
+  return header.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function hasCompactPrivateFragment(header: string): boolean {
+  const compact = compactHeader(header);
+  if (!compact) return false;
+
+  if (compactPrivateHeaderFragments.some((fragment) => compact.includes(fragment))) {
+    return true;
+  }
+
+  // Short identifiers are checked as identifier-like fragments to avoid broad
+  // substring matches while still blocking aliases such as carrierMCNumber,
+  // dotnumber, bolurl, or poddocument.
+  return /(?:^|(?:carrier|broker|company))(?:mc|dot)(?:id|number|no)?(?:$|[a-z0-9])/.test(compact)
+    || /(?:^|order)(?:bol|pod)(?:id|url|file|document|number|no)?(?:$|[a-z0-9])/.test(compact);
+}
+
 function compoundPrivateHeaders(csv: string): string[] {
   const firstLine = csv.trim().split(/\r?\n/, 1)[0] ?? "";
   if (!firstLine) return [];
@@ -93,7 +136,8 @@ function compoundPrivateHeaders(csv: string): string[] {
     .filter((header) => {
       const canonicalHeader = normalizedHeader(header);
       if (!canonicalHeader || approvedOperationalHeaders.has(canonicalHeader)) return false;
-      return headerTokens(header).some((token) => privateHeaderTokens.has(token));
+      return headerTokens(header).some((token) => privateHeaderTokens.has(token))
+        || hasCompactPrivateFragment(header);
     })
     .map(normalizedHeader);
 }
@@ -116,10 +160,10 @@ function rejectPrivateHeaders(
  * Privacy-hardened, preview-only Shipment History adapter.
  *
  * The base parser blocks exact prohibited headers. This adapter also blocks
- * compound aliases in delimited or camelCase form, such as driver_phone,
- * customerEmail, company_id, orderNumber, negotiatedRateUsd, or
- * carrierMcNumber. It never removes raw preview rows and never enables public
- * export.
+ * compound aliases in delimited, camelCase, or compact lowercase form, such
+ * as driver_phone, customerEmail, customeremail, company_id, orderNumber,
+ * negotiatedRateUsd, or carrierMcNumber. It never removes raw preview rows
+ * and never enables public export.
  */
 export function previewSafeShipmentHistoryCsv(
   csv: string,
