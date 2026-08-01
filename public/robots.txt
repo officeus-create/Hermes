@@ -5,3 +5,4 @@ Sitemap: https://hermeslogisticsus.com/sitemap.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-local.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-services.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-digital-services.xml
+Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml
