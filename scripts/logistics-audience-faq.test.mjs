@@ -18,7 +18,7 @@ for (const [slug, expectedQuestion] of pages) {
   assert.ok(html.includes('aria-label="Breadcrumb"'), `${slug} visible breadcrumb is missing`);
   assert.ok(html.includes('"@type":"BreadcrumbList"'), `${slug} BreadcrumbList schema is missing`);
   assert.ok(html.includes('"@type":"FAQPage"'), `${slug} FAQPage schema is missing`);
-  assert.equal((html.match(/<details>/g) ?? []).length, 3, `${slug} must render three FAQ items`);
+  assert.equal((html.match(/<details\b/gi) ?? []).length, 3, `${slug} must render three FAQ items`);
   assert.ok(html.includes(expectedQuestion), `${slug} is missing its audience-specific FAQ question`);
 
   const schemaMatch = [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
