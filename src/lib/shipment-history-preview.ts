@@ -109,11 +109,17 @@ export function previewShipmentHistoryCsv(csv: string, now = new Date()): Shipme
   });
 
   const duplicateMap = new Map<string, string[]>();
+  const lifecycleMap = new Map<string, Set<string>>();
   const sourceRecordMap = new Map<string, Set<string>>();
   for (const { row } of parsedRows) {
     const key = canonicalKey(row);
     const id = row.source_record_id?.trim();
     if (key && id) duplicateMap.set(key, [...(duplicateMap.get(key) ?? []), id]);
+    if (key && row.lifecycle_status?.trim()) {
+      const statuses = lifecycleMap.get(key) ?? new Set<string>();
+      statuses.add(row.lifecycle_status.trim().toLowerCase());
+      lifecycleMap.set(key, statuses);
+    }
     if (id) {
       const signatures = sourceRecordMap.get(id) ?? new Set<string>();
       signatures.add(sourceRecordSignature(row));
@@ -157,10 +163,12 @@ export function previewShipmentHistoryCsv(csv: string, now = new Date()): Shipme
     const key = canonicalKey(row);
     const duplicateOf = key ? (duplicateMap.get(key) ?? []).filter((id) => id !== sourceRecordId) : [];
     if (duplicateOf.length) quarantineReasons.push("duplicate_candidate");
+    if (key && (lifecycleMap.get(key)?.size ?? 0) > 1) quarantineReasons.push("conflicting_lifecycle_status");
 
     let proposedAction: ImportDecision = "accept";
     if (privacyFlags.length || malformedColumnCount || !status || quarantineReasons.includes("unsupported_publication_flag")) proposedAction = "reject";
     else if (quarantineReasons.includes("missing_required_fields") || quarantineReasons.includes("invalid_event_date") || quarantineReasons.includes("missing_provenance")) proposedAction = "hold";
+    else if (quarantineReasons.includes("conflicting_lifecycle_status")) proposedAction = "needs_review";
     else if (duplicateOf.length) proposedAction = "update";
     else if (quarantineReasons.length) proposedAction = "needs_review";
 
