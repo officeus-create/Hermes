@@ -25,6 +25,18 @@ assert.ok(repeated.every((row) => row.proposedAction === "needs_review"));
 assert.ok(repeated.every((row) => row.quarantineReasons.includes("duplicate_source_record_id")));
 assert.equal(preview.rows.find((row) => row.sourceRecordId === "SYN-UNIQUE")?.proposedAction, "accept");
 
+const caseVariantCsv = [
+  "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
+  "SYN-CASE,Green Bay,WI,Chicago,IL,car_hauler,2026-07-25,booked,false",
+  "syn-case,Green Bay,WI,Chicago,IL,car_hauler,2026-07-25,booked,false",
+].join("\n");
+const caseVariantPreview = previewShipmentHistoryCsvWithProvenanceGuard(caseVariantCsv, now);
+assert.equal(caseVariantPreview.rows.length, 2);
+assert.equal(caseVariantPreview.summary.needsReview, 2);
+assert.equal(caseVariantPreview.summary.quarantined, 2);
+assert.ok(caseVariantPreview.rows.every((row) => row.proposedAction === "needs_review"));
+assert.ok(caseVariantPreview.rows.every((row) => row.quarantineReasons.includes("duplicate_source_record_id")));
+
 const privacyCsv = [
   "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed,email",
   "SYN-PRIVATE,Appleton,WI,Chicago,IL,car_hauler,2026-07-25,booked,false,private@example.com",
