@@ -119,7 +119,16 @@ const {
           distance_miles?: number;
           duration_minutes?: number;
         };
-        if (!response.ok || !payload.success || !Number.isFinite(payload.distance_miles) || !Number.isFinite(payload.duration_minutes)) {
+        const distanceMiles = payload.distance_miles;
+        const durationMinutes = payload.duration_minutes;
+        if (
+          !response.ok
+          || !payload.success
+          || typeof distanceMiles !== "number"
+          || !Number.isFinite(distanceMiles)
+          || typeof durationMinutes !== "number"
+          || !Number.isFinite(durationMinutes)
+        ) {
           if (response.status === 400 || response.status === 422) {
             status.textContent = "A route could not be estimated from those locations. Check both addresses and try again.";
           } else if (response.status === 429) {
@@ -129,8 +138,8 @@ const {
           }
           return;
         }
-        miles.textContent = payload.distance_miles.toLocaleString("en-US", { maximumFractionDigits: 1 });
-        minutes.textContent = Math.ceil(payload.duration_minutes).toLocaleString("en-US");
+        miles.textContent = distanceMiles.toLocaleString("en-US", { maximumFractionDigits: 1 });
+        minutes.textContent = Math.ceil(durationMinutes).toLocaleString("en-US");
         result.hidden = false;
         status.textContent = "General route estimate ready. Review it as planning context only.";
       } catch {
