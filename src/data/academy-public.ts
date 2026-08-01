@@ -23,10 +23,10 @@ export const academyPublicPathOverrides: Partial<PathDetail> = {
     { title: "Marketing path", items: ["Positioning and offer", "Content and campaigns", "Lead journey", "Sales follow-up", "Analytics and improvement"] },
   ],
   faq: [
-    { question: "Which public programs are currently presented?", answer: "The public Academy page presents two programs: U.S. Logistics Operations and Marketing. Leadership, systems thinking, and technology may support exercises, but they are not separate public Academy programs." },
-    { question: "What is the difference between a paid cohort and free practice?", answer: "A paid cohort is a separately approved education offer with published scope, dates, price, enrollment terms, and refund terms. Free practice is a separate application-based learning opportunity with eligibility, participation, feedback, and removal rules. One does not imply the other." },
-    { question: "Are current prices published on this website?", answer: "No fixed Academy price is published until the owner approves the exact program, cohort, scope, dates, payment terms, and public offer. This website does not accept Academy payment." },
-    { question: "Is employment, income, certification, or promotion guaranteed?", answer: "No. Training and practice are intended to build capability and evidence of readiness. Employment, income, clients, certification, promotion, and business results are not guaranteed." },
+    { question: "Which programs are publicly presented?", answer: "Two programs: U.S. Logistics Operations and Marketing. Leadership and technology topics may support exercises, but they are not separate public Academy programs on this page." },
+    { question: "Are paid cohorts and free practice the same offer?", answer: "No. A paid cohort requires an approved public offer with scope, dates, price, payment, refund, capacity, and enrollment terms. Free practice is a separate application and eligibility process with its own participation rules." },
+    { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment." },
+    { question: "Is employment or income guaranteed?", answer: "No. Training and practice can build capability and evidence of readiness, but employment, income, clients, certification, promotion, access duration, and future paid work are not guaranteed." },
   ],
 };
 
