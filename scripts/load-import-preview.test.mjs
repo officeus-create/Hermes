@@ -93,6 +93,35 @@ assert.equal(invalidEvidencePreview.quarantined[0].message.includes("MOCK-X"), f
 assert.equal(invalidEvidencePreview.quarantined[0].message.includes("[redacted-id]"), true);
 assert.equal("rawRecord" in invalidEvidencePreview.quarantined[0], false);
 
+const invalidCalendarDateCsv = historyCsv.replace("2026-07-10", "2026-02-30");
+const invalidCalendarDatePreview = previewShipmentHistoryCsv(invalidCalendarDateCsv);
+assert.equal(invalidCalendarDatePreview.summary.acceptedRows, 1);
+assert.equal(invalidCalendarDatePreview.summary.quarantinedRows, 1);
+assert.equal(invalidCalendarDatePreview.quarantined[0].reason, "invalid_date");
+assert.match(invalidCalendarDatePreview.quarantined[0].message, /pickup_date/i);
+assert.equal("rawRecord" in invalidCalendarDatePreview.quarantined[0], false);
+
+const reversedShipmentDatesCsv = historyCsv.replace("2026-07-13", "2026-07-11");
+const reversedShipmentDatesPreview = previewShipmentHistoryCsv(reversedShipmentDatesCsv);
+assert.equal(reversedShipmentDatesPreview.summary.acceptedRows, 1);
+assert.equal(reversedShipmentDatesPreview.summary.quarantinedRows, 1);
+assert.equal(reversedShipmentDatesPreview.quarantined[0].reason, "invalid_date");
+assert.match(reversedShipmentDatesPreview.quarantined[0].message, /delivery_date precedes pickup_date/i);
+
+const invalidExpiryCsv = offersCsv.replace("2026-07-30T18:00:00Z", "not-a-date");
+const invalidExpiryPreview = previewOffersCsv(invalidExpiryCsv, now);
+assert.equal(invalidExpiryPreview.summary.acceptedRows, 2);
+assert.equal(invalidExpiryPreview.summary.quarantinedRows, 1);
+assert.equal(invalidExpiryPreview.quarantined[0].reason, "invalid_date");
+assert.match(invalidExpiryPreview.quarantined[0].message, /expires_at/i);
+
+const reversedOfferWindowCsv = offersCsv.replace("2026-07-30T18:00:00Z", "2026-07-29T11:00:00Z");
+const reversedOfferWindowPreview = previewOffersCsv(reversedOfferWindowCsv, now);
+assert.equal(reversedOfferWindowPreview.summary.acceptedRows, 2);
+assert.equal(reversedOfferWindowPreview.summary.quarantinedRows, 1);
+assert.equal(reversedOfferWindowPreview.quarantined[0].reason, "invalid_date");
+assert.match(reversedOfferWindowPreview.quarantined[0].message, /expires_at must be after observed_at/i);
+
 const observedToBooked = previewLifecycleTransition("observed", "booked");
 assert.equal(observedToBooked.allowed, true);
 assert.equal(observedToBooked.writePerformed, false);
@@ -110,4 +139,4 @@ const publishWithApproval = previewLifecycleTransition("verified", "published", 
 assert.equal(publishWithApproval.allowed, true);
 assert.equal(publishWithApproval.writePerformed, false);
 
-console.log("Load import preview, private-header quarantine, identifier redaction, duplicate, and lifecycle checks passed.");
+console.log("Load import preview, privacy, date/freshness quarantine, identifier redaction, duplicate, and lifecycle checks passed.");
