@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -129,4 +130,26 @@ for (const route of wisconsinHubRoutes) {
 
 assert.ok(logisticsHub.includes('id="logistics-resources"'), "Logistics resources fragment target is missing");
 
-console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${homepagePriorityRoutes.length} homepage discovery links, and ${wisconsinHubRoutes.length} Wisconsin hub links.`);
+const indexNowKey = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e";
+const deployedIndexNowKey = await readFile(join(dist, `${indexNowKey}.txt`), "utf8");
+assert.equal(deployedIndexNowKey.trim(), indexNowKey, "IndexNow ownership key must be copied to the site root");
+const indexNowDryRun = JSON.parse(execFileSync(
+  process.execPath,
+  [join(root, "scripts", "indexnow-submit.mjs")],
+  {
+    encoding: "utf8",
+    env: { ...process.env, INDEXNOW_DRY_RUN: "1" },
+  },
+));
+assert.equal(indexNowDryRun.host, "hermeslogisticsus.com");
+assert.equal(indexNowDryRun.key, indexNowKey);
+assert.equal(indexNowDryRun.keyLocation, `https://hermeslogisticsus.com/${indexNowKey}.txt`);
+assert.deepEqual(indexNowDryRun.urlList, [
+  "https://hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/paths/logistics/",
+  "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+  "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+  "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+]);
+
+console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${homepagePriorityRoutes.length} homepage discovery links, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);
