@@ -61,26 +61,41 @@ function parseHeaderLine(line: string): string[] {
         quoted = !quoted;
       }
     } else if (character === "," && !quoted) {
-      headers.push(current.trim().toLowerCase());
+      headers.push(current.trim());
       current = "";
     } else {
       current += character;
     }
   }
 
-  headers.push(current.trim().toLowerCase());
+  headers.push(current.trim());
   return headers;
+}
+
+function normalizedHeader(header: string): string {
+  return header.trim().toLowerCase();
+}
+
+function headerTokens(header: string): string[] {
+  return header
+    .trim()
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
 }
 
 function compoundPrivateHeaders(csv: string): string[] {
   const firstLine = csv.trim().split(/\r?\n/, 1)[0] ?? "";
   if (!firstLine) return [];
 
-  return parseHeaderLine(firstLine).filter((header) => {
-    if (!header || approvedOperationalHeaders.has(header)) return false;
-    const tokens = header.split(/[^a-z0-9]+/).filter(Boolean);
-    return tokens.some((token) => privateHeaderTokens.has(token));
-  });
+  return parseHeaderLine(firstLine)
+    .filter((header) => {
+      const canonicalHeader = normalizedHeader(header);
+      if (!canonicalHeader || approvedOperationalHeaders.has(canonicalHeader)) return false;
+      return headerTokens(header).some((token) => privateHeaderTokens.has(token));
+    })
+    .map(normalizedHeader);
 }
 
 function rejectPrivateHeaders(
@@ -101,9 +116,10 @@ function rejectPrivateHeaders(
  * Privacy-hardened, preview-only Shipment History adapter.
  *
  * The base parser blocks exact prohibited headers. This adapter also blocks
- * compound aliases such as driver_phone, customer_email, company_id,
- * order_number, invoice_number, negotiated_rate_usd, or carrier_mc_number.
- * It never removes raw preview rows and never enables public export.
+ * compound aliases in delimited or camelCase form, such as driver_phone,
+ * customerEmail, company_id, orderNumber, negotiatedRateUsd, or
+ * carrierMcNumber. It never removes raw preview rows and never enables public
+ * export.
  */
 export function previewSafeShipmentHistoryCsv(
   csv: string,
