@@ -5,11 +5,13 @@
 - Date: 2026-08-01
 - Domain: `https://hermeslogisticsus.com`
 - Cloudflare Pages project: `hermes`
-- Deployment ID: `655e4425-09b7-4e3f-8868-30aef98367c4`
-- Deployment preview: `https://655e4425.hermes-eu4.pages.dev`
+- Deployment ID: `e29845f5-da6e-4d34-9d24-5d9bd561dac3`
+- Deployment preview: `https://e29845f5.hermes-eu4.pages.dev`
+- Deployed source commit: `7a8c56d`
 - Build mode: Astro static output from `dist`
 - Contact mode: preview only; no external form submission
-- Exact bundle manifest: `docs/PUBLIC_DEPLOYMENT_MANIFEST_2026-08-01.md`
+- Bundle: 48 generated pages and 86 static files; no Pages Functions or
+  internal Load Operations files included.
 
 ## Verified
 
@@ -21,6 +23,9 @@
 - Portal hover and selection work in production.
 - Production browser console has no CSP, script, font, or page errors.
 - The verified upload was an isolated static bundle; Pages Functions and the closed P0 Load Operations module were excluded.
+- `/academy/casablanca-courses/` returns HTTP 200 on the production domain and
+  immutable deployment. It remains `noindex,nofollow`, outside the sitemap,
+  without schema or a form delivery action until course facts are approved.
 
 ## Rollback
 

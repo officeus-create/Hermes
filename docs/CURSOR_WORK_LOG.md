@@ -826,3 +826,15 @@ npm run test:e2e
   browser console errors.
 - No publication, deployment, push, advertising, external message, or data
   write was performed.
+
+### Production release follow-up
+
+- Owner approval to publish the safe preview was received on 2026-08-01.
+- Published an isolated 86-file static bundle from commit `7a8c56d`; Pages
+  Functions and internal Load Operations files were not included.
+- Cloudflare Pages production deployment:
+  `e29845f5-da6e-4d34-9d24-5d9bd561dac3`.
+- Production URL: `https://hermeslogisticsus.com/academy/casablanca-courses/`.
+- Verified HTTP 200, expected content, canonical URL, `noindex,nofollow`, no
+  schema, no sitemap entry, no form action, no broken images, no desktop/mobile
+  overflow, and no browser warnings or errors.
