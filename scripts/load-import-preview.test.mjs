@@ -42,6 +42,44 @@ assert.equal(historyPreview.writePerformed, false);
 assert.equal(historyPreview.summary.acceptedRows, 2);
 assert.equal(historyPreview.summary.quarantinedRows, 0);
 
+const [historyHeader, historyRow] = historyCsv.trim().split(/\r?\n/);
+const privateAliasCases = [
+  {
+    headers: "driver_phone,customer_email,carrier_mc_number,order_number,negotiated_rate_usd",
+    values: "000-000-0000,synthetic@example.invalid,000000,SYN-ORDER,0",
+    aliases: ["driver_phone", "customer_email", "carrier_mc_number", "order_number", "negotiated_rate_usd"],
+  },
+  {
+    headers: "driverPhone,customerEmail,carrierMcNumber,orderNumber,negotiatedRateUsd",
+    values: "000-000-0000,synthetic@example.invalid,000000,SYN-ORDER,0",
+    aliases: ["driverphone", "customeremail", "carriermcnumber", "ordernumber", "negotiatedrateusd"],
+  },
+  {
+    headers: "driverphone,customeremail,carriermcnumber,ordernumber,negotiatedrateusd",
+    values: "000-000-0000,synthetic@example.invalid,000000,SYN-ORDER,0",
+    aliases: ["driverphone", "customeremail", "carriermcnumber", "ordernumber", "negotiatedrateusd"],
+  },
+  {
+    headers: "driverName,contactPerson,vehicleVin,licensePlate,taxId,companyEin",
+    values: "Synthetic Driver,Synthetic Contact,SYNVIN00000000000,SYN-PLATE,SYN-TAX,SYN-EIN",
+    aliases: ["drivername", "contactperson", "vehiclevin", "licenseplate", "taxid", "companyein"],
+  },
+];
+
+for (const aliasCase of privateAliasCases) {
+  const preview = previewShipmentHistoryCsv(`${historyHeader},${aliasCase.headers}\n${historyRow},${aliasCase.values}`);
+  assert.equal(preview.mode, "preview_only");
+  assert.equal(preview.writePerformed, false);
+  assert.equal(preview.summary.totalRows, 1);
+  assert.equal(preview.summary.acceptedRows, 0);
+  assert.equal(preview.summary.quarantinedRows, 1);
+  assert.equal(preview.quarantined[0].reason, "private_columns");
+  for (const alias of aliasCase.aliases) assert.ok(preview.quarantined[0].message.includes(alias));
+  assert.equal(preview.quarantined[0].message.includes("synthetic@example.invalid"), false);
+  assert.equal(preview.quarantined[0].message.includes("Synthetic Driver"), false);
+  assert.equal("rawRecord" in preview.quarantined[0], false);
+}
+
 const invalidEvidenceCsv = [
   "shipment_id,proof_status,origin_city,origin_state,destination_city,destination_state,equipment_class,pickup_date,delivery_date,booked_rate,loaded_miles,deadhead_miles,source_record_id,delivery_confirmed,bol_or_pod_confirmed,manual_operational_confirmed,cancellations_and_claims_reviewed",
   "SYN-SHIP-X,completed,Test,WI,Test,IL,car_hauler,2026-07-01,2026-07-02,1000,400,10,MOCK-X,false,false,false,false",
@@ -68,4 +106,4 @@ const publishWithApproval = previewLifecycleTransition("verified", "published", 
 assert.equal(publishWithApproval.allowed, true);
 assert.equal(publishWithApproval.writePerformed, false);
 
-console.log("Load import preview, quarantine, and lifecycle checks passed.");
+console.log("Load import preview, private-header quarantine, duplicate, and lifecycle checks passed.");
