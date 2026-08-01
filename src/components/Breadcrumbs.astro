@@ -1,0 +1,34 @@
+---
+type BreadcrumbItem = {
+  label: string;
+  href: string;
+};
+
+interface Props {
+  items: BreadcrumbItem[];
+  current: string;
+  theme?: "light" | "dark";
+}
+
+const { items, current, theme = "dark" } = Astro.props;
+---
+
+<nav class={`breadcrumbs breadcrumbs-${theme}`} aria-label="Breadcrumb">
+  <ol>
+    {items.map((item) => (
+      <li><a href={item.href}>{item.label}</a><span aria-hidden="true">/</span></li>
+    ))}
+    <li><span aria-current="page">{current}</span></li>
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs { margin: 0 0 1.4rem; font-size: .82rem; }
+  .breadcrumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+  .breadcrumbs li { display: inline-flex; align-items: center; gap: .5rem; }
+  .breadcrumbs a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: .22em; }
+  .breadcrumbs a:hover, .breadcrumbs a:focus-visible { text-decoration: underline; }
+  .breadcrumbs [aria-current="page"] { opacity: .72; }
+  .breadcrumbs-dark { color: rgba(255, 255, 255, .9); }
+  .breadcrumbs-light { color: #26324f; }
+</style>
