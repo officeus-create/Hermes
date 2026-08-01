@@ -120,6 +120,8 @@ const descriptionOwners = new Map();
 for (const url of clusterUrls) {
   const route = new URL(url).pathname;
   const htmlPath = htmlPathFromUrl(url);
+  const sitemapOwners = urlOwners.get(url) ?? [];
+  const isCaseStudy = sitemapOwners.includes("sitemap-cases.xml");
   let html;
   try {
     html = await readFile(join(dist, htmlPath), "utf8");
@@ -154,7 +156,12 @@ for (const url of clusterUrls) {
 
   const schemas = parseJsonLd(html, route);
   const schemaTypes = collectSchemaTypes(schemas);
-  for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) {
+  const requiredTypes = isCaseStudy
+    ? route === "/case/"
+      ? ["CollectionPage", "BreadcrumbList"]
+      : ["CreativeWork", "BreadcrumbList"]
+    : ["Service", "BreadcrumbList", "FAQPage"];
+  for (const requiredType of requiredTypes) {
     if (!schemaTypes.has(requiredType)) errors.push(`${route}: required ${requiredType} schema is missing`);
   }
 
