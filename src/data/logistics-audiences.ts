@@ -6,6 +6,7 @@ export type LogisticsAudience = {
   summary: string;
   needs: string[];
   steps: { title: string; body: string }[];
+  faq: { question: string; answer: string }[];
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
 };
@@ -23,6 +24,11 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Automatic review", body: "The preview checks completeness and whether the commodity fits the car-hauling pilot." },
       { title: "Collect options", body: "Approved production requests will be matched with relevant carrier capacity." },
     ],
+    faq: [
+      { question: "Is a carrier match guaranteed once I post a load?", answer: "No. Posting starts a review for fit and availability; matching depends on route, timing, and carrier capacity at that moment." },
+      { question: "What if my vehicle is inoperable?", answer: "Note the condition when you post. Inoperable units may need different equipment, access, or timing and are reviewed before routing." },
+      { question: "Can I set a target price?", answer: "Yes. A target price is optional context for review and discussion, not a guaranteed final rate." },
+    ],
     primary: { label: "Post a load", href: "/load-board/?role=shipper#post-load" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
@@ -37,6 +43,11 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Post the opportunity", body: "Enter the same operational details a carrier needs to evaluate the move." },
       { title: "Check compatibility", body: "Unusual, oversized, or inoperable equipment is held for additional requirements." },
       { title: "Route by fit", body: "The production workflow will route approved loads to relevant car-hauling capacity." },
+    ],
+    faq: [
+      { question: "Do you guarantee capacity for every load I post?", answer: "No. Each opportunity is checked for equipment and route fit before routing; carrier availability is not guaranteed." },
+      { question: "What verification details do you need?", answer: "Standard broker and load verification details, together with commodity, route, timing, and equipment information needed for an accurate review." },
+      { question: "How are oversized or unusual loads handled?", answer: "They are held for additional requirements rather than routed automatically because equipment, permits, and operating fit may vary." },
     ],
     primary: { label: "Open broker Load Board", href: "/load-board/?role=broker#post-load" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
@@ -53,6 +64,11 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Confirm the fit", body: "Hermes reviews the service path and the kind of opportunities that may fit." },
       { title: "Choose the relationship", body: "Discuss loads, dispatch support, or a broader operating relationship without giving up load approval." },
     ],
+    faq: [
+      { question: "Do I have to accept every load Hermes sends?", answer: "No. You review and approve every load. Nothing is booked without your confirmation." },
+      { question: "What do you need from me to get started?", answer: "MC/DOT and authority status, equipment and capacity, current location, preferred lanes, availability, and operating constraints." },
+      { question: "Can new authorities apply?", answer: "Yes, subject to a readiness review covering authority age, insurance, documents, equipment, and broker requirements." },
+    ],
     primary: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
   },
@@ -68,6 +84,11 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Initial fit review", body: "Hermes evaluates the operating fit before discussing structure or commercial terms." },
       { title: "Define a pilot", body: "Any approved path begins with responsibilities, training, controls, and measurable expectations." },
     ],
+    faq: [
+      { question: "Does applying guarantee an agency will open?", answer: "No. Hermes reviews operating fit, experience, market, resources, and current priorities before any structure or terms are discussed." },
+      { question: "What experience is required?", answer: "Relevant logistics or management experience, an existing team or realistic hiring capacity, and clear business goals." },
+      { question: "What happens after the initial review?", answer: "A suitable application may move to a defined pilot discussion with responsibilities, training, controls, and measurable expectations." },
+    ],
     primary: { label: "Start agency application", href: "/logistics/apply/?for=agency" },
   },
   {
@@ -81,6 +102,11 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { title: "Complete the application", body: "Share factual experience, results, availability, and the role you want to explore." },
       { title: "Role review", body: "The team compares your background with current needs; an application does not guarantee placement." },
       { title: "Interview or training path", body: "A suitable candidate may be invited to an interview, test, or relevant Academy path." },
+    ],
+    faq: [
+      { question: "Does submitting an application guarantee an interview or a job?", answer: "No. Applications are compared with current needs, and not every applicant is invited to an interview or training path." },
+      { question: "What should I include in my application?", answer: "Your location and time zone, languages, relevant experience and measurable results, availability, and the role you want to explore." },
+      { question: "Is training available if I do not have direct experience?", answer: "Some candidates may be invited to a relevant Academy path or practice opportunity, but participation, employment, and future paid work are not guaranteed." },
     ],
     primary: { label: "Start job application", href: "/logistics/apply/?for=career" },
     secondary: { label: "Explore training first", href: "/paths/academy/" },
