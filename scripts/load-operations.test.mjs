@@ -25,6 +25,15 @@ assert.equal(history.every((record) => record.cancellationsAndClaimsReviewed), t
 assert.equal(offers.filter((offer) => offer.freshness === "fresh").length, 2);
 assert.equal(offers.filter((offer) => offer.freshness === "expired").length, 1);
 
+const bookedHistoryCsv = [
+  "shipment_id,proof_status,origin_city,origin_state,destination_city,destination_state,equipment_class,pickup_date,delivery_date,booked_rate,loaded_miles,deadhead_miles,source_record_id,delivery_confirmed,bol_or_pod_confirmed,manual_operational_confirmed,cancellations_and_claims_reviewed",
+  "SYN-BOOKED-001,booked,Test Origin,WI,Test Destination,IL,car_hauler,2026-08-03,2026-08-04,1000,400,25,SYN-SOURCE-BOOKED-001,false,false,false,false",
+].join("\n");
+const bookedHistory = importShipmentHistoryCsv(bookedHistoryCsv);
+assert.equal(bookedHistory.length, 1);
+assert.equal(bookedHistory[0].proofStatus, "booked");
+assert.equal(bookedHistory[0].deliveryConfirmed, false, "Booked records must not require completion evidence");
+
 const opportunities = buildCanonicalOpportunities(offers);
 assert.equal(opportunities.length, 2);
 const chicagoNashville = opportunities.find((opportunity) => opportunity.origin === "Chicago, IL");
@@ -60,6 +69,7 @@ assert.equal(handoff.externalActionPerformed, false);
 
 assert.equal(PUBLIC_ROUTE_EXPORT_ENABLED, false);
 assert.deepEqual(buildPublicRouteExport(history), [], "Completed or verified history must not become public");
+assert.deepEqual(buildPublicRouteExport(bookedHistory), [], "Booked history must never become public");
 
 assert.throws(
   () => importOffersCsv("offer_id,email\nSYN-1,test@example.com", now),
