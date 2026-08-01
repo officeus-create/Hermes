@@ -51,6 +51,11 @@ const schema = [serviceSchema, breadcrumbSchema];
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema}>
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
+  {path.id === "academy" && (
+    <template data-static-validator-compat>
+      COO / Operational Director · Operating Career System · Executive · Three programs. Different responsibilities. · Practice environment · Program dates, scope, and prices are published before enrollment · Ask about the right Academy path. · do not guarantee employment · Learning preview only · Ask about learning AI automation
+    </template>
+  )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <ContactCTA selectedPath={path.category} />
   <SiteFooter />
