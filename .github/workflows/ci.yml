@@ -51,16 +51,21 @@ jobs:
             'const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";\nconst routeEstimateMode = import.meta.env.PUBLIC_ROUTE_ESTIMATE_MODE === "live" ? "live" : "preview";\nconst routeEstimateEndpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-estimate";\n',
             "route estimate feature flags",
           );
-          page = replaceOnce(
-            page,
-            `            <div class="field-row">
-              <label>Ready date *`,
-            `            <RouteEstimatePanel mode={routeEstimateMode} endpoint={routeEstimateEndpoint} />
 
-            <div class="field-row">
-              <label>Ready date *`,
-            "route estimate panel placement",
-          );
+          const panelMarkup = '<RouteEstimatePanel mode={routeEstimateMode} endpoint={routeEstimateEndpoint} />';
+          if (!page.includes(panelMarkup)) {
+            const readyLabel = "<label>Ready date *";
+            const readyMatches = page.split(readyLabel).length - 1;
+            if (readyMatches !== 1) throw new Error(`Ready-date anchor: expected one label, found ${readyMatches}`);
+            const readyLabelIndex = page.indexOf(readyLabel);
+            const readyRowIndex = page.lastIndexOf('<div class="field-row">', readyLabelIndex);
+            if (readyRowIndex < 0) throw new Error("Ready-date row start was not found");
+            const lineStart = page.lastIndexOf("\n", readyRowIndex) + 1;
+            const indent = page.slice(lineStart, readyRowIndex);
+            page = page.slice(0, lineStart)
+              + `${indent}${panelMarkup}\n\n`
+              + page.slice(lineStart);
+          }
           writeFileSync(pagePath, page);
 
           const componentPath = "src/components/RouteEstimatePanel.astro";
