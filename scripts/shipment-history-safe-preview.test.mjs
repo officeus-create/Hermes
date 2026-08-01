@@ -38,6 +38,24 @@ assert.deepEqual(
 assert.equal(camelCasePreview.summary.rejected, 1);
 assert.equal(camelCasePreview.summary.quarantined, 1);
 
+const compactPrivateCsv = [
+  "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed,driverphone,customeremail,carriermcnumber,ordernumber,negotiatedrateusd",
+  "SYN-COMPACT-PRIVATE,Appleton,WI,Chicago,IL,car_hauler,2026-07-25,booked,false,000-000-0000,synthetic@example.invalid,000000,SYN-ORDER,0",
+].join("\n");
+
+const compactPreview = previewSafeShipmentHistoryCsv(compactPrivateCsv, now);
+assert.equal(compactPreview.mode, "preview_only");
+assert.equal(compactPreview.publicExportEnabled, false);
+assert.equal(compactPreview.rows.length, 1);
+assert.equal(compactPreview.rows[0].proposedAction, "reject");
+assert.ok(compactPreview.rows[0].quarantineReasons.includes("prohibited_private_data"));
+assert.deepEqual(
+  compactPreview.rows[0].privacyFlags.sort(),
+  ["carriermcnumber", "customeremail", "driverphone", "negotiatedrateusd", "ordernumber"],
+);
+assert.equal(compactPreview.summary.rejected, 1);
+assert.equal(compactPreview.summary.quarantined, 1);
+
 const approvedCsv = [
   "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
   "SYN-SAFE,Appleton,WI,Chicago,IL,car_hauler,2026-07-25,booked,false",
@@ -46,4 +64,4 @@ const approvedPreview = previewSafeShipmentHistoryCsv(approvedCsv, now);
 assert.equal(approvedPreview.rows[0].proposedAction, "accept");
 assert.deepEqual(approvedPreview.rows[0].privacyFlags, []);
 
-console.log("Shipment History compound and camelCase private-header quarantine checks passed.");
+console.log("Shipment History compound, camelCase, and compact private-header quarantine checks passed.");
