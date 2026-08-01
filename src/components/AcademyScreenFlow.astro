@@ -179,7 +179,7 @@ const academyFaq = [
   </div>
 </section>
 
-<script define:vars={{ tracks: academyPublicTracks }}>
+<script is:inline define:vars={{ tracks: academyPublicTracks }}>
   document.querySelectorAll("[data-academy-flow]").forEach((flow) => {
     if (!(flow instanceof HTMLElement)) return;
     const screens = [...flow.querySelectorAll("[data-academy-screen]")];
