@@ -28,6 +28,55 @@ export type StrictOfferPreview = Readonly<{
   }>;
 }>;
 
+function parseCsvLine(line: string): string[] {
+  const values: string[] = [];
+  let current = "";
+  let quoted = false;
+
+  for (let index = 0; index < line.length; index += 1) {
+    const character = line[index];
+    if (character === '"') {
+      if (quoted && line[index + 1] === '"') {
+        current += '"';
+        index += 1;
+      } else {
+        quoted = !quoted;
+      }
+    } else if (character === "," && !quoted) {
+      values.push(current.trim());
+      current = "";
+    } else {
+      current += character;
+    }
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function normalizedIdentity(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+function sourceRowNumbersByOfferId(csv: string): Map<string, number[]> {
+  const lines = csv.trim().split(/\r?\n/).filter(Boolean);
+  const headers = parseCsvLine(lines[0] ?? "").map((header) => header.trim().toLowerCase());
+  const offerIdIndex = headers.indexOf("offer_id");
+  const rowsByOfferId = new Map<string, number[]>();
+  if (offerIdIndex < 0) return rowsByOfferId;
+
+  lines.slice(1).forEach((line, index) => {
+    const values = parseCsvLine(line);
+    const identity = normalizedIdentity(values[offerIdIndex] ?? "");
+    if (!identity) return;
+    const rowNumbers = rowsByOfferId.get(identity) ?? [];
+    rowNumbers.push(index + 2);
+    rowsByOfferId.set(identity, rowNumbers);
+  });
+
+  return rowsByOfferId;
+}
+
 /**
  * Applies the operational freshness policy on top of the generic CSV preview.
  * Expired load-board observations remain private evidence candidates only and
@@ -36,12 +85,19 @@ export type StrictOfferPreview = Readonly<{
 export function previewActiveOffersCsv(csv: string, now = new Date()): StrictOfferPreview {
   const base: ImportPreview<NormalizedOffer> = previewOffersCsv(csv, now);
   const accepted = base.accepted.filter((offer) => offer.freshness === "fresh");
-  const staleCount = base.accepted.length - accepted.length;
-  const staleRows: StrictOfferQuarantineRow[] = Array.from({ length: staleCount }, (_, index) => Object.freeze({
-    rowNumber: 0,
-    reason: "stale_observation" as const,
-    message: `Expired private offer observation ${index + 1} held for review; it is not a confirmed route or public capacity fact`,
-  }));
+  const staleOffers = base.accepted.filter((offer) => offer.freshness !== "fresh");
+  const rowNumbersByOfferId = sourceRowNumbersByOfferId(csv);
+  const staleRows: StrictOfferQuarantineRow[] = staleOffers.map((offer) => {
+    const identity = normalizedIdentity(offer.offerId);
+    const matchingRows = rowNumbersByOfferId.get(identity) ?? [];
+    const rowNumber = matchingRows.shift() ?? 0;
+
+    return Object.freeze({
+      rowNumber,
+      reason: "stale_observation" as const,
+      message: "Expired private offer observation held for review; it is not a confirmed route or public capacity fact",
+    });
+  });
   const quarantined: StrictOfferQuarantineRow[] = [
     ...base.quarantined,
     ...staleRows,
