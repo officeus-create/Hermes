@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Audit dependency security
+        run: node scripts/dependency-audit-report.mjs
+
       - name: Build website
         run: npm run build
 
