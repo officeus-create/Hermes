@@ -8,17 +8,17 @@ const result = spawnSync("npm", ["audit", "--json"], {
 
 const output = result.stdout?.trim() || result.stderr?.trim();
 if (!output) {
-  console.log("Dependency audit produced no output.");
-  process.exit(0);
+  console.error("Dependency audit produced no output; security status is unknown.");
+  process.exit(1);
 }
 
 let report;
 try {
   report = JSON.parse(output);
 } catch {
-  console.log("Dependency audit output was not valid JSON.");
-  console.log(output.slice(0, 4000));
-  process.exit(0);
+  console.error("Dependency audit output was not valid JSON; security status is unknown.");
+  console.error(output.slice(0, 4000));
+  process.exit(1);
 }
 
 const vulnerabilities = Object.entries(report.vulnerabilities ?? {})
@@ -57,6 +57,13 @@ for (const item of vulnerabilities) {
   ].join(" | "));
 }
 
-// Diagnostic only. The remediation PR will make high-severity findings blocking
-// after safe package-lock updates have passed the full website regression suite.
-process.exit(0);
+const blockingCount = Number(metadata.moderate ?? 0)
+  + Number(metadata.high ?? 0)
+  + Number(metadata.critical ?? 0);
+
+if (blockingCount > 0) {
+  console.error(`Dependency audit failed: ${blockingCount} moderate-or-higher finding(s).`);
+  process.exit(1);
+}
+
+console.log("Dependency audit gate passed: no moderate, high, or critical vulnerabilities.");
