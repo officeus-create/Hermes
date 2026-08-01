@@ -91,7 +91,8 @@ const {
       let endpoint: URL;
       try {
         endpoint = new URL(panel.dataset.routeEstimateEndpoint || "/api/route-estimate", window.location.origin);
-        if (endpoint.origin !== window.location.origin || endpoint.protocol !== "https:") throw new Error("invalid_endpoint");
+        const localDevelopment = ["localhost", "127.0.0.1"].includes(endpoint.hostname);
+        if (endpoint.origin !== window.location.origin || (endpoint.protocol !== "https:" && !localDevelopment)) throw new Error("invalid_endpoint");
       } catch {
         status.textContent = "Route estimates are unavailable. Continue with the load preview or contact Logistics Sales.";
         return;
