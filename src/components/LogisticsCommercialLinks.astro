@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Building2, ClipboardCheck, Compass, Truck } from "@lucide/astro";
+import { ArrowRight, Building2, ClipboardCheck, Compass, MapPin, Truck } from "@lucide/astro";
 
 const carrierPaths = [
   ["Owner-operator support", "/paths/logistics/carriers/owner-operators/"],
@@ -27,6 +27,29 @@ const developmentPaths = [
   ["Driver and career paths", "/paths/logistics/drivers/"],
   ["Agency partners", "/paths/logistics/agency-partners/"],
   ["General logistics guidance", "/paths/logistics/guidance/"],
+];
+
+const wisconsinServicePaths = [
+  ["Wisconsin vehicle transport", "/logistics/wisconsin-vehicle-transport/"],
+  ["Dealer vehicle transport", "/logistics/wisconsin-dealer-vehicle-transport/"],
+  ["Auction vehicle pickup", "/logistics/wisconsin-auction-vehicle-pickup/"],
+  ["Enclosed vehicle transport", "/logistics/wisconsin-enclosed-vehicle-transport/"],
+  ["Multi-vehicle dealer transport", "/logistics/wisconsin-multi-vehicle-dealer-transport/"],
+];
+
+const wisconsinCityPaths = [
+  ["Appleton", "/logistics/appleton-wi-vehicle-transport/"],
+  ["Milwaukee", "/logistics/milwaukee-wi-vehicle-transport/"],
+  ["Madison", "/logistics/madison-wi-vehicle-transport/"],
+  ["Green Bay", "/logistics/green-bay-wi-vehicle-transport/"],
+  ["Oshkosh", "/logistics/oshkosh-wi-vehicle-transport/"],
+  ["Fond du Lac", "/logistics/fond-du-lac-wi-vehicle-transport/"],
+  ["Eau Claire", "/logistics/eau-claire-wi-vehicle-transport/"],
+  ["La Crosse", "/logistics/la-crosse-wi-vehicle-transport/"],
+  ["Kenosha", "/logistics/kenosha-wi-vehicle-transport/"],
+  ["Racine", "/logistics/racine-wi-vehicle-transport/"],
+  ["Waukesha", "/logistics/waukesha-wi-vehicle-transport/"],
+  ["Sheboygan", "/logistics/sheboygan-wi-vehicle-transport/"],
 ];
 ---
 
@@ -57,7 +80,7 @@ const developmentPaths = [
         <a href="/logistics/dealer-vehicle-transportation/">Review dealer vehicle transportation <ArrowRight size={17} aria-hidden="true" /></a>
       </article>
 
-      <article>
+      <article id="logistics-resources">
         <ClipboardCheck size={25} aria-hidden="true" />
         <p class="eyebrow">Supporting guidance</p>
         <h3>Prepare accurate operating information</h3>
@@ -95,6 +118,31 @@ const developmentPaths = [
       </div>
     </section>
 
+    <section class="logistics-path-directory wisconsin-transport-directory" aria-labelledby="wisconsin-transport-directory-title" data-reveal>
+      <div class="logistics-path-directory-heading logistics-wisconsin-heading">
+        <MapPin size={25} aria-hidden="true" />
+        <div>
+          <p class="eyebrow">Wisconsin vehicle transport directory</p>
+          <h3 id="wisconsin-transport-directory-title">Open a statewide service or local city guide.</h3>
+          <p>These public pages explain preparation, service boundaries, equipment considerations, and the reviewed request process for Wisconsin vehicle moves.</p>
+        </div>
+      </div>
+      <div class="logistics-path-columns">
+        <div>
+          <h4>Statewide service pages</h4>
+          <nav aria-label="Wisconsin vehicle transport services">
+            {wisconsinServicePaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
+          </nav>
+        </div>
+        <div>
+          <h4>Wisconsin city guides</h4>
+          <nav aria-label="Wisconsin city vehicle transport guides">
+            {wisconsinCityPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
+          </nav>
+        </div>
+      </div>
+    </section>
+
     <div class="logistics-commercial-footer" data-reveal>
       <p>Need a direct review instead?</p>
       <a class="button button-primary" href="/contacts/">Contact Hermes Logistics <ArrowRight size={18} aria-hidden="true" /></a>
@@ -105,5 +153,5 @@ const developmentPaths = [
 </section>
 
 <style>
-  .logistics-commercial-links{background:#f4f7fb}.logistics-commercial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.logistics-commercial-grid article{display:flex;flex-direction:column;align-items:flex-start;padding:1.45rem;border:1px solid #dce3ee;border-radius:10px;background:#fff}.logistics-commercial-grid h3{font-size:1.25rem}.logistics-commercial-grid article>a,.logistics-commercial-actions a{display:flex;gap:.5rem;align-items:center;margin-top:auto;font-weight:700}.logistics-commercial-actions{display:grid;gap:.7rem;margin-top:auto}.logistics-path-directory{margin-top:1.2rem;padding:1.4rem;border:1px solid #d7dfeb;border-radius:10px;background:#fff}.logistics-path-directory-heading{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}.logistics-path-directory-heading h3{margin:.2rem 0}.logistics-path-directory-heading p{margin:0}.logistics-path-columns{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid #e1e7ef}.logistics-path-columns h4{margin:0 0 .7rem}.logistics-path-columns nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.logistics-path-columns a{display:flex;justify-content:space-between;gap:.45rem;align-items:center;padding:.7rem .75rem;border:1px solid #e3e8f0;border-radius:7px;background:#f9fbfd;font-size:.9rem;font-weight:700}.logistics-commercial-footer{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #d7dfeb}.logistics-commercial-footer p{margin:0 auto 0 0;font-weight:700}@media(max-width:900px){.logistics-commercial-grid,.logistics-path-columns{grid-template-columns:1fr}.logistics-path-directory-heading{grid-template-columns:auto 1fr}.logistics-path-directory-heading .button{grid-column:1/-1}.logistics-path-columns nav{grid-template-columns:1fr 1fr}.logistics-commercial-footer{align-items:stretch}.logistics-commercial-footer p{width:100%}}@media(max-width:620px){.logistics-path-columns nav{grid-template-columns:1fr}}
+  .logistics-commercial-links{background:#f4f7fb}.logistics-commercial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.logistics-commercial-grid article{display:flex;flex-direction:column;align-items:flex-start;padding:1.45rem;border:1px solid #dce3ee;border-radius:10px;background:#fff}.logistics-commercial-grid h3{font-size:1.25rem}.logistics-commercial-grid article>a,.logistics-commercial-actions a{display:flex;gap:.5rem;align-items:center;margin-top:auto;font-weight:700}.logistics-commercial-actions{display:grid;gap:.7rem;margin-top:auto}.logistics-path-directory{margin-top:1.2rem;padding:1.4rem;border:1px solid #d7dfeb;border-radius:10px;background:#fff}.logistics-path-directory-heading{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}.logistics-wisconsin-heading{grid-template-columns:auto 1fr}.logistics-path-directory-heading h3{margin:.2rem 0}.logistics-path-directory-heading p{margin:0}.logistics-path-columns{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid #e1e7ef}.logistics-path-columns h4{margin:0 0 .7rem}.logistics-path-columns nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.logistics-path-columns a{display:flex;justify-content:space-between;gap:.45rem;align-items:center;padding:.7rem .75rem;border:1px solid #e3e8f0;border-radius:7px;background:#f9fbfd;font-size:.9rem;font-weight:700}.logistics-commercial-footer{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #d7dfeb}.logistics-commercial-footer p{margin:0 auto 0 0;font-weight:700}@media(max-width:900px){.logistics-commercial-grid,.logistics-path-columns{grid-template-columns:1fr}.logistics-path-directory-heading{grid-template-columns:auto 1fr}.logistics-path-directory-heading .button{grid-column:1/-1}.logistics-path-columns nav{grid-template-columns:1fr 1fr}.logistics-commercial-footer{align-items:stretch}.logistics-commercial-footer p{width:100%}}@media(max-width:620px){.logistics-path-columns nav{grid-template-columns:1fr}}
 </style>

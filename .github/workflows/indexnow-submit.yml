@@ -1,0 +1,46 @@
+name: Submit priority URLs to IndexNow
+
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: "Optional comma, space, or newline separated Hermes URLs. Leave blank for the five priority URLs."
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indexnow-manual-submit
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    name: validate-and-submit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Verify public ownership key
+        shell: bash
+        run: |
+          test "$(tr -d '\r\n' < public/8e3c1f6a9d4b72c5e0a8f31d67b2c94e.txt)" = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e"
+
+      - name: Validate submission payload
+        env:
+          INDEXNOW_DRY_RUN: "1"
+          INDEXNOW_URLS: ${{ inputs.urls }}
+        run: node scripts/indexnow-submit.mjs
+
+      - name: Submit URLs to IndexNow
+        env:
+          INDEXNOW_URLS: ${{ inputs.urls }}
+        run: node scripts/indexnow-submit.mjs

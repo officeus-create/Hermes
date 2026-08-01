@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -9,6 +10,7 @@ const sitemapFiles = (await readdir(dist, { withFileTypes: true }))
   .map((entry) => entry.name)
   .sort();
 const sitemap = (await Promise.all(sitemapFiles.map((file) => readFile(join(dist, file), "utf8")))).join("\n");
+const homepage = await readFile(join(dist, "index.html"), "utf8");
 const logisticsHub = await readFile(join(dist, "paths", "logistics", "index.html"), "utf8");
 
 const pages = [
@@ -41,6 +43,32 @@ const pages = [
       "/contacts/",
     ],
   },
+];
+
+const homepagePriorityRoutes = [
+  "/logistics/appleton-wi-vehicle-transport/",
+  "/logistics/resources/auction-vehicle-pickup-checklist/",
+  "/logistics/resources/car-hauler-capacity-checklist/",
+];
+
+const wisconsinHubRoutes = [
+  "/logistics/wisconsin-vehicle-transport/",
+  "/logistics/wisconsin-dealer-vehicle-transport/",
+  "/logistics/wisconsin-auction-vehicle-pickup/",
+  "/logistics/wisconsin-enclosed-vehicle-transport/",
+  "/logistics/wisconsin-multi-vehicle-dealer-transport/",
+  "/logistics/appleton-wi-vehicle-transport/",
+  "/logistics/milwaukee-wi-vehicle-transport/",
+  "/logistics/madison-wi-vehicle-transport/",
+  "/logistics/green-bay-wi-vehicle-transport/",
+  "/logistics/oshkosh-wi-vehicle-transport/",
+  "/logistics/fond-du-lac-wi-vehicle-transport/",
+  "/logistics/eau-claire-wi-vehicle-transport/",
+  "/logistics/la-crosse-wi-vehicle-transport/",
+  "/logistics/kenosha-wi-vehicle-transport/",
+  "/logistics/racine-wi-vehicle-transport/",
+  "/logistics/waukesha-wi-vehicle-transport/",
+  "/logistics/sheboygan-wi-vehicle-transport/",
 ];
 
 const decode = (value = "") => value
@@ -90,4 +118,38 @@ for (const page of pages) {
   assert.ok(logisticsHub.includes(`href="${page.route}"`), `${page.route} is not linked from the logistics hub`);
 }
 
-console.log(`Commercial logistics page checks passed: ${pages.length} indexable pages with scope, schema, breadcrumbs, sitemap entries, and hub links.`);
+for (const route of homepagePriorityRoutes) {
+  assert.ok(homepage.includes(`href="${route}"`), `${route} is not linked from the homepage discovery block`);
+  assert.ok(sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} is missing from declared sitemap union`);
+}
+
+for (const route of wisconsinHubRoutes) {
+  assert.ok(logisticsHub.includes(`href="${route}"`), `${route} is not linked from the Wisconsin logistics directory`);
+  assert.ok(sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} is missing from declared sitemap union`);
+}
+
+assert.ok(logisticsHub.includes('id="logistics-resources"'), "Logistics resources fragment target is missing");
+
+const indexNowKey = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e";
+const deployedIndexNowKey = await readFile(join(dist, `${indexNowKey}.txt`), "utf8");
+assert.equal(deployedIndexNowKey.trim(), indexNowKey, "IndexNow ownership key must be copied to the site root");
+const indexNowDryRun = JSON.parse(execFileSync(
+  process.execPath,
+  [join(root, "scripts", "indexnow-submit.mjs")],
+  {
+    encoding: "utf8",
+    env: { ...process.env, INDEXNOW_DRY_RUN: "1" },
+  },
+));
+assert.equal(indexNowDryRun.host, "hermeslogisticsus.com");
+assert.equal(indexNowDryRun.key, indexNowKey);
+assert.equal(indexNowDryRun.keyLocation, `https://hermeslogisticsus.com/${indexNowKey}.txt`);
+assert.deepEqual(indexNowDryRun.urlList, [
+  "https://hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/paths/logistics/",
+  "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+  "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+  "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+]);
+
+console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${homepagePriorityRoutes.length} homepage discovery links, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);
