@@ -14,6 +14,10 @@ Date: 2026-07-29
 - Manual booking handoff only; it performs no booking, message, negotiation, or external write.
 - Public route export is hard-disabled and returns no records.
 - CSV adapter rejects common PII and carrier/customer identity columns.
+- Import preview accepts only the exact safe offer schema with synthetic `SYN-*`/`MOCK-*` or sanitized `CLEAN-*` identifiers and Mock/Synthetic/Cleaned source labels.
+- Import preview reports accepted, duplicate candidates, expired, rejected, and needs-review counts without writing anywhere.
+- Quarantine retains only CSV row numbers, outcome categories, and non-PII reason codes; it does not retain raw rejected rows.
+- Invalid schemas, forbidden columns, and non-synthetic identifiers stop before row classification.
 - `completed`, `verified`, and `published` require confirmed delivery, BOL/POD or manual operational confirmation, and cancellation/claims review. A paid flag is not accepted as completion evidence.
 
 ## Not implemented or claimed

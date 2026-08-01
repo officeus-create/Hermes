@@ -8,6 +8,7 @@ import {
   createReadOnlyFeed,
   importOffersCsv,
   importShipmentHistoryCsv,
+  previewOffersCsvImport,
   prepareManualBookingHandoff,
 } from "../src/lib/load-operations.ts";
 
@@ -71,6 +72,74 @@ assert.throws(
     + "SYN-SHIP-X,completed,Test,WI,Test,IL,car_hauler,2026-07-01,2026-07-02,1,1,0,MOCK-X,false,false,false,false",
   ),
   /cannot be completed without delivery evidence/,
+);
+
+const preview = previewOffersCsvImport(offersCsv, now);
+assert.deepEqual(preview.summary, {
+  accepted: 1,
+  duplicate_candidate: 1,
+  expired: 1,
+  rejected: 0,
+  needs_review: 0,
+});
+assert.equal(preview.mode, "synthetic_preview");
+assert.equal(preview.externalWritePerformed, false);
+assert.equal(preview.publicExportEnabled, false);
+assert.equal(preview.acceptedOffers.length, 1);
+assert.deepEqual(preview.quarantine, [
+  { rowNumber: 3, status: "duplicate_candidate", reasons: ["DUPLICATE_CANONICAL_OPPORTUNITY"] },
+  { rowNumber: 4, status: "expired", reasons: ["OFFER_EXPIRED"] },
+]);
+assert.equal(JSON.stringify(preview.quarantine).includes("Chicago"), false, "Quarantine must not retain row content");
+
+const offerHeader = offersCsv.split("\n")[0];
+assert.throws(
+  () => previewOffersCsvImport("", now),
+  /Invalid CSV schema/,
+);
+assert.throws(
+  () => previewOffersCsvImport(`${offerHeader.replace(",deadhead_miles", "")}\nSYN-OFFER-X,Mock Board,MOCK-X,2026-07-29T12:00:00Z,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,1,,,1`, now),
+  /Invalid CSV schema/,
+);
+assert.throws(
+  () => previewOffersCsvImport(`${offerHeader},phone\nSYN-OFFER-X,Mock Board,MOCK-X,2026-07-29T12:00:00Z,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,1,,,1,0,5551234567`, now),
+  /Private columns are not allowed/,
+);
+assert.throws(
+  () => previewOffersCsvImport(`${offerHeader}\nREAL-123,Live Board,12345,2026-07-29T12:00:00Z,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,1,,,1,0`, now),
+  /Only synthetic or cleaned mock identifiers/,
+);
+
+const rejectedPreview = previewOffersCsvImport(
+  `${offerHeader}\nSYN-BAD-1,Mock Board,MOCK-BAD-1,not-a-date,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,not-a-rate,,,1,0`,
+  now,
+);
+assert.deepEqual(rejectedPreview.summary, { accepted: 0, duplicate_candidate: 0, expired: 0, rejected: 1, needs_review: 0 });
+assert.deepEqual(rejectedPreview.quarantine[0], { rowNumber: 2, status: "rejected", reasons: ["INVALID_ROW_VALUE"] });
+
+const reviewPreview = previewOffersCsvImport(
+  `${offerHeader}\nSYN-REVIEW-1,Mock Board,MOCK-REVIEW-1,2026-07-31T12:00:00Z,2026-07-30T12:00:00Z,2026-07-31,A,WI,B,IL,car_hauler,100,,,50,0`,
+  now,
+);
+assert.deepEqual(reviewPreview.summary, { accepted: 0, duplicate_candidate: 0, expired: 0, rejected: 0, needs_review: 1 });
+assert.deepEqual(reviewPreview.quarantine[0].reasons, ["OBSERVED_AFTER_EXPIRY", "OBSERVED_IN_FUTURE"]);
+
+const happyPreview = previewOffersCsvImport(
+  `${offerHeader}\nSYN-HAPPY-1,Synthetic Source,MOCK-HAPPY-1,2026-07-29T12:00:00Z,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,100,,,50,0`,
+  now,
+);
+assert.deepEqual(happyPreview.summary, { accepted: 1, duplicate_candidate: 0, expired: 0, rejected: 0, needs_review: 0 });
+assert.equal(happyPreview.quarantine.length, 0);
+
+const cleanedPreview = previewOffersCsvImport(
+  `${offerHeader}\nCLEAN-HAPPY-1,Cleaned Export,CLEAN-RECORD-1,2026-07-29T12:00:00Z,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,100,,,50,0`,
+  now,
+);
+assert.equal(cleanedPreview.summary.accepted, 1);
+
+assert.throws(
+  () => previewOffersCsvImport(`${offerHeader},paid\nSYN-PAID-1,Mock Board,MOCK-PAID-1,2026-07-29T12:00:00Z,2026-07-30T12:00:00Z,2026-07-30,A,WI,B,IL,car_hauler,100,,,50,0,true`, now),
+  /Private columns are not allowed/,
 );
 
 console.log("Load operations P0 synthetic vertical-slice checks passed.");

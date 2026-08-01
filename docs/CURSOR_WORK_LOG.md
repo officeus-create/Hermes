@@ -189,6 +189,81 @@ npx playwright test tests/site.spec.ts --project=desktop --grep '/ru/ renders wi
 
 Add a controlled local submission ledger and a carrier-match fixture so approved previews can be tested end-to-end without touching production data or sending messages.
 
+## Session 05 - P0 Load Operations Import Preview and Quarantine
+
+STATUS: CODEX_IMPLEMENTED_LOCAL_ONLY
+
+### Objective
+
+Add a non-publishing import preview for synthetic/cleaned offer CSV files, with safe row-level quarantine and no external writes.
+
+### Changes delivered
+
+- Added strict offer-schema validation before row processing.
+- Rejected forbidden private columns and non-synthetic identifiers before classification.
+- Added mutually exclusive counts for accepted, duplicate candidates, expired, rejected, and needs-review rows.
+- Added row-number plus non-PII reason codes for quarantine; raw rejected row values are not retained.
+- Kept public export hard-disabled and preserved the existing delivery evidence, BOL/POD or manual confirmation, and cancellations/claims review requirements.
+- Kept `paid` forbidden and unusable as completion evidence.
+
+### Boundaries
+
+- No OFFICE 374 2026 workbook access or connection.
+- No real load board, CRM, TMS, carrier, customer, route, rate, contact, or identifier data.
+- No network request, external write, public route, build-time public data, deployment, DNS change, or publication.
+
+### Exact remaining blocker
+
+Real-data preview remains blocked until a named source owner approves a specific privacy-safe export, field list, access rights/provider terms, freshness/TTL, source-removal rules, and operational review ownership.
+
+### Verification
+
+```bash
+node --experimental-strip-types scripts/load-operations.test.mjs
+# passed: invalid schema, forbidden fields, real identifiers, duplicates,
+# stale rows, quarantine reasons, needs-review rows, and clean synthetic/sanitized paths
+
+npm test
+# passed: 50 generated pages validated; no broken internal links or external form action
+
+npm run build
+# passed after excluding IT/venv and preview artifacts from Astro type scanning
+# 78 files checked; 0 errors, 0 warnings, 0 hints; 47 pages built
+
+npm run test:e2e
+# 118 passed; 2 expected skips
+```
+
+## Session 06 - Verified Public Bundle Production Release
+
+STATUS: CODEX_DEPLOYED_AND_VERIFIED_PRODUCTION
+
+### Deployment
+
+- Cloudflare Pages project: `hermes`.
+- Production branch: `main`.
+- Deployment ID: `655e4425-09b7-4e3f-8868-30aef98367c4`.
+- Immutable deployment URL: `https://655e4425.hermes-eu4.pages.dev`.
+- Production domain: `https://hermeslogisticsus.com`.
+- Exact bundle manifest: `docs/PUBLIC_DEPLOYMENT_MANIFEST_2026-08-01.md`.
+
+### Isolation and safety
+
+- Uploaded an isolated 85-file copy of `dist`; no `functions` directory was present in the upload root.
+- Excluded the P0 Load Operations module, fixtures, tests, import preview/quarantine, rates, routes, identifiers, mock feeds, private read models, IT/venv, preview artifacts, screenshots, and work logs.
+- Contact and Load Board forms remain preview-only and have no external action.
+- No CRM/Sheets write, email send, advertising, booking, integration, public operational export, or paid service was activated.
+
+### Production verification
+
+- 82 of 83 directly served static files matched the local bundle byte-for-byte.
+- `robots.txt` returned HTTP 200 and retained the Hermes sitemap; Cloudflare prepended its managed crawler content signals, so a byte-for-byte match is not expected.
+- Homepage, Load Board, IT Development, Appleton, Auction Vehicle Pickup Checklist, and Car Hauler Capacity Checklist were visually checked in production.
+- Desktop and 390 px mobile checks showed no horizontal overflow, missing image alt attributes, external form actions, or browser console errors.
+- Canonical URLs were correct on every checked page; the three SEO pages exposed visible-content-aligned structured data.
+- Production returned HSTS (`max-age=31536000`), CSP, permissions, referrer, content-type, and frame-protection headers.
+- Production sitemap returned HTTP 200 with 46 canonical URLs, including Appleton and both national Logistics resources.
+
 ## Session 05 - Four-direction Home Entry Scene
 
 STATUS: CODEX_IMPLEMENTED_VERIFIED_LOCAL
