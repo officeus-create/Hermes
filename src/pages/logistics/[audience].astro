@@ -1,6 +1,7 @@
 ---
-import { ArrowLeft, ArrowRight, Check } from "@lucide/astro";
+import { ArrowRight, Check } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import CareerStatusPanel from "../../components/CareerStatusPanel.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -29,7 +30,13 @@ const schema = {
     <main id="main-content">
       <section class="logistics-audience-hero">
         <div class="shell">
-          <a class="detail-back" href="/paths/logistics/#choose-your-path"><ArrowLeft size={18} aria-hidden="true" />All logistics paths</a>
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Logistics", href: "/paths/logistics/" },
+            ]}
+            current={audience.label}
+          />
           <p class="eyebrow">Hermes Logistics · {audience.eyebrow}</p>
           <h1>{audience.title}</h1>
           <p>{audience.summary}</p>
