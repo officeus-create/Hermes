@@ -1,18 +1,18 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
-const openLoadForm = async (page) => {
+const openLoadForm = async (page: Page) => {
   const response = await page.goto("/load-board/?role=dealer#post-load");
   expect(response?.ok()).toBeTruthy();
   await expect(page.locator("[data-route-estimate-panel]")).toBeVisible();
 };
 
-const fillRoute = async (page, origin = "Chicago, IL", destination = "Milwaukee, WI") => {
+const fillRoute = async (page: Page, origin = "Chicago, IL", destination = "Milwaukee, WI") => {
   await page.locator('input[name="pickup_location"]').fill(origin);
   await page.locator('input[name="delivery_location"]').fill(destination);
 };
 
-const enableLiveModeForTest = async (page) => {
-  await page.locator("[data-route-estimate-panel]").evaluate((panel) => {
+const enableLiveModeForTest = async (page: Page) => {
+  await page.locator("[data-route-estimate-panel]").evaluate((panel: Element) => {
     if (!(panel instanceof HTMLElement)) throw new Error("route panel missing");
     panel.dataset.routeEstimateMode = "live";
     panel.dataset.routeEstimateEndpoint = "/api/route-estimate";
