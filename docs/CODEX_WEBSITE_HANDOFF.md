@@ -6,6 +6,16 @@ LOCAL_PATH: `/Users/progressopro/Documents/hermeslogisticus.com`
 
 BRANCH: `prototype/editorial-v1`
 
+## SEO multi-AI intake rule
+
+Canonical policy: `/Users/progressopro/Documents/Сайт Hermes/05_Shared_Platform/ПРАВИЛА_ДОСТУПА_CHATGPT_CODEX_GEMINI_2026-08-01.md`.
+
+- Incoming SEO work must include the same complete safe context for ChatGPT, Codex, and Gemini Google Workspace.
+- Codex reconciles other-AI findings against the repository and current production and remains the only website code executor.
+- Findings must use `VERIFIED / INFERENCE / NEEDS REVIEW / NOT FOUND` and mark `DUPLICATE / CONFLICT / NEW / STALE` where applicable.
+- Complete context is not execution authority. Publication, Cloudflare/DNS/Search Console changes, form or CRM connections, credentials, PII, costs, and other external writes still require the applicable explicit production decision.
+- Missing access is not evidence that a website feature is absent.
+
 SCOPE_COMPLETED:
 
 - ecosystem homepage with four clear directions;
