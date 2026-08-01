@@ -1,5 +1,5 @@
 ---
-import { AlertTriangle, BarChart3, Clock3, LockKeyhole, Route, ShieldCheck, Truck } from "@lucide/astro";
+import { ChartNoAxesColumnIncreasing, Clock3, LockKeyhole, Route, ShieldCheck, TriangleAlert, Truck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
@@ -126,7 +126,7 @@ const routeLabel = (offer: NormalizedOffer) => `${offer.originCity}, ${offer.ori
           </div>
           <div class="lane-summary-grid">
             <article>
-              <BarChart3 size={24} aria-hidden="true" />
+              <ChartNoAxesColumnIncreasing size={24} aria-hidden="true" />
               <span>Highest synthetic gross</span>
               <strong>${highestGross.metrics.gross.toLocaleString("en-US")}</strong>
               <p>{routeLabel(highestGross.offer)}</p>
@@ -206,7 +206,7 @@ const routeLabel = (offer: NormalizedOffer) => `${offer.originCity}, ${offer.ori
 
       <section class="lane-section lane-warning" aria-labelledby="warning-title">
         <div class="lane-shell lane-warning-card">
-          <AlertTriangle size={30} aria-hidden="true" />
+          <TriangleAlert size={30} aria-hidden="true" />
           <div>
             <p class="lane-kicker">Not connected</p>
             <h2 id="warning-title">No real sheet, load board, API, or carrier history is represented.</h2>
