@@ -7,14 +7,16 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out repository branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -28,18 +30,24 @@ jobs:
       - name: Generate safe audit remediation lockfile
         run: npm audit fix --package-lock-only --ignore-scripts
 
+      - name: Commit remediated lockfile
+        if: github.event_name == 'pull_request' && github.head_ref == 'security/dependency-audit-remediation'
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "package-lock.json already contains the remediation."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "Update dependency lockfile after security audit [skip ci]"
+          git push origin HEAD:${{ github.head_ref }}
+
       - name: Reinstall remediated dependencies
         run: npm ci
 
       - name: Report dependency advisories
         run: node scripts/dependency-audit-report.mjs
-
-      - name: Emit remediated lockfile payload
-        run: |
-          echo "LOCKFILE_GZIP_BASE64_BEGIN"
-          gzip -9c package-lock.json | base64 -w0
-          echo
-          echo "LOCKFILE_GZIP_BASE64_END"
 
       - name: Build website
         run: npm run build
