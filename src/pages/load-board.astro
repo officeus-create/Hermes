@@ -4,9 +4,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import RouteEstimatePanel from "../components/RouteEstimatePanel.astro";
+import RouteEstimatePanel from "../components/RouteEstimatePanel.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const routeEstimateMode = import.meta.env.PUBLIC_ROUTE_ESTIMATE_MODE === "live" ? "live" : "preview";
+const routeEstimateEndpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-estimate";
 const routeEstimateMode = import.meta.env.PUBLIC_ROUTE_ESTIMATE_MODE === "live" ? "live" : "preview";
 const routeEstimateEndpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-estimate";
 ---
