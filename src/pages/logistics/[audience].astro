@@ -13,7 +13,7 @@ export function getStaticPaths() {
 
 const { audience } = Astro.props;
 const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toString();
-const schema = {
+const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
@@ -22,6 +22,16 @@ const schema = {
     { "@type": "ListItem", position: 3, name: audience.label, item: canonicalUrl },
   ],
 };
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: audience.faq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
+const schema = [breadcrumbSchema, faqSchema];
 ---
 
 <BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary} schema={schema}>
@@ -69,8 +79,31 @@ const schema = {
         </div>
       </section>
 
+      <section class="section logistics-audience-faq" aria-labelledby="logistics-audience-faq-title">
+        <div class="shell">
+          <p class="eyebrow">Common questions</p>
+          <h2 id="logistics-audience-faq-title">Before you start.</h2>
+          <div class="logistics-audience-faq-list">
+            {audience.faq.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {audience.slug === "careers" && <CareerStatusPanel />}
     </main>
     <SiteFooter />
   </div>
 </BaseLayout>
+
+<style>
+  .logistics-audience-faq { background: #f5f7fb; }
+  .logistics-audience-faq-list { display: grid; gap: 1rem; margin-top: 1.5rem; }
+  .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid #d6dce8; border-radius: 10px; background: #fff; }
+  .logistics-audience-faq-list summary { cursor: pointer; font-weight: 750; color: var(--color-navy-900); }
+  .logistics-audience-faq-list p { margin: .75rem 0 0; max-width: 78ch; color: var(--color-muted); }
+</style>
