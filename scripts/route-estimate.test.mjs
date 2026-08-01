@@ -82,7 +82,7 @@ const placeSuccess = await handleRouteEstimate(
     }),
     env: configuredEnv(),
   },
-  async (input, init) => {
+  async (_input, init) => {
     placeCaptured.push(JSON.parse(init.body));
     return new Response(JSON.stringify({ routes: [{ distanceMeters: 150000, duration: "7000.4s" }] }), { status: 200 });
   },
