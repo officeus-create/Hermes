@@ -155,10 +155,11 @@ test("homepage hero combines office and handwritten typography with a restrained
 test("Load Board demo search reveals a fictional load for a presented city", async ({ page }) => {
   await page.goto("/load-board/");
   await page.getByRole("button", { name: "Rockford, IL" }).click();
-  await expect(page.getByRole("status")).toContainText("1 fictional demonstration load found");
+  const demoStatus = page.locator("[data-demo-search-status]");
+  await expect(demoStatus).toContainText("1 fictional demonstration load found");
   await expect(page.locator("[data-demo-load-card]:visible")).toHaveCount(1);
   await expect(page.locator("[data-demo-load-card]:visible")).toContainText("Nashville, TN");
-  await expect(page.getByRole("status")).toContainText("not available to book or dispatch");
+  await expect(demoStatus).toContainText("not available to book or dispatch");
 });
 
 test("Appleton guide routes customers, dealers, and carriers into the existing Logistics forms", async ({ page }) => {
