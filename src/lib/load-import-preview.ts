@@ -4,6 +4,7 @@ import {
   type NormalizedOffer,
   type ShipmentHistoryRecord,
 } from "./load-operations.ts";
+import { createProvenanceIdentityKey } from "./provenance-identity.ts";
 
 export type ShipmentLifecycleStatus = "observed" | "booked" | "completed" | "verified" | "published";
 
@@ -378,7 +379,10 @@ export function previewShipmentHistoryCsv(csv: string): ImportPreview<ShipmentHi
   return createPreview(
     csv,
     importShipmentHistoryCsv,
-    (record) => [`shipment:${record.shipmentId}`, `source:${record.sourceRecordId}`],
+    (record) => [
+      createProvenanceIdentityKey("shipment", record.shipmentId),
+      createProvenanceIdentityKey("source", record.sourceRecordId),
+    ],
     shipmentHistoryHeaders,
   );
 }
@@ -387,7 +391,10 @@ export function previewOffersCsv(csv: string, now = new Date()): ImportPreview<N
   return createPreview(
     csv,
     (singleRowCsv) => importOffersCsv(singleRowCsv, now),
-    (record) => [`offer:${record.offerId}`, `source:${record.sourceRecordId}`],
+    (record) => [
+      createProvenanceIdentityKey("offer", record.offerId),
+      createProvenanceIdentityKey("source", record.sourceRecordId),
+    ],
     offerHeaders,
   );
 }
