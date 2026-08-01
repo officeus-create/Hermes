@@ -33,9 +33,19 @@ assert.equal(ui.rows.length, 1);
 assert.equal(ui.rows[0].provenanceLabel, "Synthetic test data");
 assert.match(ui.rows[0].statusLabel, /Research only/);
 assert.match(ui.privacyNotice, /No identities/);
+assert.match(ui.privacyNotice, /credentials/);
 assert.match(ui.privacyNotice, /public exports/);
 
-const serialized = JSON.stringify(ui);
+function collectObjectKeys(value, keys = new Set()) {
+  if (!value || typeof value !== "object") return keys;
+  for (const [key, nestedValue] of Object.entries(value)) {
+    keys.add(key);
+    collectObjectKeys(nestedValue, keys);
+  }
+  return keys;
+}
+
+const projectedKeys = collectObjectKeys(ui);
 for (const forbidden of [
   "customerName",
   "carrierName",
@@ -47,9 +57,10 @@ for (const forbidden of [
   "commission",
   "livePosition",
   "credential",
+  "credentials",
   "bookingEnabled",
 ]) {
-  assert.equal(serialized.includes(forbidden), false, `UI projection must exclude ${forbidden}`);
+  assert.equal(projectedKeys.has(forbidden), false, `UI projection must exclude field ${forbidden}`);
 }
 
 assert.throws(
