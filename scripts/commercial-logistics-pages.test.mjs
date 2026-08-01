@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
-const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
+const sitemapFiles = (await readdir(dist, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && /^sitemap(?:-[a-z0-9-]+)?\.xml$/i.test(entry.name))
+  .map((entry) => entry.name)
+  .sort();
+const sitemap = (await Promise.all(sitemapFiles.map((file) => readFile(join(dist, file), "utf8")))).join("\n");
 const logisticsHub = await readFile(join(dist, "paths", "logistics", "index.html"), "utf8");
 
 const pages = [
@@ -82,7 +86,7 @@ for (const page of pages) {
   assert.ok(faq?.mainEntity?.length >= 5, `${page.route} visible FAQ schema is incomplete`);
   for (const question of faq.mainEntity) assert.ok(html.includes(question.name), `${page.route} FAQ question is not visible: ${question.name}`);
 
-  assert.ok(sitemap.includes(`https://hermeslogisticsus.com${page.route}`), `${page.route} is missing from sitemap`);
+  assert.ok(sitemap.includes(`https://hermeslogisticsus.com${page.route}`), `${page.route} is missing from declared sitemap union`);
   assert.ok(logisticsHub.includes(`href="${page.route}"`), `${page.route} is not linked from the logistics hub`);
 }
 
