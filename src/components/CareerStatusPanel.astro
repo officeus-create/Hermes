@@ -1,0 +1,36 @@
+---
+import { BriefcaseBusiness, ShieldCheck } from "@lucide/astro";
+import { careerPublicBoundaries, verifiedOpenVacancies } from "../data/careers-governance";
+---
+
+<section class="section career-status" aria-labelledby="career-status-title">
+  <div class="shell career-status-layout">
+    <div>
+      <p class="eyebrow">Current vacancy status</p>
+      <h2 id="career-status-title">General careers inquiries are open. No verified public vacancy is listed today.</h2>
+      <p>Hermes may review professional interest for Logistics, Marketing, Academy, and IT Development. A specific vacancy is published only after the role, location, employment type, scope, application route, review date, and status are verified and owner-approved.</p>
+      <div class="career-status-count" aria-label="Verified public vacancies">
+        <BriefcaseBusiness size={22} aria-hidden="true" />
+        <strong>{verifiedOpenVacancies.length}</strong>
+        <span>verified public vacancies</span>
+      </div>
+      <a class="button button-primary" href="/logistics/apply/">Prepare a general careers inquiry</a>
+    </div>
+    <ul>
+      {careerPublicBoundaries.map((item) => <li><ShieldCheck size={18} aria-hidden="true" />{item}</li>)}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .career-status { background: #eef3ff; }
+  .career-status-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+  .career-status-layout > div > p { max-width: 720px; line-height: 1.7; color: #526181; }
+  .career-status-count { display: flex; align-items: center; gap: .7rem; margin: 1.4rem 0; padding: 1rem 1.1rem; width: fit-content; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); }
+  .career-status-count strong { font-size: 1.45rem; color: #122b72; }
+  .career-status-count span { color: #526181; }
+  .career-status-layout ul { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
+  .career-status-layout li { display: flex; gap: .75rem; align-items: flex-start; padding: 1rem; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); line-height: 1.55; color: #344567; }
+  .career-status-layout li svg { flex: none; margin-top: .15rem; color: #315fd7; }
+  @media (max-width: 800px) { .career-status-layout { grid-template-columns: 1fr; } }
+</style>
