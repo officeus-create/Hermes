@@ -1,0 +1,137 @@
+---
+import { ArrowRight, CircleAlert, ShieldCheck } from "@lucide/astro";
+import AcademyApplicationPreview from "../../components/AcademyApplicationPreview.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+const title = "Courses for Casablanca | Hermes Business Academy Preview";
+const description = "Preview the Hermes Business Academy course-interest path for Casablanca. Course availability, format, language, duration and price remain under review.";
+const reviewItems = [
+  ["Course availability", "Which Academy programs can accept learners connected to Casablanca."],
+  ["Learning format", "Online, in-person, or hybrid delivery has not been approved."],
+  ["Teaching languages", "French, Arabic, and English are preferences to validate, not confirmed delivery languages."],
+  ["Schedule and duration", "Dates, study hours, and program length are not published."],
+  ["Price and certificate", "No price, payment, or certificate claim is approved."],
+];
+const interestPaths = [
+  { title: "Logistics Operations", body: "Practical freight communication, documents, equipment logic, and operating routines." },
+  { title: "Marketing", body: "Positioning, content, campaigns, lead generation, and measurable growth workflows." },
+  { title: "COO / Operational Director", body: "Departments, KPI, process control, operating rhythm, and business decision systems." },
+  { title: "AI Automation practical lab", body: "A controlled learning concept for turning one repeated business process into a tested assistant prototype." },
+];
+const faq = [
+  { question: "Are Hermes courses currently confirmed for Casablanca?", answer: "Not yet. This page is a local first-stage preview. Exact course availability and enrollment rules remain under business review." },
+  { question: "Will classes take place in Casablanca?", answer: "No physical classroom, office, partner, or local address is claimed. Online, in-person, and hybrid formats remain NEEDS REVIEW." },
+  { question: "Which languages are available?", answer: "French, Arabic, and English are collected only as preferences. Teaching and support languages must be confirmed before enrollment opens." },
+  { question: "Does an application guarantee admission or employment?", answer: "No. A future application would request human review only. Hermes does not guarantee admission, employment, income, a visa, a certificate, or any other result." },
+  { question: "Does the preview form send my information?", answer: "No. It creates a temporary summary in your browser and does not send or store the information." },
+];
+---
+
+<BaseLayout title={title} description={description} robots="noindex,nofollow">
+  <SiteHeader theme="dark" activePath="/paths/academy/" />
+  <main id="main-content" class="casablanca-course-page">
+    <section class="casablanca-hero" id="top">
+      <div class="shell casablanca-hero-grid">
+        <div>
+          <nav class="casablanca-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Hermes</a><span aria-hidden="true">/</span>
+            <a href="/paths/academy/">Academy</a><span aria-hidden="true">/</span>
+            <span>Casablanca course preview</span>
+          </nav>
+          <p class="eyebrow">Hermes Business Academy · Casablanca interest preview</p>
+          <h1>Explore practical learning paths from Casablanca.</h1>
+          <p class="casablanca-hero-copy">
+            Tell us what you would like to learn while Hermes verifies the exact programs, languages, delivery format,
+            schedule, price, and review process for this audience.
+          </p>
+          <div class="casablanca-hero-actions">
+            <a class="button button-primary" href="#application">Preview an application <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href="/paths/academy/">Explore the Academy</a>
+          </div>
+        </div>
+        <aside class="casablanca-review-card" aria-labelledby="casablanca-review-title">
+          <ShieldCheck size={26} aria-hidden="true" />
+          <p class="eyebrow">Safe first stage</p>
+          <h2 id="casablanca-review-title">No enrollment claim yet.</h2>
+          <p>No Casablanca office, classroom, partner, price, date, certificate, or course availability is presented as confirmed.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section casablanca-interest" aria-labelledby="casablanca-interest-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Interest paths · Availability NEEDS REVIEW</p>
+          <h2 id="casablanca-interest-title">Start with the capability you want to build.</h2>
+          <p>These are existing Hermes Academy learning directions. Their availability for Casablanca is not yet confirmed.</p>
+        </div>
+        <div class="casablanca-interest-grid">
+          {interestPaths.map((path, index) => (
+            <article>
+              <span>0{index + 1}</span>
+              <h3>{path.title}</h3>
+              <p>{path.body}</p>
+              <strong>Casablanca availability · NEEDS REVIEW</strong>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section casablanca-facts" aria-labelledby="casablanca-facts-title">
+      <div class="shell casablanca-facts-grid">
+        <div>
+          <p class="eyebrow">Business facts before enrollment</p>
+          <h2 id="casablanca-facts-title">What Hermes still needs to confirm.</h2>
+          <p>Preferences collected in the preview form help shape a future offer. They do not create or approve a course.</p>
+        </div>
+        <dl>
+          {reviewItems.map(([term, detail]) => (
+            <div>
+              <dt><CircleAlert size={18} aria-hidden="true" />{term}<span>NEEDS REVIEW</span></dt>
+              <dd>{detail}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+
+    <section class="section casablanca-process" aria-labelledby="casablanca-process-title">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Current preview process</p>
+          <h2 id="casablanca-process-title">A clear first step without pretending enrollment is open.</h2>
+        </div>
+        <ol class="casablanca-process-grid">
+          <li><span>01</span><h3>Choose an interest</h3><p>Select the capability, preferred language, and learning format you want Hermes to evaluate.</p></li>
+          <li><span>02</span><h3>Create a local preview</h3><p>Review a structured summary in your browser. Nothing is transmitted or stored.</p></li>
+          <li><span>03</span><h3>Wait for confirmed facts</h3><p>Hermes must approve the real program, format, language, schedule, price, reviewer, and contact destination.</p></li>
+          <li><span>04</span><h3>Human review later</h3><p>If applications open, a separate reviewed workflow will explain delivery, response expectations, and data retention.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <AcademyApplicationPreview />
+
+    <section class="section casablanca-faq" aria-labelledby="casablanca-faq-title">
+      <div class="shell casablanca-faq-grid">
+        <div>
+          <p class="eyebrow">FAQ · Visible facts only</p>
+          <h2 id="casablanca-faq-title">Questions before you create a preview.</h2>
+          <p>No Course or FAQ structured data is published while the offer remains under review.</p>
+        </div>
+        <div class="faq-list">
+          {faq.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>

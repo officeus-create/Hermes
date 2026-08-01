@@ -786,3 +786,43 @@ npm run test:e2e
 - Search Console opened under the browser's active Google account with no
   existing Hermes website property. No property, DNS record, or verification
   method was created.
+
+## 2026-08-01 — Casablanca Academy course-interest preview
+
+### Implemented locally
+
+- Added `/academy/casablanca-courses/` as one focused course-interest preview
+  for people exploring Hermes Business Academy from Casablanca.
+- Reused the existing Academy design and linked the preview from the Academy
+  screen flow without creating duplicate Academy navigation or geo templates.
+- Added an accessible preview-only application form. A valid submission creates
+  only an on-page summary; it has no action, endpoint, email, CRM, Sheets, or
+  external storage destination.
+- Marked course availability, delivery format, teaching languages, schedule,
+  duration, price, and certificate status as `NEEDS REVIEW`.
+- Kept the page `noindex,nofollow`, excluded it from the sitemap, and added no
+  structured data until the offer and publication decision are confirmed.
+
+### Verification
+
+```bash
+npm test
+# 51 generated pages validated; 27 homepage checks; 6 image assets;
+# zero broken internal links; no external form action.
+
+npm run build
+# 80 Astro files checked; 0 errors, 0 warnings, 0 hints; 48 pages built.
+
+npx playwright test tests/site.spec.ts --grep 'Casablanca|/academy/casablanca-courses/'
+# 4 passed.
+
+npm run test:e2e
+# 122 passed, 2 expected device-specific skips.
+```
+
+### Release boundary
+
+- Desktop and 390px mobile previews were checked locally with no overflow or
+  browser console errors.
+- No publication, deployment, push, advertising, external message, or data
+  write was performed.

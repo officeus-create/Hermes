@@ -11,9 +11,10 @@ interface Props {
   schema?: Record<string, unknown> | Record<string, unknown>[];
   locale?: SiteLocale;
   alternates?: { lang: string; href: string }[];
+  robots?: string;
 }
 
-const { title, description, image = "/images/hermes-social-share-2026.jpg", schema, locale = "en", alternates = [] } = Astro.props;
+const { title, description, image = "/images/hermes-social-share-2026.jpg", schema, locale = "en", alternates = [], robots = "index,follow,max-image-preview:large" } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
@@ -25,7 +26,7 @@ const ogLocale = localeConfig[locale].ogLocale;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
-    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     <meta property="og:type" content="website" />

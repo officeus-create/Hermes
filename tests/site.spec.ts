@@ -14,6 +14,7 @@ const routes = [
   "/paths/logistics/",
   "/paths/marketing/",
   "/paths/academy/",
+  "/academy/casablanca-courses/",
   "/paths/technology/",
   "/case/it-development/",
   "/privacy/",
@@ -206,6 +207,45 @@ test("Academy presents AI automation as a safe practical learning lab", async ({
   await expect(page.getByRole("heading", { name: "Learn AI automation by building one useful assistant." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Fitness AI Telegram Assistant" })).toBeVisible();
   await expect(page.getByText(/no live bot, member data, messages, enrollment, or payment/i)).toBeVisible();
+});
+
+test("Casablanca Academy preview keeps course facts and application delivery under review", async ({ page }) => {
+  await page.goto("/academy/casablanca-courses/");
+  await expect(page).toHaveTitle("Courses for Casablanca | Hermes Business Academy Preview");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/academy/casablanca-courses/",
+  );
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(0);
+  await expect(page.getByText("NEEDS REVIEW", { exact: true })).toHaveCount(5);
+  await expect(page.locator(".casablanca-interest-grid strong")).toHaveCount(4);
+  await expect(page.locator(".casablanca-interest-grid strong")).toHaveText([
+    "Casablanca availability · NEEDS REVIEW",
+    "Casablanca availability · NEEDS REVIEW",
+    "Casablanca availability · NEEDS REVIEW",
+    "Casablanca availability · NEEDS REVIEW",
+  ]);
+  await expect(page.locator("form[data-casablanca-application]")).not.toHaveAttribute("action");
+
+  const form = page.locator("form[data-casablanca-application]");
+  await form.getByRole("button", { name: "Preview application" }).click();
+  await expect(form.locator("[data-application-errors]")).toBeFocused();
+  await expect(form.locator("[data-application-errors]")).toContainText("Please review the highlighted fields");
+  await expect(form.locator("[data-application-status]")).toContainText("Nothing was sent or stored");
+
+  await form.locator('input[name="name"]').fill("Example Learner");
+  await form.locator('input[name="email"]').fill("learner@example.com");
+  await form.locator('select[name="course"]').selectOption({ label: "Marketing — interest only" });
+  await form.locator('select[name="language"]').selectOption({ label: "French" });
+  await form.locator('select[name="format"]').selectOption({ label: "Online" });
+  await form.locator('input[name="consent"]').check();
+  await form.getByRole("button", { name: "Preview application" }).click();
+
+  await expect(form.locator("[data-application-summary]")).toContainText("Example Learner");
+  await expect(form.locator("[data-application-summary]")).toContainText("Marketing — interest only");
+  await expect(form.locator("[data-application-summary]")).toContainText("Delivery: preview only — not sent or stored");
+  await expect(form.locator("[data-application-status]")).toContainText("Preview created. Your information was not sent or stored.");
 });
 
 test("premium opening plays a direction cue after consented interaction and keeps sound optional", async ({ page }) => {

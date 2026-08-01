@@ -1,0 +1,181 @@
+---
+import { ArrowRight, RotateCcw } from "@lucide/astro";
+
+const courseOptions = [
+  "Logistics Operations — interest only",
+  "Marketing — interest only",
+  "COO / Operational Director — interest only",
+  "AI Automation practical lab — interest only",
+  "I am not sure yet",
+];
+---
+
+<section class="casablanca-application section" id="application" aria-labelledby="casablanca-application-title">
+  <div class="shell casablanca-application-grid">
+    <div>
+      <p class="eyebrow">Application preview · No submission</p>
+      <h2 id="casablanca-application-title">Organize your course interest.</h2>
+      <p>
+        This first-step form creates a local preview in your browser. Until Hermes approves a destination and a
+        reviewed course offer, your details are not sent, stored, emailed, or added to a CRM or spreadsheet.
+      </p>
+      <ul class="casablanca-privacy-list">
+        <li>Use email as the single required contact method.</li>
+        <li>Do not enter passport, ID, payment, immigration, health, or other sensitive information.</li>
+        <li>An application does not guarantee admission, employment, income, a visa, or any other result.</li>
+      </ul>
+      <nav class="casablanca-support-links" aria-label="Application support links">
+        <a href="/paths/academy/">Hermes Business Academy</a>
+        <a href="/privacy/">Privacy notice</a>
+        <a href="/contacts/">Contacts</a>
+      </nav>
+    </div>
+
+    <form class="contact-form casablanca-form" data-casablanca-application novalidate>
+      <div class="form-alert" role="alert" tabindex="-1" data-application-errors hidden></div>
+
+      <div class="field-row">
+        <div>
+          <label for="casablanca-name">Your name</label>
+          <input id="casablanca-name" type="text" name="name" autocomplete="name" minlength="2" maxlength="100" required />
+        </div>
+        <div>
+          <label for="casablanca-email">Email</label>
+          <input id="casablanca-email" type="email" name="email" autocomplete="email" maxlength="160" required />
+        </div>
+      </div>
+
+      <label for="casablanca-course">Course interest</label>
+      <select id="casablanca-course" name="course" required>
+        <option value="">Choose one interest</option>
+        {courseOptions.map((option) => <option>{option}</option>)}
+      </select>
+
+      <div class="field-row">
+        <div>
+          <label for="casablanca-language">Preferred language</label>
+          <select id="casablanca-language" name="language" required>
+            <option value="">Choose a preference</option>
+            <option>French</option>
+            <option>Arabic</option>
+            <option>English</option>
+            <option>Other</option>
+            <option>No preference</option>
+          </select>
+          <small>Preference only. Teaching and support languages are NEEDS REVIEW.</small>
+        </div>
+
+        <div>
+          <label for="casablanca-format">Preferred learning format</label>
+          <select id="casablanca-format" name="format" required>
+            <option value="">Choose a preference</option>
+            <option>Online</option>
+            <option>In person</option>
+            <option>Hybrid</option>
+            <option>No preference</option>
+          </select>
+          <small>Preference only. Available formats are NEEDS REVIEW.</small>
+        </div>
+      </div>
+
+      <label for="casablanca-message">Short message <span>(optional)</span></label>
+      <textarea id="casablanca-message" name="message" rows="4" maxlength="800" placeholder="What would you like to learn or improve?"></textarea>
+
+      <label class="consent-field" for="casablanca-consent">
+        <input id="casablanca-consent" type="checkbox" name="consent" required />
+        <span>I agree that these details may be used to prepare this local preview. I have read the <a href="/privacy/">privacy notice</a>.</span>
+      </label>
+
+      <div class="casablanca-form-actions">
+        <button class="button button-primary" type="submit">
+          Preview application <ArrowRight size={18} aria-hidden="true" />
+        </button>
+        <button class="button button-ghost" type="reset">
+          Clear <RotateCcw size={17} aria-hidden="true" />
+        </button>
+      </div>
+      <p class="form-status" role="status" aria-live="polite" data-application-status>
+        Preview-only: your information has not been sent or stored.
+      </p>
+      <div class="casablanca-application-result" data-application-result hidden>
+        <p class="eyebrow">Local application preview</p>
+        <pre tabindex="0" data-application-summary aria-label="Application preview summary"></pre>
+        <p>No recipient is connected. This preview stays only on the current page and disappears when you leave or reload.</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-casablanca-application]");
+  const errors = form?.querySelector<HTMLElement>("[data-application-errors]");
+  const status = form?.querySelector<HTMLElement>("[data-application-status]");
+  const result = form?.querySelector<HTMLElement>("[data-application-result]");
+  const summary = form?.querySelector<HTMLElement>("[data-application-summary]");
+
+  const clearPreview = () => {
+    if (errors) {
+      errors.hidden = true;
+      errors.replaceChildren();
+    }
+    if (result) result.hidden = true;
+    if (summary) summary.textContent = "";
+    if (status) status.textContent = "Preview-only: your information has not been sent or stored.";
+  };
+
+  form?.addEventListener("input", clearPreview);
+  form?.addEventListener("reset", () => window.requestAnimationFrame(clearPreview));
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    clearPreview();
+
+    const invalid = [...form.elements].filter((field): field is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement =>
+      field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement
+    ).filter((field) => !field.validity.valid);
+
+    if (invalid.length) {
+      const heading = document.createElement("strong");
+      heading.textContent = "Please review the highlighted fields:";
+      const list = document.createElement("ul");
+      invalid.forEach((field) => {
+        field.setAttribute("aria-invalid", "true");
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = `#${field.id}`;
+        const label = form.querySelector<HTMLLabelElement>(`label[for="${field.id}"]`)?.textContent?.trim() || field.name;
+        link.textContent = `${label}: ${field.validationMessage}`;
+        link.addEventListener("click", (clickEvent) => {
+          clickEvent.preventDefault();
+          field.focus();
+        });
+        item.appendChild(link);
+        list.appendChild(item);
+      });
+      errors?.append(heading, list);
+      if (errors) {
+        errors.hidden = false;
+        errors.focus();
+      }
+      if (status) status.textContent = "Nothing was sent or stored.";
+      return;
+    }
+
+    form.querySelectorAll("[aria-invalid]").forEach((field) => field.removeAttribute("aria-invalid"));
+    const data = new FormData(form);
+    const lines = [
+      "Hermes Business Academy · Casablanca interest preview",
+      `Name: ${String(data.get("name") || "")}`,
+      `Email: ${String(data.get("email") || "")}`,
+      `Course interest: ${String(data.get("course") || "")}`,
+      `Preferred language: ${String(data.get("language") || "")}`,
+      `Preferred format: ${String(data.get("format") || "")}`,
+      `Message: ${String(data.get("message") || "Not provided")}`,
+      "Delivery: preview only — not sent or stored",
+    ];
+    if (summary) summary.textContent = lines.join("\n");
+    if (result) result.hidden = false;
+    if (status) status.textContent = "Preview created. Your information was not sent or stored.";
+    result?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
+  });
+</script>

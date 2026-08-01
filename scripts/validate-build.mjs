@@ -15,6 +15,23 @@ const routes = [
   },
   { path: "paths/marketing/index.html", required: ["ProgressoPro", "Website and SEO", "Social media marketing", "Four connected marketing pillars", "SEO Optimization", "Growth &amp; Sales System", "Growth operating system", "Qualified lead", "Reach ProgressoPro directly.", "https://www.instagram.com/progressopro/", "https://www.threads.com/@progressopro", "https://t.me/SMMProgressoPro"] },
   { path: "paths/academy/index.html", required: ["Hermes Business Academy", "COO / Operational Director", "Operating Career System", "Executive", "Three programs. Different responsibilities.", "Practice environment", "Program dates, scope, and prices are published before enrollment", "Ask about the right Academy path.", "do not guarantee employment"] },
+  {
+    path: "academy/casablanca-courses/index.html",
+    required: [
+      "Courses for Casablanca",
+      "Explore practical learning paths from Casablanca.",
+      "Availability NEEDS REVIEW",
+      "No enrollment claim yet.",
+      "data-casablanca-application",
+      "Preview-only: your information has not been sent or stored.",
+      "No recipient is connected.",
+      "does not guarantee admission, employment, income, a visa, a certificate",
+      "name=\"course\"",
+      "name=\"language\"",
+      "name=\"format\"",
+      "name=\"consent\"",
+    ],
+  },
   { path: "paths/technology/index.html", required: ["IT Development", "Digital presence and portals", "CRM and operations systems", "Automation and industry products", "One connected business flow", "A company-building partnership", "One partner that can keep building as your company grows.", "Technology", "Marketing", "Academy", "Logistics", "Live product", "Working prototype", "Build-ready capability", "Local preview", "Implemented capability", "Carrier and dispatcher workspace", "Multilingual website foundation", "Controlled intake and review", "WhatsApp", "Google Chat", "Our first public product", "Hermes IT Development", "Quality assurance", "AI assistants", "Operations AI Assistant", "SEO and Content AI Assistant", "Setup & training", "4-8 weeks", "A concrete first step", "Fitness and wellness", "Beauty and salon", "Logistics operations", "Professional services", "Discuss the system you want to build.", "Company Digital Operating System", "Built in stages", "Continuous Improvement Partnership", "Digital Presence System", "CRM and Operations Control", "AI Assistant and Workflow", "Connected Business Platform", "The capabilities behind a connected company system.", "Build your project brief", "Tell us what should work better next.", "Up to three projects", "What have you seen that feels right?", "Budget approach", "Where does the business operate", "Your project brief is ready."] },
   { path: "case/it-development/index.html", required: ["One digital front door for four businesses.", "Build your brief", "Start your project brief"] },
   { path: "privacy/index.html", required: ["Privacy notice", "preview mode"] },
@@ -202,9 +219,23 @@ for (const route of routes) {
   if (["ua/index.html", "ru/index.html", "es/index.html", "it/index.html", "fr/index.html"].includes(route.path)) validateStructuredData(routeHtml, route.path);
   if (route.path === "paths/logistics/index.html" && !routeHtml.includes("Wisconsin first")) throw new Error(`U.S. Logistics service-area signal missing in ${route.path}`);
   if (emailOnlyRoutes.includes(route.path) && !routeHtml.includes("Email coordination only")) throw new Error(`International email-only signal missing in ${route.path}`);
-  if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
+  const expectedRobots = route.path === "academy/casablanca-courses/index.html"
+    ? 'name="robots" content="noindex,nofollow"'
+    : 'name="robots" content="index,follow,max-image-preview:large"';
+  if (!routeHtml.includes(expectedRobots)) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
   if (route.path === "paths/technology/index.html" && /digital employee/i.test(routeHtml)) throw new Error("Legacy digital employee wording found on the IT page");
+}
+
+const casablancaPreviewHtml = await readFile(join(dist, "academy/casablanca-courses/index.html"), "utf8");
+if (casablancaPreviewHtml.includes('type="application/ld+json"')) {
+  throw new Error("Casablanca preview must not publish Course or FAQ schema before business facts are approved");
+}
+if (sitemap.includes("/academy/casablanca-courses/")) {
+  throw new Error("Casablanca preview must stay out of the sitemap before publication approval");
+}
+if (/<form[^>]+action=/i.test(casablancaPreviewHtml)) {
+  throw new Error("Casablanca preview form must not have a delivery endpoint");
 }
 
 const technologyHtml = await readFile(join(dist, "paths/technology/index.html"), "utf8");

@@ -1910,6 +1910,76 @@ h3 { font-size: 1.75rem; }
   .logistics-audience-grid > a { min-height: 230px; }
 }
 
+/* Academy Casablanca course-interest preview */
+.casablanca-course-page { min-height: 100vh; background: #f7f5f0; }
+.casablanca-hero { padding: clamp(8.5rem, 14vw, 11rem) 0 clamp(4rem, 8vw, 6.5rem); background: radial-gradient(circle at 82% 16%, #7a5b1f 0, #3d3150 34%, #11183f 72%); color: #fff; }
+.casablanca-hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); gap: clamp(2rem, 6vw, 5rem); align-items: end; }
+.casablanca-breadcrumbs { display: flex; flex-wrap: wrap; gap: .55rem; margin-bottom: 2.4rem; color: #ddd4bd; font-size: .78rem; }
+.casablanca-breadcrumbs a { color: #fff; }
+.casablanca-hero h1 { max-width: 940px; margin: .65rem 0 1.1rem; color: #fff; font-size: clamp(3rem, 7vw, 6rem); line-height: .94; }
+.casablanca-hero-copy { max-width: 760px; color: #e3ddcf; font-size: clamp(1rem, 2vw, 1.18rem); }
+.casablanca-hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.7rem; }
+.casablanca-hero-actions .button-ghost { border-color: rgba(255,255,255,.45); color: #fff; }
+.casablanca-review-card { padding: clamp(1.4rem, 3vw, 2rem); border: 1px solid rgba(255,255,255,.25); border-radius: 14px; background: rgba(10,15,48,.52); backdrop-filter: blur(12px); }
+.casablanca-review-card > svg { color: #f4cb6b; }
+.casablanca-review-card h2 { margin: .55rem 0 .75rem; color: #fff; }
+.casablanca-review-card p:last-child { margin: 0; color: #ddd8ca; }
+.casablanca-interest { background: #fff; }
+.casablanca-interest-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.casablanca-interest-grid article { display: flex; min-height: 285px; flex-direction: column; padding: 1.35rem; border: 1px solid #ddd7c9; border-radius: 10px; background: #faf8f3; }
+.casablanca-interest-grid article > span { color: #9a6c13; font: 750 .72rem/1 var(--font-mono); }
+.casablanca-interest-grid h3 { margin: 2rem 0 .7rem; color: var(--color-navy-900); }
+.casablanca-interest-grid p { color: var(--color-muted); }
+.casablanca-interest-grid strong { margin-top: auto; color: #7b5611; font-size: .74rem; }
+.casablanca-facts { background: #eee9df; }
+.casablanca-facts-grid, .casablanca-faq-grid { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); gap: clamp(2rem, 7vw, 7rem); align-items: start; }
+.casablanca-facts h2, .casablanca-faq h2, .casablanca-application h2 { margin-top: .5rem; color: var(--color-navy-900); }
+.casablanca-facts-grid > div > p:last-child, .casablanca-faq-grid > div > p:last-child, .casablanca-application-grid > div > p { color: var(--color-muted); }
+.casablanca-facts dl { display: grid; gap: .8rem; margin: 0; }
+.casablanca-facts dl > div { padding: 1rem 1.1rem; border: 1px solid #d8d0bf; border-radius: 8px; background: rgba(255,255,255,.74); }
+.casablanca-facts dt { display: flex; gap: .55rem; align-items: center; color: var(--color-navy-900); font-weight: 780; }
+.casablanca-facts dt svg { flex: 0 0 auto; color: #8a6114; }
+.casablanca-facts dt span { margin-left: auto; color: #8a6114; font: 750 .65rem/1 var(--font-mono); }
+.casablanca-facts dd { margin: .45rem 0 0 1.55rem; color: var(--color-muted); }
+.casablanca-process { background: #10173f; color: #fff; }
+.casablanca-process .section-heading h2 { color: #fff; }
+.casablanca-process-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0; padding: 0; background: rgba(255,255,255,.18); list-style: none; }
+.casablanca-process-grid li { padding: 1.4rem; background: #10173f; }
+.casablanca-process-grid span { color: #e0b64c; font: 750 .72rem/1 var(--font-mono); }
+.casablanca-process-grid h3 { margin: 2.2rem 0 .65rem; color: #fff; }
+.casablanca-process-grid p { margin: 0; color: #c9cee3; }
+.casablanca-application { background: #fff; }
+.casablanca-application-grid { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); gap: clamp(2rem, 7vw, 7rem); align-items: start; }
+.casablanca-privacy-list { display: grid; gap: .65rem; margin: 1.4rem 0; padding: 0; list-style: none; }
+.casablanca-privacy-list li { padding-left: 1.35rem; position: relative; color: var(--color-muted); }
+.casablanca-privacy-list li::before { position: absolute; left: 0; content: "✓"; color: #7250dd; font-weight: 800; }
+.casablanca-support-links { display: flex; flex-wrap: wrap; gap: .65rem 1rem; }
+.casablanca-support-links a { color: #4f36b4; font-weight: 760; text-decoration: underline; text-underline-offset: 3px; }
+.casablanca-form .field-row > label { align-content: start; }
+.casablanca-form .field-row > div { display: grid; gap: .45rem; }
+.casablanca-form small { color: var(--color-muted); font-size: .75rem; line-height: 1.4; }
+.casablanca-form label > span { color: var(--color-muted); font-weight: 550; }
+.casablanca-form-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+.casablanca-form-actions .button-ghost { border: 1px solid #c9c8d7; color: var(--color-navy-900); }
+.casablanca-application-result { padding: 1rem; border: 1px solid #cec5e5; border-radius: 8px; background: #fff; }
+.casablanca-application-result pre { overflow: auto; margin: .7rem 0; white-space: pre-wrap; color: var(--color-navy-900); font: 500 .78rem/1.65 var(--font-mono); }
+.casablanca-application-result p:last-child { margin: 0; color: var(--color-muted); font-size: .8rem; }
+.casablanca-faq { background: #f7f5f0; }
+.casablanca-faq .faq-list details { background: #fff; }
+
+@media (max-width: 1000px) {
+  .casablanca-interest-grid, .casablanca-process-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 820px) {
+  .casablanca-hero-grid, .casablanca-facts-grid, .casablanca-application-grid, .casablanca-faq-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .casablanca-interest-grid, .casablanca-process-grid { grid-template-columns: 1fr; }
+  .casablanca-hero-actions .button, .casablanca-form-actions .button { width: 100%; justify-content: center; }
+  .casablanca-facts dt { align-items: flex-start; flex-wrap: wrap; }
+  .casablanca-facts dt span { width: 100%; margin: .35rem 0 0 1.55rem; }
+}
+
 /* Appleton vehicle transport SEO pilot */
 .appleton-service-page { min-height: 100vh; background: #f4f6fb; }
 .appleton-hero { padding: clamp(8.5rem, 14vw, 11rem) 0 clamp(4rem, 8vw, 6.5rem); overflow: hidden; background: radial-gradient(circle at 85% 18%, #3659bc 0, #132865 34%, #07113c 72%); color: #fff; }
