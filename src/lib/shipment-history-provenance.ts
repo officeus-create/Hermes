@@ -4,11 +4,15 @@ import {
   type ShipmentHistoryPreviewRow,
 } from "./shipment-history-preview";
 
+function canonicalProvenanceId(sourceRecordId: string): string {
+  return sourceRecordId.trim().toLowerCase();
+}
+
 function withRepeatedSourceIdQuarantine(
   row: ShipmentHistoryPreviewRow,
   repeatedSourceIds: Set<string>,
 ): ShipmentHistoryPreviewRow {
-  if (!row.sourceRecordId || !repeatedSourceIds.has(row.sourceRecordId)) return row;
+  if (!row.sourceRecordId || !repeatedSourceIds.has(canonicalProvenanceId(row.sourceRecordId))) return row;
 
   return {
     ...row,
@@ -20,8 +24,10 @@ function withRepeatedSourceIdQuarantine(
 /**
  * Preview-only guard for repeated provenance identifiers.
  *
- * Raw records are never removed or merged. Every row sharing a repeated
- * sourceRecordId remains visible and is routed to manual review.
+ * Provenance identifiers are compared case-insensitively after trimming so
+ * formatting differences cannot bypass duplicate review. Raw records are
+ * never removed or merged. Every row sharing a repeated sourceRecordId remains
+ * visible and is routed to manual review.
  */
 export function previewShipmentHistoryCsvWithProvenanceGuard(
   csv: string,
@@ -32,7 +38,8 @@ export function previewShipmentHistoryCsvWithProvenanceGuard(
 
   for (const row of preview.rows) {
     if (!row.sourceRecordId) continue;
-    sourceIdCounts.set(row.sourceRecordId, (sourceIdCounts.get(row.sourceRecordId) ?? 0) + 1);
+    const sourceRecordId = canonicalProvenanceId(row.sourceRecordId);
+    sourceIdCounts.set(sourceRecordId, (sourceIdCounts.get(sourceRecordId) ?? 0) + 1);
   }
 
   const repeatedSourceIds = new Set(
