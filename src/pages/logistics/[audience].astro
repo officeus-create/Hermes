@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Check } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CareerStatusPanel from "../../components/CareerStatusPanel.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import { logisticsAudiences } from "../../data/logistics-audiences";
@@ -12,13 +13,13 @@ export function getStaticPaths() {
 const { audience } = Astro.props;
 const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toString();
 const schema = {
-"@context": "https://schema.org",
-"@type": "BreadcrumbList",
-itemListElement: [
-{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-{ "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
-{ "@type": "ListItem", position: 3, name: audience.label, item: canonicalUrl },
-],
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+    { "@type": "ListItem", position: 3, name: audience.label, item: canonicalUrl },
+  ],
 };
 ---
 
@@ -60,6 +61,8 @@ itemListElement: [
           </ol>
         </div>
       </section>
+
+      {audience.slug === "careers" && <CareerStatusPanel />}
     </main>
     <SiteFooter />
   </div>
