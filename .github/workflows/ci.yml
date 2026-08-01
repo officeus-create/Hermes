@@ -7,62 +7,14 @@ on:
   pull_request:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository branch
+      - name: Check out repository
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-
-      - name: Normalize route estimate integration
-        if: github.event_name == 'pull_request' && github.head_ref == 'feature/route-estimate-boundary'
-        run: |
-          node --input-type=module <<'NODE'
-          import { readFileSync, writeFileSync } from "node:fs";
-
-          const path = "src/pages/load-board.astro";
-          const source = readFileSync(path, "utf8");
-          const importLine = 'import RouteEstimatePanel from "../components/RouteEstimatePanel.astro";';
-          const modeLine = 'const routeEstimateMode = import.meta.env.PUBLIC_ROUTE_ESTIMATE_MODE === "live" ? "live" : "preview";';
-          const endpointLine = 'const routeEstimateEndpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-estimate";';
-          const panelMarkup = '<RouteEstimatePanel mode={routeEstimateMode} endpoint={routeEstimateEndpoint} />';
-
-          const seen = new Set();
-          const uniqueOnce = new Set([importLine, modeLine, endpointLine]);
-          const lines = source.split("\n").filter((line) => {
-            if (!uniqueOnce.has(line)) return true;
-            if (seen.has(line)) return false;
-            seen.add(line);
-            return true;
-          });
-          const normalized = lines.join("\n");
-
-          for (const required of uniqueOnce) {
-            const count = normalized.split(required).length - 1;
-            if (count !== 1) throw new Error(`Expected exactly one ${required}, found ${count}`);
-          }
-          const panelCount = normalized.split(panelMarkup).length - 1;
-          if (panelCount !== 1) throw new Error(`Expected exactly one route estimate panel, found ${panelCount}`);
-
-          writeFileSync(path, normalized);
-          NODE
-
-      - name: Commit normalization
-        if: github.event_name == 'pull_request' && github.head_ref == 'feature/route-estimate-boundary'
-        run: |
-          if git diff --quiet -- src/pages/load-board.astro; then
-            echo "Route estimate integration is already normalized."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src/pages/load-board.astro
-            git commit -m "Normalize route estimate integration [skip ci]"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
