@@ -54,26 +54,8 @@ jobs:
           page = replaceOnce(
             page,
             `            <div class="field-row">
-              <label>Pickup city, state or ZIP *
-                <input name="pickup_location" maxlength="180" required />
-              </label>
-              <label>Delivery city, state or ZIP *
-                <input name="delivery_location" maxlength="180" required />
-              </label>
-            </div>
-
-            <div class="field-row">
               <label>Ready date *`,
-            `            <div class="field-row">
-              <label>Pickup city, state or ZIP *
-                <input name="pickup_location" maxlength="180" required />
-              </label>
-              <label>Delivery city, state or ZIP *
-                <input name="delivery_location" maxlength="180" required />
-              </label>
-            </div>
-
-            <RouteEstimatePanel mode={routeEstimateMode} endpoint={routeEstimateEndpoint} />
+            `            <RouteEstimatePanel mode={routeEstimateMode} endpoint={routeEstimateEndpoint} />
 
             <div class="field-row">
               <label>Ready date *`,
