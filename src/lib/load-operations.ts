@@ -1,5 +1,5 @@
 export type OperationsRole = "dispatcher" | "carrier";
-export type RouteProofStatus = "observed" | "completed" | "verified" | "published";
+export type RouteProofStatus = "observed" | "booked" | "completed" | "verified" | "published";
 export type OfferFreshness = "fresh" | "expired";
 
 export type ShipmentHistoryRecord = {
@@ -152,7 +152,7 @@ function nonNegativeNumber(row: Record<string, string>, field: string, nullable 
 }
 
 function proofStatus(value: string): RouteProofStatus {
-  if (value === "observed" || value === "completed" || value === "verified" || value === "published") return value;
+  if (value === "observed" || value === "booked" || value === "completed" || value === "verified" || value === "published") return value;
   throw new Error(`Invalid proof_status: ${value}`);
 }
 
