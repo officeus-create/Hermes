@@ -10,11 +10,6 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "cf:whoami": "wrangler whoami",
-    "cf:types": "wrangler types ./src/worker-configuration.d.ts --include-runtime=false",
-    "cf:validate": "npm run build && wrangler pages functions build functions --outdir .wrangler/functions --project-directory . --build-output-directory dist",
-    "cf:dev": "npm run build && wrangler pages dev dist",
-    "cf:deploy:staging": "npm run build && wrangler pages deploy dist --project-name hermes --branch staging",
     "sync:product-demos": "node scripts/sync-product-demos.mjs",
     "check": "astro check",
     "test": "node scripts/validate-build.mjs && node --experimental-strip-types scripts/logistics-locations.test.mjs && node scripts/frozen-anchor-regression.test.mjs && node scripts/academy-public-contract.test.mjs && node scripts/seo-growth-audit.test.mjs && node scripts/seo-cluster-regression.test.mjs && node scripts/hreflang-audit.test.mjs && node scripts/localization-content-audit.test.mjs && node scripts/internal-link-audit.test.mjs && node scripts/entity-schema-audit.test.mjs && node scripts/performance-budget.test.mjs && node scripts/case-studies.test.mjs && node scripts/logistics-audience-faq.test.mjs && node scripts/path-detail-faq-schema.test.mjs && node scripts/commercial-logistics-pages.test.mjs && node --experimental-strip-types scripts/lane-opportunity.test.mjs && node --experimental-strip-types scripts/carrier-research-registry.test.mjs && node --experimental-strip-types scripts/carrier-language-research.test.mjs && node --experimental-strip-types scripts/carrier-content-operations.test.mjs && node --experimental-strip-types scripts/vehicle-transport-demand-registry.test.mjs && node --experimental-strip-types scripts/transport-demand-publication.test.mjs && node --experimental-strip-types scripts/website-growth-research.test.mjs && node scripts/digital-service-pages.test.mjs && node --experimental-strip-types scripts/digital-niche-pages.test.mjs && node --experimental-strip-types scripts/path-engine.test.mjs && node --experimental-strip-types scripts/p0-data-layer.test.mjs && node --experimental-strip-types scripts/contact-handoff.test.mjs && node --experimental-strip-types scripts/load-board.test.mjs && node --experimental-strip-types scripts/load-operations.test.mjs && node --experimental-strip-types scripts/load-import-preview.test.mjs && node --experimental-strip-types scripts/load-board-adapter-registry.test.mjs && node --experimental-strip-types scripts/sanitized-csv-adapter.test.mjs && node scripts/lane-intelligence-preview.test.mjs && node --experimental-strip-types scripts/lane-intelligence-access.test.mjs && node --experimental-strip-types scripts/sales-lead-receiver.test.mjs",
@@ -30,7 +25,6 @@
     "@astrojs/check": "^0.9.6",
     "@playwright/test": "^1.61.1",
     "@types/node": "^26.1.1",
-    "typescript": "^6.0.3",
-    "wrangler": "^4.115.0"
+    "typescript": "^6.0.3"
   }
 }
