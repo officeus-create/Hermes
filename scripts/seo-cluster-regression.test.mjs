@@ -111,7 +111,7 @@ for (const sitemapFile of sitemapFiles) {
 }
 
 for (const [url, owners] of urlOwners) {
-  if (owners.length > 1) warnings.push(`${url}: appears in multiple sitemaps (${owners.join(", ")})`);
+  if (owners.length > 1) errors.push(`${url}: appears in multiple sitemaps (${owners.join(", ")})`);
 }
 
 const titleOwners = new Map();

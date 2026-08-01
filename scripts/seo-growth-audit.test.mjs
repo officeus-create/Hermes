@@ -85,30 +85,51 @@ const walkSchema = (value, visit, path = "schema") => {
 
 const allHtmlFiles = await collectHtmlFiles(dist);
 const htmlByPath = new Map(await Promise.all(allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")])));
-const sitemapXml = await readFile(join(dist, "sitemap.xml"), "utf8");
 const robotsTxt = await readFile(join(dist, "robots.txt"), "utf8");
-const sitemapUrls = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/gi)].map((match) => decode(match[1]));
-const sitemapSet = new Set(sitemapUrls);
+const distEntries = await readdir(dist, { withFileTypes: true });
+const sitemapFiles = distEntries
+  .filter((entry) => entry.isFile() && /^sitemap(?:-[a-z0-9-]+)?\.xml$/i.test(entry.name))
+  .map((entry) => entry.name)
+  .sort();
 
-if (!robotsTxt.includes(`Sitemap: ${siteOrigin}/sitemap.xml`)) {
-  addError("/robots.txt", "canonical sitemap declaration is missing");
+if (!sitemapFiles.length) addError("/robots.txt", "no sitemap files were generated");
+
+const sitemapOwners = new Map();
+for (const sitemapFile of sitemapFiles) {
+  const declaration = `Sitemap: ${siteOrigin}/${sitemapFile}`;
+  if (!robotsTxt.includes(declaration)) addError("/robots.txt", `declaration is missing for ${sitemapFile}`);
+
+  const xml = await readFile(join(dist, sitemapFile), "utf8");
+  const urls = [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => decode(match[1]));
+  const localSet = new Set(urls);
+  if (urls.length !== localSet.size) addError(`/${sitemapFile}`, "duplicate <loc> entries found inside the sitemap");
+
+  for (const url of urls) {
+    const owners = sitemapOwners.get(url) ?? [];
+    owners.push(sitemapFile);
+    sitemapOwners.set(url, owners);
+  }
 }
-if (sitemapUrls.length !== sitemapSet.size) {
-  addError("/sitemap.xml", "duplicate <loc> entries found");
+
+for (const [url, owners] of sitemapOwners) {
+  if (owners.length > 1) addError("/sitemaps", `${url} appears in multiple sitemaps (${owners.join(", ")})`);
 }
+
+const sitemapUrls = [...sitemapOwners.keys()];
+const sitemapSet = new Set(sitemapUrls);
 
 for (const url of sitemapUrls) {
   let parsed;
   try {
     parsed = new URL(url);
   } catch {
-    addError("/sitemap.xml", `invalid absolute URL: ${url}`);
+    addError("/sitemaps", `invalid absolute URL: ${url}`);
     continue;
   }
-  if (parsed.protocol !== "https:" || parsed.hostname !== canonicalHost) addError("/sitemap.xml", `non-canonical host or protocol: ${url}`);
-  if (parsed.search || parsed.hash) addError("/sitemap.xml", `query string or fragment is not allowed: ${url}`);
+  if (parsed.protocol !== "https:" || parsed.hostname !== canonicalHost) addError("/sitemaps", `non-canonical host or protocol: ${url}`);
+  if (parsed.search || parsed.hash) addError("/sitemaps", `query string or fragment is not allowed: ${url}`);
   const htmlPath = htmlPathFromUrl(url);
-  if (!htmlByPath.has(htmlPath)) addError("/sitemap.xml", `URL has no generated HTML page: ${url}`);
+  if (!htmlByPath.has(htmlPath)) addError("/sitemaps", `URL has no generated HTML page: ${url}`);
 }
 
 const titleOwners = new Map();
@@ -164,7 +185,7 @@ for (const [path, html] of htmlByPath) {
     const expected = new URL(route, siteOrigin).href;
     if (canonical.href !== expected) addError(route, `self-canonical mismatch; expected ${expected}, received ${canonical.href}`);
     canonicalOwners.set(canonical.href, [...(canonicalOwners.get(canonical.href) ?? []), route]);
-    if (!sitemapSet.has(canonical.href)) addWarning(route, `indexable canonical is not listed in sitemap: ${canonical.href}`);
+    if (!sitemapSet.has(canonical.href)) addWarning(route, `indexable canonical is not listed in any declared sitemap: ${canonical.href}`);
   }
 
   const ogTitles = metaByProperty(html, "og:title");
@@ -199,7 +220,7 @@ for (const [path, html] of htmlByPath) {
   }
 
   if (route.startsWith("/demos/") && !robotsContent.includes("noindex")) {
-    addWarning(route, "demo/prototype page is indexable but absent from the primary commercial sitemap policy");
+    addWarning(route, "demo/prototype page is indexable but absent from the commercial sitemap policy");
   }
 }
 
@@ -232,4 +253,4 @@ if (errors.length) {
   throw new Error(`SEO growth audit failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log(`SEO growth audit passed: ${indexableRoutes.length} indexable pages, ${sitemapUrls.length} sitemap URLs, ${warnings.length} review warning(s).`);
+console.log(`SEO growth audit passed: ${indexableRoutes.length} indexable pages, ${sitemapUrls.length} URLs across ${sitemapFiles.length} declared sitemap file(s), ${warnings.length} review warning(s).`);
