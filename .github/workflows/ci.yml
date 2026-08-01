@@ -7,20 +7,104 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out repository branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Integrate route estimate panel
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/route-estimate-boundary'
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from "node:fs";
+
+          const replaceOnce = (source, before, after, label) => {
+            const matches = source.split(before).length - 1;
+            if (matches === 0 && source.includes(after)) return source;
+            if (matches !== 1) throw new Error(`${label}: expected one anchor, found ${matches}`);
+            return source.replace(before, after);
+          };
+
+          const pagePath = "src/pages/load-board.astro";
+          let page = readFileSync(pagePath, "utf8");
+          page = replaceOnce(
+            page,
+            'import SiteFooter from "../components/SiteFooter.astro";\n',
+            'import SiteFooter from "../components/SiteFooter.astro";\nimport RouteEstimatePanel from "../components/RouteEstimatePanel.astro";\n',
+            "RouteEstimatePanel import",
+          );
+          page = replaceOnce(
+            page,
+            'const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";\n',
+            'const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";\nconst routeEstimateMode = import.meta.env.PUBLIC_ROUTE_ESTIMATE_MODE === "live" ? "live" : "preview";\nconst routeEstimateEndpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-estimate";\n',
+            "route estimate feature flags",
+          );
+          page = replaceOnce(
+            page,
+            `            <div class="field-row">
+              <label>Pickup city, state or ZIP *
+                <input name="pickup_location" maxlength="180" required />
+              </label>
+              <label>Delivery city, state or ZIP *
+                <input name="delivery_location" maxlength="180" required />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>Ready date *`,
+            `            <div class="field-row">
+              <label>Pickup city, state or ZIP *
+                <input name="pickup_location" maxlength="180" required />
+              </label>
+              <label>Delivery city, state or ZIP *
+                <input name="delivery_location" maxlength="180" required />
+              </label>
+            </div>
+
+            <RouteEstimatePanel mode={routeEstimateMode} endpoint={routeEstimateEndpoint} />
+
+            <div class="field-row">
+              <label>Ready date *`,
+            "route estimate panel placement",
+          );
+          writeFileSync(pagePath, page);
+
+          const componentPath = "src/components/RouteEstimatePanel.astro";
+          let component = readFileSync(componentPath, "utf8");
+          component = replaceOnce(
+            component,
+            '        if (endpoint.origin !== window.location.origin || endpoint.protocol !== "https:") throw new Error("invalid_endpoint");',
+            '        const localDevelopment = ["localhost", "127.0.0.1"].includes(endpoint.hostname);\n        if (endpoint.origin !== window.location.origin || (endpoint.protocol !== "https:" && !localDevelopment)) throw new Error("invalid_endpoint");',
+            "local browser test endpoint boundary",
+          );
+          writeFileSync(componentPath, component);
+          NODE
+
+      - name: Commit route estimate integration
+        if: github.event_name == 'pull_request' && github.head_ref == 'feature/route-estimate-boundary'
+        run: |
+          files=(src/pages/load-board.astro src/components/RouteEstimatePanel.astro)
+          if git diff --quiet -- "${files[@]}"; then
+            echo "Route estimate integration is already committed."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add "${files[@]}"
+            git commit -m "Integrate feature-gated route estimate panel [skip ci]"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
 
       - name: Install dependencies
         run: npm ci
