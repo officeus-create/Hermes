@@ -1,309 +1,237 @@
 ---
-import { ArrowRight, BriefcaseBusiness, ChartNoAxesCombined, CircleQuestionMark, Route } from "@lucide/astro";
-import { site } from "../data/site";
+import { BookOpen, Bot, Check, ChevronRight, GraduationCap, ShieldCheck } from "@lucide/astro";
+import { academyEnrollmentModels, academyPublicTracks } from "../data/academy-public";
 
-const academy = site.paths.find((p) => p.id === "academy")!;
-const tracks = [
-  {
-    id: "logistics",
-    label: "Logistics",
-    icon: Route,
-    problem:
-      "Freight work feels like constant firefighting: unclear messages, weak document rhythm, and no standard load lifecycle.",
-    title: "Learn how freight work moves from conversation to completed load.",
-    body: academy.offerings[0].body,
-    practice: ["Call and message review", "Load lifecycle exercises", "Document and exception scenarios"],
-  },
-  {
-    id: "marketing",
-    label: "Marketing",
-    icon: ChartNoAxesCombined,
-    problem: "Attention does not convert because content, campaigns, and sales follow-up are disconnected.",
-    title: "Connect positioning, content, campaigns, and sales follow-up.",
-    body: academy.offerings[1].body,
-    practice: ["Offer and audience diagnosis", "Content and campaign briefs", "Lead journey and reporting exercises"],
-  },
-  {
-    id: "coo",
-    label: "COO / Operational Director",
-    icon: BriefcaseBusiness,
-    problem: "The company runs on heroics instead of departments, KPI, process control, and decision rhythm.",
-    title: "See the company as one operating system, not isolated departments.",
-    body: academy.offerings[2].body,
-    practice: ["Department and responsibility maps", "KPI and process diagnosis", "Case decisions and operating reviews"],
-  },
+const progression = [
+  { level: "Student", focus: "Language and context", responsibility: "Understand the role, terminology, public boundaries, and how work moves through the selected U.S.-market workflow." },
+  { level: "Trainee", focus: "Guided execution", responsibility: "Complete defined logistics or marketing exercises with examples, review, and correction." },
+  { level: "Specialist", focus: "Reliable ownership", responsibility: "Perform a repeatable area of work, document decisions, and communicate status clearly." },
+  { level: "Manager", focus: "Team coordination", responsibility: "Control priorities, quality, handoffs, and performance inside a defined logistics or marketing workflow." },
+  { level: "Director", focus: "Operating system", responsibility: "Connect process, KPI, resources, quality controls, and execution rhythm for the selected professional path." },
+  { level: "Executive", focus: "Business decisions", responsibility: "Use systems thinking and reviewed evidence to guide the wider operating or growth direction." },
 ];
-const layers = academy.progression ?? [];
-const method = academy.process;
+
+const method = [
+  { title: "Awareness", body: "Understand the role, U.S. market context, terminology, responsibilities, public boundaries, and standard of professional work." },
+  { title: "Understanding", body: "Work through systems, examples, decisions, reviews, and the connections between communication, execution, measurement, and quality." },
+  { title: "Application", body: "Practice defined tasks, receive correction, and build evidence of readiness without assuming employment, income, clients, certification, or promotion." },
+];
+
+const academyFaq = [
+  { question: "Which programs are publicly presented?", answer: "Two programs: U.S. Logistics Operations and Marketing. Leadership and technology topics may support exercises, but they are not separate public Academy programs on this page." },
+  { question: "Are paid cohorts and free practice the same offer?", answer: "No. A paid cohort requires an approved public offer with scope, dates, price, payment, refund, capacity, and enrollment terms. Free practice is a separate application and eligibility process with its own participation rules." },
+  { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment." },
+  { question: "Is employment or income guaranteed?", answer: "No. Training and practice can build capability and evidence of readiness, but employment, income, clients, certification, promotion, access duration, and future paid work are not guaranteed." },
+];
 ---
 
-<section class="academy-screens" data-academy-screens data-analytics-scope="academy" aria-label="Academy guided path">
-  <div class="academy-screen is-active" data-screen="0" id="academy-screen-0">
-    <div class="shell academy-screen-inner">
-      <p class="eyebrow">Hermes Business Academy · LearnSkill</p>
-      <h2>Skills only matter if they connect to real operating work.</h2>
-      <p class="academy-primary">Primary decision: which professional track matches the problem you need to solve.</p>
-      <ul class="academy-trust-facts" aria-label="Verified program facts">
-        <li><strong>3</strong> professional tracks (Logistics, Marketing, COO / Operational Director)</li>
-        <li><strong>6</strong> capability layers from Student to Executive</li>
-        <li>Method: Awareness → Understanding → Application</li>
-        <li>We do not guarantee employment (stated publicly)</li>
-      </ul>
-      <button type="button" class="button button-primary" data-academy-next data-cta="academy_start">
-        Choose a track <ArrowRight size={18} aria-hidden="true" />
-      </button>
-    </div>
-  </div>
-
-  <div class="academy-screen" data-screen="1" id="academy-screen-1" hidden>
-    <div class="shell academy-screen-inner">
-      <p class="eyebrow">Primary · Track selection</p>
-      <h2>Three programs. Different responsibilities.</h2>
-      <p>Start from the problem, not the brochure.</p>
-      <div class="academy-track-grid" role="tablist" aria-label="Academy tracks">
-        {
-          tracks.map((track) => {
-            const Icon = track.icon;
-            return (
-              <button type="button" class="academy-track-card" role="tab" data-academy-track={track.id}>
-                <Icon size={22} aria-hidden="true" />
-                <strong>{track.label}</strong>
-                <span class="problem-lead">Problem: {track.problem}</span>
-              </button>
-            );
-          })
-        }
-        <button type="button" class="academy-track-card academy-track-compare" role="tab" data-academy-track="compare">
-          <CircleQuestionMark size={22} aria-hidden="true" />
-          <strong>Not sure</strong>
-          <span class="problem-lead">Compare all three tracks, then talk to the team.</span>
-        </button>
-      </div>
-      <div class="academy-screen-nav">
-        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
-        <button type="button" class="button button-primary" data-academy-next data-cta="academy_next_track">
-          Next <ArrowRight size={18} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="academy-screen" data-screen="2" id="academy-screen-2" hidden>
-    <div class="shell academy-screen-inner">
-      <p class="eyebrow">Primary · Selected track</p>
-      {
-        tracks.map((track, index) => (
-          <article class="academy-track-detail" data-track-detail={track.id} hidden={index !== 0}>
-            <p class="problem-banner">Problem: {track.problem}</p>
-            <h2>{track.title}</h2>
-            <p>{track.body}</p>
-            <details class="academy-optional" data-case-id={`academy-${track.id}-practice`}>
-              <summary>Practice environment</summary>
-              <ul>
-                {track.practice.map((item) => (
-                  <li>{item}</li>
-                ))}
-              </ul>
-            </details>
-          </article>
-        ))
-      }
-      <article class="academy-track-detail" data-track-detail="compare" hidden>
-        <h2>Three programs. Different responsibilities.</h2>
-        <p>
-          Logistics builds operating execution. Marketing builds demand systems. COO / Operational Director builds
-          department and company control. Program dates, scope, and prices are published before enrollment; this site
-          does not accept payment.
-        </p>
-      </article>
-      <div class="academy-screen-nav">
-        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
-        <button type="button" class="button button-primary" data-academy-next data-cta="academy_next_layers">
-          See the 6 layers <ArrowRight size={18} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="academy-screen" data-screen="3" id="academy-screen-3" hidden>
-    <div class="shell academy-screen-inner">
-      <p class="eyebrow">Operating Career System</p>
-      <h2>Responsibility grows with capability.</h2>
-      <p>This is a learning progression model, not an employment or promotion guarantee.</p>
-      <ol class="academy-layer-list">
-        {
-          layers.map((item, index) => (
-            <li>
-              <details data-case-id={`academy-layer-${item.level}`}>
-                <summary>
-                  <span>0{index + 1}</span>
-                  <strong>{item.level}</strong>
-                  <em>{item.focus}</em>
-                </summary>
-                <p>{item.responsibility}</p>
-              </details>
-            </li>
-          ))
-        }
-      </ol>
-      <div class="academy-screen-nav">
-        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
-        <button type="button" class="button button-primary" data-academy-next data-cta="academy_next_method">
-          Method &amp; FAQ <ArrowRight size={18} aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <div class="academy-screen" data-screen="4" id="academy-screen-4" hidden>
-    <div class="shell academy-screen-inner">
-      <p class="eyebrow">Supporting · Method</p>
-      <h2>How learning moves into practice.</h2>
-      <ol class="academy-method">
-        {
-          method.map((step, index) => (
-            <li>
-              <span>0{index + 1}</span>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </li>
-          ))
-        }
-      </ol>
-      <details class="academy-optional">
-        <summary>FAQ (optional)</summary>
-        <div class="faq-list">
-          {
-            academy.faq?.map((item) => (
-              <details>
-                <summary>{item.question}</summary>
-                <p>{item.answer}</p>
-              </details>
-            ))
-          }
+<section class="academy-flow" data-academy-flow data-active-screen="0" aria-labelledby="academy-flow-title">
+  <div class="shell academy-flow-shell">
+    <div class="academy-flow-progress" aria-label="Academy pathway progress">
+      {["Start", "Programs", "Program", "Growth", "Method"].map((label, index) => (
+        <div class="academy-progress-step" data-academy-progress={index} data-active={index === 0 ? "true" : "false"}>
+          <span>0{index + 1}</span><p>{label}</p>
         </div>
-      </details>
+      ))}
+    </div>
 
-      <section class="academy-ai-lab" aria-labelledby="academy-ai-lab-title">
+    <div class="academy-screen" data-academy-screen="0" data-active="true">
+      <div class="academy-opening">
+        <p class="eyebrow">Hermes Academy · U.S.-market programs</p>
+        <h2 id="academy-flow-title">Choose one practical professional path.</h2>
+        <p>Start with U.S. Logistics Operations or Marketing. Paid cohorts and free practice opportunities are separate models, and neither implies employment or income.</p>
+        <div class="academy-opening-actions">
+          <button class="button button-primary" type="button" data-academy-next="1">Choose a track <ChevronRight size={18} aria-hidden="true" /></button>
+          <a class="button button-ghost" href="#contact">Ask a question</a>
+        </div>
+        <div class="academy-trust-facts" aria-label="Academy facts">
+          <div><strong>2</strong><span>public programs</span></div>
+          <div><strong>3</strong><span>learning stages</span></div>
+          <div><strong>6</strong><span>capability layers</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-screen" data-academy-screen="1" data-active="false" hidden>
+      <div class="academy-screen-heading">
+        <p class="eyebrow">Two public programs</p>
+        <h2>Choose the work you want to understand and practice.</h2>
+        <p>Each path uses its own terminology, exercises, review criteria, and public boundaries.</p>
+      </div>
+      <div class="academy-track-selector" role="tablist" aria-label="Academy programs">
+        {academyPublicTracks.map((track, index) => (
+          <button type="button" role="tab" aria-selected={index === 0 ? "true" : "false"} data-academy-track={track.id} data-active={index === 0 ? "true" : "false"}>
+            <span>0{index + 1}</span>
+            <div><strong>{track.label}</strong><p>{track.problem}</p></div>
+            <ChevronRight size={19} aria-hidden="true" />
+          </button>
+        ))}
+      </div>
+      <div class="academy-screen-actions">
+        <button class="academy-text-button" type="button" data-academy-back="0">Back</button>
+        <button class="button button-primary" type="button" data-academy-next="2">Next: <span data-academy-selected-label>U.S. Logistics Operations</span><ChevronRight size={18} aria-hidden="true" /></button>
+      </div>
+    </div>
+
+    <div class="academy-screen" data-academy-screen="2" data-active="false" hidden>
+      <div class="academy-track-result">
         <div>
-          <p class="eyebrow">New practical lab · Concept preview</p>
-          <h3 id="academy-ai-lab-title">Learn AI automation by building one useful assistant.</h3>
-          <p>
-            Begin with a real business routine, define what the assistant may do, build a focused prototype, and test
-            it before any production connection. The example project is a Fitness AI Telegram Assistant.
-          </p>
+          <p class="eyebrow" data-academy-result-eyebrow>U.S. Logistics Operations</p>
+          <h2 data-academy-result-title>{academyPublicTracks[0].title}</h2>
+          <p data-academy-result-body>{academyPublicTracks[0].body}</p>
         </div>
-        <ol class="academy-ai-steps" aria-label="AI automation learning path">
-          <li><span>01</span><strong>Choose a process</strong><small>Identify one repeated task worth improving.</small></li>
-          <li><span>02</span><strong>Define the assistant</strong><small>Set users, knowledge, rules, and boundaries.</small></li>
-          <li><span>03</span><strong>Build a prototype</strong><small>Create a safe Telegram conversation flow.</small></li>
-          <li><span>04</span><strong>Test scenarios</strong><small>Review answers, handoffs, and failure cases.</small></li>
-          <li><span>05</span><strong>Plan improvement</strong><small>Discuss scope and budget only after the opportunity is clear.</small></li>
-        </ol>
-        <div class="academy-ai-example">
-          <p class="eyebrow">Example project</p>
-          <h4>Fitness AI Telegram Assistant</h4>
-          <p>Practice structured member intake, approved answers, reminder drafts, and escalation to a human coach.</p>
-          <p><strong>Learning preview only:</strong> no live bot, member data, messages, enrollment, or payment is created on this page.</p>
+        <div class="academy-practice-card">
+          <BookOpen size={24} aria-hidden="true" />
+          <p>Practice can include</p>
+          <ul data-academy-practice-list>
+            {academyPublicTracks[0].practice.map((item) => <li><Check size={16} aria-hidden="true" />{item}</li>)}
+          </ul>
         </div>
-        <a class="button button-primary" href="mailto:officeus@hermeslogisticsus.com?subject=AI%20Automation%20Academy%20Path" data-cta="academy_ai_automation">
-          Ask about learning AI automation <ArrowRight size={18} aria-hidden="true" />
-        </a>
-      </section>
+      </div>
+      <div class="academy-screen-actions">
+        <button class="academy-text-button" type="button" data-academy-back="1">Change program</button>
+        <button class="button button-primary" type="button" data-academy-next="3">See the 6 layers <ChevronRight size={18} aria-hidden="true" /></button>
+      </div>
+    </div>
 
-      <div class="academy-community" aria-labelledby="academy-community-title">
-        <p class="eyebrow">Community</p>
-        <h3 id="academy-community-title">Telegram learning groups</h3>
-        <p>Join the public group that matches your track. Groups open in a new tab.</p>
-        <ul class="academy-community-list">
-          {
-            site.telegramGroups.map((group) => (
-              <li>
-                <a href={group.href} target="_blank" rel="noopener noreferrer" data-cta={`academy_tg_${group.tracks.join("_")}`}>
-                  {group.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-        <p class="academy-community-location">Location: {site.location}</p>
+    <div class="academy-screen" data-academy-screen="3" data-active="false" hidden>
+      <div class="academy-screen-heading">
+        <p class="eyebrow">Growth framework</p>
+        <h2>Progress from context to reviewed responsibility.</h2>
+        <p>These layers describe capability development. They do not guarantee a job title, promotion, client, income, certification, or access to a company role.</p>
+      </div>
+      <div class="academy-progression-list">
+        {progression.map((item, index) => (
+          <article>
+            <span>0{index + 1}</span>
+            <div><p>{item.level}</p><h3>{item.focus}</h3><div>{item.responsibility}</div></div>
+          </article>
+        ))}
+      </div>
+      <div class="academy-screen-actions">
+        <button class="academy-text-button" type="button" data-academy-back="2">Back to program</button>
+        <button class="button button-primary" type="button" data-academy-next="4">Method & FAQ <ChevronRight size={18} aria-hidden="true" /></button>
+      </div>
+    </div>
+
+    <div class="academy-screen" data-academy-screen="4" data-active="false" hidden>
+      <div class="academy-method-heading">
+        <div>
+          <p class="eyebrow">How learning works</p>
+          <h2>Awareness. Understanding. Application.</h2>
+        </div>
+        <p>Each program moves from language and context into reviewed exercises. The exact cohort or practice scope is confirmed before participation.</p>
+      </div>
+      <div class="academy-method-grid">
+        {method.map((item, index) => (
+          <article><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.body}</p></article>
+        ))}
       </div>
 
-      <a class="button button-primary" href="#contact" data-cta="academy_contact_intent">
-        Ask about the right Academy path <ArrowRight size={18} aria-hidden="true" />
-      </a>
-      <a class="button button-ghost" href="/contacts/" data-cta="academy_all_contacts">All contacts</a>
-      <div class="academy-screen-nav">
-        <button type="button" class="button button-ghost" data-academy-prev>Back</button>
+      <div class="academy-ai-lab" aria-labelledby="academy-ai-lab-title">
+        <div class="academy-ai-lab-copy">
+          <p class="eyebrow">Optional marketing workflow lab · Concept preview</p>
+          <h2 id="academy-ai-lab-title">Learn AI automation by building one useful assistant.</h2>
+          <p>This is an optional exercise inside the Marketing program, not a third Academy program or separate enrollment offer. The example shows how a learner could define a simple intake and draft-response workflow with explicit review boundaries.</p>
+          <ul>
+            <li><Bot size={17} aria-hidden="true" />Map the user question and approved response scope</li>
+            <li><ShieldCheck size={17} aria-hidden="true" />Keep every action in preview until a person confirms it</li>
+            <li><GraduationCap size={17} aria-hidden="true" />Explain the workflow, fallback, and measurement plan</li>
+          </ul>
+        </div>
+        <div class="academy-ai-mockup" role="img" aria-label="Concept preview of a fitness AI Telegram assistant learning project">
+          <div class="academy-ai-topbar"><strong><i>H</i>Academy Lab</strong><span>Learning preview</span></div>
+          <div class="academy-ai-body">
+            <aside><span class="is-active">Brief</span><span>Knowledge</span><span>Workflow</span><span>Test</span><span>Review</span></aside>
+            <div class="academy-ai-workspace">
+              <header><small>PRACTICAL BUILD · CONCEPT ONLY</small><h3>Fitness AI Telegram Assistant</h3></header>
+              <div class="academy-ai-brief">
+                <p><span>01</span><b>Goal</b><em>Answer approved membership questions and prepare a consultation request.</em></p>
+                <p><span>02</span><b>Knowledge</b><em>Services, schedule rules, location, policies, and handoff contacts.</em></p>
+                <p><span>03</span><b>Guardrail</b><em>No booking, payment, medical advice, or message is sent automatically.</em></p>
+              </div>
+              <div class="academy-ai-preview"><Bot size={18} aria-hidden="true" /><div><small>DRAFT RESPONSE</small><p>“I can explain the approved membership options and prepare a consultation request for team review.”</p></div><button type="button">Review draft</button></div>
+            </div>
+          </div>
+          <p>No live bot, member data, messages, enrollment, or payment is connected.</p>
+        </div>
+      </div>
+
+      <div class="academy-enrollment-grid" aria-label="Academy participation models">
+        {academyEnrollmentModels.map((model) => (
+          <article>
+            <p>{model.label}</p>
+            <h3>{model.status === "owner_approval_required" ? "Published offer required" : "Application and eligibility required"}</h3>
+            <div>{model.description}</div>
+            <small>{model.boundary}</small>
+          </article>
+        ))}
+      </div>
+
+      <div class="academy-faq-grid">
+        {academyFaq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+      </div>
+      <div class="academy-screen-actions">
+        <button class="academy-text-button" type="button" data-academy-back="3">Back to growth</button>
+        <a class="button button-primary" href="#contact">Ask about the Academy <ChevronRight size={18} aria-hidden="true" /></a>
       </div>
     </div>
   </div>
 </section>
 
-<script>
-  import {
-    trackCaseOpened,
-    trackCtaClicked,
-    trackSimulationStarted,
-    trackTrackSelected,
-  } from "../lib/analytics.ts";
+<script define:vars={{ tracks: academyPublicTracks }}>
+  document.querySelectorAll("[data-academy-flow]").forEach((flow) => {
+    if (!(flow instanceof HTMLElement)) return;
+    const screens = [...flow.querySelectorAll("[data-academy-screen]")];
+    const progress = [...flow.querySelectorAll("[data-academy-progress]")];
+    const trackButtons = [...flow.querySelectorAll("[data-academy-track]")];
+    let selectedTrack = tracks[0];
 
-  const root = document.querySelector<HTMLElement>("[data-academy-screens]");
-  if (root) {
-    let screen = 0;
-    let started = false;
-    const screens = [...root.querySelectorAll<HTMLElement>("[data-screen]")];
-
-    const showScreen = (index: number) => {
-      screen = index;
-      if (!started && index > 0) {
-        started = true;
-        trackSimulationStarted();
-      }
-      screens.forEach((node) => {
-        const active = Number(node.dataset.screen) === index;
-        node.hidden = !active;
-        node.classList.toggle("is-active", active);
+    const showScreen = (screenNumber) => {
+      screens.forEach((screen) => {
+        const isActive = Number(screen.getAttribute("data-academy-screen")) === screenNumber;
+        screen.toggleAttribute("hidden", !isActive);
+        screen.setAttribute("data-active", isActive ? "true" : "false");
       });
+      progress.forEach((step) => {
+        const stepNumber = Number(step.getAttribute("data-academy-progress"));
+        step.setAttribute("data-active", stepNumber <= screenNumber ? "true" : "false");
+      });
+      flow.dataset.activeScreen = String(screenNumber);
+      flow.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.gtag?.("event", "academy_screen_view", { screen_number: screenNumber + 1, track: selectedTrack.id });
     };
 
-    const showTrack = (id: string) => {
-      trackTrackSelected(id);
-      root.querySelectorAll<HTMLElement>("[data-track-detail]").forEach((node) => {
-        node.hidden = node.dataset.trackDetail !== id;
-      });
-      root.querySelectorAll<HTMLButtonElement>("[data-academy-track]").forEach((btn) => {
-        btn.setAttribute("aria-selected", String(btn.dataset.academyTrack === id));
-      });
+    const renderTrack = () => {
+      flow.querySelectorAll("[data-academy-selected-label]").forEach((node) => { node.textContent = selectedTrack.label; });
+      const eyebrow = flow.querySelector("[data-academy-result-eyebrow]");
+      const title = flow.querySelector("[data-academy-result-title]");
+      const body = flow.querySelector("[data-academy-result-body]");
+      const list = flow.querySelector("[data-academy-practice-list]");
+      if (eyebrow) eyebrow.textContent = selectedTrack.label;
+      if (title) title.textContent = selectedTrack.title;
+      if (body) body.textContent = selectedTrack.body;
+      if (list) list.innerHTML = selectedTrack.practice.map((item) => `<li><span aria-hidden="true">✓</span>${item}</li>`).join("");
     };
 
-    root.querySelectorAll<HTMLButtonElement>("[data-academy-next]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const cta = btn.dataset.cta;
-        if (cta) trackCtaClicked(cta);
-        showScreen(Math.min(screen + 1, screens.length - 1));
+    trackButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const trackId = button.getAttribute("data-academy-track");
+        selectedTrack = tracks.find((track) => track.id === trackId) || tracks[0];
+        trackButtons.forEach((item) => {
+          const isActive = item === button;
+          item.setAttribute("data-active", isActive ? "true" : "false");
+          item.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+        renderTrack();
+        window.gtag?.("event", "academy_track_select", { track: selectedTrack.id });
       });
     });
 
-    root.querySelectorAll<HTMLButtonElement>("[data-academy-prev]").forEach((btn) => {
-      btn.addEventListener("click", () => showScreen(Math.max(screen - 1, 0)));
-    });
-
-    root.querySelectorAll<HTMLButtonElement>("[data-academy-track]").forEach((btn) => {
-      btn.addEventListener("click", () => showTrack(btn.dataset.academyTrack || "logistics"));
-    });
-
-    root.querySelectorAll<HTMLDetailsElement>("[data-case-id]").forEach((el) => {
-      el.addEventListener("toggle", () => {
-        if (el.open && el.dataset.caseId) trackCaseOpened(el.dataset.caseId);
-      });
-    });
-
-    root.querySelectorAll<HTMLAnchorElement>("[data-cta]").forEach((link) => {
-      if (link.tagName !== "A") return;
-      link.addEventListener("click", () => {
-        if (link.dataset.cta) trackCtaClicked(link.dataset.cta);
-      });
-    });
-  }
+    flow.querySelectorAll("[data-academy-next]").forEach((button) => button.addEventListener("click", () => {
+      renderTrack();
+      showScreen(Number(button.getAttribute("data-academy-next")));
+    }));
+    flow.querySelectorAll("[data-academy-back]").forEach((button) => button.addEventListener("click", () => showScreen(Number(button.getAttribute("data-academy-back")))));
+  });
 </script>
