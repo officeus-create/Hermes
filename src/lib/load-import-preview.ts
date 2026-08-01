@@ -169,6 +169,7 @@ function safeMessage(error: unknown): string {
   return raw
     .replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g, "[redacted-email]")
     .replace(/\+?\d[\d\s().-]{7,}\d/g, "[redacted-phone]")
+    .replace(/\bShipment\s+\S+/gi, "Shipment [redacted-id]")
     .slice(0, 240);
 }
 
