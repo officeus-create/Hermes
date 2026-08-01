@@ -56,6 +56,24 @@ assert.deepEqual(
 assert.equal(compactPreview.summary.rejected, 1);
 assert.equal(compactPreview.summary.quarantined, 1);
 
+const additionalPrivateIdentifiersCsv = [
+  "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed,driverName,contactPerson,vehicleVin,licensePlate,taxId,companyEin",
+  "SYN-IDENTIFIERS,Appleton,WI,Chicago,IL,car_hauler,2026-07-25,completed,true,Synthetic Driver,Synthetic Contact,SYNVIN00000000000,SYN-PLATE,SYN-TAX,SYN-EIN",
+].join("\n");
+
+const additionalPrivateIdentifiersPreview = previewSafeShipmentHistoryCsv(additionalPrivateIdentifiersCsv, now);
+assert.equal(additionalPrivateIdentifiersPreview.mode, "preview_only");
+assert.equal(additionalPrivateIdentifiersPreview.publicExportEnabled, false);
+assert.equal(additionalPrivateIdentifiersPreview.rows.length, 1);
+assert.equal(additionalPrivateIdentifiersPreview.rows[0].proposedAction, "reject");
+assert.ok(additionalPrivateIdentifiersPreview.rows[0].quarantineReasons.includes("prohibited_private_data"));
+assert.deepEqual(
+  additionalPrivateIdentifiersPreview.rows[0].privacyFlags.sort(),
+  ["companyein", "contactperson", "drivername", "licenseplate", "taxid", "vehiclevin"],
+);
+assert.equal(additionalPrivateIdentifiersPreview.summary.rejected, 1);
+assert.equal(additionalPrivateIdentifiersPreview.summary.quarantined, 1);
+
 const approvedCsv = [
   "source_record_id,origin_city,origin_state,destination_city,destination_state,equipment_class,event_date,lifecycle_status,reviewed",
   "SYN-SAFE,Appleton,WI,Chicago,IL,car_hauler,2026-07-25,booked,false",
@@ -64,4 +82,4 @@ const approvedPreview = previewSafeShipmentHistoryCsv(approvedCsv, now);
 assert.equal(approvedPreview.rows[0].proposedAction, "accept");
 assert.deepEqual(approvedPreview.rows[0].privacyFlags, []);
 
-console.log("Shipment History compound, camelCase, and compact private-header quarantine checks passed.");
+console.log("Shipment History compound, camelCase, compact, identity, and vehicle-identifier quarantine checks passed.");
