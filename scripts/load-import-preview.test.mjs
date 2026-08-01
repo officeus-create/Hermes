@@ -88,6 +88,10 @@ const invalidEvidencePreview = previewShipmentHistoryCsv(invalidEvidenceCsv);
 assert.equal(invalidEvidencePreview.summary.acceptedRows, 0);
 assert.equal(invalidEvidencePreview.summary.quarantinedRows, 1);
 assert.equal(invalidEvidencePreview.quarantined[0].reason, "invalid_lifecycle_evidence");
+assert.equal(invalidEvidencePreview.quarantined[0].message.includes("SYN-SHIP-X"), false);
+assert.equal(invalidEvidencePreview.quarantined[0].message.includes("MOCK-X"), false);
+assert.equal(invalidEvidencePreview.quarantined[0].message.includes("[redacted-id]"), true);
+assert.equal("rawRecord" in invalidEvidencePreview.quarantined[0], false);
 
 const observedToBooked = previewLifecycleTransition("observed", "booked");
 assert.equal(observedToBooked.allowed, true);
@@ -106,4 +110,4 @@ const publishWithApproval = previewLifecycleTransition("verified", "published", 
 assert.equal(publishWithApproval.allowed, true);
 assert.equal(publishWithApproval.writePerformed, false);
 
-console.log("Load import preview, private-header quarantine, duplicate, and lifecycle checks passed.");
+console.log("Load import preview, private-header quarantine, identifier redaction, duplicate, and lifecycle checks passed.");
