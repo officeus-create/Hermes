@@ -1,0 +1,109 @@
+---
+import { ArrowRight, Building2, ClipboardCheck, Compass, Truck } from "@lucide/astro";
+
+const carrierPaths = [
+  ["Owner-operator support", "/paths/logistics/carriers/owner-operators/"],
+  ["Fleet-owner operations", "/paths/logistics/carriers/fleet-owners/"],
+  ["Car-hauling carriers", "/paths/logistics/carriers/car-hauling/"],
+  ["Hotshot carriers", "/paths/logistics/carriers/hotshot/"],
+  ["Box truck carriers", "/paths/logistics/carriers/box-truck/"],
+  ["Cargo van carriers", "/paths/logistics/carriers/cargo-van/"],
+  ["Power-only carriers", "/paths/logistics/carriers/power-only/"],
+  ["Dry van carriers", "/paths/logistics/carriers/dry-van/"],
+  ["Reefer carriers", "/paths/logistics/carriers/reefer/"],
+  ["Flatbed carriers", "/paths/logistics/carriers/flatbed/"],
+  ["Step deck carriers", "/paths/logistics/carriers/step-deck/"],
+];
+
+const developmentPaths = [
+  ["New authority readiness", "/paths/logistics/carriers/new-authority/"],
+  ["Direct freight development", "/paths/logistics/carriers/direct-freight-development/"],
+  ["Trusted Carrier Network qualification", "/paths/logistics/carriers/trusted-carrier-network/"],
+  ["Vehicle transport requests", "/paths/logistics/customers/vehicle-transport/"],
+  ["Port pickup planning", "/paths/logistics/customers/port-pickup/"],
+  ["Luxury and classic vehicle planning", "/paths/logistics/customers/luxury-classic-vehicle/"],
+  ["Shippers and dealers", "/paths/logistics/shippers-dealers/"],
+  ["Broker carrier capacity", "/paths/logistics/brokers/carrier-capacity/"],
+  ["Driver and career paths", "/paths/logistics/drivers/"],
+  ["Agency partners", "/paths/logistics/agency-partners/"],
+  ["General logistics guidance", "/paths/logistics/guidance/"],
+];
+---
+
+<section class="section logistics-commercial-links" aria-labelledby="logistics-commercial-title">
+  <div class="shell">
+    <div class="section-heading split-heading" data-reveal>
+      <div>
+        <p class="eyebrow">Commercial logistics paths</p>
+        <h2 id="logistics-commercial-title">Choose the page that matches the work.</h2>
+      </div>
+      <p>These pages explain real coordination scope, required information, decision boundaries, and the next contact step.</p>
+    </div>
+
+    <div class="logistics-commercial-grid" data-reveal>
+      <article>
+        <Truck size={25} aria-hidden="true" />
+        <p class="eyebrow">For carriers</p>
+        <h3>Car hauling dispatch and operations support</h3>
+        <p>Review dispatch, broker communication, paperwork, invoicing follow-through, equipment fit, qualification, and carrier-controlled load approval.</p>
+        <a href="/logistics/car-hauling-dispatch/">Explore car hauling dispatch support <ArrowRight size={17} aria-hidden="true" /></a>
+      </article>
+
+      <article>
+        <Building2 size={25} aria-hidden="true" />
+        <p class="eyebrow">For dealers and shippers</p>
+        <h3>Dealer vehicle transportation coordination</h3>
+        <p>Prepare dealership, auction, multi-vehicle, open, enclosed, and specialty transport requirements for a reviewed carrier-capacity process.</p>
+        <a href="/logistics/dealer-vehicle-transportation/">Review dealer vehicle transportation <ArrowRight size={17} aria-hidden="true" /></a>
+      </article>
+
+      <article>
+        <ClipboardCheck size={25} aria-hidden="true" />
+        <p class="eyebrow">Supporting guidance</p>
+        <h3>Prepare accurate operating information</h3>
+        <p>Use the public checklists before sharing private MC, authority, insurance, release, vehicle-condition, route, or contact information.</p>
+        <div class="logistics-commercial-actions">
+          <a href="/logistics/resources/car-hauler-capacity-checklist/">Carrier capacity checklist <ArrowRight size={17} aria-hidden="true" /></a>
+          <a href="/logistics/resources/auction-vehicle-pickup-checklist/">Auction pickup checklist <ArrowRight size={17} aria-hidden="true" /></a>
+        </div>
+      </article>
+    </div>
+
+    <section class="logistics-path-directory" aria-labelledby="logistics-path-directory-title" data-reveal>
+      <div class="logistics-path-directory-heading">
+        <Compass size={25} aria-hidden="true" />
+        <div>
+          <p class="eyebrow">Crawlable path directory</p>
+          <h3 id="logistics-path-directory-title">Explore the full logistics decision system.</h3>
+          <p>Start with the guided selector or open a relevant carrier, customer, broker, driver, or agency path directly.</p>
+        </div>
+        <a class="button button-primary" href="/paths/logistics/find-your-path/">Open the logistics path finder <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+      <div class="logistics-path-columns">
+        <div>
+          <h4>Carrier and equipment paths</h4>
+          <nav aria-label="Carrier and equipment logistics paths">
+            {carrierPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
+          </nav>
+        </div>
+        <div>
+          <h4>Development and audience paths</h4>
+          <nav aria-label="Development and audience logistics paths">
+            {developmentPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <div class="logistics-commercial-footer" data-reveal>
+      <p>Need a direct review instead?</p>
+      <a class="button button-primary" href="/contacts/">Contact Hermes Logistics <ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="button button-ghost" href="/load-board/?role=carrier#carrier-access">Start carrier intake</a>
+      <a class="button button-ghost" href="/load-board/?role=shipper#post-load">Prepare a transport request</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .logistics-commercial-links{background:#f4f7fb}.logistics-commercial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.logistics-commercial-grid article{display:flex;flex-direction:column;align-items:flex-start;padding:1.45rem;border:1px solid #dce3ee;border-radius:10px;background:#fff}.logistics-commercial-grid h3{font-size:1.25rem}.logistics-commercial-grid article>a,.logistics-commercial-actions a{display:flex;gap:.5rem;align-items:center;margin-top:auto;font-weight:700}.logistics-commercial-actions{display:grid;gap:.7rem;margin-top:auto}.logistics-path-directory{margin-top:1.2rem;padding:1.4rem;border:1px solid #d7dfeb;border-radius:10px;background:#fff}.logistics-path-directory-heading{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}.logistics-path-directory-heading h3{margin:.2rem 0}.logistics-path-directory-heading p{margin:0}.logistics-path-columns{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid #e1e7ef}.logistics-path-columns h4{margin:0 0 .7rem}.logistics-path-columns nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.logistics-path-columns a{display:flex;justify-content:space-between;gap:.45rem;align-items:center;padding:.7rem .75rem;border:1px solid #e3e8f0;border-radius:7px;background:#f9fbfd;font-size:.9rem;font-weight:700}.logistics-commercial-footer{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #d7dfeb}.logistics-commercial-footer p{margin:0 auto 0 0;font-weight:700}@media(max-width:900px){.logistics-commercial-grid,.logistics-path-columns{grid-template-columns:1fr}.logistics-path-directory-heading{grid-template-columns:auto 1fr}.logistics-path-directory-heading .button{grid-column:1/-1}.logistics-path-columns nav{grid-template-columns:1fr 1fr}.logistics-commercial-footer{align-items:stretch}.logistics-commercial-footer p{width:100%}}@media(max-width:620px){.logistics-path-columns nav{grid-template-columns:1fr}}
+</style>

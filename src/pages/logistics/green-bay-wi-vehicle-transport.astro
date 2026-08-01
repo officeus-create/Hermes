@@ -1,0 +1,164 @@
+---
+import { ArrowRight, Building2, Car, Check, MapPin, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+
+const title = "Green Bay Vehicle Transport | Hermes Logistics";
+const description =
+  "Request vehicle transport to or from Green Bay, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, timing, equipment, and vehicle condition.";
+const canonicalUrl = new URL("/logistics/green-bay-wi-vehicle-transport/", Astro.site).toString();
+
+const faq = [
+  {
+    question: "How much does vehicle transport to or from Green Bay cost?",
+    answer:
+      "Pricing depends on the exact route, vehicle size and condition, equipment type, timing, pickup and delivery access, season, and current carrier availability. Complete route details are required before a request can be reviewed.",
+  },
+  {
+    question: "Can Hermes review an inoperable vehicle move?",
+    answer:
+      "Yes. State whether the vehicle starts, rolls, steers, and brakes so loading and equipment requirements can be evaluated before carrier coordination.",
+  },
+  {
+    question: "Can dealers request transportation for several vehicles?",
+    answer:
+      "Yes. Include the full vehicle list, condition of each unit, pickup and delivery requirements, preferred timing, and any required loading or delivery sequence.",
+  },
+  {
+    question: "Can I request open or enclosed vehicle transport?",
+    answer:
+      "Yes. Open or enclosed equipment can be requested. The workable option depends on the vehicle, route, handling requirements, timing, and available equipment.",
+  },
+  {
+    question: "Does submitting the form guarantee a carrier or pickup date?",
+    answer:
+      "No. Submission starts a request review. Price, timing, equipment, and carrier availability are not confirmed until the applicable arrangement is accepted and scheduled.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Green Bay vehicle transport request coordination",
+    description,
+    url: canonicalUrl,
+    serviceType: "Vehicle transport request review and carrier coordination",
+    areaServed: [
+      { "@type": "City", name: "Green Bay", containedInPlace: { "@type": "State", name: "Wisconsin" } },
+      { "@type": "Country", name: "United States" },
+    ],
+    provider: {
+      "@type": "Organization",
+      name: "Hermes Logistics",
+      url: "https://hermeslogisticsus.com/paths/logistics/",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Green Bay Vehicle Transport", item: canonicalUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content" class="local-page">
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/paths/logistics/">Logistics</a> / Green Bay vehicle transport</nav>
+          <p class="eyebrow">Hermes Logistics · Green Bay, Wisconsin</p>
+          <h1>Vehicle transport to and from Green Bay.</h1>
+          <p class="lead">Hermes reviews vehicle transportation requests for dealers, auction buyers and sellers, businesses, private customers, and qualified carriers. Start with the exact route, vehicle condition, timing, and access details.</p>
+          <div class="actions">
+            <a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Green%20Bay%2C%20WI#post-load">Prepare a transport request <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button" href="/load-board/?role=carrier&amp;area=Green%20Bay%2C%20WI#carrier-access">Carrier: share capacity</a>
+          </div>
+          <p class="boundary">Submitting a request does not guarantee price, timing, equipment, or carrier availability.</p>
+        </div>
+        <aside class="panel">
+          <MapPin size={30} aria-hidden="true" />
+          <h2>Route-first review</h2>
+          <ul>
+            <li><Check size={17} aria-hidden="true" />Green Bay pickup or delivery</li>
+            <li><Check size={17} aria-hidden="true" />Single or multi-vehicle moves</li>
+            <li><Check size={17} aria-hidden="true" />Operable or disclosed inoperable vehicles</li>
+            <li><Check size={17} aria-hidden="true" />Open or enclosed equipment requests</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell">
+        <p class="eyebrow">Who we help</p>
+        <h2>Vehicle transport requests built around the actual move.</h2>
+        <div class="cards">
+          <article><Building2 size={25} aria-hidden="true" /><h3>Dealers and businesses</h3><p>Purchased, sold, transferred, or relocated vehicles, including multi-unit inventory moves.</p></article>
+          <article><Car size={25} aria-hidden="true" /><h3>Private customers</h3><p>Vehicle purchases, sales, relocation, and transport for a known recipient.</p></article>
+          <article><Truck size={25} aria-hidden="true" /><h3>Carriers and car haulers</h3><p>Share authority, equipment, preferred routes, capacity, and availability for review.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="shell split">
+        <div><p class="eyebrow">Information to prepare</p><h2>Complete details support a faster review.</h2></div>
+        <ul class="checklist">
+          <li><Check size={18} aria-hidden="true" />Pickup and delivery city, state, or ZIP code</li>
+          <li><Check size={18} aria-hidden="true" />Vehicle year, make, model, quantity, and condition</li>
+          <li><Check size={18} aria-hidden="true" />Earliest pickup date and required delivery window</li>
+          <li><Check size={18} aria-hidden="true" />Open or enclosed equipment preference</li>
+          <li><Check size={18} aria-hidden="true" />Facility access, release status, and contact details</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="shell split">
+        <div><p class="eyebrow">How it works</p><h2>From request details to a confirmed next step.</h2></div>
+        <ol class="steps">
+          <li><span>1</span><div><h3>Submit the route and vehicle details</h3><p>Provide enough information to evaluate equipment, timing, and access requirements.</p></div></li>
+          <li><span>2</span><div><h3>Complete request review</h3><p>Hermes checks completeness and identifies any missing condition, release, or scheduling details.</p></div></li>
+          <li><span>3</span><div><h3>Coordinate by fit and availability</h3><p>A qualified request can proceed based on route, equipment, compliance, timing, and capacity.</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section faq">
+      <div class="shell split">
+        <div><p class="eyebrow">FAQ</p><h2>Green Bay vehicle transport questions.</h2></div>
+        <div>{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="section cta">
+      <div class="shell cta-card">
+        <ShieldCheck size={34} aria-hidden="true" />
+        <div><p class="eyebrow">Start with complete information</p><h2>Prepare the Green Bay transport request.</h2><p>Provide the exact route, vehicle condition, timing, access requirements, and reliable contact details.</p></div>
+        <a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Green%20Bay%2C%20WI#post-load">Start request <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .local-page{background:#f7f8fb;color:#111a39}.shell{width:min(1120px,calc(100% - 32px));margin:0 auto}.hero{padding:132px 0 76px;background:linear-gradient(135deg,#07133e,#142d78);color:white}.hero-grid,.split,.cta-card{display:grid;grid-template-columns:1.4fr .8fr;gap:48px;align-items:start}.hero nav{font-size:.86rem;margin-bottom:34px;color:#cbd5ff}.hero nav a{color:inherit}.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-weight:800;font-size:.75rem}.hero h1,.section h2{font-size:clamp(2.2rem,5vw,4.4rem);line-height:1.02;margin:.4rem 0 1.2rem}.section h2{font-size:clamp(1.9rem,3.5vw,3.1rem)}.lead{font-size:1.16rem;line-height:1.7;max-width:760px}.actions{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0 14px}.boundary{font-size:.86rem;color:#cbd5ff}.panel,.cards article,.cta-card{background:white;color:#111a39;border-radius:22px;padding:28px;box-shadow:0 18px 48px rgba(5,15,53,.12)}.panel ul,.checklist{list-style:none;padding:0}.panel li,.checklist li{display:flex;gap:10px;margin:13px 0;align-items:flex-start}.section{padding:76px 0}.section-alt{background:#edf1f8}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:30px}.cards article h3{font-size:1.2rem}.steps{list-style:none;padding:0;margin:0}.steps li{display:flex;gap:18px;margin-bottom:22px}.steps span{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#142d78;color:white;font-weight:800;flex:none}.steps h3{margin:0 0 6px}.steps p{margin:0;line-height:1.6}.faq details{border-bottom:1px solid #cbd3e6;padding:18px 0}.faq summary{font-weight:800;cursor:pointer}.faq p{line-height:1.65}.cta-card{grid-template-columns:auto 1fr auto;align-items:center;background:#0a164f;color:white}.cta-card h2{font-size:2rem;margin:.2rem 0 .6rem}.cta-card p{margin:0}.button{display:inline-flex;align-items:center;gap:8px;text-decoration:none;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:13px 18px;color:inherit;font-weight:800}.button-primary{background:#f3bf39;color:#101936;border-color:#f3bf39}@media(max-width:800px){.hero-grid,.split,.cards,.cta-card{grid-template-columns:1fr}.hero{padding-top:110px}.section{padding:56px 0}.cta-card{align-items:start}}
+</style>

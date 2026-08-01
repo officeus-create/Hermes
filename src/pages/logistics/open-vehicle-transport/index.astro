@@ -1,0 +1,52 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+const content = {
+  title: "Open Vehicle Transport Services | Hermes Logistics",
+  description: "Open vehicle transport coordination for dealers, auction buyers, businesses, and private customers across the United States.",
+  eyebrow: "Hermes Logistics · Open Vehicle Transport",
+  h1: "Open Vehicle Transport Services",
+  intro: "Hermes reviews open vehicle transport requests for dealers, auction buyers and sellers, businesses, and private customers. The exact route, vehicle dimensions, condition, operability, timing, and access requirements are reviewed before carrier coordination begins.",
+  image: "/images/path-logistics-system.jpg",
+  imageAlt: "Open car hauler transporting vehicles across a logistics network",
+  audience: [
+    "Private customers moving standard passenger vehicles",
+    "Dealers arranging purchases, sales, trades, or transfers",
+    "Auction buyers and sellers preparing released vehicles",
+    "Businesses coordinating single-vehicle or multi-unit moves",
+  ],
+  benefits: [
+    { title: "Broad equipment consideration", body: "Open single-car, hotshot, and multi-car equipment requests are evaluated according to actual vehicle count, dimensions, condition, route, and access." },
+    { title: "Dealer and auction support", body: "Release status, facility hours, storage deadlines, unit lists, pickup contacts, and delivery requirements can be organized before coordination." },
+    { title: "Operability review", body: "Whether each vehicle starts, rolls, steers, and brakes is documented so loading requirements can be evaluated." },
+    { title: "Route and timing review", body: "Pickup readiness, requested windows, delivery restrictions, weather, traffic, compliance, and current capacity are considered." },
+    { title: "Carrier-controlled acceptance", body: "The motor carrier reviews the available shipment information and accepts the transportation arrangement before booking." },
+    { title: "No generic price promises", body: "Pricing depends on the exact route, vehicle, equipment, timing, access, season, and current carrier availability." },
+  ],
+  process: [
+    { title: "Submit route and vehicle details", body: "Provide pickup and delivery locations, year, make, model, quantity, condition, operability, timing, and access." },
+    { title: "Review pickup readiness", body: "Release status, contacts, facility hours, appointment rules, keys, and storage deadlines are checked when applicable." },
+    { title: "Evaluate open equipment fit", body: "Equipment type and capacity are reviewed against vehicle dimensions, route, timing, access, compliance, and availability." },
+    { title: "Confirm terms and carrier", body: "The customer reviews the available arrangement and carrier information before confirmation." },
+    { title: "Coordinate pickup and delivery", body: "Hermes supports communication and document flow while the carrier remains responsible for transportation and safety." },
+  ],
+  faq: [
+    { question: "What is open vehicle transport?", answer: "Open vehicle transport uses equipment where vehicles are carried on an open trailer rather than inside an enclosed trailer. Equipment type and capacity vary by carrier and route." },
+    { question: "Is open transport suitable for every vehicle?", answer: "Not automatically. Vehicle value, sensitivity, dimensions, condition, ground clearance, handling needs, route, and customer preference should be reviewed." },
+    { question: "Can inoperable vehicles use open equipment?", answer: "They may be reviewed when compatible loading capability is available. State whether the vehicle starts, rolls, steers, and brakes." },
+    { question: "Can several vehicles move together?", answer: "Yes, when compatible multi-car capacity is available and the unit list, dimensions, condition, route, timing, and sequence are workable." },
+    { question: "Is the lowest price guaranteed?", answer: "No. Hermes does not guarantee the lowest price. The available arrangement depends on route, vehicle, timing, equipment, access, compliance, and market capacity." },
+    { question: "How do I request a review?", answer: "Submit the exact route, vehicle details, condition, timing, equipment preference, access, and reliable contacts." },
+  ],
+  related: [
+    { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
+    { label: "Inoperable Vehicle Transport", href: "/logistics/inoperable-vehicle-transport/" },
+    { label: "Multi-Car Transport", href: "/logistics/multi-car-transport/" },
+    { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
+    { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
+    { label: "Contact Hermes", href: "/contacts/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />

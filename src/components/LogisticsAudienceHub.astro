@@ -8,6 +8,19 @@ const training = {
   summary: "Build practical logistics, sales, dispatch, and operations capability before or alongside a role.",
   href: "/paths/academy/",
 };
+
+const serviceGuides = [
+  { label: "Car Hauling Dispatch", href: "/logistics/car-hauling-dispatch/" },
+  { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
+  { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
+  { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
+  { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
+  { label: "Inoperable Vehicle Transport", href: "/logistics/inoperable-vehicle-transport/" },
+  { label: "Multi-Car Transport", href: "/logistics/multi-car-transport/" },
+  { label: "New Authority Car Hauler Support", href: "/logistics/new-authority-car-hauler-support/" },
+  { label: "Owner-Operator Dispatch Support", href: "/logistics/owner-operator-dispatch-support/" },
+  { label: "Fleet Owner Dispatch Support", href: "/logistics/fleet-owner-dispatch-support/" },
+];
 ---
 
 <section class="section logistics-audience-hub" id="choose-your-path" aria-labelledby="logistics-audience-title">
@@ -40,6 +53,41 @@ const training = {
         <p>Preview a vehicle transport request and see how it would be reviewed and routed.</p>
         <strong>Open Load Board <ArrowUpRight size={18} aria-hidden="true" /></strong>
       </a>
+    </div>
+    <aside class="logistics-local-pilot">
+      <div>
+        <span>USA organic service guide · Wisconsin pilot</span>
+        <h3>Vehicle transport to and from Appleton.</h3>
+        <p>A practical route guide for dealers, auction customers, businesses, private customers, carriers, and car haulers.</p>
+      </div>
+      <a class="button button-primary" href="/logistics/appleton-wi-vehicle-transport/">
+        Open Appleton guide <ArrowUpRight size={18} aria-hidden="true" />
+      </a>
+    </aside>
+    <div class="logistics-resource-library" id="logistics-resources">
+      <div>
+        <span>National planning resources</span>
+        <h3>Prepare better information before the next transport review.</h3>
+      </div>
+      <nav aria-label="Hermes Logistics resources">
+        <a href="/logistics/resources/auction-vehicle-pickup-checklist/">
+          Auction Vehicle Pickup Checklist <ArrowUpRight size={17} aria-hidden="true" />
+        </a>
+        <a href="/logistics/resources/car-hauler-capacity-checklist/">
+          Car Hauler Capacity Checklist <ArrowUpRight size={17} aria-hidden="true" />
+        </a>
+      </nav>
+    </div>
+    <div class="logistics-resource-library" id="logistics-service-guides">
+      <div>
+        <span>Service and carrier guides</span>
+        <h3>Open the guide that matches the vehicle, equipment, or operating stage.</h3>
+      </div>
+      <nav aria-label="Hermes Logistics service guides">
+        {serviceGuides.map((guide) => (
+          <a href={guide.href}>{guide.label} <ArrowUpRight size={17} aria-hidden="true" /></a>
+        ))}
+      </nav>
     </div>
   </div>
 </section>

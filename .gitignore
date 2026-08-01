@@ -1,13 +1,10 @@
 node_modules/
 dist/
 .astro/
-.wrangler/
+artifacts/
 playwright-report/
 test-results/
-
-.dev.vars*
-.env*
-!.env.example
-
-*.log
 .DS_Store
+.env
+.env.*
+!.env.example

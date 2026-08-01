@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Wisconsin Auction Vehicle Pickup | Hermes Logistics";
+const description = "Prepare Wisconsin auction vehicle pickup requests with release status, lot references, pickup hours, storage deadlines, condition, and route details.";
+const canonicalUrl = new URL("/logistics/wisconsin-auction-vehicle-pickup/", Astro.site).toString();
+const faq = [
+  { question: "What is required before an auction pickup?", answer: "Confirm release status, the exact facility, lot or stock reference, pickup hours, storage deadline, vehicle condition, keys, and the authorized pickup contact." },
+  { question: "Can an inoperable auction vehicle be submitted?", answer: "Yes. State whether it starts, rolls, steers, and brakes so loading equipment and handling requirements can be reviewed." },
+  { question: "Can storage deadlines affect timing?", answer: "Yes. Include the deadline clearly, but do not assume it can be met until the route, equipment, access, and carrier availability are reviewed and confirmed." },
+  { question: "Does Hermes represent an auction facility?", answer: "No. Facility requirements and release rules must be confirmed directly with the actual auction or storage location." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Wisconsin auction vehicle pickup request coordination", description, url: canonicalUrl, serviceType: "Auction vehicle pickup request review and carrier coordination", areaServed: [{ "@type": "State", name: "Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Wisconsin Vehicle Transport", item: "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/" }, { "@type": "ListItem", position: 3, name: "Wisconsin Auction Vehicle Pickup", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell"><nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/logistics/wisconsin-vehicle-transport/">Wisconsin vehicle transport</a> / <span aria-current="page">Auction vehicle pickup</span></nav><p class="eyebrow">Hermes Logistics · Wisconsin auction pickups</p><h1>Wisconsin auction vehicle pickup planning.</h1><p>Hermes reviews pickup requests for dealers, businesses, auction buyers and sellers, and private customers. The exact facility, release status, storage deadline, vehicle condition, route, and access rules must be known before coordination begins.</p><div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=shipper&amp;origin=Wisconsin#post-load">Prepare an auction pickup request</a><a class="button" href="/logistics/resources/auction-vehicle-pickup-checklist/">Open the full pickup checklist</a></div><p>Hermes is not presented as affiliated with any auction, storage facility, dealership, or public agency.</p></div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Pickup readiness</p><h2>The address alone is not enough.</h2><div class="appleton-card-grid"><article><h3>Release</h3><p>Confirm the vehicle is released and the pickup party will have the correct authorization reference.</p></article><article><h3>Condition</h3><p>State whether the vehicle starts, rolls, steers, and brakes and disclose unusual dimensions or damage.</p></article><article><h3>Facility access</h3><p>Provide pickup hours, loading rules, keys, contact information, and any appointment requirements.</p></article><article><h3>Deadlines</h3><p>Include storage deadlines and requested timing without representing them as guaranteed.</p></article></div></div></section>
+    <section class="section"><div class="shell"><p class="eyebrow">Related services</p><h2>Continue the transport plan.</h2><p><a href="/logistics/wisconsin-dealer-vehicle-transport/">Wisconsin dealer vehicle transport</a> · <a href="/logistics/wisconsin-enclosed-vehicle-transport/">Wisconsin enclosed vehicle transport</a> · <a href="/logistics/wisconsin-vehicle-transport/">Wisconsin vehicle transport hub</a></p></div></section>
+    <section class="section logistics-faq" aria-labelledby="auction-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="auction-faq-title">Auction pickup questions.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main><SiteFooter />
+</BaseLayout>

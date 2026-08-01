@@ -5,7 +5,7 @@ Production-ready static Astro website for `hermeslogisticsus.com`.
 ## Status
 
 - Production V1 is published at `https://hermeslogisticsus.com` through Cloudflare Pages.
-- Data-driven Astro SSG with four business directions, Path Engine routes, audience routes, and vehicle-transport market pages.
+- Five public routes plus a custom 404 page.
 - No form submission or data storage.
 - No unsupported numeric claims or partner logos.
 - The contact workflow remains in preview mode and performs no external write.
@@ -17,9 +17,6 @@ Production-ready static Astro website for `hermeslogisticsus.com`.
 - `src/styles/global.css`: design tokens and responsive system.
 - `src/pages/index.astro`: ecosystem homepage.
 - `src/pages/paths/[slug].astro`: four generated direction pages.
-- `src/data/logistics-locations.ts`: approved city/state market content and publication boundaries.
-- `src/pages/logistics/[audience].astro`: shared SSG router for audience and market pages.
-- `src/pages/sitemap.xml.ts`: sitemap generated from the same route data.
 - `scripts/validate-build.mjs`: route, content, asset, form, and sitemap checks.
 
 ## Routes
@@ -39,36 +36,6 @@ npm run build
 npm test
 npm run test:e2e
 ```
-
-## Cloudflare and Wrangler
-
-The repository uses Wrangler 4 and `wrangler.jsonc` as the local Cloudflare
-configuration source. The current production target remains the existing
-Cloudflare Pages project `hermes`; this setup does not migrate the site to a
-new Worker and does not activate live lead delivery.
-
-```bash
-# Confirm Cloudflare authorization.
-npm run cf:whoami
-
-# Generate Cloudflare binding types without replacing Astro browser types.
-npm run cf:types
-
-# Build Astro and compile Pages Functions without deploying.
-npm run cf:validate
-
-# Build and run Pages locally.
-npm run cf:dev
-
-# Deploy a non-production staging branch after authorization.
-npm run cf:deploy:staging
-```
-
-The `LEAD_LIMITS` KV namespace and `LEAD_EMAIL` binding are intentionally absent
-from `wrangler.jsonc`. Enable them only after the Cloudflare account is
-connected, Email Sending has verified `hermeslogisticsus.com`, a restricted KV
-namespace is available, and the staging receiver test passes. Never place API
-tokens or other secrets in this repository.
 
 ## Contact Workflow
 
@@ -102,12 +69,6 @@ real delivery test has passed.
 ## Logistics Visitor Paths
 
 The Logistics page begins with a visitor router for shippers/dealers, brokers, carriers/owner-operators, remote-agency candidates, job candidates, and students. Each audience has a dedicated static page and next action. Shippers, dealers, and brokers can open the Load Board preview; carriers can reach the carrier intake; agency and career candidates can prepare a local application preview; training routes to Hermes Business Academy.
-
-## Vehicle Transport Markets
-
-The Logistics page also exposes 14 substantial market guides: the existing Appleton route plus 13 reviewed city/state signals. Each page is generated from `src/data/logistics-locations.ts`, includes dealer/shipper/private-customer/carrier paths where applicable, route-specific planning context, request requirements, FAQ schema, breadcrumb schema, canonical metadata, and clear non-guarantee language.
-
-City/state pages are request-intake guides. They do not claim that Hermes owns a local office, terminal, yard, or storage facility. Exact addresses and ZIP data render only from an explicitly `HERMES_VERIFIED` public-location object; the current dataset contains none. Merriam, San Martin, and Watsonville remain unpublished until completed-shipment or other approved operating evidence is available.
 
 ## Publication
 

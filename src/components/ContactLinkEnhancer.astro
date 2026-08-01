@@ -1,0 +1,146 @@
+<div
+  class="contact-link-status"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  data-contact-link-status
+  hidden
+></div>
+
+<script>
+  const status = document.querySelector<HTMLElement>("[data-contact-link-status]");
+  let statusTimer = 0;
+
+  const showStatus = (message: string) => {
+    if (!status) return;
+    window.clearTimeout(statusTimer);
+    status.textContent = message;
+    status.hidden = false;
+    statusTimer = window.setTimeout(() => {
+      status.hidden = true;
+      status.textContent = "";
+    }, 4200);
+  };
+
+  const copyPhoneNumber = async (text: string) => {
+    if (!navigator.clipboard?.writeText || !window.isSecureContext) return false;
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const isLikelyMobileDevice = () => {
+    const navigatorWithUAData = navigator as Navigator & { userAgentData?: { mobile?: boolean } };
+    return (
+      navigatorWithUAData.userAgentData?.mobile === true ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints > 1 && window.matchMedia("(max-width: 1024px)").matches)
+    );
+  };
+
+  const pushAnalyticsEvent = (payload: Record<string, string>) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  };
+
+  const classifyPageCluster = (path: string) => {
+    if (path.includes("-wi-vehicle-transport") || path.includes("/logistics/wisconsin-")) return "wisconsin_local_seo";
+    if (path.startsWith("/logistics/")) return "logistics_service";
+    if (path.startsWith("/paths/logistics/")) return "logistics_path";
+    return "other";
+  };
+
+  const trackLoadBoardClick = (link: HTMLAnchorElement) => {
+    const href = link.getAttribute("href") || "";
+    let target: URL;
+    try {
+      target = new URL(href, window.location.origin);
+    } catch {
+      return;
+    }
+    if (target.origin !== window.location.origin || target.pathname !== "/load-board/") return;
+
+    const role = target.searchParams.get("role") || "unspecified";
+    const ctaType = role === "carrier"
+      ? "carrier_capacity"
+      : role === "dealer"
+        ? "dealer_transport_request"
+        : role === "shipper"
+          ? "shipper_transport_request"
+          : role === "private_party"
+            ? "private_transport_request"
+            : "load_board_entry";
+
+    pushAnalyticsEvent({
+      event: "logistics_cta_click",
+      cta_type: ctaType,
+      audience_role: role,
+      page_cluster: classifyPageCluster(window.location.pathname),
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  };
+
+  document.addEventListener("click", async (event) => {
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+
+    const anyLink = source.closest("a[href]");
+    if (anyLink instanceof HTMLAnchorElement) trackLoadBoardClick(anyLink);
+
+    const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    const href = link.getAttribute("href") || "";
+    const isPhone = href.startsWith("tel:");
+
+    pushAnalyticsEvent({
+      event: "contact_click",
+      contact_method: isPhone ? "phone" : "email",
+      page_cluster: classifyPageCluster(window.location.pathname),
+      page_path: window.location.pathname,
+    });
+
+    if (!isPhone) return;
+
+    const internationalNumber = href.slice(4).trim();
+    const displayNumber = link.textContent?.trim() || internationalNumber;
+
+    if (isLikelyMobileDevice()) {
+      showStatus(`Opening your phone app for ${displayNumber}.`);
+      return;
+    }
+
+    event.preventDefault();
+    const copied = await copyPhoneNumber(internationalNumber);
+    showStatus(
+      copied
+        ? `Phone number copied: ${displayNumber}. Open FaceTime, Skype, or your calling app to place the call.`
+        : `Call Hermes Logistics at ${displayNumber}. Copy the number or configure a calling app in your browser.`,
+    );
+  });
+</script>
+
+<style>
+  .contact-link-status {
+    position: fixed;
+    z-index: 1200;
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(1rem, 3vw, 2rem);
+    max-width: min(420px, calc(100vw - 2rem));
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 6px;
+    background: #071038;
+    color: #fff;
+    box-shadow: 0 18px 50px rgba(7, 16, 56, 0.28);
+    font: 600 0.88rem/1.45 var(--font-body);
+  }
+
+  .contact-link-status[hidden] {
+    display: none;
+  }
+</style>

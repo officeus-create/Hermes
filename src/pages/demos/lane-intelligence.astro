@@ -1,0 +1,277 @@
+---
+import { ChartNoAxesColumnIncreasing, Clock3, LockKeyhole, Route, ShieldCheck, TriangleAlert, Truck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { calculateRateMetrics, type NormalizedOffer } from "../../lib/load-operations.ts";
+
+const title = "Lane Intelligence Synthetic Preview | Hermes Logistics";
+const description = "A noindex, read-only synthetic prototype for transparent load metrics and workflow review. No real shipment or load-board data is connected.";
+
+const syntheticOffers: NormalizedOffer[] = [
+  {
+    offerId: "SYN-LI-001",
+    sourceName: "Synthetic Board A",
+    sourceRecordId: "SYN-SOURCE-001",
+    observedAt: "2026-07-31T12:00:00Z",
+    expiresAt: "2026-08-02T12:00:00Z",
+    pickupDate: "2026-08-03",
+    originCity: "Chicago",
+    originState: "IL",
+    destinationCity: "Nashville",
+    destinationState: "TN",
+    equipmentClass: "3-car open hauler",
+    postedRate: 1350,
+    negotiatedRate: 1450,
+    bookedRate: null,
+    loadedMiles: 485,
+    deadheadMiles: 35,
+    freshness: "fresh",
+  },
+  {
+    offerId: "SYN-LI-002",
+    sourceName: "Synthetic Board B",
+    sourceRecordId: "SYN-SOURCE-002",
+    observedAt: "2026-07-31T11:45:00Z",
+    expiresAt: "2026-08-02T11:45:00Z",
+    pickupDate: "2026-08-04",
+    originCity: "Dallas",
+    originState: "TX",
+    destinationCity: "Phoenix",
+    destinationState: "AZ",
+    equipmentClass: "7-car open hauler",
+    postedRate: 2400,
+    negotiatedRate: null,
+    bookedRate: null,
+    loadedMiles: 1065,
+    deadheadMiles: 70,
+    freshness: "fresh",
+  },
+  {
+    offerId: "SYN-LI-003",
+    sourceName: "Synthetic Board C",
+    sourceRecordId: "SYN-SOURCE-003",
+    observedAt: "2026-07-31T11:30:00Z",
+    expiresAt: "2026-08-02T11:30:00Z",
+    pickupDate: "2026-08-03",
+    originCity: "Atlanta",
+    originState: "GA",
+    destinationCity: "Tampa",
+    destinationState: "FL",
+    equipmentClass: "enclosed car hauler",
+    postedRate: 1800,
+    negotiatedRate: 1900,
+    bookedRate: 2000,
+    loadedMiles: 460,
+    deadheadMiles: 25,
+    freshness: "fresh",
+  },
+];
+
+const opportunities = syntheticOffers.map((offer) => ({
+  offer,
+  metrics: calculateRateMetrics(offer),
+}));
+const highestGross = [...opportunities].sort((left, right) => right.metrics.gross - left.metrics.gross)[0];
+const bestTotalMileRpm = [...opportunities].sort((left, right) => right.metrics.totalMileRpm - left.metrics.totalMileRpm)[0];
+const lowestDeadhead = [...opportunities].sort((left, right) => left.metrics.deadheadPercent - right.metrics.deadheadPercent)[0];
+
+const routeLabel = (offer: NormalizedOffer) => `${offer.originCity}, ${offer.originState} → ${offer.destinationCity}, ${offer.destinationState}`;
+---
+
+<BaseLayout title={title} description={description} robots="noindex,nofollow,noarchive">
+  <div class="lane-preview" data-lane-intelligence-preview>
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <section class="lane-hero">
+        <div class="lane-shell">
+          <p class="lane-kicker">Hermes Logistics · Internal systems prototype</p>
+          <div class="lane-hero-grid">
+            <div>
+              <h1>Lane Intelligence — synthetic read-only preview</h1>
+              <p class="lane-lead">
+                This page demonstrates transparent route and rate calculations using fictional records only. It is not a
+                live load board, dispatcher account, booking tool, or production data connection.
+              </p>
+              <div class="lane-boundary" role="note">
+                <LockKeyhole size={22} aria-hidden="true" />
+                <div>
+                  <strong>No real operations are connected.</strong>
+                  <span>No login, message, negotiation, booking, CRM write, spreadsheet write, or public route export occurs here.</span>
+                </div>
+              </div>
+            </div>
+            <aside class="lane-status-card" aria-label="Prototype boundaries">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>Preview-only boundary</h2>
+              <ul>
+                <li>Three synthetic opportunities</li>
+                <li>Transparent arithmetic only</li>
+                <li>No hidden AI score</li>
+                <li>No income or load-availability promise</li>
+              </ul>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane-section" aria-labelledby="summary-title">
+        <div class="lane-shell">
+          <div class="lane-section-heading">
+            <div>
+              <p class="lane-kicker">Explainable comparison</p>
+              <h2 id="summary-title">Three labels, each tied to a visible metric.</h2>
+            </div>
+            <p>These labels compare only the fictional records shown below. They are not recommendations or forecasts.</p>
+          </div>
+          <div class="lane-summary-grid">
+            <article>
+              <ChartNoAxesColumnIncreasing size={24} aria-hidden="true" />
+              <span>Highest synthetic gross</span>
+              <strong>${highestGross.metrics.gross.toLocaleString("en-US")}</strong>
+              <p>{routeLabel(highestGross.offer)}</p>
+            </article>
+            <article>
+              <Route size={24} aria-hidden="true" />
+              <span>Best total-mile RPM</span>
+              <strong>${bestTotalMileRpm.metrics.totalMileRpm.toFixed(2)}</strong>
+              <p>{routeLabel(bestTotalMileRpm.offer)}</p>
+            </article>
+            <article>
+              <Truck size={24} aria-hidden="true" />
+              <span>Lowest deadhead percentage</span>
+              <strong>{lowestDeadhead.metrics.deadheadPercent.toFixed(2)}%</strong>
+              <p>{routeLabel(lowestDeadhead.offer)}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="lane-section lane-opportunities" aria-labelledby="opportunities-title">
+        <div class="lane-shell">
+          <div class="lane-section-heading">
+            <div>
+              <p class="lane-kicker">Synthetic opportunities</p>
+              <h2 id="opportunities-title">Every displayed number can be traced to its inputs.</h2>
+            </div>
+            <p>Gross uses booked, then negotiated, then posted rate. Total-mile RPM includes loaded and deadhead miles.</p>
+          </div>
+          <div class="lane-card-grid">
+            {opportunities.map(({ offer, metrics }) => (
+              <article class="lane-card">
+                <div class="lane-card-topline">
+                  <span>{offer.offerId}</span>
+                  <span class="lane-fresh"><Clock3 size={14} aria-hidden="true" />Synthetic · fresh</span>
+                </div>
+                <h3>{routeLabel(offer)}</h3>
+                <p>{offer.equipmentClass} · pickup {offer.pickupDate}</p>
+                <dl>
+                  <div><dt>Posted</dt><dd>${offer.postedRate.toLocaleString("en-US")}</dd></div>
+                  <div><dt>Negotiated</dt><dd>{offer.negotiatedRate === null ? "Not set" : `$${offer.negotiatedRate.toLocaleString("en-US")}`}</dd></div>
+                  <div><dt>Booked</dt><dd>{offer.bookedRate === null ? "Not set" : `$${offer.bookedRate.toLocaleString("en-US")}`}</dd></div>
+                  <div><dt>Rate basis</dt><dd>{metrics.rateBasis}</dd></div>
+                  <div><dt>Gross used</dt><dd>${metrics.gross.toLocaleString("en-US")}</dd></div>
+                  <div><dt>Loaded miles</dt><dd>{metrics.loadedMiles}</dd></div>
+                  <div><dt>Deadhead miles</dt><dd>{metrics.deadheadMiles}</dd></div>
+                  <div><dt>Total miles</dt><dd>{metrics.totalMiles}</dd></div>
+                  <div><dt>Loaded RPM</dt><dd>${metrics.loadedRpm.toFixed(2)}</dd></div>
+                  <div><dt>Total-mile RPM</dt><dd>${metrics.totalMileRpm.toFixed(2)}</dd></div>
+                  <div><dt>Deadhead</dt><dd>{metrics.deadheadPercent.toFixed(2)}%</dd></div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="lane-section" aria-labelledby="lifecycle-title">
+        <div class="lane-shell lane-lifecycle-layout">
+          <div>
+            <p class="lane-kicker">Shipment-history lifecycle</p>
+            <h2 id="lifecycle-title">Verification never becomes publication automatically.</h2>
+            <p>
+              A future sanitized record may move through sequential review states. The final publication state requires a
+              separate explicit approval and a public-data review. This prototype performs no transition.
+            </p>
+          </div>
+          <ol class="lane-lifecycle" aria-label="Shipment data lifecycle">
+            <li>Observed</li>
+            <li>Booked</li>
+            <li>Completed</li>
+            <li>Verified</li>
+            <li>Published — explicit approval required</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="lane-section lane-warning" aria-labelledby="warning-title">
+        <div class="lane-shell lane-warning-card">
+          <TriangleAlert size={30} aria-hidden="true" />
+          <div>
+            <p class="lane-kicker">Not connected</p>
+            <h2 id="warning-title">No real sheet, load board, API, or carrier history is represented.</h2>
+            <p>
+              Production work remains blocked until an owner-approved sanitized source, authorization model, provider
+              permissions, retention rules, and security review are documented and tested.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .lane-preview { min-height: 100vh; background: #f4f6fb; color: #101528; }
+  .lane-shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+  .lane-hero { padding: 150px 0 72px; background: linear-gradient(145deg, #071338, #12245f 62%, #233c82); color: white; }
+  .lane-hero-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(280px, .75fr); gap: 44px; align-items: end; }
+  .lane-kicker { margin: 0 0 12px; font-size: .76rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #f5b547; }
+  h1 { max-width: 850px; margin: 0; font-size: clamp(2.4rem, 5.6vw, 5.5rem); line-height: .98; letter-spacing: -.05em; }
+  .lane-lead { max-width: 760px; margin: 28px 0; font-size: clamp(1rem, 1.8vw, 1.25rem); line-height: 1.7; color: #dfe7ff; }
+  .lane-boundary { display: flex; gap: 14px; max-width: 770px; padding: 18px 20px; border: 1px solid rgba(255,255,255,.2); border-radius: 18px; background: rgba(255,255,255,.08); }
+  .lane-boundary strong, .lane-boundary span { display: block; }
+  .lane-boundary span { margin-top: 4px; color: #d8e1ff; line-height: 1.5; }
+  .lane-status-card { padding: 28px; border: 1px solid rgba(255,255,255,.2); border-radius: 24px; background: rgba(5, 13, 42, .55); backdrop-filter: blur(14px); }
+  .lane-status-card h2 { margin: 14px 0; font-size: 1.5rem; }
+  .lane-status-card ul { margin: 0; padding-left: 20px; color: #dfe7ff; line-height: 1.8; }
+  .lane-section { padding: 72px 0; }
+  .lane-section-heading { display: flex; justify-content: space-between; gap: 40px; align-items: end; margin-bottom: 30px; }
+  .lane-section-heading h2, .lane-lifecycle-layout h2, .lane-warning-card h2 { margin: 0; font-size: clamp(1.8rem, 3.4vw, 3rem); letter-spacing: -.035em; }
+  .lane-section-heading > p { max-width: 520px; margin: 0; color: #5e667c; line-height: 1.65; }
+  .lane-summary-grid, .lane-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .lane-summary-grid article, .lane-card { padding: 24px; border: 1px solid #dfe3ed; border-radius: 22px; background: white; box-shadow: 0 18px 45px rgba(24, 39, 86, .07); }
+  .lane-summary-grid span { display: block; margin: 14px 0 6px; color: #616a81; }
+  .lane-summary-grid strong { display: block; font-size: 2rem; }
+  .lane-summary-grid p { margin: 8px 0 0; color: #343c53; }
+  .lane-opportunities { background: #e9edf7; }
+  .lane-card-topline { display: flex; justify-content: space-between; gap: 10px; font-size: .76rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #64708d; }
+  .lane-fresh { display: inline-flex; align-items: center; gap: 5px; color: #267255; }
+  .lane-card h3 { margin: 20px 0 8px; font-size: 1.35rem; }
+  .lane-card > p { margin: 0 0 22px; color: #697188; }
+  .lane-card dl { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; overflow: hidden; border: 1px solid #e1e5ee; border-radius: 14px; background: #e1e5ee; }
+  .lane-card dl div { padding: 11px 12px; background: #fafbfe; }
+  .lane-card dt { font-size: .72rem; color: #737c92; }
+  .lane-card dd { margin: 4px 0 0; font-weight: 800; }
+  .lane-lifecycle-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, .8fr); gap: 50px; align-items: center; }
+  .lane-lifecycle-layout p:not(.lane-kicker) { color: #5d667d; line-height: 1.7; }
+  .lane-lifecycle { margin: 0; padding: 0; list-style: none; counter-reset: lane-state; }
+  .lane-lifecycle li { counter-increment: lane-state; position: relative; margin-bottom: 10px; padding: 16px 18px 16px 54px; border: 1px solid #dce1eb; border-radius: 14px; background: white; font-weight: 750; }
+  .lane-lifecycle li::before { content: counter(lane-state, decimal-leading-zero); position: absolute; left: 17px; color: #3e5aa8; }
+  .lane-warning { padding-top: 0; }
+  .lane-warning-card { display: flex; gap: 22px; padding: 30px; border: 1px solid #efcf8b; border-radius: 24px; background: #fff8e7; }
+  .lane-warning-card p:last-child { margin-bottom: 0; color: #64562f; line-height: 1.7; }
+  @media (max-width: 900px) {
+    .lane-hero-grid, .lane-lifecycle-layout { grid-template-columns: 1fr; }
+    .lane-summary-grid, .lane-card-grid { grid-template-columns: 1fr; }
+    .lane-section-heading { display: block; }
+    .lane-section-heading > p { margin-top: 16px; }
+  }
+  @media (max-width: 560px) {
+    .lane-shell { width: min(100% - 24px, 1180px); }
+    .lane-hero { padding-top: 120px; }
+    .lane-card dl { grid-template-columns: 1fr; }
+    .lane-warning-card { display: block; }
+  }
+</style>

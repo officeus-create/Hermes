@@ -2,6 +2,8 @@ name: Website checks
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 permissions:
@@ -12,16 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Audit dependency security
+        run: node scripts/dependency-audit-report.mjs
 
       - name: Build website
         run: npm run build

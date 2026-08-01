@@ -11,14 +11,27 @@ const crmTarget = join(websiteRoot, "public", "demos", "crm-validation");
 const connectTarget = join(websiteRoot, "public", "demos", "hermes-connect");
 const auditTarget = join(websiteRoot, "public", "demos", "website-audit");
 
+const noindexMeta = '<meta name="robots" content="noindex,nofollow">';
+const preserveDemoNoindex = async (path) => {
+  const html = await readFile(path, "utf8");
+  if (/\bname=["']robots["']/i.test(html)) return;
+  const next = html.replace(/<head>/i, `<head>\n  ${noindexMeta}`);
+  if (next === html) throw new Error(`Could not add noindex metadata to demo: ${path}`);
+  await writeFile(path, next, "utf8");
+};
+
 await mkdir(crmTarget, { recursive: true });
 await mkdir(connectTarget, { recursive: true });
 await mkdir(auditTarget, { recursive: true });
 
-await cp(join(crmRoot, "index.html"), join(crmTarget, "index.html"));
+const crmIndex = join(crmTarget, "index.html");
+await cp(join(crmRoot, "index.html"), crmIndex);
+await preserveDemoNoindex(crmIndex);
 await cp(join(crmRoot, "dashboard.json"), join(crmTarget, "dashboard.json"));
 
-await cp(join(connectRoot, "prototype", "index.html"), join(connectTarget, "index.html"));
+const connectIndex = join(connectTarget, "index.html");
+await cp(join(connectRoot, "prototype", "index.html"), connectIndex);
+await preserveDemoNoindex(connectIndex);
 await cp(join(connectRoot, "prototype", "styles.css"), join(connectTarget, "styles.css"));
 await cp(join(connectRoot, "src", "profile-workspace.mjs"), join(connectTarget, "profile-workspace.mjs"));
 
@@ -29,7 +42,9 @@ await writeFile(
   "utf8",
 );
 
-await cp(join(auditRoot, "index-after.html"), join(auditTarget, "index.html"));
+const auditIndex = join(auditTarget, "index.html");
+await cp(join(auditRoot, "index-after.html"), auditIndex);
+await preserveDemoNoindex(auditIndex);
 await cp(join(auditRoot, "report-after.json"), join(auditTarget, "report.json"));
 
-console.log("Synced CRM Validation, Hermes Connect, and Website Audit public demos.");
+console.log("Synced CRM Validation, Hermes Connect, and Website Audit public demos with noindex metadata.");

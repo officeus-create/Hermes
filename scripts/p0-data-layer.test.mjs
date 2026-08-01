@@ -53,4 +53,3 @@ assert.equal(mayPublishLane("verified", true), true);
 assert.equal(mayPublishLane("published", false), false);
 
 console.log("P0 carrier enrichment, CRM payload, and lane-intelligence checks passed.");
-

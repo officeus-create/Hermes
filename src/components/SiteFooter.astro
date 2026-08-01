@@ -11,7 +11,15 @@ const { locale = "en" } = Astro.props;
 const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
-    nav: site.navigation.map((item) => ({ label: item.label, href: `/${item.href}` })),
+    nav: [
+      ...site.navigation.map((item) => ({ label: item.label, href: `/${item.href}` })),
+      { label: "Case Studies", href: "/case/" },
+      { label: "Website Development", href: "/services/website-development/" },
+      { label: "SEO Services", href: "/services/seo/" },
+      { label: "Wisconsin Vehicle Transport", href: "/logistics/wisconsin-vehicle-transport/" },
+      { label: "Dealer Vehicle Transport", href: "/logistics/dealer-vehicle-transportation/" },
+      { label: "Car Hauling Dispatch", href: "/logistics/car-hauling-dispatch/" },
+    ],
     privacy: "Privacy",
     contact: "Contact",
     route: "Choose the right contact route",
@@ -94,7 +102,7 @@ const localePath = localeConfig[locale].path;
     </div>
     <nav class="footer-social" aria-label="Social media">
       {site.social.map((item) => (
-        <a href={item.href} target="_blank" rel="noreferrer">
+        <a href={item.href} target="_blank" rel="noopener noreferrer">
           {item.label}
         </a>
       ))}

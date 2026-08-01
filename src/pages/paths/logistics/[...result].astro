@@ -29,7 +29,11 @@ const schema = {
 };
 ---
 
-<BaseLayout title={`${recommendation.title} | Hermes Logistics`} description={recommendation.summary} schema={schema}>
+<BaseLayout
+  title={`${recommendation.seoTitle ?? recommendation.title} | Hermes Logistics`}
+  description={recommendation.seoDescription ?? recommendation.summary}
+  schema={schema}
+>
   <div class="logistics-recommendation-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">

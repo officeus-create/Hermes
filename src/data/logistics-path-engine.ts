@@ -25,6 +25,10 @@ export type LogisticsRecommendation = {
   eyebrow: string;
   title: string;
   summary: string;
+  /** Optional dedicated <title> text (without the " | Hermes Logistics" suffix). Falls back to `title` when unset. Keep under ~41 characters so the rendered tag stays within Google's ~60-character display limit. */
+  seoTitle?: string;
+  /** Optional dedicated meta description. Falls back to `summary` when unset. Keep under ~155 characters to avoid truncation in search results. */
+  seoDescription?: string;
   reasons: string[];
   included: string[];
   nextSteps: string[];
@@ -231,6 +235,8 @@ const carrierEquipment = (id: string, slug: string, label: string, fit: string):
   eyebrow: `Hermes Logistics · ${label}`,
   title: `${label} dispatch and operating support built around total-mile economics.`,
   summary: `A fit-first path for ${label.toLowerCase()} carriers that need current freight support, professional negotiation, document control, and a clearer plan for repeatable lanes.`,
+  seoTitle: `${label} Dispatch Support`,
+  seoDescription: `A fit-first path for ${label.toLowerCase()} carriers needing freight support, negotiation, and document control for repeatable lanes.`,
   reasons: [`Your selected equipment is ${label}.`, "Private carrier details belong after the recommendation.", `The first review must confirm ${fit}.`],
   included: ["Daily load search and carrier approval workflow", "Rate negotiation using loaded and deadhead miles", "Broker setup, pickup, delivery, and exception coordination", "Documents, invoicing, and follow-up where included", "Optional direct-freight development after fit is confirmed"],
   nextSteps: ["Submit MC or USDOT, equipment, capacity, location, and availability privately.", "Hermes checks authority, insurance, equipment fit, and current capacity.", "Logistics Sales confirms the suitable path; no load is booked automatically."],
@@ -247,7 +253,9 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/carriers/owner-operators/",
     eyebrow: "Hermes Logistics · Owner-Operators",
     title: "You don’t get just a dispatcher. You get two departments.",
+    seoTitle: "Owner-Operator Dispatch & Growth",
     summary: "One department helps keep the truck moving today. A second department can spend an initial working period of approximately 90 days developing direct relationships around verified capacity.",
+    seoDescription: "One team keeps your truck moving today. A second spends an initial ~90-day period developing direct relationships around verified capacity.",
     reasons: ["You operate carrier capacity.", "Your choices point to daily support or a broad fit review.", "Authority, insurance, equipment, lanes, and current Hermes capacity must be verified."],
     included: ["Load search, negotiation, booking, and coordination", "Broker setup, documents, invoicing, and follow-up where included", "Deadhead and schedule planning", "Direct shipper and dealer research under an approved scope", "Potential Trusted Carrier Network qualification after verified performance"],
     nextSteps: ["Provide MC or USDOT, equipment, capacity, current area, and availability privately.", "Hermes verifies authority, insurance, equipment, communication, and fit.", "The team confirms the dispatch, back-office, or growth path before work begins."],
@@ -260,6 +268,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/carriers/fleet-owners/",
     eyebrow: "Hermes Logistics · Fleet Owners",
     title: "Coordinate multiple trucks with one clear operating and growth system.",
+    seoTitle: "Fleet Owner Dispatch & Growth System",
     summary: "A fleet path for dispatch controls, truck-level visibility, consistent handoffs, and a direct-freight pipeline around verified equipment and service areas.",
     reasons: ["Your choices indicate multiple trucks, growth, or an operating transition.", "Scaling requires repeatable approval, documents, and exception workflows.", "Capacity and responsibilities must be verified before expansion."],
     included: ["Truck and equipment profile review", "Dispatch ownership and approval controls", "Lane, deadhead, schedule, and home-time planning", "Document and billing workflows", "Direct-freight development by verified capacity"],
@@ -282,6 +291,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/carriers/new-authority/",
     eyebrow: "Hermes Logistics · New Authority",
     title: "Prepare the operation before expecting mature freight access.",
+    seoTitle: "New Authority Carrier Readiness",
     summary: "Verify compliance, insurance, equipment, documents, operating area, and a realistic first freight strategy before dispatch promises are made.",
     reasons: ["Your authority is new, pending, or the primary concern.", "Brokers and customers may apply authority-age and history requirements.", "The correct first step is readiness, not guaranteed loads."],
     included: ["MC and USDOT normalization boundary", "Official FMCSA-source enrichment when connected", "Insurance and document checklist", "Equipment and operating-area review", "Realistic first dispatch and relationship-development plan"],
@@ -295,6 +305,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/carriers/direct-freight-development/",
     eyebrow: "Hermes Logistics · Direct Freight Development",
     title: "Build the freight network around verified carrier capacity.",
+    seoTitle: "Direct Freight Network Development",
     summary: "After qualification, Hermes can define an initial working period—often approximately 90 days—to research and develop relevant direct relationships.",
     reasons: ["You selected direct shippers, dealers, or dedicated lanes.", "Direct freight requires a qualified prospect pipeline and follow-up.", "Repeatable lanes come from verified demand and performance, not preferences alone."],
     included: ["Equipment, capacity, home-market, and lane analysis", "Shipper, dealer, auction, port, manufacturer, warehouse, and broker research", "Decision-maker identification and structured outreach", "Load-list requests and opportunity handoff", "Demand-signal, objection, and follow-up tracking"],
@@ -308,6 +319,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/carriers/trusted-carrier-network/",
     eyebrow: "Hermes Logistics · Trusted Carrier Network",
     title: "Trusted capacity is earned through verified operating performance.",
+    seoTitle: "Trusted Carrier Network Eligibility",
     summary: "After approximately 60–90 days of successful work, a carrier may become eligible for matching direct inquiries and approved service-area visibility.",
     reasons: ["You asked about the Trusted Carrier Network.", "Eligibility requires verified authority, insurance, equipment, communication, documents, safety, and service.", "The network is not purchased or automatic."],
     included: ["MC and USDOT verification", "Insurance and equipment review", "Communication and document-quality review", "Pickup, delivery, claims, and customer-interaction review", "Lane and service coverage from Hermes history"],
@@ -321,6 +333,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/customers/vehicle-transport/",
     eyebrow: "Hermes Logistics · Vehicle Transport",
     title: "Qualify the vehicle, route, timing, and handling before carrier matching.",
+    seoTitle: "Vehicle Transport Qualification",
     summary: "A structured request for one or multiple vehicles moving between a private address, dealership, auction, business, or approved location.",
     reasons: ["You selected a vehicle move.", "Matching depends on route, readiness, condition, equipment, access, and timing.", "Private addresses, VINs, names, and documents stay out of the public path."],
     included: ["Pickup and delivery qualification", "Vehicle count, condition, and operability review", "Open or enclosed equipment discussion", "Ready date, access, and special handling", "Carrier fit and rate conversation after completion"],
@@ -333,6 +346,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/customers/port-pickup/",
     eyebrow: "Hermes Logistics · Port and Airport Pickup",
     title: "Confirm release, access, timing, and storage risk before dispatch.",
+    seoTitle: "Port & Airport Vehicle Pickup",
     summary: "A vehicle-transport path where customs, release, identification, access credentials, storage, or demurrage can affect pickup.",
     reasons: ["You selected a port or airport pickup.", "Release and access can block an otherwise suitable carrier.", "The request needs qualification before matching."],
     included: ["Release and customs-status checklist", "Terminal, port, airport, or warehouse access review", "Arrival, pickup window, storage, and demurrage review", "TWIC or escort discussion when applicable", "Vehicle condition, handling, and equipment fit"],
@@ -345,6 +359,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/customers/luxury-classic-vehicle/",
     eyebrow: "Hermes Logistics · Luxury and Classic Vehicles",
     title: "Specialized transport starts with handling, insurance, access, and equipment fit.",
+    seoTitle: "Luxury & Classic Vehicle Transport",
     summary: "A qualification-first route for rare, luxury, classic, collector, or sensitive vehicles that may require enclosed transport or experienced handling.",
     reasons: ["You identified a luxury or classic vehicle.", "The lowest posted rate is not the only factor.", "Experience, authority, insurance, equipment, handling, and access must be verified."],
     included: ["Open versus enclosed review", "Operability, clearance, loading, securement, and handling", "Authority, insurance, and experience qualification", "Pickup access, release, storage, and timing", "Private handling of VINs, documents, names, and exact addresses"],
@@ -363,6 +378,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/shippers-dealers/",
     eyebrow: "Hermes Logistics · Shippers and Dealers",
     title: "Move inventory through a qualified request, not a generic contact form.",
+    seoTitle: "Shipper & Dealer Vehicle Intake",
     summary: "A B2B intake path for dealership inventory, auction purchases, repeat vehicle movement, and other approved shipper needs.",
     reasons: ["You identified as a dealer or selected dealership inventory.", "Repeat work needs consistent route, timing, vehicle, and condition data.", "Matching begins only after qualification."],
     included: ["Single and multi-vehicle requests", "Dealer, auction, and business pickup context", "Ready dates, delivery windows, operability, and fit", "Rate or budget context without automatic acceptance", "Routing to the Shipper/Dealer team"],
@@ -375,6 +391,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/brokers/carrier-capacity/",
     eyebrow: "Hermes Logistics · Broker Capacity",
     title: "Request verified carrier capacity with the details an operating team needs.",
+    seoTitle: "Request Verified Carrier Capacity",
     summary: "A broker path requiring origin, destination, dates, equipment, commodity, rate, authority, insurance, and tracking expectations.",
     reasons: ["You identified as a broker.", "Capacity is not available until carrier and load fit are verified.", "Structured intake reduces repeated questions."],
     included: ["Load and broker identity review", "Origin, destination, timing, commodity, and equipment fit", "Rate, weight, dimensions, and special requirements", "Authority, insurance, and tracking expectations", "Handoff after verification"],
@@ -387,6 +404,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/drivers/",
     eyebrow: "Hermes Logistics · Drivers and Careers",
     title: "Keep driver employment, operations roles, and training on the correct path.",
+    seoTitle: "Driver & Logistics Career Path",
     summary: "A career route for driving, dispatch, sales, operations, or an Academy path before applying.",
     reasons: ["You selected the driver or career path.", "Employment review is separate from carrier dispatch.", "Fit depends on qualifications, experience, availability, and current needs."],
     included: ["Driving and car-hauling experience review", "CDL and OTR discussion where relevant", "Dispatch, sales, and operations routing", "Languages, location, and availability", "Academy connection when training comes first"],
@@ -400,6 +418,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/agency-partners/",
     eyebrow: "Hermes Logistics · Agency Partners",
     title: "Discuss an agency path through a controlled fit assessment.",
+    seoTitle: "Agency Partner Fit Assessment",
     summary: "A structured conversation for operators, sales leaders, or managers exploring a remote logistics agency under Hermes standards and controls.",
     reasons: ["You selected the agency-partner path.", "The model requires operating, sales, hiring, leadership, language, and time review.", "Any path starts with controls and measurable expectations."],
     included: ["Location, market, languages, and network review", "Logistics, sales, operations, and management experience", "Team or hiring-capacity assessment", "Available-time and responsibility assessment", "Pilot discussion only after fit"],
@@ -412,6 +431,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     route: "/paths/logistics/guidance/",
     eyebrow: "Hermes Logistics · Guided Fit Review",
     title: "Start with the request, not a guessed service.",
+    seoTitle: "Logistics Sales Guided Fit Review",
     summary: "Use Logistics Sales when the role, equipment, cargo, authority, or service path is not yet clear.",
     reasons: ["You selected “I am not sure yet” or a request outside the current pilot.", "A general review is safer than the wrong route.", "No eligibility, freight, equipment fit, or scope is assumed."],
     included: ["Clarify freight, operations, transportation, careers, or agency intent", "Identify minimum qualification facts", "Route to the correct existing form or team", "Explain current preview and production boundaries"],

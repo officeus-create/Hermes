@@ -515,12 +515,20 @@ const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
   let activeLoadLead: ReturnType<typeof buildPostedLoadSalesLead> | null = null;
 
   const activeRole = new URLSearchParams(window.location.search).get("role");
+  const sourceOrigin = new URLSearchParams(window.location.search).get("origin");
+  const sourceArea = new URLSearchParams(window.location.search).get("area");
   if (activeRole) {
     document.querySelector(`[data-role-link="${activeRole}"]`)?.setAttribute("aria-current", "page");
     const submitter = document.querySelector<HTMLSelectElement>('select[name="submitter_type"]');
     if (submitter && activeRole === "broker") submitter.value = "broker";
     if (submitter && activeRole === "shipper") submitter.value = "shipper";
+    if (submitter && activeRole === "dealer") submitter.value = "dealer";
+    if (submitter && activeRole === "private_party") submitter.value = "private_party";
   }
+  const pickupLocation = document.querySelector<HTMLInputElement>('input[name="pickup_location"]');
+  const carrierOrigin = document.querySelector<HTMLInputElement>('input[name="origin_location"]');
+  if (pickupLocation && sourceOrigin) pickupLocation.value = sourceOrigin.slice(0, 180);
+  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);
 
   const demoSearchButton = document.querySelector<HTMLButtonElement>("[data-demo-search]");
   const demoSearchStatus = document.querySelector<HTMLElement>("[data-demo-search-status]");

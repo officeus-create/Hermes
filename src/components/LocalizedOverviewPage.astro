@@ -18,30 +18,37 @@ const mailCopy = {
   it: { subject: "Richiesta per Hermes", body: "Azienda:\nPaese e città:\nArea di interesse:\nCosa deve migliorare:\nTre progetti desiderati:\nEsempi che le piacciono:\nBudget stimato o investimento mensile:" },
   fr: { subject: "Demande pour Hermes", body: "Entreprise :\nPays et ville :\nDomaine recherché :\nCe qui doit être amélioré :\nTrois projets souhaités :\nExemples appréciés :\nBudget estimé ou investissement mensuel :" },
 }[content.locale];
+const partnershipLabels = {
+  uk: ["Технології", "Маркетинг", "Академія", "Логістика"],
+  ru: ["Технологии", "Маркетинг", "Академия", "Логистика"],
+  es: ["Tecnología", "Marketing", "Academia", "Logística"],
+  it: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
+  fr: ["Technologie", "Marketing", "Académie", "Logistique"],
+}[content.locale];
 const mailSubject = mailCopy.subject;
 const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
+const canonicalUrl = `https://hermeslogisticsus.com${content.path}`;
 const schema = {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "Hermes",
-  url: `https://hermeslogisticsus.com${content.path}`,
-  areaServed: [
-    { "@type": "Country", name: "United States" },
-    { "@type": "Country", name: "Italy" },
-    { "@type": "Country", name: "Germany" },
-    { "@type": "Country", name: "France" },
-    { "@type": "Country", name: "United Kingdom" },
-  ],
+  "@type": "WebPage",
+  "@id": `${canonicalUrl}#webpage`,
+  url: canonicalUrl,
+  name: content.metaTitle,
+  description: content.metaDescription,
+  inLanguage: content.locale,
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+  about: { "@id": "https://hermeslogisticsus.com/#organization" },
+  publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
 };
 ---
 
-<BaseLayout title={content.metaTitle} description={content.metaDescription} locale={content.locale} alternates={languageAlternates} schema={schema}>
+<BaseLayout title={content.metaTitle} description={content.metaDescription} locale={content.locale} alternates={languageAlternates} preloadImage="/images/hermes-ecosystem-hero.jpg" schema={schema}>
   <SiteHeader locale={content.locale} />
   <main id="main-content" class="localized-overview">
     <section class="localized-hero" id="top" data-motion-hero>
-      <img src="/images/hermes-ecosystem-hero.jpg" alt="" width="1920" height="1080" fetchpriority="high" decoding="async" />
+                <img src="/images/hermes-ecosystem-hero.jpg" alt={content.heroImageAlt} width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" sizes="100vw" />
       <div class="localized-hero-shade"></div>
       <div class="shell localized-hero-content">
         <p class="eyebrow">{content.hero.eyebrow}</p>
@@ -88,7 +95,7 @@ const schema = {
           <p>{content.partnership.body}</p>
         </div>
         <div class="localized-partnership-grid" data-reveal>
-          {content.partnership.items.map((item, index) => <article><span>0{index + 1}</span><h3>{item.title}</h3><p>{item.body}</p></article>)}
+          {content.partnership.items.map((item, index) => <article><span>0{index + 1}</span><h3>{partnershipLabels[index] ?? item.title}</h3><p>{item.body}</p></article>)}
         </div>
         <div class="localized-partnership-note" data-reveal><ShieldCheck size={21} aria-hidden="true" /><p>{content.partnership.note}</p></div>
       </div>

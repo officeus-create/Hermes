@@ -1,0 +1,121 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import {
+  digitalGrowthCtaVariants,
+  digitalNicheResearch,
+  evaluateDigitalNicheResearch,
+} from "../src/data/digital-market-operations.ts";
+
+const root = new URL("../", import.meta.url).pathname;
+const dist = join(root, "dist");
+const pages = [
+  {
+    route: "/services/seo-for-logistics-companies/",
+    file: "services/seo-for-logistics-companies/index.html",
+    title: "SEO for Logistics Companies | Hermes",
+    h1: "SEO for U.S. Logistics Companies",
+    required: [
+      "Audience and service architecture",
+      "Current load-board offers are private observations",
+      "Can shipment history be used for SEO pages?",
+      "/logistics/car-hauling-dispatch/",
+      "/logistics/dealer-vehicle-transportation/",
+    ],
+  },
+  {
+    route: "/services/seo-for-independent-auto-dealers/",
+    file: "services/seo-for-independent-auto-dealers/index.html",
+    title: "SEO for Independent Auto Dealers | Hermes",
+    h1: "SEO for Independent Auto Dealers",
+    required: [
+      "Dealer search architecture",
+      "Inventory, pricing, availability, condition, financing",
+      "Can SEO work with a third-party dealer inventory feed?",
+      "/logistics/dealer-vehicle-transportation/",
+      "/logistics/resources/auction-vehicle-pickup-checklist/",
+    ],
+  },
+];
+
+const decode = (value = "") => value
+  .replaceAll("&amp;", "&")
+  .replaceAll("&quot;", '"')
+  .replaceAll("&#39;", "'")
+  .replace(/<[^>]+>/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+const tagText = (html, tag) => decode(html.match(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"))?.[1] ?? "");
+const canonical = (html) => [...html.matchAll(/<link\b[^>]*>/gi)]
+  .map((match) => match[0])
+  .find((tag) => /\brel=["'][^"']*\bcanonical\b[^"']*["']/i.test(tag))
+  ?.match(/\bhref=["']([^"']+)["']/i)?.[1] ?? "";
+const parseSchema = (html) => [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
+  .flatMap((match) => {
+    const parsed = JSON.parse(match[1]);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  });
+
+const sitemap = await readFile(join(dist, "sitemap-digital-services.xml"), "utf8");
+const seoHub = await readFile(join(dist, "services/seo/index.html"), "utf8");
+
+for (const page of pages) {
+  const html = await readFile(join(dist, page.file), "utf8");
+  assert.equal(tagText(html, "title"), page.title, `${page.route} title mismatch`);
+  assert.equal(tagText(html, "h1"), page.h1, `${page.route} H1 mismatch`);
+  assert.equal(canonical(html), `https://hermeslogisticsus.com${page.route}`, `${page.route} canonical mismatch`);
+  assert.equal((html.match(/<h1\b/gi) ?? []).length, 1, `${page.route} must have one H1`);
+  assert.ok(html.includes('data-contact-mode="preview"'), `${page.route} must remain preview-first`);
+  assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} IT email fallback missing`);
+  assert.ok(!html.includes('href="tel:'), `${page.route} must remain IT email-only`);
+  assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} breadcrumb missing`);
+  for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
+  const schemaTypes = parseSchema(html).map((entity) => entity?.["@type"]);
+  for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) {
+    assert.ok(schemaTypes.includes(requiredType), `${page.route} missing ${requiredType}`);
+  }
+  assert.ok(sitemap.includes(`<loc>https://hermeslogisticsus.com${page.route}</loc>`), `${page.route} missing from sitemap`);
+  assert.ok(seoHub.includes(`href="${page.route}"`), `${page.route} missing from national SEO hub`);
+}
+
+assert.equal(digitalGrowthCtaVariants.length, 5);
+assert.equal(new Set(digitalGrowthCtaVariants.map((cta) => cta.id)).size, 5);
+for (const cta of digitalGrowthCtaVariants) {
+  assert.ok(cta.requiredInputs.length >= 5);
+  assert.match(cta.disclosure, /manual project review/i);
+  assert.match(cta.disclosure, /does not create a contract/i);
+  assert.match(cta.disclosure, /guarantee completion time, rankings, traffic, inquiries, revenue, or ROI/i);
+}
+
+assert.equal(digitalNicheResearch.length, 4);
+assert.deepEqual(
+  digitalNicheResearch.map((record) => record.id).sort(),
+  ["beauty_and_salon", "education_and_training", "home_services", "professional_services"],
+);
+for (const record of digitalNicheResearch) {
+  assert.ok(record.researchQuestions.length >= 4);
+  assert.ok(record.requiredEvidence.length >= 5);
+  assert.ok(record.prohibitedAssumptions.length >= 4);
+  const evaluation = evaluateDigitalNicheResearch(record);
+  assert.equal(evaluation.status, "blocked_missing_evidence");
+  assert.ok(evaluation.blockers.includes("dated research provenance is required"));
+  assert.ok(evaluation.blockers.includes("measurable niche demand is required"));
+  assert.ok(evaluation.blockers.includes("service response capacity must be confirmed"));
+  assert.ok(evaluation.blockers.includes("proof and claims review is required"));
+  assert.ok(evaluation.blockers.includes("unique niche or local content plan is required"));
+}
+
+const researchReady = evaluateDigitalNicheResearch({
+  ...digitalNicheResearch[0],
+  sourceIds: ["fixture-niche-source-001"],
+  reviewedAt: "2026-07-31",
+  measurableDemand: true,
+  serviceResponseCapacityConfirmed: true,
+  proofReviewed: true,
+  uniqueContentPlan: true,
+});
+assert.equal(researchReady.status, "eligible_for_editorial_review");
+assert.deepEqual(researchReady.blockers, []);
+assert.notEqual(researchReady.status, "published");
+
+console.log("digital niche checks passed: logistics/dealer SEO pages, five CTA variants, four separate research queues, evidence gates, sitemap, schema, and preview contact.");

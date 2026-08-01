@@ -1,6 +1,8 @@
 ---
-import { ArrowLeft, ArrowRight, Check } from "@lucide/astro";
+import { ArrowRight, Check } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import CareerStatusPanel from "../../components/CareerStatusPanel.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import LogisticsLocationPage from "../../components/LogisticsLocationPage.astro";
@@ -8,31 +10,81 @@ import { logisticsAudiences } from "../../data/logistics-audiences";
 import { publishedLogisticsLocations } from "../../data/logistics-locations";
 
 export function getStaticPaths() {
+  // Markets that already have a hand-built standalone page under
+  // src/pages/logistics/. Those pages are part of the Wisconsin service cluster
+  // and are cross-linked from the Wisconsin hub, the resource checklists, and the
+  // Appleton case study, so they own their URL. Astro would otherwise emit a
+  // route-collision warning and silently drop the dynamic version. Declared
+  // inside getStaticPaths because Astro hoists this function — module-scope
+  // consts are not in scope here. Keep in sync when a standalone page is added.
+  const standaloneLocationSlugs = new Set([
+    "appleton-wi-vehicle-transport",
+    "milwaukee-wi-vehicle-transport",
+  ]);
+
   return [
     ...logisticsAudiences.map((audience) => ({
       params: { audience: audience.slug },
       props: { pageKind: "audience" as const, audience },
     })),
-    ...publishedLogisticsLocations.map((location) => ({
-      params: { audience: location.slug },
-      props: { pageKind: "location" as const, location },
-    })),
+    ...publishedLogisticsLocations
+      .filter((location) => !standaloneLocationSlugs.has(location.slug))
+      .map((location) => ({
+        params: { audience: location.slug },
+        props: { pageKind: "location" as const, location },
+      })),
   ];
 }
 
 const { pageKind, audience, location } = Astro.props;
+
+// Audience-only metadata. Location pages render through LogisticsLocationPage,
+// which builds its own canonical URL and Service/Breadcrumb/FAQ schema, so this
+// block must stay guarded — it would throw on location routes where `audience`
+// is undefined.
+const canonicalUrl = audience
+  ? new URL(`/logistics/${audience.slug}/`, Astro.site).toString()
+  : undefined;
+const schema = audience
+  ? [
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+          { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+          { "@type": "ListItem", position: 3, name: audience.label, item: canonicalUrl },
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: audience.faq.map((item) => ({
+          "@type": "Question",
+          name: item.question,
+          acceptedAnswer: { "@type": "Answer", text: item.answer },
+        })),
+      },
+    ]
+  : undefined;
 ---
 
 {pageKind === "location" && location ? (
   <LogisticsLocationPage location={location} />
 ) : audience ? (
-  <BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary}>
+  <BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary} schema={schema}>
     <div class="logistics-audience-page">
       <SiteHeader theme="dark" activePath="/paths/logistics/" />
       <main id="main-content">
         <section class="logistics-audience-hero">
           <div class="shell">
-            <a class="detail-back" href="/paths/logistics/#choose-your-path"><ArrowLeft size={18} aria-hidden="true" />All logistics paths</a>
+            <Breadcrumbs
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Logistics", href: "/paths/logistics/" },
+              ]}
+              current={audience.label}
+            />
             <p class="eyebrow">Hermes Logistics · {audience.eyebrow}</p>
             <h1>{audience.title}</h1>
             <p>{audience.summary}</p>
@@ -40,6 +92,11 @@ const { pageKind, audience, location } = Astro.props;
               <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
               {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
             </div>
+            {(audience.slug === "shipper-dealer" || audience.slug === "carrier") && (
+              <a class="logistics-local-guide-link" href="/logistics/appleton-wi-vehicle-transport/">
+                Appleton, Wisconsin vehicle transport guide <ArrowRight size={16} aria-hidden="true" />
+              </a>
+            )}
           </div>
         </section>
 
@@ -59,8 +116,33 @@ const { pageKind, audience, location } = Astro.props;
             </ol>
           </div>
         </section>
+
+        <section class="section logistics-audience-faq" aria-labelledby="logistics-audience-faq-title">
+          <div class="shell">
+            <p class="eyebrow">Common questions</p>
+            <h2 id="logistics-audience-faq-title">Before you start.</h2>
+            <div class="logistics-audience-faq-list">
+              {audience.faq.map((item) => (
+                <details>
+                  <summary>{item.question}</summary>
+                  <p>{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {audience.slug === "careers" && <CareerStatusPanel />}
       </main>
       <SiteFooter />
     </div>
   </BaseLayout>
 ) : null}
+
+<style>
+  .logistics-audience-faq { background: #f5f7fb; }
+  .logistics-audience-faq-list { display: grid; gap: 1rem; margin-top: 1.5rem; }
+  .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid #d6dce8; border-radius: 10px; background: #fff; }
+  .logistics-audience-faq-list summary { cursor: pointer; font-weight: 750; color: var(--color-navy-900); }
+  .logistics-audience-faq-list p { margin: .75rem 0 0; max-width: 78ch; color: var(--color-muted); }
+</style>

@@ -1,16 +1,35 @@
 ---
 import { ArrowRight } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
+
+const canonicalUrl = "https://hermeslogisticsus.com/logistics/apply/";
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+    { "@type": "ListItem", position: 3, name: "Application", item: canonicalUrl },
+  ],
+};
 ---
 
-<BaseLayout title="Logistics Application | Hermes" description="Prepare an application for a Hermes logistics career or remote agency conversation.">
+<BaseLayout title="Logistics Application | Hermes" description="Prepare an application for a Hermes logistics career or remote agency conversation." schema={schema}>
   <div class="logistics-application-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">
       <section class="logistics-audience-hero logistics-application-hero">
         <div class="shell">
+          <Breadcrumbs
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Logistics", href: "/paths/logistics/" },
+            ]}
+            current="Application"
+          />
           <p class="eyebrow">Hermes Logistics · Application preview</p>
           <h1>Tell us what path you want to explore.</h1>
           <p>Prepare a structured application for a role or a remote agency conversation. Preview mode does not send or store your information.</p>
@@ -98,4 +117,3 @@ import SiteFooter from "../../components/SiteFooter.astro";
     catch { copyStatus.textContent = "Copy did not work. Select the preview text and copy it manually."; }
   });
 </script>
-

@@ -4,6 +4,10 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const indexPath = join(dist, "index.html");
+const headers = await readFile(join(root, "public/_headers"), "utf8");
+if (!headers.includes("Strict-Transport-Security: max-age=31536000")) {
+  throw new Error("HSTS header is missing from public/_headers");
+}
 const routes = [
   {
     path: "paths/logistics/index.html",
@@ -62,6 +66,53 @@ const routes = [
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
   { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "Your information was not sent or stored"] },
+  {
+    path: "logistics/appleton-wi-vehicle-transport/index.html",
+    required: [
+      "Vehicle transport to and from Appleton, Wisconsin.",
+      "Prepare a transport request",
+      "Carrier: share capacity",
+      "does not guarantee price, timing",
+      "Auction and dealer planning",
+      "Hermes is not presented as affiliated",
+      "How much does vehicle transport to or from Appleton cost?",
+      "Does submitting a request guarantee a carrier?",
+      "application/ld+json",
+      "/load-board/?role=dealer",
+      "/load-board/?role=carrier",
+    ],
+  },
+  {
+    path: "logistics/resources/auction-vehicle-pickup-checklist/index.html",
+    required: [
+      "Auction Vehicle Pickup Checklist",
+      "Confirm the actual facility rules.",
+      "Confirm the vehicle is released.",
+      "Check the storage deadline.",
+      "Describe the vehicle accurately.",
+      "Prepare delivery information.",
+      "does not guarantee a price, pickup date",
+      "/logistics/appleton-wi-vehicle-transport/",
+      "/logistics/shipper-dealer/",
+      "/load-board/?role=shipper",
+    ],
+  },
+  {
+    path: "logistics/resources/car-hauler-capacity-checklist/index.html",
+    required: [
+      "Car Hauler Capacity Checklist",
+      "Availability begins a review.",
+      "Carrier and authority",
+      "Current area and radius",
+      "Equipment and spaces",
+      "No guaranteed load",
+      "No guaranteed rate or revenue",
+      "does not create an account, approve a carrier",
+      "/logistics/carrier/",
+      "/logistics/appleton-wi-vehicle-transport/",
+      "/load-board/?role=carrier",
+    ],
+  },
   { path: "paths/academy/index.html", required: ["Learn AI automation by building one useful assistant.", "Fitness AI Telegram Assistant", "Learning preview only", "Ask about learning AI automation"] },
 ];
 const emailOnlyRoutes = [
@@ -85,6 +136,13 @@ await access(join(dist, "sitemap.xml"));
 await access(join(dist, "llms.txt"));
 const html = await readFile(indexPath, "utf8");
 const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
+
+if (/<img\b[^>]*\balt=""/i.test(html)) {
+  throw new Error("Homepage contains an image without a descriptive alt value");
+}
+if (!html.includes('hreflang="it"')) {
+  throw new Error('Valid Italian hreflang="it" is missing from the homepage');
+}
 
 function validateStructuredData(pageHtml, pageName) {
   const matches = [...pageHtml.matchAll(/<script[^>]+type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)];
@@ -147,55 +205,6 @@ for (const route of routes) {
   if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) throw new Error(`Robots metadata missing in ${route.path}`);
   if (/<form[^>]+action=/i.test(routeHtml)) throw new Error(`Form action found in ${route.path}`);
   if (route.path === "paths/technology/index.html" && /digital employee/i.test(routeHtml)) throw new Error("Legacy digital employee wording found on the IT page");
-}
-
-const locationRoutes = [
-  ["appleton-wi-vehicle-transport", "Appleton, Wisconsin"],
-  ["pueblo-co-vehicle-transport", "Pueblo, Colorado"],
-  ["colorado-springs-co-vehicle-transport", "Colorado Springs, Colorado"],
-  ["springfield-mo-vehicle-transport", "Springfield, Missouri"],
-  ["puyallup-wa-vehicle-transport", "Puyallup, Washington"],
-  ["university-park-il-vehicle-transport", "University Park, Illinois"],
-  ["saint-paul-mn-vehicle-transport", "Saint Paul, Minnesota"],
-  ["royal-oak-mi-vehicle-transport", "Royal Oak, Michigan"],
-  ["evanston-il-vehicle-transport", "Evanston, Illinois"],
-  ["englewood-co-vehicle-transport", "Englewood, Colorado"],
-  ["chicago-il-vehicle-transport", "Chicago, Illinois"],
-  ["austin-tx-vehicle-transport", "Austin, Texas"],
-  ["milwaukee-wi-vehicle-transport", "Milwaukee, Wisconsin"],
-  ["littleton-co-vehicle-transport", "Littleton, Colorado"],
-];
-
-for (const [slug, place] of locationRoutes) {
-  const routePath = `logistics/${slug}/index.html`;
-  const routeHtml = await readFile(join(dist, routePath), "utf8");
-  for (const text of [
-    `Vehicle transport requests to and from ${place}.`,
-    "Prepare a transport request",
-    "Carrier: share capacity",
-    "Request review only.",
-    "What can change the operating plan.",
-    "Prepare the facts a carrier needs.",
-    "From request to a qualified next step.",
-    "Open or enclosed is a fit decision.",
-    "Before you request transport.",
-  ]) {
-    if (!routeHtml.includes(text)) throw new Error(`Missing ${text} in ${routePath}`);
-  }
-  if (!routeHtml.includes(`<link rel="canonical" href="https://hermeslogisticsus.com/logistics/${slug}/">`)) {
-    throw new Error(`Location canonical URL missing or incorrect in ${routePath}`);
-  }
-  if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) {
-    throw new Error(`Location robots metadata missing in ${routePath}`);
-  }
-  if (!sitemap.includes(`/logistics/${slug}/`)) throw new Error(`Sitemap entry missing for location: ${slug}`);
-  if (/Verified Hermes location detail/.test(routeHtml)) {
-    throw new Error(`Unverified address or ZIP block was rendered in ${routePath}`);
-  }
-  if (/\[cite:\s*\d+\]|6%\s*(?:to|-)\s*11%|\$10k|\$12k|weekly gross|high-paying/i.test(routeHtml)) {
-    throw new Error(`Unsupported Gemini draft claim found in ${routePath}`);
-  }
-  validateStructuredData(routeHtml, routePath);
 }
 
 const technologyHtml = await readFile(join(dist, "paths/technology/index.html"), "utf8");
@@ -316,6 +325,9 @@ for (const path of ["shipper-dealer", "broker", "carrier", "agency", "careers"])
   if (!sitemap.includes(`/logistics/${path}/`)) throw new Error(`Sitemap entry missing for logistics audience: ${path}`);
 }
 if (!sitemap.includes("/logistics/apply/")) throw new Error("Sitemap entry missing for logistics application");
+if (!sitemap.includes("/logistics/appleton-wi-vehicle-transport/")) throw new Error("Sitemap entry missing for Appleton vehicle transport");
+if (!sitemap.includes("/logistics/resources/auction-vehicle-pickup-checklist/")) throw new Error("Sitemap entry missing for auction pickup checklist");
+if (!sitemap.includes("/logistics/resources/car-hauler-capacity-checklist/")) throw new Error("Sitemap entry missing for car hauler capacity checklist");
 
 const forbidden = [
   "guaranteed income",
@@ -348,60 +360,9 @@ const publicForbiddenInternalTerms = [
   "DCA-",
 ];
 
-async function collectHtmlFiles(directory, relative = "") {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const files = [];
-  for (const entry of entries) {
-    const nextRelative = join(relative, entry.name);
-    if (entry.isDirectory()) files.push(...await collectHtmlFiles(join(directory, entry.name), nextRelative));
-    else if (entry.name.endsWith(".html")) files.push(nextRelative);
-  }
-  return files;
-}
-
-const allHtmlFiles = await collectHtmlFiles(dist);
-const publicPages = await Promise.all(allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")]));
-
-for (const [pageName, pageHtml] of publicPages) {
-  if (pageHtml.includes("/cdn-cgi/l/email-protection")) {
-    throw new Error(`Cloudflare email-protection link found in ${pageName}`);
-  }
-
-  const mailtoPositions = [...pageHtml.matchAll(/href="mailto:/g)].map((match) => match.index ?? -1);
-  if (mailtoPositions.length === 0) continue;
-
-  const protectionStart = pageHtml.indexOf("<!--email_off-->");
-  const protectionEnd = pageHtml.indexOf("<!--/email_off-->");
-  if (
-    protectionStart === -1 ||
-    protectionEnd === -1 ||
-    protectionEnd <= protectionStart ||
-    mailtoPositions.some((position) => position < protectionStart || position > protectionEnd)
-  ) {
-    throw new Error(`Static email link is not protected from Cloudflare obfuscation in ${pageName}`);
-  }
-}
-
-const routeFromHtmlPath = (path) => {
-  if (path === "index.html") return "/";
-  if (path.endsWith("/index.html")) return `/${path.slice(0, -"index.html".length)}`;
-  return `/${path}`;
-};
-const htmlTargets = new Set(allHtmlFiles.map(routeFromHtmlPath));
-const brokenInternalLinks = [];
-for (const [pageName, pageHtml] of publicPages) {
-  const pageUrl = new URL(routeFromHtmlPath(pageName), "https://hermeslogisticsus.com");
-  for (const match of pageHtml.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)) {
-    const href = match[1];
-    if (!href || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
-    const target = new URL(href, pageUrl);
-    if (target.hostname !== "hermeslogisticsus.com") continue;
-    const targetPath = target.pathname.endsWith("/") ? target.pathname : target.pathname.endsWith(".html") ? target.pathname : `${target.pathname}/`;
-    if (!htmlTargets.has(targetPath)) brokenInternalLinks.push(`${pageName} -> ${href}`);
-  }
-}
-if (brokenInternalLinks.length) {
-  throw new Error(`Broken internal links:\n${brokenInternalLinks.slice(0, 30).join("\n")}`);
+const publicPages = [["homepage", html]];
+for (const route of routes) {
+  publicPages.push([route.path, await readFile(join(dist, route.path), "utf8")]);
 }
 
 for (const claim of forbidden) {
@@ -447,4 +408,132 @@ for (const asset of assets) {
 
 await access(join(dist, "_headers"));
 
-console.log(`Validated static website: ${allHtmlFiles.length} HTML pages, ${required.length} homepage checks, ${assets.length} image assets, 0 broken internal links.`);
+async function collectHtmlFiles(directory, relative = "") {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const nextRelative = join(relative, entry.name);
+    if (entry.isDirectory()) files.push(...await collectHtmlFiles(join(directory, entry.name), nextRelative));
+    else if (entry.name.endsWith(".html")) files.push(nextRelative);
+  }
+  return files;
+}
+
+const allHtmlFiles = await collectHtmlFiles(dist);
+const generatedPages = await Promise.all(
+  allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")]),
+);
+
+for (const [pageName, pageHtml] of generatedPages) {
+  if (pageHtml.includes("/cdn-cgi/l/email-protection")) {
+    throw new Error(`Cloudflare email-protection link found in ${pageName}`);
+  }
+
+  const mailtoPositions = [...pageHtml.matchAll(/href="mailto:/g)].map((match) => match.index ?? -1);
+  if (mailtoPositions.length === 0) continue;
+
+  const protectionStart = pageHtml.indexOf("<!--email_off-->");
+  const protectionEnd = pageHtml.indexOf("<!--/email_off-->");
+  if (
+    protectionStart === -1 ||
+    protectionEnd === -1 ||
+    protectionEnd <= protectionStart ||
+    mailtoPositions.some((position) => position < protectionStart || position > protectionEnd)
+  ) {
+    throw new Error(`Static email link is not protected from Cloudflare obfuscation in ${pageName}`);
+  }
+}
+
+const routeFromHtmlPath = (path) => {
+  if (path === "index.html") return "/";
+  if (path.endsWith("/index.html")) return `/${path.slice(0, -"index.html".length)}`;
+  return `/${path}`;
+};
+const htmlTargets = new Set(allHtmlFiles.map(routeFromHtmlPath));
+const brokenInternalLinks = [];
+for (const [pageName, pageHtml] of generatedPages) {
+  const pageUrl = new URL(routeFromHtmlPath(pageName), "https://hermeslogisticsus.com");
+  for (const match of pageHtml.matchAll(/<a\b[^>]*\bhref="([^"]+)"/g)) {
+    const href = match[1];
+    if (!href || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
+    const target = new URL(href, pageUrl);
+    if (target.hostname !== "hermeslogisticsus.com") continue;
+    const targetPath = target.pathname.endsWith("/")
+      ? target.pathname
+      : target.pathname.endsWith(".html")
+        ? target.pathname
+        : `${target.pathname}/`;
+    if (!htmlTargets.has(targetPath)) brokenInternalLinks.push(`${pageName} -> ${href}`);
+  }
+}
+if (brokenInternalLinks.length) {
+  throw new Error(`Broken internal links:\n${brokenInternalLinks.slice(0, 30).join("\n")}`);
+}
+
+console.log(`Validated static website: ${allHtmlFiles.length} generated pages, ${required.length} homepage checks, ${assets.length} image assets, zero broken internal links, no external form action.`);
+
+// --- Dynamic vehicle-transport market pages -------------------------------
+// Markets rendered from src/data/logistics-locations.ts through the shared
+// LogisticsLocationPage template. Appleton and Milwaukee are intentionally
+// excluded: they keep hand-built standalone pages in the Wisconsin cluster and
+// are validated by their own route entries above.
+const dynamicLocationRoutes = [
+  ["pueblo-co-vehicle-transport", "Pueblo, Colorado"],
+  ["colorado-springs-co-vehicle-transport", "Colorado Springs, Colorado"],
+  ["springfield-mo-vehicle-transport", "Springfield, Missouri"],
+  ["puyallup-wa-vehicle-transport", "Puyallup, Washington"],
+  ["university-park-il-vehicle-transport", "University Park, Illinois"],
+  ["saint-paul-mn-vehicle-transport", "Saint Paul, Minnesota"],
+  ["royal-oak-mi-vehicle-transport", "Royal Oak, Michigan"],
+  ["evanston-il-vehicle-transport", "Evanston, Illinois"],
+  ["englewood-co-vehicle-transport", "Englewood, Colorado"],
+  ["chicago-il-vehicle-transport", "Chicago, Illinois"],
+  ["austin-tx-vehicle-transport", "Austin, Texas"],
+  ["littleton-co-vehicle-transport", "Littleton, Colorado"],
+];
+
+for (const [slug, place] of dynamicLocationRoutes) {
+  const routePath = `logistics/${slug}/index.html`;
+  const routeHtml = await readFile(join(dist, routePath), "utf8");
+  for (const text of [
+    `Vehicle transport requests to and from ${place}.`,
+    "Prepare a transport request",
+    "Request review only.",
+    "What can change the operating plan.",
+    "Prepare the facts a carrier needs.",
+    "From request to a qualified next step.",
+    "Before you request transport.",
+  ]) {
+    if (!routeHtml.includes(text)) throw new Error(`Missing ${text} in ${routePath}`);
+  }
+  if (!routeHtml.includes(`<link rel="canonical" href="https://hermeslogisticsus.com/logistics/${slug}/">`)) {
+    throw new Error(`Location canonical URL missing or incorrect in ${routePath}`);
+  }
+  if (!routeHtml.includes('name="robots" content="index,follow,max-image-preview:large"')) {
+    throw new Error(`Location robots metadata missing in ${routePath}`);
+  }
+  if (!sitemap.includes(`/logistics/${slug}/`)) throw new Error(`Sitemap entry missing for location: ${slug}`);
+  // Publication guards carried over from the location release: no unverified
+  // address/ZIP block, and no unsupported commercial claims from the source draft.
+  if (/Verified Hermes location detail/.test(routeHtml)) {
+    throw new Error(`Unverified address or ZIP block was rendered in ${routePath}`);
+  }
+  if (/\[cite:\s*\d+\]|6%\s*(?:to|-)\s*11%|\$10k|\$12k|weekly gross|high-paying/i.test(routeHtml)) {
+    throw new Error(`Unsupported source draft claim found in ${routePath}`);
+  }
+  validateStructuredData(routeHtml, routePath);
+}
+
+// Every dynamic market page must link out to at least one peer market so no
+// location page is a dead end in the internal link graph.
+for (const [slug] of dynamicLocationRoutes) {
+  const routeHtml = await readFile(join(dist, `logistics/${slug}/index.html`), "utf8");
+  const peerLinks = [...routeHtml.matchAll(/href="\/logistics\/([a-z-]+-vehicle-transport)\//g)]
+    .map((match) => match[1])
+    .filter((peer) => peer !== slug);
+  if (peerLinks.length === 0) {
+    throw new Error(`No peer market cross-links found on logistics/${slug}/`);
+  }
+}
+
+console.log(`Validated ${dynamicLocationRoutes.length} dynamic vehicle-transport market pages with peer cross-links.`);

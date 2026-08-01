@@ -1,0 +1,52 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+const content = {
+  title: "Multi-Car Transport Services | Hermes Logistics",
+  description: "Multi-car transport coordination for dealerships, auctions, fleets, businesses, and authorized customers moving several vehicles on compatible equipment.",
+  eyebrow: "Hermes Logistics · Multi-Car Transport",
+  h1: "Multi-Car Transport Services",
+  intro: "Hermes reviews multi-car transport requests for dealerships, auctions, fleets, businesses, and authorized customers. A complete unit list, route, condition, timing, access, and requested delivery sequence are required before equipment and capacity can be evaluated.",
+  image: "/images/path-logistics-system.jpg",
+  imageAlt: "Multi-car vehicle transportation and carrier capacity coordination",
+  audience: [
+    "Dealerships moving several inventory units",
+    "Auction buyers or sellers coordinating multiple vehicles",
+    "Businesses transferring fleet or company vehicles",
+    "Authorized customers planning compatible multi-unit moves",
+  ],
+  benefits: [
+    { title: "Complete unit-list review", body: "Every vehicle is documented by year, make, model, dimensions when unusual, condition, operability, pickup point, and destination." },
+    { title: "Equipment-capacity planning", body: "Open multi-car, hotshot, enclosed, or other compatible capacity is evaluated against vehicle count, dimensions, weight, condition, and route." },
+    { title: "Pickup and delivery sequence", body: "Requested order, facility hours, appointments, access, deadlines, and receiving restrictions are reviewed before confirmation." },
+    { title: "Mixed-condition awareness", body: "Operable and inoperable units can be submitted together, but each condition must be disclosed because loading requirements may differ." },
+    { title: "Dealer and auction coordination", body: "Release references, storage deadlines, stock identifiers, contacts, and location rules can be organized before carrier matching." },
+    { title: "No one-truck assumption", body: "Vehicle count does not guarantee one truck. The workable arrangement depends on fit, route, timing, access, compliance, and carrier capacity." },
+  ],
+  process: [
+    { title: "Build the unit list", body: "Provide year, make, model, condition, operability, dimensions when unusual, pickup location, and destination for every vehicle." },
+    { title: "Define route and sequence", body: "State pickup and delivery order, timing, facility hours, access restrictions, appointments, and deadlines." },
+    { title: "Review equipment fit", body: "Available capacity is evaluated against unit count, dimensions, condition, route, timing, compliance, and access." },
+    { title: "Confirm the arrangement", body: "The customer reviews the available equipment, carrier information, terms, and sequence before acceptance." },
+    { title: "Coordinate execution", body: "Hermes supports communication and document flow while the carrier remains responsible for transportation and safety." },
+  ],
+  faq: [
+    { question: "How many vehicles can move together?", answer: "Capacity varies by equipment, vehicle dimensions, weight, condition, route, access, compliance, and carrier availability. A complete unit list is required." },
+    { question: "Can vehicles have different pickup or delivery locations?", answer: "They can be submitted for review, but route complexity, sequence, access, timing, and capacity must be evaluated before confirmation." },
+    { question: "Can operable and inoperable units be combined?", answer: "They may be reviewed together, but every vehicle's condition and loading needs must be disclosed." },
+    { question: "Does a multi-car request guarantee one carrier?", answer: "No. The move may require one or more equipment options depending on vehicle count, fit, route, timing, access, and capacity." },
+    { question: "Can enclosed multi-car equipment be requested?", answer: "Yes. Enclosed capacity can be requested, subject to vehicle fit, route, timing, access, compliance, and current availability." },
+    { question: "What is the fastest way to prepare the request?", answer: "Provide a clean unit list, exact route, condition for every vehicle, pickup readiness, access, timing, and desired sequence." },
+  ],
+  related: [
+    { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
+    { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
+    { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
+    { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
+    { label: "Wisconsin Multi-Vehicle Dealer Transport", href: "/logistics/wisconsin-multi-vehicle-dealer-transport/" },
+    { label: "Contact Hermes", href: "/contacts/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />

@@ -1,0 +1,47 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const title = "Fond du Lac Vehicle Transport | Hermes Logistics";
+const description = "Request vehicle transport to or from Fond du Lac, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, condition, timing, and equipment needs.";
+const canonicalUrl = new URL("/logistics/fond-du-lac-wi-vehicle-transport/", Astro.site).toString();
+
+const faq = [
+  { question: "How is Fond du Lac vehicle transport priced?", answer: "Pricing depends on the exact route, vehicle size and condition, open or enclosed equipment, access, timing, season, and current carrier availability. Complete request details are required for review." },
+  { question: "Can Hermes review dealer or auction pickups near Fond du Lac?", answer: "Yes. Include the facility, release status, pickup hours, storage deadline, vehicle condition, and correct pickup contact." },
+  { question: "Can an inoperable vehicle be submitted?", answer: "Yes. State whether the vehicle starts, rolls, steers, and brakes so loading and equipment requirements can be evaluated." },
+  { question: "Does a submitted request guarantee pickup?", answer: "No. Submission begins a review. Coordination depends on route, equipment, compliance, timing, capacity, and final confirmation." },
+];
+
+const schema = [
+  { "@context": "https://schema.org", "@type": "Service", name: "Fond du Lac vehicle transport request coordination", description, url: canonicalUrl, serviceType: "Vehicle transport request review and carrier coordination", areaServed: [{ "@type": "City", name: "Fond du Lac", containedInPlace: { "@type": "State", name: "Wisconsin" } }, { "@type": "AdministrativeArea", name: "East-central Wisconsin" }, { "@type": "Country", name: "United States" }], provider: { "@type": "Organization", name: "Hermes Logistics", url: "https://hermeslogisticsus.com/paths/logistics/" } },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" }, { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" }, { "@type": "ListItem", position: 3, name: "Fond du Lac Vehicle Transport", item: canonicalUrl }] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader theme="dark" activePath="/paths/logistics/" />
+  <main id="main-content">
+    <section class="section"><div class="shell">
+      <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/paths/logistics/">Logistics</a> / <span aria-current="page">Fond du Lac vehicle transport</span></nav>
+      <p class="eyebrow">Hermes Logistics · Fond du Lac, Wisconsin</p>
+      <h1>Vehicle transport to and from Fond du Lac, Wisconsin.</h1>
+      <p>Hermes reviews transport requests for dealers, auction buyers and sellers, businesses, and private customers. Start with the exact route, vehicle condition, pickup readiness, access requirements, and timing.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Fond%20du%20Lac%2C%20WI#post-load">Prepare a transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=Fond%20du%20Lac%2C%20WI#carrier-access">Carrier: share capacity</a></div>
+      <p>Submitting a request does not guarantee price, timing, equipment, or carrier availability.</p>
+    </div></section>
+
+    <section class="section"><div class="shell">
+      <p class="eyebrow">Request preparation</p><h2>Complete route and vehicle details reduce delays.</h2>
+      <ul><li>Pickup and delivery city, state, or ZIP code</li><li>Vehicle year, make, model, quantity, and dimensions when unusual</li><li>Whether each vehicle starts, rolls, steers, and brakes</li><li>Earliest pickup date and required delivery window</li><li>Open or enclosed transport preference</li><li>Facility hours, release references, storage deadlines, and access restrictions</li></ul>
+      <p>Use the <a href="/logistics/resources/auction-vehicle-pickup-checklist/">Auction Vehicle Pickup Checklist</a> for facility pickups and the <a href="/logistics/resources/car-hauler-capacity-checklist/">Car Hauler Capacity Checklist</a> when sharing carrier availability.</p>
+    </div></section>
+
+    <section class="section"><div class="shell"><p class="eyebrow">Related Wisconsin locations</p><h2>Continue planning nearby vehicle moves.</h2><p><a href="/logistics/oshkosh-wi-vehicle-transport/">Oshkosh vehicle transport</a> · <a href="/logistics/sheboygan-wi-vehicle-transport/">Sheboygan vehicle transport</a> · <a href="/logistics/milwaukee-wi-vehicle-transport/">Milwaukee vehicle transport</a></p></div></section>
+
+    <section class="section logistics-faq" aria-labelledby="fond-du-lac-faq-title"><div class="shell faq-layout"><div><p class="eyebrow">FAQ</p><h2 id="fond-du-lac-faq-title">Before you submit.</h2></div><div class="faq-list">{faq.map((item) => (<details><summary>{item.question}</summary><p>{item.answer}</p></details>))}</div></div></section>
+  </main>
+  <SiteFooter />
+</BaseLayout>

@@ -1,5 +1,23 @@
 import { expect, test, type Page } from "@playwright/test";
 
+// GA4 (gtag.js) is the one approved external telemetry integration on this site (see
+// public/_headers connect-src / script-src). "Zero external delivery" checks below assert
+// that no form submission, CRM write, or operational request leaves the browser — they must
+// keep failing on any other outbound request, so only these known GA4 hosts are excluded.
+const APPROVED_ANALYTICS_HOSTS = [/^https:\/\/(www\.)?google-analytics\.com$/, /^https:\/\/www\.googletagmanager\.com$/, /^https:\/\/www\.google\.com$/];
+
+function isApprovedAnalyticsRequest(url: string): boolean {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  if (!APPROVED_ANALYTICS_HOSTS.some((pattern) => pattern.test(parsed.origin))) return false;
+  if (parsed.origin === "https://www.google.com") return parsed.pathname === "/g/collect";
+  return true;
+}
+
 async function openRegularHome(page: Page) {
   await page.goto("/");
   const intro = page.locator("[data-site-intro]");
@@ -22,6 +40,9 @@ const routes = [
   "/es/",
   "/it/",
   "/fr/",
+  "/logistics/appleton-wi-vehicle-transport/",
+  "/logistics/resources/auction-vehicle-pickup-checklist/",
+  "/logistics/resources/car-hauler-capacity-checklist/",
 ];
 
 for (const route of routes) {
@@ -138,6 +159,60 @@ test("Load Board demo search reveals a fictional load for a presented city", asy
   await expect(page.locator("[data-demo-load-card]:visible")).toHaveCount(1);
   await expect(page.locator("[data-demo-load-card]:visible")).toContainText("Nashville, TN");
   await expect(page.getByRole("status")).toContainText("not available to book or dispatch");
+});
+
+test("Appleton guide routes customers, dealers, and carriers into the existing Logistics forms", async ({ page }) => {
+  await page.goto("/logistics/appleton-wi-vehicle-transport/");
+  await expect(page).toHaveTitle("Appleton Vehicle Transport | Hermes Logistics");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+  );
+  await expect(page.getByRole("heading", { name: "Vehicle transport to and from Appleton, Wisconsin." })).toBeVisible();
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
+
+  await page.getByRole("link", { name: /Dealer request/ }).click();
+  await expect(page).toHaveURL(/\/load-board\/\?role=dealer&origin=Appleton%2C%20WI#post-load$/);
+  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("dealer");
+  await expect(page.locator('input[name="pickup_location"]')).toHaveValue("Appleton, WI");
+
+  await page.goto("/logistics/appleton-wi-vehicle-transport/");
+  const carrierIntakeLink = page.getByRole("link", { name: "Carrier: share capacity" });
+  await expect(carrierIntakeLink).toHaveAttribute(
+    "href",
+    "/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access",
+  );
+  await page.goto("/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access");
+  await expect(page).toHaveURL(/\/load-board\/\?role=carrier&area=Appleton%2C%20WI#carrier-access$/);
+  await expect(page.locator('input[name="origin_location"]')).toHaveValue("Appleton, WI");
+});
+
+test("auction pickup checklist stays non-affiliated and opens the existing shipper intake", async ({ page }) => {
+  await page.goto("/logistics/resources/auction-vehicle-pickup-checklist/");
+  await expect(page).toHaveTitle("Auction Vehicle Pickup Checklist | Hermes Logistics");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+  );
+  await expect(page.getByText(/Requirements vary by auction and location/)).toBeVisible();
+  await expect(page.getByText(/does not guarantee a price, pickup date/)).toBeVisible();
+  await page.getByRole("link", { name: /Open transport request/ }).click();
+  await expect(page).toHaveURL(/\/load-board\/\?role=shipper#post-load$/);
+  await expect(page.locator('select[name="submitter_type"]')).toHaveValue("shipper");
+});
+
+test("car hauler checklist keeps load claims safe and opens the existing carrier intake", async ({ page }) => {
+  await page.goto("/logistics/resources/car-hauler-capacity-checklist/");
+  await expect(page).toHaveTitle("Car Hauler Capacity Checklist | Hermes Logistics");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+  );
+  await expect(page.getByText("No guaranteed load", { exact: true })).toBeVisible();
+  await expect(page.getByText("No guaranteed rate or revenue", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /Open carrier intake/ }).click();
+  await expect(page).toHaveURL(/\/load-board\/\?role=carrier#carrier-access$/);
+  await expect(page.locator('select[name="carrier_role"]')).toHaveValue("");
 });
 
 test("Academy presents AI automation as a safe practical learning lab", async ({ page }) => {
@@ -273,7 +348,7 @@ test("language menu opens all localized overview pages", async ({ page, isMobile
 test("preview contact workflow validates and sends no request", async ({ page }) => {
   const posts: string[] = [];
   page.on("request", (request) => {
-    if (request.method() === "POST") posts.push(request.url());
+    if (request.method() === "POST" && !isApprovedAnalyticsRequest(request.url())) posts.push(request.url());
   });
 
   await page.goto("/#contact");
@@ -298,7 +373,9 @@ test("preview contact workflow validates and sends no request", async ({ page })
 test("Load Board approves a standard car-hauling preview with zero external delivery", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
 
   await page.goto("/load-board/");
@@ -327,7 +404,9 @@ test("Load Board approves a standard car-hauling preview with zero external deli
 test("Load Board routes each role to the right workspace and keeps demo loads non-operational", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
 
   await page.goto("/load-board/?role=carrier#available-loads");
@@ -349,7 +428,9 @@ test("Load Board routes each role to the right workspace and keeps demo loads no
 test("Load Board prepares a carrier vehicle for dispatcher review with zero external delivery", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
 
   await page.goto("/load-board/");
@@ -412,54 +493,6 @@ test("logistics page routes each visitor type to a dedicated path", async ({ pag
   await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
 });
 
-test("logistics market hub links the approved location set without claiming local offices", async ({ page }) => {
-  await page.goto("/paths/logistics/#transport-markets");
-  const hub = page.locator("#transport-markets");
-
-  await expect(hub.getByRole("heading", { name: "Prepare a city-specific request." })).toBeVisible();
-  await expect(hub.locator(".logistics-location-grid > a")).toHaveCount(14);
-  await expect(hub.getByRole("link", { name: /Appleton, WI/ })).toHaveAttribute(
-    "href",
-    "/logistics/appleton-wi-vehicle-transport/",
-  );
-  await expect(hub.getByText(/do not represent Hermes offices, terminals, guaranteed capacity, or live prices/i)).toBeVisible();
-});
-
-test("location page exposes truthful multi-audience CTAs and complete SEO metadata", async ({ page }) => {
-  await page.goto("/logistics/appleton-wi-vehicle-transport/");
-
-  await expect(page.getByRole("heading", { name: "Vehicle transport requests to and from Appleton, Wisconsin." })).toBeVisible();
-  await expect(page.getByText("Request review only.", { exact: false })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Auto dealers and auctions" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Commercial shippers" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Private customers" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Carriers and fleets" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Prepare a transport request/ })).toHaveAttribute(
-    "href",
-    "/load-board/?role=shipper#post-load",
-  );
-  await expect(page.getByRole("link", { name: "Carrier: share capacity" })).toHaveAttribute(
-    "href",
-    "/load-board/?role=carrier#carrier-access",
-  );
-  await expect(page.locator(".location-verified-detail")).toHaveCount(0);
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
-  );
-  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
-  const schemas = await page.locator('script[type="application/ld+json"]').evaluate((element) => JSON.parse(element.textContent ?? "[]"));
-  expect(schemas.map((schema: { "@type": string }) => schema["@type"])).toEqual(["Service", "BreadcrumbList", "FAQPage"]);
-});
-
-test("shipper-focused location omits the dealer CTA but keeps private and carrier paths", async ({ page }) => {
-  await page.goto("/logistics/saint-paul-mn-vehicle-transport/");
-  await expect(page.getByRole("heading", { name: "Commercial shippers" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Auto dealers and auctions" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Private customers" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Carriers and fleets" })).toBeVisible();
-});
-
 test("logistics audience pages open role-specific Load Board workspaces", async ({ page }) => {
   await page.goto("/logistics/shipper-dealer/");
   await expect(page.getByRole("link", { name: "Post a load" })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
@@ -474,7 +507,9 @@ test("logistics audience pages open role-specific Load Board workspaces", async 
 test("agency and career applications create local previews without sending", async ({ page }) => {
   const writes: string[] = [];
   page.on("request", (request) => {
-    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) writes.push(`${request.method()} ${request.url()}`);
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
   });
   await page.goto("/logistics/apply/?for=agency");
   await expect(page.locator('select[name="application_type"]')).toHaveValue("agency");
@@ -613,7 +648,7 @@ test("public logistics contacts use the approved department routing", async ({ p
 test("marketing field group supports multiple platforms + 3/6/9/12 horizon and includes direction details in summary", async ({ page }, testInfo) => {
   const posts: string[] = [];
   page.on("request", (request) => {
-    if (request.method() === "POST") posts.push(request.url());
+    if (request.method() === "POST" && !isApprovedAnalyticsRequest(request.url())) posts.push(request.url());
   });
 
   await page.goto("/paths/marketing/#contact");
