@@ -7,20 +7,100 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out repository branch
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Optimize oversized JPEG assets
+        if: github.event_name == 'pull_request' && github.head_ref == 'performance/jpeg-asset-optimization'
+        run: |
+          if ! command -v convert >/dev/null 2>&1 || ! command -v identify >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y imagemagick
+          fi
+
+          files=(
+            public/images/hermes-ecosystem-hero.jpg
+            public/images/hermes-social-share-2026.jpg
+            public/images/path-academy-system.jpg
+            public/images/path-logistics-system.jpg
+            public/images/path-marketing-system.jpg
+          )
+
+          for file in "${files[@]}"; do
+            original="$(mktemp --suffix=.jpg)"
+            candidate="$(mktemp --suffix=.jpg)"
+            cp "$file" "$original"
+            before_size="$(stat -c%s "$file")"
+            before_dimensions="$(identify -format '%wx%h' "$file")"
+            selected_quality=""
+
+            for quality in 84 80 76 72 68; do
+              convert "$original" -auto-orient -strip -sampling-factor 4:2:0 -interlace Plane -quality "$quality" "$candidate"
+              candidate_size="$(stat -c%s "$candidate")"
+              if [ "$candidate_size" -le 240000 ]; then
+                cp "$candidate" "$file"
+                selected_quality="$quality"
+                break
+              fi
+            done
+
+            if [ -z "$selected_quality" ]; then
+              cp "$candidate" "$file"
+              selected_quality="68"
+            fi
+
+            after_size="$(stat -c%s "$file")"
+            after_dimensions="$(identify -format '%wx%h' "$file")"
+            if [ "$before_dimensions" != "$after_dimensions" ]; then
+              echo "Dimension mismatch for $file: $before_dimensions -> $after_dimensions"
+              exit 1
+            fi
+            if [ "$after_size" -ge "$before_size" ]; then
+              echo "Optimization did not reduce $file: $before_size -> $after_size"
+              exit 1
+            fi
+            if [ "$after_size" -gt 250000 ]; then
+              echo "Optimized file still exceeds the review threshold: $file ($after_size bytes)"
+              exit 1
+            fi
+
+            echo "$file | ${before_dimensions} | ${before_size} -> ${after_size} bytes | quality ${selected_quality}"
+            rm -f "$original" "$candidate"
+          done
+
+      - name: Commit optimized JPEG assets
+        if: github.event_name == 'pull_request' && github.head_ref == 'performance/jpeg-asset-optimization'
+        run: |
+          files=(
+            public/images/hermes-ecosystem-hero.jpg
+            public/images/hermes-social-share-2026.jpg
+            public/images/path-academy-system.jpg
+            public/images/path-logistics-system.jpg
+            public/images/path-marketing-system.jpg
+          )
+          if git diff --quiet -- "${files[@]}"; then
+            echo "JPEG assets are already optimized."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${files[@]}"
+          git commit -m "Optimize oversized JPEG assets [skip ci]"
+          git push origin HEAD:${{ github.head_ref }}
 
       - name: Install dependencies
         run: npm ci
