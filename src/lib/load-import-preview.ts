@@ -11,6 +11,7 @@ export type ImportQuarantineReason =
   | "private_columns"
   | "missing_required_field"
   | "invalid_value"
+  | "invalid_date"
   | "invalid_lifecycle_evidence"
   | "duplicate_record"
   | "malformed_csv";
@@ -175,6 +176,7 @@ function safeMessage(error: unknown): string {
 function classifyReason(message: string): ImportQuarantineReason {
   if (message.includes("Private columns are not allowed")) return "private_columns";
   if (message.includes("Missing required CSV field")) return "missing_required_field";
+  if (message.includes("Invalid ISO date") || message.includes("date order is invalid")) return "invalid_date";
   if (message.includes("cannot be") && message.includes("without delivery evidence")) {
     return "invalid_lifecycle_evidence";
   }
@@ -261,6 +263,42 @@ function privateHeaderAliases(header: string, approvedHeaders: ReadonlySet<strin
     .sort();
 }
 
+function parseDateOnly(value: string, field: string): number {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error(`Invalid ISO date in CSV field: ${field}`);
+  const timestamp = Date.parse(`${value}T00:00:00Z`);
+  if (!Number.isFinite(timestamp) || new Date(timestamp).toISOString().slice(0, 10) !== value) {
+    throw new Error(`Invalid ISO date in CSV field: ${field}`);
+  }
+  return timestamp;
+}
+
+function parseDateTime(value: string, field: string): number {
+  const timestamp = Date.parse(value);
+  if (!value || !Number.isFinite(timestamp) || !/^\d{4}-\d{2}-\d{2}T/.test(value)) {
+    throw new Error(`Invalid ISO date in CSV field: ${field}`);
+  }
+  return timestamp;
+}
+
+function validateTemporalFields(header: string, row: string): void {
+  const headers = parseCsvLine(header).map(normalizedHeader);
+  const values = parseCsvLine(row);
+  if (values.length !== headers.length) return;
+  const record = Object.fromEntries(headers.map((name, index) => [name, values[index] ?? ""]));
+
+  const pickup = record.pickup_date ? parseDateOnly(record.pickup_date, "pickup_date") : null;
+  const delivery = record.delivery_date ? parseDateOnly(record.delivery_date, "delivery_date") : null;
+  const observed = record.observed_at ? parseDateTime(record.observed_at, "observed_at") : null;
+  const expires = record.expires_at ? parseDateTime(record.expires_at, "expires_at") : null;
+
+  if (pickup !== null && delivery !== null && delivery < pickup) {
+    throw new Error("Shipment date order is invalid: delivery_date precedes pickup_date");
+  }
+  if (observed !== null && expires !== null && expires <= observed) {
+    throw new Error("Offer date order is invalid: expires_at must be after observed_at");
+  }
+}
+
 function createPreview<T>(
   csv: string,
   importer: CsvImporter<T>,
@@ -295,6 +333,7 @@ function createPreview<T>(
     rows.forEach((row, index) => {
       const rowNumber = index + 2;
       try {
+        validateTemporalFields(header, row);
         const imported = importer(`${header}\n${row}`);
         if (imported.length !== 1) throw new Error("CSV row did not produce exactly one preview record");
         const record = imported[0];
