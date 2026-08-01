@@ -14,8 +14,17 @@ const privateHeaderTokens = new Set([
   "customer",
   "dealer",
   "shipper",
+  "driver",
+  "contact",
+  "person",
   "mc",
   "dot",
+  "vin",
+  "ssn",
+  "ein",
+  "tax",
+  "license",
+  "plate",
   "address",
   "order",
   "invoice",
@@ -44,6 +53,15 @@ const compactPrivateHeaderFragments = [
   "customer",
   "dealer",
   "shipper",
+  "driver",
+  "contact",
+  "person",
+  "vin",
+  "ssn",
+  "ein",
+  "taxid",
+  "license",
+  "plate",
   "address",
   "order",
   "invoice",
@@ -162,8 +180,8 @@ function rejectPrivateHeaders(
  * The base parser blocks exact prohibited headers. This adapter also blocks
  * compound aliases in delimited, camelCase, or compact lowercase form, such
  * as driver_phone, customerEmail, customeremail, company_id, orderNumber,
- * negotiatedRateUsd, or carrierMcNumber. It never removes raw preview rows
- * and never enables public export.
+ * negotiatedRateUsd, carrierMcNumber, vehicleVin, licensePlate, or taxId.
+ * It never removes raw preview rows and never enables public export.
  */
 export function previewSafeShipmentHistoryCsv(
   csv: string,
