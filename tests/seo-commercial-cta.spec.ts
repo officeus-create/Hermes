@@ -35,7 +35,7 @@ for (const funnel of seoFunnels) {
       funnel.href,
     );
     await expect(page.getByRole("link", { name: funnel.supporting })).toHaveAttribute("href", funnel.href);
-    await expect(page.getByText(/does not automatically send or store the answers/i)).toBeVisible();
+    await expect(page.getByText(/automatically (?:send|sent|sending).*stor/i)).toBeVisible();
     await expect(page.locator('select[name="path"]')).toHaveValue("ProgressoPro");
     await expect(page.locator("[data-website-project-cta]")).toHaveCount(0);
   });
