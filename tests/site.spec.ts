@@ -95,7 +95,7 @@ test("business pillars reveal one direction at a time and support keyboard navig
   await expect(page.getByRole("tabpanel", { name: /Hermes Logistics/ })).toBeHidden();
 
   await marketing.press("ArrowRight");
-  const academy = page.getByRole("tab", { name: /Hermes Business Academy/ });
+  const academy = page.getByRole("tab", { name: /Hermes Academy/ });
   await expect(academy).toBeFocused();
   await expect(academy).toHaveAttribute("aria-selected", "true");
 });
