@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const futureDate = (daysFromNow: number) => {
   const date = new Date();
@@ -7,7 +7,7 @@ const futureDate = (daysFromNow: number) => {
   return date.toISOString().slice(0, 10);
 };
 
-const readEvents = (page: Parameters<typeof test>[0] extends never ? never : any) =>
+const readEvents = (page: Page) =>
   page.evaluate(() => {
     const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
     return (analyticsWindow.dataLayer || []).filter((item) => typeof item.event === "string");
@@ -30,13 +30,13 @@ test("carrier intake records start, preview and handoff without submitted data",
   await form.locator('input[name="anywhere"]').check();
   await form.locator('input[name="carrier_consent"]').check();
 
-  await expect.poll(async () => (await readEvents(page)).filter((item: Record<string, unknown>) => item.event === "carrier_intake_start").length).toBe(1);
+  await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "carrier_intake_start").length).toBe(1);
 
   await form.getByRole("button", { name: "Review access request" }).click();
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
   await expect(page.locator("[data-vehicle-decision]")).toHaveText("dispatcher review");
 
-  await expect.poll(async () => (await readEvents(page)).filter((item: Record<string, unknown>) => item.event === "carrier_intake_preview_ready").length).toBe(1);
+  await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "carrier_intake_preview_ready").length).toBe(1);
 
   const emailHandoff = page.locator("[data-vehicle-email]");
   await page.evaluate(() => {
@@ -44,9 +44,9 @@ test("carrier intake records start, preview and handoff without submitted data",
   });
   await emailHandoff.click();
 
-  await expect.poll(async () => (await readEvents(page)).filter((item: Record<string, unknown>) => item.event === "carrier_handoff_ready").length).toBe(1);
+  await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "carrier_handoff_ready").length).toBe(1);
 
-  const funnelEvents = (await readEvents(page)).filter((item: Record<string, unknown>) =>
+  const funnelEvents = (await readEvents(page)).filter((item) =>
     ["carrier_intake_start", "carrier_intake_preview_ready", "carrier_handoff_ready"].includes(String(item.event)),
   );
   expect(funnelEvents).toEqual([
@@ -83,6 +83,6 @@ test("invalid carrier form does not report preview or handoff readiness", async 
   await page.waitForTimeout(50);
 
   const events = await readEvents(page);
-  expect(events.filter((item: Record<string, unknown>) => item.event === "carrier_intake_preview_ready")).toEqual([]);
-  expect(events.filter((item: Record<string, unknown>) => item.event === "carrier_handoff_ready")).toEqual([]);
+  expect(events.filter((item) => item.event === "carrier_intake_preview_ready")).toEqual([]);
+  expect(events.filter((item) => item.event === "carrier_handoff_ready")).toEqual([]);
 });
