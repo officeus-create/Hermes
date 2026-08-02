@@ -61,7 +61,7 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
   await expect(page.locator("[data-vehicle-preview]")).toContainText("Authority status: Active");
   await expect(page.locator("[data-vehicle-preview]")).toContainText("Current dispatch status: Needs dispatch service");
-  await expect(page.locator("[data-vehicle-preview]")).toContainText("no email, account, call, CRM write, or dispatcher assignment was created automatically");
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("no email, account, call, CRM write, load booking, or dispatcher assignment was created automatically");
   await expect.poll(async () => (await analyticsEvents(page, "carrier_intake_preview_ready")).length).toBe(1);
 
   const analytics = {
