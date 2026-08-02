@@ -76,51 +76,54 @@
     equipmentSelect.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
-  const setupCarrierFunnelAnalytics = () => {
-    const carrierForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
-    const carrierResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
-    const carrierDecision = document.querySelector<HTMLElement>("[data-vehicle-decision]");
-    if (!carrierForm || !carrierResult || !carrierDecision) return;
+  applyApprovedLoadBoardPrefill();
+
+  const setupCarrierIntakeAnalytics = () => {
+    if (window.location.pathname !== "/load-board/") return;
+    const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
+    if (!form || !result) return;
 
     let intakeStarted = false;
     let previewReady = false;
     let handoffReady = false;
-    const eventBase = {
-      intake_type: "carrier",
-      page_group: "load_board",
-      page_path: window.location.pathname,
-    };
-    const readPreviewStatus = () => {
-      const normalized = carrierDecision.textContent
-        ?.trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "");
-      return normalized || "prepared";
-    };
+    const serviceGroup = () =>
+      form.querySelector<HTMLSelectElement>('select[name="equipment_class"]')?.value === "car_hauler"
+        ? "car_hauling_dispatch"
+        : "carrier_intake";
 
-    const trackIntakeStart = () => {
-      if (intakeStarted) return;
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
       intakeStarted = true;
-      pushAnalyticsEvent({ event: "carrier_intake_start", ...eventBase });
+      pushAnalyticsEvent({
+        event: "carrier_intake_start",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        page_path: window.location.pathname,
+      });
     };
 
-    carrierForm.addEventListener("input", trackIntakeStart);
-    carrierForm.addEventListener("change", trackIntakeStart);
-    carrierForm.addEventListener("submit", () => {
-      window.requestAnimationFrame(() => {
-        if (previewReady || carrierResult.hidden) return;
+    form.addEventListener("focusin", recordIntakeStart);
+    form.addEventListener("input", recordIntakeStart);
+    form.addEventListener("change", recordIntakeStart);
+    form.addEventListener("submit", () => {
+      window.setTimeout(() => {
+        if (result.hidden) return;
         previewReady = true;
         pushAnalyticsEvent({
           event: "carrier_intake_preview_ready",
-          ...eventBase,
-          preview_status: readPreviewStatus(),
+          audience_type: "carrier",
+          page_group: "load_board",
+          service_group: serviceGroup(),
+          preview_status: result.dataset.decision || "unknown",
+          page_path: window.location.pathname,
         });
-      });
+      }, 0);
     });
 
     document.addEventListener("click", (event) => {
-      if (handoffReady || !previewReady) return;
+      if (!previewReady || handoffReady) return;
       const source = event.target;
       if (!(source instanceof Element)) return;
       const handoff = source.closest("[data-vehicle-email], [data-send-vehicle-lead]");
@@ -129,15 +132,17 @@
       handoffReady = true;
       pushAnalyticsEvent({
         event: "carrier_handoff_ready",
-        ...eventBase,
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
         handoff_method: handoff.hasAttribute("data-send-vehicle-lead") ? "secure_delivery" : "email",
-        preview_status: readPreviewStatus(),
+        preview_status: result.dataset.decision || "unknown",
+        page_path: window.location.pathname,
       });
     });
   };
 
-  applyApprovedLoadBoardPrefill();
-  setupCarrierFunnelAnalytics();
+  setupCarrierIntakeAnalytics();
 
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
     const href = link.getAttribute("href") || "";
