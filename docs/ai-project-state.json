@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-08-02",
+  "repository": "officeus-create/Hermes",
+  "production_url": "https://hermeslogisticsus.com",
+  "platform": {
+    "framework": "Astro static site",
+    "runtime": "Node 22",
+    "hosting": "Cloudflare Pages",
+    "default_delivery_mode": "preview",
+    "required_verification": [
+      "npm run build",
+      "npm test",
+      "npm run test:e2e"
+    ]
+  },
+  "business_priority": "qualified organic inquiries and revenue without loss of indexation, trust, privacy, or existing rankings",
+  "canonical_commercial_owners": [
+    {
+      "direction": "car_hauling_dispatch",
+      "path": "/logistics/car-hauling-dispatch/",
+      "cta_event": "commercial_cta_click",
+      "intake_event": "carrier_intake_start",
+      "preview_event": "carrier_intake_preview_ready",
+      "handoff_event": "carrier_handoff_ready"
+    },
+    {
+      "direction": "website_development",
+      "path": "/services/website-development/",
+      "cta_event": "commercial_cta_click",
+      "intake_event": "website_project_intake_start",
+      "preview_event": "website_project_preview_ready",
+      "handoff_event": "website_handoff_ready"
+    },
+    {
+      "direction": "seo_services",
+      "path": "/services/seo/",
+      "cta_event": "commercial_cta_click",
+      "intake_event": "seo_intake_start",
+      "preview_event": "seo_intake_preview_ready",
+      "handoff_event": "seo_handoff_ready"
+    }
+  ],
+  "completed_foundations": [
+    "technical SEO build and static validation",
+    "desktop and mobile Playwright coverage",
+    "privacy-safe GA4 event taxonomy",
+    "car hauling CTA, carrier intake, preview and explicit handoff",
+    "website development CTA and structured project brief",
+    "SEO CTA and structured marketing intake",
+    "manual qualified-lead, contract and revenue runbook",
+    "query-to-page ownership foundation",
+    "SEO outreach CRM and operating playbook",
+    "About, Terms, Editorial and Corrections, and Accessibility pages",
+    "public trust sitemap"
+  ],
+  "active_programs": [
+    {
+      "name": "SEO-2 clean-room revenue growth",
+      "scope": "20-30 commercial/problem-solving queries, strengthen five existing commercial pages, create at most one or two pages only for proven gaps",
+      "rules": [
+        "small PRs",
+        "baseline before change",
+        "no automated SERP scraping",
+        "no doorway or mass-generated pages",
+        "stop the affected package on indexation, canonical, penalty, privacy, or cannibalization risk"
+      ]
+    },
+    {
+      "name": "AI operating system v2",
+      "scope": "vendor-neutral current state, error register, bounded handoffs and reduced context duplication"
+    }
+  ],
+  "active_external_dependencies": [
+    {
+      "id": "EXT-GSC-OWNERSHIP",
+      "status": "owner_or_account_action_required",
+      "detail": "Google Search Console Domain Property ownership and sitemap submission are not confirmed by repository or reviewed mailbox evidence."
+    },
+    {
+      "id": "EXT-BING-WMT",
+      "status": "owner_or_account_action_required",
+      "detail": "Bing Webmaster Tools ownership and sitemap submission are not confirmed."
+    },
+    {
+      "id": "EXT-GOOGLE-SECURITY",
+      "status": "owner_review_required",
+      "detail": "Multiple Google account sign-in and third-party access alerts exist; verify devices and OAuth grants in Google Account Security before treating them as resolved."
+    },
+    {
+      "id": "EXT-LOCAL-PROFILES",
+      "status": "eligibility_and_verification_required",
+      "detail": "Google Business Profile and location profiles must not be created until the real customer-facing or eligible service-area model is confirmed."
+    }
+  ],
+  "protected_boundaries": [
+    "no credentials or private company records in the repository",
+    "no PII or submitted free text in analytics",
+    "no production merge or infrastructure/account changes without required approval",
+    "no parallel edits to the same files without written handoff",
+    "no claims without approved evidence",
+    "no automatic live delivery by default"
+  ],
+  "open_high_risk_branches": [
+    {
+      "pr": 85,
+      "status": "draft_diverged_do_not_merge",
+      "scope": "Shipment History lifecycle and private synthetic workspace"
+    },
+    {
+      "pr": 83,
+      "status": "owner_controlled_stale_review_required",
+      "scope": "feature-gated Google Routes estimate"
+    }
+  ],
+  "primary_docs": [
+    "docs/AI_START_HERE.md",
+    "AGENTS.md",
+    "docs/ERROR_REGISTER.md",
+    "docs/SEO_RELEASE_CHECKLIST.md",
+    "docs/SEO_QUALIFIED_LEAD_OPERATING_RUNBOOK.md",
+    "docs/SEO_OUTREACH_OPERATING_PLAYBOOK_2026-08-02.md",
+    "docs/AI_HANDOFF.md"
+  ]
+}
