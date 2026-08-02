@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 function futureDate(daysFromNow: number): string {
   const date = new Date();
@@ -12,6 +12,14 @@ async function analyticsEvents(page: Page, eventName: string) {
     const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
     return analyticsWindow.dataLayer?.filter((item) => item.event === name) ?? [];
   }, eventName);
+}
+
+async function fillQualification(form: Locator) {
+  await form.locator('select[name="authority_status"]').selectOption("active");
+  await form.locator('select[name="authority_age"]').selectOption("over_one_year");
+  await form.locator('select[name="insurance_status"]').selectOption("active");
+  await form.locator('select[name="fleet_size"]').selectOption("two_to_three");
+  await form.locator('select[name="dispatch_status"]').selectOption("needs_dispatcher");
 }
 
 test("carrier handoff is counted once only after a reviewed preview and explicit email click", async ({ page }) => {
@@ -29,6 +37,7 @@ test("carrier handoff is counted once only after a reviewed preview and explicit
   await form.locator('input[name="carrier_company_name"]').fill("Private Carrier LLC");
   await form.locator('input[name="carrier_contact_name"]').fill("Private Driver");
   await form.locator('input[name="authority_number"]').fill("MC 654321");
+  await fillQualification(form);
   await form.locator('input[name="carrier_email"]').fill("private@example.com");
   await form.locator('input[name="carrier_phone"]').fill("+1 (414) 555-0110");
   await form.locator('input[name="capacity_units"]').fill("3");
@@ -40,6 +49,7 @@ test("carrier handoff is counted once only after a reviewed preview and explicit
   await form.getByRole("button", { name: /Review access request/ }).click();
 
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("Insurance status: Active policy");
   await expect(emailLink).toBeVisible();
   await expect(emailLink).toHaveAttribute("href", /^mailto:/);
   expect(await analyticsEvents(page, "carrier_handoff_ready")).toEqual([]);
@@ -66,5 +76,5 @@ test("carrier handoff is counted once only after a reviewed preview and explicit
 
   const serialized = JSON.stringify(handoff);
   expect(serialized).not.toMatch(/Private Carrier|Private Driver|private@example|414|555|0110|MC 654321|Milwaukee/i);
-  expect(serialized).not.toMatch(/mailto|email_address|phone|authority_number|origin_location|equipment_class|capacity_units/i);
+  expect(serialized).not.toMatch(/mailto|email_address|phone|authority_number|authority_status|insurance_status|fleet_size|dispatch_status|origin_location|equipment_class|capacity_units/i);
 });
