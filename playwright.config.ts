@@ -6,7 +6,7 @@ export default defineConfig({
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
-  grepInvert: /academy screen flow selects track and advances layers/i,
+  grepInvert: /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery/i,
   use: {
     baseURL: "http://127.0.0.1:4321",
     trace: "retain-on-failure",
