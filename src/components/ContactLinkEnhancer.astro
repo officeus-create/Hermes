@@ -94,7 +94,8 @@
   const setupCarrierFunnelAnalytics = () => {
     const carrierForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
     const carrierResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
-    if (!carrierForm || !carrierResult) return;
+    const carrierDecision = document.querySelector<HTMLElement>("[data-vehicle-decision]");
+    if (!carrierForm || !carrierResult || !carrierDecision) return;
 
     let intakeStarted = false;
     let previewReady = false;
@@ -103,6 +104,14 @@
       intake_type: "carrier",
       page_group: "load_board",
       page_path: window.location.pathname,
+    };
+    const readPreviewStatus = () => {
+      const normalized = carrierDecision.textContent
+        ?.trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "");
+      return normalized || "prepared";
     };
 
     const trackIntakeStart = () => {
@@ -120,7 +129,7 @@
         pushAnalyticsEvent({
           event: "carrier_intake_preview_ready",
           ...eventBase,
-          preview_status: carrierResult.dataset.decision || "prepared",
+          preview_status: readPreviewStatus(),
         });
       });
     });
@@ -137,7 +146,7 @@
         event: "carrier_handoff_ready",
         ...eventBase,
         handoff_method: handoff.hasAttribute("data-send-vehicle-lead") ? "secure_delivery" : "email",
-        preview_status: carrierResult.dataset.decision || "prepared",
+        preview_status: readPreviewStatus(),
       });
     });
   };
