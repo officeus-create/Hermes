@@ -27,7 +27,10 @@ test("new authority readiness checklist is useful, indexable, and connected to c
     "href",
     "/logistics/new-authority-car-hauler-support/",
   );
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText("New Authority Car Hauler Readiness Checklist");
+  const schemaText = (await page.locator('script[type="application/ld+json"]').textContent()) || "";
+  expect(schemaText).toContain("New Authority Car Hauler Readiness Checklist");
+  expect(schemaText).toContain('"FAQPage"');
+  expect(schemaText).toContain('"Service"');
 });
 
 test("new authority commercial owner links to the readiness checklist", async ({ page }) => {
