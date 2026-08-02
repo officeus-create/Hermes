@@ -1,0 +1,65 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "Purpose",
+    body: [
+      "This policy explains how Hermes prepares, reviews, updates, and corrects public service pages, guides, case studies, checklists, and other website material.",
+      "The standard is useful, audience-focused information with clear evidence boundaries—not artificial keyword density, fabricated expertise, or promises that depend on third parties.",
+    ],
+  },
+  {
+    title: "Sources and evidence",
+    bullets: [
+      "Primary and official sources are preferred for regulations, platform rules, public company data, and technical requirements.",
+      "Operational claims require a public source, approved internal evidence, or an explicit limitation explaining what has not been independently verified.",
+      "Case-study numbers, screenshots, testimonials, customer names, and identifiable results require supporting evidence and publication permission.",
+      "Planned features, research hypotheses, and future capabilities must not be presented as currently delivered services.",
+    ],
+  },
+  {
+    title: "Authors, reviewers, and AI assistance",
+    body: [
+      "Hermes may use research, analytics, code, and AI-assisted drafting tools. A human remains responsible for publication decisions, source selection, accuracy checks, service boundaries, and corrections.",
+      "Named author or reviewer profiles are added only when identity, role, relevant experience, and permission to publish have been confirmed. The absence of a named profile must not be replaced with an invented expert identity.",
+    ],
+  },
+  {
+    title: "Search and commercial content standard",
+    bullets: [
+      "Each commercial page should own one clear search and customer intent.",
+      "Related terms, equipment, processes, questions, customer problems, entities, and synonyms are used for semantic completeness—not as a separate LSI-word target.",
+      "Comparison pages and guides should help a reader make a decision and link naturally to the relevant service or qualification tool.",
+      "City, state, equipment, or vertical pages are published only when they have distinct demand, useful content, and a non-duplicative purpose.",
+      "Paid or sponsored placements must be disclosed and use the appropriate link attributes. Purchased PageRank, private link networks, and fake reviews are prohibited.",
+    ],
+  },
+  {
+    title: "Updates and reviewed dates",
+    body: [
+      "Material is reviewed when a service, workflow, source, platform rule, operating boundary, or material fact changes. A reviewed date should represent a real content review rather than an automatic build date.",
+      "Commercial pages are evaluated using search visibility, qualified inquiries, user needs, and evidence quality. Low-value or duplicative pages may be consolidated, redirected, or removed.",
+    ],
+  },
+  {
+    title: "Corrections process",
+    bullets: [
+      "Send the page URL, disputed statement, and supporting source to officeus@hermeslogisticsus.com.",
+      "Material errors are reviewed against the best available evidence and corrected without hiding the updated review date.",
+      "Legal, privacy, safety, identity, financial, or customer-evidence concerns receive priority review.",
+      "A correction request does not guarantee removal of accurate public information, but the evidence and context will be reviewed.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Editorial & Corrections Policy | Hermes"
+  description="How Hermes reviews sources, human and AI-assisted content, commercial SEO pages, case-study evidence, updates, and correction requests."
+  eyebrow="Publication governance"
+  h1="Editorial and Corrections Policy"
+  intro="The evidence, review, semantic-content, disclosure, and correction standards applied to public Hermes website material."
+  reviewedAt="2026-08-02"
+  {sections}
+/>

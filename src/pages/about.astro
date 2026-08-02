@@ -1,0 +1,61 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "How the Hermes website is organized",
+    body: [
+      "Hermes is the public website connecting four practical directions: U.S. logistics services, ProgressoPro marketing and growth work, Hermes Business Academy, and Hermes IT Development.",
+      "The directions share operating standards and a public website, but they do not all use the same local-business model. Logistics services are presented for the U.S. market. Marketing, education, and technology may be coordinated remotely or by email unless a page clearly states otherwise.",
+    ],
+  },
+  {
+    title: "U.S. logistics direction",
+    body: [
+      "Hermes Logistics LLC is the business name used for the U.S. logistics direction on this website. Public pages describe dispatch support, carrier back-office work, car-hauling support, vehicle transportation, and related coordination.",
+      "Carrier onboarding, authority, insurance, equipment, route, agreement, and operating requirements must be reviewed before work begins. The carrier retains the final operating decision under the applicable agreement and confirmed workflow.",
+    ],
+  },
+  {
+    title: "Marketing and SEO direction",
+    body: [
+      "ProgressoPro connects website strategy, SEO, content, social media, lead qualification, and measurement. SEO pages describe research, technical work, content architecture, authority development, and conversion improvement without guaranteeing rankings, traffic, leads, revenue, or timing.",
+    ],
+  },
+  {
+    title: "Technology and education directions",
+    body: [
+      "Hermes IT Development designs and builds websites, workflow tools, automation, CRM-related systems, and other approved digital projects. Hermes Business Academy presents practical learning paths connected to real business responsibilities.",
+      "Project scope, access, integrations, compliance, deliverables, and commercial terms are confirmed before paid work or operational access begins.",
+    ],
+  },
+  {
+    title: "Evidence and publication standard",
+    bullets: [
+      "Public claims should have a source, approved evidence status, or a clearly stated limitation.",
+      "Case studies and testimonials are published only when the supporting facts and publication permission are available.",
+      "Service pages distinguish current capability from planned capability and do not promise third-party outcomes.",
+      "Human reviewers remain responsible for public content, including material prepared with AI assistance.",
+    ],
+  },
+  {
+    title: "Public contact routes",
+    bullets: [
+      "General, marketing, academy, technology, legal, privacy, and publication questions: officeus@hermeslogisticsus.com.",
+      "U.S. logistics operations and carrier questions: freight_301@hermeslogisticsus.com.",
+      "U.S. Logistics Sales phone: +1 (262) 302-3626.",
+      "The website does not use a virtual office to imply an eligible customer-facing location where none has been confirmed.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="About Hermes | Logistics, Marketing, Academy & IT"
+  description="Learn how Hermes organizes U.S. logistics, ProgressoPro marketing and SEO, practical business education, and IT development with clear evidence and service boundaries."
+  eyebrow="Company and service structure"
+  h1="About Hermes"
+  intro="A clear explanation of the four Hermes directions, how requests are routed, and which public claims and operating boundaries apply."
+  reviewedAt="2026-08-02"
+  {sections}
+/>

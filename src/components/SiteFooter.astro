@@ -94,6 +94,14 @@ const localePath = localeConfig[locale].path;
     <nav aria-label="Footer navigation">
       {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
       <a href="/privacy/">{localized.privacy}</a>
+      {locale === "en" && (
+        <>
+          <a href="/about/">About Hermes</a>
+          <a href="/terms/">Terms of Use</a>
+          <a href="/editorial-policy/">Editorial & Corrections</a>
+          <a href="/accessibility/">Accessibility</a>
+        </>
+      )}
     </nav>
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
