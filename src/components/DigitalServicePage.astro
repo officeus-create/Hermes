@@ -13,7 +13,9 @@ interface Props {
 const { content } = Astro.props;
 const absoluteUrl = `https://hermeslogisticsus.com${content.slug}`;
 const isWebsiteDevelopment = content.slug === "/services/website-development/";
+const isSeoService = content.slug === "/services/seo/";
 const websiteProjectBriefHref = "/paths/technology/?project=website_development#project-brief";
+const seoIntakeHref = "/paths/marketing/?service=seo#contact";
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -61,6 +63,10 @@ const faqSchema = {
             <a class="button button-primary" href={websiteProjectBriefHref} data-website-project-cta>
               Start a website project brief <ArrowRight size={18} aria-hidden="true" />
             </a>
+          ) : isSeoService ? (
+            <a class="button button-primary" href={seoIntakeHref} data-seo-service-cta>
+              Start an SEO review request <ArrowRight size={18} aria-hidden="true" />
+            </a>
           ) : (
             <a class="button button-primary" href="#contact">Discuss this service <ArrowRight size={18} aria-hidden="true" /></a>
           )}
@@ -68,6 +74,9 @@ const faqSchema = {
         </div>
         {isWebsiteDevelopment && (
           <p class="digital-project-note">The project brief prepares a structured summary for review. The website does not automatically send or store the answers.</p>
+        )}
+        {isSeoService && (
+          <p class="digital-project-note">The marketing intake opens with SEO selected. You review the prepared summary before choosing the email handoff; the preview does not automatically send or store the answers.</p>
         )}
         <p class="digital-review-date">Scope reviewed {content.reviewedAt}</p>
       </div>
@@ -166,7 +175,22 @@ const faqSchema = {
       </section>
     )}
 
-    <ContactCTA selectedPath="IT Development" />
+    {isSeoService && (
+      <section class="section digital-project-cta" aria-labelledby="seo-intake-cta-title">
+        <div class="shell digital-project-cta-card">
+          <div>
+            <p class="eyebrow">Structured SEO intake</p>
+            <h2 id="seo-intake-cta-title">Prepare the search problem for a practical SEO review.</h2>
+            <p>Describe the business, target U.S. market, current website, search goals, current problems, and planning horizon. Hermes reviews scope and evidence without guaranteeing rankings, traffic, leads, revenue, or timing.</p>
+          </div>
+          <a class="button button-primary" href={seoIntakeHref} data-seo-service-cta>
+            Prepare the SEO request <ArrowRight size={18} aria-hidden="true" />
+          </a>
+        </div>
+      </section>
+    )}
+
+    <ContactCTA selectedPath={isSeoService ? "ProgressoPro" : "IT Development"} />
   </main>
   <SiteFooter />
 </BaseLayout>
