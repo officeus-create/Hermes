@@ -1,0 +1,277 @@
+<script>
+  import {
+    buildQualifiedCarrierLead,
+    buildQualifiedCarrierMailto,
+    buildQualifiedCarrierPayload,
+    buildQualifiedCarrierPreview,
+    reviewQualifiedCarrierPayload,
+    type QualifiedCarrierLead,
+  } from "../lib/carrier-qualification";
+
+  const setupCarrierQualification = () => {
+    if (window.location.pathname !== "/load-board/") return;
+
+    const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const emailRow = form?.querySelector<HTMLInputElement>('input[name="carrier_email"]')?.closest<HTMLElement>(".field-row");
+    const alert = document.querySelector<HTMLElement>("[data-vehicle-alert]");
+    const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
+    const decision = document.querySelector<HTMLElement>("[data-vehicle-decision]");
+    const state = document.querySelector<HTMLElement>("[data-vehicle-state]");
+    const preview = document.querySelector<HTMLElement>("[data-vehicle-preview]");
+    const email = document.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+    const sendButton = document.querySelector<HTMLButtonElement>("[data-send-vehicle-lead]");
+    const deliveryStatus = document.querySelector<HTMLElement>("[data-vehicle-delivery-status]");
+    const boundary = document.querySelector<HTMLElement>("[data-vehicle-boundary]");
+    if (!form || !emailRow || !alert || !result || !decision || !state || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
+
+    const createSelect = (
+      name: string,
+      labelText: string,
+      prompt: string,
+      options: Array<{ value: string; label: string }>,
+    ) => {
+      const label = document.createElement("label");
+      label.append(document.createTextNode(labelText));
+      const select = document.createElement("select");
+      select.name = name;
+      select.required = true;
+      const first = document.createElement("option");
+      first.value = "";
+      first.textContent = prompt;
+      select.appendChild(first);
+      for (const item of options) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        select.appendChild(option);
+      }
+      label.appendChild(select);
+      return label;
+    };
+
+    const qualification = document.createElement("section");
+    qualification.className = "carrier-qualification-fields";
+    qualification.dataset.carrierQualification = "true";
+    qualification.setAttribute("aria-labelledby", "carrier-qualification-title");
+
+    const heading = document.createElement("div");
+    heading.className = "carrier-qualification-heading";
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "eyebrow";
+    eyebrow.textContent = "Authority and dispatch readiness";
+    const title = document.createElement("h4");
+    title.id = "carrier-qualification-title";
+    title.textContent = "Help Logistics Sales qualify the right next step.";
+    const copy = document.createElement("p");
+    copy.textContent = "These answers prepare a local review of authority, insurance, fleet, and dispatch needs. They are included in the Sales handoff but never sent to GA4.";
+    heading.append(eyebrow, title, copy);
+
+    const rowOne = document.createElement("div");
+    rowOne.className = "field-row";
+    rowOne.append(
+      createSelect("authority_status", "Operating authority status *", "Choose authority status", [
+        { value: "active", label: "Active" },
+        { value: "pending", label: "Pending activation" },
+        { value: "inactive", label: "Inactive" },
+        { value: "not_sure", label: "Not sure" },
+      ]),
+      createSelect("authority_age", "Authority age *", "Choose authority age", [
+        { value: "under_90_days", label: "Under 90 days" },
+        { value: "three_to_twelve_months", label: "3–12 months" },
+        { value: "over_one_year", label: "Over one year" },
+        { value: "not_sure", label: "Not sure" },
+      ]),
+    );
+
+    const rowTwo = document.createElement("div");
+    rowTwo.className = "field-row";
+    rowTwo.append(
+      createSelect("insurance_status", "Insurance readiness *", "Choose insurance status", [
+        { value: "active", label: "Active policy" },
+        { value: "quote_in_progress", label: "Quote or policy in progress" },
+        { value: "inactive", label: "Not active" },
+        { value: "not_sure", label: "Not sure" },
+      ]),
+      createSelect("fleet_size", "Fleet size *", "Choose fleet size", [
+        { value: "one", label: "1 unit" },
+        { value: "two_to_three", label: "2–3 units" },
+        { value: "four_to_ten", label: "4–10 units" },
+        { value: "eleven_plus", label: "11+ units" },
+      ]),
+    );
+
+    const rowThree = document.createElement("div");
+    rowThree.className = "field-row carrier-dispatch-row";
+    rowThree.append(
+      createSelect("dispatch_status", "Current dispatch status *", "Choose dispatch status", [
+        { value: "self_dispatching", label: "Self-dispatching" },
+        { value: "working_with_dispatcher", label: "Working with a dispatcher" },
+        { value: "needs_dispatcher", label: "Needs dispatch service" },
+        { value: "not_sure", label: "Not sure what support is needed" },
+      ]),
+    );
+
+    qualification.append(heading, rowOne, rowTwo, rowThree);
+    emailRow.before(qualification);
+
+    let activeLead: QualifiedCarrierLead | null = null;
+    let secureHandoffRecorded = false;
+
+    const fillList = (selector: string, values: string[]) => {
+      const list = document.querySelector<HTMLElement>(selector);
+      if (!list) return;
+      list.replaceChildren(...values.map((value) => {
+        const item = document.createElement("li");
+        item.textContent = value;
+        return item;
+      }));
+    };
+
+    const pushPreviewEvent = (previewStatus: string) => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "carrier_intake_preview_ready",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: form.querySelector<HTMLSelectElement>('select[name="equipment_class"]')?.value === "car_hauler"
+          ? "car_hauling_dispatch"
+          : "carrier_intake",
+        preview_status: previewStatus,
+        page_path: window.location.pathname,
+      });
+    };
+
+    form.addEventListener("input", () => {
+      activeLead = null;
+      secureHandoffRecorded = false;
+    });
+    form.addEventListener("change", () => {
+      activeLead = null;
+      secureHandoffRecorded = false;
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      alert.hidden = true;
+      deliveryStatus.textContent = "";
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        alert.textContent = "Complete the carrier, authority, insurance, fleet, dispatch, equipment, availability, and operating-area fields before review.";
+        alert.hidden = false;
+        return;
+      }
+
+      const payload = buildQualifiedCarrierPayload(new FormData(form));
+      const review = reviewQualifiedCarrierPayload(payload);
+      activeLead = buildQualifiedCarrierLead(payload, review);
+      secureHandoffRecorded = false;
+
+      decision.textContent = review.decision.replaceAll("_", " ");
+      state.textContent = `Vehicle state: ${review.vehicle_state.replaceAll("_", " ")}`;
+      fillList("[data-vehicle-reasons]", review.reasons);
+      fillList("[data-vehicle-actions]", review.required_actions);
+      fillList("[data-vehicle-routing]", review.routing.length ? review.routing : ["No routing — preview rejected."]);
+      preview.textContent = buildQualifiedCarrierPreview(payload, review);
+      email.href = buildQualifiedCarrierMailto(activeLead);
+
+      const live = form.dataset.leadMode === "live";
+      email.hidden = live;
+      sendButton.hidden = !live;
+      deliveryStatus.textContent = live
+        ? "Review the qualified carrier lead, then send it securely to Logistics Sales."
+        : "Email is prepared with authority, insurance, fleet, dispatch, equipment, and operating details. Review it and press Send in your email application.";
+      boundary.textContent = live
+        ? "The request is not delivered until you press Send to Logistics Sales and receive confirmation."
+        : "Preview mode does not send or store the request automatically.";
+
+      result.dataset.decision = review.decision;
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+      pushPreviewEvent(review.decision);
+    }, true);
+
+    sendButton.addEventListener("click", async (event) => {
+      if (!event.isTrusted || !activeLead) return;
+      if (!secureHandoffRecorded) {
+        secureHandoffRecorded = true;
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+          event: "carrier_handoff_ready",
+          audience_type: "carrier",
+          page_group: "load_board",
+          service_group: "car_hauling_dispatch",
+          handoff_method: "secure_delivery",
+          preview_status: result.dataset.decision || "unknown",
+          page_path: window.location.pathname,
+        });
+      }
+
+      const endpoint = form.dataset.leadEndpoint || "";
+      try {
+        if (!endpoint || new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
+      } catch {
+        deliveryStatus.textContent = "Secure delivery is not connected yet. Use the prepared email option or call Logistics Sales.";
+        return;
+      }
+
+      sendButton.disabled = true;
+      deliveryStatus.textContent = "Sending the request securely…";
+      const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 10000);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+          body: JSON.stringify({
+            request_id: requestId,
+            submitted_at: new Date().toISOString(),
+            page_path: window.location.pathname,
+            ...activeLead,
+          }),
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("delivery_failed");
+        deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review it and follow up.";
+        sendButton.hidden = true;
+      } catch {
+        deliveryStatus.textContent = "Delivery was not confirmed. Your request may not have been received; please try again or use the prepared email option.";
+      } finally {
+        window.clearTimeout(timeout);
+        sendButton.disabled = false;
+      }
+    });
+  };
+
+  setupCarrierQualification();
+</script>
+
+<style>
+  .carrier-qualification-fields {
+    display: grid;
+    gap: 1rem;
+    margin: 0.4rem 0 1rem;
+    padding: 1rem;
+    border: 1px solid rgba(49, 95, 215, 0.18);
+    border-radius: 18px;
+    background: rgba(238, 243, 255, 0.6);
+  }
+
+  .carrier-qualification-heading h4 {
+    margin: 0.25rem 0 0.4rem;
+    color: #10204e;
+    font-size: 1.05rem;
+  }
+
+  .carrier-qualification-heading p:last-child {
+    margin: 0;
+    color: #526181;
+    line-height: 1.55;
+  }
+
+  .carrier-dispatch-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+</style>
