@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-const seoIntakeHref = "/paths/marketing/?service=seo#contact";
-
 for (const scenario of [
   {
     path: "/services/seo-for-logistics-companies/",
     h1: "SEO for Logistics, Trucking and Dispatch Companies",
+    heroLabel: "Start a logistics SEO review",
+    supportingLabel: "Prepare the logistics SEO request",
+    intakeHref: "/paths/marketing/?service=logistics_seo#contact",
+    serviceGroup: "logistics_seo",
     evidence: [
       "Trucking, dispatch and freight-broker query map",
       "Logistics website SEO audit",
@@ -16,6 +18,10 @@ for (const scenario of [
   {
     path: "/services/seo-for-independent-auto-dealers/",
     h1: "SEO for Independent and Used Car Dealers",
+    heroLabel: "Start an auto dealer SEO review",
+    supportingLabel: "Prepare the dealer SEO request",
+    intakeHref: "/paths/marketing/?service=auto_dealer_seo#contact",
+    serviceGroup: "auto_dealer_seo",
     evidence: [
       "Inventory-page SEO audit",
       "Local eligibility and market foundation",
@@ -24,18 +30,22 @@ for (const scenario of [
     ],
   },
 ]) {
-  test(`${scenario.path} owns its niche intent and routes into SEO intake`, async ({ page }) => {
+  test(`${scenario.path} owns its niche intent and keeps the approved SEO funnel context`, async ({ page }) => {
     await page.goto(scenario.path);
 
     await expect(page.getByRole("heading", { level: 1, name: scenario.h1 })).toBeVisible();
-    await expect(page.locator(".digital-breadcrumb").getByRole("link", { name: "Marketing & SEO" })).toHaveAttribute(
+    await expect(page.locator(".digital-breadcrumb").getByRole("link", { name: "Marketing" })).toHaveAttribute(
       "href",
       "/paths/marketing/",
     );
-    await expect(page.locator(".digital-service-actions").getByRole("link", {
-      name: "Start an SEO review request",
-    })).toHaveAttribute("href", seoIntakeHref);
-    await expect(page.getByRole("link", { name: "Prepare the SEO request" })).toHaveAttribute("href", seoIntakeHref);
+
+    const heroCta = page.locator(".digital-service-actions").getByRole("link", { name: scenario.heroLabel });
+    await expect(heroCta).toHaveAttribute("href", scenario.intakeHref);
+    await expect(heroCta).toHaveAttribute("data-service-group", scenario.serviceGroup);
+
+    const supportingCta = page.getByRole("link", { name: scenario.supportingLabel });
+    await expect(supportingCta).toHaveAttribute("href", scenario.intakeHref);
+    await expect(supportingCta).toHaveAttribute("data-service-group", scenario.serviceGroup);
     await expect(page.locator('select[name="path"]')).toHaveValue("ProgressoPro");
 
     for (const text of scenario.evidence) {
@@ -44,13 +54,16 @@ for (const scenario of [
   });
 }
 
-test("Local SEO remains outside the bounded niche-owner routing change", async ({ page }) => {
+test("Local SEO keeps the separate current-main local SEO context", async ({ page }) => {
   await page.goto("/services/local-seo/");
 
-  await expect(page.locator(".digital-service-actions").getByRole("link", { name: "Discuss this service" })).toHaveAttribute(
+  await expect(page.locator(".digital-service-actions").getByRole("link", { name: "Start a local SEO review" })).toHaveAttribute(
     "href",
-    "#contact",
+    "/paths/marketing/?service=local_seo#contact",
   );
-  await expect(page.locator("[data-seo-service-cta]")).toHaveCount(0);
-  await expect(page.locator('select[name="path"]')).toHaveValue("IT Development");
+  await expect(page.getByRole("link", { name: "Prepare the local SEO request" })).toHaveAttribute(
+    "href",
+    "/paths/marketing/?service=local_seo#contact",
+  );
+  await expect(page.locator('select[name="path"]')).toHaveValue("ProgressoPro");
 });
