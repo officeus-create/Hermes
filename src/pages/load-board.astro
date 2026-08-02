@@ -9,8 +9,8 @@ const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
 ---
 
 <BaseLayout
-  title="Car Hauling Load Board Preview | Hermes Logistics"
-  description="Preview a car-hauling transport request and see how Hermes validation and carrier matching would classify it. No request is sent or stored."
+  title="Car Hauling Loads & Load Board Preview | Hermes Logistics"
+  description="Review how owner-operators evaluate car hauling loads by lane, equipment, capacity, deadhead, timing, source, rate, paperwork, and authority readiness before requesting Load Board access."
 >
   <div class="load-board-page">
     <SiteHeader theme="dark" activePath="/load-board/" />
@@ -18,9 +18,9 @@ const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
       <section class="load-board-hero">
         <div class="shell load-board-hero-grid">
           <div>
-            <p class="eyebrow">Hermes Logistics · Preview</p>
-            <h1>One board. The right workspace for your role.</h1>
-            <p>Post a vehicle move, bring broker freight, or find car-hauling opportunities that fit your equipment. This local preview does not publish a load, register an account, or contact a carrier.</p>
+            <p class="eyebrow">Hermes Logistics · Car Hauling Loads Preview</p>
+            <h1>Review Car Hauling Loads Before You Commit</h1>
+            <p>Owner-operators and small fleets can review fictional load examples, evaluate equipment and lane fit, and prepare a carrier-access request. Shippers, dealers, and brokers can prepare a vehicle-move request. This local preview does not publish a load, register an account, book freight, or contact a carrier.</p>
           </div>
           <div class="load-board-safety">
             <ShieldCheck size={28} aria-hidden="true" />
@@ -56,6 +56,25 @@ const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
               <small>Search by lane, equipment, date, units, miles, and offered rate.</small>
             </a>
           </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="load-evaluation-title">
+        <div class="shell">
+          <div class="load-board-section-heading">
+            <p class="eyebrow">How to evaluate car hauling loads</p>
+            <h2 id="load-evaluation-title">A load is useful only when the complete operating fit works.</h2>
+            <p>Do not judge an auto-transport load by the posted rate alone. Review the route, empty miles, equipment, timing, source, requirements, documents, payment terms, and the next reload before the carrier approves anything.</p>
+          </div>
+          <ol class="carrier-flow" aria-label="Car hauling load evaluation steps">
+            <li><span>01</span><strong>Lane and deadhead</strong><small>Pickup position, delivery market, empty miles, tolls, traffic, and reload options</small></li>
+            <li><span>02</span><strong>Equipment and units</strong><small>Open, enclosed, hotshot, wedge, multi-car, dimensions, condition, and winch needs</small></li>
+            <li><span>03</span><strong>Timing and access</strong><small>Ready date, appointments, auction or dealer hours, keys, release status, and loading limits</small></li>
+            <li><span>04</span><strong>Source and paperwork</strong><small>Broker or dealer review, setup packet, insurance certificate, rate confirmation, BOL, and POD</small></li>
+            <li><span>05</span><strong>Rate and carrier approval</strong><small>Offered rate, miles, operating cost, payment terms, risk, and the carrier's final decision</small></li>
+          </ol>
+          <p><strong>New authority:</strong> load access may be limited by broker rules, authority age, insurance, safety profile, documentation, equipment, and payment requirements. A readiness review does not guarantee that a specific load, lane, rate, or broker will be available.</p>
+          <p>Need ongoing search, broker communication, paperwork, and back-office support? Review the <a href="/logistics/car-hauling-dispatch/">car hauling dispatch service</a>, the <a href="/paths/logistics/carriers/new-authority/">new-authority carrier path</a>, and the <a href="/logistics/resources/car-hauler-capacity-checklist/">car hauler capacity checklist</a>.</p>
         </div>
       </section>
 
