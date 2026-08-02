@@ -26,11 +26,11 @@ test.describe("National digital service hubs", () => {
     });
   }
 
-  test("website and SEO hubs cross-link to redesign and Local SEO", async ({ page }) => {
+  test("website and SEO hubs cross-link to the correct supporting owners", async ({ page }) => {
     await page.goto("/services/website-development/");
     await expect(page.locator('a[href="/services/website-redesign/"]').first()).toBeVisible();
     await expect(page.locator('a[href="/services/seo/"]').first()).toBeVisible();
-    await expect(page.locator('a[href="/services/local-seo/"]').first()).toBeVisible();
+    await expect(page.locator('a[href="/services/seo-for-logistics-companies/"]').first()).toBeVisible();
 
     await page.goto("/services/seo/");
     await expect(page.locator('a[href="/services/local-seo/"]').first()).toBeVisible();
