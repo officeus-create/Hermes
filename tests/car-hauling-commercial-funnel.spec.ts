@@ -22,8 +22,28 @@ test("car hauling dispatch page routes carriers into structured intake with dire
   expect(publicCopy).toMatch(/does not.*guarantee.*load/i);
   expect(publicCopy).toMatch(/carrier.*final decision/i);
 
+  await page.evaluate(() => {
+    document.querySelector("[data-commercial-primary-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
+      capture: true,
+    });
+  });
   await primary.click();
-  await expect(page).toHaveURL(/\/load-board\/\?role=carrier#carrier-access$/);
+
+  const analyticsEvent = await page.evaluate(() =>
+    window.dataLayer?.find((item: Record<string, unknown>) => item.event === "commercial_cta_click"),
+  );
+  expect(analyticsEvent).toMatchObject({
+    event: "commercial_cta_click",
+    cta_type: "carrier_intake",
+    audience_type: "carrier",
+    page_group: "logistics_service",
+    service_group: "car_hauling_dispatch",
+    page_path: "/logistics/car-hauling-dispatch/",
+    destination_path: "/load-board/",
+  });
+  expect(JSON.stringify(analyticsEvent)).not.toMatch(/email|phone|MC\s*\d|USDOT\s*\d|VIN/i);
+
+  await page.goto("/load-board/?role=carrier#carrier-access");
   await expect(page.locator("#carrier-access")).toBeVisible();
   await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
   await expect(page.locator('input[name="authority_number"]')).toBeVisible();
