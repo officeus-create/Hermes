@@ -76,7 +76,59 @@
     equipmentSelect.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
+  const setupCarrierFunnelAnalytics = () => {
+    const carrierForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const carrierResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
+    if (!carrierForm || !carrierResult) return;
+
+    let intakeStarted = false;
+    let previewReady = false;
+    let handoffReady = false;
+    const eventBase = {
+      intake_type: "carrier",
+      page_group: "load_board",
+      page_path: window.location.pathname,
+    };
+
+    const trackIntakeStart = () => {
+      if (intakeStarted) return;
+      intakeStarted = true;
+      pushAnalyticsEvent({ event: "carrier_intake_start", ...eventBase });
+    };
+
+    carrierForm.addEventListener("input", trackIntakeStart);
+    carrierForm.addEventListener("change", trackIntakeStart);
+    carrierForm.addEventListener("submit", () => {
+      window.requestAnimationFrame(() => {
+        if (previewReady || carrierResult.hidden) return;
+        previewReady = true;
+        pushAnalyticsEvent({
+          event: "carrier_intake_preview_ready",
+          ...eventBase,
+          preview_status: carrierResult.dataset.decision || "prepared",
+        });
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      if (handoffReady || !previewReady) return;
+      const source = event.target;
+      if (!(source instanceof Element)) return;
+      const handoff = source.closest("[data-vehicle-email], [data-send-vehicle-lead]");
+      if (!(handoff instanceof HTMLElement)) return;
+
+      handoffReady = true;
+      pushAnalyticsEvent({
+        event: "carrier_handoff_ready",
+        ...eventBase,
+        handoff_method: handoff.hasAttribute("data-send-vehicle-lead") ? "secure_delivery" : "email",
+        preview_status: carrierResult.dataset.decision || "prepared",
+      });
+    });
+  };
+
   applyApprovedLoadBoardPrefill();
+  setupCarrierFunnelAnalytics();
 
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
     const href = link.getAttribute("href") || "";
