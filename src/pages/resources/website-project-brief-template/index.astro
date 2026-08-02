@@ -1,0 +1,74 @@
+---
+import { ArrowRight, Check, FileText, Gauge, Search, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Website Project Brief Template | Hermes IT Development";
+const description = "Use this website project brief template to define business goals, audiences, pages, content, integrations, SEO migration, analytics, launch criteria, timing, and budget approach.";
+const canonicalUrl = new URL("/resources/website-project-brief-template/", Astro.site).toString();
+const faq = [
+  { question: "What should a website project brief include?", answer: "A useful brief should define the business goal, target audience, required pages, content ownership, integrations, SEO requirements, analytics, accessibility, approval process, timing, and budget approach." },
+  { question: "Is this template only for a new website?", answer: "No. It can be used for a new website, a redesign, or a website-plus-SEO project. Redesign projects should also document current URLs, rankings, analytics, redirects, content migration, and technical dependencies." },
+  { question: "Does completing a brief guarantee a fixed price or launch date?", answer: "No. Pricing and timing depend on discovery, content readiness, integrations, approvals, technical risk, third-party systems, and the final approved scope." },
+  { question: "Should SEO be included before development starts?", answer: "Search ownership, URL structure, redirects, metadata, internal linking, structured data, content requirements, analytics, and conversion paths are easier to protect when they are planned before design and development are finalized." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "Article", headline: "Website Project Brief Template", description, datePublished: "2026-08-02", dateModified: "2026-08-02", mainEntityOfPage: canonicalUrl, author: { "@type": "Organization", name: "Hermes IT Development" }, publisher: { "@id": "https://hermeslogisticsus.com/#organization" } },
+  { "@context": "https://schema.org", "@type": "Service", name: "Website project planning and development review", description: "Structured website project planning for new websites, redesigns, and website-plus-SEO projects.", provider: { "@id": "https://hermeslogisticsus.com/#organization" }, areaServed: { "@type": "Country", name: "United States" }, url: canonicalUrl },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "Website Development", item: "https://hermeslogisticsus.com/services/website-development/" },
+    { "@type": "ListItem", position: 3, name: "Website Project Brief Template", item: canonicalUrl },
+  ] },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader activePath="/paths/technology/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes IT Development Resource</p>
+              <h1>Website Project Brief Template</h1>
+              <p>Turn a vague request for “a new website” into a reviewable business and technical scope. This template helps a company prepare the decisions a development team needs before pricing, architecture, design, content, SEO, integrations, and launch planning can be confirmed.</p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href="/paths/technology/?project=website_development#project-brief">Start the structured project brief <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/services/website-development/">Review website development</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card"><ShieldCheck size={30} aria-hidden="true" /><h2>A brief prepares discovery.</h2><p>It does not automatically create a contract, fixed estimate, launch date, ranking result, integration approval, or project commitment.</p></aside>
+          </div>
+        </header>
+
+        <section class="section resource-intro"><div class="shell resource-lead"><FileText size={36} aria-hidden="true" /><div><p class="eyebrow">Planning foundation</p><h2>Define the business outcome before choosing features.</h2><p>A useful website is built around a measurable customer action, an operating process, credible content, and a maintainable technical system—not only visual preferences.</p></div></div></section>
+
+        <section class="section capacity-pillars" aria-labelledby="brief-sections-title"><div class="shell"><div class="section-heading split-heading"><div><p class="eyebrow">Brief sections</p><h2 id="brief-sections-title">Ten decisions to prepare before scope review.</h2></div><p>Use the questions as a worksheet. Do not place passwords, API keys, customer records, private contracts, payment details, or unnecessary personal data into a public document.</p></div><div class="capacity-pillar-grid">
+          <article><span>01</span><Gauge size={23} aria-hidden="true" /><h3>Business objective</h3><ul><li>Primary revenue or operating goal</li><li>Action visitors should complete</li><li>Current problem or bottleneck</li><li>How success will be measured</li></ul></article>
+          <article><span>02</span><Search size={23} aria-hidden="true" /><h3>Audience and market</h3><ul><li>Customer type and decision-maker</li><li>Target U.S. markets or service areas</li><li>Languages and accessibility needs</li><li>Questions and objections to answer</li></ul></article>
+          <article><span>03</span><FileText size={23} aria-hidden="true" /><h3>Project type</h3><ul><li>New website</li><li>Website redesign</li><li>Website plus SEO</li><li>Migration or platform replacement</li></ul></article>
+          <article><span>04</span><Check size={23} aria-hidden="true" /><h3>Pages and conversion paths</h3><ul><li>Core service and audience pages</li><li>Quote, contact, apply, booking, or intake</li><li>Trust, legal, case, and resource pages</li><li>Navigation and internal-link ownership</li></ul></article>
+          <article><span>05</span><FileText size={23} aria-hidden="true" /><h3>Content ownership</h3><ul><li>Who writes and approves copy</li><li>Existing assets that may be reused</li><li>Claims requiring evidence</li><li>Photography, video, logos, and permissions</li></ul></article>
+          <article><span>06</span><Gauge size={23} aria-hidden="true" /><h3>Integrations</h3><ul><li>CRM, email, calendar, payments, or booking</li><li>Maps, inventory, portals, APIs, or automation</li><li>Data owner and access method</li><li>Fallback when a provider is unavailable</li></ul></article>
+          <article><span>07</span><Search size={23} aria-hidden="true" /><h3>SEO and migration</h3><ul><li>Query-to-page ownership</li><li>Current URLs and redirect requirements</li><li>Metadata, schema, canonicals, and sitemaps</li><li>Content and ranking evidence to protect</li></ul></article>
+          <article><span>08</span><Gauge size={23} aria-hidden="true" /><h3>Analytics and qualification</h3><ul><li>GA4 and Search Console ownership</li><li>CTA, intake, preview, and handoff events</li><li>Qualified-lead definition</li><li>Privacy-safe reporting boundaries</li></ul></article>
+          <article><span>09</span><ShieldCheck size={23} aria-hidden="true" /><h3>Quality and compliance</h3><ul><li>Mobile and browser requirements</li><li>Accessibility and security expectations</li><li>Privacy, legal, evidence, and claims review</li><li>Performance and regression gates</li></ul></article>
+          <article><span>10</span><Check size={23} aria-hidden="true" /><h3>Timing and budget approach</h3><ul><li>Desired launch window and dependencies</li><li>Decision-makers and approval cadence</li><li>Phased release or full launch</li><li>Budget range or discovery-first planning</li></ul></article>
+        </div></div></section>
+
+        <section class="section capacity-example" aria-labelledby="brief-output-title"><div class="shell capacity-example-grid"><div><p class="eyebrow">Expected output</p><h2 id="brief-output-title">A development team should be able to review these five layers.</h2><p>The final scope may change after discovery, but unresolved assumptions should be visible before implementation begins.</p></div><dl><div><dt>Business</dt><dd>Goal, audience, offer, conversion, success metric, decision owner.</dd></div><div><dt>Content</dt><dd>Pages, messages, evidence, assets, approvals, migration responsibilities.</dd></div><div><dt>Technical</dt><dd>Platform, integrations, data flows, hosting, security, accessibility, performance.</dd></div><div><dt>Search</dt><dd>Query ownership, architecture, redirects, metadata, schema, analytics, indexation.</dd></div><div><dt>Delivery</dt><dd>Phases, dependencies, acceptance criteria, testing, handoff, maintenance.</dd></div></dl></div></section>
+
+        <section class="section capacity-review" aria-labelledby="brief-boundaries-title"><div class="shell"><div class="section-heading"><p class="eyebrow">Scope boundaries</p><h2 id="brief-boundaries-title">A clear brief reduces uncertainty; it does not remove it.</h2><p>Third-party providers, content delays, approval changes, legacy systems, search engines, compliance decisions, and newly discovered technical risks can affect final scope, timing, and cost.</p></div><div class="capacity-boundary-grid"><article><strong>No automatic estimate</strong><p>A responsible estimate follows review of scope, content, integrations, risks, and dependencies.</p></article><article><strong>No guaranteed launch date</strong><p>Timing depends on approvals, access, content, providers, testing, and accepted scope changes.</p></article><article><strong>No guaranteed SEO result</strong><p>Architecture and content can be improved, but rankings, traffic, leads, and revenue are not guaranteed.</p></article><article><strong>No automatic submission</strong><p>The structured project brief is reviewed locally before an explicit email handoff.</p></article></div></div></section>
+
+        <section class="section" aria-labelledby="brief-faq-title"><div class="shell digital-faq-layout"><div><p class="eyebrow">Frequently asked questions</p><h2 id="brief-faq-title">Questions before project discovery.</h2></div><div class="digital-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></div></section>
+
+        <section class="section resource-final-cta" id="contact"><div class="shell resource-final-card"><div><p class="eyebrow">Website project review</p><h2>Convert the template into a structured project brief.</h2><p>The existing workflow prepares a local summary for review and explicit email handoff. Submitted values are not added to analytics.</p></div><a class="button button-primary" href="/paths/technology/?project=website_development#project-brief">Open project brief <ArrowRight size={18} aria-hidden="true" /></a></div></section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
