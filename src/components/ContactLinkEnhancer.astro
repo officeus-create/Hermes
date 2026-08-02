@@ -75,8 +75,8 @@
     if (target.origin !== window.location.origin || target.pathname !== "/load-board/") return;
 
     const role = target.searchParams.get("role") || "unspecified";
-    const ctaType = role === "carrier"
-      ? "carrier_intake"
+    const legacyCtaType = role === "carrier"
+      ? "carrier_capacity"
       : role === "dealer"
         ? "dealer_transport_request"
         : role === "shipper"
@@ -86,8 +86,18 @@
             : "load_board_entry";
 
     pushAnalyticsEvent({
+      event: "logistics_cta_click",
+      cta_type: legacyCtaType,
+      audience_role: role,
+      page_cluster: classifyPageCluster(window.location.pathname),
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+
+    if (!link.hasAttribute("data-commercial-primary-cta")) return;
+    pushAnalyticsEvent({
       event: "commercial_cta_click",
-      cta_type: ctaType,
+      cta_type: role === "carrier" ? "carrier_intake" : legacyCtaType,
       audience_type: role,
       page_group: classifyPageCluster(window.location.pathname),
       service_group: classifyServiceGroup(window.location.pathname),
@@ -112,7 +122,7 @@
     pushAnalyticsEvent({
       event: "contact_click",
       contact_method: isPhone ? "phone" : "email",
-      page_group: classifyPageCluster(window.location.pathname),
+      page_cluster: classifyPageCluster(window.location.pathname),
       service_group: classifyServiceGroup(window.location.pathname),
       page_path: window.location.pathname,
     });
