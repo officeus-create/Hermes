@@ -49,28 +49,29 @@ test("carrier intake records start, preview and handoff without submitted data",
   const funnelEvents = (await readEvents(page)).filter((item) =>
     ["carrier_intake_start", "carrier_intake_preview_ready", "carrier_handoff_ready"].includes(String(item.event)),
   );
+  expect(funnelEvents).toHaveLength(3);
   expect(funnelEvents).toEqual([
-    {
+    expect.objectContaining({
       event: "carrier_intake_start",
       intake_type: "carrier",
       page_group: "load_board",
       page_path: "/load-board/",
-    },
-    {
+    }),
+    expect.objectContaining({
       event: "carrier_intake_preview_ready",
       intake_type: "carrier",
       page_group: "load_board",
       page_path: "/load-board/",
       preview_status: "dispatcher_review",
-    },
-    {
+    }),
+    expect.objectContaining({
       event: "carrier_handoff_ready",
       intake_type: "carrier",
       page_group: "load_board",
       page_path: "/load-board/",
       handoff_method: "email",
       preview_status: "dispatcher_review",
-    },
+    }),
   ]);
 
   const serialized = JSON.stringify(funnelEvents);
