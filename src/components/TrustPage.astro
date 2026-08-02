@@ -21,16 +21,26 @@ interface Props {
 
 const { title, description, eyebrow, h1, intro, reviewedAt, sections } = Astro.props;
 const canonical = `https://hermeslogisticsus.com${Astro.url.pathname}`;
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  name: h1,
-  description,
-  url: canonical,
-  dateModified: reviewedAt,
-  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
-  publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
-};
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: h1,
+    description,
+    url: canonical,
+    dateModified: reviewedAt,
+    isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: h1, item: canonical },
+    ],
+  },
+];
 ---
 
 <BaseLayout title={title} description={description} schema={schema}>
