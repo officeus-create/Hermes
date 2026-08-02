@@ -64,6 +64,20 @@
     return "other";
   };
 
+  const applyApprovedLoadBoardPrefill = () => {
+    if (window.location.pathname !== "/load-board/") return;
+    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");
+    const approvedEquipmentPrefills = new Set(["car_hauler"]);
+    if (!requestedEquipment || !approvedEquipmentPrefills.has(requestedEquipment)) return;
+
+    const equipmentSelect = document.querySelector<HTMLSelectElement>('select[name="equipment_class"]');
+    if (!equipmentSelect || ![...equipmentSelect.options].some((option) => option.value === requestedEquipment)) return;
+    equipmentSelect.value = requestedEquipment;
+    equipmentSelect.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
+  applyApprovedLoadBoardPrefill();
+
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
     const href = link.getAttribute("href") || "";
     let target: URL;
