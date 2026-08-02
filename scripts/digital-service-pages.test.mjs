@@ -8,15 +8,27 @@ const routes = [
   {
     route: "/services/website-development/",
     file: "services/website-development/index.html",
-    title: "Website Development Services | Hermes",
+    title: "Website Development Services for U.S. Businesses | Hermes",
     h1: "Custom Website Development for U.S. Businesses",
-    required: ["Business discovery", "Information architecture", "Does website development guarantee search rankings or leads?"],
+    reviewedAt: "August 2, 2026",
+    required: [
+      "Business discovery",
+      "Information architecture",
+      "Logistics and operational website architecture",
+      "Integrations and phased systems",
+      "Can Hermes build a website for a logistics, trucking, dispatch, or freight-broker company?",
+      "What should a logistics company website include?",
+      "Does website development guarantee search rankings or leads?",
+      "/services/seo-for-logistics-companies/",
+      "/logistics/car-hauling-dispatch/",
+    ],
   },
   {
     route: "/services/website-redesign/",
     file: "services/website-redesign/index.html",
     title: "Website Redesign Services | Hermes",
     h1: "Website Redesign Built Around Business Priorities",
+    reviewedAt: "July 31, 2026",
     required: ["Current-site review", "Migration architecture", "Can existing pages and search visibility be preserved?"],
   },
   {
@@ -24,6 +36,7 @@ const routes = [
     file: "services/seo/index.html",
     title: "SEO Services for U.S. Businesses | Hermes",
     h1: "SEO Services Built on Technical Quality and Useful Content",
+    reviewedAt: "July 31, 2026",
     required: ["Technical SEO review", "Search-intent architecture", "Can Hermes guarantee first-page rankings?"],
   },
   {
@@ -31,6 +44,7 @@ const routes = [
     file: "services/local-seo/index.html",
     title: "Local SEO Services for U.S. Businesses | Hermes",
     h1: "Local SEO for Real U.S. Service Areas and Customer Needs",
+    reviewedAt: "July 31, 2026",
     required: ["Eligibility and service-area review", "Google Business Profile support", "Do you create pages for every nearby city?"],
   },
 ];
@@ -71,7 +85,7 @@ for (const page of routes) {
   assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} approved IT email fallback missing`);
   assert.ok(!html.includes('href="tel:'), `${page.route} IT service page must remain email-only`);
   assert.ok(!/<form\b[^>]*action=/i.test(html), `${page.route} contains an unreviewed form action`);
-  assert.ok(html.includes("Scope reviewed July 31, 2026"), `${page.route} review date missing`);
+  assert.ok(html.includes(`Scope reviewed ${page.reviewedAt}`), `${page.route} review date missing`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
   const types = schemaTypes(html);
   for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) {
