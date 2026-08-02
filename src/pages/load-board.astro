@@ -6,6 +6,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+import "../styles/features/load.css";
 ---
 
 <BaseLayout

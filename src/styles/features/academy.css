@@ -1,0 +1,52 @@
+/* academy feature styles — extracted from global.css so they ship only on routes that use them */
+.academy-progression { background: #f8f6ef; }
+.academy-programs { background: #071038; color: white; }
+.academy-programs .section-heading h2 { color: white; }
+.academy-programs .section-heading > p:last-child { color: rgba(255,255,255,.64); }
+.academy-community { margin: 1.5rem 0; padding: 1.15rem; border: 1px solid #d9dde5; border-radius: 8px; background: #fff; }
+.academy-community-list { list-style: none; margin: .85rem 0 0; padding: 0; display: grid; gap: .55rem; }
+.academy-community-list a { color: var(--color-navy-900); font-weight: 760; text-decoration: underline; text-underline-offset: 3px; }
+.academy-community-location { margin: .85rem 0 0; color: var(--color-muted); font-size: .9rem; }
+.academy-screens { background: #f7f5f0; border-top: 1px solid #e5e0d6; }
+.academy-screen { min-height: min(88vh, 920px); padding: clamp(2rem, 5vw, 4rem) 0 5rem; }
+.academy-screen-inner { max-width: 920px; }
+.academy-primary { font-size: 1.12rem; color: var(--color-navy-900); max-width: 42rem; }
+.academy-trust-facts { display: grid; gap: .55rem; margin: 1.4rem 0 2rem; padding: 0; list-style: none; }
+.academy-trust-facts li { color: var(--color-muted); font-size: .95rem; }
+.academy-trust-facts strong { color: var(--color-navy-900); }
+.academy-track-grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.academy-track-card {
+  display: grid; gap: .45rem; text-align: left; min-height: 44px; padding: 1.1rem;
+  border: 1px solid #d9dde5; border-radius: 8px; background: #fff; cursor: pointer; color: inherit;
+}
+.academy-track-card[aria-selected="true"] { border-color: var(--color-navy-900); box-shadow: 0 0 0 1px var(--color-navy-900); }
+.academy-track-card .problem-lead { display: block; margin-top: .35rem; color: var(--color-muted); font-size: .88rem; line-height: 1.45; }
+.academy-layer-list { list-style: none; margin: 1.5rem 0 0; padding: 0; }
+.academy-layer-list details { border-bottom: 1px solid #d9dde5; padding: .85rem 0; }
+.academy-layer-list summary { display: flex; flex-wrap: wrap; gap: .55rem .85rem; align-items: baseline; cursor: pointer; list-style: none; }
+.academy-layer-list summary::-webkit-details-marker { display: none; }
+.academy-layer-list summary span { font-family: var(--font-mono); font-size: .68rem; color: #b45309; }
+.academy-layer-list summary em { color: var(--color-muted); font-style: normal; font-size: .9rem; }
+.academy-method { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.academy-method li { padding: 1rem 0; border-top: 1px solid #d9dde5; }
+.academy-method span { font-family: var(--font-mono); font-size: .68rem; color: #b45309; }
+.academy-optional { margin: 1.25rem 0; padding: 1rem; border: 1px solid #d9dde5; border-radius: 8px; background: #fff; }
+.academy-ai-lab { display: grid; gap: 1.25rem; margin: 2rem 0; padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid #cec7b9; border-radius: 18px; background: linear-gradient(135deg, #fff 0%, #f1ecff 55%, #e9f6ff 100%); }
+.academy-ai-lab h3, .academy-ai-lab h4 { margin: .35rem 0; }
+.academy-ai-lab p { max-width: 72ch; }
+.academy-ai-steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.academy-ai-steps li { display: grid; align-content: start; gap: .35rem; min-height: 145px; padding: .9rem; border: 1px solid rgba(10,24,70,.12); border-radius: 12px; background: rgba(255,255,255,.75); }
+.academy-ai-steps span { color: #6c42d8; font-family: var(--font-mono); font-size: .7rem; font-weight: 800; }
+.academy-ai-steps small { color: var(--color-muted); line-height: 1.45; }
+.academy-ai-example { padding: 1rem 1.1rem; border-left: 4px solid #6c42d8; background: rgba(255,255,255,.72); }
+.academy-screen-nav {
+  position: sticky; bottom: 0; z-index: 2; display: flex; gap: .75rem; justify-content: space-between;
+  margin-top: 2rem; padding: .85rem 0; background: linear-gradient(transparent, #f7f5f0 28%);
+}
+@media (max-width: 900px) {
+.academy-ai-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+.academy-ai-steps { grid-template-columns: 1fr; }
+.academy-ai-steps li { min-height: auto; }
+}
