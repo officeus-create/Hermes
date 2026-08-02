@@ -10,12 +10,91 @@ interface Props {
   content: DigitalServicePageContent;
 }
 
+type WebsiteFunnelContext = {
+  project: "website_development" | "website_redesign";
+  serviceGroup: "website_development" | "website_redesign";
+  heroLabel: string;
+  supportingLabel: string;
+  note: string;
+  heading: string;
+  body: string;
+};
+
+type SeoFunnelContext = {
+  service: "seo" | "local_seo" | "logistics_seo" | "auto_dealer_seo";
+  serviceGroup: "seo_services" | "local_seo" | "logistics_seo" | "auto_dealer_seo";
+  heroLabel: string;
+  supportingLabel: string;
+  heading: string;
+  body: string;
+};
+
 const { content } = Astro.props;
 const absoluteUrl = `https://hermeslogisticsus.com${content.slug}`;
-const isWebsiteDevelopment = content.slug === "/services/website-development/";
-const isSeoService = content.slug === "/services/seo/";
-const websiteProjectBriefHref = "/paths/technology/?project=website_development#project-brief";
-const seoIntakeHref = "/paths/marketing/?service=seo#contact";
+const websiteFunnels: Record<string, WebsiteFunnelContext> = {
+  "/services/website-development/": {
+    project: "website_development",
+    serviceGroup: "website_development",
+    heroLabel: "Start a website project brief",
+    supportingLabel: "Prepare the website brief",
+    note: "The project brief prepares a structured summary for review. The website does not automatically send or store the answers.",
+    heading: "Turn the website scope into a brief our development team can review.",
+    body: "Choose a new website, redesign, or website-plus-SEO path, then describe the target market, pages, integrations, references, timing, languages, and investment approach.",
+  },
+  "/services/website-redesign/": {
+    project: "website_redesign",
+    serviceGroup: "website_redesign",
+    heroLabel: "Start a website redesign brief",
+    supportingLabel: "Prepare the redesign brief",
+    note: "The redesign brief prepares a structured summary for review without automatically sending or storing the answers.",
+    heading: "Protect search visibility and conversion while planning the redesign.",
+    body: "Document the current website, redesign objective, target U.S. market, page range, integrations, languages, timing, and whether SEO protection is required.",
+  },
+};
+const seoFunnels: Record<string, SeoFunnelContext> = {
+  "/services/seo/": {
+    service: "seo",
+    serviceGroup: "seo_services",
+    heroLabel: "Start an SEO review request",
+    supportingLabel: "Prepare the SEO request",
+    heading: "Prepare the search problem for a practical SEO review.",
+    body: "Describe the business, target U.S. market, current website, search goals, current problems, access status, and planning horizon.",
+  },
+  "/services/local-seo/": {
+    service: "local_seo",
+    serviceGroup: "local_seo",
+    heroLabel: "Start a local SEO review",
+    supportingLabel: "Prepare the local SEO request",
+    heading: "Prepare the local visibility problem for review.",
+    body: "Describe the real service area, location model, current profiles, website, target searches, access status, and inquiry problem without using virtual-office location tactics.",
+  },
+  "/services/seo-for-logistics-companies/": {
+    service: "logistics_seo",
+    serviceGroup: "logistics_seo",
+    heroLabel: "Start a logistics SEO review",
+    supportingLabel: "Prepare the logistics SEO request",
+    heading: "Connect logistics search demand to a qualified inquiry path.",
+    body: "Describe the logistics services, equipment, markets, customer type, current website, Search Console access, content gaps, authority needs, and conversion problem.",
+  },
+  "/services/seo-for-independent-auto-dealers/": {
+    service: "auto_dealer_seo",
+    serviceGroup: "auto_dealer_seo",
+    heroLabel: "Start an auto dealer SEO review",
+    supportingLabel: "Prepare the dealer SEO request",
+    heading: "Prepare local and inventory-related search problems for review.",
+    body: "Describe the dealership market, website, local visibility, inventory and service content, access status, authority, and search-to-inquiry problem.",
+  },
+};
+const websiteContext = websiteFunnels[content.slug];
+const seoContext = seoFunnels[content.slug];
+const websiteProjectBriefHref = websiteContext
+  ? `/paths/technology/?project=${websiteContext.project}#project-brief`
+  : "";
+const seoIntakeHref = seoContext
+  ? `/paths/marketing/?service=${seoContext.service}#contact`
+  : "";
+const parentLabel = seoContext ? "Marketing" : "IT Development";
+const parentHref = seoContext ? "/paths/marketing/" : "/paths/technology/";
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -30,7 +109,7 @@ const breadcrumbSchema = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-    { "@type": "ListItem", position: 2, name: "IT Development", item: "https://hermeslogisticsus.com/paths/technology/" },
+    { "@type": "ListItem", position: 2, name: parentLabel, item: `https://hermeslogisticsus.com${parentHref}` },
     { "@type": "ListItem", position: 3, name: content.h1, item: absoluteUrl },
   ],
 };
@@ -46,37 +125,45 @@ const faqSchema = {
 ---
 
 <BaseLayout title={content.title} description={content.description} schema={[serviceSchema, breadcrumbSchema, faqSchema]}>
-  <SiteHeader activePath="/paths/technology/" />
+  <SiteHeader activePath={parentHref} />
   <main id="main-content" class="digital-service-page">
     <section class="digital-service-hero" id="top">
       <div class="shell">
         <nav class="digital-breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a><span aria-hidden="true">/</span>
-          <a href="/paths/technology/">IT Development</a><span aria-hidden="true">/</span>
+          <a href={parentHref}>{parentLabel}</a><span aria-hidden="true">/</span>
           <span aria-current="page">{content.h1}</span>
         </nav>
         <p class="eyebrow">{content.eyebrow}</p>
         <h1>{content.h1}</h1>
         <p class="digital-service-intro">{content.intro}</p>
         <div class="digital-service-actions">
-          {isWebsiteDevelopment ? (
-            <a class="button button-primary" href={websiteProjectBriefHref} data-website-project-cta>
-              Start a website project brief <ArrowRight size={18} aria-hidden="true" />
+          {websiteContext ? (
+            <a
+              class="button button-primary"
+              href={websiteProjectBriefHref}
+              data-website-project-cta
+              data-service-group={websiteContext.serviceGroup}
+            >
+              {websiteContext.heroLabel} <ArrowRight size={18} aria-hidden="true" />
             </a>
-          ) : isSeoService ? (
-            <a class="button button-primary" href={seoIntakeHref} data-seo-service-cta>
-              Start an SEO review request <ArrowRight size={18} aria-hidden="true" />
+          ) : seoContext ? (
+            <a
+              class="button button-primary"
+              href={seoIntakeHref}
+              data-seo-service-cta
+              data-service-group={seoContext.serviceGroup}
+            >
+              {seoContext.heroLabel} <ArrowRight size={18} aria-hidden="true" />
             </a>
           ) : (
             <a class="button button-primary" href="#contact">Discuss this service <ArrowRight size={18} aria-hidden="true" /></a>
           )}
           <a class="button button-ghost" href="/case/it-development/">View the website case</a>
         </div>
-        {isWebsiteDevelopment && (
-          <p class="digital-project-note">The project brief prepares a structured summary for review. The website does not automatically send or store the answers.</p>
-        )}
-        {isSeoService && (
-          <p class="digital-project-note">The marketing intake opens with SEO selected. You review the prepared summary before choosing the email handoff; the preview does not automatically send or store the answers.</p>
+        {websiteContext && <p class="digital-project-note">{websiteContext.note}</p>}
+        {seoContext && (
+          <p class="digital-project-note">The SEO intake opens with the relevant service context selected. You review the prepared summary before choosing the email handoff; answers are not automatically sent or stored, and rankings, traffic, leads, revenue, or timing are not guaranteed.</p>
         )}
         <p class="digital-review-date">Scope reviewed {content.reviewedAt}</p>
       </div>
@@ -160,37 +247,47 @@ const faqSchema = {
       </div>
     </section>
 
-    {isWebsiteDevelopment && (
+    {websiteContext && (
       <section class="section digital-project-cta" aria-labelledby="website-project-cta-title">
         <div class="shell digital-project-cta-card">
           <div>
             <p class="eyebrow">Structured project intake</p>
-            <h2 id="website-project-cta-title">Turn the website scope into a brief our development team can review.</h2>
-            <p>Describe the business goal, target market, pages, integrations, references, timing, languages, and investment approach. You review the summary before choosing the email handoff.</p>
+            <h2 id="website-project-cta-title">{websiteContext.heading}</h2>
+            <p>{websiteContext.body} You review the summary before choosing the email handoff.</p>
           </div>
-          <a class="button button-primary" href={websiteProjectBriefHref} data-website-project-cta>
-            Prepare the website brief <ArrowRight size={18} aria-hidden="true" />
+          <a
+            class="button button-primary"
+            href={websiteProjectBriefHref}
+            data-website-project-cta
+            data-service-group={websiteContext.serviceGroup}
+          >
+            {websiteContext.supportingLabel} <ArrowRight size={18} aria-hidden="true" />
           </a>
         </div>
       </section>
     )}
 
-    {isSeoService && (
+    {seoContext && (
       <section class="section digital-project-cta" aria-labelledby="seo-intake-cta-title">
         <div class="shell digital-project-cta-card">
           <div>
             <p class="eyebrow">Structured SEO intake</p>
-            <h2 id="seo-intake-cta-title">Prepare the search problem for a practical SEO review.</h2>
-            <p>Describe the business, target U.S. market, current website, search goals, current problems, and planning horizon. Hermes reviews scope and evidence without guaranteeing rankings, traffic, leads, revenue, or timing.</p>
+            <h2 id="seo-intake-cta-title">{seoContext.heading}</h2>
+            <p>{seoContext.body} Hermes reviews scope and evidence without guaranteeing search-engine or commercial outcomes.</p>
           </div>
-          <a class="button button-primary" href={seoIntakeHref} data-seo-service-cta>
-            Prepare the SEO request <ArrowRight size={18} aria-hidden="true" />
+          <a
+            class="button button-primary"
+            href={seoIntakeHref}
+            data-seo-service-cta
+            data-service-group={seoContext.serviceGroup}
+          >
+            {seoContext.supportingLabel} <ArrowRight size={18} aria-hidden="true" />
           </a>
         </div>
       </section>
     )}
 
-    <ContactCTA selectedPath={isSeoService ? "ProgressoPro" : "IT Development"} />
+    <ContactCTA selectedPath={seoContext ? "ProgressoPro" : "IT Development"} />
   </main>
   <SiteFooter />
 </BaseLayout>
@@ -203,7 +300,7 @@ const faqSchema = {
   .digital-service-hero h1 { max-width: 900px; margin: .65rem 0 1.25rem; font-size: clamp(2.6rem, 6vw, 5rem); line-height: .98; letter-spacing: -.045em; }
   .digital-service-intro { max-width: 820px; font-size: clamp(1.08rem, 2vw, 1.3rem); line-height: 1.7; color: rgba(255,255,255,.82); }
   .digital-service-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
-  .digital-project-note { max-width: 720px; margin: 1rem 0 0; color: rgba(255,255,255,.68); font-size: .9rem; line-height: 1.55; }
+  .digital-project-note { max-width: 760px; margin: 1rem 0 0; color: rgba(255,255,255,.68); font-size: .9rem; line-height: 1.55; }
   .digital-review-date { margin-top: 1.25rem; font-size: .84rem; color: rgba(255,255,255,.62); }
   .digital-two-column, .digital-boundary-layout, .digital-faq-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
   .digital-two-column h2, .digital-boundary-layout h2, .digital-faq-layout h2 { max-width: 620px; }
@@ -235,7 +332,7 @@ const faqSchema = {
   .digital-project-cta { background: #07143d; color: white; }
   .digital-project-cta-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; align-items: center; }
   .digital-project-cta-card h2 { max-width: 760px; }
-  .digital-project-cta-card p { max-width: 760px; color: rgba(255,255,255,.74); }
+  .digital-project-cta-card p { max-width: 780px; color: rgba(255,255,255,.74); }
   @media (max-width: 900px) {
     .digital-card-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     .digital-two-column, .digital-boundary-layout, .digital-faq-layout, .digital-project-cta-card { grid-template-columns: 1fr; }
