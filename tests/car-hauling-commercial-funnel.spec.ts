@@ -29,9 +29,10 @@ test("car hauling dispatch page routes carriers into structured intake with dire
   });
   await primary.click();
 
-  const analyticsEvent = await page.evaluate(() =>
-    window.dataLayer?.find((item: Record<string, unknown>) => item.event === "commercial_cta_click"),
-  );
+  const analyticsEvent = await page.evaluate(() => {
+    const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
+    return analyticsWindow.dataLayer?.find((item) => item.event === "commercial_cta_click");
+  });
   expect(analyticsEvent).toMatchObject({
     event: "commercial_cta_click",
     cta_type: "carrier_intake",
