@@ -78,6 +78,50 @@
 
   applyApprovedLoadBoardPrefill();
 
+  const setupCarrierIntakeAnalytics = () => {
+    if (window.location.pathname !== "/load-board/") return;
+    const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
+    if (!form || !result) return;
+
+    let intakeStarted = false;
+    const serviceGroup = () =>
+      form.querySelector<HTMLSelectElement>('select[name="equipment_class"]')?.value === "car_hauler"
+        ? "car_hauling_dispatch"
+        : "carrier_intake";
+
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushAnalyticsEvent({
+        event: "carrier_intake_start",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        page_path: window.location.pathname,
+      });
+    };
+
+    form.addEventListener("focusin", recordIntakeStart);
+    form.addEventListener("input", recordIntakeStart);
+    form.addEventListener("change", recordIntakeStart);
+    form.addEventListener("submit", () => {
+      window.setTimeout(() => {
+        if (result.hidden) return;
+        pushAnalyticsEvent({
+          event: "carrier_intake_preview_ready",
+          audience_type: "carrier",
+          page_group: "load_board",
+          service_group: serviceGroup(),
+          preview_status: result.dataset.decision || "unknown",
+          page_path: window.location.pathname,
+        });
+      }, 0);
+    });
+  };
+
+  setupCarrierIntakeAnalytics();
+
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
     const href = link.getAttribute("href") || "";
     let target: URL;
