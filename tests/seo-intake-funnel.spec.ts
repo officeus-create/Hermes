@@ -32,7 +32,7 @@ test("SEO intake produces a structured preview and explicit handoff without anal
   await page.goto("/paths/marketing/?service=seo#contact");
   const form = page.locator("[data-contact-form]");
 
-  await expect(form.locator("[data-seo-intake]")) .toBeVisible();
+  await expect(form.locator("[data-seo-intake]")).toBeVisible();
   await expect(form.locator('select[name="path"]')).toHaveValue("ProgressoPro");
   await expect(form.locator('select[name="path"]')).toBeDisabled();
 
@@ -100,6 +100,60 @@ test("SEO intake produces a structured preview and explicit handoff without anal
   const serialized = JSON.stringify(funnelEvents);
   expect(serialized).not.toMatch(/Jordan|example\.com|private-example|Milwaukee|qualified inquiries|monthly|6 months/i);
 });
+
+const supportingContexts = [
+  {
+    sourcePath: "/services/local-seo/",
+    ctaName: "Start a local SEO review",
+    service: "local_seo",
+    serviceGroup: "local_seo",
+    presetName: "seo_search_scope",
+    presetValue: "local",
+  },
+  {
+    sourcePath: "/services/seo-for-logistics-companies/",
+    ctaName: "Start a logistics SEO review",
+    service: "logistics_seo",
+    serviceGroup: "logistics_seo",
+    presetName: "seo_vertical",
+    presetValue: "logistics",
+  },
+  {
+    sourcePath: "/services/seo-for-independent-auto-dealers/",
+    ctaName: "Start an auto dealer SEO review",
+    service: "auto_dealer_seo",
+    serviceGroup: "auto_dealer_seo",
+    presetName: "seo_vertical",
+    presetValue: "auto_dealer",
+  },
+] as const;
+
+for (const context of supportingContexts) {
+  test(`${context.service} uses a privacy-safe commercial event and approved intake preset`, async ({ page }) => {
+    await page.goto(context.sourcePath);
+    await page.evaluate(() => {
+      document.querySelector("[data-seo-service-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
+        capture: true,
+      });
+    });
+    await page.locator(".digital-service-actions").getByRole("link", { name: context.ctaName }).click();
+    const commercial = (await readEvents(page)).find((item) => item.event === "commercial_cta_click");
+    expect(commercial).toEqual(expect.objectContaining({
+      event: "commercial_cta_click",
+      service_group: context.serviceGroup,
+      page_path: context.sourcePath,
+      destination_path: "/paths/marketing/",
+    }));
+
+    await page.goto(`/paths/marketing/?service=${context.service}#contact`);
+    const form = page.locator("[data-contact-form]");
+    await expect(form.locator('[data-seo-intake="true"]')).toBeVisible();
+    await expect(form.locator('[data-seo-intake="true"]')).toHaveAttribute("data-seo-service", context.service);
+    await expect(form.locator(`select[name="${context.presetName}"]`)).toHaveValue(context.presetValue);
+    await expect(form.locator('select[name="path"]')).toHaveValue("ProgressoPro");
+    await expect(form.locator('select[name="path"]')).toBeDisabled();
+  });
+}
 
 test("unsupported marketing service query keeps the generic contact form", async ({ page }) => {
   await page.goto("/paths/marketing/?service=unsupported#contact");

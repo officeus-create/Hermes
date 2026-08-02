@@ -1,26 +1,29 @@
 import { expect, test } from "@playwright/test";
 
-const projectBriefHref = "/paths/technology/?project=website_development#project-brief";
+const websiteFunnels = [
+  {
+    path: "/services/website-development/",
+    hero: "Start a website project brief",
+    supporting: "Prepare the website brief",
+    href: "/paths/technology/?project=website_development#project-brief",
+  },
+  {
+    path: "/services/website-redesign/",
+    hero: "Start a website redesign brief",
+    supporting: "Prepare the redesign brief",
+    href: "/paths/technology/?project=website_redesign#project-brief",
+  },
+] as const;
 
-test("website development routes qualified visitors into the structured project brief", async ({ page }) => {
-  await page.goto("/services/website-development/");
-
-  const heroPrimary = page.locator(".digital-service-actions").getByRole("link", {
-    name: "Start a website project brief",
+for (const funnel of websiteFunnels) {
+  test(`${funnel.path} routes qualified visitors into the structured project brief`, async ({ page }) => {
+    await page.goto(funnel.path);
+    await expect(page.locator(".digital-service-actions").getByRole("link", { name: funnel.hero })).toHaveAttribute(
+      "href",
+      funnel.href,
+    );
+    await expect(page.getByRole("link", { name: funnel.supporting })).toHaveAttribute("href", funnel.href);
+    await expect(page.getByText(/automatically (?:send|sent|sending).*stor/i)).toBeVisible();
+    await expect(page.locator("[data-seo-service-cta]")).toHaveCount(0);
   });
-  await expect(heroPrimary).toHaveAttribute("href", projectBriefHref);
-
-  const supportingCta = page.getByRole("link", { name: "Prepare the website brief" });
-  await expect(supportingCta).toHaveAttribute("href", projectBriefHref);
-  await expect(page.getByText(/does not automatically send or store the answers/i)).toBeVisible();
-});
-
-test("other digital services retain their existing contact CTA", async ({ page }) => {
-  await page.goto("/services/local-seo/");
-  await expect(page.locator(".digital-service-actions").getByRole("link", { name: "Discuss this service" })).toHaveAttribute(
-    "href",
-    "#contact",
-  );
-  await expect(page.locator("[data-website-project-cta]")).toHaveCount(0);
-  await expect(page.locator("[data-seo-service-cta]")).toHaveCount(0);
-});
+}
