@@ -24,11 +24,13 @@ test("Website Development covers logistics companies without creating a competin
     "href",
     "/paths/technology/?project=website_development#project-brief",
   );
-  await expect(page.getByRole("link", { name: "SEO for Logistics Companies" })).toHaveAttribute(
+
+  const related = page.locator(".digital-related-links");
+  await expect(related.getByRole("link", { name: "SEO for Logistics Companies" })).toHaveAttribute(
     "href",
     "/services/seo-for-logistics-companies/",
   );
-  await expect(page.getByRole("link", { name: "Car Hauling Dispatch" })).toHaveAttribute(
+  await expect(related.getByRole("link", { name: "Car Hauling Dispatch" })).toHaveAttribute(
     "href",
     "/logistics/car-hauling-dispatch/",
   );
