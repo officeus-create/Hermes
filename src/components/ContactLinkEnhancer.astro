@@ -76,6 +76,21 @@
     equipmentSelect.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
+  const applyApprovedTechnologyProjectPrefill = () => {
+    if (window.location.pathname !== "/paths/technology/") return;
+    const requestedProject = new URLSearchParams(window.location.search).get("project");
+    const approvedProjectPrefills = new Map([
+      ["website_development", "Custom Website Development with SEO Foundation"],
+    ]);
+    const projectValue = requestedProject ? approvedProjectPrefills.get(requestedProject) : undefined;
+    if (!projectValue) return;
+
+    const projectField = document.querySelector<HTMLTextAreaElement>('textarea[name="project_1"]');
+    if (!projectField || projectField.value.trim()) return;
+    projectField.value = projectValue;
+    projectField.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
   const setupCarrierFunnelAnalytics = () => {
     const carrierForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
     const carrierResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
@@ -127,8 +142,63 @@
     });
   };
 
+  const setupWebsiteProjectFunnelAnalytics = () => {
+    const requestedProject = new URLSearchParams(window.location.search).get("project");
+    if (window.location.pathname !== "/paths/technology/" || requestedProject !== "website_development") return;
+
+    const briefRoot = document.querySelector<HTMLElement>("[data-it-project-brief]");
+    const briefForm = briefRoot?.querySelector<HTMLFormElement>("[data-brief-form]");
+    const reviewPanel = briefRoot?.querySelector<HTMLElement>('[data-brief-step="4"]');
+    if (!briefRoot || !briefForm || !reviewPanel) return;
+
+    let intakeStarted = false;
+    let previewReady = false;
+    let handoffReady = false;
+    const eventBase = {
+      intake_type: "website_project",
+      page_group: "technology_project_brief",
+      page_path: window.location.pathname,
+    };
+
+    const trackIntakeStart = () => {
+      if (intakeStarted) return;
+      intakeStarted = true;
+      pushAnalyticsEvent({ event: "website_project_intake_start", ...eventBase });
+    };
+
+    briefForm.addEventListener("input", trackIntakeStart);
+    briefForm.addEventListener("change", trackIntakeStart);
+    briefRoot.addEventListener("click", (event) => {
+      const source = event.target;
+      if (!(source instanceof Element)) return;
+
+      if (source.closest("[data-brief-next]")) {
+        window.requestAnimationFrame(() => {
+          if (previewReady || reviewPanel.hidden) return;
+          previewReady = true;
+          pushAnalyticsEvent({
+            event: "website_project_preview_ready",
+            ...eventBase,
+            preview_status: "prepared",
+          });
+        });
+      }
+
+      if (handoffReady || !previewReady || !source.closest("[data-brief-email]")) return;
+      handoffReady = true;
+      pushAnalyticsEvent({
+        event: "marketing_handoff_ready",
+        ...eventBase,
+        handoff_method: "email",
+        preview_status: "prepared",
+      });
+    });
+  };
+
   applyApprovedLoadBoardPrefill();
+  applyApprovedTechnologyProjectPrefill();
   setupCarrierFunnelAnalytics();
+  setupWebsiteProjectFunnelAnalytics();
 
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
     const href = link.getAttribute("href") || "";
@@ -172,12 +242,41 @@
     });
   };
 
+  const trackWebsiteProjectClick = (link: HTMLAnchorElement) => {
+    if (!link.hasAttribute("data-website-project-cta")) return;
+    const href = link.getAttribute("href") || "";
+    let target: URL;
+    try {
+      target = new URL(href, window.location.origin);
+    } catch {
+      return;
+    }
+    if (
+      target.origin !== window.location.origin ||
+      target.pathname !== "/paths/technology/" ||
+      target.searchParams.get("project") !== "website_development"
+    ) return;
+
+    pushAnalyticsEvent({
+      event: "commercial_cta_click",
+      cta_type: "website_project_intake",
+      audience_type: "business",
+      page_group: "digital_service",
+      service_group: "website_development",
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  };
+
   document.addEventListener("click", async (event) => {
     const source = event.target;
     if (!(source instanceof Element)) return;
 
     const anyLink = source.closest("a[href]");
-    if (anyLink instanceof HTMLAnchorElement) trackLoadBoardClick(anyLink);
+    if (anyLink instanceof HTMLAnchorElement) {
+      trackLoadBoardClick(anyLink);
+      trackWebsiteProjectClick(anyLink);
+    }
 
     const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
     if (!(link instanceof HTMLAnchorElement)) return;
