@@ -91,62 +91,68 @@
     projectField.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
-  const setupCarrierFunnelAnalytics = () => {
-    const carrierForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
-    const carrierResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
-    const carrierDecision = document.querySelector<HTMLElement>("[data-vehicle-decision]");
-    if (!carrierForm || !carrierResult || !carrierDecision) return;
+  applyApprovedLoadBoardPrefill();
+  applyApprovedTechnologyProjectPrefill();
+
+  const setupCarrierIntakeAnalytics = () => {
+    if (window.location.pathname !== "/load-board/") return;
+    const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
+    const emailLink = document.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+    if (!form || !result || !emailLink) return;
 
     let intakeStarted = false;
-    let previewReady = false;
-    let handoffReady = false;
-    const eventBase = {
-      intake_type: "carrier",
-      page_group: "load_board",
-      page_path: window.location.pathname,
-    };
-    const readPreviewStatus = () => {
-      const normalized = carrierDecision.textContent
-        ?.trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "_")
-        .replace(/^_+|_+$/g, "");
-      return normalized || "prepared";
-    };
+    let handoffRecorded = false;
+    const serviceGroup = () =>
+      form.querySelector<HTMLSelectElement>('select[name="equipment_class"]')?.value === "car_hauler"
+        ? "car_hauling_dispatch"
+        : "carrier_intake";
 
-    const trackIntakeStart = () => {
-      if (intakeStarted) return;
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
       intakeStarted = true;
-      pushAnalyticsEvent({ event: "carrier_intake_start", ...eventBase });
+      pushAnalyticsEvent({
+        event: "carrier_intake_start",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        page_path: window.location.pathname,
+      });
     };
 
-    carrierForm.addEventListener("input", trackIntakeStart);
-    carrierForm.addEventListener("change", trackIntakeStart);
-    carrierForm.addEventListener("submit", () => {
-      window.requestAnimationFrame(() => {
-        if (previewReady || carrierResult.hidden) return;
-        previewReady = true;
+    form.addEventListener("focusin", recordIntakeStart);
+    form.addEventListener("input", (event) => {
+      handoffRecorded = false;
+      recordIntakeStart(event);
+    });
+    form.addEventListener("change", recordIntakeStart);
+    form.addEventListener("submit", () => {
+      window.setTimeout(() => {
+        if (result.hidden) return;
+        handoffRecorded = false;
         pushAnalyticsEvent({
           event: "carrier_intake_preview_ready",
-          ...eventBase,
-          preview_status: readPreviewStatus(),
+          audience_type: "carrier",
+          page_group: "load_board",
+          service_group: serviceGroup(),
+          preview_status: result.dataset.decision || "unknown",
+          page_path: window.location.pathname,
         });
-      });
+      }, 0);
     });
 
-    document.addEventListener("click", (event) => {
-      if (handoffReady || !previewReady) return;
-      const source = event.target;
-      if (!(source instanceof Element)) return;
-      const handoff = source.closest("[data-vehicle-email], [data-send-vehicle-lead]");
-      if (!(handoff instanceof HTMLElement)) return;
-
-      handoffReady = true;
+    emailLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || handoffRecorded || result.hidden || emailLink.hidden) return;
+      if (!emailLink.getAttribute("href")?.startsWith("mailto:")) return;
+      handoffRecorded = true;
       pushAnalyticsEvent({
         event: "carrier_handoff_ready",
-        ...eventBase,
-        handoff_method: handoff.hasAttribute("data-send-vehicle-lead") ? "secure_delivery" : "email",
-        preview_status: readPreviewStatus(),
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        handoff_method: "email",
+        preview_status: result.dataset.decision || "unknown",
+        page_path: window.location.pathname,
       });
     });
   };
@@ -158,33 +164,43 @@
     const briefRoot = document.querySelector<HTMLElement>("[data-it-project-brief]");
     const briefForm = briefRoot?.querySelector<HTMLFormElement>("[data-brief-form]");
     const reviewPanel = briefRoot?.querySelector<HTMLElement>('[data-brief-step="4"]');
-    if (!briefRoot || !briefForm || !reviewPanel) return;
+    const emailLink = briefRoot?.querySelector<HTMLAnchorElement>("[data-brief-email]");
+    if (!briefRoot || !briefForm || !reviewPanel || !emailLink) return;
 
     let intakeStarted = false;
-    let previewReady = false;
-    let handoffReady = false;
+    let previewRecorded = false;
+    let handoffRecorded = false;
     const eventBase = {
       intake_type: "website_project",
       page_group: "technology_project_brief",
       page_path: window.location.pathname,
     };
 
-    const trackIntakeStart = () => {
-      if (intakeStarted) return;
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
       intakeStarted = true;
       pushAnalyticsEvent({ event: "website_project_intake_start", ...eventBase });
     };
 
-    briefForm.addEventListener("input", trackIntakeStart);
-    briefForm.addEventListener("change", trackIntakeStart);
+    const resetPreparedState = (event: Event) => {
+      if (!event.isTrusted) return;
+      previewRecorded = false;
+      handoffRecorded = false;
+      recordIntakeStart(event);
+    };
+
+    briefForm.addEventListener("focusin", recordIntakeStart);
+    briefForm.addEventListener("input", resetPreparedState);
+    briefForm.addEventListener("change", resetPreparedState);
     briefRoot.addEventListener("click", (event) => {
       const source = event.target;
       if (!(source instanceof Element)) return;
 
       if (source.closest("[data-brief-next]")) {
         window.requestAnimationFrame(() => {
-          if (previewReady || reviewPanel.hidden) return;
-          previewReady = true;
+          if (previewRecorded || reviewPanel.hidden) return;
+          previewRecorded = true;
+          handoffRecorded = false;
           pushAnalyticsEvent({
             event: "website_project_preview_ready",
             ...eventBase,
@@ -192,9 +208,12 @@
           });
         });
       }
+    });
 
-      if (handoffReady || !previewReady || !source.closest("[data-brief-email]")) return;
-      handoffReady = true;
+    emailLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || !previewRecorded || handoffRecorded || reviewPanel.hidden || emailLink.hidden) return;
+      if (!emailLink.getAttribute("href")?.startsWith("mailto:")) return;
+      handoffRecorded = true;
       pushAnalyticsEvent({
         event: "marketing_handoff_ready",
         ...eventBase,
@@ -204,9 +223,7 @@
     });
   };
 
-  applyApprovedLoadBoardPrefill();
-  applyApprovedTechnologyProjectPrefill();
-  setupCarrierFunnelAnalytics();
+  setupCarrierIntakeAnalytics();
   setupWebsiteProjectFunnelAnalytics();
 
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
