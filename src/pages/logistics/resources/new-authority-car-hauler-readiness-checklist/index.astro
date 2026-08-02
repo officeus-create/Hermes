@@ -1,0 +1,170 @@
+---
+import { ArrowLeft, ArrowRight, Check, FileCheck2, Route, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "New Authority Car Hauler Readiness Checklist | Hermes Logistics";
+const description =
+  "Use this new-authority car hauler checklist to review MC/DOT status, insurance, equipment, broker setup, paperwork, operating area, dispatch control, and first-load readiness.";
+const canonicalUrl = new URL("/logistics/resources/new-authority-car-hauler-readiness-checklist/", Astro.site).toString();
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "New Authority Car Hauler Readiness Checklist",
+    description,
+    datePublished: "2026-08-02",
+    dateModified: "2026-08-02",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Resources", item: "https://hermeslogisticsus.com/paths/logistics/#logistics-resources" },
+      { "@type": "ListItem", position: 4, name: "New Authority Car Hauler Readiness Checklist", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <span aria-current="page">New authority readiness checklist</span>
+            </nav>
+            <a class="detail-back" href="/paths/logistics/#logistics-resources"><ArrowLeft size={18} aria-hidden="true" />Logistics resources</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · New Authorities</p>
+                <h1>New Authority Car Hauler Readiness Checklist</h1>
+                <p>
+                  An active authority number is only one part of becoming operationally ready. Use this checklist to identify
+                  the information, documents, equipment limits, broker requirements, and approval rules that should be clear
+                  before requesting dispatch support or reviewing a first load.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">
+                    Start carrier readiness review <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href="/logistics/new-authority-car-hauler-support/">Review new-authority support</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Readiness does not guarantee access.</h2>
+                <p>Authority age, insurance, safety information, equipment, broker rules, market conditions, and carrier fit can still limit available opportunities.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <FileCheck2 size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Before dispatch begins</p>
+              <h2>Prepare a reviewable carrier profile, not only an MC number.</h2>
+              <p>A dispatcher or broker may need to understand authority status, insurance, equipment, capacity, operating area, documents, communication, and who controls every booking decision.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="readiness-pillars-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div>
+                <p class="eyebrow">Readiness areas</p>
+                <h2 id="readiness-pillars-title">Eight checks before active load review.</h2>
+              </div>
+              <p>This is an operational preparation guide, not legal, insurance, safety, tax, or regulatory advice. Confirm requirements with the applicable agencies, insurers, brokers, and qualified professionals.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              <article><span>01</span><ShieldCheck size={23} aria-hidden="true" /><h3>Authority status and age</h3><ul><li>MC and USDOT numbers match the operating business</li><li>Authority status is confirmed through official sources</li><li>Effective date and authority age are documented</li><li>Any pending, inactive, or uncertain status is resolved first</li></ul></article>
+              <article><span>02</span><FileCheck2 size={23} aria-hidden="true" /><h3>Insurance readiness</h3><ul><li>Required policies are active for the planned operation</li><li>Coverage limits and effective dates are understood</li><li>Certificate-request process is ready</li><li>Equipment and cargo limitations are reviewed</li></ul></article>
+              <article><span>03</span><Truck size={23} aria-hidden="true" /><h3>Equipment profile</h3><ul><li>Truck and trailer type are documented</li><li>Practical vehicle capacity is clear</li><li>Dimensions, weight, height, and clearance limits are known</li><li>Inoperable, oversized, modified, or specialty restrictions are stated</li></ul></article>
+              <article><span>04</span><Route size={23} aria-hidden="true" /><h3>Operating area</h3><ul><li>Home base and realistic pickup radius are defined</li><li>Preferred states, regions, or lanes are identified</li><li>Deadhead and return-route expectations are understood</li><li>Availability and time-off rules are current</li></ul></article>
+              <article><span>05</span><FileCheck2 size={23} aria-hidden="true" /><h3>Broker setup packet</h3><ul><li>W-9 and business information are consistent</li><li>Authority and insurance documents are current</li><li>Payment and factoring instructions are controlled</li><li>No passwords, security codes, or unnecessary private data are shared</li></ul></article>
+              <article><span>06</span><Check size={23} aria-hidden="true" /><h3>Load evaluation rules</h3><ul><li>Equipment and unit fit are checked</li><li>Pickup, delivery, access, and timing are reviewed</li><li>Rate, miles, deadhead, and operating costs are considered</li><li>Broker and payment terms are confirmed before acceptance</li></ul></article>
+              <article><span>07</span><ShieldCheck size={23} aria-hidden="true" /><h3>Carrier control</h3><ul><li>The carrier defines approval limits</li><li>No load is booked without carrier approval</li><li>Changes and counteroffers require confirmation</li><li>Dispatch support does not transfer operating responsibility</li></ul></article>
+              <article><span>08</span><FileCheck2 size={23} aria-hidden="true" /><h3>Paperwork and communication</h3><ul><li>Rate confirmations are reviewed before signing</li><li>Pickup and delivery documents are organized</li><li>Updates, exceptions, and damage concerns have an escalation path</li><li>Invoice and payment follow-up responsibilities are assigned</li></ul></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="readiness-sequence-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Practical sequence</p>
+              <h2 id="readiness-sequence-title">Move from authority verification to controlled dispatch.</h2>
+              <p>Do not treat a new authority as fully ready until each required dependency has an owner and a confirmed status.</p>
+            </div>
+            <dl>
+              <div><dt>1. Verify</dt><dd>Confirm authority status, effective date, insurance, and business identity through approved sources.</dd></div>
+              <div><dt>2. Document</dt><dd>Prepare equipment, capacity, operating area, availability, and broker setup information.</dd></div>
+              <div><dt>3. Define control</dt><dd>Set carrier approval, communication, rate-review, and booking boundaries.</dd></div>
+              <div><dt>4. Review opportunities</dt><dd>Compare route, deadhead, equipment, timing, source, paperwork, and rate.</dd></div>
+              <div><dt>5. Confirm every load</dt><dd>The carrier makes the final decision before booking or signing.</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="readiness-boundary-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Important boundaries</p>
+              <h2 id="readiness-boundary-title">A completed checklist is not a promise of loads or income.</h2>
+              <p>Readiness improves the quality of review. It cannot control broker acceptance, market demand, rates, safety decisions, payment, route availability, or future performance.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article><strong>No guaranteed broker approval</strong><p>Each broker may apply different authority-age, insurance, safety, equipment, and documentation rules.</p></article>
+              <article><strong>No guaranteed load volume</strong><p>Available opportunities depend on market, lane, equipment, timing, authority, and carrier fit.</p></article>
+              <article><strong>No guaranteed rate or revenue</strong><p>Rates, miles, utilization, profit, payment timing, and income are not promised.</p></article>
+              <article><strong>No automatic booking</strong><p>The carrier reviews and approves each load before booking.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="readiness-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Continue preparing</p><h2 id="readiness-related-title">Related Hermes resources and services.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/logistics/new-authority-car-hauler-support/"><ShieldCheck size={22} aria-hidden="true" /><h3>New authority support</h3><p>Review the commercial readiness and dispatch-support path.</p><strong>Open service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/car-hauler-capacity-checklist/"><Truck size={22} aria-hidden="true" /><h3>Capacity checklist</h3><p>Prepare equipment, spaces, origin, route, dates, and restrictions.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/car-hauling-dispatch/"><Route size={22} aria-hidden="true" /><h3>Car hauling dispatch</h3><p>Compare dispatch scope, carrier control, and structured intake.</p><strong>Review dispatch <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Carrier readiness review</p>
+              <h2>Prepare authority, insurance, equipment, fleet, dispatch, and availability details.</h2>
+              <p>The carrier intake creates a local review preview and explicit handoff. It does not automatically approve an authority, create an account, assign a dispatcher, or book a load.</p>
+            </div>
+            <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
