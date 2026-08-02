@@ -39,6 +39,11 @@ const content = {
     { question: "Does Hermes own the transporting fleet?", answer: "Hermes coordinates transportation information and carrier relationships. Unless explicitly stated for a specific transaction, transportation is performed by independent authorized motor carriers." },
     { question: "What information is needed for a quote or capacity review?", answer: "Provide origin and destination, vehicle year, make, model, number of vehicles, operability, release status, desired timing, open or enclosed preference, facility access, and authorized contact details. VIN and sensitive release details should be exchanged through a secure direct channel." },
   ],
+  primaryAction: {
+    label: "Prepare a dealer transport request",
+    href: "/load-board/?role=dealer#post-load",
+  },
+  handoffNote: "The request opens a local review and does not book transportation, guarantee capacity, or send sensitive release information automatically. Email and phone remain available as fallback routes.",
   related: [
     { label: "Wisconsin Dealer Vehicle Transport", href: "/logistics/wisconsin-dealer-vehicle-transport/" },
     { label: "Wisconsin Auction Vehicle Pickup", href: "/logistics/wisconsin-auction-vehicle-pickup/" },
