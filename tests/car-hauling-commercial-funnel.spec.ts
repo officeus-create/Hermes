@@ -8,13 +8,14 @@ test("car hauling dispatch page routes carriers into structured intake with dire
     page.getByRole("heading", { name: "Car Hauling Dispatch Services for Owner-Operators and Small Fleets" }),
   ).toBeVisible();
 
-  const primary = page.getByRole("link", { name: "Request car-hauling dispatch review" });
+  const actions = page.locator(".commercial-actions");
+  const primary = actions.getByRole("link", { name: "Request car-hauling dispatch review" });
   await expect(primary).toHaveAttribute("href", "/load-board/?role=carrier#carrier-access");
-  await expect(page.getByRole("link", { name: "Email Logistics Sales" })).toHaveAttribute(
+  await expect(actions.getByRole("link", { name: "Email Logistics Sales" })).toHaveAttribute(
     "href",
     "mailto:freight_301@hermeslogisticsus.com",
   );
-  await expect(page.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
+  await expect(actions.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
 
   const publicCopy = await page.locator("main").innerText();
   expect(publicCopy).toContain("one vehicle through multi-car capacity");
