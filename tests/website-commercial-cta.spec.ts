@@ -21,6 +21,6 @@ test("other digital services retain their existing contact CTA", async ({ page }
     "href",
     "#contact",
   );
-  await expect(page.locator("[data-website-project-cta]")) .toHaveCount(0);
-  await expect(page.locator("[data-seo-service-cta]")) .toHaveCount(0);
+  await expect(page.locator("[data-website-project-cta]")).toHaveCount(0);
+  await expect(page.locator("[data-seo-service-cta]")).toHaveCount(0);
 });
