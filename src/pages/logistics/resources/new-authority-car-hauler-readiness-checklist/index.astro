@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Check, FileCheck2, Route, ShieldCheck, Truck } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, Check, ClipboardCheck, Route, ShieldCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
@@ -8,6 +8,24 @@ const title = "New Authority Car Hauler Readiness Checklist | Hermes Logistics";
 const description =
   "Use this new-authority car hauler checklist to review MC/DOT status, insurance, equipment, broker setup, paperwork, operating area, dispatch control, and first-load readiness.";
 const canonicalUrl = new URL("/logistics/resources/new-authority-car-hauler-readiness-checklist/", Astro.site).toString();
+const faq = [
+  {
+    question: "Does active authority mean a new car hauler is ready for every broker?",
+    answer: "No. Brokers may apply different authority-age, insurance, safety, equipment, documentation, payment, and lane requirements. Each opportunity still requires review.",
+  },
+  {
+    question: "What should a new authority prepare before requesting dispatch support?",
+    answer: "Prepare confirmed authority status, effective date, insurance, equipment and capacity, operating area, availability, broker setup documents, communication rules, and carrier approval boundaries.",
+  },
+  {
+    question: "Can Hermes guarantee loads, rates, or revenue for a new authority?",
+    answer: "No. Loads, broker approval, rates, miles, utilization, profit, payment timing, and revenue depend on external market and operating conditions and are not guaranteed.",
+  },
+  {
+    question: "Who makes the final decision to book a load?",
+    answer: "The carrier does. Dispatch support can research and coordinate information, but the carrier reviews and approves each load before booking or signing.",
+  },
+];
 const schema = [
   {
     "@context": "https://schema.org",
@@ -24,6 +42,24 @@ const schema = [
       url: "https://hermeslogisticsus.com/",
       logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
     },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "New Authority Car Hauler Readiness Review",
+    description,
+    url: canonicalUrl,
+    areaServed: { "@type": "Country", name: "United States" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
   },
   {
     "@context": "https://schema.org",
@@ -78,7 +114,7 @@ const schema = [
 
         <section class="section resource-intro">
           <div class="shell resource-lead">
-            <FileCheck2 size={36} aria-hidden="true" />
+            <ClipboardCheck size={36} aria-hidden="true" />
             <div>
               <p class="eyebrow">Before dispatch begins</p>
               <h2>Prepare a reviewable carrier profile, not only an MC number.</h2>
@@ -98,13 +134,13 @@ const schema = [
             </div>
             <div class="capacity-pillar-grid">
               <article><span>01</span><ShieldCheck size={23} aria-hidden="true" /><h3>Authority status and age</h3><ul><li>MC and USDOT numbers match the operating business</li><li>Authority status is confirmed through official sources</li><li>Effective date and authority age are documented</li><li>Any pending, inactive, or uncertain status is resolved first</li></ul></article>
-              <article><span>02</span><FileCheck2 size={23} aria-hidden="true" /><h3>Insurance readiness</h3><ul><li>Required policies are active for the planned operation</li><li>Coverage limits and effective dates are understood</li><li>Certificate-request process is ready</li><li>Equipment and cargo limitations are reviewed</li></ul></article>
+              <article><span>02</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Insurance readiness</h3><ul><li>Required policies are active for the planned operation</li><li>Coverage limits and effective dates are understood</li><li>Certificate-request process is ready</li><li>Equipment and cargo limitations are reviewed</li></ul></article>
               <article><span>03</span><Truck size={23} aria-hidden="true" /><h3>Equipment profile</h3><ul><li>Truck and trailer type are documented</li><li>Practical vehicle capacity is clear</li><li>Dimensions, weight, height, and clearance limits are known</li><li>Inoperable, oversized, modified, or specialty restrictions are stated</li></ul></article>
               <article><span>04</span><Route size={23} aria-hidden="true" /><h3>Operating area</h3><ul><li>Home base and realistic pickup radius are defined</li><li>Preferred states, regions, or lanes are identified</li><li>Deadhead and return-route expectations are understood</li><li>Availability and time-off rules are current</li></ul></article>
-              <article><span>05</span><FileCheck2 size={23} aria-hidden="true" /><h3>Broker setup packet</h3><ul><li>W-9 and business information are consistent</li><li>Authority and insurance documents are current</li><li>Payment and factoring instructions are controlled</li><li>No passwords, security codes, or unnecessary private data are shared</li></ul></article>
+              <article><span>05</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Broker setup packet</h3><ul><li>W-9 and business information are consistent</li><li>Authority and insurance documents are current</li><li>Payment and factoring instructions are controlled</li><li>No passwords, security codes, or unnecessary private data are shared</li></ul></article>
               <article><span>06</span><Check size={23} aria-hidden="true" /><h3>Load evaluation rules</h3><ul><li>Equipment and unit fit are checked</li><li>Pickup, delivery, access, and timing are reviewed</li><li>Rate, miles, deadhead, and operating costs are considered</li><li>Broker and payment terms are confirmed before acceptance</li></ul></article>
               <article><span>07</span><ShieldCheck size={23} aria-hidden="true" /><h3>Carrier control</h3><ul><li>The carrier defines approval limits</li><li>No load is booked without carrier approval</li><li>Changes and counteroffers require confirmation</li><li>Dispatch support does not transfer operating responsibility</li></ul></article>
-              <article><span>08</span><FileCheck2 size={23} aria-hidden="true" /><h3>Paperwork and communication</h3><ul><li>Rate confirmations are reviewed before signing</li><li>Pickup and delivery documents are organized</li><li>Updates, exceptions, and damage concerns have an escalation path</li><li>Invoice and payment follow-up responsibilities are assigned</li></ul></article>
+              <article><span>08</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Paperwork and communication</h3><ul><li>Rate confirmations are reviewed before signing</li><li>Pickup and delivery documents are organized</li><li>Updates, exceptions, and damage concerns have an escalation path</li><li>Invoice and payment follow-up responsibilities are assigned</li></ul></article>
             </div>
           </div>
         </section>
@@ -138,6 +174,15 @@ const schema = [
               <article><strong>No guaranteed load volume</strong><p>Available opportunities depend on market, lane, equipment, timing, authority, and carrier fit.</p></article>
               <article><strong>No guaranteed rate or revenue</strong><p>Rates, miles, utilization, profit, payment timing, and income are not promised.</p></article>
               <article><strong>No automatic booking</strong><p>The carrier reviews and approves each load before booking.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="readiness-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="readiness-faq-title">Questions to resolve before requesting active dispatch.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
             </div>
           </div>
         </section>
