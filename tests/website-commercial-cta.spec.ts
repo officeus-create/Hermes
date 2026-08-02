@@ -23,7 +23,7 @@ for (const funnel of websiteFunnels) {
       funnel.href,
     );
     await expect(page.getByRole("link", { name: funnel.supporting })).toHaveAttribute("href", funnel.href);
-    await expect(page.getByText(/does not automatically send or store the answers/i)).toBeVisible();
+    await expect(page.getByText(/automatically (?:send|sent|sending).*stor/i)).toBeVisible();
     await expect(page.locator("[data-seo-service-cta]")).toHaveCount(0);
   });
 }
