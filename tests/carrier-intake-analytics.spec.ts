@@ -22,7 +22,17 @@ async function fillQualification(form: ReturnType<Page["locator"]>) {
   await form.locator('select[name="dispatch_status"]').selectOption("needs_dispatcher");
 }
 
+const isApprovedAnalyticsRequest = (url: string) =>
+  url.includes("google-analytics.com") || url.includes("googletagmanager.com");
+
 test("carrier intake emits one start and one privacy-safe preview event", async ({ page }) => {
+  const writes: string[] = [];
+  page.on("request", (request) => {
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()) && !isApprovedAnalyticsRequest(request.url())) {
+      writes.push(`${request.method()} ${request.url()}`);
+    }
+  });
+
   await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
   await page.evaluate(() => {
     window.dataLayer = [];
@@ -51,6 +61,7 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
   await expect(page.locator("[data-vehicle-preview]")).toContainText("Authority status: Active");
   await expect(page.locator("[data-vehicle-preview]")).toContainText("Current dispatch status: Needs dispatch service");
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("no email, account, call, CRM write, or dispatcher assignment was created automatically");
   await expect.poll(async () => (await analyticsEvents(page, "carrier_intake_preview_ready")).length).toBe(1);
 
   const analytics = {
@@ -77,6 +88,7 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
   const serialized = JSON.stringify(analytics);
   expect(serialized).not.toMatch(/Test Carrier|Test Driver|driver@example|312|555|0182|MC 123456|Chicago/i);
   expect(serialized).not.toMatch(/email|phone|authority_number|authority_status|insurance_status|fleet_size|dispatch_status|origin_location|destination_location|vehicle_name|interested_load/i);
+  expect(writes).toEqual([]);
 });
 
 test("invalid carrier intake does not emit a preview-ready event", async ({ page }) => {
