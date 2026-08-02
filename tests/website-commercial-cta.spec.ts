@@ -16,10 +16,11 @@ test("website development routes qualified visitors into the structured project 
 });
 
 test("other digital services retain their existing contact CTA", async ({ page }) => {
-  await page.goto("/services/seo/");
+  await page.goto("/services/local-seo/");
   await expect(page.locator(".digital-service-actions").getByRole("link", { name: "Discuss this service" })).toHaveAttribute(
     "href",
     "#contact",
   );
   await expect(page.locator("[data-website-project-cta]")).toHaveCount(0);
+  await expect(page.locator("[data-seo-service-cta]")).toHaveCount(0);
 });
