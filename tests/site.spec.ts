@@ -18,6 +18,13 @@ function isApprovedAnalyticsRequest(url: string): boolean {
   return true;
 }
 
+function futureDate(daysFromNow: number): string {
+  const date = new Date();
+  date.setUTCHours(12, 0, 0, 0);
+  date.setUTCDate(date.getUTCDate() + daysFromNow);
+  return date.toISOString().slice(0, 10);
+}
+
 async function openRegularHome(page: Page) {
   await page.goto("/");
   const intro = page.locator("[data-site-intro]");
@@ -88,7 +95,7 @@ test("business pillars reveal one direction at a time and support keyboard navig
   await expect(page.getByRole("tabpanel", { name: /Hermes Logistics/ })).toBeHidden();
 
   await marketing.press("ArrowRight");
-  const academy = page.getByRole("tab", { name: /Hermes Academy/ });
+  const academy = page.getByRole("tab", { name: /Hermes Business Academy/ });
   await expect(academy).toBeFocused();
   await expect(academy).toHaveAttribute("aria-selected", "true");
 });
@@ -385,7 +392,7 @@ test("Load Board approves a standard car-hauling preview with zero external deli
   await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('input[name="pickup_location"]').fill("Madison, WI");
   await page.locator('input[name="delivery_location"]').fill("Chicago, IL");
-  await page.locator('input[name="ready_date"]').fill("2026-08-01");
+  await page.locator('input[name="ready_date"]').fill(futureDate(7));
   await page.locator('select[name="commodity_type"]').selectOption("passenger_vehicle");
   await page.locator('input[name="year_make_model"]').fill("2021 Toyota Camry");
   await page.locator('select[name="condition"]').selectOption("operable");
@@ -443,7 +450,7 @@ test("Load Board prepares a carrier vehicle for dispatcher review with zero exte
   await vehicleForm.locator('input[name="carrier_email"]').fill("driver@example.com");
   await vehicleForm.locator('input[name="carrier_phone"]').fill("+1 (312) 555-0182");
   await vehicleForm.locator('input[name="capacity_units"]').fill("3");
-  await vehicleForm.locator('input[name="available_from"]').fill("2026-08-03");
+  await vehicleForm.locator('input[name="available_from"]').fill(futureDate(9));
   await vehicleForm.locator('input[name="origin_location"]').fill("Chicago, IL");
   await vehicleForm.locator('input[name="origin_radius"]').fill("150");
   await vehicleForm.locator('input[name="anywhere"]').check();
@@ -469,7 +476,7 @@ test("Load Board quarantines an inoperable tractor for equipment review", async 
   await page.locator('input[name="phone"]').fill("+1 (312) 555-0182");
   await page.locator('input[name="pickup_location"]').fill("Green Bay, WI");
   await page.locator('input[name="delivery_location"]').fill("Milwaukee, WI");
-  await page.locator('input[name="ready_date"]').fill("2026-08-02");
+  await page.locator('input[name="ready_date"]').fill(futureDate(8));
   await page.locator('select[name="commodity_type"]').selectOption("tractor");
   await page.locator('input[name="year_make_model"]').fill("2019 Freightliner Cascadia");
   await page.locator('select[name="condition"]').selectOption("inoperable_non_rolling");
