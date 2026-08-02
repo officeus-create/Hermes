@@ -1,0 +1,49 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "Commitment",
+    body: [
+      "Hermes aims to make public website information, navigation, forms, previews, and contact routes usable by people with different devices, input methods, vision, hearing, motion, and cognitive needs.",
+      "Accessibility is treated as an ongoing product and content requirement rather than a one-time certification claim.",
+    ],
+  },
+  {
+    title: "Current website practices",
+    bullets: [
+      "Semantic headings, landmarks, labels, lists, buttons, and links are used wherever practical.",
+      "Keyboard access, visible focus, skip navigation, responsive layouts, and reduced-motion preferences are supported by the shared website system.",
+      "Images should include useful alternative text when they communicate information; decorative imagery should not create unnecessary screen-reader noise.",
+      "Forms use labels, required-field validation, status messages, and local review steps before an explicit handoff.",
+      "Desktop and mobile browser workflows are tested before production changes are merged.",
+    ],
+  },
+  {
+    title: "Known limitations",
+    body: [
+      "Third-party destinations, email applications, telephone software, maps, social platforms, embedded services, and files supplied by other organizations may have accessibility behavior outside Hermes control.",
+      "Some older pages or complex interactive previews may need further improvement as testing expands. A page should not claim conformance with a particular legal or technical level unless that claim has been independently supported.",
+    ],
+  },
+  {
+    title: "Request an alternative format or report a barrier",
+    bullets: [
+      "Include the page URL and describe what prevented access or completion.",
+      "State the device, browser, assistive technology, and preferred alternative format when available.",
+      "Do not include passwords, account credentials, medical information, payment details, or unrelated sensitive data.",
+      "Hermes will review practical fixes or an alternative contact route based on the information provided.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Accessibility Statement | Hermes"
+  description="Hermes accessibility practices, current website support, known limitations, and how to request an alternative format or report an accessibility barrier."
+  eyebrow="Accessible website experience"
+  h1="Accessibility Statement"
+  intro="How Hermes approaches accessible navigation, forms, content, motion, testing, and requests for an alternative way to use the website."
+  reviewedAt="2026-08-02"
+  {sections}
+/>
