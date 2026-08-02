@@ -82,9 +82,11 @@
     if (window.location.pathname !== "/load-board/") return;
     const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
     const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
-    if (!form || !result) return;
+    const emailLink = document.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+    if (!form || !result || !emailLink) return;
 
     let intakeStarted = false;
+    let handoffRecorded = false;
     const serviceGroup = () =>
       form.querySelector<HTMLSelectElement>('select[name="equipment_class"]')?.value === "car_hauler"
         ? "car_hauling_dispatch"
@@ -103,11 +105,15 @@
     };
 
     form.addEventListener("focusin", recordIntakeStart);
-    form.addEventListener("input", recordIntakeStart);
+    form.addEventListener("input", (event) => {
+      handoffRecorded = false;
+      recordIntakeStart(event);
+    });
     form.addEventListener("change", recordIntakeStart);
     form.addEventListener("submit", () => {
       window.setTimeout(() => {
         if (result.hidden) return;
+        handoffRecorded = false;
         pushAnalyticsEvent({
           event: "carrier_intake_preview_ready",
           audience_type: "carrier",
@@ -117,6 +123,21 @@
           page_path: window.location.pathname,
         });
       }, 0);
+    });
+
+    emailLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || handoffRecorded || result.hidden || emailLink.hidden) return;
+      if (!emailLink.getAttribute("href")?.startsWith("mailto:")) return;
+      handoffRecorded = true;
+      pushAnalyticsEvent({
+        event: "carrier_handoff_ready",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        handoff_method: "email",
+        preview_status: result.dataset.decision || "unknown",
+        page_path: window.location.pathname,
+      });
     });
   };
 
