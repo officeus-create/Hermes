@@ -10,7 +10,10 @@ test("car hauling dispatch page routes carriers into structured intake with dire
 
   const actions = page.locator(".commercial-actions");
   const primary = actions.getByRole("link", { name: "Request car-hauling dispatch review" });
-  await expect(primary).toHaveAttribute("href", "/load-board/?role=carrier#carrier-access");
+  await expect(primary).toHaveAttribute(
+    "href",
+    "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+  );
   await expect(actions.getByRole("link", { name: "Email Logistics Sales" })).toHaveAttribute(
     "href",
     "mailto:freight_301@hermeslogisticsus.com",
@@ -43,12 +46,17 @@ test("car hauling dispatch page routes carriers into structured intake with dire
     page_path: "/logistics/car-hauling-dispatch/",
     destination_path: "/load-board/",
   });
-  expect(JSON.stringify(analyticsEvent)).not.toMatch(/email|phone|MC\s*\d|USDOT\s*\d|VIN/i);
+  expect(JSON.stringify(analyticsEvent)).not.toMatch(/email|phone|MC\s*\d|USDOT\s*\d|VIN|car_hauler/i);
 
-  await page.goto("/load-board/?role=carrier#carrier-access");
+  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
   await expect(page.locator("#carrier-access")).toBeVisible();
   await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
   await expect(page.locator('input[name="authority_number"]')).toBeVisible();
-  await expect(page.locator('select[name="equipment_class"]')).toBeVisible();
+  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");
   await expect(page.locator('input[name="capacity_units"]')).toHaveAttribute("min", "1");
+});
+
+test("Load Board ignores unsupported equipment query values", async ({ page }) => {
+  await page.goto("/load-board/?role=carrier&equipment=unknown_equipment#carrier-access");
+  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("");
 });
