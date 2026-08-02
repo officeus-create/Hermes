@@ -50,6 +50,17 @@
     if (path.includes("-wi-vehicle-transport") || path.includes("/logistics/wisconsin-")) return "wisconsin_local_seo";
     if (path.startsWith("/logistics/")) return "logistics_service";
     if (path.startsWith("/paths/logistics/")) return "logistics_path";
+    if (path.startsWith("/services/")) return "digital_service";
+    return "other";
+  };
+
+  const classifyServiceGroup = (path: string) => {
+    if (path === "/logistics/car-hauling-dispatch/") return "car_hauling_dispatch";
+    if (path === "/services/website-development/") return "website_development";
+    if (path === "/services/website-redesign/") return "website_redesign";
+    if (path === "/services/seo/") return "seo_services";
+    if (path === "/services/seo-for-logistics-companies/") return "logistics_seo";
+    if (path === "/services/seo-for-independent-auto-dealers/") return "auto_dealer_seo";
     return "other";
   };
 
@@ -65,7 +76,7 @@
 
     const role = target.searchParams.get("role") || "unspecified";
     const ctaType = role === "carrier"
-      ? "carrier_capacity"
+      ? "carrier_intake"
       : role === "dealer"
         ? "dealer_transport_request"
         : role === "shipper"
@@ -75,10 +86,11 @@
             : "load_board_entry";
 
     pushAnalyticsEvent({
-      event: "logistics_cta_click",
+      event: "commercial_cta_click",
       cta_type: ctaType,
-      audience_role: role,
-      page_cluster: classifyPageCluster(window.location.pathname),
+      audience_type: role,
+      page_group: classifyPageCluster(window.location.pathname),
+      service_group: classifyServiceGroup(window.location.pathname),
       page_path: window.location.pathname,
       destination_path: target.pathname,
     });
@@ -100,7 +112,8 @@
     pushAnalyticsEvent({
       event: "contact_click",
       contact_method: isPhone ? "phone" : "email",
-      page_cluster: classifyPageCluster(window.location.pathname),
+      page_group: classifyPageCluster(window.location.pathname),
+      service_group: classifyServiceGroup(window.location.pathname),
       page_path: window.location.pathname,
     });
 
