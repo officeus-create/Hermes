@@ -13,7 +13,14 @@ interface Props {
 const { content } = Astro.props;
 const absoluteUrl = `https://hermeslogisticsus.com${content.slug}`;
 const isWebsiteDevelopment = content.slug === "/services/website-development/";
-const isSeoService = content.slug === "/services/seo/";
+const seoServiceSlugs = new Set([
+  "/services/seo/",
+  "/services/seo-for-logistics-companies/",
+  "/services/seo-for-independent-auto-dealers/",
+]);
+const isSeoService = seoServiceSlugs.has(content.slug);
+const parentPath = isSeoService ? "/paths/marketing/" : "/paths/technology/";
+const parentLabel = isSeoService ? "Marketing & SEO" : "IT Development";
 const websiteProjectBriefHref = "/paths/technology/?project=website_development#project-brief";
 const seoIntakeHref = "/paths/marketing/?service=seo#contact";
 const serviceSchema = {
@@ -30,7 +37,7 @@ const breadcrumbSchema = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-    { "@type": "ListItem", position: 2, name: "IT Development", item: "https://hermeslogisticsus.com/paths/technology/" },
+    { "@type": "ListItem", position: 2, name: parentLabel, item: `https://hermeslogisticsus.com${parentPath}` },
     { "@type": "ListItem", position: 3, name: content.h1, item: absoluteUrl },
   ],
 };
@@ -46,13 +53,13 @@ const faqSchema = {
 ---
 
 <BaseLayout title={content.title} description={content.description} schema={[serviceSchema, breadcrumbSchema, faqSchema]}>
-  <SiteHeader activePath="/paths/technology/" />
+  <SiteHeader activePath={parentPath} />
   <main id="main-content" class="digital-service-page">
     <section class="digital-service-hero" id="top">
       <div class="shell">
         <nav class="digital-breadcrumb" aria-label="Breadcrumb">
           <a href="/">Home</a><span aria-hidden="true">/</span>
-          <a href="/paths/technology/">IT Development</a><span aria-hidden="true">/</span>
+          <a href={parentPath}>{parentLabel}</a><span aria-hidden="true">/</span>
           <span aria-current="page">{content.h1}</span>
         </nav>
         <p class="eyebrow">{content.eyebrow}</p>
