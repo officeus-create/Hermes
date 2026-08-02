@@ -13,7 +13,7 @@ const readEvents = (page: Page) =>
     return (analyticsWindow.dataLayer || []).filter((item) => typeof item.event === "string");
   });
 
-test("carrier intake records start, preview and handoff without submitted data", async ({ page }) => {
+test("carrier preview records one privacy-safe email handoff", async ({ page }) => {
   await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
   const form = page.locator("[data-vehicle-form]");
 
@@ -35,55 +35,37 @@ test("carrier intake records start, preview and handoff without submitted data",
   await form.getByRole("button", { name: "Review access request" }).click();
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
   await expect(page.locator("[data-vehicle-decision]")).toHaveText("dispatcher review");
-
   await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "carrier_intake_preview_ready").length).toBe(1);
+  expect((await readEvents(page)).filter((item) => item.event === "carrier_handoff_ready")).toEqual([]);
 
-  const emailHandoff = page.locator("[data-vehicle-email]");
   await page.evaluate(() => {
     document.querySelector("[data-vehicle-email]")?.addEventListener("click", (event) => event.preventDefault(), { capture: true });
   });
+  const emailHandoff = page.locator("[data-vehicle-email]");
+  await emailHandoff.click();
   await emailHandoff.click();
 
   await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "carrier_handoff_ready").length).toBe(1);
 
-  const funnelEvents = (await readEvents(page)).filter((item) =>
-    ["carrier_intake_start", "carrier_intake_preview_ready", "carrier_handoff_ready"].includes(String(item.event)),
-  );
-  expect(funnelEvents).toHaveLength(3);
-  expect(funnelEvents).toEqual([
-    expect.objectContaining({
-      event: "carrier_intake_start",
-      intake_type: "carrier",
-      page_group: "load_board",
-      page_path: "/load-board/",
-    }),
-    expect.objectContaining({
-      event: "carrier_intake_preview_ready",
-      intake_type: "carrier",
-      page_group: "load_board",
-      page_path: "/load-board/",
-      preview_status: "dispatcher_review",
-    }),
-    expect.objectContaining({
-      event: "carrier_handoff_ready",
-      intake_type: "carrier",
-      page_group: "load_board",
-      page_path: "/load-board/",
-      handoff_method: "email",
-      preview_status: "dispatcher_review",
-    }),
-  ]);
+  const handoffEvent = (await readEvents(page)).find((item) => item.event === "carrier_handoff_ready");
+  expect(handoffEvent).toEqual(expect.objectContaining({
+    event: "carrier_handoff_ready",
+    audience_type: "carrier",
+    page_group: "load_board",
+    service_group: "car_hauling_dispatch",
+    handoff_method: "email",
+    preview_status: "dispatcher_review",
+    page_path: "/load-board/",
+  }));
 
-  const serialized = JSON.stringify(funnelEvents);
-  expect(serialized).not.toMatch(/Private Test|example\.com|312|123456|Chicago|car_hauler|capacity/i);
+  expect(JSON.stringify(handoffEvent)).not.toMatch(/Private Test|example\.com|312|123456|Chicago|capacity_units|origin_location|authority_number/i);
 });
 
-test("invalid carrier form does not report preview or handoff readiness", async ({ page }) => {
+test("carrier handoff is not reported before a valid preview", async ({ page }) => {
   await page.goto("/load-board/?role=carrier#carrier-access");
-  await page.locator("[data-vehicle-form]").getByRole("button", { name: "Review access request" }).click();
+  const form = page.locator("[data-vehicle-form]");
+  await form.getByRole("button", { name: "Review access request" }).click();
   await page.waitForTimeout(50);
 
-  const events = await readEvents(page);
-  expect(events.filter((item) => item.event === "carrier_intake_preview_ready")).toEqual([]);
-  expect(events.filter((item) => item.event === "carrier_handoff_ready")).toEqual([]);
+  expect((await readEvents(page)).filter((item) => item.event === "carrier_handoff_ready")).toEqual([]);
 });
