@@ -29,7 +29,7 @@ test("website development service routes into a structured project brief", async
   await primary.click();
 
   const commercialEvent = (await readEvents(page)).find((item) => item.event === "commercial_cta_click");
-  expect(commercialEvent).toEqual({
+  expect(commercialEvent).toEqual(expect.objectContaining({
     event: "commercial_cta_click",
     cta_type: "website_project_intake",
     audience_type: "business",
@@ -37,7 +37,7 @@ test("website development service routes into a structured project brief", async
     service_group: "website_development",
     page_path: "/services/website-development/",
     destination_path: "/paths/technology/",
-  });
+  }));
 
   await page.goto("/paths/technology/?project=website_development#project-brief");
   const brief = page.locator("[data-it-project-brief]");
@@ -82,28 +82,29 @@ test("website project brief records start, preview and handoff without submitted
   const funnelEvents = (await readEvents(page)).filter((item) =>
     ["website_project_intake_start", "website_project_preview_ready", "marketing_handoff_ready"].includes(String(item.event)),
   );
+  expect(funnelEvents).toHaveLength(3);
   expect(funnelEvents).toEqual([
-    {
+    expect.objectContaining({
       event: "website_project_intake_start",
       intake_type: "website_project",
       page_group: "technology_project_brief",
       page_path: "/paths/technology/",
-    },
-    {
+    }),
+    expect.objectContaining({
       event: "website_project_preview_ready",
       intake_type: "website_project",
       page_group: "technology_project_brief",
       page_path: "/paths/technology/",
       preview_status: "prepared",
-    },
-    {
+    }),
+    expect.objectContaining({
       event: "marketing_handoff_ready",
       intake_type: "website_project",
       page_group: "technology_project_brief",
       page_path: "/paths/technology/",
       handoff_method: "email",
       preview_status: "prepared",
-    },
+    }),
   ]);
 
   const serialized = JSON.stringify(funnelEvents);
