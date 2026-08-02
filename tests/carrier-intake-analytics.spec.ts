@@ -14,6 +14,14 @@ async function analyticsEvents(page: Page, eventName: string) {
   }, eventName);
 }
 
+async function fillQualification(form: ReturnType<Page["locator"]>) {
+  await form.locator('select[name="authority_status"]').selectOption("active");
+  await form.locator('select[name="authority_age"]').selectOption("over_one_year");
+  await form.locator('select[name="insurance_status"]').selectOption("active");
+  await form.locator('select[name="fleet_size"]').selectOption("two_to_three");
+  await form.locator('select[name="dispatch_status"]').selectOption("needs_dispatcher");
+}
+
 test("carrier intake emits one start and one privacy-safe preview event", async ({ page }) => {
   await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
   await page.evaluate(() => {
@@ -21,10 +29,12 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
   });
 
   const form = page.locator("[data-vehicle-form]");
+  await expect(form.locator("[data-carrier-qualification]")).toBeVisible();
   await form.locator('select[name="carrier_role"]').selectOption("owner_operator");
   await form.locator('input[name="carrier_company_name"]').fill("Test Carrier LLC");
   await form.locator('input[name="carrier_contact_name"]').fill("Test Driver");
   await form.locator('input[name="authority_number"]').fill("MC 123456");
+  await fillQualification(form);
   await form.locator('input[name="carrier_email"]').fill("driver@example.com");
   await form.locator('input[name="carrier_phone"]').fill("+1 (312) 555-0182");
   await expect(form.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");
@@ -39,6 +49,8 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
 
   await form.getByRole("button", { name: /Review access request/ }).click();
   await expect(page.locator("[data-vehicle-result]")).toBeVisible();
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("Authority status: Active");
+  await expect(page.locator("[data-vehicle-preview]")).toContainText("Current dispatch status: Needs dispatch service");
   await expect.poll(async () => (await analyticsEvents(page, "carrier_intake_preview_ready")).length).toBe(1);
 
   const analytics = {
@@ -64,7 +76,7 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
 
   const serialized = JSON.stringify(analytics);
   expect(serialized).not.toMatch(/Test Carrier|Test Driver|driver@example|312|555|0182|MC 123456|Chicago/i);
-  expect(serialized).not.toMatch(/email|phone|authority_number|origin_location|destination_location|vehicle_name|interested_load/i);
+  expect(serialized).not.toMatch(/email|phone|authority_number|authority_status|insurance_status|fleet_size|dispatch_status|origin_location|destination_location|vehicle_name|interested_load/i);
 });
 
 test("invalid carrier intake does not emit a preview-ready event", async ({ page }) => {

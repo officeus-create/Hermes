@@ -10,6 +10,13 @@ import {
   reviewLoadBoardPayload,
   reviewVehicleAvailabilityPayload,
 } from "../src/lib/load-board.ts";
+import {
+  buildQualifiedCarrierLead,
+  buildQualifiedCarrierMailto,
+  buildQualifiedCarrierPayload,
+  buildQualifiedCarrierPreview,
+  reviewQualifiedCarrierPayload,
+} from "../src/lib/carrier-qualification.ts";
 
 const TEST_NOW = new Date();
 TEST_NOW.setUTCHours(12, 0, 0, 0);
@@ -73,6 +80,42 @@ assert.match(vehiclePreview, /Interested load: HLB-1042/i);
 assert.match(vehiclePreview, /no email, account, call, CRM write, or dispatcher assignment was created/i);
 const carrierLead = buildCarrierSalesLead(vehiclePayload, vehicleReview);
 assert.match(carrierLead.email_subject, /^\[HERMES SALES\] \[LOAD BOARD ACCESS\] \[CARRIER\] \[HLB-1042\]/);
+
+const qualifiedCarrier = new FormData();
+for (const [key, value] of carHauler.entries()) qualifiedCarrier.set(key, value);
+qualifiedCarrier.set("authority_status", "active");
+qualifiedCarrier.set("authority_age", "over_one_year");
+qualifiedCarrier.set("insurance_status", "active");
+qualifiedCarrier.set("fleet_size", "two_to_three");
+qualifiedCarrier.set("dispatch_status", "needs_dispatcher");
+const qualifiedPayload = buildQualifiedCarrierPayload(qualifiedCarrier);
+assert.equal(qualifiedPayload.authority_status, "active");
+assert.equal(qualifiedPayload.fleet_size, "two_to_three");
+const qualifiedReview = reviewQualifiedCarrierPayload(qualifiedPayload, TEST_NOW);
+assert.equal(qualifiedReview.decision, "dispatcher_review");
+assert.match(qualifiedReview.required_actions.join(" "), /dispatch-service qualification/i);
+const qualifiedPreview = buildQualifiedCarrierPreview(qualifiedPayload, qualifiedReview);
+assert.match(qualifiedPreview, /Authority status: Active/);
+assert.match(qualifiedPreview, /Insurance status: Active policy/);
+assert.match(qualifiedPreview, /Fleet size: 2–3 units/);
+assert.match(qualifiedPreview, /Current dispatch status: Needs dispatch service/);
+const qualifiedLead = buildQualifiedCarrierLead(qualifiedPayload, qualifiedReview);
+assert.match(qualifiedLead.email_subject, /\[DISPATCH SERVICE\]/);
+assert.match(buildQualifiedCarrierMailto(qualifiedLead), /^mailto:officeus@hermeslogisticsus.com\?/);
+
+qualifiedCarrier.set("authority_status", "pending");
+qualifiedCarrier.set("authority_age", "under_90_days");
+qualifiedCarrier.set("insurance_status", "quote_in_progress");
+const readinessReview = reviewQualifiedCarrierPayload(buildQualifiedCarrierPayload(qualifiedCarrier), TEST_NOW);
+assert.equal(readinessReview.decision, "readiness_review");
+assert.ok(readinessReview.routing.includes("Carrier readiness review queue"));
+
+qualifiedCarrier.set("authority_status", "active");
+qualifiedCarrier.set("authority_age", "over_one_year");
+qualifiedCarrier.set("insurance_status", "inactive");
+const inactiveInsuranceReview = reviewQualifiedCarrierPayload(buildQualifiedCarrierPayload(qualifiedCarrier), TEST_NOW);
+assert.equal(inactiveInsuranceReview.decision, "needs_more_information");
+assert.match(inactiveInsuranceReview.required_actions.join(" "), /insurance/i);
 
 carHauler.set("equipment_class", "box_truck");
 const boxTruckReview = reviewVehicleAvailabilityPayload(buildVehicleAvailabilityPayload(carHauler), TEST_NOW);
