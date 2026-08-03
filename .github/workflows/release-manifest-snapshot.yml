@@ -1,0 +1,47 @@
+name: Release manifest snapshot
+
+on:
+  pull_request:
+    paths:
+      - scripts/generate-release-manifest.mjs
+      - .github/workflows/release-manifest-snapshot.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build
+
+      - name: Generate read-only release snapshot
+        env:
+          RELEASE_MANIFEST_CURRENT_MAIN_SHA: 2a1004b92e5aeb5bd01317174d8d6e497b31e7cb
+        run: |
+          export RELEASE_MANIFEST_SNAPSHOT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          node scripts/generate-release-manifest.mjs --write --external
+
+      - name: Upload release manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest-phase-1
+          path: |
+            docs/RELEASE_MANIFEST_2026-08-01.md
+            docs/release-manifest-2026-08-01.json
+          if-no-files-found: error
+          retention-days: 7
