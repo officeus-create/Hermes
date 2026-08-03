@@ -1,0 +1,74 @@
+/* appleton feature styles — extracted from global.css so they ship only on routes that use them */
+.appleton-service-page { min-height: 100vh; background: #f4f6fb; }
+.appleton-hero { padding: clamp(8.5rem, 14vw, 11rem) 0 clamp(4rem, 8vw, 6.5rem); overflow: hidden; background: radial-gradient(circle at 85% 18%, #3659bc 0, #132865 34%, #07113c 72%); color: #fff; }
+.appleton-breadcrumbs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.2rem; color: #bbc7ea; font-size: .78rem; }
+.appleton-breadcrumbs a { color: #fff; }
+.appleton-hero .detail-back { margin-bottom: clamp(2rem, 4vw, 3.5rem); }
+.appleton-hero-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(310px, .75fr); gap: clamp(2rem, 6vw, 5rem); align-items: end; }
+.appleton-hero h1 { max-width: 930px; margin: .7rem 0 1.2rem; color: #fff; font-size: clamp(3rem, 7.4vw, 6.5rem); line-height: .92; }
+.appleton-hero-copy { max-width: 760px; color: #dbe2fa; font-size: clamp(1rem, 2vw, 1.18rem); }
+.appleton-boundary { max-width: 760px; margin: 1rem 0 0; color: #b8c4e8; font-size: .78rem; }
+.appleton-hero-panel { padding: clamp(1.4rem, 3vw, 2.1rem); border: 1px solid rgba(255,255,255,.24); border-radius: 14px; background: rgba(7,17,60,.5); box-shadow: 0 24px 70px rgba(0,0,0,.24); backdrop-filter: blur(12px); }
+.appleton-hero-panel > svg { color: #aebfff; }
+.appleton-hero-panel h2 { margin: .55rem 0 1.2rem; color: #fff; font-size: clamp(1.7rem, 3vw, 2.5rem); }
+.appleton-hero-panel ul { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
+.appleton-hero-panel li { display: flex; gap: .55rem; color: #e1e6f8; }
+.appleton-hero-panel li svg { flex: 0 0 auto; margin-top: .15rem; color: #9fb3ff; }
+.appleton-audiences, .appleton-process, .appleton-faq { background: #fff; }
+.appleton-card-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.appleton-card-grid article { display: flex; min-height: 300px; flex-direction: column; padding: 1.4rem; border: 1px solid #d7ddec; border-radius: 10px; background: #f8f9fd; }
+.appleton-card-grid article > svg { color: #7250dd; }
+.appleton-card-grid h3 { margin: 2rem 0 .7rem; color: var(--color-navy-900); }
+.appleton-card-grid p { color: var(--color-muted); }
+.appleton-card-grid a { display: inline-flex; gap: .4rem; align-items: center; margin-top: auto; color: #3d2aa0; font-weight: 780; }
+.appleton-two-column { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 7vw, 7rem); align-items: start; }
+.appleton-two-column h2 { margin-top: .6rem; color: var(--color-navy-900); }
+.appleton-two-column p { color: var(--color-muted); }
+.appleton-checklist { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin: 0; padding: 0; list-style: none; }
+.appleton-checklist li { display: flex; gap: .65rem; padding: 1rem; border: 1px solid #d7ddec; border-radius: 8px; background: #fff; }
+.appleton-checklist svg { flex: 0 0 auto; color: #5f45c8; }
+.appleton-planning { background: #0a1749; color: #fff; }
+.appleton-planning .section-heading h2 { max-width: 880px; color: #fff; }
+.appleton-planning-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: rgba(255,255,255,.2); }
+.appleton-planning-grid article { padding: clamp(1.4rem, 3vw, 2rem); background: #0a1749; }
+.appleton-planning-grid h3 { color: #fff; }
+.appleton-planning-grid p { color: #cbd4ef; }
+.appleton-non-affiliation { max-width: 900px; margin: 1.2rem 0 0; color: #aeb9dc; font-size: .78rem; }
+.appleton-section-link { display: inline-flex; gap: .45rem; align-items: center; margin-top: 1rem; color: #d9e2ff; font-weight: 760; }
+.appleton-section-link:hover, .appleton-section-link:focus-visible { color: #fff; }
+.appleton-process-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .85rem; margin: 0; padding: 0; list-style: none; }
+.appleton-process-grid li { padding: 1.2rem; border-top: 3px solid #684cd2; background: #f5f6fb; }
+.appleton-process-grid span { color: #7250dd; font: 750 .72rem/1 var(--font-mono); }
+.appleton-process-grid h3 { margin: 2rem 0 .6rem; font-size: 1.1rem; }
+.appleton-process-grid p { margin: 0; color: var(--color-muted); font-size: .88rem; }
+.appleton-equipment { background: #eef1f8; }
+.appleton-equipment .appleton-two-column > div:last-child { padding: clamp(1.4rem, 3vw, 2.2rem); border-left: 4px solid #7250dd; background: #fff; }
+.appleton-carrier-note { background: #111a41; color: #fff; }
+.appleton-carrier-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 1.5rem; align-items: center; }
+.appleton-carrier-card > svg { color: #9fb2ff; }
+.appleton-carrier-card h2 { margin: .4rem 0 .7rem; color: #fff; }
+.appleton-carrier-card p:not(.eyebrow) { max-width: 800px; margin: 0; color: #c8d1eb; }
+.appleton-carrier-card .appleton-section-link { margin-top: .8rem; }
+.appleton-final-cta { background: #f4f6fb; }
+.appleton-final-card { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(290px, .8fr); gap: clamp(2rem, 7vw, 6rem); padding: clamp(1.6rem, 5vw, 4rem); border-radius: 16px; background: #fff; box-shadow: 0 26px 70px rgba(12,28,78,.1); }
+.appleton-final-card h2 { margin: .55rem 0 1rem; color: var(--color-navy-900); }
+.appleton-final-card p { color: var(--color-muted); }
+.appleton-final-actions { display: flex; flex-direction: column; gap: .75rem; justify-content: center; }
+.appleton-final-actions .button:not(.button-primary) { border: 1px solid #bfc8dc; color: var(--color-navy-900); }
+.appleton-text-link { padding: .35rem 0; color: #4f36b4; font-size: .82rem; font-weight: 760; text-align: center; }
+@media (max-width: 1050px) {
+.appleton-card-grid { grid-template-columns: 1fr 1fr; }
+.appleton-process-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 820px) {
+.appleton-hero-grid, .appleton-two-column, .appleton-final-card { grid-template-columns: 1fr; }
+.appleton-planning-grid { grid-template-columns: 1fr; gap: 0; }
+.appleton-planning-grid article { border-bottom: 1px solid rgba(255,255,255,.18); }
+.appleton-carrier-card { grid-template-columns: auto 1fr; }
+.appleton-carrier-card .button { grid-column: 1 / -1; width: 100%; }
+}
+@media (max-width: 560px) {
+.appleton-card-grid, .appleton-checklist, .appleton-process-grid { grid-template-columns: 1fr; }
+.appleton-card-grid article { min-height: 250px; }
+.appleton-hero .logistics-audience-actions .button { width: 100%; justify-content: center; }
+}
