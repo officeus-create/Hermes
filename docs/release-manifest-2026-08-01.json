@@ -1,0 +1,3543 @@
+{
+  "schema_version": 1,
+  "issue": 87,
+  "phase": 1,
+  "generated_at": "2026-08-03T19:18:24Z",
+  "repository": {
+    "full_name": "officeus-create/Hermes",
+    "current_main_sha": "2a1004b92e5aeb5bd01317174d8d6e497b31e7cb",
+    "canonical_origin": "https://hermeslogisticsus.com"
+  },
+  "sources": [
+    {
+      "id": "current_main",
+      "state": "complete_build_inventory",
+      "route_count": 104,
+      "indexable_route_count": 95,
+      "sitemap_files": [
+        "public/sitemap-academy.xml",
+        "public/sitemap-cases.xml",
+        "public/sitemap-digital-services.xml",
+        "public/sitemap-local.xml",
+        "public/sitemap-services.xml",
+        "public/sitemap-trust.xml",
+        "public/sitemap.xml"
+      ],
+      "sitemap_counts": {
+        "sitemap-academy.xml": 5,
+        "sitemap-cases.xml": 2,
+        "sitemap-digital-services.xml": 9,
+        "sitemap-local.xml": 16,
+        "sitemap-services.xml": 13,
+        "sitemap-trust.xml": 4,
+        "sitemap.xml": 46
+      },
+      "note": "Generated from current build output and committed sitemap files."
+    },
+    {
+      "id": "pr_83",
+      "number": 83,
+      "title": "Add feature-gated Google Routes planning estimate",
+      "head_sha": "880cf7058aa276b28fb50a7c863d4c98eb4c178a",
+      "state": "open_draft_stale",
+      "public_route_count": 1,
+      "note": "Changes the existing /load-board/ route and adds a non-public API endpoint. It is a historical reference, not a current-main release candidate."
+    },
+    {
+      "id": "pr_85",
+      "number": 85,
+      "title": "Codex: harden Shipment History lifecycle, dates, privacy and provenance",
+      "head_sha": "eadf69427525ecc73127390ef1dafd5819868e6e",
+      "state": "open_draft_stale",
+      "public_route_count": 0,
+      "note": "Its changed-file set contains no public src/pages route, so no public URL is credited to this PR."
+    },
+    {
+      "id": "merged_pr_86",
+      "number": 86,
+      "title": "SEO: reduce crawl depth for 72-hour logistics discovery",
+      "head_sha": "7684bf925c31745eb13025290686ccddab33aad4",
+      "merge_sha": "79ab8a477042802881bc308ce69ebf8b9c9e979d",
+      "state": "merged_into_current_main",
+      "public_route_count": 5,
+      "note": "Discovery and sitemap changes are already represented in current main and are not pending release work."
+    }
+  ],
+  "external_snapshots": [
+    {
+      "source": "production",
+      "base_url": "https://hermeslogisticsus.com",
+      "availability": "AVAILABLE",
+      "sitemap_files": [
+        "/sitemap-academy.xml",
+        "/sitemap-cases.xml",
+        "/sitemap-digital-services.xml",
+        "/sitemap-local.xml",
+        "/sitemap-services.xml",
+        "/sitemap-trust.xml",
+        "/sitemap.xml"
+      ],
+      "route_count": 95,
+      "errors": []
+    },
+    {
+      "source": "immutable_release",
+      "base_url": "https://655e4425.hermes-eu4.pages.dev",
+      "availability": "AVAILABLE",
+      "sitemap_files": [
+        "/sitemap.xml"
+      ],
+      "route_count": 46,
+      "errors": []
+    }
+  ],
+  "summary": {
+    "total": 251,
+    "by_status": {
+      "COMPLETE": 250,
+      "STALE": 1
+    },
+    "by_source": {
+      "current_main": 104,
+      "immutable_release": 46,
+      "merged_pr_86": 5,
+      "production": 95,
+      "pr_83": 1
+    }
+  },
+  "routes": [
+    {
+      "route": "/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/",
+      "source_state": "merged_pr_86",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": null
+    },
+    {
+      "route": "/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/404.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/404/",
+      "sitemap_owner": [],
+      "source_file": "src/pages/404.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/about/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/about/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/about.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/about/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/about/",
+      "sitemap_owner": "/sitemap-trust.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/academy/apply/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/apply/",
+      "sitemap_owner": "public/sitemap-academy.xml",
+      "source_file": "src/pages/academy/apply/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/academy/apply/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/apply/",
+      "sitemap_owner": "/sitemap-academy.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/academy/how-training-works/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/how-training-works/",
+      "sitemap_owner": "public/sitemap-academy.xml",
+      "source_file": "src/pages/academy/how-training-works/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/academy/how-training-works/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/how-training-works/",
+      "sitemap_owner": "/sitemap-academy.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/academy/marketing/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/marketing/",
+      "sitemap_owner": "public/sitemap-academy.xml",
+      "source_file": "src/pages/academy/marketing/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/academy/marketing/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/marketing/",
+      "sitemap_owner": "/sitemap-academy.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/academy/resources/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/resources/",
+      "sitemap_owner": "public/sitemap-academy.xml",
+      "source_file": "src/pages/academy/resources/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/academy/resources/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/resources/",
+      "sitemap_owner": "/sitemap-academy.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/academy/us-logistics-operations/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/us-logistics-operations/",
+      "sitemap_owner": "public/sitemap-academy.xml",
+      "source_file": "src/pages/academy/us-logistics-operations/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/academy/us-logistics-operations/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/academy/us-logistics-operations/",
+      "sitemap_owner": "/sitemap-academy.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/accessibility/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/accessibility/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/accessibility.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/accessibility/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/accessibility/",
+      "sitemap_owner": "/sitemap-trust.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/case/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/",
+      "sitemap_owner": "public/sitemap-cases.xml",
+      "source_file": "src/pages/case/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/case/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/",
+      "sitemap_owner": "/sitemap-cases.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/case/appleton-vehicle-transport-seo/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
+      "sitemap_owner": "public/sitemap-cases.xml",
+      "source_file": "src/pages/case/appleton-vehicle-transport-seo.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/case/appleton-vehicle-transport-seo/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
+      "sitemap_owner": "/sitemap-cases.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/case/it-development/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/it-development/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/case/it-development.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/case/it-development/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/it-development/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/case/it-development/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/case/it-development/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/contacts/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/contacts/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/contacts.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/contacts/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/contacts/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/contacts/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/contacts/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/demos/ai-visibility-scorecard/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/ai-visibility-scorecard/",
+      "sitemap_owner": [],
+      "source_file": "src/pages/demos/ai-visibility-scorecard/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/content-pipeline/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/content-pipeline/",
+      "sitemap_owner": [],
+      "source_file": "src/pages/demos/content-pipeline/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/content-pipeline/insight-preview/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/content-pipeline/insight-preview/",
+      "sitemap_owner": [],
+      "source_file": "src/pages/demos/content-pipeline/insight-preview/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/crm-validation/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/crm-validation/",
+      "sitemap_owner": [],
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/hermes-connect/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect/",
+      "sitemap_owner": [],
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/lane-intelligence/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/lane-intelligence/",
+      "sitemap_owner": [],
+      "source_file": "src/pages/demos/lane-intelligence.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/social-distribution/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/social-distribution/",
+      "sitemap_owner": [],
+      "source_file": "src/pages/demos/social-distribution/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/website-audit/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/website-audit/",
+      "sitemap_owner": [],
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "missing",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/editorial-policy/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/editorial-policy/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/editorial-policy.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/editorial-policy/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/editorial-policy/",
+      "sitemap_owner": "/sitemap-trust.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/es/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/es/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/es/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/es/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/es/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/fr/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/fr/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/fr/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/fr/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/fr/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/fr/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/fr/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/it/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/it/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/it/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/it/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/it/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/load-board/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/load-board/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/load-board.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/load-board/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/load-board/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/load-board/",
+      "source_state": "pr_83",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/load-board/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/load-board.astro",
+      "status": "STALE",
+      "blocker": "PR #83 changes an existing route from a stale, non-mergeable branch and must be rebuilt from current main if prioritized.",
+      "response_status": null
+    },
+    {
+      "route": "/load-board/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/load-board/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/agency/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/agency/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/agency/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/agency/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/agency/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/agency/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/appleton-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/appleton-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/appleton-wi-vehicle-transport/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/appleton-wi-vehicle-transport/",
+      "source_state": "merged_pr_86",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/appleton-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": null
+    },
+    {
+      "route": "/logistics/appleton-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/apply/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/apply/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/apply.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/apply/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/apply/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/apply/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/apply/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/auction-vehicle-pickup/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/auction-vehicle-pickup/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/auction-vehicle-pickup/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/broker/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/broker/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/broker/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/broker/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/broker/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/broker/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/car-hauling-dispatch/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/car-hauling-dispatch/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/car-hauling-dispatch/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/careers/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/careers/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/careers/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/careers/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/careers/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/careers/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/carrier/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/carrier/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/carrier/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/carrier/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/carrier/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/carrier/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/dealer-vehicle-transportation/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/dealer-vehicle-transportation/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/dealer-vehicle-transportation/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/eau-claire-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/eau-claire-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/eau-claire-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/eau-claire-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/eau-claire-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/enclosed-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/enclosed-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/enclosed-vehicle-transport/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/enclosed-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/enclosed-vehicle-transport/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/fleet-owner-dispatch-support/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/fleet-owner-dispatch-support/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/fleet-owner-dispatch-support/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/fleet-owner-dispatch-support/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/fleet-owner-dispatch-support/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/fond-du-lac-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/fond-du-lac-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/fond-du-lac-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/fond-du-lac-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/fond-du-lac-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/green-bay-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/green-bay-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/green-bay-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/green-bay-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/green-bay-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/inoperable-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/inoperable-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/inoperable-vehicle-transport/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/inoperable-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/inoperable-vehicle-transport/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/kenosha-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/kenosha-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/kenosha-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/kenosha-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/kenosha-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/la-crosse-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/la-crosse-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/la-crosse-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/la-crosse-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/la-crosse-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/madison-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/madison-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/madison-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/madison-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/madison-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/milwaukee-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/milwaukee-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/milwaukee-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/milwaukee-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/milwaukee-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/multi-car-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/multi-car-transport/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/multi-car-transport/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/multi-car-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/multi-car-transport/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/new-authority-car-hauler-support/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/new-authority-car-hauler-support/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/new-authority-car-hauler-support/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/new-authority-car-hauler-support/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/open-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/open-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/open-vehicle-transport/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/open-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/open-vehicle-transport/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/oshkosh-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/oshkosh-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/oshkosh-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/oshkosh-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/oshkosh-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/owner-operator-dispatch-support/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/owner-operator-dispatch-support/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/owner-operator-dispatch-support/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/owner-operator-dispatch-support/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/racine-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/racine-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/racine-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/racine-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/racine-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/auction-vehicle-pickup-checklist/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/resources/auction-vehicle-pickup-checklist.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/resources/auction-vehicle-pickup-checklist/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/auction-vehicle-pickup-checklist/",
+      "source_state": "merged_pr_86",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/resources/auction-vehicle-pickup-checklist.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": null
+    },
+    {
+      "route": "/logistics/resources/auction-vehicle-pickup-checklist/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/broker-setup-packet-checklist/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/broker-setup-packet-checklist/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/resources/broker-setup-packet-checklist/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/resources/broker-setup-packet-checklist/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/broker-setup-packet-checklist/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/car-hauler-capacity-checklist/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/resources/car-hauler-capacity-checklist.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/resources/car-hauler-capacity-checklist/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/car-hauler-capacity-checklist/",
+      "source_state": "merged_pr_86",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/logistics/resources/car-hauler-capacity-checklist.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": null
+    },
+    {
+      "route": "/logistics/resources/car-hauler-capacity-checklist/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/dispatch-service-vs-self-dispatch/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/dispatch-service-vs-self-dispatch/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/resources/dispatch-service-vs-self-dispatch/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/resources/dispatch-service-vs-self-dispatch/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/dispatch-service-vs-self-dispatch/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+      "sitemap_owner": "public/sitemap-services.xml",
+      "source_file": "src/pages/logistics/resources/new-authority-car-hauler-readiness-checklist/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+      "sitemap_owner": "/sitemap-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/sheboygan-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/sheboygan-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/sheboygan-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/sheboygan-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/sheboygan-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/shipper-dealer/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/shipper-dealer/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/logistics/shipper-dealer/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/shipper-dealer/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/shipper-dealer/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/shipper-dealer/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/waukesha-wi-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/waukesha-wi-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/waukesha-wi-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/waukesha-wi-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/waukesha-wi-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/wisconsin-auction-vehicle-pickup/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-auction-vehicle-pickup/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/wisconsin-auction-vehicle-pickup.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/wisconsin-auction-vehicle-pickup/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-auction-vehicle-pickup/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/wisconsin-dealer-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-dealer-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/wisconsin-dealer-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/wisconsin-dealer-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-dealer-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/wisconsin-enclosed-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-enclosed-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/wisconsin-enclosed-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/wisconsin-enclosed-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-enclosed-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/wisconsin-multi-vehicle-dealer-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-multi-vehicle-dealer-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/wisconsin-multi-vehicle-dealer-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/wisconsin-multi-vehicle-dealer-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-multi-vehicle-dealer-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/logistics/wisconsin-vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/",
+      "sitemap_owner": "public/sitemap-local.xml",
+      "source_file": "src/pages/logistics/wisconsin-vehicle-transport.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/logistics/wisconsin-vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/",
+      "sitemap_owner": "/sitemap-local.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/academy/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/academy/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/academy/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/academy/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/academy/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/academy/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/",
+      "source_state": "merged_pr_86",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": null
+    },
+    {
+      "route": "/paths/logistics/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/agency-partners/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/agency-partners/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/agency-partners/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/agency-partners/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/agency-partners/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/agency-partners/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/brokers/carrier-capacity/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/brokers/carrier-capacity/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/brokers/carrier-capacity/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/brokers/carrier-capacity/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/brokers/carrier-capacity/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/brokers/carrier-capacity/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/box-truck/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/box-truck/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/box-truck/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/car-hauling/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/car-hauling/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/car-hauling/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/cargo-van/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/cargo-van/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/cargo-van/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/direct-freight-development/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/direct-freight-development/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/direct-freight-development/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/direct-freight-development/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/direct-freight-development/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/direct-freight-development/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/dry-van/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/dry-van/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/dry-van/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/flatbed/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/flatbed/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/flatbed/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/fleet-owners/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/fleet-owners/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/fleet-owners/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/hotshot/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/hotshot/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/hotshot/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/new-authority/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/new-authority/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/new-authority/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/new-authority/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/new-authority/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/new-authority/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/owner-operators/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/owner-operators/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/owner-operators/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/power-only/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/power-only/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/power-only/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/power-only/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/power-only/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/power-only/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/reefer/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/reefer/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/reefer/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/reefer/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/reefer/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/reefer/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/step-deck/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/step-deck/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/step-deck/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/trusted-carrier-network/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/trusted-carrier-network/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/carriers/trusted-carrier-network/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/trusted-carrier-network/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/carriers/trusted-carrier-network/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/carriers/trusted-carrier-network/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/customers/luxury-classic-vehicle/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/luxury-classic-vehicle/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/customers/luxury-classic-vehicle/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/luxury-classic-vehicle/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/customers/luxury-classic-vehicle/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/luxury-classic-vehicle/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/customers/port-pickup/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/port-pickup/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/customers/port-pickup/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/port-pickup/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/customers/port-pickup/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/port-pickup/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/customers/vehicle-transport/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/vehicle-transport/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/customers/vehicle-transport/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/vehicle-transport/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/customers/vehicle-transport/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/customers/vehicle-transport/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/drivers/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/drivers/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/drivers/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/drivers/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/drivers/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/drivers/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/find-your-path/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/find-your-path/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/find-your-path.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/find-your-path/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/find-your-path/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/find-your-path/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/find-your-path/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/guidance/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/guidance/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/guidance/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/guidance/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/guidance/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/guidance/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/shippers-dealers/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/shippers-dealers/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/paths/logistics/[...result].astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/logistics/shippers-dealers/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/shippers-dealers/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/logistics/shippers-dealers/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/logistics/shippers-dealers/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/marketing/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/marketing/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/marketing/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/marketing/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/marketing/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/marketing/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/technology/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/technology/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/paths/technology/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/technology/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/paths/technology/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/paths/technology/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/privacy/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/privacy/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/privacy.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/privacy/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/privacy/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/privacy/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/privacy/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/resources/search-to-inquiry-conversion-checklist/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/resources/search-to-inquiry-conversion-checklist/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/resources/search-to-inquiry-conversion-checklist/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/resources/technical-seo-checklist/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/resources/technical-seo-checklist/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/resources/technical-seo-checklist/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/resources/technical-seo-checklist/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/resources/technical-seo-checklist/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/resources/website-project-brief-template/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/resources/website-project-brief-template/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/resources/website-project-brief-template/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/resources/website-project-brief-template/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/resources/website-project-brief-template/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/ru/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ru/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/ru/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/ru/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ru/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/ru/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ru/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/services/local-seo/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/local-seo/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/local-seo/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/local-seo/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/local-seo/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/services/seo-for-independent-auto-dealers/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/seo-for-independent-auto-dealers/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/seo-for-independent-auto-dealers/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/services/seo-for-logistics-companies/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/seo-for-logistics-companies/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/seo-for-logistics-companies/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/seo-for-logistics-companies/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/seo-for-logistics-companies/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/services/seo/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/seo/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/seo/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/seo/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/seo/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/services/website-development/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/website-development/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/website-development/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/website-development/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/website-development/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/services/website-redesign/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/website-redesign/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/website-redesign/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/website-redesign/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/website-redesign/",
+      "sitemap_owner": "/sitemap-digital-services.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/terms/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/terms/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/terms.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/terms/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/terms/",
+      "sitemap_owner": "/sitemap-trust.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/ua/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ua/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/ua/index.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "present",
+        "immutable_release": "present"
+      }
+    },
+    {
+      "route": "/ua/",
+      "source_state": "immutable_release",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ua/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    },
+    {
+      "route": "/ua/",
+      "source_state": "production",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ua/",
+      "sitemap_owner": "/sitemap.xml",
+      "source_file": null,
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200
+    }
+  ],
+  "phase_2": {
+    "status": "BLOCKED_PENDING_REVIEW_AND_OWNER_FACTS",
+    "route": "/paths/academy/casablanca/",
+    "included_in_this_release": false
+  }
+}
