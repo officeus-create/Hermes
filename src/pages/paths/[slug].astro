@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
@@ -65,9 +66,12 @@ const schema = faqSchema
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
   {path.id === "academy" && (
-    <template data-static-validator-compat>
-      COO / Operational Director · Operating Career System · Executive · Three programs. Different responsibilities. · Practice environment · Program dates, scope, and prices are published before enrollment · Ask about the right Academy path. · do not guarantee employment · Learning preview only · Ask about learning AI automation
-    </template>
+    <>
+      <AcademySubsiteNav />
+      <template data-static-validator-compat>
+        COO / Operational Director · Operating Career System · Executive · Three programs. Different responsibilities. · Practice environment · Program dates, scope, and prices are published before enrollment · Ask about the right Academy path. · do not guarantee employment · Learning preview only · Ask about learning AI automation
+      </template>
+    </>
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <ContactCTA selectedPath={path.category} />
