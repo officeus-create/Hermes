@@ -1,0 +1,291 @@
+---
+import { BarChart3, Bot, ClipboardCheck, FileWarning, Link2, Search, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import {
+  aiVisibilityObservations,
+  aiVisibilityPrompts,
+  aiVisibilityProviders,
+  calculateAiVisibilityMetrics,
+  syntheticAiVisibilityObservations,
+} from "../../../data/ai-visibility-scorecard";
+
+const metrics = calculateAiVisibilityMetrics(aiVisibilityObservations);
+const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
+const directions = ["all", "logistics", "marketing", "academy", "technology"] as const;
+const languages = ["all", "en", "ru", "uk"] as const;
+const intents = ["all", "commercial", "comparison", "educational", "problem_solving", "brand_discovery"] as const;
+---
+
+<BaseLayout
+  title="AI Brand Visibility Scorecard | Hermes Internal Preview"
+  description="Noindex manual workspace for AI brand mentions, linked citations, entity accuracy, recommendation context, factual errors, competitors, and corrective actions."
+  robots="noindex,nofollow,noarchive"
+>
+  <div class="logistics-resource-page ai-visibility-workspace">
+    <SiteHeader theme="dark" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier" id="top">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <span>Demos</span><span aria-hidden="true">/</span>
+            <span aria-current="page">AI visibility scorecard</span>
+          </nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Internal Preview · Issue #150</p>
+              <h1>AI Brand Visibility and Citation Scorecard</h1>
+              <p>Measure dated manual observations instead of guessing. The scorecard separates brand mentions, linked citations, recommendation context, entity accuracy, description accuracy, factual errors, competitors, and corrective actions.</p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href="#query-registry">Review 48 prompts</a>
+                <a class="button" href="#manual-observation">Record a local observation</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>No automated provider checks.</h2>
+              <p>No ChatGPT, Gemini, Copilot, Perplexity, Google, browser, account, API, login, screenshot, message, or external request is connected. Release A stores nothing and starts with zero real observations.</p>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section capacity-review" aria-labelledby="baseline-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Current real baseline</p><h2 id="baseline-title">Zero observations means zero measured visibility—not zero market visibility.</h2></div>
+            <p>The workspace does not invent scores. Rates change only when a dated manual observation is entered locally or later added through a separately reviewed data workflow.</p>
+          </div>
+          <div class="capacity-boundary-grid" data-real-metrics>
+            <article><strong data-metric="total">{metrics.total}</strong><p>Recorded real observations</p></article>
+            <article><strong data-metric="mentionRate">{metrics.mentionRate}%</strong><p>Brand mention rate</p></article>
+            <article><strong data-metric="citationRate">{metrics.citationRate}%</strong><p>Linked citation rate</p></article>
+            <article><strong data-metric="recommendationRate">{metrics.recommendationRate}%</strong><p>Considered or recommended</p></article>
+            <article><strong data-metric="entityAccuracyRate">{metrics.entityAccuracyRate}%</strong><p>Correct entity rate</p></article>
+            <article><strong data-metric="descriptionAccuracyRate">{metrics.descriptionAccuracyRate}%</strong><p>Correct description rate</p></article>
+            <article><strong data-metric="factualErrorRate">{metrics.factualErrorRate}%</strong><p>Factual-error rate</p></article>
+            <article><strong>{aiVisibilityPrompts.length}</strong><p>Registered prompts</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section resource-intro" aria-labelledby="measurement-model-title">
+        <div class="shell resource-lead">
+          <BarChart3 size={36} aria-hidden="true" />
+          <div>
+            <p class="eyebrow">Measurement model</p>
+            <h2 id="measurement-model-title">Do not collapse different outcomes into one opaque score.</h2>
+            <p>A brand can be mentioned without a link, cited without being recommended, recommended with the wrong entity, or described accurately while using an outdated page. Each signal remains separate and traceable to the prompt, provider label, date, reviewer, cited path, and evidence reference.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" id="query-registry" aria-labelledby="query-registry-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Query registry</p><h2 id="query-registry-title">Forty-eight prompts across Logistics, Marketing, Academy, and IT.</h2></div>
+            <p>Filters operate only in this browser. They do not send prompts to an AI provider or record personal search history.</p>
+          </div>
+          <div class="contact-direction-group" aria-label="Prompt filters">
+            <label><span>Direction</span><select data-query-filter="direction">{directions.map((item) => <option value={item}>{item}</option>)}</select></label>
+            <label><span>Language</span><select data-query-filter="language">{languages.map((item) => <option value={item}>{item}</option>)}</select></label>
+            <label><span>Intent</span><select data-query-filter="intent">{intents.map((item) => <option value={item}>{item}</option>)}</select></label>
+            <p class="form-status" data-query-count>{aiVisibilityPrompts.length} prompts visible.</p>
+          </div>
+          <div class="capacity-pillar-grid" data-query-list>
+            {aiVisibilityPrompts.map((item, index) => (
+              <article data-query-card data-direction={item.direction} data-language={item.language} data-intent={item.intent}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <Search size={23} aria-hidden="true" />
+                <h3>{item.id} · {item.direction}</h3>
+                <p><strong>{item.language.toUpperCase()} · {item.geography} · {item.intent}</strong></p>
+                <p>{item.prompt}</p>
+                <p><strong>Canonical owner:</strong> <a href={item.canonicalOwner}>{item.canonicalOwner}</a></p>
+                <p><strong>Cadence:</strong> {item.cadence}</p>
+                <details><summary>Expected safe facts</summary><ul>{item.expectedFacts.map((fact) => <li>{fact}</li>)}</ul></details>
+                <details><summary>Prohibited claims</summary><ul>{item.prohibitedClaims.map((claim) => <li>{claim}</li>)}</ul></details>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" id="manual-observation" aria-labelledby="manual-observation-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Manual observation</p><h2 id="manual-observation-title">Prepare one privacy-safe observation locally.</h2></div>
+            <p>Do not paste full conversations, personal prompts, account identifiers, cookies, tokens, emails, phone numbers, or unrelated provider history. Record only the structured result needed for measurement.</p>
+          </div>
+          <form class="contact-form" data-ai-observation-form novalidate>
+            <div class="field-row">
+              <label><span>Prompt</span><select name="promptId" required>{aiVisibilityPrompts.map((item) => <option value={item.id}>{item.id} · {item.prompt}</option>)}</select></label>
+              <label><span>Provider/interface label</span><select name="provider" required>{aiVisibilityProviders.map((item) => <option value={item.id}>{item.label}</option>)}</select></label>
+            </div>
+            <div class="field-row">
+              <label><span>Observed at</span><input type="datetime-local" name="observedAt" required /></label>
+              <label><span>Reviewer label</span><input type="text" name="reviewer" value="Manual reviewer" maxlength="120" required /></label>
+            </div>
+            <div class="field-row">
+              <label><span>Brand mentioned</span><select name="brandMentioned"><option value="false">No</option><option value="true">Yes</option></select></label>
+              <label><span>Linked citation</span><select name="linkedCitation"><option value="false">No</option><option value="true">Yes</option></select></label>
+            </div>
+            <label><span>Cited Hermes path, if any</span><input type="text" name="citedPath" placeholder="/academy/us-logistics-operations/" maxlength="300" /></label>
+            <div class="field-row">
+              <label><span>Recommendation strength</span><select name="recommendation"><option value="none">None</option><option value="source_only">Source only</option><option value="considered_option">Considered option</option><option value="explicit_recommendation">Explicit recommendation</option></select></label>
+              <label><span>Entity accuracy</span><select name="entityAccuracy"><option value="not_applicable">Not applicable</option><option value="accurate">Accurate</option><option value="partially_accurate">Partially accurate</option><option value="inaccurate">Inaccurate</option></select></label>
+            </div>
+            <div class="field-row">
+              <label><span>Description accuracy</span><select name="descriptionAccuracy"><option value="not_applicable">Not applicable</option><option value="accurate">Accurate</option><option value="partially_accurate">Partially accurate</option><option value="inaccurate">Inaccurate</option></select></label>
+              <label><span>Factual error present</span><select name="factualError"><option value="false">No</option><option value="true">Yes</option></select></label>
+            </div>
+            <label><span>Competitors mentioned, comma separated</span><input type="text" name="competitors" maxlength="500" /></label>
+            <label><span>Corrective action</span><textarea name="correctiveAction" rows="3" maxlength="1000"></textarea></label>
+            <label><span>Owner-approved evidence reference</span><input type="text" name="evidenceReference" placeholder="Internal note or approved screenshot reference" maxlength="300" /></label>
+            <div class="logistics-audience-actions">
+              <button class="button button-primary" type="submit">Prepare local observation</button>
+              <button class="button" type="reset">Clear form</button>
+            </div>
+            <p class="form-status" data-observation-status role="status">Nothing has been recorded.</p>
+            <div data-observation-preview hidden>
+              <h3>Local JSON preview</h3>
+              <pre tabindex="0"></pre>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" aria-labelledby="local-observations-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Session-only scorecard</p><h2 id="local-observations-title">Observations prepared in this browser session.</h2></div>
+            <p>Refreshing the page clears the local session list. Release A intentionally has no database, localStorage, analytics event, CRM write, or external export.</p>
+          </div>
+          <div class="capacity-pillar-grid" data-local-observations>
+            <article data-empty-observation>
+              <span>00</span><ClipboardCheck size={23} aria-hidden="true" /><h3>No real observations recorded.</h3><p>Use the manual form only after checking a provider interface and documenting the date and evidence.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" aria-labelledby="synthetic-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Synthetic QA only</p><h2 id="synthetic-title">Fixture metrics prove the calculation contract—not Hermes visibility.</h2></div>
+            <p>These four examples are explicitly synthetic and are excluded from the real baseline.</p>
+          </div>
+          <div class="capacity-boundary-grid">
+            <article><strong>{syntheticMetrics.mentionRate}%</strong><p>Synthetic mention rate</p></article>
+            <article><strong>{syntheticMetrics.citationRate}%</strong><p>Synthetic citation rate</p></article>
+            <article><strong>{syntheticMetrics.recommendationRate}%</strong><p>Synthetic recommendation rate</p></article>
+            <article><strong>{syntheticMetrics.factualErrorRate}%</strong><p>Synthetic factual-error rate</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" aria-labelledby="visibility-boundaries-title">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">Release A boundaries</p><h2 id="visibility-boundaries-title">The workspace measures evidence; it does not manufacture it.</h2></div>
+          <div class="capacity-boundary-grid">
+            <article><Bot size={22} aria-hidden="true" /><strong>No provider automation</strong><p>No prompt is sent to any AI/search system.</p></article>
+            <article><Link2 size={22} aria-hidden="true" /><strong>No citation claim without a record</strong><p>The default real baseline is empty and all rates are zero.</p></article>
+            <article><FileWarning size={22} aria-hidden="true" /><strong>No full conversation storage</strong><p>Only structured observation fields are permitted.</p></article>
+            <article><ShieldCheck size={22} aria-hidden="true" /><strong>No secrets or personal history</strong><p>Accounts, cookies, tokens, personal prompts, and unrelated histories are out of scope.</p></article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    aiVisibilityPrompts,
+    calculateAiVisibilityMetrics,
+    type AiVisibilityObservation,
+  } from "../../../data/ai-visibility-scorecard";
+
+  const filterControls = document.querySelectorAll<HTMLSelectElement>("[data-query-filter]");
+  const queryCards = document.querySelectorAll<HTMLElement>("[data-query-card]");
+  const queryCount = document.querySelector<HTMLElement>("[data-query-count]");
+
+  const applyFilters = () => {
+    const active = Object.fromEntries([...filterControls].map((control) => [control.dataset.queryFilter ?? "", control.value]));
+    let visible = 0;
+    for (const card of queryCards) {
+      const matches = ["direction", "language", "intent"].every((key) => active[key] === "all" || card.dataset[key] === active[key]);
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    }
+    if (queryCount) queryCount.textContent = `${visible} prompts visible.`;
+  };
+  filterControls.forEach((control) => control.addEventListener("change", applyFilters));
+
+  const form = document.querySelector<HTMLFormElement>("[data-ai-observation-form]");
+  const status = document.querySelector<HTMLElement>("[data-observation-status]");
+  const preview = document.querySelector<HTMLElement>("[data-observation-preview]");
+  const previewText = preview?.querySelector<HTMLElement>("pre");
+  const localRoot = document.querySelector<HTMLElement>("[data-local-observations]");
+  const localObservations: AiVisibilityObservation[] = [];
+
+  const booleanValue = (formData: FormData, name: string) => formData.get(name) === "true";
+  const stringValue = (formData: FormData, name: string) => String(formData.get(name) ?? "").trim();
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const promptId = stringValue(formData, "promptId");
+    const prompt = aiVisibilityPrompts.find((item) => item.id === promptId);
+    const observedAtValue = stringValue(formData, "observedAt");
+    const reviewer = stringValue(formData, "reviewer");
+    if (!prompt || !observedAtValue || !reviewer) {
+      if (status) status.textContent = "Prompt, observation date, and reviewer label are required.";
+      return;
+    }
+
+    const observation: AiVisibilityObservation = {
+      id: `LOCAL-${String(localObservations.length + 1).padStart(3, "0")}`,
+      promptId,
+      provider: stringValue(formData, "provider") as AiVisibilityObservation["provider"],
+      observedAt: new Date(observedAtValue).toISOString(),
+      reviewer,
+      brandMentioned: booleanValue(formData, "brandMentioned"),
+      linkedCitation: booleanValue(formData, "linkedCitation"),
+      citedPath: stringValue(formData, "citedPath"),
+      recommendation: stringValue(formData, "recommendation") as AiVisibilityObservation["recommendation"],
+      entityAccuracy: stringValue(formData, "entityAccuracy") as AiVisibilityObservation["entityAccuracy"],
+      descriptionAccuracy: stringValue(formData, "descriptionAccuracy") as AiVisibilityObservation["descriptionAccuracy"],
+      factualError: booleanValue(formData, "factualError"),
+      competitors: stringValue(formData, "competitors").split(",").map((item) => item.trim()).filter(Boolean),
+      correctiveAction: stringValue(formData, "correctiveAction"),
+      evidenceReference: stringValue(formData, "evidenceReference"),
+    };
+
+    if (observation.linkedCitation && !observation.citedPath.startsWith("/")) {
+      if (status) status.textContent = "A linked Hermes citation requires a site path beginning with /.";
+      return;
+    }
+
+    localObservations.push(observation);
+    if (previewText) previewText.textContent = JSON.stringify({ prompt: prompt.prompt, observation }, null, 2);
+    if (preview) preview.hidden = false;
+    if (status) status.textContent = "Observation prepared locally. No storage or external action occurred.";
+
+    localRoot?.querySelector("[data-empty-observation]")?.remove();
+    if (localRoot) {
+      const card = document.createElement("article");
+      const metrics = calculateAiVisibilityMetrics(localObservations);
+      card.innerHTML = `<span>${String(localObservations.length).padStart(2, "0")}</span><h3>${observation.promptId} · ${observation.provider}</h3><p>Brand mentioned: ${observation.brandMentioned ? "yes" : "no"}; citation: ${observation.linkedCitation ? "yes" : "no"}; recommendation: ${observation.recommendation}.</p><p>Session metrics: ${metrics.mentionRate}% mention · ${metrics.citationRate}% citation · ${metrics.recommendationRate}% recommendation · ${metrics.factualErrorRate}% factual error.</p>`;
+      localRoot.appendChild(card);
+    }
+  });
+
+  form?.addEventListener("reset", () => {
+    if (status) status.textContent = "Form cleared. Existing session-only observation cards remain until refresh.";
+    if (preview) preview.hidden = true;
+    if (previewText) previewText.textContent = "";
+  });
+</script>
