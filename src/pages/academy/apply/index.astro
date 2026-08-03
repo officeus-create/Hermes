@@ -10,6 +10,13 @@ const title = "Apply to Hermes Business Academy | Program Review";
 const description =
   "Prepare your program choice, country and city, languages, English level, recent experience, objective, schedule, U.S. time-zone availability, and preferred contact route for human review.";
 const canonicalUrl = new URL("/academy/apply/", Astro.site).toString();
+const academyEntity = {
+  "@type": "Organization",
+  "@id": "https://hermeslogisticsus.com/#academy",
+  name: "Hermes Business Academy",
+  url: "https://hermeslogisticsus.com/paths/academy/",
+  parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
+};
 const faq = [
   {
     question: "Does submitting the form enroll me in the Academy?",
@@ -35,13 +42,17 @@ const schema = [
     name: "Hermes Business Academy Application",
     description,
     url: canonicalUrl,
-    about: {
-      "@type": "Organization",
-      "@id": "https://hermeslogisticsus.com/#academy",
-      name: "Hermes Business Academy",
-      url: "https://hermeslogisticsus.com/paths/academy/",
-      parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
-    },
+    about: academyEntity,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Hermes Business Academy Application Review",
+    description,
+    url: canonicalUrl,
+    provider: academyEntity,
+    serviceType: "Education program qualification and application review",
+    availableLanguage: ["English", "Russian", "Ukrainian"],
   },
   {
     "@context": "https://schema.org",
