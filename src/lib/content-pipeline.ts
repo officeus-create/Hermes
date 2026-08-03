@@ -145,7 +145,9 @@ export const normalizeSourceUrl = (value: string | null): string => {
     const url = new URL(value);
     url.hash = "";
     for (const key of [...url.searchParams.keys()]) {
-      if (key.startsWith("utm_") || key === "fbclid" || key === "igshid") url.searchParams.delete(key);
+      if (key.startsWith("utm_") || key === "fbclid" || key === "igshid" || key === "igsh") {
+        url.searchParams.delete(key);
+      }
     }
     const normalizedPath = url.pathname.replace(/\/+$/, "") || "/";
     return `${url.protocol}//${url.host.toLowerCase()}${normalizedPath}${url.search}`;
