@@ -2,7 +2,7 @@
 import {
   ArrowRight,
   BookOpen,
-  CheckCircle2,
+  CircleCheck,
   ClipboardCheck,
   FileText,
   GraduationCap,
@@ -121,6 +121,16 @@ const schema = [
       name: guide.title,
       url: new URL(guide.href, Astro.site).toString(),
     })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Car Hauler Carrier Readiness and Dispatch-Fit Review",
+    description:
+      "A structured review of carrier identity, authority status, insurance, equipment, capacity, operating area, dispatch workflow, broker setup information, and carrier-controlled approval boundaries.",
+    url: canonicalUrl,
+    areaServed: { "@type": "Country", name: "United States" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   },
   {
     "@context": "https://schema.org",
@@ -265,7 +275,7 @@ const schema = [
         <div class="shell">
           <div class="section-heading"><p class="eyebrow">Related next actions</p><h2 id="carrier-next-actions-title">Move from learning to a controlled review.</h2></div>
           <div class="resource-related-grid">
-            <a href={carrierIntake}><CheckCircle2 size={22} aria-hidden="true" /><h3>Carrier intake</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            <a href={carrierIntake}><CircleCheck size={22} aria-hidden="true" /><h3>Carrier intake</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
             <a href="/academy/us-logistics-operations/"><GraduationCap size={22} aria-hidden="true" /><h3>U.S. Logistics Operations</h3><p>Review the public Academy program covering dispatch foundations, communication, documents, equipment logic, and load lifecycle.</p><strong>Explore program <ArrowRight size={16} aria-hidden="true" /></strong></a>
             <a href="/load-board/"><Truck size={22} aria-hidden="true" /><h3>Hermes Load Board</h3><p>Open the preview-first carrier and posted-load workflows. No live load, account, booking, or external sync is implied.</p><strong>Open Load Board <ArrowRight size={16} aria-hidden="true" /></strong></a>
           </div>
