@@ -1,0 +1,237 @@
+---
+import { ArrowRight, ClipboardCheck, FileDown, MessageSquareText, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import {
+  syntheticApprovedWebsiteAsset,
+  syntheticChannelEligibility,
+  syntheticDistributionDrafts,
+  syntheticDistributionNotice,
+} from "../../../data/social-distribution-preview";
+
+const platformLabels = {
+  facebook: "Facebook",
+  threads: "Threads",
+  instagram: "Instagram",
+  x: "X",
+} as const;
+---
+
+<BaseLayout
+  title="Social Distribution Preview Queue | Hermes"
+  description="Preview-only queue for platform-specific drafts, UTM links, duplicate fingerprints, review states, rejection, approval, and manual export."
+  robots="noindex,nofollow,noarchive"
+>
+  <div class="logistics-resource-page social-distribution-workspace">
+    <SiteHeader theme="dark" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier" id="top">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <span>Demos</span><span aria-hidden="true">/</span>
+            <span aria-current="page">Social distribution</span>
+          </nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Internal Preview · Issue #144</p>
+              <h1>Approved Website Asset → Platform Draft Review Queue</h1>
+              <p>One canonical website page produces four distinct drafts, privacy-safe tracked links, duplicate fingerprints, and an auditable human-review path. Release A stops at manual export.</p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href={syntheticApprovedWebsiteAsset.canonicalUrl}>Open canonical website asset <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/demos/content-pipeline/">Review source pipeline</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>No live accounts or public posts.</h2>
+              <p>{syntheticDistributionNotice} Approval here authorizes only a local manual export preview.</p>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section capacity-review" aria-labelledby="distribution-source-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Source asset</p><h2 id="distribution-source-title">Distribution starts only after the website page is approved.</h2></div>
+            <p>Deployment alone is not a trigger. The asset must be indexable, production-approved, privacy-safe, claim-reviewed, assigned to the correct entity, and marked `distribution_approved`.</p>
+          </div>
+          <div class="capacity-boundary-grid">
+            <article><strong>{syntheticApprovedWebsiteAsset.status}</strong><p>Distribution status.</p></article>
+            <article><strong>{syntheticApprovedWebsiteAsset.campaign}</strong><p>Allowlisted campaign.</p></article>
+            <article><strong>{syntheticApprovedWebsiteAsset.contentVersion}</strong><p>Content version used for deduplication.</p></article>
+            <article><strong>{syntheticChannelEligibility.filter((item) => item.eligibility.eligible).length}/4</strong><p>Synthetic preview channels eligible; zero live accounts verified.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section resource-intro" aria-labelledby="reviewer-title">
+        <div class="shell resource-lead">
+          <ClipboardCheck size={36} aria-hidden="true" />
+          <div>
+            <p class="eyebrow">Human review</p>
+            <h2 id="reviewer-title">Name the reviewer before changing queue state.</h2>
+            <label>
+              <span>Preview reviewer</span>
+              <input type="text" value="Owner preview reviewer" data-distribution-reviewer maxlength="120" />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" aria-labelledby="distribution-drafts-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Platform drafts</p><h2 id="distribution-drafts-title">Different platforms receive different copy and destination logic.</h2></div>
+            <p>Edit locally, mark reviewed, approve or reject, then prepare a manual export. No state in this workspace can call a provider API.</p>
+          </div>
+          <div class="capacity-pillar-grid">
+            {syntheticDistributionDrafts.map((draft, index) => (
+              <article
+                data-distribution-card
+                data-platform={draft.platform}
+                data-draft={JSON.stringify(draft)}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <MessageSquareText size={23} aria-hidden="true" />
+                <h3>{platformLabels[draft.platform]}</h3>
+                <p><strong>Mode:</strong> {draft.channelMode}</p>
+                <p><strong>Initial state:</strong> <span data-distribution-state>{draft.state}</span></p>
+                <p><strong>Hook:</strong> {draft.hook}</p>
+                <label>
+                  <span>Editable platform copy</span>
+                  <textarea rows="12" data-distribution-copy>{draft.copy}</textarea>
+                </label>
+                <p><strong>Tracked URL:</strong> <code data-tracked-url>{draft.trackedUrl}</code></p>
+                <p><strong>Fingerprint:</strong> <code data-fingerprint>{draft.fingerprint}</code></p>
+                <p><strong>Destination:</strong> {draft.destinationStrategy}</p>
+                <label>
+                  <span>Rejection reason</span>
+                  <input type="text" data-rejection-reason maxlength="300" placeholder="Required only for rejection" />
+                </label>
+                <div class="logistics-audience-actions" data-distribution-actions>
+                  <button class="button" type="button" data-action="review">Mark reviewed</button>
+                  <button class="button" type="button" data-action="approve" disabled>Approve manual export</button>
+                  <button class="button" type="button" data-action="reject">Reject</button>
+                  <button class="button button-primary" type="button" data-action="export" disabled>Prepare manual export</button>
+                </div>
+                <p class="form-status" data-distribution-status aria-live="polite">Generated locally. No external action.</p>
+                <div data-audit-log>
+                  <strong>Audit log</strong>
+                  <ol></ol>
+                </div>
+                <div data-manual-export hidden>
+                  <h4>Manual export package</h4>
+                  <pre></pre>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" aria-labelledby="distribution-boundaries-title">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">Release A boundaries</p><h2 id="distribution-boundaries-title">Manual export is the final state.</h2></div>
+          <div class="capacity-boundary-grid">
+            <article><strong>No provider call</strong><p>No Facebook, Threads, Instagram, X, Meta, or other publishing endpoint is connected.</p></article>
+            <article><strong>No credential storage</strong><p>No access token, account identifier, app secret, callback, recovery data, or private export is present.</p></article>
+            <article><strong>No automatic retry</strong><p>There is no live request and therefore no ambiguous provider timeout or duplicate-post retry.</p></article>
+            <article><strong>No SEO guarantee</strong><p>Distribution can support discovery and referrals but does not guarantee ranking, traffic, leads, sales, or revenue.</p></article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    createManualExport,
+    transitionDistributionDraft,
+    type DistributionDraft,
+    type DistributionState,
+  } from "../../../lib/social-distribution.ts";
+
+  const reviewerInput = document.querySelector<HTMLInputElement>("[data-distribution-reviewer]");
+  const cards = document.querySelectorAll<HTMLElement>("[data-distribution-card]");
+
+  const allowedActions: Record<DistributionState, string[]> = {
+    generated: ["review", "reject"],
+    reviewed: ["approve", "reject"],
+    approved: ["export", "reject"],
+    rejected: [],
+    manual_export_ready: [],
+  };
+
+  for (const card of cards) {
+    let draft = JSON.parse(card.dataset.draft ?? "{}") as DistributionDraft;
+    const copy = card.querySelector<HTMLTextAreaElement>("[data-distribution-copy]");
+    const state = card.querySelector<HTMLElement>("[data-distribution-state]");
+    const status = card.querySelector<HTMLElement>("[data-distribution-status]");
+    const reason = card.querySelector<HTMLInputElement>("[data-rejection-reason]");
+    const auditList = card.querySelector<HTMLOListElement>("[data-audit-log] ol");
+    const exportRoot = card.querySelector<HTMLElement>("[data-manual-export]");
+    const exportText = exportRoot?.querySelector<HTMLElement>("pre");
+    const buttons = card.querySelectorAll<HTMLButtonElement>("button[data-action]");
+
+    const render = () => {
+      if (state) state.textContent = draft.state;
+      if (copy) copy.disabled = draft.state === "rejected" || draft.state === "manual_export_ready";
+      for (const button of buttons) {
+        button.disabled = !allowedActions[draft.state].includes(button.dataset.action ?? "");
+      }
+    };
+
+    const addAudit = (entry: { from: string; to: string; actor: string; at: string; reason: string }) => {
+      if (!auditList) return;
+      const item = document.createElement("li");
+      item.textContent = `${entry.from} → ${entry.to} by ${entry.actor} at ${entry.at}. ${entry.reason}`;
+      auditList.appendChild(item);
+    };
+
+    const transition = (to: DistributionState, transitionReason: string) => {
+      const actor = reviewerInput?.value.trim() ?? "";
+      if (copy) draft = { ...draft, copy: copy.value };
+      try {
+        const result = transitionDistributionDraft(
+          draft,
+          to,
+          actor,
+          new Date().toISOString(),
+          transitionReason,
+        );
+        draft = result.draft;
+        addAudit(result.audit);
+        if (status) status.textContent = `State changed to ${draft.state}. No external action.`;
+        render();
+      } catch (error) {
+        if (status) status.textContent = error instanceof Error ? error.message : "Unable to change state.";
+      }
+    };
+
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        const action = button.dataset.action;
+        if (action === "review") transition("reviewed", "Copy reviewed in the local Release A workspace.");
+        if (action === "approve") transition("approved", "Approved only for local manual export preparation.");
+        if (action === "reject") transition("rejected", reason?.value.trim() ?? "");
+        if (action === "export") {
+          transition("manual_export_ready", "Prepared a local manual-copy package; no provider call occurred.");
+          try {
+            const output = createManualExport(draft);
+            if (exportText) exportText.textContent = output;
+            if (exportRoot) exportRoot.hidden = false;
+          } catch (error) {
+            if (status) status.textContent = error instanceof Error ? error.message : "Unable to prepare export.";
+          }
+        }
+      });
+    }
+
+    render();
+  }
+</script>

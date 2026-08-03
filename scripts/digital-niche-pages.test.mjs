@@ -13,11 +13,15 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "SEO for Logistics Companies | Hermes",
-    h1: "SEO for U.S. Logistics Companies",
+    title: "SEO for Logistics, Trucking & Dispatch Companies | Hermes",
+    h1: "SEO for Logistics, Trucking and Dispatch Companies",
     required: [
       "Audience and service architecture",
+      "Trucking, dispatch and freight-broker query map",
+      "Logistics website SEO audit",
+      "Search-to-qualified-inquiry measurement",
       "Current load-board offers are private observations",
+      "Does Hermes provide SEO for trucking and dispatch companies?",
       "Can shipment history be used for SEO pages?",
       "/logistics/car-hauling-dispatch/",
       "/logistics/dealer-vehicle-transportation/",
@@ -26,11 +30,15 @@ const pages = [
   {
     route: "/services/seo-for-independent-auto-dealers/",
     file: "services/seo-for-independent-auto-dealers/index.html",
-    title: "SEO for Independent Auto Dealers | Hermes",
-    h1: "SEO for Independent Auto Dealers",
+    title: "SEO for Independent & Used Car Dealers | Hermes",
+    h1: "SEO for Independent and Used Car Dealers",
     required: [
-      "Dealer search architecture",
+      "Independent dealer search architecture",
+      "Inventory-page SEO audit",
+      "Local eligibility and market foundation",
+      "Mobile search-to-inquiry path",
       "Inventory, pricing, availability, condition, financing",
+      "What is included in a car dealership SEO audit?",
       "Can SEO work with a third-party dealer inventory feed?",
       "/logistics/dealer-vehicle-transportation/",
       "/logistics/resources/auction-vehicle-pickup-checklist/",
@@ -66,8 +74,8 @@ for (const page of pages) {
   assert.equal(canonical(html), `https://hermeslogisticsus.com${page.route}`, `${page.route} canonical mismatch`);
   assert.equal((html.match(/<h1\b/gi) ?? []).length, 1, `${page.route} must have one H1`);
   assert.ok(html.includes('data-contact-mode="preview"'), `${page.route} must remain preview-first`);
-  assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} IT email fallback missing`);
-  assert.ok(!html.includes('href="tel:'), `${page.route} must remain IT email-only`);
+  assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} approved email fallback missing`);
+  assert.ok(!html.includes('href="tel:'), `${page.route} must remain email-only`);
   assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} breadcrumb missing`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
   const schemaTypes = parseSchema(html).map((entity) => entity?.["@type"]);

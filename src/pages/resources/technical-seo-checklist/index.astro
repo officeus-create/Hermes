@@ -1,0 +1,59 @@
+---
+import { ArrowRight, Check, Gauge, Search, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+
+const title = "Free Technical SEO Checklist | Hermes Marketing";
+const description = "Use this technical SEO checklist to review crawlability, indexation, canonicals, sitemaps, redirects, structured data, performance, mobile usability, analytics, and conversion tracking.";
+const canonicalUrl = new URL("/resources/technical-seo-checklist/", Astro.site).toString();
+const faq = [
+  { question: "What does a technical SEO audit check?", answer: "A technical SEO audit reviews whether search engines can discover, crawl, render, understand, index, and correctly attribute the important pages of a website." },
+  { question: "Does passing this checklist guarantee rankings?", answer: "No. Technical readiness removes avoidable barriers, but rankings also depend on search intent, content quality, authority, competition, user experience, and search-engine decisions." },
+  { question: "Should every URL be indexed?", answer: "No. Duplicate, filtered, private, staging, internal-search, expired, or low-value URLs may need consolidation, redirects, canonicalization, or noindex treatment." },
+  { question: "When should an SEO specialist review the site?", answer: "Review is especially useful before a redesign or migration, after a traffic decline, when index coverage is unclear, or when important pages are not receiving relevant impressions." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "Article", headline: "Free Technical SEO Checklist", description, datePublished: "2026-08-02", dateModified: "2026-08-02", mainEntityOfPage: canonicalUrl, author: { "@type": "Organization", name: "Hermes Marketing" }, publisher: { "@id": "https://hermeslogisticsus.com/#organization" } },
+  { "@context": "https://schema.org", "@type": "Service", name: "Technical SEO review", description: "Technical SEO review for crawlability, indexation, architecture, performance, structured data, and measurement.", provider: { "@id": "https://hermeslogisticsus.com/#organization" }, areaServed: { "@type": "Country", name: "United States" }, url: canonicalUrl },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "SEO Services", item: "https://hermeslogisticsus.com/services/seo/" },
+    { "@type": "ListItem", position: 3, name: "Technical SEO Checklist", item: canonicalUrl },
+  ] },
+];
+---
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader activePath="/paths/marketing/" />
+    <main id="main-content"><article>
+      <header class="resource-hero resource-hero-carrier"><div class="shell resource-hero-grid"><div>
+        <p class="eyebrow">Hermes Marketing Resource</p><h1>Free Technical SEO Checklist</h1>
+        <p>Use this checklist to find technical barriers before investing in more content or links. It separates crawl, indexation, architecture, performance, structured data, analytics, and conversion issues into a reviewable sequence.</p>
+        <div class="logistics-audience-actions"><a class="button button-primary" href="/paths/marketing/?service=seo#contact">Start an SEO review request <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href="/services/seo/">Review SEO services</a></div>
+      </div><aside class="resource-safety-card"><ShieldCheck size={30} aria-hidden="true" /><h2>A checklist identifies risks.</h2><p>It does not guarantee crawling, indexation, rankings, traffic, leads, revenue, or a specific recovery timeline.</p></aside></div></header>
+
+      <section class="section resource-intro"><div class="shell resource-lead"><Search size={36} aria-hidden="true" /><div><p class="eyebrow">Audit order</p><h2>Confirm discoverability before optimizing presentation.</h2><p>A perfect title cannot help a page that is blocked, duplicated, orphaned, incorrectly canonicalized, or excluded from the index.</p></div></div></section>
+
+      <section class="section capacity-pillars" aria-labelledby="technical-checks-title"><div class="shell"><div class="section-heading split-heading"><div><p class="eyebrow">Technical checks</p><h2 id="technical-checks-title">Ten areas to review.</h2></div><p>Use verified production data. Never place credentials, customer records, private URLs, security codes, or personal information in a public audit document.</p></div><div class="capacity-pillar-grid">
+        <article><span>01</span><Search size={23} /><h3>Crawl access</h3><ul><li>Robots directives</li><li>HTTP status codes</li><li>Internal discovery</li><li>JS rendering dependencies</li></ul></article>
+        <article><span>02</span><Check size={23} /><h3>Indexation</h3><ul><li>Indexable owner pages</li><li>Noindex usage</li><li>Soft 404s</li><li>Selected canonicals</li></ul></article>
+        <article><span>03</span><Search size={23} /><h3>Canonical ownership</h3><ul><li>One intent owner</li><li>Duplicate parameters</li><li>HTTP/HTTPS consistency</li><li>Host and trailing-slash rules</li></ul></article>
+        <article><span>04</span><Check size={23} /><h3>Sitemaps</h3><ul><li>Only canonical URLs</li><li>Accurate lastmod</li><li>No redirects or errors</li><li>Submitted property matches host</li></ul></article>
+        <article><span>05</span><Gauge size={23} /><h3>Redirects and migrations</h3><ul><li>Direct 301 mappings</li><li>No chains or loops</li><li>Legacy equity preserved</li><li>Internal links updated</li></ul></article>
+        <article><span>06</span><Search size={23} /><h3>Architecture</h3><ul><li>Important pages reachable</li><li>Clear hubs and clusters</li><li>No orphan pages</li><li>Natural anchor context</li></ul></article>
+        <article><span>07</span><Gauge size={23} /><h3>Performance and mobile</h3><ul><li>Core Web Vitals</li><li>Render-blocking assets</li><li>Responsive forms</li><li>Layout stability</li></ul></article>
+        <article><span>08</span><Check size={23} /><h3>Structured data</h3><ul><li>Matches visible content</li><li>Correct entity references</li><li>No invented reviews</li><li>Valid breadcrumbs and FAQs</li></ul></article>
+        <article><span>09</span><ShieldCheck size={23} /><h3>Security and trust</h3><ul><li>HTTPS and mixed content</li><li>Public legal pages</li><li>Evidence boundaries</li><li>No exposed secrets</li></ul></article>
+        <article><span>10</span><Gauge size={23} /><h3>Measurement</h3><ul><li>GA4 ownership</li><li>Search Console verification</li><li>CTA and handoff events</li><li>Qualified-lead reporting</li></ul></article>
+      </div></div></section>
+
+      <section class="section capacity-review"><div class="shell"><div class="section-heading"><p class="eyebrow">Prioritization</p><h2>Fix blockers before enhancements.</h2><p>Start with accidental deindexation, wrong canonicals, broken redirects, 5xx errors, inaccessible navigation, or missing conversion paths. Then improve speed, schema, snippets, and supporting content.</p></div><div class="capacity-boundary-grid"><article><strong>Critical</strong><p>Important pages cannot be crawled, rendered, indexed, or reached.</p></article><article><strong>High</strong><p>Wrong owner, redirect, canonical, or measurement prevents reliable growth.</p></article><article><strong>Medium</strong><p>Performance, structured data, or internal linking limits quality.</p></article><article><strong>Monitor</strong><p>No confirmed defect yet; collect evidence before changing architecture.</p></article></div></div></section>
+
+      <section class="section" aria-labelledby="technical-faq-title"><div class="shell digital-faq-layout"><div><p class="eyebrow">Frequently asked questions</p><h2 id="technical-faq-title">Technical SEO review questions.</h2></div><div class="digital-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></div></section>
+
+      <section class="section resource-final-cta"><div class="shell resource-final-card"><div><p class="eyebrow">SEO review</p><h2>Turn the checklist into a structured SEO request.</h2><p>The existing intake prepares a local preview before explicit email handoff. Submitted websites, problems, access status, budgets, and messages are not added to analytics.</p></div><a class="button button-primary" href="/paths/marketing/?service=seo#contact">Open SEO intake <ArrowRight size={18} aria-hidden="true" /></a></div></section>
+    </article></main><SiteFooter />
+  </div>
+</BaseLayout>

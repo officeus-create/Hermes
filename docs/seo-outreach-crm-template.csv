@@ -1,0 +1,4 @@
+record_id,commercial_direction,target_domain,target_name,target_type,market_relevance,contact_name,contact_role,contact_email,contact_url,discovery_source,competitor_link_gap,existing_hermes_mention,proposed_asset,proposed_angle,target_page,anchor_strategy,relationship_stage,outreach_status,first_contact_date,last_contact_date,next_action_date,response_status,placement_status,link_url,rel_attribute,follow_up_count,owner,notes
+OUT-0001,car_hauling,,,,,,,,,,,,Car Hauler Capacity Checklist,,/logistics/car-hauling-dispatch/,brand_or_natural,prospect,research,,,,not_contacted,not_placed,,,0,,
+OUT-0002,website_development,,,,,,,,,,,,Website Project Brief Template,,/services/website-development/,brand_or_natural,prospect,research,,,,not_contacted,not_placed,,,0,,
+OUT-0003,seo_services,,,,,,,,,,,,Free Technical SEO Checklist,,/services/seo/,brand_or_natural,prospect,research,,,,not_contacted,not_placed,,,0,,

@@ -41,8 +41,12 @@ const routes = [
   {
     path: "load-board/index.html",
     required: [
-      "Car Hauling Load Board Preview",
-      "One board. The right workspace for your role.",
+      "Car Hauling Loads &amp; Load Board Preview",
+      "Review Car Hauling Loads Before You Commit",
+      "How to evaluate car hauling loads",
+      "A load is useful only when the complete operating fit works.",
+      "Lane and deadhead",
+      "Source and paperwork",
       "Dry-run only",
       "Available Loads · Demo data",
       "Try a demo city:",

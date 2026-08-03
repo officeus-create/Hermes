@@ -1,0 +1,59 @@
+---
+import ContentInsightPage from "../../../../components/ContentInsightPage.astro";
+import { syntheticPublishCandidate } from "../../../../data/content-pipeline-reviewed-fixtures";
+
+if (!syntheticPublishCandidate) {
+  throw new Error("Synthetic content pipeline fixtures must include one publish candidate.");
+}
+
+const { asset, review } = syntheticPublishCandidate;
+---
+
+<ContentInsightPage
+  title="Carrier-Controlled Load Review Preview | Hermes"
+  description="Synthetic noindex preview of a reusable social-to-site insight page covering carrier-controlled load review, equipment fit, documents, route questions, and booking approval."
+  eyebrow="Synthetic Content Pipeline Preview · Not Published"
+  h1="What should a car hauler check before approving a load?"
+  conciseAnswer="Review equipment and unit fit, pickup and delivery requirements, timing, route and deadhead, source and payment terms, documents, offered rate, and every operating constraint. Dispatch support can organize information, but the carrier makes the final booking and safety decision."
+  explanation={[
+    "Start with the actual truck, trailer, spaces, dimensions, weight, operability limits, and any specialty equipment requirement. A load that does not fit the equipment is not improved by a higher offered rate.",
+    "Confirm pickup and delivery access, contact rules, operating hours, appointments, release requirements, keys, condition, inoperable status, and any document needed before movement.",
+    "Review origin, destination, deadhead, route, timing, expected operating cost, payment terms, broker or source requirements, and whether the opportunity fits the carrier's stated operating profile.",
+    "Keep carrier approval explicit. Research, broker communication, setup packets, document coordination, and invoicing support do not transfer the carrier's authority, safety responsibility, or final decision.",
+  ]}
+  takeaways={[
+    "Equipment fit comes before booking",
+    "Route and deadhead affect the full decision",
+    "Documents and source terms need confirmation",
+    "Carrier approval remains explicit",
+  ]}
+  faq={[
+    { question: "Can a dispatcher book a load without carrier approval?", answer: "The public Hermes model keeps final approval with the carrier. Any operating arrangement should define communication and approval boundaries clearly before work begins." },
+    { question: "Does completing a review guarantee that the load is profitable?", answer: "No. A structured review improves the quality of the decision but cannot guarantee cost, rate, utilization, payment timing, route conditions, profit, or revenue." },
+    { question: "Should private shipment details be included in a public article?", answer: "No. Public guidance should use approved, anonymized, aggregated, or synthetic examples and must not expose customer, carrier, shipment, rate, contact, credential, or location data." },
+  ]}
+  related={[
+    { title: "Car hauling dispatch", body: "Review the commercial support scope and carrier-controlled booking model.", href: "/logistics/car-hauling-dispatch/" },
+    { title: "Dispatch vs self-dispatch", body: "Assign load search, broker calls, documents, invoicing, and approval responsibilities clearly.", href: "/logistics/resources/dispatch-service-vs-self-dispatch/" },
+    { title: "New-authority readiness", body: "Prepare authority, insurance, equipment, operating area, and broker setup information.", href: "/logistics/resources/new-authority-car-hauler-readiness-checklist/" },
+    { title: "Academy logistics program", body: "Study communication, documents, equipment logic, negotiation, and operating routines.", href: "/academy/us-logistics-operations/" },
+  ]}
+  primaryAction={{ label: "Open carrier review", href: "/load-board/?role=carrier&equipment=car_hauler#carrier-access" }}
+  secondaryAction={{ label: "Review dispatch service", href: "/logistics/car-hauling-dispatch/" }}
+  canonicalPath="/demos/content-pipeline/insight-preview/"
+  sourceLabel={`Synthetic fixture ${asset.id}; decision ${review.decision}; score ${review.score.total}/18.`}
+  sourceUrl={asset.sourceUrl}
+  sourcePublishedAt={asset.originalPublishedAt}
+  datePublished="2026-08-03"
+  dateModified="2026-08-03"
+  directionName="Hermes Logistics"
+  directionOwnerUrl="/paths/logistics/"
+  authorName="Hermes Content Pipeline Synthetic Fixture"
+  video={{
+    name: "Synthetic carrier-controlled load review video",
+    description: "Synthetic fixture used to prove that incomplete video metadata does not emit VideoObject schema.",
+    thumbnailUrl: "",
+    uploadDate: asset.originalPublishedAt ?? "",
+  }}
+  reviewMode={true}
+/>

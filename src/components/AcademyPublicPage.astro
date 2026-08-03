@@ -1,0 +1,207 @@
+---
+import { ArrowLeft, ArrowRight, BookOpen, GraduationCap, Network, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import type { AcademySubsitePage } from "../data/academy-subsite";
+
+interface Props {
+  content: AcademySubsitePage;
+}
+
+const { content } = Astro.props;
+const canonicalUrl = new URL(`/academy/${content.slug}/`, Astro.site).toString();
+const academyUrl = new URL("/paths/academy/", Astro.site).toString();
+const academyEntity = {
+  "@type": "Organization",
+  "@id": "https://hermeslogisticsus.com/#academy",
+  name: "Hermes Business Academy",
+  url: academyUrl,
+  parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
+};
+const mainSchema = content.schemaType === "Course"
+  ? {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      name: content.h1,
+      description: content.description,
+      url: canonicalUrl,
+      provider: academyEntity,
+      teaches: content.teaches,
+      availableLanguage: ["English", "Russian", "Ukrainian"],
+    }
+  : {
+      "@context": "https://schema.org",
+      "@type": content.schemaType,
+      name: content.h1,
+      description: content.description,
+      url: canonicalUrl,
+      isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+      about: academyEntity,
+    };
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: `${content.h1} — Hermes Business Academy`,
+  description: content.description,
+  url: canonicalUrl,
+  provider: academyEntity,
+  serviceType: content.schemaType === "Course"
+    ? "Education and training program review"
+    : content.slug === "resources"
+      ? "Public learning resources"
+      : "Academy learning guidance",
+  availableLanguage: ["English", "Russian", "Ukrainian"],
+};
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: content.faq.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
+  })),
+};
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: academyUrl },
+    { "@type": "ListItem", position: 3, name: content.h1, item: canonicalUrl },
+  ],
+};
+---
+
+<BaseLayout title={content.title} description={content.description} schema={[mainSchema, serviceSchema, faqSchema, breadcrumbSchema]}>
+  <div class="logistics-resource-page academy-public-page">
+    <SiteHeader theme="dark" activePath="/paths/academy/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/academy/">Academy</a><span aria-hidden="true">/</span>
+              <span aria-current="page">{content.slug.replaceAll("-", " ")}</span>
+            </nav>
+            <a class="detail-back" href="/paths/academy/"><ArrowLeft size={18} aria-hidden="true" />Academy hub</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">{content.eyebrow}</p>
+                <h1>{content.h1}</h1>
+                <p>{content.intro}</p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href={content.primaryAction.href}>{content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href={content.secondaryAction.href}>{content.secondaryAction.label}</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Clear scope before participation.</h2>
+                <p>{content.boundary}</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro" aria-labelledby="academy-audience-title">
+          <div class="shell resource-lead">
+            <GraduationCap size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Audience and readiness</p>
+              <h2 id="academy-audience-title">{content.audienceTitle}</h2>
+              <p>{content.audienceIntro}</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="academy-audience-cards-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Who it serves</p><h2 id="academy-audience-cards-title">Choose the path that matches your current responsibility.</h2></div>
+            <div class="capacity-pillar-grid">
+              {content.audience.map((item, index) => (
+                <article><span>0{index + 1}</span><GraduationCap size={23} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p></article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="academy-modules-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Public curriculum</p><h2 id="academy-modules-title">{content.modulesTitle}</h2></div>
+              <p>{content.modulesIntro}</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {content.modules.map((item, index) => (
+                <article><span>{String(index + 1).padStart(2, "0")}</span><BookOpen size={23} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p></article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="academy-process-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Practical sequence</p>
+              <h2 id="academy-process-title">{content.processTitle}</h2>
+              <p>{content.processIntro}</p>
+            </div>
+            <dl>
+              {content.process.map((item) => <div><dt>{item.title}</dt><dd>{item.body}</dd></div>)}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="academy-boundary-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Participation boundary</p>
+              <h2 id="academy-boundary-title">Learning improves readiness; it does not promise an external outcome.</h2>
+              <p>{content.boundary}</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article><strong>No automatic admission</strong><p>Applications, eligibility, available format, schedule, language, and capacity require human review.</p></article>
+              <article><strong>No employment guarantee</strong><p>Training and practice do not promise a job, client, contract, promotion, income, or future paid work.</p></article>
+              <article><strong>No unapproved live access</strong><p>Private operations, customer data, accounts, messages, payments, and external integrations require separate authorization.</p></article>
+              <article><strong>No fixed public offer yet</strong><p>Dates, prices, refunds, seats, mentors, certificates, and exact deliverables are published only for an approved cohort.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="academy-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="academy-faq-title">Resolve expectations before applying.</h2></div>
+            <div class="digital-faq-list">
+              {content.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="academy-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Continue learning</p><h2 id="academy-related-title">Related programs, services, and canonical resources.</h2></div>
+            <div class="resource-related-grid">
+              {content.related.map((item) => (
+                <a href={item.href}><Network size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p><strong>Open resource <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="apply">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Academy application</p>
+              <h2>Prepare your program, language, experience, schedule, and objective for human review.</h2>
+              <p>The current workflow creates a preview and explicit contact handoff. It does not accept payment, reserve a seat, enroll a learner, or guarantee a response time.</p>
+            </div>
+            <a class="button button-primary" href={content.primaryAction.href}>{content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

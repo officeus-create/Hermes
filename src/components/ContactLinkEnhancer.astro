@@ -50,8 +50,181 @@
     if (path.includes("-wi-vehicle-transport") || path.includes("/logistics/wisconsin-")) return "wisconsin_local_seo";
     if (path.startsWith("/logistics/")) return "logistics_service";
     if (path.startsWith("/paths/logistics/")) return "logistics_path";
+    if (path.startsWith("/services/")) return "digital_service";
     return "other";
   };
+
+  const classifyServiceGroup = (path: string) => {
+    if (path === "/logistics/car-hauling-dispatch/") return "car_hauling_dispatch";
+    if (path === "/services/website-development/") return "website_development";
+    if (path === "/services/website-redesign/") return "website_redesign";
+    if (path === "/services/seo/") return "seo_services";
+    if (path === "/services/seo-for-logistics-companies/") return "logistics_seo";
+    if (path === "/services/seo-for-independent-auto-dealers/") return "auto_dealer_seo";
+    return "other";
+  };
+
+  const applyApprovedLoadBoardPrefill = () => {
+    if (window.location.pathname !== "/load-board/") return;
+    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");
+    const approvedEquipmentPrefills = new Set(["car_hauler"]);
+    if (!requestedEquipment || !approvedEquipmentPrefills.has(requestedEquipment)) return;
+
+    const equipmentSelect = document.querySelector<HTMLSelectElement>('select[name="equipment_class"]');
+    if (!equipmentSelect || ![...equipmentSelect.options].some((option) => option.value === requestedEquipment)) return;
+    equipmentSelect.value = requestedEquipment;
+    equipmentSelect.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
+  const applyApprovedTechnologyProjectPrefill = () => {
+    if (window.location.pathname !== "/paths/technology/") return;
+    const requestedProject = new URLSearchParams(window.location.search).get("project");
+    const approvedProjectPrefills = new Map([
+      ["website_development", "Custom Website Development with SEO Foundation"],
+    ]);
+    const projectValue = requestedProject ? approvedProjectPrefills.get(requestedProject) : undefined;
+    if (!projectValue) return;
+
+    const projectField = document.querySelector<HTMLTextAreaElement>('textarea[name="project_1"]');
+    if (!projectField || projectField.value.trim()) return;
+    projectField.value = projectValue;
+    projectField.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+
+  applyApprovedLoadBoardPrefill();
+  applyApprovedTechnologyProjectPrefill();
+
+  const setupCarrierIntakeAnalytics = () => {
+    if (window.location.pathname !== "/load-board/") return;
+    const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
+    const emailLink = document.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+    if (!form || !result || !emailLink) return;
+
+    let intakeStarted = false;
+    let handoffRecorded = false;
+    const serviceGroup = () =>
+      form.querySelector<HTMLSelectElement>('select[name="equipment_class"]')?.value === "car_hauler"
+        ? "car_hauling_dispatch"
+        : "carrier_intake";
+
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushAnalyticsEvent({
+        event: "carrier_intake_start",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        page_path: window.location.pathname,
+      });
+    };
+
+    form.addEventListener("focusin", recordIntakeStart);
+    form.addEventListener("input", (event) => {
+      handoffRecorded = false;
+      recordIntakeStart(event);
+    });
+    form.addEventListener("change", recordIntakeStart);
+    form.addEventListener("submit", () => {
+      window.setTimeout(() => {
+        if (result.hidden) return;
+        handoffRecorded = false;
+        pushAnalyticsEvent({
+          event: "carrier_intake_preview_ready",
+          audience_type: "carrier",
+          page_group: "load_board",
+          service_group: serviceGroup(),
+          preview_status: result.dataset.decision || "unknown",
+          page_path: window.location.pathname,
+        });
+      }, 0);
+    });
+
+    emailLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || handoffRecorded || result.hidden || emailLink.hidden) return;
+      if (!emailLink.getAttribute("href")?.startsWith("mailto:")) return;
+      handoffRecorded = true;
+      pushAnalyticsEvent({
+        event: "carrier_handoff_ready",
+        audience_type: "carrier",
+        page_group: "load_board",
+        service_group: serviceGroup(),
+        handoff_method: "email",
+        preview_status: result.dataset.decision || "unknown",
+        page_path: window.location.pathname,
+      });
+    });
+  };
+
+  const setupWebsiteProjectFunnelAnalytics = () => {
+    const requestedProject = new URLSearchParams(window.location.search).get("project");
+    if (window.location.pathname !== "/paths/technology/" || requestedProject !== "website_development") return;
+
+    const briefRoot = document.querySelector<HTMLElement>("[data-it-project-brief]");
+    const briefForm = briefRoot?.querySelector<HTMLFormElement>("[data-brief-form]");
+    const reviewPanel = briefRoot?.querySelector<HTMLElement>('[data-brief-step="4"]');
+    const emailLink = briefRoot?.querySelector<HTMLAnchorElement>("[data-brief-email]");
+    if (!briefRoot || !briefForm || !reviewPanel || !emailLink) return;
+
+    let intakeStarted = false;
+    let previewRecorded = false;
+    let handoffRecorded = false;
+    const eventBase = {
+      intake_type: "website_project",
+      page_group: "technology_project_brief",
+      page_path: window.location.pathname,
+    };
+
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushAnalyticsEvent({ event: "website_project_intake_start", ...eventBase });
+    };
+
+    const resetPreparedState = (event: Event) => {
+      if (!event.isTrusted) return;
+      previewRecorded = false;
+      handoffRecorded = false;
+      recordIntakeStart(event);
+    };
+
+    briefForm.addEventListener("focusin", recordIntakeStart);
+    briefForm.addEventListener("input", resetPreparedState);
+    briefForm.addEventListener("change", resetPreparedState);
+    briefRoot.addEventListener("click", (event) => {
+      const source = event.target;
+      if (!(source instanceof Element)) return;
+
+      if (source.closest("[data-brief-next]")) {
+        window.requestAnimationFrame(() => {
+          if (previewRecorded || reviewPanel.hidden) return;
+          previewRecorded = true;
+          handoffRecorded = false;
+          pushAnalyticsEvent({
+            event: "website_project_preview_ready",
+            ...eventBase,
+            preview_status: "prepared",
+          });
+        });
+      }
+    });
+
+    emailLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || !previewRecorded || handoffRecorded || reviewPanel.hidden || emailLink.hidden) return;
+      if (!emailLink.getAttribute("href")?.startsWith("mailto:")) return;
+      handoffRecorded = true;
+      pushAnalyticsEvent({
+        event: "website_handoff_ready",
+        ...eventBase,
+        handoff_method: "email",
+        preview_status: "prepared",
+      });
+    });
+  };
+
+  setupCarrierIntakeAnalytics();
+  setupWebsiteProjectFunnelAnalytics();
 
   const trackLoadBoardClick = (link: HTMLAnchorElement) => {
     const href = link.getAttribute("href") || "";
@@ -64,7 +237,7 @@
     if (target.origin !== window.location.origin || target.pathname !== "/load-board/") return;
 
     const role = target.searchParams.get("role") || "unspecified";
-    const ctaType = role === "carrier"
+    const legacyCtaType = role === "carrier"
       ? "carrier_capacity"
       : role === "dealer"
         ? "dealer_transport_request"
@@ -76,9 +249,46 @@
 
     pushAnalyticsEvent({
       event: "logistics_cta_click",
-      cta_type: ctaType,
+      cta_type: legacyCtaType,
       audience_role: role,
       page_cluster: classifyPageCluster(window.location.pathname),
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+
+    if (!link.hasAttribute("data-commercial-primary-cta")) return;
+    pushAnalyticsEvent({
+      event: "commercial_cta_click",
+      cta_type: role === "carrier" ? "carrier_intake" : legacyCtaType,
+      audience_type: role,
+      page_group: classifyPageCluster(window.location.pathname),
+      service_group: classifyServiceGroup(window.location.pathname),
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  };
+
+  const trackWebsiteProjectClick = (link: HTMLAnchorElement) => {
+    if (!link.hasAttribute("data-website-project-cta")) return;
+    const href = link.getAttribute("href") || "";
+    let target: URL;
+    try {
+      target = new URL(href, window.location.origin);
+    } catch {
+      return;
+    }
+    if (
+      target.origin !== window.location.origin ||
+      target.pathname !== "/paths/technology/" ||
+      target.searchParams.get("project") !== "website_development"
+    ) return;
+
+    pushAnalyticsEvent({
+      event: "commercial_cta_click",
+      cta_type: "website_project_intake",
+      audience_type: "business",
+      page_group: "digital_service",
+      service_group: "website_development",
       page_path: window.location.pathname,
       destination_path: target.pathname,
     });
@@ -89,7 +299,10 @@
     if (!(source instanceof Element)) return;
 
     const anyLink = source.closest("a[href]");
-    if (anyLink instanceof HTMLAnchorElement) trackLoadBoardClick(anyLink);
+    if (anyLink instanceof HTMLAnchorElement) {
+      trackLoadBoardClick(anyLink);
+      trackWebsiteProjectClick(anyLink);
+    }
 
     const link = source.closest("a[href^='tel:'], a[href^='mailto:']");
     if (!(link instanceof HTMLAnchorElement)) return;
@@ -101,6 +314,7 @@
       event: "contact_click",
       contact_method: isPhone ? "phone" : "email",
       page_cluster: classifyPageCluster(window.location.pathname),
+      service_group: classifyServiceGroup(window.location.pathname),
       page_path: window.location.pathname,
     });
 

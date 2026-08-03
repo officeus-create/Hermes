@@ -1,0 +1,155 @@
+---
+import { ArrowRight, CircleAlert, FileCheck, Files, Network, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import { pilotAssetSlots } from "../../../data/content-pipeline-pilot";
+import { syntheticContentReviews } from "../../../data/content-pipeline-reviewed-fixtures";
+import { contentEntityRegistry, summarizePilotSlots } from "../../../lib/content-pipeline";
+
+const summary = summarizePilotSlots(pilotAssetSlots);
+const decisionCounts = syntheticContentReviews.reduce<Record<string, number>>((counts, item) => {
+  counts[item.review.decision] = (counts[item.review.decision] ?? 0) + 1;
+  return counts;
+}, {});
+const directionLabels = {
+  hermes_logistics: "Hermes Logistics",
+  progressopro_marketing: "ProgressoPro Marketing",
+  hermes_academy: "Hermes Business Academy",
+  hermes_it: "Hermes IT / Technology",
+} as const;
+---
+
+<BaseLayout
+  title="Content Pipeline Review Workspace | Hermes"
+  description="Review-only workspace for source slots, entity ownership, evidence, privacy, deduplication, content decisions, and insight previews."
+  robots="noindex,nofollow,noarchive"
+>
+  <div class="logistics-resource-page content-pipeline-workspace">
+    <SiteHeader theme="dark" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier" id="top">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <span>Demos</span><span aria-hidden="true">/</span>
+            <span aria-current="page">Content pipeline</span>
+          </nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Internal Preview · Issue #138</p>
+              <h1>Social Content → Website Asset Review Workspace</h1>
+              <p>This noindex workspace tests source ownership, entity mapping, evidence, privacy, deduplication, canonical ownership, content scoring, publication decisions, and a reusable insight-page preview.</p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href="/demos/content-pipeline/insight-preview/">Open insight preview <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/paths/academy/">Academy owner</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>Preview only. No publication.</h2>
+              <p>No real social account, credential, API, message, CRM record, customer data, social post, or external publication is connected. Synthetic fixtures are visibly marked and excluded from sitemap ownership.</p>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section capacity-review" aria-labelledby="pipeline-status-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Pilot status</p><h2 id="pipeline-status-title">Thirty quota slots exist; zero real sources are claimed.</h2></div>
+            <p>The 10/10/5/5 structure is ready for owner-approved URLs, uploads, or transcripts. A placeholder slot is not counted as an inventoried asset.</p>
+          </div>
+          <div class="capacity-boundary-grid">
+            <article><strong>{summary.total}</strong><p>Total required pilot slots.</p></article>
+            <article><strong>{summary.sourceAdded}</strong><p>Real sources added and verified.</p></article>
+            <article><strong>{summary.awaitingOwnerSource}</strong><p>Slots awaiting owner-controlled sources.</p></article>
+            <article><strong>{syntheticContentReviews.length}</strong><p>Synthetic decision fixtures for automated tests.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" aria-labelledby="entity-map-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Entity gate</p><h2 id="entity-map-title">Do not mix accounts until ownership and brand relationships are verified.</h2></div>
+            <p>The root schema currently contains Hermes and ProgressoPro profile signals together. This workspace records the conflict instead of silently expanding `sameAs`.</p>
+          </div>
+          <div class="capacity-pillar-grid">
+            {contentEntityRegistry.map((entity, index) => (
+              <article>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <Network size={23} aria-hidden="true" />
+                <h3>{entity.publicName}</h3>
+                <p><strong>Website owner:</strong> {entity.websiteOwner}</p>
+                <p><strong>Relationship:</strong> {entity.relationshipStatus}</p>
+                <p><strong>Publishing:</strong> {entity.publishingStatus}</p>
+                <p>{entity.notes}</p>
+                <p><strong>Profiles recorded:</strong> {entity.socialProfiles.length}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-example" aria-labelledby="quota-title">
+        <div class="shell capacity-example-grid">
+          <div>
+            <p class="eyebrow">Pilot quota</p>
+            <h2 id="quota-title">Required source distribution</h2>
+            <p>Each direction receives a fixed quota. Real source selection still requires exact URLs or files, owner permission, evidence, privacy review, and canonical-owner assignment.</p>
+          </div>
+          <dl>
+            {summary.byDirection.map((item) => (
+              <div><dt>{directionLabels[item.direction]}</dt><dd>{item.current} of {item.required} real sources added.</dd></div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" aria-labelledby="decision-fixtures-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Decision fixtures</p><h2 id="decision-fixtures-title">Every path through the publication gate is tested.</h2></div>
+            <p>Fixtures use `example.invalid` and explicit synthetic notices. They must never be converted into public claims, testimonials, routes, results, or real account records.</p>
+          </div>
+          <div class="capacity-pillar-grid">
+            {syntheticContentReviews.map(({ asset, review }, index) => (
+              <article data-content-decision={review.decision}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {review.blockers.length > 0 ? <CircleAlert size={23} aria-hidden="true" /> : <FileCheck size={23} aria-hidden="true" />}
+                <h3>{asset.proposedTopic}</h3>
+                <p><strong>Decision:</strong> {review.decision}</p>
+                <p><strong>Score:</strong> {review.score.total}/18</p>
+                <p><strong>Fingerprint:</strong> <code>{review.fingerprint}</code></p>
+                <p><strong>Blockers:</strong> {review.blockers.length > 0 ? review.blockers.join(" ") : "None in the synthetic review contract."}</p>
+                <p><strong>Next:</strong> {review.nextActions.join(" ")}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" aria-labelledby="decision-summary-title">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">Fixture coverage</p><h2 id="decision-summary-title">Decision count</h2></div>
+          <div class="capacity-boundary-grid">
+            {Object.entries(decisionCounts).map(([decision, count]) => <article><strong>{count}</strong><p>{decision}</p></article>)}
+          </div>
+        </div>
+      </section>
+
+      <section class="section resource-related" aria-labelledby="pipeline-next-title">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">Owner actions</p><h2 id="pipeline-next-title">What is still required before the 30-asset pilot is real.</h2></div>
+          <div class="resource-related-grid">
+            <article><Files size={22} aria-hidden="true" /><h3>Provide exact sources</h3><p>Ten Hermes Logistics, ten ProgressoPro, five Academy, and five IT URLs, uploads, or transcripts.</p></article>
+            <article><ShieldCheck size={22} aria-hidden="true" /><h3>Verify rights and entities</h3><p>Confirm account control, reuse permission, public-brand relationships, and the correct website owner for each source.</p></article>
+            <article><FileCheck size={22} aria-hidden="true" /><h3>Approve the first 3–5</h3><p>Select only strong distinct assets after clustering, evidence, freshness, privacy, and cannibalization review.</p></article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

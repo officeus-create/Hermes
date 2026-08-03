@@ -1,0 +1,168 @@
+{
+  "schema_version": 2,
+  "reviewed_at": "2026-08-02",
+  "repository": "officeus-create/Hermes",
+  "production_url": "https://hermeslogisticsus.com",
+  "main_commit_at_review": "8ffb88171deb7aa587d0c5101389a556c270ecd6",
+  "platform": {
+    "framework": "Astro static site",
+    "runtime": "Node 22",
+    "hosting": "Cloudflare Pages",
+    "default_delivery_mode": "preview",
+    "required_verification": [
+      "npm run build",
+      "npm test",
+      "npm run test:e2e"
+    ]
+  },
+  "business_priority": "qualified organic inquiries and revenue without loss of indexation, trust, privacy, or existing rankings",
+  "canonical_commercial_owners": [
+    {
+      "direction": "car_hauling_dispatch",
+      "path": "/logistics/car-hauling-dispatch/",
+      "supporting_owner": "/load-board/",
+      "cta_event": "commercial_cta_click",
+      "intake_event": "carrier_intake_start",
+      "preview_event": "carrier_intake_preview_ready",
+      "handoff_event": "carrier_handoff_ready"
+    },
+    {
+      "direction": "website_development",
+      "path": "/services/website-development/",
+      "cta_event": "commercial_cta_click",
+      "intake_event": "website_project_intake_start",
+      "preview_event": "website_project_preview_ready",
+      "handoff_event": "website_handoff_ready"
+    },
+    {
+      "direction": "seo_services",
+      "path": "/services/seo/",
+      "supporting_owners": [
+        "/services/local-seo/",
+        "/services/seo-for-logistics-companies/",
+        "/services/seo-for-independent-auto-dealers/"
+      ],
+      "cta_event": "commercial_cta_click",
+      "intake_event": "seo_intake_start",
+      "preview_event": "seo_intake_preview_ready",
+      "handoff_event": "seo_handoff_ready"
+    }
+  ],
+  "completed_foundations": [
+    "technical SEO build and static validation",
+    "desktop and mobile Playwright coverage",
+    "privacy-safe GA4 event taxonomy",
+    "car hauling CTA, carrier intake, preview and explicit handoff",
+    "website development and redesign service-specific project brief",
+    "general, local, logistics and dealer SEO service-specific intake",
+    "manual qualified-lead, contract and revenue runbook",
+    "query-to-page ownership foundation",
+    "SEO outreach CRM and operating playbook",
+    "About, Terms, Editorial and Corrections, and Accessibility pages",
+    "public trust sitemap",
+    "vendor-neutral AI operating system and consolidated error register",
+    "SEO-2 public clean-room baseline with 30 commercial and problem-solving queries",
+    "car hauling dispatch and Load Board owner strengthening",
+    "logistics SEO and independent auto-dealer SEO owner strengthening",
+    "Website Development owner strengthening for logistics and operational businesses",
+    "entity, profile, local eligibility and reputation verification audit"
+  ],
+  "seo2_cycle": {
+    "status": "implementation_complete_measurement_pending",
+    "new_urls_created": 0,
+    "queries_mapped": 30,
+    "existing_owners_strengthened": 5,
+    "merged_pull_requests": [118, 119, 121, 126, 127, 129],
+    "superseded_pull_requests_closed_without_merge": [122, 124, 130],
+    "next_page_decision": "Do not create a logistics website development niche URL until verified query, indexing and cannibalization evidence supports it.",
+    "measurement_windows_days": [7, 28, 90]
+  },
+  "active_programs": [
+    {
+      "name": "Organic measurement and qualified-lead review",
+      "scope": "Measure the strengthened owners through impressions, clicks, CTR, selected canonical, CTA, intake, preview, explicit handoff, qualified inquiry, proposal, contract and revenue.",
+      "blocked_by": [
+        "verified Google Search Console access",
+        "verified Bing Webmaster Tools access",
+        "consistent manual qualified-lead register operation"
+      ]
+    },
+    {
+      "name": "External authority and reputation activation",
+      "scope": "Verify canonical entity data, correct conflicting listings, create only eligible controlled profiles, request real reviews, publish approved cases and execute clean outreach.",
+      "rules": [
+        "no virtual offices",
+        "no fake or incentivized reviews",
+        "no mass directory submissions",
+        "no paid-link or PBN schemes",
+        "sameAs only for controlled verified profiles"
+      ]
+    }
+  ],
+  "active_external_dependencies": [
+    {
+      "id": "EXT-GSC-OWNERSHIP",
+      "status": "owner_or_account_action_required",
+      "detail": "Google Search Console Domain Property ownership and sitemap submission are not confirmed by repository or reviewed mailbox evidence."
+    },
+    {
+      "id": "EXT-BING-WMT",
+      "status": "owner_or_account_action_required",
+      "detail": "Bing Webmaster Tools ownership and sitemap submission are not confirmed."
+    },
+    {
+      "id": "EXT-GOOGLE-SECURITY",
+      "status": "owner_review_required",
+      "detail": "Multiple Google account sign-in and third-party access alerts exist; verify devices and OAuth grants in Google Account Security before treating them as resolved."
+    },
+    {
+      "id": "EXT-ENTITY-TRUTH",
+      "status": "owner_review_required",
+      "detail": "Exact legal/public NAP, leadership, FMCSA relationship and authorized profile managers require owner-controlled verification before schema sameAs or profile claims."
+    },
+    {
+      "id": "EXT-LOCAL-PROFILES",
+      "status": "eligibility_and_verification_required",
+      "detail": "Google Business Profile and location profiles must not be created until the real customer-facing or eligible service-area model is confirmed."
+    }
+  ],
+  "protected_boundaries": [
+    "no credentials or private company records in the repository",
+    "no PII, submitted URLs, budgets, routes or free text in analytics",
+    "no production merge or infrastructure/account changes without required approval",
+    "no parallel edits to the same files without written handoff",
+    "no claims without approved evidence",
+    "no automatic live delivery by default",
+    "no mass pages, doorway variants, fake locations, bought links, PBNs or fake reviews"
+  ],
+  "open_high_risk_branches": [
+    {
+      "pr": 85,
+      "status": "draft_diverged_do_not_merge",
+      "ahead_by": 35,
+      "behind_by": 26,
+      "scope": "Shipment History lifecycle and private synthetic workspace"
+    },
+    {
+      "pr": 83,
+      "status": "draft_diverged_rebuild_if_prioritized",
+      "ahead_by": 24,
+      "behind_by": 26,
+      "scope": "feature-gated Google Routes estimate requiring separate billing, provider and Cloudflare approval"
+    }
+  ],
+  "primary_docs": [
+    "docs/AI_START_HERE.md",
+    "AGENTS.md",
+    "docs/ERROR_REGISTER.md",
+    "docs/SEO2_CLEAN_ROOM_BASELINE_2026-08-02.md",
+    "docs/seo2-keyword-opportunities-2026-08-02.csv",
+    "docs/SEO_RELEASE_CHECKLIST.md",
+    "docs/SEO_QUALIFIED_LEAD_OPERATING_RUNBOOK.md",
+    "docs/SEO_OUTREACH_OPERATING_PLAYBOOK_2026-08-02.md",
+    "docs/SEO_ENTITY_PROFILE_OPERATING_GUIDE_2026-08-02.md",
+    "docs/seo-entity-profile-audit-2026-08-02.csv",
+    "docs/SEO2_CLOSEOUT_2026-08-02.md",
+    "docs/AI_HANDOFF.md"
+  ]
+}

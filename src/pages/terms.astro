@@ -1,0 +1,69 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "Website purpose",
+    body: [
+      "These Terms of Use apply to hermeslogisticsus.com. The website provides information about Hermes service directions, public resources, local previews, contact routes, and project or carrier qualification tools.",
+      "Using a preview, checklist, calculator, contact form, email link, or public page does not by itself create a customer, carrier, dispatcher, broker, employment, agency, partnership, or educational relationship.",
+    ],
+  },
+  {
+    title: "No automatic transaction or representation",
+    bullets: [
+      "A carrier or load preview does not book freight, activate an account, assign a dispatcher, publish a load, or authorize Hermes to act for a carrier.",
+      "A website, SEO, marketing, academy, or technology preview does not approve a project, create a contract, reserve capacity, or guarantee availability.",
+      "Any paid service, representation authority, access, scope, price, percentage, timeline, and responsibility must be confirmed in the applicable written agreement or approved order.",
+    ],
+  },
+  {
+    title: "No guaranteed third-party outcome",
+    body: [
+      "Hermes may research, coordinate, design, build, communicate, negotiate within an approved role, measure, and improve the agreed work. Search engines, brokers, shippers, carriers, customers, platforms, insurers, regulators, payment providers, and market conditions remain outside Hermes control.",
+      "The website does not guarantee rankings, impressions, traffic, leads, revenue, rates, loads, broker approval, insurance approval, authority activation, customer acceptance, employment, training results, or a specific completion date unless a signed agreement expressly states a defined deliverable under Hermes control.",
+    ],
+  },
+  {
+    title: "User responsibilities",
+    bullets: [
+      "Provide accurate and authorized information.",
+      "Do not submit another person's personal, carrier, company, or account information without permission.",
+      "Do not use the website for spam, fraud, credential collection, malicious code, scraping that disrupts service, or unlawful activity.",
+      "Review prepared email content and qualification previews before choosing an explicit handoff.",
+      "Maintain independent legal, tax, insurance, safety, compliance, and professional advice where required.",
+    ],
+  },
+  {
+    title: "Information, links, and intellectual property",
+    body: [
+      "Public guides and checklists are general operational information and may not fit every situation. External links and third-party services are provided for convenience; their content, availability, privacy practices, and decisions are controlled by their respective owners.",
+      "Unless otherwise identified, the website's original copy, layouts, graphics, tools, and downloadable materials may not be republished, sold, or presented as another company's work without written permission. Fair quotation and linking are permitted where required by law and with appropriate attribution.",
+    ],
+  },
+  {
+    title: "Privacy and analytics",
+    body: [
+      "The Privacy Notice explains the current website data boundary. Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, addresses, routes, budgets, messages, or other submitted free text.",
+      "Local preview tools may prepare information in the browser. Data is sent only when the user chooses an explicit route or when a page clearly confirms secure delivery.",
+    ],
+  },
+  {
+    title: "Changes and governing documents",
+    body: [
+      "Hermes may update these website terms when public tools, services, legal requirements, or operating models change. The reviewed date identifies the current public version.",
+      "Where a signed agreement, approved order, privacy notice, or specific service policy conflicts with these general website terms, the more specific applicable document controls for that relationship.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Terms of Use | Hermes"
+  description="Terms governing use of the Hermes website, previews, contact routes, public resources, service information, and limitations on automatic transactions and guarantees."
+  eyebrow="Website terms"
+  h1="Terms of Use"
+  intro="Rules and boundaries for using the Hermes website, qualification previews, public resources, and contact handoffs."
+  reviewedAt="2026-08-02"
+  {sections}
+/>

@@ -1,0 +1,254 @@
+---
+import { ArrowLeft, ArrowRight, Check, ClipboardList, Scale, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Dispatch Service vs Self-Dispatch for Car Haulers | Hermes Logistics";
+const description =
+  "Compare dispatch service and self-dispatch for car-hauling owner-operators: workload, control, load search, broker calls, route review, setup packets, paperwork, invoicing, fees, and decision criteria.";
+const canonicalUrl = new URL("/logistics/resources/dispatch-service-vs-self-dispatch/", Astro.site).toString();
+
+const comparisonRows = [
+  {
+    topic: "Load search coverage",
+    selfDispatch: "The carrier searches load boards, direct sources, and existing relationships during available operating time.",
+    dispatchService: "An approved dispatcher can search and organize opportunities within the agreed equipment, area, timing, and carrier preferences.",
+  },
+  {
+    topic: "Broker and dealer communication",
+    selfDispatch: "The carrier handles calls, questions, setup requirements, rate discussions, and follow-up directly.",
+    dispatchService: "The dispatcher can coordinate approved communication and prepare information, while the carrier retains final approval.",
+  },
+  {
+    topic: "Route and equipment review",
+    selfDispatch: "The carrier checks vehicle fit, deadhead, timing, pickup and delivery access, miles, and operating costs.",
+    dispatchService: "The dispatcher can organize the same review and surface conflicts, but does not replace the carrier's safety or operating judgment.",
+  },
+  {
+    topic: "Setup packets and documents",
+    selfDispatch: "The carrier prepares and tracks W-9, authority, insurance, payment, rate confirmation, pickup, delivery, and invoice documents.",
+    dispatchService: "The approved scope may include packet preparation, document organization, invoice support, and follow-up.",
+  },
+  {
+    topic: "Control over booking",
+    selfDispatch: "The carrier controls every search, call, negotiation, and booking action directly.",
+    dispatchService: "The carrier still approves every load. Dispatch support must follow documented approval and communication rules.",
+  },
+  {
+    topic: "Cost and internal workload",
+    selfDispatch: "There may be no outside dispatch fee, but the carrier absorbs the time, tools, administrative work, and missed-driving or management capacity.",
+    dispatchService: "The carrier pays the agreed fee or percentage and should compare it with the actual included scope and time saved.",
+  },
+];
+
+const decisionChecks = [
+  "Do you have reliable time for daily load search and follow-up?",
+  "Can you evaluate route, deadhead, timing, equipment fit, and operating cost before accepting a load?",
+  "Are you comfortable with broker calls, rate discussions, setup packets, and document follow-up?",
+  "Can you manage invoicing and payment follow-up without delaying operations?",
+  "Do you have clear rules for who may negotiate, sign, or book on behalf of the carrier?",
+  "Does the proposed dispatch fee match a clearly documented scope of work?",
+];
+
+const faq = [
+  {
+    question: "Is dispatch service always better than self-dispatch?",
+    answer: "No. The better model depends on the carrier's time, experience, tools, broker relationships, paperwork discipline, equipment, lanes, authority readiness, and desired level of control.",
+  },
+  {
+    question: "Does a dispatcher control the truck or make the final booking decision?",
+    answer: "No. Hermes provides information, communication, and coordination support. The motor carrier controls the truck, driver, safety decisions, and final approval of every load.",
+  },
+  {
+    question: "What should be included in a dispatch agreement?",
+    answer: "The agreement should clearly define fees, load-search scope, communication authority, carrier approval rules, setup packets, document handling, invoicing, payment follow-up, reporting, termination, and any excluded work.",
+  },
+  {
+    question: "Can dispatch service guarantee better rates or more revenue?",
+    answer: "No. Search coverage and administrative support may change the carrier's workflow, but rates, load volume, miles, utilization, profit, payment, and revenue depend on market and operating conditions and are not guaranteed.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Dispatch Service vs Self-Dispatch for Car Haulers",
+    description,
+    datePublished: "2026-08-03",
+    dateModified: "2026-08-03",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Car Hauling Dispatch Review",
+    description: "A structured review of car-hauling dispatch scope, carrier control, equipment, operating area, authority readiness, and communication requirements.",
+    url: canonicalUrl,
+    areaServed: { "@type": "Country", name: "United States" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Resources", item: "https://hermeslogisticsus.com/paths/logistics/#logistics-resources" },
+      { "@type": "ListItem", position: 4, name: "Dispatch Service vs Self-Dispatch", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Dispatch service vs self-dispatch</span>
+            </nav>
+            <a class="detail-back" href="/paths/logistics/#logistics-resources"><ArrowLeft size={18} aria-hidden="true" />Logistics resources</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · Carrier Operations</p>
+                <h1>Dispatch Service vs Self-Dispatch for Car Haulers</h1>
+                <p>
+                  Both models can work. The decision should be based on workload, control, operating knowledge, communication,
+                  paperwork, fee scope, and the carrier's ability to review every opportunity—not on a promise of guaranteed loads or revenue.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">
+                    Request dispatch-fit review <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href="/logistics/car-hauling-dispatch/">Review car-hauling dispatch</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>The carrier keeps final control.</h2>
+                <p>A dispatcher can research and coordinate approved work, but the carrier remains responsible for the truck, driver, safety, compliance, and final load approval.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Scale size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Decision framework</p>
+              <h2>Compare the complete operating workload, not only the dispatch percentage.</h2>
+              <p>A useful comparison includes search time, calls, route review, setup packets, paperwork, invoicing, follow-up, tools, internal capacity, communication rules, and the actual services included in the agreement.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="comparison-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Side-by-side comparison</p><h2 id="comparison-title">Six responsibilities to assign clearly.</h2></div>
+              <p>This guide is operational information, not legal, safety, tax, insurance, regulatory, accounting, or financial advice.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {comparisonRows.map((row, index) => (
+                <article>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Truck size={23} aria-hidden="true" />
+                  <h3>{row.topic}</h3>
+                  <p><strong>Self-dispatch:</strong> {row.selfDispatch}</p>
+                  <p><strong>Dispatch service:</strong> {row.dispatchService}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="decision-checks-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Carrier worksheet</p>
+              <h2 id="decision-checks-title">Questions to answer before choosing a model.</h2>
+              <p>Write down who owns each responsibility, how approval works, and what happens when the normal process breaks.</p>
+            </div>
+            <dl>
+              {decisionChecks.map((item, index) => (
+                <div><dt>{index + 1}. Check</dt><dd>{item}</dd></div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="hybrid-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">A third option</p>
+              <h2 id="hybrid-title">A hybrid workflow can preserve control while delegating repeatable work.</h2>
+              <p>The carrier may keep final rate and booking approval while delegating agreed search, calls, setup packets, document organization, invoicing, or follow-up. The agreement and operating rules should make every boundary explicit.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article><strong>Define approval limits</strong><p>State what the dispatcher may discuss and what always requires carrier confirmation.</p></article>
+              <article><strong>Define included work</strong><p>Separate load search from setup, paperwork, invoicing, reporting, and after-hours communication.</p></article>
+              <article><strong>Protect private information</strong><p>Do not place credentials, security codes, shipment details, payment data, or unnecessary personal data in public URLs or analytics.</p></article>
+              <article><strong>Review performance honestly</strong><p>Measure workload, response quality, documentation, operating fit, and qualified opportunities without promising market outcomes.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="dispatch-comparison-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="dispatch-comparison-faq-title">Questions carriers ask before delegating dispatch work.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="dispatch-comparison-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Continue the review</p><h2 id="dispatch-comparison-related-title">Related Hermes services, checklists, and training paths.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/logistics/car-hauling-dispatch/"><Truck size={22} aria-hidden="true" /><h3>Car hauling dispatch</h3><p>Review service scope, process, carrier control, qualification, and structured intake.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/new-authority-car-hauler-readiness-checklist/"><ClipboardList size={22} aria-hidden="true" /><h3>New-authority readiness</h3><p>Prepare authority, insurance, equipment, operating area, setup, and approval rules.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/paths/academy/"><Check size={22} aria-hidden="true" /><h3>Hermes Academy</h3><p>Explore practical learning and career paths connected to logistics operations.</p><strong>Explore Academy <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Dispatch-fit review</p>
+              <h2>Compare authority, equipment, capacity, operating area, availability, and current workflow.</h2>
+              <p>The carrier intake prepares a local preview and explicit handoff. It does not automatically assign a dispatcher, create an account, book a load, or guarantee acceptance, rates, lanes, utilization, or revenue.</p>
+            </div>
+            <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

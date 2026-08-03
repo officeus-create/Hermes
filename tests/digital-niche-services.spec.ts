@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-  ["/services/seo-for-logistics-companies/", "SEO for U.S. Logistics Companies"],
-  ["/services/seo-for-independent-auto-dealers/", "SEO for Independent Auto Dealers"],
+  ["/services/seo-for-logistics-companies/", "SEO for Logistics, Trucking and Dispatch Companies"],
+  ["/services/seo-for-independent-auto-dealers/", "SEO for Independent and Used Car Dealers"],
 ] as const;
 
 test.describe("Niche SEO service pages", () => {

@@ -1,0 +1,309 @@
+<script>
+  type SupportingSeoConfig = {
+    serviceGroup: "local_seo" | "logistics_seo" | "auto_dealer_seo";
+    label: string;
+    presetVertical?: string;
+    presetScope?: string;
+  };
+
+  const supportingSeoServices: Record<string, SupportingSeoConfig> = {
+    local_seo: {
+      serviceGroup: "local_seo",
+      label: "Local SEO",
+      presetScope: "local",
+    },
+    logistics_seo: {
+      serviceGroup: "logistics_seo",
+      label: "Logistics SEO",
+      presetVertical: "logistics",
+    },
+    auto_dealer_seo: {
+      serviceGroup: "auto_dealer_seo",
+      label: "Auto Dealer SEO",
+      presetVertical: "auto_dealer",
+      presetScope: "local_and_national",
+    },
+  };
+
+  const pushSupportingSeoEvent = (payload: Record<string, string>) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  };
+
+  document.addEventListener("click", (event) => {
+    if (!event.isTrusted) return;
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+    const link = source.closest<HTMLAnchorElement>("a[data-seo-service-cta]");
+    if (!link) return;
+
+    let target: URL;
+    try {
+      target = new URL(link.href, window.location.origin);
+    } catch {
+      return;
+    }
+    const requestedService = target.searchParams.get("service") || "";
+    const config = supportingSeoServices[requestedService];
+    if (target.origin !== window.location.origin || target.pathname !== "/paths/marketing/" || !config) return;
+
+    pushSupportingSeoEvent({
+      event: "commercial_cta_click",
+      cta_type: "seo_service_intake",
+      audience_type: "business",
+      page_group: "digital_service",
+      service_group: config.serviceGroup,
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  });
+
+  const setupSupportingSeoIntake = () => {
+    const requestedService = new URLSearchParams(window.location.search).get("service") || "";
+    const config = supportingSeoServices[requestedService];
+    if (window.location.pathname !== "/paths/marketing/" || !config) return;
+
+    const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+    const directionRoot = form?.querySelector<HTMLElement>("[data-direction-fields]");
+    const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
+    const handoff = form?.querySelector<HTMLElement>("[data-contact-handoff]");
+    const handoffSummary = form?.querySelector<HTMLElement>("[data-handoff-summary]");
+    const handoffLink = form?.querySelector<HTMLAnchorElement>("[data-handoff-route-link]");
+    const message = form?.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+    if (!form || !directionRoot || !pathSelect || !handoff || !handoffSummary || !handoffLink || !message) return;
+
+    pathSelect.value = "ProgressoPro";
+    pathSelect.dispatchEvent(new Event("change", { bubbles: true }));
+    pathSelect.disabled = true;
+    pathSelect.setAttribute("aria-description", `${config.label} requests are routed to ProgressoPro Marketing.`);
+    message.placeholder = `Describe the ${config.label.toLowerCase()} visibility, lead quality, indexing, content, authority, local profile, or conversion problem you want reviewed.`;
+
+    const createLabel = (text: string, control: HTMLElement) => {
+      const label = document.createElement("label");
+      const title = document.createElement("span");
+      title.textContent = text;
+      label.append(title, control);
+      return label;
+    };
+    const createInput = (name: string, placeholder = "") => {
+      const input = document.createElement("input");
+      input.name = name;
+      input.maxLength = 240;
+      input.placeholder = placeholder;
+      return input;
+    };
+    const createTextarea = (name: string, placeholder = "") => {
+      const textarea = document.createElement("textarea");
+      textarea.name = name;
+      textarea.rows = 3;
+      textarea.maxLength = 800;
+      textarea.placeholder = placeholder;
+      return textarea;
+    };
+    const createSelect = (
+      name: string,
+      prompt: string,
+      options: Array<{ value: string; label: string }>,
+    ) => {
+      const select = document.createElement("select");
+      select.name = name;
+      select.required = true;
+      const first = document.createElement("option");
+      first.value = "";
+      first.textContent = prompt;
+      select.appendChild(first);
+      for (const item of options) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        select.appendChild(option);
+      }
+      return select;
+    };
+    const createHidden = (name: string, value = "") => {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = name;
+      input.value = value;
+      return input;
+    };
+
+    const group = document.createElement("div");
+    group.className = "contact-direction-group seo-intake-group";
+    group.dataset.seoIntake = "true";
+    group.dataset.seoService = requestedService;
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "contact-direction-eyebrow";
+    eyebrow.textContent = `${config.label} review details`;
+    const boundary = document.createElement("p");
+    boundary.className = "seo-intake-boundary";
+    boundary.textContent = "Prepare a review brief. The website does not automatically send or store these answers, and rankings, traffic, leads, revenue, or timing are not guaranteed.";
+    const grid = document.createElement("div");
+    grid.className = "seo-intake-grid";
+
+    const currentWebsite = createInput("seo_current_website", "https://example.com or No current website");
+    currentWebsite.type = "url";
+    const market = createInput("seo_primary_market", "United States, state, metro area, service area, or national market");
+    market.required = true;
+    const vertical = createSelect("seo_vertical", "Choose a business type", [
+      { value: "logistics", label: "Logistics / transportation" },
+      { value: "auto_dealer", label: "Auto dealer / automotive" },
+      { value: "local_service", label: "Local service business" },
+      { value: "professional_services", label: "Professional services" },
+      { value: "ecommerce", label: "Ecommerce" },
+      { value: "other", label: "Other business" },
+    ]);
+    const searchScope = createSelect("seo_search_scope", "Choose search coverage", [
+      { value: "local", label: "Local SEO" },
+      { value: "national", label: "National SEO" },
+      { value: "local_and_national", label: "Local and national" },
+      { value: "not_sure", label: "Not sure yet" },
+    ]);
+    const gscAccess = createSelect("seo_gsc_access", "Search Console access", [
+      { value: "available", label: "Access is available" },
+      { value: "needs_setup", label: "Needs setup or verification" },
+      { value: "unknown", label: "Not sure" },
+      { value: "no_website", label: "No current website" },
+    ]);
+    const ga4Access = createSelect("seo_ga4_access", "GA4 access", [
+      { value: "available", label: "Access is available" },
+      { value: "needs_setup", label: "Needs setup" },
+      { value: "unknown", label: "Not sure" },
+      { value: "no_website", label: "No current website" },
+    ]);
+    const workScope = createSelect("seo_work_scope", "Choose the main work needed", [
+      { value: "technical_audit", label: "Technical SEO audit" },
+      { value: "content", label: "Content and query ownership" },
+      { value: "links", label: "Authority and link acquisition" },
+      { value: "conversion", label: "Search-to-inquiry conversion" },
+      { value: "full_service", label: "Full SEO service" },
+      { value: "not_sure", label: "Needs diagnosis first" },
+    ]);
+    const timeline = createSelect("seo_timeline", "Preferred planning horizon", [
+      { value: "30 days", label: "First 30 days" },
+      { value: "3 months", label: "3 months" },
+      { value: "6 months", label: "6 months" },
+      { value: "12 months", label: "12 months" },
+      { value: "Flexible", label: "Flexible / needs recommendation" },
+    ]);
+    const budget = createSelect("seo_budget_mode", "Budget approach (optional)", [
+      { value: "needs_definition", label: "Needs definition" },
+      { value: "monthly", label: "Monthly investment" },
+      { value: "project", label: "One-time project" },
+      { value: "prefer_not_to_say", label: "Prefer not to specify" },
+    ]);
+    budget.required = false;
+    const problem = createTextarea("seo_current_problem", `Explain the main ${config.label.toLowerCase()} indexing, visibility, content, authority, profile, or inquiry problem.`);
+    problem.required = true;
+    problem.minLength = 20;
+
+    if (config.presetVertical) vertical.value = config.presetVertical;
+    if (config.presetScope) searchScope.value = config.presetScope;
+
+    grid.append(
+      createLabel("Current website", currentWebsite),
+      createLabel("Primary U.S. market *", market),
+      createLabel("Business / vertical *", vertical),
+      createLabel("Local or national SEO *", searchScope),
+      createLabel("Google Search Console *", gscAccess),
+      createLabel("Google Analytics 4 *", ga4Access),
+      createLabel("Main work needed *", workScope),
+      createLabel("Preferred timeline *", timeline),
+      createLabel("Budget approach", budget),
+    );
+    const problemLabel = createLabel("Current SEO problem *", problem);
+    problemLabel.className = "seo-intake-wide";
+
+    const hiddenPath = createHidden("path", "ProgressoPro");
+    const hiddenPlatforms = createHidden("platforms", `SEO / Google Search · ${config.label}`);
+    const hiddenPlanning = createHidden("planning_horizon");
+    const hiddenGoal = createHidden("primary_goal");
+    const hiddenAudience = createHidden("target_audience");
+    const hiddenResults = createHidden("current_channels_results");
+    const hiddenBudget = createHidden("monthly_budget_range");
+
+    group.append(
+      eyebrow,
+      boundary,
+      grid,
+      problemLabel,
+      hiddenPath,
+      hiddenPlatforms,
+      hiddenPlanning,
+      hiddenGoal,
+      hiddenAudience,
+      hiddenResults,
+      hiddenBudget,
+    );
+    directionRoot.replaceChildren(group);
+    directionRoot.hidden = false;
+    form.dataset.seoIntake = "true";
+    form.dataset.seoService = requestedService;
+
+    const labelFor = (select: HTMLSelectElement) => select.selectedOptions[0]?.textContent?.trim() || "Not provided";
+    const syncPreviewFields = () => {
+      hiddenPlanning.value = timeline.value;
+      hiddenGoal.value = `${config.label}; ${labelFor(workScope)}; ${labelFor(searchScope)}; issue: ${problem.value.trim()}`;
+      hiddenAudience.value = `${labelFor(vertical)}; market: ${market.value.trim()}`;
+      hiddenResults.value = `Website: ${currentWebsite.value.trim() || "not provided"}; Search Console: ${labelFor(gscAccess)}; GA4: ${labelFor(ga4Access)}`;
+      hiddenBudget.value = budget.value ? labelFor(budget) : "Not provided";
+    };
+
+    let intakeStarted = false;
+    let previewRecorded = false;
+    let handoffRecorded = false;
+    const eventBase = {
+      intake_type: "seo_service",
+      page_group: "marketing_contact",
+      service_group: config.serviceGroup,
+      page_path: window.location.pathname,
+    };
+    const recordStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushSupportingSeoEvent({ event: "seo_intake_start", ...eventBase });
+    };
+    const resetPreparedState = (event: Event) => {
+      if (!event.isTrusted) return;
+      previewRecorded = false;
+      handoffRecorded = false;
+      recordStart(event);
+    };
+    form.addEventListener("focusin", recordStart);
+    form.addEventListener("input", resetPreparedState);
+    form.addEventListener("change", resetPreparedState);
+    form.addEventListener("submit", syncPreviewFields, true);
+    form.addEventListener("submit", () => {
+      window.requestAnimationFrame(() => {
+        if (previewRecorded || handoff.hidden || !handoffSummary.textContent?.trim()) return;
+        previewRecorded = true;
+        handoffRecorded = false;
+        pushSupportingSeoEvent({ event: "seo_intake_preview_ready", ...eventBase, preview_status: "prepared" });
+      });
+    });
+    handoffLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || !previewRecorded || handoffRecorded || handoff.hidden) return;
+      if (!handoffLink.getAttribute("href")?.startsWith("mailto:")) return;
+      handoffRecorded = true;
+      pushSupportingSeoEvent({
+        event: "seo_handoff_ready",
+        ...eventBase,
+        handoff_method: "email",
+        preview_status: "prepared",
+      });
+    });
+  };
+
+  setupSupportingSeoIntake();
+</script>
+
+<style>
+  .seo-intake-group { display: grid; gap: 1rem; margin: .5rem 0 1rem; padding: 1rem; border: 1px solid rgba(49,95,215,.18); border-radius: 18px; background: rgba(238,243,255,.55); }
+  .seo-intake-boundary { margin: 0; color: #526181; font-size: .92rem; line-height: 1.55; }
+  .seo-intake-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .85rem; }
+  .seo-intake-grid label, .seo-intake-wide { display: grid; gap: .42rem; }
+  .seo-intake-grid label > span, .seo-intake-wide > span { font-weight: 700; }
+  .seo-intake-wide { grid-column: 1 / -1; }
+  @media (max-width: 720px) { .seo-intake-grid { grid-template-columns: 1fr; } }
+</style>

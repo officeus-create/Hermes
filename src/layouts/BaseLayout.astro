@@ -1,8 +1,12 @@
 ---
 import "../styles/global.css";
+import CarrierQualificationEnhancer from "../components/CarrierQualificationEnhancer.astro";
 import ContactLinkEnhancer from "../components/ContactLinkEnhancer.astro";
 import MotionLayer from "../components/MotionLayer.astro";
+import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
+import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
 import SiteIntro from "../components/SiteIntro.astro";
+import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
 
 interface Props {
@@ -115,6 +119,10 @@ const alternateOgLocales = alternates
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
     <ContactLinkEnhancer />
+    <SeoIntakeEnhancer />
+    <SeoSupportingIntakeEnhancer />
+    <WebsiteProjectScopeEnhancer />
+    <CarrierQualificationEnhancer />
     <MotionLayer />
     <!--/email_off-->
   </body>
