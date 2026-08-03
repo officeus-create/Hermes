@@ -1,0 +1,297 @@
+---
+import {
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  ClipboardCheck,
+  FileText,
+  GraduationCap,
+  Route,
+  ShieldCheck,
+  Truck,
+  Users,
+} from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Carrier Knowledge Hub for Car Haulers | Hermes Logistics";
+const description =
+  "Use the Hermes carrier knowledge hub to review car-hauling dispatch models, new-authority readiness, broker setup packets, carrier control, load review, and practical next steps.";
+const canonicalUrl = new URL("/logistics/resources/", Astro.site).toString();
+const carrierIntake = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+
+const coreGuides = [
+  {
+    icon: Users,
+    label: "Dispatch model",
+    title: "Dispatch Service vs Self-Dispatch",
+    body: "Compare search workload, calls, route review, paperwork, invoicing, fees, approval rules, and the carrier's retained control.",
+    href: "/logistics/resources/dispatch-service-vs-self-dispatch/",
+  },
+  {
+    icon: ClipboardCheck,
+    label: "New authority",
+    title: "Car Hauler Readiness Checklist",
+    body: "Review authority status, insurance, equipment, operating area, broker requirements, documents, and first-load boundaries.",
+    href: "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
+  },
+  {
+    icon: FileText,
+    label: "Broker onboarding",
+    title: "Broker Setup Packet Checklist",
+    body: "Prepare consistent carrier identity, W-9, authority, insurance, equipment, payment, factoring, contact, and document information.",
+    href: "/logistics/resources/broker-setup-packet-checklist/",
+  },
+];
+
+const servicePaths = [
+  {
+    icon: Truck,
+    title: "Car Hauling Dispatch",
+    body: "Review dispatch scope, qualification, carrier approval, workflow, documentation, and direct intake.",
+    href: "/logistics/car-hauling-dispatch/",
+  },
+  {
+    icon: Users,
+    title: "Owner-Operator Dispatch Support",
+    body: "Review support for a carrier operating one truck while keeping final control over every load.",
+    href: "/logistics/owner-operator-dispatch-support/",
+  },
+  {
+    icon: Route,
+    title: "Fleet Owner Dispatch Support",
+    body: "Review multi-truck coordination boundaries, equipment visibility, driver availability, and carrier-controlled decisions.",
+    href: "/logistics/fleet-owner-dispatch-support/",
+  },
+  {
+    icon: ShieldCheck,
+    title: "New Authority Car Hauler Support",
+    body: "Review the operating information and readiness evidence needed before support can be evaluated.",
+    href: "/logistics/new-authority-car-hauler-support/",
+  },
+];
+
+const reviewOrder = [
+  "Confirm legal carrier identity, authority status, insurance, equipment, capacity, and operating area.",
+  "Define who may search, communicate, negotiate, prepare documents, and request carrier approval.",
+  "Review route, deadhead, vehicle fit, pickup and delivery constraints, timing, costs, and documents before accepting work.",
+  "Keep passwords, authentication codes, banking changes, private shipment data, and unnecessary personal information out of public or unverified channels.",
+  "Measure workflow quality and qualified opportunities without treating loads, rates, utilization, payment, profit, or revenue as guaranteed outcomes.",
+];
+
+const faq = [
+  {
+    question: "What is included in the Carrier Knowledge Hub?",
+    answer: "The hub organizes Hermes resources for dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
+  },
+  {
+    question: "Does reading a guide qualify a carrier or create dispatch service?",
+    answer: "No. The guides are educational and operational preparation resources. Qualification, service scope, authority, insurance, equipment, availability, agreement terms, and carrier approval still require direct review.",
+  },
+  {
+    question: "Can Hermes guarantee loads, rates, miles, utilization, payment, profit, or revenue?",
+    answer: "No. Those outcomes depend on market, broker, customer, equipment, lane, timing, authority, safety, operating, and carrier decisions and are not guaranteed.",
+  },
+  {
+    question: "Who makes the final decision to accept and book a load?",
+    answer: "The motor carrier does. Hermes may provide approved information, communication, coordination, and administrative support, but the carrier controls the truck, driver, safety, compliance, and final load approval.",
+  },
+  {
+    question: "Is this legal, regulatory, tax, insurance, safety, or financial advice?",
+    answer: "No. The hub provides general operational information. Carriers should use official sources and qualified professionals for legal, regulatory, tax, insurance, safety, accounting, and financial decisions.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Carrier Knowledge Hub for Car Haulers",
+    description,
+    url: canonicalUrl,
+    isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+    about: [
+      { "@type": "Thing", name: "Car hauling dispatch" },
+      { "@type": "Thing", name: "Motor carrier operations" },
+      { "@type": "Thing", name: "Carrier onboarding" },
+    ],
+    hasPart: coreGuides.map((guide) => ({
+      "@type": "Article",
+      name: guide.title,
+      url: new URL(guide.href, Astro.site).toString(),
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Hermes carrier operations resources",
+    itemListElement: coreGuides.map((guide, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: guide.title,
+      url: new URL(guide.href, Astro.site).toString(),
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Carrier Knowledge Hub", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier" id="top">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+            <span aria-current="page">Carrier Knowledge Hub</span>
+          </nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Logistics · Carrier Operations</p>
+              <h1>Carrier Knowledge Hub for Car Haulers</h1>
+              <p>
+                Start with the operating question in front of you: choosing a dispatch model, preparing a new authority,
+                organizing a broker setup packet, defining carrier approval, or requesting a structured dispatch-fit review.
+              </p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href={carrierIntake}>
+                  Open carrier intake <ArrowRight size={18} aria-hidden="true" />
+                </a>
+                <a class="button" href="/logistics/carrier/">Review the carrier path</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>The carrier keeps final control.</h2>
+              <p>Educational resources and dispatch support do not transfer control of the truck, driver, safety, compliance, or final approval of a load.</p>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section resource-intro" aria-labelledby="hub-start-title">
+        <div class="shell resource-lead">
+          <BookOpen size={36} aria-hidden="true" />
+          <div>
+            <p class="eyebrow">Start with a complete review</p>
+            <h2 id="hub-start-title">Use one controlled source for carrier preparation and next steps.</h2>
+            <p>This hub connects existing Hermes guides and service routes without inventing live load availability, rates, authority status, broker approval, revenue, or operational outcomes.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section resource-related" aria-labelledby="carrier-guides-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Core carrier guides</p>
+              <h2 id="carrier-guides-title">Three practical resources to review first.</h2>
+            </div>
+            <p>Each resource has a distinct purpose, visible carrier-control boundary, direct next step, and no guarantee language.</p>
+          </div>
+          <div class="resource-related-grid">
+            {coreGuides.map((guide) => (
+              <a href={guide.href}>
+                <guide.icon size={23} aria-hidden="true" />
+                <span>{guide.label}</span>
+                <h3>{guide.title}</h3>
+                <p>{guide.body}</p>
+                <strong>Open guide <ArrowRight size={16} aria-hidden="true" /></strong>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-example" aria-labelledby="carrier-review-order-title">
+        <div class="shell capacity-example-grid">
+          <div>
+            <p class="eyebrow">Review order</p>
+            <h2 id="carrier-review-order-title">Prepare the carrier record before evaluating opportunities.</h2>
+            <p>This sequence is a practical operating framework, not a promise that a broker, customer, platform, or dispatcher will accept the carrier.</p>
+          </div>
+          <dl>
+            {reviewOrder.map((item, index) => (
+              <div><dt>{index + 1}. Review</dt><dd>{item}</dd></div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" aria-labelledby="carrier-services-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Service paths</p>
+              <h2 id="carrier-services-title">Continue to the route that matches the operating stage.</h2>
+            </div>
+            <p>Service pages explain the reviewed scope and intake boundary; they do not automatically assign a dispatcher or book a load.</p>
+          </div>
+          <div class="capacity-pillar-grid">
+            {servicePaths.map((path, index) => (
+              <article>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <path.icon size={23} aria-hidden="true" />
+                <h3>{path.title}</h3>
+                <p>{path.body}</p>
+                <a href={path.href}>Review path <ArrowRight size={16} aria-hidden="true" /></a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section resource-related" aria-labelledby="carrier-next-actions-title">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">Related next actions</p><h2 id="carrier-next-actions-title">Move from learning to a controlled review.</h2></div>
+          <div class="resource-related-grid">
+            <a href={carrierIntake}><CheckCircle2 size={22} aria-hidden="true" /><h3>Carrier intake</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            <a href="/academy/us-logistics-operations/"><GraduationCap size={22} aria-hidden="true" /><h3>U.S. Logistics Operations</h3><p>Review the public Academy program covering dispatch foundations, communication, documents, equipment logic, and load lifecycle.</p><strong>Explore program <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            <a href="/load-board/"><Truck size={22} aria-hidden="true" /><h3>Hermes Load Board</h3><p>Open the preview-first carrier and posted-load workflows. No live load, account, booking, or external sync is implied.</p><strong>Open Load Board <ArrowRight size={16} aria-hidden="true" /></strong></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="carrier-hub-faq-title">
+        <div class="shell digital-faq-layout">
+          <div><p class="eyebrow">Frequently asked questions</p><h2 id="carrier-hub-faq-title">Carrier Knowledge Hub boundaries.</h2></div>
+          <div class="digital-faq-list">
+            {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+          </div>
+        </div>
+      </section>
+
+      <section class="section resource-final-cta" id="carrier-review">
+        <div class="shell resource-final-card">
+          <div>
+            <p class="eyebrow">Carrier-controlled handoff</p>
+            <h2>Prepare a structured dispatch-fit review without surrendering final approval.</h2>
+            <p>The intake does not guarantee acceptance, a dispatcher, loads, rates, lanes, utilization, payment, profit, or revenue. Direct phone and email fallback remain available.</p>
+          </div>
+          <a class="button button-primary" href={carrierIntake}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
