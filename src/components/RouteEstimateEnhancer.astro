@@ -1,0 +1,41 @@
+---
+const visibleOnPage = Astro.url.pathname === "/load-board/";
+const mode = import.meta.env.PUBLIC_ROUTE_ESTIMATE_MODE === "live" ? "live" : "preview";
+const endpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-estimate";
+---
+
+{visibleOnPage && (
+  <>
+    <link rel="stylesheet" href="/styles/route-estimate.css" />
+    <section
+      class="route-estimate-panel"
+      data-route-estimate-panel
+      data-route-estimate-mode={mode}
+      data-route-estimate-endpoint={endpoint}
+      aria-labelledby="route-estimate-title"
+      hidden
+    >
+      <div>
+        <p class="eyebrow">Optional route planning</p>
+        <h3 id="route-estimate-title">Check a general driving estimate.</h3>
+        <p>Use the pickup and delivery fields, then request an approximate road distance and duration.</p>
+      </div>
+      <button class="button" type="button" data-route-estimate-submit>Estimate route</button>
+      <p class="route-estimate-status" aria-live="polite" aria-atomic="true" data-route-estimate-status>
+        No route request is made until you press Estimate route.
+      </p>
+      <div class="route-estimate-result" data-route-estimate-result hidden>
+        <strong><span data-route-estimate-miles></span> miles</strong>
+        <span>Approx. <span data-route-estimate-minutes></span> minutes</span>
+      </div>
+      <p class="route-estimate-disclaimer">
+        General driving estimate for planning only. It is not truck-specific and does not confirm access, legal routing,
+        tolls, pickup timing, delivery timing, price, or carrier availability.
+      </p>
+      <p class="route-estimate-fallback">
+        Route review remains available through the regular load request or <a href="/contacts/">Logistics Sales contact options</a>.
+      </p>
+    </section>
+    <script is:inline src="/scripts/route-estimate.js" defer></script>
+  </>
+)}
