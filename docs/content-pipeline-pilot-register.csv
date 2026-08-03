@@ -1,5 +1,5 @@
 slot_id,direction,required_ordinal,source_url,platform,source_date,permission_status,evidence_status,privacy_class,proposed_topic,canonical_owner,intended_cta,cluster_id,decision,owner_notes
-hermes_logistics-01,hermes_logistics,1,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
+hermes_logistics-01,hermes_logistics,1,https://www.instagram.com/reel/Dacx1vBuJB7,instagram,,owner_confirmed,owner_claim,public,Carrier acquisition for dispatch services,/logistics/car-hauling-dispatch/,/load-board/?role=carrier#carrier-access,carrier-acquisition-dispatch-services,hold,"Owner supplied public Instagram URL on 2026-08-04; transcript source date and claim review unavailable; do not embed publish or index yet"
 hermes_logistics-02,hermes_logistics,2,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
 hermes_logistics-03,hermes_logistics,3,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
 hermes_logistics-04,hermes_logistics,4,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
@@ -19,7 +19,7 @@ progressopro_marketing-07,progressopro_marketing,7,,,,unverified,missing,public,
 progressopro_marketing-08,progressopro_marketing,8,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
 progressopro_marketing-09,progressopro_marketing,9,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
 progressopro_marketing-10,progressopro_marketing,10,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
-hermes_academy-01,hermes_academy,1,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
+hermes_academy-01,hermes_academy,1,https://www.instagram.com/reel/DaTXyd7uwoV,instagram,,owner_confirmed,owner_claim,public,U.S. Logistics Operations Academy introduction,/paths/academy/,/academy/apply/,academy-us-logistics-operations,hold,"Owner supplied public Instagram URL on 2026-08-04; transcript source date and claim review unavailable; do not embed publish or index yet"
 hermes_academy-02,hermes_academy,2,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
 hermes_academy-03,hermes_academy,3,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"
 hermes_academy-04,hermes_academy,4,,,,unverified,missing,public,,,,,awaiting_source,"Add exact owner-approved URL, upload, or transcript"

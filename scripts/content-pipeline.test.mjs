@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   buildPilotAssetSlots,
   contentEntityRegistry,
@@ -14,7 +15,7 @@ const summary = summarizePilotSlots(slots);
 
 assert.equal(slots.length, 30, "Pilot must reserve exactly 30 owner-fill source slots.");
 assert.equal(summary.total, 30);
-assert.equal(summary.sourceAdded, 0, "Placeholder slots must not be counted as real inventoried assets.");
+assert.equal(summary.sourceAdded, 0, "Generated placeholder slots must not be counted as inventoried sources.");
 assert.equal(summary.awaitingOwnerSource, 30);
 assert.deepEqual(
   summary.byDirection.map((item) => [item.direction, item.required]),
@@ -37,6 +38,42 @@ assert.equal(
   normalizeSourceUrl("https://Example.com/post/123/?utm_source=threads&utm_medium=social#comments"),
   "https://example.com/post/123",
   "Tracking parameters and fragments must not create duplicate sources.",
+);
+assert.equal(
+  normalizeSourceUrl("https://www.instagram.com/reel/Dacx1vBuJB7/?igsh=MTVtc3prbDJmZWdsag==#comments"),
+  "https://www.instagram.com/reel/Dacx1vBuJB7",
+  "Instagram share parameters must not create duplicate sources.",
+);
+
+const pilotRegister = readFileSync(new URL("../docs/content-pipeline-pilot-register.csv", import.meta.url), "utf8")
+  .trim()
+  .split("\n");
+const registerHeader = pilotRegister[0].split(",");
+const registerRows = pilotRegister.slice(1).map((line) => {
+  const values = line.split(",");
+  return Object.fromEntries(registerHeader.map((key, index) => [key, values[index] ?? ""]));
+});
+const registeredSources = registerRows.filter((row) => row.source_url);
+
+assert.equal(registerRows.length, 30, "Pilot register must retain exactly 30 quota rows.");
+assert.equal(registeredSources.length, 2, "Only the two owner-supplied public Instagram URLs may be registered.");
+assert.deepEqual(
+  registeredSources.map((row) => row.slot_id).sort(),
+  ["hermes_academy-01", "hermes_logistics-01"],
+);
+assert.ok(registeredSources.every((row) => row.platform === "instagram"));
+assert.ok(registeredSources.every((row) => row.permission_status === "owner_confirmed"));
+assert.ok(registeredSources.every((row) => row.evidence_status === "owner_claim"));
+assert.ok(registeredSources.every((row) => row.decision === "hold"));
+assert.ok(registeredSources.every((row) => !/[?#]/.test(row.source_url)));
+assert.equal(registerRows.filter((row) => row.decision === "awaiting_source").length, 28);
+assert.equal(
+  registerRows.find((row) => row.slot_id === "hermes_logistics-01")?.intended_cta,
+  "/load-board/?role=carrier#carrier-access",
+);
+assert.equal(
+  registerRows.find((row) => row.slot_id === "hermes_academy-01")?.intended_cta,
+  "/academy/apply/",
 );
 
 const substantialText = [
@@ -147,5 +184,5 @@ assert.equal(progressoproEntity.publishingStatus, "blocked");
 assert.ok(contentEntityRegistry.every((entity) => entity.publishingStatus !== "approved"));
 
 console.log(
-  `Content pipeline checks passed: ${slots.length} quota slots, ${decisionFixtures.length} decision paths, strict thin-content and entity/privacy gates active.`,
+  `Content pipeline checks passed: ${slots.length} quota slots, ${registeredSources.length} real held sources, ${decisionFixtures.length} decision paths, strict thin-content and entity/privacy gates active.`,
 );
