@@ -13,6 +13,7 @@ export type DistributionState =
   | "rejected"
   | "manual_export_ready";
 export type ChannelReadiness = "blocked" | "preview_only" | "live_gate_required";
+export type ChannelMode = "synthetic_preview" | "owner_verified";
 
 export interface ApprovedWebsiteAsset {
   id: string;
@@ -40,6 +41,7 @@ export interface DistributionChannel {
   alias: string;
   platform: DistributionPlatform;
   direction: ContentDirection;
+  mode: ChannelMode;
   readiness: ChannelReadiness;
   entityApproved: boolean;
   ownerVerified: boolean;
@@ -53,6 +55,7 @@ export interface DistributionDraft {
   contentVersion: string;
   platform: DistributionPlatform;
   channelAlias: string;
+  channelMode: ChannelMode;
   campaign: DistributionCampaign;
   audience: string;
   language: string;
@@ -121,10 +124,19 @@ export const validateDistributionEligibility = (
   if (!asset.claimsApproved) blockers.push("Claims review is incomplete.");
   if (!asset.entityApproved) blockers.push("Asset entity ownership is unresolved.");
   if (channel.direction !== asset.direction) blockers.push("Channel direction does not match the website asset.");
-  if (channel.platform !== "facebook" && !allowedSources.has(channel.platform)) blockers.push("Unsupported platform.");
+  if (!allowedSources.has(channel.platform)) blockers.push("Unsupported platform.");
   if (channel.readiness === "blocked") blockers.push("Channel is blocked.");
-  if (!channel.entityApproved) blockers.push("Channel entity ownership is unresolved.");
-  if (!channel.ownerVerified) blockers.push("Channel ownership is not verified.");
+
+  if (channel.mode === "synthetic_preview") {
+    if (channel.readiness !== "preview_only") blockers.push("Synthetic channels must remain preview-only.");
+    if (channel.entityApproved || channel.ownerVerified) {
+      blockers.push("Synthetic preview channels must not claim real entity or account verification.");
+    }
+  } else {
+    if (!channel.entityApproved) blockers.push("Channel entity ownership is unresolved.");
+    if (!channel.ownerVerified) blockers.push("Channel ownership is not verified.");
+  }
+
   return { eligible: blockers.length === 0, blockers };
 };
 
@@ -166,14 +178,14 @@ const facebookDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
   return {
     hook: asset.title,
     copy: `${asset.conciseValue}\n\n${points}\n\n${asset.ctaLabel}: ${trackedUrl}`,
-    destinationStrategy: "Direct canonical link in the Facebook Page post after owner review.",
+    destinationStrategy: "Direct canonical link in a Facebook Page draft after owner review.",
   };
 };
 
 const threadsDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
   const firstPoint = asset.practicalPoints[0] ?? asset.conciseValue;
   return {
-    hook: `A useful page is not enough if the reader never reaches the right next step.`,
+    hook: "A useful page is not enough if the reader never reaches the right next step.",
     copy: `${firstPoint}\n\n${asset.conciseValue}\n\nWhat part of this process creates the most friction for you?\n${trackedUrl}`,
     destinationStrategy: "Canonical tracked link included only when the verified Threads format supports it.",
   };
@@ -182,7 +194,7 @@ const threadsDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
 const instagramDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
   const points = asset.practicalPoints.slice(0, 4).map((point, index) => `${index + 1}. ${point}`).join("\n");
   return {
-    hook: `Save this checklist before your next review.`,
+    hook: "Save this checklist before your next review.",
     copy: `${asset.title}\n\n${points}\n\n${asset.conciseValue}\n\n${asset.ctaLabel}. Use the approved profile-link or Story destination.`,
     destinationStrategy: `Visual-first caption. Do not assume a clickable caption link. Approved destination preview: ${trackedUrl}`,
   };
@@ -228,6 +240,7 @@ export const generatePlatformDraft = (
     contentVersion: asset.contentVersion,
     platform: channel.platform,
     channelAlias: channel.alias,
+    channelMode: channel.mode,
     campaign: asset.campaign,
     audience: asset.audience,
     language: asset.language,
@@ -304,6 +317,7 @@ export const findDuplicateDrafts = (drafts: DistributionDraft[]): string[] => {
 export const createManualExport = (draft: DistributionDraft): string => {
   if (draft.state !== "manual_export_ready") throw new Error("Draft is not approved for manual export.");
   return [
+    `Mode: ${draft.channelMode}`,
     `Platform: ${draft.platform}`,
     `Channel alias: ${draft.channelAlias}`,
     `Campaign: ${draft.campaign}`,
