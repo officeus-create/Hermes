@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, BookOpen, CheckCircle2, FileCheck2, ShieldCheck, Video } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, BookOpen, Check, FileCheck, ShieldCheck, Video } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
@@ -175,7 +175,7 @@ const schema = videoSchema
 
         <section class="section resource-intro" aria-labelledby="insight-answer-title">
           <div class="shell resource-lead">
-            <FileCheck2 size={36} aria-hidden="true" />
+            <FileCheck size={36} aria-hidden="true" />
             <div>
               <p class="eyebrow">Concise answer</p>
               <h2 id="insight-answer-title">What should the reader understand first?</h2>
@@ -192,7 +192,7 @@ const schema = videoSchema
                 <Video size={36} aria-hidden="true" />
               </div>
               {hasVideoSchema ? (
-                <div class="resource-lead"><CheckCircle2 size={28} aria-hidden="true" /><div><h3>Video schema eligible</h3><p>The required name, description, thumbnail, upload date, and content or embed URL are present.</p></div></div>
+                <div class="resource-lead"><Check size={28} aria-hidden="true" /><div><h3>Video schema eligible</h3><p>The required name, description, thumbnail, upload date, and content or embed URL are present.</p></div></div>
               ) : (
                 <div class="resource-lead"><ShieldCheck size={28} aria-hidden="true" /><div><h3>Video schema held</h3><p>Do not emit VideoObject until a stable public watch page, thumbnail, upload date, description, and content or embed URL are verified.</p></div></div>
               )}
@@ -205,7 +205,7 @@ const schema = videoSchema
             <div class="section-heading"><p class="eyebrow">Key takeaways</p><h2 id="insight-takeaways-title">The practical points worth reusing.</h2></div>
             <div class="capacity-pillar-grid">
               {takeaways.map((item, index) => (
-                <article><span>{String(index + 1).padStart(2, "0")}</span><CheckCircle2 size={23} aria-hidden="true" /><h3>{item}</h3></article>
+                <article><span>{String(index + 1).padStart(2, "0")}</span><Check size={23} aria-hidden="true" /><h3>{item}</h3></article>
               ))}
             </div>
           </div>
