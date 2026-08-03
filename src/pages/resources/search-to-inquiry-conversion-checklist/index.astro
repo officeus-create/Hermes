@@ -1,0 +1,257 @@
+---
+import { ArrowRight, Check, Gauge, MessageSquareText, Search, ShieldCheck, Users } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Search-to-Inquiry Conversion Checklist | Hermes Marketing";
+const description =
+  "Use this search-to-inquiry conversion checklist to review query intent, landing-page clarity, trust, calls to action, forms, mobile usability, qualification, analytics, and sales handoff.";
+const canonicalUrl = new URL("/resources/search-to-inquiry-conversion-checklist/", Astro.site).toString();
+const seoIntakeHref = "/paths/marketing/?service=seo#contact";
+const websiteBriefHref = "/paths/technology/?project=website_development#project-brief";
+
+const checks = [
+  {
+    title: "Query and page ownership",
+    icon: Search,
+    items: ["One preferred page owns the intent", "Search promise matches visible content", "No competing thin pages", "Useful next step is relevant to the query"],
+  },
+  {
+    title: "Immediate clarity",
+    icon: MessageSquareText,
+    items: ["The offer is understandable above the fold", "Audience and problem are explicit", "Scope and exclusions are visible", "No vague AI or industry claims"],
+  },
+  {
+    title: "Evidence and trust",
+    icon: ShieldCheck,
+    items: ["Claims have a source or clear boundary", "Company and contact identity are consistent", "Policies and review dates are available", "Cases and reviews use permission and context"],
+  },
+  {
+    title: "Call to action",
+    icon: Check,
+    items: ["Primary CTA matches visitor readiness", "Button text describes the next step", "Direct contact fallback exists", "No false urgency or guaranteed result"],
+  },
+  {
+    title: "Form and qualification",
+    icon: Users,
+    items: ["Only necessary fields are requested", "The form explains what happens next", "Qualification helps route the inquiry", "Sensitive values stay out of URLs and analytics"],
+  },
+  {
+    title: "Mobile and accessibility",
+    icon: Gauge,
+    items: ["CTA and fields work on small screens", "Labels and errors are understandable", "Keyboard flow is usable", "Page load and layout shifts are controlled"],
+  },
+  {
+    title: "Content support",
+    icon: MessageSquareText,
+    items: ["FAQ resolves real objections", "Resources answer pre-sale questions", "Internal links support the decision", "Video or social content points to the canonical page"],
+  },
+  {
+    title: "Handoff and response",
+    icon: Users,
+    items: ["Department and owner are clear", "Preview and live-send states are separated", "Response expectations are honest", "Sales receives enough context to qualify"],
+  },
+  {
+    title: "Privacy-safe measurement",
+    icon: ShieldCheck,
+    items: ["Page and CTA events are defined", "No names, emails, phones, URLs, budgets, or messages enter GA4", "Qualified inquiry definition is documented", "Source and campaign data remain usable"],
+  },
+  {
+    title: "Learning and improvement",
+    icon: Gauge,
+    items: ["Search Console queries are reviewed", "Drop-off points are measured", "Sales feedback returns to content", "Changes are tested in small reviewed releases"],
+  },
+];
+
+const faq = [
+  {
+    question: "What is a search-to-inquiry conversion path?",
+    answer: "It is the complete journey from a search query and landing page through understanding, trust, a relevant call to action, qualification, explicit handoff, and human follow-up.",
+  },
+  {
+    question: "Does more traffic automatically create more inquiries?",
+    answer: "No. Traffic can fail to convert when the query, page, offer, evidence, CTA, form, response process, or measurement is weak or mismatched.",
+  },
+  {
+    question: "Should every visitor see the same form?",
+    answer: "Not necessarily. Different services, audiences, and readiness levels may need different questions and next steps, while still using one controlled data and privacy model.",
+  },
+  {
+    question: "Does completing this checklist guarantee leads or revenue?",
+    answer: "No. It can identify avoidable friction and improve the quality of the system, but search engines, demand, competition, offer strength, sales execution, customers, and revenue remain outside Hermes control.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Search-to-Inquiry Conversion Checklist",
+    description,
+    datePublished: "2026-08-03",
+    dateModified: "2026-08-03",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Marketing" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Search-to-Inquiry Conversion Review",
+    description: "A structured review of search intent, landing pages, trust, calls to action, qualification, privacy-safe measurement, and sales handoff.",
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+    areaServed: { "@type": "Country", name: "United States" },
+    url: canonicalUrl,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "SEO Services", item: "https://hermeslogisticsus.com/services/seo/" },
+      { "@type": "ListItem", position: 3, name: "Search-to-Inquiry Conversion Checklist", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader activePath="/paths/marketing/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Marketing Resource · Conversion System</p>
+              <h1>Search-to-Inquiry Conversion Checklist</h1>
+              <p>
+                Search visibility has business value only when the right visitor can understand the offer, trust the page,
+                choose a relevant next step, complete a reasonable qualification flow, and reach a team prepared to respond.
+              </p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href={seoIntakeHref}>Start an SEO conversion review <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/services/seo/">Review SEO services</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>A stronger system does not guarantee outcomes.</h2>
+              <p>Search engines, demand, competitors, customers, response capacity, sales execution, leads, revenue, and timing remain outside Hermes control.</p>
+            </aside>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Search size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Full-funnel review</p>
+              <h2>Audit the journey from query to human qualification.</h2>
+              <p>A page can rank and still fail when the offer is unclear, evidence is weak, the CTA is generic, the form asks too much, mobile behavior breaks, or the inquiry reaches the wrong team.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="conversion-checks-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Conversion checks</p><h2 id="conversion-checks-title">Ten areas to review before buying more traffic.</h2></div>
+              <p>Use aggregate and privacy-safe evidence. Do not put submitted names, emails, phone numbers, websites, budgets, messages, credentials, or private business records in public reports or analytics.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {checks.map((check, index) => {
+                const Icon = check.icon;
+                return (
+                  <article>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <Icon size={23} aria-hidden="true" />
+                    <h3>{check.title}</h3>
+                    <ul>{check.items.map((item) => <li>{item}</li>)}</ul>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="conversion-sequence-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Operating sequence</p>
+              <h2 id="conversion-sequence-title">Connect discovery, decision, qualification, and follow-up.</h2>
+              <p>Every stage should have one owner, one purpose, one safe measurement approach, and one clear escalation path.</p>
+            </div>
+            <dl>
+              <div><dt>1. Discover</dt><dd>The query reaches the correct canonical service or resource page.</dd></div>
+              <div><dt>2. Understand</dt><dd>The visitor can identify the offer, audience, scope, evidence, and boundaries.</dd></div>
+              <div><dt>3. Decide</dt><dd>A relevant CTA matches the visitor's level of readiness.</dd></div>
+              <div><dt>4. Qualify</dt><dd>The workflow collects only the information needed for the next human decision.</dd></div>
+              <div><dt>5. Handoff</dt><dd>The visitor reviews the summary and explicitly chooses the approved contact route.</dd></div>
+              <div><dt>6. Improve</dt><dd>Search, page, CTA, qualification, and sales evidence inform the next reviewed release.</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="conversion-priority-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Priority order</p>
+              <h2 id="conversion-priority-title">Fix broken ownership and handoff before cosmetic optimization.</h2>
+              <p>A new button color cannot solve a page that targets the wrong query, makes unsupported claims, sends everyone to one generic form, leaks private values into analytics, or has no response owner.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article><strong>Critical</strong><p>Wrong page owner, broken CTA, failed form, inaccessible mobile flow, or no viable contact route.</p></article>
+              <article><strong>High</strong><p>Weak offer clarity, trust, qualification, department routing, or privacy boundary.</p></article>
+              <article><strong>Medium</strong><p>FAQ, internal links, page speed, field order, or supporting content limits completion.</p></article>
+              <article><strong>Measure</strong><p>No confirmed defect yet; collect Search Console, analytics, and human qualification evidence first.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="conversion-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Related planning tools</p><h2 id="conversion-related-title">Connect technical readiness, project scope, and the commercial path.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/resources/technical-seo-checklist/"><Search size={22} aria-hidden="true" /><h3>Technical SEO Checklist</h3><p>Confirm crawlability, indexation, canonicals, architecture, performance, and measurement.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/resources/website-project-brief-template/"><MessageSquareText size={22} aria-hidden="true" /><h3>Website Project Brief</h3><p>Define business goals, audiences, content, integrations, SEO migration, and launch constraints.</p><strong>Open template <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/services/website-development/"><Gauge size={22} aria-hidden="true" /><h3>Website Development</h3><p>Build the architecture, interface, qualification, technical foundation, and controlled release.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="conversion-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="conversion-faq-title">Questions about converting search demand into qualified inquiries.</h2></div>
+            <div class="digital-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">SEO and conversion review</p>
+              <h2>Turn the checklist into a structured review request.</h2>
+              <p>The current intake prepares a local summary before explicit email handoff. Submitted website URLs, access status, budgets, problems, and messages are not added to analytics.</p>
+            </div>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={seoIntakeHref}>Open SEO intake <ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button" href={websiteBriefHref}>Prepare a website project brief</a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
