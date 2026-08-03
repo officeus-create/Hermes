@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "hermes",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2026-08-04",
+  "vars": {
+    "ALLOWED_ORIGIN": "https://hermeslogisticsus.com",
+    "LEAD_DELIVERY_MODE": "off"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "LEAD_LIMITS",
+      "id": "REPLACE_WITH_APPROVED_ENVIRONMENT_KV_NAMESPACE_ID"
+    }
+  ],
+  "services": [
+    {
+      "binding": "LEAD_EMAIL_SERVICE",
+      "service": "hermes-lead-email"
+    }
+  ]
+}
