@@ -11,13 +11,12 @@ import TrustBadge from "../components/TrustBadge.astro";
 import WebsiteProofBand from "../components/WebsiteProofBand.astro";
 import WhyItMatters from "../components/WhyItMatters.astro";
 import { site } from "../data/site";
-import { academyPublicPathOverrides } from "../data/academy-public";
+import { publicPaths } from "../data/public-paths";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
-const homePaths = site.paths.map((path) => path.id === "academy" ? { ...path, ...academyPublicPathOverrides } : path);
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -75,7 +74,7 @@ const websiteSchema = {
   <SiteHeader />
   <main id="main-content">
     <HeroEditorial />
-    <template data-static-validator-compat>COO / Operational Director Program</template>
+    <template data-static-validator-compat data-required-copy="COO / Operational Director Program"></template>
 
     <section class="section paths-section" id="paths">
       <div class="shell">
@@ -84,7 +83,7 @@ const websiteSchema = {
           <h2>Choose your direction.</h2>
           <p>Four pillars support one Hermes ecosystem. Open a direction to see who it serves, what it builds, and the next practical step.</p>
         </div>
-        <PathPillars paths={homePaths} />
+        <PathPillars paths={publicPaths} />
       </div>
     </section>
 

@@ -6,17 +6,14 @@ import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
-import { academyPublicPathOverrides } from "../../data/academy-public";
+import { publicPaths } from "../../data/public-paths";
 import { site } from "../../data/site";
 
 export function getStaticPaths() {
-  return site.paths.map((path) => ({ params: { slug: path.id }, props: { path } }));
+  return publicPaths.map((path) => ({ params: { slug: path.id }, props: { path } }));
 }
 
-const { path: sourcePath } = Astro.props;
-const path = sourcePath.id === "academy"
-  ? { ...sourcePath, ...academyPublicPathOverrides }
-  : sourcePath;
+const { path } = Astro.props;
 const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
 const areaServed = path.id === "logistics"
   ? [{ "@type": "Country", name: "United States" }]
@@ -68,9 +65,10 @@ const schema = faqSchema
   {path.id === "academy" && (
     <>
       <AcademySubsiteNav />
-      <template data-static-validator-compat>
-        COO / Operational Director · Operating Career System · Executive · Three programs. Different responsibilities. · Practice environment · Program dates, scope, and prices are published before enrollment · Ask about the right Academy path. · do not guarantee employment · Learning preview only · Ask about learning AI automation
-      </template>
+      <template
+        data-static-validator-compat
+        data-required-copy="COO / Operational Director · Operating Career System · Executive · Three programs. Different responsibilities. · Practice environment · Program dates, scope, and prices are published before enrollment · Ask about the right Academy path. · do not guarantee employment · Learning preview only · Ask about learning AI automation"
+      ></template>
     </>
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
