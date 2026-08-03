@@ -1,15 +1,10 @@
 name: Release manifest snapshot
 
 on:
-  pull_request:
-    paths:
-      - scripts/generate-release-manifest.mjs
-      - scripts/render-release-manifest-markdown.mjs
-      - .github/workflows/release-manifest-snapshot.yml
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   snapshot:
@@ -17,8 +12,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -34,24 +27,11 @@ jobs:
 
       - name: Generate read-only release snapshot
         env:
-          RELEASE_MANIFEST_CURRENT_MAIN_SHA: 2a1004b92e5aeb5bd01317174d8d6e497b31e7cb
+          RELEASE_MANIFEST_CURRENT_MAIN_SHA: ${{ github.sha }}
         run: |
           export RELEASE_MANIFEST_SNAPSHOT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           node scripts/generate-release-manifest.mjs --write --external
           node scripts/render-release-manifest-markdown.mjs
-
-      - name: Commit snapshot to the PR branch
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/RELEASE_MANIFEST_2026-08-01.md docs/release-manifest-2026-08-01.json
-          if git diff --cached --quiet; then
-            echo "Snapshot is already current."
-          else
-            git commit -m "Docs: capture Phase 1 release manifest snapshot"
-            git push origin "HEAD:${{ github.head_ref }}"
-          fi
 
       - name: Upload release manifest
         uses: actions/upload-artifact@v4
