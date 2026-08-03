@@ -15,6 +15,12 @@ test("search-to-inquiry checklist connects discovery, qualification, and handoff
   await expect(page.getByText("Immediate clarity", { exact: true })).toBeVisible();
   await expect(page.getByText("Privacy-safe measurement", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Connect discovery, decision, qualification, and follow-up." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Connect the website, social distribution, CRM, and human follow-up." }),
+  ).toBeVisible();
+  await expect(page.getByText("Social distribution", { exact: true })).toBeVisible();
+  await expect(page.getByText("CRM or review queue", { exact: true })).toBeVisible();
+  await expect(page.getByText("Should social media replace the business website?", { exact: true })).toBeVisible();
   await expect(page.getByText(/does not automatically create a contract/i)).toHaveCount(0);
   await expect(page.getByText(/Submitted website URLs, access status, budgets, problems, and messages are not added to analytics/i)).toBeVisible();
 
@@ -22,6 +28,10 @@ test("search-to-inquiry checklist connects discovery, qualification, and handoff
   await expect(page.locator(`main a[href="${websiteBriefHref}"]`)).toHaveCount(1);
   await expect(page.locator('main a[href="/resources/technical-seo-checklist/"]')).toHaveCount(1);
   await expect(page.locator('main a[href="/resources/website-project-brief-template/"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="/services/website-development/"]')).toHaveCount(2);
+  await expect(page.locator('main a[href="/paths/marketing/"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="/paths/technology/"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="/academy/marketing/"]')).toHaveCount(1);
 });
 
 test("search-to-inquiry checklist exposes canonical structured data and sitemap ownership", async ({ page }) => {
@@ -38,6 +48,7 @@ test("search-to-inquiry checklist exposes canonical structured data and sitemap 
   expect(schemaText).toContain('"Service"');
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).toContain('"BreadcrumbList"');
+  expect(schemaText).toContain('"dateModified":"2026-08-04"');
 
   const sitemapResponse = await page.request.get("/sitemap-digital-services.xml");
   expect(sitemapResponse.ok()).toBeTruthy();
