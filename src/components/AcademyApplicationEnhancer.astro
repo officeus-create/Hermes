@@ -1,0 +1,108 @@
+<script>
+  const academyInterest = "Hermes Business Academy";
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
+  const fieldsRoot = form?.querySelector<HTMLElement>("[data-direction-fields]");
+  const requestedProgram = new URLSearchParams(window.location.search).get("program");
+  const allowedPrograms = new Set(["us-logistics-operations", "marketing"]);
+
+  const addField = (
+    group: HTMLElement,
+    type: "input" | "textarea" | "select",
+    name: string,
+    labelText: string,
+    options: Array<{ value: string; label: string }> = [],
+  ) => {
+    const label = document.createElement("label");
+    const span = document.createElement("span");
+    span.textContent = labelText;
+    label.appendChild(span);
+
+    let field: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    if (type === "textarea") {
+      const textarea = document.createElement("textarea");
+      textarea.rows = 3;
+      textarea.maxLength = 1000;
+      field = textarea;
+    } else if (type === "select") {
+      const select = document.createElement("select");
+      for (const item of options) {
+        const option = document.createElement("option");
+        option.value = item.value;
+        option.textContent = item.label;
+        select.appendChild(option);
+      }
+      field = select;
+    } else {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.maxLength = 300;
+      field = input;
+    }
+
+    field.name = name;
+    field.required = true;
+    field.setAttribute("data-academy-qualification", "true");
+    label.appendChild(field);
+    group.appendChild(label);
+    return field;
+  };
+
+  const enhanceAcademyFields = () => {
+    if (!form || !pathSelect || !fieldsRoot || pathSelect.value !== academyInterest) return;
+    const group = fieldsRoot.querySelector<HTMLElement>(".contact-direction-group");
+    if (!group || group.dataset.academyApplicationExtended === "true") return;
+    group.dataset.academyApplicationExtended = "true";
+
+    const program = addField(group, "select", "academy_program", "Program", [
+      { value: "", label: "Choose a public program" },
+      { value: "us-logistics-operations", label: "U.S. Logistics Operations" },
+      { value: "marketing", label: "Marketing" },
+    ]) as HTMLSelectElement;
+    if (requestedProgram && allowedPrograms.has(requestedProgram)) program.value = requestedProgram;
+
+    addField(group, "input", "academy_country_city", "Country and city");
+    addField(group, "textarea", "academy_languages_levels", "Languages and levels");
+    addField(group, "select", "academy_english_level", "Spoken English level", [
+      { value: "", label: "Choose an English level" },
+      { value: "A1-A2", label: "A1-A2" },
+      { value: "B1", label: "B1" },
+      { value: "B2", label: "B2" },
+      { value: "C1-C2", label: "C1-C2" },
+      { value: "Not sure", label: "Not sure" },
+    ]);
+    addField(group, "textarea", "academy_recent_experience", "Relevant experience during the last 3-6 months");
+    addField(group, "select", "academy_objective", "Primary objective", [
+      { value: "", label: "Choose an objective" },
+      { value: "Career development", label: "Career development" },
+      { value: "Business capability", label: "Business capability" },
+      { value: "Career and business", label: "Career and business" },
+      { value: "Exploration", label: "I am still exploring" },
+    ]);
+    addField(group, "input", "academy_us_timezone_availability", "Availability for U.S. time-zone work or practice");
+    addField(group, "select", "academy_preferred_contact_route", "Preferred contact route", [
+      { value: "", label: "Choose a contact route" },
+      { value: "Email", label: "Email" },
+      { value: "Telegram", label: "Telegram" },
+      { value: "WhatsApp", label: "WhatsApp" },
+    ]);
+
+    const note = document.createElement("p");
+    note.className = "form-status";
+    note.textContent = "Do not include passwords, verification codes, identity documents, payment data, private customer records, or confidential shipment information.";
+    group.appendChild(note);
+  };
+
+  if (fieldsRoot) {
+    const observer = new MutationObserver(enhanceAcademyFields);
+    observer.observe(fieldsRoot, { childList: true, subtree: true });
+  }
+
+  if (pathSelect && pathSelect.value !== academyInterest) {
+    pathSelect.value = academyInterest;
+    pathSelect.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  queueMicrotask(enhanceAcademyFields);
+  window.setTimeout(enhanceAcademyFields, 0);
+</script>
