@@ -8,7 +8,6 @@ import {
   reviewContentAsset,
   summarizePilotSlots,
 } from "../src/lib/content-pipeline.ts";
-import { syntheticContentAssets } from "../src/data/content-pipeline-pilot.ts";
 
 const slots = buildPilotAssetSlots();
 const summary = summarizePilotSlots(slots);
@@ -40,8 +39,39 @@ assert.equal(
   "Tracking parameters and fragments must not create duplicate sources.",
 );
 
-const publishAsset = syntheticContentAssets.find((asset) => asset.id === "synthetic-logistics-publish");
-assert.ok(publishAsset);
+const substantialText = [
+  "A useful source explains the full operating question rather than only repeating a promotional claim.",
+  "It defines the audience, the problem, the decision steps, the evidence boundary, the privacy boundary, and the next useful action.",
+  "It contains enough detail to expand into a standalone answer with takeaways, FAQ, internal links, source attribution, and a controlled CTA.",
+  "It does not guarantee ranking, traffic, loads, rates, revenue, employment, clients, or other external outcomes.",
+].join(" ");
+
+const makeAsset = (overrides = {}) => ({
+  id: "unit-publish",
+  direction: "hermes_logistics",
+  platform: "instagram",
+  sourceUrl: "https://social.example.invalid/hermes/useful-post",
+  originalPublishedAt: "2026-07-20",
+  mediaType: "video",
+  sourceText: substantialText,
+  transcript: substantialText,
+  proposedTopic: "Structured carrier-controlled review",
+  proposedQuery: "what should a carrier review before booking",
+  canonicalOwner: "/logistics/car-hauling-dispatch/",
+  intendedCta: "/load-board/?role=carrier#carrier-access",
+  audience: "Carriers",
+  permissionStatus: "owner_confirmed",
+  evidenceStatus: "first_party_verified",
+  privacyClass: "public",
+  containsCurrentMarketClaim: false,
+  containsPrivateOperationalData: false,
+  materiallySimilarTo: null,
+  reviewer: "unit-test",
+  reviewState: "reviewed",
+  ...overrides,
+});
+
+const publishAsset = makeAsset();
 const publishReview = reviewContentAsset(publishAsset);
 assert.equal(publishReview.decision, "publish_candidate");
 assert.ok(publishReview.score.total >= 14);
@@ -57,32 +87,38 @@ assert.equal(
   "UTM and fragment changes must not create a new duplicate fingerprint.",
 );
 
-const expectedDecisions = new Map([
-  ["synthetic-logistics-publish", "publish_candidate"],
-  ["synthetic-marketing-publish", "publish_candidate"],
-  ["synthetic-academy-merge", "merge_or_expand"],
-  ["synthetic-it-hold-rights", "hold"],
-  ["synthetic-logistics-hold-market-claim", "hold"],
-  ["synthetic-private-reject", "reject"],
-  ["synthetic-thin-reject", "reject"],
-  ["synthetic-awaiting-source", "awaiting_source"],
-]);
+const decisionFixtures = [
+  [makeAsset(), "publish_candidate"],
+  [makeAsset({ id: "unit-publish-two", direction: "progressopro_marketing", canonicalOwner: "/resources/search-to-inquiry-conversion-checklist/", intendedCta: "/paths/marketing/" }), "publish_candidate"],
+  [makeAsset({ id: "unit-merge", materiallySimilarTo: "/logistics/resources/dispatch-service-vs-self-dispatch/" }), "merge_or_expand"],
+  [makeAsset({ id: "unit-hold-rights", permissionStatus: "unverified" }), "hold"],
+  [makeAsset({ id: "unit-hold-market", containsCurrentMarketClaim: true, evidenceStatus: "owner_claim" }), "hold"],
+  [makeAsset({ id: "unit-reject-private", privacyClass: "restricted", containsPrivateOperationalData: true }), "reject"],
+  [makeAsset({ id: "unit-reject-thin", mediaType: "text", sourceText: "Keep posting and believe in your business.", transcript: null }), "reject"],
+  [makeAsset({ id: "unit-awaiting-source", sourceUrl: null, permissionStatus: "unverified", evidenceStatus: "missing" }), "awaiting_source"],
+];
 
-for (const asset of syntheticContentAssets) {
+for (const [asset, expectedDecision] of decisionFixtures) {
   const review = reviewContentAsset(asset);
-  assert.equal(review.decision, expectedDecisions.get(asset.id), `Unexpected decision for ${asset.id}`);
+  assert.equal(review.decision, expectedDecision, `Unexpected decision for ${asset.id}`);
   assert.match(review.fingerprint, new RegExp(`^${asset.direction}:${asset.platform}:`));
 }
 
-const marketClaim = syntheticContentAssets.find((asset) => asset.id === "synthetic-logistics-hold-market-claim");
-assert.ok(marketClaim);
+const marketClaim = makeAsset({
+  id: "unit-market-evidence",
+  containsCurrentMarketClaim: true,
+  evidenceStatus: "owner_claim",
+});
 assert.ok(
   reviewContentAsset(marketClaim).blockers.some((blocker) => blocker.includes("Current market")),
   "Current route/rate claims require approved current evidence.",
 );
 
-const privateAsset = syntheticContentAssets.find((asset) => asset.id === "synthetic-private-reject");
-assert.ok(privateAsset);
+const privateAsset = makeAsset({
+  id: "unit-private",
+  privacyClass: "restricted",
+  containsPrivateOperationalData: true,
+});
 assert.equal(reviewContentAsset(privateAsset).decision, "reject");
 
 const progressoproEntity = contentEntityRegistry.find((entity) => entity.id === "progressopro_marketing");
@@ -92,5 +128,5 @@ assert.equal(progressoproEntity.publishingStatus, "blocked");
 assert.ok(contentEntityRegistry.every((entity) => entity.publishingStatus !== "approved"));
 
 console.log(
-  `Content pipeline checks passed: ${slots.length} quota slots, ${syntheticContentAssets.length} synthetic decisions, entity and privacy gates active.`,
+  `Content pipeline checks passed: ${slots.length} quota slots, ${decisionFixtures.length} decision paths, entity and privacy gates active.`,
 );
