@@ -47,6 +47,7 @@ test("carrier knowledge hub is indexable with one sitemap owner and matching sch
   const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
   const schemaText = schemas.join("\n");
   expect(schemaText).toContain('"CollectionPage"');
+  expect(schemaText).toContain('"Service"');
   expect(schemaText).toContain('"ItemList"');
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).toContain('"BreadcrumbList"');
