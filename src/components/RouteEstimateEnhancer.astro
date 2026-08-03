@@ -5,167 +5,37 @@ const endpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-e
 ---
 
 {visibleOnPage && (
-  <section
-    class="route-estimate-panel"
-    data-route-estimate-panel
-    data-route-estimate-mode={mode}
-    data-route-estimate-endpoint={endpoint}
-    aria-labelledby="route-estimate-title"
-    hidden
-  >
-    <div>
-      <p class="eyebrow">Optional route planning</p>
-      <h3 id="route-estimate-title">Check a general driving estimate.</h3>
-      <p>Use the pickup and delivery fields, then request an approximate road distance and duration.</p>
-    </div>
-    <button class="button" type="button" data-route-estimate-submit>Estimate route</button>
-    <p class="route-estimate-status" role="status" aria-live="polite" data-route-estimate-status>
-      No route request is made until you press Estimate route.
-    </p>
-    <div class="route-estimate-result" data-route-estimate-result hidden>
-      <strong><span data-route-estimate-miles></span> miles</strong>
-      <span>Approx. <span data-route-estimate-minutes></span> minutes</span>
-    </div>
-    <p class="route-estimate-disclaimer">
-      General driving estimate for planning only. It is not truck-specific and does not confirm access, legal routing,
-      tolls, pickup timing, delivery timing, price, or carrier availability.
-    </p>
-    <p class="route-estimate-fallback">
-      Route review remains available through the regular load request or <a href="/contacts/">Logistics Sales contact options</a>.
-    </p>
-  </section>
+  <>
+    <link rel="stylesheet" href="/styles/route-estimate.css" />
+    <section
+      class="route-estimate-panel"
+      data-route-estimate-panel
+      data-route-estimate-mode={mode}
+      data-route-estimate-endpoint={endpoint}
+      aria-labelledby="route-estimate-title"
+      hidden
+    >
+      <div>
+        <p class="eyebrow">Optional route planning</p>
+        <h3 id="route-estimate-title">Check a general driving estimate.</h3>
+        <p>Use the pickup and delivery fields, then request an approximate road distance and duration.</p>
+      </div>
+      <button class="button" type="button" data-route-estimate-submit>Estimate route</button>
+      <p class="route-estimate-status" role="status" aria-live="polite" data-route-estimate-status>
+        No route request is made until you press Estimate route.
+      </p>
+      <div class="route-estimate-result" data-route-estimate-result hidden>
+        <strong><span data-route-estimate-miles></span> miles</strong>
+        <span>Approx. <span data-route-estimate-minutes></span> minutes</span>
+      </div>
+      <p class="route-estimate-disclaimer">
+        General driving estimate for planning only. It is not truck-specific and does not confirm access, legal routing,
+        tolls, pickup timing, delivery timing, price, or carrier availability.
+      </p>
+      <p class="route-estimate-fallback">
+        Route review remains available through the regular load request or <a href="/contacts/">Logistics Sales contact options</a>.
+      </p>
+    </section>
+    <script src="/scripts/route-estimate.js" defer></script>
+  </>
 )}
-
-<script>
-  const usRegionPattern = /(?:^|[,\s])(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC|PR|GU|VI|AS|MP)(?:$|[,\s\d])/i;
-  const cleanLocation = (value: string) => value
-    .replace(/[<>\u0000-\u001f\u007f]/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 240);
-  const looksLikeUsLocation = (value: string) => {
-    const normalized = cleanLocation(value);
-    return normalized.length >= 5
-      && (usRegionPattern.test(normalized)
-        || /\b\d{5}(?:-\d{4})?\b/.test(normalized)
-        || /\b(?:USA|United States)\b/i.test(normalized));
-  };
-
-  document.querySelectorAll<HTMLElement>("[data-route-estimate-panel]").forEach((panel) => {
-    const form = document.querySelector<HTMLFormElement>("[data-load-board-form]");
-    const origin = form?.querySelector<HTMLInputElement>('input[name="pickup_location"]');
-    const destination = form?.querySelector<HTMLInputElement>('input[name="delivery_location"]');
-    const routeFieldRow = origin?.closest(".field-row");
-    const button = panel.querySelector<HTMLButtonElement>("[data-route-estimate-submit]");
-    const status = panel.querySelector<HTMLElement>("[data-route-estimate-status]");
-    const result = panel.querySelector<HTMLElement>("[data-route-estimate-result]");
-    const miles = panel.querySelector<HTMLElement>("[data-route-estimate-miles]");
-    const minutes = panel.querySelector<HTMLElement>("[data-route-estimate-minutes]");
-
-    if (!form || !origin || !destination || !routeFieldRow || !button || !status || !result || !miles || !minutes) return;
-    routeFieldRow.insertAdjacentElement("afterend", panel);
-    panel.hidden = false;
-
-    const reset = () => {
-      result.hidden = true;
-      status.textContent = "Route fields changed. Press Estimate route to check the updated route.";
-    };
-    origin.addEventListener("input", reset);
-    destination.addEventListener("input", reset);
-
-    button.addEventListener("click", async () => {
-      const originValue = cleanLocation(origin.value);
-      const destinationValue = cleanLocation(destination.value);
-      result.hidden = true;
-
-      if (!looksLikeUsLocation(originValue) || !looksLikeUsLocation(destinationValue)) {
-        status.textContent = "Enter both locations as a U.S. city and state, ZIP code, or full U.S. address.";
-        return;
-      }
-      if (originValue.toLowerCase() === destinationValue.toLowerCase()) {
-        status.textContent = "Pickup and delivery locations must be different.";
-        return;
-      }
-      if (panel.dataset.routeEstimateMode !== "live") {
-        status.textContent = "Route estimates are not connected yet. Continue with the load preview or contact Logistics Sales for route review.";
-        return;
-      }
-
-      let endpointUrl: URL;
-      try {
-        endpointUrl = new URL(panel.dataset.routeEstimateEndpoint || "/api/route-estimate", window.location.origin);
-        const localDevelopment = ["localhost", "127.0.0.1"].includes(endpointUrl.hostname);
-        if (endpointUrl.origin !== window.location.origin || (endpointUrl.protocol !== "https:" && !localDevelopment)) {
-          throw new Error("invalid_endpoint");
-        }
-      } catch {
-        status.textContent = "Route estimates are unavailable. Continue with the load preview or contact Logistics Sales.";
-        return;
-      }
-
-      button.disabled = true;
-      button.setAttribute("aria-busy", "true");
-      status.textContent = "Calculating a general driving estimate…";
-      const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 8_000);
-      try {
-        const response = await fetch(endpointUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "same-origin",
-          body: JSON.stringify({
-            origin: { address: originValue },
-            destination: { address: destinationValue },
-          }),
-          signal: controller.signal,
-        });
-        const payload = await response.json() as {
-          success?: boolean;
-          distance_miles?: number;
-          duration_minutes?: number;
-        };
-        const distanceMiles = payload.distance_miles;
-        const durationMinutes = payload.duration_minutes;
-        if (
-          !response.ok
-          || !payload.success
-          || typeof distanceMiles !== "number"
-          || !Number.isFinite(distanceMiles)
-          || typeof durationMinutes !== "number"
-          || !Number.isFinite(durationMinutes)
-        ) {
-          if (response.status === 400 || response.status === 422) {
-            status.textContent = "A route could not be estimated from those locations. Check both addresses and try again.";
-          } else if (response.status === 429) {
-            status.textContent = "The route-estimate limit was reached. Continue with the load preview or contact Logistics Sales.";
-          } else {
-            status.textContent = "Route estimates are temporarily unavailable. Continue with the load preview or contact Logistics Sales.";
-          }
-          return;
-        }
-        miles.textContent = distanceMiles.toLocaleString("en-US", { maximumFractionDigits: 1 });
-        minutes.textContent = Math.ceil(durationMinutes).toLocaleString("en-US");
-        result.hidden = false;
-        status.textContent = "General route estimate ready. Review it as planning context only.";
-      } catch {
-        status.textContent = "Route estimates are temporarily unavailable. Your load details were not sent; continue with the local preview or contact Logistics Sales.";
-      } finally {
-        window.clearTimeout(timeout);
-        button.disabled = false;
-        button.removeAttribute("aria-busy");
-      }
-    });
-  });
-</script>
-
-<style>
-  .route-estimate-panel { display: grid; gap: .85rem; margin: 1.25rem 0; padding: 1.2rem; border: 1px solid #d7deeb; border-radius: 12px; background: #f7f9fd; }
-  .route-estimate-panel h3 { margin: 0; font-size: 1.15rem; }
-  .route-estimate-panel p { margin: .35rem 0 0; }
-  .route-estimate-panel .button { justify-self: start; }
-  .route-estimate-status { min-height: 1.4em; font-weight: 650; color: #27365e; }
-  .route-estimate-result { display: flex; flex-wrap: wrap; gap: 1rem; align-items: baseline; padding: .9rem 1rem; border-radius: 9px; background: #fff; }
-  .route-estimate-result strong { font-size: 1.35rem; color: #101b42; }
-  .route-estimate-disclaimer, .route-estimate-fallback { font-size: .82rem; color: #5c6578; }
-  .route-estimate-fallback a { color: #3f2ca7; font-weight: 700; }
-</style>
