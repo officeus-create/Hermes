@@ -6,10 +6,10 @@ const dist = join(root, "dist");
 const homepage = await readFile(join(dist, "index.html"), "utf8");
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
+const progressoproProfile = "https://www.instagram.com/progressopro/";
 const expectedSameAs = new Set([
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
-  "https://www.instagram.com/progressopro/",
 ]);
 const parseEntities = (html) => [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .map((match) => JSON.parse(match[1]))
@@ -32,6 +32,8 @@ if (organization) {
   if (organization.contactPoint?.email !== "freight_301@hermeslogisticsus.com") errors.push("Organization Logistics Sales email is missing or unapproved");
   const sameAs = new Set(Array.isArray(organization.sameAs) ? organization.sameAs : []);
   for (const url of expectedSameAs) if (!sameAs.has(url)) errors.push(`Organization sameAs is missing ${url}`);
+  for (const url of sameAs) if (!expectedSameAs.has(url)) errors.push(`Organization sameAs contains an unapproved cross-entity profile: ${url}`);
+  if (sameAs.has(progressoproProfile)) errors.push("ProgressoPro must not be represented as the same Organization entity as Hermes");
 }
 
 if (website) {
@@ -47,6 +49,15 @@ if (website) {
 
 const ids = entities.map((entity) => entity?.["@id"]).filter(Boolean);
 if (new Set(ids).size !== ids.length) errors.push("Duplicate JSON-LD @id values found on the homepage");
+
+const marketingHtml = await readFile(join(dist, "paths/marketing/index.html"), "utf8");
+const marketingEntities = parseEntities(marketingHtml);
+for (const entity of marketingEntities) {
+  const sameAs = Array.isArray(entity?.sameAs) ? entity.sameAs : [];
+  if (sameAs.includes(progressoproProfile)) {
+    errors.push("Marketing page must not publish ProgressoPro sameAs until the brand relationship and entity owner are approved");
+  }
+}
 
 const localizedPages = [
   { path: "ua/index.html", route: "/ua/", language: "uk" },
@@ -78,4 +89,4 @@ if (errors.length) {
   throw new Error(`Entity schema audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log("Entity schema audit passed: stable Organization, WebSite and localized WebPage references plus approved logo, contacts, languages and publisher signals.");
+console.log("Entity schema audit passed: stable Hermes Organization and WebSite references, exact same-entity profiles only, and no premature ProgressoPro sameAs.");

@@ -13,6 +13,7 @@ import WhyItMatters from "../components/WhyItMatters.astro";
 import { site } from "../data/site";
 import { academyPublicPathOverrides } from "../data/academy-public";
 import { languageAlternates } from "../data/locales";
+import { approvedHermesSameAs } from "../data/public-entity-registry";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
@@ -49,11 +50,7 @@ const organizationSchema = {
     { "@type": "Country", name: "France" },
     { "@type": "Country", name: "United Kingdom" },
   ],
-  sameAs: [
-    "https://www.instagram.com/hermes.logistics/",
-    "https://www.threads.com/@hermes.logistics",
-    "https://www.instagram.com/progressopro/",
-  ],
+  sameAs: approvedHermesSameAs,
 };
 
 const websiteSchema = {
