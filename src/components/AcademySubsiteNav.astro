@@ -1,0 +1,31 @@
+---
+import { ArrowRight, BookOpen, ClipboardCheck, GraduationCap, Library, Route } from "@lucide/astro";
+import { academySubsiteNavigation } from "../data/academy-subsite";
+
+const icons = [GraduationCap, Route, BookOpen, ClipboardCheck, Library];
+---
+
+<section class="section resource-related" aria-labelledby="academy-subsite-title">
+  <div class="shell">
+    <div class="section-heading split-heading">
+      <div>
+        <p class="eyebrow">Hermes Business Academy</p>
+        <h2 id="academy-subsite-title">Open a program, understand the method, or prepare an application.</h2>
+      </div>
+      <p>The existing Academy hub remains the canonical ecosystem owner. These child pages cover distinct program, methodology, application, and resource intents.</p>
+    </div>
+    <div class="resource-related-grid">
+      {academySubsiteNavigation.map((item, index) => {
+        const Icon = icons[index] ?? BookOpen;
+        return (
+          <a href={item.href}>
+            <Icon size={22} aria-hidden="true" />
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+            <strong>Open Academy page <ArrowRight size={16} aria-hidden="true" /></strong>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</section>
