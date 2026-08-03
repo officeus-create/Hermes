@@ -1,0 +1,256 @@
+---
+import { ArrowLeft, ArrowRight, Building2, Check, ClipboardCheck, FileText, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Broker Setup Packet Checklist for Carriers | Hermes Logistics";
+const description =
+  "Use this broker setup packet checklist to prepare consistent carrier identity, W-9, authority, insurance, equipment, payment, factoring, contact, and document information without sharing credentials or unnecessary private data.";
+const canonicalUrl = new URL("/logistics/resources/broker-setup-packet-checklist/", Astro.site).toString();
+const intakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+
+const packetAreas = [
+  {
+    title: "Business identity",
+    icon: Building2,
+    items: ["Legal business name is consistent", "Approved DBA is identified where applicable", "Business address and contact route are current", "Authorized signer and role are clear"],
+  },
+  {
+    title: "Tax information",
+    icon: FileText,
+    items: ["Current W-9 uses the correct name and classification", "Tax information matches approved business records", "Document date and version are controlled", "Sensitive tax documents are shared only through an approved route"],
+  },
+  {
+    title: "Authority verification",
+    icon: ShieldCheck,
+    items: ["MC and USDOT numbers match the carrier", "Operating authority status is checked through an official source", "Authority effective date is documented", "Pending, inactive, or uncertain status is resolved before representation"],
+  },
+  {
+    title: "Insurance certificate",
+    icon: ShieldCheck,
+    items: ["Policies and effective dates are current", "Coverage and equipment limits are understood", "Certificate-holder requests follow the insurer's process", "No unsupported coverage claim is added manually"],
+  },
+  {
+    title: "Equipment profile",
+    icon: Truck,
+    items: ["Truck and trailer type are accurate", "Practical capacity and dimensions are documented", "Inoperable or specialty capability is stated honestly", "Operating restrictions and service area are current"],
+  },
+  {
+    title: "Payment and factoring",
+    icon: ClipboardCheck,
+    items: ["Remittance instructions come from an authorized source", "Factoring relationship and notice of assignment are confirmed when applicable", "Payment contact is verified independently", "Bank changes are not accepted through an unverified message"],
+  },
+  {
+    title: "Communication ownership",
+    icon: Check,
+    items: ["Primary and backup contacts are identified", "Dispatcher authority is documented", "Carrier approval rules are explicit", "No load is booked or signed outside the approved process"],
+  },
+  {
+    title: "Document control",
+    icon: FileText,
+    items: ["File names and versions are consistent", "Expired documents are removed from the active packet", "Rate confirmations and transport documents stay load-specific", "Access is limited to people who need the information"],
+  },
+];
+
+const neverInclude = [
+  "Passwords, API keys, security questions, authentication codes, or recovery codes",
+  "Personal SSNs, driver's-license images, or identity documents unless specifically required through an approved secure process",
+  "Banking changes copied from an unverified email, text, or messaging account",
+  "Customer, vehicle, VIN, route, rate, or shipment records unrelated to the broker's setup request",
+  "Statements that guarantee broker approval, loads, rates, payment timing, or revenue",
+];
+
+const faq = [
+  {
+    question: "Does one broker setup packet work for every broker?",
+    answer: "No. Brokers may request different forms, insurance certificates, authority age, references, payment, factoring, safety, equipment, and platform steps. Use a controlled core packet and review each broker's requirements separately.",
+  },
+  {
+    question: "Does a complete packet guarantee broker approval?",
+    answer: "No. Approval remains subject to the broker's policies, authority-age rules, insurance, safety information, equipment, documents, market needs, and independent review.",
+  },
+  {
+    question: "Should passwords or verification codes be included?",
+    answer: "No. Passwords, API keys, one-time codes, recovery codes, and security answers should never be placed in a setup packet, public form, URL, analytics event, screenshot, or ordinary email attachment.",
+  },
+  {
+    question: "Who should approve information submitted by a dispatcher?",
+    answer: "The carrier should define who is authorized to prepare, verify, submit, sign, and update setup information. A dispatcher does not replace the carrier's authority or final operating responsibility.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Broker Setup Packet Checklist for Carriers",
+    description,
+    datePublished: "2026-08-03",
+    dateModified: "2026-08-03",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Carrier Broker Setup Readiness Review",
+    description: "A structured review of carrier identity, authority, insurance, equipment, payment, communication, and document readiness before broker setup.",
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+    areaServed: { "@type": "Country", name: "United States" },
+    url: canonicalUrl,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Resources", item: "https://hermeslogisticsus.com/paths/logistics/#logistics-resources" },
+      { "@type": "ListItem", position: 4, name: "Broker Setup Packet Checklist", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Broker setup packet checklist</span>
+            </nav>
+            <a class="detail-back" href="/paths/logistics/#logistics-resources"><ArrowLeft size={18} aria-hidden="true" />Logistics resources</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · Carrier Back Office</p>
+                <h1>Broker Setup Packet Checklist for Carriers</h1>
+                <p>
+                  Prepare one controlled core packet so business identity, authority, insurance, equipment, payment,
+                  factoring, communication, and document information stay consistent when a broker requests setup.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href={intakeHref}>Request carrier readiness review <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href="/logistics/new-authority-car-hauler-support/">Review new-authority support</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>A packet supports review; it does not guarantee approval.</h2>
+                <p>Every broker applies its own authority, insurance, safety, equipment, documentation, payment, and market requirements.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <ClipboardCheck size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Controlled preparation</p>
+              <h2>Build a verified core packet, then adapt it to each broker.</h2>
+              <p>A repeatable packet reduces conflicting names, expired certificates, incorrect payment instructions, unclear dispatch authority, and unnecessary exposure of sensitive data.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="packet-areas-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Packet areas</p><h2 id="packet-areas-title">Eight areas to verify before submission.</h2></div>
+              <p>This checklist is operational information, not legal, tax, insurance, banking, safety, regulatory, or accounting advice. Confirm requirements with the broker and qualified professionals.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {packetAreas.map((area, index) => {
+                const Icon = area.icon;
+                return (
+                  <article>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <Icon size={23} aria-hidden="true" />
+                    <h3>{area.title}</h3>
+                    <ul>{area.items.map((item) => <li>{item}</li>)}</ul>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="packet-workflow-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Document workflow</p>
+              <h2 id="packet-workflow-title">Verify, submit, record, and refresh.</h2>
+              <p>Keep an audit trail of what was reviewed and sent without putting private documents or credentials in public systems.</p>
+            </div>
+            <dl>
+              <div><dt>1. Verify</dt><dd>Confirm business identity, authority, insurance, equipment, payment, contacts, and document versions.</dd></div>
+              <div><dt>2. Review request</dt><dd>Compare the broker's stated requirements with the approved core packet.</dd></div>
+              <div><dt>3. Submit securely</dt><dd>Use the broker's approved portal or controlled communication route and share only required information.</dd></div>
+              <div><dt>4. Record status</dt><dd>Track submission date, documents used, missing items, approval state, and responsible owner.</dd></div>
+              <div><dt>5. Refresh</dt><dd>Replace expired or changed documents and re-verify sensitive payment updates independently.</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="never-include-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Security boundary</p>
+              <h2 id="never-include-title">Do not turn a setup packet into a credential or private-data dump.</h2>
+              <p>Share the minimum information required through an approved route, and verify unexpected requests or payment changes before acting.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              {neverInclude.map((item) => <article><strong>Do not include</strong><p>{item}</p></article>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="packet-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="packet-faq-title">Questions before sending carrier documents.</h2></div>
+            <div class="digital-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="packet-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Continue preparing</p><h2 id="packet-related-title">Related carrier readiness resources.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/logistics/resources/new-authority-car-hauler-readiness-checklist/"><ShieldCheck size={22} aria-hidden="true" /><h3>New Authority Readiness</h3><p>Review authority, insurance, equipment, operating area, control, and first-load readiness.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/dispatch-service-vs-self-dispatch/"><Truck size={22} aria-hidden="true" /><h3>Dispatch vs Self-Dispatch</h3><p>Compare workload, control, communication, documents, and fee scope.</p><strong>Open comparison <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/car-hauling-dispatch/"><ClipboardCheck size={22} aria-hidden="true" /><h3>Car Hauling Dispatch</h3><p>Review commercial scope, carrier control, qualification, and structured intake.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Carrier readiness review</p>
+              <h2>Prepare authority, insurance, equipment, fleet, dispatch, and availability information.</h2>
+              <p>The carrier intake prepares a local preview and explicit handoff. It does not automatically approve a setup, create an account, assign a dispatcher, submit documents, book a load, or guarantee broker acceptance.</p>
+            </div>
+            <a class="button button-primary" href={intakeHref}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
