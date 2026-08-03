@@ -93,6 +93,34 @@
     group.appendChild(note);
   };
 
+  const academySummaryFields = [
+    ["Program", "academy_program"],
+    ["Country and city", "academy_country_city"],
+    ["Languages and levels", "academy_languages_levels"],
+    ["Spoken English level", "academy_english_level"],
+    ["Recent relevant experience", "academy_recent_experience"],
+    ["Primary objective", "academy_objective"],
+    ["U.S. time-zone availability", "academy_us_timezone_availability"],
+    ["Preferred contact route", "academy_preferred_contact_route"],
+  ] as const;
+
+  const appendAcademyPreviewSummary = () => {
+    if (!form || !pathSelect || pathSelect.value !== academyInterest) return;
+    const summary = form.querySelector<HTMLElement>("[data-handoff-summary]");
+    if (!summary || !summary.textContent || summary.textContent.includes("Academy qualification:")) return;
+
+    const lines = academySummaryFields.flatMap(([label, name]) => {
+      const field = form.elements.namedItem(name);
+      if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) return [];
+      const value = field.value.trim();
+      return value ? [`${label}: ${value}`] : [];
+    });
+
+    if (lines.length > 0) {
+      summary.textContent = `${summary.textContent}\n\nAcademy qualification:\n${lines.join("\n")}`;
+    }
+  };
+
   if (fieldsRoot) {
     const observer = new MutationObserver(enhanceAcademyFields);
     observer.observe(fieldsRoot, { childList: true, subtree: true });
@@ -102,6 +130,10 @@
     pathSelect.value = academyInterest;
     pathSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
+
+  form?.addEventListener("submit", () => {
+    window.setTimeout(appendAcademyPreviewSummary, 0);
+  });
 
   queueMicrotask(enhanceAcademyFields);
   window.setTimeout(enhanceAcademyFields, 0);
