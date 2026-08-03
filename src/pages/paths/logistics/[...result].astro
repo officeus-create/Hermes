@@ -14,6 +14,12 @@ export function getStaticPaths() {
 
 const { recommendation } = Astro.props;
 const canonicalUrl = new URL(recommendation.route, Astro.site).toString();
+const carHaulingCommercialAudienceIds = new Set([
+  "carrier-car-hauling",
+  "carrier-owner-operators",
+  "carrier-fleet-owners",
+]);
+const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recommendation.id);
 const schema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -74,6 +80,23 @@ import "../../../styles/features/case.css";
           </div>
         </div>
       </section>
+
+      {showCarHaulingCommercialPath && (
+        <section class="section recommendation-next" aria-labelledby="car-hauling-commercial-title">
+          <div class="shell recommendation-next-grid">
+            <div>
+              <p class="eyebrow">Car-hauling service details</p>
+              <h2 id="car-hauling-commercial-title">Review the national dispatch and back-office service before sharing private carrier details.</h2>
+              <p>See how Hermes reviews equipment, capacity, authority, operating area, broker communication, paperwork, and carrier-controlled load approval for vehicle-transport owner-operators and small fleets.</p>
+            </div>
+            <div>
+              <a class="button button-primary" href="/logistics/car-hauling-dispatch/" data-car-hauling-commercial-link>
+                Review car-hauling dispatch support <ArrowRight size={18} aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {recommendation.caseStudy && (
         <section class="section recommendation-case" aria-labelledby="recommendation-case-title">
