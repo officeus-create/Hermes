@@ -55,6 +55,7 @@ test("manual observation remains local and validates linked citation paths", asy
   await expect(page.locator("[data-observation-status]")).toHaveText("Observation prepared locally. No storage or external action occurred.");
   await expect(page.locator("[data-observation-preview]")).toBeVisible();
   await expect(page.locator("[data-local-observations] article")).toHaveCount(1);
-  await expect(page.locator("[data-local-observations]")).toContainText("LOCAL-001");
+  await expect(page.locator("[data-local-observations]")).toContainText("LOG-01 · chatgpt");
+  await expect(page.locator("[data-observation-preview] pre")).toContainText('"id": "LOCAL-001"');
   await expect(page.locator("[data-observation-preview] pre")).toContainText('"linkedCitation": true');
 });
