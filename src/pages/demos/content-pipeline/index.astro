@@ -1,9 +1,10 @@
 ---
-import { ArrowRight, CircleAlert, FileCheck2, Files, Network, ShieldCheck } from "@lucide/astro";
+import { ArrowRight, CircleAlert, FileCheck, Files, Network, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
-import { pilotAssetSlots, syntheticContentReviews } from "../../../data/content-pipeline-pilot";
+import { pilotAssetSlots } from "../../../data/content-pipeline-pilot";
+import { syntheticContentReviews } from "../../../data/content-pipeline-reviewed-fixtures";
 import { contentEntityRegistry, summarizePilotSlots } from "../../../lib/content-pipeline";
 
 const summary = summarizePilotSlots(pilotAssetSlots);
@@ -116,7 +117,7 @@ const directionLabels = {
             {syntheticContentReviews.map(({ asset, review }, index) => (
               <article data-content-decision={review.decision}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                {review.blockers.length > 0 ? <CircleAlert size={23} aria-hidden="true" /> : <FileCheck2 size={23} aria-hidden="true" />}
+                {review.blockers.length > 0 ? <CircleAlert size={23} aria-hidden="true" /> : <FileCheck size={23} aria-hidden="true" />}
                 <h3>{asset.proposedTopic}</h3>
                 <p><strong>Decision:</strong> {review.decision}</p>
                 <p><strong>Score:</strong> {review.score.total}/18</p>
@@ -144,7 +145,7 @@ const directionLabels = {
           <div class="resource-related-grid">
             <article><Files size={22} aria-hidden="true" /><h3>Provide exact sources</h3><p>Ten Hermes Logistics, ten ProgressoPro, five Academy, and five IT URLs, uploads, or transcripts.</p></article>
             <article><ShieldCheck size={22} aria-hidden="true" /><h3>Verify rights and entities</h3><p>Confirm account control, reuse permission, public-brand relationships, and the correct website owner for each source.</p></article>
-            <article><FileCheck2 size={22} aria-hidden="true" /><h3>Approve the first 3–5</h3><p>Select only strong distinct assets after clustering, evidence, freshness, privacy, and cannibalization review.</p></article>
+            <article><FileCheck size={22} aria-hidden="true" /><h3>Approve the first 3–5</h3><p>Select only strong distinct assets after clustering, evidence, freshness, privacy, and cannibalization review.</p></article>
           </div>
         </div>
       </section>
