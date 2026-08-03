@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, BookOpen, Check, GraduationCap, Layers3, ShieldCheck } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, BookOpen, GraduationCap, Network, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
@@ -39,6 +39,20 @@ const mainSchema = content.schemaType === "Course"
       isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
       about: academyEntity,
     };
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: `${content.h1} — Hermes Business Academy`,
+  description: content.description,
+  url: canonicalUrl,
+  provider: academyEntity,
+  serviceType: content.schemaType === "Course"
+    ? "Education and training program review"
+    : content.slug === "resources"
+      ? "Public learning resources"
+      : "Academy learning guidance",
+  availableLanguage: ["English", "Russian", "Ukrainian"],
+};
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -59,7 +73,7 @@ const breadcrumbSchema = {
 };
 ---
 
-<BaseLayout title={content.title} description={content.description} schema={[mainSchema, faqSchema, breadcrumbSchema]}>
+<BaseLayout title={content.title} description={content.description} schema={[mainSchema, serviceSchema, faqSchema, breadcrumbSchema]}>
   <div class="logistics-resource-page academy-public-page">
     <SiteHeader theme="dark" activePath="/paths/academy/" />
     <main id="main-content">
@@ -170,7 +184,7 @@ const breadcrumbSchema = {
             <div class="section-heading"><p class="eyebrow">Continue learning</p><h2 id="academy-related-title">Related programs, services, and canonical resources.</h2></div>
             <div class="resource-related-grid">
               {content.related.map((item) => (
-                <a href={item.href}><Layers3 size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p><strong>Open resource <ArrowRight size={16} aria-hidden="true" /></strong></a>
+                <a href={item.href}><Network size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p><strong>Open resource <ArrowRight size={16} aria-hidden="true" /></strong></a>
               ))}
             </div>
           </div>
