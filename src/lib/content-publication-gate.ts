@@ -2,7 +2,7 @@ import {
   reviewContentAsset,
   type ContentAssetInput,
   type ContentReviewResult,
-} from "./content-pipeline";
+} from "./content-pipeline.ts";
 
 const normalizedMeaningfulLength = (asset: ContentAssetInput): number =>
   `${asset.sourceText} ${asset.transcript ?? ""}`
