@@ -1,31 +1,82 @@
 # Hermes Website
 
-Production-ready static Astro website for `hermeslogisticsus.com`.
+Static Astro website and controlled Cloudflare edge workflows for `hermeslogisticsus.com`.
 
-## Status
+## Current status
 
-- Production V1 is published at `https://hermeslogisticsus.com` through Cloudflare Pages.
-- Five public routes plus a custom 404 page.
-- No form submission or data storage.
-- No unsupported numeric claims or partner logos.
-- The contact workflow remains in preview mode and performs no external write.
+- The production domain is live on Cloudflare Pages. Do not assume every `main` commit is deployed until the production snapshot or immutable deployment is reconciled.
+- The 2026-08-03 release-manifest baseline contains **104 generated HTML routes**, **95 indexable routes**, and **7 sitemap files**. See `docs/RELEASE_MANIFEST_2026-08-01.md` rather than maintaining a manual route count here.
+- Public language entry points currently cover English, Spanish, French, Ukrainian, Italian, and Russian.
+- Hermes Business Academy exposes exactly two public programs: **U.S. Logistics Operations** and **Marketing**.
+- General contact workflows remain preview-first. They must not display a delivery success state unless an approved same-origin receiver confirms the request.
+- The Logistics lead receiver and private Email Worker architecture are merged but production email delivery is not yet activated or verified.
+- Google route estimates remain default-off and preview-only until separately approved Google Cloud and Cloudflare configuration is proven.
+- Hermes Connect remains a product-discovery concept/demo. No public account, booking, calendar, payment, or autonomous AI action is connected.
+- The social-content pilot has 30 controlled slots. Two owner-supplied Instagram sources are registered on hold; neither is approved for an indexable page without transcript, date, evidence, and claim review.
 
-## Structure
+## Architecture
 
-- `src/data/site.ts`: structured content and claim register.
-- `src/components`: reusable homepage and direction-page sections.
-- `src/styles/global.css`: design tokens and responsive system.
-- `src/pages/index.astro`: ecosystem homepage.
-- `src/pages/paths/[slug].astro`: four generated direction pages.
-- `scripts/validate-build.mjs`: route, content, asset, form, and sitemap checks.
+- `src/pages/` — public routes, resources, service pages, Academy pages, case studies, and noindex demos.
+- `src/data/` — public content contracts, entity records, route definitions, research registries, and release governance.
+- `src/lib/` — content, lead, route, product-demo, publication, and validation logic.
+- `src/components/` — reusable page, intake, demo, navigation, and conversion components.
+- `src/styles/` and `public/styles/` — shared and route-owned CSS bundles.
+- `public/scripts/` — page-scoped browser enhancements with explicit privacy and network boundaries.
+- `functions/api/` — Cloudflare Pages Functions for protected same-origin server workflows.
+- `workers/lead-email/` — private Cloudflare Worker responsible for the Email Service binding.
+- `scripts/` — build validation, SEO, privacy, content, data, release, and integration regression tests.
+- `tests/` — Playwright desktop/mobile workflow and rendered-page coverage.
+- `docs/` — release evidence, implementation boundaries, activation runbooks, and owner gates.
 
-## Routes
+## Public route groups
 
-- `/`
-- `/paths/logistics/`
-- `/paths/marketing/`
-- `/paths/academy/`
-- `/paths/technology/`
+The site is no longer a five-page brochure. Current route ownership includes:
+
+- ecosystem homepage and four direction hubs;
+- Logistics audience, service, carrier, broker, careers, agency, Load Board, and Wisconsin vehicle-transport routes;
+- Academy program, application, process, and resource routes;
+- Website Development, SEO, Local SEO, marketing, CRM, automation, and technology routes;
+- resources, case studies, privacy, accessibility, editorial, and trust pages;
+- multilingual entry points;
+- noindex product and operations demos.
+
+Every indexable route must have one canonical URL and exactly one declared sitemap owner. The committed release-manifest regression test enforces this boundary.
+
+## Contact and lead delivery
+
+Preview mode is the default. A valid preview prepares a reviewable request summary and approved manual contact route without claiming that data was sent or stored.
+
+The Logistics production-delivery repository path is:
+
+`browser → same-origin Pages Function → Service Binding → private Email Worker → Cloudflare Email Service`
+
+Relevant files:
+
+- `functions/api/logistics-lead.ts`
+- `workers/lead-email/src/index.mjs`
+- `wrangler.jsonc.example`
+- `workers/lead-email/wrangler.jsonc.example`
+- `docs/CLOUDFLARE_LEAD_DELIVERY_ACTIVATION.md`
+- `scripts/sales-lead-receiver.test.mjs`
+
+Delivery stays disabled unless the environment is explicitly set to live and all required Service Binding, KV, encrypted-token, sender, and destination controls exist. Cloudflare domain onboarding and reconciled synthetic preview/production deliveries are still required before the public workflow may be called live.
+
+## Load Board and route estimate
+
+`/load-board/` contains separate preview-first paths for carriers/owner-operators and customers/shippers/dealers/brokers. Server-controlled sales tags distinguish carrier-access requests from posted-load requests.
+
+The optional route-estimate foundation uses a server-only Google Routes API request, strict same-origin checks, a minimal field mask, KV quota controls, and explicit user interaction. It does not provide truck navigation, price, quote, availability, toll, or guaranteed pickup/delivery timing. It remains disabled until Issue #12 external activation requirements are completed.
+
+## Content pipeline
+
+The review-first pipeline converts selected owner-controlled source material into possible website assets only after rights, entity, evidence, privacy, freshness, canonical-owner, CTA, duplication, and thin-content gates pass.
+
+- Pilot register: `docs/content-pipeline-pilot-register.csv`
+- Core logic: `src/lib/content-pipeline.ts`
+- Publication gate: `src/lib/content-publication-gate.ts`
+- Regression coverage: `scripts/content-pipeline.test.mjs`
+
+A public social URL is not enough to publish an article or `VideoObject`. A useful transcript or substantial explanation, source date, stable media/thumbnail evidence, factual review, and human approval remain required.
 
 ## Commands
 
@@ -37,39 +88,13 @@ npm test
 npm run test:e2e
 ```
 
-## Contact Workflow
+The GitHub Actions workflow additionally runs dependency security checks, the complete static/unit suite, and Chromium desktop/mobile workflows.
 
-The form uses `preview` mode by default and performs no network request. After a valid preview submission, the site shows a compact handoff panel with a plain-text request summary, a `Copy request` button, and the approved contact route for the selected business direction. Hermes Logistics may expose phone and email routes; Marketing, Academy, and IT Development use email only.
+## Release and safety rules
 
-A future approved HTTPS receiver can be enabled with `PUBLIC_CONTACT_MODE=live` and `PUBLIC_CONTACT_ENDPOINT`; see `.env.example`. The receiving endpoint, privacy details, and `connect-src` policy must be reviewed before live activation.
-
-The workflow includes native validation, length limits, consent, a honeypot, request IDs, idempotency headers, a ten-second timeout, and honest delivery-failure messaging.
-
-Visual redesigns must preserve the contracts in `docs/DESIGN_INTEGRATION_CONTRACT.md` and pass the build, static, and browser test suites.
-
-## Homepage Entry Scene
-
-The first direct homepage visit in a browser session opens an optional four-direction scene for Logistics, Marketing, Academy, and IT Development. Each direction receives a 3.2-second focus interval with a short audience statement and a direct route. The visitor can choose a direction, press Escape, skip immediately, or open the regular homepage. The scene does not run on hash links, repeat in the same session, or run when reduced motion is requested.
-
-## Car Hauling Load Board Pilot
-
-`/load-board/` has two local-first sales intake paths. Carriers and owner-operators can prepare a request for free Load Board access or identify a demo load they want to discuss. Customers, shippers, dealers, and brokers can prepare a posted-load request with route, vehicle, timing, condition, price, and contact details. The generated email subjects use clear Logistics Sales tags so the receiving team can distinguish `LOAD BOARD ACCESS / CARRIER` from `POSTED LOAD / CUSTOMER`, `SHIPPER`, `DEALER`, or `BROKER`.
-
-Preview mode performs no network write, storage, automatic email delivery, CRM update, load publication, or carrier notification. It prepares a addressed email that the visitor can review and send from their email application. Automatic HTTPS delivery remains controlled by `PUBLIC_CONTACT_MODE=live` and an approved `PUBLIC_CONTACT_ENDPOINT`. Standard operable vehicles can pass the preview rules; tractors, unusual commodities, inoperable vehicles, multi-unit loads, incomplete requests, and bot-like submissions are held or rejected by explicit rules.
-
-The protected same-origin receiver is implemented in
-`functions/api/logistics-lead.ts` and covered by
-`scripts/sales-lead-receiver.test.mjs`. It uses a fixed sales recipient and
-server-built subjects, validates lead categories, rejects oversized or
-cross-origin requests, and requires KV-backed deduplication/rate limiting.
-Keep preview mode active until Cloudflare Email Sending, the verified sender,
-and the restricted bindings from `wrangler.toml.example` are available and a
-real delivery test has passed.
-
-## Logistics Visitor Paths
-
-The Logistics page begins with a visitor router for shippers/dealers, brokers, carriers/owner-operators, remote-agency candidates, job candidates, and students. Each audience has a dedicated static page and next action. Shippers, dealers, and brokers can open the Load Board preview; carriers can reach the carrier intake; agency and career candidates can prepare a local application preview; training routes to Hermes Business Academy.
-
-## Publication
-
-The site is hosted in the Cloudflare Pages project `hermes` with the production domain `hermeslogisticsus.com`. See `docs/PUBLISHING_RUNBOOK.md` for release and rollback checks.
+- Keep secrets, account IDs, tokens, real leads, shipment data, private operational records, and credentials out of GitHub, rendered HTML, analytics, fixtures, screenshots, and public logs.
+- Do not publish bulk city pages, routes, rates, capacity, offices, reviews, partners, cases, or operational claims without dated evidence and an approved canonical owner.
+- Keep demos synthetic, noindex, and disconnected from real providers unless a separate release gate explicitly authorizes integration.
+- Keep Academy wording aligned with `src/data/academy-public.ts` and `scripts/academy-public-contract.test.mjs`.
+- Preserve the contracts in `docs/DESIGN_INTEGRATION_CONTRACT.md` during visual changes.
+- Use `docs/PUBLISHING_RUNBOOK.md` and the release manifest for deployment, production verification, and rollback.
