@@ -97,7 +97,7 @@ const allowedCampaigns = new Set<DistributionCampaign>([
   "it_insights",
 ]);
 const safeVariantPattern = /^[a-z0-9][a-z0-9_-]{0,63}$/;
-const privateValuePattern = /(?:@|\+?\d[\d\s().-]{7,}|\b(?:mc|dot|usdot)\s*#?\s*\d+\b)/i;
+const privateValuePattern = /(?:@|\+?\d[\d\s().-]{7,}|\b(?:mc|dot|usdot)[\s#:_-]*\d+\b)/i;
 
 const hashString = (value: string): string => {
   let hash = 2166136261;
