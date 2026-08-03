@@ -1,0 +1,61 @@
+.route-estimate-panel {
+  display: grid;
+  gap: .85rem;
+  margin: 1.25rem 0;
+  padding: 1.2rem;
+  border: 1px solid #d7deeb;
+  border-radius: 12px;
+  background: #f7f9fd;
+}
+
+.route-estimate-panel h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.route-estimate-panel p {
+  margin: .35rem 0 0;
+}
+
+.route-estimate-panel .button {
+  justify-self: start;
+}
+
+.route-estimate-status {
+  min-height: 1.4em;
+  color: #27365e;
+  font-weight: 650;
+}
+
+.route-estimate-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: baseline;
+  padding: .9rem 1rem;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.route-estimate-result strong {
+  color: #101b42;
+  font-size: 1.35rem;
+}
+
+.route-estimate-disclaimer,
+.route-estimate-fallback {
+  color: #5c6578;
+  font-size: .82rem;
+}
+
+.route-estimate-fallback a {
+  color: #3f2ca7;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .route-estimate-panel .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
