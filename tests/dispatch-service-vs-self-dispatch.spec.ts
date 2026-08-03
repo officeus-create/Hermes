@@ -16,9 +16,9 @@ test("dispatch comparison explains both operating models and routes carriers to 
   await expect(page.getByRole("heading", { name: "A hybrid workflow can preserve control while delegating repeatable work." })).toBeVisible();
   await expect(page.getByText(/does not automatically assign a dispatcher/i)).toBeVisible();
 
-  await expect(page.locator(`a[href="${intakeHref}"]`)).toHaveCount(2);
-  await expect(page.locator('a[href="/logistics/car-hauling-dispatch/"]')).toHaveCount(2);
-  await expect(page.locator('a[href="/paths/academy/"]')).toHaveCount(1);
+  await expect(page.locator(`main a[href="${intakeHref}"]`)).toHaveCount(2);
+  await expect(page.locator('main a[href="/logistics/car-hauling-dispatch/"]')).toHaveCount(2);
+  await expect(page.locator('main a[href="/paths/academy/"]')).toHaveCount(1);
 });
 
 test("dispatch comparison exposes canonical structured data and sitemap ownership", async ({ page }) => {
@@ -46,7 +46,7 @@ test("dispatch comparison exposes canonical structured data and sitemap ownershi
 test("commercial dispatch owner links back to the comparison guide", async ({ page }) => {
   await page.goto("/logistics/car-hauling-dispatch/");
   await expect(
-    page.locator('a[href="/logistics/resources/dispatch-service-vs-self-dispatch/"]'),
+    page.locator('main a[href="/logistics/resources/dispatch-service-vs-self-dispatch/"]'),
   ).toHaveCount(1);
   await expect(page.getByText("Dispatch Service vs Self-Dispatch", { exact: true })).toBeVisible();
 });
