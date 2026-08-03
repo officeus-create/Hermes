@@ -3,21 +3,15 @@ type KvNamespace = {
   put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
 };
 
-type EmailSender = {
-  send(message: {
-    to: string;
-    from: string;
-    subject: string;
-    text: string;
-    replyTo?: string;
-  }): Promise<{ messageId: string }>;
+type ServiceFetcher = {
+  fetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response>;
 };
 
 type Env = {
-  LEAD_EMAIL?: EmailSender;
+  LEAD_EMAIL_SERVICE?: ServiceFetcher;
   LEAD_LIMITS?: KvNamespace;
-  SALES_DESTINATION?: string;
-  SALES_SENDER?: string;
+  LEAD_SERVICE_TOKEN?: string;
+  LEAD_DELIVERY_MODE?: string;
   ALLOWED_ORIGIN?: string;
 };
 
@@ -36,12 +30,12 @@ type LeadInput = {
 };
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
-const DEFAULT_DESTINATION = "officeus@hermeslogisticsus.com";
-const DEFAULT_SENDER = "website@hermeslogisticsus.com";
+const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
 const MAX_BODY_BYTES = 16_000;
 const MAX_EMAIL_BODY = 8_000;
 const RATE_LIMIT = 5;
 const RATE_WINDOW_SECONDS = 60 * 60;
+const DELIVERY_TIMEOUT_MS = 8_000;
 
 const responseHeaders = (origin: string) => ({
   "Access-Control-Allow-Origin": origin,
@@ -91,6 +85,9 @@ const extractReplyTo = (body: string) => {
   return match && isEmail(match[1]) ? match[1].toLowerCase() : "";
 };
 
+const deliveryUnavailable = (origin: string) =>
+  json(origin, 503, { success: false, error: "delivery_temporarily_unavailable" });
+
 export async function onRequestOptions({ request, env }: Context) {
   const allowedOrigin = env.ALLOWED_ORIGIN || DEFAULT_ORIGIN;
   const origin = request.headers.get("Origin") || "";
@@ -102,7 +99,12 @@ export async function onRequestPost({ request, env }: Context) {
   const allowedOrigin = env.ALLOWED_ORIGIN || DEFAULT_ORIGIN;
   const origin = request.headers.get("Origin") || "";
   if (origin !== allowedOrigin) return json(allowedOrigin, 403, { success: false, error: "origin_not_allowed" });
-  if (!env.LEAD_EMAIL || !env.LEAD_LIMITS) {
+  if (
+    env.LEAD_DELIVERY_MODE !== "live" ||
+    !env.LEAD_EMAIL_SERVICE ||
+    !env.LEAD_LIMITS ||
+    !env.LEAD_SERVICE_TOKEN
+  ) {
     return json(allowedOrigin, 503, { success: false, error: "delivery_not_configured" });
   }
   if (!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) {
@@ -165,21 +167,45 @@ export async function onRequestPost({ request, env }: Context) {
     `Page: ${pagePath || "/load-board/"}`,
   ].join("\n");
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), DELIVERY_TIMEOUT_MS);
+
   try {
-    const delivery = await env.LEAD_EMAIL.send({
-      to: env.SALES_DESTINATION || DEFAULT_DESTINATION,
-      from: env.SALES_SENDER || DEFAULT_SENDER,
-      subject,
-      text: messageText,
-      ...(replyTo ? { replyTo } : {}),
+    const serviceResponse = await env.LEAD_EMAIL_SERVICE.fetch(EMAIL_SERVICE_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.LEAD_SERVICE_TOKEN}`,
+        "Content-Type": "application/json",
+        "Cache-Control": "no-store",
+      },
+      body: JSON.stringify({
+        request_id: requestId,
+        subject,
+        text: messageText,
+        ...(replyTo ? { reply_to: replyTo } : {}),
+      }),
+      signal: controller.signal,
     });
+
+    if (!serviceResponse.ok) {
+      if (serviceResponse.status === 429 || serviceResponse.status === 503 || serviceResponse.status === 504) {
+        return deliveryUnavailable(allowedOrigin);
+      }
+      return json(allowedOrigin, 502, { success: false, error: "delivery_failed" });
+    }
+
     await Promise.all([
-      env.LEAD_LIMITS.put(requestKey, delivery.messageId, { expirationTtl: 24 * 60 * 60 }),
+      env.LEAD_LIMITS.put(requestKey, "delivered", { expirationTtl: 24 * 60 * 60 }),
       env.LEAD_LIMITS.put(rateKey, String(currentRate + 1), { expirationTtl: RATE_WINDOW_SECONDS }),
     ]);
     return json(allowedOrigin, 200, { success: true, request_id: requestId });
-  } catch {
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      return deliveryUnavailable(allowedOrigin);
+    }
     return json(allowedOrigin, 502, { success: false, error: "delivery_failed" });
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
