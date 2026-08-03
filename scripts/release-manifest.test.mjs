@@ -79,7 +79,8 @@ for (const [index, record] of records.entries()) {
 }
 
 const robots = await readFile(join(publicDir, "robots.txt"), "utf8");
-const declaredSitemaps = [...robots.matchAll(/^Sitemap:\s+https:\/\/hermeslogisticsus\.com\/(sitemap[^\s]+\.xml)$/gim)].map((match) => match[1]);
+const sitemapDeclarationPattern = /^Sitemap:\s+https:\/\/hermeslogisticsus\.com\/(sitemap(?:-[^\s]+)?\.xml)$/gim;
+const declaredSitemaps = [...robots.matchAll(sitemapDeclarationPattern)].map((match) => match[1]);
 if (JSON.stringify(declaredSitemaps) !== JSON.stringify(expectedSitemaps)) fail(`robots.txt sitemap declarations changed: ${JSON.stringify(declaredSitemaps)}`);
 
 const ownerByRoute = new Map();
