@@ -5,9 +5,9 @@ import {
   createContentFingerprint,
   normalizeSourceUrl,
   pilotQuota,
-  reviewContentAsset,
   summarizePilotSlots,
 } from "../src/lib/content-pipeline.ts";
+import { reviewContentForPublication } from "../src/lib/content-publication-gate.ts";
 
 const slots = buildPilotAssetSlots();
 const summary = summarizePilotSlots(slots);
@@ -72,7 +72,7 @@ const makeAsset = (overrides = {}) => ({
 });
 
 const publishAsset = makeAsset();
-const publishReview = reviewContentAsset(publishAsset);
+const publishReview = reviewContentForPublication(publishAsset);
 assert.equal(publishReview.decision, "publish_candidate");
 assert.ok(publishReview.score.total >= 14);
 assert.equal(publishReview.blockers.length, 0);
@@ -99,7 +99,7 @@ const decisionFixtures = [
 ];
 
 for (const [asset, expectedDecision] of decisionFixtures) {
-  const review = reviewContentAsset(asset);
+  const review = reviewContentForPublication(asset);
   assert.equal(review.decision, expectedDecision, `Unexpected decision for ${asset.id}`);
   assert.match(review.fingerprint, new RegExp(`^${asset.direction}:${asset.platform}:`));
 }
@@ -110,7 +110,7 @@ const marketClaim = makeAsset({
   evidenceStatus: "owner_claim",
 });
 assert.ok(
-  reviewContentAsset(marketClaim).blockers.some((blocker) => blocker.includes("Current market")),
+  reviewContentForPublication(marketClaim).blockers.some((blocker) => blocker.includes("Current market")),
   "Current route/rate claims require approved current evidence.",
 );
 
@@ -119,7 +119,26 @@ const privateAsset = makeAsset({
   privacyClass: "restricted",
   containsPrivateOperationalData: true,
 });
-assert.equal(reviewContentAsset(privateAsset).decision, "reject");
+assert.equal(reviewContentForPublication(privateAsset).decision, "reject");
+
+const thinAsset = makeAsset({
+  id: "unit-thin",
+  mediaType: "text",
+  sourceText: "Keep posting and believe in your business.",
+  transcript: null,
+});
+const thinReview = reviewContentForPublication(thinAsset);
+assert.equal(thinReview.decision, "reject");
+assert.ok(thinReview.blockers.some((blocker) => blocker.includes("too thin")));
+
+const thinClusterNote = makeAsset({
+  id: "unit-thin-cluster",
+  mediaType: "text",
+  sourceText: "Keep carrier approval explicit.",
+  transcript: null,
+  materiallySimilarTo: "/logistics/resources/dispatch-service-vs-self-dispatch/",
+});
+assert.equal(reviewContentForPublication(thinClusterNote).decision, "merge_or_expand");
 
 const progressoproEntity = contentEntityRegistry.find((entity) => entity.id === "progressopro_marketing");
 assert.ok(progressoproEntity);
@@ -128,5 +147,5 @@ assert.equal(progressoproEntity.publishingStatus, "blocked");
 assert.ok(contentEntityRegistry.every((entity) => entity.publishingStatus !== "approved"));
 
 console.log(
-  `Content pipeline checks passed: ${slots.length} quota slots, ${decisionFixtures.length} decision paths, entity and privacy gates active.`,
+  `Content pipeline checks passed: ${slots.length} quota slots, ${decisionFixtures.length} decision paths, strict thin-content and entity/privacy gates active.`,
 );
