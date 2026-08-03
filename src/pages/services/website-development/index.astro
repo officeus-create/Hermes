@@ -1,6 +1,15 @@
 ---
 import DigitalServicePage from "../../../components/DigitalServicePage.astro";
 import { digitalServicePages } from "../../../data/digital-service-pages";
+
+const content = {
+  ...digitalServicePages.websiteDevelopment,
+  related: [
+    { label: "Website Project Brief Template", href: "/resources/website-project-brief-template/" },
+    { label: "Search-to-Inquiry Conversion Checklist", href: "/resources/search-to-inquiry-conversion-checklist/" },
+    ...digitalServicePages.websiteDevelopment.related,
+  ],
+};
 ---
 
-<DigitalServicePage content={digitalServicePages.websiteDevelopment} />
+<DigitalServicePage content={content} />
