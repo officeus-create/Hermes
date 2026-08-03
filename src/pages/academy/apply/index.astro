@@ -1,0 +1,124 @@
+---
+import { ArrowRight, ClipboardCheck, Languages, ShieldCheck, TimerReset } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import ContactCTA from "../../../components/ContactCTA.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Apply to Hermes Business Academy | Program Review";
+const description =
+  "Prepare your program choice, country and city, languages, English level, recent experience, objective, schedule, U.S. time-zone availability, and preferred contact route for human review.";
+const canonicalUrl = new URL("/academy/apply/", Astro.site).toString();
+const faq = [
+  {
+    question: "Does submitting the form enroll me in the Academy?",
+    answer: "No. The current workflow prepares a preview and explicit contact handoff for human review. It does not accept payment, reserve a seat, create an account, or confirm admission.",
+  },
+  {
+    question: "Which program can I choose?",
+    answer: "The current public programs are U.S. Logistics Operations and Marketing. Leadership, technology, and AI topics may support exercises but are not separate public programs in this release.",
+  },
+  {
+    question: "Why does the application ask about language and schedule?",
+    answer: "Program fit can depend on spoken English, other working languages, weekly availability, and the ability to participate during the applicable U.S.-market schedule.",
+  },
+  {
+    question: "Is employment or income guaranteed after admission?",
+    answer: "No. Admission, training, practice, feedback, and completion do not guarantee employment, income, clients, certification, promotion, operational access, or future paid work.",
+  },
+];
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Hermes Business Academy Application",
+    description,
+    url: canonicalUrl,
+    about: {
+      "@type": "Organization",
+      "@id": "https://hermeslogisticsus.com/#academy",
+      name: "Hermes Business Academy",
+      url: "https://hermeslogisticsus.com/paths/academy/",
+      parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: "https://hermeslogisticsus.com/paths/academy/" },
+      { "@type": "ListItem", position: 3, name: "Apply", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page academy-apply-page">
+    <SiteHeader theme="dark" activePath="/paths/academy/" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier" id="top">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <a href="/paths/academy/">Academy</a><span aria-hidden="true">/</span>
+            <span aria-current="page">Apply</span>
+          </nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Business Academy · Application</p>
+              <h1>Prepare a reviewable Academy application.</h1>
+              <p>Choose one public program and provide the minimum information needed to review language, recent experience, objective, weekly availability, U.S. time-zone fit, and the preferred contact route.</p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href="#contact">Open application preview <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/academy/how-training-works/">How training works</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>Application is not enrollment.</h2>
+              <p>The preview does not send data automatically in preview mode, accept payment, reserve a seat, create an account, assign a mentor, or guarantee admission or response time.</p>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section capacity-pillars" aria-labelledby="application-prep-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Before you begin</p><h2 id="application-prep-title">Prepare four groups of information.</h2></div>
+            <p>Do not include passwords, verification codes, identity documents, private customer records, payment information, or unrelated sensitive data.</p>
+          </div>
+          <div class="capacity-pillar-grid">
+            <article><span>01</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Program and objective</h3><p>Choose U.S. Logistics Operations or Marketing and explain whether your current objective is career development, business capability, or both.</p></article>
+            <article><span>02</span><Languages size={23} aria-hidden="true" /><h3>Location and languages</h3><p>Prepare your country, city, languages and levels, spoken English level, and preferred learning language.</p></article>
+            <article><span>03</span><TimerReset size={23} aria-hidden="true" /><h3>Experience and schedule</h3><p>Summarize recent relevant experience, weekly availability, desired start period, and U.S. time-zone availability where applicable.</p></article>
+            <article><span>04</span><ShieldCheck size={23} aria-hidden="true" /><h3>Consent and contact</h3><p>Choose the preferred contact route, review the privacy notice, and confirm that the information may be used to respond to the request.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <ContactCTA selectedPath="Hermes Business Academy" />
+
+      <section class="section" aria-labelledby="academy-application-faq-title">
+        <div class="shell digital-faq-layout">
+          <div><p class="eyebrow">Application questions</p><h2 id="academy-application-faq-title">Know what the preview does and does not do.</h2></div>
+          <div class="digital-faq-list">
+            {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
