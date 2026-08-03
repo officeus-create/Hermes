@@ -21,7 +21,7 @@ const endpoint = import.meta.env.PUBLIC_ROUTE_ESTIMATE_ENDPOINT ?? "/api/route-e
         <p>Use the pickup and delivery fields, then request an approximate road distance and duration.</p>
       </div>
       <button class="button" type="button" data-route-estimate-submit>Estimate route</button>
-      <p class="route-estimate-status" role="status" aria-live="polite" data-route-estimate-status>
+      <p class="route-estimate-status" aria-live="polite" aria-atomic="true" data-route-estimate-status>
         No route request is made until you press Estimate route.
       </p>
       <div class="route-estimate-result" data-route-estimate-result hidden>
