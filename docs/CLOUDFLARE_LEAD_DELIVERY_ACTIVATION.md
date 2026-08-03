@@ -1,6 +1,6 @@
 # Cloudflare production lead delivery
 
-Status: repository implementation complete; external Cloudflare activation not yet approved or verified.
+Status: repository implementation complete; external Cloudflare activation is blocked until authenticated account access is available.
 
 ## Selected architecture
 
@@ -30,6 +30,15 @@ The public receiver sends only when all of these bindings exist:
 - encrypted `LEAD_SERVICE_TOKEN` secret.
 
 Missing or non-live configuration returns the generic `delivery_not_configured` response. The repository does not contain the token, Cloudflare account ID, KV IDs or any real lead.
+
+## Authentication gate
+
+The remaining work cannot be completed from repository code alone. It requires either:
+
+1. a connected authenticated Cloudflare MCP/plugin session with permission to manage Workers, Pages bindings, KV, DNS, Email Service and encrypted secrets; or
+2. an approved Cloudflare API token stored in an external secret store, never pasted into chat or committed to GitHub.
+
+The repository and current execution environment contain no usable Cloudflare API token, Wrangler login state or callable authenticated Cloudflare connector.
 
 ## Required authenticated Cloudflare work
 
