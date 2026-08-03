@@ -8,10 +8,11 @@ This file is read by Codex, Cursor, Claude, ChatGPT, and other coding agents wor
 2. `docs/ai-project-state.json`
 3. `docs/ERROR_REGISTER.md`
 4. The current issue or bounded mission assigned in the prompt
-5. `docs/DESIGN_INTEGRATION_CONTRACT.md`
-6. `docs/PUBLIC_INFORMATION_POLICY.md`
-7. Only the domain runbooks needed for the assigned task
-8. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
+5. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`
+6. `docs/DESIGN_INTEGRATION_CONTRACT.md`
+7. `docs/PUBLIC_INFORMATION_POLICY.md`
+8. Only the domain runbooks needed for the assigned task
+9. The newest relevant entries in `docs/AI_HANDOFF.md` when historical continuity is needed
 
 `README.md`, `CLAUDE.md`, `docs/AI_ROLES.md`, `docs/CODEX_WEBSITE_HANDOFF.md`, and numbered `docs/CURSOR_*_MISSION_*.md` are supporting or agent-specific documents. They do not override the current owner instruction, code/tests on `main`, the current project state, or an accepted bounded issue.
 
@@ -38,6 +39,12 @@ Before asking the owner for history, inspect the current branch, recent commits,
 - Use one active agent owner per task/branch; do not edit the same files in parallel without a written handoff.
 - When a large or obsolete branch has diverged, prefer rebuilding the bounded change from current `main` over carrying unrelated history forward.
 - Record discovered, resolved, superseded, and owner-required failures in `docs/ERROR_REGISTER.md`.
+
+## Ecosystem compounding rule
+
+Every bounded change must be evaluated under `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md` for low-cost opportunities to improve search visibility, conversion, expertise, internal linking, durable knowledge, reusable architecture, privacy-safe measurement, future automation, and cross-business product value.
+
+This rule does not authorize uncontrolled scope growth. Implement adjacent value in the same PR only when it remains coherent, low-risk, independently testable, compatible with active branch ownership, and free of unverified claims, privacy exposure, canonical conflict, or live-integration requirements. Record valuable but non-bounded opportunities as follow-up work.
 
 ## Agent collaboration and delegation
 
@@ -77,6 +84,7 @@ Append a concise entry to `docs/AI_HANDOFF.md` and report:
 - branch, commits, and PR;
 - files changed;
 - behavior delivered;
+- ecosystem compounding scorecard from `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`;
 - tests passed on the current head;
 - screenshots when UI changed;
 - risks and assumptions;
