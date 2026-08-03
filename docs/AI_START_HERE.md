@@ -1,6 +1,6 @@
 # Hermes AI Start Here
 
-Reviewed: 2026-08-02
+Reviewed: 2026-08-03
 
 This is the vendor-neutral entry point for every AI agent working on the Hermes repository: ChatGPT, Codex, Claude, Cursor, Gemini, Kimi, or another approved tool.
 
@@ -9,8 +9,9 @@ This is the vendor-neutral entry point for every AI agent working on the Hermes 
 1. `docs/ai-project-state.json` — compact current state, canonical revenue pages, completed capabilities, active blockers, and approval gates.
 2. `AGENTS.md` — engineering boundaries, branch rules, tests, and handoff requirements.
 3. The current issue or mission assigned to the branch.
-4. `docs/ERROR_REGISTER.md` — active, owner-required, resolved, and obsolete errors.
-5. Only the domain documents relevant to the task.
+4. `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md` — required scan for safe multi-direction value, reuse, and deferred opportunities.
+5. `docs/ERROR_REGISTER.md` — active, owner-required, resolved, and obsolete errors.
+6. Only the domain documents relevant to the task.
 
 Do **not** read the complete `docs/AI_HANDOFF.md` from the beginning unless a historical decision is disputed. It is an append-only audit journal, not the current project dashboard.
 
@@ -35,6 +36,7 @@ Agent-specific files may add tool advice, but they must not redefine business pr
 - Search for an existing implementation, issue, PR, or superseding current-main branch.
 - Record a baseline appropriate to the change: route ownership, metadata, generated page count, current CI, and available analytics/search evidence.
 - Check overlap with Appleton/Codex, Shipment History, Load Board, trust pages, and commercial funnel work.
+- Run the opportunity scan in `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md` and distinguish immediate low-cost improvements from deferred follow-up work.
 - Stop the specific package when there is a credible risk of index loss, canonical conflict, doorway duplication, privacy exposure, or untested production behavior. Continue only independent safe work.
 
 ## 4. Revenue priority
@@ -63,6 +65,8 @@ Supporting pages must strengthen one of these owners through a distinct search i
 
 Use a feature branch and a small PR. Keep unrelated generated files out of the diff.
 
+Implement adjacent ecosystem value in the same PR only when it passes the gate in `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`: coherent objective, low risk, current-task relevance, no active-file collision, no unverified claims, no privacy exposure, and coverage by the current verification plan. Otherwise record a bounded follow-up.
+
 Run in this order:
 
 ```bash
@@ -81,7 +85,7 @@ At completion:
 
 1. Update `docs/ai-project-state.json` only when canonical state materially changed.
 2. Update the applicable issue checklist.
-3. Append one concise entry to `docs/AI_HANDOFF.md` with branch, commits, PR, tests, remaining risks, and next owner.
+3. Append one concise entry to `docs/AI_HANDOFF.md` with branch, commits, PR, tests, remaining risks, next owner, and the ecosystem compounding scorecard.
 4. Update `docs/ERROR_REGISTER.md` when an error is discovered, resolved, superseded, or requires owner action.
 
 Do not paste entire conversations into the repository. Store decisions, evidence, boundaries, and reproducible next steps.
