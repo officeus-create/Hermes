@@ -16,7 +16,7 @@ The Grok report is useful as a directional external review. It is not accepted a
 - Local sitemap inventory: **16 local-cluster URLs** at the Phase 1 snapshot.
 - Public case routes currently include the case hub, the IT-development website case, and the Appleton vehicle-transport SEO case.
 - The general contact workflow remains preview-first in production.
-- A protected same-origin Logistics lead receiver already exists in the repository; production activation still requires approved Cloudflare Email Sending, sender verification, KV, bindings, environment configuration, and a real delivery test.
+- A protected same-origin Logistics lead receiver exists in the repository, but its production delivery architecture still requires current-platform reconciliation before activation.
 - Hermes Connect is a product-discovery/prototype direction. No account, booking, calendar, payment, or AI action is represented as live.
 
 ## Findings accepted
@@ -27,7 +27,7 @@ Accepted. The site is no longer only a small brochure. It now contains role-base
 
 ### 2. Conversion is now constrained more by live delivery than by missing page volume
 
-Accepted with correction. The key gap is not “forms do not exist.” The forms, qualification logic, preview states, safe payloads, and one Logistics receiver already exist. The next conversion step is controlled production activation and measurement of the approved contact routes.
+Accepted with correction. The key gap is not “forms do not exist.” The forms, qualification logic, preview states, safe payloads, and one Logistics receiver already exist. The next conversion step is to choose and verify the correct production delivery architecture, activate it under controlled conditions, and measure qualified handoffs.
 
 ### 3. More evidence-backed case studies would improve trust
 
@@ -45,7 +45,15 @@ The report says EN + UA + RU + IT. The current public language set also includes
 
 ### Real forms
 
-The statement “everything is still mailto / preview” is incomplete. Production remains preview-first, but the repository already includes a protected Logistics lead receiver with same-origin checks, request-size limits, idempotency, KV-backed rate limits, server-controlled sales tags, and email delivery bindings. The missing work is external activation and a verified production delivery test.
+The statement “everything is still mailto / preview” is incomplete. Production remains preview-first, but the repository already includes a protected Logistics lead receiver with same-origin checks, request-size limits, idempotency, KV-backed rate limits, server-controlled sales tags, and a structured email payload.
+
+A second correction is required: current Cloudflare documentation lists only a subset of bindings for Pages Functions, and `send_email` is not listed among the documented Pages bindings. Cloudflare Email Service documents the `send_email` binding for Workers, while Pages Functions document Service Bindings to call a Worker. Therefore production activation must first choose and prove one of these architectures:
+
+1. Pages Function → Service Binding → dedicated Email Worker with `send_email` binding;
+2. Pages Function → Cloudflare Email Service REST API using an encrypted API token and account ID;
+3. another separately approved transactional-email provider.
+
+The existing `wrangler.toml.example` must not be treated as deploy-ready until this compatibility is verified.
 
 ### Local SEO expansion
 
@@ -92,18 +100,21 @@ The mismatch came from two sources:
 - added regression coverage against crawler-extractable retired wording;
 - preserved the current static validator contract without restoring a third public program.
 
-### P0 — create controlled production lead-delivery activation task
+### P0 — create controlled production lead-delivery architecture task
 
-A dedicated owner/external-operations issue should cover:
+A dedicated issue should cover:
 
-- verified sender and destination;
-- Cloudflare Email Sending onboarding;
-- KV binding;
-- exact environment variables;
+- select Worker Service Binding versus Email Service REST API;
+- verify current Cloudflare plan and Email Service availability;
+- onboard and authenticate the sending domain;
+- verify sender and fixed destination;
+- create preview and production KV bindings;
+- store all secrets outside GitHub;
+- update the endpoint to the selected provider contract;
 - preview deployment;
 - real test delivery;
 - duplicate/rate-limit checks;
-- privacy-safe logging;
+- privacy-safe logging and delivery reconciliation;
 - rollback;
 - production activation and conversion baseline.
 
@@ -129,4 +140,4 @@ The Grok report is **partially accepted**.
 
 Its strongest strategic conclusion is correct: the next meaningful website value comes from controlled live conversion, stronger evidence, and selectively moving one product from prototype to a real pilot—not from indiscriminate page growth.
 
-Its recommendations were not copied into the backlog wholesale. Existing work was reconciled first, one real P0 public-contract defect was found and fixed, and the remaining actions were routed to the correct evidence and activation gates.
+Its recommendations were not copied into the backlog wholesale. Existing work was reconciled first, one real P0 public-contract defect was found and fixed, one hidden lead-delivery architecture risk was identified, and the remaining actions were routed to the correct evidence and activation gates.
