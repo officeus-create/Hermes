@@ -21,7 +21,7 @@ test("new authority readiness checklist is useful, indexable, and connected to c
   await expect(decisionTree.locator('[data-readiness-state="clarify"]')).toContainText("Needs clarification");
   await expect(decisionTree.locator('[data-readiness-state="not-ready"]')).toContainText("Not ready for active load review");
   await expect(decisionTree).toContainText("None of the three states guarantees broker acceptance, a load, a rate, payment, revenue, or a booking.");
-  await expect(page.getByRole("button", { name: "How do I know which readiness state applies?" })).toBeVisible();
+  await expect(page.locator("summary", { hasText: "How do I know which readiness state applies?" })).toBeVisible();
 
   const primaryCtas = page.getByRole("link", { name: /carrier readiness review|open carrier intake/i });
   await expect(primaryCtas).toHaveCount(2);
