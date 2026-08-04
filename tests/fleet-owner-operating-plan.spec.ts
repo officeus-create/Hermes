@@ -15,14 +15,21 @@ test("fleet-owner page explains the written operating plan and continuity bounda
     "primary fleet contact",
     "backup contact or escalation route",
     "reporting cadence actually included in the agreement",
-    "What is included in a Fleet Operating Plan?",
-    "What happens if the normal fleet contact is unavailable?",
-    "Does every fleet receive daily or weekly reports?",
-    "does not automatically create 24/7 staffing or uninterrupted coverage",
-    "does not assume permission to commit a truck, change a rate, or accept a load",
   ]) {
     await expect(page.getByText(text, { exact: false }).first()).toBeVisible();
   }
+
+  const planFaq = page.locator("details", { hasText: "What is included in a Fleet Operating Plan?" });
+  await expect(planFaq.locator("summary")).toBeVisible();
+  await expect(planFaq).toContainText("does not automatically create 24/7 staffing or uninterrupted coverage");
+
+  const unavailableFaq = page.locator("details", { hasText: "What happens if the normal fleet contact is unavailable?" });
+  await expect(unavailableFaq.locator("summary")).toBeVisible();
+  await expect(unavailableFaq).toContainText("does not assume permission to commit a truck, change a rate, or accept a load");
+
+  const reportingFaq = page.locator("details", { hasText: "Does every fleet receive daily or weekly reports?" });
+  await expect(reportingFaq.locator("summary")).toBeVisible();
+  await expect(reportingFaq).toContainText("Not automatically");
 
   await expect(page.getByText(/Loads, revenue, utilization, rates, mileage, return loads, lane consistency, response time, and uninterrupted coverage are not guaranteed/i)).toBeVisible();
   await expect(page.locator('script[type="application/ld+json"]')).toContainText('"FAQPage"');
