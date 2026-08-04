@@ -1,0 +1,254 @@
+<script>
+  import {
+    buildLoadBoardPayload,
+    buildLoadBoardPreview,
+    buildLogisticsSalesMailto,
+    buildPostedLoadSalesLead,
+    reviewLoadBoardPayload,
+    type LogisticsSalesLead,
+  } from "../lib/load-board";
+
+  const setupVehicleTransportRequest = () => {
+    if (window.location.pathname !== "/logistics/request-vehicle-transport/") return;
+
+    const root = document.querySelector<HTMLElement>("[data-transport-intake]");
+    const form = root?.querySelector<HTMLFormElement>("[data-transport-form]");
+    const alert = root?.querySelector<HTMLElement>("[data-transport-alert]");
+    const result = root?.querySelector<HTMLElement>("[data-transport-result]");
+    const decision = root?.querySelector<HTMLElement>("[data-transport-decision]");
+    const preview = root?.querySelector<HTMLElement>("[data-transport-preview]");
+    const email = root?.querySelector<HTMLAnchorElement>("[data-transport-email]");
+    const sendButton = root?.querySelector<HTMLButtonElement>("[data-send-transport-lead]");
+    const deliveryStatus = root?.querySelector<HTMLElement>("[data-transport-delivery-status]");
+    const boundary = root?.querySelector<HTMLElement>("[data-transport-boundary]");
+    const readyDate = root?.querySelector<HTMLInputElement>('input[name="ready_date"]');
+    const storageDeadline = root?.querySelector<HTMLInputElement>('input[name="storage_deadline"]');
+    if (!root || !form || !alert || !result || !decision || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
+
+    const today = new Date();
+    today.setUTCHours(12, 0, 0, 0);
+    const todayValue = today.toISOString().slice(0, 10);
+    if (readyDate) readyDate.min = todayValue;
+    if (storageDeadline) storageDeadline.min = todayValue;
+
+    const params = new URLSearchParams(window.location.search);
+    const roleMap: Record<string, string> = {
+      dealer: "dealer",
+      shipper: "shipper",
+      broker: "broker",
+      customer: "private_party",
+      business: "other_business",
+    };
+    const requestMap = new Set(["dealer_inventory", "auction_pickup", "dealer_transfer", "customer_delivery", "recurring_program", "other"]);
+    const requestedRole = roleMap[params.get("role") || ""];
+    const requestedType = params.get("request") || "";
+    const roleSelect = form.elements.namedItem("submitter_type");
+    const requestSelect = form.elements.namedItem("request_type");
+    if (requestedRole && roleSelect instanceof HTMLSelectElement) roleSelect.value = requestedRole;
+    if (requestMap.has(requestedType) && requestSelect instanceof HTMLSelectElement) requestSelect.value = requestedType;
+
+    let activeLead: LogisticsSalesLead | null = null;
+    let intakeStarted = false;
+    let previewRecorded = false;
+    let handoffRecorded = false;
+
+    const pushEvent = (payload: Record<string, string>) => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(payload);
+    };
+
+    const baseEvent = {
+      audience_type: "customer_transport",
+      page_group: "commercial_transport_intake",
+      service_group: "vehicle_transportation",
+      page_path: window.location.pathname,
+    };
+
+    const recordStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushEvent({ event: "vehicle_transport_intake_start", ...baseEvent });
+    };
+
+    const resetPreparedState = (event: Event) => {
+      if (!event.isTrusted) return;
+      activeLead = null;
+      previewRecorded = false;
+      handoffRecorded = false;
+      recordStart(event);
+    };
+
+    const fillList = (selector: string, values: string[]) => {
+      const list = root.querySelector<HTMLElement>(selector);
+      if (!list) return;
+      list.replaceChildren(...values.map((value) => {
+        const item = document.createElement("li");
+        item.textContent = value;
+        return item;
+      }));
+    };
+
+    const value = (name: string) => {
+      const field = form.elements.namedItem(name);
+      return field instanceof HTMLInputElement || field instanceof HTMLSelectElement || field instanceof HTMLTextAreaElement
+        ? field.value.trim()
+        : "";
+    };
+
+    form.addEventListener("focusin", recordStart);
+    form.addEventListener("input", resetPreparedState);
+    form.addEventListener("change", resetPreparedState);
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      alert.hidden = true;
+      deliveryStatus.textContent = "";
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        alert.textContent = "Complete the contact, route, timing, vehicle, quantity, condition, and consent fields before review.";
+        alert.hidden = false;
+        return;
+      }
+
+      const formData = new FormData(form);
+      const requestContext = [
+        `Request type: ${value("request_type").replaceAll("_", " ") || "not specified"}`,
+        `Equipment preference: ${value("equipment_preference").replaceAll("_", " ") || "not sure"}`,
+        `Auction/facility context: ${value("auction_source").replaceAll("_", " ") || "none"}`,
+        `Release status: ${value("release_status").replaceAll("_", " ") || "not sure"}`,
+        value("storage_deadline") ? `Storage deadline: ${value("storage_deadline")}` : "",
+        `Request frequency: ${value("request_frequency").replaceAll("_", " ") || "one time"}`,
+        value("notes") ? `Additional notes: ${value("notes")}` : "",
+      ].filter(Boolean).join(" | ");
+      formData.set("notes", requestContext);
+
+      const payload = buildLoadBoardPayload(formData);
+      const review = reviewLoadBoardPayload(payload);
+      const deliverable = review.decision === "approved" || review.decision === "quarantine";
+      if (!deliverable) {
+        alert.textContent = review.reasons.join(" ");
+        alert.hidden = false;
+      }
+
+      const basePreview = buildLoadBoardPreview(payload, review)
+        .replaceAll("Hermes Load Board", "Hermes Vehicle Transportation")
+        .replaceAll("Posted Load Sales Lead Preview", "Customer Transport Review")
+        .replaceAll("Dry-run routing:", "Internal review routing:")
+        .replaceAll("load publication", "transport booking");
+      const transportPreview = `${basePreview}\nRequest context: ${requestContext}`;
+      const baseLead = buildPostedLoadSalesLead(payload, review);
+      activeLead = deliverable
+        ? {
+            ...baseLead,
+            email_subject: `Vehicle transport review — ${payload.pickup_location} → ${payload.delivery_location}`,
+            email_body: transportPreview,
+          }
+        : null;
+
+      decision.textContent = review.decision.replaceAll("_", " ");
+      fillList("[data-transport-reasons]", review.reasons);
+      fillList("[data-transport-actions]", review.required_actions);
+      fillList("[data-transport-routing]", review.routing.length ? review.routing : ["No routing — correct the request first."]);
+      preview.textContent = transportPreview;
+      email.hidden = !deliverable;
+      if (activeLead) email.href = buildLogisticsSalesMailto(activeLead, "freight_301@hermeslogisticsus.com");
+
+      const live = form.dataset.leadMode === "live";
+      sendButton.hidden = !live || !deliverable;
+      deliveryStatus.textContent = deliverable
+        ? live
+          ? "Review the request, then send it securely to Logistics Sales. Email and phone remain available as fallbacks."
+          : "The request is prepared for review. Open the prepared email or call Logistics Sales; preview mode does not send or store it automatically."
+        : "Correct the missing or invalid transport information before choosing a handoff.";
+      boundary.textContent = live
+        ? "A success state appears only after the approved receiver confirms delivery. Capacity, price, pickup timing, equipment, and carrier assignment remain unconfirmed until separately accepted."
+        : "Preview mode creates no booking, carrier assignment, CRM record, load publication, payment, or automatic message.";
+
+      result.dataset.decision = review.decision;
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (!previewRecorded) {
+        previewRecorded = true;
+        pushEvent({
+          event: "vehicle_transport_preview_ready",
+          ...baseEvent,
+          preview_status: review.decision,
+          submitter_group: payload.submitter_type || "unknown",
+        });
+      }
+    });
+
+    email.addEventListener("click", (event) => {
+      if (!event.isTrusted || !activeLead || handoffRecorded || email.hidden) return;
+      handoffRecorded = true;
+      pushEvent({
+        event: "vehicle_transport_handoff_ready",
+        ...baseEvent,
+        handoff_method: "email",
+        preview_status: result.dataset.decision || "unknown",
+      });
+    });
+
+    sendButton.addEventListener("click", async (event) => {
+      if (!event.isTrusted || !activeLead) return;
+
+      if (!handoffRecorded) {
+        handoffRecorded = true;
+        pushEvent({
+          event: "vehicle_transport_handoff_ready",
+          ...baseEvent,
+          handoff_method: "secure_delivery",
+          preview_status: result.dataset.decision || "unknown",
+        });
+      }
+
+      const endpointValue = form.dataset.leadEndpoint || "";
+      let endpoint: URL;
+      try {
+        endpoint = new URL(endpointValue, window.location.origin);
+        if (endpoint.protocol !== "https:" || endpoint.origin !== window.location.origin) throw new Error("invalid_endpoint");
+      } catch {
+        deliveryStatus.textContent = "Secure delivery is not connected. Use the prepared email or call Logistics Sales at +1 (262) 302-3626.";
+        return;
+      }
+
+      sendButton.disabled = true;
+      deliveryStatus.textContent = "Sending the request securely…";
+      const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+          body: JSON.stringify({
+            request_id: requestId,
+            submitted_at: new Date().toISOString(),
+            page_path: window.location.pathname,
+            ...activeLead,
+          }),
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("delivery_failed");
+
+        deliveryStatus.textContent = "Request received by Logistics Sales for transport review.";
+        sendButton.hidden = true;
+        pushEvent({
+          event: "vehicle_transport_delivery_confirmed",
+          ...baseEvent,
+          preview_status: result.dataset.decision || "unknown",
+        });
+      } catch {
+        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email or call Logistics Sales.";
+      } finally {
+        window.clearTimeout(timeout);
+        sendButton.disabled = false;
+      }
+    });
+  };
+
+  setupVehicleTransportRequest();
+</script>
