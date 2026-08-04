@@ -14,6 +14,15 @@ test("new authority readiness checklist is useful, indexable, and connected to c
   await expect(page.getByText("Carrier control", { exact: true })).toBeVisible();
   await expect(page.getByText(/completed checklist is not a promise of loads or income/i)).toBeVisible();
 
+  const decisionTree = page.locator("[data-readiness-decision-tree]");
+  await expect(decisionTree).toBeVisible();
+  await expect(decisionTree.getByRole("heading", { name: "Choose the next review state from the facts available now." })).toBeVisible();
+  await expect(decisionTree.locator('[data-readiness-state="ready"]')).toContainText("Ready for dispatch review");
+  await expect(decisionTree.locator('[data-readiness-state="clarify"]')).toContainText("Needs clarification");
+  await expect(decisionTree.locator('[data-readiness-state="not-ready"]')).toContainText("Not ready for active load review");
+  await expect(decisionTree).toContainText("None of the three states guarantees broker acceptance, a load, a rate, payment, revenue, or a booking.");
+  await expect(page.getByRole("button", { name: "How do I know which readiness state applies?" })).toBeVisible();
+
   const primaryCtas = page.getByRole("link", { name: /carrier readiness review|open carrier intake/i });
   await expect(primaryCtas).toHaveCount(2);
   for (let index = 0; index < 2; index += 1) {
@@ -31,6 +40,7 @@ test("new authority readiness checklist is useful, indexable, and connected to c
   expect(schemaText).toContain("New Authority Car Hauler Readiness Checklist");
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).toContain('"Service"');
+  expect(schemaText).toContain("How do I know which readiness state applies?");
 });
 
 test("new authority commercial owner links to the readiness checklist", async ({ page }) => {
