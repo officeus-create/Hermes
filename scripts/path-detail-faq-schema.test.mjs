@@ -41,6 +41,24 @@ for (const slug of slugs) {
     assert.ok(visibleText.includes(item.name), `/paths/${slug}/ FAQ question is not visible: ${item.name}`);
     assert.ok(visibleText.includes(item.acceptedAnswer.text), `/paths/${slug}/ FAQ answer is not visible: ${item.name}`);
   }
+
+  if (slug === "marketing") {
+    for (const text of [
+      "How an engagement can begin",
+      "Start with the level of commitment the problem actually requires.",
+      "01 · Diagnostic",
+      "02 · Focused cycle",
+      "03 · Ongoing system",
+      "No automatic package or outcome promise.",
+      "A diagnostic does not obligate the client to continue.",
+      "Rankings, reach, inquiries, sales, revenue, ROI, and a fixed completion time are not guaranteed.",
+      "Discuss the right starting scope",
+    ]) {
+      assert.ok(visibleText.includes(text), `/paths/marketing/ is missing engagement-model clarity: ${text}`);
+    }
+  } else {
+    assert.ok(!visibleText.includes("How an engagement can begin"), `/paths/${slug}/ must not render the Marketing engagement model`);
+  }
 }
 
-console.log("Path detail FAQ schema checks passed: four routes with visible questions and matching Service/BreadcrumbList/FAQPage JSON-LD.");
+console.log("Path detail FAQ schema checks passed: four routes with visible questions and matching Service/BreadcrumbList/FAQPage JSON-LD, plus Marketing engagement-model clarity.");
