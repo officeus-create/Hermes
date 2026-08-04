@@ -1,0 +1,56 @@
+name: Production custom-domain check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/check-production-custom-domain.mjs
+      - .github/workflows/production-custom-domain-check.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-custom-domain-check
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Read-only public custom-domain reconciliation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check production custom domain
+        run: node scripts/check-production-custom-domain.mjs
+
+      - name: Publish check summary
+        if: always()
+        run: |
+          if [ -f artifacts/production-custom-domain-check.md ]; then
+            cat artifacts/production-custom-domain-check.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Production custom-domain report was not generated." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: Upload sanitized report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-custom-domain-check
+          path: |
+            artifacts/production-custom-domain-check.json
+            artifacts/production-custom-domain-check.md
+          if-no-files-found: error
+          retention-days: 30
