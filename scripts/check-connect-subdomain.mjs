@@ -7,9 +7,10 @@ const attempts = 6;
 const delayMs = 10_000;
 
 const prHeadMarkers = [
-  "Hermes Connect · Apply for Early Access",
+  "Hermes Connect Web App · Request Access",
   "One clear client path for",
-  "category-led",
+  "Request Web App access",
+  "Hermes Connect · web-first product",
 ];
 
 const previousMarkers = [
@@ -130,7 +131,7 @@ const markdown = [
   "## Interpretation",
   "",
   classification === "LIVE_PR_HEAD_EXPOSED"
-    ? "- The custom subdomain exposed at least one unique marker from the current draft PR head during the observation window. Treat preview/production isolation as failed until Cloudflare configuration is corrected."
+    ? "- The custom subdomain exposed at least one unique Web App marker from the current draft PR head during the observation window. Treat preview/production isolation as failed until Cloudflare configuration is corrected."
     : classification === "LIVE_PREVIOUS_CONNECT"
       ? "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
       : classification === "UNRESOLVED_NETWORK_ACCESS"
@@ -139,11 +140,11 @@ const markdown = [
   "",
   "## Observations",
   "",
-  "| Attempt | Status | Title | PR marker visible | Previous marker visible |",
+  "| Attempt | Status | Title | Web App PR marker visible | Previous marker visible |",
   "| ---: | ---: | --- | --- | --- |",
   ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.prMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} |`),
   "",
-  "> Read-only public verification. No application, account, booking, payment, download, cookie, credential, or private infrastructure identifier was created or accessed.",
+  "> Read-only public verification. No application, account, booking, payment, subscription, cookie, credential, or private infrastructure identifier was created or accessed.",
   "",
 ].join("\n");
 
