@@ -8,6 +8,7 @@ interface Props {
 }
 
 const { locale = "en" } = Astro.props;
+const publicLocationBoundary = "U.S. logistics · International email coordination";
 const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
@@ -89,7 +90,7 @@ const localePath = localeConfig[locale].path;
     <div>
       <p class="footer-brand">{site.brand}</p>
       <p>{localized.statement}</p>
-      <p class="footer-location">{site.location}</p>
+      <p class="footer-location">{publicLocationBoundary}</p>
     </div>
     <nav aria-label="Footer navigation">
       {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
@@ -123,6 +124,6 @@ const localePath = localeConfig[locale].path;
     <span>
       {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `${localePath}#technology`}>Hermes IT Development</a> · {localized.method}
     </span>
-    <span>© 2026 Hermes · {site.location} · {localized.status}</span>
+    <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
 </footer>
