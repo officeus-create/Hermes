@@ -1,8 +1,11 @@
-# Reviewed merge trigger for the controlled Hermes Pages production release.
+# Controlled Hermes Pages production release from reviewed main.
 name: Deploy approved main to Cloudflare Pages
 
 on:
   workflow_dispatch:
+  issue_comment:
+    types:
+      - created
   push:
     branches:
       - main
@@ -20,6 +23,11 @@ concurrency:
 
 jobs:
   deploy:
+    if: >-
+      github.event_name != 'issue_comment' ||
+      (github.event.issue.number == 232 &&
+      github.event.comment.body == '/deploy-pages-production' &&
+      github.event.comment.author_association == 'OWNER')
     name: Build, deploy, and verify approved main
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -27,6 +35,8 @@ jobs:
     steps:
       - name: Check out approved main
         uses: actions/checkout@v6
+        with:
+          ref: main
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -66,7 +76,7 @@ jobs:
 
 The reviewed main commit \`$GITHUB_SHA\` could not start the official Wrangler Pages deployment because the required GitHub Actions deployment credentials are not available to this workflow: \`${MISSING:-Cloudflare credentials}\`.
 
-No token or account value was printed or accessed. Add the repository secrets \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`, then rerun **Deploy approved main to Cloudflare Pages**. The API token should have Account → Cloudflare Pages → Edit permission for the account that owns Pages project \`hermes\`.
+No token or account value was printed or accessed. Add the repository secrets \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`, then post \`/deploy-pages-production\` again in this issue. The API token should have Account → Cloudflare Pages → Edit permission for the account that owns Pages project \`hermes\`.
 
 Release classification remains: \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
 
