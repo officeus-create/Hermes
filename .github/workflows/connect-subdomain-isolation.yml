@@ -16,6 +16,7 @@ on:
       - public/demos/hermes-connect/**
       - functions/api/connect-lead.ts
       - scripts/connect-deployment-state.mjs
+      - scripts/connect-deployment-state.test.mjs
       - scripts/check-connect-subdomain.mjs
       - .github/workflows/connect-subdomain-isolation.yml
       - src/pages/services/hermes-connect/**
@@ -29,6 +30,7 @@ on:
       - public/demos/hermes-connect/**
       - functions/api/connect-lead.ts
       - scripts/connect-deployment-state.mjs
+      - scripts/connect-deployment-state.test.mjs
       - scripts/check-connect-subdomain.mjs
       - .github/workflows/connect-subdomain-isolation.yml
       - src/pages/services/hermes-connect/**
@@ -57,6 +59,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+
+      - name: Test deployment classifications
+        run: node scripts/connect-deployment-state.test.mjs
 
       - name: Select verification expectation
         shell: bash
