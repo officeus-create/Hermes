@@ -27,6 +27,20 @@ type LeadInput = {
   email_body?: unknown;
   page_path?: unknown;
   submitted_at?: unknown;
+  source_path?: unknown;
+  name?: unknown;
+  email?: unknown;
+  interest?: unknown;
+  message?: unknown;
+  consent?: unknown;
+  direction_fields?: unknown;
+};
+
+type GeneralContact = {
+  salesTag: string;
+  emailBody: string;
+  pagePath: string;
+  submittedAt: string;
 };
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
@@ -77,7 +91,99 @@ const leadSubject = (leadType: string, salesTag: string) => {
   if (leadType === "posted_load" && postedTags.has(salesTag)) {
     return `[HERMES SALES] [POSTED LOAD] [${salesTag.replace("POSTED LOAD / ", "")}]`;
   }
+  const contactTags = new Map([
+    ["GENERAL CONTACT / LOGISTICS", "LOGISTICS"],
+    ["GENERAL CONTACT / MARKETING", "MARKETING"],
+    ["GENERAL CONTACT / ACADEMY", "ACADEMY"],
+    ["GENERAL CONTACT / TECHNOLOGY", "IT DEVELOPMENT"],
+    ["GENERAL CONTACT / GENERAL", "GENERAL"],
+  ]);
+  if (leadType === "general_contact" && contactTags.has(salesTag)) {
+    return `[HERMES INQUIRY] [${contactTags.get(salesTag)}]`;
+  }
   return "";
+};
+
+const contactSalesTag = (interest: string) => {
+  const tags = new Map([
+    ["Hermes Logistics", "GENERAL CONTACT / LOGISTICS"],
+    ["ProgressoPro", "GENERAL CONTACT / MARKETING"],
+    ["Hermes Business Academy", "GENERAL CONTACT / ACADEMY"],
+    ["IT Development", "GENERAL CONTACT / TECHNOLOGY"],
+    ["I am not sure yet", "GENERAL CONTACT / GENERAL"],
+  ]);
+  return tags.get(interest) || "";
+};
+
+const directionFieldLabels = new Map([
+  ["phone", "Phone"],
+  ["mc_dot", "MC/DOT"],
+  ["equipment_type", "Equipment type"],
+  ["fleet_size", "Fleet size"],
+  ["preferred_lanes", "Preferred lanes/area"],
+  ["service_needed", "Service needed"],
+  ["platforms", "Platforms"],
+  ["planning_horizon", "Planning horizon"],
+  ["primary_goal", "Primary goal"],
+  ["target_audience", "Target audience"],
+  ["current_channels_results", "Current channels/results"],
+  ["monthly_budget_range", "Monthly budget range"],
+  ["target_role_or_skill", "Target role/skill"],
+  ["current_level", "Current level"],
+  ["weekly_learning_availability", "Weekly learning availability"],
+  ["preferred_language", "Preferred language"],
+  ["desired_start_period", "Desired start period"],
+  ["system_or_workflow_needed", "System/workflow needed"],
+  ["current_tools", "Current tools"],
+  ["number_of_users", "Number of users"],
+  ["integrations_needed", "Integrations needed"],
+  ["data_sensitivity", "Data sensitivity"],
+  ["timeline", "Timeline"],
+  ["budget_range", "Budget range"],
+]);
+
+const contactDirectionLines = (value: unknown) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return [];
+  const fields = (value as { fields?: unknown }).fields;
+  if (!fields || typeof fields !== "object" || Array.isArray(fields)) return [];
+
+  const lines: string[] = [];
+  for (const [key, label] of directionFieldLabels) {
+    const raw = (fields as Record<string, unknown>)[key];
+    const normalized = Array.isArray(raw)
+      ? raw.map((item) => clean(item, 80)).filter(Boolean).slice(0, 12).join(", ")
+      : clean(typeof raw === "number" ? String(raw) : raw, 240);
+    if (normalized) lines.push(`${label}: ${normalized}`);
+  }
+  return lines.slice(0, 24);
+};
+
+const buildGeneralContact = (input: LeadInput): GeneralContact | null => {
+  const name = clean(input.name, 100);
+  const email = clean(input.email, 160).toLowerCase();
+  const interest = clean(input.interest, 120);
+  const message = clean(input.message, 2_000);
+  const salesTag = contactSalesTag(interest);
+  if (input.consent !== true || name.length < 2 || !isEmail(email) || message.length < 10 || !salesTag) return null;
+
+  const sourcePath = clean(input.source_path, 160);
+  const pagePath = sourcePath.startsWith("/") ? sourcePath : "/contacts/";
+  const submittedAt = clean(input.submitted_at, 40);
+  const directionLines = contactDirectionLines(input.direction_fields);
+  const emailBody = [
+    "Hermes Contact Request",
+    "----------------------",
+    `Direction: ${interest}`,
+    `Name: ${name}`,
+    `Email: ${email}`,
+    "Message:",
+    message,
+    ...(directionLines.length ? ["", "Direction details:", ...directionLines] : []),
+    "",
+    `Submitted from: ${pagePath}`,
+  ].join("\n").slice(0, MAX_EMAIL_BODY);
+
+  return { salesTag, emailBody, pagePath, submittedAt };
 };
 
 const extractReplyTo = (body: string) => {
@@ -127,17 +233,21 @@ export async function onRequestPost({ request, env }: Context) {
 
   const headerRequestId = clean(request.headers.get("Idempotency-Key"), 80);
   const requestId = clean(input.request_id, 80);
-  const leadType = clean(input.lead_type, 40);
-  const salesTag = clean(input.sales_tag, 80).toUpperCase();
-  const emailBody = clean(input.email_body, MAX_EMAIL_BODY);
-  const pagePath = clean(input.page_path, 160);
-  const submittedAt = clean(input.submitted_at, 40);
+  const generalContact = buildGeneralContact(input);
+  const leadType = generalContact ? "general_contact" : clean(input.lead_type, 40);
+  const salesTag = generalContact ? generalContact.salesTag : clean(input.sales_tag, 80).toUpperCase();
+  const emailBody = generalContact ? generalContact.emailBody : clean(input.email_body, MAX_EMAIL_BODY);
+  const pagePath = generalContact ? generalContact.pagePath : clean(input.page_path, 160);
+  const submittedAt = generalContact ? generalContact.submittedAt : clean(input.submitted_at, 40);
   const subject = leadSubject(leadType, salesTag);
 
   if (!isRequestId(requestId) || requestId !== headerRequestId || !subject || emailBody.length < 80) {
     return json(allowedOrigin, 400, { success: false, error: "invalid_lead" });
   }
-  if (!emailBody.includes("Phone:") || !emailBody.includes("Email:")) {
+  const hasRequiredContact = generalContact
+    ? emailBody.includes("Email:")
+    : emailBody.includes("Phone:") && emailBody.includes("Email:");
+  if (!hasRequiredContact) {
     return json(allowedOrigin, 400, { success: false, error: "contact_details_required" });
   }
 
@@ -156,7 +266,7 @@ export async function onRequestPost({ request, env }: Context) {
   const replyTo = extractReplyTo(emailBody);
   const deliveredBody = emailBody.replace(
     /^Delivery:\s*preview only.*$/im,
-    "Delivery: securely received by the Hermes Logistics Sales website endpoint.",
+    "Delivery: securely received by the Hermes website endpoint.",
   );
   const messageText = [
     deliveredBody,

@@ -302,7 +302,7 @@ export const site = {
   contact: {
     eyebrow: "Not sure where to begin?",
     title: "Tell us what you are building.",
-    body: "Use the preview to organize your request, copy the summary, and open the matching contact route below. Until contact delivery is connected, the form does not send or store data.",
+    body: "Send your request securely to the Hermes team. Choose the right direction, add the details that matter, and we will respond through the approved contact channel.",
     previewStatus: "Your information was not sent or stored.",
     handoffTitle: "Next step: copy and contact",
     handoffBody: "Copy the request summary, then open the approved contact route for your direction.",

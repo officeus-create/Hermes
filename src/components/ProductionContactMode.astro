@@ -1,0 +1,21 @@
+<script>
+  const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
+
+  const activateProductionContact = () => {
+    if (window.location.protocol !== "https:" || !productionHosts.has(window.location.hostname)) return;
+
+    document.querySelectorAll<HTMLFormElement>("[data-contact-form]").forEach((form) => {
+      form.dataset.contactMode = "live";
+      form.dataset.contactEndpoint = "/api/logistics-lead";
+
+      const label = form.querySelector<HTMLElement>("[data-submit-label]");
+      if (label) label.textContent = "Send request";
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", activateProductionContact, { once: true });
+  } else {
+    activateProductionContact();
+  }
+</script>
