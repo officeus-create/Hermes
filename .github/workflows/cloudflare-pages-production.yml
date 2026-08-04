@@ -7,7 +7,7 @@ on:
     types:
       - created
   schedule:
-    - cron: "30 23 4 8 *"
+    - cron: "40 23 4 8 *"
   push:
     branches:
       - main
@@ -35,6 +35,18 @@ jobs:
     timeout-minutes: 25
 
     steps:
+      - name: Report controlled deployment start
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Controlled Pages deployment started
+
+Event: \`$GITHUB_EVENT_NAME\`
+Approved branch: \`main\`
+Workflow commit: \`$GITHUB_SHA\`
+
+The workflow is now validating Cloudflare credentials, building the reviewed site, running static release checks, and then attempting the Wrangler Pages upload. No secret value is included in this comment."
+
       - name: Check out approved main
         uses: actions/checkout@v6
         with:
