@@ -2,55 +2,236 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <meta name="description" content="Interactive Hermes Connect preview for specialist profiles, services, availability and simulated personal booking paths.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hermes Connect helps service businesses present services, share availability, and collect booking requests from one branded page.">
   <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://hermeslogisticsus.com/demos/hermes-connect/">
-  <title>Hermes Connect · Profile & Availability v0.2</title>
+  <title>Hermes Connect · Early Access</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
-  <main>
-    <section class="editor">
-      <p class="eyebrow">Hermes Connect · local prototype v0.2</p>
-      <h1>Build the specialist page before connecting the platform.</h1>
-      <p class="intro">Edit the profile, choose services and availability, then generate a simulated personal booking preview.</p>
-      <a class="back-link" href="/paths/technology/#working-prototypes">Explore Hermes Connect development →</a>
+<body data-audience="beauty-wellness">
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Hermes Connect home">
+      <span class="brand-mark">H</span>
+      <span><strong>Hermes</strong><small>Connect</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#audiences">Who it is for</a>
+      <a href="#product">Product</a>
+      <a href="#early-access">Early access</a>
+    </nav>
+    <a class="header-cta" href="#early-access">Apply to download <span>↗</span></a>
+  </header>
 
-      <form data-profile-form>
-        <div class="fields">
-          <label>Name<input name="name" value="Maya Santos" required></label>
-          <label>Professional role<input name="role" value="Business consultant" required></label>
-          <label>Location<input name="location" value="Miami / Remote" required></label>
-          <label class="wide">Short profile<textarea name="bio" rows="3" required>Operations, customer journey, and practical growth systems.</textarea></label>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-glow hero-glow-one"></div>
+      <div class="hero-glow hero-glow-two"></div>
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Early access applications are open</p>
+        <h1 id="hero-title">Your business.<br><em>One smart link.</em></h1>
+        <p class="hero-lead">Show services, share availability, collect booking requests, and give every customer a clear next step—without forcing your business into a generic marketplace.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#early-access">Apply for early access <span>→</span></a>
+          <button class="button button-secondary" type="button" data-scroll-audiences>See your category <span>↓</span></button>
+        </div>
+        <div class="hero-proof" aria-label="Product status">
+          <div><strong>Web</strong><span>Interactive preview</span></div>
+          <div><strong>iOS</strong><span>Planned mobile access</span></div>
+          <div><strong>Android</strong><span>Planned mobile access</span></div>
+        </div>
+      </div>
+
+      <div class="product-stage" aria-label="Interactive Hermes Connect product preview">
+        <div class="stage-orbit stage-orbit-one"></div>
+        <div class="stage-orbit stage-orbit-two"></div>
+
+        <div class="desktop-window">
+          <div class="window-bar"><span></span><span></span><span></span><p>Hermes Connect · Business workspace</p></div>
+          <div class="workspace-shell">
+            <aside class="workspace-nav">
+              <div class="mini-brand">HC</div>
+              <button class="active" aria-label="Overview">⌂</button>
+              <button aria-label="Calendar">□</button>
+              <button aria-label="Clients">◎</button>
+              <button aria-label="Settings">⚙</button>
+            </aside>
+            <div class="workspace-main">
+              <div class="workspace-heading">
+                <div><small data-preview-category>Beauty & wellness</small><h2 data-preview-dashboard-title>Today at a glance</h2></div>
+                <span class="status-pill"><i></i> Accepting requests</span>
+              </div>
+              <div class="metric-row">
+                <article><span>Requests</span><strong data-preview-metric-one>8</strong><small>Ready for review</small></article>
+                <article><span>Available slots</span><strong data-preview-metric-two>6</strong><small>This week</small></article>
+                <article><span>Services</span><strong data-preview-metric-three>4</strong><small>Visible to clients</small></article>
+              </div>
+              <div class="workspace-grid">
+                <section class="schedule-card">
+                  <div class="card-heading"><strong>Upcoming</strong><span>View calendar</span></div>
+                  <div class="appointment-list" data-preview-appointments></div>
+                </section>
+                <section class="activity-card">
+                  <div class="card-heading"><strong>Client journey</strong><span>Live preview</span></div>
+                  <div class="journey-step complete"><i>1</i><div><strong>Find your page</strong><span>Services and value are clear</span></div></div>
+                  <div class="journey-step complete"><i>2</i><div><strong>Choose a service</strong><span data-preview-service-choice>Signature appointment</span></div></div>
+                  <div class="journey-step"><i>3</i><div><strong>Request a time</strong><span>Business confirms the next step</span></div></div>
+                </section>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <fieldset>
-          <legend>Services</legend>
-          <div class="choices" data-services></div>
-        </fieldset>
-        <fieldset>
-          <legend>Availability</legend>
-          <div class="choices" data-availability></div>
-        </fieldset>
-        <button type="submit">Generate profile preview <span>→</span></button>
-        <p class="status" role="status" data-status>Preview mode · nothing is saved or sent.</p>
-      </form>
+        <div class="phone-frame">
+          <div class="phone-top"><span></span></div>
+          <div class="phone-screen">
+            <div class="mobile-cover">
+              <div class="mobile-brand" data-preview-initials>AV</div>
+              <span class="mobile-verified">Preview</span>
+            </div>
+            <div class="mobile-profile">
+              <small data-preview-location>Kyiv · By appointment</small>
+              <h3 data-preview-business>Aura Beauty Studio</h3>
+              <p data-preview-description>Beauty appointments with clear services and available times.</p>
+              <div class="mobile-rating"><span>★★★★★</span><small>Customer experience preview</small></div>
+            </div>
+            <div class="mobile-services" data-preview-services></div>
+            <button type="button" data-preview-request>Request an appointment <span>→</span></button>
+          </div>
+        </div>
+
+        <div class="floating-card floating-card-top"><span>New request</span><strong data-preview-floating>Color & care session</strong><small>Today · 2:30 PM</small></div>
+        <div class="floating-card floating-card-bottom"><i>✓</i><div><strong>Your page is ready</strong><span>Share one link everywhere</span></div></div>
+      </div>
     </section>
 
-    <aside class="profile-card" data-profile-preview>
-      <div class="preview-bar"><span></span><span></span><span></span><p>Personal booking preview</p></div>
-      <div class="profile-avatar">MS</div>
-      <p class="profile-location" data-preview-location>Miami / Remote</p>
-      <h2 data-preview-name>Maya Santos</h2>
-      <strong data-preview-role>Business consultant</strong>
-      <p data-preview-bio>Operations, customer journey, and practical growth systems.</p>
-      <div class="preview-section"><span>Services</span><div data-preview-services></div></div>
-      <div class="preview-section"><span>Available times</span><div data-preview-times></div></div>
-      <div class="personal-path"><span>Personal preview path</span><code data-preview-path>Generate the profile to create a path</code></div>
-      <p class="boundary">No account, database record, calendar event, payment, or message is created.</p>
-    </aside>
+    <section class="audience-section" id="audiences" aria-labelledby="audience-title">
+      <div class="section-heading">
+        <p class="eyebrow dark"><span></span> Built around your workflow</p>
+        <h2 id="audience-title">Choose your category.<br><em>Watch the product adapt.</em></h2>
+        <p>Hermes Connect is designed for appointment-based, service, expert, operational, and growing businesses. Select the closest match—your preview updates instantly.</p>
+      </div>
+      <div class="audience-layout">
+        <div class="audience-grid" data-audience-grid></div>
+        <aside class="audience-detail" data-audience-detail>
+          <div class="audience-detail-icon" data-audience-icon>✦</div>
+          <p class="eyebrow dark">Selected experience</p>
+          <h3 data-audience-title>Beauty & wellness</h3>
+          <p data-audience-summary>Turn service discovery, availability, and appointment requests into one polished client journey.</p>
+          <ul data-audience-benefits></ul>
+          <a href="#early-access" data-audience-cta>Apply for beauty early access <span>→</span></a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="product-section" id="product" aria-labelledby="product-title">
+      <div class="product-copy">
+        <p class="eyebrow light"><span></span> From attention to action</p>
+        <h2 id="product-title">Not another profile.<br><em>A working customer path.</em></h2>
+        <p>Most business pages stop at “contact us.” Hermes Connect is being built around the decisions a customer needs to make before they are ready to request a service.</p>
+        <div class="product-points">
+          <article><span>01</span><div><h3>Present the offer</h3><p>Services, duration, format, location, and the practical next step in one branded experience.</p></div></article>
+          <article><span>02</span><div><h3>Show real availability</h3><p>Give clients a clear view of when a request can fit, while the business keeps control of confirmation.</p></div></article>
+          <article><span>03</span><div><h3>Collect useful context</h3><p>Ask the right questions before a call, consultation, appointment, lesson, or operating request.</p></div></article>
+          <article><span>04</span><div><h3>Grow into a system</h3><p>Start with a focused customer path, then connect calendars, CRM, reminders, payments, or internal workflows after separate approval.</p></div></article>
+        </div>
+      </div>
+      <div class="flow-visual" aria-label="Hermes Connect customer flow">
+        <div class="flow-center"><span>H</span><strong>Hermes Connect</strong><small>Your business system</small></div>
+        <div class="flow-node node-one"><span>01</span><strong>Discover</strong><small>One branded page</small></div>
+        <div class="flow-node node-two"><span>02</span><strong>Choose</strong><small>Service and format</small></div>
+        <div class="flow-node node-three"><span>03</span><strong>Request</strong><small>Time and context</small></div>
+        <div class="flow-node node-four"><span>04</span><strong>Review</strong><small>You stay in control</small></div>
+        <svg viewBox="0 0 620 620" aria-hidden="true"><circle cx="310" cy="310" r="208"></circle><circle cx="310" cy="310" r="128"></circle></svg>
+      </div>
+    </section>
+
+    <section class="principles-section" aria-labelledby="principles-title">
+      <div class="section-heading compact">
+        <p class="eyebrow dark"><span></span> Product principles</p>
+        <h2 id="principles-title">Simple for customers.<br><em>Controlled by the business.</em></h2>
+      </div>
+      <div class="principles-grid">
+        <article><span>⌁</span><h3>Your brand first</h3><p>The customer sees your business, services, expertise, and next step—not a crowded marketplace.</p></article>
+        <article><span>◫</span><h3>One link everywhere</h3><p>Use the same customer path from Instagram, Google, your website, messages, QR codes, and direct outreach.</p></article>
+        <article><span>◎</span><h3>Useful before automation</h3><p>The first release focuses on a clear workflow. Integrations are added only when they improve the real process.</p></article>
+        <article><span>◇</span><h3>Ready for many categories</h3><p>Services, booking questions, availability, and calls to action adapt to different types of business.</p></article>
+      </div>
+    </section>
+
+    <section class="early-access-section" id="early-access" aria-labelledby="early-access-title">
+      <div class="early-access-copy">
+        <p class="eyebrow light"><span></span> Early access · Web, iOS and Android roadmap</p>
+        <h2 id="early-access-title">Be one of the businesses<br><em>that shapes the first release.</em></h2>
+        <p>Tell us what you do and where your current client journey breaks. We will review the application for the Hermes Connect early-access and download list.</p>
+        <div class="application-expectations">
+          <div><span>1</span><p><strong>Apply</strong><small>Share your category and primary goal.</small></p></div>
+          <div><span>2</span><p><strong>Review</strong><small>Hermes checks product fit and the right first workflow.</small></p></div>
+          <div><span>3</span><p><strong>Access</strong><small>Approved applicants receive the next available preview or release step.</small></p></div>
+        </div>
+        <p class="boundary-note">This page does not promise immediate app availability, approval, implementation timing, or a completed marketplace. The current experience is an interactive product preview.</p>
+      </div>
+
+      <div class="application-card">
+        <div class="application-card-heading"><div><span class="application-dot"></span><strong>Hermes Connect application</strong></div><small>Usually 2–3 minutes</small></div>
+        <form data-application-form novalidate>
+          <div class="form-alert" role="alert" data-form-alert hidden></div>
+          <div class="field-row">
+            <label>Your name *<input name="name" autocomplete="name" maxlength="100" required></label>
+            <label>Work email *<input name="email" type="email" autocomplete="email" maxlength="160" required></label>
+          </div>
+          <label>Business or project name<input name="business_name" autocomplete="organization" maxlength="160" placeholder="Optional"></label>
+          <div class="field-row">
+            <label>Your category *<select name="category" data-category-select required></select></label>
+            <label>Preferred access *
+              <select name="platform" required>
+                <option value="">Choose one</option>
+                <option value="Web">Web</option>
+                <option value="iPhone / iPad">iPhone / iPad</option>
+                <option value="Android">Android</option>
+                <option value="Web and mobile">Web and mobile</option>
+                <option value="Not sure yet">Not sure yet</option>
+              </select>
+            </label>
+          </div>
+          <label>Team size *
+            <select name="team_size" required>
+              <option value="">Choose one</option>
+              <option value="Just me">Just me</option>
+              <option value="2–5 people">2–5 people</option>
+              <option value="6–20 people">6–20 people</option>
+              <option value="21–100 people">21–100 people</option>
+              <option value="100+ people">100+ people</option>
+              <option value="Not sure yet">Not sure yet</option>
+            </select>
+          </label>
+          <label>What should Hermes Connect help you do first? *
+            <textarea name="primary_goal" rows="4" minlength="15" maxlength="1000" placeholder="Example: let clients see my services and request an available appointment without messaging back and forth" required></textarea>
+          </label>
+          <label class="honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+          <label class="consent"><input name="consent" type="checkbox" required><span>I agree that Hermes may use these details to review my early-access request and contact me about Hermes Connect. <a href="https://hermeslogisticsus.com/privacy/">Privacy notice</a>.</span></label>
+          <button class="submit-button" type="submit"><span data-submit-label>Prepare download application</span><b>→</b></button>
+          <p class="form-status" role="status" aria-live="polite" data-form-status>We will prepare a complete email application. Nothing is sent until you confirm it in your email app.</p>
+        </form>
+        <div class="application-result" data-application-result hidden>
+          <div class="result-icon">✓</div>
+          <p class="eyebrow dark">Application prepared</p>
+          <h3>Your Hermes Connect request is ready.</h3>
+          <p>Send the prepared email to complete your application. Your category and goals are already included.</p>
+          <a class="submit-button" data-email-application href="#"><span>Send application by email</span><b>↗</b></a>
+          <a class="secure-fallback" href="https://hermeslogisticsus.com/paths/technology/#contact">Use the secure website contact form instead →</a>
+          <button class="reset-application" type="button" data-reset-application>Change application details</button>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <a class="brand footer-brand" href="#top"><span class="brand-mark">H</span><span><strong>Hermes</strong><small>Connect</small></span></a>
+    <p>Product preview by Hermes IT Development.</p>
+    <div><a href="https://hermeslogisticsus.com/paths/technology/">Technology</a><a href="https://hermeslogisticsus.com/privacy/">Privacy</a><a href="mailto:officeus@hermeslogisticsus.com">Contact</a></div>
+  </footer>
+
   <script type="module" src="./app.mjs"></script>
 </body>
 </html>
