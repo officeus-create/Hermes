@@ -86,7 +86,7 @@ assert.equal(emailMessages[0].to, "officeus@hermeslogisticsus.com");
 assert.equal(emailMessages[0].from, "website@hermeslogisticsus.com");
 assert.equal(emailMessages[0].subject, "[HERMES SALES] [POSTED LOAD] [DEALER]");
 assert.equal(emailMessages[0].replyTo, "dealer@example.com");
-assert.match(emailMessages[0].text, /Delivery: securely received by the Hermes Logistics Sales website endpoint\./);
+assert.match(emailMessages[0].text, /Delivery: securely received by the Hermes website endpoint\./);
 assert.doesNotMatch(emailMessages[0].text, /Delivery: preview only/i);
 
 const duplicate = await onRequest({ request: leadRequest(), env });
@@ -94,6 +94,88 @@ assert.equal(duplicate.status, 200);
 assert.equal(emailMessages.length, 1);
 assert.equal(serviceCalls.length, 1);
 assert.equal((await duplicate.json()).duplicate, true);
+
+const generalContactPayload = {
+  request_id: "contact_test_12345",
+  submitted_at: "2026-08-04T08:30:00.000Z",
+  source_path: "/contacts/",
+  name: "Test Website Lead",
+  email: "lead@example.com",
+  interest: "ProgressoPro",
+  message: "We need an SEO and website conversion plan for qualified inquiries.",
+  consent: true,
+  direction_fields: {
+    direction: "ProgressoPro",
+    fields: {
+      platforms: ["SEO / Google Search", "LinkedIn"],
+      planning_horizon: "6 months",
+      primary_goal: "Qualified inquiries",
+      target_audience: "Independent auto dealers",
+      monthly_budget_range: "$1,000-$2,000",
+      unsupported_key: "must not be forwarded",
+    },
+  },
+};
+
+const generalAccepted = await onRequest({
+  request: leadRequest(generalContactPayload, { "CF-Connecting-IP": "192.0.2.11" }),
+  env,
+});
+assert.equal(generalAccepted.status, 200);
+assert.deepEqual(await generalAccepted.json(), { success: true, request_id: "contact_test_12345" });
+assert.equal(serviceCalls.length, 2);
+assert.equal(serviceCalls[1].payload.subject, "[HERMES INQUIRY] [MARKETING]");
+assert.equal(serviceCalls[1].payload.reply_to, "lead@example.com");
+assert.equal(emailMessages.length, 2);
+assert.equal(emailMessages[1].subject, "[HERMES INQUIRY] [MARKETING]");
+assert.equal(emailMessages[1].replyTo, "lead@example.com");
+assert.match(emailMessages[1].text, /Name: Test Website Lead/);
+assert.match(emailMessages[1].text, /Platforms: SEO \/ Google Search, LinkedIn/);
+assert.match(emailMessages[1].text, /Primary goal: Qualified inquiries/);
+assert.doesNotMatch(emailMessages[1].text, /unsupported_key|must not be forwarded/);
+assert.doesNotMatch(emailMessages[1].text, /Phone:/);
+
+const generalDuplicate = await onRequest({
+  request: leadRequest(generalContactPayload, { "CF-Connecting-IP": "192.0.2.11" }),
+  env,
+});
+assert.equal(generalDuplicate.status, 200);
+assert.equal((await generalDuplicate.json()).duplicate, true);
+assert.equal(emailMessages.length, 2);
+assert.equal(serviceCalls.length, 2);
+
+const contactDirections = [
+  ["Hermes Logistics", "[HERMES INQUIRY] [LOGISTICS]"],
+  ["Hermes Business Academy", "[HERMES INQUIRY] [ACADEMY]"],
+  ["IT Development", "[HERMES INQUIRY] [IT DEVELOPMENT]"],
+  ["I am not sure yet", "[HERMES INQUIRY] [GENERAL]"],
+];
+for (const [index, [interest, expectedSubject]] of contactDirections.entries()) {
+  const requestId = `direction_test_${index}_12345`;
+  const response = await onRequest({
+    request: leadRequest({
+      ...generalContactPayload,
+      request_id: requestId,
+      interest,
+      direction_fields: undefined,
+    }, { "CF-Connecting-IP": `198.51.100.${index + 1}` }),
+    env,
+  });
+  assert.equal(response.status, 200);
+  assert.equal(serviceCalls.at(-1).payload.subject, expectedSubject);
+}
+
+const forgedContactDirection = await onRequest({
+  request: leadRequest({ ...generalContactPayload, request_id: "contact_forged_12345", interest: "Send to any recipient" }),
+  env,
+});
+assert.equal(forgedContactDirection.status, 400);
+
+const contactWithoutConsent = await onRequest({
+  request: leadRequest({ ...generalContactPayload, request_id: "contact_consent_12345", consent: false }),
+  env,
+});
+assert.equal(contactWithoutConsent.status, 400);
 
 const foreignOrigin = await onRequest({
   request: leadRequest({ ...validPayload, request_id: "foreign_test_12345" }, { Origin: "https://attacker.example" }),
@@ -149,16 +231,16 @@ const throttledEnv = {
 };
 const throttledPayload = { ...validPayload, request_id: "throttle_test_12345" };
 const throttled = await onRequest({
-  request: leadRequest(throttledPayload, { "CF-Connecting-IP": "198.51.100.20" }),
+  request: leadRequest(throttledPayload, { "CF-Connecting-IP": "203.0.113.20" }),
   env: throttledEnv,
 });
 assert.equal(throttled.status, 503);
 const throttledBody = JSON.stringify(await throttled.json());
 assert.equal(throttledBody, JSON.stringify({ success: false, error: "delivery_temporarily_unavailable" }));
-assert.doesNotMatch(throttledBody, /dealer@example\.com|312|quota|provider_throttled|198\.51\.100\.20/i);
+assert.doesNotMatch(throttledBody, /dealer@example\.com|312|quota|provider_throttled|203\.0\.113\.20/i);
 
 for (const key of limits.values.keys()) {
-  assert.doesNotMatch(key, /192\.0\.2\.10|release_test_12345/);
+  assert.doesNotMatch(key, /192\.0\.2\.10|release_test_12345|lead@example\.com|contact_test_12345/);
 }
 
-console.log("Sales lead receiver and private Email Worker checks passed.");
+console.log("Sales lead receiver, four-direction contact intake, and private Email Worker checks passed.");
