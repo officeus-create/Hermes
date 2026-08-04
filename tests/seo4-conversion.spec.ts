@@ -84,7 +84,7 @@ test("direct dispatch intake is noindex, qualified, privacy-safe, and separate f
   const result = page.locator("[data-dispatch-intake] [data-vehicle-result]");
   await expect(result).toBeVisible();
   await expect(result.locator("[data-vehicle-preview]")).toContainText("Hermes Car Hauling Dispatch");
-  await expect(result.locator("[data-vehicle-preview]")).toContainText("Sales tag: CAR HAULING DISPATCH / CARRIER");
+  await expect(result.locator("[data-vehicle-preview]")).toContainText("Commercial source: DIRECT CAR HAULING DISPATCH INTAKE");
   await expect(result.locator("[data-vehicle-preview]")).toContainText("Current dispatch status: Needs dispatch service");
   await expect(result.locator("[data-vehicle-boundary]")).toContainText("Preview mode creates no account");
   await expect(result.getByRole("link", { name: "Open prepared email" })).toHaveAttribute("href", /^mailto:/);
