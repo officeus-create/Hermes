@@ -20,7 +20,43 @@ const capabilities = [
   { title: "Structured client intake", body: "Collect the minimum information needed to understand and review the next client step.", icon: MessageSquareText },
 ];
 
+const faqs = [
+  {
+    question: "Is Hermes Connect a mobile app or a Web App?",
+    answer: "The current approved product is a responsive Web App. It is designed to work in a modern browser on desktop, tablet, and phone without requiring an App Store or Google Play installation.",
+  },
+  {
+    question: "What happens after I request Web App access?",
+    answer: "Hermes reviews the business category and the must-have workflow before sending access instructions. The request does not automatically create an account, booking, payment, subscription, or guaranteed acceptance.",
+  },
+  {
+    question: "Which business categories can use Hermes Connect?",
+    answer: "The current funnel supports beauty and wellness, fitness and coaching, professional services, logistics and field services, education and events, and home and local services. Other service businesses can choose the closest category and describe their workflow.",
+  },
+  {
+    question: "Does Hermes Connect already connect calendars, payments, or client databases?",
+    answer: "Not by default in the current controlled release. The foundation focuses on the business profile, service catalog, availability windows, and structured client requests. Advanced integrations require separate review and verification.",
+  },
+];
+
 const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Hermes Connect Web App access and workflow review",
+    serviceType: "Category-aware service-business Web App",
+    url: "https://hermeslogisticsus.com/services/hermes-connect/",
+    description: "A reviewed Web App path for service businesses that need a clearer way to present services, availability, and client requests.",
+    provider: {
+      "@type": "Organization",
+      name: "Hermes IT Development",
+      url: "https://hermeslogisticsus.com/paths/technology/",
+    },
+    audience: {
+      "@type": "BusinessAudience",
+      audienceType: "Service businesses",
+    },
+  },
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -37,6 +73,15 @@ const schema = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
@@ -47,6 +92,7 @@ const schema = [
 ];
 
 import "../../../styles/features/hermes-connect-service.css";
+import "../../../styles/features/hermes-connect-faq.css";
 ---
 
 <BaseLayout
@@ -169,6 +215,24 @@ import "../../../styles/features/hermes-connect-service.css";
           <li><span>03</span><div><strong>AI-assisted build</strong><small>Approved work is implemented on a reviewable branch with tests.</small></div></li>
           <li><span>04</span><div><strong>Controlled web release</strong><small>Verified changes move through CI with a rollback boundary.</small></div></li>
         </ol>
+      </div>
+    </section>
+
+    <section class="section connect-service-faq" aria-labelledby="connect-faq-title">
+      <div class="shell connect-service-faq-grid">
+        <div>
+          <p class="eyebrow">Hermes Connect FAQ</p>
+          <h2 id="connect-faq-title">What the current Web App path does—and does not do.</h2>
+          <p>These answers describe the controlled access release. Future integrations require separate scope, testing, and release approval.</p>
+        </div>
+        <div class="connect-service-faq-list">
+          {faqs.map((faq, index) => (
+            <details open={index === 0}>
+              <summary>{faq.question}<span aria-hidden="true">+</span></summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
+        </div>
       </div>
     </section>
 
