@@ -13,7 +13,7 @@ const content = {
     label: "Start car-hauling dispatch review",
     href: "/logistics/start-car-hauling-dispatch/",
   },
-  handoffNote: "Use the direct carrier intake so Logistics Sales can review authority, insurance, equipment, capacity, operating area, availability, and dispatch scope. The separate Load Board remains a fictional product preview and is not the commercial intake path.",
+  handoffNote: "Use the direct carrier intake so Logistics Sales can review authority and insurance readiness, equipment, capacity, operating area, availability, and dispatch scope. The request is then routed to dispatcher review, readiness review, or scope clarification. If required information is missing, the next step is clarification rather than automatic activation. The separate Load Board remains a fictional product preview and is not the commercial intake path.",
   audience: [
     "Owner-operators running hotshot, open, enclosed, wedge, or multi-car equipment",
     "Small fleets with equipment that can transport from one vehicle through multi-car capacity",
@@ -33,6 +33,7 @@ const content = {
   process: [
     { title: "Carrier intake", body: "Share your role, company, MC or USDOT number, equipment class, capacity, availability, home area, and contact information in the direct dispatch-review workspace." },
     { title: "Qualification", body: "Logistics Sales reviews authority status and age, insurance readiness, equipment, operating area, preferred lanes, availability, fleet size, current dispatch relationship, and operating constraints." },
+    { title: "Review routing", body: "The request is routed to dispatcher review, readiness review, or scope clarification. Missing authority, insurance, equipment, availability, or operating details are clarified before any working plan is represented as active." },
     { title: "Operating profile", body: "We document truck and trailer capacity, home base, preferred regions, minimum rate expectations, communication rules, carrier approval rules, and required paperwork." },
     { title: "Load and lane review", body: "Potential loads are checked against equipment, deadhead, timing, route, pickup and delivery requirements, source, documents, offered rate, and disclosed operating preferences." },
     { title: "Carrier approval and follow-through", body: "The carrier makes the final decision before booking. Hermes coordinates approved communication and documents while the carrier remains responsible for safe and lawful transportation." },
@@ -46,7 +47,7 @@ const content = {
     { question: "What equipment and capacity can be reviewed?", answer: "Support may be available for one-car equipment, two- to three-car hotshot or wedge trailers, open multi-car haulers, enclosed trailers, and other vehicle-transport configurations after actual capacity and operating requirements are reviewed." },
     { question: "Can a new authority start immediately?", answer: "Not always. Broker requirements, insurance, safety profile, authority age, documentation, and equipment readiness must be reviewed first. A new authority may qualify for a readiness process before it qualifies for ordinary active dispatch or specific load access." },
     { question: "Does Hermes operate the trucks?", answer: "Hermes provides dispatch, information, communication, and back-office support. The motor carrier controls the truck, driver, safety decisions, and transportation service." },
-    { question: "What happens after I complete the carrier intake?", answer: "The direct workspace prepares a qualified request for Logistics Sales. Secure delivery is used only when the approved receiver confirms it; otherwise the prepared email and direct phone remain available. Submission does not automatically create an account, assign a dispatcher, book a load, or guarantee acceptance." },
+    { question: "What happens after I complete the carrier intake?", answer: "Logistics Sales reviews the submitted authority and insurance readiness, equipment, capacity, geography, availability, current dispatch status, and requested scope. The request is routed to dispatcher review, readiness review, or scope clarification. If information is missing, the team clarifies it before a working plan is confirmed. Secure delivery is used only when the approved receiver confirms it; otherwise the prepared email and direct phone remain available. Submission does not automatically create an account, assign a dispatcher, book a load, or guarantee acceptance or response time." },
     { question: "How do we begin?", answer: "Open the direct carrier intake and provide your MC or USDOT number, authority status, equipment, capacity, home base, preferred operating area, availability, fleet size, current dispatch status, and business contact information. Do not place sensitive shipment details in public URLs." },
   ],
   related: [
