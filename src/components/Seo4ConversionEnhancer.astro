@@ -1,0 +1,65 @@
+<script>
+  const pushEvent = (payload: Record<string, string>) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  };
+
+  const refreshLoadBoardDemoLabels = () => {
+    if (window.location.pathname !== "/load-board/") return;
+
+    const pickupLabels = [
+      "Demo day +1 · 8 AM–2 PM",
+      "Demo day +2",
+      "Demo day +3 · appointment",
+      "Demo day +4–5",
+    ];
+
+    document.querySelectorAll<HTMLElement>("[data-demo-load-card]").forEach((card, index) => {
+      card.dataset.demoFreshnessApplied = "true";
+      card.querySelectorAll<HTMLElement>("dt").forEach((term) => {
+        const value = term.nextElementSibling;
+        if (!(value instanceof HTMLElement)) return;
+
+        if (term.textContent?.trim() === "Pickup") {
+          value.textContent = pickupLabels[index] ?? `Demo day +${index + 1}`;
+        }
+        if (term.textContent?.trim() === "Posted") {
+          term.textContent = "Status";
+          value.textContent = "Illustrative demo";
+        }
+      });
+    });
+  };
+
+  refreshLoadBoardDemoLabels();
+
+  document.addEventListener("click", (event) => {
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+    const link = source.closest("a[href]");
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    let target: URL;
+    try {
+      target = new URL(link.href, window.location.origin);
+    } catch {
+      return;
+    }
+
+    if (
+      target.origin !== window.location.origin ||
+      target.pathname !== "/logistics/start-car-hauling-dispatch/" ||
+      !link.hasAttribute("data-commercial-primary-cta")
+    ) return;
+
+    pushEvent({
+      event: "commercial_cta_click",
+      cta_type: "carrier_intake",
+      audience_type: "carrier",
+      page_group: "logistics_service",
+      service_group: "car_hauling_dispatch",
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
+    });
+  });
+</script>
