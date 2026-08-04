@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const route = "/demos/hermes-connect/";
 
-async function fillRequiredRequest(page: Parameters<typeof test>[0]["page"]) {
+async function fillRequiredRequest(page: Page) {
   await page.locator('[name="name"]').fill("Accessible Test Owner");
   await page.locator('[name="email"]').fill("owner@example.com");
   await page.locator('[name="role"]').fill("Owner");
