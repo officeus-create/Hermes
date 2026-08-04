@@ -23,8 +23,10 @@ test("car-hauling recommendation uses the direct dispatch intake and keeps demo 
   await expect(page.getByRole("heading", { name: "Use direct intake for a real car-hauling dispatch review." })).toBeVisible();
   await expect(page.getByText(/does not create an account, assign a dispatcher, publish a load, guarantee acceptance, or book freight/i)).toBeVisible();
 
-  await expect(page.locator('[data-recommendation-primary][href*="/load-board/"]')).toHaveCount(0);
-  await expect(page.locator('[data-recommendation-primary-bottom][href*="/load-board/"]')).toHaveCount(0);
+  const primaryDemoLinks = page.locator(
+    '[data-recommendation-primary][href*="/load-board/"], [data-recommendation-primary-bottom][href*="/load-board/"]',
+  );
+  await expect(primaryDemoLinks).toHaveCount(0);
 });
 
 test("direct dispatch intake remains explicitly car-hauler specific", async ({ page }) => {
