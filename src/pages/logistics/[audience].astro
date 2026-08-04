@@ -94,6 +94,20 @@ const schema = [breadcrumbSchema, faqSchema];
         </div>
       </section>
 
+      <section class="section logistics-audience-final" aria-labelledby="logistics-audience-final-title">
+        <div class="shell logistics-audience-final-card">
+          <div>
+            <p class="eyebrow">Next practical step</p>
+            <h2 id="logistics-audience-final-title">Continue with the request that matches your role.</h2>
+            <p>Review the required business and operating information before choosing the direct handoff. No submission guarantees acceptance, carrier capacity, a load, a rate, timing, employment, training, or another commercial outcome.</p>
+          </div>
+          <div class="logistics-audience-final-actions">
+            <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+            {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
+          </div>
+        </div>
+      </section>
+
       {audience.slug === "careers" && <CareerStatusPanel />}
     </main>
     <SiteFooter />
@@ -106,4 +120,15 @@ const schema = [breadcrumbSchema, faqSchema];
   .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid #d6dce8; border-radius: 10px; background: #fff; }
   .logistics-audience-faq-list summary { cursor: pointer; font-weight: 750; color: var(--color-navy-900); }
   .logistics-audience-faq-list p { margin: .75rem 0 0; max-width: 78ch; color: var(--color-muted); }
+  .logistics-audience-final { padding-top: 1rem; background: #fff; }
+  .logistics-audience-final-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); border-radius: 14px; background: #071038; color: #fff; }
+  .logistics-audience-final-card h2 { max-width: 16ch; }
+  .logistics-audience-final-card p:not(.eyebrow) { max-width: 70ch; color: rgba(255,255,255,.72); line-height: 1.65; }
+  .logistics-audience-final-actions { display: grid; gap: .7rem; min-width: min(100%, 270px); }
+  .logistics-audience-final-actions .button:not(.button-primary) { border-color: rgba(255,255,255,.42); color: #fff; }
+  @media (max-width: 760px) {
+    .logistics-audience-final-card { grid-template-columns: 1fr; }
+    .logistics-audience-final-actions { width: 100%; }
+    .logistics-audience-final-actions .button { width: 100%; justify-content: center; }
+  }
 </style>
