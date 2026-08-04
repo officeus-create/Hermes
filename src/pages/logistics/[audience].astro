@@ -110,7 +110,7 @@ const schema = [breadcrumbSchema, faqSchema];
           </div>
           <div class="logistics-audience-final-actions">
             <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
-            {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
+            {audience.secondary && audience.slug !== "carrier" && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
           </div>
         </div>
       </section>
