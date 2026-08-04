@@ -1,9 +1,11 @@
 # Objection Coverage Audit — 5 money pages
 
-Reviewed: 2026-08-04
-Method: extracted rendered `dist/` HTML text for each page (post-`npm run build` on current `main`) and checked it against the buyer-question sequences an owner-pasted analysis proposed for each audience. Findings below are grep/read confirmed against the actual built page text, not inferred — see the `checks` per page for exactly what was searched. This is a read-only content audit; no page copy was changed.
+Reviewed: 2026-08-04  
+Reconciled against current `main`: 2026-08-04
 
-Pages covered (the five canonical/near-canonical commercial pages):
+Method: rendered `dist/` HTML was checked against the buyer-question sequences for each audience. The original audit identified four gaps. Two operational-copy gaps are now closed in current public page content and protected by regression tests; two trust-layer gaps remain intentionally blocked until real people and evidence are approved.
+
+Pages covered:
 
 - Car Hauling Dispatch — `/logistics/car-hauling-dispatch/`
 - Dealer Vehicle Transportation — `/logistics/dealer-vehicle-transportation/`
@@ -11,39 +13,71 @@ Pages covered (the five canonical/near-canonical commercial pages):
 - Website Development — `/services/website-development/`
 - Academy (US Logistics Operations) — `/academy/us-logistics-operations/`
 
-## Summary
+## Current summary
 
-| Page | Covered well | Real gaps found |
+| Page | Covered well | Current gap status |
 | --- | --- | --- |
-| Car Hauling Dispatch | Pricing/fee language, final-decision control, guarantee language, self-dispatch/Central Dispatch comparison, trust/experience mentions | No explicit "what happens after you submit" timing — the page explicitly avoids promising a response time ("without guaranteeing... response time"), which is policy-correct (no unverified claims) but still leaves a first-time visitor without a concrete next-step expectation |
-| Dealer Vehicle Transportation | Copart/IAA/Manheim, release requirements, inoperable vehicles, open vs enclosed, storage deadline, insurance, multi-vehicle | Damage/delay handling only surfaces via the word "claim," no visible explanation of the actual process if something goes wrong in transit |
-| Logistics SEO | Scope language, case study/results references, onboarding description | No named external-facing expert or reviewer profile — "author"/"credentials" only appear in the page's internal evidence-and-privacy-controls copy, not as a byline or bio a buyer would see |
-| Website Development | Pricing/scope/quote language, timeline/phase/process, case study reference, guarantee language | None found in this pass — best-covered of the five |
-| Academy (US Logistics Operations) | Pricing/fee, certificate/outcome language, program duration | No named instructor/mentor bio yet — the page lists "mentors" among things that *will* be disclosed (dates, capacity, languages, etc.), not an actual person shown now |
+| Car Hauling Dispatch | Pricing/fee language, carrier control, guarantee boundaries, self-dispatch comparison, qualification, and direct intake | **Closed.** The page now explains what happens after intake: Logistics Sales reviews authority, insurance, equipment, capacity, operating area, availability, and dispatch scope; submission does not automatically create an account, assign a dispatcher, book a load, or guarantee acceptance. No response-time promise is made. |
+| Dealer Vehicle Transportation | Auction/release requirements, inoperable vehicles, open vs enclosed, storage deadlines, insurance, multi-vehicle planning, and direct intake | **Closed at public-information level.** The page now explains delay and damage reporting, preservation of BOL/condition reports, time-stamped photos and communication records, prompt notice to the carrier and Hermes, and the responsibility boundary for the motor carrier, insurer, agreements, documents, and law. No claim outcome or timeline is guaranteed. |
+| Logistics SEO | Scope language, case/results references, onboarding and no-guarantee boundaries | **Owner-gated.** No named external-facing expert or reviewer profile. A real identity, approved bio, photo, role, and evidence are required. |
+| Website Development | Pricing/scope/quote language, timeline/phase/process, case reference, guarantee language | No gap found in this audit set. |
+| Academy (US Logistics Operations) | Pricing/fee, certificate/outcome boundaries, duration and application model | **Owner-gated.** No named instructor/mentor bio. A real identity, approved public role, photo, bio, and evidence are required. |
 
 ## Detail
 
-### Car Hauling Dispatch
-- ✅ Pricing/fee, final-decision-stays-with-carrier language, guarantee disclaimer, self-dispatch/Central Dispatch comparison, and "experience"/review language are all present.
-- ⚠️ Gap: the response-time disclaimer ("without guaranteeing revenue, mileage, rates, lanes, response time, or specific loads") is honest and consistent with `docs/AI_START_HERE.md`'s no-invented-claims rule, but it means a first-time carrier visitor has no stated expectation at all for how fast they'll hear back after submitting an inquiry. This is a real conversion-anxiety point, distinct from removing the disclaimer — the fix is not "promise a time," it's "state the actual process" (e.g. "a person reviews every submission during business hours" — only if that's true).
+### Car Hauling Dispatch — closed
 
-### Dealer Vehicle Transportation
-- ✅ Strong coverage: auction sources named, release/gate-pass, inoperable-vehicle handling, open vs enclosed, storage-deadline awareness, insurance mention, multi-vehicle/fleet language all present.
-- ⚠️ Gap: "damage/delay handling" only resolves via the bare word "claim" in the text — there's no visible step-by-step of what a dealer should expect if a vehicle is damaged or a pickup/delivery slips. This is a specific, checkable objection from the persona list ("Что при повреждении или задержке?") that isn't addressed as thoroughly as the others on this page.
+The original finding was that the page avoided an unsupported response-time promise but did not clearly tell a first-time carrier what happens after submission.
 
-### Logistics SEO
-- ✅ Scope and case-study/results language present; onboarding is described.
-- ⚠️ Gap: no named, external-facing expert/reviewer. The word "author" and "credentials" both occur, but only inside the page's internal evidence/privacy-controls copy ("evidence, privacy and authority controls define which facts may be public..."), not as a visible byline or bio. This matches `docs/ERROR_REGISTER.md` ERR-EXT-004 and issue #176's C3 trust-layer gap — it is not a copy bug to fix by inventing a name, it needs the owner to supply a real reviewer identity (see the "trust layer pending" plan already noted for tomorrow).
+Current public coverage now includes:
 
-### Website Development
-- ✅ Best-covered page in this pass: pricing/scope/quote, timeline/phase language, a case-study reference, and guarantee language are all present. No gap found against this check set.
+- a dedicated commercial carrier intake rather than dependence on the fictional Load Board demo;
+- authority and insurance readiness review;
+- equipment, capacity, geography and availability review;
+- routing to dispatcher review, readiness review or scope clarification;
+- a visible FAQ explaining that secure delivery or direct email/phone handoff does not automatically create an account, assign a dispatcher, book a load or guarantee acceptance;
+- carrier approval and final-decision boundaries.
 
-### Academy (US Logistics Operations)
-- ✅ Pricing/fee, certificate/outcome, and duration language present.
-- ⚠️ Gap: "mentors" is only mentioned as something that *will* be published alongside dates/capacity/languages — no actual instructor name or bio is shown yet. Same category as the Logistics SEO gap: needs a real person from the owner, not a placeholder.
+The page still correctly avoids guaranteeing response time, loads, rates, lanes, mileage or revenue.
 
-## What this does and doesn't mean
+### Dealer Vehicle Transportation — closed at public-information level
 
-Two of the five gaps (Logistics SEO, Academy) are the same underlying issue — a missing named, real person — and are explicitly out of scope for me or ChatGPT to fill in per `docs/AI_START_HERE.md` ("Never invent... testimonials, case results... named experts"). They're tracked as part of the trust-layer work already noted as pending for the owner.
+The original finding was that damage/delay handling surfaced only indirectly. Current public coverage now includes:
 
-The other two (Car Hauling Dispatch response-time expectation, Dealer damage/delay process) are copy-level gaps that *can* be closed without inventing anything, once the owner confirms what the actual internal process is (e.g. "who reviews inbound Car Hauling Dispatch requests and how fast," "what actually happens today if a vehicle is damaged in transit") — flagged here as ready for a small, real content PR once that's confirmed, not attempted blind in this pass.
+- a visible `Documented exception path` benefit;
+- direct notice to the agreed Hermes coordination contact and assigned motor carrier when timing changes;
+- preservation of facility notices, appointments, release information, timestamps and communications;
+- preservation of the bill of lading or condition report and time-stamped photos when condition changes or damage is reported;
+- a clear statement that Hermes coordinates information flow while liability, coverage, deadlines, review and payment are determined by the motor carrier, insurer, applicable agreement, transportation documents and law;
+- no guaranteed revised timing, claim decision, payment or resolution timeline.
+
+This is intentionally a public information and coordination boundary, not a substitute for transaction-specific contractual or legal instructions.
+
+### Logistics SEO — owner input still required
+
+Scope, onboarding, methodology and result-boundary language are present. The remaining gap is a named, external-facing expert/reviewer. The words `author` and `credentials` inside evidence-policy copy do not replace a visible real-person trust layer.
+
+Do not invent a name, role, biography, photograph, credentials, client history or results. Close this only after the owner approves a real profile and supporting evidence.
+
+### Website Development — no gap found
+
+This remains the strongest objection-covered page in this audit set. It addresses scope, pricing/quote logic, phases, timeline boundaries, ownership questions, launch and post-launch expectations, and does not promise unsupported outcomes.
+
+### Academy — owner input still required
+
+Pricing/fee, duration, application and outcome boundaries are present. The remaining trust gap is a named instructor/mentor with an approved public role, biography, photograph, current program responsibility and evidence-supported experience.
+
+Do not insert a placeholder person or revive retired Academy program language.
+
+## Remaining action items
+
+1. Add a real Logistics SEO reviewer/expert profile only after owner approval and evidence review.
+2. Add a real Academy instructor/mentor profile only after owner approval and evidence review.
+3. Keep the Car Hauling post-submit and Dealer exception guidance protected by `scripts/commercial-logistics-pages.test.mjs`.
+4. Re-run this audit after any material change to the commercial-page template, intake routes, service responsibility language or trust layer.
+
+## Publication boundary
+
+- No guaranteed response time, pickup/delivery window, rate, load volume, revenue, claim outcome or payment.
+- No invented fleet ownership, insurance responsibility, named expert, mentor, testimonial or case result.
+- No sensitive VIN, release credential, private shipment information, customer identity or real lead data in repository fixtures, public pages or analytics.
