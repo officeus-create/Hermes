@@ -1,0 +1,289 @@
+---
+import { ArrowUpRight, CheckCircle2 } from "@lucide/astro";
+
+type Advantage = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  summary: string;
+  points: string[];
+  href: string;
+  cta: string;
+  tone: "violet" | "magenta" | "gold" | "cyan";
+};
+
+const advantages: Advantage[] = [
+  {
+    id: "logistics",
+    eyebrow: "Hermes Logistics",
+    title: "Carrier control stays at the center.",
+    summary:
+      "Dispatch and back-office support are organized around the carrier’s equipment, lanes, documents, and approval rules—not a one-size-fits-all load list.",
+    points: [
+      "Carrier approval and clear communication",
+      "Dispatch, documents, invoicing, and follow-through",
+      "Support for multiple equipment types and operating needs",
+    ],
+    href: "/paths/logistics/",
+    cta: "Review logistics support",
+    tone: "violet",
+  },
+  {
+    id: "marketing",
+    eyebrow: "ProgressoPro",
+    title: "Marketing connects to the sales workflow.",
+    summary:
+      "Positioning, website conversion, SEO, social media, lead qualification, CRM handoff, and follow-up are treated as one growth system.",
+    points: [
+      "Start with the business objective and bottleneck",
+      "Connect content and traffic to a measurable next step",
+      "Improve the system using actual results",
+    ],
+    href: "/paths/marketing/",
+    cta: "Find the growth bottleneck",
+    tone: "magenta",
+  },
+  {
+    id: "academy",
+    eyebrow: "Hermes Business Academy",
+    title: "Learning is tied to practical responsibility.",
+    summary:
+      "Programs connect concepts to real logistics, marketing, sales, leadership, communication, and operating workflows rather than course completion alone.",
+    points: [
+      "Role-based logistics and marketing paths",
+      "Practice, correction, and operating standards",
+      "Progression toward leadership and process ownership",
+    ],
+    href: "/paths/academy/",
+    cta: "Explore practical training",
+    tone: "gold",
+  },
+  {
+    id: "technology",
+    eyebrow: "Hermes IT Development",
+    title: "Technology begins with the operating problem.",
+    summary:
+      "Websites, CRM, automation, dashboards, and AI-assisted workflows are scoped around a defined business process and a useful first release.",
+    points: [
+      "Connect existing tools instead of adding more fragmentation",
+      "Keep human review for important decisions",
+      "Start with one measurable workflow and expand carefully",
+    ],
+    href: "/paths/technology/",
+    cta: "Discuss a digital system",
+    tone: "cyan",
+  },
+];
+---
+
+<section class="section advantage-section" aria-labelledby="verified-advantages-title">
+  <div class="shell">
+    <div class="section-heading advantage-heading" data-reveal>
+      <p class="eyebrow">Why teams choose a Hermes path</p>
+      <h2 id="verified-advantages-title">Practical advantages, built into the way we work.</h2>
+      <p>
+        Each direction solves a different business problem, but the operating principle is the same: clearer ownership,
+        connected workflows, and a next step people can act on.
+      </p>
+    </div>
+
+    <div class="advantage-grid" data-reveal>
+      {advantages.map((advantage, index) => (
+        <article class={`advantage-card advantage-${advantage.tone}`} style={`--pulse-delay: ${index * 1.15}s`}>
+          <div class="advantage-signal" aria-hidden="true">
+            <span></span>
+          </div>
+          <p class="advantage-eyebrow">{advantage.eyebrow}</p>
+          <h3>{advantage.title}</h3>
+          <p class="advantage-summary">{advantage.summary}</p>
+          <ul>
+            {advantage.points.map((point) => (
+              <li>
+                <CheckCircle2 size={17} stroke-width={1.8} aria-hidden="true" />
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+          <a href={advantage.href} aria-label={`${advantage.cta}: ${advantage.eyebrow}`}>
+            {advantage.cta}
+            <ArrowUpRight size={18} aria-hidden="true" />
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .advantage-section {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .advantage-section::before {
+    content: "";
+    position: absolute;
+    inset: 8% -18% auto;
+    height: 30rem;
+    background: radial-gradient(circle, rgba(115, 92, 255, 0.11), transparent 68%);
+    pointer-events: none;
+  }
+
+  .advantage-heading {
+    max-width: 54rem;
+  }
+
+  .advantage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .advantage-card {
+    --advantage-accent: 120, 102, 255;
+    position: relative;
+    min-height: 100%;
+    padding: clamp(1.35rem, 3vw, 2rem);
+    border: 1px solid rgba(var(--advantage-accent), 0.24);
+    border-radius: 1.45rem;
+    background:
+      linear-gradient(145deg, rgba(var(--advantage-accent), 0.1), transparent 42%),
+      rgba(10, 12, 22, 0.74);
+    box-shadow: 0 1.2rem 3.2rem rgba(0, 0, 0, 0.16);
+    isolation: isolate;
+  }
+
+  .advantage-violet { --advantage-accent: 129, 105, 255; }
+  .advantage-magenta { --advantage-accent: 227, 82, 176; }
+  .advantage-gold { --advantage-accent: 229, 179, 81; }
+  .advantage-cyan { --advantage-accent: 65, 190, 216; }
+
+  .advantage-signal {
+    position: absolute;
+    top: 1.35rem;
+    right: 1.35rem;
+    width: 0.72rem;
+    height: 0.72rem;
+    border-radius: 999px;
+    background: rgb(var(--advantage-accent));
+    box-shadow: 0 0 1.2rem rgba(var(--advantage-accent), 0.78);
+  }
+
+  .advantage-signal span {
+    position: absolute;
+    inset: -0.42rem;
+    border: 1px solid rgba(var(--advantage-accent), 0.55);
+    border-radius: inherit;
+    animation: advantage-pulse 4.6s ease-out infinite;
+    animation-delay: var(--pulse-delay);
+  }
+
+  .advantage-eyebrow {
+    margin: 0 2rem 0.8rem 0;
+    color: rgb(var(--advantage-accent));
+    font-size: 0.72rem;
+    font-weight: 750;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .advantage-card h3 {
+    max-width: 28rem;
+    margin: 0;
+    font-size: clamp(1.35rem, 2.4vw, 2rem);
+    line-height: 1.08;
+  }
+
+  .advantage-summary {
+    max-width: 38rem;
+    margin: 1rem 0 0;
+    opacity: 0.78;
+  }
+
+  .advantage-card ul {
+    display: grid;
+    gap: 0.7rem;
+    margin: 1.35rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .advantage-card li {
+    display: grid;
+    grid-template-columns: 1.2rem 1fr;
+    gap: 0.6rem;
+    align-items: start;
+  }
+
+  .advantage-card li :global(svg) {
+    margin-top: 0.16rem;
+    color: rgb(var(--advantage-accent));
+  }
+
+  .advantage-card a {
+    display: inline-flex;
+    gap: 0.45rem;
+    align-items: center;
+    margin-top: 1.45rem;
+    color: inherit;
+    font-weight: 720;
+    text-decoration: none;
+  }
+
+  .advantage-card a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .advantage-card a :global(svg) {
+    color: rgb(var(--advantage-accent));
+    transition: transform 180ms ease;
+  }
+
+  .advantage-card:hover a :global(svg),
+  .advantage-card:focus-within a :global(svg) {
+    transform: translate(0.2rem, -0.2rem);
+  }
+
+  .advantage-card:hover,
+  .advantage-card:focus-within {
+    border-color: rgba(var(--advantage-accent), 0.5);
+    box-shadow: 0 1.4rem 3.8rem rgba(0, 0, 0, 0.22), 0 0 2.4rem rgba(var(--advantage-accent), 0.08);
+  }
+
+  @keyframes advantage-pulse {
+    0%, 58% {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    68% {
+      opacity: 0.75;
+    }
+    88%, 100% {
+      opacity: 0;
+      transform: scale(1.85);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .advantage-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .advantage-signal span {
+      animation: none;
+      opacity: 0.45;
+      transform: none;
+    }
+
+    .advantage-card,
+    .advantage-card a :global(svg) {
+      transition: none;
+    }
+  }
+</style>
