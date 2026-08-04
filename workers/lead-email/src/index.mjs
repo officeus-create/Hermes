@@ -20,7 +20,8 @@ const isRequestId = (value) => /^[a-zA-Z0-9][a-zA-Z0-9_-]{7,79}$/.test(value);
 const isEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const isAllowedSubject = (value) =>
   value === "[HERMES SALES] [LOAD BOARD ACCESS] [CARRIER]" ||
-  /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value);
+  /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value) ||
+  /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|ACADEMY|IT DEVELOPMENT|GENERAL)\]$/.test(value);
 
 const constantTimeEqual = async (left, right) => {
   const leftBytes = encoder.encode(left);
