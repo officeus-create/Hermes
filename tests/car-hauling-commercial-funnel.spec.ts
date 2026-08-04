@@ -20,7 +20,8 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   const publicCopy = await page.locator("main").innerText();
   expect(publicCopy).toContain("one vehicle through multi-car capacity");
   expect(publicCopy).toContain("MC or USDOT number");
-  expect(publicCopy).toMatch(/does not.*guarantee.*load/i);
+  expect(publicCopy).toContain("Does Hermes guarantee loads, rates, or revenue?");
+  expect(publicCopy).toContain("No guaranteed lanes or revenue claims.");
   expect(publicCopy).toMatch(/carrier.*final decision/i);
   expect(publicCopy).toContain("fictional product preview");
 
