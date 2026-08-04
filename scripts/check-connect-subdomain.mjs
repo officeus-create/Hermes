@@ -3,10 +3,20 @@ import path from "node:path";
 
 const targetUrl = "https://connect.hermeslogisticsus.com/";
 const outputDir = path.resolve("artifacts");
-const attempts = 6;
-const delayMs = 10_000;
+const allowedExpectations = new Set(["isolation", "release_pending", "approved_web_app"]);
+const requestedExpectation = process.env.CONNECT_EXPECTATION || "isolation";
+const expectation = allowedExpectations.has(requestedExpectation) ? requestedExpectation : "isolation";
+const attempts = Number.parseInt(process.env.CONNECT_CHECK_ATTEMPTS || "6", 10);
+const delayMs = Number.parseInt(process.env.CONNECT_CHECK_DELAY_MS || "10000", 10);
 
-const prHeadMarkers = [
+if (!Number.isInteger(attempts) || attempts < 1 || attempts > 24) {
+  throw new Error("CONNECT_CHECK_ATTEMPTS must be an integer between 1 and 24.");
+}
+if (!Number.isInteger(delayMs) || delayMs < 1000 || delayMs > 30000) {
+  throw new Error("CONNECT_CHECK_DELAY_MS must be an integer between 1000 and 30000.");
+}
+
+const webAppMarkers = [
   "Hermes Connect Web App · Request Access",
   "One clear client path for",
   "Request Web App access",
@@ -31,7 +41,7 @@ async function fetchPublic() {
         accept: "text/html,application/xhtml+xml",
         "cache-control": "no-cache",
         pragma: "no-cache",
-        "user-agent": "HermesConnectIsolationVerifier/1.0 (+public read-only deployment check)",
+        "user-agent": "HermesConnectReleaseVerifier/1.1 (+public read-only deployment check)",
       },
       signal: AbortSignal.timeout(20_000),
     });
@@ -62,7 +72,7 @@ async function fetchPublic() {
 const observations = [];
 for (let attempt = 1; attempt <= attempts; attempt += 1) {
   const fetched = await fetchPublic();
-  const prMarkers = Object.fromEntries(prHeadMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
+  const liveWebAppMarkers = Object.fromEntries(webAppMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
   const oldMarkers = Object.fromEntries(previousMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
   const title = fetched.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null;
   observations.push({
@@ -75,15 +85,15 @@ for (let attempt = 1; attempt <= attempts; attempt += 1) {
     age: fetched.age,
     durationMs: fetched.durationMs,
     title,
-    prMarkers,
+    webAppMarkers: liveWebAppMarkers,
     previousMarkers: oldMarkers,
     error: fetched.error,
   });
   if (attempt < attempts) await sleep(delayMs);
 }
 
-const anyPrHeadVisible = observations.some((observation) =>
-  Object.values(observation.prMarkers).some(Boolean),
+const anyWebAppVisible = observations.some((observation) =>
+  Object.values(observation.webAppMarkers).some(Boolean),
 );
 const anyPreviousVisible = observations.some((observation) =>
   Object.values(observation.previousMarkers).some(Boolean),
@@ -92,12 +102,14 @@ const allRequestsHealthy = observations.every((observation) => observation.statu
 
 let classification = "LIVE_UNKNOWN_CONTENT";
 if (!allRequestsHealthy) classification = "UNRESOLVED_NETWORK_ACCESS";
-else if (anyPrHeadVisible) classification = "LIVE_PR_HEAD_EXPOSED";
+else if (anyWebAppVisible && expectation === "isolation") classification = "LIVE_PR_HEAD_EXPOSED";
+else if (anyWebAppVisible) classification = "LIVE_APPROVED_WEB_APP";
 else if (anyPreviousVisible) classification = "LIVE_PREVIOUS_CONNECT";
 
 const result = {
   checkedAt: new Date().toISOString(),
   targetUrl,
+  expectation,
   classification,
   observations,
   boundaries: {
@@ -117,11 +129,26 @@ await fs.writeFile(
 );
 
 const last = observations.at(-1);
+const interpretation = classification === "LIVE_APPROVED_WEB_APP"
+  ? "- The custom subdomain serves the approved web-only Hermes Connect release."
+  : classification === "LIVE_PR_HEAD_EXPOSED"
+    ? "- The custom subdomain exposed at least one marker that this isolation run treats as unapproved preview content. Correct Cloudflare branch/domain isolation before release."
+    : classification === "LIVE_PREVIOUS_CONNECT"
+      ? expectation === "approved_web_app"
+        ? "- The approved release has not reached the custom subdomain; the previous Hermes Connect experience is still live."
+        : expectation === "release_pending"
+          ? "- The previous Hermes Connect experience is still live while the approved release is pending. This PR check remains read-only; the post-merge main check will require the Web App."
+          : "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
+      : classification === "UNRESOLVED_NETWORK_ACCESS"
+        ? "- At least one required public request failed; no deployment conclusion is safe."
+        : "- The subdomain returned healthy but unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.";
+
 const markdown = [
-  "# Hermes Connect subdomain isolation check",
+  "# Hermes Connect custom-domain verification",
   "",
   `- Checked: ${result.checkedAt}`,
   `- Target: ${targetUrl}`,
+  `- Expected state: **${expectation}**`,
   `- Classification: **${classification}**`,
   `- HTTP status: ${last?.status ?? "unavailable"}`,
   `- Final URL: ${last?.finalUrl ?? "unavailable"}`,
@@ -130,19 +157,13 @@ const markdown = [
   "",
   "## Interpretation",
   "",
-  classification === "LIVE_PR_HEAD_EXPOSED"
-    ? "- The custom subdomain exposed at least one unique Web App marker from the current draft PR head during the observation window. Treat preview/production isolation as failed until Cloudflare configuration is corrected."
-    : classification === "LIVE_PREVIOUS_CONNECT"
-      ? "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
-      : classification === "UNRESOLVED_NETWORK_ACCESS"
-        ? "- At least one required public request failed; no deployment conclusion is safe."
-        : "- The subdomain returned healthy but unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.",
+  interpretation,
   "",
   "## Observations",
   "",
-  "| Attempt | Status | Title | Web App PR marker visible | Previous marker visible |",
+  "| Attempt | Status | Title | Web App marker visible | Previous marker visible |",
   "| ---: | ---: | --- | --- | --- |",
-  ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.prMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} |`),
+  ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.webAppMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} |`),
   "",
   "> Read-only public verification. No application, account, booking, payment, subscription, cookie, credential, or private infrastructure identifier was created or accessed.",
   "",
@@ -151,5 +172,7 @@ const markdown = [
 await fs.writeFile(path.join(outputDir, "connect-subdomain-isolation.md"), markdown);
 console.log(markdown);
 
-if (classification === "LIVE_PR_HEAD_EXPOSED") process.exitCode = 2;
 if (classification === "UNRESOLVED_NETWORK_ACCESS") process.exitCode = 3;
+if (classification === "LIVE_UNKNOWN_CONTENT") process.exitCode = 5;
+if (expectation === "isolation" && classification === "LIVE_PR_HEAD_EXPOSED") process.exitCode = 2;
+if (expectation === "approved_web_app" && classification !== "LIVE_APPROVED_WEB_APP") process.exitCode = 4;
