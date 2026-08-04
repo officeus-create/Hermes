@@ -20,7 +20,7 @@ export const categoryCatalog = [
     id: "beauty-wellness",
     name: "Beauty & wellness",
     label: "Salons, barbers, nail, spa",
-    headline: "Show services beautifully and turn interest into a booking request.",
+    headline: "Show services beautifully and turn interest into a clear booking request.",
     previewName: "Luna Beauty Studio",
     previewRole: "Beauty studio · Chicago / Remote consultation",
     previewServices: ["Nail service", "Hair appointment", "Skin consultation"],
@@ -53,7 +53,7 @@ export const categoryCatalog = [
     id: "logistics-field",
     name: "Logistics & field services",
     label: "Dispatch, transport, mobile teams",
-    headline: "Route every request to the right service, location, equipment, or operations review.",
+    headline: "Route each request to the right service, location, equipment, or operations review.",
     previewName: "Hermes Field Desk",
     previewRole: "Logistics support · U.S. operations",
     previewServices: ["Carrier review", "Transport request", "Operations call"],
@@ -75,7 +75,7 @@ export const categoryCatalog = [
     id: "home-local",
     name: "Home & local services",
     label: "Cleaning, repair, photo, pet care",
-    headline: "Make local services easy to understand, request, and coordinate from a phone.",
+    headline: "Make local services easy to understand, request, and coordinate from any browser.",
     previewName: "Bright Local Services",
     previewRole: "Local service team · Milwaukee area",
     previewServices: ["Service estimate", "Visit request", "Recurring service"],
@@ -88,20 +88,8 @@ export const platformCatalog = [
   {
     id: "web",
     name: "Web app",
-    status: "First release",
-    description: "Open from any modern browser. No app-store installation is required for the first controlled release.",
-  },
-  {
-    id: "iphone",
-    name: "iPhone",
-    status: "Download waitlist",
-    description: "Apply to receive an invitation when an approved iPhone test build or mobile-web release is available.",
-  },
-  {
-    id: "android",
-    name: "Android",
-    status: "Download waitlist",
-    description: "Apply to receive an invitation when an approved Android test build or mobile-web release is available.",
+    status: "Controlled web access",
+    description: "Open Hermes Connect from a modern browser on desktop, tablet, or phone. No app-store installation is required.",
   },
 ];
 
@@ -145,7 +133,7 @@ export function validateEarlyAccessDraft(draft) {
   const email = cleanText(draft.email, 160).toLowerCase();
   const businessName = cleanText(draft.businessName, 140);
   const categoryId = cleanText(draft.categoryId, 60);
-  const platformId = cleanText(draft.platformId, 40);
+  const platformId = cleanText(draft.platformId || "web", 40);
   const role = cleanText(draft.role, 100);
   const teamSize = cleanText(draft.teamSize, 40);
   const currentMethod = cleanText(draft.currentMethod, 120);
@@ -182,7 +170,7 @@ export function validateEarlyAccessDraft(draft) {
 }
 
 export function createEarlyAccessRequest(draft) {
-  const validation = validateEarlyAccessDraft(draft);
+  const validation = validateEarlyAccessDraft({ ...draft, platformId: "web" });
   if (!validation.valid) {
     const error = new Error(`Early-access validation failed: ${validation.errors.join(", ")}`);
     error.validationErrors = validation.errors;
@@ -191,26 +179,26 @@ export function createEarlyAccessRequest(draft) {
 
   const value = validation.normalized;
   const category = getCategory(value.categoryId);
-  const platform = getPlatform(value.platformId);
+  const platform = getPlatform("web");
   const requestId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
     ? crypto.randomUUID()
     : `connect-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   const message = [
-    "Hermes Connect early-access request",
+    "Hermes Connect web-access request",
     `Category: ${category.name}`,
-    `Requested platform: ${platform.name}`,
+    "Requested product: Hermes Connect Web App",
     value.businessName ? `Business: ${value.businessName}` : "",
     `Role: ${value.role}`,
     value.teamSize ? `Team size: ${value.teamSize}` : "",
     value.currentMethod ? `Current booking/request method: ${value.currentMethod}` : "",
     `Must-have workflow: ${value.mustHave}`,
-    "Request: review this business for controlled access or a future download invitation.",
+    "Request: review this business for controlled Hermes Connect web access.",
   ].filter(Boolean).join("\n");
 
   return {
     request_id: requestId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80),
     submitted_at: new Date().toISOString(),
-    source_path: "/hermes-connect/early-access/",
+    source_path: "/hermes-connect/web-access/",
     name: value.name,
     email: value.email,
     interest: "IT Development",
@@ -219,16 +207,16 @@ export function createEarlyAccessRequest(draft) {
     direction_fields: {
       direction: "IT Development",
       fields: {
-        system_or_workflow_needed: `Hermes Connect · ${category.name}`,
+        system_or_workflow_needed: `Hermes Connect Web App · ${category.name}`,
         current_tools: value.currentMethod,
         number_of_users: value.teamSize,
-        integrations_needed: `${platform.name}; ${value.mustHave}`,
+        integrations_needed: `Web app; ${value.mustHave}`,
         timeline: platform.status,
       },
     },
     public_dimensions: {
       category_id: category.id,
-      platform_id: platform.id,
+      platform_id: "web",
     },
   };
 }
