@@ -7,7 +7,7 @@ const demo = "/load-board/?role=carrier&equipment=car_hauler#available-loads";
 test("car-hauling recommendation uses the direct dispatch intake and keeps demo secondary", async ({ page }) => {
   await page.goto(route);
 
-  await expect(page).toHaveTitle("Car Hauler Dispatch & Load Access Path | Hermes Logistics");
+  await expect(page).toHaveTitle("Car Hauling Dispatch Support | Hermes Logistics");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${route}`);
 
   const primaryLinks = page.locator("[data-recommendation-primary], [data-recommendation-primary-bottom]");
@@ -32,7 +32,7 @@ test("car-hauling recommendation uses the direct dispatch intake and keeps demo 
 test("direct dispatch intake remains explicitly car-hauler specific", async ({ page }) => {
   await page.goto(directIntake);
   await expect(page.locator('input[name="equipment_class"]')).toHaveValue("car_hauler");
-  await expect(page.getByRole("heading", { level: 1, name: "Start a Car-Hauling Dispatch Review" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Start Your Car Hauling Dispatch Review" })).toBeVisible();
 });
 
 test("generic carrier recommendations are not silently redirected into the car-hauler intake", async ({ page }) => {
