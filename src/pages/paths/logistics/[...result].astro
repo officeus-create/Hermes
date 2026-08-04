@@ -23,6 +23,7 @@ const carHaulingCommercialAudienceIds = new Set([
 const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recommendation.id);
 const showPartnerReviewMatrix = recommendation.id === "agency-development";
 const isBrokerCapacityPath = recommendation.id === "broker-carrier-capacity";
+const isCarHaulingPath = recommendation.id === "carrier-car-hauling";
 const customerIntakeById: Record<string, {
   primary: { label: string; href: string };
   demo: { label: string; href: string };
@@ -52,10 +53,14 @@ const customerIntakeById: Record<string, {
 const customerIntake = customerIntakeById[recommendation.id];
 const primaryCta = isBrokerCapacityPath
   ? { label: "Prepare broker opportunity", href: "/logistics/request-vehicle-transport/?role=broker#transport-intake" }
-  : customerIntake?.primary ?? recommendation.primaryCta;
+  : isCarHaulingPath
+    ? { label: "Start car-hauling dispatch review", href: "/logistics/start-car-hauling-dispatch/" }
+    : customerIntake?.primary ?? recommendation.primaryCta;
 const demoCta = isBrokerCapacityPath
   ? { label: "Preview broker Load Board demo", href: "/load-board/?role=broker#post-load" }
-  : customerIntake?.demo ?? null;
+  : isCarHaulingPath
+    ? { label: "Preview carrier Load Board demo", href: "/load-board/?role=carrier&equipment=car_hauler#available-loads" }
+    : customerIntake?.demo ?? null;
 const schema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -130,6 +135,21 @@ import "../../../styles/features/case.css";
             </div>
             <div>
               <a class="button button-primary" href={primaryCta.href}>Prepare broker opportunity <ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {isCarHaulingPath && (
+        <section class="section recommendation-next" aria-labelledby="car-hauling-intake-boundary-title" data-car-hauling-direct-intake>
+          <div class="shell recommendation-next-grid">
+            <div>
+              <p class="eyebrow">Commercial intake versus product demo</p>
+              <h2 id="car-hauling-intake-boundary-title">Use direct intake for a real car-hauling dispatch review.</h2>
+              <p>The direct carrier workspace collects authority, insurance, equipment, practical capacity, operating area, availability, current dispatch status, business contact, and consent for Logistics Sales review. The Load Board remains a fictional product demonstration and does not create an account, assign a dispatcher, publish a load, guarantee acceptance, or book freight.</p>
+            </div>
+            <div>
+              <a class="button button-primary" href={primaryCta.href}>Start car-hauling dispatch review <ArrowRight size={18} aria-hidden="true" /></a>
             </div>
           </div>
         </section>
