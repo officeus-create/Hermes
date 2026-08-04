@@ -23,6 +23,10 @@ const faq = [
     answer: "No. The current workflow prepares a preview and explicit contact handoff for human review. It does not accept payment, reserve a seat, create an account, or confirm admission.",
   },
   {
+    question: "What happens after I choose a contact handoff?",
+    answer: "A person reviews the selected program, country and city, languages, spoken English level, recent experience, objective, weekly availability, U.S. time-zone fit, and preferred contact route. Missing or unclear information may require a follow-up question. If a current approved format may fit, its scope, dates, schedule, language, capacity, price, payment or refund terms, and participation rules are shared separately before enrollment. No response time, admission, seat, mentor, account, operational access, employment, income, or future paid work is guaranteed.",
+  },
+  {
     question: "Which program can I choose?",
     answer: "The current public programs are U.S. Logistics Operations and Marketing. Leadership, technology, and AI topics may support exercises but are not separate public programs in this release.",
   },
@@ -116,6 +120,21 @@ const schema = [
             <article><span>02</span><Languages size={23} aria-hidden="true" /><h3>Location and languages</h3><p>Prepare your country, city, languages and levels, spoken English level, and preferred learning language.</p></article>
             <article><span>03</span><TimerReset size={23} aria-hidden="true" /><h3>Experience and schedule</h3><p>Summarize recent relevant experience, weekly availability, desired start period, and U.S. time-zone availability where applicable.</p></article>
             <article><span>04</span><ShieldCheck size={23} aria-hidden="true" /><h3>Consent and contact</h3><p>Choose the preferred contact route, review the privacy notice, and confirm that the information may be used to respond to the request.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-pillars" aria-labelledby="application-review-title">
+        <div class="shell">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">After the handoff</p><h2 id="application-review-title">The application moves through human review.</h2></div>
+            <p>The review explains fit and the next available step. It does not create enrollment, access, a mentor assignment, employment, or a guaranteed response time.</p>
+          </div>
+          <div class="capacity-pillar-grid">
+            <article><span>01</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Application context</h3><p>A reviewer checks the selected program, location, languages, spoken English, experience, objective, schedule, time-zone fit, and contact route.</p></article>
+            <article><span>02</span><Languages size={23} aria-hidden="true" /><h3>Clarification when needed</h3><p>If required information is missing, unclear, or inconsistent with the selected program, the next contact may request clarification before any fit decision.</p></article>
+            <article><span>03</span><TimerReset size={23} aria-hidden="true" /><h3>Current format review</h3><p>If a current approved format may fit, its scope, dates, schedule, language, capacity, price, payment or refund terms, and participation rules are shared separately.</p></article>
+            <article><span>04</span><ShieldCheck size={23} aria-hidden="true" /><h3>Separate decision</h3><p>The application may continue, change direction, wait for a suitable format, or not proceed. Enrollment exists only after the applicable offer and terms are separately accepted.</p></article>
           </div>
         </div>
       </section>
