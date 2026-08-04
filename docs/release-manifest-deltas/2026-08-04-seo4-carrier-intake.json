@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-04-seo4-carrier-intake",
+  "generated_at": "2026-08-04T10:39:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/logistics/start-car-hauling-dispatch/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "canonical": "https://hermeslogisticsus.com/logistics/start-car-hauling-dispatch/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/logistics/start-car-hauling-dispatch/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Production lead delivery remains gated by Issue #167; preview email and phone fallbacks remain visible.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

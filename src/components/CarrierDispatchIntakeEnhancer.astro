@@ -1,0 +1,218 @@
+<script>
+  import {
+    buildQualifiedCarrierLead,
+    buildQualifiedCarrierMailto,
+    buildQualifiedCarrierPayload,
+    buildQualifiedCarrierPreview,
+    reviewQualifiedCarrierPayload,
+    type QualifiedCarrierLead,
+  } from "../lib/carrier-qualification";
+
+  const setupCarrierDispatchIntake = () => {
+    if (window.location.pathname !== "/logistics/start-car-hauling-dispatch/") return;
+
+    const root = document.querySelector<HTMLElement>("[data-dispatch-intake]");
+    const form = root?.querySelector<HTMLFormElement>("[data-vehicle-form]");
+    const alert = root?.querySelector<HTMLElement>("[data-vehicle-alert]");
+    const result = root?.querySelector<HTMLElement>("[data-vehicle-result]");
+    const decision = root?.querySelector<HTMLElement>("[data-vehicle-decision]");
+    const state = root?.querySelector<HTMLElement>("[data-vehicle-state]");
+    const preview = root?.querySelector<HTMLElement>("[data-vehicle-preview]");
+    const email = root?.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+    const sendButton = root?.querySelector<HTMLButtonElement>("[data-send-vehicle-lead]");
+    const deliveryStatus = root?.querySelector<HTMLElement>("[data-vehicle-delivery-status]");
+    const boundary = root?.querySelector<HTMLElement>("[data-vehicle-boundary]");
+    const availableFrom = root?.querySelector<HTMLInputElement>('input[name="available_from"]');
+    if (!root || !form || !alert || !result || !decision || !state || !preview || !email || !sendButton || !deliveryStatus || !boundary) return;
+
+    if (availableFrom) {
+      const today = new Date();
+      today.setUTCHours(12, 0, 0, 0);
+      availableFrom.min = today.toISOString().slice(0, 10);
+    }
+
+    let activeLead: QualifiedCarrierLead | null = null;
+    let intakeStarted = false;
+    let previewRecorded = false;
+    let handoffRecorded = false;
+
+    const pushEvent = (payload: Record<string, string>) => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(payload);
+    };
+
+    const baseEvent = {
+      audience_type: "carrier",
+      page_group: "commercial_dispatch_intake",
+      service_group: "car_hauling_dispatch",
+      page_path: window.location.pathname,
+    };
+
+    const recordStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushEvent({ event: "carrier_intake_start", ...baseEvent });
+    };
+
+    const resetPreparedState = (event: Event) => {
+      if (!event.isTrusted) return;
+      activeLead = null;
+      previewRecorded = false;
+      handoffRecorded = false;
+      recordStart(event);
+    };
+
+    const fillList = (selector: string, values: string[]) => {
+      const list = root.querySelector<HTMLElement>(selector);
+      if (!list) return;
+      list.replaceChildren(...values.map((value) => {
+        const item = document.createElement("li");
+        item.textContent = value;
+        return item;
+      }));
+    };
+
+    form.addEventListener("focusin", recordStart);
+    form.addEventListener("input", resetPreparedState);
+    form.addEventListener("change", resetPreparedState);
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      alert.hidden = true;
+      deliveryStatus.textContent = "";
+
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        alert.textContent = "Complete the company, authority, insurance, equipment, availability, operating-area, phone, email, and consent fields before review.";
+        alert.hidden = false;
+        return;
+      }
+
+      const payload = buildQualifiedCarrierPayload(new FormData(form));
+      const review = reviewQualifiedCarrierPayload(payload);
+      const deliverable = review.decision !== "needs_more_information" && review.decision !== "rejected";
+      if (!deliverable) {
+        alert.textContent = review.reasons.join(" ");
+        alert.hidden = false;
+      }
+
+      const rawPreview = buildQualifiedCarrierPreview(payload, review);
+      const dispatchPreview = rawPreview
+        .replaceAll("Hermes Load Board", "Hermes Car Hauling Dispatch")
+        .replace("Sales tag: LOAD BOARD ACCESS / CARRIER", "Commercial source: DIRECT CAR HAULING DISPATCH INTAKE")
+        .replaceAll("Dry-run routing:", "Internal review routing:");
+      const baseLead = buildQualifiedCarrierLead(payload, review);
+      activeLead = deliverable
+        ? {
+            ...baseLead,
+            email_subject: `Car hauling dispatch review — ${payload.company_name}`,
+            email_body: dispatchPreview,
+          }
+        : null;
+
+      decision.textContent = review.decision.replaceAll("_", " ");
+      state.textContent = `Review state: ${review.vehicle_state.replaceAll("_", " ")}`;
+      fillList("[data-vehicle-reasons]", review.reasons);
+      fillList("[data-vehicle-actions]", review.required_actions);
+      fillList("[data-vehicle-routing]", review.routing.length ? review.routing : ["No routing — the request needs correction."]);
+      preview.textContent = dispatchPreview;
+      email.hidden = !deliverable;
+      if (activeLead) email.href = buildQualifiedCarrierMailto(activeLead);
+
+      const live = form.dataset.leadMode === "live";
+      sendButton.hidden = !live || !deliverable;
+      deliveryStatus.textContent = deliverable
+        ? live
+          ? "Review the qualified request, then send it securely to Logistics Sales. Email and phone remain available as fallbacks."
+          : "The request is prepared for review. Open the email handoff or call Logistics Sales; preview mode does not send or store it automatically."
+        : "Correct the missing or invalid operating information before choosing a handoff.";
+      boundary.textContent = live
+        ? "A success message appears only after the approved receiver confirms delivery. No dispatcher, load, rate, lane, or revenue is guaranteed."
+        : "Preview mode creates no account, CRM record, dispatcher assignment, load booking, or automatic message.";
+
+      result.dataset.decision = review.decision;
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (!previewRecorded) {
+        previewRecorded = true;
+        pushEvent({
+          event: "carrier_intake_preview_ready",
+          ...baseEvent,
+          preview_status: review.decision,
+        });
+      }
+    });
+
+    email.addEventListener("click", (event) => {
+      if (!event.isTrusted || !activeLead || handoffRecorded || result.hidden || email.hidden) return;
+      handoffRecorded = true;
+      pushEvent({
+        event: "carrier_handoff_ready",
+        ...baseEvent,
+        handoff_method: "email",
+        preview_status: result.dataset.decision || "unknown",
+      });
+    });
+
+    sendButton.addEventListener("click", async (event) => {
+      if (!event.isTrusted || !activeLead) return;
+
+      if (!handoffRecorded) {
+        handoffRecorded = true;
+        pushEvent({
+          event: "carrier_handoff_ready",
+          ...baseEvent,
+          handoff_method: "secure_delivery",
+          preview_status: result.dataset.decision || "unknown",
+        });
+      }
+
+      const endpointValue = form.dataset.leadEndpoint || "";
+      let endpoint: URL;
+      try {
+        endpoint = new URL(endpointValue, window.location.origin);
+        if (endpoint.protocol !== "https:" || endpoint.origin !== window.location.origin) throw new Error("invalid_endpoint");
+      } catch {
+        deliveryStatus.textContent = "Secure delivery is not connected. Use the prepared email or call Logistics Sales at +1 (262) 302-3626.";
+        return;
+      }
+
+      sendButton.disabled = true;
+      deliveryStatus.textContent = "Sending the request securely…";
+      const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+          body: JSON.stringify({
+            request_id: requestId,
+            submitted_at: new Date().toISOString(),
+            page_path: window.location.pathname,
+            ...activeLead,
+          }),
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error("delivery_failed");
+
+        deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review the authority, insurance, equipment, and dispatch scope.";
+        sendButton.hidden = true;
+        pushEvent({
+          event: "carrier_delivery_confirmed",
+          ...baseEvent,
+          preview_status: result.dataset.decision || "unknown",
+        });
+      } catch {
+        deliveryStatus.textContent = "Delivery was not confirmed. The request may not have been received; use the prepared email or call Logistics Sales.";
+      } finally {
+        window.clearTimeout(timeout);
+        sendButton.disabled = false;
+      }
+    });
+  };
+
+  setupCarrierDispatchIntake();
+</script>

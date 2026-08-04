@@ -1,0 +1,256 @@
+---
+import { Mail, Phone, ShieldCheck } from "@lucide/astro";
+import CarrierDispatchIntakeEnhancer from "./CarrierDispatchIntakeEnhancer.astro";
+
+interface Props {
+  leadMode: "live" | "preview";
+  leadEndpoint: string;
+}
+
+const { leadMode, leadEndpoint } = Astro.props;
+---
+
+<section class="dispatch-intake" id="dispatch-intake" data-dispatch-intake aria-labelledby="dispatch-intake-title">
+  <div class="shell dispatch-intake-layout">
+    <div class="dispatch-intake-copy">
+      <p class="eyebrow">Direct carrier intake</p>
+      <h2 id="dispatch-intake-title">Start with the operating facts Logistics Sales needs.</h2>
+      <p>
+        This is the commercial dispatch-review path. It is separate from the fictional Load Board demo and is designed for
+        owner-operators and fleets that want Hermes to review authority, insurance, equipment, operating area, availability,
+        and dispatch scope.
+      </p>
+      <ol>
+        <li><span>01</span><div><strong>Prepare the request</strong><small>Company, MC/USDOT, authority, insurance, equipment, capacity, geography, and contact.</small></div></li>
+        <li><span>02</span><div><strong>Review the qualification</strong><small>The page explains whether the next step is dispatcher review, readiness review, or scope clarification.</small></div></li>
+        <li><span>03</span><div><strong>Choose the handoff</strong><small>Use secure delivery when activated, or use the prepared email and direct phone fallback.</small></div></li>
+      </ol>
+      <div class="dispatch-intake-boundary-card">
+        <ShieldCheck size={24} aria-hidden="true" />
+        <div>
+          <strong>Carrier-controlled operating decisions</strong>
+          <p>Hermes may research, communicate, negotiate, and coordinate approved information. The carrier approves each load and remains responsible for safety and lawful transportation.</p>
+        </div>
+      </div>
+      <div class="dispatch-intake-direct-contact">
+        <a href="mailto:freight_301@hermeslogisticsus.com"><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
+        <a href="tel:+12623023626"><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
+      </div>
+    </div>
+
+    <div class="dispatch-intake-workspace">
+      <form class="dispatch-intake-form" data-vehicle-form data-lead-mode={leadMode} data-lead-endpoint={leadEndpoint} novalidate>
+        <div class="form-alert" role="alert" data-vehicle-alert hidden></div>
+        <p class="eyebrow">Carrier / Owner-operator</p>
+        <h3>Request a car-hauling dispatch review</h3>
+        <p class="dispatch-intake-form-note">Complete the minimum operating profile. Do not include VINs, shipment documents, private rates, passwords, or sensitive release information.</p>
+
+        <div class="dispatch-field-row">
+          <label>Your role *
+            <select name="carrier_role" required>
+              <option value="">Choose one</option>
+              <option value="carrier">Carrier</option>
+              <option value="owner_operator">Owner-operator</option>
+              <option value="dispatcher">Dispatcher for a carrier</option>
+            </select>
+          </label>
+          <label>Company name *
+            <input name="carrier_company_name" maxlength="160" autocomplete="organization" required />
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Contact name *
+            <input name="carrier_contact_name" maxlength="100" autocomplete="name" required />
+          </label>
+          <label>MC or USDOT number *
+            <input name="authority_number" maxlength="40" placeholder="MC 123456 or USDOT 1234567" required />
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Operating authority status *
+            <select name="authority_status" required>
+              <option value="">Choose authority status</option>
+              <option value="active">Active</option>
+              <option value="pending">Pending activation</option>
+              <option value="inactive">Inactive</option>
+              <option value="not_sure">Not sure</option>
+            </select>
+          </label>
+          <label>Authority age *
+            <select name="authority_age" required>
+              <option value="">Choose authority age</option>
+              <option value="under_90_days">Under 90 days</option>
+              <option value="three_to_twelve_months">3–12 months</option>
+              <option value="over_one_year">Over one year</option>
+              <option value="not_sure">Not sure</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Insurance readiness *
+            <select name="insurance_status" required>
+              <option value="">Choose insurance status</option>
+              <option value="active">Active policy</option>
+              <option value="quote_in_progress">Quote or policy in progress</option>
+              <option value="inactive">Not active</option>
+              <option value="not_sure">Not sure</option>
+            </select>
+          </label>
+          <label>Fleet size *
+            <select name="fleet_size" required>
+              <option value="">Choose fleet size</option>
+              <option value="one">1 unit</option>
+              <option value="two_to_three">2–3 units</option>
+              <option value="four_to_ten">4–10 units</option>
+              <option value="eleven_plus">11+ units</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Current dispatch status *
+            <select name="dispatch_status" required>
+              <option value="">Choose dispatch status</option>
+              <option value="self_dispatching">Self-dispatching</option>
+              <option value="working_with_dispatcher">Working with a dispatcher</option>
+              <option value="needs_dispatcher">Needs dispatch service</option>
+              <option value="not_sure">Not sure what support is needed</option>
+            </select>
+          </label>
+          <label>Equipment configuration
+            <input name="vehicle_name" maxlength="100" placeholder="Example: 3-car wedge, 7-car open hauler" />
+          </label>
+        </div>
+
+        <input type="hidden" name="equipment_class" value="car_hauler" />
+        <input type="hidden" name="interested_load" value="" />
+
+        <div class="dispatch-field-row">
+          <label>Capacity / unit count *
+            <input name="capacity_units" type="number" min="1" max="20" inputmode="numeric" required />
+          </label>
+          <label>Available from *
+            <input name="available_from" type="date" required />
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Home city, state or ZIP *
+            <input name="origin_location" maxlength="180" placeholder="Example: Chicago, IL" required />
+          </label>
+          <label>Origin radius in miles *
+            <input name="origin_radius" type="number" min="1" max="1000" inputmode="numeric" value="150" required />
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Preferred destination or region
+            <input name="destination_location" maxlength="180" placeholder="Example: Midwest, Southeast, anywhere" />
+          </label>
+          <label class="dispatch-checkbox dispatch-anywhere">
+            <input name="anywhere" type="checkbox" />
+            <span>Open to any suitable destination</span>
+          </label>
+        </div>
+
+        <div class="dispatch-field-row">
+          <label>Email *
+            <input name="carrier_email" type="email" maxlength="160" autocomplete="email" required />
+          </label>
+          <label>Phone *
+            <input name="carrier_phone" type="tel" maxlength="40" autocomplete="tel" required />
+          </label>
+        </div>
+
+        <label class="dispatch-checkbox dispatch-consent">
+          <input name="carrier_consent" type="checkbox" required />
+          <span>I confirm that I am authorized to request this business review and agree that Logistics Sales may contact me about the submitted carrier information.</span>
+        </label>
+
+        <label class="dispatch-honeypot" aria-hidden="true">Website
+          <input name="carrier_website" tabindex="-1" autocomplete="off" />
+        </label>
+
+        <button class="button button-primary" type="submit">Review dispatch request</button>
+        <p class="dispatch-mode-note">
+          {leadMode === "live"
+            ? "Secure delivery is available only when the approved same-origin receiver confirms the request."
+            : "Preview mode is active. The form prepares a review and email handoff without automatic delivery or storage."}
+        </p>
+      </form>
+
+      <aside class="dispatch-intake-result" data-vehicle-result hidden aria-live="polite">
+        <p class="eyebrow">Qualification result</p>
+        <h3 data-vehicle-decision>Review pending</h3>
+        <p data-vehicle-state></p>
+
+        <div class="dispatch-result-grid">
+          <div><strong>Why</strong><ul data-vehicle-reasons></ul></div>
+          <div><strong>Required actions</strong><ul data-vehicle-actions></ul></div>
+          <div><strong>Routing</strong><ul data-vehicle-routing></ul></div>
+        </div>
+
+        <pre data-vehicle-preview></pre>
+        <div class="dispatch-result-actions">
+          <button class="button button-primary" type="button" data-send-vehicle-lead hidden>Send securely to Logistics Sales</button>
+          <a class="button" href="mailto:freight_301@hermeslogisticsus.com" data-vehicle-email>Open prepared email</a>
+          <a class="button" href="tel:+12623023626">Call +1 (262) 302-3626</a>
+        </div>
+        <p data-vehicle-delivery-status></p>
+        <p class="dispatch-result-boundary" data-vehicle-boundary></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<CarrierDispatchIntakeEnhancer />
+
+<style>
+  .dispatch-intake { padding: clamp(4rem, 8vw, 7rem) 0; background: #f5f7ff; color: #10204e; }
+  .dispatch-intake-layout { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+  .dispatch-intake-copy { position: sticky; top: 7rem; }
+  .dispatch-intake-copy h2 { max-width: 13ch; font-size: clamp(2.1rem, 4vw, 3.7rem); }
+  .dispatch-intake-copy > p:not(.eyebrow) { max-width: 58ch; color: #526181; line-height: 1.7; }
+  .dispatch-intake-copy ol { display: grid; gap: .8rem; margin: 2rem 0; padding: 0; list-style: none; }
+  .dispatch-intake-copy li { display: grid; grid-template-columns: 42px 1fr; gap: .8rem; padding: 1rem 0; border-top: 1px solid #dce3f8; }
+  .dispatch-intake-copy li > span { font-family: var(--font-mono); color: #6a20d9; }
+  .dispatch-intake-copy li div { display: grid; gap: .25rem; }
+  .dispatch-intake-copy li small { color: #667392; line-height: 1.5; }
+  .dispatch-intake-boundary-card { display: grid; grid-template-columns: auto 1fr; gap: .9rem; padding: 1.1rem; border: 1px solid #d8e0f7; border-radius: 10px; background: #fff; }
+  .dispatch-intake-boundary-card svg { color: #1d7a57; }
+  .dispatch-intake-boundary-card p { margin: .35rem 0 0; color: #5d6986; font-size: .92rem; line-height: 1.55; }
+  .dispatch-intake-direct-contact { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+  .dispatch-intake-direct-contact a { display: inline-flex; gap: .45rem; align-items: center; font-weight: 750; }
+  .dispatch-intake-workspace { display: grid; gap: 1rem; }
+  .dispatch-intake-form, .dispatch-intake-result { padding: clamp(1.25rem, 3vw, 2rem); border: 1px solid #dbe2f5; border-radius: 14px; background: #fff; box-shadow: 0 24px 70px rgba(29, 48, 102, .09); }
+  .dispatch-intake-form h3, .dispatch-intake-result h3 { margin: .25rem 0 .75rem; font-size: clamp(1.5rem, 3vw, 2.2rem); }
+  .dispatch-intake-form-note, .dispatch-mode-note, .dispatch-result-boundary { color: #65718e; font-size: .9rem; line-height: 1.55; }
+  .dispatch-field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; margin-top: .9rem; }
+  .dispatch-intake-form label { display: grid; gap: .4rem; color: #21325f; font-size: .88rem; font-weight: 700; }
+  .dispatch-intake-form input, .dispatch-intake-form select { width: 100%; min-height: 46px; padding: .72rem .8rem; border: 1px solid #cfd8ee; border-radius: 7px; background: #fff; color: #10204e; font: inherit; }
+  .dispatch-intake-form input:focus, .dispatch-intake-form select:focus { outline: 3px solid rgba(74, 92, 255, .18); border-color: #4a5cff; }
+  .dispatch-checkbox { grid-template-columns: auto 1fr !important; align-items: start; }
+  .dispatch-checkbox input { width: 1rem; min-height: auto; margin-top: .2rem; }
+  .dispatch-anywhere { align-self: end; min-height: 46px; padding: .75rem; border: 1px solid #dbe2f5; border-radius: 7px; }
+  .dispatch-consent { margin: 1rem 0; font-weight: 600 !important; line-height: 1.5; }
+  .dispatch-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+  .form-alert { margin-bottom: 1rem; padding: .85rem 1rem; border: 1px solid #d64f4f; border-radius: 7px; background: #fff3f3; color: #8e2020; }
+  .dispatch-result-grid { display: grid; gap: .8rem; }
+  .dispatch-result-grid > div { padding: 1rem; border: 1px solid #e1e6f4; border-radius: 8px; }
+  .dispatch-result-grid ul { margin: .6rem 0 0; padding-left: 1.1rem; color: #526181; }
+  .dispatch-intake-result pre { margin: 1rem 0; padding: 1rem; overflow: auto; border-radius: 8px; background: #071038; color: #eef2ff; white-space: pre-wrap; font: 500 .82rem/1.55 var(--font-mono); }
+  .dispatch-result-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+  .dispatch-intake-result[hidden] { display: none; }
+  @media (max-width: 900px) {
+    .dispatch-intake-layout { grid-template-columns: 1fr; }
+    .dispatch-intake-copy { position: static; }
+  }
+  @media (max-width: 640px) {
+    .dispatch-field-row { grid-template-columns: 1fr; }
+    .dispatch-intake-form, .dispatch-intake-result { padding: 1rem; }
+    .dispatch-result-actions .button { width: 100%; justify-content: center; }
+  }
+</style>
