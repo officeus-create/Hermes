@@ -32,5 +32,9 @@ test("fleet-owner page explains the written operating plan and continuity bounda
   await expect(reportingFaq).toContainText("Not automatically");
 
   await expect(page.getByText(/Loads, revenue, utilization, rates, mileage, return loads, lane consistency, response time, and uninterrupted coverage are not guaranteed/i)).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText('"FAQPage"');
+
+  const schemaText = await page.locator('script[type="application/ld+json"]').evaluateAll((nodes) =>
+    nodes.map((node) => node.textContent ?? "").join("\n"),
+  );
+  expect(schemaText).toContain('"FAQPage"');
 });
