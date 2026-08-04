@@ -42,10 +42,13 @@
     const requestMap = new Set(["dealer_inventory", "auction_pickup", "dealer_transfer", "customer_delivery", "recurring_program", "other"]);
     const requestedRole = roleMap[params.get("role") || ""];
     const requestedType = params.get("request") || "";
+    const requestedPickup = (params.get("pickup") || "").replace(/\s+/g, " ").trim();
     const roleSelect = form.elements.namedItem("submitter_type");
     const requestSelect = form.elements.namedItem("request_type");
+    const pickupInput = form.elements.namedItem("pickup_location");
     if (requestedRole && roleSelect instanceof HTMLSelectElement) roleSelect.value = requestedRole;
     if (requestMap.has(requestedType) && requestSelect instanceof HTMLSelectElement) requestSelect.value = requestedType;
+    if (requestedPickup && requestedPickup.length <= 180 && pickupInput instanceof HTMLInputElement) pickupInput.value = requestedPickup;
 
     let activeLead: LogisticsSalesLead | null = null;
     let intakeStarted = false;
