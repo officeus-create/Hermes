@@ -29,13 +29,14 @@ test("Hermes Connect submits a privacy-safe early-access request through the pro
   let requestHeaders: Record<string, string> = {};
 
   await page.route("https://hermeslogisticsus.com/api/connect-lead", async (route) => {
-    submittedPayload = route.request().postDataJSON() as Record<string, unknown>;
+    const payload = route.request().postDataJSON() as Record<string, unknown>;
+    submittedPayload = payload;
     requestHeaders = route.request().headers();
     await route.fulfill({
       status: 200,
       contentType: "application/json",
       headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ success: true, request_id: submittedPayload.request_id }),
+      body: JSON.stringify({ success: true, request_id: payload.request_id }),
     });
   });
 
