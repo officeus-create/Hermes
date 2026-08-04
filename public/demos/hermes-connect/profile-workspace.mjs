@@ -15,6 +15,84 @@ export const availabilityCatalog = [
   "Thu · 11:00 AM",
 ];
 
+export const categoryCatalog = [
+  {
+    id: "beauty-wellness",
+    name: "Beauty & wellness",
+    label: "Salons, barbers, nail, spa",
+    headline: "Show services beautifully and turn interest into a clear booking request.",
+    previewName: "Luna Beauty Studio",
+    previewRole: "Beauty studio · Chicago / Remote consultation",
+    previewServices: ["Nail service", "Hair appointment", "Skin consultation"],
+    accent: "#ff6f91",
+    icon: "BW",
+  },
+  {
+    id: "fitness-coaching",
+    name: "Fitness & coaching",
+    label: "Trainers, studios, coaches",
+    headline: "Package sessions, programs, and available times in one clear client path.",
+    previewName: "Northline Performance",
+    previewRole: "Personal training · Online and in-person",
+    previewServices: ["1:1 training", "Program review", "Intro consultation"],
+    accent: "#67e8c4",
+    icon: "FC",
+  },
+  {
+    id: "professional-services",
+    name: "Professional services",
+    label: "Consultants, agencies, experts",
+    headline: "Explain the offer, qualify the request, and give prospects a professional next step.",
+    previewName: "Atlas Advisory",
+    previewRole: "Business consulting · United States",
+    previewServices: ["Strategy session", "Operations review", "Project discovery"],
+    accent: "#80a7ff",
+    icon: "PS",
+  },
+  {
+    id: "logistics-field",
+    name: "Logistics & field services",
+    label: "Dispatch, transport, mobile teams",
+    headline: "Route each request to the right service, location, equipment, or operations review.",
+    previewName: "Hermes Field Desk",
+    previewRole: "Logistics support · U.S. operations",
+    previewServices: ["Carrier review", "Transport request", "Operations call"],
+    accent: "#b99cff",
+    icon: "LF",
+  },
+  {
+    id: "education-events",
+    name: "Education & events",
+    label: "Tutors, academies, workshops",
+    headline: "Present programs, schedules, and application steps without losing the learner.",
+    previewName: "LearnSkill Studio",
+    previewRole: "Practical education · Online cohorts",
+    previewServices: ["Program overview", "Application review", "Workshop registration"],
+    accent: "#ffc766",
+    icon: "EE",
+  },
+  {
+    id: "home-local",
+    name: "Home & local services",
+    label: "Cleaning, repair, photo, pet care",
+    headline: "Make local services easy to understand, request, and coordinate from any browser.",
+    previewName: "Bright Local Services",
+    previewRole: "Local service team · Milwaukee area",
+    previewServices: ["Service estimate", "Visit request", "Recurring service"],
+    accent: "#ff9472",
+    icon: "HL",
+  },
+];
+
+export const platformCatalog = [
+  {
+    id: "web",
+    name: "Web app",
+    status: "Controlled web access",
+    description: "Open Hermes Connect from a modern browser on desktop, tablet, or phone. No app-store installation is required.",
+  },
+];
+
 export const defaultDraft = {
   name: "Maya Santos",
   role: "Business consultant",
@@ -40,6 +118,107 @@ function slugify(value) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 60);
+}
+
+export function getCategory(categoryId) {
+  return categoryCatalog.find((category) => category.id === categoryId) ?? null;
+}
+
+export function getPlatform(platformId) {
+  return platformCatalog.find((platform) => platform.id === platformId) ?? null;
+}
+
+export function validateEarlyAccessDraft(draft) {
+  const name = cleanText(draft.name, 100);
+  const email = cleanText(draft.email, 160).toLowerCase();
+  const businessName = cleanText(draft.businessName, 140);
+  const categoryId = cleanText(draft.categoryId, 60);
+  const platformId = cleanText(draft.platformId || "web", 40);
+  const role = cleanText(draft.role, 100);
+  const teamSize = cleanText(draft.teamSize, 40);
+  const currentMethod = cleanText(draft.currentMethod, 120);
+  const mustHave = cleanText(draft.mustHave, 1_000);
+  const consent = draft.consent === true;
+  const website = cleanText(draft.website, 120);
+  const errors = [];
+
+  if (website) errors.push("automated_submission_rejected");
+  if (name.length < 2) errors.push("name_required");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push("email_required");
+  if (!getCategory(categoryId)) errors.push("category_required");
+  if (!getPlatform(platformId)) errors.push("platform_required");
+  if (role.length < 2) errors.push("role_required");
+  if (mustHave.length < 10) errors.push("feature_required");
+  if (!consent) errors.push("consent_required");
+
+  return {
+    valid: errors.length === 0,
+    errors,
+    normalized: {
+      name,
+      email,
+      businessName,
+      categoryId,
+      platformId,
+      role,
+      teamSize,
+      currentMethod,
+      mustHave,
+      consent,
+    },
+  };
+}
+
+export function createEarlyAccessRequest(draft) {
+  const validation = validateEarlyAccessDraft({ ...draft, platformId: "web" });
+  if (!validation.valid) {
+    const error = new Error(`Early-access validation failed: ${validation.errors.join(", ")}`);
+    error.validationErrors = validation.errors;
+    throw error;
+  }
+
+  const value = validation.normalized;
+  const category = getCategory(value.categoryId);
+  const platform = getPlatform("web");
+  const requestId = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `connect-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const message = [
+    "Hermes Connect web-access request",
+    `Category: ${category.name}`,
+    "Requested product: Hermes Connect Web App",
+    value.businessName ? `Business: ${value.businessName}` : "",
+    `Role: ${value.role}`,
+    value.teamSize ? `Team size: ${value.teamSize}` : "",
+    value.currentMethod ? `Current booking/request method: ${value.currentMethod}` : "",
+    `Must-have workflow: ${value.mustHave}`,
+    "Request: review this business for controlled Hermes Connect web access.",
+  ].filter(Boolean).join("\n");
+
+  return {
+    request_id: requestId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80),
+    submitted_at: new Date().toISOString(),
+    source_path: "/hermes-connect/web-access/",
+    name: value.name,
+    email: value.email,
+    interest: "IT Development",
+    message,
+    consent: true,
+    direction_fields: {
+      direction: "IT Development",
+      fields: {
+        system_or_workflow_needed: `Hermes Connect Web App · ${category.name}`,
+        current_tools: value.currentMethod,
+        number_of_users: value.teamSize,
+        integrations_needed: `Web app; ${value.mustHave}`,
+        timeline: platform.status,
+      },
+    },
+    public_dimensions: {
+      category_id: category.id,
+      platform_id: "web",
+    },
+  };
 }
 
 export function validateProfileDraft(draft) {

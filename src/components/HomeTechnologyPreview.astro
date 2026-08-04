@@ -5,9 +5,15 @@ const systems = [
   { title: "AI Assistants", body: "Company knowledge, Telegram workflows, structured tasks, and human-controlled actions.", icon: Bot },
   { title: "CRM & Automation", body: "Intake, validation, pipelines, review queues, dashboards, and approved integrations.", icon: Network },
   { title: "Logistics Technology", body: "Carrier intelligence, route risk, dispatch visibility, and Load Board workflows.", icon: Truck },
-  { title: "Hermes Connect", body: "Specialist profiles, services, availability, and a clear path into a test booking.", icon: CalendarDays },
+  {
+    title: "Hermes Connect",
+    body: "A category-aware Web App for services, availability, and a clear client request path.",
+    icon: CalendarDays,
+    href: "/services/hermes-connect/",
+  },
 ];
 import "../styles/features/technology.css";
+import "../styles/features/home-connect-bridge.css";
 ---
 
 <section class="section home-technology-preview" aria-labelledby="home-technology-title">
@@ -19,7 +25,14 @@ import "../styles/features/technology.css";
     <div class="home-technology-grid" data-reveal>
       {systems.map((system) => {
         const Icon = system.icon;
-        return <article><Icon size={22} aria-hidden="true" /><h3>{system.title}</h3><p>{system.body}</p></article>;
+        return (
+          <article class={system.href ? "home-connect-product-card" : undefined}>
+            <Icon size={22} aria-hidden="true" />
+            <h3>{system.title}</h3>
+            <p>{system.body}</p>
+            {system.href && <a class="home-connect-product-link" href={system.href}>Explore Hermes Connect <ArrowRight size={16} aria-hidden="true" /></a>}
+          </article>
+        );
       })}
     </div>
     <a class="home-technology-link" href="/paths/technology/#capabilities">Explore IT & Development solutions <ArrowRight size={18} aria-hidden="true" /></a>

@@ -2,55 +2,183 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <meta name="description" content="Interactive Hermes Connect preview for specialist profiles, services, availability and simulated personal booking paths.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hermes Connect is a web app for service businesses to present services, availability, and a clear client request path. Choose your category and request controlled web access.">
   <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#07152f">
   <link rel="canonical" href="https://hermeslogisticsus.com/demos/hermes-connect/">
-  <title>Hermes Connect · Profile & Availability v0.2</title>
+  <title>Hermes Connect Web App · Request Access</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <main>
-    <section class="editor">
-      <p class="eyebrow">Hermes Connect · local prototype v0.2</p>
-      <h1>Build the specialist page before connecting the platform.</h1>
-      <p class="intro">Edit the profile, choose services and availability, then generate a simulated personal booking preview.</p>
-      <a class="back-link" href="/paths/technology/#working-prototypes">Explore Hermes Connect development →</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Hermes Connect home">
+      <span class="brand-mark">H</span>
+      <span><strong>Hermes Connect</strong><small>Web app for service businesses</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#categories">Categories</a>
+      <a href="#product">Web App</a>
+      <a href="#build-system">How we build</a>
+      <a href="https://hermeslogisticsus.com/services/hermes-connect/">About on Hermes</a>
+    </nav>
+    <a class="header-cta" href="#apply" data-web-access-intent>Request web access <span aria-hidden="true">→</span></a>
+  </header>
 
-      <form data-profile-form>
-        <div class="fields">
-          <label>Name<input name="name" value="Maya Santos" required></label>
-          <label>Professional role<input name="role" value="Business consultant" required></label>
-          <label>Location<input name="location" value="Miami / Remote" required></label>
-          <label class="wide">Short profile<textarea name="bio" rows="3" required>Operations, customer journey, and practical growth systems.</textarea></label>
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-glow hero-glow-one"></div>
+      <div class="hero-glow hero-glow-two"></div>
+      <div class="hero-copy">
+        <p class="eyebrow"><span></span> Hermes Connect · web-first product</p>
+        <h1 id="hero-title">One clear client path for <em>every service business.</em></h1>
+        <p class="hero-intro">Give clients one professional place to understand your services, see request windows, and take the right next step—from any modern browser.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#categories">Choose your category <span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href="#apply" data-web-access-intent>Request Web App access</a>
         </div>
+        <ul class="trust-list" aria-label="Web access boundaries">
+          <li><span>01</span> Works in a browser</li>
+          <li><span>02</span> Human-reviewed access</li>
+          <li><span>03</span> No payment today</li>
+        </ul>
+      </div>
 
-        <fieldset>
-          <legend>Services</legend>
-          <div class="choices" data-services></div>
-        </fieldset>
-        <fieldset>
-          <legend>Availability</legend>
-          <div class="choices" data-availability></div>
-        </fieldset>
-        <button type="submit">Generate profile preview <span>→</span></button>
-        <p class="status" role="status" data-status>Preview mode · nothing is saved or sent.</p>
-      </form>
+      <div class="hero-product" aria-label="Hermes Connect Web App preview">
+        <div class="product-window">
+          <div class="window-bar"><span></span><span></span><span></span><p>connect.hermeslogisticsus.com</p><b>Web preview</b></div>
+          <div class="product-shell">
+            <aside class="product-rail" aria-hidden="true">
+              <strong>H</strong>
+              <span class="is-active"></span><span></span><span></span><span></span>
+            </aside>
+            <div class="product-main">
+              <div class="profile-head">
+                <div class="preview-logo" data-preview-icon>PS</div>
+                <div><small data-preview-role>Business consulting · United States</small><h2 data-preview-name>Atlas Advisory</h2></div>
+                <button type="button" tabindex="-1">Request</button>
+              </div>
+              <p class="preview-headline" data-preview-headline>Explain the offer, qualify the request, and give prospects a professional next step.</p>
+              <div class="preview-services" data-preview-services>
+                <article><span>01</span><strong>Strategy session</strong><small>45 min</small></article>
+                <article><span>02</span><strong>Operations review</strong><small>60 min</small></article>
+                <article><span>03</span><strong>Project discovery</strong><small>30 min</small></article>
+              </div>
+              <div class="preview-calendar">
+                <div><span>Tue · 10:30</span><span>Tue · 14:00</span><span>Wed · 09:00</span></div>
+                <p><i></i> Available request windows</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-card floating-card-status"><span></span><div><small>Web access path</small><strong>Category → workflow → review</strong></div></div>
+        <div class="floating-card floating-card-mobile"><b>Responsive web</b><small>Designed for desktop, tablet, and phone browsers</small></div>
+      </div>
     </section>
 
-    <aside class="profile-card" data-profile-preview>
-      <div class="preview-bar"><span></span><span></span><span></span><p>Personal booking preview</p></div>
-      <div class="profile-avatar">MS</div>
-      <p class="profile-location" data-preview-location>Miami / Remote</p>
-      <h2 data-preview-name>Maya Santos</h2>
-      <strong data-preview-role>Business consultant</strong>
-      <p data-preview-bio>Operations, customer journey, and practical growth systems.</p>
-      <div class="preview-section"><span>Services</span><div data-preview-services></div></div>
-      <div class="preview-section"><span>Available times</span><div data-preview-times></div></div>
-      <div class="personal-path"><span>Personal preview path</span><code data-preview-path>Generate the profile to create a path</code></div>
-      <p class="boundary">No account, database record, calendar event, payment, or message is created.</p>
-    </aside>
+    <section class="category-section" id="categories" aria-labelledby="category-title">
+      <div class="section-heading">
+        <div><p class="eyebrow dark"><span></span> Choose your business</p><h2 id="category-title">The workflow adapts to your category—not the other way around.</h2></div>
+        <p>Select a category to update the Web App preview and prefill your access request. The category changes the services, client language, and request flow.</p>
+      </div>
+      <div class="category-grid" data-category-grid></div>
+      <p class="category-note">Do not see your exact category? Choose the closest option and describe your workflow in the request.</p>
+    </section>
+
+    <section class="product-section" id="product" aria-labelledby="product-title">
+      <div class="product-intro">
+        <p class="eyebrow light"><span></span> One web operating layer</p>
+        <h2 id="product-title">From “How do I book?” to one professional next step.</h2>
+        <p>Hermes Connect is designed around common service-business friction: scattered messages, unclear services, manual scheduling, and no consistent follow-up path.</p>
+      </div>
+      <div class="capability-grid">
+        <article><span>01</span><h3>Business profile</h3><p>Present your category, location, languages, experience, and a focused client promise.</p><b>Foundation</b></article>
+        <article><span>02</span><h3>Service catalog</h3><p>Turn informal offers into clear services, durations, requirements, and request types.</p><b>Foundation</b></article>
+        <article><span>03</span><h3>Availability</h3><p>Show controlled times or request windows without forcing clients into endless messaging.</p><b>Foundation</b></article>
+        <article><span>04</span><h3>Client intake</h3><p>Collect only the information needed to understand and review the request.</p><b>Foundation</b></article>
+        <article><span>05</span><h3>Reminders & follow-up</h3><p>Planned workflow for confirmations, reminders, and the next useful client action.</p><b>Planned</b></article>
+        <article><span>06</span><h3>Business intelligence</h3><p>Planned view of demand, services, sources, and conversion signals without exposing private client details.</p><b>Planned</b></article>
+      </div>
+      <div class="product-boundary"><strong>Current boundary:</strong> this page accepts Web App access requests only. It does not automatically create an account, booking, payment, calendar event, or subscription.</div>
+    </section>
+
+    <section class="build-section" id="build-system" aria-labelledby="build-title">
+      <div class="build-copy">
+        <p class="eyebrow light"><span></span> AI-assisted product delivery</p>
+        <h2 id="build-title">Requests become reviewed product tasks—not unchecked AI actions.</h2>
+        <p>Hermes uses an AI-assisted engineering pipeline to turn repeated business needs into bounded product improvements. AI tools support implementation; Hermes reviews scope, privacy, tests, and release readiness.</p>
+        <div class="build-proof"><span>Current release contract</span><strong>Brief → AI-assisted build → human review → CI tests → controlled web release</strong></div>
+      </div>
+      <ol class="build-steps">
+        <li><span>01</span><div><strong>Request</strong><small>Category and must-have workflow</small></div><i></i></li>
+        <li><span>02</span><div><strong>Product brief</strong><small>One bounded problem and acceptance criteria</small></div><i></i></li>
+        <li class="is-active"><span>03</span><div><strong>AI-assisted build</strong><small>Implementation on a reviewable branch</small></div><i></i></li>
+        <li><span>04</span><div><strong>Verification</strong><small>Human review, privacy, and automated tests</small></div><i></i></li>
+        <li><span>05</span><div><strong>Web release</strong><small>Controlled access with a rollback boundary</small></div><i></i></li>
+      </ol>
+    </section>
+
+    <section class="apply-section" id="apply" aria-labelledby="apply-title">
+      <div class="apply-copy">
+        <p class="eyebrow dark"><span></span> Web App access request</p>
+        <h2 id="apply-title">Tell us what your clients need to do next.</h2>
+        <p>Choose your category and describe the workflow that matters most. Hermes will review the request before sending web access instructions.</p>
+        <div class="selected-summary" data-selected-summary>
+          <span>Selected Web App path</span>
+          <strong>Professional services · Hermes Connect Web App</strong>
+          <small>You can change the business category in the form.</small>
+        </div>
+        <ul class="apply-trust">
+          <li><span>✓</span> No app installation required</li>
+          <li><span>✓</span> No client data needed for this request</li>
+          <li><span>✓</span> Human review before access instructions</li>
+        </ul>
+      </div>
+
+      <form class="application-form" data-application-form novalidate>
+        <div class="form-alert" role="alert" data-form-alert hidden></div>
+        <div class="form-row">
+          <label>Your name<input type="text" name="name" autocomplete="name" minlength="2" maxlength="100" required></label>
+          <label>Work email<input type="email" name="email" autocomplete="email" maxlength="160" required></label>
+        </div>
+        <div class="form-row">
+          <label>Business or project name <small>Optional</small><input type="text" name="business_name" autocomplete="organization" maxlength="140"></label>
+          <label>Your role<input type="text" name="role" maxlength="100" placeholder="Owner, trainer, manager…" required></label>
+        </div>
+        <div class="form-row">
+          <label>Business category<select name="category_id" required data-category-select></select></label>
+          <label>Requested product<input type="text" value="Hermes Connect Web App" readonly aria-readonly="true"></label>
+        </div>
+        <div class="form-row">
+          <label>Team size<select name="team_size"><option value="">Choose (optional)</option><option>Just me</option><option>2–5 people</option><option>6–20 people</option><option>21–100 people</option><option>100+ people</option></select></label>
+          <label>How do clients contact or book now?<select name="current_method"><option value="">Choose (optional)</option><option>Instagram / social messages</option><option>Phone or text</option><option>WhatsApp / Telegram</option><option>Calendar tool</option><option>Website form</option><option>CRM or internal system</option><option>Other / mixed</option></select></label>
+        </div>
+        <label>What is the one feature or workflow you must have?<textarea name="must_have" rows="5" minlength="10" maxlength="1000" placeholder="Example: clients choose a service, see available times, and send a request in under two minutes." required></textarea></label>
+        <label class="honeypot" aria-hidden="true">Leave this field empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+        <label class="consent"><input type="checkbox" name="consent" required><span>I agree that Hermes may use these details to review and respond to this Web App access request. <a href="https://hermeslogisticsus.com/privacy/">Privacy notice</a>.</span></label>
+        <button class="submit-button" type="submit" data-web-access-intent><span data-submit-label>Request Web App access</span><b aria-hidden="true">→</b></button>
+        <p class="form-status" role="status" aria-live="polite" data-form-status>Secure delivery is attempted only after you submit this form.</p>
+        <div class="application-result" data-application-result hidden>
+          <span>Request received</span>
+          <strong>Hermes will review your category and must-have workflow.</strong>
+          <p>Web access instructions are sent only after review and release readiness. Submission does not guarantee acceptance or a response time.</p>
+        </div>
+        <div class="fallback-result" data-fallback-result hidden>
+          <span>Secure delivery was not confirmed</span>
+          <p>Your details were not reported as delivered. Use the prepared email below instead.</p>
+          <a data-fallback-email href="#">Open prepared email</a>
+        </div>
+      </form>
+    </section>
   </main>
+
+  <footer>
+    <div><strong>Hermes Connect</strong><p>A controlled Web App product-discovery and access experience by Hermes.</p></div>
+    <nav><a href="https://hermeslogisticsus.com/services/hermes-connect/">Hermes Connect overview</a><a href="https://hermeslogisticsus.com/paths/technology/">IT Development</a><a href="https://hermeslogisticsus.com/privacy/">Privacy</a><a href="https://hermeslogisticsus.com/contacts/">Contact</a></nav>
+    <p>Web access boundary · no account, booking, payment, or subscription is created automatically.</p>
+  </footer>
+
+  <a class="mobile-apply" href="#apply" data-web-access-intent>Request web access <span aria-hidden="true">→</span></a>
   <script type="module" src="./app.mjs"></script>
 </body>
 </html>
