@@ -7,7 +7,7 @@ const demo = "/load-board/?role=broker#post-load";
 test("broker recommendation uses the direct commercial intake and labels the demo separately", async ({ page }) => {
   await page.goto(route);
 
-  await expect(page).toHaveTitle(/Freight broker carrier-capacity path/i);
+  await expect(page).toHaveTitle("Request Verified Carrier Capacity | Hermes Logistics");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${route}`);
 
   const primaryLinks = page.locator("[data-recommendation-primary], [data-recommendation-primary-bottom]");
