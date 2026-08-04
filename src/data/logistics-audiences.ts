@@ -9,6 +9,7 @@ export type LogisticsAudience = {
   faq: { question: string; answer: string }[];
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
+  demo?: { label: string; href: string };
 };
 
 export const logisticsAudiences: LogisticsAudience[] = [
@@ -31,6 +32,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
     ],
     primary: { label: "Prepare transport request", href: "/logistics/request-vehicle-transport/?role=shipper#transport-intake" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
+    demo: { label: "Post a load in the Load Board demo", href: "/load-board/?role=shipper#post-load" },
   },
   {
     slug: "broker",
@@ -51,6 +53,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
     ],
     primary: { label: "Prepare broker opportunity", href: "/logistics/request-vehicle-transport/?role=broker#transport-intake" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
+    demo: { label: "Open broker Load Board demo", href: "/load-board/?role=broker#post-load" },
   },
   {
     slug: "carrier",
@@ -70,7 +73,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { question: "Can new authorities apply?", answer: "Yes, subject to a readiness review covering authority age, insurance, documents, equipment, and broker requirements." },
     ],
     primary: { label: "Start dispatch review", href: "/logistics/start-car-hauling-dispatch/" },
-    secondary: { label: "Preview Load Board", href: "/load-board/?role=carrier#available-loads" },
+    secondary: { label: "Open Load Board demo", href: "/load-board/?role=carrier#available-loads" },
   },
   {
     slug: "agency",
