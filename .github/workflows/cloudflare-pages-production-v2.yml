@@ -1,0 +1,177 @@
+name: Deploy approved main to Cloudflare Pages v2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/cloudflare-pages-production-v2.yml
+
+permissions:
+  contents: read
+  deployments: write
+  issues: write
+
+concurrency:
+  group: cloudflare-pages-production-v2
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build, deploy, and verify approved main
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out current approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Validate Cloudflare deployment credentials
+        id: credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          missing=""
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            missing="CLOUDFLARE_API_TOKEN"
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            if [ -n "$missing" ]; then missing="$missing, "; fi
+            missing="${missing}CLOUDFLARE_ACCOUNT_ID"
+          fi
+          if [ -n "$missing" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "missing=$missing" >> "$GITHUB_OUTPUT"
+            echo "Missing required deployment credentials: $missing" >&2
+            exit 1
+          fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Report credential blocker
+        if: failure() && steps.credentials.outputs.available != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MISSING: ${{ steps.credentials.outputs.missing }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 blocked\n\nThe isolated v2 release workflow started from approved \`main\`, but the required GitHub Actions deployment credentials are unavailable: \`${MISSING:-Cloudflare credentials}\`.\n\nNo credential value was printed or accessed. Add repository secrets \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`, then run **Deploy approved main to Cloudflare Pages v2** from GitHub Actions. The API token needs Cloudflare Pages edit access for the account that owns project \`hermes\`.\n\nRelease remains \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build approved release
+        run: npm run build
+
+      - name: Validate static release contracts
+        run: npm test
+
+      - name: Deploy dist to Cloudflare Pages project hermes
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: pages deploy dist --project-name=hermes --branch=main --commit-hash=${{ github.sha }} --commit-message="Approved main ${{ github.sha }}"
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify main-domain product bridge
+        run: |
+          node <<'NODE'
+          const targets = [
+            {
+              url: "https://hermeslogisticsus.com/services/hermes-connect/",
+              markers: ["Hermes Connect Web App", "Request Web App access"],
+            },
+            {
+              url: "https://hermeslogisticsus.com/",
+              markers: ["Hermes Connect", "Web App"],
+            },
+          ];
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          for (const target of targets) {
+            let ok = false;
+            let last = {};
+            for (let attempt = 1; attempt <= 18; attempt += 1) {
+              try {
+                const response = await fetch(`${target.url}?release=${Date.now()}`, {
+                  redirect: "follow",
+                  headers: {
+                    "cache-control": "no-cache",
+                    pragma: "no-cache",
+                    "user-agent": "HermesPagesReleaseVerifier/2.0",
+                  },
+                  signal: AbortSignal.timeout(20_000),
+                });
+                const body = await response.text();
+                last = {
+                  status: response.status,
+                  title: body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() ?? null,
+                };
+                if (response.status === 200 && target.markers.every((marker) => body.includes(marker))) {
+                  ok = true;
+                  break;
+                }
+              } catch (error) {
+                last = { error: error instanceof Error ? error.message : String(error) };
+              }
+              if (attempt < 18) await sleep(10_000);
+            }
+            if (!ok) {
+              console.error(`Main-domain verification failed for ${target.url}: ${JSON.stringify(last)}`);
+              process.exitCode = 1;
+            } else {
+              console.log(`Verified approved release at ${target.url}`);
+            }
+          }
+          NODE
+
+      - name: Verify Connect custom subdomain
+        env:
+          CONNECT_EXPECTATION: approved_web_app
+          CONNECT_CHECK_ATTEMPTS: "18"
+          CONNECT_CHECK_DELAY_MS: "10000"
+        run: node scripts/check-connect-subdomain.mjs
+
+      - name: Report successful production release
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Hermes Connect Web App is live\n\nApproved \`main\` was built, tested, and deployed to Cloudflare Pages project \`hermes\`. The indexed overview, homepage Web App bridge, and \`connect.hermeslogisticsus.com\` all passed public verification.\n\nDeployment URL returned by Wrangler: ${DEPLOYMENT_URL:-not returned}.\n\nThe release verifier returned \`LIVE_APPROVED_WEB_APP\`."
+
+      - name: Report deployment or verification failure
+        if: failure() && steps.credentials.outputs.available == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 did not complete\n\nCloudflare credentials were available, but build, Wrangler upload, main-domain verification, or Connect-subdomain verification failed for approved \`main\`.\n\nReview the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID. No secret value is included here. Keep the Web App \`noindex,nofollow\` and do not submit a real access request until verification succeeds."
+
+      - name: Publish sanitized summary
+        if: always()
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          DEPLOYMENT_ALIAS: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            echo "# Cloudflare Pages production deployment v2"
+            echo
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Project: \`hermes\`"
+            echo "- Branch: \`main\`"
+            echo "- Build output: \`dist\`"
+            echo "- Deployment URL: ${DEPLOYMENT_URL:-not returned}"
+            echo "- Alias URL: ${DEPLOYMENT_ALIAS:-not returned}"
+            echo
+            echo "> No token, account ID, binding ID, recipient, or secret value is written to this summary."
+          } >> "$GITHUB_STEP_SUMMARY"
