@@ -45,6 +45,7 @@ type GeneralContact = {
 
 const DEFAULT_ORIGIN = "https://hermeslogisticsus.com";
 const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send";
+const LEGACY_CONTACT_SUBJECT = "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]";
 const MAX_BODY_BYTES = 16_000;
 const MAX_EMAIL_BODY = 8_000;
 const RATE_LIMIT = 5;
@@ -279,23 +280,31 @@ export async function onRequestPost({ request, env }: Context) {
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DELIVERY_TIMEOUT_MS);
+  const sendToEmailService = (deliverySubject: string) => env.LEAD_EMAIL_SERVICE!.fetch(EMAIL_SERVICE_URL, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${env.LEAD_SERVICE_TOKEN}`,
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store",
+    },
+    body: JSON.stringify({
+      request_id: requestId,
+      subject: deliverySubject,
+      text: messageText,
+      ...(replyTo ? { reply_to: replyTo } : {}),
+    }),
+    signal: controller.signal,
+  });
 
   try {
-    const serviceResponse = await env.LEAD_EMAIL_SERVICE.fetch(EMAIL_SERVICE_URL, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.LEAD_SERVICE_TOKEN}`,
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store",
-      },
-      body: JSON.stringify({
-        request_id: requestId,
-        subject,
-        text: messageText,
-        ...(replyTo ? { reply_to: replyTo } : {}),
-      }),
-      signal: controller.signal,
-    });
+    let serviceResponse = await sendToEmailService(subject);
+
+    if (generalContact && serviceResponse.status === 400) {
+      const rejection = await serviceResponse.clone().json().catch(() => null) as { error?: unknown } | null;
+      if (rejection?.error === "invalid_message") {
+        serviceResponse = await sendToEmailService(LEGACY_CONTACT_SUBJECT);
+      }
+    }
 
     if (!serviceResponse.ok) {
       if (serviceResponse.status === 429 || serviceResponse.status === 503 || serviceResponse.status === 504) {

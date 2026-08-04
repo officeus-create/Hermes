@@ -165,6 +165,64 @@ for (const [index, [interest, expectedSubject]] of contactDirections.entries()) 
   assert.equal(serviceCalls.at(-1).payload.subject, expectedSubject);
 }
 
+const legacyServiceCalls = [];
+const legacyServiceBinding = {
+  async fetch(input, init) {
+    const request = input instanceof Request ? input : new Request(input, init);
+    const inspection = request.clone();
+    const payload = await inspection.json();
+    legacyServiceCalls.push(payload);
+    if (String(payload.subject).startsWith("[HERMES INQUIRY]")) {
+      return Response.json({ ok: false, error: "invalid_message" }, { status: 400 });
+    }
+    return leadEmailWorker.fetch(request, workerEnv);
+  },
+};
+const legacyEnv = {
+  ...env,
+  LEAD_LIMITS: new MemoryKv(),
+  LEAD_EMAIL_SERVICE: legacyServiceBinding,
+};
+const legacyPayload = {
+  ...generalContactPayload,
+  request_id: "legacy_worker_test_12345",
+  interest: "IT Development",
+  message: "We need a secure CRM integration and workflow automation review.",
+  direction_fields: undefined,
+};
+const emailCountBeforeLegacy = emailMessages.length;
+const legacyAccepted = await onRequest({
+  request: leadRequest(legacyPayload, { "CF-Connecting-IP": "198.51.100.40" }),
+  env: legacyEnv,
+});
+assert.equal(legacyAccepted.status, 200);
+assert.deepEqual(await legacyAccepted.json(), { success: true, request_id: "legacy_worker_test_12345" });
+assert.equal(legacyServiceCalls.length, 2);
+assert.equal(legacyServiceCalls[0].subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
+assert.equal(legacyServiceCalls[1].subject, "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]");
+assert.equal(emailMessages.length, emailCountBeforeLegacy + 1);
+assert.equal(emailMessages.at(-1).subject, "[HERMES SALES] [POSTED LOAD] [OTHER BUSINESS]");
+assert.match(emailMessages.at(-1).text, /Direction: IT Development/);
+assert.match(emailMessages.at(-1).text, /secure CRM integration/);
+
+let ambiguousServiceCalls = 0;
+const ambiguousEnv = {
+  ...env,
+  LEAD_LIMITS: new MemoryKv(),
+  LEAD_EMAIL_SERVICE: {
+    async fetch() {
+      ambiguousServiceCalls += 1;
+      return Response.json({ ok: false, error: "provider_unavailable" }, { status: 503 });
+    },
+  },
+};
+const ambiguous = await onRequest({
+  request: leadRequest({ ...generalContactPayload, request_id: "ambiguous_test_12345" }, { "CF-Connecting-IP": "198.51.100.41" }),
+  env: ambiguousEnv,
+});
+assert.equal(ambiguous.status, 503);
+assert.equal(ambiguousServiceCalls, 1, "Ambiguous provider failures must never trigger a second send attempt.");
+
 const forgedContactDirection = await onRequest({
   request: leadRequest({ ...generalContactPayload, request_id: "contact_forged_12345", interest: "Send to any recipient" }),
   env,
@@ -243,4 +301,4 @@ for (const key of limits.values.keys()) {
   assert.doesNotMatch(key, /192\.0\.2\.10|release_test_12345|lead@example\.com|contact_test_12345/);
 }
 
-console.log("Sales lead receiver, four-direction contact intake, and private Email Worker checks passed.");
+console.log("Sales lead receiver, four-direction contact intake, legacy Worker compatibility, and private Email Worker checks passed.");
