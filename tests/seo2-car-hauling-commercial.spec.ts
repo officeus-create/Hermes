@@ -14,9 +14,12 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
   await expect(page.getByText("Is dispatch service better than self-dispatch?")).toBeVisible();
   await expect(page.getByText("How much does car hauling dispatch service cost?")).toBeVisible();
 
-  await expect(page.getByRole("link", { name: "Request car-hauling dispatch review" })).toHaveAttribute(
+  const directIntakeLinks = page.getByRole("link", { name: "Start car-hauling dispatch review" });
+  await expect(directIntakeLinks.first()).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
+  await expect(directIntakeLinks).toHaveCount(2);
+  await expect(page.getByRole("link", { name: "Preview the Load Board Demo" })).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+    "/load-board/?role=carrier&equipment=car_hauler#available-loads",
   );
 });
 
