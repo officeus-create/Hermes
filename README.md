@@ -8,8 +8,8 @@ Static Astro website and controlled Cloudflare edge workflows for `hermeslogisti
 - The 2026-08-03 release-manifest baseline contains **104 generated HTML routes**, **95 indexable routes**, and **7 sitemap files**. See `docs/RELEASE_MANIFEST_2026-08-01.md` rather than maintaining a manual route count here.
 - Public language entry points currently cover English, Spanish, French, Ukrainian, Italian, and Russian.
 - Hermes Business Academy exposes exactly two public programs: **U.S. Logistics Operations** and **Marketing**.
-- General contact workflows remain preview-first. They must not display a delivery success state unless an approved same-origin receiver confirms the request.
-- The Logistics lead receiver and private Email Worker architecture are merged but production email delivery is not yet activated or verified.
+- Local and non-production contact workflows remain preview-first unless explicitly configured. The approved production custom-domain build routes Logistics, Marketing, Academy, IT Development, and general inquiries through the protected same-origin receiver, and it must not display success unless the receiver confirms delivery.
+- Production inquiry delivery was verified end to end on 2026-08-04: the fixed destination received approved synthetic preview and production requests, foreign-origin rejection and duplicate suppression were proven, and the emergency rollback remains `LEAD_DELIVERY_MODE=off`.
 - Google route estimates remain default-off and preview-only until separately approved Google Cloud and Cloudflare configuration is proven.
 - Hermes Connect remains a product-discovery concept/demo. No public account, booking, calendar, payment, or autonomous AI action is connected.
 - The social-content pilot has 30 controlled slots. Two owner-supplied Instagram sources are registered on hold; neither is approved for an indexable page without transcript, date, evidence, and claim review.
@@ -44,9 +44,11 @@ Every indexable route must have one canonical URL and exactly one declared sitem
 
 ## Contact and lead delivery
 
-Preview mode is the default. A valid preview prepares a reviewable request summary and approved manual contact route without claiming that data was sent or stored.
+Preview mode remains the default for local and non-production environments. A valid preview prepares a reviewable request summary and approved manual contact route without claiming that data was sent or stored.
 
-The Logistics production-delivery repository path is:
+The approved production custom-domain build routes Logistics, Marketing, Academy, IT Development, and general inquiries through the same protected receiver contract. A browser success state is allowed only after the approved receiver confirms delivery.
+
+The production-delivery path is:
 
 `browser → same-origin Pages Function → Service Binding → private Email Worker → Cloudflare Email Service`
 
@@ -59,7 +61,20 @@ Relevant files:
 - `docs/CLOUDFLARE_LEAD_DELIVERY_ACTIVATION.md`
 - `scripts/sales-lead-receiver.test.mjs`
 
-Delivery stays disabled unless the environment is explicitly set to live and all required Service Binding, KV, encrypted-token, sender, and destination controls exist. Cloudflare domain onboarding and reconciled synthetic preview/production deliveries are still required before the public workflow may be called live.
+Production activation was reconciled on 2026-08-04 using the approved zero-cost verified-destination path:
+
+- separate preview and production KV namespaces;
+- private Email Worker with no public route;
+- Service Binding and matching encrypted shared token;
+- fixed approved destination;
+- successful synthetic preview and production delivery;
+- foreign-origin rejection;
+- idempotent duplicate suppression;
+- custom-domain production smoke coverage;
+- no Google Workspace MX/DNS change;
+- immediate rollback through `LEAD_DELIVERY_MODE=off`.
+
+The receiver remains fail-closed when the live mode, binding, KV, encrypted token, destination, or provider confirmation is unavailable. A later migration to full paid Cloudflare Email Sending onboarding is an optional optimization, not a blocker for the verified current production path.
 
 ## Load Board and route estimate
 
