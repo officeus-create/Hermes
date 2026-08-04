@@ -1,7 +1,15 @@
-name: Hermes Connect subdomain isolation
+name: Hermes Connect custom-domain verification
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - public/demos/hermes-connect/**
+      - functions/api/connect-lead.ts
+      - scripts/check-connect-subdomain.mjs
+      - .github/workflows/connect-subdomain-isolation.yml
   pull_request:
     paths:
       - public/demos/hermes-connect/**
@@ -13,14 +21,18 @@ permissions:
   contents: read
 
 concurrency:
-  group: connect-subdomain-isolation-${{ github.event.pull_request.number || github.ref }}
+  group: connect-custom-domain-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   verify:
-    name: Read-only Connect custom-domain isolation
+    name: Read-only Connect custom-domain verification
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
+    env:
+      CONNECT_EXPECTATION: ${{ github.event_name == 'push' && 'approved_web_app' || 'isolation' }}
+      CONNECT_CHECK_ATTEMPTS: ${{ github.event_name == 'push' && '12' || '6' }}
+      CONNECT_CHECK_DELAY_MS: ${{ github.event_name == 'push' && '15000' || '10000' }}
 
     steps:
       - name: Check out repository
@@ -40,7 +52,7 @@ jobs:
           if [ -f artifacts/connect-subdomain-isolation.md ]; then
             cat artifacts/connect-subdomain-isolation.md >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "Connect subdomain isolation report was not generated." >> "$GITHUB_STEP_SUMMARY"
+            echo "Connect custom-domain report was not generated." >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
 
@@ -48,7 +60,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: connect-subdomain-isolation
+          name: connect-custom-domain-verification
           path: |
             artifacts/connect-subdomain-isolation.json
             artifacts/connect-subdomain-isolation.md
