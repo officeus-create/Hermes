@@ -1,0 +1,111 @@
+---
+import { ArrowRight, CheckCircle2 } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import CarrierDispatchIntake from "../../../components/CarrierDispatchIntake.astro";
+
+const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
+const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const absoluteUrl = "https://hermeslogisticsus.com/logistics/start-car-hauling-dispatch/";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Start a Car Hauling Dispatch Review",
+    description: "A direct carrier qualification and handoff workspace for owner-operators and fleets requesting car hauling dispatch review from Hermes Logistics.",
+    url: absoluteUrl,
+    isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+    about: { "@id": "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/#service" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Car Hauling Dispatch", item: "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/" },
+      { "@type": "ListItem", position: 3, name: "Start Dispatch Review", item: absoluteUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Start a Car Hauling Dispatch Review | Hermes Logistics"
+  description="Prepare a direct car hauling dispatch review with company, MC/USDOT, authority, insurance, equipment, capacity, operating area, availability, phone, and email."
+  robots="noindex,follow"
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="dispatch-start-page">
+    <section class="dispatch-start-hero">
+      <div class="shell dispatch-start-hero-grid">
+        <div>
+          <nav class="dispatch-start-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <a href="/logistics/car-hauling-dispatch/">Car Hauling Dispatch</a><span aria-hidden="true">/</span>
+            <span aria-current="page">Start Review</span>
+          </nav>
+          <p class="eyebrow">Hermes Logistics · Commercial carrier intake</p>
+          <h1>Start Your Car Hauling Dispatch Review</h1>
+          <p class="dispatch-start-lead">
+            Give Logistics Sales the operating facts needed to review dispatch fit. This path is for a real business inquiry;
+            it does not route you through the fictional Load Board examples.
+          </p>
+          <div class="dispatch-start-actions">
+            <a class="button button-primary" href="#dispatch-intake">Start the carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href="/load-board/?role=carrier&equipment=car_hauler#available-loads">Preview the Load Board demo</a>
+          </div>
+        </div>
+        <aside class="dispatch-start-expectation">
+          <p class="eyebrow">What happens next</p>
+          <ul>
+            <li><CheckCircle2 size={19} aria-hidden="true" />Authority and insurance readiness are reviewed.</li>
+            <li><CheckCircle2 size={19} aria-hidden="true" />Equipment, capacity, geography, and availability are checked.</li>
+            <li><CheckCircle2 size={19} aria-hidden="true" />The request is routed to dispatcher review, readiness review, or scope clarification.</li>
+            <li><CheckCircle2 size={19} aria-hidden="true" />No account, dispatcher, load, rate, lane, or revenue is guaranteed by submitting.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <CarrierDispatchIntake {leadMode} {leadEndpoint} />
+
+    <section class="section dispatch-start-followup" aria-labelledby="dispatch-start-followup-title">
+      <div class="shell dispatch-start-followup-card">
+        <div>
+          <p class="eyebrow">Before an agreement</p>
+          <h2 id="dispatch-start-followup-title">Confirm scope, fee, control, and communication.</h2>
+          <p>Dispatch pricing and included work depend on the approved agreement. Confirm load search, broker communication, setup packets, paperwork, invoicing, collections follow-up, reporting, after-hours communication, and carrier approval rules before work begins.</p>
+        </div>
+        <a class="button" href="/logistics/resources/dispatch-service-vs-self-dispatch/">Compare dispatch and self-dispatch <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .dispatch-start-page { background: #fff; color: #10204e; }
+  .dispatch-start-hero { padding: 8.8rem 0 5rem; background: radial-gradient(circle at 86% 16%, rgba(106,32,217,.26), transparent 34%), #071038; color: #fff; }
+  .dispatch-start-hero-grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(320px, .88fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+  .dispatch-start-breadcrumbs { display: flex; flex-wrap: wrap; gap: .55rem; margin-bottom: 2rem; color: rgba(255,255,255,.68); font-size: .84rem; }
+  .dispatch-start-breadcrumbs a { color: inherit; }
+  .dispatch-start-hero h1 { max-width: 12ch; font-size: clamp(3rem, 7vw, 6rem); }
+  .dispatch-start-lead { max-width: 62ch; color: rgba(255,255,255,.8); font-size: 1.17rem; line-height: 1.7; }
+  .dispatch-start-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
+  .dispatch-start-actions .button-ghost { border-color: rgba(255,255,255,.42); color: #fff; }
+  .dispatch-start-expectation { padding: clamp(1.4rem, 3vw, 2rem); border: 1px solid rgba(255,255,255,.2); border-radius: 14px; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); }
+  .dispatch-start-expectation ul { display: grid; gap: 1rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+  .dispatch-start-expectation li { display: grid; grid-template-columns: auto 1fr; gap: .65rem; color: rgba(255,255,255,.84); line-height: 1.5; }
+  .dispatch-start-expectation svg { color: #87e7bb; }
+  .dispatch-start-followup { background: #fff; }
+  .dispatch-start-followup-card { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid #dce3f8; border-radius: 14px; background: #f7f4ff; }
+  .dispatch-start-followup h2 { max-width: 16ch; }
+  .dispatch-start-followup p:not(.eyebrow) { max-width: 70ch; color: #596784; line-height: 1.65; }
+  @media (max-width: 850px) {
+    .dispatch-start-hero-grid, .dispatch-start-followup-card { grid-template-columns: 1fr; }
+    .dispatch-start-hero { padding-top: 7.6rem; }
+    .dispatch-start-followup-card .button { justify-self: start; }
+  }
+</style>
