@@ -1,0 +1,187 @@
+---
+import { ArrowLeft, ArrowRight, CalendarDays, Check, Globe2, LayoutDashboard, MessageSquareText, ShieldCheck, Sparkles, UsersRound } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const categories = [
+  { name: "Beauty & wellness", detail: "Salons, barbers, nail, spa, and independent specialists" },
+  { name: "Fitness & coaching", detail: "Personal trainers, studios, coaches, and programs" },
+  { name: "Professional services", detail: "Consultants, agencies, experts, and client-facing teams" },
+  { name: "Logistics & field services", detail: "Transport, dispatch, mobile teams, and operational requests" },
+  { name: "Education & events", detail: "Tutors, academies, workshops, and cohort programs" },
+  { name: "Home & local services", detail: "Cleaning, repair, photography, pet care, and local teams" },
+];
+
+const capabilities = [
+  { title: "Clear business profile", body: "Present the service, category, location, languages, and client promise in one focused web experience.", icon: LayoutDashboard },
+  { title: "Service and request catalog", body: "Turn scattered offers into clear services, durations, requirements, and request types.", icon: Sparkles },
+  { title: "Availability windows", body: "Show controlled request times or availability without forcing clients into long message threads.", icon: CalendarDays },
+  { title: "Structured client intake", body: "Collect the minimum information needed to understand and review the next client step.", icon: MessageSquareText },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Hermes Connect",
+    url: "https://connect.hermeslogisticsus.com/",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Any modern web browser",
+    description: "A category-aware web application for service businesses to present services, availability, and a clear client request path.",
+    creator: {
+      "@type": "Organization",
+      name: "Hermes IT Development",
+      url: "https://hermeslogisticsus.com/paths/technology/",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "IT Development", item: "https://hermeslogisticsus.com/paths/technology/" },
+      { "@type": "ListItem", position: 3, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+    ],
+  },
+];
+
+import "../../../styles/features/hermes-connect-service.css";
+---
+
+<BaseLayout
+  title="Hermes Connect Web App for Service Businesses"
+  description="Explore Hermes Connect, a category-aware web app for service businesses to present services, availability, and a clear client request path."
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <main id="main-content" class="connect-service-page">
+    <section class="connect-service-hero" id="top" aria-labelledby="connect-service-title">
+      <div class="connect-service-orbit connect-service-orbit-one"></div>
+      <div class="connect-service-orbit connect-service-orbit-two"></div>
+      <div class="shell connect-service-hero-grid">
+        <div class="connect-service-hero-copy">
+          <a class="detail-back" href="/paths/technology/"><ArrowLeft size={18} aria-hidden="true" />Hermes IT Development</a>
+          <p class="eyebrow hero-eyebrow">Hermes product · Web App</p>
+          <h1 id="connect-service-title">Give clients one clear place to understand, choose, and request your service.</h1>
+          <p>Hermes Connect is a browser-based product for service businesses. It combines a professional business page, clear services, availability windows, and structured client requests in one category-aware experience.</p>
+          <div class="connect-service-actions">
+            <a class="button button-primary" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href="#categories">See supported categories</a>
+          </div>
+          <ul class="connect-service-trust" aria-label="Hermes Connect release boundaries">
+            <li><Globe2 size={17} aria-hidden="true" />Works in a modern browser</li>
+            <li><ShieldCheck size={17} aria-hidden="true" />Human-reviewed access</li>
+            <li><UsersRound size={17} aria-hidden="true" />Built around service-business workflows</li>
+          </ul>
+        </div>
+
+        <div class="connect-service-product" aria-label="Hermes Connect Web App interface preview">
+          <div class="connect-service-window">
+            <div class="connect-service-window-bar"><span></span><span></span><span></span><p>connect.hermeslogisticsus.com</p><b>Web App</b></div>
+            <div class="connect-service-window-body">
+              <aside><strong>H</strong><i class="is-active"></i><i></i><i></i><i></i></aside>
+              <div class="connect-service-screen">
+                <div class="connect-service-profile">
+                  <span>PS</span>
+                  <div><small>Professional services · Web profile</small><h2>Atlas Advisory</h2></div>
+                  <button type="button" tabindex="-1">Request</button>
+                </div>
+                <p>Explain the offer, qualify the request, and give prospects a professional next step.</p>
+                <div class="connect-service-offers">
+                  <article><span>01</span><strong>Strategy session</strong><small>45 min</small></article>
+                  <article><span>02</span><strong>Operations review</strong><small>60 min</small></article>
+                  <article><span>03</span><strong>Project discovery</strong><small>30 min</small></article>
+                </div>
+                <div class="connect-service-times"><span>Tue · 10:30</span><span>Tue · 14:00</span><span>Wed · 09:00</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="connect-service-floating"><span></span><div><small>Client path</small><strong>Discover → choose → request</strong></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section connect-service-problem" aria-labelledby="connect-problem-title">
+      <div class="shell connect-service-problem-grid">
+        <div>
+          <p class="eyebrow">The problem it solves</p>
+          <h2 id="connect-problem-title">Stop making every client reconstruct your business from messages.</h2>
+        </div>
+        <div>
+          <p>Many service businesses spread their offer across social profiles, chats, screenshots, calendars, and individual explanations. The client has to ask what is available, how it works, and what to do next.</p>
+          <p>Hermes Connect is being built as one controlled web layer that makes the service journey visible before private client details are requested.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section connect-service-capabilities" aria-labelledby="connect-capabilities-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Web App foundation</p><h2 id="connect-capabilities-title">A useful first release, not a list of disconnected features.</h2></div>
+          <p>The first controlled release focuses on the client path that most service businesses need before advanced integrations: understand the offer, choose a service, see availability, and send a request.</p>
+        </div>
+        <div class="connect-service-capability-grid">
+          {capabilities.map((capability, index) => {
+            const Icon = capability.icon;
+            return (
+              <article>
+                <span>0{index + 1}</span>
+                <Icon size={23} aria-hidden="true" />
+                <h3>{capability.title}</h3>
+                <p>{capability.body}</p>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <section class="section connect-service-categories" id="categories" aria-labelledby="connect-categories-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Category-aware product</p><h2 id="connect-categories-title">One platform. Different service language for each business.</h2></div>
+          <p>The same product structure adapts the services, examples, request language, and client next step to the selected category.</p>
+        </div>
+        <div class="connect-service-category-grid">
+          {categories.map((category, index) => (
+            <article>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{category.name}</h3>
+              <p>{category.detail}</p>
+              <Check size={18} aria-hidden="true" />
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section connect-service-process" aria-labelledby="connect-process-title">
+      <div class="shell connect-service-process-grid">
+        <div>
+          <p class="eyebrow">Connected development loop</p>
+          <h2 id="connect-process-title">Your recurring need can become the next reviewed product task.</h2>
+          <p>Applications are reviewed for patterns. Hermes converts repeated needs into bounded briefs, Codex-assisted implementation, human review, automated tests, and controlled web releases.</p>
+        </div>
+        <ol>
+          <li><span>01</span><div><strong>Request access</strong><small>Choose the category and describe one must-have workflow.</small></div></li>
+          <li><span>02</span><div><strong>Human review</strong><small>Hermes checks fit, privacy boundaries, and repeated demand.</small></div></li>
+          <li><span>03</span><div><strong>Codex-assisted build</strong><small>Approved work is implemented on a reviewable branch with tests.</small></div></li>
+          <li><span>04</span><div><strong>Controlled web release</strong><small>Verified changes move through CI with a rollback boundary.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="connect-service-final" aria-labelledby="connect-final-title">
+      <div class="shell connect-service-final-grid">
+        <div>
+          <p class="eyebrow hero-eyebrow">Hermes Connect Web App</p>
+          <h2 id="connect-final-title">Choose your category and show us the client workflow that matters most.</h2>
+          <p>The access request does not create an account, booking, payment, or subscription automatically. Hermes reviews the request before sending access instructions.</p>
+        </div>
+        <a class="button button-primary" href="https://connect.hermeslogisticsus.com/#apply">Open the Web App access form <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
