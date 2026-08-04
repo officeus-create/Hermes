@@ -1,21 +1,30 @@
 # Hermes Connect — Codex Product Handoff
 
-Status: `ACTIVE PRODUCT FUNNEL — CONTROLLED EARLY ACCESS`
+Status: `ACTIVE WEB PRODUCT FUNNEL — CONTROLLED ACCESS`
 
 ## Owner intent
 
-Hermes Connect should become an attractive, category-aware product entry point that converts service businesses into reviewed early-access and future download applications.
+Hermes Connect is a category-aware Web App for service businesses. The current product direction is web-only. Do not create iPhone, Android, App Store, Google Play, APK, TestFlight, native-download, or mobile-waitlist paths unless the owner explicitly opens a new approved product phase.
 
-The page must help a visitor answer four questions quickly:
+The experience must help a visitor answer four questions quickly:
 
 1. Is Hermes Connect relevant to my business category?
 2. What client workflow will it improve?
-3. Which release path can I request: Web, iPhone, or Android?
-4. What happens after I submit an application?
+3. What does the Web App do in the current controlled release?
+4. What happens after I request access?
+
+## Product and website connection
+
+Hermes Connect has two connected public surfaces:
+
+- product Web App entry point: `https://connect.hermeslogisticsus.com/`;
+- indexed Hermes product overview: `https://hermeslogisticsus.com/services/hermes-connect/`.
+
+The main Hermes homepage and IT Development path must link to the indexed overview. The overview must link to the Connect Web App. Keep copy and claims consistent across all three surfaces.
 
 ## Repository source of truth
 
-The reviewed product funnel lives in:
+The reviewed Web App funnel lives in:
 
 - `public/demos/hermes-connect/index.html`
 - `public/demos/hermes-connect/styles.css`
@@ -25,7 +34,14 @@ The reviewed product funnel lives in:
 - `tests/hermes-connect-early-access.spec.ts`
 - `scripts/connect-lead-receiver.test.mjs`
 
-Do not overwrite these files from a stale local prototype. `scripts/sync-product-demos.mjs` now preserves the repository-managed funnel by default. An external import is allowed only when `HERMES_CONNECT_SOURCE_DIR` is explicitly set and the resulting diff is reviewed.
+The main-site product bridge lives in:
+
+- `src/pages/services/hermes-connect/index.astro`
+- `src/components/TechnologyInteractivePrototypes.astro`
+- `src/components/HomeTechnologyPreview.astro`
+- `src/styles/features/hermes-connect-service.css`
+
+Do not overwrite the repository-managed product files from a stale local prototype. `scripts/sync-product-demos.mjs` preserves them by default. An external import is allowed only when `HERMES_CONNECT_SOURCE_DIR` is explicitly set and the resulting diff is reviewed.
 
 ## Current categories
 
@@ -36,17 +52,17 @@ Do not overwrite these files from a stale local prototype. `scripts/sync-product
 - Education & events
 - Home & local services
 
-New categories should reuse the same catalog structure. Do not create disconnected landing pages before conversion evidence shows that a separate route is needed.
+New categories should reuse the same catalog structure. Do not create thin or disconnected category landing pages before conversion evidence supports a separate route.
 
-## Release paths
+## Release path
 
-- Web app — first controlled release
-- iPhone — download waitlist
-- Android — download waitlist
+The only current release path is:
 
-Do not state that an App Store, TestFlight, Google Play, APK, native app, or downloadable build exists until the exact artifact and distribution process have been approved and verified.
+- Hermes Connect Web App — controlled access from a modern desktop, tablet, or phone browser.
 
-## Application contract
+Do not mention or collect demand for mobile-store downloads in the current product funnel.
+
+## Web access application contract
 
 The page collects:
 
@@ -55,70 +71,73 @@ The page collects:
 - optional business/project name;
 - role;
 - approved category;
-- approved platform;
 - optional team size;
 - optional current booking/request method;
 - one must-have workflow;
 - consent.
 
-It must not collect real client records, appointment details, payment details, credentials, private routes, medical information, or other sensitive operational data.
+The platform is always the public-safe value `web`; users do not choose a platform.
 
-Applications use the exact-origin adapter at `/api/connect-lead`, which accepts only `https://connect.hermeslogisticsus.com`, rewrites the request into the existing protected Hermes inquiry contract, and preserves the fixed private delivery boundary. Foreign origins must fail before the private delivery service is called.
+The request must not collect real client records, appointment details, payment details, credentials, private routes, medical information, or other sensitive operational data.
+
+Applications use the exact-origin adapter at `/api/connect-lead`, which accepts only `https://connect.hermeslogisticsus.com`, rewrites the request into the protected Hermes inquiry contract, and preserves the fixed private delivery boundary. Foreign origins must fail before the private delivery service is called.
 
 ## Public product language
 
 Approved framing:
 
-- controlled early access;
-- web-first release;
-- iPhone and Android download waitlist;
+- Hermes Connect Web App;
+- controlled web access;
+- works from a modern browser;
+- category-aware service and request workflow;
 - human review before access instructions;
 - AI-assisted engineering workflow;
 - Codex supports implementation;
-- Hermes reviews privacy, tests and release readiness.
+- Hermes reviews privacy, tests, and release readiness.
 
 Do not claim:
 
-- an active public account system;
+- an automatically created public account;
 - confirmed booking or calendar integration;
 - a live payment system;
 - guaranteed acceptance or response time;
-- a downloadable mobile app before verification;
+- a native mobile app or downloadable build;
 - OpenAI endorsement or partnership;
 - autonomous AI control of client or business actions.
 
 ## Codex implementation loop
 
 1. Read the newest Hermes Connect issue and this handoff.
-2. Confirm current `main` and open PR ownership before editing.
+2. Confirm current `main`, open PR ownership, and the Connect deployment owner before editing.
 3. Convert repeated applicant needs into one bounded issue with acceptance criteria.
 4. Implement on a feature branch.
-5. Add or update unit and Playwright coverage.
-6. Run `npm run build`, `npm test`, and `npm run test:e2e` on the current head.
-7. Keep the PR draft until Cloudflare preview/production isolation under Issue #226 is verified.
-8. Record screenshots and a concise handoff before requesting merge approval.
+5. Keep the main-site overview, IT section, homepage bridge, and Web App copy aligned.
+6. Add or update unit and Playwright coverage.
+7. Run `npm run build`, `npm test`, and `npm run test:e2e` on the current head.
+8. Confirm that preview commits do not replace `connect.hermeslogisticsus.com`.
+9. Record the release commit and run the approved production smoke procedure before removing `noindex` from the Web App surface.
 
 ## Measurement boundary
 
 Privacy-safe custom dimensions may include:
 
 - category ID;
-- platform ID;
+- fixed platform ID `web`;
 - funnel event name;
 - page path.
 
 Do not place names, emails, business names, free-form workflow text, client data, addresses, or other personal/private details in analytics.
 
-A category click is not an application. A form start is not an application. A successful receiver response is a delivered application, not an accepted participant, account, download, booking, sale, or qualified commercial opportunity.
+A category click is not an access request. A form start is not an access request. A successful receiver response is a delivered Web App access request, not an accepted account, booking, sale, subscription, or qualified commercial opportunity.
 
 ## Next bounded product tasks
 
-After this funnel is green and deployment isolation is verified:
+After the web-only funnel and main-site bridge are green:
 
-1. confirm the subdomain serves the reviewed commit;
-2. run one synthetic application through the approved production smoke procedure;
-3. reconcile delivered applications with human review;
-4. measure category and platform demand for 7 and 28 days;
-5. prioritize the first product workflow from repeated applicant needs;
-6. create a controlled invitation and release artifact process;
-7. remove `noindex` only after the owner approves public discovery and canonical ownership for the subdomain.
+1. merge the reviewed release;
+2. confirm the approved commit serves `connect.hermeslogisticsus.com`;
+3. run one synthetic Web App access request through the approved production smoke procedure;
+4. reconcile delivered requests with human review;
+5. measure category demand for 7 and 28 days;
+6. prioritize the first working product workflow from repeated applicant needs;
+7. remove `noindex` from the Connect surface only after canonical ownership and discovery are explicitly approved.
