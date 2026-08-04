@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 30
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
 
     steps:
       - name: Check out current approved main
@@ -38,17 +41,14 @@ jobs:
 
       - name: Validate Cloudflare deployment credentials
         id: credentials
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           missing=""
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            missing="CLOUDFLARE_API_TOKEN"
+            missing="scoped Cloudflare API token"
           fi
           if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
             if [ -n "$missing" ]; then missing="$missing, "; fi
-            missing="${missing}CLOUDFLARE_ACCOUNT_ID"
+            missing="${missing}Cloudflare account identifier"
           fi
           if [ -n "$missing" ]; then
             echo "available=false" >> "$GITHUB_OUTPUT"
@@ -64,7 +64,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MISSING: ${{ steps.credentials.outputs.missing }}
         run: |
-          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 blocked\n\nThe isolated v2 release workflow started from approved \`main\` and checked both repository-level and GitHub Environment \`production\` secrets, but the required Cloudflare deployment credentials are unavailable: \`${MISSING:-Cloudflare credentials}\`.\n\nNo credential value was printed or accessed. Add \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\` either as repository Actions secrets or as secrets in the \`production\` environment, then run **Deploy approved main to Cloudflare Pages v2**. The API token needs Cloudflare Pages edit access for the account that owns project \`hermes\`.\n\nRelease remains \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 blocked\n\nThe controlled release checked repository secrets, GitHub Environment \`production\` secrets, and the approved alias names for a scoped token and account identifier, but the required Cloudflare deployment credentials are still unavailable: \`${MISSING:-Cloudflare credentials}\`.\n\nNo credential value was printed or accessed. The preferred names are \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`. The account identifier may also be stored as a repository/environment variable. Then run **Deploy approved main to Cloudflare Pages v2**. The token needs Cloudflare Pages edit access for the account that owns project \`hermes\`.\n\nRelease remains \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
 
       - name: Install dependencies
         run: npm ci
@@ -79,8 +79,8 @@ jobs:
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
           command: pages deploy dist --project-name=hermes --branch=main --commit-hash=${{ github.sha }} --commit-message="Approved main ${{ github.sha }}"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
