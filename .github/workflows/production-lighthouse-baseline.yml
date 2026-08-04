@@ -1,0 +1,101 @@
+name: Production Lighthouse baseline
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/production-lighthouse-baseline.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-lighthouse-baseline
+  cancel-in-progress: false
+
+jobs:
+  lighthouse:
+    name: Mobile lab baseline — ${{ matrix.page.slug }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        page:
+          - slug: home
+            url: https://hermeslogisticsus.com/
+          - slug: car-hauling-dispatch
+            url: https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
+          - slug: dealer-vehicle-transportation
+            url: https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
+          - slug: load-board
+            url: https://hermeslogisticsus.com/load-board/
+          - slug: logistics-seo
+            url: https://hermeslogisticsus.com/services/seo/
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Lighthouse against production
+        env:
+          TARGET_URL: ${{ matrix.page.url }}
+          PAGE_SLUG: ${{ matrix.page.slug }}
+        run: |
+          mkdir -p lighthouse-results
+          npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+            --output=json \
+            --output-path="lighthouse-results/${PAGE_SLUG}.json" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+
+      - name: Write sanitized score summary
+        env:
+          TARGET_URL: ${{ matrix.page.url }}
+          PAGE_SLUG: ${{ matrix.page.slug }}
+        run: |
+          node <<'NODE'
+          import fs from 'node:fs';
+
+          const slug = process.env.PAGE_SLUG;
+          const targetUrl = process.env.TARGET_URL;
+          const report = JSON.parse(fs.readFileSync(`lighthouse-results/${slug}.json`, 'utf8'));
+          const score = (key) => Math.round((report.categories?.[key]?.score ?? 0) * 100);
+          const display = (key) => report.audits?.[key]?.displayValue ?? 'n/a';
+
+          const summary = [
+            `## Production Lighthouse mobile lab baseline — ${slug}`,
+            '',
+            `- URL: ${targetUrl}`,
+            `- Lighthouse: ${report.lighthouseVersion ?? 'unknown'}`,
+            `- Fetch time: ${report.fetchTime ?? 'unknown'}`,
+            `- Performance: ${score('performance')}`,
+            `- Accessibility: ${score('accessibility')}`,
+            `- Best Practices: ${score('best-practices')}`,
+            `- SEO: ${score('seo')}`,
+            `- FCP: ${display('first-contentful-paint')}`,
+            `- LCP: ${display('largest-contentful-paint')}`,
+            `- Speed Index: ${display('speed-index')}`,
+            `- Total Blocking Time: ${display('total-blocking-time')}`,
+            `- CLS: ${display('cumulative-layout-shift')}`,
+            '',
+            '> This is a single GitHub-hosted Lighthouse lab run. It is not Search Console data, CrUX field data, a conversion result, or a ranking claim.',
+          ].join('\n');
+
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${summary}\n`);
+          NODE
+
+      - name: Upload Lighthouse JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-mobile-${{ matrix.page.slug }}
+          path: lighthouse-results/${{ matrix.page.slug }}.json
+          if-no-files-found: error
+          retention-days: 30
