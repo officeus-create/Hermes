@@ -29,6 +29,7 @@ for (const item of cases) {
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${item.route}`);
 
     const directLinks = page.locator(item.directSelector);
+    expect(await directLinks.count()).toBeGreaterThan(0);
     for (let index = 0; index < await directLinks.count(); index += 1) {
       await expect(directLinks.nth(index)).toHaveAttribute("href", directIntake);
     }
@@ -36,7 +37,6 @@ for (const item of cases) {
     await expect(page.locator(item.demoSelector)).toHaveAttribute("href", item.demo);
     await expect(page.locator(item.demoSelector)).toContainText(`Preview the ${item.city} Load Board demo`);
     await expect(page.getByText(/does not publish a request, notify a carrier, confirm capacity, create a booking/i)).toBeVisible();
-    await expect(page.locator(`${item.directSelector}[href*="/load-board/"]`)).toHaveCount(0);
   });
 }
 
