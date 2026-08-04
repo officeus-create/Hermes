@@ -32,6 +32,9 @@ test("homepage offers a fast role-first route before the four ecosystem pillars"
 });
 
 test("homepage role click emits only privacy-safe routing context", async ({ page }) => {
+  await page.addInitScript(() => {
+    window.sessionStorage.setItem("hermes-intro-seen", "1");
+  });
   await page.goto("/");
   await page.evaluate(() => {
     window.dataLayer = [];
