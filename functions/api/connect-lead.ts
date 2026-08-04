@@ -1,4 +1,4 @@
-import { onRequest as onLogisticsLeadRequest } from "./logistics-lead";
+import { onRequest as onLogisticsLeadRequest } from "./logistics-lead.ts";
 
 type Context = {
   request: Request;
