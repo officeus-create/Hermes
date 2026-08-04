@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PartnerReviewMatrix from "../../../components/PartnerReviewMatrix.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import { logisticsRecommendations } from "../../../data/logistics-path-engine";
@@ -20,6 +21,7 @@ const carHaulingCommercialAudienceIds = new Set([
   "carrier-fleet-owners",
 ]);
 const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recommendation.id);
+const showPartnerReviewMatrix = recommendation.id === "agency-development";
 const schema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -80,6 +82,8 @@ import "../../../styles/features/case.css";
           </div>
         </div>
       </section>
+
+      {showPartnerReviewMatrix && <PartnerReviewMatrix />}
 
       {showCarHaulingCommercialPath && (
         <section class="section recommendation-next" aria-labelledby="car-hauling-commercial-title">
