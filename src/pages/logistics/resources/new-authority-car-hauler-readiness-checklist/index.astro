@@ -18,6 +18,10 @@ const faq = [
     answer: "Prepare confirmed authority status, effective date, insurance, equipment and capacity, operating area, availability, broker setup documents, communication rules, and carrier approval boundaries.",
   },
   {
+    question: "How do I know which readiness state applies?",
+    answer: "Ready for dispatch review means the authority and insurance can be verified and the equipment, operating area, availability, setup documents, contact path, and carrier approval rules are clear. Needs clarification means the core authority or insurance may be verifiable but important operating or document details remain incomplete. Not ready for active load review means a foundational dependency such as authority, insurance, equipment identity, or an approved decision process is pending, inactive, or uncertain.",
+  },
+  {
     question: "Can Hermes guarantee loads, rates, or revenue for a new authority?",
     answer: "No. Loads, broker approval, rates, miles, utilization, profit, payment timing, and revenue depend on external market and operating conditions and are not guaranteed.",
   },
@@ -33,7 +37,7 @@ const schema = [
     headline: "New Authority Car Hauler Readiness Checklist",
     description,
     datePublished: "2026-08-02",
-    dateModified: "2026-08-02",
+    dateModified: "2026-08-04",
     mainEntityOfPage: canonicalUrl,
     author: { "@type": "Organization", name: "Hermes Logistics" },
     publisher: {
@@ -162,6 +166,31 @@ const schema = [
           </div>
         </section>
 
+        <section class="section capacity-review" aria-labelledby="readiness-decision-title" data-readiness-decision-tree>
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Readiness decision</p>
+              <h2 id="readiness-decision-title">Choose the next review state from the facts available now.</h2>
+              <p>This decision tree organizes the next operational step. It does not replace official authority, insurance, legal, safety, broker, or transaction-specific review.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article data-readiness-state="ready">
+                <strong>Ready for dispatch review</strong>
+                <p>Authority and insurance can be verified; equipment, practical capacity, operating area, availability, setup documents, business contact, and carrier approval rules are clear enough for a dispatch-scope review.</p>
+              </article>
+              <article data-readiness-state="clarify">
+                <strong>Needs clarification</strong>
+                <p>The core business may be reviewable, but equipment limits, operating area, availability, setup documents, factoring or payment instructions, communication, or approval rules remain incomplete or inconsistent.</p>
+              </article>
+              <article data-readiness-state="not-ready">
+                <strong>Not ready for active load review</strong>
+                <p>Authority is pending, inactive, or uncertain; required insurance is not effective; equipment identity or capacity is unresolved; or there is no approved contact and carrier-decision process. Resolve the foundational dependency first.</p>
+              </article>
+            </div>
+            <p class="readiness-decision-note"><strong>None of the three states guarantees broker acceptance, a load, a rate, payment, revenue, or a booking.</strong> A carrier may move between states as documents, operating facts, and external requirements change.</p>
+          </div>
+        </section>
+
         <section class="section capacity-review" aria-labelledby="readiness-boundary-title">
           <div class="shell">
             <div class="section-heading">
@@ -213,3 +242,14 @@ const schema = [
     <SiteFooter />
   </div>
 </BaseLayout>
+
+<style>
+  .readiness-decision-note {
+    margin: 1rem 0 0;
+    padding: 1rem 1.15rem;
+    border: 1px solid rgba(99, 117, 255, 0.2);
+    border-radius: 1rem;
+    background: rgba(99, 117, 255, 0.06);
+    line-height: 1.65;
+  }
+</style>
