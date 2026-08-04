@@ -1,0 +1,16 @@
+.connect-service-faq { background: #eef2f8; }
+.connect-service-faq-grid { display: grid; grid-template-columns: .78fr 1.22fr; gap: 5rem; align-items: start; }
+.connect-service-faq-grid > div:first-child { position: sticky; top: 7rem; }
+.connect-service-faq h2 { max-width: 13ch; margin: .8rem 0 1rem; font-size: clamp(2.35rem,4.3vw,4.5rem); line-height: 1; letter-spacing: -.045em; }
+.connect-service-faq-grid > div:first-child > p:last-child { color: #59677e; line-height: 1.75; }
+.connect-service-faq-list { display: grid; gap: .75rem; }
+.connect-service-faq-list details { border: 1px solid #d7dfeb; border-radius: 15px; background: #fff; box-shadow: 0 14px 34px rgba(24,43,78,.05); }
+.connect-service-faq-list summary { display: grid; grid-template-columns: minmax(0,1fr) 34px; gap: 1rem; align-items: center; padding: 1.25rem 1.35rem; cursor: pointer; color: #10203d; font-weight: 760; list-style: none; }
+.connect-service-faq-list summary::-webkit-details-marker { display: none; }
+.connect-service-faq-list summary span { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 10px; background: #e4ebfb; color: #2856a3; font-size: 1.15rem; transition: transform .2s ease; }
+.connect-service-faq-list details[open] summary span { transform: rotate(45deg); }
+.connect-service-faq-list details p { margin: 0; padding: 0 1.35rem 1.35rem; color: #5b687e; line-height: 1.7; }
+@media (max-width: 760px) {
+  .connect-service-faq-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .connect-service-faq-grid > div:first-child { position: static; }
+}
