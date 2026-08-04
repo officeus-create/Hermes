@@ -5,9 +5,9 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist", "logistics");
 const pages = [
-  ["shipper-dealer", "Is a carrier match guaranteed once I post a load?"],
-  ["broker", "Do you guarantee capacity for every load I post?"],
-  ["carrier", "Do I have to accept every load Hermes sends?"],
+  ["shipper-dealer", "Is a carrier match guaranteed after I submit a request?"],
+  ["broker", "Do you guarantee capacity for every opportunity?"],
+  ["carrier", "Do I have to accept every load Hermes presents?"],
   ["agency", "Does applying guarantee an agency will open?"],
   ["careers", "Does submitting an application guarantee an interview or a job?"],
 ];

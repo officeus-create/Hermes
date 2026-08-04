@@ -1,0 +1,294 @@
+---
+import { ArrowRight, Check, Mail, Phone, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import VehicleTransportRequestEnhancer from "../../../components/VehicleTransportRequestEnhancer.astro";
+
+const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
+const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
+const absoluteUrl = "https://hermeslogisticsus.com/logistics/request-vehicle-transport/";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Request Vehicle Transportation Review",
+    description: "A direct vehicle transportation qualification and handoff workspace for dealers, auction buyers, shippers, brokers, businesses, and private customers.",
+    url: absoluteUrl,
+    isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Request Vehicle Transportation", item: absoluteUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="Request Vehicle Transportation Review | Hermes Logistics"
+  description="Prepare a direct vehicle transport request with route, timing, vehicle condition, quantity, open or enclosed preference, auction release context, and business contact details."
+  robots="noindex,follow"
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="transport-request-page">
+    <section class="transport-request-hero">
+      <div class="shell transport-request-hero-grid">
+        <div>
+          <nav class="transport-request-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span aria-hidden="true">/</span>
+            <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+            <span aria-current="page">Request transport</span>
+          </nav>
+          <p class="eyebrow">Hermes Logistics · Direct customer intake</p>
+          <h1>Request a Vehicle Transportation Review</h1>
+          <p class="transport-request-lead">
+            Prepare a real dealer, auction, shipper, broker, business, or private-customer request without entering the fictional Load Board demo. Logistics Sales reviews route, timing, condition, release context, equipment needs, and the next practical step.
+          </p>
+          <div class="transport-request-actions">
+            <a class="button button-primary" href="#transport-intake">Prepare the request <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href="/load-board/?role=shipper#post-load">Preview the Load Board demo</a>
+          </div>
+        </div>
+        <aside class="transport-request-expectation">
+          <p class="eyebrow">Prepare before carrier search</p>
+          <ul>
+            <li><Check size={19} aria-hidden="true" />Exact pickup and delivery locations.</li>
+            <li><Check size={19} aria-hidden="true" />Ready date, facility hours, appointment, or storage deadline.</li>
+            <li><Check size={19} aria-hidden="true" />Vehicle year, make, model, quantity, and operability.</li>
+            <li><Check size={19} aria-hidden="true" />Open, enclosed, winch, multi-car, or other equipment preference.</li>
+          </ul>
+          <p class="transport-request-non-affiliation">Copart, IAA, and Manheim may be selected only as facility-context examples. Hermes does not claim affiliation with those companies.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="transport-intake-section" id="transport-intake" data-transport-intake aria-labelledby="transport-intake-title">
+      <div class="shell transport-intake-layout">
+        <div class="transport-intake-copy">
+          <p class="eyebrow">Customer-side qualification</p>
+          <h2 id="transport-intake-title">Give Logistics Sales the operating details that affect the move.</h2>
+          <p>The first review separates a standard operable request from cases requiring equipment, loading, release, capacity, or timing clarification.</p>
+          <div class="transport-intake-safety">
+            <ShieldCheck size={25} aria-hidden="true" />
+            <div>
+              <strong>Keep sensitive release data out of this form</strong>
+              <p>Do not enter VINs, gate-pass codes, payment credentials, identity documents, passwords, private contracts, or release documents. Exchange them later through an approved secure channel.</p>
+            </div>
+          </div>
+          <div class="transport-intake-contact">
+            <a href="mailto:freight_301@hermeslogisticsus.com"><Mail size={18} aria-hidden="true" />Email Logistics Sales</a>
+            <a href="tel:+12623023626"><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
+          </div>
+        </div>
+
+        <div class="transport-intake-workspace">
+          <form class="transport-intake-form" data-transport-form data-lead-mode={leadMode} data-lead-endpoint={leadEndpoint} novalidate>
+            <div class="form-alert" role="alert" data-transport-alert hidden></div>
+            <p class="eyebrow">Dealer / shipper / customer request</p>
+            <h3>Prepare the vehicle move</h3>
+
+            <div class="transport-field-row">
+              <label>Your role *
+                <select name="submitter_type" required>
+                  <option value="">Choose one</option>
+                  <option value="dealer">Dealer or dealership</option>
+                  <option value="shipper">Shipper or logistics manager</option>
+                  <option value="broker">Freight broker</option>
+                  <option value="other_business">Other business</option>
+                  <option value="private_party">Private customer</option>
+                </select>
+              </label>
+              <label>Request type *
+                <select name="request_type" required>
+                  <option value="">Choose one</option>
+                  <option value="dealer_inventory">Dealer inventory movement</option>
+                  <option value="auction_pickup">Auction pickup</option>
+                  <option value="dealer_transfer">Dealer-to-dealer transfer</option>
+                  <option value="customer_delivery">Customer delivery</option>
+                  <option value="recurring_program">Repeat or recurring transport</option>
+                  <option value="other">Other vehicle move</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Company name
+                <input name="company_name" maxlength="160" autocomplete="organization" />
+              </label>
+              <label>Contact name *
+                <input name="contact_name" maxlength="100" autocomplete="name" required />
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Email *
+                <input name="email" type="email" maxlength="160" autocomplete="email" required />
+              </label>
+              <label>Phone *
+                <input name="phone" type="tel" maxlength="40" autocomplete="tel" required />
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Pickup city, state, ZIP, or known facility *
+                <input name="pickup_location" maxlength="180" required />
+              </label>
+              <label>Delivery city, state, or ZIP *
+                <input name="delivery_location" maxlength="180" required />
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Ready date *
+                <input name="ready_date" type="date" required />
+              </label>
+              <label>Request frequency *
+                <select name="request_frequency" required>
+                  <option value="one_time">One-time move</option>
+                  <option value="repeat">Repeat requests</option>
+                  <option value="recurring">Recurring program</option>
+                  <option value="not_sure">Not sure yet</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Vehicle category *
+                <select name="commodity_type" required>
+                  <option value="">Choose one</option>
+                  <option value="passenger_vehicle">Passenger vehicle</option>
+                  <option value="pickup_suv">Pickup or SUV</option>
+                  <option value="motorcycle">Motorcycle</option>
+                  <option value="light_truck">Light truck</option>
+                  <option value="tractor">Truck tractor</option>
+                  <option value="other">Other vehicle/equipment</option>
+                </select>
+              </label>
+              <label>Year, make, model, or unit summary *
+                <input name="year_make_model" maxlength="180" placeholder="Example: 2024 Ford F-150 or mixed dealer inventory" required />
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Quantity *
+                <input name="quantity" type="number" min="1" max="20" inputmode="numeric" required />
+              </label>
+              <label>Vehicle condition *
+                <select name="condition" required>
+                  <option value="">Choose one</option>
+                  <option value="operable">Operable</option>
+                  <option value="inoperable_rolls">Inoperable, rolls and steers</option>
+                  <option value="inoperable_non_rolling">Inoperable, does not roll or steer</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Equipment preference *
+                <select name="equipment_preference" required>
+                  <option value="not_sure">Not sure — review needed</option>
+                  <option value="open">Open transport</option>
+                  <option value="enclosed">Enclosed transport</option>
+                  <option value="multi_car">Multi-car capacity</option>
+                  <option value="winch_required">Winch/inoperable capability</option>
+                  <option value="special_review">Special equipment review</option>
+                </select>
+              </label>
+              <label>Target price or budget context
+                <input name="offered_price" maxlength="80" placeholder="Optional; not a guaranteed final rate" />
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Auction/facility context
+                <select name="auction_source">
+                  <option value="none">Not an auction pickup</option>
+                  <option value="copart">Copart facility</option>
+                  <option value="iaa">IAA facility</option>
+                  <option value="manheim">Manheim facility</option>
+                  <option value="other_auction">Other auction or storage facility</option>
+                </select>
+              </label>
+              <label>Release status
+                <select name="release_status">
+                  <option value="not_sure">Not sure</option>
+                  <option value="ready">Released and ready</option>
+                  <option value="pending">Release pending</option>
+                  <option value="documents_in_progress">Documents in progress</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="transport-field-row">
+              <label>Storage deadline
+                <input name="storage_deadline" type="date" />
+              </label>
+              <label>Facility hours or access notes
+                <input name="notes" maxlength="600" placeholder="Hours, appointment, keys, loading access, or other non-sensitive notes" />
+              </label>
+            </div>
+
+            <label class="transport-consent">
+              <input name="consent" type="checkbox" required />
+              <span>I am authorized to request this business review and agree that Logistics Sales may contact me about the submitted transportation information.</span>
+            </label>
+
+            <label class="transport-honeypot" aria-hidden="true">Website
+              <input name="website" tabindex="-1" autocomplete="off" />
+            </label>
+
+            <button class="button button-primary" type="submit">Review transport request</button>
+            <p class="transport-mode-note">
+              {leadMode === "live"
+                ? "Secure delivery is available only when the approved same-origin receiver confirms the request."
+                : "Preview mode is active. The form prepares a review and email handoff without automatic delivery or storage."}
+            </p>
+          </form>
+
+          <aside class="transport-intake-result" data-transport-result hidden aria-live="polite">
+            <p class="eyebrow">Transport review result</p>
+            <h3 data-transport-decision>Review pending</h3>
+            <div class="transport-result-grid">
+              <div><strong>Why</strong><ul data-transport-reasons></ul></div>
+              <div><strong>Required actions</strong><ul data-transport-actions></ul></div>
+              <div><strong>Routing</strong><ul data-transport-routing></ul></div>
+            </div>
+            <pre data-transport-preview></pre>
+            <div class="transport-result-actions">
+              <button class="button button-primary" type="button" data-send-transport-lead hidden>Send securely to Logistics Sales</button>
+              <a class="button" href="mailto:freight_301@hermeslogisticsus.com" data-transport-email>Open prepared email</a>
+              <a class="button" href="tel:+12623023626">Call +1 (262) 302-3626</a>
+            </div>
+            <p data-transport-delivery-status></p>
+            <p class="transport-result-boundary" data-transport-boundary></p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section transport-process" aria-labelledby="transport-process-title">
+      <div class="shell">
+        <p class="eyebrow">After the review</p>
+        <h2 id="transport-process-title">Request, clarification, carrier review, confirmation.</h2>
+        <ol>
+          <li><span>01</span><div><strong>Request review</strong><p>Logistics Sales checks route, timing, quantity, condition, release status, and equipment preference.</p></div></li>
+          <li><span>02</span><div><strong>Missing details</strong><p>Release references, dimensions, access, keys, operability, or loading method may need direct clarification.</p></div></li>
+          <li><span>03</span><div><strong>Carrier and equipment review</strong><p>Authority, insurance, equipment, route, availability, and operating fit are reviewed before an option is represented as available.</p></div></li>
+          <li><span>04</span><div><strong>Separate confirmation</strong><p>No transportation is booked until terms, carrier information, and the applicable arrangement are reviewed and accepted.</p></div></li>
+        </ol>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+  <VehicleTransportRequestEnhancer />
+</BaseLayout>
+
+<style>
+  .transport-request-page{background:#fff;color:#10204e}.transport-request-hero{padding:8.8rem 0 5rem;background:radial-gradient(circle at 85% 15%,rgba(62,112,255,.28),transparent 35%),#071038;color:#fff}.transport-request-hero-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);gap:clamp(2rem,5vw,5rem);align-items:center}.transport-request-breadcrumbs{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2rem;color:rgba(255,255,255,.68);font-size:.84rem}.transport-request-breadcrumbs a{color:inherit}.transport-request-hero h1{max-width:12ch;font-size:clamp(3rem,7vw,6rem)}.transport-request-lead{max-width:66ch;color:rgba(255,255,255,.8);font-size:1.16rem;line-height:1.7}.transport-request-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}.transport-request-actions .button-ghost{border-color:rgba(255,255,255,.42);color:#fff}.transport-request-expectation{padding:clamp(1.3rem,3vw,2rem);border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(255,255,255,.08)}.transport-request-expectation ul{display:grid;gap:.85rem;margin:1rem 0;padding:0;list-style:none}.transport-request-expectation li{display:grid;grid-template-columns:auto 1fr;gap:.65rem;color:rgba(255,255,255,.84)}.transport-request-expectation svg{color:#82e4b4}.transport-request-non-affiliation{margin:1.2rem 0 0;padding-top:1rem;border-top:1px solid rgba(255,255,255,.16);color:rgba(255,255,255,.66);font-size:.85rem;line-height:1.55}.transport-intake-section{padding:clamp(4rem,8vw,7rem) 0;background:#f5f7ff}.transport-intake-layout{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:clamp(2rem,5vw,5rem);align-items:start}.transport-intake-copy{position:sticky;top:7rem}.transport-intake-copy h2{max-width:13ch;font-size:clamp(2.1rem,4vw,3.6rem)}.transport-intake-copy>p:not(.eyebrow){color:#5e6b89;line-height:1.7}.transport-intake-safety{display:grid;grid-template-columns:auto 1fr;gap:.8rem;margin-top:1.5rem;padding:1rem;border:1px solid #d8e0f3;border-radius:10px;background:#fff}.transport-intake-safety svg{color:#1e805c}.transport-intake-safety p{margin:.35rem 0 0;color:#65718d;font-size:.9rem;line-height:1.55}.transport-intake-contact{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1rem}.transport-intake-contact a{display:inline-flex;gap:.45rem;align-items:center;font-weight:750}.transport-intake-workspace{display:grid;gap:1rem}.transport-intake-form,.transport-intake-result{padding:clamp(1.2rem,3vw,2rem);border:1px solid #dbe2f5;border-radius:14px;background:#fff;box-shadow:0 24px 70px rgba(29,48,102,.09)}.transport-intake-form h3,.transport-intake-result h3{margin:.25rem 0 .8rem;font-size:clamp(1.5rem,3vw,2.2rem)}.transport-field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem;margin-top:.9rem}.transport-intake-form label{display:grid;gap:.4rem;color:#21325f;font-size:.88rem;font-weight:700}.transport-intake-form input,.transport-intake-form select{width:100%;min-height:46px;padding:.72rem .8rem;border:1px solid #cfd8ee;border-radius:7px;background:#fff;color:#10204e;font:inherit}.transport-intake-form input:focus,.transport-intake-form select:focus{outline:3px solid rgba(74,92,255,.18);border-color:#4a5cff}.transport-consent{grid-template-columns:auto 1fr!important;align-items:start;margin:1rem 0;line-height:1.5}.transport-consent input{width:1rem;min-height:auto;margin-top:.2rem}.transport-honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}.form-alert{margin-bottom:1rem;padding:.85rem 1rem;border:1px solid #d64f4f;border-radius:7px;background:#fff3f3;color:#8e2020}.transport-mode-note,.transport-result-boundary{color:#65718e;font-size:.9rem;line-height:1.55}.transport-result-grid{display:grid;gap:.8rem}.transport-result-grid>div{padding:1rem;border:1px solid #e1e6f4;border-radius:8px}.transport-result-grid ul{margin:.6rem 0 0;padding-left:1.1rem;color:#526181}.transport-intake-result pre{margin:1rem 0;padding:1rem;overflow:auto;border-radius:8px;background:#071038;color:#eef2ff;white-space:pre-wrap;font:500 .82rem/1.55 var(--font-mono)}.transport-result-actions{display:flex;flex-wrap:wrap;gap:.7rem}.transport-intake-result[hidden]{display:none}.transport-process{background:#fff}.transport-process h2{max-width:16ch}.transport-process ol{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem;padding:0;list-style:none}.transport-process li{padding:1.2rem;border-top:2px solid #6a20d9;background:#f7f4ff}.transport-process li>span{font-family:var(--font-mono);color:#6a20d9}.transport-process strong{display:block;margin:.8rem 0 .35rem}.transport-process p{margin:0;color:#62708c;line-height:1.55}@media(max-width:950px){.transport-request-hero-grid,.transport-intake-layout{grid-template-columns:1fr}.transport-intake-copy{position:static}.transport-process ol{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.transport-field-row,.transport-process ol{grid-template-columns:1fr}.transport-intake-form,.transport-intake-result{padding:1rem}.transport-result-actions .button{width:100%;justify-content:center}}
+</style>

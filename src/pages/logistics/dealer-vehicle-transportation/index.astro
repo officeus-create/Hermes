@@ -33,6 +33,7 @@ const content = {
   faq: [
     { question: "Can Hermes guarantee same-day dealer pickup?", answer: "No. Pickup timing depends on carrier availability, location, vehicle readiness, release requirements, weather, market conditions, access, and final carrier acceptance." },
     { question: "Do you support auction pickups?", answer: "Auction pickup coordination may be available when the exact facility, release information, buyer or stock reference, vehicle condition, pickup hours, storage deadline, timing, and destination are provided." },
+    { question: "Can I prepare a Copart, IAA, or Manheim pickup request?", answer: "Yes. Those names may be selected as facility context so the review can ask for release status, buyer or stock reference, hours, storage deadline, keys, operability, and loading access. Hermes does not claim affiliation with Copart, IAA, or Manheim, and the facility's own requirements still control pickup." },
     { question: "Can several dealer vehicles move together?", answer: "Yes, when compatible carrier capacity is available. Vehicle count, size, operability, pickup location, delivery location, requested sequence, and timing must be reviewed first." },
     { question: "Is enclosed transportation available?", answer: "Enclosed capacity may be requested for luxury, classic, specialty, or higher-protection moves, subject to route, timing, equipment, access, and carrier availability." },
     { question: "Can Wisconsin dealers use a local request page?", answer: "Yes. Wisconsin dealers can use the dedicated dealer transport, auction pickup, multi-vehicle, enclosed transport, and city-level pages to prepare more specific requests." },
@@ -41,14 +42,16 @@ const content = {
   ],
   primaryAction: {
     label: "Prepare a dealer transport request",
-    href: "/load-board/?role=dealer#post-load",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=dealer_inventory#transport-intake",
   },
-  handoffNote: "The request opens a local review and does not book transportation, guarantee capacity, or send sensitive release information automatically. Email and phone remain available as fallback routes.",
+  handoffNote: "Use the direct customer intake to prepare route, timing, quantity, condition, equipment preference, auction context, release status, and recurring-need details. The separate Load Board remains a fictional product preview.",
   related: [
+    { label: "Start Dealer Transport Request", href: "/logistics/request-vehicle-transport/?role=dealer&request=dealer_inventory#transport-intake" },
+    { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
     { label: "Wisconsin Dealer Vehicle Transport", href: "/logistics/wisconsin-dealer-vehicle-transport/" },
-    { label: "Wisconsin Auction Vehicle Pickup", href: "/logistics/wisconsin-auction-vehicle-pickup/" },
     { label: "Wisconsin Multi-Vehicle Dealer Transport", href: "/logistics/wisconsin-multi-vehicle-dealer-transport/" },
     { label: "Wisconsin Enclosed Vehicle Transport", href: "/logistics/wisconsin-enclosed-vehicle-transport/" },
+    { label: "Preview the Load Board Demo", href: "/load-board/?role=dealer#post-load" },
     { label: "Car Hauling Dispatch Services", href: "/logistics/car-hauling-dispatch/" },
     { label: "Contact Hermes", href: "/contacts/" },
   ],
