@@ -25,18 +25,24 @@ test("Hermes Connect routes categories and platforms into the early-access form"
 });
 
 test("Hermes Connect submits a privacy-safe early-access request through the protected adapter", async ({ page }) => {
-  let submittedPayload: Record<string, unknown> | null = null;
-  let requestHeaders: Record<string, string> = {};
+  let submittedInterest = "";
+  let submittedSourcePath = "";
+  let submittedMessage = "";
+  let submittedRequestId = "";
+  let requestIdHeader = "";
 
   await page.route("https://hermeslogisticsus.com/api/connect-lead", async (route) => {
     const payload = route.request().postDataJSON() as Record<string, unknown>;
-    submittedPayload = payload;
-    requestHeaders = route.request().headers();
+    submittedInterest = String(payload.interest ?? "");
+    submittedSourcePath = String(payload.source_path ?? "");
+    submittedMessage = String(payload.message ?? "");
+    submittedRequestId = String(payload.request_id ?? "");
+    requestIdHeader = route.request().headers()["idempotency-key"] ?? "";
     await route.fulfill({
       status: 200,
       contentType: "application/json",
       headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ success: true, request_id: payload.request_id }),
+      body: JSON.stringify({ success: true, request_id: submittedRequestId }),
     });
   });
 
@@ -56,12 +62,12 @@ test("Hermes Connect submits a privacy-safe early-access request through the pro
   await expect(page.locator("[data-application-result]")).toBeVisible();
   await expect(page.locator("[data-form-status]")).toHaveText("Application delivery confirmed.");
 
-  expect(submittedPayload).not.toBeNull();
-  expect(submittedPayload?.interest).toBe("IT Development");
-  expect(submittedPayload?.source_path).toBe("/hermes-connect/early-access/");
-  expect(String(submittedPayload?.message)).toContain("Category: Beauty & wellness");
-  expect(String(submittedPayload?.message)).toContain("Requested platform: Android");
-  expect(requestHeaders["idempotency-key"]).toBe(submittedPayload?.request_id);
+  expect(submittedInterest).toBe("IT Development");
+  expect(submittedSourcePath).toBe("/hermes-connect/early-access/");
+  expect(submittedMessage).toContain("Category: Beauty & wellness");
+  expect(submittedMessage).toContain("Requested platform: Android");
+  expect(requestIdHeader).toBe(submittedRequestId);
+  expect(submittedRequestId.length).toBeGreaterThan(7);
 
   const analytics = await page.evaluate(() => JSON.stringify(window.dataLayer ?? []));
   expect(analytics).toContain("connect_application_delivery_confirmed");
