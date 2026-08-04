@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("car hauling dispatch page routes carriers into structured intake with direct fallbacks", async ({ page }) => {
+test("car hauling dispatch page routes carriers into direct commercial intake with fallbacks", async ({ page }) => {
   await page.goto("/logistics/car-hauling-dispatch/");
 
   await expect(page).toHaveTitle("Car Hauling Dispatch Services for Owner-Operators | Hermes Logistics");
@@ -9,11 +9,8 @@ test("car hauling dispatch page routes carriers into structured intake with dire
   ).toBeVisible();
 
   const actions = page.locator(".commercial-actions");
-  const primary = actions.getByRole("link", { name: "Request car-hauling dispatch review" });
-  await expect(primary).toHaveAttribute(
-    "href",
-    "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
-  );
+  const primary = actions.getByRole("link", { name: "Start car-hauling dispatch review" });
+  await expect(primary).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
   await expect(actions.getByRole("link", { name: "Email Logistics Sales" })).toHaveAttribute(
     "href",
     "mailto:freight_301@hermeslogisticsus.com",
@@ -25,6 +22,7 @@ test("car hauling dispatch page routes carriers into structured intake with dire
   expect(publicCopy).toContain("MC or USDOT number");
   expect(publicCopy).toMatch(/does not.*guarantee.*load/i);
   expect(publicCopy).toMatch(/carrier.*final decision/i);
+  expect(publicCopy).toContain("fictional product preview");
 
   await page.evaluate(() => {
     document.querySelector("[data-commercial-primary-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
@@ -44,16 +42,25 @@ test("car hauling dispatch page routes carriers into structured intake with dire
     page_group: "logistics_service",
     service_group: "car_hauling_dispatch",
     page_path: "/logistics/car-hauling-dispatch/",
-    destination_path: "/load-board/",
+    destination_path: "/logistics/start-car-hauling-dispatch/",
   });
   expect(JSON.stringify(analyticsEvent)).not.toMatch(/email|phone|MC\s*\d|USDOT\s*\d|VIN|car_hauler/i);
 
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
-  await expect(page.locator("#carrier-access")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
+  await page.goto("/logistics/start-car-hauling-dispatch/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+  await expect(page.locator("#dispatch-intake")).toBeVisible();
   await expect(page.locator('input[name="authority_number"]')).toBeVisible();
-  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");
+  await expect(page.locator('input[name="equipment_class"]')).toHaveValue("car_hauler");
   await expect(page.locator('input[name="capacity_units"]')).toHaveAttribute("min", "1");
+  await expect(page.getByRole("link", { name: "Email Logistics Sales" }).first()).toHaveAttribute(
+    "href",
+    "mailto:freight_301@hermeslogisticsus.com",
+  );
+  await expect(page.getByRole("link", { name: "+1 (262) 302-3626" }).first()).toHaveAttribute("href", "tel:+12623023626");
+  await expect(page.getByRole("link", { name: /Preview the Load Board demo/i })).toHaveAttribute(
+    "href",
+    "/load-board/?role=carrier&equipment=car_hauler#available-loads",
+  );
 });
 
 test("Load Board ignores unsupported equipment query values", async ({ page }) => {
