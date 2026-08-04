@@ -21,7 +21,7 @@ const content = {
     { title: "Facility access planning", body: "Pickup hours, appointment rules, loading requirements, access restrictions, and reliable contacts are organized before coordination." },
     { title: "Storage deadline awareness", body: "Storage deadlines are recorded as planning inputs without guaranteeing pickup until route, equipment, and capacity are confirmed." },
     { title: "Equipment matching", body: "Open, enclosed, inoperable-capable, hotshot, or multi-car equipment requests are reviewed against the actual vehicle and route." },
-    { title: "Clear non-affiliation boundary", body: "Hermes does not claim affiliation with auction facilities and does not replace the facility's own release or pickup rules." },
+    { title: "Clear non-affiliation boundary", body: "Copart, IAA, Manheim, and other facility names may be used only as pickup context. Hermes does not claim affiliation and does not replace the facility's own release or pickup rules." },
   ],
   process: [
     { title: "Submit the facility and route", body: "Provide the exact auction or storage location, destination, pickup contact, and route details." },
@@ -32,23 +32,25 @@ const content = {
   ],
   faq: [
     { question: "What information is required for an auction pickup?", answer: "Provide the exact facility, release status, buyer or stock reference, pickup hours, storage deadline, vehicle condition, keys, route, and authorized contacts." },
+    { question: "Can I submit a Copart, IAA, or Manheim pickup?", answer: "Yes. The direct request can record the facility context, but Hermes is not affiliated with Copart, IAA, or Manheim. Their release, payment, appointment, loading, and pickup rules must be confirmed with the actual location." },
     { question: "Can an inoperable auction vehicle be transported?", answer: "It may be reviewed. State whether the vehicle starts, rolls, steers, and brakes so loading equipment and handling requirements can be evaluated." },
     { question: "Can Hermes guarantee pickup before storage fees begin?", answer: "No. Storage deadlines should be disclosed, but timing depends on route, access, equipment, compliance, carrier availability, and final confirmation." },
     { question: "Is Hermes affiliated with auction facilities?", answer: "No affiliation is implied. Facility release, payment, pickup, appointment, and loading requirements must be confirmed with the actual location." },
     { question: "Can several auction vehicles move together?", answer: "Yes, when compatible capacity is available. Vehicle count, condition, dimensions, pickup readiness, route, and timing must be reviewed first." },
-    { question: "How do I prepare the request?", answer: "Use the auction pickup checklist and submit non-sensitive route and vehicle details. Exchange VINs, documents, and release credentials through a secure direct channel." },
+    { question: "How do I prepare the request?", answer: "Use the direct auction pickup intake and submit non-sensitive route, timing, release-status, equipment-preference, and vehicle details. Exchange VINs, documents, and release credentials through a secure direct channel." },
   ],
   primaryAction: {
     label: "Prepare an auction pickup request",
-    href: "/load-board/#post-load",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake",
   },
-  handoffNote: "The request opens a local review and does not guarantee pickup, price, equipment, carrier capacity, or a storage-deadline outcome. VINs and release credentials should remain in a secure direct channel.",
+  handoffNote: "The direct request reviews facility, route, timing, condition, equipment preference, release status, and storage deadline without guaranteeing pickup, price, equipment, capacity, or outcome. Keep VINs and release credentials in a secure direct channel.",
   related: [
+    { label: "Start Auction Pickup Request", href: "/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake" },
     { label: "Auction Vehicle Pickup Checklist", href: "/logistics/resources/auction-vehicle-pickup-checklist/" },
     { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
     { label: "Inoperable Vehicle Transport", href: "/logistics/inoperable-vehicle-transport/" },
     { label: "Multi-Car Transport", href: "/logistics/multi-car-transport/" },
-    { label: "Wisconsin Auction Vehicle Pickup", href: "/logistics/wisconsin-auction-vehicle-pickup/" },
+    { label: "Preview the Load Board Demo", href: "/load-board/?role=dealer#post-load" },
     { label: "Contact Hermes", href: "/contacts/" },
   ],
 };
