@@ -41,7 +41,7 @@ async function fetchPublic() {
         accept: "text/html,application/xhtml+xml",
         "cache-control": "no-cache",
         pragma: "no-cache",
-        "user-agent": "HermesConnectReleaseVerifier/1.1 (+public read-only deployment check)",
+        "user-agent": "HermesConnectReleaseVerifier/1.2 (+public read-only deployment recheck)",
       },
       signal: AbortSignal.timeout(20_000),
     });
