@@ -1,0 +1,68 @@
+---
+import { Check, ShieldCheck } from "@lucide/astro";
+
+const categories = [
+  {
+    title: "Agency operator",
+    fit: "An experienced logistics, sales, or operations leader exploring a controlled Hermes agency assessment.",
+    evidence: ["Location, languages, market, and available time", "Relevant operating, sales, hiring, or leadership experience", "Existing team or realistic hiring capacity", "Proposed responsibilities and decision boundaries"],
+  },
+  {
+    title: "Insurance or risk services",
+    fit: "A licensed or authorized provider proposing insurance, certificates, claims-support, or risk-review services relevant to approved carrier workflows.",
+    evidence: ["Legal business identity and applicable licenses", "States, products, and customer types actually served", "Data requested and reason for access", "Escalation, privacy, security, and complaint process"],
+  },
+  {
+    title: "Factoring or payment services",
+    fit: "A provider proposing factoring, invoicing, payment, collections, or related financial workflow support.",
+    evidence: ["Legal entity, service area, and applicable authorization", "Fees, recourse, reserves, exclusions, and contract boundary", "Security and identity-verification process", "Support, dispute, cancellation, and data-retention process"],
+  },
+  {
+    title: "ELD, telematics, or technology",
+    fit: "A provider proposing ELD, tracking, TMS, CRM, communications, automation, integration, or another operating technology.",
+    evidence: ["Product scope and current production capability", "Security, permissions, storage, retention, and deletion model", "Integration method, support ownership, and failure behavior", "Pricing, implementation requirements, and exit/export path"],
+  },
+  {
+    title: "Compliance, safety, or professional service",
+    fit: "A provider proposing filings, safety, training, drug and alcohol, legal, tax, maintenance, fuel, permits, or another specialist service.",
+    evidence: ["Exact service and responsibility boundary", "Licenses, credentials, or qualifications where applicable", "Jurisdiction, limitations, conflicts, and referral rules", "Pricing, support, records, and correction process"],
+  },
+  {
+    title: "Other logistics vendor",
+    fit: "A relevant vendor whose service does not fit the categories above and requires a separate scope and risk review.",
+    evidence: ["Clear problem and intended Hermes audience", "Legal identity and evidence-supported capability", "Requested data, access, promotion, or integration", "Commercial model, responsibilities, risks, and exit conditions"],
+  },
+];
+---
+
+<section class="section partner-review" aria-labelledby="partner-review-title" data-partner-review-matrix>
+  <div class="shell">
+    <div class="section-heading split-heading">
+      <div><p class="eyebrow">Partner review matrix</p><h2 id="partner-review-title">Different partnership requests require different evidence.</h2></div>
+      <p>Share public-safe company and service information first. Credentials, contracts, customer records, carrier data, access keys, payment details, and other sensitive materials belong only in an approved private review channel.</p>
+    </div>
+
+    <div class="partner-review-grid">
+      {categories.map((category) => (
+        <article>
+          <h3>{category.title}</h3>
+          <p>{category.fit}</p>
+          <strong>Minimum review evidence</strong>
+          <ul>{category.evidence.map((item) => <li><Check size={17} aria-hidden="true" />{item}</li>)}</ul>
+        </article>
+      ))}
+    </div>
+
+    <div class="partner-review-boundary">
+      <ShieldCheck size={26} aria-hidden="true" />
+      <div>
+        <h3>A review is not an endorsement or commercial approval.</h3>
+        <p>Submitting information does not create a partnership, agency, franchise, territory, exclusivity, preferred-vendor status, referral commitment, commission, customer or carrier access, lead access, data access, integration, purchase, insurance or factoring approval, public listing, or permission to use Hermes names and logos. Any approved pilot or relationship requires separate written scope, responsibilities, privacy and security terms, commercial terms, and termination conditions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .partner-review{position:relative;overflow:hidden}.partner-review::before{content:"";position:absolute;inset:5% -18% auto;height:28rem;background:radial-gradient(circle,rgba(129,105,255,.11),transparent 68%);pointer-events:none}.partner-review>.shell{position:relative}.partner-review-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:clamp(2rem,4vw,3rem)}.partner-review-grid article{padding:clamp(1.25rem,3vw,1.75rem);border:1px solid rgba(129,105,255,.22);border-radius:1.25rem;background:linear-gradient(145deg,rgba(129,105,255,.08),transparent 48%),rgba(255,255,255,.035)}.partner-review-grid h3{margin:0;font-size:clamp(1.2rem,2vw,1.55rem)}.partner-review-grid article>p{margin:.8rem 0 1.1rem;opacity:.76}.partner-review-grid strong{display:block;margin-bottom:.7rem}.partner-review-grid ul{display:grid;gap:.58rem;margin:0;padding:0;list-style:none}.partner-review-grid li{display:grid;grid-template-columns:1.15rem 1fr;gap:.5rem}.partner-review-grid li :global(svg){margin-top:.12rem;color:rgb(129,105,255)}.partner-review-boundary{display:grid;grid-template-columns:2rem 1fr;gap:.9rem;margin-top:1rem;padding:clamp(1.25rem,3vw,1.8rem);border:1px solid rgba(129,105,255,.3);border-radius:1.25rem;background:rgba(10,12,22,.58)}.partner-review-boundary :global(svg){color:rgb(129,105,255)}.partner-review-boundary h3{margin:0}.partner-review-boundary p{margin:.55rem 0 0;opacity:.76}@media(max-width:760px){.partner-review-grid{grid-template-columns:1fr}}
+</style>
