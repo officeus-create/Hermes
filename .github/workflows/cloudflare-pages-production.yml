@@ -1,0 +1,142 @@
+name: Deploy approved main to Cloudflare Pages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/cloudflare-pages-production.yml
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-pages-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build, deploy, and verify approved main
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Validate Cloudflare deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Missing required GitHub Actions secret: CLOUDFLARE_API_TOKEN" >&2
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Missing required GitHub Actions secret: CLOUDFLARE_ACCOUNT_ID" >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build approved release
+        run: npm run build
+
+      - name: Validate static release contracts
+        run: npm test
+
+      - name: Deploy dist to the authoritative Pages project
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: pages deploy dist --project-name=hermes --branch=main --commit-hash=${{ github.sha }} --commit-message="Approved main ${{ github.sha }}"
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify the main-domain Hermes Connect bridge
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          node <<'NODE'
+          const targets = [
+            {
+              url: "https://hermeslogisticsus.com/services/hermes-connect/",
+              markers: ["Hermes Connect Web App", "Request Web App access"],
+            },
+            {
+              url: "https://hermeslogisticsus.com/",
+              markers: ["Hermes Connect", "Web App"],
+            },
+          ];
+
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const attempts = 12;
+
+          for (const target of targets) {
+            let verified = false;
+            let lastStatus = null;
+            let lastTitle = null;
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              try {
+                const response = await fetch(`${target.url}?release=${Date.now()}`, {
+                  redirect: "follow",
+                  headers: {
+                    "cache-control": "no-cache",
+                    pragma: "no-cache",
+                    "user-agent": "HermesProductionVerifier/1.0",
+                  },
+                  signal: AbortSignal.timeout(20_000),
+                });
+                const body = await response.text();
+                lastStatus = response.status;
+                lastTitle = body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() ?? null;
+                if (response.status === 200 && target.markers.every((marker) => body.includes(marker))) {
+                  verified = true;
+                  break;
+                }
+              } catch (error) {
+                console.error(`Attempt ${attempt} failed for ${target.url}:`, error instanceof Error ? error.message : error);
+              }
+              if (attempt < attempts) await sleep(10_000);
+            }
+
+            if (!verified) {
+              console.error(`Production verification failed for ${target.url}. Last status: ${lastStatus}; title: ${lastTitle}`);
+              process.exitCode = 1;
+            } else {
+              console.log(`Verified approved release at ${target.url}`);
+            }
+          }
+          NODE
+
+      - name: Publish deployment summary
+        if: always()
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          DEPLOYMENT_ALIAS: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            echo "# Cloudflare Pages production deployment"
+            echo
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Project: \`hermes\`"
+            echo "- Branch: \`main\`"
+            echo "- Build output: \`dist\`"
+            echo "- Deployment URL: ${DEPLOYMENT_URL:-not returned}"
+            echo "- Alias URL: ${DEPLOYMENT_ALIAS:-not returned}"
+            echo
+            echo "> No token, account ID, binding ID, recipient, or secret value is written to this summary."
+          } >> "$GITHUB_STEP_SUMMARY"
