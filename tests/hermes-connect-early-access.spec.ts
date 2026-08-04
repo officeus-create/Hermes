@@ -21,7 +21,8 @@ test("Hermes Connect routes every category into one Web App access form", async 
   await expect(page.getByRole("heading", { name: /Requests become reviewed product tasks/i })).toBeVisible();
   await expect(page.getByText(/AI tools support implementation/i)).toBeVisible();
   await expect(page.getByText(/accepts Web App access requests only/i)).toBeVisible();
-  await expect(page.getByRole("link", { name: /About on Hermes/i })).toHaveAttribute("href", "https://hermeslogisticsus.com/services/hermes-connect/");
+  await expect(page.locator('footer a[href="https://hermeslogisticsus.com/services/hermes-connect/"]')).toBeVisible();
+  await expect(page.locator('footer a[href="https://hermeslogisticsus.com/services/hermes-connect/"]')).toHaveText("Hermes Connect overview");
 });
 
 test("Hermes Connect submits a privacy-safe Web App access request through the protected adapter", async ({ page }) => {
