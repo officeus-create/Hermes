@@ -19,7 +19,7 @@ test("Hermes Connect routes every category into one Web App access form", async 
   await expect(page.locator('[name="platform_id"]')).toHaveCount(0);
   await expect(page.getByText(/iPhone|Android|App Store|Google Play/i)).toHaveCount(0);
   await expect(page.getByRole("heading", { name: /Requests become reviewed product tasks/i })).toBeVisible();
-  await expect(page.getByText(/Codex supports implementation/i)).toBeVisible();
+  await expect(page.getByText(/AI tools support implementation/i)).toBeVisible();
   await expect(page.getByText(/accepts Web App access requests only/i)).toBeVisible();
   await expect(page.getByRole("link", { name: /About on Hermes/i })).toHaveAttribute("href", "https://hermeslogisticsus.com/services/hermes-connect/");
 });
