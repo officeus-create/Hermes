@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
-  "release_delta": "2026-08-04-seo4-production-reconciliation",
+  "release_reconciliation": "2026-08-04-seo4-production-reconciliation",
   "generated_at": "2026-08-04T12:20:00+03:00",
   "status": "AWAITING_PRODUCTION_RECONCILIATION",
   "source_commit_minimum": "e9c2cccb17d4d8aa0c4e9ea65fd2ef6786a950ce",
