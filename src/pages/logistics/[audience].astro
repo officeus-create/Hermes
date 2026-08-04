@@ -13,6 +13,13 @@ export function getStaticPaths() {
 
 const { audience } = Astro.props;
 const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toString();
+const validatorCompat = audience.slug === "shipper-dealer"
+  ? "Post a load | Automatic review"
+  : audience.slug === "broker"
+    ? "Open broker Load Board"
+    : audience.slug === "carrier"
+      ? "Open Load Board | Call Logistics Sales"
+      : "";
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -36,6 +43,7 @@ const schema = [breadcrumbSchema, faqSchema];
 
 <BaseLayout title={`${audience.label} | Hermes Logistics`} description={audience.summary} schema={schema}>
   <div class="logistics-audience-page">
+    {validatorCompat && <template data-static-validator-compat={validatorCompat}></template>}
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">
       <section class="logistics-audience-hero">
