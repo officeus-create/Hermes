@@ -11,6 +11,7 @@ on:
 permissions:
   contents: read
   deployments: write
+  issues: write
 
 concurrency:
   group: cloudflare-pages-production
@@ -21,7 +22,6 @@ jobs:
     name: Build, deploy, and verify approved main
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    environment: production
 
     steps:
       - name: Check out approved main
@@ -34,18 +34,40 @@ jobs:
           cache: npm
 
       - name: Validate Cloudflare deployment credentials
+        id: credentials
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          missing=""
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "Missing required GitHub Actions secret: CLOUDFLARE_API_TOKEN" >&2
-            exit 1
+            missing="CLOUDFLARE_API_TOKEN"
           fi
           if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "Missing required GitHub Actions secret: CLOUDFLARE_ACCOUNT_ID" >&2
+            if [ -n "$missing" ]; then missing="$missing, "; fi
+            missing="${missing}CLOUDFLARE_ACCOUNT_ID"
+          fi
+          if [ -n "$missing" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "missing=$missing" >> "$GITHUB_OUTPUT"
+            echo "Missing required GitHub Actions deployment credentials: $missing" >&2
             exit 1
           fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
+
+      - name: Report credential blocker
+        if: failure() && steps.credentials.outputs.available != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MISSING: ${{ steps.credentials.outputs.missing }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Controlled production deploy blocked
+
+The reviewed main commit \`$GITHUB_SHA\` could not start the official Wrangler Pages deployment because the required GitHub Actions deployment credentials are not available to this workflow: \`${MISSING:-Cloudflare credentials}\`.
+
+No token or account value was printed or accessed. Add the repository secrets \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`, then rerun **Deploy approved main to Cloudflare Pages**. The API token should have Account → Cloudflare Pages → Edit permission for the account that owns Pages project \`hermes\`.
+
+Release classification remains: \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
 
       - name: Install dependencies
         run: npm ci
@@ -119,6 +141,33 @@ jobs:
             }
           }
           NODE
+
+      - name: Report successful Pages release
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Controlled Pages production deploy succeeded
+
+Approved main commit \`$GITHUB_SHA\` was built, validated, and uploaded to Cloudflare Pages project \`hermes\` from \`dist\`. The new indexed Hermes Connect overview and the homepage Web App bridge were confirmed on the main custom domain.
+
+Deployment URL returned by Wrangler: ${DEPLOYMENT_URL:-not returned}.
+
+The separate custom-subdomain verifier must still confirm \`https://connect.hermeslogisticsus.com/\` before this issue is closed."
+
+      - name: Report deployment or verification failure
+        if: failure() && steps.credentials.outputs.available == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Controlled production deploy did not complete
+
+Cloudflare credentials were available, but build, Wrangler deployment, or public production verification failed for main commit \`$GITHUB_SHA\`.
+
+Review the sanitized GitHub Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID. No secret value is included in this comment.
+
+Keep the Web App \`noindex,nofollow\` and do not submit a real access request until the main-domain bridge and Connect custom subdomain are both verified."
 
       - name: Publish deployment summary
         if: always()
