@@ -30,6 +30,7 @@ const sitemapPaths = [
 const expectedCurrentMarkers = [
   "Website inquiries are delivered securely by email",
   "Direct contact available now",
+  "U.S. logistics · International email coordination",
 ];
 
 const staleMarkers = [
