@@ -22,6 +22,15 @@ const state = {
   applicationStarted: false,
 };
 
+const validationFieldSelectors = {
+  name_required: '[name="name"]',
+  email_required: '[name="email"]',
+  category_required: '[name="category_id"]',
+  role_required: '[name="role"]',
+  feature_required: '[name="must_have"]',
+  consent_required: '[name="consent"]',
+};
+
 function pushPublicEvent(event, dimensions = {}) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
@@ -132,11 +141,35 @@ function setSubmitting(submitting) {
   if (submitLabel) submitLabel.textContent = submitting ? "Sending web-access request…" : "Request Web App access";
 }
 
+function clearFieldError(field) {
+  if (!(field instanceof HTMLElement)) return;
+  field.removeAttribute("aria-invalid");
+}
+
+function focusField(field) {
+  if (!(field instanceof HTMLElement)) return;
+  field.setAttribute("aria-invalid", "true");
+  field.focus({ preventScroll: true });
+  field.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function firstInvalidNativeField() {
+  if (!form) return null;
+  return [...form.querySelectorAll("input, select, textarea")].find((field) => !field.validity.valid) ?? null;
+}
+
+function focusValidationError(error) {
+  const keys = Array.isArray(error?.validationErrors) ? error.validationErrors : [];
+  const selector = keys.map((key) => validationFieldSelectors[key]).find(Boolean);
+  const field = selector ? form?.querySelector(selector) : firstInvalidNativeField();
+  focusField(field);
+}
+
 function validationMessage(error) {
   const keys = Array.isArray(error?.validationErrors) ? error.validationErrors : [];
   if (keys.includes("automated_submission_rejected")) return "The request could not be accepted.";
   if (keys.includes("name_required")) return "Enter your name.";
-  if (keys.includes("email_required")) return "Enter a valid work email.";
+  if (keys.includes("email_required")) return "Enter a valid email.";
   if (keys.includes("category_required")) return "Choose a business category.";
   if (keys.includes("role_required")) return "Tell us your role in the business.";
   if (keys.includes("feature_required")) return "Describe the feature or workflow you must have.";
@@ -156,9 +189,48 @@ function preparedEmail(request) {
   return `mailto:officeus@hermeslogisticsus.com?subject=${subject}&body=${body}`;
 }
 
+function enhanceFormAccessibility() {
+  if (selectedSummary) selectedSummary.setAttribute("aria-live", "polite");
+
+  if (formStatus) {
+    formStatus.id = "connect-form-status";
+    submitButton?.setAttribute("aria-describedby", formStatus.id);
+  }
+
+  if (formAlert) {
+    formAlert.tabIndex = -1;
+  }
+
+  for (const result of [applicationResult, fallbackResult]) {
+    if (result) result.tabIndex = -1;
+  }
+
+  const mustHave = form?.querySelector('[name="must_have"]');
+  if (mustHave && !document.querySelector("#connect-must-have-help")) {
+    const helper = element(
+      "small",
+      "form-helper",
+      "Describe the workflow only. Do not include client names, medical details, payment data, passwords, or private routes.",
+    );
+    helper.id = "connect-must-have-help";
+    mustHave.setAttribute("aria-describedby", helper.id);
+    mustHave.insertAdjacentElement("afterend", helper);
+  }
+
+  form?.addEventListener("invalid", (event) => {
+    const field = event.target;
+    if (field instanceof HTMLElement) field.setAttribute("aria-invalid", "true");
+  }, true);
+
+  for (const eventName of ["input", "change"]) {
+    form?.addEventListener(eventName, (event) => clearFieldError(event.target));
+  }
+}
+
 renderCategoryCards();
 populateCategorySelect();
 selectCategory(state.categoryId);
+enhanceFormAccessibility();
 pushPublicEvent("connect_web_experience_viewed", { category_id: state.categoryId });
 
 categorySelect?.addEventListener("change", () => selectCategory(categorySelect.value));
@@ -181,6 +253,16 @@ form?.addEventListener("submit", async (event) => {
   if (applicationResult) applicationResult.hidden = true;
   if (fallbackResult) fallbackResult.hidden = true;
 
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    const invalidField = firstInvalidNativeField();
+    focusField(invalidField);
+    setAlert("Review the highlighted fields and try again.");
+    if (formStatus) formStatus.textContent = "Request not sent.";
+    pushPublicEvent("connect_application_validation_failed", { category_id: state.categoryId });
+    return;
+  }
+
   const data = new FormData(form);
   let request;
   try {
@@ -199,7 +281,9 @@ form?.addEventListener("submit", async (event) => {
     });
   } catch (error) {
     setAlert(validationMessage(error));
+    focusValidationError(error);
     if (formStatus) formStatus.textContent = "Request not sent.";
+    pushPublicEvent("connect_application_validation_failed", { category_id: state.categoryId });
     return;
   }
 
@@ -222,13 +306,21 @@ form?.addEventListener("submit", async (event) => {
     const result = await response.json().catch(() => null);
     if (!response.ok || result?.success !== true) throw new Error("delivery_not_confirmed");
 
-    if (applicationResult) applicationResult.hidden = false;
+    if (applicationResult) {
+      applicationResult.hidden = false;
+      applicationResult.focus({ preventScroll: true });
+      applicationResult.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     if (formStatus) formStatus.textContent = "Web App access request delivery confirmed.";
     pushPublicEvent("connect_application_delivery_confirmed", {
       category_id: request.public_dimensions.category_id,
     });
   } catch {
-    if (fallbackResult) fallbackResult.hidden = false;
+    if (fallbackResult) {
+      fallbackResult.hidden = false;
+      fallbackResult.focus({ preventScroll: true });
+      fallbackResult.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     if (formStatus) formStatus.textContent = "Secure delivery was not confirmed. Use the prepared email fallback.";
     pushPublicEvent("connect_application_delivery_failed", {
       category_id: request.public_dimensions.category_id,
