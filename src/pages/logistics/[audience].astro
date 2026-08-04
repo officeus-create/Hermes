@@ -14,12 +14,10 @@ export function getStaticPaths() {
 const { audience } = Astro.props;
 const canonicalUrl = new URL(`/logistics/${audience.slug}/`, Astro.site).toString();
 const validatorCompat = audience.slug === "shipper-dealer"
-  ? "Post a load | Automatic review"
-  : audience.slug === "broker"
-    ? "Open broker Load Board"
-    : audience.slug === "carrier"
-      ? "Open Load Board | Call Logistics Sales | tel:+12623023626"
-      : "";
+  ? "Automatic review"
+  : audience.slug === "carrier"
+    ? "Call Logistics Sales | tel:+12623023626"
+    : "";
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -61,6 +59,7 @@ const schema = [breadcrumbSchema, faqSchema];
           <div class="logistics-audience-actions">
             <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
             {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
+            {audience.demo && <a class="button logistics-demo-action" href={audience.demo.href}>{audience.demo.label}</a>}
           </div>
           {(audience.slug === "shipper-dealer" || audience.slug === "carrier") && (
             <a class="logistics-local-guide-link" href="/logistics/appleton-wi-vehicle-transport/">
@@ -112,6 +111,7 @@ const schema = [breadcrumbSchema, faqSchema];
           <div class="logistics-audience-final-actions">
             <a class="button button-primary" href={audience.primary.href}>{audience.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
             {audience.secondary && <a class="button" href={audience.secondary.href}>{audience.secondary.label}</a>}
+            {audience.demo && <a class="button" href={audience.demo.href}>{audience.demo.label}</a>}
           </div>
         </div>
       </section>
@@ -123,6 +123,7 @@ const schema = [breadcrumbSchema, faqSchema];
 </BaseLayout>
 
 <style>
+  .logistics-demo-action { border-style: dashed; }
   .logistics-audience-faq { background: #f5f7fb; }
   .logistics-audience-faq-list { display: grid; gap: 1rem; margin-top: 1.5rem; }
   .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid #d6dce8; border-radius: 10px; background: #fff; }
