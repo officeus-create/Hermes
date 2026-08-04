@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
+import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
@@ -64,6 +65,7 @@ const schema = faqSchema
   <SiteHeader theme={path.id === "technology" ? "light" : "dark"} />
   <PathDetailPage path={path} />
   <PathVerifiedAdvantages pathId={path.id} />
+  {path.id === "marketing" && <MarketingEngagementModel />}
   {path.id === "academy" && (
     <>
       <AcademySubsiteNav />
