@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 const targetUrl = "https://connect.hermeslogisticsus.com/";
+const overviewUrl = "https://hermeslogisticsus.com/services/hermes-connect/";
 const outputDir = path.resolve("artifacts");
 const allowedExpectations = new Set(["isolation", "release_pending", "approved_web_app"]);
 const requestedExpectation = process.env.CONNECT_EXPECTATION || "isolation";
@@ -22,7 +23,10 @@ const webAppMarkers = [
   "Request Web App access",
   "Hermes Connect · web-first product",
 ];
-
+const overviewMarkers = [
+  "Hermes Connect Web App for Service Businesses",
+  "Give clients one clear place to understand, choose, and request your service.",
+];
 const previousMarkers = [
   "Hermes Connect · Profile & Availability v0.3",
   "Hermes Connect — Profile and Availability Workspace",
@@ -32,16 +36,16 @@ const previousMarkers = [
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-async function fetchPublic() {
+async function fetchPublic(url) {
   const startedAt = Date.now();
   try {
-    const response = await fetch(targetUrl, {
+    const response = await fetch(url, {
       redirect: "follow",
       headers: {
         accept: "text/html,application/xhtml+xml",
         "cache-control": "no-cache",
         pragma: "no-cache",
-        "user-agent": "HermesConnectReleaseVerifier/1.2 (+public read-only deployment recheck)",
+        "user-agent": "HermesConnectReleaseVerifier/1.3 (+public read-only deployment recheck)",
       },
       signal: AbortSignal.timeout(20_000),
     });
@@ -71,23 +75,30 @@ async function fetchPublic() {
 
 const observations = [];
 for (let attempt = 1; attempt <= attempts; attempt += 1) {
-  const fetched = await fetchPublic();
-  const liveWebAppMarkers = Object.fromEntries(webAppMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
-  const oldMarkers = Object.fromEntries(previousMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
-  const title = fetched.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null;
+  const [connect, overview] = await Promise.all([fetchPublic(targetUrl), fetchPublic(overviewUrl)]);
+  const liveWebAppMarkers = Object.fromEntries(webAppMarkers.map((marker) => [marker, connect.body.includes(marker)]));
+  const oldMarkers = Object.fromEntries(previousMarkers.map((marker) => [marker, connect.body.includes(marker)]));
+  const liveOverviewMarkers = Object.fromEntries(overviewMarkers.map((marker) => [marker, overview.body.includes(marker)]));
   observations.push({
     attempt,
     checkedAt: new Date().toISOString(),
-    status: fetched.status,
-    finalUrl: fetched.finalUrl,
-    contentType: fetched.contentType,
-    cacheStatus: fetched.cacheStatus,
-    age: fetched.age,
-    durationMs: fetched.durationMs,
-    title,
+    status: connect.status,
+    finalUrl: connect.finalUrl,
+    contentType: connect.contentType,
+    cacheStatus: connect.cacheStatus,
+    age: connect.age,
+    durationMs: connect.durationMs,
+    title: connect.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null,
     webAppMarkers: liveWebAppMarkers,
     previousMarkers: oldMarkers,
-    error: fetched.error,
+    error: connect.error,
+    overview: {
+      status: overview.status,
+      finalUrl: overview.finalUrl,
+      title: overview.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null,
+      markers: liveOverviewMarkers,
+      error: overview.error,
+    },
   });
   if (attempt < attempts) await sleep(delayMs);
 }
@@ -109,6 +120,7 @@ else if (anyPreviousVisible) classification = "LIVE_PREVIOUS_CONNECT";
 const result = {
   checkedAt: new Date().toISOString(),
   targetUrl,
+  overviewUrl,
   expectation,
   classification,
   observations,
@@ -129,6 +141,7 @@ await fs.writeFile(
 );
 
 const last = observations.at(-1);
+const overviewCurrent = last?.overview.status === 200 && Object.values(last.overview.markers).every(Boolean);
 const interpretation = classification === "LIVE_APPROVED_WEB_APP"
   ? "- The custom subdomain serves the approved web-only Hermes Connect release."
   : classification === "LIVE_PR_HEAD_EXPOSED"
@@ -138,7 +151,7 @@ const interpretation = classification === "LIVE_APPROVED_WEB_APP"
         ? "- The approved release has not reached the custom subdomain; the previous Hermes Connect experience is still live."
         : expectation === "release_pending"
           ? "- The previous Hermes Connect experience is still live while the approved release is pending. This PR check remains read-only; the post-merge main check will require the Web App."
-          : "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
+          : "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window."
       : classification === "UNRESOLVED_NETWORK_ACCESS"
         ? "- At least one required public request failed; no deployment conclusion is safe."
         : "- The subdomain returned healthy but unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.";
@@ -151,9 +164,10 @@ const markdown = [
   `- Expected state: **${expectation}**`,
   `- Classification: **${classification}**`,
   `- HTTP status: ${last?.status ?? "unavailable"}`,
-  `- Final URL: ${last?.finalUrl ?? "unavailable"}`,
   `- Last observed title: ${last?.title ?? "unavailable"}`,
   `- Cloudflare cache status: ${last?.cacheStatus ?? "not exposed"}`,
+  `- Main-site overview status: ${last?.overview.status ?? "unavailable"}`,
+  `- Main-site overview current: **${overviewCurrent ? "yes" : "no"}**`,
   "",
   "## Interpretation",
   "",
@@ -161,9 +175,9 @@ const markdown = [
   "",
   "## Observations",
   "",
-  "| Attempt | Status | Title | Web App marker visible | Previous marker visible |",
-  "| ---: | ---: | --- | --- | --- |",
-  ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.webAppMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} |`),
+  "| Attempt | Connect | Connect title | Web App | Old v0.3 | Overview | Current overview |",
+  "| ---: | ---: | --- | --- | --- | ---: | --- |",
+  ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.webAppMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} | ${observation.overview.status ?? "—"} | ${Object.values(observation.overview.markers).every(Boolean) ? "yes" : "no"} |`),
   "",
   "> Read-only public verification. No application, account, booking, payment, subscription, cookie, credential, or private infrastructure identifier was created or accessed.",
   "",
