@@ -46,8 +46,20 @@
       return;
     }
 
+    if (target.origin !== window.location.origin) return;
+
+    if (link.hasAttribute("data-home-role-link") && window.location.pathname === "/") {
+      pushEvent({
+        event: "homepage_role_click",
+        page_group: "homepage_role_router",
+        role_id: link.dataset.roleId || "unknown",
+        page_path: "/",
+        destination_path: target.pathname,
+      });
+      return;
+    }
+
     if (
-      target.origin !== window.location.origin ||
       target.pathname !== "/logistics/start-car-hauling-dispatch/" ||
       !link.hasAttribute("data-commercial-primary-cta")
     ) return;
