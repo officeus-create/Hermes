@@ -22,7 +22,7 @@ import "../styles/features/product.css";
         <p class="eyebrow">Working product previews</p>
         <h2 id="working-prototypes-title">See the workflow before connecting real data.</h2>
       </div>
-      <p>These interactive previews demonstrate the product logic with simulated records. They do not create CRM entries, reservations, messages, payments, or external integrations.</p>
+      <p>These interactive previews demonstrate product logic with simulated records. They do not create CRM entries, reservations, messages, payments, or external integrations.</p>
     </div>
 
     <div class="technology-prototype-stack">
@@ -30,7 +30,7 @@ import "../styles/features/product.css";
         <div class="technology-prototype-copy">
           <div class="technology-prototype-label"><Network size={19} aria-hidden="true" /><span>CRM and Operations Control</span><strong>Working v0.2</strong></div>
           <h3>Turn incoming records into a controlled review queue.</h3>
-          <p>The local v0.2 adapter now reads the existing DCA preview format, applies deterministic review indicators, and produces a management dashboard without writing to CRM.</p>
+          <p>The local v0.2 adapter reads the existing DCA preview format, applies deterministic review indicators, and produces a management dashboard without writing to CRM.</p>
           <ul>
             <li><Check size={16} aria-hidden="true" />Structured intake</li>
             <li><Check size={16} aria-hidden="true" />Duplicate and missing-field indicators</li>
@@ -66,18 +66,21 @@ import "../styles/features/product.css";
 
       <article class="technology-product-prototype connect-product-prototype" data-connect-prototype data-reveal>
         <div class="technology-prototype-copy">
-          <div class="technology-prototype-label"><CalendarDays size={19} aria-hidden="true" /><span>Hermes Connect</span><strong>Working v0.2</strong></div>
-          <h3>Give every specialist a clear path from profile to booking.</h3>
-          <p>v0.2 adds a working local profile editor, controlled services, availability management, a personal preview path, and test booking rules before accounts or integrations.</p>
-          <div class="connect-prototype-flow" aria-label="Hermes Connect first product flow">
-            <span>Profile</span><ArrowRight size={14} aria-hidden="true" /><span>Service</span><ArrowRight size={14} aria-hidden="true" /><span>Availability</span><ArrowRight size={14} aria-hidden="true" /><span>Test booking</span>
+          <div class="technology-prototype-label"><CalendarDays size={19} aria-hidden="true" /><span>Hermes Connect</span><strong>Web App</strong></div>
+          <h3>Give every service business one clear web path from discovery to request.</h3>
+          <p>Hermes Connect adapts the business profile, services, availability, and request language to the selected category. The current product direction is one responsive Web App—not separate mobile downloads.</p>
+          <div class="connect-prototype-flow" aria-label="Hermes Connect Web App flow">
+            <span>Business page</span><ArrowRight size={14} aria-hidden="true" /><span>Service</span><ArrowRight size={14} aria-hidden="true" /><span>Availability</span><ArrowRight size={14} aria-hidden="true" /><span>Client request</span>
           </div>
-          <a class="technology-prototype-demo-link" href="/demos/hermes-connect/">Open profile & availability workspace <ArrowRight size={16} aria-hidden="true" /></a>
-          <p class="technology-prototype-status" role="status" aria-live="polite" data-connect-status>Choose a service and an available time to create a test booking.</p>
+          <div class="technology-prototype-actions">
+            <a class="technology-prototype-demo-link" href="/services/hermes-connect/">Explore Hermes Connect <ArrowRight size={16} aria-hidden="true" /></a>
+            <a class="technology-prototype-demo-link" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={16} aria-hidden="true" /></a>
+          </div>
+          <p class="technology-prototype-status" role="status" aria-live="polite" data-connect-status>Choose a service and an available time to preview the client request flow.</p>
         </div>
 
-        <div class="connect-preview-window" aria-label="Hermes Connect booking preview">
-          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes Connect · Specialist page</p></div>
+        <div class="connect-preview-window" aria-label="Hermes Connect Web App request preview">
+          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes Connect · Service business page</p></div>
           <div class="connect-profile">
             <div class="connect-avatar"><UserRound size={30} aria-hidden="true" /></div>
             <div><small>Business consultant · Miami / Remote</small><h4>Maya Santos</h4><p>Operations, customer journey, and practical growth systems.</p></div>
@@ -87,15 +90,15 @@ import "../styles/features/product.css";
             <div>{connectServices.map((service, index) => <button type="button" data-connect-service aria-pressed={index === 0} data-selected={String(index === 0)}>{service}</button>)}</div>
           </div>
           <div class="connect-choice-group">
-            <p>Available times</p>
+            <p>Available request windows</p>
             <div>{connectTimes.map((time) => <button type="button" data-connect-time aria-pressed="false">{time}</button>)}</div>
           </div>
-          <button type="button" class="connect-book-button" data-connect-book disabled>Create test booking <ArrowRight size={17} aria-hidden="true" /></button>
+          <button type="button" class="connect-book-button" data-connect-book disabled>Create test request <ArrowRight size={17} aria-hidden="true" /></button>
           <div class="connect-booking-result" data-connect-result hidden>
             <Check size={18} aria-hidden="true" />
-            <div><strong>Test booking created</strong><span data-connect-summary></span></div>
+            <div><strong>Test request created</strong><span data-connect-summary></span></div>
           </div>
-          <p class="connect-preview-note">Simulated data · no calendar event, payment, account, or message is created.</p>
+          <p class="connect-preview-note">Simulated data · no account, calendar event, payment, or message is created.</p>
         </div>
       </article>
     </div>
@@ -139,14 +142,14 @@ import "../styles/features/product.css";
   if (connectPrototype) {
     const serviceButtons = [...connectPrototype.querySelectorAll<HTMLButtonElement>("[data-connect-service]")];
     const timeButtons = [...connectPrototype.querySelectorAll<HTMLButtonElement>("[data-connect-time]")];
-    const bookingButton = connectPrototype.querySelector<HTMLButtonElement>("[data-connect-book]");
+    const requestButton = connectPrototype.querySelector<HTMLButtonElement>("[data-connect-book]");
     const status = connectPrototype.querySelector<HTMLElement>("[data-connect-status]");
     const result = connectPrototype.querySelector<HTMLElement>("[data-connect-result]");
     const summary = connectPrototype.querySelector<HTMLElement>("[data-connect-summary]");
     let selectedService = serviceButtons[0]?.textContent?.trim() ?? "";
     let selectedTime = "";
-    const updateBookingButton = () => {
-      if (bookingButton instanceof HTMLButtonElement) bookingButton.disabled = !selectedService || !selectedTime;
+    const updateRequestButton = () => {
+      if (requestButton instanceof HTMLButtonElement) requestButton.disabled = !selectedService || !selectedTime;
       if (result instanceof HTMLElement) result.hidden = true;
     };
     serviceButtons.forEach((button) => button.addEventListener("click", () => {
@@ -155,7 +158,7 @@ import "../styles/features/product.css";
         item.setAttribute("aria-pressed", String(item === button));
       });
       selectedService = button.textContent?.trim() ?? "";
-      updateBookingButton();
+      updateRequestButton();
     }));
     timeButtons.forEach((button) => button.addEventListener("click", () => {
       timeButtons.forEach((item) => {
@@ -164,14 +167,14 @@ import "../styles/features/product.css";
       });
       selectedTime = button.textContent?.trim() ?? "";
       if (status) status.textContent = `${selectedService} selected for ${selectedTime}.`;
-      updateBookingButton();
+      updateRequestButton();
     }));
-    bookingButton?.addEventListener("click", () => {
+    requestButton?.addEventListener("click", () => {
       if (!selectedService || !selectedTime) return;
       if (summary) summary.textContent = `${selectedService} · ${selectedTime} · Maya Santos`;
       if (result instanceof HTMLElement) result.hidden = false;
-      if (status) status.textContent = "Test booking created locally. Nothing was sent or saved.";
+      if (status) status.textContent = "Test request created locally. Nothing was sent or saved.";
     });
-    updateBookingButton();
+    updateRequestButton();
   }
 </script>
