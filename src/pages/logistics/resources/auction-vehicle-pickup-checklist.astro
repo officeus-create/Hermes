@@ -8,6 +8,8 @@ const title = "Auction Vehicle Pickup Checklist | Hermes Logistics";
 const description =
   "Prepare an auction vehicle for transport with a practical checklist covering release status, condition, pickup access, deadlines, contacts, and equipment needs.";
 const canonicalUrl = new URL("/logistics/resources/auction-vehicle-pickup-checklist/", Astro.site).toString();
+const directAuctionIntake = "/logistics/request-vehicle-transport/?request=auction_pickup#transport-intake";
+const loadBoardDemo = "/load-board/?role=shipper#post-load";
 const schema = [
   {
     "@context": "https://schema.org",
@@ -15,7 +17,7 @@ const schema = [
     headline: "Auction Vehicle Pickup Checklist",
     description,
     datePublished: "2026-07-29",
-    dateModified: "2026-07-29",
+    dateModified: "2026-08-04",
     mainEntityOfPage: canonicalUrl,
     author: { "@type": "Organization", name: "Hermes Logistics" },
     publisher: {
@@ -62,8 +64,11 @@ import "../../../styles/features/appleton.css";
                   the pickup must be released, accessible, correctly documented, and matched with appropriate equipment.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href="/load-board/?role=shipper#post-load">
-                    Prepare an auction transport request <ArrowRight size={18} aria-hidden="true" />
+                  <a class="button button-primary" href={directAuctionIntake} data-auction-direct-intake>
+                    Prepare a direct auction request <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href={loadBoardDemo} data-auction-demo>
+                    Preview the Load Board demo
                   </a>
                   <a class="button" href="/logistics/appleton-wi-vehicle-transport/">See the Appleton planning example</a>
                 </div>
@@ -205,11 +210,14 @@ import "../../../styles/features/appleton.css";
             <div>
               <p class="eyebrow">Request review</p>
               <h2>Prepare the auction vehicle, route, release, condition, access, and timing details.</h2>
-              <p>The current form prepares a structured email for Logistics Sales review. It does not automatically publish a load or contact a carrier.</p>
+              <p>The direct intake sends a qualified review to Logistics Sales only after the approved receiver confirms delivery. It does not publish a load, notify a carrier, confirm capacity, or create a booking.</p>
             </div>
-            <a class="button button-primary" href="/load-board/?role=shipper#post-load">
-              Open transport request <ArrowRight size={18} aria-hidden="true" />
-            </a>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={directAuctionIntake} data-auction-direct-intake-bottom>
+                Prepare direct auction request <ArrowRight size={18} aria-hidden="true" />
+              </a>
+              <a class="button" href={loadBoardDemo}>Open transport request in demo</a>
+            </div>
           </div>
         </section>
       </article>
