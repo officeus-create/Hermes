@@ -34,8 +34,8 @@ export function classifyConnectDeployment({ expectation, observations }) {
   if (expectation === "isolation") {
     const allHealthy = observations.every((observation) => requestHealthy(observation.connect));
     if (!allHealthy) return "UNRESOLVED_NETWORK_ACCESS";
-    if (observations.some((observation) => markerCount(observation.connect?.currentMarkers) > 0)) {
-      return "LIVE_PR_HEAD_EXPOSED";
+    if (observations.some((observation) => markerCount(observation.connect?.currentMarkers) === connectCurrentMarkers.length)) {
+      return "LIVE_CURRENT_CONNECT";
     }
     if (observations.some((observation) => markerCount(observation.connect?.previousMarkers) > 0)) {
       return "LIVE_PREVIOUS_CONNECT";
@@ -68,8 +68,7 @@ export function classifyConnectDeployment({ expectation, observations }) {
 }
 
 export function exitCodeForClassification(classification) {
-  if (["LIVE_PREVIOUS_CONNECT", "LIVE_UNKNOWN_CONTENT", "LIVE_RELEASE_CURRENT"].includes(classification)) return 0;
-  if (classification === "LIVE_PR_HEAD_EXPOSED") return 2;
+  if (["LIVE_CURRENT_CONNECT", "LIVE_PREVIOUS_CONNECT", "LIVE_UNKNOWN_CONTENT", "LIVE_RELEASE_CURRENT"].includes(classification)) return 0;
   if (classification === "UNRESOLVED_NETWORK_ACCESS") return 3;
   if (classification === "INVALID_EXPECTATION") return 4;
   return 5;
