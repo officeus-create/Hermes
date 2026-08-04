@@ -1,0 +1,122 @@
+name: Production contact smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/production-contact-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-contact-smoke
+  cancel-in-progress: false
+
+jobs:
+  verify-production-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Wait for current production HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_footer='Website inquiries are delivered securely by email'
+          expected_contact='Send your request securely to the Hermes team.'
+          live=0
+
+          for attempt in $(seq 1 20); do
+            url="https://hermeslogisticsus.com/?production-smoke=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            html="$(curl --fail --silent --show-error --location \
+              --connect-timeout 10 --max-time 30 \
+              --header 'Cache-Control: no-cache' \
+              --header 'Pragma: no-cache' \
+              "$url")"
+
+            if grep -Fq "$expected_footer" <<<"$html" && grep -Fq "$expected_contact" <<<"$html"; then
+              echo "Current production HTML is live on attempt $attempt."
+              live=1
+              break
+            fi
+
+            echo "Production still serves the previous snapshot on attempt $attempt."
+            sleep 15
+          done
+
+          if [[ "$live" != "1" ]]; then
+            echo "Current main was not observed on the custom domain within the release window." >&2
+            exit 1
+          fi
+
+      - name: Send one synthetic production inquiry
+        id: first_send
+        shell: bash
+        env:
+          REQUEST_ID: prod_smoke_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          payload="$(node -e '
+            const payload = {
+              request_id: process.env.REQUEST_ID,
+              submitted_at: new Date().toISOString(),
+              source_path: "/contacts/",
+              name: "Hermes Production Smoke Test",
+              email: "officeus@hermeslogisticsus.com",
+              interest: "I am not sure yet",
+              message: "Automated synthetic production verification. No customer or operational data is included.",
+              consent: true
+            };
+            process.stdout.write(JSON.stringify(payload));
+          ')"
+
+          response="$(curl --fail-with-body --silent --show-error \
+            --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
+            --header 'Origin: https://hermeslogisticsus.com' \
+            --header 'Content-Type: application/json' \
+            --header "Idempotency-Key: ${REQUEST_ID}" \
+            --data "$payload")"
+
+          RESPONSE="$response" node -e '
+            const body = JSON.parse(process.env.RESPONSE);
+            if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate === true) {
+              throw new Error(`Unexpected first-send response: ${JSON.stringify(body)}`);
+            }
+            console.log("Synthetic production inquiry accepted.");
+          '
+
+      - name: Confirm duplicate suppression
+        shell: bash
+        env:
+          REQUEST_ID: prod_smoke_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          payload="$(node -e '
+            const payload = {
+              request_id: process.env.REQUEST_ID,
+              submitted_at: new Date().toISOString(),
+              source_path: "/contacts/",
+              name: "Hermes Production Smoke Test",
+              email: "officeus@hermeslogisticsus.com",
+              interest: "I am not sure yet",
+              message: "Automated synthetic production verification. No customer or operational data is included.",
+              consent: true
+            };
+            process.stdout.write(JSON.stringify(payload));
+          ')"
+
+          response="$(curl --fail-with-body --silent --show-error \
+            --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
+            --header 'Origin: https://hermeslogisticsus.com' \
+            --header 'Content-Type: application/json' \
+            --header "Idempotency-Key: ${REQUEST_ID}" \
+            --data "$payload")"
+
+          RESPONSE="$response" node -e '
+            const body = JSON.parse(process.env.RESPONSE);
+            if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate !== true) {
+              throw new Error(`Unexpected duplicate response: ${JSON.stringify(body)}`);
+            }
+            console.log("Duplicate suppression confirmed without a second delivery.");
+          '
