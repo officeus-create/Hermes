@@ -1,37 +1,38 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+  classifyConnectDeployment,
+  connectCurrentMarkers,
+  connectPreviousMarkers,
+  exitCodeForClassification,
+  overviewCurrentMarkers,
+} from "./connect-deployment-state.mjs";
 
-const targetUrl = "https://connect.hermeslogisticsus.com/";
+const connectUrl = "https://connect.hermeslogisticsus.com/";
+const overviewUrl = "https://hermeslogisticsus.com/services/hermes-connect/";
 const outputDir = path.resolve("artifacts");
-const attempts = 6;
-const delayMs = 10_000;
+const expectation = process.env.CONNECT_EXPECTATION || "isolation";
+const releaseMode = expectation === "release";
+const attempts = releaseMode ? 16 : 6;
+const delayMs = releaseMode ? 15_000 : 10_000;
 
-const prHeadMarkers = [
-  "Hermes Connect Web App · Request Access",
-  "One clear client path for",
-  "Request Web App access",
-  "Hermes Connect · web-first product",
-];
-
-const previousMarkers = [
-  "Hermes Connect · Profile & Availability v0.3",
-  "Hermes Connect — Profile and Availability Workspace",
-  "Create specialist profile",
-  "Profile preview ready",
-];
+if (!["isolation", "release"].includes(expectation)) {
+  console.error(`Unsupported CONNECT_EXPECTATION: ${expectation}`);
+  process.exit(4);
+}
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-async function fetchPublic() {
+async function fetchPublic(url) {
   const startedAt = Date.now();
   try {
-    const response = await fetch(targetUrl, {
+    const response = await fetch(url, {
       redirect: "follow",
       headers: {
         accept: "text/html,application/xhtml+xml",
         "cache-control": "no-cache",
         pragma: "no-cache",
-        "user-agent": "HermesConnectIsolationVerifier/1.0 (+public read-only deployment check)",
+        "user-agent": "HermesConnectDeploymentVerifier/2.0 (+public read-only deployment check)",
       },
       signal: AbortSignal.timeout(20_000),
     });
@@ -59,45 +60,42 @@ async function fetchPublic() {
   }
 }
 
-const observations = [];
-for (let attempt = 1; attempt <= attempts; attempt += 1) {
-  const fetched = await fetchPublic();
-  const prMarkers = Object.fromEntries(prHeadMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
-  const oldMarkers = Object.fromEntries(previousMarkers.map((marker) => [marker, fetched.body.includes(marker)]));
-  const title = fetched.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null;
-  observations.push({
-    attempt,
-    checkedAt: new Date().toISOString(),
+function inspectFetched(fetched, currentMarkers, previousMarkers = []) {
+  return {
     status: fetched.status,
     finalUrl: fetched.finalUrl,
     contentType: fetched.contentType,
     cacheStatus: fetched.cacheStatus,
     age: fetched.age,
     durationMs: fetched.durationMs,
-    title,
-    prMarkers,
-    previousMarkers: oldMarkers,
+    title: fetched.body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() || null,
+    currentMarkers: Object.fromEntries(currentMarkers.map((marker) => [marker, fetched.body.includes(marker)])),
+    previousMarkers: Object.fromEntries(previousMarkers.map((marker) => [marker, fetched.body.includes(marker)])),
     error: fetched.error,
+  };
+}
+
+const observations = [];
+for (let attempt = 1; attempt <= attempts; attempt += 1) {
+  const [connectFetch, overviewFetch] = await Promise.all([
+    fetchPublic(connectUrl),
+    fetchPublic(overviewUrl),
+  ]);
+  observations.push({
+    attempt,
+    checkedAt: new Date().toISOString(),
+    connect: inspectFetched(connectFetch, connectCurrentMarkers, connectPreviousMarkers),
+    overview: inspectFetched(overviewFetch, overviewCurrentMarkers),
   });
   if (attempt < attempts) await sleep(delayMs);
 }
 
-const anyPrHeadVisible = observations.some((observation) =>
-  Object.values(observation.prMarkers).some(Boolean),
-);
-const anyPreviousVisible = observations.some((observation) =>
-  Object.values(observation.previousMarkers).some(Boolean),
-);
-const allRequestsHealthy = observations.every((observation) => observation.status === 200 && !observation.error);
-
-let classification = "LIVE_UNKNOWN_CONTENT";
-if (!allRequestsHealthy) classification = "UNRESOLVED_NETWORK_ACCESS";
-else if (anyPrHeadVisible) classification = "LIVE_PR_HEAD_EXPOSED";
-else if (anyPreviousVisible) classification = "LIVE_PREVIOUS_CONNECT";
-
+const classification = classifyConnectDeployment({ expectation, observations });
 const result = {
   checkedAt: new Date().toISOString(),
-  targetUrl,
+  expectation,
+  connectUrl,
+  overviewUrl,
   classification,
   observations,
   boundaries: {
@@ -117,32 +115,43 @@ await fs.writeFile(
 );
 
 const last = observations.at(-1);
+const interpretation = {
+  LIVE_CURRENT_CONNECT: "The public Connect domain serves the approved Web App baseline. Preview observation remains healthy.",
+  LIVE_PREVIOUS_CONNECT: "The public Connect domain still serves the previous v0.3 experience. Preview observation is healthy, but the Web App release is not yet live.",
+  LIVE_UNKNOWN_CONTENT: "The public Connect domain is reachable but its content does not match a controlled baseline.",
+  LIVE_RELEASE_CURRENT: "The Connect Web App and the indexed Hermes product overview were both stable and current for the final three observations.",
+  LIVE_RELEASE_STALE_CONNECT: "The main-site overview may be current, but the Connect subdomain still serves the previous v0.3 experience.",
+  LIVE_RELEASE_STALE_OVERVIEW: "The Connect subdomain may be current, but the indexed Hermes product overview is not yet serving all approved release markers.",
+  LIVE_RELEASE_UNKNOWN: "Both URLs are reachable, but the final stable window does not match the approved release contract.",
+  UNRESOLVED_NETWORK_ACCESS: "At least one required public request failed in the required observation window; no deployment conclusion is safe.",
+  INVALID_EXPECTATION: "The workflow supplied an unsupported verification mode.",
+}[classification] || "Inspect the sanitized artifact before drawing a deployment conclusion.";
+
 const markdown = [
-  "# Hermes Connect subdomain isolation check",
+  "# Hermes Connect deployment verification",
   "",
   `- Checked: ${result.checkedAt}`,
-  `- Target: ${targetUrl}`,
+  `- Expectation: **${expectation}**`,
   `- Classification: **${classification}**`,
-  `- HTTP status: ${last?.status ?? "unavailable"}`,
-  `- Final URL: ${last?.finalUrl ?? "unavailable"}`,
-  `- Last observed title: ${last?.title ?? "unavailable"}`,
-  `- Cloudflare cache status: ${last?.cacheStatus ?? "not exposed"}`,
+  `- Connect URL: ${connectUrl}`,
+  `- Connect status/title: ${last?.connect.status ?? "unavailable"} · ${last?.connect.title ?? "unavailable"}`,
+  `- Overview URL: ${overviewUrl}`,
+  `- Overview status/title: ${last?.overview.status ?? "unavailable"} · ${last?.overview.title ?? "unavailable"}`,
   "",
   "## Interpretation",
   "",
-  classification === "LIVE_PR_HEAD_EXPOSED"
-    ? "- The custom subdomain exposed at least one unique Web App marker from the current draft PR head during the observation window. Treat preview/production isolation as failed until Cloudflare configuration is corrected."
-    : classification === "LIVE_PREVIOUS_CONNECT"
-      ? "- The custom subdomain continued to serve the previous Hermes Connect experience during the observation window. This supports preview isolation for this specific check, but authenticated Cloudflare branch/binding inventory is still required."
-      : classification === "UNRESOLVED_NETWORK_ACCESS"
-        ? "- At least one required public request failed; no deployment conclusion is safe."
-        : "- The subdomain returned healthy but unrecognized content. Inspect the sanitized artifact before drawing a deployment conclusion.",
+  `- ${interpretation}`,
   "",
   "## Observations",
   "",
-  "| Attempt | Status | Title | Web App PR marker visible | Previous marker visible |",
-  "| ---: | ---: | --- | --- | --- |",
-  ...observations.map((observation) => `| ${observation.attempt} | ${observation.status ?? "—"} | ${observation.title ?? "—"} | ${Object.values(observation.prMarkers).some(Boolean) ? "yes" : "no"} | ${Object.values(observation.previousMarkers).some(Boolean) ? "yes" : "no"} |`),
+  "| Attempt | Connect | Connect title | Current Web App | Old v0.3 | Overview | Current overview |",
+  "| ---: | ---: | --- | --- | --- | ---: | --- |",
+  ...observations.map((observation) => {
+    const connectCurrent = Object.values(observation.connect.currentMarkers).every(Boolean);
+    const connectPrevious = Object.values(observation.connect.previousMarkers).some(Boolean);
+    const overviewCurrent = Object.values(observation.overview.currentMarkers).every(Boolean);
+    return `| ${observation.attempt} | ${observation.connect.status ?? "—"} | ${observation.connect.title ?? "—"} | ${connectCurrent ? "yes" : "no"} | ${connectPrevious ? "yes" : "no"} | ${observation.overview.status ?? "—"} | ${overviewCurrent ? "yes" : "no"} |`;
+  }),
   "",
   "> Read-only public verification. No application, account, booking, payment, subscription, cookie, credential, or private infrastructure identifier was created or accessed.",
   "",
@@ -151,5 +160,4 @@ const markdown = [
 await fs.writeFile(path.join(outputDir, "connect-subdomain-isolation.md"), markdown);
 console.log(markdown);
 
-if (classification === "LIVE_PR_HEAD_EXPOSED") process.exitCode = 2;
-if (classification === "UNRESOLVED_NETWORK_ACCESS") process.exitCode = 3;
+process.exitCode = exitCodeForClassification(classification);
