@@ -9,6 +9,7 @@ const auditRoot = join(homedir(), "Documents", "Отдел маркетинга"
 
 const crmTarget = join(websiteRoot, "public", "demos", "crm-validation");
 const connectTarget = join(websiteRoot, "public", "demos", "hermes-connect");
+const connectWorkspaceTarget = join(connectTarget, "workspace");
 const auditTarget = join(websiteRoot, "public", "demos", "website-audit");
 
 const noindexMeta = '<meta name="robots" content="noindex,nofollow">';
@@ -22,6 +23,7 @@ const preserveDemoNoindex = async (path) => {
 
 await mkdir(crmTarget, { recursive: true });
 await mkdir(connectTarget, { recursive: true });
+await mkdir(connectWorkspaceTarget, { recursive: true });
 await mkdir(auditTarget, { recursive: true });
 
 const crmIndex = join(crmTarget, "index.html");
@@ -29,15 +31,18 @@ await cp(join(crmRoot, "index.html"), crmIndex);
 await preserveDemoNoindex(crmIndex);
 await cp(join(crmRoot, "dashboard.json"), join(crmTarget, "dashboard.json"));
 
-const connectIndex = join(connectTarget, "index.html");
-await cp(join(connectRoot, "prototype", "index.html"), connectIndex);
-await preserveDemoNoindex(connectIndex);
-await cp(join(connectRoot, "prototype", "styles.css"), join(connectTarget, "styles.css"));
-await cp(join(connectRoot, "src", "profile-workspace.mjs"), join(connectTarget, "profile-workspace.mjs"));
+// The Hermes Connect root is now the website-owned conversion and early-access surface.
+// Keep Codex's raw working prototype available as a nested noindex workspace so future
+// syncs cannot overwrite the public product story, audience selection, or application flow.
+const connectWorkspaceIndex = join(connectWorkspaceTarget, "index.html");
+await cp(join(connectRoot, "prototype", "index.html"), connectWorkspaceIndex);
+await preserveDemoNoindex(connectWorkspaceIndex);
+await cp(join(connectRoot, "prototype", "styles.css"), join(connectWorkspaceTarget, "styles.css"));
+await cp(join(connectRoot, "src", "profile-workspace.mjs"), join(connectWorkspaceTarget, "profile-workspace.mjs"));
 
 const connectApp = await readFile(join(connectRoot, "prototype", "app.mjs"), "utf8");
 await writeFile(
-  join(connectTarget, "app.mjs"),
+  join(connectWorkspaceTarget, "app.mjs"),
   connectApp.replace("../src/profile-workspace.mjs", "./profile-workspace.mjs"),
   "utf8",
 );
@@ -47,4 +52,4 @@ await cp(join(auditRoot, "index-after.html"), auditIndex);
 await preserveDemoNoindex(auditIndex);
 await cp(join(auditRoot, "report-after.json"), join(auditTarget, "report.json"));
 
-console.log("Synced CRM Validation, Hermes Connect, and Website Audit public demos with noindex metadata.");
+console.log("Synced CRM Validation, the nested Hermes Connect Codex workspace, and Website Audit public demos with noindex metadata. The Hermes Connect root conversion surface remains website-owned.");
