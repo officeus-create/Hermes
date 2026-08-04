@@ -256,7 +256,7 @@ form?.addEventListener("submit", async (event) => {
   const timeout = window.setTimeout(() => controller.abort(), 10000);
 
   try {
-    const response = await fetch("https://hermeslogisticsus.com/api/logistics-lead", {
+    const response = await fetch("https://hermeslogisticsus.com/api/connect-lead", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
