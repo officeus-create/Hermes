@@ -1,10 +1,12 @@
 import { cp, mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 const websiteRoot = new URL("..", import.meta.url).pathname;
 const crmRoot = join(homedir(), "Documents", "Database Carrier", "prototypes", "crm-validation-pipeline", "demo");
-const connectRoot = join(homedir(), "Projects", "hermes-connect-prototype");
+const externalConnectRoot = process.env.HERMES_CONNECT_SOURCE_DIR
+  ? resolve(process.env.HERMES_CONNECT_SOURCE_DIR)
+  : null;
 const auditRoot = join(homedir(), "Documents", "Отдел маркетинга", "website-audit", "reports", "hermes-site-audit-2026-07-28");
 
 const crmTarget = join(websiteRoot, "public", "demos", "crm-validation");
@@ -30,21 +32,27 @@ await preserveDemoNoindex(crmIndex);
 await cp(join(crmRoot, "dashboard.json"), join(crmTarget, "dashboard.json"));
 
 const connectIndex = join(connectTarget, "index.html");
-await cp(join(connectRoot, "prototype", "index.html"), connectIndex);
-await preserveDemoNoindex(connectIndex);
-await cp(join(connectRoot, "prototype", "styles.css"), join(connectTarget, "styles.css"));
-await cp(join(connectRoot, "src", "profile-workspace.mjs"), join(connectTarget, "profile-workspace.mjs"));
+if (externalConnectRoot) {
+  await cp(join(externalConnectRoot, "prototype", "index.html"), connectIndex);
+  await preserveDemoNoindex(connectIndex);
+  await cp(join(externalConnectRoot, "prototype", "styles.css"), join(connectTarget, "styles.css"));
+  await cp(join(externalConnectRoot, "src", "profile-workspace.mjs"), join(connectTarget, "profile-workspace.mjs"));
 
-const connectApp = await readFile(join(connectRoot, "prototype", "app.mjs"), "utf8");
-await writeFile(
-  join(connectTarget, "app.mjs"),
-  connectApp.replace("../src/profile-workspace.mjs", "./profile-workspace.mjs"),
-  "utf8",
-);
+  const connectApp = await readFile(join(externalConnectRoot, "prototype", "app.mjs"), "utf8");
+  await writeFile(
+    join(connectTarget, "app.mjs"),
+    connectApp.replace("../src/profile-workspace.mjs", "./profile-workspace.mjs"),
+    "utf8",
+  );
+  console.log(`Synced Hermes Connect from explicit external source: ${externalConnectRoot}`);
+} else {
+  await preserveDemoNoindex(connectIndex);
+  console.log("Preserved repository-managed Hermes Connect funnel. Set HERMES_CONNECT_SOURCE_DIR only for an intentional reviewed import.");
+}
 
 const auditIndex = join(auditTarget, "index.html");
 await cp(join(auditRoot, "index-after.html"), auditIndex);
 await preserveDemoNoindex(auditIndex);
 await cp(join(auditRoot, "report-after.json"), join(auditTarget, "report.json"));
 
-console.log("Synced CRM Validation, Hermes Connect, and Website Audit public demos with noindex metadata.");
+console.log("Synced CRM Validation and Website Audit public demos with noindex metadata.");
