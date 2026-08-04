@@ -1,29 +1,23 @@
 ---
-import { CheckCircle2 } from "@lucide/astro";
+import { Check } from "@lucide/astro";
 
 interface Props {
   pathId: string;
 }
-
-type Advantage = {
-  title: string;
-  body: string;
-};
 
 type AdvantageSet = {
   label: string;
   title: string;
   intro: string;
   tone: "violet" | "magenta" | "gold" | "cyan";
-  items: Advantage[];
+  items: { title: string; body: string }[];
 };
 
 const advantageSets: Record<string, AdvantageSet> = {
   logistics: {
     label: "Verified operating advantages",
     title: "Control, qualification, and follow-through stay visible.",
-    intro:
-      "The public Hermes Logistics model is built around carrier approval, defined operating needs, and coordinated support across dispatch and back-office work.",
+    intro: "The public Hermes Logistics model is built around carrier approval, defined operating needs, and coordinated support across dispatch and back-office work.",
     tone: "violet",
     items: [
       {
@@ -43,8 +37,7 @@ const advantageSets: Record<string, AdvantageSet> = {
   marketing: {
     label: "Verified growth advantages",
     title: "The channels connect to one business objective.",
-    intro:
-      "ProgressoPro treats positioning, website conversion, search, social media, qualification, follow-up, and measurement as connected parts of the same growth workflow.",
+    intro: "ProgressoPro treats positioning, website conversion, search, social media, qualification, follow-up, and measurement as connected parts of the same growth workflow.",
     tone: "magenta",
     items: [
       {
@@ -57,20 +50,19 @@ const advantageSets: Record<string, AdvantageSet> = {
       },
       {
         title: "The next cycle uses actual results.",
-        body: "Reporting and review are used to refine the message, workflow, and priorities without promising a guaranteed ranking or lead volume.",
+        body: "Reporting and review refine the message, workflow, and priorities without promising a guaranteed ranking or lead volume.",
       },
     ],
   },
   academy: {
     label: "Verified learning advantages",
     title: "Learning connects to practical responsibility.",
-    intro:
-      "Hermes Business Academy is organized around applied learning in logistics, marketing, and operational leadership rather than a generic library of disconnected courses.",
+    intro: "Hermes Business Academy is organized around applied learning in logistics, marketing, and operational leadership rather than a generic library of disconnected courses.",
     tone: "gold",
     items: [
       {
-        title: "Three professional paths are visible.",
-        body: "Learners can explore Logistics Operations, Marketing Worldwide, or the COO / Operational Director direction according to the responsibility they want to build.",
+        title: "Two public programs stay clearly separated.",
+        body: "Learners can explore U.S. Logistics Operations or Marketing, with paid cohort and free practice participation described as separate models.",
       },
       {
         title: "The model progresses toward application.",
@@ -78,15 +70,14 @@ const advantageSets: Record<string, AdvantageSet> = {
       },
       {
         title: "Training stays tied to operating work.",
-        body: "Public program scope connects learning to communication, documents, decisions, KPI, processes, and the standards used inside business operations.",
+        body: "Public program scope connects learning to communication, documents, decisions, processes, and the standards used inside business operations.",
       },
     ],
   },
   technology: {
     label: "Verified system advantages",
     title: "The operating problem comes before the tool.",
-    intro:
-      "Hermes IT Development scopes websites, CRM, automation, dashboards, and AI-assisted workflows around a defined business process and a useful first release.",
+    intro: "Hermes IT Development scopes websites, CRM, automation, dashboards, and AI-assisted workflows around a defined business process and a useful first release.",
     tone: "cyan",
     items: [
       {
@@ -122,7 +113,7 @@ const set = advantageSets[pathId];
       <div class="path-advantages-grid" data-reveal>
         {set.items.map((item, index) => (
           <article style={`--advantage-delay: ${index * 1.1}s`}>
-            <CheckCircle2 size={20} stroke-width={1.8} aria-hidden="true" />
+            <Check size={20} stroke-width={1.8} aria-hidden="true" />
             <h3>{item.title}</h3>
             <p>{item.body}</p>
           </article>
@@ -210,9 +201,7 @@ const set = advantageSets[pathId];
     padding: clamp(1.25rem, 3vw, 1.8rem);
     border: 1px solid rgba(var(--advantage-accent), 0.22);
     border-radius: 1.25rem;
-    background:
-      linear-gradient(145deg, rgba(var(--advantage-accent), 0.085), transparent 48%),
-      rgba(255, 255, 255, 0.035);
+    background: linear-gradient(145deg, rgba(var(--advantage-accent), 0.085), transparent 48%), rgba(255, 255, 255, 0.035);
     box-shadow: 0 1rem 2.8rem rgba(0, 0, 0, 0.08);
     transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
   }
@@ -267,13 +256,8 @@ const set = advantageSets[pathId];
   }
 
   @media (max-width: 860px) {
-    .path-advantages-layout {
-      grid-template-columns: 1fr;
-    }
-
-    .path-advantages-heading {
-      position: static;
-    }
+    .path-advantages-layout { grid-template-columns: 1fr; }
+    .path-advantages-heading { position: static; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -284,8 +268,6 @@ const set = advantageSets[pathId];
       transform: none;
     }
 
-    .path-advantages-grid article {
-      transition: none;
-    }
+    .path-advantages-grid article { transition: none; }
   }
 </style>
