@@ -34,13 +34,8 @@ const expectedCurrentMarkers = [
 
 const staleMarkers = [
   "Contact mode: Preview",
-  "Your information was not sent or stored",
   "Contact submission pending connection",
 ];
-
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 
 function extractAttribute(html, tagName, identifyingAttribute, identifyingValue, targetAttribute) {
   const tags = html.match(new RegExp(`<${tagName}\\b[^>]*>`, "gi")) ?? [];
@@ -191,8 +186,14 @@ const networkFailure = [
   ...sitemapResults,
 ].some((result) => result.error || !result.status);
 
-const staleMarkerFound = Object.values(staleMarkerChecks).some(Boolean);
-const allCurrentMarkersFound = Object.values(currentMarkerChecks).every(Boolean);
+const missingCurrentMarkers = Object.entries(currentMarkerChecks)
+  .filter(([, found]) => !found)
+  .map(([marker]) => marker);
+const presentStaleMarkers = Object.entries(staleMarkerChecks)
+  .filter(([, found]) => found)
+  .map(([marker]) => marker);
+const allCurrentMarkersFound = missingCurrentMarkers.length === 0;
+const staleMarkerFound = presentStaleMarkers.length > 0;
 const routeContractHealthy =
   canonicalResults.every((result) => result.status === 200 && result.canonicalMatches && result.indexableByMeta) &&
   noindexResults.every((result) => result.status === 200 && result.hasNoindex && result.allowsFollow) &&
@@ -201,18 +202,30 @@ const routeContractHealthy =
   sitemapResults.every((result) => result.status === 200 && result.looksLikeSitemap);
 
 let classification = "MIXED_EDGE_OR_CACHE_STATE";
+const classificationReasons = [];
 if (networkFailure) {
   classification = "UNRESOLVED_NETWORK_ACCESS";
-} else if (staleMarkerFound) {
+  classificationReasons.push("At least one required public request failed or returned no status.");
+} else if (staleMarkerFound || !allCurrentMarkersFound) {
   classification = "LIVE_STALE_DEPLOYMENT";
-} else if (allCurrentMarkersFound && routeContractHealthy) {
+  if (presentStaleMarkers.length) {
+    classificationReasons.push(`Stale homepage markers are present: ${presentStaleMarkers.join(" | ")}`);
+  }
+  if (missingCurrentMarkers.length) {
+    classificationReasons.push(`Required current homepage markers are missing: ${missingCurrentMarkers.join(" | ")}`);
+  }
+} else if (routeContractHealthy) {
   classification = "LIVE_CURRENT";
+  classificationReasons.push("Required current markers and the public route contract are present.");
+} else {
+  classificationReasons.push("Homepage markers are current, but one or more route/discovery contracts are inconsistent.");
 }
 
 const result = {
   checkedAt: new Date().toISOString(),
   baseUrl,
   classification,
+  classificationReasons,
   boundaries: {
     publicReadOnly: true,
     noFormsSubmitted: true,
@@ -228,6 +241,8 @@ const result = {
     durationMs: homepage.durationMs,
     currentMarkerChecks,
     staleMarkerChecks,
+    missingCurrentMarkers,
+    presentStaleMarkers,
     error: homepage.error,
   },
   canonicalPages: canonicalResults,
@@ -248,6 +263,10 @@ const markdown = [
   `- Homepage final URL: ${homepage.finalUrl ?? "unavailable"}`,
   `- Cloudflare cache status: ${homepage.cacheStatus ?? "not exposed"}`,
   `- Age header: ${homepage.age ?? "not exposed"}`,
+  "",
+  "## Classification reasons",
+  "",
+  ...classificationReasons.map((reason) => `- ${reason}`),
   "",
   "## Homepage markers",
   "",
