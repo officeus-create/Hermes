@@ -31,8 +31,10 @@ test("dealer and auction commercial pages route buyers to direct transport intak
     "href",
     "/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake",
   );
-  await expect(page.getByText("Can I submit a Copart, IAA, or Manheim pickup?")).toBeVisible();
-  await expect(page.getByText(/Hermes is not affiliated with Copart, IAA, or Manheim/i)).toBeVisible();
+  const auctionFaq = page.locator("details").filter({ hasText: "Can I submit a Copart, IAA, or Manheim pickup?" });
+  await expect(auctionFaq.locator("summary")).toBeVisible();
+  await auctionFaq.locator("summary").click();
+  await expect(auctionFaq).toContainText("Hermes is not affiliated with Copart, IAA, or Manheim");
 });
 
 test("shipper, broker, and carrier audience pages use direct role-specific commercial paths", async ({ page }) => {
@@ -41,6 +43,10 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
     "href",
     "/logistics/request-vehicle-transport/?role=shipper#transport-intake",
   );
+  await expect(page.getByRole("link", { name: /Post a load in the Load Board demo/i }).first()).toHaveAttribute(
+    "href",
+    "/load-board/?role=shipper#post-load",
+  );
   await expect(page.locator(".logistics-audience-final")).toContainText("Prepare transport request");
 
   await page.goto("/logistics/broker/");
@@ -48,13 +54,17 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
     "href",
     "/logistics/request-vehicle-transport/?role=broker#transport-intake",
   );
+  await expect(page.getByRole("link", { name: /Open broker Load Board demo/i }).first()).toHaveAttribute(
+    "href",
+    "/load-board/?role=broker#post-load",
+  );
 
   await page.goto("/logistics/carrier/");
   await expect(page.getByRole("link", { name: "Start dispatch review" }).first()).toHaveAttribute(
     "href",
     "/logistics/start-car-hauling-dispatch/",
   );
-  await expect(page.getByRole("link", { name: "Preview Load Board" }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Open Load Board demo/i }).first()).toHaveAttribute(
     "href",
     "/load-board/?role=carrier#available-loads",
   );
