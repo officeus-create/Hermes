@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
-      CONNECT_EXPECTATION: ${{ github.event_name == 'push' && 'approved_web_app' || 'isolation' }}
+      CONNECT_EXPECTATION: ${{ github.event_name == 'push' && 'approved_web_app' || 'release_pending' }}
       CONNECT_CHECK_ATTEMPTS: ${{ github.event_name == 'push' && '12' || '6' }}
       CONNECT_CHECK_DELAY_MS: ${{ github.event_name == 'push' && '15000' || '10000' }}
 
