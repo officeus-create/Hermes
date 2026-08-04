@@ -22,6 +22,13 @@ const carHaulingCommercialAudienceIds = new Set([
 ]);
 const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recommendation.id);
 const showPartnerReviewMatrix = recommendation.id === "agency-development";
+const isBrokerCapacityPath = recommendation.id === "broker-carrier-capacity";
+const primaryCta = isBrokerCapacityPath
+  ? { label: "Prepare broker opportunity", href: "/logistics/request-vehicle-transport/?role=broker#transport-intake" }
+  : recommendation.primaryCta;
+const demoCta = isBrokerCapacityPath
+  ? { label: "Preview broker Load Board demo", href: "/load-board/?role=broker#post-load" }
+  : null;
 const schema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -53,10 +60,11 @@ import "../../../styles/features/case.css";
           <h1>{recommendation.title}</h1>
           <p>{recommendation.summary}</p>
           <div class="logistics-audience-actions">
-            <a class="button button-primary" href={recommendation.primaryCta.href} data-recommendation-primary>
-              {recommendation.primaryCta.label}<ArrowRight size={18} aria-hidden="true" />
+            <a class="button button-primary" href={primaryCta.href} data-recommendation-primary>
+              {primaryCta.label}<ArrowRight size={18} aria-hidden="true" />
             </a>
             {recommendation.secondaryCta && <a class="button" href={recommendation.secondaryCta.href}>{recommendation.secondaryCta.label}</a>}
+            {demoCta && <a class="button" href={demoCta.href} data-recommendation-demo>{demoCta.label}</a>}
           </div>
         </div>
       </section>
@@ -84,6 +92,21 @@ import "../../../styles/features/case.css";
       </section>
 
       {showPartnerReviewMatrix && <PartnerReviewMatrix />}
+
+      {isBrokerCapacityPath && (
+        <section class="section recommendation-next" aria-labelledby="broker-intake-boundary-title">
+          <div class="shell recommendation-next-grid">
+            <div>
+              <p class="eyebrow">Commercial intake versus product demo</p>
+              <h2 id="broker-intake-boundary-title">Use the direct intake for a real opportunity.</h2>
+              <p>The broker intake collects route, timing, equipment, vehicle condition, quantity, contact, and review context for Logistics Sales. The Load Board remains a fictional product demonstration and does not publish a load, notify a carrier, confirm capacity, or create a booking.</p>
+            </div>
+            <div>
+              <a class="button button-primary" href={primaryCta.href}>Prepare broker opportunity <ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {showCarHaulingCommercialPath && (
         <section class="section recommendation-next" aria-labelledby="car-hauling-commercial-title">
@@ -134,7 +157,7 @@ import "../../../styles/features/case.css";
             <p>Contact and private operational details are collected only now—after the recommendation is clear.</p>
           </div>
           <div>
-            <a class="button button-primary" href={recommendation.primaryCta.href} data-recommendation-primary-bottom>{recommendation.primaryCta.label}<ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={primaryCta.href} data-recommendation-primary-bottom>{primaryCta.label}<ArrowRight size={18} aria-hidden="true" /></a>
             {recommendation.secondaryCta && <a class="button" href={recommendation.secondaryCta.href}>{recommendation.secondaryCta.label}</a>}
           </div>
         </div>
