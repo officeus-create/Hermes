@@ -23,12 +23,39 @@ const carHaulingCommercialAudienceIds = new Set([
 const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recommendation.id);
 const showPartnerReviewMatrix = recommendation.id === "agency-development";
 const isBrokerCapacityPath = recommendation.id === "broker-carrier-capacity";
+const customerIntakeById: Record<string, {
+  primary: { label: string; href: string };
+  demo: { label: string; href: string };
+  context: string;
+}> = {
+  "customer-vehicle-transport": {
+    primary: { label: "Prepare vehicle transport request", href: "/logistics/request-vehicle-transport/?request=customer_delivery#transport-intake" },
+    demo: { label: "Preview customer Load Board demo", href: "/load-board/?role=private_party#post-load" },
+    context: "vehicle, route, timing, condition, equipment preference, access, and contact",
+  },
+  "customer-port-pickup": {
+    primary: { label: "Prepare port pickup request", href: "/logistics/request-vehicle-transport/?request=other#transport-intake" },
+    demo: { label: "Preview customer Load Board demo", href: "/load-board/?role=private_party#post-load" },
+    context: "vehicle, route, release status, facility access, timing, storage risk, handling, and contact",
+  },
+  "customer-luxury-classic": {
+    primary: { label: "Prepare specialty vehicle request", href: "/logistics/request-vehicle-transport/?request=customer_delivery#transport-intake" },
+    demo: { label: "Preview customer Load Board demo", href: "/load-board/?role=private_party#post-load" },
+    context: "vehicle, route, timing, operability, handling, open or enclosed preference, access, and contact",
+  },
+  "shipper-dealer": {
+    primary: { label: "Prepare dealer or shipper request", href: "/logistics/request-vehicle-transport/?request=dealer_inventory#transport-intake" },
+    demo: { label: "Preview dealer Load Board demo", href: "/load-board/?role=dealer#post-load" },
+    context: "route, timing, vehicle count, condition, auction or dealer context, equipment preference, access, and contact",
+  },
+};
+const customerIntake = customerIntakeById[recommendation.id];
 const primaryCta = isBrokerCapacityPath
   ? { label: "Prepare broker opportunity", href: "/logistics/request-vehicle-transport/?role=broker#transport-intake" }
-  : recommendation.primaryCta;
+  : customerIntake?.primary ?? recommendation.primaryCta;
 const demoCta = isBrokerCapacityPath
   ? { label: "Preview broker Load Board demo", href: "/load-board/?role=broker#post-load" }
-  : null;
+  : customerIntake?.demo ?? null;
 const schema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -103,6 +130,21 @@ import "../../../styles/features/case.css";
             </div>
             <div>
               <a class="button button-primary" href={primaryCta.href}>Prepare broker opportunity <ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {customerIntake && (
+        <section class="section recommendation-next" aria-labelledby="customer-intake-boundary-title" data-customer-direct-intake>
+          <div class="shell recommendation-next-grid">
+            <div>
+              <p class="eyebrow">Commercial intake versus product demo</p>
+              <h2 id="customer-intake-boundary-title">Use direct intake for a real transportation request.</h2>
+              <p>The direct workspace collects {customerIntake.context} for Logistics Sales review. The Load Board remains a fictional product demonstration and does not publish a request, notify a carrier, confirm capacity, create a booking, or guarantee acceptance.</p>
+            </div>
+            <div>
+              <a class="button button-primary" href={primaryCta.href}>{primaryCta.label} <ArrowRight size={18} aria-hidden="true" /></a>
             </div>
           </div>
         </section>
