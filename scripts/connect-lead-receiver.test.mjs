@@ -26,16 +26,16 @@ const env = {
 };
 
 const payload = {
-  request_id: "connect_access_12345",
-  submitted_at: "2026-08-04T21:30:00.000Z",
-  source_path: "/hermes-connect/early-access/",
+  request_id: "connect_web_access_12345",
+  submitted_at: "2026-08-05T00:30:00.000Z",
+  source_path: "/hermes-connect/web-access/",
   name: "Test Connect Applicant",
   email: "connect-applicant@example.com",
   interest: "IT Development",
   message: [
-    "Hermes Connect early-access request",
+    "Hermes Connect web-access request",
     "Category: Beauty & wellness",
-    "Requested platform: iPhone",
+    "Requested product: Hermes Connect Web App",
     "Role: Owner",
     "Must-have workflow: clients choose a service and request an available time",
   ].join("\n"),
@@ -43,12 +43,16 @@ const payload = {
   direction_fields: {
     direction: "IT Development",
     fields: {
-      system_or_workflow_needed: "Hermes Connect · Beauty & wellness",
+      system_or_workflow_needed: "Hermes Connect Web App · Beauty & wellness",
       current_tools: "Instagram / social messages",
       number_of_users: "2–5 people",
-      integrations_needed: "iPhone; service and availability request",
-      timeline: "Download waitlist",
+      integrations_needed: "Web app; service and availability request",
+      timeline: "Controlled web access",
     },
+  },
+  public_dimensions: {
+    category_id: "beauty-wellness",
+    platform_id: "web",
   },
 };
 
@@ -76,12 +80,13 @@ assert.equal(accepted.headers.get("Access-Control-Allow-Origin"), "https://conne
 assert.equal(calls.length, 1);
 assert.equal(calls[0].authorization, "Bearer connect-test-token-with-sufficient-length");
 assert.equal(calls[0].payload.subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
-assert.match(calls[0].payload.text, /Hermes Connect early-access request/);
-assert.match(calls[0].payload.text, /System\/workflow needed: Hermes Connect · Beauty & wellness/);
+assert.match(calls[0].payload.text, /Hermes Connect web-access request/);
+assert.match(calls[0].payload.text, /System\/workflow needed: Hermes Connect Web App · Beauty & wellness/);
+assert.doesNotMatch(calls[0].payload.text, /iPhone|Android|Download waitlist/);
 
 const foreign = await onRequest({ request: request("https://attacker.example"), env });
 assert.equal(foreign.status, 403);
 assert.deepEqual(await foreign.json(), { success: false, error: "origin_not_allowed" });
 assert.equal(calls.length, 1, "Rejected origins must never reach the private delivery service.");
 
-console.log("Hermes Connect exact-origin early-access receiver checks passed.");
+console.log("Hermes Connect exact-origin Web App receiver checks passed.");
