@@ -1,0 +1,7 @@
+.home-connect-product-card { position: relative; overflow: hidden; border-color: rgba(128,167,255,.42) !important; background: radial-gradient(circle at 100% 0, rgba(103,232,196,.16), transparent 42%), linear-gradient(145deg, #0b1e42, #102c5e) !important; color: #fff; }
+.home-connect-product-card::after { position: absolute; right: -2rem; bottom: -3rem; width: 9rem; height: 9rem; border: 1px solid rgba(128,167,255,.24); border-radius: 50%; content: ""; }
+.home-connect-product-card > svg { color: #67e8c4 !important; }
+.home-connect-product-card h3 { color: #fff; }
+.home-connect-product-card p { color: #b9c6dc !important; }
+.home-connect-product-link { position: relative; z-index: 1; display: inline-flex; gap: .4rem; align-items: center; margin-top: 1rem; color: #dce7ff; font-size: .77rem; font-weight: 750; text-decoration: none; }
+.home-connect-product-link:hover { color: #67e8c4; }
