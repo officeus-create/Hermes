@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: production-contact-smoke
@@ -20,6 +21,8 @@ jobs:
     timeout-minutes: 12
     steps:
       - name: Wait for current production HTML
+        id: production_html
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -27,7 +30,7 @@ jobs:
           expected_contact='Send your request securely to the Hermes team.'
           live=0
 
-          for attempt in $(seq 1 20); do
+          for attempt in $(seq 1 18); do
             url="https://hermeslogisticsus.com/?production-smoke=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
             html="$(curl --fail --silent --show-error --location \
               --connect-timeout 10 --max-time 30 \
@@ -42,7 +45,7 @@ jobs:
             fi
 
             echo "Production still serves the previous snapshot on attempt $attempt."
-            sleep 15
+            sleep 10
           done
 
           if [[ "$live" != "1" ]]; then
@@ -52,6 +55,8 @@ jobs:
 
       - name: Send one synthetic production inquiry
         id: first_send
+        if: steps.production_html.outcome == 'success'
+        continue-on-error: true
         shell: bash
         env:
           REQUEST_ID: prod_smoke_${{ github.run_id }}_${{ github.run_attempt }}
@@ -87,6 +92,9 @@ jobs:
           '
 
       - name: Confirm duplicate suppression
+        id: duplicate
+        if: steps.first_send.outcome == 'success'
+        continue-on-error: true
         shell: bash
         env:
           REQUEST_ID: prod_smoke_${{ github.run_id }}_${{ github.run_attempt }}
@@ -120,3 +128,49 @@ jobs:
             }
             console.log("Duplicate suppression confirmed without a second delivery.");
           '
+
+      - name: Report production result
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HTML_OUTCOME: ${{ steps.production_html.outcome }}
+          SEND_OUTCOME: ${{ steps.first_send.outcome }}
+          DUPLICATE_OUTCOME: ${{ steps.duplicate.outcome }}
+        run: |
+          set -euo pipefail
+          if [[ "$HTML_OUTCOME" == "success" && "$SEND_OUTCOME" == "success" && "$DUPLICATE_OUTCOME" == "success" ]]; then
+            overall="PASS"
+            summary="Current production HTML, one synthetic inquiry, and duplicate suppression were verified externally."
+          else
+            overall="FAIL"
+            summary="Production reconciliation is incomplete. Inspect the per-step outcomes below before calling the frontend live."
+          fi
+
+          cat > /tmp/production-smoke.md <<EOF
+          ## Production contact smoke — ${overall}
+
+          ${summary}
+
+          - merge commit: \`${GITHUB_SHA}\`
+          - production HTML: \`${HTML_OUTCOME}\`
+          - first synthetic inquiry: \`${SEND_OUTCOME}\`
+          - duplicate suppression: \`${DUPLICATE_OUTCOME}\`
+          - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          No customer data, Cloudflare secret, account ID, KV ID, or provider diagnostic is included in this report.
+          EOF
+
+          gh issue comment 167 --repo "$GITHUB_REPOSITORY" --body-file /tmp/production-smoke.md
+
+      - name: Enforce production verification
+        if: always()
+        shell: bash
+        env:
+          HTML_OUTCOME: ${{ steps.production_html.outcome }}
+          SEND_OUTCOME: ${{ steps.first_send.outcome }}
+          DUPLICATE_OUTCOME: ${{ steps.duplicate.outcome }}
+        run: |
+          if [[ "$HTML_OUTCOME" != "success" || "$SEND_OUTCOME" != "success" || "$DUPLICATE_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
