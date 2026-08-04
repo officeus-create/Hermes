@@ -1,3 +1,4 @@
+# Reviewed merge trigger for the controlled Hermes Pages production release.
 name: Deploy approved main to Cloudflare Pages
 
 on:
