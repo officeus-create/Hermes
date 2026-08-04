@@ -90,22 +90,25 @@
 
       const payload = buildQualifiedCarrierPayload(new FormData(form));
       const review = reviewQualifiedCarrierPayload(payload);
-      if (review.decision === "needs_more_information" || review.decision === "rejected") {
+      const deliverable = review.decision !== "needs_more_information" && review.decision !== "rejected";
+      if (!deliverable) {
         alert.textContent = review.reasons.join(" ");
         alert.hidden = false;
       }
 
       const rawPreview = buildQualifiedCarrierPreview(payload, review);
       const dispatchPreview = rawPreview
-        .replace("Hermes Load Board — Qualified Carrier Sales Lead Preview", "Hermes Car Hauling Dispatch — Qualified Carrier Review")
-        .replace("Sales tag: LOAD BOARD ACCESS / CARRIER", "Sales tag: CAR HAULING DISPATCH / CARRIER");
+        .replaceAll("Hermes Load Board", "Hermes Car Hauling Dispatch")
+        .replace("Sales tag: LOAD BOARD ACCESS / CARRIER", "Commercial source: DIRECT CAR HAULING DISPATCH INTAKE")
+        .replaceAll("Dry-run routing:", "Internal review routing:");
       const baseLead = buildQualifiedCarrierLead(payload, review);
-      activeLead = {
-        ...baseLead,
-        sales_tag: "CAR HAULING DISPATCH / CARRIER",
-        email_subject: `Car hauling dispatch review — ${payload.company_name}`,
-        email_body: dispatchPreview,
-      };
+      activeLead = deliverable
+        ? {
+            ...baseLead,
+            email_subject: `Car hauling dispatch review — ${payload.company_name}`,
+            email_body: dispatchPreview,
+          }
+        : null;
 
       decision.textContent = review.decision.replaceAll("_", " ");
       state.textContent = `Review state: ${review.vehicle_state.replaceAll("_", " ")}`;
@@ -113,14 +116,16 @@
       fillList("[data-vehicle-actions]", review.required_actions);
       fillList("[data-vehicle-routing]", review.routing.length ? review.routing : ["No routing — the request needs correction."]);
       preview.textContent = dispatchPreview;
-      email.href = buildQualifiedCarrierMailto(activeLead);
-      email.hidden = false;
+      email.hidden = !deliverable;
+      if (activeLead) email.href = buildQualifiedCarrierMailto(activeLead);
 
       const live = form.dataset.leadMode === "live";
-      sendButton.hidden = !live;
-      deliveryStatus.textContent = live
-        ? "Review the qualified request, then send it securely to Logistics Sales. Email and phone remain available as fallbacks."
-        : "The request is prepared for review. Open the email handoff or call Logistics Sales; preview mode does not send or store it automatically.";
+      sendButton.hidden = !live || !deliverable;
+      deliveryStatus.textContent = deliverable
+        ? live
+          ? "Review the qualified request, then send it securely to Logistics Sales. Email and phone remain available as fallbacks."
+          : "The request is prepared for review. Open the email handoff or call Logistics Sales; preview mode does not send or store it automatically."
+        : "Correct the missing or invalid operating information before choosing a handoff.";
       boundary.textContent = live
         ? "A success message appears only after the approved receiver confirms delivery. No dispatcher, load, rate, lane, or revenue is guaranteed."
         : "Preview mode creates no account, CRM record, dispatcher assignment, load booking, or automatic message.";
@@ -140,7 +145,7 @@
     });
 
     email.addEventListener("click", (event) => {
-      if (!event.isTrusted || !activeLead || handoffRecorded || result.hidden) return;
+      if (!event.isTrusted || !activeLead || handoffRecorded || result.hidden || email.hidden) return;
       handoffRecorded = true;
       pushEvent({
         event: "carrier_handoff_ready",
