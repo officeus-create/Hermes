@@ -13,6 +13,7 @@ const prHeadMarkers = [
 ];
 
 const previousMarkers = [
+  "Hermes Connect · Profile & Availability v0.3",
   "Hermes Connect — Profile and Availability Workspace",
   "Create specialist profile",
   "Profile preview ready",
