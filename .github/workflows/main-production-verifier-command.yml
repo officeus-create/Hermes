@@ -1,0 +1,83 @@
+name: Verify main production on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: main-production-command
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 220 &&
+      github.event.comment.body == '/verify-main-production' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run read-only public verifier
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          node scripts/check-production-custom-domain.mjs
+          status=$?
+          classification="REPORT_MISSING"
+          if [ -f artifacts/production-custom-domain-check.json ]; then
+            classification="$(node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('artifacts/production-custom-domain-check.json','utf8')); process.stdout.write(r.classification || 'UNKNOWN');")"
+          fi
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "classification=$classification" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish sanitized result to issue
+        shell: bash
+        run: |
+          {
+            echo "## Main production verification"
+            echo
+            if [ -f artifacts/production-custom-domain-check.md ]; then
+              cat artifacts/production-custom-domain-check.md
+            else
+              echo "The verifier did not produce its sanitized report."
+            fi
+            echo
+            echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
+            echo "Classification: \`${{ steps.verify.outputs.classification }}\`."
+            echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/main-production-verification-comment.md
+          gh issue comment 220 --repo "${{ github.repository }}" --body-file /tmp/main-production-verification-comment.md
+
+      - name: Upload sanitized report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-production-command-verification
+          path: |
+            artifacts/production-custom-domain-check.json
+            artifacts/production-custom-domain-check.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce current production result
+        shell: bash
+        run: test "${{ steps.verify.outputs.classification }}" = "LIVE_CURRENT"
