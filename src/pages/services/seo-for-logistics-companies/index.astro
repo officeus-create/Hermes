@@ -1,6 +1,14 @@
 ---
 import DigitalServicePage from "../../../components/DigitalServicePage.astro";
 import { digitalNicheServicePages } from "../../../data/digital-niche-service-pages";
+
+const content = {
+  ...digitalNicheServicePages.logisticsSeo,
+  related: [
+    { label: "Logistics SEO Audit Sample", href: "/resources/logistics-seo-audit-sample/" },
+    ...digitalNicheServicePages.logisticsSeo.related,
+  ],
+};
 ---
 
-<DigitalServicePage content={digitalNicheServicePages.logisticsSeo} />
+<DigitalServicePage content={content} />
