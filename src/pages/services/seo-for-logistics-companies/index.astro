@@ -4,6 +4,20 @@ import { digitalNicheServicePages } from "../../../data/digital-niche-service-pa
 
 const content = {
   ...digitalNicheServicePages.logisticsSeo,
+  process: [
+    ...digitalNicheServicePages.logisticsSeo.process,
+    {
+      title: "Use the first 30 days as a controlled review and release window",
+      body: "Week 1 confirms scope, access, evidence, privacy boundaries, inquiry ownership and the priority commercial action. Week 2 produces the audit, URL ownership map and ordered P0/P1 findings. Week 3 releases only the approved focused batch with full tests. Week 4 validates the live routes, indexability, CTA and delivery behavior, then records the first measurement baseline that is actually available. Timing depends on access, evidence, review speed and implementation capacity; this sequence does not guarantee rankings, traffic, inquiries or revenue.",
+    },
+  ],
+  faq: [
+    {
+      question: "What happens during the first 30 days of a Logistics SEO engagement?",
+      answer: "The first month is used to confirm the real business scope and evidence, audit the existing search and conversion system, map URL ownership, prioritize defects, release one approved tested batch, and validate the live result. Search Console, analytics and inquiry-quality baselines are recorded only when the correct authenticated evidence is available. The sequence does not guarantee rankings, traffic, leads, revenue or a fixed implementation volume.",
+    },
+    ...digitalNicheServicePages.logisticsSeo.faq,
+  ],
   related: [
     { label: "Logistics SEO Audit Sample", href: "/resources/logistics-seo-audit-sample/" },
     ...digitalNicheServicePages.logisticsSeo.related,
