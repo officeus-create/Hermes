@@ -24,6 +24,10 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   expect(publicCopy).toContain("No guaranteed lanes or revenue claims.");
   expect(publicCopy).toMatch(/carrier.*final decision/i);
   expect(publicCopy).toContain("fictional product preview");
+  expect(publicCopy).toContain("First 24–48 hours after approval");
+  expect(publicCopy).toContain("What happens during the first 24–48 hours after approval?");
+  expect(publicCopy).toContain("not a guarantee of dispatcher assignment, response time, load availability, booking, rate, mileage, lane consistency, or revenue");
+  expect(publicCopy).toContain("Missing documents, market conditions, broker requirements, or carrier changes can extend the sequence.");
 
   await page.evaluate(() => {
     document.querySelector("[data-commercial-primary-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
