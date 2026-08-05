@@ -1,5 +1,5 @@
 ---
-import { ArrowUp } from "@lucide/astro";
+import { ArrowUp, Phone } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
 
@@ -15,6 +15,7 @@ const showLogisticsPhone =
   currentPath === "/load-board/" ||
   currentPath.startsWith("/logistics/") ||
   currentPath.startsWith("/paths/logistics/");
+const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
 const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
@@ -93,6 +94,54 @@ const localized = {
 }[locale];
 const localePath = localeConfig[locale].path;
 ---
+
+{showTransportRequestActions && (
+  <>
+    <nav class="transport-request-mobile-actions" aria-label="Vehicle transportation request actions">
+      <a href="#transport-intake" data-transport-mobile-request>Prepare request</a>
+      <a href="tel:+12623023626" data-transport-mobile-call><Phone size={17} aria-hidden="true" />Call</a>
+    </nav>
+    <style is:global>
+      .transport-request-actions a[href*="/load-board/"] { display: none; }
+      @media (max-width: 700px) {
+        .transport-request-page { padding-bottom: 4.6rem; }
+        .transport-request-mobile-actions {
+          position: fixed;
+          z-index: 80;
+          right: .65rem;
+          bottom: .65rem;
+          left: .65rem;
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: .5rem;
+          padding: .55rem;
+          border: 1px solid rgba(255,255,255,.18);
+          border-radius: 12px;
+          background: rgba(7,16,56,.96);
+          box-shadow: 0 18px 50px rgba(7,16,56,.3);
+          backdrop-filter: blur(14px);
+        }
+        .transport-request-mobile-actions a {
+          display: inline-flex;
+          min-height: 46px;
+          align-items: center;
+          justify-content: center;
+          gap: .35rem;
+          padding: .75rem 1rem;
+          border-radius: 8px;
+          color: #fff;
+          font-weight: 800;
+          text-decoration: none;
+        }
+        .transport-request-mobile-actions a:first-child { background: #6a20d9; }
+        .transport-request-mobile-actions a:last-child { border: 1px solid rgba(255,255,255,.34); }
+      }
+      @media (min-width: 701px) {
+        .transport-request-mobile-actions { display: none; }
+      }
+    </style>
+  </>
+)}
 
 <footer class="site-footer">
   <div class="shell footer-main">
