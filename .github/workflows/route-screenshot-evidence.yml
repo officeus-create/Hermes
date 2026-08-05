@@ -11,22 +11,36 @@ on:
       - scripts/route-screenshot-contract.test.mjs
       - docs/ROUTE_SCREENSHOT_EVIDENCE.md
       - .github/workflows/route-screenshot-evidence.yml
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
-  group: route-screenshot-evidence-${{ github.ref }}
+  group: route-screenshot-evidence-${{ github.event.issue.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   capture:
+    if: >-
+      github.event_name != 'issue_comment' ||
+      (
+        github.event.issue.number == 264 &&
+        github.event.comment.body == '/capture-route-screenshots' &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
 
     steps:
-      - name: Check out selected ref
+      - name: Check out approved source
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'issue_comment' && 'main' || github.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -63,6 +77,26 @@ jobs:
           SCREENSHOT_OUTPUT_DIR: artifacts/route-screenshots
         run: npm run capture:screenshots
 
+      - name: Validate sanitized manifest
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'artifacts/route-screenshots/manifest.json';
+          const manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
+          const pngs = fs.readdirSync('artifacts/route-screenshots').filter((name) => name.endsWith('.png'));
+          if (manifest.source !== 'local-reviewed-build') throw new Error('Unexpected source');
+          if (manifest.productionEvidence !== false) throw new Error('Artifact must not claim production evidence');
+          if (manifest.externalRequestsBlocked !== true) throw new Error('External requests were not recorded as blocked');
+          if (manifest.observations?.length !== 14 || pngs.length !== 14) {
+            throw new Error(`Expected 14 observations and PNGs; got ${manifest.observations?.length} and ${pngs.length}`);
+          }
+          if (manifest.observations.some((item) => item.status >= 400 || item.status === 0)) {
+            throw new Error('At least one route failed');
+          }
+          console.log('Screenshot manifest contract passed.');
+          NODE
+
       - name: Upload screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,6 +105,45 @@ jobs:
           path: artifacts/route-screenshots
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish command result
+        if: always() && github.event_name == 'issue_comment'
+        shell: bash
+        run: |
+          run_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ -f artifacts/route-screenshots/manifest.json ]; then
+            node <<'NODE' > /tmp/screenshot-summary.txt
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('artifacts/route-screenshots/manifest.json', 'utf8'));
+          const pngCount = fs.readdirSync('artifacts/route-screenshots').filter((name) => name.endsWith('.png')).length;
+          const statuses = [...new Set(manifest.observations.map((item) => item.status))].sort((a, b) => a - b);
+          console.log(`- PNG files: ${pngCount}`);
+          console.log(`- Manifest observations: ${manifest.observations.length}`);
+          console.log(`- HTTP statuses: ${statuses.join(', ')}`);
+          console.log(`- Source: \`${manifest.source}\``);
+          console.log(`- Production evidence: \`${manifest.productionEvidence}\``);
+          console.log(`- External requests blocked: \`${manifest.externalRequestsBlocked}\``);
+          console.log(`- Retention: ${manifest.retentionDays} days`);
+          NODE
+            {
+              echo "## Route screenshot evidence completed"
+              echo
+              cat /tmp/screenshot-summary.txt
+              echo "- Approved source commit: \`${{ github.sha }}\`"
+              echo "- Workflow run and artifact: ${run_url}"
+              echo
+              echo "These screenshots are local reviewed-build visual QA only. They are not production-domain, ranking, traffic, conversion, delivery, or customer-result evidence."
+            } > /tmp/screenshot-comment.md
+          else
+            {
+              echo "## Route screenshot evidence failed"
+              echo
+              echo "The workflow did not produce a validated manifest."
+              echo "- Workflow run: ${run_url}"
+              echo "- Approved source commit: \`${{ github.sha }}\`"
+            } > /tmp/screenshot-comment.md
+          fi
+          gh issue comment 264 --repo "${{ github.repository }}" --body-file /tmp/screenshot-comment.md
 
       - name: Stop preview
         if: always()
