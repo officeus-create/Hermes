@@ -1,5 +1,6 @@
 ---
 import { ArrowRight, Bot, ChartNoAxesCombined, CloudSun, RadioTower, ShieldCheck, UserRoundCheck } from "@lucide/astro";
+import { technologyDashboardMetrics } from "../data/technology-concept-metrics";
 
 const profileFields = [
   ["MC", "1482019"],
@@ -12,13 +13,6 @@ const profileFields = [
 ];
 
 const recruitingStages = ["New", "Validated", "Reviewed", "Interview", "Offer"];
-const dashboardMetrics = [
-  ["Leads", "184", "+12% sample"],
-  ["Conversions", "28", "15.2% sample"],
-  ["Active Tasks", "46", "8 due today"],
-  ["Risks", "7", "Needs review"],
-  ["Revenue Pipeline", "$284K", "Illustrative"],
-];
 import "../styles/features/technology.css";
 ---
 
@@ -81,7 +75,7 @@ import "../styles/features/technology.css";
         <div class="solution-mockup-heading"><ChartNoAxesCombined size={20} aria-hidden="true" /><span>Management visibility</span><strong>Interface concept</strong></div>
         <h3>Executive Dashboard</h3>
         <div class="executive-dashboard-grid">
-          {dashboardMetrics.map(([label, value, note]) => <div><span>{label}</span><strong>{value}</strong><small>{note}</small></div>)}
+          {technologyDashboardMetrics.map((metric) => <div><span>{metric.label}</span><strong>{metric.value}</strong><small>{metric.uiNote}</small></div>)}
         </div>
         <p>Connect only the approved data sources and metrics relevant to the client’s operating decisions.</p>
       </article>
