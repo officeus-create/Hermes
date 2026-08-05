@@ -10,6 +10,11 @@ interface Props {
 const { locale = "en" } = Astro.props;
 const publicLocationBoundary = "U.S. logistics · International email coordination";
 const logisticsPhone = site.publicPhones[0];
+const currentPath = Astro.url.pathname;
+const showLogisticsPhone =
+  currentPath === "/load-board/" ||
+  currentPath.startsWith("/logistics/") ||
+  currentPath.startsWith("/paths/logistics/");
 const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
@@ -111,7 +116,7 @@ const localePath = localeConfig[locale].path;
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
       <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
-      {logisticsPhone && <a href={logisticsPhone.href}>{localized.phone} · {logisticsPhone.value}</a>}
+      {showLogisticsPhone && logisticsPhone && <a href={logisticsPhone.href}>{localized.phone} · {logisticsPhone.value}</a>}
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">
