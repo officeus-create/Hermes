@@ -46,8 +46,11 @@ test("Logistics SEO audit sample exposes Article, Service, FAQ, and breadcrumb s
   expect(schemaTypes).toEqual(expect.arrayContaining(["Article", "Service", "FAQPage", "BreadcrumbList"]));
 });
 
-test("SEO services and sitemap discover the Logistics SEO audit sample", async ({ page, request }) => {
+test("SEO services, Logistics SEO, and sitemap discover the audit sample", async ({ page, request }) => {
   await page.goto("/services/seo/");
+  await expect(page.getByRole("link", { name: "Logistics SEO Audit Sample" })).toHaveAttribute("href", route);
+
+  await page.goto("/services/seo-for-logistics-companies/");
   await expect(page.getByRole("link", { name: "Logistics SEO Audit Sample" })).toHaveAttribute("href", route);
 
   const sitemap = await request.get("/sitemap-digital-services.xml");
