@@ -1,7 +1,7 @@
 import {
   assertMetricEvidenceRecord,
   type MetricEvidenceRecord,
-} from "./metric-provenance";
+} from "./metric-provenance.ts";
 
 export interface TechnologyConceptMetric extends MetricEvidenceRecord {
   uiNote: string;
