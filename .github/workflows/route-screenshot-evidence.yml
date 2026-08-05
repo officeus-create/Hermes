@@ -1,0 +1,72 @@
+name: Capture local route screenshot evidence
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: route-screenshot-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out selected ref
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build reviewed local release
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Start loopback preview
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/hermes-preview.log 2>&1 &
+          echo $! > /tmp/hermes-preview.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:4321/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/hermes-preview.log
+          exit 1
+
+      - name: Capture controlled routes
+        env:
+          SCREENSHOT_BASE_URL: http://127.0.0.1:4321/
+          SCREENSHOT_OUTPUT_DIR: artifacts/route-screenshots
+        run: npm run capture:screenshots
+
+      - name: Upload screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-screenshot-evidence-${{ github.run_id }}
+          path: artifacts/route-screenshots
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Stop preview
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/hermes-preview.pid ]; then
+            kill "$(cat /tmp/hermes-preview.pid)" 2>/dev/null || true
+          fi
