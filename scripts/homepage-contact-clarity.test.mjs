@@ -14,22 +14,16 @@ const logisticsPages = [
 for (const relativePath of logisticsPages) {
   const html = await readBuiltPage(relativePath);
   assert.match(html, /href="tel:\+12623023626"/, `${relativePath} must expose the approved click-to-call route`);
-  assert.ok(html.includes("U.S. Logistics Sales"), `${relativePath} must label the logistics department clearly`);
+  assert.ok(html.includes("U.S. Logistics Sales"), `${relativePath} must label the footer logistics department clearly`);
 }
 
-const emailOnlyPages = [
-  "dist/index.html",
-  "dist/ua/index.html",
-  "dist/ru/index.html",
-  "dist/es/index.html",
-  "dist/it/index.html",
-  "dist/fr/index.html",
+const departmentEmailOnlyPages = [
   "dist/paths/marketing/index.html",
   "dist/paths/academy/index.html",
   "dist/paths/technology/index.html",
 ];
 
-for (const relativePath of emailOnlyPages) {
+for (const relativePath of departmentEmailOnlyPages) {
   const html = await readBuiltPage(relativePath);
   assert.doesNotMatch(html, /href="tel:/, `${relativePath} must remain email-only outside the logistics context`);
 }
@@ -40,5 +34,9 @@ assert.ok(
   "Homepage title must identify U.S. Logistics and AI Systems",
 );
 assert.ok(homepage.includes("officeus@hermeslogisticsus.com"), "Existing office email must remain available");
+assert.ok(
+  !homepage.includes("U.S. Logistics Sales · +1 (262) 302-3626"),
+  "The global footer phone must remain scoped to logistics routes even though the homepage already has a contextual logistics call action",
+);
 
-console.log("Homepage SEO title and logistics-scoped click-to-call contract passed.");
+console.log("Homepage SEO title and logistics-scoped footer click-to-call contract passed.");
