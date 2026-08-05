@@ -56,10 +56,17 @@ assert.ok(layout.includes("<SeoSupportingIntakeEnhancer />"));
 assert.ok(layout.includes("<MoneyPageActionBar />"));
 assert.ok(layout.includes("<VehicleTransportCtaEnhancer />"));
 
+const actionBar = await read("src/components/MoneyPageActionBar.astro");
+assert.ok(actionBar.includes("data-service-group={action.serviceGroup}"));
+assert.ok(actionBar.includes('serviceGroup: "appleton_vehicle_transport"'));
+assert.ok(actionBar.includes('serviceGroup: "wisconsin_local_vehicle_transport"'));
+
 const vehicleTracking = await read("src/components/VehicleTransportCtaEnhancer.astro");
-assert.ok(vehicleTracking.includes("dealer_vehicle_transport"));
-assert.ok(vehicleTracking.includes("auction_vehicle_pickup"));
+assert.ok(vehicleTracking.includes("link.dataset.serviceGroup"));
+assert.ok(vehicleTracking.includes("appleton_vehicle_transport"));
+assert.ok(vehicleTracking.includes("wisconsin_local_vehicle_transport"));
+assert.ok(vehicleTracking.includes("wisconsin_dealer_vehicle_transport"));
 assert.ok(vehicleTracking.includes('cta_type: "vehicle_transport_intake"'));
 assert.ok(vehicleTracking.includes('target.pathname !== "/logistics/request-vehicle-transport/"'));
 
-console.log("Money-page revenue tail contract passed: specialized SEO intake, vehicle CTA tracking, and bounded mobile actions across national and Wisconsin transport pages.");
+console.log("Money-page revenue tail contract passed: specialized SEO intake, complete Wisconsin vehicle CTA tracking, and bounded mobile actions.");
