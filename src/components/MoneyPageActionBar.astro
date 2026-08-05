@@ -1,0 +1,154 @@
+---
+import { ArrowRight, Mail, Phone } from "@lucide/astro";
+
+type ActionConfig = {
+  label: string;
+  href: string;
+  kind: "logistics" | "seo" | "website";
+  serviceGroup: string;
+  secondary: "phone" | "email";
+};
+
+const actions: Record<string, ActionConfig> = {
+  "/logistics/car-hauling-dispatch/": {
+    label: "Start dispatch review",
+    href: "/logistics/start-car-hauling-dispatch/",
+    kind: "logistics",
+    serviceGroup: "car_hauling_dispatch",
+    secondary: "phone",
+  },
+  "/logistics/dealer-vehicle-transportation/": {
+    label: "Prepare dealer request",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=dealer_inventory#transport-intake",
+    kind: "logistics",
+    serviceGroup: "dealer_vehicle_transport",
+    secondary: "phone",
+  },
+  "/logistics/auction-vehicle-pickup/": {
+    label: "Prepare auction request",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake",
+    kind: "logistics",
+    serviceGroup: "auction_vehicle_pickup",
+    secondary: "phone",
+  },
+  "/services/seo/": {
+    label: "Start SEO review",
+    href: "/paths/marketing/?service=seo#contact",
+    kind: "seo",
+    serviceGroup: "seo_services",
+    secondary: "email",
+  },
+  "/services/local-seo/": {
+    label: "Start local SEO review",
+    href: "/paths/marketing/?service=local_seo#contact",
+    kind: "seo",
+    serviceGroup: "local_seo",
+    secondary: "email",
+  },
+  "/services/seo-for-logistics-companies/": {
+    label: "Start logistics SEO review",
+    href: "/paths/marketing/?service=logistics_seo#contact",
+    kind: "seo",
+    serviceGroup: "logistics_seo",
+    secondary: "email",
+  },
+  "/services/seo-for-independent-auto-dealers/": {
+    label: "Start dealer SEO review",
+    href: "/paths/marketing/?service=auto_dealer_seo#contact",
+    kind: "seo",
+    serviceGroup: "auto_dealer_seo",
+    secondary: "email",
+  },
+  "/services/website-development/": {
+    label: "Start website brief",
+    href: "/paths/technology/?project=website_development#project-brief",
+    kind: "website",
+    serviceGroup: "website_development",
+    secondary: "email",
+  },
+  "/services/website-redesign/": {
+    label: "Start redesign brief",
+    href: "/paths/technology/?project=website_redesign#project-brief",
+    kind: "website",
+    serviceGroup: "website_redesign",
+    secondary: "email",
+  },
+};
+
+const action = actions[Astro.url.pathname];
+---
+
+{action && (
+  <aside class="money-page-action-bar" aria-label="Quick contact actions">
+    <a
+      class="money-page-action-primary"
+      href={action.href}
+      data-commercial-primary-cta={action.kind === "logistics" ? "" : undefined}
+      data-seo-service-cta={action.kind === "seo" ? "" : undefined}
+      data-website-project-cta={action.kind === "website" ? "" : undefined}
+      data-service-group={action.serviceGroup}
+    >
+      {action.label}<ArrowRight size={17} aria-hidden="true" />
+    </a>
+    {action.secondary === "phone" ? (
+      <a class="money-page-action-secondary" href="tel:+12623023626" aria-label="Call U.S. Logistics Sales">
+        <Phone size={18} aria-hidden="true" /><span>Call</span>
+      </a>
+    ) : (
+      <a class="money-page-action-secondary" href="mailto:officeus@hermeslogisticsus.com" aria-label="Email Hermes">
+        <Mail size={18} aria-hidden="true" /><span>Email</span>
+      </a>
+    )}
+  </aside>
+)}
+
+<style>
+  .money-page-action-bar { display: none; }
+  @media (max-width: 800px) {
+    body:has(.money-page-action-bar) { padding-bottom: 5.2rem; }
+    .money-page-action-bar {
+      position: fixed;
+      z-index: 90;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 0.55rem;
+      padding: 0.72rem max(0.75rem, env(safe-area-inset-right)) calc(0.72rem + env(safe-area-inset-bottom)) max(0.75rem, env(safe-area-inset-left));
+      border-top: 1px solid rgba(173, 188, 230, 0.55);
+      background: rgba(7, 16, 56, 0.96);
+      box-shadow: 0 -0.8rem 2.2rem rgba(7, 16, 56, 0.2);
+      backdrop-filter: blur(14px);
+    }
+    .money-page-action-bar a {
+      min-height: 3rem;
+      border-radius: 9px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .money-page-action-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.72rem 0.9rem;
+      background: #ffffff;
+      color: #071038;
+    }
+    .money-page-action-secondary {
+      display: grid;
+      min-width: 4.5rem;
+      place-items: center;
+      align-content: center;
+      gap: 0.1rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      color: #ffffff;
+      font-size: 0.75rem;
+    }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .money-page-action-bar { background: #071038; backdrop-filter: none; }
+  }
+</style>
