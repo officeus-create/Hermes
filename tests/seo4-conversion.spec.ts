@@ -49,10 +49,13 @@ test("direct dispatch intake is noindex, qualified, privacy-safe, and separate f
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
   await expect(page.getByRole("heading", { name: "Start Your Car Hauling Dispatch Review" })).toBeVisible();
   await expect(page.getByText("Dry-run only")).toHaveCount(0);
-  await expect(page.getByRole("link", { name: /Preview the Load Board demo/i })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Preview the Load Board demo/i })).toHaveCount(0);
+  await expect(page.locator(".dispatch-start-actions").getByRole("link", { name: /Call Logistics Sales/i })).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier&equipment=car_hauler#available-loads",
+    "tel:+12623023626",
   );
+  await expect(page.locator("[data-dispatch-mobile-intake]")).toHaveAttribute("href", "#dispatch-intake");
+  await expect(page.locator("[data-dispatch-mobile-call]")).toHaveAttribute("href", "tel:+12623023626");
 
   await page.evaluate(() => {
     window.dataLayer = [];
