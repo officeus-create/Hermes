@@ -3,26 +3,42 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
-const pages = [
-  ["en", "dist/index.html", "U.S. Logistics Sales"],
-  ["uk", "dist/ua/index.html", "Продажі логістики США"],
-  ["ru", "dist/ru/index.html", "Отдел продаж логистики США"],
-  ["es", "dist/es/index.html", "Ventas de logística en EE. UU."],
-  ["it", "dist/it/index.html", "Vendite logistica USA"],
-  ["fr", "dist/fr/index.html", "Ventes logistiques aux États-Unis"],
+const readBuiltPage = (relativePath) => readFile(path.join(root, relativePath), "utf8");
+
+const logisticsPages = [
+  "dist/paths/logistics/index.html",
+  "dist/logistics/car-hauling-dispatch/index.html",
+  "dist/load-board/index.html",
 ];
 
-for (const [locale, relativePath, phoneLabel] of pages) {
-  const html = await readFile(path.join(root, relativePath), "utf8");
-  assert.match(html, /href="tel:\+12623023626"/, `${locale} footer must expose the approved click-to-call route`);
-  assert.ok(html.includes(phoneLabel), `${locale} footer must label the logistics department clearly`);
+for (const relativePath of logisticsPages) {
+  const html = await readBuiltPage(relativePath);
+  assert.match(html, /href="tel:\+12623023626"/, `${relativePath} must expose the approved click-to-call route`);
+  assert.ok(html.includes("U.S. Logistics Sales"), `${relativePath} must label the logistics department clearly`);
 }
 
-const homepage = await readFile(path.join(root, "dist/index.html"), "utf8");
+const emailOnlyPages = [
+  "dist/index.html",
+  "dist/ua/index.html",
+  "dist/ru/index.html",
+  "dist/es/index.html",
+  "dist/it/index.html",
+  "dist/fr/index.html",
+  "dist/paths/marketing/index.html",
+  "dist/paths/academy/index.html",
+  "dist/paths/technology/index.html",
+];
+
+for (const relativePath of emailOnlyPages) {
+  const html = await readBuiltPage(relativePath);
+  assert.doesNotMatch(html, /href="tel:/, `${relativePath} must remain email-only outside the logistics context`);
+}
+
+const homepage = await readBuiltPage("dist/index.html");
 assert.ok(
   homepage.includes("<title>Hermes | U.S. Logistics, Marketing, Academy &amp; AI Systems</title>"),
   "Homepage title must identify U.S. Logistics and AI Systems",
 );
 assert.ok(homepage.includes("officeus@hermeslogisticsus.com"), "Existing office email must remain available");
 
-console.log("Homepage SEO title and global click-to-call contract passed.");
+console.log("Homepage SEO title and logistics-scoped click-to-call contract passed.");
