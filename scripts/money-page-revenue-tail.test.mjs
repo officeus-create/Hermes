@@ -7,6 +7,7 @@ const read = (relativePath) => readFile(path.join(root, relativePath), "utf8");
 
 const pages = [
   ["dist/logistics/car-hauling-dispatch/index.html", "Start dispatch review", "/logistics/start-car-hauling-dispatch/", "tel:+12623023626"],
+  ["dist/logistics/appleton-wi-vehicle-transport/index.html", "Prepare Appleton request", "/logistics/request-vehicle-transport/#transport-intake", "tel:+12623023626"],
   ["dist/logistics/dealer-vehicle-transportation/index.html", "Prepare dealer request", "request=dealer_inventory", "tel:+12623023626"],
   ["dist/logistics/auction-vehicle-pickup/index.html", "Prepare auction request", "request=auction_pickup", "tel:+12623023626"],
   ["dist/services/seo/index.html", "Start SEO review", "service=seo", "mailto:officeus@hermeslogisticsus.com"],
