@@ -6,6 +6,8 @@ import SiteFooter from "../../components/SiteFooter.astro";
 const title = "La Crosse Vehicle Transport | Hermes Logistics";
 const description = "Request vehicle transport to or from La Crosse, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, timing, condition, access, and equipment.";
 const canonicalUrl = new URL("/logistics/la-crosse-wi-vehicle-transport/", Astro.site).toString();
+const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
+const loadBoardDemo = "/load-board/?role=private_party&origin=La%20Crosse%2C%20WI#post-load";
 
 const faq = [
   { question: "What information is needed for La Crosse vehicle transport?", answer: "Provide the exact pickup and delivery route, vehicle details and condition, pickup readiness, access restrictions, timing, equipment preference, and reliable contacts." },
@@ -30,8 +32,8 @@ import "../../styles/features/appleton.css";
       <p class="eyebrow">Hermes Logistics · La Crosse, Wisconsin</p>
       <h1>Vehicle transport to and from La Crosse, Wisconsin.</h1>
       <p>Hermes reviews vehicle transport requests for dealers, auction buyers and sellers, businesses, and private customers. Start with the full route, vehicle condition, pickup readiness, timing, and access details.</p>
-      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=La%20Crosse%2C%20WI#post-load">Prepare a transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=La%20Crosse%2C%20WI#carrier-access">Carrier: share capacity</a></div>
-      <p>Submitting a request does not guarantee a price, pickup date, equipment type, or carrier.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href={directTransportIntake} data-la-crosse-direct-intake>Prepare a transport request</a><a class="button" href={loadBoardDemo} data-la-crosse-demo>Preview the La Crosse Load Board demo</a><a class="button" href="/load-board/?role=carrier&amp;area=La%20Crosse%2C%20WI#carrier-access">Carrier: share capacity in demo</a></div>
+      <p>The direct intake starts a Logistics Sales review. It does not publish a request, notify a carrier, confirm capacity, create a booking, or guarantee price, timing, equipment, or carrier availability.</p>
     </div></section>
 
     <section class="section"><div class="shell"><p class="eyebrow">Request review</p><h2>Complete details support equipment and timing decisions.</h2><div class="appleton-card-grid"><article><h3>Route</h3><p>Exact pickup and delivery location or ZIP code, plus any facility access restrictions.</p></article><article><h3>Vehicle condition</h3><p>Year, make, model, dimensions when unusual, and whether it starts, rolls, steers, and brakes.</p></article><article><h3>Timing</h3><p>Earliest pickup date, pickup hours, storage deadlines, and required delivery windows.</p></article><article><h3>Equipment</h3><p>Open or enclosed preference and any disclosed loading or handling requirements.</p></article></div></div></section>
