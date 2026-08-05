@@ -82,6 +82,9 @@ for (const page of pages) {
   assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} approved email fallback missing`);
   assert.ok(!html.includes('href="tel:'), `${page.route} must remain email-only`);
   assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} breadcrumb missing`);
+  assert.ok(html.includes('href="/case/appleton-vehicle-transport-seo/"'), `${page.route} must link the SEO case in the hero`);
+  assert.ok(html.includes("View the SEO case"), `${page.route} must label the proof as an SEO case`);
+  assert.ok(!html.includes('href="/case/it-development/">View the website case'), `${page.route} must not use the IT case as its hero proof`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
   const schemaTypes = parseSchema(html).map((entity) => entity?.["@type"]);
   for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) {
@@ -131,4 +134,4 @@ assert.equal(researchReady.status, "eligible_for_editorial_review");
 assert.deepEqual(researchReady.blockers, []);
 assert.notEqual(researchReady.status, "published");
 
-console.log("digital niche checks passed: logistics/dealer SEO pages, five CTA variants, four separate research queues, evidence gates, sitemap, schema, and preview contact.");
+console.log("digital niche checks passed: logistics/dealer SEO pages, intent-aligned SEO proof, five CTA variants, four separate research queues, evidence gates, sitemap, schema, and preview contact.");
