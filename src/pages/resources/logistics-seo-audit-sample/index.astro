@@ -1,0 +1,353 @@
+---
+import { ArrowRight, Check, Gauge, MessageSquareText, Search, ShieldCheck, Users } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Logistics SEO Audit Sample | Hermes Marketing";
+const description =
+  "Review an illustrative logistics SEO audit deliverable covering page ownership, technical risk, conversion paths, evidence boundaries, priorities, validation, and measurement.";
+const canonicalUrl = new URL("/resources/logistics-seo-audit-sample/", Astro.site).toString();
+const seoIntakeHref = "/paths/marketing/?service=seo#contact";
+
+const auditSections = [
+  {
+    title: "Executive decision summary",
+    icon: MessageSquareText,
+    items: [
+      "State the commercial problem in plain language",
+      "Separate verified defects from hypotheses",
+      "Name the highest-value user action",
+      "Identify blockers, owners, and the first release batch",
+    ],
+  },
+  {
+    title: "Query and URL ownership",
+    icon: Search,
+    items: [
+      "Assign one preferred page to each intent family",
+      "Separate carrier, customer, broker, dealer, equipment, and resource intent",
+      "Detect cannibalization and thin location duplication",
+      "Document pages that should consolidate, redirect, remain noindex, or be measured",
+    ],
+  },
+  {
+    title: "Technical and indexation review",
+    icon: Gauge,
+    items: [
+      "Check status, robots, canonical, sitemap ownership, schema, and internal depth",
+      "Review mobile behavior, performance budgets, accessibility, and broken paths",
+      "Distinguish repository evidence from production and Search Console evidence",
+      "Record exact validation steps for every proposed repair",
+    ],
+  },
+  {
+    title: "Search-to-inquiry path",
+    icon: Users,
+    items: [
+      "Match the primary CTA to visitor readiness",
+      "Keep product demos separate from real commercial intake",
+      "Request only information needed for the next human decision",
+      "Define delivery, review, qualification, and follow-up as separate stages",
+    ],
+  },
+  {
+    title: "Evidence and claim controls",
+    icon: ShieldCheck,
+    items: [
+      "Name the source, date, owner, and publication permission for each material claim",
+      "Block unsupported fleet, authority, capacity, office, customer, volume, rate, and outcome claims",
+      "Keep shipment, carrier, customer, route, rate, document, and identity data private",
+      "Separate first-party implementation evidence from client results",
+    ],
+  },
+  {
+    title: "Measurement and next release",
+    icon: Check,
+    items: [
+      "Define the 7-day and 28-day baseline before expansion",
+      "Use Search Console, privacy-safe analytics, receiver evidence, and human qualification correctly",
+      "Prioritize one small reviewed batch",
+      "Set the next evidence review and stop condition",
+    ],
+  },
+];
+
+const sampleFindings = [
+  {
+    priority: "P0",
+    finding: "A commercial customer CTA opens a fictional product demo instead of a real intake.",
+    impact: "A ready buyer may believe a request was published or never reach the team responsible for review.",
+    evidence: "Rendered CTA destination, visible demo boundary, and browser workflow test.",
+    action: "Route the primary action to direct intake; keep the demo as a separately labeled secondary path.",
+  },
+  {
+    priority: "P0",
+    finding: "The interface can display success before the approved receiver confirms delivery.",
+    impact: "The visitor may believe Hermes received a request that never reached the review queue.",
+    evidence: "Form state transition, network response contract, and failure-path test.",
+    action: "Allow success only after a positive server response and expose a prepared fallback when delivery is unconfirmed.",
+  },
+  {
+    priority: "P1",
+    finding: "Several location pages repeat the same service explanation with little local decision value.",
+    impact: "Pages can compete with one another, add crawl noise, and weaken buyer confidence.",
+    evidence: "Page-template comparison, query ownership map, internal-link graph, and public differentiation review.",
+    action: "Keep only locations with real service fit and distinct useful content; consolidate or hold the rest.",
+  },
+  {
+    priority: "P1",
+    finding: "Demo cards use fixed calendar dates and recent-posting language.",
+    impact: "The page becomes visibly stale or can look like live freight when it is only an illustration.",
+    evidence: "Crawler-visible built HTML and rendered page text.",
+    action: "Use evergreen labels such as Demo day +1 and Status / Illustrative demo in the built HTML.",
+  },
+  {
+    priority: "P1",
+    finding: "Public company profiles expose conflicting team, office, service, and benefit statements.",
+    impact: "Search engines and buyers may connect the wrong facts or the wrong same-name entity to the website.",
+    evidence: "Dated public profile inventory; no third-party statement treated as canonical automatically.",
+    action: "Approve one private canonical facts sheet, then correct owned profiles field by field.",
+  },
+  {
+    priority: "Measure",
+    finding: "Repository analytics events exist, but production Search Console and GA4 evidence is unavailable.",
+    impact: "Traffic, indexation, conversion, and lead-quality conclusions would be guesses.",
+    evidence: "Repository event registry plus absence of authenticated platform exports or property verification.",
+    action: "Verify the exact properties, approved events, parameters, receiver reconciliation, and 7/28-day baseline before expansion.",
+  },
+];
+
+const queryMap = [
+  { intent: "Carrier wants dispatch support", owner: "/logistics/car-hauling-dispatch/", action: "Direct carrier intake" },
+  { intent: "Dealer or customer needs vehicle transport", owner: "/logistics/dealer-vehicle-transportation/", action: "Direct transport intake" },
+  { intent: "Buyer wants logistics SEO", owner: "/services/seo-for-logistics-companies/", action: "SEO scope review" },
+  { intent: "Visitor wants preparation guidance", owner: "A focused checklist or resource", action: "Resource → relevant commercial path" },
+  { intent: "Visitor wants to explore a product concept", owner: "Noindex product demo", action: "Clearly labeled preview or access request" },
+];
+
+const deliveryPackage = [
+  "One-page executive summary with decisions, blockers, and owners",
+  "URL inventory with status, canonical owner, audience, intent, CTA, and sitemap owner",
+  "Finding register with severity, evidence, business impact, recommendation, and validation",
+  "Query-to-page map with consolidation and expansion decisions",
+  "Evidence and privacy register for public claims and protected data",
+  "Prioritized implementation batch plus 7-day and 28-day measurement plan",
+];
+
+const faq = [
+  {
+    question: "Is this a real client audit?",
+    answer: "No. This is an illustrative deliverable sample built from Hermes first-party methodology and synthetic examples. It contains no client identity, confidential record, ranking result, traffic figure, lead figure, revenue figure, or testimonial.",
+  },
+  {
+    question: "Does every logistics SEO audit use the same findings?",
+    answer: "No. The structure can remain consistent, but findings must come from the actual website, business scope, public evidence, Search Console, analytics, inquiry workflow, and owner-approved operating facts.",
+  },
+  {
+    question: "Can an audit begin without Search Console or GA4 access?",
+    answer: "Yes, but the report must distinguish repository and public-page findings from authenticated search and analytics evidence. Platform-dependent conclusions remain unverified until the correct properties are reviewed.",
+  },
+  {
+    question: "Does the sample promise rankings, traffic, or leads?",
+    answer: "No. An audit can identify defects, priorities, evidence gaps, conversion friction, and measurement requirements. Search engines, demand, competitors, customers, sales execution, inquiries, revenue, and timing remain outside Hermes control.",
+  },
+  {
+    question: "What happens after an audit?",
+    answer: "The next step can be no implementation, a focused repair batch, or a continuing program. Scope, required access, deliverables, exclusions, review points, fee, ownership, and success evidence are confirmed separately in writing.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Illustrative Logistics SEO Audit Sample",
+    description,
+    datePublished: "2026-08-05",
+    dateModified: "2026-08-05",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Marketing" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Logistics Website SEO Audit",
+    description: "A structured review of logistics search architecture, indexation, conversion paths, evidence boundaries, priorities, and privacy-safe measurement.",
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+    areaServed: { "@type": "Country", name: "United States" },
+    url: canonicalUrl,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics SEO", item: "https://hermeslogisticsus.com/services/seo-for-logistics-companies/" },
+      { "@type": "ListItem", position: 3, name: "Logistics SEO Audit Sample", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader activePath="/paths/marketing/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Marketing Resource · Illustrative Deliverable</p>
+              <h1>Logistics SEO Audit Sample</h1>
+              <p>
+                See how a logistics SEO review can turn scattered technical, content, trust, conversion, and measurement observations into an ordered decision document.
+              </p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href={seoIntakeHref}>Request an SEO scope review <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/services/seo-for-logistics-companies/">Review Logistics SEO services</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>Illustrative sample — not a client case.</h2>
+              <p>No client identity, private operating record, ranking, traffic, inquiry, revenue, testimonial, or guaranteed result is presented.</p>
+            </aside>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Search size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">What a buyer receives</p>
+              <h2>A decision-ready audit, not a list of generic SEO tips.</h2>
+              <p>The audit separates confirmed defects, evidence gaps, hypotheses, owner decisions, implementation work, and platform-dependent measurement so the next step is clear and reviewable.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-pillars" aria-labelledby="audit-structure-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Audit structure</p><h2 id="audit-structure-title">Six sections connect search visibility to a real human decision.</h2></div>
+              <p>The same structure can be used for dispatch, trucking, vehicle transport, freight-broker, shipper, dealer, and logistics technology websites, but the facts and findings must be specific to the reviewed business.</p>
+            </div>
+            <div class="capacity-pillar-grid">
+              {auditSections.map((section, index) => {
+                const Icon = section.icon;
+                return (
+                  <article>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <Icon size={23} aria-hidden="true" />
+                    <h3>{section.title}</h3>
+                    <ul>{section.items.map((item) => <li>{item}</li>)}</ul>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="sample-findings-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Illustrative finding register</p><h2 id="sample-findings-title">Each recommendation needs severity, evidence, impact, action, and validation.</h2></div>
+              <p>These examples demonstrate report quality. They are not claims about a client, a live company, current search performance, or guaranteed commercial impact.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              {sampleFindings.map((finding) => (
+                <article data-sample-priority={finding.priority}>
+                  <strong>{finding.priority} · {finding.finding}</strong>
+                  <p><b>Why it matters:</b> {finding.impact}</p>
+                  <p><b>Evidence:</b> {finding.evidence}</p>
+                  <p><b>Recommended action:</b> {finding.action}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="query-map-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Sample query-to-page map</p>
+              <h2 id="query-map-title">One intent, one preferred owner, one useful next action.</h2>
+              <p>The map prevents every service, audience, city, and equipment keyword from becoming a competing thin page.</p>
+            </div>
+            <dl>
+              {queryMap.map((row, index) => (
+                <div>
+                  <dt>{index + 1}. {row.intent}</dt>
+                  <dd><b>Owner:</b> {row.owner}<br /><b>Next action:</b> {row.action}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="delivery-package-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div><p class="eyebrow">Delivery package</p><h2 id="delivery-package-title">The report should be usable by the owner, developer, marketer, and sales team.</h2></div>
+              <p>A finding without an owner, source, validation step, or decision boundary is only an observation. The deliverable turns it into controlled work.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              {deliveryPackage.map((item, index) => <article><strong>{String(index + 1).padStart(2, "0")}</strong><p>{item}</p></article>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="audit-boundaries-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Evidence boundaries</p><h2 id="audit-boundaries-title">What this sample deliberately does not claim.</h2></div>
+            <div class="capacity-boundary-grid">
+              <article><strong>No client result</strong><p>The sample does not report a customer ranking, click, lead, sale, revenue, ROI, carrier, load, route, rate, or operational outcome.</p></article>
+              <article><strong>No live platform evidence</strong><p>Search Console, Bing, GA4, CRM, and field-performance findings require authenticated source review.</p></article>
+              <article><strong>No private logistics data</strong><p>Names, emails, phones, MC/DOT, exact routes, addresses, VINs, rates, shipment records, documents, and notes stay outside the public deliverable.</p></article>
+              <article><strong>No automatic expansion</strong><p>A low-difficulty keyword, city, lane, or equipment term does not justify a page without distinct intent, capability, useful content, and a qualified-inquiry path.</p></article>
+              <article><strong>No guaranteed outcome</strong><p>Hermes can identify and implement reviewed improvements, but rankings, traffic, inquiries, sales, revenue, and timing are not guaranteed.</p></article>
+              <article><strong>No hidden scope</strong><p>Access, deliverables, exclusions, review points, fee, ownership, and completion evidence are confirmed before implementation.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="audit-related-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Related resources</p><h2 id="audit-related-title">Move from sample output to a controlled review.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/services/seo-for-logistics-companies/"><Search size={22} aria-hidden="true" /><h3>Logistics SEO Services</h3><p>Review the audiences, deliverables, process, starting scopes, boundaries, and questions.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/resources/technical-seo-checklist/"><Gauge size={22} aria-hidden="true" /><h3>Technical SEO Checklist</h3><p>Check crawlability, indexation, canonicals, schema, sitemaps, internal links, performance, and measurement.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/resources/search-to-inquiry-conversion-checklist/"><Users size={22} aria-hidden="true" /><h3>Search-to-Inquiry Checklist</h3><p>Review the complete path from query and page ownership to qualification and human follow-up.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="audit-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="audit-faq-title">Questions about the audit sample and next step.</h2></div>
+            <div class="digital-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+          </div>
+        </section>
+
+        <section class="section resource-cta" aria-labelledby="audit-cta-title">
+          <div class="shell resource-cta-inner">
+            <div><p class="eyebrow">Start with the highest-value commercial path</p><h2 id="audit-cta-title">Request a Logistics SEO scope review.</h2><p>Share the website, real services, priority audience, current search/analytics access, inquiry workflow, evidence limits, and the business decision the audit should support.</p></div>
+            <a class="button button-primary" href={seoIntakeHref}>Prepare the review request <ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
