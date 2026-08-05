@@ -16,12 +16,12 @@ test("carrier agreement review is private, downloadable, and e-sign ready", asyn
   await expect(page.getByRole("heading", { name: "Review the Carrier Dispatch Agreement" })).toBeVisible();
   await expect(page.getByText("Draft for attorney review", { exact: true })).toBeVisible();
 
-  const pdfLink = page.locator('[data-contract-download="pdf"]');
-  const docxLink = page.locator('[data-contract-download="docx"]');
-  await expect(pdfLink).toHaveAttribute("href", pdfPath);
-  await expect(pdfLink).toHaveAttribute("download", "");
-  await expect(docxLink).toHaveAttribute("href", docxPath);
-  await expect(docxLink).toHaveAttribute("download", "");
+  const pdfControl = page.locator('[data-contract-download="pdf"]');
+  const docxControl = page.locator('[data-contract-download="docx"]');
+  await expect(pdfControl).toHaveAttribute("data-download-path", pdfPath);
+  await expect(docxControl).toHaveAttribute("data-download-path", docxPath);
+  await expect(pdfControl).toHaveRole("button");
+  await expect(docxControl).toHaveRole("button");
 
   const pdfResponse = await request.get(pdfPath);
   expect(pdfResponse.ok()).toBe(true);
