@@ -38,6 +38,34 @@ const actions: Record<string, ActionConfig> = {
     serviceGroup: "auction_vehicle_pickup",
     secondary: "phone",
   },
+  "/logistics/wisconsin-dealer-vehicle-transport/": {
+    label: "Prepare dealer request",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=dealer_inventory#transport-intake",
+    kind: "logistics",
+    serviceGroup: "wisconsin_dealer_vehicle_transport",
+    secondary: "phone",
+  },
+  "/logistics/wisconsin-auction-vehicle-pickup/": {
+    label: "Prepare auction request",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake",
+    kind: "logistics",
+    serviceGroup: "wisconsin_auction_vehicle_pickup",
+    secondary: "phone",
+  },
+  "/logistics/wisconsin-enclosed-vehicle-transport/": {
+    label: "Prepare enclosed request",
+    href: "/logistics/request-vehicle-transport/#transport-intake",
+    kind: "logistics",
+    serviceGroup: "wisconsin_enclosed_vehicle_transport",
+    secondary: "phone",
+  },
+  "/logistics/wisconsin-multi-vehicle-dealer-transport/": {
+    label: "Prepare multi-vehicle request",
+    href: "/logistics/request-vehicle-transport/?role=dealer&request=dealer_inventory#transport-intake",
+    kind: "logistics",
+    serviceGroup: "wisconsin_multi_vehicle_dealer_transport",
+    secondary: "phone",
+  },
   "/services/seo/": {
     label: "Start SEO review",
     href: "/paths/marketing/?service=seo#contact",
@@ -82,7 +110,17 @@ const actions: Record<string, ActionConfig> = {
   },
 };
 
-const action = actions[Astro.url.pathname];
+const isGeneralWisconsinTransportPage =
+  Astro.url.pathname === "/logistics/wisconsin-vehicle-transport/" ||
+  /^\/logistics\/[a-z0-9-]+-wi-vehicle-transport\/$/.test(Astro.url.pathname);
+
+const action = actions[Astro.url.pathname] ?? (isGeneralWisconsinTransportPage ? {
+  label: "Prepare transport request",
+  href: "/logistics/request-vehicle-transport/#transport-intake",
+  kind: "logistics",
+  serviceGroup: "wisconsin_local_vehicle_transport",
+  secondary: "phone",
+} satisfies ActionConfig : undefined);
 ---
 
 {action && (
