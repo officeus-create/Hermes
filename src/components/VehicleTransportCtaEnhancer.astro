@@ -1,45 +1,64 @@
 <script>
-  const vehicleTransportPages: Record<string, string> = {
+  const vehicleTransportServiceGroups: Record<string, string> = {
+    "/logistics/appleton-wi-vehicle-transport/": "appleton_vehicle_transport",
     "/logistics/dealer-vehicle-transportation/": "dealer_vehicle_transport",
     "/logistics/auction-vehicle-pickup/": "auction_vehicle_pickup",
-    "/logistics/wisconsin-dealer-vehicle-transport/": "wisconsin_dealer_transport",
-    "/logistics/wisconsin-auction-vehicle-pickup/": "wisconsin_auction_pickup",
-    "/logistics/wisconsin-multi-vehicle-dealer-transport/": "wisconsin_multi_vehicle_transport",
-    "/logistics/wisconsin-enclosed-vehicle-transport/": "wisconsin_enclosed_transport",
+    "/logistics/wisconsin-dealer-vehicle-transport/": "wisconsin_dealer_vehicle_transport",
+    "/logistics/wisconsin-auction-vehicle-pickup/": "wisconsin_auction_vehicle_pickup",
+    "/logistics/wisconsin-multi-vehicle-dealer-transport/": "wisconsin_multi_vehicle_dealer_transport",
+    "/logistics/wisconsin-enclosed-vehicle-transport/": "wisconsin_enclosed_vehicle_transport",
   };
 
-  const serviceGroup = vehicleTransportPages[window.location.pathname];
-  if (serviceGroup) {
-    document.addEventListener("click", (event) => {
-      if (!event.isTrusted) return;
-      const source = event.target;
-      if (!(source instanceof Element)) return;
-      const link = source.closest<HTMLAnchorElement>("a[data-commercial-primary-cta]");
-      if (!link) return;
+  const resolveServiceGroup = (link: HTMLAnchorElement) => {
+    const explicitServiceGroup = link.dataset.serviceGroup?.trim();
+    if (explicitServiceGroup) return explicitServiceGroup;
 
-      let target: URL;
-      try {
-        target = new URL(link.href, window.location.origin);
-      } catch {
-        return;
-      }
+    const path = window.location.pathname;
+    const mappedServiceGroup = vehicleTransportServiceGroups[path];
+    if (mappedServiceGroup) return mappedServiceGroup;
 
-      if (
-        target.origin !== window.location.origin ||
-        target.pathname !== "/logistics/request-vehicle-transport/"
-      ) return;
+    if (
+      path === "/logistics/wisconsin-vehicle-transport/" ||
+      /^\/logistics\/[a-z0-9-]+-wi-vehicle-transport\/$/.test(path)
+    ) {
+      return "wisconsin_local_vehicle_transport";
+    }
 
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "commercial_cta_click",
-        cta_type: "vehicle_transport_intake",
-        audience_type: target.searchParams.get("role") || "customer",
-        page_group: "logistics_service",
-        service_group: serviceGroup,
-        request_type: target.searchParams.get("request") || "vehicle_transport",
-        page_path: window.location.pathname,
-        destination_path: target.pathname,
-      });
+    return "";
+  };
+
+  document.addEventListener("click", (event) => {
+    if (!event.isTrusted) return;
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+    const link = source.closest<HTMLAnchorElement>("a[data-commercial-primary-cta]");
+    if (!link) return;
+
+    let target: URL;
+    try {
+      target = new URL(link.href, window.location.origin);
+    } catch {
+      return;
+    }
+
+    if (
+      target.origin !== window.location.origin ||
+      target.pathname !== "/logistics/request-vehicle-transport/"
+    ) return;
+
+    const serviceGroup = resolveServiceGroup(link);
+    if (!serviceGroup) return;
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "commercial_cta_click",
+      cta_type: "vehicle_transport_intake",
+      audience_type: target.searchParams.get("role") || "customer",
+      page_group: "logistics_service",
+      service_group: serviceGroup,
+      request_type: target.searchParams.get("request") || "vehicle_transport",
+      page_path: window.location.pathname,
+      destination_path: target.pathname,
     });
-  }
+  });
 </script>
