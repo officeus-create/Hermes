@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, CheckCircle2 } from "@lucide/astro";
+import { ArrowRight, CheckCircle2, Phone } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
@@ -49,13 +49,13 @@ const schema = [
           <p class="eyebrow">Hermes Logistics · Commercial carrier intake</p>
           <h1>Start Your Car Hauling Dispatch Review</h1>
           <p class="dispatch-start-lead">
-            Give Logistics Sales the operating facts needed to review dispatch fit. This path is for a real business inquiry;
-            it does not route you through the fictional Load Board examples.
+            Give Logistics Sales the operating facts needed to review dispatch fit. This is the direct path for a real carrier inquiry, qualification, and next-step conversation.
           </p>
           <div class="dispatch-start-actions">
-            <a class="button button-primary" href="#dispatch-intake">Start the carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="button button-ghost" href="/load-board/?role=carrier&equipment=car_hauler#available-loads">Preview the Load Board demo</a>
+            <a class="button button-primary" href="#dispatch-intake" data-dispatch-start-cta>Start the carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href="tel:+12623023626" data-dispatch-call-cta><Phone size={18} aria-hidden="true" />Call Logistics Sales</a>
           </div>
+          <p class="dispatch-start-direct-note">Prefer to speak first? Call +1 (262) 302-3626. The intake remains the fastest way to provide authority, equipment, capacity, location, and availability for review.</p>
         </div>
         <aside class="dispatch-start-expectation">
           <p class="eyebrow">What happens next</p>
@@ -82,6 +82,11 @@ const schema = [
       </div>
     </section>
   </main>
+
+  <nav class="dispatch-mobile-actions" aria-label="Car hauling dispatch actions">
+    <a href="#dispatch-intake" data-dispatch-mobile-intake>Start intake</a>
+    <a href="tel:+12623023626" data-dispatch-mobile-call><Phone size={17} aria-hidden="true" />Call</a>
+  </nav>
   <SiteFooter />
 </BaseLayout>
 
@@ -95,6 +100,7 @@ const schema = [
   .dispatch-start-lead { max-width: 62ch; color: rgba(255,255,255,.8); font-size: 1.17rem; line-height: 1.7; }
   .dispatch-start-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
   .dispatch-start-actions .button-ghost { border-color: rgba(255,255,255,.42); color: #fff; }
+  .dispatch-start-direct-note { max-width: 66ch; margin-top: 1rem; color: rgba(255,255,255,.68); font-size: .9rem; line-height: 1.55; }
   .dispatch-start-expectation { padding: clamp(1.4rem, 3vw, 2rem); border: 1px solid rgba(255,255,255,.2); border-radius: 14px; background: rgba(255,255,255,.08); backdrop-filter: blur(12px); }
   .dispatch-start-expectation ul { display: grid; gap: 1rem; margin: 1rem 0 0; padding: 0; list-style: none; }
   .dispatch-start-expectation li { display: grid; grid-template-columns: auto 1fr; gap: .65rem; color: rgba(255,255,255,.84); line-height: 1.5; }
@@ -103,9 +109,17 @@ const schema = [
   .dispatch-start-followup-card { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid #dce3f8; border-radius: 14px; background: #f7f4ff; }
   .dispatch-start-followup h2 { max-width: 16ch; }
   .dispatch-start-followup p:not(.eyebrow) { max-width: 70ch; color: #596784; line-height: 1.65; }
+  .dispatch-mobile-actions { display: none; }
   @media (max-width: 850px) {
     .dispatch-start-hero-grid, .dispatch-start-followup-card { grid-template-columns: 1fr; }
     .dispatch-start-hero { padding-top: 7.6rem; }
     .dispatch-start-followup-card .button { justify-self: start; }
+  }
+  @media (max-width: 700px) {
+    .dispatch-start-page { padding-bottom: 4.6rem; }
+    .dispatch-mobile-actions { position: fixed; z-index: 80; right: .65rem; bottom: .65rem; left: .65rem; display: grid; grid-template-columns: 1fr auto; gap: .5rem; padding: .55rem; border: 1px solid rgba(255,255,255,.18); border-radius: 12px; background: rgba(7,16,56,.96); box-shadow: 0 18px 50px rgba(7,16,56,.3); backdrop-filter: blur(14px); }
+    .dispatch-mobile-actions a { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: .35rem; padding: .75rem 1rem; border-radius: 8px; color: #fff; font-weight: 800; text-decoration: none; }
+    .dispatch-mobile-actions a:first-child { background: #6a20d9; }
+    .dispatch-mobile-actions a:last-child { border: 1px solid rgba(255,255,255,.34); }
   }
 </style>
