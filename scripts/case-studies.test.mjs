@@ -50,13 +50,17 @@ for (const required of [
   "/logistics/resources/auction-vehicle-pickup-checklist/",
   "/logistics/resources/car-hauler-capacity-checklist/",
   "/paths/marketing/?service=logistics_seo#contact",
-  'data-seo-service-cta=""',
   'data-service-group="logistics_seo"',
   "Start a logistics SEO review",
   "Measurement in progress",
   "No public metric yet",
 ]) assert.ok(appletonCase.includes(required), `Appleton case is missing: ${required}`);
 
+assert.match(
+  appletonCase,
+  /\bdata-seo-service-cta(?:="")?\b/,
+  "Appleton case must expose the established SEO service CTA contract",
+);
 assert.ok(!appletonCase.includes('href="/contacts/">Discuss an SEO or logistics project'), "Appleton SEO case must not end in the generic contacts route");
 
 for (const prohibited of ["guaranteed rankings", "guaranteed leads", "ranks #1", "capacity is available now"]) {
