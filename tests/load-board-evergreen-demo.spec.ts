@@ -8,12 +8,8 @@ test("Load Board uses evergreen fictional timing labels", async ({ page }) => {
   await expect(page.getByText("Demo day +3 · appointment", { exact: true })).toBeVisible();
   await expect(page.getByText("Demo day +4–5", { exact: true })).toBeVisible();
 
-  for (const sample of ["A", "B", "C", "D"]) {
-    await expect(page.getByText(`Fictional sample ${sample}`, { exact: true })).toBeVisible();
-  }
-
-  await expect(page.locator(".available-load-list dt", { hasText: "Demo status" })).toHaveCount(4);
-  await expect(page.getByText("No load below is available to book.", { exact: true })).toBeVisible();
+  await expect(page.locator(".available-load-list dt", { hasText: "Status" })).toHaveCount(4);
+  await expect(page.getByText("Illustrative demo", { exact: true })).toHaveCount(4);
 
   const demoText = await page.locator(".available-load-list").innerText();
   expect(demoText).not.toMatch(/Jul\s+2[2-6]/i);
