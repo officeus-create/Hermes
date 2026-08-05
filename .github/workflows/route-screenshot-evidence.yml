@@ -2,6 +2,15 @@ name: Capture local route screenshot evidence
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/capture-route-screenshots.mjs
+      - scripts/route-screenshot-contract.mjs
+      - scripts/route-screenshot-contract.test.mjs
+      - docs/ROUTE_SCREENSHOT_EVIDENCE.md
+      - .github/workflows/route-screenshot-evidence.yml
 
 permissions:
   contents: read
