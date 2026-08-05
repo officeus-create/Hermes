@@ -49,9 +49,15 @@ for (const required of [
   "/logistics/appleton-wi-vehicle-transport/",
   "/logistics/resources/auction-vehicle-pickup-checklist/",
   "/logistics/resources/car-hauler-capacity-checklist/",
+  "/paths/marketing/?service=logistics_seo#contact",
+  'data-seo-service-cta=""',
+  'data-service-group="logistics_seo"',
+  "Start a logistics SEO review",
   "Measurement in progress",
   "No public metric yet",
 ]) assert.ok(appletonCase.includes(required), `Appleton case is missing: ${required}`);
+
+assert.ok(!appletonCase.includes('href="/contacts/">Discuss an SEO or logistics project'), "Appleton SEO case must not end in the generic contacts route");
 
 for (const prohibited of ["guaranteed rankings", "guaranteed leads", "ranks #1", "capacity is available now"]) {
   assert.ok(!appletonCase.toLowerCase().includes(prohibited), `Appleton case contains prohibited claim: ${prohibited}`);
@@ -68,4 +74,4 @@ assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-de
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
 
-console.log("Case studies release checks passed: hub, Appleton case, schema, links, claims, unique sitemap ownership, and crawl path.");
+console.log("Case studies release checks passed: hub, Appleton case, direct SEO intake, schema, links, claims, unique sitemap ownership, and crawl path.");
