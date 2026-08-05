@@ -1,8 +1,19 @@
 const CONNECT_HOST = "connect.hermeslogisticsus.com";
+const MAIN_HOST = "hermeslogisticsus.com";
 const CONNECT_ASSET_ROOT = "/demos/hermes-connect";
+const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
+const STALE_PUBLIC_COPY = [
+  "Your information was not sent or stored.",
+  "Contact delivery is not connected",
+  "contact delivery is not connected",
+];
+
+function requestHost(request) {
+  return new URL(request.url).hostname.toLowerCase();
+}
 
 function isConnectHost(request) {
-  return new URL(request.url).hostname.toLowerCase() === CONNECT_HOST;
+  return requestHost(request) === CONNECT_HOST;
 }
 
 function connectAssetPath(pathname) {
@@ -45,4 +56,29 @@ async function routeConnectHost(context) {
   return assetResponse;
 }
 
-export const onRequest = [routeConnectHost];
+async function sanitizeMainDomainCopy(context) {
+  if (requestHost(context.request) !== MAIN_HOST) {
+    return routeConnectHost(context);
+  }
+
+  const response = await context.next();
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("text/html")) return response;
+
+  const original = await response.text();
+  const sanitized = STALE_PUBLIC_COPY.reduce(
+    (html, staleCopy) => html.replaceAll(staleCopy, LIVE_DELIVERY_COPY),
+    original,
+  );
+  if (sanitized === original) return new Response(original, response);
+
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(sanitized, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+export const onRequest = [sanitizeMainDomainCopy];
