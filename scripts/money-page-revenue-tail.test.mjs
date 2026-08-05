@@ -7,8 +7,15 @@ const read = (relativePath) => readFile(path.join(root, relativePath), "utf8");
 
 const pages = [
   ["dist/logistics/car-hauling-dispatch/index.html", "Start dispatch review", "/logistics/start-car-hauling-dispatch/", "tel:+12623023626"],
+  ["dist/logistics/appleton-wi-vehicle-transport/index.html", "Prepare Appleton request", "/logistics/request-vehicle-transport/#transport-intake", "tel:+12623023626"],
+  ["dist/logistics/wisconsin-vehicle-transport/index.html", "Prepare transport request", "/logistics/request-vehicle-transport/#transport-intake", "tel:+12623023626"],
+  ["dist/logistics/green-bay-wi-vehicle-transport/index.html", "Prepare transport request", "/logistics/request-vehicle-transport/#transport-intake", "tel:+12623023626"],
   ["dist/logistics/dealer-vehicle-transportation/index.html", "Prepare dealer request", "request=dealer_inventory", "tel:+12623023626"],
   ["dist/logistics/auction-vehicle-pickup/index.html", "Prepare auction request", "request=auction_pickup", "tel:+12623023626"],
+  ["dist/logistics/wisconsin-dealer-vehicle-transport/index.html", "Prepare dealer request", "request=dealer_inventory", "tel:+12623023626"],
+  ["dist/logistics/wisconsin-auction-vehicle-pickup/index.html", "Prepare auction request", "request=auction_pickup", "tel:+12623023626"],
+  ["dist/logistics/wisconsin-enclosed-vehicle-transport/index.html", "Prepare enclosed request", "/logistics/request-vehicle-transport/#transport-intake", "tel:+12623023626"],
+  ["dist/logistics/wisconsin-multi-vehicle-dealer-transport/index.html", "Prepare multi-vehicle request", "request=dealer_inventory", "tel:+12623023626"],
   ["dist/services/seo/index.html", "Start SEO review", "service=seo", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/services/local-seo/index.html", "Start local SEO review", "service=local_seo", "mailto:officeus@hermeslogisticsus.com"],
   ["dist/services/seo-for-logistics-companies/index.html", "Start logistics SEO review", "service=logistics_seo", "mailto:officeus@hermeslogisticsus.com"],
@@ -55,4 +62,4 @@ assert.ok(vehicleTracking.includes("auction_vehicle_pickup"));
 assert.ok(vehicleTracking.includes('cta_type: "vehicle_transport_intake"'));
 assert.ok(vehicleTracking.includes('target.pathname !== "/logistics/request-vehicle-transport/"'));
 
-console.log("Money-page revenue tail contract passed: existing specialized SEO intake, vehicle CTA tracking, and bounded mobile actions.");
+console.log("Money-page revenue tail contract passed: specialized SEO intake, vehicle CTA tracking, and bounded mobile actions across national and Wisconsin transport pages.");
