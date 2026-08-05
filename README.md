@@ -11,7 +11,7 @@ Static Astro website and controlled Cloudflare edge workflows for `hermeslogisti
 - Local and non-production contact workflows remain preview-first unless explicitly configured. The approved production custom-domain build routes Logistics, Marketing, Academy, IT Development, and general inquiries through the protected same-origin receiver, and it must not display success unless the receiver confirms delivery.
 - Production inquiry delivery was verified end to end on 2026-08-04: the fixed destination received approved synthetic preview and production requests, foreign-origin rejection and duplicate suppression were proven, and the emergency rollback remains `LEAD_DELIVERY_MODE=off`.
 - Google route estimates remain default-off and preview-only until separately approved Google Cloud and Cloudflare configuration is proven.
-- Hermes Connect remains a product-discovery concept/demo. No public account, booking, calendar, payment, or autonomous AI action is connected.
+- Hermes Connect is an approved web-only access-request product funnel in `main`, with an indexed main-site overview, homepage/Technology bridges, protected exact-origin intake, and desktop/mobile-browser regression coverage. The approved custom-domain release is not considered live until the controlled Cloudflare deployment verifier reports `LIVE_APPROVED_WEB_APP`; native iPhone/Android, app-store, account, booking, calendar, payment, and autonomous-AI capabilities are not claimed.
 - The social-content pilot has 30 controlled slots. Two owner-supplied Instagram sources are registered on hold; neither is approved for an indexable page without transcript, date, evidence, and claim review.
 
 ## Architecture
