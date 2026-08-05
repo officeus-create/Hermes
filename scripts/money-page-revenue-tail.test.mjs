@@ -34,6 +34,7 @@ for (const variant of ["local_seo", "logistics_seo", "auto_dealer_seo"]) {
 }
 assert.ok(bridge.includes('normalized.searchParams.set("service", "seo")'));
 assert.ok(bridge.includes('normalized.searchParams.set("seo_variant", requestedVariant)'));
+assert.ok(bridge.includes('currentParams.get("seo_variant")'));
 assert.ok(bridge.includes('name = "seo_service_variant"'));
 assert.ok(bridge.includes('event: "commercial_cta_click"'));
 
