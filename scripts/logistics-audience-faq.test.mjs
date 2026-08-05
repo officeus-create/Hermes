@@ -5,7 +5,7 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist", "logistics");
 const pages = [
-  ["shipper-dealer", "Is a carrier match guaranteed after I submit a request?", 5],
+  ["shipper-dealer", "Is a carrier match guaranteed after I submit a request?", 8],
   ["broker", "Do you guarantee capacity for every opportunity?", 3],
   ["carrier", "Do I have to accept every load Hermes presents?", 3],
   ["agency", "Does applying guarantee an agency will open?", 3],
@@ -55,10 +55,14 @@ for (const [slug, expectedQuestion, expectedCount] of pages) {
       "Does carrier review mean the move is already booked?",
       "identity and available operating-authority information",
       "does not guarantee future availability, performance, safety, delivery timing, or an insurance outcome",
+      "What is the difference between a one-time move, repeat capacity, and managed coordination?",
+      "Can a one-time request become a repeat or managed program?",
+      "Does choosing a service mode guarantee capacity, price, timing, or carrier assignment?",
+      "responsibilities, authority boundaries, fee, ownership, and escalation rules are approved in writing",
     ]) {
-      assert.ok(decodeHtml(html).includes(text), `shipper-dealer is missing carrier-review clarity: ${text}`);
+      assert.ok(decodeHtml(html).includes(text), `shipper-dealer is missing service or carrier-review clarity: ${text}`);
     }
   }
 }
 
-console.log("Logistics audience FAQ checks passed: five routes, visible FAQs, matching schema, preserved breadcrumbs, and shipper carrier-review clarity.");
+console.log("Logistics audience FAQ checks passed: five routes, visible FAQs, matching schema, preserved breadcrumbs, and shipper carrier-review/service-mode clarity.");
