@@ -39,9 +39,16 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Validate Cloudflare deployment credentials
+      - name: Validate and mask Cloudflare deployment credentials
         id: credentials
         run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          fi
+
           missing=""
           if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
             missing="scoped Cloudflare API token"
@@ -64,7 +71,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MISSING: ${{ steps.credentials.outputs.missing }}
         run: |
-          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 blocked\n\nThe controlled release checked repository secrets, GitHub Environment \`production\` secrets, and the approved alias names for a scoped token and account identifier, but the required Cloudflare deployment credentials are still unavailable: \`${MISSING:-Cloudflare credentials}\`.\n\nNo credential value was printed or accessed. The preferred names are \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`. The account identifier may also be stored as a repository/environment variable. Then run **Deploy approved main to Cloudflare Pages v2**. The token needs Cloudflare Pages edit access for the account that owns project \`hermes\`.\n\nRelease remains \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
+          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 blocked\n\nThe controlled release checked repository secrets, GitHub Environment \`production\` secrets, and the approved alias names for a scoped token and account identifier, but the required Cloudflare deployment credentials are still unavailable: \`${MISSING:-Cloudflare credentials}\`.\n\nNo credential value was printed. The preferred names are \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`. The account identifier may also be stored as a repository/environment variable. Then run **Deploy approved main to Cloudflare Pages v2**. The token needs Cloudflare Pages edit access for the account that owns project \`hermes\`.\n\nRelease remains \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
 
       - name: Install dependencies
         run: npm ci
