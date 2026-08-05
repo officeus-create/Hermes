@@ -3,13 +3,16 @@ import "../styles/global.css";
 import "../styles/shared-resource.css";
 import CarrierQualificationEnhancer from "../components/CarrierQualificationEnhancer.astro";
 import ContactLinkEnhancer from "../components/ContactLinkEnhancer.astro";
+import MoneyPageActionBar from "../components/MoneyPageActionBar.astro";
 import MotionLayer from "../components/MotionLayer.astro";
 import ProductionContactMode from "../components/ProductionContactMode.astro";
 import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
+import SeoServiceVariantBridge from "../components/SeoServiceVariantBridge.astro";
 import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
 import SiteIntro from "../components/SiteIntro.astro";
+import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
 
@@ -122,13 +125,16 @@ const alternateOgLocales = alternates
     <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
+    <MoneyPageActionBar />
     <ProductionContactMode />
     <ContactLinkEnhancer />
+    <SeoServiceVariantBridge />
     <SeoIntakeEnhancer />
     <SeoSupportingIntakeEnhancer />
     <WebsiteProjectScopeEnhancer />
     <CarrierQualificationEnhancer />
     <Seo4ConversionEnhancer />
+    <VehicleTransportCtaEnhancer />
     <RouteEstimateEnhancer />
     <MotionLayer />
     <!--/email_off-->
