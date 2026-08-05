@@ -18,6 +18,42 @@ const validatorCompat = audience.slug === "shipper-dealer"
   : audience.slug === "carrier"
     ? "Call Logistics Sales | tel:+12623023626"
     : "";
+const shipperServiceModes = audience.slug === "shipper-dealer"
+  ? [
+      {
+        title: "One-time transportation request",
+        body: "Use this when one defined vehicle or multi-unit move has a known pickup, delivery, readiness, condition, timing, and contact path. Hermes reviews the request for completeness and operating fit before any carrier option is represented as available.",
+        next: "Prepare one direct transport request with the current move details.",
+      },
+      {
+        title: "Repeat capacity review",
+        body: "Use this when similar moves recur across a lane, facility, auction, dealership, customer-delivery program, or operating region. Each request still requires current route, timing, equipment, release, and capacity review; a prior move does not guarantee future availability or terms.",
+        next: "Mark the intake as repeat or recurring and describe the representative pattern without placing private records in the URL.",
+      },
+      {
+        title: "Managed coordination",
+        body: "Use this when the required scope may include continuing intake, document flow, carrier communication, exception routing, status coordination, and reporting. The actual responsibilities, authority boundaries, service level, fee, ownership, and escalation process must be approved in writing before ongoing work begins.",
+        next: "Request a scope review before assuming a managed program exists.",
+      },
+    ]
+  : [];
+const shipperFaq = audience.slug === "shipper-dealer"
+  ? [
+      {
+        question: "What is the difference between a one-time move, repeat capacity, and managed coordination?",
+        answer: "A one-time move covers one defined transportation request. Repeat capacity applies when similar needs recur, but every move still requires current fit and availability review. Managed coordination is a broader ongoing operating scope that may include intake, documents, communication, exceptions, status coordination, and reporting only after responsibilities, authority boundaries, fee, ownership, and escalation rules are approved in writing.",
+      },
+      {
+        question: "Can a one-time request become a repeat or managed program?",
+        answer: "Possibly, after actual operating needs, request quality, route patterns, carrier fit, communication, documents, exception handling, volume, ownership, and commercial scope are reviewed. One completed or submitted request does not automatically create recurring capacity, preferred terms, a managed program, or guaranteed service.",
+      },
+      {
+        question: "Does choosing a service mode guarantee capacity, price, timing, or carrier assignment?",
+        answer: "No. The service mode clarifies the type of operating conversation. Capacity, equipment, carrier acceptance, price, pickup, delivery timing, and repeat availability depend on the current request, route, readiness, market conditions, documents, access, and final confirmation.",
+      },
+    ]
+  : [];
+const publicFaq = [...audience.faq, ...shipperFaq];
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -30,7 +66,7 @@ const breadcrumbSchema = {
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: audience.faq.map((item) => ({
+  mainEntity: publicFaq.map((item) => ({
     "@type": "Question",
     name: item.question,
     acceptedAnswer: { "@type": "Answer", text: item.answer },
@@ -86,12 +122,39 @@ const schema = [breadcrumbSchema, faqSchema];
         </div>
       </section>
 
+      {shipperServiceModes.length > 0 && (
+        <section class="section shipper-service-modes" aria-labelledby="shipper-service-modes-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div>
+                <p class="eyebrow">Choose the operating level</p>
+                <h2 id="shipper-service-modes-title">One request, repeat capacity, or managed coordination?</h2>
+              </div>
+              <p>Choose the smallest operating scope that matches the current need. The label starts a review; it does not create capacity, preferred pricing, a carrier assignment, or an ongoing program.</p>
+            </div>
+            <div class="shipper-service-mode-grid">
+              {shipperServiceModes.map((mode, index) => (
+                <article data-shipper-service-mode>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <h3>{mode.title}</h3>
+                  <p>{mode.body}</p>
+                  <strong>{mode.next}</strong>
+                </article>
+              ))}
+            </div>
+            <p class="shipper-service-boundary" data-shipper-service-boundary>
+              No mode guarantees carrier capacity, price, pickup or delivery timing, equipment, acceptance, repeat availability, service level, or another commercial outcome. Final responsibilities and terms are confirmed separately.
+            </p>
+          </div>
+        </section>
+      )}
+
       <section class="section logistics-audience-faq" aria-labelledby="logistics-audience-faq-title">
         <div class="shell">
           <p class="eyebrow">Common questions</p>
           <h2 id="logistics-audience-faq-title">Before you start.</h2>
           <div class="logistics-audience-faq-list">
-            {audience.faq.map((item) => (
+            {publicFaq.map((item) => (
               <details>
                 <summary>{item.question}</summary>
                 <p>{item.answer}</p>
@@ -123,6 +186,14 @@ const schema = [breadcrumbSchema, faqSchema];
 
 <style>
   .logistics-demo-action { border-style: dashed; }
+  .shipper-service-modes { background: #fff; }
+  .shipper-service-mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .shipper-service-mode-grid article { display: flex; min-height: 100%; flex-direction: column; padding: 1.35rem; border: 1px solid #d6dce8; border-radius: 12px; background: #f8faff; }
+  .shipper-service-mode-grid article > span { color: var(--color-blue-700); font-weight: 800; }
+  .shipper-service-mode-grid h3 { margin: .8rem 0 .55rem; color: var(--color-navy-900); }
+  .shipper-service-mode-grid p { color: var(--color-muted); line-height: 1.65; }
+  .shipper-service-mode-grid strong { margin-top: auto; padding-top: 1rem; color: var(--color-navy-900); }
+  .shipper-service-boundary { margin: 1.25rem 0 0; padding: 1rem 1.15rem; border-left: 4px solid var(--color-blue-700); background: #f5f7fb; color: var(--color-muted); }
   .logistics-audience-faq { background: #f5f7fb; }
   .logistics-audience-faq-list { display: grid; gap: 1rem; margin-top: 1.5rem; }
   .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid #d6dce8; border-radius: 10px; background: #fff; }
@@ -134,6 +205,9 @@ const schema = [breadcrumbSchema, faqSchema];
   .logistics-audience-final-card p:not(.eyebrow) { max-width: 70ch; color: rgba(255,255,255,.72); line-height: 1.65; }
   .logistics-audience-final-actions { display: grid; gap: .7rem; min-width: min(100%, 270px); }
   .logistics-audience-final-actions .button:not(.button-primary) { border-color: rgba(255,255,255,.42); color: #fff; }
+  @media (max-width: 900px) {
+    .shipper-service-mode-grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 760px) {
     .logistics-audience-final-card { grid-template-columns: 1fr; }
     .logistics-audience-final-actions { width: 100%; }
