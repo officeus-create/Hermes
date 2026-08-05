@@ -9,6 +9,7 @@ interface Props {
 
 const { locale = "en" } = Astro.props;
 const publicLocationBoundary = "U.S. logistics · International email coordination";
+const logisticsPhone = site.publicPhones[0];
 const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
@@ -24,6 +25,7 @@ const localized = {
     privacy: "Privacy",
     contact: "Contact",
     route: "Choose the right contact route",
+    phone: "U.S. Logistics Sales",
     designed: "Designed and engineered by",
     method: "Human-led, AI-assisted",
     status: "Website inquiries are delivered securely by email",
@@ -37,6 +39,7 @@ const localized = {
     privacy: "Конфіденційність",
     contact: "Контакт",
     route: "Обрати напрям звернення",
+    phone: "Продажі логістики США",
     designed: "Дизайн і розробка",
     method: "Під керівництвом людей, з підтримкою AI",
     status: "Звернення надсилаються електронною поштою",
@@ -50,6 +53,7 @@ const localized = {
     privacy: "Конфиденциальность",
     contact: "Контакт",
     route: "Выбрать направление обращения",
+    phone: "Отдел продаж логистики США",
     designed: "Дизайн и разработка",
     method: "Под управлением людей, с поддержкой AI",
     status: "Обращения отправляются по электронной почте",
@@ -60,7 +64,7 @@ const localized = {
       { label: "Logística", href: "/es/#logistics" }, { label: "Marketing", href: "/es/#marketing" },
       { label: "Academia", href: "/es/#academy" }, { label: "Desarrollo IT", href: "/es/#technology" },
     ],
-    privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto",
+    privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto", phone: "Ventas de logística en EE. UU.",
     designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
   },
   it: {
@@ -69,7 +73,7 @@ const localized = {
       { label: "Logistica", href: "/it/#logistics" }, { label: "Marketing", href: "/it/#marketing" },
       { label: "Academy", href: "/it/#academy" }, { label: "Sviluppo IT", href: "/it/#technology" },
     ],
-    privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto",
+    privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto", phone: "Vendite logistica USA",
     designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
   },
   fr: {
@@ -78,7 +82,7 @@ const localized = {
       { label: "Logistique", href: "/fr/#logistics" }, { label: "Marketing", href: "/fr/#marketing" },
       { label: "Académie", href: "/fr/#academy" }, { label: "Développement IT", href: "/fr/#technology" },
     ],
-    privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact",
+    privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact", phone: "Ventes logistiques aux États-Unis",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
   },
 }[locale];
@@ -107,6 +111,7 @@ const localePath = localeConfig[locale].path;
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
       <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
+      {logisticsPhone && <a href={logisticsPhone.href}>{localized.phone} · {logisticsPhone.value}</a>}
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
     <nav class="footer-social" aria-label="Social media">
