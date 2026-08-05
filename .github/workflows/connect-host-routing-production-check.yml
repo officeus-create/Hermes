@@ -1,0 +1,62 @@
+name: Verify Connect host routing after merge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - functions/_middleware.js
+      - public/demos/hermes-connect/**
+      - scripts/check-connect-subdomain.mjs
+      - .github/workflows/connect-host-routing-production-check.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connect-host-routing-production
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Require approved Web App on Connect hostname
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      CONNECT_EXPECTATION: approved_web_app
+      CONNECT_CHECK_ATTEMPTS: "24"
+      CONNECT_CHECK_DELAY_MS: "20000"
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Wait for production deployment and verify public markers
+        run: node scripts/check-connect-subdomain.mjs
+
+      - name: Publish sanitized summary
+        if: always()
+        run: |
+          if [ -f artifacts/connect-subdomain-isolation.md ]; then
+            cat artifacts/connect-subdomain-isolation.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Connect custom-domain report was not generated." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: Upload sanitized report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connect-host-routing-production-verification
+          path: |
+            artifacts/connect-subdomain-isolation.json
+            artifacts/connect-subdomain-isolation.md
+          if-no-files-found: error
+          retention-days: 30
