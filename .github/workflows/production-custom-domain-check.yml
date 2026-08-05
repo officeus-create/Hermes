@@ -5,13 +5,17 @@ on:
   pull_request:
     paths:
       - scripts/check-production-custom-domain.mjs
+      - scripts/check-production-domain-issue.mjs
       - .github/workflows/production-custom-domain-check.yml
+      - .github/workflows/production-domain-verifier-command.yml
   push:
     branches:
       - main
     paths:
       - scripts/check-production-custom-domain.mjs
+      - scripts/check-production-domain-issue.mjs
       - .github/workflows/production-custom-domain-check.yml
+      - .github/workflows/production-domain-verifier-command.yml
 
 permissions:
   contents: read
@@ -28,15 +32,15 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: .nvmrc
 
       - name: Check production custom domain
-        run: node scripts/check-production-custom-domain.mjs
+        run: node scripts/check-production-domain-issue.mjs
 
       - name: Publish check summary
         if: always()
