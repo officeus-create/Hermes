@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - functions/_middleware.js
+      - scripts/connect-host-routing.test.mjs
       - scripts/check-production-custom-domain.mjs
       - scripts/check-production-domain-issue.mjs
       - .github/workflows/production-custom-domain-check.yml
@@ -12,6 +14,8 @@ on:
     branches:
       - main
     paths:
+      - functions/_middleware.js
+      - scripts/connect-host-routing.test.mjs
       - scripts/check-production-custom-domain.mjs
       - scripts/check-production-domain-issue.mjs
       - .github/workflows/production-custom-domain-check.yml
@@ -39,8 +43,16 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Check production custom domain
+      - name: Observe current production state
+        id: production_check
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
         run: node scripts/check-production-domain-issue.mjs
+
+      - name: Explain pre-merge stale state
+        if: github.event_name == 'pull_request' && steps.production_check.outcome == 'failure'
+        run: |
+          echo "The pull request observed the current live release before this fix is merged."
+          echo "The sanitized report is preserved below; post-merge main and the issue command enforce the corrected production state."
 
       - name: Publish check summary
         if: always()
