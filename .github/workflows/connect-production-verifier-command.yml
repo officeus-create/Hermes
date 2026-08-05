@@ -1,0 +1,80 @@
+name: Verify Connect production on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: connect-production-command
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 232 &&
+      github.event.comment.body == '/verify-connect-production' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      CONNECT_EXPECTATION: approved_web_app
+      CONNECT_CHECK_ATTEMPTS: "24"
+      CONNECT_CHECK_DELAY_MS: "20000"
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run strict public verifier
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          node scripts/check-connect-subdomain.mjs
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish sanitized result to issue
+        shell: bash
+        run: |
+          {
+            echo "## Hermes Connect production verification"
+            echo
+            if [ -f artifacts/connect-subdomain-isolation.md ]; then
+              cat artifacts/connect-subdomain-isolation.md
+            else
+              echo "The verifier did not produce its sanitized report."
+            fi
+            echo
+            echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
+            echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/connect-verification-comment.md
+          gh issue comment 232 --repo "${{ github.repository }}" --body-file /tmp/connect-verification-comment.md
+
+      - name: Upload sanitized report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: connect-production-command-verification
+          path: |
+            artifacts/connect-subdomain-isolation.json
+            artifacts/connect-subdomain-isolation.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce approved Web App result
+        shell: bash
+        run: test "${{ steps.verify.outputs.status }}" = "0"
