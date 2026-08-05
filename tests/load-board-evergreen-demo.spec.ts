@@ -13,9 +13,9 @@ test("Load Board uses evergreen fictional timing labels", async ({ page }) => {
   }
 
   await expect(page.locator(".available-load-list dt", { hasText: "Demo status" })).toHaveCount(4);
+  await expect(page.getByText("No load below is available to book.", { exact: true })).toBeVisible();
 
   const demoText = await page.locator(".available-load-list").innerText();
   expect(demoText).not.toMatch(/Jul\s+2[2-6]/i);
   expect(demoText).not.toMatch(/\b\d+\s*(?:min|hr)s?\s+ago\b/i);
-  expect(demoText).toContain("No load below is available to book");
 });
