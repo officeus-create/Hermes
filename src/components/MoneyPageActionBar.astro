@@ -17,6 +17,13 @@ const actions: Record<string, ActionConfig> = {
     serviceGroup: "car_hauling_dispatch",
     secondary: "phone",
   },
+  "/logistics/appleton-wi-vehicle-transport/": {
+    label: "Prepare Appleton request",
+    href: "/logistics/request-vehicle-transport/#transport-intake",
+    kind: "logistics",
+    serviceGroup: "appleton_vehicle_transport",
+    secondary: "phone",
+  },
   "/logistics/dealer-vehicle-transportation/": {
     label: "Prepare dealer request",
     href: "/logistics/request-vehicle-transport/?role=dealer&request=dealer_inventory#transport-intake",
