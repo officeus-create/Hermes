@@ -64,13 +64,23 @@
     });
   });
 
-  const requestedVariant = new URLSearchParams(window.location.search).get("service");
-  if (window.location.pathname === "/paths/marketing/" && isSeoVariant(requestedVariant)) {
+  const currentParams = new URLSearchParams(window.location.search);
+  const directVariant = currentParams.get("service");
+  const persistedVariant = currentParams.get("seo_variant");
+  const requestedVariant = isSeoVariant(directVariant)
+    ? directVariant
+    : isSeoVariant(persistedVariant)
+      ? persistedVariant
+      : null;
+
+  if (window.location.pathname === "/paths/marketing/" && requestedVariant) {
     const config = seoVariants[requestedVariant];
-    const normalized = new URL(window.location.href);
-    normalized.searchParams.set("service", "seo");
-    normalized.searchParams.set("seo_variant", requestedVariant);
-    window.history.replaceState(window.history.state, "", `${normalized.pathname}${normalized.search}${normalized.hash}`);
+    if (isSeoVariant(directVariant)) {
+      const normalized = new URL(window.location.href);
+      normalized.searchParams.set("service", "seo");
+      normalized.searchParams.set("seo_variant", requestedVariant);
+      window.history.replaceState(window.history.state, "", `${normalized.pathname}${normalized.search}${normalized.hash}`);
+    }
 
     window.setTimeout(() => {
       const group = document.querySelector<HTMLElement>("[data-seo-intake]");
