@@ -28,22 +28,24 @@ for (const [relativePath, label, primaryFragment, fallback] of pages) {
 const homepage = await read("dist/index.html");
 assert.ok(!homepage.includes('<aside class="money-page-action-bar"'), "The homepage must not receive a global sticky sales bar");
 
-const bridge = await read("src/components/SeoServiceVariantBridge.astro");
+const supportingSeo = await read("src/components/SeoSupportingIntakeEnhancer.astro");
 for (const variant of ["local_seo", "logistics_seo", "auto_dealer_seo"]) {
-  assert.ok(bridge.includes(variant), `SEO variant bridge is missing ${variant}`);
+  assert.ok(supportingSeo.includes(variant), `Specialized SEO intake is missing ${variant}`);
 }
-assert.ok(bridge.includes('normalized.searchParams.set("service", "seo")'));
-assert.ok(bridge.includes('normalized.searchParams.set("seo_variant", requestedVariant)'));
-assert.ok(bridge.includes('currentParams.get("seo_variant")'));
-assert.ok(bridge.includes("group.dataset.seoService = requestedVariant"));
-assert.ok(bridge.includes('name = "seo_service_variant"'));
-assert.ok(bridge.includes('event: "commercial_cta_click"'));
+assert.ok(supportingSeo.includes("group.dataset.seoService = requestedService"));
+assert.ok(supportingSeo.includes("form.dataset.seoService = requestedService"));
+assert.ok(supportingSeo.includes('event: "commercial_cta_click"'));
+assert.ok(supportingSeo.includes('event: "seo_intake_start"'));
+assert.ok(supportingSeo.includes('event: "seo_intake_preview_ready"'));
+assert.ok(supportingSeo.includes('event: "seo_handoff_ready"'));
+assert.ok(supportingSeo.includes('presetScope: "local"'));
+assert.ok(supportingSeo.includes('presetVertical: "logistics"'));
+assert.ok(supportingSeo.includes('presetVertical: "auto_dealer"'));
 
 const layout = await read("src/layouts/BaseLayout.astro");
-assert.ok(
-  layout.indexOf("<SeoServiceVariantBridge />") < layout.indexOf("<SeoIntakeEnhancer />"),
-  "SEO variant normalization must run before the existing SEO intake enhancer",
-);
+assert.ok(!layout.includes("SeoServiceVariantBridge"), "A second SEO variant handler must not compete with the approved intake");
+assert.ok(layout.includes("<SeoIntakeEnhancer />"));
+assert.ok(layout.includes("<SeoSupportingIntakeEnhancer />"));
 assert.ok(layout.includes("<MoneyPageActionBar />"));
 assert.ok(layout.includes("<VehicleTransportCtaEnhancer />"));
 
@@ -53,4 +55,4 @@ assert.ok(vehicleTracking.includes("auction_vehicle_pickup"));
 assert.ok(vehicleTracking.includes('cta_type: "vehicle_transport_intake"'));
 assert.ok(vehicleTracking.includes('target.pathname !== "/logistics/request-vehicle-transport/"'));
 
-console.log("Money-page revenue tail contract passed: specialized SEO intake, vehicle CTA tracking, and bounded mobile actions.");
+console.log("Money-page revenue tail contract passed: existing specialized SEO intake, vehicle CTA tracking, and bounded mobile actions.");
