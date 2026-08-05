@@ -76,8 +76,18 @@ test("Wisconsin mobile money-page actions emit one controlled commercial CTA eve
       page_path: item.path,
       destination_path: "/logistics/request-vehicle-transport/",
     });
-
-    expect(JSON.stringify(events)).not.toMatch(/name|email|phone|company|origin|destination|vehicle|vin|rate|budget/i);
+    expect(Object.keys(events[0]).sort()).toEqual(
+      [
+        "event",
+        "cta_type",
+        "audience_type",
+        "page_group",
+        "service_group",
+        "request_type",
+        "page_path",
+        "destination_path",
+      ].sort(),
+    );
   }
 });
 
