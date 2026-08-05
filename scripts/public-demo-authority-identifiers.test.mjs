@@ -14,7 +14,7 @@ const files = [
 ];
 
 const retiredValues = ["1482019", "4120938", "923184"];
-const realisticAuthorityPattern = /\b(?:MC|USDOT|DOT)[\s:#-]*\d{6,8}\b/gi;
+const realisticAuthorityPattern = /\b(?:MC|USDOT|DOT)[\s:#-]*\d{6,8}\b/i;
 
 for (const relativePath of files) {
   const content = await readFile(path.join(root, relativePath), "utf8");
