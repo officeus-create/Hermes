@@ -11,6 +11,8 @@ const routes = [
     title: "Website Development Services for U.S. Businesses | Hermes",
     h1: "Custom Website Development for U.S. Businesses",
     reviewedAt: "August 2, 2026",
+    proofHref: "/case/it-development/",
+    proofLabel: "View the website case",
     required: [
       "Business discovery",
       "Information architecture",
@@ -29,6 +31,8 @@ const routes = [
     title: "Website Redesign Services | Hermes",
     h1: "Website Redesign Built Around Business Priorities",
     reviewedAt: "July 31, 2026",
+    proofHref: "/case/it-development/",
+    proofLabel: "View the website case",
     required: ["Current-site review", "Migration architecture", "Can existing pages and search visibility be preserved?"],
   },
   {
@@ -37,6 +41,8 @@ const routes = [
     title: "SEO Services for U.S. Businesses | Hermes",
     h1: "SEO Services Built on Technical Quality and Useful Content",
     reviewedAt: "July 31, 2026",
+    proofHref: "/case/appleton-vehicle-transport-seo/",
+    proofLabel: "View the SEO case",
     required: ["Technical SEO review", "Search-intent architecture", "Can Hermes guarantee first-page rankings?"],
   },
   {
@@ -45,6 +51,8 @@ const routes = [
     title: "Local SEO Services for U.S. Businesses | Hermes",
     h1: "Local SEO for Real U.S. Service Areas and Customer Needs",
     reviewedAt: "July 31, 2026",
+    proofHref: "/case/appleton-vehicle-transport-seo/",
+    proofLabel: "View the SEO case",
     required: ["Eligibility and service-area review", "Google Business Profile support", "Do you create pages for every nearby city?"],
   },
 ];
@@ -86,6 +94,8 @@ for (const page of routes) {
   assert.ok(!html.includes('href="tel:'), `${page.route} IT service page must remain email-only`);
   assert.ok(!/<form\b[^>]*action=/i.test(html), `${page.route} contains an unreviewed form action`);
   assert.ok(html.includes(`Scope reviewed ${page.reviewedAt}`), `${page.route} review date missing`);
+  assert.ok(html.includes(`href="${page.proofHref}"`), `${page.route} proof link must match page intent`);
+  assert.ok(html.includes(page.proofLabel), `${page.route} proof label must match page intent`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
   const types = schemaTypes(html);
   for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) {
@@ -103,4 +113,4 @@ for (const prohibited of ["guaranteed rankings", "guaranteed leads", "guaranteed
   assert.ok(!serialized.includes(prohibited));
 }
 
-console.log("digital service page checks passed: four national hubs, metadata, schema, sitemap, crawl paths, preview contact, and email-only IT routing.");
+console.log("digital service page checks passed: four national hubs, intent-aligned proof, metadata, schema, sitemap, crawl paths, preview contact, and email-only routing.");

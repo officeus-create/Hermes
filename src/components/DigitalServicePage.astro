@@ -95,6 +95,8 @@ const seoIntakeHref = seoContext
   : "";
 const parentLabel = seoContext ? "Marketing" : "IT Development";
 const parentHref = seoContext ? "/paths/marketing/" : "/paths/technology/";
+const proofHref = seoContext ? "/case/appleton-vehicle-transport-seo/" : "/case/it-development/";
+const proofLabel = seoContext ? "View the SEO case" : "View the website case";
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
@@ -159,7 +161,7 @@ const faqSchema = {
           ) : (
             <a class="button button-primary" href="#contact">Discuss this service <ArrowRight size={18} aria-hidden="true" /></a>
           )}
-          <a class="button button-ghost" href="/case/it-development/">View the website case</a>
+          <a class="button button-ghost" href={proofHref}>{proofLabel}</a>
         </div>
         {websiteContext && <p class="digital-project-note">{websiteContext.note}</p>}
         {seoContext && (
