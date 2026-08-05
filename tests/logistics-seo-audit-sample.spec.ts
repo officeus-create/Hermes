@@ -52,6 +52,9 @@ test("SEO services, Logistics SEO, and sitemap discover the audit sample", async
 
   await page.goto("/services/seo-for-logistics-companies/");
   await expect(page.getByRole("link", { name: "Logistics SEO Audit Sample" })).toHaveAttribute("href", route);
+  await expect(page.getByRole("heading", { name: /Use the first 30 days as a controlled review and release window/i })).toBeVisible();
+  await expect(page.getByText(/does not guarantee rankings, traffic, inquiries or revenue/i)).toBeVisible();
+  await expect(page.getByText("What happens during the first 30 days of a Logistics SEO engagement?", { exact: true })).toBeVisible();
 
   const sitemap = await request.get("/sitemap-digital-services.xml");
   expect(sitemap.ok()).toBeTruthy();
