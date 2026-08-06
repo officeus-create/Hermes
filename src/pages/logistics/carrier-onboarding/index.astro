@@ -14,7 +14,12 @@ const schema = {
 };
 ---
 
-<BaseLayout title="Carrier Agreement Packet | Hermes Logistics" description="Confirm the carrier-specific service scope and percentage, provide authorized signer details, and create a signed review packet from a phone or computer." robots="noindex,nofollow" schema={schema}>
+<BaseLayout
+  title="Carrier Agreement Packet | Hermes Logistics"
+  description="Confirm the carrier-specific service scope and percentage, provide authorized signer details, and create a signed review packet from a phone or computer."
+  robots="noindex,nofollow"
+  schema={schema}
+>
   <SiteHeader activePath="/paths/logistics/" />
   <main id="main-content" class="onboarding-page" data-carrier-contract-form>
     <section class="onboarding-hero">
@@ -23,35 +28,61 @@ const schema = {
         <div>
           <p class="eyebrow">Hermes Logistics · Private agreement packet</p>
           <h1>Review the exact terms. Sign from your phone.</h1>
-          <p class="onboarding-lead">This short workflow asks only for the information needed to identify the carrier, confirm the authorized signer, record the agreed percentage in Appendix A, and create the signed PDF packet.</p>
-          <div class="trust-row"><span><Check size={17} aria-hidden="true" />Three steps</span><span><Check size={17} aria-hidden="true" />Carrier-specific percentage</span><span><Check size={17} aria-hidden="true" />No full street address required</span><span><Check size={17} aria-hidden="true" />No load-board credentials or private documents</span></div>
+          <p class="onboarding-lead">This short workflow asks only for the information needed to identify the carrier, confirm the authorized signer, record the agreed percentage in Appendix A, and create the signed PDF review packet.</p>
+          <div class="trust-row">
+            <span><Check size={17} aria-hidden="true" />Three steps</span>
+            <span><Check size={17} aria-hidden="true" />Carrier-specific percentage</span>
+            <span><Check size={17} aria-hidden="true" />No full street address required</span>
+            <span><Check size={17} aria-hidden="true" />No load-board credentials or private documents</span>
+          </div>
         </div>
-        <aside class="status-card"><ShieldCheck size={30} aria-hidden="true" /><p class="eyebrow">Current document status</p><strong>v3 attorney-review packet</strong><p>The page can create a signed review record. Final execution activates only when Hermes publishes a counsel-approved master PDF and production verifies its version, SHA-256, and allowed percentage.</p><a href="/logistics/carrier-agreement/" data-carrier-context-link>Read the full v3 draft</a></aside>
+        <aside class="status-card">
+          <ShieldCheck size={30} aria-hidden="true" />
+          <p class="eyebrow">Current document status</p>
+          <strong>v3 attorney-review packet</strong>
+          <p>The page can create a signed review record. Final execution activates only when Hermes publishes a counsel-approved master PDF and production verifies its version, SHA-256, allowed percentage, and execution controls.</p>
+          <a href="/logistics/carrier-agreement/">Read the full v3 draft</a>
+        </aside>
       </div>
     </section>
 
     <section class="section onboarding-section">
       <div class="shell onboarding-shell">
-        <div class="progress-card" aria-label="Agreement progress"><div class="progress-top"><span data-step-label>Step 1 of 3</span><strong data-step-title>Confirm the offer</strong></div><div class="progress-track"><span data-progress-bar></span></div></div>
+        <div class="progress-card" aria-label="Agreement progress">
+          <div class="progress-top"><span data-step-label>Step 1 of 3</span><strong data-step-title>Confirm the offer</strong></div>
+          <div class="progress-track"><span data-progress-bar></span></div>
+        </div>
+
         <form id="carrier-onboarding-form" class="onboarding-form" data-private-form novalidate>
           <section class="form-step" data-step="1" data-title="Confirm the offer">
-            <div class="step-heading"><p class="eyebrow">Appendix A</p><h2>Confirm the service model and exact percentage.</h2><p>The master agreement contains no fixed percentage. The number below is written into the carrier-specific Appendix A and must match the offer discussed with Logistics Sales.</p></div>
+            <div class="step-heading">
+              <p class="eyebrow">Appendix A</p>
+              <h2>Confirm the service model and exact percentage.</h2>
+              <p>The master agreement contains no fixed percentage. Enter the number already discussed with Hermes. It is written into the carrier-specific Appendix A and the server will not activate an unapproved percentage.</p>
+            </div>
             <div class="plan-choice-grid">
               <label class="plan-choice"><input type="radio" name="selected_plan" value="essential" required /><span class="plan-choice-main"><strong>Dispatch Support</strong><b>Core</b></span><small>Opportunity research, communication, negotiation within instructions, and ordinary document coordination.</small></label>
               <label class="plan-choice plan-choice-pro"><input type="radio" name="selected_plan" value="pro" required checked /><span class="recommended">Broader operating support</span><span class="plan-choice-main"><strong>Operations + Growth</strong><b>Extended</b></span><small>Dispatch support plus lane planning, route development, customer research, and structured handoffs.</small></label>
               <label class="plan-choice"><input type="radio" name="selected_plan" value="custom" required /><span class="plan-choice-main"><strong>Custom Cooperation</strong><b>Review</b></span><small>A different scope remains non-binding until Hermes accepts it and both parties sign a matching approved package.</small></label>
             </div>
             <div class="commercial-fields">
-              <label>Agreed service percentage for Appendix A <span class="required-note">Required</span><div class="percentage-control"><input type="number" name="service_percentage" min="1" max="15" step="0.25" inputmode="decimal" required placeholder="Example: 8" /><span>%</span></div><small>Enter only the percentage already discussed with Hermes. The server will not activate an unapproved percentage.</small></label>
-              <label>Hermes representative or team code <input name="sales_contact" maxlength="80" autocomplete="off" placeholder="Example: Assistant 107" /></label>
-              <label>Offer code, if provided <input name="offer_code" maxlength="40" autocomplete="off" placeholder="Example: PRO-AUG" /></label>
+              <label>Agreed service percentage for Appendix A <span class="required-note">Required</span><div class="percentage-control"><input type="number" name="service_percentage" min="1" max="15" step="0.25" inputmode="decimal" required placeholder="Example: 8" /><span>%</span></div><small>This value is entered inside the private form, never carried in the public SMS URL.</small></label>
+              <label>Hermes representative or team code <input name="sales_contact" maxlength="80" autocomplete="off" placeholder="Only if provided" /></label>
+              <label>Offer code, if provided <input name="offer_code" maxlength="40" autocomplete="off" placeholder="Only if provided" /></label>
             </div>
-            <div class="custom-plan-fields" data-custom-plan hidden><label>Custom scope proposed <textarea name="custom_scope" rows="5" maxlength="1500" placeholder="Describe what Hermes should handle and what the carrier will handle."></textarea></label><p>A custom submission creates only a proposal/review record. Hermes must approve the scope and issue a matching execution package before a final signature.</p></div>
+            <div class="custom-plan-fields" data-custom-plan hidden>
+              <label>Custom scope proposed <textarea name="custom_scope" rows="5" maxlength="1500" placeholder="Describe what Hermes should handle and what the carrier will handle."></textarea></label>
+              <p>A custom submission creates only a proposal/review record. Hermes must approve the scope and issue a matching execution package before a final signature.</p>
+            </div>
             <div class="control-callout"><ShieldCheck size={25} aria-hidden="true" /><p><strong>Your company remains in control.</strong> You approve every load. The relationship is non-exclusive, has no minimum load volume, and does not transfer freight funds to Hermes.</p></div>
           </section>
 
           <section class="form-step" data-step="2" data-title="Company and signer" hidden>
-            <div class="step-heading"><p class="eyebrow">Carrier identity</p><h2>Who is signing for the carrier?</h2><p>Use the legal company and authorized signer information that should appear in the packet. Operating details, lanes, load boards, W-9s, and credentials are handled later through the appropriate secure process.</p></div>
+            <div class="step-heading">
+              <p class="eyebrow">Carrier identity</p>
+              <h2>Who is signing for the carrier?</h2>
+              <p>Use the legal company and authorized signer information that should appear in the packet. Operating details, lanes, load boards, W-9s, and credentials are handled later through the appropriate secure process.</p>
+            </div>
             <div class="field-grid">
               <label>Legal company name <input name="legal_company_name" required maxlength="140" autocomplete="organization" /></label>
               <label>DBA, if any <input name="dba_name" maxlength="140" /></label>
@@ -67,9 +98,23 @@ const schema = {
           </section>
 
           <section class="form-step" data-step="3" data-title="Review and sign" hidden>
-            <div class="step-heading"><p class="eyebrow">Electronic signature</p><h2>Review the record and sign with your finger.</h2><p>The packet records the exact model, percentage, company, signer, document version, master SHA-256, timestamp, electronic consent, and audit fingerprints.</p></div>
+            <div class="step-heading">
+              <p class="eyebrow">Electronic signature</p>
+              <h2>Review the record and sign with your finger.</h2>
+              <p>The packet records the exact model, percentage, company, signer, document version, master SHA-256, timestamp, electronic consent, and audit fingerprints.</p>
+            </div>
             <div class="summary-card" data-plan-summary aria-live="polite"></div>
-            <div class="plain-terms"><h3>The business terms you are confirming</h3><ul><li><Check size={17} aria-hidden="true" />Carrier approves every load and keeps operating control.</li><li><Check size={17} aria-hidden="true" />Hermes has limited administrative and dispatch support authority only.</li><li><Check size={17} aria-hidden="true" />Freight funds are paid directly to the carrier or its factor.</li><li><Check size={17} aria-hidden="true" />No load, rate, mileage, customer, profit, or revenue is guaranteed.</li><li><Check size={17} aria-hidden="true" />The exact service fee is the percentage displayed in this Appendix A summary.</li></ul><a href="/logistics/carrier-agreement/" target="_blank" rel="noopener noreferrer" data-carrier-context-link>Open the full v3 attorney-review draft in a new tab</a></div>
+            <div class="plain-terms">
+              <h3>The business terms you are confirming</h3>
+              <ul>
+                <li><Check size={17} aria-hidden="true" />Carrier approves every load and keeps operating control.</li>
+                <li><Check size={17} aria-hidden="true" />Hermes has limited administrative and dispatch support authority only.</li>
+                <li><Check size={17} aria-hidden="true" />Freight funds are paid directly to the carrier or its factor.</li>
+                <li><Check size={17} aria-hidden="true" />No load, rate, mileage, customer, profit, or revenue is guaranteed.</li>
+                <li><Check size={17} aria-hidden="true" />The exact service fee is the percentage displayed in this Appendix A summary.</li>
+              </ul>
+              <a href="/logistics/carrier-agreement/" target="_blank" rel="noopener noreferrer">Open the full v3 attorney-review draft in a new tab</a>
+            </div>
             <div class="consent-list">
               <label><input type="checkbox" name="consent_electronic_records" required />I consent to electronic records and signatures for this transaction, can access and retain PDF files, may request a paper copy, and may withdraw electronic consent before final execution.</label>
               <label><input type="checkbox" name="consent_authority" required />I confirm that I am authorized to provide this information and sign for the carrier company identified above.</label>
@@ -77,61 +122,290 @@ const schema = {
               <label><input type="checkbox" name="consent_selected_scope" required />I confirm the selected service model, exact percentage, and Appendix A information shown in the summary.</label>
             </div>
             <label>Type the authorized signer name exactly as entered above <input name="typed_signature" required maxlength="120" autocomplete="off" /></label>
-            <div class="signature-wrap"><div class="signature-heading"><span>Draw signature</span><button type="button" class="text-button" data-clear-signature><Trash2 size={16} aria-hidden="true" />Clear</button></div><canvas width="600" height="180" data-signature-canvas aria-label="Signature drawing area" tabindex="0"></canvas><p>Use a finger, stylus, mouse, or trackpad. The PDF also records the typed signer name and timestamp.</p></div>
+            <div class="signature-wrap">
+              <div class="signature-heading"><span>Draw signature</span><button type="button" class="text-button" data-clear-signature><Trash2 size={16} aria-hidden="true" />Clear</button></div>
+              <canvas width="600" height="180" data-signature-canvas aria-label="Signature drawing area" tabindex="0"></canvas>
+              <p>Use a finger, stylus, mouse, or trackpad. The PDF also records the typed signer name and timestamp.</p>
+            </div>
             <div class="final-warning"><strong>Review mode is not final legal activation.</strong><p>Until Hermes activates a counsel-approved master version and allowed percentage, this workflow creates a signed review packet rather than a final executed agreement.</p></div>
           </section>
 
           <div class="form-error" data-form-error role="alert" hidden></div>
-          <div class="form-actions"><button type="button" class="button" data-previous hidden><ArrowLeft size={18} aria-hidden="true" />Back</button><a class="button help-button" href="tel:+12623023626"><Phone size={17} aria-hidden="true" />Questions?</a><button type="button" class="button button-primary signing-primary" data-next>Continue <ArrowRight size={18} aria-hidden="true" /></button><button type="submit" class="button button-primary signing-primary" data-submit hidden><FileSignature size={18} aria-hidden="true" />Create signed packet</button></div>
-          <div class="submission-result" data-submission-result role="status" aria-live="polite" hidden><Loader2 class="result-loader" size={25} aria-hidden="true" /><div><strong data-result-title></strong><p data-result-copy></p><a class="button" href="#" data-manual-download hidden><Download size={17} aria-hidden="true" />Download PDF again</a></div></div>
+          <div class="form-actions">
+            <button type="button" class="button" data-previous hidden><ArrowLeft size={18} aria-hidden="true" />Back</button>
+            <a class="button help-button" href="tel:+12623023626"><Phone size={17} aria-hidden="true" />Questions?</a>
+            <button type="button" class="button button-primary signing-primary" data-next>Continue <ArrowRight size={18} aria-hidden="true" /></button>
+            <button type="submit" class="button button-primary signing-primary" data-submit hidden><FileSignature size={18} aria-hidden="true" />Create signed packet</button>
+          </div>
+          <div class="submission-result" data-submission-result role="status" aria-live="polite" hidden>
+            <Loader2 class="result-loader" size={25} aria-hidden="true" />
+            <div><strong data-result-title></strong><p data-result-copy></p><a class="button" href="#" data-manual-download hidden><Download size={17} aria-hidden="true" />Download PDF again</a></div>
+          </div>
         </form>
       </div>
     </section>
-  </main><SiteFooter />
+  </main>
+  <SiteFooter />
 </BaseLayout>
 
 <script>
   const form = document.querySelector<HTMLFormElement>("#carrier-onboarding-form");
   if (!form) throw new Error("Carrier agreement form is unavailable.");
-  const steps=[...form.querySelectorAll<HTMLElement>("[data-step]")];
-  const progressBar=document.querySelector<HTMLElement>("[data-progress-bar]"); const stepLabel=document.querySelector<HTMLElement>("[data-step-label]"); const stepTitle=document.querySelector<HTMLElement>("[data-step-title]");
-  const previousButton=form.querySelector<HTMLButtonElement>("[data-previous]"); const nextButton=form.querySelector<HTMLButtonElement>("[data-next]"); const submitButton=form.querySelector<HTMLButtonElement>("[data-submit]"); const errorBox=form.querySelector<HTMLElement>("[data-form-error]");
-  const customFields=form.querySelector<HTMLElement>("[data-custom-plan]"); const customScope=form.elements.namedItem("custom_scope") as HTMLTextAreaElement; const summary=form.querySelector<HTMLElement>("[data-plan-summary]"); const canvas=form.querySelector<HTMLCanvasElement>("[data-signature-canvas]"); const clearSignature=form.querySelector<HTMLButtonElement>("[data-clear-signature]");
-  const result=form.querySelector<HTMLElement>("[data-submission-result]"); const resultTitle=form.querySelector<HTMLElement>("[data-result-title]"); const resultCopy=form.querySelector<HTMLElement>("[data-result-copy]"); const manualDownload=form.querySelector<HTMLAnchorElement>("[data-manual-download]");
-  if(!canvas) throw new Error("Signature canvas is unavailable.");
-  const allowedPlans=new Set(["essential","pro","custom"]); const cleanCode=(value:string)=>/^[A-Za-z0-9._ -]{1,40}$/.test(value)?value:""; const cleanRate=(value:string)=>{if(!/^\d{1,2}(?:\.\d{1,2})?$/.test(value))return"";const n=Number(value);return n>=1&&n<=15?String(n):"";};
-  const query=new URL(window.location.href).searchParams; const requestedPlan=query.get("plan")??""; const requestedRate=cleanRate(query.get("rate")??""); const requestedRep=cleanCode(query.get("rep")??""); const requestedOffer=cleanCode(query.get("offer")??"");
-  if(allowedPlans.has(requestedPlan)) form.querySelector<HTMLInputElement>(`input[name="selected_plan"][value="${requestedPlan}"]`)?.click();
-  if(requestedRate)(form.elements.namedItem("service_percentage") as HTMLInputElement).value=requestedRate;
-  if(requestedRep)(form.elements.namedItem("sales_contact") as HTMLInputElement).value=requestedRep;
-  if(requestedOffer)(form.elements.namedItem("offer_code") as HTMLInputElement).value=requestedOffer;
-  const contextParams=new URLSearchParams(); if(allowedPlans.has(requestedPlan))contextParams.set("plan",requestedPlan);if(requestedRate)contextParams.set("rate",requestedRate);if(requestedRep)contextParams.set("rep",requestedRep);if(requestedOffer)contextParams.set("offer",requestedOffer);
-  document.querySelectorAll<HTMLAnchorElement>("[data-carrier-context-link]").forEach((link)=>{const target=new URL(link.href,window.location.origin);target.search=contextParams.toString();link.href=target.toString();});
 
-  let currentStep=0, signatureDrawn=false, downloadedUrl=""; const context=canvas.getContext("2d"); if(!context)throw new Error("Signature canvas cannot be initialized.");
-  const resetCanvas=()=>{context.clearRect(0,0,canvas.width,canvas.height);context.fillStyle="#fff";context.fillRect(0,0,canvas.width,canvas.height);context.strokeStyle="#101b45";context.lineWidth=4;context.lineCap="round";context.lineJoin="round";}; resetCanvas();
-  const setError=(message="")=>{if(!errorBox)return;errorBox.textContent=message;errorBox.hidden=!message;};
-  const selectedPlan=()=>form.querySelector<HTMLInputElement>('input[name="selected_plan"]:checked')?.value??"";
-  const planLabel=(plan:string)=>plan==="essential"?"Dispatch Support":plan==="pro"?"Operations + Growth":"Custom Cooperation Proposal";
-  const updateCustomFields=()=>{const custom=selectedPlan()==="custom";if(customFields)customFields.hidden=!custom;customScope.required=custom;};
-  const addSummaryItem=(label:string,value:string)=>{const p=document.createElement("p");const span=document.createElement("span");span.textContent=label;const strong=document.createElement("strong");strong.textContent=value;p.append(span,strong);return p;};
-  const updateSummary=()=>{if(!summary)return;summary.replaceChildren();const company=(form.elements.namedItem("legal_company_name") as HTMLInputElement).value||"Carrier company";const signer=(form.elements.namedItem("signer_name") as HTMLInputElement).value||"Authorized signer";const rate=(form.elements.namedItem("service_percentage") as HTMLInputElement).value||"Not entered";summary.append(addSummaryItem("Company",company),addSummaryItem("Selected model",`${planLabel(selectedPlan())} · ${rate}%`),addSummaryItem("Signer",signer));};
-  const showStep=(index:number,shouldScroll=true)=>{currentStep=Math.max(0,Math.min(index,steps.length-1));steps.forEach((step,i)=>step.hidden=i!==currentStep);if(stepLabel)stepLabel.textContent=`Step ${currentStep+1} of ${steps.length}`;if(stepTitle)stepTitle.textContent=steps[currentStep].dataset.title??"Carrier agreement";if(progressBar)progressBar.style.width=`${((currentStep+1)/steps.length)*100}%`;if(previousButton)previousButton.hidden=currentStep===0;if(nextButton)nextButton.hidden=currentStep===steps.length-1;if(submitButton)submitButton.hidden=currentStep!==steps.length-1;if(currentStep===steps.length-1)updateSummary();setError();if(shouldScroll)steps[currentStep].scrollIntoView({behavior:"smooth",block:"start"});};
-  const validateStep=()=>{const controls=[...steps[currentStep].querySelectorAll<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>("input,textarea,select")];const invalid=controls.find((control)=>!control.checkValidity());if(invalid){invalid.reportValidity();invalid.focus();return false;}if(currentStep===1){const mc=(form.elements.namedItem("mc_number") as HTMLInputElement).value.trim();const dot=(form.elements.namedItem("usdot_number") as HTMLInputElement).value.trim();if(!mc&&!dot){setError("Enter at least one authority identifier: MC or USDOT.");(form.elements.namedItem("mc_number") as HTMLInputElement).focus();return false;}}return true;};
-  form.querySelectorAll<HTMLInputElement>('input[name="selected_plan"]').forEach((radio)=>radio.addEventListener("change",updateCustomFields));nextButton?.addEventListener("click",()=>{if(validateStep())showStep(currentStep+1);});previousButton?.addEventListener("click",()=>showStep(currentStep-1));
-  let drawing=false;const point=(event:PointerEvent)=>{const rect=canvas.getBoundingClientRect();return{x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height};};canvas.addEventListener("pointerdown",(event)=>{drawing=true;signatureDrawn=true;canvas.setPointerCapture(event.pointerId);const p=point(event);context.beginPath();context.moveTo(p.x,p.y);});canvas.addEventListener("pointermove",(event)=>{if(!drawing)return;const p=point(event);context.lineTo(p.x,p.y);context.stroke();});const stop=(event:PointerEvent)=>{drawing=false;if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);};canvas.addEventListener("pointerup",stop);canvas.addEventListener("pointercancel",stop);clearSignature?.addEventListener("click",()=>{resetCanvas();signatureDrawn=false;});
-  const downloadBlob=(blob:Blob,disposition:string|null)=>{if(downloadedUrl)URL.revokeObjectURL(downloadedUrl);downloadedUrl=URL.createObjectURL(blob);const filename=disposition?.match(/filename="([^"]+)"/i)?.[1]||"Hermes_Carrier_Signed_Review_Packet.pdf";const link=document.createElement("a");link.href=downloadedUrl;link.download=filename;document.body.append(link);link.click();link.remove();if(manualDownload){manualDownload.href=downloadedUrl;manualDownload.download=filename;manualDownload.hidden=false;}};
-  form.addEventListener("submit",async(event)=>{event.preventDefault();setError();if(!validateStep()||!form.checkValidity()){form.reportValidity();return;}if(!signatureDrawn){setError("Draw the authorized signer signature before creating the packet.");canvas.focus();return;}const signerName=(form.elements.namedItem("signer_name") as HTMLInputElement).value.trim();const typed=(form.elements.namedItem("typed_signature") as HTMLInputElement).value.trim();if(signerName.toLowerCase()!==typed.toLowerCase()){setError("The typed signature must exactly match the authorized signer name.");(form.elements.namedItem("typed_signature") as HTMLInputElement).focus();return;}
-    const data=new FormData(form);const existing=sessionStorage.getItem("hermesCarrierContractRequestId");const requestId=existing||`contract_${crypto.randomUUID().replaceAll("-","")}`;sessionStorage.setItem("hermesCarrierContractRequestId",requestId);
-    const payload={request_id:requestId,selected_plan:data.get("selected_plan"),service_percentage:data.get("service_percentage"),custom_scope:data.get("custom_scope"),legal_company_name:data.get("legal_company_name"),dba_name:data.get("dba_name"),mc_number:data.get("mc_number"),usdot_number:data.get("usdot_number"),company_website:data.get("company_website"),signer_name:data.get("signer_name"),signer_title:data.get("signer_title"),signer_email:data.get("signer_email"),signer_phone:data.get("signer_phone"),sales_contact:data.get("sales_contact"),offer_code:data.get("offer_code"),typed_signature:typed,signature_jpeg:canvas.toDataURL("image/jpeg",.9),signature_width:canvas.width,signature_height:canvas.height,consent_electronic_records:data.get("consent_electronic_records")==="on",consent_authority:data.get("consent_authority")==="on",consent_document_review:data.get("consent_document_review")==="on",consent_selected_scope:data.get("consent_selected_scope")==="on",submitted_at:new Date().toISOString()};
-    if(submitButton){submitButton.disabled=true;submitButton.textContent="Creating signed PDF…";}if(result)result.hidden=false;if(resultTitle)resultTitle.textContent="Creating your signed packet…";if(resultCopy)resultCopy.textContent="The server is generating the Appendix A record and controlled copies.";
-    try{const response=await fetch("/api/carrier-contract",{method:"POST",headers:{"Content-Type":"application/json","Idempotency-Key":requestId},body:JSON.stringify(payload)});const contentType=response.headers.get("Content-Type")||"";if(!contentType.includes("application/pdf")){const error=await response.json().catch(()=>({error:"contract_generation_failed"}));throw new Error(String(error.error||"contract_generation_failed"));}const pdf=await response.blob();downloadBlob(pdf,response.headers.get("Content-Disposition"));const delivery=response.headers.get("X-Hermes-Delivery");const mode=response.headers.get("X-Hermes-Document-Mode");if(resultTitle)resultTitle.textContent=delivery==="delivered"?"Your PDF packet is ready and copies were sent.":"Your PDF packet is ready; email delivery needs follow-up.";if(resultCopy)resultCopy.textContent=delivery==="delivered"?`A copy was downloaded and emailed to the carrier and approved Hermes recipients. Document mode: ${mode||"review"}.`:"The PDF was downloaded, but automatic email delivery was not confirmed. Keep the copy and contact Logistics Sales.";sessionStorage.removeItem("hermesCarrierContractRequestId");}
-    catch(error){const code=error instanceof Error?error.message:"contract_generation_failed";setError(`The packet could not be completed: ${code.replaceAll("_"," ")}. No private document or credential was stored.`);if(resultTitle)resultTitle.textContent="The packet was not completed.";if(resultCopy)resultCopy.textContent="Review the fields or contact Logistics Sales for a secure manual process.";}
-    finally{if(submitButton){submitButton.disabled=false;submitButton.textContent="Create signed packet";}}
+  const steps = [...form.querySelectorAll<HTMLElement>("[data-step]")];
+  const progressBar = document.querySelector<HTMLElement>("[data-progress-bar]");
+  const stepLabel = document.querySelector<HTMLElement>("[data-step-label]");
+  const stepTitle = document.querySelector<HTMLElement>("[data-step-title]");
+  const previousButton = form.querySelector<HTMLButtonElement>("[data-previous]");
+  const nextButton = form.querySelector<HTMLButtonElement>("[data-next]");
+  const submitButton = form.querySelector<HTMLButtonElement>("[data-submit]");
+  const errorBox = form.querySelector<HTMLElement>("[data-form-error]");
+  const customFields = form.querySelector<HTMLElement>("[data-custom-plan]");
+  const customScope = form.elements.namedItem("custom_scope") as HTMLTextAreaElement;
+  const summary = form.querySelector<HTMLElement>("[data-plan-summary]");
+  const canvas = form.querySelector<HTMLCanvasElement>("[data-signature-canvas]");
+  const clearSignature = form.querySelector<HTMLButtonElement>("[data-clear-signature]");
+  const result = form.querySelector<HTMLElement>("[data-submission-result]");
+  const resultTitle = form.querySelector<HTMLElement>("[data-result-title]");
+  const resultCopy = form.querySelector<HTMLElement>("[data-result-copy]");
+  const manualDownload = form.querySelector<HTMLAnchorElement>("[data-manual-download]");
+  if (!canvas) throw new Error("Signature canvas is unavailable.");
+
+  const allowedPlans = new Set(["essential", "pro", "custom"]);
+  const currentUrl = new URL(window.location.href);
+  const requestedPlan = currentUrl.searchParams.get("plan") ?? "";
+  const cleanUrl = new URL(window.location.pathname, window.location.origin);
+  if (allowedPlans.has(requestedPlan)) cleanUrl.searchParams.set("plan", requestedPlan);
+  window.history.replaceState({}, "", `${cleanUrl.pathname}${cleanUrl.search}`);
+  if (allowedPlans.has(requestedPlan)) {
+    form.querySelector<HTMLInputElement>(`input[name="selected_plan"][value="${requestedPlan}"]`)?.click();
+  }
+
+  let currentStep = 0;
+  let signatureDrawn = false;
+  let downloadedUrl = "";
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("Signature canvas cannot be initialized.");
+
+  const resetCanvas = () => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.strokeStyle = "#101b45";
+    context.lineWidth = 4;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+  };
+  resetCanvas();
+
+  const setError = (message = "") => {
+    if (!errorBox) return;
+    errorBox.textContent = message;
+    errorBox.hidden = !message;
+  };
+  const selectedPlan = () => form.querySelector<HTMLInputElement>('input[name="selected_plan"]:checked')?.value ?? "";
+  const planLabel = (plan: string) => plan === "essential" ? "Dispatch Support" : plan === "pro" ? "Operations + Growth" : "Custom Cooperation Proposal";
+  const updateCustomFields = () => {
+    const custom = selectedPlan() === "custom";
+    if (customFields) customFields.hidden = !custom;
+    customScope.required = custom;
+  };
+  const addSummaryItem = (label: string, value: string) => {
+    const item = document.createElement("p");
+    const caption = document.createElement("span");
+    caption.textContent = label;
+    const strong = document.createElement("strong");
+    strong.textContent = value;
+    item.append(caption, strong);
+    return item;
+  };
+  const updateSummary = () => {
+    if (!summary) return;
+    summary.replaceChildren();
+    const company = (form.elements.namedItem("legal_company_name") as HTMLInputElement).value || "Carrier company";
+    const signer = (form.elements.namedItem("signer_name") as HTMLInputElement).value || "Authorized signer";
+    const percentage = (form.elements.namedItem("service_percentage") as HTMLInputElement).value || "Not entered";
+    summary.append(
+      addSummaryItem("Company", company),
+      addSummaryItem("Selected model", `${planLabel(selectedPlan())} · ${percentage}%`),
+      addSummaryItem("Signer", signer),
+    );
+  };
+  const showStep = (index: number, shouldScroll = true) => {
+    currentStep = Math.max(0, Math.min(index, steps.length - 1));
+    steps.forEach((step, stepIndex) => { step.hidden = stepIndex !== currentStep; });
+    if (stepLabel) stepLabel.textContent = `Step ${currentStep + 1} of ${steps.length}`;
+    if (stepTitle) stepTitle.textContent = steps[currentStep].dataset.title ?? "Carrier agreement";
+    if (progressBar) progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
+    if (previousButton) previousButton.hidden = currentStep === 0;
+    if (nextButton) nextButton.hidden = currentStep === steps.length - 1;
+    if (submitButton) submitButton.hidden = currentStep !== steps.length - 1;
+    if (currentStep === steps.length - 1) updateSummary();
+    setError();
+    if (shouldScroll) steps[currentStep].scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+  const validateStep = () => {
+    const controls = [...steps[currentStep].querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input,textarea,select")];
+    const invalid = controls.find((control) => !control.checkValidity());
+    if (invalid) {
+      invalid.reportValidity();
+      invalid.focus();
+      return false;
+    }
+    if (currentStep === 1) {
+      const mc = (form.elements.namedItem("mc_number") as HTMLInputElement).value.trim();
+      const dot = (form.elements.namedItem("usdot_number") as HTMLInputElement).value.trim();
+      if (!mc && !dot) {
+        setError("Enter at least one authority identifier: MC or USDOT.");
+        (form.elements.namedItem("mc_number") as HTMLInputElement).focus();
+        return false;
+      }
+    }
+    return true;
+  };
+
+  form.querySelectorAll<HTMLInputElement>('input[name="selected_plan"]').forEach((radio) => radio.addEventListener("change", updateCustomFields));
+  nextButton?.addEventListener("click", () => { if (validateStep()) showStep(currentStep + 1); });
+  previousButton?.addEventListener("click", () => showStep(currentStep - 1));
+
+  let drawing = false;
+  const point = (event: PointerEvent) => {
+    const rect = canvas.getBoundingClientRect();
+    return { x: (event.clientX - rect.left) * canvas.width / rect.width, y: (event.clientY - rect.top) * canvas.height / rect.height };
+  };
+  canvas.addEventListener("pointerdown", (event) => {
+    drawing = true;
+    signatureDrawn = true;
+    canvas.setPointerCapture(event.pointerId);
+    const position = point(event);
+    context.beginPath();
+    context.moveTo(position.x, position.y);
   });
-  updateCustomFields();showStep(0,false);
+  canvas.addEventListener("pointermove", (event) => {
+    if (!drawing) return;
+    const position = point(event);
+    context.lineTo(position.x, position.y);
+    context.stroke();
+  });
+  const stopDrawing = (event: PointerEvent) => {
+    drawing = false;
+    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+  };
+  canvas.addEventListener("pointerup", stopDrawing);
+  canvas.addEventListener("pointercancel", stopDrawing);
+  clearSignature?.addEventListener("click", () => { resetCanvas(); signatureDrawn = false; });
+
+  const downloadBlob = (blob: Blob, disposition: string | null) => {
+    if (downloadedUrl) URL.revokeObjectURL(downloadedUrl);
+    downloadedUrl = URL.createObjectURL(blob);
+    const filename = disposition?.match(/filename="([^"]+)"/i)?.[1] || "Hermes_Carrier_Signed_Review_Packet.pdf";
+    const link = document.createElement("a");
+    link.href = downloadedUrl;
+    link.download = filename;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    if (manualDownload) {
+      manualDownload.href = downloadedUrl;
+      manualDownload.download = filename;
+      manualDownload.hidden = false;
+    }
+  };
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setError();
+    if (!validateStep() || !form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (!signatureDrawn) {
+      setError("Draw the authorized signer signature before creating the packet.");
+      canvas.focus();
+      return;
+    }
+    const signerName = (form.elements.namedItem("signer_name") as HTMLInputElement).value.trim();
+    const typedSignature = (form.elements.namedItem("typed_signature") as HTMLInputElement).value.trim();
+    if (signerName.toLowerCase() !== typedSignature.toLowerCase()) {
+      setError("The typed signature must exactly match the authorized signer name.");
+      (form.elements.namedItem("typed_signature") as HTMLInputElement).focus();
+      return;
+    }
+
+    const data = new FormData(form);
+    const existingRequestId = sessionStorage.getItem("hermesCarrierContractRequestId");
+    const requestId = existingRequestId || `contract_${crypto.randomUUID().replaceAll("-", "")}`;
+    sessionStorage.setItem("hermesCarrierContractRequestId", requestId);
+    const payload = {
+      request_id: requestId,
+      selected_plan: data.get("selected_plan"),
+      service_percentage: data.get("service_percentage"),
+      custom_scope: data.get("custom_scope"),
+      legal_company_name: data.get("legal_company_name"),
+      dba_name: data.get("dba_name"),
+      mc_number: data.get("mc_number"),
+      usdot_number: data.get("usdot_number"),
+      company_website: data.get("company_website"),
+      signer_name: data.get("signer_name"),
+      signer_title: data.get("signer_title"),
+      signer_email: data.get("signer_email"),
+      signer_phone: data.get("signer_phone"),
+      sales_contact: data.get("sales_contact"),
+      offer_code: data.get("offer_code"),
+      typed_signature: typedSignature,
+      signature_jpeg: canvas.toDataURL("image/jpeg", 0.9),
+      signature_width: canvas.width,
+      signature_height: canvas.height,
+      consent_electronic_records: data.get("consent_electronic_records") === "on",
+      consent_authority: data.get("consent_authority") === "on",
+      consent_document_review: data.get("consent_document_review") === "on",
+      consent_selected_scope: data.get("consent_selected_scope") === "on",
+      submitted_at: new Date().toISOString(),
+    };
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Creating signed PDF…";
+    }
+    if (result) result.hidden = false;
+    if (resultTitle) resultTitle.textContent = "Creating your signed packet…";
+    if (resultCopy) resultCopy.textContent = "The server is generating the Appendix A record and controlled copies.";
+
+    try {
+      const response = await fetch("/api/carrier-contract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+        body: JSON.stringify(payload),
+      });
+      const contentType = response.headers.get("Content-Type") || "";
+      if (!contentType.includes("application/pdf")) {
+        const failure = await response.json().catch(() => ({ error: "contract_generation_failed" }));
+        throw new Error(String(failure.error || "contract_generation_failed"));
+      }
+      const pdf = await response.blob();
+      downloadBlob(pdf, response.headers.get("Content-Disposition"));
+      const delivery = response.headers.get("X-Hermes-Delivery");
+      const mode = response.headers.get("X-Hermes-Document-Mode");
+      if (resultTitle) resultTitle.textContent = delivery === "delivered" ? "Your PDF packet is ready and copies were sent." : "Your PDF packet is ready; email delivery needs follow-up.";
+      if (resultCopy) resultCopy.textContent = delivery === "delivered" ? `A copy was downloaded and emailed to the carrier and approved Hermes recipients. Document mode: ${mode || "review"}.` : "The PDF was downloaded, but automatic email delivery was not confirmed. Keep the copy and contact Logistics Sales.";
+      sessionStorage.removeItem("hermesCarrierContractRequestId");
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "contract_generation_failed";
+      setError(`The packet could not be completed: ${code.replaceAll("_", " ")}. No private document or credential was stored.`);
+      if (resultTitle) resultTitle.textContent = "The packet was not completed.";
+      if (resultCopy) resultCopy.textContent = "Review the fields or contact Logistics Sales for a secure manual process.";
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Create signed packet";
+      }
+    }
+  });
+
+  updateCustomFields();
+  showStep(0, false);
 </script>
 
 <style>
-.onboarding-page{background:#f7f8ff;color:#10204e}.onboarding-hero{position:relative;padding:8.45rem 0 4.5rem;background:radial-gradient(circle at 84% 12%,rgba(103,91,255,.3),transparent 34%),#071038;color:#fff}.onboarding-rails{position:absolute;top:5.35rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.onboarding-rails span:nth-child(1){background:#071038}.onboarding-rails span:nth-child(2){background:#675bff}.onboarding-rails span:nth-child(3){background:#f2a93b}.onboarding-rails span:nth-child(4){background:#24a69a}.onboarding-hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:center}.onboarding-hero h1{max-width:14ch;font-size:clamp(3rem,7vw,6rem);line-height:.98}.onboarding-lead{max-width:72ch;color:rgba(255,255,255,.8);font-size:1.1rem;line-height:1.7}.trust-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.4rem}.trust-row span{display:flex;gap:.4rem;align-items:center;padding:.6rem .75rem;border:1px solid rgba(104,231,164,.25);border-radius:999px;background:rgba(47,158,98,.12);font-size:.82rem}.trust-row svg{flex:none;color:#68e7a4}.status-card{padding:1.45rem;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px)}.status-card>svg{color:#f2a93b}.status-card strong{display:block;margin:.4rem 0;font-size:1.25rem}.status-card p:not(.eyebrow){color:rgba(255,255,255,.72);line-height:1.6}.status-card a{color:#fff;text-decoration:underline}.onboarding-section{padding-top:3rem}.onboarding-shell{max-width:930px}.progress-card{position:sticky;top:5.2rem;z-index:3;margin-bottom:1rem;padding:1rem 1.2rem;border:1px solid #dce3f8;border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 12px 35px rgba(22,33,80,.08);backdrop-filter:blur(8px)}.progress-top{display:flex;gap:1rem;align-items:center;justify-content:space-between;font-size:.85rem}.progress-top span{color:#69758f}.progress-track{height:7px;margin-top:.75rem;overflow:hidden;border-radius:999px;background:#e5e8f7}.progress-track span{display:block;width:33.33%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#675bff,#f2a93b);transition:width .2s ease}.onboarding-form{padding:clamp(1.2rem,4vw,2.5rem);border:1px solid #dce3f8;border-radius:16px;background:#fff;box-shadow:0 22px 60px rgba(22,33,80,.08)}.form-step{scroll-margin-top:9rem}.step-heading{max-width:780px;margin-bottom:1.6rem}.step-heading h2{font-size:clamp(2rem,5vw,3.3rem)}.step-heading p:not(.eyebrow){color:#5b6885;line-height:1.65}.plan-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem}.plan-choice{position:relative;display:grid;align-content:start;gap:.75rem;min-height:190px;padding:1.15rem;border:1px solid #d8def2;border-radius:12px;cursor:pointer}.plan-choice:has(input:checked){border-color:#f2a93b;box-shadow:0 0 0 3px rgba(242,169,59,.17)}.plan-choice-pro{background:#f8f6ff}.plan-choice input{position:absolute;top:1rem;right:1rem;width:auto}.plan-choice-main{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding-right:1.5rem}.plan-choice-main b{font-size:.85rem;color:#9a6400;text-transform:uppercase}.plan-choice small{color:#5b6885;line-height:1.55}.recommended{color:#5f56e8;font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}.commercial-fields{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1rem;margin-top:1.2rem}.percentage-control{display:grid;grid-template-columns:1fr auto;align-items:center}.percentage-control input{border-radius:8px 0 0 8px!important}.percentage-control span{display:grid;height:100%;place-items:center;padding:0 .9rem;border:1px solid #cfd7ee;border-left:0;border-radius:0 8px 8px 0;background:#fff7e8;color:#7d5200;font-size:1.15rem}.required-note{color:#a56600;font-size:.72rem}.commercial-fields small{color:#6a748c;font-weight:500;line-height:1.45}.custom-plan-fields{margin-top:1rem;padding:1.1rem;border:1px solid #dce3f8;border-radius:12px;background:#f8f9ff}.custom-plan-fields p{color:#6a748c;font-size:.82rem}.control-callout{display:grid;grid-template-columns:auto 1fr;gap:.8rem;margin-top:1rem;padding:1rem;border-radius:10px;background:#effaf4;color:#285e42}.control-callout p{margin:0;line-height:1.6}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.field-wide{grid-column:1/-1}.onboarding-form label{display:grid;gap:.45rem;color:#29375e;font-size:.84rem;font-weight:800}.onboarding-form input,.onboarding-form textarea{width:100%;padding:.78rem .85rem;border:1px solid #cfd7ee;border-radius:8px;background:#fff;color:#10204e;font:inherit;font-weight:500}.onboarding-form textarea{resize:vertical}.onboarding-form input:focus,.onboarding-form textarea:focus{outline:3px solid rgba(242,169,59,.2);border-color:#d79220}.field-note{padding:.8rem 1rem;border-radius:8px;background:#fff7e8;color:#72501a;font-size:.83rem;line-height:1.55}.summary-card{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-bottom:1rem;padding:1rem;border:1px solid #d8def2;border-radius:10px;background:#f7f8ff}.summary-card p{display:grid;gap:.2rem;margin:0}.summary-card span{color:#6a748c;font-size:.72rem;text-transform:uppercase}.plain-terms{margin:1rem 0;padding:1rem;border:1px solid #d7eadf;border-radius:10px;background:#f5fcf8}.plain-terms h3{margin-top:0}.plain-terms ul{display:grid;gap:.55rem;padding:0;list-style:none}.plain-terms li{display:flex;gap:.5rem;align-items:flex-start}.plain-terms svg{flex:none;margin-top:.15rem;color:#2f9e62}.plain-terms a{font-weight:800;color:#4437d4}.consent-list{display:grid;gap:.75rem;margin:1rem 0}.consent-list label{display:flex;gap:.65rem;align-items:flex-start;padding:.85rem;border:1px solid #dce3f8;border-radius:9px;font-weight:600;line-height:1.55}.consent-list input{width:auto;margin-top:.2rem;flex:none}.signature-wrap{margin-top:1rem;padding:1rem;border:1px solid #cfd7ee;border-radius:12px}.signature-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;font-weight:800}.text-button{display:flex;gap:.35rem;align-items:center;border:0;background:none;color:#5148cc;font:inherit;font-weight:800;cursor:pointer}.signature-wrap canvas{display:block;width:100%;height:auto;min-height:130px;border:1px dashed #aeb8d4;border-radius:8px;background:#fff;touch-action:none}.signature-wrap p{margin-bottom:0;color:#6a748c;font-size:.78rem}.final-warning{margin-top:1rem;padding:1rem;border-left:4px solid #b4233a;background:#fff1f3}.final-warning p{margin-bottom:0;color:#70505a;line-height:1.6}.form-actions{display:flex;gap:.75rem;align-items:center;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid #e2e6f4}.form-actions .signing-primary{margin-left:auto;border:0;background:linear-gradient(135deg,#f2a93b,#ffd66d);color:#251900}.help-button{color:#285e42}.form-error{margin-top:1rem;padding:.9rem 1rem;border-radius:8px;background:#fff0f2;color:#9c1f32;font-weight:700}.submission-result{display:grid;grid-template-columns:auto 1fr;gap:.8rem;margin-top:1rem;padding:1rem;border:1px solid #d3dcf3;border-radius:10px;background:#f3f7ff}.submission-result p{margin:.3rem 0;color:#5b6885}.submission-result .button{display:inline-flex;margin-top:.5rem}.result-loader{color:#5f56e8}@media(max-width:900px){.onboarding-hero-grid{grid-template-columns:1fr}.plan-choice-grid{grid-template-columns:1fr}.commercial-fields{grid-template-columns:1fr 1fr}.commercial-fields>label:first-child{grid-column:1/-1}}@media(max-width:620px){.onboarding-hero{padding-top:7.5rem}.onboarding-rails{top:4.8rem}.onboarding-form{padding:1rem}.progress-card{top:4.5rem}.field-grid,.commercial-fields,.summary-card{grid-template-columns:1fr}.commercial-fields>label:first-child,.field-wide{grid-column:auto}.form-actions{flex-wrap:wrap}.form-actions .button{width:100%;justify-content:center}.form-actions .signing-primary{margin-left:0}.trust-row span{border-radius:10px}.signature-wrap canvas{min-height:110px}}
+  .onboarding-page{background:#f7f8ff;color:#10204e}.onboarding-hero{position:relative;padding:8.45rem 0 4.5rem;background:radial-gradient(circle at 84% 12%,rgba(103,91,255,.3),transparent 34%),#071038;color:#fff}.onboarding-rails{position:absolute;top:5.35rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.onboarding-rails span:nth-child(1){background:#071038}.onboarding-rails span:nth-child(2){background:#675bff}.onboarding-rails span:nth-child(3){background:#d7529b}.onboarding-rails span:nth-child(4){background:#24a69a}.onboarding-hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:center}.onboarding-hero h1{max-width:14ch;font-size:clamp(3rem,7vw,6rem);line-height:.98}.onboarding-lead{max-width:72ch;color:rgba(255,255,255,.8);font-size:1.1rem;line-height:1.7}.trust-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.4rem}.trust-row span{display:flex;gap:.4rem;align-items:center;padding:.6rem .75rem;border:1px solid rgba(104,231,164,.25);border-radius:999px;background:rgba(47,158,98,.12);font-size:.82rem}.trust-row svg{flex:none;color:#68e7a4}.status-card{padding:1.45rem;border:1px solid rgba(255,255,255,.22);border-radius:15px;background:rgba(255,255,255,.08)}.status-card>svg{color:#c8c0ff}.status-card strong{display:block;margin:.4rem 0;font-size:1.25rem}.status-card p:not(.eyebrow){color:rgba(255,255,255,.72);line-height:1.6}.status-card a{color:#fff;text-decoration:underline}.onboarding-section{padding-top:3rem}.onboarding-shell{max-width:930px}.progress-card{position:sticky;top:5.2rem;z-index:3;margin-bottom:1rem;padding:1rem 1.2rem;border:1px solid #dce3f8;border-radius:12px;background:rgba(255,255,255,.96);box-shadow:0 12px 35px rgba(22,33,80,.08)}.progress-top{display:flex;gap:1rem;align-items:center;justify-content:space-between;font-size:.85rem}.progress-top span{color:#69758f}.progress-track{height:7px;margin-top:.75rem;overflow:hidden;border-radius:999px;background:#e5e8f7}.progress-track span{display:block;width:33.33%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#675bff,#d7529b);transition:width .2s ease}.onboarding-form{padding:clamp(1.2rem,4vw,2.5rem);border:1px solid #dce3f8;border-radius:16px;background:#fff;box-shadow:0 22px 60px rgba(22,33,80,.08)}.form-step{scroll-margin-top:9rem}.step-heading{max-width:780px;margin-bottom:1.6rem}.step-heading h2{font-size:clamp(2rem,5vw,3.3rem)}.step-heading p:not(.eyebrow){color:#5b6885;line-height:1.65}.plan-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem}.plan-choice{position:relative;display:grid;align-content:start;gap:.75rem;min-height:190px;padding:1.15rem;border:1px solid #d8def2;border-radius:12px;cursor:pointer}.plan-choice:has(input:checked){border-color:#7564ff;box-shadow:0 0 0 3px rgba(117,100,255,.17)}.plan-choice-pro{background:#f8f6ff}.plan-choice input{position:absolute;top:1rem;right:1rem;width:auto}.plan-choice-main{display:flex;gap:.7rem;align-items:center;justify-content:space-between;padding-right:1.5rem}.plan-choice-main b{font-size:.85rem;color:#5948d6;text-transform:uppercase}.plan-choice small{color:#5b6885;line-height:1.55}.recommended{color:#5f56e8;font-size:.68rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}.commercial-fields{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1rem;margin-top:1.2rem}.percentage-control{display:grid;grid-template-columns:1fr auto;align-items:center}.percentage-control input{border-radius:8px 0 0 8px!important}.percentage-control span{display:grid;height:100%;place-items:center;padding:0 .9rem;border:1px solid #cfd7ee;border-left:0;border-radius:0 8px 8px 0;background:#f4f1ff;color:#5948d6;font-size:1.15rem}.required-note{color:#5948d6;font-size:.72rem}.commercial-fields small{color:#6a748c;font-weight:500;line-height:1.45}.custom-plan-fields{margin-top:1rem;padding:1.1rem;border:1px solid #dce3f8;border-radius:12px;background:#f8f9ff}.custom-plan-fields p{color:#6a748c;font-size:.82rem}.control-callout{display:grid;grid-template-columns:auto 1fr;gap:.8rem;margin-top:1rem;padding:1rem;border-radius:10px;background:#effaf4;color:#285e42}.control-callout p{margin:0;line-height:1.6}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.field-wide{grid-column:1/-1}.onboarding-form label{display:grid;gap:.45rem;color:#29375e;font-size:.84rem;font-weight:800}.onboarding-form input,.onboarding-form textarea{width:100%;padding:.78rem .85rem;border:1px solid #cfd7ee;border-radius:8px;background:#fff;color:#10204e;font:inherit;font-weight:500}.onboarding-form textarea{resize:vertical}.onboarding-form input:focus,.onboarding-form textarea:focus{outline:3px solid rgba(117,100,255,.2);border-color:#7564ff}.field-note{padding:.8rem 1rem;border-radius:8px;background:#fff7e8;color:#72501a;font-size:.83rem;line-height:1.55}.summary-card{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-bottom:1rem;padding:1rem;border:1px solid #d8def2;border-radius:10px;background:#f7f8ff}.summary-card p{display:grid;gap:.2rem;margin:0}.summary-card span{color:#6a748c;font-size:.72rem;text-transform:uppercase}.plain-terms{margin:1rem 0;padding:1rem;border:1px solid #d7eadf;border-radius:10px;background:#f5fcf8}.plain-terms h3{margin-top:0}.plain-terms ul{display:grid;gap:.55rem;padding:0;list-style:none}.plain-terms li{display:flex;gap:.5rem;align-items:flex-start}.plain-terms svg{flex:none;margin-top:.15rem;color:#2f9e62}.plain-terms a{font-weight:800;color:#4437d4}.consent-list{display:grid;gap:.75rem;margin:1rem 0}.consent-list label{display:flex;gap:.65rem;align-items:flex-start;padding:.85rem;border:1px solid #dce3f8;border-radius:9px;font-weight:600;line-height:1.55}.consent-list input{width:auto;margin-top:.2rem;flex:none}.signature-wrap{margin-top:1rem;padding:1rem;border:1px solid #cfd7ee;border-radius:12px}.signature-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;font-weight:800}.text-button{display:flex;gap:.35rem;align-items:center;border:0;background:none;color:#5148cc;font:inherit;font-weight:800;cursor:pointer}.signature-wrap canvas{display:block;width:100%;height:auto;min-height:130px;border:1px dashed #aeb8d4;border-radius:8px;background:#fff;touch-action:none}.signature-wrap p{margin-bottom:0;color:#6a748c;font-size:.78rem}.final-warning{margin-top:1rem;padding:1rem;border-left:4px solid #b67714;background:#fff7e8}.final-warning p{margin-bottom:0;color:#70572b;line-height:1.6}.form-actions{display:flex;gap:.75rem;align-items:center;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid #e2e6f4}.form-actions .signing-primary{margin-left:auto;border:0;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291);color:#fff}.help-button{color:#285e42}.form-error{margin-top:1rem;padding:.9rem 1rem;border-radius:8px;background:#fff0f2;color:#9c1f32;font-weight:700}.submission-result{display:grid;grid-template-columns:auto 1fr;gap:.8rem;margin-top:1rem;padding:1rem;border:1px solid #d3dcf3;border-radius:10px;background:#f3f7ff}.submission-result p{margin:.3rem 0;color:#5b6885}.submission-result .button{display:inline-flex;margin-top:.5rem}.result-loader{color:#5f56e8}@media(max-width:900px){.onboarding-hero-grid{grid-template-columns:1fr}.plan-choice-grid{grid-template-columns:1fr}.commercial-fields{grid-template-columns:1fr 1fr}.commercial-fields>label:first-child{grid-column:1/-1}}@media(max-width:620px){.onboarding-hero{padding-top:7.5rem}.onboarding-rails{top:4.8rem}.onboarding-form{padding:1rem}.progress-card{top:4.5rem}.field-grid,.commercial-fields,.summary-card{grid-template-columns:1fr}.commercial-fields>label:first-child,.field-wide{grid-column:auto}.form-actions{flex-wrap:wrap}.form-actions .button{width:100%;justify-content:center}.form-actions .signing-primary{margin-left:0}.trust-row span{border-radius:10px}.signature-wrap canvas{min-height:110px}}
 </style>
