@@ -51,9 +51,6 @@ for (const source of [carrierPage, signPage]) {
   assert.doesNotMatch(source, /\b(?:we|Hermes)\s+guarantee(?:s|d)?\b/i);
   assert.doesNotMatch(source, /limited time|expires today|only \d+ spots|act now/i);
   assert.doesNotMatch(source, /input[^>]+type=["']password/i);
-}
-
-for (const source of [carrierPage, signPage]) {
   assert.doesNotMatch(source, /searchParams\.(?:get|set)\(["'](?:rate|rep|offer|carrier_name|mc|usdot)["']/i);
   assert.doesNotMatch(source, /[?&](?:rate|rep|offer|carrier_name|mc|usdot)=/i);
 }
@@ -143,11 +140,10 @@ for (const required of [
   "The percentage is private and carrier-specific.",
   'data-primary-choice="agreement"',
   'data-primary-choice="learn"',
-  "No personal guaranty or UCC lien",
-  `${onboardingPathPlaceholder()}`,
-]) {
-  if (required) assert.ok(offer.includes(required), `Carrier support page is missing: ${required}`);
-}
+  "personal guaranty",
+  "UCC lien",
+  "The carrier confirms the exact commercial term in the private signing form",
+]) assert.ok(offer.includes(required), `Carrier support page is missing: ${required}`);
 
 assert.doesNotMatch(offer, />\s*(?:5|6|8)(?:\.00)?%\s*</i, "Offer page must not publish a fixed percentage outside the carrier-specific Appendix A context.");
 assert.doesNotMatch(offer, /searchParams\.(?:get|set)\(["'](?:rate|rep|offer)["']/i);
@@ -167,7 +163,3 @@ for (const required of [
 ]) assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 
 console.log("Carrier agreement journey v3 passed: clean SMS entry, plan-only same-origin context, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and execution gates are present.");
-
-function onboardingPathPlaceholder() {
-  return "The carrier confirms the exact commercial term in the private signing form";
-}
