@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
+const legacyCarrierDemoIntake = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+
 test("content pipeline workspace is noindex and reports the unfilled 30-asset pilot honestly", async ({ page }) => {
   const response = await page.goto("/demos/content-pipeline/");
   expect(response?.ok()).toBeTruthy();
@@ -21,13 +24,16 @@ test("content pipeline workspace is noindex and reports the unfilled 30-asset pi
   await expect(page.locator('a[href="/demos/content-pipeline/insight-preview/"]')).toBeVisible();
 });
 
-test("synthetic insight preview uses the reusable template without claiming VideoObject eligibility", async ({ page }) => {
+test("synthetic insight preview uses the reusable template and direct carrier review without claiming VideoObject eligibility", async ({ page }) => {
   const response = await page.goto("/demos/content-pipeline/insight-preview/");
   expect(response?.ok()).toBeTruthy();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow,noarchive");
   await expect(page.getByRole("heading", { level: 1, name: "What should a car hauler check before approving a load?" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Video schema held" })).toBeVisible();
   await expect(page.getByText(/Synthetic fixture synthetic-logistics-publish/)).toBeVisible();
+  await expect(page.locator(`a[href="${directCarrierIntake}"]`)).toHaveCount(1);
+  await expect(page.locator(`a[href="${legacyCarrierDemoIntake}"]`)).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Open carrier review" })).toHaveAttribute("href", directCarrierIntake);
   await expect(page.locator('a[href="/logistics/car-hauling-dispatch/"]')).toHaveCount(3);
   await expect(page.locator('a[href="/academy/us-logistics-operations/"]')).toBeVisible();
 
