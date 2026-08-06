@@ -65,6 +65,24 @@ test("offer and agreement pages keep a persistent next step to onboarding", asyn
   }
 });
 
+test("carrier audience keeps dispatch review primary and exposes the proposal path", async ({ page }) => {
+  await page.goto("/logistics/carrier/");
+
+  await expect(page.getByRole("link", { name: "Start dispatch review" }).first()).toHaveAttribute(
+    "href",
+    "/logistics/start-car-hauling-dispatch/",
+  );
+
+  const journey = page.locator("[data-carrier-contract-journey]");
+  await expect(journey).toBeVisible();
+  await expect(journey.locator("[data-commercial-primary-cta]")).toContainText("Review plans and carrier packet");
+  await expect(journey.locator("[data-commercial-primary-cta]")).toHaveAttribute("href", "/carrier/");
+  await expect(journey.getByRole("link", { name: "Call U.S. Logistics Sales" })).toHaveAttribute(
+    "href",
+    "tel:+12623023626",
+  );
+});
+
 test("the public logistics hub exposes the memorable carrier proposal path", async ({ page }) => {
   await page.goto("/paths/logistics/");
   await expect(page.getByRole("link", { name: /Carrier plans, packet, and agreement/i })).toHaveAttribute(
