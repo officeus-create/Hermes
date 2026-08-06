@@ -9,6 +9,13 @@ import {
   summarizePilotSlots,
 } from "../src/lib/content-pipeline.ts";
 import { reviewContentForPublication } from "../src/lib/content-publication-gate.ts";
+import { syntheticContentAssets } from "../src/data/content-pipeline-pilot.ts";
+
+const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
+const legacyCarrierDemoCtas = new Set([
+  "/load-board/?role=carrier#carrier-access",
+  "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+]);
 
 const slots = buildPilotAssetSlots();
 const summary = summarizePilotSlots(slots);
@@ -69,11 +76,24 @@ assert.ok(registeredSources.every((row) => !/[?#]/.test(row.source_url)));
 assert.equal(registerRows.filter((row) => row.decision === "awaiting_source").length, 28);
 assert.equal(
   registerRows.find((row) => row.slot_id === "hermes_logistics-01")?.intended_cta,
-  "/load-board/?role=carrier#carrier-access",
+  directCarrierIntake,
 );
 assert.equal(
   registerRows.find((row) => row.slot_id === "hermes_academy-01")?.intended_cta,
   "/academy/apply/",
+);
+
+const syntheticLogisticsPublish = syntheticContentAssets.find((asset) => asset.id === "synthetic-logistics-publish");
+assert.ok(syntheticLogisticsPublish, "Synthetic logistics publish candidate must exist.");
+assert.equal(syntheticLogisticsPublish.intendedCta, directCarrierIntake);
+
+const publishableSyntheticAssets = syntheticContentAssets.filter(
+  (asset) => reviewContentForPublication(asset).decision === "publish_candidate",
+);
+assert.ok(publishableSyntheticAssets.length > 0, "Synthetic fixtures must retain at least one publish candidate.");
+assert.ok(
+  publishableSyntheticAssets.every((asset) => !legacyCarrierDemoCtas.has(asset.intendedCta)),
+  "Publish candidates must not route carrier conversion traffic to the fictional Load Board intake.",
 );
 
 const substantialText = [
@@ -95,7 +115,7 @@ const makeAsset = (overrides = {}) => ({
   proposedTopic: "Structured carrier-controlled review",
   proposedQuery: "what should a carrier review before booking",
   canonicalOwner: "/logistics/car-hauling-dispatch/",
-  intendedCta: "/load-board/?role=carrier#carrier-access",
+  intendedCta: directCarrierIntake,
   audience: "Carriers",
   permissionStatus: "owner_confirmed",
   evidenceStatus: "first_party_verified",
@@ -184,5 +204,5 @@ assert.equal(progressoproEntity.publishingStatus, "blocked");
 assert.ok(contentEntityRegistry.every((entity) => entity.publishingStatus !== "approved"));
 
 console.log(
-  `Content pipeline checks passed: ${slots.length} quota slots, ${registeredSources.length} real held sources, ${decisionFixtures.length} decision paths, strict thin-content and entity/privacy gates active.`,
+  `Content pipeline checks passed: ${slots.length} quota slots, ${registeredSources.length} real held sources, ${decisionFixtures.length} decision paths, direct carrier CTA for publishable content, strict thin-content and entity/privacy gates active.`,
 );
