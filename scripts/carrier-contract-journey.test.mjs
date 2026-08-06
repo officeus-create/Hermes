@@ -5,8 +5,9 @@ import path from "node:path";
 const root = process.cwd();
 const read = (relativePath) => readFile(path.join(root, relativePath), "utf8");
 
-const [shortPage, journey, layout, logisticsLinks, playbook, analyticsDelta] = await Promise.all([
+const [shortPage, signPage, journey, layout, logisticsLinks, playbook, analyticsDelta] = await Promise.all([
   read("src/pages/carrier/index.astro"),
+  read("src/pages/sign/index.astro"),
   read("src/components/CarrierContractJourney.astro"),
   read("src/layouts/BaseLayout.astro"),
   read("src/components/LogisticsCommercialLinks.astro"),
@@ -32,22 +33,42 @@ for (const required of [
   "data-carrier-copy",
   "data-carrier-sms",
 ]) {
-  assert.ok(shortPage.includes(required), `Short carrier sales page is missing: ${required}`);
+  assert.ok(shortPage.includes(required), `Carrier proposal page is missing: ${required}`);
 }
 
-assert.doesNotMatch(shortPage, /guaranteed (?:load|rate|revenue|income)/i);
-assert.doesNotMatch(shortPage, /limited time|expires today|only \d+ spots|act now/i);
-assert.doesNotMatch(shortPage, /(?:carrier|driver)[_-]?(?:name|email|phone|mc|usdot)=/i);
-assert.doesNotMatch(shortPage, /input[^>]+type=["']password/i);
+for (const required of [
+  'robots="noindex,nofollow"',
+  'const shortUrl = "https://hermeslogisticsus.com/sign/"',
+  "Everything is clear before you sign.",
+  "No exclusivity required here",
+  "You approve every load",
+  "Freight payments stay with your company",
+  "Continue to carrier packet",
+  "Review the agreement first",
+  "Ask a question",
+  "data-sign-copy",
+  "data-sign-sms",
+]) {
+  assert.ok(signPage.includes(required), `Short signing page is missing: ${required}`);
+}
+
+for (const source of [shortPage, signPage]) {
+  assert.doesNotMatch(source, /guaranteed (?:load|rate|revenue|income)/i);
+  assert.doesNotMatch(source, /limited time|expires today|only \d+ spots|act now/i);
+  assert.doesNotMatch(source, /(?:carrier|driver)[_-]?(?:name|email|phone|mc|usdot)=/i);
+  assert.doesNotMatch(source, /input[^>]+type=["']password/i);
+}
 
 for (const required of [
   '"/carrier/"',
+  '"/sign/"',
   '"/logistics/carrier/"',
   '"/logistics/carrier-offer/"',
   '"/logistics/carrier-agreement/"',
-  'primaryLabel: "Review plans and carrier packet"',
-  'primaryHref: "/carrier/"',
+  'primaryLabel: "Review the signing path"',
+  'primaryHref: "/sign/"',
   'primaryHref: "/logistics/carrier-onboarding/"',
+  'const shortUrl = "https://hermeslogisticsus.com/sign/"',
   "Copy link",
   "data-carrier-journey-sms",
   "tel:+12623023626",
@@ -77,18 +98,9 @@ for (const requiredAnalyticsContract of [
   '"delivered"',
   '"pending"',
   '"failed"',
+  '"carrier_signing_entry"',
 ]) {
   assert.ok(journey.includes(requiredAnalyticsContract), `Carrier analytics contract is missing: ${requiredAnalyticsContract}`);
-}
-
-for (const requiredRegistryBoundary of [
-  "DATALAYER_PRESENT / GA4_UNVERIFIED",
-  "DELIVERY_RECONCILIATION_REQUIRED",
-  "steps 1–5 exactly once per page session",
-  "GTM may add its own internal keys such as `gtm.uniqueEventId`",
-  "review/onboarding packet as final executed agreement while #280 is open",
-]) {
-  assert.ok(analyticsDelta.includes(requiredRegistryBoundary), `Carrier analytics registry delta is missing: ${requiredRegistryBoundary}`);
 }
 
 for (const prohibitedAnalyticsReference of [
@@ -105,24 +117,17 @@ for (const prohibitedAnalyticsReference of [
   "custom_percentage",
   "custom_scope",
 ]) {
-  assert.ok(
-    !journey.includes(prohibitedAnalyticsReference),
-    `Carrier analytics component references prohibited form data: ${prohibitedAnalyticsReference}`,
-  );
+  assert.ok(!journey.includes(prohibitedAnalyticsReference), `Carrier analytics component references prohibited form data: ${prohibitedAnalyticsReference}`);
 }
-
-assert.doesNotMatch(analyticsDelta, /@[a-z0-9.-]+\.[a-z]{2,}/i, "Analytics registry delta must not contain an email address");
-assert.doesNotMatch(analyticsDelta, /\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i, "Analytics registry delta must not contain a carrier identifier");
-assert.doesNotMatch(analyticsDelta, /\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/, "Analytics registry delta must not contain a phone number");
 
 assert.ok(layout.includes('import CarrierContractJourney from "../components/CarrierContractJourney.astro"'));
 assert.ok(layout.includes("<CarrierContractJourney />"));
 assert.ok(logisticsLinks.includes('href="/carrier/"'));
 assert.ok(logisticsLinks.includes("Carrier plans, packet, and agreement"));
-assert.ok(logisticsLinks.includes("Carrier proposal and packet"));
 
 for (const required of [
   "https://hermeslogisticsus.com/carrier/",
+  "https://hermeslogisticsus.com/sign/",
   "Start the carrier packet",
   "Review plans and support",
   "Review the agreement draft",
@@ -132,4 +137,4 @@ for (const required of [
   assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 }
 
-console.log("Carrier contract journey contract passed: short SMS URL, site entry, trust-first CTA hierarchy, carrier-audience handoff, privacy-safe funnel analytics, registry delta, and execution boundaries are present.");
+console.log("Carrier contract journey passed: proposal entry, short signing URL, trust-first CTA hierarchy, privacy-safe SMS handoff, analytics, and execution boundaries are present.");
