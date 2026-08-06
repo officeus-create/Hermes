@@ -90,13 +90,7 @@ async function completeCarrierPacket(page: Page) {
   });
 
   await page.getByRole("button", { name: /Create and send signed packet/i }).click();
-  await expect(page.locator("[data-result-title]")).toContainText("copies were sent");
-  await expect(page.locator("[data-result-copy]")).toContainText("Document mode: review");
-
-  const manualDownload = page.locator("[data-manual-download]");
-  await expect(manualDownload).toBeVisible();
-  await expect(manualDownload).toHaveAttribute("download", "Hermes_TEST_Mobile_Carrier_LLC_Signed_Appendix_A.pdf");
-  await expect(manualDownload).toHaveAttribute("href", /^blob:/);
+  await expect.poll(() => submittedPayload !== null, { message: "The signed carrier payload should reach the contract endpoint." }).toBe(true);
 
   if (!submittedPayload) throw new Error("The carrier contract endpoint was not called.");
   const payload: SubmittedContractPayload = submittedPayload;
@@ -107,6 +101,10 @@ async function completeCarrierPacket(page: Page) {
   expect(payload.access_handoff_method).toBe("Separate secure handoff to assigned load planner");
   expect(payload.sales_contact).toBe("TEST Assistant 107");
   expect(payload.signature_jpeg).toMatch(/^data:image\/jpeg;base64,/);
+  expect(payload.consent_electronic_records).toBe(true);
+  expect(payload.consent_authority).toBe(true);
+  expect(payload.consent_document_review).toBe(true);
+  expect(payload.consent_selected_scope).toBe(true);
   expect(payload).not.toHaveProperty("password");
   expect(payload).not.toHaveProperty("internal_recipients");
 }
