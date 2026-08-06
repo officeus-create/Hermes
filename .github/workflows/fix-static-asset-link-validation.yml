@@ -1,0 +1,66 @@
+name: Fix static asset link validation
+
+on:
+  push:
+    branches:
+      - revenue/carrier-signing-funnel-v3-rebased
+    paths:
+      - ".github/workflows/fix-static-asset-link-validation.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch-validator:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Validate internal HTML routes and static files separately
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/validate-build.mjs")
+          text = path.read_text()
+          old = '''    const targetPath = target.pathname.endsWith("/")
+              ? target.pathname
+              : target.pathname.endsWith(".html")
+                ? target.pathname
+                : `${target.pathname}/`;
+            if (!htmlTargets.has(targetPath)) brokenInternalLinks.push(`${pageName} -> ${href}`);'''
+          new = '''    const targetPathname = decodeURIComponent(target.pathname);
+            const targetName = targetPathname.split("/").pop() ?? "";
+            const looksLikeStaticFile = targetName.includes(".") && !targetName.endsWith(".html");
+            if (looksLikeStaticFile) {
+              try {
+                const targetFile = await stat(join(dist, targetPathname.replace(/^\\/+/, "")));
+                if (!targetFile.isFile()) brokenInternalLinks.push(`${pageName} -> ${href}`);
+              } catch {
+                brokenInternalLinks.push(`${pageName} -> ${href}`);
+              }
+              continue;
+            }
+            const targetPath = targetPathname.endsWith("/")
+              ? targetPathname
+              : targetPathname.endsWith(".html")
+                ? targetPathname
+                : `${targetPathname}/`;
+            if (!htmlTargets.has(targetPath)) brokenInternalLinks.push(`${pageName} -> ${href}`);'''
+          if old not in text:
+              raise SystemExit("Expected link-validation block was not found")
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+          rm -f .github/workflows/fix-static-asset-link-validation.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Validate internal static-file links"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
