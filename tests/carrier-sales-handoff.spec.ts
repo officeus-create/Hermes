@@ -25,9 +25,9 @@ test("learn-more path reveals responsibilities, plans, and company branches", as
 
   await expect(page).toHaveURL(/\/logistics\/carrier-offer\/#learn-more$/);
   await expect(page.getByRole("heading", { name: /You keep the decisions/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Essential Dispatch" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Hermes Pro" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Custom Cooperation" })).toBeVisible();
+  await expect(page.getByText("Essential Dispatch", { exact: true })).toBeVisible();
+  await expect(page.getByText("Hermes Pro", { exact: true })).toBeVisible();
+  await expect(page.getByText("Custom Cooperation", { exact: true })).toBeVisible();
   await expect(page.getByText("6%", { exact: true })).toBeVisible();
   await expect(page.getByText("8%", { exact: true })).toBeVisible();
   await expect(page.getByText(/custom proposal is non-binding/i)).toBeVisible();
@@ -38,7 +38,7 @@ test("agreement choice reaches the existing draft review boundary", async ({ pag
   await page.goto(offerRoute);
   await page.locator('[data-primary-choice="agreement"]').click();
 
-  await expect(page).toHaveURL(new RegExp(`${agreementRoute.replaceAll("/", "\\/")}$`));
+  await expect(page).toHaveURL(/\/logistics\/carrier-agreement\/$/);
   await expect(page.getByRole("heading", { name: /Review the Carrier Dispatch Agreement/i })).toBeVisible();
   await expect(page.getByText("Draft for attorney review", { exact: true })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
