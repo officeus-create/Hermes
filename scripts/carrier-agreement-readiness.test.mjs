@@ -80,28 +80,35 @@ for (const required of [
 ]) assert.ok(backend.includes(required), `Contract endpoint is missing execution/data-minimization gate: ${required}`);
 
 for (const required of [
-  "ATTORNEY REVIEW DRAFT - NOT FOR EXECUTION",
+  "OWNER-APPROVED WISCONSIN REVIEW DRAFT - NOT FOR EXECUTION",
   "6% Dispatch Support",
   "8% Full Partnership",
   "Carrier Proposal",
   "Hermes-Supported Load",
   "Monday through Saturday",
-  "invoice on Saturday",
+  "weekly invoice on Saturday",
   "five business days",
   "Protected Account",
   "twenty-four months after termination",
-  "No circumvention",
-  "twelve months after it ends",
-  "The parties do not agree to an automatic punitive or arbitrary fixed penalty",
+  "Non-circumvention",
+  "Wisconsin liquidated-damages formula",
+  "Carrier is free to hire or contract with any person",
+  "No arbitrary fixed minimum fine applies",
+  "may not recover duplicative actual damages and liquidated damages",
+  "1.5% per month (18% annually)",
+  "substantially prevailing party",
+  "Wis. Stat. § 814.045",
   "separately authorized and properly licensed broker",
 ]) assert.ok(protectionAddendum.includes(required), `Carrier protection addendum is missing: ${required}`);
 
 for (const required of [
-  "ATTORNEY REVIEW DRAFT - NOT FOR EXECUTION",
+  "OWNER-APPROVED WISCONSIN REVIEW DRAFT - NOT FOR EXECUTION",
   "Protected Account",
   "five business days",
   "twenty-four months after termination",
   "regardless of booking or payment channel",
+  "reasonable, rebuttable estimate",
+  "No arbitrary fixed fine applies",
   "Carrier acknowledgment is useful evidence",
 ]) assert.ok(protectedAccountNotice.includes(required), `Protected Account Notice is missing: ${required}`);
 
@@ -116,11 +123,13 @@ for (const required of [
 ]) assert.ok(ownerRevisions.includes(required), `Owner revision record is missing: ${required}`);
 
 assert.doesNotMatch(protectionAddendum, /automatic\s+(?:\$|USD)|fixed penalty of|confession of judgment|personal guaranty|blanket lien|UCC security interest/i);
+assert.doesNotMatch(protectionAddendum, /will not knowingly solicit, induce, hire|automatic hiring fee|50% contractual fee/i);
 assert.match(protectionAddendum, /actual proven damages/i);
-assert.match(protectionAddendum, /reasonable documented collection costs/i);
-assert.match(protectionAddendum, /lawful equitable relief/i);
+assert.match(protectionAddendum, /liquidated damages equal to the unpaid selected fee/i);
+assert.match(protectionAddendum, /reasonable documented pre-suit collection costs/i);
+assert.match(protectionAddendum, /lawful hiring without such misuse are allowed/i);
 
 for (const secretLike of ["sk_live_", "api_key=", "access_token=", "private_key="])
   assert.ok(!readiness.toLowerCase().includes(secretLike));
 
-console.log("Carrier agreement v3 offer, document, owner protection addendum, minimized signing, and production execution-readiness contracts passed.");
+console.log("Carrier agreement v3 offer, Wisconsin-aligned protection addendum, minimized signing, and production execution-readiness contracts passed.");
