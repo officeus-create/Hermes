@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 const resourcePath = "/logistics/resources/broker-setup-packet-checklist/";
-const intakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
 
 test("broker setup checklist prepares carrier documents without exposing credentials", async ({ page }) => {
   await page.goto(resourcePath);
@@ -17,6 +18,7 @@ test("broker setup checklist prepares carrier documents without exposing credent
   await expect(page.getByText(/does not automatically approve a setup/i)).toBeVisible();
 
   await expect(page.locator(`main a[href="${intakeHref}"]`)).toHaveCount(2);
+  await expect(page.locator(`main a[href="${legacyDemoIntakeHref}"]`)).toHaveCount(0);
   await expect(page.locator('main a[href="/logistics/new-authority-car-hauler-support/"]')).toHaveCount(1);
 });
 
