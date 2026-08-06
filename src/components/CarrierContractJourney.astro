@@ -245,6 +245,7 @@ const smsCopy = `Hermes carrier proposal: review the support options, keep contr
     form?.addEventListener("input", recordIntakeStart);
     form?.addEventListener("change", recordIntakeStart);
     form?.addEventListener("click", (event) => {
+      recordIntakeStart(event);
       if (!event.isTrusted) return;
       const source = event.target;
       if (!(source instanceof Element) || !source.closest("[data-next], [data-previous]")) return;
