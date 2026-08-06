@@ -1,29 +1,52 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [pageSource, readiness, offerSource] = await Promise.all([
+const [pageSource, readiness, offerSource, signSource] = await Promise.all([
   readFile(new URL("../src/pages/logistics/carrier-agreement/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../docs/CARRIER_AGREEMENT_EXECUTION_READINESS.md", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/logistics/carrier-offer/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/sign/index.astro", import.meta.url), "utf8"),
 ]);
 
 for (const requiredPageContract of [
   'robots="noindex,nofollow"',
-  "Draft for attorney review",
+  "Review draft — not the final execution version",
   "PUBLIC_CARRIER_ESIGN_URL",
   "data-agreement-version",
   "PDF SHA-256",
-  "No passwords in the agreement",
+  "Sensitive data stays separate",
+  "You approve every load",
+  "Freight funds go to your company",
+  "No guaranteed results or hidden exclusivity",
+  "Continue to carrier packet",
 ]) {
   assert.ok(pageSource.includes(requiredPageContract), `Carrier agreement review page is missing: ${requiredPageContract}`);
 }
 
-assert.match(pageSource, /5\.00% fee/, "The current review page must continue to identify the actual draft fee");
+assert.match(pageSource, /legacy draft contains a 5\.00% rate/i, "The review page must continue to identify the actual legacy draft fee");
 assert.doesNotMatch(
   pageSource,
   /<strong>\s*(?:8|8\.00)% service fee/i,
-  "The public review page must not present the intended 8% target before an approved execution asset exists",
+  "The review page must not present the intended 8% target as an approved execution term",
 );
+assert.ok(pageSource.indexOf("Clear responsibilities") < pageSource.indexOf("Review draft — not the final execution version"));
+
+for (const requiredSignContract of [
+  'const shortUrl = "https://hermeslogisticsus.com/sign/"',
+  "Everything is clear before you sign.",
+  "No exclusivity required here",
+  "You approve every load",
+  "Freight payments stay with your company",
+  "Continue to carrier packet",
+  "Review the agreement first",
+  "Ask a question",
+  "Copy SMS message",
+  "Open SMS",
+]) {
+  assert.ok(signSource.includes(requiredSignContract), `SMS-friendly signing page is missing: ${requiredSignContract}`);
+}
+assert.doesNotMatch(signSource, /limited time|act now|only \d+ spots|expires today/i);
+assert.doesNotMatch(signSource, /guaranteed (?:load|rate|revenue|income)/i);
 
 for (const requiredOfferContract of [
   'robots="noindex,nofollow"',
@@ -69,13 +92,8 @@ for (const requiredReadinessContract of [
   assert.ok(readiness.includes(requiredReadinessContract), `Execution readiness contract is missing: ${requiredReadinessContract}`);
 }
 
-for (const prohibitedPublicSecret of [
-  "sk_live_",
-  "api_key=",
-  "access_token=",
-  "private_key=",
-]) {
+for (const prohibitedPublicSecret of ["sk_live_", "api_key=", "access_token=", "private_key="]) {
   assert.ok(!readiness.toLowerCase().includes(prohibitedPublicSecret), `Readiness document contains a secret-like value: ${prohibitedPublicSecret}`);
 }
 
-console.log("Carrier offer and agreement execution-readiness contracts passed.");
+console.log("Carrier offer, signing entry, and agreement execution-readiness contracts passed.");
