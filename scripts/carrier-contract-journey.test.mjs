@@ -62,7 +62,7 @@ for (const requiredAnalyticsContract of [
   'event: "carrier_contract_step_reached"',
   'event: "carrier_contract_packet_result"',
   'service_group: "carrier_contract"',
-  'page_group: "carrier_contract_onboarding"',
+  'carrierEventBase("carrier_contract_onboarding")',
   "stepNumber",
   'preview_status: previewStatus',
   '"delivered"',
