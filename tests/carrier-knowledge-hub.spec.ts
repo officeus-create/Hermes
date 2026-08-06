@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
 
 const hubPath = "/logistics/resources/";
-const intakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
 const coreGuides = [
   "/logistics/resources/dispatch-service-vs-self-dispatch/",
   "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
@@ -29,6 +30,9 @@ test("carrier knowledge hub organizes reviewed guides and controlled next steps"
   for (const href of coreGuides) await expect(page.locator(`main a[href="${href}"]`)).toHaveCount(1);
   for (const href of servicePaths) await expect(page.locator(`main a[href="${href}"]`)).toHaveCount(1);
   await expect(page.locator(`main a[href="${intakeHref}"]`)).toHaveCount(3);
+  await expect(page.locator(`main a[href="${legacyDemoIntakeHref}"]`)).toHaveCount(0);
+  await expect(page.locator('main a[href="/load-board/"]')).toHaveCount(1);
+  await expect(page.getByText("Hermes Load Board", { exact: true })).toBeVisible();
   await expect(page.locator('main a[href="/academy/us-logistics-operations/"]')).toHaveCount(1);
 });
 
