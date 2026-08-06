@@ -147,7 +147,9 @@ assert.equal(serviceCalls[0].payload.carrier_email, "carrier-test@example.com");
 assert.equal(serviceCalls[0].payload.attachments.length, 2);
 assert.equal(serviceCalls[0].payload.attachments[0].content_type, "application/pdf");
 assert.equal(serviceCalls[0].payload.attachments[1].content_type, "application/pdf");
-assert.doesNotMatch(JSON.stringify(serviceCalls[0].payload), /password|api_key|bank_account|192\.0\.2\.55/i);
+const serializedServicePayload = JSON.stringify(serviceCalls[0].payload);
+assert.doesNotMatch(serializedServicePayload, /"(?:password|passcode|pin|api[_-]?key|bank_account|routing_number)"\s*:/i);
+assert.doesNotMatch(serializedServicePayload, /must-never-be-accepted|192\.0\.2\.55/i);
 
 assert.equal(sentMessages.length, 3, "The worker must send separately to two internal recipients and the carrier.");
 assert.deepEqual(sentMessages.map((message) => message.to).sort(), [
