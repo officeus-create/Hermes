@@ -157,7 +157,7 @@ const normalizeInput = (input: ContractInput): NormalizedContract | null => {
   const submittedAtRaw=clean(input.submitted_at,40); const submittedAtDate=new Date(submittedAtRaw); const submittedAt=Number.isNaN(submittedAtDate.getTime())?new Date().toISOString():submittedAtDate.toISOString();
   return {
     requestId,plan,
-    planLabel:plan==="essential"?"Dispatch Support":plan==="pro"?"Operations + Growth":"Custom Cooperation Proposal",
+    planLabel:plan==="essential"?"Dispatch Support":plan==="pro"?"Full Partnership":"Carrier Proposal",
     percentage:plan==="custom"?`${percentage.display} proposed - pending Hermes approval`:percentage.display,
     percentageKey:percentage.key,
     customScope,legalCompanyName,dbaName:clean(input.dba_name,140),mcNumber,usdotNumber,companyWebsite,signerName,signerTitle,signerEmail,signerPhone,salesContact,offerCode,typedSignature,signatureBytes,signatureWidth,signatureHeight,submittedAt,

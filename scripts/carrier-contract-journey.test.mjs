@@ -135,8 +135,8 @@ for (const required of [
 
 for (const required of [
   "Dispatch Support",
-  "Operations + Growth",
-  "Custom Cooperation",
+  "Full Partnership",
+  "Carrier Proposal",
   "The percentage is private and carrier-specific.",
   'data-primary-choice="agreement"',
   'data-primary-choice="learn"',
@@ -145,7 +145,12 @@ for (const required of [
   "The carrier confirms the exact commercial term in the private signing form",
 ]) assert.ok(offer.includes(required), `Carrier support page is missing: ${required}`);
 
-assert.doesNotMatch(offer, />\s*(?:5|6|8)(?:\.00)?%\s*</i, "Offer page must not publish a fixed percentage outside the carrier-specific Appendix A context.");
+const offerPercentages = new Set([...offer.matchAll(/>\s*(\d+(?:\.\d+)?)%\s*</g)].map((match) => match[1]));
+assert.deepEqual(
+  offerPercentages,
+  new Set(["6", "8"]),
+  "Offer page may publish only the two owner-approved standard tiers (6% Dispatch Support, 8% Full Partnership); every other percentage stays private to the carrier-specific Appendix A context.",
+);
 assert.doesNotMatch(offer, /searchParams\.(?:get|set)\(["'](?:rate|rep|offer)["']/i);
 assert.doesNotMatch(offer, /[?&](?:rate|rep|offer)=/i);
 assert.match(offer, /\?plan=essential/);

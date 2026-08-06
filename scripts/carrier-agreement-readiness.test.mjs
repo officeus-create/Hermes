@@ -33,10 +33,10 @@ for (const required of [
   'href="#learn-more"',
   'const agreementPath = "/logistics/carrier-agreement/"',
   "Dispatch Support",
-  "Operations + Growth",
-  "Custom Cooperation",
+  "Full Partnership",
+  "Carrier Proposal",
   "Your company approves every load",
-  "A custom scope and percentage remain a proposal",
+  "You propose the percentage and volume of work",
   "No. The agreement promises a defined support process, not a market result.",
 ]) assert.ok(offerSource.includes(required), `Carrier sales handoff is missing: ${required}`);
 

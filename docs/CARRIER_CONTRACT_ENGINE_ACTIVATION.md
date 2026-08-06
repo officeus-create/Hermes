@@ -10,7 +10,7 @@ The carrier agreement journey is intentionally separated into two phases.
 
 ### Before signature - three-step legal/commercial packet
 
-1. confirm Dispatch Support, Operations + Growth, or Custom Cooperation;
+1. confirm Dispatch Support, Full Partnership, or Carrier Proposal;
 2. confirm the exact carrier-specific percentage for Appendix A;
 3. provide legal company, MC or USDOT, optional company website, authorized signer, and business email/phone;
 4. review the plain-language control and payment boundaries;
@@ -90,14 +90,14 @@ Final execution may be enabled only when all conditions are true:
    - `CARRIER_CONTRACT_APPROVED_PDF_SHA256=<64 lowercase hex>`;
    - `CARRIER_CONTRACT_ALLOWED_PERCENTAGES=<comma-separated approved percentages>`;
 6. the selected percentage is present in `CARRIER_CONTRACT_ALLOWED_PERCENTAGES`;
-7. Custom Cooperation remains review-only until a separately approved matching document is issued;
+7. Carrier Proposal remains review-only until a separately approved matching document is issued;
 8. any personalized link uses an approved opaque, signed, expiring server-side offer/session mechanism;
 9. preview environments cannot access production email, KV, recipient, agreement, records, or signing bindings;
 10. a synthetic phone execution passes;
 11. the downloaded and emailed files have matching hashes;
 12. permanent private record retention is approved.
 
-The endpoint falls back to review mode whenever the version is missing or contains `draft`/`review`, the PDF path/hash is invalid, the percentage is absent from the allowlist, the personalized request is not server-approved, or Custom Cooperation is selected.
+The endpoint falls back to review mode whenever the version is missing or contains `draft`/`review`, the PDF path/hash is invalid, the percentage is absent from the allowlist, the personalized request is not server-approved, or Carrier Proposal is selected.
 
 ## Electronic signature record
 
@@ -137,7 +137,7 @@ Raw IP addresses and raw user-agent strings are not written into the PDF or emai
 7. verify full address, equipment, lanes, load boards, and access details are absent;
 8. verify all four consents and typed/drawn signature are required;
 9. verify a rate absent from `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` stays review mode;
-10. verify Custom Cooperation stays review mode;
+10. verify Carrier Proposal stays review mode;
 11. verify the master PDF SHA-256;
 12. verify the two-page Appendix PDF and attached master open;
 13. verify carrier and active internal recipients receive both PDFs;

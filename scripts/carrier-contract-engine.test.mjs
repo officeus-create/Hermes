@@ -104,7 +104,7 @@ const contractRequest = (payload = validPayload, headers = {}) => new Request("h
 assert.deepEqual([...parseAllowedPercentages("6, 8.00; 9.5")], ["6.00", "8.00", "9.50"]);
 const normalized = normalizeInput(validPayload);
 assert.ok(normalized);
-assert.equal(normalized.planLabel, "Operations + Growth");
+assert.equal(normalized.planLabel, "Full Partnership");
 assert.equal(normalized.percentage, "8%");
 assert.equal(normalized.percentageKey, "8.00");
 assert.equal(normalized.companyWebsite, "https://carrier.example.com/about");
@@ -125,7 +125,7 @@ const generatedText = generatedPdf.toString("latin1");
 assert.match(generatedText, /Hermes Carrier Agreement - Appendix A/);
 assert.match(generatedText, /SIGNED REVIEW PACKET/);
 assert.match(generatedText, /Test Authorized Signer/);
-assert.match(generatedText, /Operations \+ Growth/);
+assert.match(generatedText, /Full Partnership/);
 assert.match(generatedText, /8%/);
 assert.doesNotMatch(generatedText, /192\.0\.2\.55/);
 

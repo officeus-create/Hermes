@@ -70,7 +70,7 @@ async function completeCarrierPacket(page: Page) {
 
   await page.locator("[data-next]").click();
   await expect(page.locator("[data-step-label]")).toHaveText("Step 3 of 3");
-  await expect(page.locator("[data-plan-summary]")).toContainText("Operations + Growth · 8%");
+  await expect(page.locator("[data-plan-summary]")).toContainText("Full Partnership · 8%");
   await expect(page.getByText("Carrier approves every load and keeps operating control.", { exact: true })).toBeVisible();
   await page.locator('input[name="typed_signature"]').fill("Test Mobile Signer");
   for (const consent of ["consent_electronic_records", "consent_authority", "consent_document_review", "consent_selected_scope"]) {

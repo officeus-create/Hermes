@@ -61,9 +61,9 @@ const schema = {
               <p>The master agreement contains no fixed percentage. Enter the number already discussed with Hermes. It is written into the carrier-specific Appendix A and the server will not activate an unapproved percentage.</p>
             </div>
             <div class="plan-choice-grid">
-              <label class="plan-choice"><input type="radio" name="selected_plan" value="essential" required /><span class="plan-choice-main"><strong>Dispatch Support</strong><b>Core</b></span><small>Opportunity research, communication, negotiation within instructions, and ordinary document coordination.</small></label>
-              <label class="plan-choice plan-choice-pro"><input type="radio" name="selected_plan" value="pro" required checked /><span class="recommended">Broader operating support</span><span class="plan-choice-main"><strong>Operations + Growth</strong><b>Extended</b></span><small>Dispatch support plus lane planning, route development, customer research, and structured handoffs.</small></label>
-              <label class="plan-choice"><input type="radio" name="selected_plan" value="custom" required /><span class="plan-choice-main"><strong>Custom Cooperation</strong><b>Review</b></span><small>A different scope remains non-binding until Hermes accepts it and both parties sign a matching approved package.</small></label>
+              <label class="plan-choice"><input type="radio" name="selected_plan" value="essential" required /><span class="plan-choice-main"><strong>Dispatch Support</strong><b>6%</b></span><small>Opportunity research, communication, negotiation within instructions, and ordinary document coordination.</small></label>
+              <label class="plan-choice plan-choice-pro"><input type="radio" name="selected_plan" value="pro" required checked /><span class="recommended">Recommended</span><span class="plan-choice-main"><strong>Full Partnership</strong><b>8%</b></span><small>Dispatch support plus lane planning, route development, customer research, and structured handoffs.</small></label>
+              <label class="plan-choice"><input type="radio" name="selected_plan" value="custom" required /><span class="plan-choice-main"><strong>Carrier Proposal</strong><b>Your %</b></span><small>You propose the percentage and scope. Terms take effect only after written Hermes confirmation.</small></label>
             </div>
             <div class="commercial-fields">
               <label>Agreed service percentage for Appendix A <span class="required-note">Required</span><div class="percentage-control"><input type="number" name="service_percentage" min="1" max="15" step="0.25" inputmode="decimal" required placeholder="Example: 8" /><span>%</span></div><small>This value is entered inside the private form, never carried in the public SMS URL.</small></label>
@@ -204,7 +204,7 @@ const schema = {
     errorBox.hidden = !message;
   };
   const selectedPlan = () => form.querySelector<HTMLInputElement>('input[name="selected_plan"]:checked')?.value ?? "";
-  const planLabel = (plan: string) => plan === "essential" ? "Dispatch Support" : plan === "pro" ? "Operations + Growth" : "Custom Cooperation Proposal";
+  const planLabel = (plan: string) => plan === "essential" ? "Dispatch Support" : plan === "pro" ? "Full Partnership" : "Carrier Proposal";
   const updateCustomFields = () => {
     const custom = selectedPlan() === "custom";
     if (customFields) customFields.hidden = !custom;

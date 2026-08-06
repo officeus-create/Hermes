@@ -10,7 +10,7 @@ Current review master: `ATTORNEY-REVIEW-V3-2026-08-06`
 Give Logistics Sales one consistent phone-friendly path:
 
 1. carrier sees the control, money-flow, and responsibility boundaries in plain English;
-2. carrier chooses Dispatch Support, Operations + Growth, or Custom Cooperation;
+2. carrier chooses Dispatch Support, Full Partnership, or Carrier Proposal;
 3. carrier confirms the company, authorized signer, and agreed percentage;
 4. carrier reviews the exact Appendix A summary;
 5. carrier signs and keeps a PDF review packet;
@@ -98,7 +98,7 @@ Optional:
 
 - Hermes representative/team code kept inside the submitted record, not the public URL;
 - offer code kept inside the submitted record, not the public URL;
-- custom scope when Custom Cooperation is selected.
+- custom scope when Carrier Proposal is selected.
 
 ### Step 2 - Company and signer
 
