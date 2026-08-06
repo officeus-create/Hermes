@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 const route = "/logistics/resources/new-authority-car-hauler-readiness-checklist/";
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
 
-test("new authority readiness checklist is useful, indexable, and connected to carrier intake", async ({ page }) => {
+test("new authority readiness checklist is useful, indexable, and connected to direct carrier intake", async ({ page }) => {
   await page.goto(route);
 
   await expect(page).toHaveTitle(/New Authority Car Hauler Readiness Checklist/);
@@ -26,11 +28,9 @@ test("new authority readiness checklist is useful, indexable, and connected to c
   const primaryCtas = page.getByRole("link", { name: /carrier readiness review|open carrier intake/i });
   await expect(primaryCtas).toHaveCount(2);
   for (let index = 0; index < 2; index += 1) {
-    await expect(primaryCtas.nth(index)).toHaveAttribute(
-      "href",
-      "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
-    );
+    await expect(primaryCtas.nth(index)).toHaveAttribute("href", intakeHref);
   }
+  await expect(page.locator(`main a[href="${legacyDemoIntakeHref}"]`)).toHaveCount(0);
 
   await expect(page.getByRole("link", { name: "Review new-authority support" })).toHaveAttribute(
     "href",

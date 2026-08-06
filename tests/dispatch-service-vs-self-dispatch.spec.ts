@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 const resourcePath = "/logistics/resources/dispatch-service-vs-self-dispatch/";
-const intakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
 
-test("dispatch comparison explains both operating models and routes carriers to review", async ({ page }) => {
+test("dispatch comparison explains both operating models and routes carriers to direct review", async ({ page }) => {
   await page.goto(resourcePath);
 
   await expect(page).toHaveTitle(/Dispatch Service vs Self-Dispatch/);
@@ -17,8 +18,10 @@ test("dispatch comparison explains both operating models and routes carriers to 
   await expect(page.getByText(/does not automatically assign a dispatcher/i)).toBeVisible();
 
   await expect(page.locator(`main a[href="${intakeHref}"]`)).toHaveCount(2);
+  await expect(page.locator(`main a[href="${legacyDemoIntakeHref}"]`)).toHaveCount(0);
   await expect(page.locator('main a[href="/logistics/car-hauling-dispatch/"]')).toHaveCount(2);
-  await expect(page.locator('main a[href="/paths/academy/"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="/carrier/"]')).toHaveCount(1);
+  await expect(page.getByText("Carrier plans and packet", { exact: true })).toBeVisible();
 });
 
 test("dispatch comparison exposes canonical structured data and sitemap ownership", async ({ page }) => {
