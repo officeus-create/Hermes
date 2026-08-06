@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-06-carrier-contract-engine",
+  "generated_at": "2026-08-06T08:45:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/logistics/carrier-onboarding/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/logistics/carrier-onboarding/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/logistics/carrier-onboarding/index.astro",
+      "status": "COMPLETE",
+      "blocker": "The workflow may create a signed review/onboarding packet now. Final agreement execution remains gated by an attorney-approved master document, an immutable version and SHA-256, verified production-only email recipients, and a successful synthetic end-to-end delivery test.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
