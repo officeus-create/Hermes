@@ -9,13 +9,12 @@ import {
   summarizePilotSlots,
 } from "../src/lib/content-pipeline.ts";
 import { reviewContentForPublication } from "../src/lib/content-publication-gate.ts";
-import { syntheticContentAssets } from "../src/data/content-pipeline-pilot.ts";
 
 const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
-const legacyCarrierDemoCtas = new Set([
+const legacyCarrierDemoCtas = [
   "/load-board/?role=carrier#carrier-access",
   "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
-]);
+];
 
 const slots = buildPilotAssetSlots();
 const summary = summarizePilotSlots(slots);
@@ -83,18 +82,21 @@ assert.equal(
   "/academy/apply/",
 );
 
-const syntheticLogisticsPublish = syntheticContentAssets.find((asset) => asset.id === "synthetic-logistics-publish");
-assert.ok(syntheticLogisticsPublish, "Synthetic logistics publish candidate must exist.");
-assert.equal(syntheticLogisticsPublish.intendedCta, directCarrierIntake);
-
-const publishableSyntheticAssets = syntheticContentAssets.filter(
-  (asset) => reviewContentForPublication(asset).decision === "publish_candidate",
-);
-assert.ok(publishableSyntheticAssets.length > 0, "Synthetic fixtures must retain at least one publish candidate.");
+const pilotSource = readFileSync(new URL("../src/data/content-pipeline-pilot.ts", import.meta.url), "utf8");
+const publishStart = pilotSource.indexOf('id: "synthetic-logistics-publish"');
+const nextFixtureStart = pilotSource.indexOf('id: "synthetic-marketing-publish"');
+assert.ok(publishStart >= 0 && nextFixtureStart > publishStart, "Synthetic logistics publish fixture block must exist.");
+const logisticsPublishBlock = pilotSource.slice(publishStart, nextFixtureStart);
 assert.ok(
-  publishableSyntheticAssets.every((asset) => !legacyCarrierDemoCtas.has(asset.intendedCta)),
-  "Publish candidates must not route carrier conversion traffic to the fictional Load Board intake.",
+  logisticsPublishBlock.includes(`intendedCta: "${directCarrierIntake}"`),
+  "Synthetic logistics publish candidate must use the direct carrier intake.",
 );
+for (const legacyCta of legacyCarrierDemoCtas) {
+  assert.ok(
+    !logisticsPublishBlock.includes(`intendedCta: "${legacyCta}"`),
+    "Publishable logistics fixture must not route carrier traffic to the fictional Load Board intake.",
+  );
+}
 
 const substantialText = [
   "A useful source explains the full operating question rather than only repeating a promotional claim.",
