@@ -65,13 +65,46 @@ async function completeCarrierPacket(page: Page) {
   const canvas = page.locator("[data-signature-canvas]");
   const box = await canvas.boundingBox();
   if (!box) throw new Error("Signature canvas is not visible.");
-  await page.mouse.move(box.x + 30, box.y + box.height * 0.65);
-  await page.mouse.down();
-  await page.mouse.move(box.x + box.width * 0.25, box.y + box.height * 0.35, { steps: 5 });
-  await page.mouse.move(box.x + box.width * 0.45, box.y + box.height * 0.7, { steps: 5 });
-  await page.mouse.move(box.x + box.width * 0.7, box.y + box.height * 0.3, { steps: 5 });
-  await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.55, { steps: 5 });
-  await page.mouse.up();
+  const startX = box.x + 30;
+  const startY = box.y + box.height * 0.65;
+  await canvas.dispatchEvent("pointerdown", {
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    button: 0,
+    buttons: 1,
+    clientX: startX,
+    clientY: startY,
+  });
+  await canvas.dispatchEvent("pointermove", {
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    button: 0,
+    buttons: 1,
+    clientX: box.x + box.width * 0.5,
+    clientY: box.y + box.height * 0.35,
+  });
+  await canvas.dispatchEvent("pointerup", {
+    pointerId: 7,
+    pointerType: "pen",
+    isPrimary: true,
+    button: 0,
+    buttons: 0,
+    clientX: box.x + box.width * 0.85,
+    clientY: box.y + box.height * 0.6,
+  });
+
+  const invalidFields = await page.locator("#carrier-onboarding-form").evaluate((node) => {
+    const form = node as HTMLFormElement;
+    return [...form.elements]
+      .filter((element): element is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
+        element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement || element instanceof HTMLSelectElement,
+      )
+      .filter((element) => !element.checkValidity())
+      .map((element) => element.name || element.id || element.tagName);
+  });
+  expect(invalidFields).toEqual([]);
 
   let submittedPayload: SubmittedContractPayload | null = null;
   await page.route("**/api/carrier-contract", async (route: Route) => {
@@ -90,9 +123,12 @@ async function completeCarrierPacket(page: Page) {
   });
 
   await page.getByRole("button", { name: /Create and send signed packet/i }).click();
-  await expect.poll(() => submittedPayload !== null, { message: "The signed carrier payload should reach the contract endpoint." }).toBe(true);
+  await page.waitForTimeout(250);
+  if (!submittedPayload) {
+    const formError = (await page.locator("[data-form-error]").textContent())?.trim() || "No visible form error";
+    throw new Error(`The contract endpoint was not called. Form status: ${formError}`);
+  }
 
-  if (!submittedPayload) throw new Error("The carrier contract endpoint was not called.");
   const payload: SubmittedContractPayload = submittedPayload;
   expect(payload.selected_plan).toBe("pro");
   expect(payload.legal_company_name).toBe("TEST Mobile Carrier LLC");
