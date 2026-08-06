@@ -10,6 +10,12 @@ import {
 } from "../src/lib/content-pipeline.ts";
 import { reviewContentForPublication } from "../src/lib/content-publication-gate.ts";
 
+const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
+const legacyCarrierDemoCtas = [
+  "/load-board/?role=carrier#carrier-access",
+  "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+];
+
 const slots = buildPilotAssetSlots();
 const summary = summarizePilotSlots(slots);
 
@@ -69,12 +75,28 @@ assert.ok(registeredSources.every((row) => !/[?#]/.test(row.source_url)));
 assert.equal(registerRows.filter((row) => row.decision === "awaiting_source").length, 28);
 assert.equal(
   registerRows.find((row) => row.slot_id === "hermes_logistics-01")?.intended_cta,
-  "/load-board/?role=carrier#carrier-access",
+  directCarrierIntake,
 );
 assert.equal(
   registerRows.find((row) => row.slot_id === "hermes_academy-01")?.intended_cta,
   "/academy/apply/",
 );
+
+const pilotSource = readFileSync(new URL("../src/data/content-pipeline-pilot.ts", import.meta.url), "utf8");
+const publishStart = pilotSource.indexOf('id: "synthetic-logistics-publish"');
+const nextFixtureStart = pilotSource.indexOf('id: "synthetic-marketing-publish"');
+assert.ok(publishStart >= 0 && nextFixtureStart > publishStart, "Synthetic logistics publish fixture block must exist.");
+const logisticsPublishBlock = pilotSource.slice(publishStart, nextFixtureStart);
+assert.ok(
+  logisticsPublishBlock.includes(`intendedCta: "${directCarrierIntake}"`),
+  "Synthetic logistics publish candidate must use the direct carrier intake.",
+);
+for (const legacyCta of legacyCarrierDemoCtas) {
+  assert.ok(
+    !logisticsPublishBlock.includes(`intendedCta: "${legacyCta}"`),
+    "Publishable logistics fixture must not route carrier traffic to the fictional Load Board intake.",
+  );
+}
 
 const substantialText = [
   "A useful source explains the full operating question rather than only repeating a promotional claim.",
@@ -95,7 +117,7 @@ const makeAsset = (overrides = {}) => ({
   proposedTopic: "Structured carrier-controlled review",
   proposedQuery: "what should a carrier review before booking",
   canonicalOwner: "/logistics/car-hauling-dispatch/",
-  intendedCta: "/load-board/?role=carrier#carrier-access",
+  intendedCta: directCarrierIntake,
   audience: "Carriers",
   permissionStatus: "owner_confirmed",
   evidenceStatus: "first_party_verified",
@@ -184,5 +206,5 @@ assert.equal(progressoproEntity.publishingStatus, "blocked");
 assert.ok(contentEntityRegistry.every((entity) => entity.publishingStatus !== "approved"));
 
 console.log(
-  `Content pipeline checks passed: ${slots.length} quota slots, ${registeredSources.length} real held sources, ${decisionFixtures.length} decision paths, strict thin-content and entity/privacy gates active.`,
+  `Content pipeline checks passed: ${slots.length} quota slots, ${registeredSources.length} real held sources, ${decisionFixtures.length} decision paths, direct carrier CTA for publishable content, strict thin-content and entity/privacy gates active.`,
 );
