@@ -4,13 +4,14 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 
+const onboardingPath = "/logistics/carrier-onboarding/";
 const agreementPath = "/logistics/carrier-agreement/";
 const salesPhone = "+12623023626";
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "Hermes Carrier Partnership Options",
-  description: "A private mobile sales handoff that lets a carrier review the agreement path or learn how Hermes support options work.",
+  description: "A private mobile sales handoff that lets a carrier begin onboarding or learn how Hermes support options work.",
   url: "https://hermeslogisticsus.com/logistics/carrier-offer/",
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
@@ -48,13 +49,13 @@ const schema = {
         <div class="primary-choice-grid" aria-label="Choose your next step">
           <article class="primary-choice primary-choice-agreement">
             <FileText size={28} aria-hidden="true" />
-            <p class="choice-label">Ready to review the paperwork?</p>
-            <h2>Go to the agreement</h2>
-            <p>Open the current private agreement-review page, download the document, and see the secure signing process.</p>
-            <a class="button button-primary" href={agreementPath} data-primary-choice="agreement">
-              Review agreement and signing steps <ArrowRight size={18} aria-hidden="true" />
+            <p class="choice-label">Ready to move forward?</p>
+            <h2>Complete the carrier packet</h2>
+            <p>Select the working model, provide the operating information, sign from your phone, and download your PDF copy.</p>
+            <a class="button button-primary" href={onboardingPath} data-primary-choice="agreement">
+              Start onboarding and signature <ArrowRight size={18} aria-hidden="true" />
             </a>
-            <small>The current document remains a review draft until Hermes uploads the approved execution version.</small>
+            <small>The current release creates a signed review/onboarding packet. Final execution activates only with the approved master agreement.</small>
           </article>
 
           <article class="primary-choice primary-choice-learn">
@@ -124,7 +125,7 @@ const schema = {
               <li><Check size={17} aria-hidden="true" />Negotiation within carrier instructions</li>
               <li><Check size={17} aria-hidden="true" />Booking and basic document coordination</li>
             </ul>
-            <a href={agreementPath}>Review agreement path <ArrowRight size={16} aria-hidden="true" /></a>
+            <a href={`${onboardingPath}?plan=essential`}>Choose Essential and continue <ArrowRight size={16} aria-hidden="true" /></a>
           </article>
 
           <article class="plan-card plan-card-pro">
@@ -138,7 +139,7 @@ const schema = {
               <li><Check size={17} aria-hidden="true" />Shipper, dealer, and repeat-customer research</li>
               <li><Check size={17} aria-hidden="true" />Hermes Connect operating profile and team handoffs as available</li>
             </ul>
-            <a href={agreementPath}>Review agreement path <ArrowRight size={16} aria-hidden="true" /></a>
+            <a href={`${onboardingPath}?plan=pro`}>Choose Hermes Pro and continue <ArrowRight size={16} aria-hidden="true" /></a>
           </article>
 
           <article class="plan-card">
@@ -150,7 +151,7 @@ const schema = {
               <li><Check size={17} aria-hidden="true" />Your proposed percentage</li>
               <li><Check size={17} aria-hidden="true" />Hermes review before any agreement is issued</li>
             </ul>
-            <a href={`tel:${salesPhone}`}>Discuss custom terms <Phone size={16} aria-hidden="true" /></a>
+            <a href={`${onboardingPath}?plan=custom`}>Submit a custom proposal <ArrowRight size={16} aria-hidden="true" /></a>
             <small>A custom proposal is non-binding and is not an approved agreement until Hermes accepts the scope and issues the matching document.</small>
           </article>
         </div>
@@ -178,11 +179,12 @@ const schema = {
       <div class="shell offer-final-card">
         <div>
           <p class="eyebrow">Choose your next step</p>
-          <h2 id="offer-final-title">Review the agreement or talk through the right service level.</h2>
+          <h2 id="offer-final-title">Start the carrier packet or review the current master draft.</h2>
           <p>No load, rate, mileage, revenue, customer relationship, or business outcome is guaranteed. The goal is to give your company more research and operating support while you remain the decision-maker.</p>
         </div>
         <div class="offer-final-actions">
-          <a class="button button-primary" href={agreementPath}>Review agreement <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-primary" href={onboardingPath}>Start onboarding <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button" href={agreementPath}>Review master draft <FileText size={18} aria-hidden="true" /></a>
           <a class="button" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Talk to Logistics Sales</a>
         </div>
       </div>
