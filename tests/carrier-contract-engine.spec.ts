@@ -93,7 +93,7 @@ async function completeCarrierPacket(page: Page) {
   await expect(page.locator("[data-result-title]")).toContainText("copies were sent");
   await expect(page.locator("[data-result-copy]")).toContainText("Document mode: review");
 
-  const manualDownload = page.locator<HTMLAnchorElement>("[data-manual-download]");
+  const manualDownload = page.locator("[data-manual-download]");
   await expect(manualDownload).toBeVisible();
   await expect(manualDownload).toHaveAttribute("download", "Hermes_TEST_Mobile_Carrier_LLC_Signed_Appendix_A.pdf");
   await expect(manualDownload).toHaveAttribute("href", /^blob:/);
