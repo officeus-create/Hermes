@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const offerRoute = "/logistics/carrier-offer/";
-const agreementRoute = "/logistics/carrier-agreement/";
+const onboardingRoute = "/logistics/carrier-onboarding/";
 
 test("carrier sales handoff starts with two clear choices and no data collection", async ({ page }) => {
   await page.goto(offerRoute);
@@ -13,13 +13,13 @@ test("carrier sales handoff starts with two clear choices and no data collection
 
   const primaryChoices = page.locator("[data-primary-choice]");
   await expect(primaryChoices).toHaveCount(2);
-  await expect(page.locator('[data-primary-choice="agreement"]')).toHaveAttribute("href", agreementRoute);
+  await expect(page.locator('[data-primary-choice="agreement"]')).toHaveAttribute("href", onboardingRoute);
   await expect(page.locator('[data-primary-choice="learn"]')).toHaveAttribute("href", "#learn-more");
   await expect(page.locator("form")).toHaveCount(0);
   await expect(page.locator("input, textarea, select")).toHaveCount(0);
 });
 
-test("learn-more path reveals responsibilities, plans, and company branches", async ({ page }) => {
+test("learn-more path reveals responsibilities, plan-specific onboarding, and company branches", async ({ page }) => {
   await page.goto(offerRoute);
   await page.locator('[data-primary-choice="learn"]').click();
 
@@ -32,14 +32,17 @@ test("learn-more path reveals responsibilities, plans, and company branches", as
   await expect(page.getByText("8%", { exact: true })).toBeVisible();
   await expect(page.getByText(/custom proposal is non-binding/i)).toBeVisible();
   await expect(page.getByRole("heading", { name: "Hermes Connect & IT" })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Choose Essential and continue/i })).toHaveAttribute("href", `${onboardingRoute}?plan=essential`);
+  await expect(page.getByRole("link", { name: /Choose Hermes Pro and continue/i })).toHaveAttribute("href", `${onboardingRoute}?plan=pro`);
+  await expect(page.getByRole("link", { name: /Submit a custom proposal/i })).toHaveAttribute("href", `${onboardingRoute}?plan=custom`);
 });
 
-test("agreement choice reaches the existing draft review boundary", async ({ page }) => {
+test("primary sales choice reaches the carrier onboarding engine", async ({ page }) => {
   await page.goto(offerRoute);
   await page.locator('[data-primary-choice="agreement"]').click();
 
-  await expect(page).toHaveURL(/\/logistics\/carrier-agreement\/$/);
-  await expect(page.getByRole("heading", { name: /Review the Carrier Dispatch Agreement/i })).toBeVisible();
-  await expect(page.getByText("Draft for attorney review", { exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/logistics\/carrier-onboarding\/$/);
+  await expect(page.getByRole("heading", { name: /Complete the carrier packet from your phone/i })).toBeVisible();
+  await expect(page.locator("#carrier-onboarding-form")).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
 });

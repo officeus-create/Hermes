@@ -34,8 +34,14 @@ jobs:
       - name: Validate static output
         run: npm test
 
+      - name: Validate carrier contract engine
+        run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
+
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
+
+      - name: Validate carrier onboarding browser flow
+        run: npx playwright test tests/carrier-contract-engine.spec.ts --project=desktop --grep "carrier can complete"
 
       - name: Run browser workflow tests
         run: npm run test:e2e
