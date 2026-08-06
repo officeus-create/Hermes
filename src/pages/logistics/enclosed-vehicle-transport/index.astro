@@ -9,6 +9,11 @@ const content = {
   intro: "Hermes reviews enclosed vehicle transport requests for classic, luxury, specialty, high-value, and sensitive vehicles. Route, dimensions, condition, operability, ground clearance, handling needs, timing, and access must be disclosed before equipment fit can be evaluated.",
   image: "/images/path-logistics-system.jpg",
   imageAlt: "Enclosed vehicle transport and protected carrier coordination",
+  primaryAction: {
+    label: "Prepare enclosed transport request",
+    href: "/logistics/request-vehicle-transport/?request=other&equipment=enclosed#transport-intake",
+  },
+  handoffNote: "Use the direct transport intake to prepare the exact route, timing, vehicle summary, condition, ground-clearance or handling context, access, and enclosed-equipment preference for Logistics Sales review. The requester selects the correct role in the form. Submission does not guarantee enclosed capacity, equipment fit, protection outcome, price, timing, acceptance, or booking.",
   audience: [
     "Owners of classic, collector, luxury, or specialty vehicles",
     "Dealers moving sensitive or higher-protection inventory",
@@ -39,6 +44,7 @@ const content = {
     { question: "How do I begin?", answer: "Submit the exact route, vehicle details, condition, operability, access, timing, and protected-handling request for review." },
   ],
   related: [
+    { label: "Request Vehicle Transportation", href: "/logistics/request-vehicle-transport/?request=other&equipment=enclosed#transport-intake" },
     { label: "Luxury and Classic Vehicle Transport", href: "/paths/logistics/customers/luxury-classic-vehicle/" },
     { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
     { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
