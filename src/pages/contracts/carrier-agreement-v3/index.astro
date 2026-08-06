@@ -1,0 +1,67 @@
+---
+import { ArrowLeft, Download, FileText, Printer, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+
+const pdfAssetPath = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
+const version = "ATTORNEY-REVIEW-V3-2026-08-06";
+const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb";
+---
+
+<BaseLayout
+  title="Carrier Agreement PDF Review | Hermes Logistics"
+  description="Review the seven-page Hermes carrier administrative and dispatch support agreement v3 attorney-review PDF from a phone or computer."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="pdf-review-page" data-pdf-asset={pdfAssetPath} data-agreement-version={version}>
+    <section class="pdf-review-hero">
+      <div class="pdf-review-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="shell pdf-review-heading">
+        <a class="back-link" href="/logistics/carrier-agreement/"><ArrowLeft size={17} aria-hidden="true" />Back to the 60-second summary</a>
+        <p class="eyebrow">Hermes Logistics · PDF review</p>
+        <h1>Read the full seven-page draft.</h1>
+        <p>The document remains marked <strong>ATTORNEY REVIEW DRAFT - NOT FOR EXECUTION</strong>. The carrier-specific percentage belongs in Appendix A, not in the reusable master.</p>
+        <div class="pdf-review-actions">
+          <button class="button pdf-primary" type="button" data-download-pdf><Download size={18} aria-hidden="true" />Download PDF</button>
+          <button class="button" type="button" data-print-pdf><Printer size={18} aria-hidden="true" />Print or save</button>
+          <a class="button" href="/logistics/carrier-onboarding/">Confirm terms and sign</a>
+        </div>
+        <p class="document-control"><ShieldCheck size={16} aria-hidden="true" />Version {version} · SHA-256 <code>{pdfSha256}</code></p>
+      </div>
+    </section>
+
+    <section class="section pdf-review-section">
+      <div class="shell pdf-review-frame">
+        <object data={pdfAssetPath} type="application/pdf" aria-label="Hermes carrier agreement v3 attorney-review PDF">
+          <div class="pdf-fallback"><FileText size={32} aria-hidden="true" /><h2>Your browser did not open the embedded PDF.</h2><p>Use the Download PDF button above, or open the HTML agreement from the summary page.</p></div>
+        </object>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script define:vars={{ pdfAssetPath }}>
+  document.querySelector("[data-download-pdf]")?.addEventListener("click", () => {
+    const link = document.createElement("a");
+    link.href = pdfAssetPath;
+    link.download = "Hermes_Carrier_Agreement_v3_ATTORNEY_REVIEW.pdf";
+    document.body.append(link);
+    link.click();
+    link.remove();
+  });
+  document.querySelector("[data-print-pdf]")?.addEventListener("click", () => {
+    const frame = document.createElement("iframe");
+    frame.hidden = true;
+    frame.src = pdfAssetPath;
+    frame.addEventListener("load", () => frame.contentWindow?.print(), { once: true });
+    document.body.append(frame);
+    window.setTimeout(() => frame.remove(), 60000);
+  });
+</script>
+
+<style>
+.pdf-review-page{min-height:100vh;background:#f5f7ff;color:#10204e}.pdf-review-hero{position:relative;padding:8.35rem 0 3rem;background:radial-gradient(circle at 82% 15%,rgba(103,91,255,.28),transparent 34%),#071038;color:#fff}.pdf-review-rails{position:absolute;top:5.25rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.pdf-review-rails span:nth-child(1){background:#071038}.pdf-review-rails span:nth-child(2){background:#675bff}.pdf-review-rails span:nth-child(3){background:#f2a93b}.pdf-review-rails span:nth-child(4){background:#24a69a}.pdf-review-heading{max-width:1050px}.back-link{display:inline-flex;gap:.4rem;align-items:center;margin-bottom:1.5rem;color:rgba(255,255,255,.75);font-weight:700}.pdf-review-heading h1{max-width:14ch;font-size:clamp(2.7rem,6vw,5.4rem);line-height:1}.pdf-review-heading>p:not(.eyebrow,.document-control){max-width:72ch;color:rgba(255,255,255,.78);font-size:1.08rem;line-height:1.7}.pdf-review-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.5rem}.pdf-review-actions .button{border-color:rgba(255,255,255,.36);color:#fff}.pdf-review-actions button{font:inherit;cursor:pointer}.pdf-primary{border:0!important;background:linear-gradient(135deg,#f2a93b,#ffd66d)!important;color:#251900!important}.document-control{display:flex;gap:.45rem;align-items:flex-start;max-width:100%;margin-top:1rem;color:rgba(255,255,255,.56);font-size:.76rem;overflow-wrap:anywhere}.pdf-review-section{padding-top:2rem}.pdf-review-frame{padding:clamp(.5rem,2vw,1rem);border:1px solid #dce3f8;border-radius:16px;background:#fff;box-shadow:0 24px 70px rgba(7,16,56,.12)}.pdf-review-frame object{display:block;width:100%;height:min(78vh,980px);min-height:640px;border:0;border-radius:10px;background:#eef1fb}.pdf-fallback{display:grid;place-items:center;align-content:center;min-height:640px;padding:2rem;text-align:center}.pdf-fallback p{max-width:56ch;color:#5b6885}@media(max-width:700px){.pdf-review-hero{padding-top:7.35rem}.pdf-review-rails{top:4.75rem}.pdf-review-actions .button{width:100%;justify-content:center}.pdf-review-frame{padding:.25rem}.pdf-review-frame object{height:72vh;min-height:520px}}@media print{.site-header,.site-footer,.pdf-review-hero{display:none!important}.pdf-review-section{padding:0}.pdf-review-frame{padding:0;border:0;box-shadow:none}.pdf-review-frame object{height:100vh}}
+</style>

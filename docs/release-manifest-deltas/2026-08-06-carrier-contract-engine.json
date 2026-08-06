@@ -2,7 +2,7 @@
   "schema_version": 1,
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-08-06-carrier-contract-engine",
-  "generated_at": "2026-08-06T08:45:00+03:00",
+  "generated_at": "2026-08-06T11:35:00+03:00",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
   "additions": [
     {
@@ -20,10 +20,42 @@
         "production": "pending_deployment",
         "immutable_release": "missing"
       }
+    },
+    {
+      "route": "/contracts/carrier-agreement-v3/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/contracts/carrier-agreement-v3/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/contracts/carrier-agreement-v3/index.astro",
+      "status": "COMPLETE",
+      "blocker": "The mobile viewer presents the attorney-review PDF and does not activate production execution. The final signing system remains gated by counsel approval, immutable document controls, provider approval, and isolated production credentials.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.html",
+      "sitemap_owner": null,
+      "source_file": "public/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.html",
+      "status": "COMPLETE",
+      "blocker": "This reusable master remains an attorney-review business draft with a blank percentage. It must not be presented as an approved execution agreement until counsel approval and immutable production document controls are complete.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 1,
+    "route_count_added": 3,
     "indexable_route_count_added": 0,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true

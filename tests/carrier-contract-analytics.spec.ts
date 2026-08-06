@@ -26,10 +26,10 @@ async function preventNavigation(locator: Locator) {
   });
 }
 
-test("carrier sales choices, sharing, downloads, and e-sign actions emit controlled events", async ({ page }) => {
+test("carrier sales choices, sharing, and document actions emit controlled events", async ({ page }) => {
   await page.goto("/carrier/");
 
-  const offerLink = page.getByRole("link", { name: "Review plans and support" });
+  const offerLink = page.getByRole("link", { name: "See what Hermes handles" });
   await preventNavigation(offerLink);
   await offerLink.click();
   await page.locator("[data-carrier-copy]").click();
@@ -54,10 +54,10 @@ test("carrier sales choices, sharing, downloads, and e-sign actions emit control
   });
 
   await page.goto("/logistics/carrier-agreement/");
-  const downloadPromise = page.waitForEvent("download");
-  await page.locator('[data-contract-download="pdf"]').click();
-  await downloadPromise;
-  const esignLink = page.locator("[data-contract-esign]");
+  const pdfControl = page.locator('[data-contract-download="pdf"]');
+  await preventNavigation(pdfControl);
+  await pdfControl.click();
+  const esignLink = page.locator("[data-contract-esign]").first();
   await preventNavigation(esignLink);
   await esignLink.click();
 
@@ -71,39 +71,32 @@ test("carrier sales choices, sharing, downloads, and e-sign actions emit control
     service_group: "carrier_contract",
     page_path: "/logistics/carrier-agreement/",
   });
-  expect(documentActions).toContainEqual(expect.objectContaining({
+  expect(documentActions).toContainEqual({
     event: "carrier_contract_document_action",
     cta_type: "carrier_esign_request",
+    handoff_method: "site_packet",
     audience_type: "carrier",
     page_group: "carrier_agreement",
     service_group: "carrier_contract",
     page_path: "/logistics/carrier-agreement/",
-    handoff_method: expect.stringMatching(/^(email_request|hosted_session)$/),
-  }));
+  });
 });
 
-test("carrier onboarding records steps one through five and packet status without form values", async ({ page }) => {
+test("carrier onboarding records steps one through three and packet status without form values", async ({ page }) => {
   await page.goto("/logistics/carrier-onboarding/?plan=essential");
 
+  await page.locator('input[name="service_percentage"]').fill("6");
   await page.locator("[data-next]").click();
+
   await page.locator('input[name="legal_company_name"]').fill("PRIVATE TEST Carrier LLC");
   await page.locator('input[name="mc_number"]').fill("987654");
   await page.locator('input[name="signer_name"]').fill("Private Test Signer");
   await page.locator('input[name="signer_title"]').fill("Owner");
   await page.locator('input[name="signer_email"]').fill("private-analytics-test@example.com");
   await page.locator('input[name="signer_phone"]').fill("+1 414 555 0199");
-
   await page.locator("[data-next]").click();
-  await page.locator('input[name="equipment_types"][value="Car hauler"]').check();
-  await page.locator('textarea[name="preferred_lanes"]').fill("PRIVATE TEST Wisconsin to Illinois lane");
 
-  await page.locator("[data-next]").click();
-  await page.locator('select[name="access_handoff_method"]').selectOption({
-    label: "Carrier will operate the load board during adaptation",
-  });
-
-  await page.locator("[data-next]").click();
-  await expect(page.locator("[data-step-label]")).toHaveText("Step 5 of 5");
+  await expect(page.locator("[data-step-label]")).toHaveText("Step 3 of 3");
 
   await page.locator("[data-result-title]").evaluate((element) => {
     element.textContent = "Your PDF packet is ready and copies were sent.";
@@ -131,7 +124,7 @@ test("carrier onboarding records steps one through five and packet status withou
     .filter((entry) => entry.event === "carrier_contract_step_reached")
     .map((entry) => Number(entry.stepNumber))
     .sort((left, right) => left - right);
-  expect(reachedSteps).toEqual([1, 2, 3, 4, 5]);
+  expect(reachedSteps).toEqual([1, 2, 3]);
 
   expect(events.filter((entry) => entry.event === "carrier_contract_packet_result")).toContainEqual({
     event: "carrier_contract_packet_result",
@@ -149,8 +142,6 @@ test("carrier onboarding records steps one through five and packet status withou
     "Private Test Signer",
     "private-analytics-test@example.com",
     "+1 414 555 0199",
-    "Car hauler",
-    "PRIVATE TEST Wisconsin to Illinois lane",
   ]) {
     expect(serialized).not.toContain(prohibitedValue);
   }

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-06-carrier-signing-short-route",
+  "generated_at": "2026-08-06T16:48:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/sign/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/sign/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/sign/index.astro",
+      "status": "COMPLETE",
+      "blocker": "The private signing entry guides carriers into the attorney-review/onboarding packet. Final legal execution remains disabled until an approved master agreement matches the selected percentage, scope, version, and file fingerprint.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "not_applicable_to_private_sales_entry"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

@@ -1,83 +1,155 @@
-# Carrier Sales Handoff — Proposal, Packet, and Agreement
+# Carrier Sales Handoff - Agreement v3
 
-Status: SALES FLOW READY / FINAL LEGAL EXECUTION STILL GATED  
-Primary short URL: `https://hermeslogisticsus.com/carrier/`
+Status: SALES AND REVIEW FLOW READY / PRODUCTION EXECUTION STILL GATED  
+Primary SMS URL: `https://hermeslogisticsus.com/sign/`  
+Detailed proposal URL: `https://hermeslogisticsus.com/carrier/`  
+Current review master: `ATTORNEY-REVIEW-V3-2026-08-06`
 
 ## Purpose
 
-Give Logistics Sales one consistent link that works in SMS, WhatsApp, Telegram, email, and website navigation. The carrier can:
+Give Logistics Sales one consistent phone-friendly path:
 
-1. understand the value and control boundaries;
-2. compare Essential, Pro, and Custom proposals;
-3. start the carrier packet from a phone;
-4. review the current master draft;
-5. draw a signature and retain a PDF review/onboarding packet;
-6. call Logistics Sales before the final step.
+1. carrier sees the control, money-flow, and responsibility boundaries in plain English;
+2. carrier chooses Dispatch Support, Full Partnership, or Carrier Proposal;
+3. carrier confirms the company, authorized signer, and agreed percentage;
+4. carrier reviews the exact Appendix A summary;
+5. carrier signs and keeps a PDF review packet;
+6. equipment, lanes, load boards, credentials, and operating details are collected later through the appropriate secure onboarding process.
 
-The short URL must never contain a carrier name, email, phone, MC/USDOT, plan selection, tracking identifier, or other private value.
+The signing form must remain short. Do not turn the agreement into an operational questionnaire.
+
+## Safe SMS link
+
+Send only the clean public handoff:
+
+`https://hermeslogisticsus.com/sign/`
+
+Do not place a percentage, plan, carrier name, email, phone, MC/USDOT, signer identity, representative identity, internal carrier ID, tracking ID, offer code, or private document reference in a public URL.
+
+A future personalized execution link must use an opaque, signed, expiring, single-purpose token resolved by Hermes on the server. Raw commercial terms and personal data must never become URL parameters, identity tokens, authentication tokens, or record-retrieval keys.
 
 ## Recommended sales sequence
 
-### 1. Confirm basic fit before sending
+### 1. Confirm fit privately
 
-Confirm only what is needed for the next step:
+Before sending the link, confirm the carrier is operating or preparing to operate, has an authorized business contact, and understands the proposed service model and percentage. Equipment and lane discovery may occur in conversation, but it is not required in the pre-signature web form.
 
-- carrier or fleet status;
-- equipment type and capacity;
-- authority and insurance readiness;
-- current dispatch situation;
-- operating area and availability;
-- authorized business contact.
+No passwords, bank details, W-9, CDL image, VIN list, or shipment documents in this flow.
 
-Do not ask for passwords, PINs, W-9 files, CDL images, bank information, VIN lists, gate codes, or private shipment records through SMS or a public URL.
+Do not request passwords, PINs, recovery codes, API keys, W-9 files, CDL images, bank information, payment credentials, VIN lists, gate codes, release documents, or private shipment records through SMS or the public agreement URL.
 
 ### 2. Set the reason for the link
 
-Use one sentence before sending:
+Use a low-pressure explanation:
 
-> I’m sending one private Hermes page where you can review the support options, see what remains under your control, and prepare the carrier packet from your phone.
+> I am sending one private Hermes page where you can see the important terms in plain English, understand what stays under your control, and continue from your phone. You approve every load and keep control of the operation. You may review the full agreement or call us before completing the packet.
 
-### 3. Send the short link
+### 3. Send the link
 
-Preferred:
+General SMS:
 
-> Hermes carrier proposal: review the support options, keep control of every load, and prepare the carrier packet from your phone. https://hermeslogisticsus.com/carrier/
+> Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: https://hermeslogisticsus.com/sign/
 
-Short follow-up:
+Follow-up when appropriate:
 
-> Open the link and choose either “Start the carrier packet” or “Review plans and support.” Call me before the signature step if any term is unclear.
+> Were the control, payment, and percentage terms clear? Tell me which section needs clarification before you continue.
 
-### 4. Guide, do not pressure
+Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, hidden conditions, or threatening language.
 
-Useful questions:
+## Conversation bridge before the CTA
 
-- Which part of the process takes the most time from you now?
-- Do you want ordinary dispatch support or deeper route and customer-development work?
-- Which decisions do you want to keep personally?
-- Is the signer authorized to act for the carrier company?
-- Which term should we clarify before the packet is completed?
+Use questions that reduce uncertainty:
 
-Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, or hidden conditions.
+- Which decisions do you want to keep personally? The agreement keeps final load and operating decisions with the carrier.
+- Is the percentage in the carrier-specific Appendix A the percentage we discussed?
+- Is the signer authorized to act for the legal carrier company?
+- Is anything unclear about non-exclusivity, payment flow, invoices, or termination?
+- Would you prefer to read the full agreement before completing the three-step packet?
 
 ## CTA hierarchy
 
-1. `Start the carrier packet` — strongest action for a qualified carrier.
-2. `Review plans and support` — for a carrier who needs value clarification.
-3. `Review the agreement draft` — for document-focused review.
-4. `Call Logistics Sales` — immediate human fallback.
+1. `Continue to carrier packet` - qualified carrier ready to confirm the offer.
+2. `Review the agreement first` - carrier wants detailed terms before continuing.
+3. `Ask a question` - immediate human fallback.
+4. `See what Hermes handles` - carrier needs more value and scope explanation.
 
-Do not make PDF download the only next step. Reading without a clear continuation path creates avoidable drop-off.
+Do not make a file download the only next step. Every review screen must provide a clear path back to the carrier-specific Appendix A packet.
 
 ## Visual hierarchy
 
 - dark navy: trust, control, and serious business context;
-- violet-to-magenta primary action: product and next-step emphasis;
-- green check and call accents: safety, confirmation, and human support;
-- warm accents: recommended path only, without implying urgency or guaranteed superiority;
-- red: security or legal warning only.
+- violet-to-magenta gradient: the primary continuation action;
+- green: carrier control, confirmation, and safe payment/data boundaries;
+- amber/gold: document status and terms requiring attention;
+- red: actual errors, draft status, and legal/security warnings only.
+
+No countdowns, pulsing panic animations, fake availability, aggressive red primary buttons, or unverified time-to-complete claims.
+
+## Three-step signing flow
+
+### Step 1 - Confirm the offer
+
+Required:
+
+- service model;
+- exact carrier-specific percentage for Appendix A.
+
+Optional:
+
+- Hermes representative/team code kept inside the submitted record, not the public URL;
+- offer code kept inside the submitted record, not the public URL;
+- custom scope when Carrier Proposal is selected.
+
+### Step 2 - Company and signer
+
+Required:
+
+- legal company name;
+- MC or USDOT;
+- authorized signer name/title;
+- business email;
+- mobile or business phone.
+
+Optional:
+
+- DBA;
+- company website.
+
+Do not request a full street address before signature. The company is identified by legal name and authority number; counsel may later require a notice address in the approved execution package or private records system.
+
+### Step 3 - Review and sign
+
+Show before signature:
+
+- legal company;
+- selected model;
+- exact percentage;
+- signer;
+- carrier-control boundary;
+- freight-payment boundary;
+- no-guarantee boundary;
+- current document status.
+
+Require affirmative electronic-record consent, signer-authority confirmation, document review, selected-scope confirmation, typed name, and drawn signature.
 
 ## Current execution boundary
 
-The current master asset is `DRAFT-2026-08-05` and states 5.00%. Essential 6% and Pro 8% are proposed service structures. Until an approved master agreement matches the selected plan, the engine may create a signed review/onboarding packet but must not label it a final executed agreement.
+The repository review master is:
 
-Production execution remains governed by `docs/CARRIER_CONTRACT_ENGINE_ACTIVATION.md` and Issue #280.
+- version: `ATTORNEY-REVIEW-V3-2026-08-06`;
+- PDF: `/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf`;
+- PDF SHA-256: `9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb`;
+- master percentage: blank;
+- carrier-specific percentage: signed Appendix A.
+
+The endpoint must remain in review mode until production has all of the following:
+
+- counsel-approved non-review master version;
+- immutable approved PDF path and SHA-256;
+- `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` containing the exact supported rates;
+- opaque signed-link or approved provider session for personalized execution;
+- preview/production binding isolation;
+- approved internal recipients and records retention;
+- successful synthetic phone execution.
+
+A custom proposal never becomes live automatically.

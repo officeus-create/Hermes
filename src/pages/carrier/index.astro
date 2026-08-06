@@ -1,117 +1,82 @@
 ---
-import { ArrowRight, Check, Clipboard, FileSignature, MessageSquareText, Phone, ShieldCheck, Sparkles } from "@lucide/astro";
+import { ArrowRight, Check, Clipboard, FileSignature, MessageSquareText, Phone, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 
-const shortUrl = "https://hermeslogisticsus.com/carrier/";
-const offerPath = "/logistics/carrier-offer/";
-const onboardingPath = "/logistics/carrier-onboarding/";
-const agreementPath = "/logistics/carrier-agreement/";
+const pageUrl = "https://hermeslogisticsus.com/carrier/";
+const shareUrl = "https://hermeslogisticsus.com/sign/";
 const salesPhone = "+12623023626";
-const smsCopy = `Hermes carrier proposal: review the support options, keep control of every load, and prepare the carrier packet from your phone. ${shortUrl}`;
-
+const smsCopy = `Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: ${shareUrl}`;
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Hermes Carrier Partnership",
-  description: "A private, phone-friendly Hermes Logistics sales handoff for reviewing carrier support options and starting the carrier packet.",
-  url: shortUrl,
+  name: "Hermes Carrier Agreement",
+  description: "A private Hermes Logistics page for understanding carrier support, reviewing the agreement, and continuing to a carrier-specific review packet.",
+  url: pageUrl,
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
 ---
 
 <BaseLayout
-  title="Carrier Partnership | Hermes Logistics"
-  description="Review Hermes carrier support options, keep control of every load, and start the carrier packet from a phone or computer."
+  title="Carrier Agreement | Hermes Logistics"
+  description="Review the carrier-support model, understand what stays under your control, and continue to a carrier-specific Appendix A review packet."
   robots="noindex,nofollow"
   schema={schema}
 >
   <SiteHeader activePath="/paths/logistics/" />
-  <main id="main-content" class="carrier-short-page" data-carrier-short-url={shortUrl}>
-    <section class="carrier-short-hero">
-      <div class="shell carrier-short-hero-grid">
+  <main id="main-content" class="carrier-signing-entry" data-carrier-entry data-carrier-short-url={pageUrl}>
+    <section class="carrier-entry-hero">
+      <div class="carrier-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div class="shell carrier-entry-grid">
         <div>
-          <p class="eyebrow">Hermes Logistics · Private carrier link</p>
-          <h1>Keep control of your operation. Add a team around it.</h1>
-          <p class="carrier-short-lead">
-            Review the support options, choose the working model that fits your company, and prepare the carrier packet from your phone. You continue approving every load and every final operating decision.
+          <p class="eyebrow">Hermes Logistics · Carrier support</p>
+          <h1>Keep control. Add a dispatch team.</h1>
+          <p class="carrier-entry-lead">
+            Review the working model in plain English, choose the support level, confirm the company and exact Appendix A percentage, and sign the review packet from your phone. The carrier keeps every final operating decision.
           </p>
-          <div class="carrier-trust-strip" aria-label="Carrier control commitments">
+          <div class="carrier-trust-strip" aria-label="Carrier agreement commitments">
             <span><Check size={17} aria-hidden="true" />You approve every load</span>
-            <span><Check size={17} aria-hidden="true" />Freight payments go to your company</span>
-            <span><Check size={17} aria-hidden="true" />No passwords collected here</span>
+            <span><Check size={17} aria-hidden="true" />Non-exclusive · no minimum volume</span>
+            <span><Check size={17} aria-hidden="true" />Freight funds go to your company or factor</span>
+            <span><ShieldCheck size={17} aria-hidden="true" />No passwords, W-9, bank data, or CDL image here</span>
           </div>
-          <div class="carrier-short-actions">
-            <a class="button carrier-primary" href={onboardingPath} data-commercial-primary-cta data-service-group="carrier_contract">
-              Start the carrier packet <FileSignature size={18} aria-hidden="true" />
+          <div class="carrier-entry-actions">
+            <a class="button carrier-primary" href="/logistics/carrier-onboarding/" data-commercial-primary-cta data-service-group="carrier_contract">
+              Review and sign <FileSignature size={18} aria-hidden="true" />
             </a>
-            <a class="button carrier-secondary" href={offerPath}>Review plans and support</a>
+            <a class="button carrier-secondary" href="/logistics/carrier-offer/">See what Hermes handles</a>
             <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call Logistics Sales</a>
           </div>
-          <p class="carrier-boundary">
-            The current release creates a signed review/onboarding packet. Final legal execution activates only after Hermes publishes an approved master agreement that matches the selected terms.
-          </p>
+          <p class="carrier-guidance">Review calmly. Continue only after the control, percentage, and Appendix A terms are clear.</p>
+          <p class="carrier-boundary">The current v3 document is an attorney-review draft. The system cannot label a packet as a final executed agreement until an approved master version, matching file hash, allowed percentage, and production execution controls are activated.</p>
         </div>
 
-        <aside class="carrier-next-card" aria-label="Carrier packet steps">
-          <p class="eyebrow">Your next step</p>
-          <strong>One mobile flow. Five clear stages.</strong>
+        <aside class="carrier-next-card" aria-label="Three carrier agreement steps">
+          <p class="eyebrow">Three clear steps</p>
+          <strong>Understand first. Sign second.</strong>
           <ol>
-            <li><span>1</span><div><b>Choose support</b><small>Essential, Pro, or a custom proposal.</small></div></li>
-            <li><span>2</span><div><b>Identify the company</b><small>Legal carrier and authorized signer.</small></div></li>
-            <li><span>3</span><div><b>Describe the operation</b><small>Equipment, lanes, availability, and process.</small></div></li>
-            <li><span>4</span><div><b>Review the record</b><small>Terms, boundaries, and document status stay visible.</small></div></li>
-            <li><span>5</span><div><b>Sign and retain</b><small>Draw the signature and download the PDF packet.</small></div></li>
+            <li><span>1</span><div><b>Review the working model</b><small>Control, scope, payment flow, termination, and the no-guarantee boundary.</small></div></li>
+            <li><span>2</span><div><b>Confirm company and percentage</b><small>Legal company, MC or USDOT, authorized signer, website, and the exact Appendix A percentage.</small></div></li>
+            <li><span>3</span><div><b>Sign and keep the PDF</b><small>Electronic consent, drawn signature, document identifiers, and a downloadable review copy.</small></div></li>
           </ol>
+          <a href="/logistics/carrier-agreement/">Read the full v3 attorney-review draft <ArrowRight size={16} aria-hidden="true" /></a>
         </aside>
       </div>
     </section>
 
-    <section class="section carrier-choice" aria-labelledby="carrier-choice-title">
-      <div class="shell">
-        <div class="section-heading carrier-short-heading">
-          <p class="eyebrow">Choose how to continue</p>
-          <h2 id="carrier-choice-title">Ready now, or still comparing the options?</h2>
-          <p>The page gives the carrier one clear decision without forcing data entry before they understand the working model.</p>
-        </div>
-        <div class="carrier-choice-grid">
-          <article class="carrier-choice-card carrier-choice-ready">
-            <FileSignature size={30} aria-hidden="true" />
-            <p class="choice-kicker">Ready to move forward</p>
-            <h3>Prepare the carrier packet</h3>
-            <p>Select the proposed plan, enter operating information, review the status, sign with a finger, and receive the PDF.</p>
-            <a href={onboardingPath}>Start onboarding and signature <ArrowRight size={17} aria-hidden="true" /></a>
-          </article>
-          <article class="carrier-choice-card">
-            <Sparkles size={30} aria-hidden="true" />
-            <p class="choice-kicker">Understand the value first</p>
-            <h3>Review plans and responsibilities</h3>
-            <p>See what remains under carrier control, what Hermes may support, and how Essential, Pro, and Custom differ.</p>
-            <a href={offerPath}>Open the carrier proposal <ArrowRight size={17} aria-hidden="true" /></a>
-          </article>
-          <article class="carrier-choice-card">
-            <ShieldCheck size={30} aria-hidden="true" />
-            <p class="choice-kicker">Review the document</p>
-            <h3>Read the current master draft</h3>
-            <p>Download the PDF or DOCX and review the fee, carrier-control language, security boundaries, and document version.</p>
-            <a href={agreementPath}>Review the agreement draft <ArrowRight size={17} aria-hidden="true" /></a>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <section class="section carrier-confidence" aria-labelledby="carrier-confidence-title">
-      <div class="shell carrier-confidence-grid">
-        <div>
-          <p class="eyebrow">Before the carrier signs</p>
-          <h2 id="carrier-confidence-title">The important boundaries are stated before the signature.</h2>
+      <div class="shell">
+        <div class="section-heading carrier-heading">
+          <p class="eyebrow">What the signature does</p>
+          <h2 id="carrier-confidence-title">It authorizes support. It does not hand over your company.</h2>
+          <p>Hermes may research, communicate, negotiate within your instructions, and coordinate ordinary documents. The carrier remains responsible for transportation, safety, drivers, equipment, insurance, routes, compliance, and final approval.</p>
         </div>
-        <div class="carrier-confidence-list">
-          <article><Check size={20} aria-hidden="true" /><div><h3>Carrier-controlled decisions</h3><p>Hermes may research, communicate, negotiate within instructions, and coordinate documents. The carrier makes the final operating decision.</p></div></article>
-          <article><Check size={20} aria-hidden="true" /><div><h3>No hidden freight-fund flow</h3><p>Brokers, shippers, or factoring companies pay the carrier directly. The selected service fee and scope must match the approved agreement.</p></div></article>
-          <article><Check size={20} aria-hidden="true" /><div><h3>No guaranteed business result</h3><p>No load, rate, mileage, lane, response time, customer, booking, or revenue is promised.</p></div></article>
-          <article><Check size={20} aria-hidden="true" /><div><h3>No credentials in the public workflow</h3><p>Passwords, PINs, W-9 files, CDL images, bank information, VIN lists, and private shipment records are prohibited.</p></div></article>
+        <div class="confidence-grid">
+          <article><Check size={22} aria-hidden="true" /><h3>Limited authority</h3><p>Hermes acts only within the selected administrative and dispatch scope. No brokerage or re-brokering authority is created.</p></article>
+          <article><Check size={22} aria-hidden="true" /><h3>Clear percentage</h3><p>The master agreement has no fixed rate. The exact percentage must appear in the carrier-specific Appendix A before signing.</p></article>
+          <article><Check size={22} aria-hidden="true" /><h3>Simple exit</h3><p>The proposed v3 structure is non-exclusive and allows either party to terminate with written notice while completed work is reconciled.</p></article>
+          <article><Check size={22} aria-hidden="true" /><h3>No personal collateral package</h3><p>The v3 draft does not add a personal guaranty, UCC lien, automatic card debit, confession of judgment, or hidden freight-fund transfer.</p></article>
         </div>
       </div>
     </section>
@@ -119,9 +84,9 @@ const schema = {
     <section class="section carrier-share" aria-labelledby="carrier-share-title">
       <div class="shell carrier-share-card">
         <div>
-          <p class="eyebrow">For Logistics Sales</p>
-          <h2 id="carrier-share-title">One short link for SMS, WhatsApp, or email.</h2>
-          <p>Send <strong>hermeslogisticsus.com/carrier</strong>. The message contains no carrier identity, authority number, or private tracking value.</p>
+          <p class="eyebrow">One clean link for SMS, WhatsApp, Telegram, or email</p>
+          <h2 id="carrier-share-title">Send hermeslogisticsus.com/sign</h2>
+          <p>The shared URL never contains the carrier name, email, phone, MC/USDOT, percentage, plan, representative code, offer code, or tracking identifier. Personalized execution will use an opaque, signed, expiring server-side token after that system is approved.</p>
           <p class="share-status" data-carrier-share-status aria-live="polite"></p>
         </div>
         <div class="carrier-share-actions">
@@ -135,12 +100,12 @@ const schema = {
     <section class="section carrier-final">
       <div class="shell carrier-final-card">
         <div>
-          <p class="eyebrow">Continue the conversation</p>
-          <h2>Choose the plan, prepare the packet, and keep a PDF copy.</h2>
-          <p>Questions can be resolved with Logistics Sales before the final step. The carrier does not need to surrender control of loads, drivers, equipment, safety, routes, or freight payments.</p>
+          <p class="eyebrow">Ready to continue</p>
+          <h2>Confirm the exact terms and complete the review packet from your phone.</h2>
+          <p>Questions can be resolved with Logistics Sales before signature. No false deadline, promise of loads, or hidden condition is used to pressure the carrier.</p>
         </div>
         <div class="carrier-final-actions">
-          <a class="button carrier-primary" href={onboardingPath}>Start the carrier packet <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button carrier-primary" href="/logistics/carrier-onboarding/">Review and sign <ArrowRight size={18} aria-hidden="true" /></a>
           <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call +1 (262) 302-3626</a>
         </div>
       </div>
@@ -149,12 +114,9 @@ const schema = {
   <SiteFooter />
 </BaseLayout>
 
-<script define:vars={{ shortUrl, smsCopy }}>
+<script define:vars={{ shareUrl, smsCopy }}>
   const status = document.querySelector("[data-carrier-share-status]");
-  const setStatus = (message) => {
-    if (status instanceof HTMLElement) status.textContent = message;
-  };
-
+  const setStatus = (message) => { if (status instanceof HTMLElement) status.textContent = message; };
   const copyText = async (value) => {
     try {
       await navigator.clipboard.writeText(value);
@@ -174,22 +136,20 @@ const schema = {
   };
 
   document.querySelector("[data-carrier-copy]")?.addEventListener("click", async () => {
-    const copied = await copyText(smsCopy);
-    setStatus(copied ? "SMS text copied." : `Copy this link: ${shortUrl}`);
+    setStatus(await copyText(smsCopy) ? "SMS text copied." : shareUrl);
   });
 
   document.querySelector("[data-carrier-share]")?.addEventListener("click", async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Hermes carrier proposal", text: smsCopy, url: shortUrl });
+        await navigator.share({ title: "Hermes carrier agreement", text: smsCopy, url: shareUrl });
         setStatus("Share menu opened.");
         return;
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
       }
     }
-    const copied = await copyText(smsCopy);
-    setStatus(copied ? "Share text copied." : `Copy this link: ${shortUrl}`);
+    setStatus(await copyText(smsCopy) ? "Share text copied." : shareUrl);
   });
 
   const smsLink = document.querySelector("[data-carrier-sms]");
@@ -200,5 +160,5 @@ const schema = {
 </script>
 
 <style>
-  .carrier-short-page{background:#fff;color:#10204e}.carrier-short-hero{padding:8.6rem 0 5rem;background:radial-gradient(circle at 82% 12%,rgba(116,99,255,.34),transparent 34%),radial-gradient(circle at 12% 84%,rgba(255,91,140,.16),transparent 35%),#071038;color:#fff}.carrier-short-hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.7fr);gap:clamp(2rem,5vw,5rem);align-items:center}.carrier-short-hero h1{max-width:12ch;font-size:clamp(3rem,7vw,6.1rem);line-height:.98}.carrier-short-lead{max-width:72ch;color:rgba(255,255,255,.82);font-size:clamp(1rem,2vw,1.2rem);line-height:1.72}.carrier-trust-strip{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.45rem}.carrier-trust-strip span{display:flex;gap:.42rem;align-items:center;padding:.62rem .78rem;border:1px solid rgba(178,255,210,.25);border-radius:999px;background:rgba(35,178,99,.1);color:#e4ffef;font-size:.84rem;font-weight:750}.carrier-trust-strip svg{color:#56e291}.carrier-short-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.75rem}.carrier-short-actions .button{min-height:3.15rem}.carrier-primary{border:0!important;background:linear-gradient(135deg,#7868ff,#a94de8 58%,#e35191)!important;color:#fff!important;box-shadow:0 14px 34px rgba(121,90,255,.3)}.carrier-secondary{border-color:rgba(255,255,255,.42)!important;color:#fff!important}.carrier-call{border-color:rgba(86,226,145,.42)!important;background:rgba(28,157,84,.14)!important;color:#f0fff6!important}.carrier-boundary{max-width:72ch;margin-top:1rem;color:rgba(255,255,255,.59);font-size:.82rem;line-height:1.55}.carrier-next-card{padding:1.5rem;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:rgba(255,255,255,.08);box-shadow:0 26px 70px rgba(0,0,0,.22);backdrop-filter:blur(14px)}.carrier-next-card>strong{display:block;font-size:1.55rem}.carrier-next-card ol{display:grid;gap:.85rem;margin:1.25rem 0 0;padding:0;list-style:none}.carrier-next-card li{display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:start}.carrier-next-card li>span{display:grid;width:2rem;height:2rem;place-items:center;border-radius:50%;background:linear-gradient(135deg,#7868ff,#d9549a);font-weight:900}.carrier-next-card b,.carrier-next-card small{display:block}.carrier-next-card small{margin-top:.15rem;color:rgba(255,255,255,.62);line-height:1.45}.carrier-choice{background:#f5f7ff}.carrier-short-heading{max-width:820px}.carrier-short-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.carrier-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.carrier-choice-card{display:flex;flex-direction:column;align-items:flex-start;padding:1.5rem;border:1px solid #dce3f8;border-radius:15px;background:#fff}.carrier-choice-card>svg{color:#6559ee}.carrier-choice-ready{border-color:#8375ff;box-shadow:0 22px 55px rgba(42,48,120,.12)}.choice-kicker{margin:.85rem 0 0;color:#6559ee;font-size:.76rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.carrier-choice-card h3{font-size:1.55rem}.carrier-choice-card>p:not(.choice-kicker){color:#5b6885;line-height:1.65}.carrier-choice-card>a{display:flex;gap:.45rem;align-items:center;margin-top:auto;padding-top:1rem;color:#4437d4;font-weight:850}.carrier-confidence-grid{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:clamp(2rem,5vw,5rem)}.carrier-confidence-grid h2{max-width:16ch}.carrier-confidence-list{display:grid;gap:.85rem}.carrier-confidence-list article{display:grid;grid-template-columns:auto 1fr;gap:.75rem;padding:1rem;border:1px solid #dde4f5;border-radius:11px}.carrier-confidence-list svg{margin-top:.2rem;color:#23a861}.carrier-confidence-list h3,.carrier-confidence-list p{margin:0}.carrier-confidence-list p{margin-top:.25rem;color:#5b6885;line-height:1.6}.carrier-share{padding-top:1rem}.carrier-share-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.4rem,4vw,2.5rem);border:1px solid #d7def4;border-radius:16px;background:linear-gradient(135deg,#f8f7ff,#fff4f8)}.carrier-share-card h2{max-width:19ch}.carrier-share-card p:not(.eyebrow){max-width:70ch;color:#596682;line-height:1.65}.carrier-share-actions{display:grid;gap:.65rem;min-width:min(100%,250px)}.carrier-share-actions .button{justify-content:center;font:inherit;cursor:pointer}.share-status{min-height:1.25rem;color:#4238bc!important;font-weight:800}.carrier-final{padding-top:1rem}.carrier-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border-radius:18px;background:#071038;color:#fff}.carrier-final-card h2{max-width:19ch}.carrier-final-card p:not(.eyebrow){max-width:72ch;color:rgba(255,255,255,.72);line-height:1.65}.carrier-final-actions{display:grid;gap:.7rem;min-width:min(100%,275px)}.carrier-final-actions .button{justify-content:center}@media(max-width:940px){.carrier-short-hero-grid,.carrier-confidence-grid,.carrier-share-card,.carrier-final-card{grid-template-columns:1fr}.carrier-choice-grid{grid-template-columns:1fr 1fr}.carrier-share-actions,.carrier-final-actions{width:100%;min-width:0}.carrier-share-actions{grid-template-columns:repeat(3,1fr)}}@media(max-width:680px){.carrier-short-hero{padding-top:7.5rem}.carrier-short-actions .button{width:100%;justify-content:center}.carrier-choice-grid{grid-template-columns:1fr}.carrier-share-actions{grid-template-columns:1fr}.carrier-final-actions .button{width:100%}}
+  .carrier-signing-entry{background:#fff;color:#10204e}.carrier-entry-hero{position:relative;overflow:hidden;padding:8.5rem 0 5rem;background:radial-gradient(circle at 84% 10%,rgba(103,91,255,.35),transparent 34%),radial-gradient(circle at 8% 90%,rgba(36,166,154,.14),transparent 30%),#071038;color:#fff}.carrier-rails{position:absolute;top:5.35rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.carrier-rails span:nth-child(1){background:#071038}.carrier-rails span:nth-child(2){background:#675bff}.carrier-rails span:nth-child(3){background:#d7529b}.carrier-rails span:nth-child(4){background:#24a69a}.carrier-entry-grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(320px,.72fr);gap:clamp(2rem,5vw,5rem);align-items:center}.carrier-entry-hero h1{max-width:11ch;font-size:clamp(3.4rem,7.4vw,6.6rem);line-height:.94;letter-spacing:-.045em}.carrier-entry-lead{max-width:71ch;color:rgba(255,255,255,.84);font-size:clamp(1rem,2vw,1.22rem);line-height:1.72}.carrier-trust-strip{display:flex;flex-wrap:wrap;gap:.62rem;margin-top:1.35rem}.carrier-trust-strip span{display:flex;gap:.42rem;align-items:center;padding:.6rem .74rem;border:1px solid rgba(104,231,164,.26);border-radius:999px;background:rgba(47,158,98,.12);color:#eafff2;font-size:.82rem;font-weight:750}.carrier-trust-strip svg{flex:none;color:#68e7a4}.carrier-entry-actions{display:flex;flex-wrap:wrap;gap:.72rem;margin-top:1.65rem}.carrier-entry-actions .button{min-height:3.2rem}.carrier-primary{border:0!important;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291)!important;color:#fff!important;box-shadow:0 15px 38px rgba(117,82,255,.32)}.carrier-secondary{border-color:rgba(255,255,255,.42)!important;color:#fff!important}.carrier-call{border-color:rgba(104,231,164,.42)!important;background:rgba(47,158,98,.15)!important;color:#effff5!important}.carrier-guidance{margin-top:1rem;color:#c9c4ff;font-size:.86rem;font-weight:750}.carrier-boundary{max-width:72ch;color:rgba(255,255,255,.58);font-size:.78rem;line-height:1.55}.carrier-next-card{padding:1.55rem;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:rgba(255,255,255,.08);box-shadow:0 28px 80px rgba(0,0,0,.22);backdrop-filter:blur(14px)}.carrier-next-card>strong{display:block;font-size:1.6rem}.carrier-next-card ol{display:grid;gap:1rem;margin:1.25rem 0;padding:0;list-style:none}.carrier-next-card li{display:grid;grid-template-columns:auto 1fr;gap:.75rem}.carrier-next-card li>span{display:grid;width:2.15rem;height:2.15rem;place-items:center;border-radius:50%;background:#7564ff;color:#fff;font-weight:900}.carrier-next-card b,.carrier-next-card small{display:block}.carrier-next-card small{margin-top:.17rem;color:rgba(255,255,255,.65);line-height:1.48}.carrier-next-card>a{display:inline-flex;gap:.4rem;align-items:center;color:#fff;font-weight:800}.carrier-confidence{background:#f5f7ff}.carrier-heading{max-width:850px}.carrier-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.confidence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.confidence-grid article{padding:1.35rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.confidence-grid svg{color:#2f9e62}.confidence-grid h3{font-size:1.25rem}.confidence-grid p{color:#5b6885;line-height:1.6}.carrier-share-card,.carrier-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:16px;background:#fff}.carrier-share-actions,.carrier-final-actions{display:flex;flex-wrap:wrap;gap:.65rem;justify-content:flex-end}.carrier-share-actions button{font:inherit;cursor:pointer}.share-status{min-height:1.2rem;color:#2f7f54;font-weight:800}.carrier-final{padding-top:1rem}.carrier-final-card{border-color:#071038;background:#071038;color:#fff}.carrier-final-card p:not(.eyebrow){max-width:70ch;color:rgba(255,255,255,.7);line-height:1.65}@media(max-width:980px){.confidence-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.carrier-entry-grid,.carrier-share-card,.carrier-final-card{grid-template-columns:1fr}.carrier-share-actions,.carrier-final-actions{justify-content:flex-start}}@media(max-width:620px){.carrier-entry-hero{padding-top:7.5rem}.carrier-entry-actions .button,.carrier-share-actions .button,.carrier-final-actions .button{width:100%;justify-content:center}.confidence-grid{grid-template-columns:1fr}.carrier-next-card{padding:1.15rem}}
 </style>
