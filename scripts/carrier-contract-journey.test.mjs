@@ -130,7 +130,7 @@ for (const required of [
   "https://hermeslogisticsus.com/sign/",
   "Continue to carrier packet",
   "Review plans and support",
-  "Review the agreement draft",
+  "Review the agreement first",
   "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, hidden conditions, or threatening language.",
   "DRAFT-2026-08-05",
 ]) {
