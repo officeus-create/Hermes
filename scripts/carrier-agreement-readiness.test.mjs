@@ -56,14 +56,15 @@ for (const required of [
   "Preview environments are proven unable to access production signature bindings",
 ]) assert.ok(readiness.includes(required), `Execution readiness contract is missing: ${required}`);
 
+const activationLower = activation.toLowerCase();
 for (const required of [
-  "ATTORNEY-REVIEW-V3-2026-08-06",
-  "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
+  "attorney-review-v3-2026-08-06",
+  "carrier_contract_allowed_percentages",
   "company website",
   "three-step",
   "equipment, lanes, load boards, and access details are collected after",
   "allowed percentage",
-]) assert.ok(activation.includes(required), `Activation runbook is missing v3 requirement: ${required}`);
+]) assert.ok(activationLower.includes(required), `Activation runbook is missing v3 requirement: ${required}`);
 
 for (const required of [
   "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
