@@ -9,6 +9,11 @@ const content = {
   intro: "Hermes reviews open vehicle transport requests for dealers, auction buyers and sellers, businesses, and private customers. The exact route, vehicle dimensions, condition, operability, timing, and access requirements are reviewed before carrier coordination begins.",
   image: "/images/path-logistics-system.jpg",
   imageAlt: "Open car hauler transporting vehicles across a logistics network",
+  primaryAction: {
+    label: "Prepare open transport request",
+    href: "/logistics/request-vehicle-transport/?request=other&equipment=open#transport-intake",
+  },
+  handoffNote: "Use the direct transport intake to prepare the exact route, timing, vehicle summary, quantity, condition, access, and open-equipment preference for Logistics Sales review. The requester selects the correct role in the form. Submission does not guarantee carrier capacity, equipment, the lowest price, pickup or delivery timing, acceptance, or booking.",
   audience: [
     "Private customers moving standard passenger vehicles",
     "Dealers arranging purchases, sales, trades, or transfers",
@@ -39,6 +44,7 @@ const content = {
     { question: "How do I request a review?", answer: "Submit the exact route, vehicle details, condition, timing, equipment preference, access, and reliable contacts." },
   ],
   related: [
+    { label: "Request Vehicle Transportation", href: "/logistics/request-vehicle-transport/?request=other&equipment=open#transport-intake" },
     { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
     { label: "Inoperable Vehicle Transport", href: "/logistics/inoperable-vehicle-transport/" },
     { label: "Multi-Car Transport", href: "/logistics/multi-car-transport/" },
