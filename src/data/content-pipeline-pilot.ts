@@ -23,7 +23,7 @@ export const syntheticContentAssets: ContentAssetInput[] = [
     proposedTopic: "Carrier-controlled load review before booking",
     proposedQuery: "what should a car hauler check before booking a load",
     canonicalOwner: "/logistics/car-hauling-dispatch/",
-    intendedCta: "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+    intendedCta: "/logistics/start-car-hauling-dispatch/",
     audience: "Car-hauling owner-operators and small fleets",
     permissionStatus: "owner_confirmed",
     evidenceStatus: "first_party_verified",
