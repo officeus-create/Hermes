@@ -1,135 +1,20 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-
-const root = process.cwd();
-const read = (relativePath) => readFile(path.join(root, relativePath), "utf8");
-
-const [shortPage, journey, layout, logisticsLinks, playbook, analyticsDelta] = await Promise.all([
-  read("src/pages/carrier/index.astro"),
-  read("src/components/CarrierContractJourney.astro"),
-  read("src/layouts/BaseLayout.astro"),
-  read("src/components/LogisticsCommercialLinks.astro"),
-  read("docs/CARRIER_SALES_HANDOFF_PLAYBOOK.md"),
-  read("docs/analytics-registry-deltas/2026-08-06-carrier-contract.md"),
+const root=process.cwd();const read=(relative)=>readFile(path.join(root,relative),"utf8");
+const [shortPage,journey,layout,logisticsLinks,playbook,onboarding,agreement,offer]=await Promise.all([
+  read("src/pages/carrier/index.astro"),read("src/components/CarrierContractJourney.astro"),read("src/layouts/BaseLayout.astro"),read("src/components/LogisticsCommercialLinks.astro"),read("docs/CARRIER_SALES_HANDOFF_PLAYBOOK.md"),read("src/pages/logistics/carrier-onboarding/index.astro"),read("src/pages/logistics/carrier-agreement/index.astro"),read("src/pages/logistics/carrier-offer/index.astro"),
 ]);
-
-for (const required of [
-  'robots="noindex,nofollow"',
-  'const shortUrl = "https://hermeslogisticsus.com/carrier/"',
-  'href={onboardingPath}',
-  'href={offerPath}',
-  'href={agreementPath}',
-  'href={`tel:${salesPhone}`}',
-  "Start the carrier packet",
-  "Review plans and support",
-  "Review the agreement draft",
-  "You approve every load",
-  "Freight payments go to your company",
-  "No passwords collected here",
-  "Final legal execution activates only",
-  "data-carrier-share",
-  "data-carrier-copy",
-  "data-carrier-sms",
-]) {
-  assert.ok(shortPage.includes(required), `Short carrier sales page is missing: ${required}`);
-}
-
-assert.doesNotMatch(shortPage, /guaranteed (?:load|rate|revenue|income)/i);
-assert.doesNotMatch(shortPage, /limited time|expires today|only \d+ spots|act now/i);
-assert.doesNotMatch(shortPage, /(?:carrier|driver)[_-]?(?:name|email|phone|mc|usdot)=/i);
-assert.doesNotMatch(shortPage, /input[^>]+type=["']password/i);
-
-for (const required of [
-  '"/carrier/"',
-  '"/logistics/carrier/"',
-  '"/logistics/carrier-offer/"',
-  '"/logistics/carrier-agreement/"',
-  'primaryLabel: "Review plans and carrier packet"',
-  'primaryHref: "/carrier/"',
-  'primaryHref: "/logistics/carrier-onboarding/"',
-  "Copy link",
-  "data-carrier-journey-sms",
-  "tel:+12623023626",
-]) {
-  assert.ok(journey.includes(required), `Carrier journey component is missing: ${required}`);
-}
-
-const carrierAnalyticsEvents = [
-  "commercial_cta_click",
-  "carrier_contract_share",
-  "carrier_contract_document_action",
-  "carrier_contract_intake_start",
-  "carrier_contract_step_reached",
-  "carrier_contract_packet_result",
-];
-
-for (const eventName of carrierAnalyticsEvents) {
-  assert.ok(journey.includes(`event: "${eventName}"`), `Carrier analytics implementation is missing: ${eventName}`);
-  assert.ok(analyticsDelta.includes(`\`${eventName}\``), `Carrier analytics registry delta is missing: ${eventName}`);
-}
-
-for (const requiredAnalyticsContract of [
-  'service_group: "carrier_contract"',
-  'carrierEventBase("carrier_contract_onboarding")',
-  "stepNumber",
-  'preview_status: previewStatus',
-  '"delivered"',
-  '"pending"',
-  '"failed"',
-]) {
-  assert.ok(journey.includes(requiredAnalyticsContract), `Carrier analytics contract is missing: ${requiredAnalyticsContract}`);
-}
-
-for (const requiredRegistryBoundary of [
-  "DATALAYER_PRESENT / GA4_UNVERIFIED",
-  "DELIVERY_RECONCILIATION_REQUIRED",
-  "steps 1–5 exactly once per page session",
-  "GTM may add its own internal keys such as `gtm.uniqueEventId`",
-  "review/onboarding packet as final executed agreement while #280 is open",
-]) {
-  assert.ok(analyticsDelta.includes(requiredRegistryBoundary), `Carrier analytics registry delta is missing: ${requiredRegistryBoundary}`);
-}
-
-for (const prohibitedAnalyticsReference of [
-  "legal_company_name",
-  "signer_name",
-  "signer_email",
-  "signer_phone",
-  "mc_number",
-  "usdot_number",
-  "preferred_lanes",
-  "equipment_types",
-  "signature_jpeg",
-  "typed_signature",
-  "custom_percentage",
-  "custom_scope",
-]) {
-  assert.ok(
-    !journey.includes(prohibitedAnalyticsReference),
-    `Carrier analytics component references prohibited form data: ${prohibitedAnalyticsReference}`,
-  );
-}
-
-assert.doesNotMatch(analyticsDelta, /@[a-z0-9.-]+\.[a-z]{2,}/i, "Analytics registry delta must not contain an email address");
-assert.doesNotMatch(analyticsDelta, /\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i, "Analytics registry delta must not contain a carrier identifier");
-assert.doesNotMatch(analyticsDelta, /\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/, "Analytics registry delta must not contain a phone number");
-
-assert.ok(layout.includes('import CarrierContractJourney from "../components/CarrierContractJourney.astro"'));
-assert.ok(layout.includes("<CarrierContractJourney />"));
-assert.ok(logisticsLinks.includes('href="/carrier/"'));
-assert.ok(logisticsLinks.includes("Carrier plans, packet, and agreement"));
-assert.ok(logisticsLinks.includes("Carrier proposal and packet"));
-
-for (const required of [
-  "https://hermeslogisticsus.com/carrier/",
-  "Start the carrier packet",
-  "Review plans and support",
-  "Review the agreement draft",
-  "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, or hidden conditions.",
-  "DRAFT-2026-08-05",
-]) {
-  assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
-}
-
-console.log("Carrier contract journey contract passed: short SMS URL, site entry, trust-first CTA hierarchy, carrier-audience handoff, privacy-safe funnel analytics, registry delta, and execution boundaries are present.");
+for(const required of ['robots="noindex,nofollow"','const shortUrl = "https://hermeslogisticsus.com/carrier/"',"Review and sign","See what Hermes handles","You approve every load","Non-exclusive · no minimum volume","Freight funds go to your company or factor","No passwords, W-9, bank data, or CDL image here","Three simple steps","data-carrier-share","data-carrier-copy","data-carrier-sms","data-carrier-context-link","cleanRate","cleanCode"]){assert.ok(shortPage.includes(required),`Short carrier agreement page is missing: ${required}`);}
+assert.doesNotMatch(shortPage,/guaranteed (?:load|rate|revenue|income)/i);assert.doesNotMatch(shortPage,/limited time|expires today|only \d+ spots|act now/i);assert.doesNotMatch(shortPage,/(?:carrier|driver)[_-]?(?:name|email|phone|mc|usdot)=/i);assert.doesNotMatch(shortPage,/input[^>]+type=["']password/i);
+for(const required of ['"/carrier/"','"/logistics/carrier/"','"/logistics/carrier-offer/"','"/logistics/carrier-agreement/"','primaryLabel:"Review and sign"','primaryLabel:"Confirm terms and sign"','primaryHref:"/logistics/carrier-onboarding/"',"Copy link","data-carrier-journey-sms","tel:+12623023626","value>=1&&value<=3"]){assert.ok(journey.includes(required),`Carrier journey component is missing: ${required}`);}
+for(const requiredAnalytics of ['event:"commercial_cta_click"','event:"carrier_contract_share"','event:"carrier_contract_document_action"','event:"carrier_contract_intake_start"','event:"carrier_contract_step_reached"','event:"carrier_contract_packet_result"','service_group:"carrier_contract"','carrierEventBase("carrier_contract_onboarding")','stepNumber','preview_status:previewStatus','"delivered"','"pending"','"failed"'])assert.ok(journey.includes(requiredAnalytics),`Carrier analytics contract is missing: ${requiredAnalytics}`);
+for(const prohibited of ["legal_company_name","signer_name","signer_email","signer_phone","mc_number","usdot_number","company_website","service_percentage","offer_code","signature_jpeg","typed_signature","custom_scope"])assert.ok(!journey.includes(prohibited),`Carrier analytics component references prohibited form data: ${prohibited}`);
+assert.ok(layout.includes('import CarrierContractJourney from "../components/CarrierContractJourney.astro"'));assert.ok(layout.includes("<CarrierContractJourney />"));assert.ok(logisticsLinks.includes('href="/carrier/"'));
+for(const required of ["Step 1 of 3","Agreed service percentage for Appendix A","company_website","No full street address required","service_percentage","offer_code","data-signature-canvas","Review mode is not final legal activation"]){assert.ok(onboarding.includes(required),`Minimized carrier signing form is missing: ${required}`);}
+for(const prohibited of ["business_address","preferred_lanes","equipment_types","load_boards","access_handoff_method"]){assert.ok(!onboarding.includes(`name=\"${prohibited}\"`),`Pre-signature form still collects legacy field: ${prohibited}`);}
+for(const required of ["ATTORNEY-REVIEW-V3-2026-08-06","60-second version","Percentage only in Appendix A","No personal guaranty or UCC lien","Five-business-day objection window","9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb","data-contract-download=\"pdf\""]){assert.ok(agreement.includes(required),`v3 agreement page is missing: ${required}`);}
+for(const required of ["Dispatch Support","Operations + Growth","Custom Cooperation","The percentage is private and carrier-specific.","data-primary-choice=\"agreement\"","data-primary-choice=\"learn\"","No personal guaranty or UCC lien"]){assert.ok(offer.includes(required),`Carrier support page is missing: ${required}`);}
+assert.doesNotMatch(offer,/>\s*(?:5|6|8)(?:\.00)?%\s*</i,"Offer page must not publish a fixed percentage outside the carrier-specific Appendix A context.");
+for(const required of ["https://hermeslogisticsus.com/carrier/","Review and sign","confirm the company and agreed percentage","Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, or hidden conditions.","ATTORNEY-REVIEW-V3-2026-08-06","CARRIER_CONTRACT_ALLOWED_PERCENTAGES"]){assert.ok(playbook.includes(required),`Carrier sales handoff playbook is missing: ${required}`);}
+console.log("Carrier agreement journey v3 contract passed: safe SMS context, trust-first offer, three-step minimized signature flow, private Appendix A percentage, privacy-safe analytics, and execution gates are present.");

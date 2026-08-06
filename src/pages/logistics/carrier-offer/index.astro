@@ -10,189 +10,64 @@ const salesPhone = "+12623023626";
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Hermes Carrier Partnership Options",
-  description: "A private mobile sales handoff that lets a carrier begin onboarding or learn how Hermes support options work.",
+  name: "Hermes Carrier Support Options",
+  description: "A private carrier proposal explaining control, dispatch support scope, commercial terms, and the signature next step.",
   url: "https://hermeslogisticsus.com/logistics/carrier-offer/",
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
 ---
 
-<BaseLayout
-  title="Carrier Partnership Options | Hermes Logistics"
-  description="Keep control of every operating decision while reviewing Hermes dispatch, planning, and carrier-development support options."
-  robots="noindex,nofollow"
-  schema={schema}
->
+<BaseLayout title="Carrier Support Options | Hermes Logistics" description="Review carrier-controlled dispatch support options and continue to a phone-friendly agreement packet." robots="noindex,nofollow" schema={schema}>
   <SiteHeader activePath="/paths/logistics/" />
   <main id="main-content" class="carrier-offer-page">
     <section class="offer-hero">
+      <div class="offer-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
       <div class="shell offer-hero-shell">
-        <nav class="offer-breadcrumbs" aria-label="Breadcrumb">
-          <a href="/">Home</a><span aria-hidden="true">/</span>
-          <span aria-current="page">Private carrier proposal</span>
-        </nav>
-
+        <nav class="offer-breadcrumbs" aria-label="Breadcrumb"><a href="/carrier/" data-carrier-context-link>Carrier agreement</a><span aria-hidden="true">/</span><span aria-current="page">Support options</span></nav>
         <div class="offer-hero-copy">
           <p class="eyebrow">Hermes Logistics · Private carrier proposal</p>
-          <h1>Keep control of your operation. Add a team around it.</h1>
-          <p class="offer-lead">
-            You approve every load and every final operating decision. Hermes can help with market research, communication, planning, coordination, and carrier-development work according to the service option you choose.
-          </p>
-
-          <div class="control-strip" aria-label="Carrier control commitments">
-            <span><Check size={17} aria-hidden="true" />You approve every load</span>
-            <span><Check size={17} aria-hidden="true" />Freight payments go to your company</span>
-            <span><Check size={17} aria-hidden="true" />Drivers, equipment, safety, and routes remain under your control</span>
-          </div>
+          <h1>You keep the decisions. We help carry the workload.</h1>
+          <p class="offer-lead">Hermes supports research, communication, negotiation within your instructions, planning, and ordinary document coordination. Your company approves every load and remains responsible for the transportation operation.</p>
+          <div class="control-strip"><span><Check size={17} aria-hidden="true" />Non-exclusive</span><span><Check size={17} aria-hidden="true" />No minimum volume</span><span><Check size={17} aria-hidden="true" />Freight funds stay with the carrier or factor</span><span><Check size={17} aria-hidden="true" />Exact rate appears in Appendix A</span></div>
         </div>
-
-        <div class="primary-choice-grid" aria-label="Choose your next step">
-          <article class="primary-choice primary-choice-agreement">
-            <FileText size={28} aria-hidden="true" />
-            <p class="choice-label">Ready to move forward?</p>
-            <h2>Complete the carrier packet</h2>
-            <p>Select the working model, provide the operating information, sign from your phone, and download your PDF copy.</p>
-            <a class="button button-primary" href={onboardingPath} data-primary-choice="agreement">
-              Start onboarding and signature <ArrowRight size={18} aria-hidden="true" />
-            </a>
-            <small>The current release creates a signed review/onboarding packet. Final execution activates only with the approved master agreement.</small>
-          </article>
-
-          <article class="primary-choice primary-choice-learn">
-            <Info size={28} aria-hidden="true" />
-            <p class="choice-label">Want to understand the value first?</p>
-            <h2>See what Hermes can handle</h2>
-            <p>Review what stays under your control, what our team can support, and how the service options differ.</p>
-            <a class="button button-ghost" href="#learn-more" data-primary-choice="learn">
-              Learn how it works <ArrowRight size={18} aria-hidden="true" />
-            </a>
-          </article>
+        <div class="primary-choice-grid" aria-label="Choose the next step">
+          <article class="primary-choice primary-choice-agreement"><FileText size={28} aria-hidden="true" /><p class="choice-label">Terms are already clear?</p><h2>Confirm the offer and sign</h2><p>Use the prepared plan and percentage, confirm the company and authorized signer, then draw the signature from a phone.</p><a class="button button-primary offer-primary" href={onboardingPath} data-carrier-context-link data-primary-choice="agreement">Review and sign <ArrowRight size={18} aria-hidden="true" /></a><small>Only the information needed for the agreement is requested before signing.</small></article>
+          <article class="primary-choice primary-choice-learn"><Info size={28} aria-hidden="true" /><p class="choice-label">Still comparing?</p><h2>Understand the boundaries first</h2><p>Review what Hermes may handle, what remains under carrier control, and how payment and termination work.</p><a class="button button-ghost" href="#learn-more" data-primary-choice="learn">See how it works <ArrowRight size={18} aria-hidden="true" /></a></article>
         </div>
       </div>
     </section>
 
-    <section id="learn-more" class="section offer-learn" aria-labelledby="learn-title">
-      <div class="shell">
-        <div class="section-heading offer-heading">
-          <p class="eyebrow">The simple idea</p>
-          <h2 id="learn-title">You keep the decisions. Hermes helps carry the workload.</h2>
-          <p>You do not hand over your truck or your company. You choose the level of support and continue approving the opportunities that fit your operation.</p>
-        </div>
+    <section id="learn-more" class="section offer-learn" aria-labelledby="learn-title"><div class="shell"><div class="section-heading offer-heading"><p class="eyebrow">The simple operating model</p><h2 id="learn-title">Limited support authority. Full carrier operating control.</h2><p>The agreement is designed to let Hermes act as the carrier's identified administrative and dispatch support agent without taking over the carrier's authority, equipment, drivers, safety duties, or final decisions.</p></div><div class="responsibility-grid"><article class="responsibility-card responsibility-carrier"><ShieldCheck size={29} aria-hidden="true" /><p class="eyebrow">The carrier controls</p><h3>The transportation operation</h3><ul><li><Check size={17} aria-hidden="true" />Accepting or rejecting every load</li><li><Check size={17} aria-hidden="true" />Drivers, equipment, safety, insurance, and compliance</li><li><Check size={17} aria-hidden="true" />Routes, schedules, expenses, and availability</li><li><Check size={17} aria-hidden="true" />Final decisions involving brokers, factors, insurers, and vendors</li></ul></article><article class="responsibility-card responsibility-hermes"><Users size={29} aria-hidden="true" /><p class="eyebrow">Hermes may support</p><h3>Research, communication, and coordination</h3><ul><li><Check size={17} aria-hidden="true" />Load and market research</li><li><Check size={17} aria-hidden="true" />Communication and negotiation within carrier instructions</li><li><Check size={17} aria-hidden="true" />Rate-confirmation and ordinary document coordination</li><li><Check size={17} aria-hidden="true" />Lane, deadhead, scheduling, and carrier-development research</li></ul></article></div></div></section>
 
-        <div class="responsibility-grid">
-          <article class="responsibility-card responsibility-carrier">
-            <ShieldCheck size={29} aria-hidden="true" />
-            <p class="eyebrow">You remain responsible for</p>
-            <h3>Your operation and final decisions</h3>
-            <ul>
-              <li><Check size={17} aria-hidden="true" />Accepting or rejecting each load</li>
-              <li><Check size={17} aria-hidden="true" />Drivers, equipment, safety, and compliance</li>
-              <li><Check size={17} aria-hidden="true" />Routes, schedule, expenses, and availability</li>
-              <li><Check size={17} aria-hidden="true" />Final choices involving brokers, factoring, insurance, repair, and other providers</li>
-            </ul>
-          </article>
+    <section id="plans" class="section offer-plans" aria-labelledby="plans-title"><div class="shell"><div class="section-heading offer-heading"><p class="eyebrow">Choose the service scope</p><h2 id="plans-title">The percentage is private and carrier-specific.</h2><p>The master agreement intentionally contains no fixed percentage. Logistics Sales confirms the exact rate in the private link or directly with the carrier, and the signing packet writes it into Appendix A.</p></div><div class="plan-grid">
+      <article class="plan-card"><div class="plan-topline"><span>Dispatch Support</span><strong>Appendix A</strong></div><h3>Day-to-day dispatch assistance</h3><p>For carriers who mainly need opportunity research, communication, negotiation support, and basic booking/document coordination.</p><ul><li><Check size={17} aria-hidden="true" />Carrier approval before every load</li><li><Check size={17} aria-hidden="true" />Research and negotiation within instructions</li><li><Check size={17} aria-hidden="true" />Ordinary document and invoice follow-up</li></ul><a href={`${onboardingPath}?plan=essential`} data-plan-link="essential">Choose Dispatch Support <ArrowRight size={16} aria-hidden="true" /></a></article>
+      <article class="plan-card plan-card-pro"><p class="recommended"><Sparkles size={15} aria-hidden="true" />Broader operating support</p><div class="plan-topline"><span>Operations + Growth</span><strong>Appendix A</strong></div><h3>Dispatch plus planning and development</h3><p>For carriers who want deeper lane planning, route development, customer research, structured handoffs, and operational follow-up.</p><ul><li><Check size={17} aria-hidden="true" />Everything in Dispatch Support</li><li><Check size={17} aria-hidden="true" />Lane, deadhead, and schedule planning</li><li><Check size={17} aria-hidden="true" />Shipper, dealer, and repeat-customer research</li><li><Check size={17} aria-hidden="true" />Hermes Connect handoffs as released and approved</li></ul><a href={`${onboardingPath}?plan=pro`} data-plan-link="pro">Choose Operations + Growth <ArrowRight size={16} aria-hidden="true" /></a></article>
+      <article class="plan-card"><div class="plan-topline"><span>Custom Cooperation</span><strong>Review</strong></div><h3>Define a different scope</h3><p>A custom scope and percentage remain a proposal until Hermes reviews them and both parties sign a matching approved package.</p><ul><li><Check size={17} aria-hidden="true" />Requested responsibilities</li><li><Check size={17} aria-hidden="true" />Proposed percentage</li><li><Check size={17} aria-hidden="true" />New signature after written acceptance</li></ul><a href={`${onboardingPath}?plan=custom`} data-plan-link="custom">Prepare a custom proposal <ArrowRight size={16} aria-hidden="true" /></a><small>A custom submission never enters live execution automatically.</small></article>
+    </div></div></section>
 
-          <article class="responsibility-card responsibility-hermes">
-            <Users size={29} aria-hidden="true" />
-            <p class="eyebrow">Hermes may support</p>
-            <h3>Research, coordination, and development</h3>
-            <ul>
-              <li><Check size={17} aria-hidden="true" />Load research and market monitoring</li>
-              <li><Check size={17} aria-hidden="true" />Communication and negotiation within your instructions</li>
-              <li><Check size={17} aria-hidden="true" />Lane, deadhead, and next-step planning</li>
-              <li><Check size={17} aria-hidden="true" />Customer-development research and business-process support</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
+    <section class="section offer-objections" aria-labelledby="objections-title"><div class="shell"><div class="section-heading offer-heading"><p class="eyebrow">Common carrier questions</p><h2 id="objections-title">The agreement answers the questions that usually stop a signature.</h2></div><div class="objection-grid"><article><h3>Am I locked in?</h3><p>No. The proposed v3 structure is non-exclusive, has no minimum load volume, and allows termination with written notice.</p></article><article><h3>Can Hermes book anything it wants?</h3><p>No. Hermes may communicate and negotiate within instructions, but the carrier approves every load and material operating term.</p></article><article><h3>Who receives freight money?</h3><p>The carrier or its factor. Hermes receives only the service fee stated in Appendix A.</p></article><article><h3>Do I upload private documents now?</h3><p>No. The signature step does not request W-9s, CDL images, passwords, bank details, VIN lists, or shipment documents.</p></article><article><h3>Are loads or revenue guaranteed?</h3><p>No. The agreement promises a defined support process, not a market result.</p></article><article><h3>Is there a personal guaranty or lien?</h3><p>The v3 attorney-review draft does not include a personal guaranty, UCC lien, automatic card debit, or confession of judgment.</p></article></div></div></section>
 
-    <section id="plans" class="section offer-plans" aria-labelledby="plans-title">
-      <div class="shell">
-        <div class="section-heading offer-heading">
-          <p class="eyebrow">Choose the working model</p>
-          <h2 id="plans-title">Start with the level of support that fits your operation.</h2>
-          <p>These are the proposed service structures for discussion. Final scope, percentage, timing, and termination terms must match the approved agreement and its selected-service appendix.</p>
-        </div>
+    <section id="company" class="section offer-company" aria-labelledby="company-title"><div class="shell"><div class="section-heading offer-heading"><p class="eyebrow">More than one dispatcher</p><h2 id="company-title">A connected support system around the carrier.</h2><p>The exact team and tools depend on the signed scope, carrier readiness, and released capabilities.</p></div><div class="division-grid"><article><Users size={24} aria-hidden="true" /><h3>Logistics Operations</h3><p>Dispatch research, communication, coordination, and operating handoffs.</p></article><article><Sparkles size={24} aria-hidden="true" /><h3>Hermes Connect & IT</h3><p>Structured carrier information, team workflows, and supported digital tools.</p></article><article><Building2 size={24} aria-hidden="true" /><h3>Customer Development</h3><p>Research around shippers, dealers, repeat opportunities, and route hypotheses.</p></article><article><ShieldCheck size={24} aria-hidden="true" /><h3>Process Support</h3><p>Clear records, privacy boundaries, and defined carrier approval points.</p></article></div></div></section>
 
-        <div class="plan-grid">
-          <article class="plan-card">
-            <div class="plan-topline"><span>Essential Dispatch</span><strong>6%</strong></div>
-            <h3>Day-to-day dispatch support</h3>
-            <p>For carriers who primarily want help finding, reviewing, negotiating, and coordinating loads while retaining full approval.</p>
-            <ul>
-              <li><Check size={17} aria-hidden="true" />Load search and option review</li>
-              <li><Check size={17} aria-hidden="true" />Negotiation within carrier instructions</li>
-              <li><Check size={17} aria-hidden="true" />Booking and basic document coordination</li>
-            </ul>
-            <a href={`${onboardingPath}?plan=essential`}>Choose Essential and continue <ArrowRight size={16} aria-hidden="true" /></a>
-          </article>
-
-          <article class="plan-card plan-card-pro">
-            <p class="recommended"><Sparkles size={15} aria-hidden="true" />Recommended for carrier development</p>
-            <div class="plan-topline"><span>Hermes Pro</span><strong>8%</strong></div>
-            <h3>An extended operations and growth team</h3>
-            <p>For carriers who want deeper planning, route development, customer research, and organized support around dispatch operations.</p>
-            <ul>
-              <li><Check size={17} aria-hidden="true" />Everything in Essential Dispatch</li>
-              <li><Check size={17} aria-hidden="true" />Load-planning and route-development work</li>
-              <li><Check size={17} aria-hidden="true" />Shipper, dealer, and repeat-customer research</li>
-              <li><Check size={17} aria-hidden="true" />Hermes Connect operating profile and team handoffs as available</li>
-            </ul>
-            <a href={`${onboardingPath}?plan=pro`}>Choose Hermes Pro and continue <ArrowRight size={16} aria-hidden="true" /></a>
-          </article>
-
-          <article class="plan-card">
-            <div class="plan-topline"><span>Custom Cooperation</span><strong>Review</strong></div>
-            <h3>Propose a different scope</h3>
-            <p>Tell Logistics Sales which services you need, what you will handle yourself, and what percentage you propose.</p>
-            <ul>
-              <li><Check size={17} aria-hidden="true" />Your requested service scope</li>
-              <li><Check size={17} aria-hidden="true" />Your proposed percentage</li>
-              <li><Check size={17} aria-hidden="true" />Hermes review before any agreement is issued</li>
-            </ul>
-            <a href={`${onboardingPath}?plan=custom`}>Submit a custom proposal <ArrowRight size={16} aria-hidden="true" /></a>
-            <small>A custom proposal is non-binding and is not an approved agreement until Hermes accepts the scope and issues the matching document.</small>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="company" class="section offer-company" aria-labelledby="company-title">
-      <div class="shell">
-        <div class="section-heading offer-heading">
-          <p class="eyebrow">More than a single dispatcher</p>
-          <h2 id="company-title">See the parts of Hermes that may support your operation.</h2>
-          <p>The exact team and tools involved depend on the selected plan, operational readiness, and the services actually approved in writing.</p>
-        </div>
-
-        <div class="division-grid">
-          <article><Users size={24} aria-hidden="true" /><h3>Logistics Operations</h3><p>Dispatch research, communication, coordination, and operating handoffs.</p></article>
-          <article><Sparkles size={24} aria-hidden="true" /><h3>Hermes Connect & IT</h3><p>Structured carrier information, team workflows, and supported digital tools as released and approved.</p></article>
-          <article><Building2 size={24} aria-hidden="true" /><h3>Customer Development</h3><p>Research around shippers, dealers, repeat opportunities, and route-development hypotheses.</p></article>
-          <article><ShieldCheck size={24} aria-hidden="true" /><h3>Process Support</h3><p>Operational guidance and research into independent providers while the carrier retains every final decision.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section offer-final" aria-labelledby="offer-final-title">
-      <div class="shell offer-final-card">
-        <div>
-          <p class="eyebrow">Choose your next step</p>
-          <h2 id="offer-final-title">Start the carrier packet or review the current master draft.</h2>
-          <p>No load, rate, mileage, revenue, customer relationship, or business outcome is guaranteed. The goal is to give your company more research and operating support while you remain the decision-maker.</p>
-        </div>
-        <div class="offer-final-actions">
-          <a class="button button-primary" href={onboardingPath}>Start onboarding <ArrowRight size={18} aria-hidden="true" /></a>
-          <a class="button" href={agreementPath}>Review master draft <FileText size={18} aria-hidden="true" /></a>
-          <a class="button" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Talk to Logistics Sales</a>
-        </div>
-      </div>
-    </section>
-  </main>
-  <SiteFooter />
+    <section class="section offer-final" aria-labelledby="offer-final-title"><div class="shell offer-final-card"><div><p class="eyebrow">Choose the next step</p><h2 id="offer-final-title">Confirm the exact offer or read the full draft.</h2><p>The current v3 document remains an attorney-review draft. Production execution stays blocked until the approved master, SHA-256, and allowed percentage are configured.</p></div><div class="offer-final-actions"><a class="button button-primary offer-primary" href={onboardingPath} data-carrier-context-link>Review and sign <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href={agreementPath} data-carrier-context-link>Read full agreement <FileText size={18} aria-hidden="true" /></a><a class="button" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Talk to Logistics Sales</a></div></div></section>
+  </main><SiteFooter />
 </BaseLayout>
 
+<script>
+  const allowedPlans = new Set(["essential", "pro", "custom"]);
+  const cleanCode = (value: string) => /^[A-Za-z0-9._ -]{1,40}$/.test(value) ? value : "";
+  const cleanRate = (value: string) => { if (!/^\d{1,2}(?:\.\d{1,2})?$/.test(value)) return ""; const n=Number(value); return n>=1&&n<=15?String(n):""; };
+  const source = new URL(window.location.href);
+  const context = new URLSearchParams();
+  const plan = source.searchParams.get("plan") ?? "";
+  const rate = cleanRate(source.searchParams.get("rate") ?? "");
+  const rep = cleanCode(source.searchParams.get("rep") ?? "");
+  const offer = cleanCode(source.searchParams.get("offer") ?? "");
+  if (allowedPlans.has(plan)) context.set("plan",plan); if(rate) context.set("rate",rate); if(rep) context.set("rep",rep); if(offer) context.set("offer",offer);
+  document.querySelectorAll<HTMLAnchorElement>("[data-carrier-context-link]").forEach((link)=>{const target=new URL(link.href,window.location.origin);target.search=context.toString();link.href=target.toString();});
+  document.querySelectorAll<HTMLAnchorElement>("[data-plan-link]").forEach((link)=>{const target=new URL(link.href,window.location.origin);const chosen=link.dataset.planLink??"";target.searchParams.set("plan",chosen);if(rate)target.searchParams.set("rate",rate);if(rep)target.searchParams.set("rep",rep);if(offer)target.searchParams.set("offer",offer);link.href=target.toString();});
+</script>
+
 <style>
-  .carrier-offer-page{background:#fff;color:#10204e}.offer-hero{padding:8.4rem 0 5rem;background:radial-gradient(circle at 84% 12%,rgba(103,91,255,.3),transparent 34%),#071038;color:#fff}.offer-hero-shell{display:grid;gap:2.2rem}.offer-breadcrumbs{display:flex;flex-wrap:wrap;gap:.55rem;color:rgba(255,255,255,.65);font-size:.84rem}.offer-breadcrumbs a{color:inherit}.offer-hero-copy{max-width:980px}.offer-hero h1{max-width:13ch;font-size:clamp(3rem,7vw,6.3rem);line-height:.97}.offer-lead{max-width:74ch;color:rgba(255,255,255,.8);font-size:clamp(1rem,2vw,1.2rem);line-height:1.7}.control-strip{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.5rem}.control-strip span{display:flex;gap:.42rem;align-items:flex-start;padding:.62rem .78rem;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.88);font-size:.84rem}.control-strip svg{flex:none;color:#a99fff}.primary-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.primary-choice{display:grid;align-content:start;gap:.75rem;padding:clamp(1.35rem,3vw,2rem);border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px)}.primary-choice>svg{color:#a99fff}.primary-choice h2,.primary-choice p{margin:0}.primary-choice h2{font-size:clamp(1.65rem,3vw,2.35rem)}.primary-choice p:not(.choice-label){color:rgba(255,255,255,.72);line-height:1.6}.choice-label{color:#beb8ff;font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.primary-choice .button{justify-self:start;margin-top:.35rem}.primary-choice .button-ghost{border-color:rgba(255,255,255,.45);color:#fff}.primary-choice small{color:rgba(255,255,255,.55);line-height:1.5}.offer-heading{max-width:840px}.offer-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.responsibility-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.responsibility-card{padding:clamp(1.4rem,3vw,2rem);border:1px solid #dce3f8;border-radius:14px;background:#fff}.responsibility-card>svg{color:#5f56e8}.responsibility-card h3{font-size:1.6rem}.responsibility-card ul,.plan-card ul{display:grid;gap:.7rem;padding:0;list-style:none}.responsibility-card li,.plan-card li{display:flex;gap:.5rem;align-items:flex-start;color:#4f5d7b;line-height:1.55}.responsibility-card li svg,.plan-card li svg{flex:none;margin-top:.18rem;color:#5f56e8}.offer-learn{background:#f7f8ff}.offer-plans{background:#fff}.plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.plan-card{display:flex;flex-direction:column;padding:1.45rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.plan-card-pro{border-color:#766cf0;box-shadow:0 22px 55px rgba(31,38,100,.12)}.recommended{display:flex;gap:.4rem;align-items:center;margin:-.35rem 0 1rem;color:#5f56e8;font-size:.76rem;font-weight:800;text-transform:uppercase}.plan-topline{display:flex;gap:1rem;align-items:center;justify-content:space-between}.plan-topline span{font-weight:800}.plan-topline strong{font-size:1.8rem;color:#5f56e8}.plan-card h3{font-size:1.45rem}.plan-card>p:not(.recommended){color:#5b6885;line-height:1.65}.plan-card>a{display:flex;gap:.4rem;align-items:center;margin-top:auto;padding-top:1rem;color:#3f36ca;font-weight:800}.plan-card small{margin-top:.75rem;color:#6b7387;line-height:1.5}.offer-company{background:#071038;color:#fff}.offer-company .offer-heading>p:not(.eyebrow){color:rgba(255,255,255,.68)}.division-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.division-grid article{padding:1.25rem;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.06)}.division-grid svg{color:#a99fff}.division-grid h3{font-size:1.15rem}.division-grid p{color:rgba(255,255,255,.68);line-height:1.6}.offer-final{padding-top:1.2rem}.offer-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:16px;background:#f7f4ff}.offer-final-card h2{max-width:18ch}.offer-final-card p:not(.eyebrow){max-width:75ch;color:#5b6885;line-height:1.65}.offer-final-actions{display:grid;gap:.7rem}.offer-final-actions .button{justify-content:center}@media(max-width:980px){.plan-grid{grid-template-columns:1fr}.division-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.offer-final-card{grid-template-columns:1fr}.offer-final-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.offer-hero{padding-top:7.3rem}.primary-choice-grid,.responsibility-grid{grid-template-columns:1fr}.primary-choice .button{width:100%;justify-content:center}.control-strip{display:grid}.control-strip span{border-radius:12px}.division-grid{grid-template-columns:1fr}.offer-final-actions{grid-template-columns:1fr}.offer-final-actions .button{width:100%}}@media(max-width:480px){.offer-hero h1{font-size:2.8rem}.primary-choice{padding:1.2rem}.plan-card{padding:1.2rem}}
+.carrier-offer-page{background:#fff;color:#10204e}.offer-hero{position:relative;padding:8.45rem 0 5rem;background:radial-gradient(circle at 84% 12%,rgba(103,91,255,.3),transparent 34%),#071038;color:#fff}.offer-rails{position:absolute;top:5.35rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.offer-rails span:nth-child(1){background:#071038}.offer-rails span:nth-child(2){background:#675bff}.offer-rails span:nth-child(3){background:#f2a93b}.offer-rails span:nth-child(4){background:#24a69a}.offer-hero-shell{display:grid;gap:2.2rem}.offer-breadcrumbs{display:flex;gap:.55rem;color:rgba(255,255,255,.65);font-size:.84rem}.offer-breadcrumbs a{color:inherit}.offer-hero-copy{max-width:1020px}.offer-hero h1{max-width:14ch;font-size:clamp(3rem,7vw,6.25rem);line-height:.97}.offer-lead{max-width:76ch;color:rgba(255,255,255,.8);font-size:clamp(1rem,2vw,1.2rem);line-height:1.7}.control-strip{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.45rem}.control-strip span{display:flex;gap:.42rem;align-items:center;padding:.62rem .78rem;border:1px solid rgba(104,231,164,.25);border-radius:999px;background:rgba(47,158,98,.11);color:#eafff2;font-size:.84rem}.control-strip svg{color:#68e7a4}.primary-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.primary-choice{display:grid;align-content:start;gap:.75rem;padding:clamp(1.35rem,3vw,2rem);border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px)}.primary-choice>svg{color:#f2a93b}.primary-choice h2,.primary-choice p{margin:0}.primary-choice h2{font-size:clamp(1.65rem,3vw,2.35rem)}.primary-choice p:not(.choice-label){color:rgba(255,255,255,.72);line-height:1.6}.choice-label{color:#ffe3a2;font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.primary-choice .button{justify-self:start;margin-top:.35rem}.offer-primary{border:0!important;background:linear-gradient(135deg,#f2a93b,#ffd66d)!important;color:#251900!important}.primary-choice .button-ghost{border-color:rgba(255,255,255,.45);color:#fff}.primary-choice small{color:rgba(255,255,255,.55);line-height:1.5}.offer-heading{max-width:870px}.offer-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.responsibility-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.responsibility-card{padding:clamp(1.4rem,3vw,2rem);border:1px solid #dce3f8;border-radius:14px;background:#fff}.responsibility-card>svg{color:#2f9e62}.responsibility-card h3{font-size:1.6rem}.responsibility-card ul,.plan-card ul{display:grid;gap:.7rem;padding:0;list-style:none}.responsibility-card li,.plan-card li{display:flex;gap:.5rem;align-items:flex-start;color:#4f5d7b;line-height:1.55}.responsibility-card li svg,.plan-card li svg{flex:none;margin-top:.18rem;color:#2f9e62}.offer-learn{background:#f7f8ff}.plan-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.plan-card{display:flex;flex-direction:column;padding:1.45rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.plan-card-pro{border-color:#766cf0;box-shadow:0 22px 55px rgba(31,38,100,.12)}.recommended{display:flex;gap:.4rem;align-items:center;margin:-.35rem 0 1rem;color:#5f56e8;font-size:.76rem;font-weight:800;text-transform:uppercase}.plan-topline{display:flex;gap:1rem;align-items:center;justify-content:space-between}.plan-topline span{font-weight:800}.plan-topline strong{font-size:1rem;color:#a56600}.plan-card h3{font-size:1.45rem}.plan-card>p:not(.recommended){color:#5b6885;line-height:1.65}.plan-card>a{display:flex;gap:.4rem;align-items:center;margin-top:auto;padding-top:1rem;color:#3f36ca;font-weight:800}.plan-card small{margin-top:.65rem;color:#6d7180;line-height:1.45}.offer-objections{background:#f5f7ff}.objection-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.objection-grid article{padding:1.35rem;border:1px solid #dce3f8;border-radius:13px;background:#fff}.objection-grid h3{font-size:1.25rem}.objection-grid p{color:#5b6885;line-height:1.6}.division-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.division-grid article{padding:1.25rem;border:1px solid #dce3f8;border-radius:12px}.division-grid svg{color:#5f56e8}.division-grid p{color:#5b6885;line-height:1.6}.offer-final{padding-top:1rem}.offer-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border-radius:16px;background:#071038;color:#fff}.offer-final-card p:not(.eyebrow){max-width:72ch;color:rgba(255,255,255,.7);line-height:1.65}.offer-final-actions{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:flex-end}.offer-final-actions .button:not(.offer-primary){border-color:rgba(255,255,255,.35);color:#fff}@media(max-width:980px){.plan-grid,.objection-grid{grid-template-columns:1fr 1fr}.division-grid{grid-template-columns:1fr 1fr}.offer-final-card{grid-template-columns:1fr}.offer-final-actions{justify-content:flex-start}}@media(max-width:760px){.primary-choice-grid,.responsibility-grid,.plan-grid,.objection-grid{grid-template-columns:1fr}}@media(max-width:620px){.offer-hero{padding-top:7.5rem}.offer-rails{top:4.8rem}.primary-choice .button,.offer-final-actions .button{width:100%;justify-content:center}.division-grid{grid-template-columns:1fr}.control-strip span{border-radius:10px}}
 </style>

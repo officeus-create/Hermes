@@ -1,177 +1,141 @@
-# Carrier Contract Engine — Activation and Operating Runbook
+# Carrier Contract Engine - v3 Activation and Operating Runbook
 
-Status: CODE READY FOR CONTROLLED REVIEW PACKETS / PRODUCTION EXECUTION REQUIRES APPROVAL  
+Status: SIGNED REVIEW PACKET READY / PRODUCTION EXECUTION REQUIRES APPROVAL  
 Owner: Hermes Logistics + IT Development  
 Last updated: 2026-08-06
 
-## Purpose
+## v3 operating model
 
-The carrier contract engine continues the Logistics Sales conversation through one phone-friendly workflow:
+The carrier agreement journey is intentionally separated into two phases.
 
-1. carrier selects Essential Dispatch, Hermes Pro, or Custom Cooperation;
-2. carrier provides legal company, signer, authority, equipment, lanes, load-board names, and adaptation details;
-3. carrier identifies the Hermes assistant or load planner they spoke with;
-4. carrier confirms electronic-record consent and signer authority;
-5. carrier signs with a finger, stylus, mouse, or trackpad;
-6. the server creates a PDF Appendix A / onboarding packet with the selected plan, operating profile, signature image, timestamp, document identifiers, and hashed audit fingerprints;
-7. the server attaches the applicable master agreement PDF;
-8. copies are delivered to the carrier and a private, environment-controlled Hermes recipient list;
-9. the carrier receives an immediate PDF download even when email delivery needs follow-up.
+### Before signature - three-step legal/commercial packet
 
-The website never asks for or accepts load-board passwords, PINs, API tokens, recovery codes, payment credentials, W-9 files, CDL images, VIN lists, bank data, or private shipment documents.
+1. confirm Dispatch Support, Operations + Growth, or Custom Cooperation;
+2. confirm the exact carrier-specific percentage for Appendix A;
+3. provide legal company, MC or USDOT, optional company website, authorized signer, business email/phone, representative/offer code;
+4. review the plain-language control and payment boundaries;
+5. provide electronic consent, typed name, and drawn signature;
+6. receive a signed Appendix A review PDF plus the current master review PDF.
 
-## Current document classification
+### After signature - secure operating onboarding
 
-The repository currently contains the attorney-review draft:
+Equipment, lanes, availability, load boards, delegated access, W-9, insurance, carrier packets, driver/CDL documents, VIN lists, and shipment records are collected only when required through the appropriate approved private workflow. They are not part of the public pre-signature form.
 
-- version: `DRAFT-2026-08-05`;
-- path: `/contracts/Hermes_Carrier_Dispatch_Agreement_Master_DRAFT_v2026-08-05.pdf`;
-- SHA-256: `35b14cf8e68a8cc4a0e4720157e8dd141765868a16b5db3145c94168bbf80e0b`;
-- commercial term in that draft: 5.00%.
+No password, PIN, recovery code, API key, payment credential, bank information, W-9, CDL image, VIN list, full street address, lane profile, or private shipment document is accepted by the v3 pre-signature endpoint.
 
-Therefore the safe initial mode is:
+## Current review document
+
+- version: `ATTORNEY-REVIEW-V3-2026-08-06`;
+- PDF path: `/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf`;
+- PDF SHA-256: `9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb`;
+- HTML review versions are published under `/contracts/`;
+- master percentage: blank;
+- exact percentage: carrier-specific Appendix A;
+- status: attorney review, not final execution.
+
+Safe mode:
 
 `CARRIER_CONTRACT_MODE=review`
 
-In review mode, the carrier receives:
+## Required production bindings
 
-- the signed service-selection and onboarding PDF;
-- the current master draft PDF;
-- explicit wording that the packet does not activate a final agreement until Hermes issues an approved execution version.
-
-The proposed 6% Essential and 8% Pro structures are recorded as selected commercial proposals. They must not be represented as a final executed contract while the attached master agreement still states 5%.
-
-## Required Cloudflare bindings
-
-The Pages production environment must provide:
-
-- `ASSETS` — Pages static asset binding;
-- `LEAD_EMAIL_SERVICE` — service binding to the private email worker;
-- `LEAD_LIMITS` — production KV namespace used for idempotency and rate control;
-- `LEAD_SERVICE_TOKEN` — shared secret stored only in Cloudflare secret storage;
+- `ASSETS` - production static asset binding;
+- `LEAD_EMAIL_SERVICE` - private email-worker binding;
+- `LEAD_LIMITS` - production KV for idempotency and rate control;
+- `LEAD_SERVICE_TOKEN` - Cloudflare secret;
 - `LEAD_DELIVERY_MODE=live`;
 - `ALLOWED_ORIGIN=https://hermeslogisticsus.com`;
-- `CARRIER_CONTRACT_MODE=review` until final legal approval;
+- `CARRIER_CONTRACT_MODE=review` until approval;
 - `CARRIER_CONTRACT_INTERNAL_RECIPIENTS` on the email worker;
-- `EMAIL_TRANSPORT_MODE=cloudflare_email_message` when the Cloudflare Email Routing send binding is used for MIME/PDF attachments.
+- `EMAIL_TRANSPORT_MODE=cloudflare_email_message` when using the Email Routing send binding.
 
-Do not place secret values, account IDs, binding IDs, recipient lists, or provider diagnostics in GitHub, page HTML, analytics, URLs, screenshots, or public logs.
+Never place secret values, account IDs, recipient lists, provider diagnostics, or signer records in GitHub, HTML, analytics, URLs, screenshots, or public logs.
 
-## Internal recipient configuration
+## Internal recipients
 
-The internal recipient list is not accepted from the browser. It is read only from the private email-worker variable:
+The browser cannot choose internal recipients. The private email worker reads `CARRIER_CONTRACT_INTERNAL_RECIPIENTS` and removes retired addresses.
 
-`CARRIER_CONTRACT_INTERNAL_RECIPIENTS`
+Confirmed active fallback:
 
-Current safe format:
+`officeus@hermeslogisticsus.com`
 
-```text
-officeus@hermeslogisticsus.com,EXACT_DISPATCH_34_47_ADDRESS,EXACT_DISPATCH_107_ADDRESS
-```
+`freight_301@hermeslogisticsus.com` is retired and denylisted. Dispatch 34-47 and dispatch 107 addresses must not be guessed.
 
-Currently confirmed active in project records:
+## Production execution gate
 
-- `officeus@hermeslogisticsus.com`.
+Final execution may be enabled only when all conditions are true:
 
-The former `freight_301` mailbox is retired and must not be configured as a recipient. The email worker contains a defensive denylist, so it ignores that retired mailbox even when a stale Cloudflare variable still contains it. When the configured list becomes empty after filtering, the worker falls back to the active `SALES_DESTINATION` address.
-
-The exact addresses described operationally as “dispatch 34–47” and “dispatch 107” were not confirmed in the repository or connected mailbox search. Do not guess them. Add them to the encrypted/private Cloudflare variable only after the owner supplies or verifies their exact spelling and domain.
-
-The engine can operate initially with only `officeus@hermeslogisticsus.com`. Updating the private recipient variable later extends distribution immediately after the worker configuration is deployed.
-
-## Production execution activation
-
-Final agreement execution may be enabled only after all of the following are true:
-
-1. qualified Wisconsin transportation counsel approves the master agreement and related authorization/addendum;
-2. Essential 6%, Pro 8%, and any supported selected-service language are consistent between the master agreement and Appendix A;
-3. Hermes publishes an immutable approved PDF under `/contracts/`;
-4. Hermes records the exact approved version and SHA-256;
-5. the Cloudflare Pages production environment receives:
+1. qualified Wisconsin transportation counsel approves the master and any limited authorization/addendum;
+2. Hermes publishes an immutable non-review PDF under `/contracts/`;
+3. exact approved version and PDF SHA-256 are recorded;
+4. approved service models and percentage rules are consistent between the master and Appendix A;
+5. production receives:
    - `CARRIER_CONTRACT_MODE=live`;
-   - `CARRIER_CONTRACT_APPROVED_VERSION=<non-draft version>`;
+   - `CARRIER_CONTRACT_APPROVED_VERSION=<non-draft/non-review version>`;
    - `CARRIER_CONTRACT_APPROVED_PDF_PATH=/contracts/<approved-file>.pdf`;
-   - `CARRIER_CONTRACT_APPROVED_PDF_SHA256=<64 lowercase hex characters>`;
-6. preview environments are proven unable to access production email, KV, recipient, and agreement bindings;
-7. a synthetic end-to-end execution succeeds on a phone;
-8. the carrier test inbox and every internal recipient receive both PDFs;
-9. the downloaded and emailed files have matching SHA-256 values;
-10. no private value appears in analytics, URLs, GitHub, or public logs.
+   - `CARRIER_CONTRACT_APPROVED_PDF_SHA256=<64 lowercase hex>`;
+   - `CARRIER_CONTRACT_ALLOWED_PERCENTAGES=<comma-separated approved percentages>`;
+6. the selected percentage is present in `CARRIER_CONTRACT_ALLOWED_PERCENTAGES`;
+7. Custom Cooperation remains review-only until a separately approved matching document is issued;
+8. preview environments cannot access production email, KV, recipient, agreement, or signing bindings;
+9. a synthetic phone execution passes;
+10. the downloaded and emailed files have matching hashes;
+11. permanent private record retention is approved.
 
-The endpoint refuses to label a package live when the approved version is missing, contains `draft`, has an invalid path/hash, or the carrier selected non-approved custom terms.
+The endpoint falls back to review mode whenever the version is missing or contains `draft`/`review`, the PDF path/hash is invalid, the percentage is absent from the allowlist, or Custom Cooperation is selected.
 
-## Electronic-signature record
+## Electronic signature record
 
-The generated PDF records:
+The v3 generated Appendix records:
 
-- selected plan and percentage;
-- company and authority identifiers;
-- authorized signer name and title;
-- carrier business email and phone;
-- equipment, operating areas, lane preferences, and adaptation notes;
-- load-board names and secure access-handoff method;
-- Hermes representative referenced by the carrier;
-- four affirmative consent confirmations;
-- typed signer name;
-- drawn JPEG signature;
-- UTC timestamp;
-- consent-version identifier;
-- SHA-256 input fingerprint;
-- hashed network and device fingerprints;
-- master-document version and SHA-256;
-- generated Appendix A SHA-256.
+- document mode, version, and master SHA-256;
+- selected service model and exact percentage;
+- legal company, DBA, MC/USDOT, optional company website;
+- authorized signer name/title and business contact;
+- Hermes representative and offer code when supplied;
+- custom scope when applicable;
+- four affirmative consents;
+- typed signer name and drawn JPEG signature;
+- UTC timestamp and consent version;
+- input, network, and device audit fingerprints;
+- generated Appendix SHA-256.
 
-Raw IP addresses and raw device strings are not written to the PDF or email. Only one-way hashes are retained in the signed record.
+Raw IP addresses and raw user-agent strings are not written into the PDF or email.
 
-## Custom plan boundary
+## Failure and recovery
 
-A Custom Cooperation submission is always a proposal. It may generate a signed review/onboarding packet, but it must not become a live executed agreement automatically.
-
-Required sequence:
-
-1. carrier proposes percentage and scope;
-2. Hermes reviews the commercial and operating terms;
-3. Hermes approves or revises the proposal;
-4. Hermes issues a matching immutable agreement/appendix version;
-5. the carrier completes a new signature request against that approved version.
-
-## Failure handling
-
-- The endpoint returns a PDF immediately when generation succeeds.
-- `X-Hermes-Delivery: delivered` means the private email worker accepted delivery to the carrier and configured Hermes recipients.
-- `X-Hermes-Delivery: pending` means the PDF was created but email delivery was not confirmed; the carrier keeps the downloaded copy and Logistics Sales must complete a secure manual follow-up.
-- Idempotency prevents repeated clicks from sending duplicate contract emails.
-- KV stores the generated carrier PDF for 24 hours only to support same-request recovery; it is not the permanent contract archive.
-- Permanent completed-document storage must be added to the approved private records system before high-volume production execution.
+- successful generation returns a PDF immediately;
+- `X-Hermes-Delivery: delivered` confirms private worker acceptance;
+- `X-Hermes-Delivery: pending` means the carrier keeps the downloaded PDF and Sales follows up securely;
+- idempotency prevents duplicate contract email from repeated clicks;
+- generated recovery data remains in KV for 24 hours only;
+- permanent completed-document storage is a separate production requirement.
 
 ## Synthetic acceptance test
 
-Use an obviously synthetic carrier and approved test inboxes.
+1. use a prepared safe link with plan, rate, representative, and offer code;
+2. verify only those safe values travel through the URL;
+3. verify the form has three steps;
+4. verify MC or USDOT is required;
+5. verify company website is optional and validated;
+6. verify full address, equipment, lanes, load boards, and access details are absent;
+7. verify all four consents and typed/drawn signature are required;
+8. verify a rate absent from `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` stays review mode;
+9. verify custom scope stays review mode;
+10. verify the master PDF SHA-256;
+11. verify the two-page Appendix PDF and attached master open;
+12. verify carrier and active internal recipients receive both PDFs;
+13. verify retired recipients are filtered;
+14. verify duplicate submission does not resend;
+15. verify prohibited or unnecessary pre-signature fields are rejected;
+16. verify production bindings are unavailable to previews.
 
-Verify:
+## Release classification
 
-1. Essential and Pro query links preselect the correct plan;
-2. MC or USDOT is required;
-3. at least one equipment type is required;
-4. no password-like field exists;
-5. the signature canvas works on iPhone/Android and desktop;
-6. typed signature must match the signer name;
-7. all four consents are required;
-8. the server verifies the master PDF SHA-256;
-9. the generated Appendix A opens as a valid three-page PDF;
-10. the carrier and every configured active Hermes recipient receive both PDFs;
-11. retired recipients are filtered and never receive a contract;
-12. a duplicate submission does not send again;
-13. a payload containing password, token, bank, W-9, CDL, or VIN keys is rejected;
-14. custom terms remain review mode;
-15. production preview builds cannot use production recipient or contract bindings.
+Before approval:
 
-## Release classifications
+`SIGNED REVIEW PACKET READY / FINAL AGREEMENT NOT ACTIVATED`
 
-Before approved master activation:
-
-`SIGNED REVIEW/ONBOARDING PACKET READY / FINAL AGREEMENT NOT ACTIVATED`
-
-After legal approval, binding isolation, recipient verification, and synthetic execution:
+After counsel approval, allowed-rate activation, binding isolation, retention, and synthetic execution:
 
 `PRODUCTION CARRIER E-SIGN VERIFIED`
