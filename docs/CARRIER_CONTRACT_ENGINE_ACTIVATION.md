@@ -63,20 +63,21 @@ The internal recipient list is not accepted from the browser. It is read only fr
 
 `CARRIER_CONTRACT_INTERNAL_RECIPIENTS`
 
-Format:
+Current safe format:
 
 ```text
-officeus@hermeslogisticsus.com,freight_301@hermeslogisticsus.com,EXACT_DISPATCH_34_47_ADDRESS,EXACT_DISPATCH_107_ADDRESS
+officeus@hermeslogisticsus.com,EXACT_DISPATCH_34_47_ADDRESS,EXACT_DISPATCH_107_ADDRESS
 ```
 
-Confirmed in current project records:
+Currently confirmed active in project records:
 
-- `officeus@hermeslogisticsus.com`;
-- `freight_301@hermeslogisticsus.com`.
+- `officeus@hermeslogisticsus.com`.
+
+The former `freight_301` mailbox is retired and must not be configured as a recipient. The email worker contains a defensive denylist, so it ignores that retired mailbox even when a stale Cloudflare variable still contains it. When the configured list becomes empty after filtering, the worker falls back to the active `SALES_DESTINATION` address.
 
 The exact addresses described operationally as “dispatch 34–47” and “dispatch 107” were not confirmed in the repository or connected mailbox search. Do not guess them. Add them to the encrypted/private Cloudflare variable only after the owner supplies or verifies their exact spelling and domain.
 
-If only the confirmed addresses are configured initially, the engine operates without requiring a code change. Updating the private recipient variable later extends distribution immediately after the worker configuration is deployed.
+The engine can operate initially with only `officeus@hermeslogisticsus.com`. Updating the private recipient variable later extends distribution immediately after the worker configuration is deployed.
 
 ## Production execution activation
 
@@ -158,11 +159,12 @@ Verify:
 7. all four consents are required;
 8. the server verifies the master PDF SHA-256;
 9. the generated Appendix A opens as a valid three-page PDF;
-10. the carrier and every configured Hermes recipient receive both PDFs;
-11. a duplicate submission does not send again;
-12. a payload containing password, token, bank, W-9, CDL, or VIN keys is rejected;
-13. custom terms remain review mode;
-14. production preview builds cannot use production recipient or contract bindings.
+10. the carrier and every configured active Hermes recipient receive both PDFs;
+11. retired recipients are filtered and never receive a contract;
+12. a duplicate submission does not send again;
+13. a payload containing password, token, bank, W-9, CDL, or VIN keys is rejected;
+14. custom terms remain review mode;
+15. production preview builds cannot use production recipient or contract bindings.
 
 ## Release classifications
 

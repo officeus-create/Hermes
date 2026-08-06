@@ -38,6 +38,20 @@ const {
   preloadImage,
 } = Astro.props;
 
+const RETIRED_CONTACT_EMAIL = "freight_301@hermeslogisticsus.com";
+const CURRENT_LOGISTICS_EMAIL = "officeus@hermeslogisticsus.com";
+
+const replaceRetiredContact = (value: unknown): unknown => {
+  if (typeof value === "string") return value.replaceAll(RETIRED_CONTACT_EMAIL, CURRENT_LOGISTICS_EMAIL);
+  if (Array.isArray(value)) return value.map(replaceRetiredContact);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, replaceRetiredContact(item)]),
+    );
+  }
+  return value;
+};
+
 const conciseDescription = (value: string, maxLength = 170) => {
   const normalized = value.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
@@ -64,6 +78,9 @@ const alternateOgLocales = alternates
 .filter((alternate) => alternate.lang !== locale && alternate.lang !== "x-default")
 .map((alternate) => localeConfig[alternate.lang as SiteLocale]?.ogLocale)
 .filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
+const safeSchema = schema
+  ? replaceRetiredContact(schema) as Record<string, unknown> | Record<string, unknown>[]
+  : undefined;
 ---
 
 <!doctype html>
@@ -130,7 +147,27 @@ const alternateOgLocales = alternates
         }
       }
     </script>
-    {schema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />}
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", () => {
+        const retiredContactEmail = "freight_301@hermeslogisticsus.com";
+        const currentLogisticsEmail = "officeus@hermeslogisticsus.com";
+
+        document.querySelectorAll(`a[href^="mailto:${retiredContactEmail}"]`).forEach((link) => {
+          const href = link.getAttribute("href") || "";
+          link.setAttribute("href", href.replace(retiredContactEmail, currentLogisticsEmail));
+        });
+
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let node = walker.nextNode();
+        while (node) {
+          if (node.nodeValue?.includes(retiredContactEmail)) {
+            node.nodeValue = node.nodeValue.replaceAll(retiredContactEmail, currentLogisticsEmail);
+          }
+          node = walker.nextNode();
+        }
+      }, { once: true });
+    </script>
+    {safeSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(safeSchema)} />}
     <title>{title}</title>
   </head>
   <body>

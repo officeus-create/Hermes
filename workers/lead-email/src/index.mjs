@@ -3,6 +3,7 @@ const MAX_CONTRACT_BODY_BYTES = 4_500_000;
 const MAX_MESSAGE_TEXT = 20_000;
 const MAX_ATTACHMENT_BYTES = 2_200_000;
 const MAX_TOTAL_ATTACHMENT_BYTES = 3_500_000;
+const RETIRED_INTERNAL_RECIPIENTS = new Set(["freight_301@hermeslogisticsus.com"]);
 const encoder = new TextEncoder();
 
 const json = (status, payload) =>
@@ -109,9 +110,19 @@ const normalizeAttachments = (value) => {
   return attachments;
 };
 
+const parseRecipientList = (value) => [...new Set(
+  clean(value, 1_200)
+    .split(/[;,]/)
+    .map((item) => item.trim().toLowerCase())
+    .filter((item) => isEmail(item) && !RETIRED_INTERNAL_RECIPIENTS.has(item)),
+)];
+
 const parseInternalRecipients = (env) => {
-  const source = clean(env.CARRIER_CONTRACT_INTERNAL_RECIPIENTS, 1_200) || clean(env.SALES_DESTINATION, 320);
-  return [...new Set(source.split(/[;,]/).map((item) => item.trim().toLowerCase()).filter(isEmail))].slice(0, 8);
+  const configuredRecipients = parseRecipientList(env.CARRIER_CONTRACT_INTERNAL_RECIPIENTS);
+  if (configuredRecipients.length > 0) return configuredRecipients.slice(0, 8);
+
+  const fallbackRecipients = parseRecipientList(env.SALES_DESTINATION);
+  return fallbackRecipients.slice(0, 8);
 };
 
 const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId }) => {
