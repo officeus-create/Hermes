@@ -41,8 +41,11 @@ assert.doesNotMatch(shortPage, /input[^>]+type=["']password/i);
 
 for (const required of [
   '"/carrier/"',
+  '"/logistics/carrier/"',
   '"/logistics/carrier-offer/"',
   '"/logistics/carrier-agreement/"',
+  'primaryLabel: "Review plans and carrier packet"',
+  'primaryHref: "/carrier/"',
   'primaryHref: "/logistics/carrier-onboarding/"',
   "Copy link",
   "data-carrier-journey-sms",
@@ -68,4 +71,4 @@ for (const required of [
   assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 }
 
-console.log("Carrier contract journey contract passed: short SMS URL, site entry, trust-first CTA hierarchy, and execution boundaries are present.");
+console.log("Carrier contract journey contract passed: short SMS URL, site entry, trust-first CTA hierarchy, carrier-audience handoff, and execution boundaries are present.");
