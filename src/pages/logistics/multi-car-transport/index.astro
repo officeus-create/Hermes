@@ -9,6 +9,11 @@ const content = {
   intro: "Hermes reviews multi-car transport requests for dealerships, auctions, fleets, businesses, and authorized customers. A complete unit list, route, condition, timing, access, and requested delivery sequence are required before equipment and capacity can be evaluated.",
   image: "/images/path-logistics-system.jpg",
   imageAlt: "Multi-car vehicle transportation and carrier capacity coordination",
+  primaryAction: {
+    label: "Prepare multi-car transport request",
+    href: "/logistics/request-vehicle-transport/?request=other&equipment=multi_car#transport-intake",
+  },
+  handoffNote: "Use the direct transport intake to prepare the route, timing, unit summary, quantity, vehicle conditions, access, sequence, and multi-car equipment preference for Logistics Sales review. The requester selects their own role in the form. Submission does not guarantee one truck, carrier capacity, equipment, price, pickup or delivery timing, acceptance, or booking.",
   audience: [
     "Dealerships moving several inventory units",
     "Auction buyers or sellers coordinating multiple vehicles",
@@ -39,6 +44,7 @@ const content = {
     { question: "What is the fastest way to prepare the request?", answer: "Provide a clean unit list, exact route, condition for every vehicle, pickup readiness, access, timing, and desired sequence." },
   ],
   related: [
+    { label: "Request Vehicle Transportation", href: "/logistics/request-vehicle-transport/?request=other&equipment=multi_car#transport-intake" },
     { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
     { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
     { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
