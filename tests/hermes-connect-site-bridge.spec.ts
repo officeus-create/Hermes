@@ -13,7 +13,13 @@ test("Hermes Connect has an indexed product overview connected to the Web App", 
   );
   await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/i);
   await expect(page.getByRole("heading", { name: /Give clients one clear place/i })).toBeVisible();
-  await expect(page.locator(".connect-service-category-grid article")).toHaveCount(6);
+
+  const categoryCards = page.locator(".connect-service-category-grid article");
+  await expect(categoryCards).toHaveCount(10);
+  await expect(categoryCards.filter({ hasText: "Auto service & repair" })).toHaveCount(1);
+  await expect(categoryCards.filter({ hasText: "Truck & car-hauler repair" })).toHaveCount(1);
+  await expect(categoryCards.filter({ hasText: "Heavy equipment service" })).toHaveCount(1);
+  await expect(categoryCards.filter({ hasText: "Oversize & specialty equipment" })).toHaveCount(1);
 
   const webAccessLinks = page.locator(`a[href="${connectUrl}"]`);
   await expect(webAccessLinks).toHaveCount(2);

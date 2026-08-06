@@ -10,11 +10,13 @@ test("Hermes Connect routes every category into one Web App access form", async 
   await expect(page.getByRole("heading", { name: /One clear client path/i })).toBeVisible();
 
   const categoryCards = page.locator("[data-category-id]");
-  await expect(categoryCards).toHaveCount(6);
-  await page.locator('[data-category-id="fitness-coaching"]').click();
-  await expect(page.locator("[data-preview-name]")).toHaveText("Northline Performance");
-  await expect(page.locator('[name="category_id"]')).toHaveValue("fitness-coaching");
-  await expect(page.locator("[data-selected-summary] strong")).toContainText("Fitness & coaching · Hermes Connect Web App");
+  await expect(categoryCards).toHaveCount(10);
+  await page.locator('[data-category-id="truck-car-hauler-repair"]').click();
+  await expect(page.locator('[data-category-id="truck-car-hauler-repair"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("[data-preview-name]")).toHaveText("FleetLine Repair");
+  await expect(page.locator("[data-preview-role]")).toContainText("Commercial truck and car-hauler service");
+  await expect(page.locator('[name="category_id"]')).toHaveValue("truck-car-hauler-repair");
+  await expect(page.locator("[data-selected-summary] strong")).toContainText("Truck & car-hauler repair · Hermes Connect Web App");
 
   await expect(page.locator('[name="platform_id"]')).toHaveCount(0);
   await expect(page.getByText(/iPhone|Android|App Store|Google Play/i)).toHaveCount(0);
@@ -23,6 +25,28 @@ test("Hermes Connect routes every category into one Web App access form", async 
   await expect(page.getByText(/accepts Web App access requests only/i)).toBeVisible();
   await expect(page.locator('footer a[href="https://hermeslogisticsus.com/services/hermes-connect/"]')).toBeVisible();
   await expect(page.locator('footer a[href="https://hermeslogisticsus.com/services/hermes-connect/"]')).toHaveText("Hermes Connect overview");
+});
+
+test("Hermes Connect exposes the automotive and equipment categories on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(route);
+
+  const requiredMobileCategories = [
+    "auto-service-repair",
+    "truck-car-hauler-repair",
+    "heavy-equipment-service",
+    "oversize-specialty-equipment",
+  ];
+
+  for (const categoryId of requiredMobileCategories) {
+    await expect(page.locator(`[data-category-id="${categoryId}"]`)).toBeVisible();
+  }
+
+  await page.locator('[data-category-id="oversize-specialty-equipment"]').click();
+  await expect(page.locator("[data-preview-name]")).toHaveText("Titan Specialty Support");
+  await expect(page.locator('[name="category_id"]')).toHaveValue("oversize-specialty-equipment");
+  await expect(page.locator("[data-selected-summary] strong")).toContainText("Oversize & specialty equipment · Hermes Connect Web App");
+  await expect(page.locator(".mobile-apply")).toBeVisible();
 });
 
 test("Hermes Connect submits a privacy-safe Web App access request through the protected adapter", async ({ page }) => {
