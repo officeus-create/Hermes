@@ -10,7 +10,10 @@ class MemoryKv {
 }
 
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
-const approvedMaster = Buffer.from("%PDF-1.4\n1 0 obj << /Type /Catalog >> endobj\n%%EOF\n", "utf8");
+const approvedMaster = Buffer.from(
+  `%PDF-1.4\n${"% Synthetic approved master document padding for attachment validation.\n".repeat(8)}1 0 obj << /Type /Catalog >> endobj\n%%EOF\n`,
+  "utf8",
+);
 const approvedMasterSha = sha256(approvedMaster);
 const signatureBytes = Buffer.alloc(900, 17);
 const signatureData = `data:image/jpeg;base64,${signatureBytes.toString("base64")}`;
