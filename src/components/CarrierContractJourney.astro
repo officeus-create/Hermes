@@ -1,47 +1,147 @@
 ---
 import { Clipboard, FileSignature, MessageSquareText, Phone } from "@lucide/astro";
-type JourneyConfig={stage:string;primaryLabel:string;primaryHref:string};
-const journeyByPath:Record<string,JourneyConfig>={
-  "/carrier/":{stage:"Carrier agreement",primaryLabel:"Review and sign",primaryHref:"/logistics/carrier-onboarding/"},
-  "/logistics/carrier/":{stage:"Comparing carrier support",primaryLabel:"Open carrier agreement",primaryHref:"/carrier/"},
-  "/logistics/carrier-offer/":{stage:"Support options reviewed",primaryLabel:"Review and sign",primaryHref:"/logistics/carrier-onboarding/"},
-  "/logistics/carrier-agreement/":{stage:"Full terms reviewed",primaryLabel:"Confirm terms and sign",primaryHref:"/logistics/carrier-onboarding/"},
+
+type JourneyConfig = { stage: string; primaryLabel: string; primaryHref: string };
+
+const journeyByPath: Record<string, JourneyConfig> = {
+  "/carrier/": { stage: "Carrier agreement", primaryLabel: "Continue to carrier packet", primaryHref: "/logistics/carrier-onboarding/" },
+  "/sign/": { stage: "Private carrier link", primaryLabel: "Continue to carrier packet", primaryHref: "/logistics/carrier-onboarding/" },
+  "/logistics/carrier/": { stage: "Comparing carrier support", primaryLabel: "Review plans and carrier packet", primaryHref: "/carrier/" },
+  "/logistics/carrier-offer/": { stage: "Support options reviewed", primaryLabel: "Review and continue", primaryHref: "/sign/" },
+  "/logistics/carrier-agreement/": { stage: "Full terms reviewed", primaryLabel: "Confirm terms and continue", primaryHref: "/logistics/carrier-onboarding/" },
 };
-const journey=journeyByPath[Astro.url.pathname];
-const shortUrl="https://hermeslogisticsus.com/carrier/";
-const smsCopy=`Hermes carrier agreement: review the simple terms, keep control of every load, and complete the signature packet from your phone. ${shortUrl}`;
+
+const journey = journeyByPath[Astro.url.pathname];
+const shortUrl = "https://hermeslogisticsus.com/sign/";
+const smsCopy = `Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: ${shortUrl}`;
 ---
 
-{journey&&(<aside class="carrier-contract-journey" aria-label="Carrier agreement next actions" data-carrier-contract-journey><div class="carrier-journey-stage"><small>{journey.stage}</small><strong>Keep the next step simple.</strong></div><a class="carrier-journey-primary" href={journey.primaryHref} data-carrier-context-link data-commercial-primary-cta data-service-group="carrier_contract"><FileSignature size={17} aria-hidden="true" />{journey.primaryLabel}</a><a class="carrier-journey-call" href="tel:+12623023626" aria-label="Call U.S. Logistics Sales"><Phone size={18} aria-hidden="true" /><span>Call</span></a><button class="carrier-journey-copy" type="button" data-carrier-journey-copy aria-label="Copy carrier agreement SMS text"><Clipboard size={18} aria-hidden="true" /><span>Copy link</span></button><a class="carrier-journey-sms" href="#" data-carrier-journey-sms aria-label="Open an SMS with the carrier agreement link"><MessageSquareText size={18} aria-hidden="true" /><span>Text</span></a><span class="carrier-journey-status" data-carrier-journey-status aria-live="polite"></span></aside>)}
+{journey && (
+  <aside class="carrier-contract-journey" aria-label="Carrier agreement next actions" data-carrier-contract-journey>
+    <div class="carrier-journey-stage"><small>{journey.stage}</small><strong>Keep the next step simple.</strong></div>
+    <a class="carrier-journey-primary" href={journey.primaryHref} data-commercial-primary-cta data-service-group="carrier_contract"><FileSignature size={17} aria-hidden="true" />{journey.primaryLabel}</a>
+    <a class="carrier-journey-call" href="tel:+12623023626" aria-label="Call U.S. Logistics Sales"><Phone size={18} aria-hidden="true" /><span>Call</span></a>
+    <button class="carrier-journey-copy" type="button" data-carrier-journey-copy aria-label="Copy carrier agreement SMS text"><Clipboard size={18} aria-hidden="true" /><span>Copy link</span></button>
+    <a class="carrier-journey-sms" href="#" data-carrier-journey-sms aria-label="Open an SMS with the carrier agreement link"><MessageSquareText size={18} aria-hidden="true" /><span>Text</span></a>
+    <span class="carrier-journey-status" data-carrier-journey-status aria-live="polite"></span>
+  </aside>
+)}
 
-{journey&&(<script define:vars={{shortUrl,smsCopy}}>
-  const bar=document.querySelector("[data-carrier-contract-journey]");
-  if(bar instanceof HTMLElement){
-    const allowedPlans=new Set(["essential","pro","custom"]);const cleanCode=(value)=>/^[A-Za-z0-9._ -]{1,40}$/.test(value)?value:"";const cleanRate=(value)=>{if(!/^\d{1,2}(?:\.\d{1,2})?$/.test(value))return"";const number=Number(value);return number>=1&&number<=15?String(number):"";};
-    const source=new URL(window.location.href);const safe=new URL(shortUrl);const plan=source.searchParams.get("plan")??"";const rate=cleanRate(source.searchParams.get("rate")??"");const rep=cleanCode(source.searchParams.get("rep")??"");const offer=cleanCode(source.searchParams.get("offer")??"");if(allowedPlans.has(plan))safe.searchParams.set("plan",plan);if(rate)safe.searchParams.set("rate",rate);if(rep)safe.searchParams.set("rep",rep);if(offer)safe.searchParams.set("offer",offer);
-    const sharedUrl=safe.toString();const sharedCopy=safe.search?`Hermes carrier agreement: review the simple terms and confirm the prepared offer from your phone. ${sharedUrl}`:smsCopy;
-    bar.querySelectorAll("[data-carrier-context-link]").forEach((node)=>{if(!(node instanceof HTMLAnchorElement))return;const target=new URL(node.href,window.location.origin);target.search=safe.search;node.href=target.toString();});
-    const status=bar.querySelector("[data-carrier-journey-status]");const setStatus=(message)=>{if(status instanceof HTMLElement)status.textContent=message;};const copyText=async(value)=>{try{await navigator.clipboard.writeText(value);return true;}catch{const field=document.createElement("textarea");field.value=value;field.setAttribute("readonly","");field.style.position="fixed";field.style.opacity="0";document.body.append(field);field.select();const copied=document.execCommand("copy");field.remove();return copied;}};
-    bar.querySelector("[data-carrier-journey-copy]")?.addEventListener("click",async()=>setStatus(await copyText(sharedCopy)?"SMS link copied":sharedUrl));const smsLink=bar.querySelector("[data-carrier-journey-sms]");if(smsLink instanceof HTMLAnchorElement){const separator=/iPad|iPhone|iPod/.test(navigator.userAgent)?"&":"?";smsLink.href=`sms:${separator}body=${encodeURIComponent(sharedCopy)}`;}
-  }
-</script>)}
+{journey && (
+  <script define:vars={{ shortUrl, smsCopy }}>
+    const bar = document.querySelector("[data-carrier-contract-journey]");
+    if (bar instanceof HTMLElement) {
+      const status = bar.querySelector("[data-carrier-journey-status]");
+      const setStatus = (message) => { if (status instanceof HTMLElement) status.textContent = message; };
+      const copyText = async (value) => {
+        try { await navigator.clipboard.writeText(value); return true; }
+        catch {
+          const field = document.createElement("textarea");
+          field.value = value;
+          field.setAttribute("readonly", "");
+          field.style.position = "fixed";
+          field.style.opacity = "0";
+          document.body.append(field);
+          field.select();
+          const copied = document.execCommand("copy");
+          field.remove();
+          return copied;
+        }
+      };
+      bar.querySelector("[data-carrier-journey-copy]")?.addEventListener("click", async () => setStatus(await copyText(smsCopy) ? "SMS link copied" : shortUrl));
+      const smsLink = bar.querySelector("[data-carrier-journey-sms]");
+      if (smsLink instanceof HTMLAnchorElement) {
+        const separator = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
+        smsLink.href = `sms:${separator}body=${encodeURIComponent(smsCopy)}`;
+      }
+    }
+  </script>
+)}
 
 <script>
-  type AnalyticsValue=string|number;type AnalyticsPayload=Record<string,AnalyticsValue>;const pushCarrierAnalytics=(payload:AnalyticsPayload)=>{window.dataLayer=window.dataLayer||[];window.dataLayer.push(payload);};
-  const carrierSalesPaths=new Set(["/carrier/","/logistics/carrier/","/logistics/carrier-offer/","/logistics/carrier-agreement/"]);const destinationTypes=new Map([["/carrier/","carrier_proposal_entry"],["/logistics/carrier-offer/","carrier_offer_review"],["/logistics/carrier-agreement/","carrier_agreement_review"]]);const carrierEventBase=(pageGroup="carrier_contract")=>({audience_type:"carrier",page_group:pageGroup,service_group:"carrier_contract",page_path:window.location.pathname});
-  const classifyDestination=(target:URL)=>{if(target.pathname==="/logistics/carrier-onboarding/"){const plan=target.searchParams.get("plan");if(plan==="essential")return"carrier_plan_essential";if(plan==="pro")return"carrier_plan_pro";if(plan==="custom")return"carrier_plan_custom";return"carrier_packet_start";}return destinationTypes.get(target.pathname)??"";};
-  document.addEventListener("click",(event)=>{if(!event.isTrusted)return;const source=event.target;if(!(source instanceof Element))return;const link=source.closest("a[href]");if(carrierSalesPaths.has(window.location.pathname)&&link instanceof HTMLAnchorElement){let target:URL;try{target=new URL(link.href,window.location.origin);}catch{target=new URL(window.location.origin);}const ctaType=target.origin===window.location.origin?classifyDestination(target):"";if(ctaType)pushCarrierAnalytics({event:"commercial_cta_click",cta_type:ctaType,...carrierEventBase(),destination_path:target.pathname});}
-    const share=source.closest("[data-carrier-share],[data-carrier-copy],[data-carrier-sms],[data-carrier-journey-copy],[data-carrier-journey-sms]");if(share){const handoffMethod=share.hasAttribute("data-carrier-share")?"native_share":share.hasAttribute("data-carrier-copy")||share.hasAttribute("data-carrier-journey-copy")?"copy":"sms";pushCarrierAnalytics({event:"carrier_contract_share",handoff_method:handoffMethod,...carrierEventBase()});}
-    const download=source.closest<HTMLElement>("[data-contract-download]");if(download){const format=download.dataset.contractDownload;if(format==="pdf")pushCarrierAnalytics({event:"carrier_contract_document_action",cta_type:"agreement_pdf_download",...carrierEventBase("carrier_agreement")});}
-    const esign=source.closest<HTMLAnchorElement>("[data-contract-esign]");if(esign)pushCarrierAnalytics({event:"carrier_contract_document_action",cta_type:"carrier_esign_request",handoff_method:"site_packet",...carrierEventBase("carrier_agreement")});
+  type AnalyticsValue = string | number;
+  type AnalyticsPayload = Record<string, AnalyticsValue>;
+  const pushCarrierAnalytics = (payload: AnalyticsPayload) => { window.dataLayer = window.dataLayer || []; window.dataLayer.push(payload); };
+  const carrierSalesPaths = new Set(["/carrier/", "/sign/", "/logistics/carrier/", "/logistics/carrier-offer/", "/logistics/carrier-agreement/"]);
+  const destinationTypes = new Map([
+    ["/carrier/", "carrier_proposal_entry"],
+    ["/sign/", "carrier_signing_entry"],
+    ["/logistics/carrier-offer/", "carrier_offer_review"],
+    ["/logistics/carrier-agreement/", "carrier_agreement_review"],
+  ]);
+  const carrierEventBase = (pageGroup = "carrier_contract") => ({ audience_type: "carrier", page_group: pageGroup, service_group: "carrier_contract", page_path: window.location.pathname });
+  const classifyDestination = (target: URL) => target.pathname === "/logistics/carrier-onboarding/" ? "carrier_packet_start" : destinationTypes.get(target.pathname) ?? "";
+
+  document.addEventListener("click", (event) => {
+    if (!event.isTrusted) return;
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+    const link = source.closest("a[href]");
+    if (carrierSalesPaths.has(window.location.pathname) && link instanceof HTMLAnchorElement) {
+      let target: URL;
+      try { target = new URL(link.href, window.location.origin); }
+      catch { target = new URL(window.location.origin); }
+      const ctaType = target.origin === window.location.origin ? classifyDestination(target) : "";
+      if (ctaType) pushCarrierAnalytics({ event: "commercial_cta_click", cta_type: ctaType, ...carrierEventBase(), destination_path: target.pathname });
+    }
+    const share = source.closest("[data-carrier-share],[data-carrier-copy],[data-carrier-sms],[data-sign-copy],[data-sign-sms],[data-carrier-journey-copy],[data-carrier-journey-sms]");
+    if (share) {
+      const handoffMethod = share.hasAttribute("data-carrier-share") ? "native_share" : share.hasAttribute("data-carrier-copy") || share.hasAttribute("data-sign-copy") || share.hasAttribute("data-carrier-journey-copy") ? "copy" : "sms";
+      pushCarrierAnalytics({ event: "carrier_contract_share", handoff_method: handoffMethod, ...carrierEventBase() });
+    }
+    const download = source.closest<HTMLElement>("[data-contract-download]");
+    if (download?.dataset.contractDownload === "pdf") pushCarrierAnalytics({ event: "carrier_contract_document_action", cta_type: "agreement_pdf_download", ...carrierEventBase("carrier_agreement") });
+    const esign = source.closest<HTMLAnchorElement>("[data-contract-esign]");
+    if (esign) pushCarrierAnalytics({ event: "carrier_contract_document_action", cta_type: "carrier_esign_request", handoff_method: "site_packet", ...carrierEventBase("carrier_agreement") });
   });
-  if(window.location.pathname==="/logistics/carrier-onboarding/"){
-    const form=document.querySelector<HTMLFormElement>("#carrier-onboarding-form");const steps=form?[...form.querySelectorAll<HTMLElement>("[data-step]")]:[];const reached=new Set<number>();const results=new Set<string>();let started=false;const visibleStep=()=>{const value=Number(steps.find((step)=>!step.hidden)?.dataset.step??0);return Number.isInteger(value)&&value>=1&&value<=3?value:0;};const recordStep=()=>{const stepNumber=visibleStep();if(!stepNumber||reached.has(stepNumber))return;reached.add(stepNumber);pushCarrierAnalytics({event:"carrier_contract_step_reached",stepNumber,...carrierEventBase("carrier_contract_onboarding")});};const recordStart=(event:Event)=>{if(!event.isTrusted||started)return;started=true;pushCarrierAnalytics({event:"carrier_contract_intake_start",...carrierEventBase("carrier_contract_onboarding")});recordStep();};form?.addEventListener("focusin",recordStart);form?.addEventListener("input",recordStart);form?.addEventListener("change",recordStart);form?.addEventListener("click",(event)=>{recordStart(event);if(!event.isTrusted)return;const source=event.target;if(!(source instanceof Element)||!source.closest("[data-next],[data-previous]"))return;window.requestAnimationFrame(recordStep);});
-    const title=form?.querySelector<HTMLElement>("[data-result-title]");if(title){const recordResult=()=>{const text=title.textContent?.trim()??"";const previewStatus=text.startsWith("Your PDF packet is ready and copies were sent.")?"delivered":text.startsWith("Your PDF packet is ready; email delivery needs follow-up.")?"pending":text.startsWith("The packet was not completed.")?"failed":"";if(!previewStatus||results.has(previewStatus))return;results.add(previewStatus);pushCarrierAnalytics({event:"carrier_contract_packet_result",preview_status:previewStatus,...carrierEventBase("carrier_contract_onboarding")});};new MutationObserver(recordResult).observe(title,{childList:true,characterData:true,subtree:true});}
+
+  if (window.location.pathname === "/logistics/carrier-onboarding/") {
+    const form = document.querySelector<HTMLFormElement>("#carrier-onboarding-form");
+    const steps = form ? [...form.querySelectorAll<HTMLElement>("[data-step]")] : [];
+    const reached = new Set<number>();
+    const results = new Set<string>();
+    let started = false;
+    const visibleStep = () => {
+      const value = Number(steps.find((step) => !step.hidden)?.dataset.step ?? 0);
+      return Number.isInteger(value) && value >= 1 && value <= 3 ? value : 0;
+    };
+    const recordStep = () => {
+      const stepNumber = visibleStep();
+      if (!stepNumber || reached.has(stepNumber)) return;
+      reached.add(stepNumber);
+      pushCarrierAnalytics({ event: "carrier_contract_step_reached", stepNumber, ...carrierEventBase("carrier_contract_onboarding") });
+    };
+    const recordStart = (event: Event) => {
+      if (!event.isTrusted || started) return;
+      started = true;
+      pushCarrierAnalytics({ event: "carrier_contract_intake_start", ...carrierEventBase("carrier_contract_onboarding") });
+      recordStep();
+    };
+    form?.addEventListener("focusin", recordStart);
+    form?.addEventListener("input", recordStart);
+    form?.addEventListener("change", recordStart);
+    form?.addEventListener("click", (event) => {
+      recordStart(event);
+      if (!event.isTrusted) return;
+      const source = event.target;
+      if (!(source instanceof Element) || !source.closest("[data-next],[data-previous]")) return;
+      window.requestAnimationFrame(recordStep);
+    });
+    const title = form?.querySelector<HTMLElement>("[data-result-title]");
+    if (title) {
+      const recordResult = () => {
+        const text = title.textContent?.trim() ?? "";
+        const previewStatus = text.startsWith("Your PDF packet is ready and copies were sent.") ? "delivered" : text.startsWith("Your PDF packet is ready; email delivery needs follow-up.") ? "pending" : text.startsWith("The packet was not completed.") ? "failed" : "";
+        if (!previewStatus || results.has(previewStatus)) return;
+        results.add(previewStatus);
+        pushCarrierAnalytics({ event: "carrier_contract_packet_result", preview_status: previewStatus, ...carrierEventBase("carrier_contract_onboarding") });
+      };
+      new MutationObserver(recordResult).observe(title, { childList: true, characterData: true, subtree: true });
+    }
   }
 </script>
 
 <style>
-.carrier-contract-journey{display:none}@media(min-width:901px){.carrier-contract-journey{position:fixed;z-index:92;right:1rem;bottom:1rem;display:grid;grid-template-columns:1fr auto auto;gap:.5rem;align-items:center;width:min(620px,calc(100vw - 2rem));padding:.72rem;border:1px solid rgba(173,188,230,.55);border-radius:15px;background:rgba(7,16,56,.96);box-shadow:0 18px 48px rgba(7,16,56,.25);color:#fff;backdrop-filter:blur(14px)}.carrier-journey-stage{padding:0 .45rem}.carrier-journey-stage small,.carrier-journey-stage strong{display:block}.carrier-journey-stage small{color:#ffd88a;font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.carrier-journey-stage strong{margin-top:.1rem;font-size:.9rem}.carrier-journey-primary,.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{display:inline-flex;min-height:2.8rem;align-items:center;justify-content:center;gap:.4rem;border-radius:9px;font:inherit;font-weight:850;text-decoration:none;cursor:pointer}.carrier-journey-primary{padding:.65rem .85rem;border:0;background:linear-gradient(135deg,#f2a93b,#ffd66d);color:#251900}.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{width:2.8rem;padding:0;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.08);color:#fff}.carrier-journey-call span,.carrier-journey-copy span,.carrier-journey-sms span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.carrier-journey-sms{display:none}.carrier-journey-status{grid-column:1/-1;min-height:.8rem;padding:0 .45rem;color:#bff7d3;font-size:.7rem;font-weight:800}}
-@media(max-width:900px){body:has(.carrier-contract-journey){padding-bottom:5.35rem}.carrier-contract-journey{position:fixed;z-index:92;right:0;bottom:0;left:0;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:.45rem;padding:.68rem max(.7rem,env(safe-area-inset-right)) calc(.68rem + env(safe-area-inset-bottom)) max(.7rem,env(safe-area-inset-left));border-top:1px solid rgba(173,188,230,.55);background:rgba(7,16,56,.97);box-shadow:0 -.8rem 2.2rem rgba(7,16,56,.22);color:#fff;backdrop-filter:blur(14px)}.carrier-journey-stage{display:none}.carrier-journey-primary,.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{display:inline-flex;min-height:3rem;align-items:center;justify-content:center;gap:.38rem;border-radius:9px;font:inherit;font-weight:850;text-decoration:none}.carrier-journey-primary{padding:.68rem .8rem;border:0;background:linear-gradient(135deg,#f2a93b,#ffd66d);color:#251900}.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{width:3rem;padding:0;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.08);color:#fff}.carrier-journey-primary svg{display:none}.carrier-journey-call span,.carrier-journey-copy span,.carrier-journey-sms span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.carrier-journey-status{position:absolute;right:.75rem;bottom:calc(4.45rem + env(safe-area-inset-bottom));max-width:70vw;padding:.35rem .55rem;border-radius:7px;background:#071038;color:#c8f8d8;font-size:.7rem;font-weight:800}.carrier-journey-status:empty{display:none}}@media(prefers-reduced-transparency:reduce){.carrier-contract-journey{background:#071038;backdrop-filter:none}}
+.carrier-contract-journey{display:none}@media(min-width:901px){.carrier-contract-journey{position:fixed;z-index:92;right:1rem;bottom:1rem;display:grid;grid-template-columns:1fr auto auto;gap:.5rem;align-items:center;width:min(620px,calc(100vw - 2rem));padding:.72rem;border:1px solid rgba(173,188,230,.55);border-radius:15px;background:rgba(7,16,56,.96);box-shadow:0 18px 48px rgba(7,16,56,.25);color:#fff;backdrop-filter:blur(14px)}.carrier-journey-stage{padding:0 .45rem}.carrier-journey-stage small,.carrier-journey-stage strong{display:block}.carrier-journey-stage small{color:#ffd88a;font-size:.68rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.carrier-journey-stage strong{margin-top:.1rem;font-size:.9rem}.carrier-journey-primary,.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{display:inline-flex;min-height:2.8rem;align-items:center;justify-content:center;gap:.4rem;border-radius:9px;font:inherit;font-weight:850;text-decoration:none;cursor:pointer}.carrier-journey-primary{padding:.65rem .85rem;border:0;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291);color:#fff}.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{width:2.8rem;padding:0;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.08);color:#fff}.carrier-journey-call span,.carrier-journey-copy span,.carrier-journey-sms span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.carrier-journey-sms{display:none}.carrier-journey-status{grid-column:1/-1;min-height:.8rem;padding:0 .45rem;color:#bff7d3;font-size:.7rem;font-weight:800}}
+@media(max-width:900px){body:has(.carrier-contract-journey){padding-bottom:5.35rem}.carrier-contract-journey{position:fixed;z-index:92;right:0;bottom:0;left:0;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:.45rem;padding:.68rem max(.7rem,env(safe-area-inset-right)) calc(.68rem + env(safe-area-inset-bottom)) max(.7rem,env(safe-area-inset-left));border-top:1px solid rgba(173,188,230,.55);background:rgba(7,16,56,.97);box-shadow:0 -.8rem 2.2rem rgba(7,16,56,.22);color:#fff;backdrop-filter:blur(14px)}.carrier-journey-stage{display:none}.carrier-journey-primary,.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{display:inline-flex;min-height:3rem;align-items:center;justify-content:center;gap:.38rem;border-radius:9px;font:inherit;font-weight:850;text-decoration:none}.carrier-journey-primary{padding:.68rem .8rem;border:0;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291);color:#fff}.carrier-journey-call,.carrier-journey-copy,.carrier-journey-sms{width:3rem;padding:0;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.08);color:#fff}.carrier-journey-primary svg{display:none}.carrier-journey-call span,.carrier-journey-copy span,.carrier-journey-sms span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.carrier-journey-status{position:absolute;right:.75rem;bottom:calc(4.45rem + env(safe-area-inset-bottom));max-width:70vw;padding:.35rem .55rem;border-radius:7px;background:#071038;color:#c8f8d8;font-size:.7rem;font-weight:800}.carrier-journey-status:empty{display:none}}@media(prefers-reduced-transparency:reduce){.carrier-contract-journey{background:#071038;backdrop-filter:none}}
 </style>
