@@ -102,6 +102,179 @@ const smsCopy = `Hermes carrier proposal: review the support options, keep contr
   </script>
 )}
 
+<script>
+  type AnalyticsValue = string | number;
+  type AnalyticsPayload = Record<string, AnalyticsValue>;
+
+  const pushCarrierAnalytics = (payload: AnalyticsPayload) => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+  };
+
+  const carrierSalesPaths = new Set([
+    "/carrier/",
+    "/logistics/carrier/",
+    "/logistics/carrier-offer/",
+    "/logistics/carrier-agreement/",
+  ]);
+
+  const carrierDestinationTypes = new Map([
+    ["/carrier/", "carrier_proposal_entry"],
+    ["/logistics/carrier-offer/", "carrier_offer_review"],
+    ["/logistics/carrier-agreement/", "carrier_agreement_review"],
+  ]);
+
+  const carrierEventBase = (pageGroup = "carrier_contract") => ({
+    audience_type: "carrier",
+    page_group: pageGroup,
+    service_group: "carrier_contract",
+    page_path: window.location.pathname,
+  });
+
+  const classifyCarrierDestination = (target: URL) => {
+    if (target.pathname === "/logistics/carrier-onboarding/") {
+      const plan = target.searchParams.get("plan");
+      if (plan === "essential") return "carrier_plan_essential";
+      if (plan === "pro") return "carrier_plan_pro";
+      if (plan === "custom") return "carrier_plan_custom";
+      return "carrier_packet_start";
+    }
+    return carrierDestinationTypes.get(target.pathname) ?? "";
+  };
+
+  document.addEventListener("click", (event) => {
+    if (!event.isTrusted) return;
+    const source = event.target;
+    if (!(source instanceof Element)) return;
+
+    const currentPath = window.location.pathname;
+    const link = source.closest("a[href]");
+    if (carrierSalesPaths.has(currentPath) && link instanceof HTMLAnchorElement) {
+      let target: URL;
+      try {
+        target = new URL(link.href, window.location.origin);
+      } catch {
+        target = new URL(window.location.origin);
+      }
+      const ctaType = target.origin === window.location.origin ? classifyCarrierDestination(target) : "";
+      if (ctaType) {
+        pushCarrierAnalytics({
+          event: "commercial_cta_click",
+          cta_type: ctaType,
+          ...carrierEventBase(),
+          destination_path: target.pathname,
+        });
+      }
+    }
+
+    const shareControl = source.closest(
+      "[data-carrier-share], [data-carrier-copy], [data-carrier-sms], [data-carrier-journey-copy], [data-carrier-journey-sms]",
+    );
+    if (shareControl) {
+      const handoffMethod = shareControl.hasAttribute("data-carrier-share")
+        ? "native_share"
+        : shareControl.hasAttribute("data-carrier-copy") || shareControl.hasAttribute("data-carrier-journey-copy")
+          ? "copy"
+          : "sms";
+      pushCarrierAnalytics({
+        event: "carrier_contract_share",
+        handoff_method: handoffMethod,
+        ...carrierEventBase(),
+      });
+    }
+
+    const downloadControl = source.closest<HTMLElement>("[data-contract-download]");
+    if (downloadControl) {
+      const format = downloadControl.dataset.contractDownload;
+      if (format === "pdf" || format === "docx") {
+        pushCarrierAnalytics({
+          event: "carrier_contract_document_action",
+          cta_type: format === "pdf" ? "agreement_pdf_download" : "agreement_docx_download",
+          ...carrierEventBase("carrier_agreement"),
+        });
+      }
+    }
+
+    const esignControl = source.closest<HTMLAnchorElement>("[data-contract-esign]");
+    if (esignControl) {
+      const href = esignControl.getAttribute("href") ?? "";
+      pushCarrierAnalytics({
+        event: "carrier_contract_document_action",
+        cta_type: "carrier_esign_request",
+        handoff_method: href.startsWith("mailto:") ? "email_request" : "hosted_session",
+        ...carrierEventBase("carrier_agreement"),
+      });
+    }
+  });
+
+  if (window.location.pathname === "/logistics/carrier-onboarding/") {
+    const form = document.querySelector<HTMLFormElement>("#carrier-onboarding-form");
+    const steps = form ? [...form.querySelectorAll<HTMLElement>("[data-step]")] : [];
+    const reachedSteps = new Set<number>();
+    const recordedResults = new Set<string>();
+    let intakeStarted = false;
+
+    const visibleStepNumber = () => {
+      const visibleStep = steps.find((step) => !step.hidden);
+      const value = Number(visibleStep?.dataset.step ?? 0);
+      return Number.isInteger(value) && value >= 1 && value <= 5 ? value : 0;
+    };
+
+    const recordStepReached = () => {
+      const stepNumber = visibleStepNumber();
+      if (!stepNumber || reachedSteps.has(stepNumber)) return;
+      reachedSteps.add(stepNumber);
+      pushCarrierAnalytics({
+        event: "carrier_contract_step_reached",
+        stepNumber,
+        ...carrierEventBase("carrier_contract_onboarding"),
+      });
+    };
+
+    const recordIntakeStart = (event: Event) => {
+      if (!event.isTrusted || intakeStarted) return;
+      intakeStarted = true;
+      pushCarrierAnalytics({
+        event: "carrier_contract_intake_start",
+        ...carrierEventBase("carrier_contract_onboarding"),
+      });
+      recordStepReached();
+    };
+
+    form?.addEventListener("focusin", recordIntakeStart);
+    form?.addEventListener("input", recordIntakeStart);
+    form?.addEventListener("change", recordIntakeStart);
+    form?.addEventListener("click", (event) => {
+      if (!event.isTrusted) return;
+      const source = event.target;
+      if (!(source instanceof Element) || !source.closest("[data-next], [data-previous]")) return;
+      window.requestAnimationFrame(recordStepReached);
+    });
+
+    const resultTitle = form?.querySelector<HTMLElement>("[data-result-title]");
+    if (resultTitle) {
+      const recordResult = () => {
+        const text = resultTitle.textContent?.trim() ?? "";
+        const previewStatus = text.startsWith("Your PDF packet is ready and copies were sent.")
+          ? "delivered"
+          : text.startsWith("Your PDF packet is ready; email delivery needs follow-up.")
+            ? "pending"
+            : text.startsWith("The packet was not completed.")
+              ? "failed"
+              : "";
+        if (!previewStatus || recordedResults.has(previewStatus)) return;
+        recordedResults.add(previewStatus);
+        pushCarrierAnalytics({
+          event: "carrier_contract_packet_result",
+          preview_status: previewStatus,
+          ...carrierEventBase("carrier_contract_onboarding"),
+        });
+      };
+      new MutationObserver(recordResult).observe(resultTitle, { childList: true, characterData: true, subtree: true });
+    }
+  }
+</script>
+
 <style>
   .carrier-contract-journey{display:none}
   @media(min-width:901px){
