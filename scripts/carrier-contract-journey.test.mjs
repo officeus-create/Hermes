@@ -19,12 +19,14 @@ const [carrierPage, signPage, journey, layout, logisticsLinks, playbook, onboard
 
 for (const required of [
   'robots="noindex,nofollow"',
-  'const shortUrl = "https://hermeslogisticsus.com/carrier/"',
+  'const pageUrl = "https://hermeslogisticsus.com/carrier/"',
+  'const shareUrl = "https://hermeslogisticsus.com/sign/"',
   "Keep control. Add a dispatch team.",
   "You approve every load",
   "Non-exclusive · no minimum volume",
   "Freight funds go to your company or factor",
   "No passwords, W-9, bank data, or CDL image here",
+  "Send hermeslogisticsus.com/sign",
   "data-carrier-share",
   "data-carrier-copy",
   "data-carrier-sms",
@@ -46,13 +48,16 @@ for (const required of [
 ]) assert.ok(signPage.includes(required), `Short signing page is missing: ${required}`);
 
 for (const source of [carrierPage, signPage]) {
-  assert.doesNotMatch(source, /guaranteed (?:load|rate|revenue|income)/i);
+  assert.doesNotMatch(source, /\b(?:we|Hermes)\s+guarantee(?:s|d)?\b/i);
   assert.doesNotMatch(source, /limited time|expires today|only \d+ spots|act now/i);
   assert.doesNotMatch(source, /input[^>]+type=["']password/i);
 }
 
+for (const source of [carrierPage, signPage]) {
+  assert.doesNotMatch(source, /searchParams\.(?:get|set)\(["'](?:rate|rep|offer|carrier_name|mc|usdot)["']/i);
+  assert.doesNotMatch(source, /[?&](?:rate|rep|offer|carrier_name|mc|usdot)=/i);
+}
 assert.doesNotMatch(signPage, /(?:carrier|driver)[_-]?(?:name|email|phone|mc|usdot)=/i);
-assert.doesNotMatch(signPage, /[?&](?:rate|plan|rep|offer)=/i);
 
 for (const required of [
   '"/carrier/"',
@@ -113,10 +118,14 @@ for (const required of [
   "offer_code",
   "data-signature-canvas",
   "Review mode is not final legal activation",
+  'const requestedPlan = currentUrl.searchParams.get("plan")',
+  "window.history.replaceState",
 ]) assert.ok(onboarding.includes(required), `Minimized carrier signing form is missing: ${required}`);
 
 for (const prohibited of ["business_address", "preferred_lanes", "equipment_types", "load_boards", "access_handoff_method"])
   assert.ok(!onboarding.includes(`name=\"${prohibited}\"`), `Pre-signature form still collects legacy field: ${prohibited}`);
+for (const rawParameter of ["rate", "rep", "offer", "carrier_name", "mc", "usdot"])
+  assert.ok(!onboarding.includes(`searchParams.get(\"${rawParameter}\")`), `Onboarding still trusts raw URL parameter: ${rawParameter}`);
 
 for (const required of [
   "ATTORNEY-REVIEW-V3-2026-08-06",
@@ -135,9 +144,17 @@ for (const required of [
   'data-primary-choice="agreement"',
   'data-primary-choice="learn"',
   "No personal guaranty or UCC lien",
-]) assert.ok(offer.includes(required), `Carrier support page is missing: ${required}`);
+  `${onboardingPathPlaceholder()}`,
+]) {
+  if (required) assert.ok(offer.includes(required), `Carrier support page is missing: ${required}`);
+}
 
 assert.doesNotMatch(offer, />\s*(?:5|6|8)(?:\.00)?%\s*</i, "Offer page must not publish a fixed percentage outside the carrier-specific Appendix A context.");
+assert.doesNotMatch(offer, /searchParams\.(?:get|set)\(["'](?:rate|rep|offer)["']/i);
+assert.doesNotMatch(offer, /[?&](?:rate|rep|offer)=/i);
+assert.match(offer, /\?plan=essential/);
+assert.match(offer, /\?plan=pro/);
+assert.match(offer, /\?plan=custom/);
 
 for (const required of [
   "https://hermeslogisticsus.com/sign/",
@@ -149,4 +166,8 @@ for (const required of [
   "opaque, signed, expiring",
 ]) assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 
-console.log("Carrier agreement journey v3 passed: clean SMS entry, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and execution gates are present.");
+console.log("Carrier agreement journey v3 passed: clean SMS entry, plan-only same-origin context, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and execution gates are present.");
+
+function onboardingPathPlaceholder() {
+  return "The carrier confirms the exact commercial term in the private signing form";
+}
