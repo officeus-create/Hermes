@@ -19,6 +19,11 @@ assert.equal(
 );
 assert.equal(validateScreenshotRoutes(), DEFAULT_SCREENSHOT_ROUTES);
 
+const routeMap = new Map(DEFAULT_SCREENSHOT_ROUTES.map((route) => [route.id, route.path]));
+assert.equal(routeMap.get("carrier-sales"), "/carrier/");
+assert.equal(screenshotFileName("carrier-sales", "desktop"), "carrier-sales--desktop.png");
+assert.equal(screenshotFileName("carrier-sales", "mobile"), "carrier-sales--mobile.png");
+
 assert.throws(
   () => parseScreenshotBaseUrl("https://hermeslogisticsus.com/"),
   /Remote screenshot capture is disabled/,
@@ -46,4 +51,4 @@ assert.throws(
   /clean absolute path/,
 );
 
-console.log("Route screenshot safety contract passed.");
+console.log("Route screenshot safety contract passed, including carrier sales desktop/mobile coverage.");
