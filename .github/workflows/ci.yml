@@ -40,5 +40,8 @@ jobs:
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
+      - name: Validate carrier onboarding browser flow
+        run: npx playwright test tests/carrier-contract-engine.spec.ts --project=desktop --grep "carrier can complete"
+
       - name: Run browser workflow tests
         run: npm run test:e2e
