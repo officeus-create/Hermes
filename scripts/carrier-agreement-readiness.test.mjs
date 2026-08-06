@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [pageSource, readiness] = await Promise.all([
+const [pageSource, readiness, offerSource] = await Promise.all([
   readFile(new URL("../src/pages/logistics/carrier-agreement/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../docs/CARRIER_AGREEMENT_EXECUTION_READINESS.md", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/logistics/carrier-offer/index.astro", import.meta.url), "utf8"),
 ]);
 
 for (const requiredPageContract of [
@@ -23,6 +24,37 @@ assert.doesNotMatch(
   /<strong>\s*(?:8|8\.00)% service fee/i,
   "The public review page must not present the intended 8% target before an approved execution asset exists",
 );
+
+for (const requiredOfferContract of [
+  'robots="noindex,nofollow"',
+  'data-primary-choice="agreement"',
+  'data-primary-choice="learn"',
+  'href="#learn-more"',
+  'const agreementPath = "/logistics/carrier-agreement/"',
+  "Essential Dispatch",
+  "Hermes Pro",
+  "Custom Cooperation",
+  "6%",
+  "8%",
+  "You approve every load",
+  "A custom proposal is non-binding",
+  "No load, rate, mileage, revenue, customer relationship, or business outcome is guaranteed",
+]) {
+  assert.ok(offerSource.includes(requiredOfferContract), `Carrier sales handoff is missing: ${requiredOfferContract}`);
+}
+
+assert.equal(
+  (offerSource.match(/data-primary-choice=/g) ?? []).length,
+  2,
+  "The first carrier-offer decision must remain limited to exactly two primary choices",
+);
+assert.doesNotMatch(offerSource, /<form\b/i, "The first carrier-offer release must not collect data before the carrier chooses a path");
+assert.doesNotMatch(
+  offerSource,
+  /(?:carrier|driver)[_-]?(?:name|email|phone|mc|usdot)=/i,
+  "The private sales URL must not be designed to carry carrier PII in query parameters",
+);
+assert.doesNotMatch(offerSource, /\$\s?(?:800|1,600|1600)/, "The carrier offer must not publish an unsupported weekly gain claim");
 
 for (const requiredReadinessContract of [
   "operating email and/or mobile number",
@@ -46,4 +78,4 @@ for (const prohibitedPublicSecret of [
   assert.ok(!readiness.toLowerCase().includes(prohibitedPublicSecret), `Readiness document contains a secret-like value: ${prohibitedPublicSecret}`);
 }
 
-console.log("Carrier agreement execution-readiness contract passed.");
+console.log("Carrier offer and agreement execution-readiness contracts passed.");
