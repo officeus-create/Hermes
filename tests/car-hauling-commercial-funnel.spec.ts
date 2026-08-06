@@ -13,7 +13,7 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   await expect(primary).toHaveAttribute("href", "/logistics/start-car-hauling-dispatch/");
   await expect(actions.getByRole("link", { name: "Email Logistics Sales" })).toHaveAttribute(
     "href",
-    "mailto:freight_301@hermeslogisticsus.com",
+    "mailto:officeus@hermeslogisticsus.com",
   );
   await expect(actions.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
 
@@ -59,7 +59,7 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   await expect(page.locator('input[name="capacity_units"]')).toHaveAttribute("min", "1");
   await expect(page.getByRole("link", { name: "Email Logistics Sales" }).first()).toHaveAttribute(
     "href",
-    "mailto:freight_301@hermeslogisticsus.com",
+    "mailto:officeus@hermeslogisticsus.com",
   );
   await expect(page.getByRole("link", { name: "+1 (262) 302-3626" }).first()).toHaveAttribute("href", "tel:+12623023626");
   await expect(page.locator(".dispatch-start-actions").getByRole("link", { name: /Call Logistics Sales/i })).toHaveAttribute(
