@@ -1,23 +1,27 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 type DataLayerEvent = Record<string, unknown> & { event?: string };
 
 async function carrierEvents(page: Page) {
   return page.evaluate(() => {
     const dataLayer = (window as Window & { dataLayer?: unknown[] }).dataLayer ?? [];
-    return dataLayer.filter((entry): entry is Record<string, unknown> => {
-      if (!entry || typeof entry !== "object" || Array.isArray(entry)) return false;
-      const eventName = (entry as { event?: unknown }).event;
-      return typeof eventName === "string" && (
-        eventName.startsWith("carrier_contract") ||
-        eventName === "commercial_cta_click"
-      );
-    });
+    return dataLayer
+      .filter((entry): entry is Record<string, unknown> => {
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) return false;
+        const eventName = (entry as { event?: unknown }).event;
+        return typeof eventName === "string" && (
+          eventName.startsWith("carrier_contract") ||
+          eventName === "commercial_cta_click"
+        );
+      })
+      .map((entry) => Object.fromEntries(
+        Object.entries(entry).filter(([key]) => !key.startsWith("gtm.")),
+      ));
   }) as Promise<DataLayerEvent[]>;
 }
 
-async function preventNavigation(page: Page, selector: string) {
-  await page.locator(selector).evaluate((element) => {
+async function preventNavigation(locator: Locator) {
+  await locator.evaluate((element) => {
     element.addEventListener("click", (event) => event.preventDefault(), { capture: true, once: true });
   });
 }
@@ -26,7 +30,7 @@ test("carrier sales choices, sharing, downloads, and e-sign actions emit control
   await page.goto("/carrier/");
 
   const offerLink = page.getByRole("link", { name: "Review plans and support" });
-  await preventNavigation(page, 'a[href="/logistics/carrier-offer/"]');
+  await preventNavigation(offerLink);
   await offerLink.click();
   await page.locator("[data-carrier-copy]").click();
 
@@ -53,8 +57,9 @@ test("carrier sales choices, sharing, downloads, and e-sign actions emit control
   const downloadPromise = page.waitForEvent("download");
   await page.locator('[data-contract-download="pdf"]').click();
   await downloadPromise;
-  await preventNavigation(page, "[data-contract-esign]");
-  await page.locator("[data-contract-esign]").click();
+  const esignLink = page.locator("[data-contract-esign]");
+  await preventNavigation(esignLink);
+  await esignLink.click();
 
   events = await carrierEvents(page);
   const documentActions = events.filter((entry) => entry.event === "carrier_contract_document_action");
