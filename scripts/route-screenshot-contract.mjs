@@ -3,6 +3,7 @@ const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
 export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "homepage", path: "/" },
   { id: "car-hauling-dispatch", path: "/logistics/car-hauling-dispatch/" },
+  { id: "carrier-sales", path: "/carrier/" },
   { id: "dealer-vehicle-transportation", path: "/logistics/dealer-vehicle-transportation/" },
   { id: "load-board", path: "/load-board/" },
   { id: "seo-service", path: "/services/seo/" },
