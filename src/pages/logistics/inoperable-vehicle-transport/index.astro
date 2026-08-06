@@ -9,6 +9,11 @@ const content = {
   intro: "Hermes reviews transport requests for vehicles that do not start, roll, steer, or brake normally. Accurate condition disclosure, loading access, dimensions, route, timing, and equipment requirements are essential before carrier coordination begins.",
   image: "/images/path-logistics-system.jpg",
   imageAlt: "Inoperable vehicle transport and specialized loading coordination",
+  primaryAction: {
+    label: "Prepare inoperable transport request",
+    href: "/logistics/request-vehicle-transport/?request=other&equipment=winch_required#transport-intake",
+  },
+  handoffNote: "Use the direct transport intake to prepare the exact route, timing, vehicle condition, whether it rolls or steers, access, loading context, and winch/inoperable-equipment preference for Logistics Sales review. The requester selects the correct role in the form. Submission does not guarantee feasibility, compatible equipment, carrier capacity, price, timing, acceptance, or booking.",
   audience: [
     "Auction buyers with non-running or damaged vehicles",
     "Dealers moving inoperable inventory or trade-ins",
@@ -39,6 +44,7 @@ const content = {
     { question: "Is timing guaranteed?", answer: "No. Timing depends on compatible equipment, route, facility access, condition, compliance, capacity, weather, traffic, and final confirmation." },
   ],
   related: [
+    { label: "Request Vehicle Transportation", href: "/logistics/request-vehicle-transport/?request=other&equipment=winch_required#transport-intake" },
     { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
     { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
     { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
