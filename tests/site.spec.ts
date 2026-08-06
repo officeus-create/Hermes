@@ -641,7 +641,7 @@ test("public logistics contacts use the approved department routing", async ({ p
 
   await expect(contacts.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
   await expect(contacts.getByText("Logistics Sales Department", { exact: true })).toBeVisible();
-  await expect(contacts.getByRole("link", { name: "freight_301@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:freight_301@hermeslogisticsus.com");
+  await expect(contacts.getByRole("link", { name: "officeus@hermeslogisticsus.com" })).toHaveAttribute("href", "mailto:officeus@hermeslogisticsus.com");
   await expect(contacts.getByText("Email-only international coordination", { exact: true })).toBeVisible();
   await expect(contacts.getByText("Milan · Berlin · Paris · Miami · California · New York · England", { exact: true })).toBeVisible();
   const telephoneTargets = await page.locator('a[href^="tel:"]').evaluateAll((links) => [...new Set(links.map((link) => link.getAttribute("href")))]);
