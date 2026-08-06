@@ -3,10 +3,37 @@
     "/logistics/appleton-wi-vehicle-transport/": "appleton_vehicle_transport",
     "/logistics/dealer-vehicle-transportation/": "dealer_vehicle_transport",
     "/logistics/auction-vehicle-pickup/": "auction_vehicle_pickup",
+    "/logistics/multi-car-transport/": "multi_car_transport",
+    "/logistics/open-vehicle-transport/": "open_vehicle_transport",
+    "/logistics/enclosed-vehicle-transport/": "enclosed_vehicle_transport",
+    "/logistics/inoperable-vehicle-transport/": "inoperable_vehicle_transport",
     "/logistics/wisconsin-dealer-vehicle-transport/": "wisconsin_dealer_vehicle_transport",
     "/logistics/wisconsin-auction-vehicle-pickup/": "wisconsin_auction_vehicle_pickup",
     "/logistics/wisconsin-multi-vehicle-dealer-transport/": "wisconsin_multi_vehicle_dealer_transport",
     "/logistics/wisconsin-enclosed-vehicle-transport/": "wisconsin_enclosed_vehicle_transport",
+  };
+
+  const approvedEquipmentPreferences = new Set([
+    "open",
+    "enclosed",
+    "multi_car",
+    "winch_required",
+    "special_review",
+    "not_sure",
+  ]);
+
+  const setupVehicleTransportEquipmentPrefill = () => {
+    if (window.location.pathname !== "/logistics/request-vehicle-transport/") return;
+
+    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment") ?? "";
+    if (!approvedEquipmentPreferences.has(requestedEquipment)) return;
+
+    const form = document.querySelector<HTMLFormElement>("[data-transport-form]");
+    const equipmentSelect = form?.elements.namedItem("equipment_preference");
+    if (!(equipmentSelect instanceof HTMLSelectElement)) return;
+
+    equipmentSelect.value = requestedEquipment;
+    equipmentSelect.dispatchEvent(new Event("change", { bubbles: true }));
   };
 
   const resolveServiceGroup = (link: HTMLAnchorElement) => {
@@ -61,4 +88,6 @@
       destination_path: target.pathname,
     });
   });
+
+  setupVehicleTransportEquipmentPrefill();
 </script>
