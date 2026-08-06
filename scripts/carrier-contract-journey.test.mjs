@@ -54,6 +54,44 @@ for (const required of [
   assert.ok(journey.includes(required), `Carrier journey component is missing: ${required}`);
 }
 
+for (const requiredAnalyticsContract of [
+  'event: "commercial_cta_click"',
+  'event: "carrier_contract_share"',
+  'event: "carrier_contract_document_action"',
+  'event: "carrier_contract_intake_start"',
+  'event: "carrier_contract_step_reached"',
+  'event: "carrier_contract_packet_result"',
+  'service_group: "carrier_contract"',
+  'carrierEventBase("carrier_contract_onboarding")',
+  "stepNumber",
+  'preview_status: previewStatus',
+  '"delivered"',
+  '"pending"',
+  '"failed"',
+]) {
+  assert.ok(journey.includes(requiredAnalyticsContract), `Carrier analytics contract is missing: ${requiredAnalyticsContract}`);
+}
+
+for (const prohibitedAnalyticsReference of [
+  "legal_company_name",
+  "signer_name",
+  "signer_email",
+  "signer_phone",
+  "mc_number",
+  "usdot_number",
+  "preferred_lanes",
+  "equipment_types",
+  "signature_jpeg",
+  "typed_signature",
+  "custom_percentage",
+  "custom_scope",
+]) {
+  assert.ok(
+    !journey.includes(prohibitedAnalyticsReference),
+    `Carrier analytics component references prohibited form data: ${prohibitedAnalyticsReference}`,
+  );
+}
+
 assert.ok(layout.includes('import CarrierContractJourney from "../components/CarrierContractJourney.astro"'));
 assert.ok(layout.includes("<CarrierContractJourney />"));
 assert.ok(logisticsLinks.includes('href="/carrier/"'));
@@ -71,4 +109,4 @@ for (const required of [
   assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 }
 
-console.log("Carrier contract journey contract passed: short SMS URL, site entry, trust-first CTA hierarchy, carrier-audience handoff, and execution boundaries are present.");
+console.log("Carrier contract journey contract passed: short SMS URL, site entry, trust-first CTA hierarchy, carrier-audience handoff, privacy-safe funnel analytics, and execution boundaries are present.");
