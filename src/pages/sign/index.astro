@@ -1,0 +1,172 @@
+---
+import { ArrowRight, Check, FileSignature, MessageSquareText, Phone, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const shortUrl = "https://hermeslogisticsus.com/sign/";
+const onboardingPath = "/logistics/carrier-onboarding/";
+const agreementPath = "/logistics/carrier-agreement/";
+const phoneHref = "tel:+12623023626";
+const smsText = `Hermes Logistics: here is the private carrier link we discussed. You can review the working model, see what stays under your control, and complete the carrier packet from your phone: ${shortUrl}`;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Hermes Carrier Agreement and Signature",
+  description: "A private, phone-friendly carrier handoff for reviewing the working model and completing the carrier packet.",
+  url: shortUrl,
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+};
+---
+
+<BaseLayout
+  title="Carrier Agreement and Signature | Hermes Logistics"
+  description="Review the carrier working model, keep control of every load, and complete the carrier packet from a phone or computer."
+  robots="noindex,nofollow"
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/logistics/" />
+  <main id="main-content" class="sign-page" data-sign-short-url={shortUrl}>
+    <section class="sign-hero">
+      <div class="shell sign-hero-grid">
+        <div>
+          <p class="eyebrow">Hermes Logistics · Private carrier link</p>
+          <h1>Everything is clear before you sign.</h1>
+          <p class="sign-lead">
+            Review how the cooperation works, confirm the company details, and complete the carrier packet from your phone. You keep the final decision on every load, driver, route, and operating choice.
+          </p>
+          <div class="sign-trust-row" aria-label="Carrier control commitments">
+            <span><Check size={17} aria-hidden="true" />No exclusivity required here</span>
+            <span><Check size={17} aria-hidden="true" />You approve every load</span>
+            <span><Check size={17} aria-hidden="true" />Freight payments stay with your company</span>
+          </div>
+          <div class="sign-actions">
+            <a class="button sign-primary" href={onboardingPath} data-commercial-primary-cta data-service-group="carrier_contract">
+              Continue to carrier packet <ArrowRight size={18} aria-hidden="true" />
+            </a>
+            <a class="button sign-secondary" href={agreementPath}>Review the agreement first</a>
+            <a class="button sign-call" href={phoneHref}><Phone size={18} aria-hidden="true" />Ask a question</a>
+          </div>
+          <p class="sign-reassurance">Most carriers can review the summary and complete the packet on a phone. Nothing is activated until the applicable terms and signer authority are confirmed.</p>
+        </div>
+
+        <aside class="sign-decision-card" aria-label="Choose the next step">
+          <p class="eyebrow">Choose what feels right</p>
+          <h2>Ready now, or need to review first?</h2>
+          <a class="decision decision-ready" href={onboardingPath}>
+            <FileSignature size={23} aria-hidden="true" />
+            <span><strong>I’m ready to continue</strong><small>Choose the working model, confirm the company, and sign the packet.</small></span>
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
+          <a class="decision" href={agreementPath}>
+            <ShieldCheck size={23} aria-hidden="true" />
+            <span><strong>I want to review the terms</strong><small>See the plain-language summary and document status before continuing.</small></span>
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
+          <a class="decision" href={phoneHref}>
+            <Phone size={23} aria-hidden="true" />
+            <span><strong>I have a question</strong><small>Speak with Logistics Sales before the signature step.</small></span>
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section sign-summary" aria-labelledby="sign-summary-title">
+      <div class="shell">
+        <div class="section-heading sign-heading">
+          <p class="eyebrow">The agreement in plain language</p>
+          <h2 id="sign-summary-title">A support relationship, not a transfer of your business.</h2>
+          <p>Hermes may help research, communicate, negotiate within your instructions, coordinate documents, and support dispatch operations. Your company keeps operating authority and final control.</p>
+        </div>
+        <div class="sign-summary-grid">
+          <article><Check size={20} aria-hidden="true" /><h3>You decide</h3><p>You may accept or reject each opportunity and remain responsible for drivers, equipment, safety, routes, and compliance.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Your money stays yours</h3><p>Brokers, shippers, or factoring companies pay the carrier directly. Hermes receives only the agreed service fee.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>No hidden guarantee</h3><p>No load, rate, mileage, lane, customer, booking, or revenue is promised.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Clear commercial terms</h3><p>The percentage and scope shown in the packet must match the version approved for that carrier before final execution.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section sign-process" aria-labelledby="sign-process-title">
+      <div class="shell sign-process-grid">
+        <div>
+          <p class="eyebrow">Simple mobile flow</p>
+          <h2 id="sign-process-title">Only the information needed for the next step.</h2>
+          <p>The public workflow does not ask for passwords, bank information, W-9 files, CDL images, VIN lists, gate codes, or private shipment documents.</p>
+        </div>
+        <ol>
+          <li><span>01</span><div><strong>Choose support</strong><small>Select the proposed working model or request custom review.</small></div></li>
+          <li><span>02</span><div><strong>Confirm the company</strong><small>Legal carrier name, authority number, signer, email, and phone.</small></div></li>
+          <li><span>03</span><div><strong>Describe the operation</strong><small>Equipment, lanes, availability, and secure access method.</small></div></li>
+          <li><span>04</span><div><strong>Review and sign</strong><small>Confirm the summary, sign, and keep the PDF copy.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section sign-share" aria-labelledby="sign-share-title">
+      <div class="shell sign-share-card">
+        <div>
+          <p class="eyebrow">For Logistics Sales</p>
+          <h2 id="sign-share-title">One clean link for SMS, WhatsApp, Telegram, or email.</h2>
+          <p>Send <strong>hermeslogisticsus.com/sign</strong>. The URL contains no carrier name, phone, email, MC/USDOT, plan, or tracking identifier.</p>
+          <p class="sign-share-status" data-sign-share-status aria-live="polite"></p>
+        </div>
+        <div class="sign-share-actions">
+          <button class="button sign-primary" type="button" data-sign-copy><MessageSquareText size={18} aria-hidden="true" />Copy SMS message</button>
+          <a class="button" href="#" data-sign-sms><MessageSquareText size={18} aria-hidden="true" />Open SMS</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section sign-final">
+      <div class="shell sign-final-card">
+        <div>
+          <p class="eyebrow">Next step</p>
+          <h2>Review it calmly. Continue when the working model is clear.</h2>
+          <p>The goal is not to rush a signature. The goal is to make the responsibilities, control boundaries, and commercial terms understandable before the carrier completes the packet.</p>
+        </div>
+        <a class="button sign-primary" href={onboardingPath}>Continue to carrier packet <ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script define:vars={{ smsText, shortUrl }}>
+  const status = document.querySelector("[data-sign-share-status]");
+  const setStatus = (message) => {
+    if (status instanceof HTMLElement) status.textContent = message;
+  };
+  const copyText = async (value) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      return true;
+    } catch {
+      const field = document.createElement("textarea");
+      field.value = value;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      return copied;
+    }
+  };
+  document.querySelector("[data-sign-copy]")?.addEventListener("click", async () => {
+    const copied = await copyText(smsText);
+    setStatus(copied ? "SMS message copied." : `Copy this link: ${shortUrl}`);
+  });
+  const smsLink = document.querySelector("[data-sign-sms]");
+  if (smsLink instanceof HTMLAnchorElement) {
+    const separator = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
+    smsLink.href = `sms:${separator}body=${encodeURIComponent(smsText)}`;
+  }
+</script>
+
+<style>
+  .sign-page{background:#fff;color:#10204e}.sign-hero{position:relative;overflow:hidden;padding:8.4rem 0 5rem;background:radial-gradient(circle at 83% 12%,rgba(115,96,255,.38),transparent 34%),radial-gradient(circle at 8% 86%,rgba(238,78,140,.18),transparent 32%),#071038;color:#fff}.sign-hero::before{content:"";position:absolute;inset:0 0 auto;height:7px;background:linear-gradient(90deg,#6758f4 0 25%,#d7529b 25% 50%,#33b77a 50% 75%,#efb84e 75%)}.sign-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(330px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:center}.sign-hero h1{max-width:11ch;font-size:clamp(3.2rem,7vw,6.2rem);line-height:.96}.sign-lead{max-width:68ch;color:rgba(255,255,255,.84);font-size:clamp(1rem,2vw,1.18rem);line-height:1.72}.sign-trust-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.45rem}.sign-trust-row span{display:flex;align-items:center;gap:.42rem;padding:.62rem .78rem;border:1px solid rgba(117,240,170,.27);border-radius:999px;background:rgba(39,175,99,.12);color:#e8fff1;font-size:.84rem;font-weight:800}.sign-trust-row svg{color:#5ee99a}.sign-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.7rem}.sign-actions .button{min-height:3.2rem}.sign-primary{border:0!important;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291)!important;color:#fff!important;box-shadow:0 15px 38px rgba(117,82,255,.32)}.sign-secondary{border-color:rgba(255,255,255,.42)!important;color:#fff!important}.sign-call{border-color:rgba(91,232,151,.45)!important;background:rgba(30,159,85,.14)!important;color:#f0fff6!important}.sign-reassurance{max-width:68ch;margin-top:1rem;color:rgba(255,255,255,.62);font-size:.84rem;line-height:1.55}.sign-decision-card{padding:1.45rem;border:1px solid rgba(255,255,255,.24);border-radius:20px;background:rgba(255,255,255,.09);box-shadow:0 28px 76px rgba(0,0,0,.25);backdrop-filter:blur(15px)}.sign-decision-card h2{margin:.3rem 0 1.1rem;font-size:1.8rem}.decision{display:grid;grid-template-columns:auto 1fr auto;gap:.75rem;align-items:center;padding:1rem;border:1px solid rgba(255,255,255,.18);border-radius:13px;color:#fff;text-decoration:none}.decision+.decision{margin-top:.7rem}.decision-ready{border-color:rgba(133,247,181,.55);background:rgba(41,174,98,.15)}.decision>svg:first-child{color:#a9a1ff}.decision-ready>svg:first-child{color:#67eca0}.decision strong,.decision small{display:block}.decision small{margin-top:.2rem;color:rgba(255,255,255,.65);line-height:1.4}.sign-summary{background:#f5f7ff}.sign-heading{max-width:860px}.sign-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.sign-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.sign-summary-grid article{display:grid;grid-template-columns:auto 1fr;gap:.55rem;padding:1.35rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.sign-summary-grid svg{grid-row:1/3;color:#2cad6b}.sign-summary-grid h3,.sign-summary-grid p{margin:0}.sign-summary-grid p{color:#5b6885;line-height:1.6}.sign-process-grid{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr);gap:clamp(2rem,5vw,5rem);align-items:start}.sign-process-grid>div>p:not(.eyebrow){color:#5b6885;line-height:1.7}.sign-process ol{display:grid;gap:.8rem;margin:0;padding:0;list-style:none}.sign-process li{display:grid;grid-template-columns:auto 1fr;gap:.9rem;padding:1rem;border-bottom:1px solid #dce3f8}.sign-process li>span{color:#6b5df2;font-weight:950;letter-spacing:.08em}.sign-process strong,.sign-process small{display:block}.sign-process small{margin-top:.18rem;color:#65718b;line-height:1.45}.sign-share{padding-top:1rem}.sign-share-card,.sign-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border-radius:18px}.sign-share-card{border:1px solid #d9e0f5;background:#f7f4ff}.sign-share-card p:not(.eyebrow),.sign-final-card p:not(.eyebrow){max-width:72ch;color:#5b6885;line-height:1.65}.sign-share-actions{display:flex;flex-wrap:wrap;gap:.7rem}.sign-share-actions button{font:inherit;cursor:pointer}.sign-share-status{min-height:1.2rem;color:#208858!important;font-weight:800}.sign-final{padding-top:1rem}.sign-final-card{background:#071038;color:#fff}.sign-final-card p:not(.eyebrow){color:rgba(255,255,255,.7)}@media(max-width:980px){.sign-summary-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.sign-hero-grid,.sign-process-grid,.sign-share-card,.sign-final-card{grid-template-columns:1fr}.sign-share-actions{justify-content:flex-start}.sign-final-card .button{justify-self:start}}@media(max-width:620px){.sign-hero{padding-top:7.4rem}.sign-actions .button,.sign-share-actions .button{width:100%;justify-content:center}.sign-summary-grid{grid-template-columns:1fr}.sign-decision-card{padding:1rem}.decision{padding:.85rem}.sign-final-card .button{width:100%;justify-content:center}}
+</style>
