@@ -32,7 +32,7 @@ test("car-hauling dispatch routes commercial intent to the direct intake and rep
   );
   await expect(finalCta.getByRole("link", { name: /Email Logistics Sales/i })).toHaveAttribute(
     "href",
-    "mailto:freight_301@hermeslogisticsus.com",
+    "mailto:officeus@hermeslogisticsus.com",
   );
   await expect(finalCta.getByRole("link", { name: /262.*302.*3626/i })).toHaveAttribute("href", "tel:+12623023626");
 });
