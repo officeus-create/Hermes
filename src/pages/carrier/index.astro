@@ -1,38 +1,39 @@
 ---
-import { ArrowRight, Check, Clipboard, FileSignature, MessageSquareText, Phone, ShieldCheck, Timer } from "@lucide/astro";
+import { ArrowRight, Check, Clipboard, FileSignature, MessageSquareText, Phone, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 
-const shortUrl = "https://hermeslogisticsus.com/carrier/";
+const pageUrl = "https://hermeslogisticsus.com/carrier/";
+const shareUrl = "https://hermeslogisticsus.com/sign/";
 const salesPhone = "+12623023626";
-const defaultSmsCopy = `Hermes carrier agreement: review the simple terms, keep control of every load, and complete the signature packet from your phone. ${shortUrl}`;
+const smsCopy = `Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: ${shareUrl}`;
 const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "Hermes Carrier Agreement",
-  description: "A private, phone-friendly Hermes Logistics handoff for reviewing carrier terms and completing a signature packet.",
-  url: shortUrl,
+  description: "A private Hermes Logistics page for understanding carrier support, reviewing the agreement, and continuing to a carrier-specific review packet.",
+  url: pageUrl,
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
 ---
 
 <BaseLayout
   title="Carrier Agreement | Hermes Logistics"
-  description="Review the simple carrier terms, confirm your company and agreed rate, and complete the signature packet from a phone or computer."
+  description="Review the carrier-support model, understand what stays under your control, and continue to a carrier-specific Appendix A review packet."
   robots="noindex,nofollow"
   schema={schema}
 >
   <SiteHeader activePath="/paths/logistics/" />
-  <main id="main-content" class="carrier-signing-entry" data-carrier-entry>
+  <main id="main-content" class="carrier-signing-entry" data-carrier-entry data-carrier-short-url={pageUrl}>
     <section class="carrier-entry-hero">
       <div class="carrier-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
       <div class="shell carrier-entry-grid">
         <div>
-          <p class="eyebrow">Hermes Logistics · Private carrier link</p>
+          <p class="eyebrow">Hermes Logistics · Carrier support</p>
           <h1>Keep control. Add a dispatch team.</h1>
           <p class="carrier-entry-lead">
-            Review the working terms in plain English, confirm the company and agreed percentage, then sign from your phone. The carrier keeps every final operating decision.
+            Review the working model in plain English, choose the support level, confirm the company and exact Appendix A percentage, and sign the review packet from your phone. The carrier keeps every final operating decision.
           </p>
           <div class="carrier-trust-strip" aria-label="Carrier agreement commitments">
             <span><Check size={17} aria-hidden="true" />You approve every load</span>
@@ -41,25 +42,25 @@ const schema = {
             <span><ShieldCheck size={17} aria-hidden="true" />No passwords, W-9, bank data, or CDL image here</span>
           </div>
           <div class="carrier-entry-actions">
-            <a class="button carrier-primary" href="/logistics/carrier-onboarding/" data-carrier-context-link data-commercial-primary-cta data-service-group="carrier_contract">
+            <a class="button carrier-primary" href="/logistics/carrier-onboarding/" data-commercial-primary-cta data-service-group="carrier_contract">
               Review and sign <FileSignature size={18} aria-hidden="true" />
             </a>
-            <a class="button carrier-secondary" href="/logistics/carrier-offer/" data-carrier-context-link>See what Hermes handles</a>
+            <a class="button carrier-secondary" href="/logistics/carrier-offer/">See what Hermes handles</a>
             <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call Logistics Sales</a>
           </div>
-          <p class="carrier-time"><Timer size={17} aria-hidden="true" />The terms take about 60 seconds to review. A prepared packet usually takes 3-5 minutes to complete.</p>
-          <p class="carrier-boundary">The current v3 document is an attorney-review draft. The system cannot label a packet as a final executed agreement until an approved master version, file hash, and allowed percentage are activated in production.</p>
+          <p class="carrier-guidance">Review calmly. Continue only after the control, percentage, and Appendix A terms are clear.</p>
+          <p class="carrier-boundary">The current v3 document is an attorney-review draft. The system cannot label a packet as a final executed agreement until an approved master version, matching file hash, allowed percentage, and production execution controls are activated.</p>
         </div>
 
         <aside class="carrier-next-card" aria-label="Three carrier agreement steps">
-          <p class="eyebrow">Three simple steps</p>
+          <p class="eyebrow">Three clear steps</p>
           <strong>Understand first. Sign second.</strong>
           <ol>
-            <li><span>1</span><div><b>Review the simple terms</b><small>Control, scope, payment flow, termination, and no-guarantee boundary.</small></div></li>
-            <li><span>2</span><div><b>Confirm company and rate</b><small>Legal company, MC or USDOT, signer, website, and the exact Appendix A percentage.</small></div></li>
-            <li><span>3</span><div><b>Sign and keep the PDF</b><small>Electronic consent, finger signature, immutable document identifiers, and a downloadable copy.</small></div></li>
+            <li><span>1</span><div><b>Review the working model</b><small>Control, scope, payment flow, termination, and the no-guarantee boundary.</small></div></li>
+            <li><span>2</span><div><b>Confirm company and percentage</b><small>Legal company, MC or USDOT, authorized signer, website, and the exact Appendix A percentage.</small></div></li>
+            <li><span>3</span><div><b>Sign and keep the PDF</b><small>Electronic consent, drawn signature, document identifiers, and a downloadable review copy.</small></div></li>
           </ol>
-          <a href="/logistics/carrier-agreement/" data-carrier-context-link>Read the full v3 attorney-review draft <ArrowRight size={16} aria-hidden="true" /></a>
+          <a href="/logistics/carrier-agreement/">Read the full v3 attorney-review draft <ArrowRight size={16} aria-hidden="true" /></a>
         </aside>
       </div>
     </section>
@@ -69,7 +70,7 @@ const schema = {
         <div class="section-heading carrier-heading">
           <p class="eyebrow">What the signature does</p>
           <h2 id="carrier-confidence-title">It authorizes support. It does not hand over your company.</h2>
-          <p>Hermes may research, communicate, negotiate within your instructions, and coordinate ordinary documents. The carrier remains responsible for transportation, safety, drivers, equipment, insurance, routes, and final approval.</p>
+          <p>Hermes may research, communicate, negotiate within your instructions, and coordinate ordinary documents. The carrier remains responsible for transportation, safety, drivers, equipment, insurance, routes, compliance, and final approval.</p>
         </div>
         <div class="confidence-grid">
           <article><Check size={22} aria-hidden="true" /><h3>Limited authority</h3><p>Hermes acts only within the selected administrative and dispatch scope. No brokerage or re-brokering authority is created.</p></article>
@@ -83,9 +84,9 @@ const schema = {
     <section class="section carrier-share" aria-labelledby="carrier-share-title">
       <div class="shell carrier-share-card">
         <div>
-          <p class="eyebrow">One link for SMS, WhatsApp, or email</p>
-          <h2 id="carrier-share-title">Send hermeslogisticsus.com/carrier</h2>
-          <p>A sales representative may add only a plan, agreed rate, representative code, and offer code. Carrier names, emails, phone numbers, MC/USDOT, and tracking identifiers are never placed in the URL.</p>
+          <p class="eyebrow">One clean link for SMS, WhatsApp, Telegram, or email</p>
+          <h2 id="carrier-share-title">Send hermeslogisticsus.com/sign</h2>
+          <p>The shared URL never contains the carrier name, email, phone, MC/USDOT, percentage, plan, representative code, offer code, or tracking identifier. Personalized execution will use an opaque, signed, expiring server-side token after that system is approved.</p>
           <p class="share-status" data-carrier-share-status aria-live="polite"></p>
         </div>
         <div class="carrier-share-actions">
@@ -98,61 +99,59 @@ const schema = {
 
     <section class="section carrier-final">
       <div class="shell carrier-final-card">
-        <div><p class="eyebrow">Ready to continue</p><h2>Confirm the exact terms and complete the packet from your phone.</h2><p>Questions can be resolved with Logistics Sales before the signature. No false deadline, guaranteed load, or hidden condition is used to pressure the carrier.</p></div>
-        <div class="carrier-final-actions"><a class="button carrier-primary" href="/logistics/carrier-onboarding/" data-carrier-context-link>Review and sign <ArrowRight size={18} aria-hidden="true" /></a><a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call +1 (262) 302-3626</a></div>
+        <div>
+          <p class="eyebrow">Ready to continue</p>
+          <h2>Confirm the exact terms and complete the review packet from your phone.</h2>
+          <p>Questions can be resolved with Logistics Sales before signature. No false deadline, promise of loads, or hidden condition is used to pressure the carrier.</p>
+        </div>
+        <div class="carrier-final-actions">
+          <a class="button carrier-primary" href="/logistics/carrier-onboarding/">Review and sign <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call +1 (262) 302-3626</a>
+        </div>
       </div>
     </section>
   </main>
   <SiteFooter />
 </BaseLayout>
 
-<script define:vars={{ shortUrl, defaultSmsCopy }}>
-  const allowedPlans = new Set(["essential", "pro", "custom"]);
-  const cleanCode = (value) => /^[A-Za-z0-9._ -]{1,40}$/.test(value) ? value : "";
-  const cleanRate = (value) => {
-    if (!/^\d{1,2}(?:\.\d{1,2})?$/.test(value)) return "";
-    const number = Number(value);
-    return number >= 1 && number <= 15 ? String(number) : "";
-  };
-  const current = new URL(window.location.href);
-  const safe = new URL(shortUrl);
-  const plan = current.searchParams.get("plan") ?? "";
-  const rate = cleanRate(current.searchParams.get("rate") ?? "");
-  const rep = cleanCode(current.searchParams.get("rep") ?? "");
-  const offer = cleanCode(current.searchParams.get("offer") ?? "");
-  if (allowedPlans.has(plan)) safe.searchParams.set("plan", plan);
-  if (rate) safe.searchParams.set("rate", rate);
-  if (rep) safe.searchParams.set("rep", rep);
-  if (offer) safe.searchParams.set("offer", offer);
-  const safeQuery = safe.search;
-  const sharedUrl = safe.toString();
-  const smsCopy = safeQuery
-    ? `Hermes carrier agreement: review the simple terms and confirm the prepared offer from your phone. ${sharedUrl}`
-    : defaultSmsCopy;
-
-  document.querySelectorAll("[data-carrier-context-link]").forEach((node) => {
-    if (!(node instanceof HTMLAnchorElement)) return;
-    const target = new URL(node.href, window.location.origin);
-    target.search = safeQuery;
-    node.href = target.toString();
-  });
-
+<script define:vars={{ shareUrl, smsCopy }}>
   const status = document.querySelector("[data-carrier-share-status]");
   const setStatus = (message) => { if (status instanceof HTMLElement) status.textContent = message; };
   const copyText = async (value) => {
-    try { await navigator.clipboard.writeText(value); return true; }
-    catch {
-      const field = document.createElement("textarea"); field.value = value; field.setAttribute("readonly", ""); field.style.position = "fixed"; field.style.opacity = "0"; document.body.append(field); field.select(); const copied = document.execCommand("copy"); field.remove(); return copied;
+    try {
+      await navigator.clipboard.writeText(value);
+      return true;
+    } catch {
+      const field = document.createElement("textarea");
+      field.value = value;
+      field.setAttribute("readonly", "");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      return copied;
     }
   };
-  document.querySelector("[data-carrier-copy]")?.addEventListener("click", async () => setStatus(await copyText(smsCopy) ? "SMS text copied." : sharedUrl));
+
+  document.querySelector("[data-carrier-copy]")?.addEventListener("click", async () => {
+    setStatus(await copyText(smsCopy) ? "SMS text copied." : shareUrl);
+  });
+
   document.querySelector("[data-carrier-share]")?.addEventListener("click", async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: "Hermes carrier agreement", text: smsCopy, url: sharedUrl }); setStatus("Share menu opened."); return; }
-      catch (error) { if (error instanceof DOMException && error.name === "AbortError") return; }
+      try {
+        await navigator.share({ title: "Hermes carrier agreement", text: smsCopy, url: shareUrl });
+        setStatus("Share menu opened.");
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
     }
-    setStatus(await copyText(smsCopy) ? "Share text copied." : sharedUrl);
+    setStatus(await copyText(smsCopy) ? "Share text copied." : shareUrl);
   });
+
   const smsLink = document.querySelector("[data-carrier-sms]");
   if (smsLink instanceof HTMLAnchorElement) {
     const separator = /iPad|iPhone|iPod/.test(navigator.userAgent) ? "&" : "?";
@@ -161,5 +160,5 @@ const schema = {
 </script>
 
 <style>
-.carrier-signing-entry{background:#fff;color:#10204e}.carrier-entry-hero{position:relative;padding:8.5rem 0 5rem;background:radial-gradient(circle at 84% 10%,rgba(103,91,255,.35),transparent 34%),radial-gradient(circle at 8% 90%,rgba(36,166,154,.14),transparent 30%),#071038;color:#fff;overflow:hidden}.carrier-rails{position:absolute;top:5.35rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.carrier-rails span:nth-child(1){background:#071038}.carrier-rails span:nth-child(2){background:#675bff}.carrier-rails span:nth-child(3){background:#f2a93b}.carrier-rails span:nth-child(4){background:#24a69a}.carrier-entry-grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(320px,.72fr);gap:clamp(2rem,5vw,5rem);align-items:center}.carrier-entry-hero h1{max-width:11ch;font-size:clamp(3.4rem,7.4vw,6.6rem);line-height:.94;letter-spacing:-.045em}.carrier-entry-lead{max-width:71ch;color:rgba(255,255,255,.84);font-size:clamp(1rem,2vw,1.22rem);line-height:1.72}.carrier-trust-strip{display:flex;flex-wrap:wrap;gap:.62rem;margin-top:1.35rem}.carrier-trust-strip span{display:flex;gap:.42rem;align-items:center;padding:.6rem .74rem;border:1px solid rgba(104,231,164,.26);border-radius:999px;background:rgba(47,158,98,.12);color:#eafff2;font-size:.82rem;font-weight:750}.carrier-trust-strip svg{flex:none;color:#68e7a4}.carrier-entry-actions{display:flex;flex-wrap:wrap;gap:.72rem;margin-top:1.65rem}.carrier-entry-actions .button{min-height:3.2rem}.carrier-primary{border:0!important;background:linear-gradient(135deg,#f2a93b,#ffd66d)!important;color:#251900!important;box-shadow:0 14px 35px rgba(242,169,59,.28)}.carrier-secondary{border-color:rgba(255,255,255,.42)!important;color:#fff!important}.carrier-call{border-color:rgba(104,231,164,.42)!important;background:rgba(47,158,98,.15)!important;color:#effff5!important}.carrier-time{display:flex;gap:.45rem;align-items:center;margin-top:1rem;color:#ffe8b5;font-size:.83rem;font-weight:700}.carrier-time svg{flex:none}.carrier-boundary{max-width:72ch;color:rgba(255,255,255,.58);font-size:.78rem;line-height:1.55}.carrier-next-card{padding:1.55rem;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:rgba(255,255,255,.08);box-shadow:0 28px 80px rgba(0,0,0,.22);backdrop-filter:blur(14px)}.carrier-next-card>strong{display:block;font-size:1.6rem}.carrier-next-card ol{display:grid;gap:1rem;margin:1.25rem 0;padding:0;list-style:none}.carrier-next-card li{display:grid;grid-template-columns:auto 1fr;gap:.75rem}.carrier-next-card li>span{display:grid;width:2.15rem;height:2.15rem;place-items:center;border-radius:50%;background:#f2a93b;color:#261900;font-weight:900}.carrier-next-card b,.carrier-next-card small{display:block}.carrier-next-card small{margin-top:.17rem;color:rgba(255,255,255,.65);line-height:1.48}.carrier-next-card>a{display:inline-flex;gap:.4rem;align-items:center;color:#fff;font-weight:800}.carrier-confidence{background:#f5f7ff}.carrier-heading{max-width:850px}.carrier-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.confidence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.confidence-grid article{padding:1.35rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.confidence-grid svg{color:#2f9e62}.confidence-grid h3{font-size:1.25rem}.confidence-grid p{color:#5b6885;line-height:1.6}.carrier-share-card,.carrier-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:16px;background:#fff}.carrier-share-actions,.carrier-final-actions{display:flex;flex-wrap:wrap;gap:.65rem;justify-content:flex-end}.share-status{min-height:1.2rem;color:#2f7f54;font-weight:800}.carrier-final{padding-top:0}.carrier-final-card{background:#071038;color:#fff}.carrier-final-card p:not(.eyebrow){max-width:70ch;color:rgba(255,255,255,.7);line-height:1.65}@media(max-width:1000px){.confidence-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.carrier-entry-grid,.carrier-share-card,.carrier-final-card{grid-template-columns:1fr}.carrier-share-actions,.carrier-final-actions{justify-content:flex-start}}@media(max-width:620px){.carrier-entry-hero{padding-top:7.5rem}.carrier-rails{top:4.8rem}.carrier-entry-actions .button,.carrier-share-actions .button,.carrier-final-actions .button{width:100%;justify-content:center}.confidence-grid{grid-template-columns:1fr}.carrier-trust-strip span{border-radius:10px}.carrier-next-card{padding:1.25rem}}
+  .carrier-signing-entry{background:#fff;color:#10204e}.carrier-entry-hero{position:relative;overflow:hidden;padding:8.5rem 0 5rem;background:radial-gradient(circle at 84% 10%,rgba(103,91,255,.35),transparent 34%),radial-gradient(circle at 8% 90%,rgba(36,166,154,.14),transparent 30%),#071038;color:#fff}.carrier-rails{position:absolute;top:5.35rem;right:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);height:8px}.carrier-rails span:nth-child(1){background:#071038}.carrier-rails span:nth-child(2){background:#675bff}.carrier-rails span:nth-child(3){background:#d7529b}.carrier-rails span:nth-child(4){background:#24a69a}.carrier-entry-grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(320px,.72fr);gap:clamp(2rem,5vw,5rem);align-items:center}.carrier-entry-hero h1{max-width:11ch;font-size:clamp(3.4rem,7.4vw,6.6rem);line-height:.94;letter-spacing:-.045em}.carrier-entry-lead{max-width:71ch;color:rgba(255,255,255,.84);font-size:clamp(1rem,2vw,1.22rem);line-height:1.72}.carrier-trust-strip{display:flex;flex-wrap:wrap;gap:.62rem;margin-top:1.35rem}.carrier-trust-strip span{display:flex;gap:.42rem;align-items:center;padding:.6rem .74rem;border:1px solid rgba(104,231,164,.26);border-radius:999px;background:rgba(47,158,98,.12);color:#eafff2;font-size:.82rem;font-weight:750}.carrier-trust-strip svg{flex:none;color:#68e7a4}.carrier-entry-actions{display:flex;flex-wrap:wrap;gap:.72rem;margin-top:1.65rem}.carrier-entry-actions .button{min-height:3.2rem}.carrier-primary{border:0!important;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291)!important;color:#fff!important;box-shadow:0 15px 38px rgba(117,82,255,.32)}.carrier-secondary{border-color:rgba(255,255,255,.42)!important;color:#fff!important}.carrier-call{border-color:rgba(104,231,164,.42)!important;background:rgba(47,158,98,.15)!important;color:#effff5!important}.carrier-guidance{margin-top:1rem;color:#c9c4ff;font-size:.86rem;font-weight:750}.carrier-boundary{max-width:72ch;color:rgba(255,255,255,.58);font-size:.78rem;line-height:1.55}.carrier-next-card{padding:1.55rem;border:1px solid rgba(255,255,255,.23);border-radius:18px;background:rgba(255,255,255,.08);box-shadow:0 28px 80px rgba(0,0,0,.22);backdrop-filter:blur(14px)}.carrier-next-card>strong{display:block;font-size:1.6rem}.carrier-next-card ol{display:grid;gap:1rem;margin:1.25rem 0;padding:0;list-style:none}.carrier-next-card li{display:grid;grid-template-columns:auto 1fr;gap:.75rem}.carrier-next-card li>span{display:grid;width:2.15rem;height:2.15rem;place-items:center;border-radius:50%;background:#7564ff;color:#fff;font-weight:900}.carrier-next-card b,.carrier-next-card small{display:block}.carrier-next-card small{margin-top:.17rem;color:rgba(255,255,255,.65);line-height:1.48}.carrier-next-card>a{display:inline-flex;gap:.4rem;align-items:center;color:#fff;font-weight:800}.carrier-confidence{background:#f5f7ff}.carrier-heading{max-width:850px}.carrier-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.confidence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.confidence-grid article{padding:1.35rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.confidence-grid svg{color:#2f9e62}.confidence-grid h3{font-size:1.25rem}.confidence-grid p{color:#5b6885;line-height:1.6}.carrier-share-card,.carrier-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:16px;background:#fff}.carrier-share-actions,.carrier-final-actions{display:flex;flex-wrap:wrap;gap:.65rem;justify-content:flex-end}.carrier-share-actions button{font:inherit;cursor:pointer}.share-status{min-height:1.2rem;color:#2f7f54;font-weight:800}.carrier-final{padding-top:1rem}.carrier-final-card{border-color:#071038;background:#071038;color:#fff}.carrier-final-card p:not(.eyebrow){max-width:70ch;color:rgba(255,255,255,.7);line-height:1.65}@media(max-width:980px){.confidence-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.carrier-entry-grid,.carrier-share-card,.carrier-final-card{grid-template-columns:1fr}.carrier-share-actions,.carrier-final-actions{justify-content:flex-start}}@media(max-width:620px){.carrier-entry-hero{padding-top:7.5rem}.carrier-entry-actions .button,.carrier-share-actions .button,.carrier-final-actions .button{width:100%;justify-content:center}.confidence-grid{grid-template-columns:1fr}.carrier-next-card{padding:1.15rem}}
 </style>
