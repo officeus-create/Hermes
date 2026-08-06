@@ -8,6 +8,7 @@ const title = "New Authority Car Hauler Readiness Checklist | Hermes Logistics";
 const description =
   "Use this new-authority car hauler checklist to review MC/DOT status, insurance, equipment, broker setup, paperwork, operating area, dispatch control, and first-load readiness.";
 const canonicalUrl = new URL("/logistics/resources/new-authority-car-hauler-readiness-checklist/", Astro.site).toString();
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
 const faq = [
   {
     question: "Does active authority mean a new car hauler is ready for every broker?",
@@ -37,7 +38,7 @@ const schema = [
     headline: "New Authority Car Hauler Readiness Checklist",
     description,
     datePublished: "2026-08-02",
-    dateModified: "2026-08-04",
+    dateModified: "2026-08-06",
     mainEntityOfPage: canonicalUrl,
     author: { "@type": "Organization", name: "Hermes Logistics" },
     publisher: {
@@ -101,7 +102,7 @@ const schema = [
                   before requesting dispatch support or reviewing a first load.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">
+                  <a class="button button-primary" href={intakeHref}>
                     Start carrier readiness review <ArrowRight size={18} aria-hidden="true" />
                   </a>
                   <a class="button" href="/logistics/new-authority-car-hauler-support/">Review new-authority support</a>
@@ -234,7 +235,7 @@ const schema = [
               <h2>Prepare authority, insurance, equipment, fleet, dispatch, and availability details.</h2>
               <p>The carrier intake creates a local review preview and explicit handoff. It does not automatically approve an authority, create an account, assign a dispatcher, or book a load.</p>
             </div>
-            <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={intakeHref}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>
