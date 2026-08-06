@@ -116,6 +116,19 @@ const alternateOgLocales = alternates
         // Continue directly to the page when browser storage is unavailable.
       }
     </script>
+    <script is:inline>
+      if (window.location.pathname === "/logistics/carrier-onboarding/") {
+        const selectedPlan = new URLSearchParams(window.location.search).get("plan");
+        if (["essential", "pro", "custom"].includes(selectedPlan || "")) {
+          document.addEventListener("DOMContentLoaded", () => {
+            const radio = document.querySelector(`input[name="selected_plan"][value="${selectedPlan}"]`);
+            if (!(radio instanceof HTMLInputElement)) return;
+            radio.checked = true;
+            radio.dispatchEvent(new Event("change", { bubbles: true }));
+          }, { once: true });
+        }
+      }
+    </script>
     {schema && <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />}
     <title>{title}</title>
   </head>
