@@ -20,7 +20,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "Hermes Carrier Agreement Review",
-  description: "A private sales handoff page for reviewing and downloading the Hermes carrier dispatch agreement draft and requesting a secure electronic signature workflow.",
+  description: "A private carrier handoff for reviewing the working model, downloading the current review copy, and continuing to the carrier packet.",
   url: "https://hermeslogisticsus.com/logistics/carrier-agreement/",
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
@@ -28,84 +28,120 @@ const schema = {
 
 <BaseLayout
   title="Carrier Agreement Review | Hermes Logistics"
-  description="Review and download the Hermes carrier dispatch agreement draft, then request a secure electronic signature workflow from Logistics Sales."
+  description="Understand the Hermes carrier working model in plain language, review the current document, and continue to the carrier packet."
   robots="noindex,nofollow"
   schema={schema}
 >
   <SiteHeader activePath="/paths/logistics/" />
   <main id="main-content" class="agreement-page" data-agreement-version={version} data-esign-mode={hasHostedEsign ? "hosted" : "request"}>
     <section class="agreement-hero">
+      <div class="agreement-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
       <div class="shell agreement-hero-grid">
         <div>
           <nav class="agreement-breadcrumbs" aria-label="Breadcrumb">
-            <a href="/">Home</a><span aria-hidden="true">/</span>
-            <a href="/logistics/car-hauling-dispatch/">Car Hauling Dispatch</a><span aria-hidden="true">/</span>
-            <span aria-current="page">Agreement review</span>
+            <a href="/sign/">Carrier signing path</a><span aria-hidden="true">/</span><span aria-current="page">Agreement review</span>
           </nav>
-          <p class="eyebrow">Hermes Logistics · Private sales handoff</p>
-          <h1>Review the Carrier Dispatch Agreement</h1>
+          <p class="eyebrow">Hermes Logistics · Private carrier review</p>
+          <h1>Clear responsibilities. No hidden transfer of control.</h1>
           <p class="agreement-lead">
-            Read the current master draft, download a copy, and prepare the secure signature request. This page is intentionally excluded from search engines and is designed to be shared directly by Logistics Sales.
+            This page explains the cooperation before the signature step. Hermes may support research, communication, negotiation within your instructions, and document coordination. Your company keeps final control of every load and operating decision.
           </p>
-          <div class="agreement-actions">
-            <button class="button button-primary" type="button" data-contract-download="pdf" data-download-path={pdfPath}><Download size={18} aria-hidden="true" />Download PDF</button>
-            <button class="button button-ghost" type="button" data-contract-download="docx" data-download-path={docxPath}><Download size={18} aria-hidden="true" />Download DOCX</button>
-            <a class="button button-ghost" href="tel:+12623023626"><Phone size={18} aria-hidden="true" />+1 (262) 302-3626</a>
+          <div class="agreement-trust-row">
+            <span><Check size={17} aria-hidden="true" />You approve every load</span>
+            <span><Check size={17} aria-hidden="true" />Freight funds go to your company</span>
+            <span><Check size={17} aria-hidden="true" />No guaranteed results or hidden exclusivity</span>
           </div>
-          <noscript><p class="agreement-noscript">Direct downloads require JavaScript. Contact officeus@hermeslogisticsus.com for a copy.</p></noscript>
-          <p class="agreement-version">Version {version} · PDF SHA-256: <code>{pdfSha256}</code></p>
+          <div class="agreement-actions">
+            <a class="button agreement-primary" href="/logistics/carrier-onboarding/" data-commercial-primary-cta data-service-group="carrier_contract">
+              Continue to carrier packet <ArrowRight size={18} aria-hidden="true" />
+            </a>
+            <a class="button agreement-secondary" href="tel:+12623023626"><Phone size={18} aria-hidden="true" />Ask Logistics Sales</a>
+          </div>
+          <p class="agreement-reassurance">You can review the document first, ask questions, and return to the packet later. The public page does not collect passwords or sensitive onboarding documents.</p>
         </div>
-        <aside class="agreement-status">
-          <p class="eyebrow">Current status</p>
-          <strong>Draft for attorney review</strong>
-          <p>This copy is ready for operational and legal review, but it must not be represented as the final approved agreement until Hermes publishes an approved execution version.</p>
+
+        <aside class="agreement-quick-card" aria-label="Agreement at a glance">
+          <p class="eyebrow">Agreement at a glance</p>
+          <h2>What the carrier is agreeing to</h2>
+          <ul>
+            <li><Check size={18} aria-hidden="true" /><span><strong>Support scope</strong><small>Hermes performs only the services described in the selected packet and approved agreement.</small></span></li>
+            <li><Check size={18} aria-hidden="true" /><span><strong>Carrier control</strong><small>The carrier keeps authority over drivers, equipment, safety, routes, compliance, and load acceptance.</small></span></li>
+            <li><Check size={18} aria-hidden="true" /><span><strong>Service fee</strong><small>The percentage must be visible in the carrier packet and match the approved execution version.</small></span></li>
+            <li><Check size={18} aria-hidden="true" /><span><strong>No promised outcome</strong><small>No load, rate, mileage, lane, customer, booking, or revenue is guaranteed.</small></span></li>
+          </ul>
         </aside>
       </div>
     </section>
 
     <section class="section agreement-summary" aria-labelledby="agreement-summary-title">
       <div class="shell">
-        <div class="section-heading">
+        <div class="section-heading agreement-heading">
           <p class="eyebrow">Plain-language summary</p>
-          <h2 id="agreement-summary-title">The commercial model, without hidden operational control.</h2>
+          <h2 id="agreement-summary-title">A dispatcher supports the operation. The carrier still runs the business.</h2>
+          <p>This summary is designed to remove the most common reasons a carrier hesitates: fear of losing control, uncertainty about money flow, and unclear responsibilities.</p>
         </div>
         <div class="agreement-grid">
-          <article><Check size={20} aria-hidden="true" /><h3>5% service fee</h3><p>The draft uses a 5.00% fee for approved loads booked or materially arranged through Hermes.</p></article>
-          <article><Check size={20} aria-hidden="true" /><h3>Carrier approves every load</h3><p>The carrier may accept or reject every opportunity and retains control of drivers, equipment, safety, and routes.</p></article>
-          <article><Check size={20} aria-hidden="true" /><h3>Administrative and dispatch support</h3><p>Hermes may research, communicate, negotiate within instructions, coordinate documents, and support invoicing.</p></article>
-          <article><Check size={20} aria-hidden="true" /><h3>Freight funds go to the carrier</h3><p>Brokers, shippers, or factoring companies pay the carrier directly. Hermes does not receive freight funds.</p></article>
-          <article><Check size={20} aria-hidden="true" /><h3>No result guarantee</h3><p>No promise of loads, rates, mileage, lanes, response time, booking, or revenue.</p></article>
-          <article><ShieldCheck size={20} aria-hidden="true" /><h3>No passwords in the agreement</h3><p>Load-board access must use a provider-approved delegated account or another separately approved secure method.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Carrier makes the final decision</h3><p>Every load may be accepted or rejected. Instructions can be changed or withdrawn by the authorized carrier contact.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Hermes works within instructions</h3><p>Hermes may research opportunities, communicate, negotiate within approved limits, coordinate documents, and support invoicing follow-through.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Freight payments remain direct</h3><p>Brokers, shippers, or factoring companies pay the carrier. Hermes does not receive or hold the carrier’s freight funds.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Commercial terms must match</h3><p>The selected percentage, service scope, document version, and execution record must agree before the relationship is treated as fully executed.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>No minimum business result</h3><p>No load volume, rate, mileage, lane, customer, booking, or revenue is promised by the agreement.</p></article>
+          <article><ShieldCheck size={20} aria-hidden="true" /><h3>Sensitive data stays separate</h3><p>No passwords, PINs, bank data, W-9 files, CDL images, VIN lists, or private shipment records belong on this public page.</p></article>
         </div>
+      </div>
+    </section>
+
+    <section class="section agreement-document" aria-labelledby="agreement-document-title">
+      <div class="shell agreement-document-grid">
+        <div>
+          <p class="eyebrow">Document review</p>
+          <h2 id="agreement-document-title">Download the current review copy.</h2>
+          <p>
+            The available file is the current operational review draft. It is useful for comparing responsibilities and clauses, but it is not the final execution asset. The legacy draft contains a 5.00% rate; that rate must not be assumed to apply when a selected packet shows different commercial terms.
+          </p>
+          <div class="agreement-download-actions">
+            <button class="button" type="button" data-contract-download="pdf" data-download-path={pdfPath}><Download size={18} aria-hidden="true" />Download review PDF</button>
+            <button class="button" type="button" data-contract-download="docx" data-download-path={docxPath}><Download size={18} aria-hidden="true" />Download editable DOCX</button>
+          </div>
+          <noscript><p class="agreement-noscript">Direct downloads require JavaScript. Contact officeus@hermeslogisticsus.com for a copy.</p></noscript>
+        </div>
+        <aside class="agreement-status">
+          <p class="eyebrow">Document status</p>
+          <strong>Review draft — not the final execution version</strong>
+          <p>Final activation requires an approved document whose percentage, scope, version, and file fingerprint match the carrier packet.</p>
+          <details>
+            <summary>Technical document details</summary>
+            <p>Version {version}</p>
+            <p>PDF SHA-256: <code>{pdfSha256}</code></p>
+          </details>
+        </aside>
       </div>
     </section>
 
     <section class="section agreement-sign" aria-labelledby="agreement-sign-title">
       <div class="shell agreement-sign-grid">
         <div>
-          <p class="eyebrow">Electronic signature</p>
-          <h2 id="agreement-sign-title">Move from review to a traceable execution record.</h2>
-          <p>
-            The approved execution copy is sent to the authorized signer’s business email. The signature workflow should retain the agreed document version, completed PDF, signer identity details, timestamps, and audit trail.
-          </p>
+          <p class="eyebrow">Signature path</p>
+          <h2 id="agreement-sign-title">The next step should feel simple and traceable.</h2>
+          <p>The carrier packet confirms the selected working model, company identity, signer authority, operating profile, electronic consent, signature, and document status.</p>
           <ul>
-            <li><Check size={18} aria-hidden="true" />Unique request for the carrier and authorized signer</li>
-            <li><Check size={18} aria-hidden="true" />Final PDF that cannot silently change after signing</li>
-            <li><Check size={18} aria-hidden="true" />Downloadable copy for both parties</li>
+            <li><Check size={18} aria-hidden="true" />Phone-friendly five-step packet</li>
+            <li><Check size={18} aria-hidden="true" />Typed signer name, drawn signature, and timestamp</li>
+            <li><Check size={18} aria-hidden="true" />Downloadable PDF copy for the carrier</li>
           </ul>
         </div>
         <div class="agreement-sign-card">
           <FileSignature size={32} aria-hidden="true" />
-          <h3>{hasHostedEsign ? "Open the secure signature session" : "Prepare the secure signature request"}</h3>
+          <h3>{hasHostedEsign ? "Open the secure signature session" : "Continue with the carrier packet"}</h3>
           <p>
             {hasHostedEsign
-              ? "Use the provider-hosted session. Confirm that the legal company name and authorized signer are correct before signing."
-              : "Logistics Sales will create a unique Google Workspace eSignature request after the approved version and signer details are confirmed."}
+              ? "Confirm that the legal company name, signer, percentage, scope, and document version are correct before signing."
+              : "Complete the carrier packet first. Logistics Sales can then prepare a unique secure execution request when the approved agreement version is available."}
           </p>
-          <a class="button button-primary" href={signHref} target={hasHostedEsign ? "_blank" : undefined} rel={hasHostedEsign ? "noopener noreferrer" : undefined} data-contract-esign>
-            {hasHostedEsign ? "Open secure e-signature" : "Request secure e-signature"}<ArrowRight size={18} aria-hidden="true" />
+          <a class="button agreement-primary" href={hasHostedEsign ? signHref : "/logistics/carrier-onboarding/"} target={hasHostedEsign ? "_blank" : undefined} rel={hasHostedEsign ? "noopener noreferrer" : undefined} data-contract-esign>
+            {hasHostedEsign ? "Open secure e-signature" : "Continue to carrier packet"}<ArrowRight size={18} aria-hidden="true" />
           </a>
-          <a class="agreement-email" href={`mailto:${requestEmail}`}><Mail size={17} aria-hidden="true" />{requestEmail}</a>
+          {!hasHostedEsign && <a class="agreement-email" href={fallbackHref}><Mail size={17} aria-hidden="true" />Request help by email</a>}
         </div>
       </div>
     </section>
@@ -115,20 +151,23 @@ const schema = {
         <ShieldCheck size={30} aria-hidden="true" />
         <div>
           <p class="eyebrow">Security boundary</p>
-          <h2 id="agreement-security-title">Do not send sensitive onboarding documents through this public URL.</h2>
-          <p>Do not submit passwords, PINs, W-9s, CDL images, payment credentials, VIN lists, gate codes, release documents, or private shipment records here. Logistics Sales must provide the approved secure document channel separately.</p>
+          <h2 id="agreement-security-title">Keep sensitive onboarding documents out of the public link.</h2>
+          <p>Passwords, PINs, W-9s, CDL images, payment credentials, VIN lists, gate codes, release documents, and private shipment records must use a separately approved secure channel.</p>
         </div>
       </div>
     </section>
 
-    <section class="section agreement-next">
-      <div class="shell agreement-next-card">
+    <section class="section agreement-final">
+      <div class="shell agreement-final-card">
         <div>
-          <p class="eyebrow">Not qualified yet?</p>
-          <h2>Complete the carrier operating review first.</h2>
-          <p>The direct intake collects authority, insurance, equipment, capacity, operating area, availability, and business contact information without asking for passwords or private shipment documents.</p>
+          <p class="eyebrow">Ready to continue?</p>
+          <h2>Confirm the working model and prepare the carrier packet.</h2>
+          <p>Questions can be resolved before the signature step. The carrier does not surrender control of loads, drivers, equipment, safety, routes, compliance, or freight payments.</p>
         </div>
-        <a class="button" href="/logistics/start-car-hauling-dispatch/#dispatch-intake">Start carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+        <div class="agreement-final-actions">
+          <a class="button agreement-primary" href="/logistics/carrier-onboarding/">Continue to carrier packet <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button agreement-secondary" href="tel:+12623023626"><Phone size={18} aria-hidden="true" />Call +1 (262) 302-3626</a>
+        </div>
       </div>
     </section>
   </main>
@@ -140,7 +179,6 @@ const schema = {
     "/contracts/Hermes_Carrier_Dispatch_Agreement_Master_DRAFT_v2026-08-05.pdf",
     "/contracts/Hermes_Carrier_Dispatch_Agreement_Master_DRAFT_v2026-08-05.docx",
   ]);
-
   document.querySelectorAll<HTMLElement>("[data-contract-download]").forEach((control) => {
     control.addEventListener("click", () => {
       const path = control.dataset.downloadPath ?? "";
@@ -156,5 +194,5 @@ const schema = {
 </script>
 
 <style>
-  .agreement-page{background:#fff;color:#10204e}.agreement-hero{padding:8.7rem 0 5rem;background:radial-gradient(circle at 84% 12%,rgba(99,91,255,.3),transparent 34%),#071038;color:#fff}.agreement-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:clamp(2rem,5vw,5rem);align-items:center}.agreement-breadcrumbs{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2rem;color:rgba(255,255,255,.68);font-size:.84rem}.agreement-breadcrumbs a{color:inherit}.agreement-hero h1{max-width:12ch;font-size:clamp(3rem,7vw,6rem)}.agreement-lead{max-width:66ch;color:rgba(255,255,255,.8);font-size:1.15rem;line-height:1.7}.agreement-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.8rem}.agreement-actions .button-ghost{border-color:rgba(255,255,255,.44);color:#fff}.agreement-actions button{font:inherit;cursor:pointer}.agreement-noscript{max-width:66ch;margin-top:1rem;color:#ffd9de;font-size:.88rem}.agreement-version{max-width:72ch;margin-top:1rem;color:rgba(255,255,255,.58);font-size:.77rem;overflow-wrap:anywhere}.agreement-version code{color:inherit}.agreement-status{padding:1.5rem;border:1px solid rgba(255,255,255,.22);border-radius:14px;background:rgba(255,255,255,.08);backdrop-filter:blur(12px)}.agreement-status strong{display:block;font-size:1.45rem}.agreement-status p:not(.eyebrow){color:rgba(255,255,255,.75);line-height:1.65}.agreement-summary{background:#f6f7ff}.agreement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.agreement-grid article{display:grid;grid-template-columns:auto 1fr;gap:.55rem;padding:1.35rem;border:1px solid #dde3f8;border-radius:10px;background:#fff}.agreement-grid article svg{grid-row:1/3;color:#5f56e8}.agreement-grid h3,.agreement-grid p{margin:0}.agreement-grid p{color:#5b6885;line-height:1.6}.agreement-sign-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:center}.agreement-sign-grid>div>p:not(.eyebrow){max-width:68ch;color:#5b6885;line-height:1.7}.agreement-sign-grid ul{display:grid;gap:.65rem;padding:0;list-style:none}.agreement-sign-grid li{display:flex;gap:.55rem;align-items:flex-start}.agreement-sign-card{display:grid;gap:.8rem;padding:1.6rem;border-radius:14px;background:#071038;color:#fff;box-shadow:0 24px 60px rgba(7,16,56,.18)}.agreement-sign-card>svg{color:#9d94ff}.agreement-sign-card h3,.agreement-sign-card p{margin:0}.agreement-sign-card p{color:rgba(255,255,255,.72);line-height:1.6}.agreement-sign-card .button{justify-content:center}.agreement-email{display:flex;gap:.45rem;align-items:center;justify-content:center;color:rgba(255,255,255,.76);font-weight:700}.agreement-security{padding-top:1rem}.agreement-security-card{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;padding:1.5rem;border:1px solid #f0c5cc;border-radius:12px;background:#fff7f8}.agreement-security-card>svg{color:#a81c2b}.agreement-security-card h2{max-width:20ch}.agreement-security-card p:not(.eyebrow){max-width:82ch;color:#6d5860;line-height:1.65}.agreement-next{padding-top:1rem}.agreement-next-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:14px;background:#f7f4ff}.agreement-next-card h2{max-width:17ch}.agreement-next-card p:not(.eyebrow){max-width:70ch;color:#5b6885;line-height:1.65}@media(max-width:900px){.agreement-hero-grid,.agreement-sign-grid,.agreement-next-card{grid-template-columns:1fr}.agreement-grid{grid-template-columns:repeat(2,1fr)}.agreement-next-card .button{justify-self:start}}@media(max-width:620px){.agreement-hero{padding-top:7.6rem}.agreement-grid{grid-template-columns:1fr}.agreement-actions .button{width:100%;justify-content:center}.agreement-security-card{grid-template-columns:1fr}.agreement-sign-card .button{width:100%}}
+  .agreement-page{background:#fff;color:#10204e}.agreement-hero{position:relative;overflow:hidden;padding:8.6rem 0 5rem;background:radial-gradient(circle at 84% 12%,rgba(99,91,255,.34),transparent 34%),radial-gradient(circle at 10% 86%,rgba(225,79,145,.15),transparent 32%),#071038;color:#fff}.agreement-rails{position:absolute;inset:0 0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:7px}.agreement-rails span:nth-child(1){background:#6758f4}.agreement-rails span:nth-child(2){background:#d7529b}.agreement-rails span:nth-child(3){background:#33b77a}.agreement-rails span:nth-child(4){background:#efb84e}.agreement-hero-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(330px,.72fr);gap:clamp(2rem,5vw,5rem);align-items:center}.agreement-breadcrumbs{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2rem;color:rgba(255,255,255,.68);font-size:.84rem}.agreement-breadcrumbs a{color:inherit}.agreement-hero h1{max-width:12ch;font-size:clamp(3rem,7vw,6rem);line-height:.98}.agreement-lead{max-width:68ch;color:rgba(255,255,255,.82);font-size:clamp(1rem,2vw,1.16rem);line-height:1.72}.agreement-trust-row{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1.4rem}.agreement-trust-row span{display:flex;align-items:center;gap:.42rem;padding:.62rem .78rem;border:1px solid rgba(117,240,170,.27);border-radius:999px;background:rgba(39,175,99,.12);color:#e8fff1;font-size:.83rem;font-weight:800}.agreement-trust-row svg{color:#5ee99a}.agreement-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.7rem}.agreement-actions .button{min-height:3.15rem}.agreement-primary{border:0!important;background:linear-gradient(135deg,#7564ff,#a94ee8 56%,#e25291)!important;color:#fff!important;box-shadow:0 15px 38px rgba(117,82,255,.3)}.agreement-secondary{border-color:rgba(255,255,255,.42)!important;color:#fff!important}.agreement-reassurance{max-width:68ch;margin-top:1rem;color:rgba(255,255,255,.61);font-size:.83rem;line-height:1.55}.agreement-quick-card{padding:1.5rem;border:1px solid rgba(255,255,255,.24);border-radius:20px;background:rgba(255,255,255,.09);box-shadow:0 26px 70px rgba(0,0,0,.23);backdrop-filter:blur(14px)}.agreement-quick-card h2{margin:.3rem 0 1rem;font-size:1.8rem}.agreement-quick-card ul{display:grid;gap:.85rem;margin:0;padding:0;list-style:none}.agreement-quick-card li{display:grid;grid-template-columns:auto 1fr;gap:.7rem}.agreement-quick-card li>svg{color:#65e99d}.agreement-quick-card strong,.agreement-quick-card small{display:block}.agreement-quick-card small{margin-top:.18rem;color:rgba(255,255,255,.64);line-height:1.45}.agreement-summary{background:#f5f7ff}.agreement-heading{max-width:870px}.agreement-heading>p:not(.eyebrow){color:#5b6885;line-height:1.7}.agreement-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.agreement-grid article{display:grid;grid-template-columns:auto 1fr;gap:.55rem;padding:1.35rem;border:1px solid #dce3f8;border-radius:14px;background:#fff}.agreement-grid article svg{grid-row:1/3;color:#2cad6b}.agreement-grid h3,.agreement-grid p{margin:0}.agreement-grid p{color:#5b6885;line-height:1.6}.agreement-document-grid,.agreement-sign-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:center}.agreement-document-grid>div>p:not(.eyebrow),.agreement-sign-grid>div>p:not(.eyebrow){max-width:70ch;color:#5b6885;line-height:1.7}.agreement-download-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.2rem}.agreement-download-actions button{font:inherit;cursor:pointer}.agreement-noscript{color:#9b2133}.agreement-status{padding:1.5rem;border:1px solid #e2d7a7;border-radius:15px;background:#fffaf0}.agreement-status strong{display:block;font-size:1.35rem}.agreement-status p{color:#6e6250;line-height:1.6}.agreement-status details{margin-top:1rem;padding-top:1rem;border-top:1px solid #eadfb9}.agreement-status summary{cursor:pointer;font-weight:850}.agreement-status code{overflow-wrap:anywhere}.agreement-sign{background:#f8f9fd}.agreement-sign-grid ul{display:grid;gap:.65rem;padding:0;list-style:none}.agreement-sign-grid li{display:flex;gap:.55rem;align-items:flex-start}.agreement-sign-card{display:grid;gap:.85rem;padding:1.6rem;border-radius:16px;background:#071038;color:#fff;box-shadow:0 24px 60px rgba(7,16,56,.18)}.agreement-sign-card>svg{color:#9d94ff}.agreement-sign-card h3,.agreement-sign-card p{margin:0}.agreement-sign-card p{color:rgba(255,255,255,.72);line-height:1.6}.agreement-sign-card .button{justify-content:center}.agreement-email{display:flex;gap:.45rem;align-items:center;justify-content:center;color:rgba(255,255,255,.78);font-weight:750}.agreement-security{padding-top:1rem}.agreement-security-card{display:grid;grid-template-columns:auto 1fr;gap:1.1rem;padding:1.5rem;border:1px solid #f0d1d6;border-radius:14px;background:#fff8f9}.agreement-security-card>svg{color:#a81c2b}.agreement-security-card h2{max-width:22ch}.agreement-security-card p:not(.eyebrow){max-width:82ch;color:#6d5860;line-height:1.65}.agreement-final{padding-top:1rem}.agreement-final-card{display:grid;grid-template-columns:1fr auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border-radius:18px;background:#071038;color:#fff}.agreement-final-card p:not(.eyebrow){max-width:72ch;color:rgba(255,255,255,.7);line-height:1.65}.agreement-final-actions{display:flex;flex-wrap:wrap;gap:.7rem}@media(max-width:950px){.agreement-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:900px){.agreement-hero-grid,.agreement-document-grid,.agreement-sign-grid,.agreement-final-card{grid-template-columns:1fr}.agreement-final-actions{justify-content:flex-start}}@media(max-width:620px){.agreement-hero{padding-top:7.5rem}.agreement-grid{grid-template-columns:1fr}.agreement-actions .button,.agreement-download-actions .button,.agreement-final-actions .button{width:100%;justify-content:center}.agreement-security-card{grid-template-columns:1fr}}
 </style>
