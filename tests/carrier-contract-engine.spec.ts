@@ -1,8 +1,19 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page, type Route } from "@playwright/test";
+
+type SubmittedContractPayload = {
+  selected_plan: string;
+  legal_company_name: string;
+  signer_email: string;
+  load_boards: string[];
+  access_handoff_method: string;
+  sales_contact: string;
+  signature_jpeg: string;
+  [key: string]: unknown;
+};
 
 const onboardingRoute = "/logistics/carrier-onboarding/?plan=pro";
 
-async function completeCarrierPacket(page) {
+async function completeCarrierPacket(page: Page) {
   await page.goto(onboardingRoute);
 
   await expect(page).toHaveTitle("Carrier Onboarding and Signature | Hermes Logistics");
@@ -62,9 +73,9 @@ async function completeCarrierPacket(page) {
   await page.mouse.move(box.x + box.width * 0.9, box.y + box.height * 0.55, { steps: 5 });
   await page.mouse.up();
 
-  let submittedPayload;
-  await page.route("**/api/carrier-contract", async (route) => {
-    submittedPayload = route.request().postDataJSON();
+  let submittedPayload: SubmittedContractPayload | null = null;
+  await page.route("**/api/carrier-contract", async (route: Route) => {
+    submittedPayload = route.request().postDataJSON() as SubmittedContractPayload;
     await route.fulfill({
       status: 200,
       contentType: "application/pdf",
@@ -83,15 +94,17 @@ async function completeCarrierPacket(page) {
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("Hermes_TEST_Mobile_Carrier_LLC_Signed_Appendix_A.pdf");
 
-  expect(submittedPayload.selected_plan).toBe("pro");
-  expect(submittedPayload.legal_company_name).toBe("TEST Mobile Carrier LLC");
-  expect(submittedPayload.signer_email).toBe("carrier-mobile@example.com");
-  expect(submittedPayload.load_boards).toEqual(["Central Dispatch", "DAT"]);
-  expect(submittedPayload.access_handoff_method).toBe("Separate secure handoff to assigned load planner");
-  expect(submittedPayload.sales_contact).toBe("TEST Assistant 107");
-  expect(submittedPayload.signature_jpeg).toMatch(/^data:image\/jpeg;base64,/);
-  expect(submittedPayload).not.toHaveProperty("password");
-  expect(submittedPayload).not.toHaveProperty("internal_recipients");
+  expect(submittedPayload).not.toBeNull();
+  const payload = submittedPayload as SubmittedContractPayload;
+  expect(payload.selected_plan).toBe("pro");
+  expect(payload.legal_company_name).toBe("TEST Mobile Carrier LLC");
+  expect(payload.signer_email).toBe("carrier-mobile@example.com");
+  expect(payload.load_boards).toEqual(["Central Dispatch", "DAT"]);
+  expect(payload.access_handoff_method).toBe("Separate secure handoff to assigned load planner");
+  expect(payload.sales_contact).toBe("TEST Assistant 107");
+  expect(payload.signature_jpeg).toMatch(/^data:image\/jpeg;base64,/);
+  expect(payload).not.toHaveProperty("password");
+  expect(payload).not.toHaveProperty("internal_recipients");
 
   await expect(page.locator("[data-result-title]")).toContainText("copies were sent");
   await expect(page.locator("[data-result-copy]")).toContainText("Document mode: review");
