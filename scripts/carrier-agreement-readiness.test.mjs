@@ -25,7 +25,7 @@ assert.doesNotMatch(
 );
 
 for (const requiredReadinessContract of [
-  "business email and/or mobile number",
+  "operating email and/or mobile number",
   "at least one of signer email or verified signer mobile is present",
   "never reuse a signer URL between carriers",
   "document_version",
