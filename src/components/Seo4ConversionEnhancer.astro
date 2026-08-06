@@ -31,9 +31,18 @@
     });
   };
 
+  const carrierServiceGroups: Record<string, string> = {
+    "/logistics/car-hauling-dispatch/": "car_hauling_dispatch",
+    "/logistics/owner-operator-dispatch-support/": "owner_operator_dispatch",
+    "/logistics/fleet-owner-dispatch-support/": "fleet_owner_dispatch",
+    "/logistics/new-authority-car-hauler-support/": "new_authority_car_hauler",
+    "/paths/logistics/": "logistics_hub_carrier_review",
+  };
+
   refreshLoadBoardDemoLabels();
 
   document.addEventListener("click", (event) => {
+    if (!event.isTrusted) return;
     const source = event.target;
     if (!(source instanceof Element)) return;
     const link = source.closest("a[href]");
@@ -64,12 +73,15 @@
       !link.hasAttribute("data-commercial-primary-cta")
     ) return;
 
+    const serviceGroup = link.dataset.serviceGroup?.trim() || carrierServiceGroups[window.location.pathname];
+    if (!serviceGroup) return;
+
     pushEvent({
       event: "commercial_cta_click",
       cta_type: "carrier_intake",
       audience_type: "carrier",
-      page_group: "logistics_service",
-      service_group: "car_hauling_dispatch",
+      page_group: window.location.pathname.startsWith("/paths/logistics/") ? "logistics_path" : "logistics_service",
+      service_group: serviceGroup,
       page_path: window.location.pathname,
       destination_path: target.pathname,
     });

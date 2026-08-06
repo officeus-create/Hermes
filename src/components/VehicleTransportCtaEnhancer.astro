@@ -81,7 +81,7 @@
       event: "commercial_cta_click",
       cta_type: "vehicle_transport_intake",
       audience_type: target.searchParams.get("role") || "customer",
-      page_group: "logistics_service",
+      page_group: window.location.pathname.startsWith("/paths/logistics/") ? "logistics_path" : "logistics_service",
       service_group: serviceGroup,
       request_type: target.searchParams.get("request") || "vehicle_transport",
       page_path: window.location.pathname,
