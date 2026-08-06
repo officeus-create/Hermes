@@ -29,7 +29,7 @@ if (organization) {
   if (organization.email !== "officeus@hermeslogisticsus.com") errors.push("Organization email does not match the approved general contact");
   if (organization.logo?.url !== "https://hermeslogisticsus.com/favicon.svg") errors.push("Organization logo URL is missing or not canonical");
   if (organization.contactPoint?.telephone !== "+1-262-302-3626") errors.push("Organization Logistics Sales phone is missing or unapproved");
-  if (organization.contactPoint?.email !== "freight_301@hermeslogisticsus.com") errors.push("Organization Logistics Sales email is missing or unapproved");
+  if (organization.contactPoint?.email !== "officeus@hermeslogisticsus.com") errors.push("Organization Logistics Sales email is missing or unapproved");
   const sameAs = new Set(Array.isArray(organization.sameAs) ? organization.sameAs : []);
   for (const url of expectedSameAs) if (!sameAs.has(url)) errors.push(`Organization sameAs is missing ${url}`);
   for (const url of sameAs) if (!expectedSameAs.has(url)) errors.push(`Organization sameAs contains an unapproved cross-entity profile: ${url}`);
