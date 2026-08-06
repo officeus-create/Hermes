@@ -94,8 +94,8 @@ async function completeCarrierPacket(page: Page) {
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe("Hermes_TEST_Mobile_Carrier_LLC_Signed_Appendix_A.pdf");
 
-  expect(submittedPayload).not.toBeNull();
-  const payload = submittedPayload as SubmittedContractPayload;
+  if (!submittedPayload) throw new Error("The carrier contract endpoint was not called.");
+  const payload: SubmittedContractPayload = submittedPayload;
   expect(payload.selected_plan).toBe("pro");
   expect(payload.legal_company_name).toBe("TEST Mobile Carrier LLC");
   expect(payload.signer_email).toBe("carrier-mobile@example.com");
