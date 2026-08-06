@@ -128,10 +128,10 @@ assert.ok(logisticsLinks.includes("Carrier plans, packet, and agreement"));
 for (const required of [
   "https://hermeslogisticsus.com/carrier/",
   "https://hermeslogisticsus.com/sign/",
-  "Start the carrier packet",
+  "Continue to carrier packet",
   "Review plans and support",
   "Review the agreement draft",
-  "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, or hidden conditions.",
+  "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, hidden conditions, or threatening language.",
   "DRAFT-2026-08-05",
 ]) {
   assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
