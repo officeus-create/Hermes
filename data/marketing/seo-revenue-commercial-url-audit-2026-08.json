@@ -1,6 +1,6 @@
 {
-  "reviewed_at": "2026-08-02",
-  "source": "current main repository contracts; production/Search Console metrics remain external",
+  "reviewed_at": "2026-08-06",
+  "source": "current main repository contracts through the direct-intake and carrier-journey releases; production/Search Console/GA4 metrics remain external",
   "allowed_statuses": [
     "READY_TO_MEASURE",
     "INDEXATION_BLOCKED",
@@ -19,13 +19,13 @@
       "audience": "dealers, auction users, businesses and private customers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-local.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "transport request preview and Logistics Sales route",
-      "event_family": "logistics request preview",
-      "proof_state": "service boundaries and FAQ present; production query evidence pending",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "direct vehicle-transport intake, local review, email fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "direct request path, service boundaries and FAQ present; production query and qualified-inquiry evidence pending",
       "cannibalization_risk": "low when Appleton remains a distinct local intent",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "Search Console and production evidence tracked in issue #123"
+      "external_blocker": "Search Console and GA4 verification tracked in issue #206; permissioned proof tracked in issue #176"
     },
     {
       "route": "/logistics/wisconsin-vehicle-transport/",
@@ -34,13 +34,13 @@
       "audience": "Wisconsin vehicle transport customers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-local.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "transport request preview and Logistics Sales route",
-      "event_family": "logistics request preview",
-      "proof_state": "statewide scope and no-guarantee boundaries present",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "direct vehicle-transport intake, local review, email fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "statewide scope, direct request path and no-guarantee boundaries present",
       "cannibalization_risk": "medium; city pages must remain supporting local intents",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "Search Console baseline tracked in issue #123"
+      "external_blocker": "statewide and city query ownership requires authenticated Search Console review in issue #206"
     },
     {
       "route": "/logistics/dealer-vehicle-transportation/",
@@ -49,13 +49,13 @@
       "audience": "U.S. auto dealers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-services.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "dealer load request preview and Logistics Sales route",
-      "event_family": "dealer transport request",
-      "proof_state": "service and qualification boundaries present",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "dealer-prefilled direct transport intake, local review, fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "service, qualification, direct request and carrier-review boundaries present",
       "cannibalization_risk": "low; Wisconsin dealer page is geographic support",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "verified dealer case evidence remains external"
+      "external_blocker": "production event verification tracked in issue #206; approved dealer case evidence tracked in issue #176"
     },
     {
       "route": "/logistics/car-hauling-dispatch/",
@@ -64,13 +64,13 @@
       "audience": "car-hauling carriers, owner-operators and fleets",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-services.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "qualified carrier preview and explicit Logistics Sales handoff",
-      "event_family": "commercial_cta_click → carrier_intake_start → carrier_intake_preview_ready → carrier_handoff_ready",
-      "proof_state": "authority, insurance, fleet, dispatch, equipment and availability qualification present",
+      "primary_destination": "/logistics/start-car-hauling-dispatch/",
+      "handoff": "direct carrier qualification, local review, email fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → carrier_intake_start → carrier_intake_preview_ready → carrier_handoff_ready → carrier_delivery_confirmed",
+      "proof_state": "authority, insurance, fleet, dispatch, equipment, availability and direct carrier qualification present",
       "cannibalization_risk": "low; carrier path pages are supporting audiences",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #123"
+      "external_blocker": "production event verification tracked in issue #206; permissioned carrier proof tracked in issue #176"
     },
     {
       "route": "/logistics/auction-vehicle-pickup/",
@@ -79,13 +79,13 @@
       "audience": "dealers, businesses and auction buyers/sellers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-services.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "vehicle request preview and Logistics Sales route",
-      "event_family": "logistics request preview",
-      "proof_state": "condition, release and timing requirements explained",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "auction-prefilled direct transport intake, local review, fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "condition, release, timing, direct request and no-affiliation boundaries explained",
       "cannibalization_risk": "low; Wisconsin auction page is geographic support",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "auction partner/customer evidence remains external"
+      "external_blocker": "production event verification tracked in issue #206; auction/customer evidence tracked in issue #176"
     },
     {
       "route": "/logistics/wisconsin-dealer-vehicle-transport/",
@@ -94,13 +94,13 @@
       "audience": "Wisconsin auto dealers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-local.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "dealer request preview and Logistics Sales route",
-      "event_family": "dealer transport request",
-      "proof_state": "geographic and dealer scope present",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "dealer-prefilled direct transport intake, local review, fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "geographic, dealer, direct-request and service-boundary context present",
       "cannibalization_risk": "medium; must support rather than duplicate national dealer page",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "Search Console query ownership review tracked in issue #123"
+      "external_blocker": "Search Console query ownership and production events require authenticated review in issue #206"
     },
     {
       "route": "/logistics/wisconsin-auction-vehicle-pickup/",
@@ -109,13 +109,13 @@
       "audience": "Wisconsin dealers and auction customers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-local.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "auction transport request preview and Logistics Sales route",
-      "event_family": "logistics request preview",
-      "proof_state": "geographic and auction scope present",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "auction-prefilled direct transport intake, local review, fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "geographic, auction, release, operability and direct-request scope present",
       "cannibalization_risk": "medium; must support national auction page",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "Search Console query ownership review tracked in issue #123"
+      "external_blocker": "Search Console query ownership and production events require authenticated review in issue #206"
     },
     {
       "route": "/logistics/green-bay-wi-vehicle-transport/",
@@ -124,13 +124,13 @@
       "audience": "local vehicle transport customers",
       "canonical_owner": true,
       "sitemap_owner": "sitemap-local.xml",
-      "primary_destination": "/load-board/",
-      "handoff": "transport request preview and Logistics Sales route",
-      "event_family": "logistics request preview",
-      "proof_state": "representative city-route contract; other city pages require the same uniqueness standard",
+      "primary_destination": "/logistics/request-vehicle-transport/",
+      "handoff": "direct vehicle-transport intake, local review, fallback and controlled receiver confirmation",
+      "event_family": "commercial_cta_click → vehicle_transport_intake_start → vehicle_transport_preview_ready → vehicle_transport_handoff_ready → vehicle_transport_delivery_confirmed",
+      "proof_state": "representative city-route contract and direct request path; other city pages require the same uniqueness standard",
       "cannibalization_risk": "medium; no place-name doorway expansion",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "city-level demand must be validated in Search Console"
+      "external_blocker": "city-level demand and query ownership require authenticated Search Console evidence in issue #206"
     },
     {
       "route": "/services/seo-for-logistics-companies/",
@@ -145,7 +145,7 @@
       "proof_state": "vertical context, access status and problem qualification present",
       "cannibalization_risk": "low when it supports general SEO rather than duplicating it",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production events and case evidence tracked in issue #123"
+      "external_blocker": "production event verification tracked in issue #206; permissioned case evidence tracked in issue #176"
     },
     {
       "route": "/services/seo-for-independent-auto-dealers/",
@@ -160,7 +160,7 @@
       "proof_state": "dealer vertical and local/national context present",
       "cannibalization_risk": "low when it supports general SEO rather than duplicating it",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production events and dealer case evidence tracked in issue #123"
+      "external_blocker": "production event verification tracked in issue #206; dealer case evidence tracked in issue #176"
     },
     {
       "route": "/services/seo/",
@@ -175,7 +175,7 @@
       "proof_state": "technical, content, authority and conversion qualification present",
       "cannibalization_risk": "medium; vertical pages retain distinct audiences",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production GSC/GA4 verification tracked in issue #123"
+      "external_blocker": "authenticated Search Console and GA4 verification tracked in issue #206"
     },
     {
       "route": "/services/local-seo/",
@@ -190,7 +190,7 @@
       "proof_state": "local scope preset and virtual-office boundary present",
       "cannibalization_risk": "low when location eligibility remains distinct",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "profile eligibility and production evidence tracked in issue #123"
+      "external_blocker": "profile eligibility tracked in issue #204; production event verification tracked in issue #206"
     },
     {
       "route": "/services/website-development/",
@@ -205,7 +205,7 @@
       "proof_state": "project type, market, pages, integrations, languages, timing and budget qualification present",
       "cannibalization_risk": "medium; redesign remains separate intent",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production events and approved case evidence tracked in issue #123"
+      "external_blocker": "production event verification tracked in issue #206; approved case evidence tracked in issue #176"
     },
     {
       "route": "/services/website-redesign/",
@@ -220,7 +220,7 @@
       "proof_state": "current URL, redesign type, market, pages, integrations, languages and migration context present",
       "cannibalization_risk": "low when redesign/migration risk remains distinct",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production events and redesign case evidence tracked in issue #123"
+      "external_blocker": "production event verification tracked in issue #206; redesign case evidence tracked in issue #176"
     }
   ]
 }
