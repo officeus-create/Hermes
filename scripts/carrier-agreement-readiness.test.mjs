@@ -1,12 +1,15 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [pageSource, readiness, offerSource, activation, backend] = await Promise.all([
+const [pageSource, readiness, offerSource, activation, backend, protectionAddendum, protectedAccountNotice, ownerRevisions] = await Promise.all([
   readFile(new URL("../src/pages/logistics/carrier-agreement/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../docs/CARRIER_AGREEMENT_EXECUTION_READINESS.md", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/logistics/carrier-offer/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../docs/CARRIER_CONTRACT_ENGINE_ACTIVATION.md", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/carrier-contract.ts", import.meta.url), "utf8"),
+  readFile(new URL("../public/contracts/Hermes_Carrier_Protection_and_Compensation_Addendum_v3_ATTORNEY_REVIEW.html", import.meta.url), "utf8"),
+  readFile(new URL("../public/contracts/Hermes_Protected_Account_Notice_v3_ATTORNEY_REVIEW.html", import.meta.url), "utf8"),
+  readFile(new URL("../docs/CARRIER_AGREEMENT_OWNER_REVISIONS_2026-08-06.md", import.meta.url), "utf8"),
 ]);
 
 for (const required of [
@@ -76,7 +79,48 @@ for (const required of [
   "service_percentage",
 ]) assert.ok(backend.includes(required), `Contract endpoint is missing execution/data-minimization gate: ${required}`);
 
+for (const required of [
+  "ATTORNEY REVIEW DRAFT - NOT FOR EXECUTION",
+  "6% Dispatch Support",
+  "8% Full Partnership",
+  "Carrier Proposal",
+  "Hermes-Supported Load",
+  "Monday through Saturday",
+  "invoice on Saturday",
+  "five business days",
+  "Protected Account",
+  "twenty-four months after termination",
+  "No circumvention",
+  "twelve months after it ends",
+  "The parties do not agree to an automatic punitive or arbitrary fixed penalty",
+  "separately authorized and properly licensed broker",
+]) assert.ok(protectionAddendum.includes(required), `Carrier protection addendum is missing: ${required}`);
+
+for (const required of [
+  "ATTORNEY REVIEW DRAFT - NOT FOR EXECUTION",
+  "Protected Account",
+  "five business days",
+  "twenty-four months after termination",
+  "regardless of booking or payment channel",
+  "Carrier acknowledgment is useful evidence",
+]) assert.ok(protectedAccountNotice.includes(required), `Protected Account Notice is missing: ${required}`);
+
+for (const required of [
+  "OWNER-APPROVED REVIEW TEXT / PRODUCTION EXECUTION REMAINS OFF",
+  "Hermes-Supported Load",
+  "24 months after termination",
+  "12-month",
+  "No automatic punitive fixed penalty",
+  "combined execution PDF",
+  "synthetic mobile signing",
+]) assert.ok(ownerRevisions.includes(required), `Owner revision record is missing: ${required}`);
+
+assert.doesNotMatch(protectionAddendum, /automatic\s+(?:\$|USD)|fixed penalty of|confession of judgment|personal guaranty|blanket lien|UCC security interest/i);
+assert.match(protectionAddendum, /actual proven damages/i);
+assert.match(protectionAddendum, /reasonable documented collection costs/i);
+assert.match(protectionAddendum, /lawful equitable relief/i);
+
 for (const secretLike of ["sk_live_", "api_key=", "access_token=", "private_key="])
   assert.ok(!readiness.toLowerCase().includes(secretLike));
 
-console.log("Carrier agreement v3 offer, document, minimized signing, and production execution-readiness contracts passed.");
+console.log("Carrier agreement v3 offer, document, owner protection addendum, minimized signing, and production execution-readiness contracts passed.");
