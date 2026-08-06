@@ -8,6 +8,7 @@ const title = "Car Hauler Capacity Checklist | Hermes Logistics";
 const description =
   "Share useful car-hauler capacity details: equipment, available spaces, origin, destination, dates, operating authority, and vehicle restrictions.";
 const canonicalUrl = new URL("/logistics/resources/car-hauler-capacity-checklist/", Astro.site).toString();
+const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
 const schema = [
   {
     "@context": "https://schema.org",
@@ -15,7 +16,7 @@ const schema = [
     headline: "Car Hauler Capacity Checklist",
     description,
     datePublished: "2026-07-29",
-    dateModified: "2026-08-02",
+    dateModified: "2026-08-06",
     mainEntityOfPage: canonicalUrl,
     author: { "@type": "Organization", name: "Hermes Logistics" },
     publisher: {
@@ -62,8 +63,13 @@ import "../../../styles/features/appleton.css";
                   explains where the equipment is, what it can carry, where it is going, and when it is available.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href="/load-board/?role=carrier#carrier-access">
-                    Share available capacity <ArrowRight size={18} aria-hidden="true" />
+                  <a
+                    class="button button-primary"
+                    href={directCarrierIntake}
+                    data-commercial-primary-cta
+                    data-service-group="carrier_capacity_resource"
+                  >
+                    Prepare carrier capacity review <ArrowRight size={18} aria-hidden="true" />
                   </a>
                   <a class="button" href="/logistics/car-hauling-dispatch/">Review dispatch support</a>
                 </div>
@@ -204,8 +210,8 @@ import "../../../styles/features/appleton.css";
               <h2 id="capacity-related-title">Related Hermes Logistics paths.</h2>
             </div>
             <div class="resource-related-grid">
+              <a href="/carrier/"><Truck size={22} aria-hidden="true" /><h3>Carrier plans and packet</h3><p>Review support options, agreement boundaries, onboarding, signature flow, and PDF retention.</p><strong>Review carrier proposal <ArrowRight size={16} aria-hidden="true" /></strong></a>
               <a href="/logistics/carrier/"><Truck size={22} aria-hidden="true" /><h3>Carrier and owner-operator</h3><p>See the current review path and the information Hermes needs.</p><strong>Open carrier path <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href="/logistics/appleton-wi-vehicle-transport/"><MapPin size={22} aria-hidden="true" /><h3>Appleton vehicle transport</h3><p>Share Appleton and Fox Valley capacity when that area fits your route.</p><strong>Open guide <ArrowRight size={16} aria-hidden="true" /></strong></a>
               <a href="/logistics/resources/auction-vehicle-pickup-checklist/"><ShieldCheck size={22} aria-hidden="true" /><h3>Auction pickup checklist</h3><p>Review the information customers can prepare before a vehicle pickup.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
             </div>
           </div>
@@ -216,10 +222,15 @@ import "../../../styles/features/appleton.css";
             <div>
               <p class="eyebrow">Carrier capacity review</p>
               <h2>Share current equipment, route, timing, and available capacity.</h2>
-              <p>The existing form prepares a Logistics Sales request. It does not create an account, approve a carrier, assign a load, or make a booking.</p>
+              <p>The direct carrier intake prepares authority, equipment, capacity, operating area, availability, and communication information for Logistics Sales review. It does not create an account, approve a carrier, assign a dispatcher or load, or make a booking.</p>
             </div>
-            <a class="button button-primary" href="/load-board/?role=carrier#carrier-access">
-              Open carrier intake <ArrowRight size={18} aria-hidden="true" />
+            <a
+              class="button button-primary"
+              href={directCarrierIntake}
+              data-commercial-primary-cta
+              data-service-group="carrier_capacity_resource"
+            >
+              Open carrier review <ArrowRight size={18} aria-hidden="true" />
             </a>
           </div>
         </section>
