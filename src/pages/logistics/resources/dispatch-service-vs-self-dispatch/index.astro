@@ -8,6 +8,7 @@ const title = "Dispatch Service vs Self-Dispatch for Car Haulers | Hermes Logist
 const description =
   "Compare dispatch service and self-dispatch for car-hauling owner-operators: workload, control, load search, broker calls, route review, setup packets, paperwork, invoicing, fees, and decision criteria.";
 const canonicalUrl = new URL("/logistics/resources/dispatch-service-vs-self-dispatch/", Astro.site).toString();
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
 
 const comparisonRows = [
   {
@@ -77,7 +78,7 @@ const schema = [
     headline: "Dispatch Service vs Self-Dispatch for Car Haulers",
     description,
     datePublished: "2026-08-03",
-    dateModified: "2026-08-03",
+    dateModified: "2026-08-06",
     mainEntityOfPage: canonicalUrl,
     author: { "@type": "Organization", name: "Hermes Logistics" },
     publisher: {
@@ -140,7 +141,7 @@ const schema = [
                   paperwork, fee scope, and the carrier's ability to review every opportunity—not on a promise of guaranteed loads or revenue.
                 </p>
                 <div class="logistics-audience-actions">
-                  <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">
+                  <a class="button button-primary" href={intakeHref}>
                     Request dispatch-fit review <ArrowRight size={18} aria-hidden="true" />
                   </a>
                   <a class="button" href="/logistics/car-hauling-dispatch/">Review car-hauling dispatch</a>
@@ -228,11 +229,11 @@ const schema = [
 
         <section class="section resource-related" aria-labelledby="dispatch-comparison-related-title">
           <div class="shell">
-            <div class="section-heading"><p class="eyebrow">Continue the review</p><h2 id="dispatch-comparison-related-title">Related Hermes services, checklists, and training paths.</h2></div>
+            <div class="section-heading"><p class="eyebrow">Continue the review</p><h2 id="dispatch-comparison-related-title">Related Hermes services, checklists, and carrier next steps.</h2></div>
             <div class="resource-related-grid">
               <a href="/logistics/car-hauling-dispatch/"><Truck size={22} aria-hidden="true" /><h3>Car hauling dispatch</h3><p>Review service scope, process, carrier control, qualification, and structured intake.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
               <a href="/logistics/resources/new-authority-car-hauler-readiness-checklist/"><ClipboardList size={22} aria-hidden="true" /><h3>New-authority readiness</h3><p>Prepare authority, insurance, equipment, operating area, setup, and approval rules.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href="/paths/academy/"><Check size={22} aria-hidden="true" /><h3>Hermes Academy</h3><p>Explore practical learning and career paths connected to logistics operations.</p><strong>Explore Academy <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/carrier/"><Check size={22} aria-hidden="true" /><h3>Carrier plans and packet</h3><p>Review support options, agreement boundaries, onboarding steps, signature flow, and PDF retention.</p><strong>Review carrier proposal <ArrowRight size={16} aria-hidden="true" /></strong></a>
             </div>
           </div>
         </section>
@@ -244,7 +245,7 @@ const schema = [
               <h2>Compare authority, equipment, capacity, operating area, availability, and current workflow.</h2>
               <p>The carrier intake prepares a local preview and explicit handoff. It does not automatically assign a dispatcher, create an account, book a load, or guarantee acceptance, rates, lanes, utilization, or revenue.</p>
             </div>
-            <a class="button button-primary" href="/load-board/?role=carrier&equipment=car_hauler#carrier-access">Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-primary" href={intakeHref}>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>
