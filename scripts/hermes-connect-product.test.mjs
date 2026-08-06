@@ -68,9 +68,10 @@ for (const invalidId of ["", "other", "auto-repair<script>", "heavy equipment"])
   assert.equal(getCategory(invalidId), null, `Unknown category must not resolve: ${invalidId}`);
 }
 
-const [appSource, pageSource, salesPackage] = await Promise.all([
+const [appSource, pageSource, serviceOverviewSource, salesPackage] = await Promise.all([
   readFile(new URL("../public/demos/hermes-connect/app.mjs", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/index.html", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../docs/HERMES_CONNECT_SALES_TEST_PACKAGE.md", import.meta.url), "utf8"),
 ]);
 
@@ -84,7 +85,14 @@ assert.match(pageSource, /does not automatically create an account, booking, pay
 
 for (const category of categoryCatalog) {
   assert.ok(salesPackage.includes(category.name), `Sales test package must include ${category.name}`);
+  assert.ok(serviceOverviewSource.includes(category.name), `Public Hermes Connect overview must include ${category.name}`);
 }
+
+assert.match(
+  serviceOverviewSource,
+  /auto service and repair, truck and car-hauler repair, heavy equipment service, oversize and specialty equipment/i,
+  "The public FAQ must describe the automotive and equipment category expansion",
+);
 
 for (const requiredText of [
   "https://connect.hermeslogisticsus.com/",
