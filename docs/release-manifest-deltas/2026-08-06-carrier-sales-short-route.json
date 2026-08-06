@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-06-carrier-sales-short-route",
+  "generated_at": "2026-08-06T02:18:00-05:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/carrier/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/carrier/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/carrier/index.astro",
+      "status": "COMPLETE",
+      "blocker": "The sales journey may produce a signed review/onboarding packet, but final legal execution remains gated by the attorney-approved master agreement and production activation controls in Issue #280.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "not_applicable_to_private_sales_entry"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

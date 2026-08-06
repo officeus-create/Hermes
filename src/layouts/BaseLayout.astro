@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import "../styles/shared-resource.css";
+import CarrierContractJourney from "../components/CarrierContractJourney.astro";
 import CarrierQualificationEnhancer from "../components/CarrierQualificationEnhancer.astro";
 import ContactLinkEnhancer from "../components/ContactLinkEnhancer.astro";
 import MoneyPageActionBar from "../components/MoneyPageActionBar.astro";
@@ -138,6 +139,7 @@ const alternateOgLocales = alternates
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
     <MoneyPageActionBar />
+    <CarrierContractJourney />
     <ProductionContactMode />
     <ContactLinkEnhancer />
     <SeoIntakeEnhancer />
