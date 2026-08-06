@@ -1,0 +1,58 @@
+name: Rebase carrier signing funnel v3 onto current main
+
+on:
+  push:
+    branches:
+      - revenue/carrier-signing-funnel-v3-rebased
+    paths:
+      - ".github/workflows/carrier-v3-rebase-apply.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-reviewed-files:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Apply only the reviewed v3 files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin revenue/carrier-signing-funnel-v3:refs/remotes/origin/revenue/carrier-signing-funnel-v3
+
+          files=(
+            docs/CARRIER_AGREEMENT_EXECUTION_READINESS.md
+            docs/CARRIER_CONTRACT_ENGINE_ACTIVATION.md
+            docs/CARRIER_SALES_HANDOFF_PLAYBOOK.md
+            functions/api/carrier-contract.ts
+            public/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.html
+            public/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf
+            scripts/carrier-agreement-readiness.test.mjs
+            scripts/carrier-contract-engine.test.mjs
+            scripts/carrier-contract-journey.test.mjs
+            src/components/CarrierContractJourney.astro
+            src/pages/carrier/index.astro
+            src/pages/logistics/carrier-agreement/index.astro
+            src/pages/logistics/carrier-offer/index.astro
+            src/pages/logistics/carrier-onboarding/index.astro
+            tests/carrier-contract-engine.spec.ts
+          )
+
+          for file in "${files[@]}"; do
+            git checkout origin/revenue/carrier-signing-funnel-v3 -- "$file"
+          done
+
+          echo "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb  public/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf" | sha256sum --check --strict
+          rm -f .github/workflows/carrier-v3-rebase-apply.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Carrier signing funnel v3"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
