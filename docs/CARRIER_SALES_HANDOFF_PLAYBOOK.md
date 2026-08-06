@@ -36,6 +36,8 @@ Example:
 
 Never place carrier name, email, phone, MC/USDOT, signer identity, internal carrier ID, tracking ID, or private document reference in the URL.
 
+The canonical SMS link must remain usable without query parameters. Prepared links are optional context only and must never become identity, authentication, or record-retrieval tokens.
+
 ## Recommended sales sequence
 
 ### 1. Confirm fit privately
