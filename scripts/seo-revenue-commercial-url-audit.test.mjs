@@ -7,7 +7,7 @@ const dist = join(root, "dist");
 const auditPath = join(root, "data/marketing/seo-revenue-commercial-url-audit-2026-08.json");
 const audit = JSON.parse(await readFile(auditPath, "utf8"));
 
-assert.equal(audit.reviewed_at, "2026-08-02");
+assert.equal(audit.reviewed_at, "2026-08-06");
 assert.ok(Array.isArray(audit.allowed_statuses));
 assert.ok(Array.isArray(audit.records));
 assert.equal(audit.records.length, 14, "commercial audit must retain the 14 approved priority records");
@@ -52,7 +52,28 @@ for (const record of audit.records) {
 }
 
 const routeMap = new Map(audit.records.map((record) => [record.route, record]));
-assert.match(routeMap.get("/logistics/car-hauling-dispatch/").event_family, /carrier_intake_start.*carrier_intake_preview_ready.*carrier_handoff_ready/);
+const directTransportRoutes = [
+  "/logistics/appleton-wi-vehicle-transport/",
+  "/logistics/wisconsin-vehicle-transport/",
+  "/logistics/dealer-vehicle-transportation/",
+  "/logistics/auction-vehicle-pickup/",
+  "/logistics/wisconsin-dealer-vehicle-transport/",
+  "/logistics/wisconsin-auction-vehicle-pickup/",
+  "/logistics/green-bay-wi-vehicle-transport/",
+];
+
+for (const route of directTransportRoutes) {
+  const record = routeMap.get(route);
+  assert.equal(record.primary_destination, "/logistics/request-vehicle-transport/", `${route}: must use direct transport intake`);
+  assert.match(record.event_family, /vehicle_transport_intake_start.*vehicle_transport_preview_ready.*vehicle_transport_handoff_ready.*vehicle_transport_delivery_confirmed/);
+  assert.doesNotMatch(record.handoff, /Load Board/i, `${route}: audit must not describe the demo as the handoff`);
+}
+
+const dispatchRecord = routeMap.get("/logistics/car-hauling-dispatch/");
+assert.equal(dispatchRecord.primary_destination, "/logistics/start-car-hauling-dispatch/");
+assert.match(dispatchRecord.event_family, /carrier_intake_start.*carrier_intake_preview_ready.*carrier_handoff_ready.*carrier_delivery_confirmed/);
+assert.doesNotMatch(dispatchRecord.handoff, /Load Board/i);
+
 assert.match(routeMap.get("/services/website-development/").event_family, /website_project_intake_start.*website_project_preview_ready.*website_handoff_ready/);
 assert.match(routeMap.get("/services/seo/").event_family, /seo_intake_start.*seo_intake_preview_ready.*seo_handoff_ready/);
 assert.equal(routeMap.get("/services/website-redesign/").primary_destination, "/paths/technology/");
@@ -61,8 +82,10 @@ assert.equal(routeMap.get("/services/seo-for-logistics-companies/").primary_dest
 assert.equal(routeMap.get("/services/seo-for-independent-auto-dealers/").primary_destination, "/paths/marketing/");
 
 const serialized = JSON.stringify(audit);
+assert.doesNotMatch(serialized, /issue #123/i, "audit must not reference the retired catch-all tracking issue");
+assert.match(serialized, /issue #206/i, "audit must identify the authenticated measurement gate");
 assert.doesNotMatch(serialized, /@[a-z0-9.-]+\.[a-z]{2,}/i, "audit data must not contain email addresses");
 assert.doesNotMatch(serialized, /\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i, "audit data must not contain carrier identifiers");
 assert.doesNotMatch(serialized, /\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/, "audit data must not contain phone numbers");
 
-console.log(`SEO revenue commercial URL audit passed: ${audit.records.length} current-main priority routes.`);
+console.log(`SEO revenue commercial URL audit passed: ${audit.records.length} current-main priority routes use current direct-intake contracts.`);
