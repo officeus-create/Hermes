@@ -18,12 +18,13 @@ const approvedMasterSha = sha256(approvedMaster);
 const signatureBytes = Buffer.alloc(900, 17);
 const signatureData = `data:image/jpeg;base64,${signatureBytes.toString("base64")}`;
 const serviceToken = "test-contract-service-token-with-sufficient-length";
+const retiredRecipient = "freight_301@hermeslogisticsus.com";
 const sentMessages = [];
 const workerEnv = {
   LEAD_SERVICE_TOKEN: serviceToken,
   SALES_DESTINATION: "officeus@hermeslogisticsus.com",
   SALES_SENDER: "website@hermeslogisticsus.com",
-  CARRIER_CONTRACT_INTERNAL_RECIPIENTS: "officeus@hermeslogisticsus.com,dispatch-test@hermeslogisticsus.com",
+  CARRIER_CONTRACT_INTERNAL_RECIPIENTS: `officeus@hermeslogisticsus.com,${retiredRecipient},dispatch-test@hermeslogisticsus.com`,
   EMAIL: {
     async send(message) {
       sentMessages.push(message);
@@ -151,12 +152,13 @@ const serializedServicePayload = JSON.stringify(serviceCalls[0].payload);
 assert.doesNotMatch(serializedServicePayload, /"(?:password|passcode|pin|api[_-]?key|bank_account|routing_number)"\s*:/i);
 assert.doesNotMatch(serializedServicePayload, /must-never-be-accepted|192\.0\.2\.55/i);
 
-assert.equal(sentMessages.length, 3, "The worker must send separately to two internal recipients and the carrier.");
+assert.equal(sentMessages.length, 3, "The worker must send separately to two active internal recipients and the carrier.");
 assert.deepEqual(sentMessages.map((message) => message.to).sort(), [
   "carrier-test@example.com",
   "dispatch-test@hermeslogisticsus.com",
   "officeus@hermeslogisticsus.com",
 ]);
+assert.ok(!sentMessages.some((message) => message.to === retiredRecipient), "Retired internal recipients must never receive contract email.");
 for (const message of sentMessages) {
   assert.equal(message.from, "website@hermeslogisticsus.com");
   assert.equal(message.subject, "[HERMES CONTRACT] [CARRIER ONBOARDING]");
@@ -164,6 +166,12 @@ for (const message of sentMessages) {
   assert.equal(message.attachments.length, 2);
   assert.equal(message.attachments[0].contentType, "application/pdf");
 }
+
+const fallbackRecipients = (await import("../workers/lead-email/src/index.mjs")).parseInternalRecipients({
+  CARRIER_CONTRACT_INTERNAL_RECIPIENTS: retiredRecipient,
+  SALES_DESTINATION: "officeus@hermeslogisticsus.com",
+});
+assert.deepEqual(fallbackRecipients, ["officeus@hermeslogisticsus.com"], "A retired-only recipient list must fall back to the active sales destination.");
 
 const duplicate = await onRequest({ request: contractRequest(), env });
 assert.equal(duplicate.status, 200);
@@ -209,4 +217,4 @@ for (const key of limits.values.keys()) {
   assert.doesNotMatch(key, /192\.0\.2\.55|contract_test_12345678|carrier-test@example\.com/);
 }
 
-console.log("Carrier contract PDF generation, controlled multi-recipient delivery, idempotency, and privacy tests passed.");
+console.log("Carrier contract PDF generation, retired-recipient filtering, controlled delivery, idempotency, and privacy tests passed.");
