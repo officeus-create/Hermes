@@ -89,26 +89,26 @@ async function completeCarrierPacket(page: Page) {
     });
   });
 
-  const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: /Create and send signed packet/i }).click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("Hermes_TEST_Mobile_Carrier_LLC_Signed_Appendix_A.pdf");
+  await expect(page.locator("[data-result-title]")).toContainText("copies were sent");
+  await expect(page.locator("[data-result-copy]")).toContainText("Document mode: review");
+
+  const manualDownload = page.locator<HTMLAnchorElement>("[data-manual-download]");
+  await expect(manualDownload).toBeVisible();
+  await expect(manualDownload).toHaveAttribute("download", "Hermes_TEST_Mobile_Carrier_LLC_Signed_Appendix_A.pdf");
+  await expect(manualDownload).toHaveAttribute("href", /^blob:/);
 
   if (!submittedPayload) throw new Error("The carrier contract endpoint was not called.");
   const payload: SubmittedContractPayload = submittedPayload;
   expect(payload.selected_plan).toBe("pro");
   expect(payload.legal_company_name).toBe("TEST Mobile Carrier LLC");
   expect(payload.signer_email).toBe("carrier-mobile@example.com");
-  expect(payload.load_boards).toEqual(["Central Dispatch", "DAT"]);
+  expect([...payload.load_boards].sort()).toEqual(["Central Dispatch", "DAT"].sort());
   expect(payload.access_handoff_method).toBe("Separate secure handoff to assigned load planner");
   expect(payload.sales_contact).toBe("TEST Assistant 107");
   expect(payload.signature_jpeg).toMatch(/^data:image\/jpeg;base64,/);
   expect(payload).not.toHaveProperty("password");
   expect(payload).not.toHaveProperty("internal_recipients");
-
-  await expect(page.locator("[data-result-title]")).toContainText("copies were sent");
-  await expect(page.locator("[data-result-copy]")).toContainText("Document mode: review");
-  await expect(page.locator("[data-manual-download]")).toBeVisible();
 }
 
 test("carrier can complete the Pro onboarding and finger-signature workflow", async ({ page }) => {
