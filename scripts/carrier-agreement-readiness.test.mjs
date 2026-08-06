@@ -63,7 +63,8 @@ for (const required of [
   "company website",
   "three-step",
   "equipment, lanes, load boards, and access details are collected after",
-  "allowed percentage",
+  "the selected percentage is present in",
+  "opaque, signed, expiring",
 ]) assert.ok(activationLower.includes(required), `Activation runbook is missing v3 requirement: ${required}`);
 
 for (const required of [
