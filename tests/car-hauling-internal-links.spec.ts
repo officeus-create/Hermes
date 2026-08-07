@@ -19,9 +19,9 @@ test("capacity checklist connects service research to dispatch support and carri
   await page.goto("/logistics/resources/car-hauler-capacity-checklist/");
   const heroActions = page.locator(".logistics-audience-actions");
   await expect(heroActions.getByRole("link", { name: "Review dispatch support" })).toHaveAttribute("href", commercialHref);
-  await expect(heroActions.getByRole("link", { name: /Share available capacity/ })).toHaveAttribute(
+  await expect(heroActions.getByRole("link", { name: /Prepare carrier capacity review/ })).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier#carrier-access",
+    "/logistics/start-car-hauling-dispatch/",
   );
 });
 

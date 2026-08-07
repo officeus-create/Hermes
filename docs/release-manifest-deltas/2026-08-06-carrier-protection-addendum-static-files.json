@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-06-carrier-protection-addendum-static-files",
+  "generated_at": "2026-08-06T20:15:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/contracts/Hermes_Carrier_Protection_and_Compensation_Addendum_v3_ATTORNEY_REVIEW.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/contracts/Hermes_Carrier_Protection_and_Compensation_Addendum_v3_ATTORNEY_REVIEW.html",
+      "sitemap_owner": null,
+      "source_file": "public/contracts/Hermes_Carrier_Protection_and_Compensation_Addendum_v3_ATTORNEY_REVIEW.html",
+      "status": "COMPLETE",
+      "blocker": "Owner-approved Wisconsin review draft of the carrier protection and compensation addendum. Remains an ATTORNEY REVIEW / NOT FOR EXECUTION artifact until an approved combined execution packet, version identifier, and SHA-256 replace it.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "not_applicable_to_review_only_static_document"
+      }
+    },
+    {
+      "route": "/contracts/Hermes_Protected_Account_Notice_v3_ATTORNEY_REVIEW.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/contracts/Hermes_Protected_Account_Notice_v3_ATTORNEY_REVIEW.html",
+      "sitemap_owner": null,
+      "source_file": "public/contracts/Hermes_Protected_Account_Notice_v3_ATTORNEY_REVIEW.html",
+      "status": "COMPLETE",
+      "blocker": "Owner-approved Wisconsin review draft of the Protected Account notice. Remains an ATTORNEY REVIEW / NOT FOR EXECUTION artifact until an approved combined execution packet, version identifier, and SHA-256 replace it.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "not_applicable_to_review_only_static_document"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

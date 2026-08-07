@@ -217,9 +217,9 @@ test("car hauler checklist keeps load claims safe and opens the existing carrier
   );
   await expect(page.getByText("No guaranteed load", { exact: true })).toBeVisible();
   await expect(page.getByText("No guaranteed rate or revenue", { exact: true })).toBeVisible();
-  await page.getByRole("link", { name: /Open carrier intake/ }).click();
-  await expect(page).toHaveURL(/\/load-board\/\?role=carrier#carrier-access$/);
-  await expect(page.locator('select[name="carrier_role"]')).toHaveValue("");
+  await page.getByRole("link", { name: /Open carrier review/ }).click();
+  await expect(page).toHaveURL(/\/logistics\/start-car-hauling-dispatch\/$/);
+  await expect(page.getByRole("heading", { name: "Start Your Car Hauling Dispatch Review" })).toBeVisible();
 });
 
 test("Academy presents AI automation as a safe practical learning lab", async ({ page }) => {
