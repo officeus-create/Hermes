@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { publicEntityRegistry } from "../src/data/public-entity-registry";
 
 const progressoproProfile = "https://www.instagram.com/progressopro/";
 const expectedHermesProfiles = [
@@ -25,6 +26,13 @@ const readJsonLd = async (page: import("@playwright/test").Page) =>
       const parsed = JSON.parse(text);
       return Array.isArray(parsed) ? parsed : [parsed];
     });
+
+test("public entity registry excludes unrelated and personal-profile Hermes signals", () => {
+  const serialized = JSON.stringify(publicEntityRegistry).toLowerCase();
+  for (const signal of forbiddenEntitySignals) {
+    expect(serialized).not.toContain(signal.toLowerCase());
+  }
+});
 
 test("homepage Organization uses exact Hermes same-entity profiles only", async ({ page }) => {
   const response = await page.goto("/");
