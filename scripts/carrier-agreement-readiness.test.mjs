@@ -123,7 +123,8 @@ for (const required of [
 ]) assert.ok(ownerRevisions.includes(required), `Owner revision record is missing: ${required}`);
 
 assert.doesNotMatch(protectionAddendum, /automatic\s+(?:\$|USD)|fixed penalty of|confession of judgment|personal guaranty|blanket lien|UCC security interest/i);
-assert.doesNotMatch(protectionAddendum, /will not knowingly solicit, induce, hire|automatic hiring fee|50% contractual fee/i);
+assert.doesNotMatch(protectionAddendum, /will not knowingly solicit, induce, hire|50% contractual fee/i);
+assert.match(protectionAddendum, /no automatic hiring fee/i);
 assert.match(protectionAddendum, /actual proven damages/i);
 assert.match(protectionAddendum, /liquidated damages equal to the unpaid selected fee/i);
 assert.match(protectionAddendum, /reasonable documented pre-suit collection costs/i);
