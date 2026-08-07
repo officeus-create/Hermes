@@ -55,16 +55,19 @@ The matching locally generated and visually reviewed artifacts are:
 
 The agreement remains three pages and the Protected Account Notice remains one page. Rendered pages were visually inspected for clipping, overlapping text, and broken tables.
 
+## Merge status update (2026-08-06)
+
+This decision record was written while PR #303 was still open. PR #303 was merged into `main` on 2026-08-06 (merge commit `65a20b7`). The blockers below described the state at decision time; they remain accurate as **production execution** blockers, not as merge blockers, since the merge has already occurred.
+
 ## Production blockers that remain intentional
 
-1. PR #303 remains Draft.
-2. `CARRIER_CONTRACT_MODE` remains review/default-off.
-3. The existing repository master PDF remains the prior immutable attorney-review snapshot and must not be represented as matching the new Addendum.
-4. Before live execution, the Master Agreement, Addendum, Protected Account Notice, and Appendix A must be assembled into one immutable carrier-specific packet or an equivalent provider envelope.
-5. The combined execution PDF must receive a new non-review version identifier and SHA-256.
-6. Production `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` must allow the approved standard percentages and continue to require separate approval for custom terms.
-7. One synthetic mobile signing and delivery test must pass against the exact combined packet.
-8. GitHub Actions and Workers build infrastructure failures remain separate technical blockers and must be resolved before merge.
+1. `CARRIER_CONTRACT_MODE` remains review/default-off.
+2. The existing repository master PDF remains the prior immutable attorney-review snapshot and must not be represented as matching the new Addendum.
+3. Before live execution, the Master Agreement, Addendum, Protected Account Notice, and Appendix A must be assembled into one immutable carrier-specific packet or an equivalent provider envelope.
+4. The combined execution PDF must receive a new non-review version identifier and SHA-256.
+5. Production `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` must allow the approved standard percentages and continue to require separate approval for custom terms.
+6. One synthetic mobile signing and delivery test must pass against the exact combined packet.
+7. GitHub Actions and Workers build infrastructure issues (see `docs/CLOUDFLARE_DEPLOYMENT_OWNERSHIP.md` for the confirmed duplicate Workers Builds integration) remain separate technical blockers and must be resolved before production execution activation.
 
 ## Activation rule
 
