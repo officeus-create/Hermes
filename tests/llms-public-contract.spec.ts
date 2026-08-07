@@ -38,7 +38,8 @@ test("llms.txt describes current public owners and transaction boundaries", asyn
   for (const url of privateWorkspaceUrls) expect(body).not.toContain(url);
 
   expect(body).not.toContain("Contact submission is currently preview-only");
-  expect(body).not.toMatch(/guarantees? (?:loads|rates|lanes|mileage|traffic|rankings|revenue|profit|employment)/i);
+  expect(body).toMatch(/No public page guarantees loads, rates, lanes/i);
+  expect(body).not.toMatch(/(?<!No public page )guarantees? (?:loads|rates|lanes|mileage|traffic|rankings|revenue|profit|employment)/i);
   expect(body).not.toMatch(/@[a-z0-9.-]+\.[a-z]{2,}/i);
   expect(body).not.toMatch(/\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i);
   expect(body).not.toMatch(/\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/);

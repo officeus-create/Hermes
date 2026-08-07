@@ -63,7 +63,7 @@ test("car-hauler capacity guide retains indexable canonical ownership", async ({
     "index,follow,max-image-preview:large",
   );
 
-  const sitemapResponse = await page.request.get("/sitemap-services.xml");
+  const sitemapResponse = await page.request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBeTruthy();
   expect(await sitemapResponse.text()).toContain(
     "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
