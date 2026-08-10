@@ -39,6 +39,31 @@ const measurementId = "G-RY26321PVW";
       document.documentElement.dataset.analyticsConsent = value;
     };
 
+    const clearGaCookies = () => {
+      const cookieNames = document.cookie
+        .split(";")
+        .map((item) => item.trim().split("=")[0])
+        .filter((name) => name === "_ga" || name.startsWith("_ga_"));
+      const domains = [undefined, location.hostname, `.${location.hostname}`];
+      for (const name of cookieNames) {
+        for (const domain of domains) {
+          const domainPart = domain ? `; domain=${domain}` : "";
+          document.cookie = `${name}=; Max-Age=0; path=/${domainPart}; SameSite=Lax`;
+        }
+      }
+    };
+
+    const denyGoogleConsent = () => {
+      if (typeof window.gtag === "function") {
+        window.gtag('consent', 'update', {
+          analytics_storage: 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied'
+        });
+      }
+    };
+
     const loadAnalytics = () => {
       if (document.querySelector('script[data-hermes-ga4]')) return;
 
@@ -86,8 +111,12 @@ const measurementId = "G-RY26321PVW";
     });
 
     decline?.addEventListener("click", () => {
+      const wasGranted = readChoice() === "granted";
+      denyGoogleConsent();
+      clearGaCookies();
       saveChoice("denied");
       if (banner) banner.hidden = true;
+      if (wasGranted) window.location.reload();
     });
 
     settings?.addEventListener("click", () => {
