@@ -30,7 +30,7 @@ for (const relativePath of departmentEmailOnlyPages) {
 
 const homepage = await readBuiltPage("dist/index.html");
 assert.ok(
-  homepage.includes("<title>Hermes | U.S. Logistics, Marketing, Academy &amp; AI Systems</title>"),
+  homepage.includes("<title>Hermes — U.S. Logistics, Marketing, Academy &amp; AI Systems</title>"),
   "Homepage title must identify U.S. Logistics and AI Systems",
 );
 assert.ok(homepage.includes("officeus@hermeslogisticsus.com"), "Existing office email must remain available");
