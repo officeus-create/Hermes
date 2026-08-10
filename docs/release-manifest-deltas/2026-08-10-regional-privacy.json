@@ -7,7 +7,7 @@
   "additions": [
     {
       "route": "/regional-privacy/",
-      "source_state": "current_branch",
+      "source_state": "current_main",
       "indexability": "indexable",
       "robots": "index,follow,max-image-preview:large",
       "canonical": "https://hermeslogisticsus.com/regional-privacy/",
