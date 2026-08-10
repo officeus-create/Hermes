@@ -12,6 +12,7 @@ import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
 import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
 import SiteIntro from "../components/SiteIntro.astro";
+import TrackingConsent from "../components/TrackingConsent.astro";
 import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
@@ -101,8 +102,6 @@ const safeSchema = schema
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
-<link rel="preconnect" href="https://www.googletagmanager.com" />
-<link rel="preconnect" href="https://www.google-analytics.com" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
@@ -124,14 +123,6 @@ const safeSchema = schema
     <meta name="twitter:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <!-- Google Analytics 4: deployed site-wide -->
-    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RY26321PVW"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-RY26321PVW');
-    </script>
     <script is:inline>
       try {
         const canAnimate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -188,6 +179,7 @@ const safeSchema = schema
     <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
+    <TrackingConsent />
     <MoneyPageActionBar />
     <CarrierContractJourney />
     <ProductionContactMode />
