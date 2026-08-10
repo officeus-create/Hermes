@@ -1,0 +1,58 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const privacyEmail = "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Privacy%20Request";
+const sections = [
+  {
+    title: "Request access, correction, or deletion",
+    body: [
+      "You may ask Hermes to review whether the applicable Hermes business holds personal information about you and, where appropriate or legally required, request access, correction, or deletion.",
+      "Email the public privacy route with the subject “Hermes Privacy Request.” Include your name, the email address or contact route you used with Hermes, the Hermes service or website page involved, and the request you want us to review. Do not send identity documents, passwords, payment credentials, or other sensitive records in the first message.",
+    ],
+  },
+  {
+    title: "Opt-out requests",
+    body: [
+      "If an applicable privacy law gives you a right to opt out of sale, sharing, targeted advertising, or similar processing, you may use the same privacy request route. The current website is not designed to sell personal information or run advertising pixels for cross-context behavioral advertising. If that data practice changes, the required dedicated controls must be implemented before launch.",
+    ],
+  },
+  {
+    title: "Verification and authorized agents",
+    body: [
+      "Hermes may request reasonable information to verify that a request relates to the person whose information is at issue and to prevent unauthorized access, correction, or deletion. The verification method should be proportionate to the sensitivity of the information and the request.",
+      "Where applicable law permits an authorized agent to submit a request, Hermes may ask for evidence of the agent’s authority and may separately verify the consumer when permitted by law.",
+    ],
+  },
+  {
+    title: "No discrimination for exercising applicable rights",
+    body: [
+      "Where applicable law prohibits discrimination or retaliation for exercising privacy rights, Hermes will not deny a service, charge a different price, or provide a different level of service merely because a person exercised that protected right, except where a legally permitted difference is directly related to the value or necessity of the data involved.",
+    ],
+  },
+  {
+    title: "What happens next",
+    body: [
+      "The receiving team will identify the relevant Hermes business and system, determine which law or contractual obligation applies, verify the request if necessary, and respond through the appropriate contact route. Timing and available rights depend on the governing law and the nature of the request.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Privacy Choices & Requests | Hermes"
+  description="Request access, correction, deletion, or an applicable privacy opt-out for personal information handled by a Hermes website or service workflow."
+  eyebrow="Privacy choices"
+  h1="Privacy Choices & Requests"
+  intro="A single public route for privacy access, correction, deletion, and applicable opt-out requests."
+  reviewedAt="2026-08-10"
+  {sections}
+/>
+
+<div class="privacy-choice-action">
+  <a class="button button-primary" href={privacyEmail}>Start a privacy request</a>
+</div>
+
+<style>
+  .privacy-choice-action { position: fixed; right: 1rem; bottom: 1rem; z-index: 20; }
+  @media (max-width: 700px) { .privacy-choice-action { right: .75rem; bottom: .75rem; left: .75rem; } .privacy-choice-action a { width: 100%; justify-content: center; } }
+</style>
