@@ -24,7 +24,7 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
   expect(analyticsRequests).toEqual([]);
 });
 
-test("analytics loads only after explicit allow and preferences can be reopened", async ({ page }) => {
+test("analytics loads only after explicit allow and can be withdrawn", async ({ page }) => {
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
     if (isGoogleAnalyticsRequest(request.url())) analyticsRequests.push(request.url());
@@ -40,4 +40,12 @@ test("analytics loads only after explicit allow and preferences can be reopened"
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
+
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+    page.getByRole("button", { name: "Continue without analytics" }).click(),
+  ]);
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
+  await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
 });
