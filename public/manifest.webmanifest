@@ -1,0 +1,18 @@
+{
+  "name": "Hermes",
+  "short_name": "Hermes",
+  "description": "U.S. logistics, marketing, business education, and AI & web systems.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a164f",
+  "theme_color": "#0a164f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
