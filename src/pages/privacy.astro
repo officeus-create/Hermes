@@ -17,10 +17,11 @@ const sections = [
     ],
   },
   {
-    title: "Website analytics and tracking",
+    title: "Website analytics, cookies, and tracking choices",
     body: [
-      "Google Analytics 4 is the currently approved analytics integration. It is used to understand page visits and limited interactions. Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages.",
-      "The current site is not designed to use advertising pixels for cross-context behavioral advertising. If advertising, remarketing, additional cookies, or new tracking providers are introduced, this notice and the applicable choice controls must be reviewed before deployment.",
+      "Google Analytics 4 is the currently approved analytics integration. Hermes uses a consent-gated setup: the Google Analytics tag is not loaded until a visitor chooses “Allow analytics.” If analytics is allowed, GA4 may use first-party analytics cookies to distinguish users and sessions. Hermes stores the visitor’s analytics choice in first-party browser storage so the site can remember that preference.",
+      "Advertising storage, advertising user data, and ad personalization remain disabled in the current implementation. The site does not currently deploy Meta Pixel or a parallel Google Tag Manager container. Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages. Visitors can reopen Privacy settings and change the analytics choice.",
+      "If advertising, remarketing, additional cookies, a consent-management platform, or new tracking providers are introduced, this notice, the applicable regional requirements, and the technical consent controls must be reviewed before deployment.",
     ],
   },
   {
@@ -78,7 +79,7 @@ const sections = [
 
 <TrustPage
   title="Privacy Policy & Notice at Collection | Hermes"
-  description="Hermes privacy policy and notice at collection covering website forms, analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
+  description="Hermes privacy policy and notice at collection covering website forms, consent-gated analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
   eyebrow="Privacy notice"
   h1="Privacy Policy & Notice at Collection"
   intro="What the Hermes website collects, why it is used, how long it should be kept, and how to make a privacy request."
