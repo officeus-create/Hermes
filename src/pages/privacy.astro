@@ -1,38 +1,87 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SiteFooter from "../components/SiteFooter.astro";
-import SiteHeader from "../components/SiteHeader.astro";
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "Scope and current website boundary",
+    body: [
+      "This Privacy Notice explains how hermeslogisticsus.com handles personal information through website visits, public contact routes, qualification tools, preview interfaces, and limited analytics. It does not replace a service-specific privacy notice or contract where a separate workflow, product, or legal entity provides additional disclosures.",
+      "Some website tools remain preview or dry-run interfaces. A preview does not send or store submitted information unless the page clearly identifies a live delivery workflow. Direct email and phone actions are handled through the provider selected by the user and the published Hermes contact route.",
+    ],
+  },
+  {
+    title: "Notice at Collection: categories and purposes",
+    body: [
+      "At or before a website form asks for personal information, Hermes provides a short notice linking here. Depending on the selected workflow, the site may request identifiers and business contact information such as name, email, phone number, company, role, MC/USDOT number, equipment, operating area, project needs, budget range, or a message supplied by the user.",
+      "The purposes are to respond to a request, route it to the appropriate business direction, qualify a logistics, marketing, academy, or technology inquiry, prepare a user-requested preview or summary, prevent abuse, maintain security, and improve the website. Do not submit passwords, payment credentials, Social Security numbers, identity documents, confidential records, or other sensitive information unless a future secure workflow explicitly requires and explains it.",
+    ],
+  },
+  {
+    title: "Website analytics and tracking",
+    body: [
+      "Google Analytics 4 is the currently approved analytics integration. It is used to understand page visits and limited interactions. Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages.",
+      "The current site is not designed to use advertising pixels for cross-context behavioral advertising. If advertising, remarketing, additional cookies, or new tracking providers are introduced, this notice and the applicable choice controls must be reviewed before deployment.",
+    ],
+  },
+  {
+    title: "How information is used and disclosed",
+    bullets: [
+      "To respond to or route a request the user chooses to send.",
+      "To perform qualification, security, fraud-prevention, troubleshooting, and website operations.",
+      "To work with service providers that support hosting, email, analytics, security, or other approved operational functions, subject to the relevant service configuration and agreements.",
+      "To comply with applicable law, legal process, or protect rights, safety, systems, and users where legally permitted.",
+      "Hermes does not publish form submissions as public content unless a separate workflow obtains the necessary authorization.",
+    ],
+  },
+  {
+    title: "Retention and data minimization",
+    body: [
+      "Hermes aims to collect only information reasonably needed for the stated purpose and to retain it only for an operational, contractual, security, accounting, dispute, or legal need. Preview-only browser data should not become a server record merely because it was typed into a preview.",
+      "Retention periods can differ by workflow. Before a new live form, CRM integration, payment flow, account, or document upload is activated, the owner of that workflow must define the data categories, system of record, access roles, retention or deletion rule, and security controls. Information that no longer has a legitimate business or legal purpose should be securely deleted or de-identified where feasible.",
+    ],
+  },
+  {
+    title: "Security",
+    body: [
+      "Hermes uses a data-minimization and least-access approach: do not collect unnecessary sensitive information, limit access to people and systems that need it, use controlled delivery routes, and avoid sending private form fields into analytics or public URLs. No internet transmission or storage system can be guaranteed to be completely secure.",
+    ],
+  },
+  {
+    title: "Privacy rights and choices",
+    body: [
+      "Depending on where you live and whether a particular privacy law applies to the relevant Hermes business, you may have rights to request access to personal information, correction, deletion, information about certain disclosures, or an opt-out from sale, sharing, targeted advertising, or similar processing. Hermes will not describe a right as universally available when the governing law does not apply, but you may still contact us with a privacy request.",
+      "Use the Privacy Choices page to request access, correction, deletion, or an applicable opt-out. We may need reasonable information to verify the request and protect data from unauthorized access or deletion. Authorized-agent requests may require verification of authority where permitted by law.",
+    ],
+  },
+  {
+    title: "California notice",
+    body: [
+      "If the California Consumer Privacy Act, as amended, applies to a particular Hermes business and interaction, this section is intended to support the required notice at or before collection. The categories collected through the website can include identifiers, customer or business contact information, internet or network activity, and professional or commercial information supplied in an inquiry. The business purposes are described above.",
+      "The site is not intended to collect sensitive personal information through ordinary contact forms. If a California opt-out right regarding sale or sharing becomes applicable to a deployed data practice, Hermes must provide the legally required method and update the Privacy Choices page before that practice is activated.",
+    ],
+  },
+  {
+    title: "International visitors",
+    body: [
+      "The website can be visited internationally, but a translated page or international email route does not by itself mean every Hermes service is offered in every country. If a Hermes business intentionally targets a market where additional privacy requirements apply, including the European Economic Area or United Kingdom, the applicable workflow must be reviewed for lawful basis, cookies or tracking consent, transfer mechanisms, data-subject rights, and any additional required notices before launch.",
+    ],
+  },
+  {
+    title: "Contact and updates",
+    body: [
+      "Privacy questions and requests may be sent through the Privacy Choices page or to officeus@hermeslogisticsus.com. The applicable contracting or service entity will be identified by the relevant service page, proposal, order, or agreement where required.",
+      "This notice will be reviewed when the site adds a material new data flow, advertising technology, live account system, payment flow, document upload, new analytics provider, or targeted international market.",
+    ],
+  },
+];
 ---
 
-<BaseLayout title="Privacy notice | Hermes" description="Learn how the Hermes website handles preview forms, direct contact links, limited analytics events, personal information, and future live form delivery.">
-  <SiteHeader />
-  <main class="legal-page" id="main-content">
-    <div class="shell legal-content">
-      <p class="eyebrow">Privacy notice</p>
-      <h1>How website contact and analytics currently work.</h1>
-      <p class="legal-lead">The general website contact form currently runs in preview mode. Information entered into that preview is not sent to Hermes and is not stored by the website.</p>
-      <section>
-        <h2>Direct phone and email contact</h2>
-        <p>When you choose a public phone or email link, your device opens the relevant calling or email application. Information you send through those applications is handled by the selected provider and received through the published Hermes contact route.</p>
-      </section>
-      <section>
-        <h2>When live form delivery is connected</h2>
-        <p>Before a preview form is changed to live delivery, the page and this notice must identify the receiving company, contact destination, purpose, required consent, retention approach, security controls, and available privacy contact.</p>
-      </section>
-      <section>
-        <h2>Information requested</h2>
-        <p>Preview and intake interfaces may ask for a name, business contact details, area of interest, role, equipment, or a short description of the request. Do not enter passwords, payment credentials, identity documents, VINs, exact private addresses, or confidential records unless a secure live workflow explicitly requests them.</p>
-      </section>
-      <section>
-        <h2>Website analytics</h2>
-        <p>Google Analytics 4 is used to understand page visits and limited website interactions. Approved events may include the page path and whether a visitor selected a phone or email contact method. Names, email addresses, telephone numbers, VINs, authority numbers, exact routes, exact addresses, document contents, and free-form messages must not be sent in analytics events or URL parameters.</p>
-      </section>
-      <section>
-        <h2>Preview boundaries</h2>
-        <p>A preview, prototype, or dry-run interface does not create an account, booking, payment, calendar event, CRM record, load, carrier approval, or external message unless the page explicitly confirms that a live delivery workflow is active.</p>
-      </section>
-      <a class="button button-primary" href="/#contact">Return to the contact options</a>
-    </div>
-  </main>
-  <SiteFooter />
-</BaseLayout>
+<TrustPage
+  title="Privacy Policy & Notice at Collection | Hermes"
+  description="Hermes privacy policy and notice at collection covering website forms, analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
+  eyebrow="Privacy & data practices"
+  h1="Privacy Policy & Notice at Collection"
+  intro="What the Hermes website collects, why it is used, how long it should be kept, and how to make a privacy request."
+  reviewedAt="2026-08-10"
+  {sections}
+/>
