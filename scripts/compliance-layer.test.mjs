@@ -23,10 +23,32 @@ assert.match(company, /Hermes Logistics LLC/);
 assert.match(company, /Other Hermes directions/);
 assert.match(company, /Before payment or signing/);
 
+const payments = await read("dist/payments-cancellations/index.html");
+assert.match(payments, /Payments, Refunds &amp; Cancellation/);
+assert.match(payments, /Current website payment status/);
+assert.match(payments, /Recurring billing/);
+assert.match(payments, /Request payment terms/);
+
+const security = await read("dist/data-security/index.html");
+assert.match(security, /Data Security/);
+assert.match(security, /Data minimization/);
+assert.match(security, /Analytics boundary/);
+assert.match(security, /Request data-security information/);
+
+const licensing = await read("dist/asset-licensing/index.html");
+assert.match(licensing, /Asset Licensing &amp; Intellectual Property/);
+assert.match(licensing, /Manrope/);
+assert.match(licensing, /Source Sans 3/);
+assert.match(licensing, /IBM Plex Mono/);
+assert.match(licensing, /Request licensing information/);
+
 const legal = await read("dist/legal-compliance/index.html");
 assert.match(legal, /Legal &amp; Compliance/);
 assert.match(legal, /Published now/);
 assert.match(legal, /Available on request/);
+assert.match(legal, /href="\/payments-cancellations\/"/);
+assert.match(legal, /href="\/data-security\/"/);
+assert.match(legal, /href="\/asset-licensing\/"/);
 assert.match(legal, /Request payment terms/);
 assert.match(legal, /Request data information/);
 assert.match(legal, /Request licensing information/);
@@ -40,4 +62,4 @@ assert.match(homepage, /href="\/company-information\/"/);
 assert.match(homepage, /href="\/privacy\/"/);
 assert.match(homepage, /href="\/terms\/"/);
 
-console.log("Compliance layer checks passed: public legal hub, privacy disclosures, choices, company identity, request routes, and footer discovery are present.");
+console.log("Compliance layer checks passed: legal hub, privacy, payment, security, licensing, request routes, and footer discovery are present.");
