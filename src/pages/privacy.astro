@@ -5,7 +5,7 @@ const sections = [
   {
     title: "Scope and current website boundary",
     body: [
-      "This Privacy Notice explains how hermeslogisticsus.com handles personal information through website visits, public contact routes, qualification tools, preview interfaces, and limited analytics. It does not replace a service-specific privacy notice or contract where a separate workflow, product, or legal entity provides additional disclosures.",
+      "This Privacy Notice explains how hermeslogisticsus.com handles personal information through website visits, public contact routes, qualification tools, preview interfaces, necessary site preferences, and optional analytics. It does not replace a service-specific privacy notice or contract where a separate workflow, product, or legal entity provides additional disclosures.",
       "Some website tools remain in preview mode or operate as dry-run interfaces. A preview does not send or store submitted information unless the page clearly identifies a live delivery workflow. Direct email and phone actions are handled through the provider selected by the user and the published Hermes contact route.",
     ],
   },
@@ -17,10 +17,11 @@ const sections = [
     ],
   },
   {
-    title: "Website analytics and tracking",
+    title: "Necessary preferences, analytics, and tracking",
     body: [
-      "Google Analytics 4 is the currently approved analytics integration. It is used to understand page visits and limited interactions. Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages.",
-      "The current site is not designed to use advertising pixels for cross-context behavioral advertising. If advertising, remarketing, additional cookies, or new tracking providers are introduced, this notice and the applicable choice controls must be reviewed before deployment.",
+      "The website uses limited browser storage for necessary or user-requested preferences, including interface state and the privacy choice itself. The privacy preference stores only a version, whether optional analytics was accepted, and the time the choice was updated.",
+      "Google Analytics 4 is the currently approved optional analytics integration. On a fresh visit, the Google Analytics script is not requested until the visitor chooses “Accept analytics.” Choosing “Necessary only” keeps Google Analytics off. A Privacy settings control remains available so the visitor can revisit the choice. Analytics is used to understand page visits and limited interactions, and analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages.",
+      "The current site is not designed to use Meta Pixel, Google Ads remarketing, or other advertising trackers for cross-context behavioral advertising. If advertising, remarketing, additional cookies, or new tracking providers are introduced, this notice and the applicable choice controls must be reviewed before deployment.",
     ],
   },
   {
@@ -63,7 +64,7 @@ const sections = [
   {
     title: "International visitors",
     body: [
-      "The website can be visited internationally, but a translated page or international email route does not by itself mean every Hermes service is offered in every country. If a Hermes business intentionally targets a market where additional privacy requirements apply, including the European Economic Area or United Kingdom, the applicable workflow must be reviewed for lawful basis, cookies or tracking consent, transfer mechanisms, data-subject rights, and any additional required notices before launch.",
+      "The website can be visited internationally, but a translated page or international email route does not by itself mean every Hermes service is offered in every country. The current analytics design keeps optional GA4 off until the visitor accepts analytics. If a Hermes business intentionally targets a market where additional privacy requirements apply, including the European Economic Area or United Kingdom, the applicable workflow must still be reviewed for lawful basis, cookies or tracking consent, transfer mechanisms, data-subject rights, and any additional required notices before launch.",
     ],
   },
   {
@@ -78,10 +79,10 @@ const sections = [
 
 <TrustPage
   title="Privacy Policy & Notice at Collection | Hermes"
-  description="Hermes privacy policy and notice at collection covering website forms, analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
+  description="Hermes privacy policy and notice at collection covering website forms, necessary preferences, optional analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
   eyebrow="Privacy notice"
   h1="Privacy Policy & Notice at Collection"
-  intro="What the Hermes website collects, why it is used, how long it should be kept, and how to make a privacy request."
+  intro="What the Hermes website collects, why it is used, how optional analytics choices work, how long data should be kept, and how to make a privacy request."
   reviewedAt="2026-08-10"
   {sections}
 />
