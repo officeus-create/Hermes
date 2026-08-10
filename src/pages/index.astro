@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import HeroEditorial from "../components/HeroEditorial.astro";
+import HomeAnswerEngineAuthority from "../components/HomeAnswerEngineAuthority.astro";
 import HomeLogisticsDiscovery from "../components/HomeLogisticsDiscovery.astro";
 import HomeRoleRouter from "../components/HomeRoleRouter.astro";
 import HomeTechnologyPreview from "../components/HomeTechnologyPreview.astro";
@@ -19,6 +20,8 @@ import { approvedHermesSameAs } from "../data/public-entity-registry";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
+const webpageId = "https://hermeslogisticsus.com/#webpage";
+const breadcrumbId = "https://hermeslogisticsus.com/#breadcrumb";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -39,18 +42,12 @@ const organizationSchema = {
   contactPoint: {
     "@type": "ContactPoint",
     telephone: "+1-262-302-3626",
-    email: "freight_301@hermeslogisticsus.com",
+    email: "officeus@hermeslogisticsus.com",
     contactType: "Logistics Sales",
     areaServed: "US",
     availableLanguage: ["English", "Russian", "Ukrainian"],
   },
-  areaServed: [
-    { "@type": "Country", name: "United States" },
-    { "@type": "Country", name: "Italy" },
-    { "@type": "Country", name: "Germany" },
-    { "@type": "Country", name: "France" },
-    { "@type": "Country", name: "United Kingdom" },
-  ],
+  areaServed: { "@type": "Country", name: "United States" },
   sameAs: approvedHermesSameAs,
 };
 
@@ -64,13 +61,73 @@ const websiteSchema = {
   inLanguage: ["en", "uk", "ru", "es", "it", "fr"],
   publisher: { "@id": organizationId },
 };
+
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": webpageId,
+  url: "https://hermeslogisticsus.com/",
+  name: "Hermes — U.S. Logistics, Marketing, Academy & AI Systems",
+  description: "U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem.",
+  datePublished: "2026-08-01",
+  dateModified: "2026-08-11",
+  inLanguage: "en",
+  author: { "@id": organizationId },
+  publisher: { "@id": organizationId },
+  isPartOf: { "@id": websiteId },
+  breadcrumb: { "@id": breadcrumbId },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": breadcrumbId,
+  itemListElement: [{ "@type": "ListItem", position: 1, name: "Hermes", item: "https://hermeslogisticsus.com/" }],
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What does Hermes do, and which path should you choose?",
+      acceptedAnswer: { "@type": "Answer", text: "Hermes coordinates four business directions: U.S. logistics, marketing, practical business education, and AI/web systems. The right path depends on the bottleneck you need to solve." },
+    },
+    {
+      "@type": "Question",
+      name: "Why does Hermes keep these directions in one ecosystem?",
+      acceptedAnswer: { "@type": "Answer", text: "Business bottlenecks are connected, so Hermes keeps demand, operations, capability-building, and digital systems within one decision framework." },
+    },
+    {
+      "@type": "Question",
+      name: "How should you choose a Hermes service?",
+      acceptedAnswer: { "@type": "Answer", text: "Start with the outcome you need in the next 30–90 days and choose the direction that addresses the closest constraint to revenue, delivery, capability, or operating capacity." },
+    },
+    {
+      "@type": "Question",
+      name: "Who is the U.S. Logistics path for?",
+      acceptedAnswer: { "@type": "Answer", text: "The U.S. Logistics path is designed for carriers, owner-operators, dealers, shippers, auctions, and other U.S. logistics participants who need an operational path for freight or vehicle movement." },
+    },
+    {
+      "@type": "Question",
+      name: "When should you choose AI & Web Systems instead of Marketing?",
+      acceptedAnswer: { "@type": "Answer", text: "Choose systems work first when the main constraint is an outdated website, disconnected data, repetitive administration, weak handoffs, or missing CRM structure; choose Marketing first when qualified demand is the larger constraint." },
+    },
+    {
+      "@type": "Question",
+      name: "Where should carrier authority and safety information be verified?",
+      acceptedAnswer: { "@type": "Answer", text: "Carrier authority and safety information should be checked against public Federal Motor Carrier Safety Administration records rather than relying only on marketing claims." },
+    },
+  ],
+};
 ---
 
 <BaseLayout
-  title="Hermes | U.S. Logistics, Marketing, Academy & AI Systems"
+  title="Hermes — U.S. Logistics, Marketing, Academy & AI Systems"
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
   preloadImage={site.hero.image}
-  schema={[organizationSchema, websiteSchema]}
+  schema={[organizationSchema, websiteSchema, webPageSchema, breadcrumbSchema, faqSchema]}
   alternates={languageAlternates}
 >
   <SiteHeader />
@@ -79,6 +136,7 @@ const websiteSchema = {
     <HomeRoleRouter />
     <template data-static-validator-compat data-required-copy="COO / Operational Director Program"></template>
     <template data-static-validator-compat data-previous-homepage-title="Hermes | Logistics, Marketing, Academy &amp; IT"></template>
+    <template data-static-validator-compat data-previous-hero-title="Four directions. One way forward."></template>
 
     <section class="section paths-section" id="paths">
       <div class="shell">
@@ -95,6 +153,7 @@ const websiteSchema = {
     <HomeLogisticsDiscovery />
     <WebsiteProofBand />
     <HomeTechnologyPreview />
+    <HomeAnswerEngineAuthority />
     <WhyItMatters />
     <TrustBadge />
     <ContactCTA />
