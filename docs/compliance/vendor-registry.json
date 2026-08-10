@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-08-10",
+  "principle": "No tracking, advertising, remarketing, or data-processing integration may be activated unless it has an explicit registry record and the required consent, disclosure, contract, transfer, retention, and production-verification review.",
+  "vendors": [
+    {
+      "id": "google-analytics-4",
+      "vendor": "Google",
+      "product": "Google Analytics 4",
+      "status": "approved_analytics_only",
+      "measurement_id": "G-RY26321PVW",
+      "purpose": "Website analytics and privacy-safe aggregate measurement after affirmative analytics consent.",
+      "consent_category": "analytics",
+      "default_state": "denied",
+      "advertising_use": false,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    },
+    {
+      "id": "google-tag-manager-advertising",
+      "vendor": "Google",
+      "product": "Google Tag Manager for advertising or unreviewed tags",
+      "status": "blocked_pending_review",
+      "consent_category": "advertising_or_vendor_specific",
+      "default_state": "denied",
+      "advertising_use": true,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    },
+    {
+      "id": "google-ads",
+      "vendor": "Google",
+      "product": "Google Ads conversion/remarketing technologies",
+      "status": "blocked_pending_review",
+      "consent_category": "advertising",
+      "default_state": "denied",
+      "advertising_use": true,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    },
+    {
+      "id": "meta-pixel",
+      "vendor": "Meta",
+      "product": "Meta Pixel / advertising tracking",
+      "status": "blocked_pending_review",
+      "consent_category": "advertising",
+      "default_state": "denied",
+      "advertising_use": true,
+      "private_form_fields_allowed": false,
+      "production_verification_required": true
+    }
+  ],
+  "required_fields_for_new_vendor": [
+    "vendor",
+    "product",
+    "purpose",
+    "pages_or_workflows",
+    "data_categories",
+    "storage_or_tracking_technology",
+    "identifier_or_form_data_access",
+    "controller_or_processor_role",
+    "contract_or_dpa_status",
+    "hosting_or_transfer_geography",
+    "retention_controls",
+    "consent_category",
+    "withdrawal_or_opt_out_behavior",
+    "privacy_notice_impact",
+    "production_verification_owner",
+    "production_verification_date"
+  ]
+}
