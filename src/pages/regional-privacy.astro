@@ -1,0 +1,93 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "What this page does",
+    body: [
+      "This page explains the regional privacy launch gates Hermes uses when a website, service, campaign, analytics configuration, form, account workflow, or vendor relationship intentionally targets people in a jurisdiction with additional privacy requirements. It is a public operating boundary, not a statement that every Hermes direction is automatically subject to every law listed here.",
+      "The current website baseline is privacy-first: optional Google Analytics is blocked until a visitor affirmatively allows analytics, advertising storage and ad personalization remain disabled, and ordinary contact forms are not intended to collect passwords, payment credentials, Social Security numbers, identity documents, or other sensitive information unless a future secure workflow specifically requires and explains it."
+    ]
+  },
+  {
+    title: "European Union and European Economic Area",
+    body: [
+      "A business established outside the EU can become subject to the GDPR when it intentionally offers goods or services to people in the EU or monitors their behavior there. Before Hermes intentionally launches a qualifying EU/EEA workflow, the service owner must document the applicable controller or processor roles, lawful basis for each material processing purpose, required notices, data-subject request handling, retention rules, vendors, international-transfer mechanism where required, and whether an EU representative, DPO, DPIA, or other additional measure is required for that actual activity.",
+      "A person merely visiting this website from Europe does not by itself cause Hermes to describe every service as an EU-targeted offer. Market targeting, service availability, language, campaign settings, contracts, and actual data practices must be assessed together."
+    ]
+  },
+  {
+    title: "United Kingdom",
+    body: [
+      "Before intentionally targeting a UK market, Hermes must review the relevant UK GDPR and Privacy and Electronic Communications Regulations requirements for the actual service and tracking stack. Cookies, pixels, scripts, tags, local storage, device identifiers, and similar storage or access technologies must not be treated as interchangeable with strictly necessary site functionality.",
+      "The current Hermes analytics design uses an affirmative analytics choice before the Google Analytics tag loads. A future Meta Pixel, Google Ads remarketing tag, additional analytics provider, fingerprinting technology, or other advertising technology requires a fresh regional review and must not inherit analytics consent automatically."
+    ]
+  },
+  {
+    title: "United States privacy-state launch gate",
+    body: [
+      "U.S. privacy obligations can differ by state, business thresholds, data categories, consumer relationship, processing purpose, and whether data is sold, shared, used for targeted advertising, profiling, or other regulated activity. Hermes therefore does not present one California-style disclosure as proof of compliance in every state.",
+      "Before a new state-targeted workflow materially changes data collection or use, the owner must review whether additional notice, access, correction, deletion, portability, opt-out, appeal, sensitive-data consent, universal opt-out mechanism, retention, contract, or processor requirements apply. California-specific disclosures remain in the main Privacy Policy where applicable."
+    ]
+  },
+  {
+    title: "International data transfers and vendors",
+    bullets: [
+      "Identify every material provider that receives personal information for the live workflow, including hosting, email, CRM, analytics, payment, support, document, advertising, communications, and security providers.",
+      "Record what data the provider receives, the business purpose, where it is processed or stored where known, applicable retention controls, and the contractual role of the provider.",
+      "Do not activate a new international data flow merely because the vendor is technically available. The service owner must review the transfer and contractual requirements that apply to the actual market and data set.",
+      "Do not put private form fields into analytics, advertising audiences, public URLs, logs intended for public debugging, or unrelated systems."
+    ]
+  },
+  {
+    title: "Advertising and tracking technology gate",
+    bullets: [
+      "Current approved optional analytics: Google Analytics 4 only after affirmative analytics consent.",
+      "Current advertising state: ad storage, ad user data, and ad personalization remain disabled; Meta Pixel and parallel GTM advertising deployment are not part of the approved baseline.",
+      "Any remarketing, targeted-advertising, cross-site tracking, audience matching, additional pixel, or new consent-management platform requires a documented privacy and technical review before deployment.",
+      "Consent for analytics is not treated as blanket consent for advertising or unrelated data uses."
+    ]
+  },
+  {
+    title: "Data minimization, retention, and security",
+    body: [
+      "Hermes uses a minimum-necessary approach: collect only information needed for the defined business purpose, restrict access to people and systems that need it, define a retention or deletion rule for each live workflow, and securely remove or de-identify information when there is no longer a legitimate operational, contractual, accounting, dispute, security, or legal need.",
+      "Before a live form, CRM integration, account, payment flow, document upload, automated decision flow, or new vendor launches, the owner must identify the data categories, system of record, access roles, retention rule, security controls, and incident-response owner."
+    ]
+  },
+  {
+    title: "Privacy requests",
+    body: [
+      "Visitors may use the Privacy Choices page to request access, correction, deletion, or an applicable opt-out. Which legal right applies can depend on the relevant Hermes entity, service, jurisdiction, and data practice. Hermes may request reasonable verification information where necessary to protect personal information from unauthorized access or deletion.",
+      "Do not send passwords, payment credentials, identity documents, or other sensitive records in the first privacy-request message unless Hermes provides a secure verification method for that specific request."
+    ]
+  },
+  {
+    title: "Launch checklist before entering a new market",
+    bullets: [
+      "Confirm the actual contracting or service entity and target geography.",
+      "Map the personal-data categories, purposes, lawful or permitted basis, forms, cookies, analytics, advertising, processors, storage systems, and transfers.",
+      "Confirm the public notice, point-of-collection notice, consent or opt-out design, and privacy-request workflow required for the actual market.",
+      "Confirm retention, deletion, access-control, security, vendor-contract, and incident-response ownership.",
+      "Review payment, cancellation, recurring billing, marketing communications, and sector-specific requirements separately where they apply.",
+      "Run production verification after deployment rather than relying only on source code, preview environments, or search-engine cache."
+    ]
+  },
+  {
+    title: "Questions about a specific country, state, vendor, or workflow",
+    body: [
+      "For a service-specific privacy or data-processing question, contact officeus@hermeslogisticsus.com and identify the Hermes service, country or state, and workflow you are asking about. The answer should describe the actual deployed process rather than provide a generic assurance that may not apply."
+    ]
+  }
+];
+---
+
+<TrustPage
+  title="Regional Privacy & International Data | Hermes"
+  description="Hermes regional privacy and international data launch gates for EU/EEA, UK, U.S. privacy states, analytics, advertising technology, vendors, transfers, and new-market deployment."
+  eyebrow="Regional privacy"
+  h1="Regional Privacy & International Data"
+  intro="What Hermes checks before intentionally launching a service, campaign, tracking stack, or data workflow into a new privacy jurisdiction."
+  reviewedAt="2026-08-10"
+  {sections}
+/>

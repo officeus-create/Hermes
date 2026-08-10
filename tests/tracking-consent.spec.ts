@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    sessionStorage.setItem("hermes-intro-seen", "true");
+  });
+});
+
 const isGoogleAnalyticsRequest = (url: string) =>
   /https:\/\/(?:www\.)?(?:googletagmanager\.com|google-analytics\.com)\//.test(url);
 
