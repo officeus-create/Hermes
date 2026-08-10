@@ -7,7 +7,7 @@ const sections = [
     title: "Request access, correction, or deletion",
     body: [
       "You may ask Hermes to review whether the applicable Hermes business holds personal information about you and, where appropriate or legally required, request access, correction, or deletion.",
-      "Email the public privacy route with the subject “Hermes Privacy Request.” Include your name, the email address or contact route you used with Hermes, the Hermes service or website page involved, and the request you want us to review. Do not send identity documents, passwords, payment credentials, or other sensitive records in the first message.",
+      "Include your name, the email address or contact route you used with Hermes, the Hermes service or website page involved, and the request you want us to review. Do not send identity documents, passwords, payment credentials, or other sensitive records in the first message.",
     ],
   },
   {
@@ -45,14 +45,7 @@ const sections = [
   h1="Privacy Choices & Requests"
   intro="A single public route for privacy access, correction, deletion, and applicable opt-out requests."
   reviewedAt="2026-08-10"
+  actionLabel="Start a privacy request"
+  actionHref={privacyEmail}
   {sections}
 />
-
-<div class="privacy-choice-action">
-  <a class="button button-primary" href={privacyEmail}>Start a privacy request</a>
-</div>
-
-<style>
-  .privacy-choice-action { position: fixed; right: 1rem; bottom: 1rem; z-index: 20; }
-  @media (max-width: 700px) { .privacy-choice-action { right: .75rem; bottom: .75rem; left: .75rem; } .privacy-choice-action a { width: 100%; justify-content: center; } }
-</style>
