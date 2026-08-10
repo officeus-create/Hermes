@@ -1,5 +1,15 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const ordinaryE2eStorageState = {
+  cookies: [],
+  origins: [
+    {
+      origin: "http://127.0.0.1:4321",
+      localStorage: [{ name: "hermes-analytics-consent", value: "denied" }],
+    },
+  ],
+};
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -10,6 +20,7 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:4321",
     trace: "retain-on-failure",
+    storageState: ordinaryE2eStorageState,
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
