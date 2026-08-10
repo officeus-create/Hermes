@@ -9,7 +9,6 @@ const exists = (relativePath) => fs.existsSync(path.join(root, relativePath));
 function listFiles(directory) {
   const absolute = path.join(root, directory);
   if (!fs.existsSync(absolute)) return [];
-
   return fs.readdirSync(absolute, { withFileTypes: true }).flatMap((entry) => {
     const relative = path.join(directory, entry.name);
     return entry.isDirectory() ? listFiles(relative) : [relative];
@@ -52,6 +51,18 @@ for (const workflowPath of listFiles(".github/workflows").filter((file) => /\.ya
     workflow,
     /^\s*command:\s*deploy(?:\s|$)/im,
     `${workflowPath} invokes a generic wrangler-action deploy command. Pages releases must use pages deploy.`,
+  );
+}
+
+// Package scripts are another deployment entry point. A generic root Worker
+// deploy here could bypass the workflow-only scan above and later be invoked by
+// a dashboard, CI job, or operator. Keep the website release path Pages-only.
+const packageJson = JSON.parse(read("package.json"));
+for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
+  assert.doesNotMatch(
+    String(command),
+    /\b(?:npx\s+)?wrangler\s+deploy\b/i,
+    `package.json script ${scriptName} introduces a generic Worker deployment. Website production must remain Pages-only.`,
   );
 }
 
