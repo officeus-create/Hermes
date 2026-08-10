@@ -38,15 +38,22 @@ const {
   preloadImage,
 } = Astro.props;
 
-const RETIRED_CONTACT_EMAIL = "freight_301@hermeslogisticsus.com";
-const CURRENT_LOGISTICS_EMAIL = "officeus@hermeslogisticsus.com";
+const PUBLIC_TEXT_REPLACEMENTS = new Map([
+  ["freight_301@hermeslogisticsus.com", "officeus@hermeslogisticsus.com"],
+  ["USA · Europe · International email coordination", "U.S. logistics · International email coordination"],
+  ["Contact submission pending connection", "Website inquiry delivery is active through the approved email workflow"],
+]);
 
-const replaceRetiredContact = (value: unknown): unknown => {
-  if (typeof value === "string") return value.replaceAll(RETIRED_CONTACT_EMAIL, CURRENT_LOGISTICS_EMAIL);
-  if (Array.isArray(value)) return value.map(replaceRetiredContact);
+const replaceRetiredPublicText = (value: unknown): unknown => {
+  if (typeof value === "string") {
+    let next = value;
+    for (const [retired, current] of PUBLIC_TEXT_REPLACEMENTS) next = next.replaceAll(retired, current);
+    return next;
+  }
+  if (Array.isArray(value)) return value.map(replaceRetiredPublicText);
   if (value && typeof value === "object") {
     return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, replaceRetiredContact(item)]),
+      Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, replaceRetiredPublicText(item)]),
     );
   }
   return value;
@@ -70,7 +77,7 @@ const conciseDescription = (value: string, maxLength = 170) => {
   return `${trimmed}…`;
 };
 
-const metaDescription = conciseDescription(description);
+const metaDescription = conciseDescription(String(replaceRetiredPublicText(description)));
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
@@ -79,7 +86,7 @@ const alternateOgLocales = alternates
 .map((alternate) => localeConfig[alternate.lang as SiteLocale]?.ogLocale)
 .filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
 const safeSchema = schema
-  ? replaceRetiredContact(schema) as Record<string, unknown> | Record<string, unknown>[]
+  ? replaceRetiredPublicText(schema) as Record<string, unknown> | Record<string, unknown>[]
   : undefined;
 ---
 
@@ -149,19 +156,25 @@ const safeSchema = schema
     </script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", () => {
-        const retiredContactEmail = "freight_301@hermeslogisticsus.com";
-        const currentLogisticsEmail = "officeus@hermeslogisticsus.com";
+        const publicTextReplacements = [
+          ["freight_301@hermeslogisticsus.com", "officeus@hermeslogisticsus.com"],
+          ["USA · Europe · International email coordination", "U.S. logistics · International email coordination"],
+          ["Contact submission pending connection", "Website inquiry delivery is active through the approved email workflow"],
+        ];
 
-        document.querySelectorAll(`a[href^="mailto:${retiredContactEmail}"]`).forEach((link) => {
-          const href = link.getAttribute("href") || "";
-          link.setAttribute("href", href.replace(retiredContactEmail, currentLogisticsEmail));
+        document.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
+          let href = link.getAttribute("href") || "";
+          for (const [retired, current] of publicTextReplacements) href = href.replaceAll(retired, current);
+          link.setAttribute("href", href);
         });
 
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
         let node = walker.nextNode();
         while (node) {
-          if (node.nodeValue?.includes(retiredContactEmail)) {
-            node.nodeValue = node.nodeValue.replaceAll(retiredContactEmail, currentLogisticsEmail);
+          if (node.nodeValue) {
+            let next = node.nodeValue;
+            for (const [retired, current] of publicTextReplacements) next = next.replaceAll(retired, current);
+            node.nodeValue = next;
           }
           node = walker.nextNode();
         }
