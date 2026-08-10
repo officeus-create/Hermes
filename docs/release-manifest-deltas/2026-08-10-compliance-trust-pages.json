@@ -36,11 +36,75 @@
         "production": "pending_deployment",
         "immutable_release": "missing"
       }
+    },
+    {
+      "route": "/legal-compliance/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/legal-compliance/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/legal-compliance.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/payments-cancellations/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/payments-cancellations/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/payments-cancellations.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/data-security/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/data-security/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/data-security.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/asset-licensing/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/asset-licensing/",
+      "sitemap_owner": "public/sitemap-trust.xml",
+      "source_file": "src/pages/asset-licensing.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
     }
   ],
   "acceptance": {
-    "route_count_added": 2,
-    "indexable_route_count_added": 2,
+    "route_count_added": 6,
+    "indexable_route_count_added": 6,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }

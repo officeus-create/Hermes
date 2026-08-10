@@ -1,0 +1,52 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const requestHref = "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20data%20security%20information%20request";
+const sections = [
+  {
+    title: "Data minimization",
+    body: [
+      "Hermes aims to collect only information reasonably needed for the website or service workflow the user chooses. Ordinary public forms should not request passwords, payment credentials, Social Security numbers, identity documents, or other sensitive records unless a future secure workflow explicitly requires and explains them.",
+    ],
+  },
+  {
+    title: "Analytics boundary",
+    bullets: [
+      "Google Analytics 4 is blocked until the visitor explicitly allows analytics.",
+      "Advertising storage, advertising user data, and ad personalization remain disabled in the current website configuration.",
+      "Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages.",
+    ],
+  },
+  {
+    title: "Preview and browser-local workflows",
+    body: [
+      "Some website tools prepare previews or qualification information locally in the browser. Typing information into a preview should not automatically turn that information into a server-side business record unless the page clearly identifies a live submission or delivery workflow.",
+    ],
+  },
+  {
+    title: "Access and retention",
+    body: [
+      "A live workflow should have an identified system of record, authorized access roles, and a retention or deletion rule. Information that no longer has a legitimate operational, contractual, accounting, security, dispute, or legal purpose should be deleted or de-identified where feasible.",
+      "Because different Hermes services use different operational systems, a specific retention period or vendor list may depend on the service and workflow involved. Request the relevant details if they are material to your engagement.",
+    ],
+  },
+  {
+    title: "Security limitations and reporting",
+    body: [
+      "No internet transmission or storage system can be guaranteed to be completely secure. If you believe information was exposed, misdirected, or handled through the wrong website route, contact Hermes promptly with the affected service or page and enough non-sensitive detail to investigate.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Data Security | Hermes"
+  description="Hermes website data-security baseline covering minimization, analytics boundaries, browser-local previews, access, retention, and security reporting."
+  eyebrow="Data governance"
+  h1="Data Security"
+  intro="The public security and data-handling rules that guide Hermes website workflows without overstating controls that depend on a specific service system."
+  reviewedAt="2026-08-10"
+  actionLabel="Request data-security information"
+  actionHref={requestHref}
+  {sections}
+/>

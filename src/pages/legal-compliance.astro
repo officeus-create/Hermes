@@ -1,0 +1,257 @@
+---
+import { ArrowRight, CheckCircle2, FileText, Mail, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+const reviewedAt = "2026-08-10";
+const canonical = "https://hermeslogisticsus.com/legal-compliance/";
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Legal & Compliance",
+    description: "Hermes legal, privacy, company identity, website terms, analytics choices, payment-term boundaries, and compliance request routes.",
+    url: canonical,
+    dateModified: reviewedAt,
+    isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+    publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Legal & Compliance", item: canonical },
+    ],
+  },
+];
+
+const publicPolicies = [
+  {
+    title: "Privacy Policy & Notice at Collection",
+    status: "Public",
+    body: "Explains website data categories, purposes, analytics, retention, security, privacy rights, California disclosures, and international-market boundaries.",
+    href: "/privacy/",
+    label: "Read Privacy Policy",
+  },
+  {
+    title: "Privacy Choices & Requests",
+    status: "Public request route",
+    body: "Use this route for access, correction, deletion, and applicable opt-out requests. The first message should not contain passwords, payment credentials, or identity documents.",
+    href: "/privacy-choices/",
+    label: "Open Privacy Choices",
+  },
+  {
+    title: "Company Information",
+    status: "Public",
+    body: "Identifies Hermes Logistics LLC for U.S. logistics and explains that marketing, academy, and technology engagements must identify their applicable contracting entity before payment or signing.",
+    href: "/company-information/",
+    label: "View Company Information",
+  },
+  {
+    title: "Payments, Refunds & Cancellation",
+    status: "Public boundary",
+    body: "Explains the current no-universal-checkout status and exactly what entity, scope, price, billing, cancellation, refund, and recurring terms must be clear before payment.",
+    href: "/payments-cancellations/",
+    label: "View Payment Rules",
+  },
+  {
+    title: "Data Security",
+    status: "Public baseline",
+    body: "Publishes the website data-minimization, analytics, preview, access, retention, and security-reporting boundaries without overstating service-specific controls.",
+    href: "/data-security/",
+    label: "View Data Security",
+  },
+  {
+    title: "Asset Licensing & Intellectual Property",
+    status: "Public baseline",
+    body: "Identifies current self-hosted font families and the source, licensing, attribution, provenance, and replacement rules applied to website assets.",
+    href: "/asset-licensing/",
+    label: "View Asset Licensing",
+  },
+  {
+    title: "Terms of Use",
+    status: "Public",
+    body: "Defines the website boundary, preview and contact-tool limitations, user responsibilities, intellectual-property rules, and the fact that website use alone does not create a service relationship.",
+    href: "/terms/",
+    label: "Read Terms of Use",
+  },
+  {
+    title: "Accessibility",
+    status: "Public",
+    body: "Describes current accessibility practices and the route for reporting a barrier or requesting an accessible alternative.",
+    href: "/accessibility/",
+    label: "View Accessibility",
+  },
+  {
+    title: "Editorial & Corrections",
+    status: "Public",
+    body: "Explains how public claims, evidence, corrections, source updates, and publication-quality issues are handled on the website.",
+    href: "/editorial-policy/",
+    label: "View Editorial Policy",
+  },
+];
+
+const requestItems = [
+  {
+    title: "Payment, refund, cancellation, or recurring-billing terms",
+    body: "There is no general website checkout currently presented as a universal Hermes payment flow. Before a paid engagement, the applicable proposal, order, invoice, or agreement should identify the selling entity, exact scope, price or percentage, payment timing, cancellation/refund terms, and any recurring-billing terms. Request the specific commercial terms for the service you are considering.",
+    subject: "Hermes payment and cancellation terms request",
+    label: "Request payment terms",
+  },
+  {
+    title: "Privacy, vendor, or data-processing information",
+    body: "Request additional information about a specific live workflow, processor, system of record, retention rule, or international data flow. The answer depends on the Hermes service and deployed workflow involved.",
+    subject: "Hermes data processing information request",
+    label: "Request data information",
+  },
+  {
+    title: "Licensing or intellectual-property documentation",
+    body: "Hermes can review a request concerning website fonts, media, downloadable materials, or other assets. Current self-hosted website font families include Manrope, Source Sans 3, and IBM Plex Mono. Provenance and license evidence is being verified and maintained as an asset-governance requirement; a specific asset can be reviewed on request.",
+    subject: "Hermes website asset licensing request",
+    label: "Request licensing information",
+  },
+  {
+    title: "Service-specific legal or compliance documents",
+    body: "Carrier agreements, logistics representation terms, project statements of work, service-specific privacy terms, and other relationship documents are provided only where relevant to the requested service and do not become universal website terms.",
+    subject: "Hermes service-specific compliance document request",
+    label: "Request service documents",
+  },
+];
+---
+
+<BaseLayout
+  title="Legal & Compliance | Hermes"
+  description="Hermes legal and compliance center for privacy, company identity, website terms, analytics choices, payment-term boundaries, accessibility, and document requests."
+  schema={schema}
+>
+  <SiteHeader />
+  <main id="main-content" class="legal-page">
+    <section class="legal-hero" id="top">
+      <div class="shell legal-hero-inner">
+        <nav class="legal-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span aria-current="page">Legal & Compliance</span></nav>
+        <p class="eyebrow">Trust · Privacy · Company identity · Commercial terms</p>
+        <h1>Legal & Compliance</h1>
+        <p class="legal-intro">Everything that is universal and verified is published here. Terms that depend on a specific service, payment, contract, data flow, or jurisdiction are available through a direct request instead of being presented as a fictional one-size-fits-all policy.</p>
+        <div class="legal-hero-actions">
+          <a class="button button-primary" href="/privacy/">Privacy & data rules <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button legal-secondary" href="mailto:officeus@hermeslogisticsus.com?subject=Hermes%20compliance%20information%20request">Request compliance information <Mail size={17} aria-hidden="true" /></a>
+        </div>
+        <p class="legal-reviewed">Reviewed {reviewedAt}</p>
+      </div>
+    </section>
+
+    <section class="section legal-public" aria-labelledby="public-policies-title">
+      <div class="shell">
+        <div class="legal-section-heading">
+          <p class="eyebrow">Published now</p>
+          <h2 id="public-policies-title">Public policies and controls</h2>
+          <p>These pages describe the current website-level rules and controls that apply without needing a private contract.</p>
+        </div>
+        <div class="legal-grid">
+          {publicPolicies.map((item) => (
+            <article class="legal-card">
+              <div class="legal-card-status"><CheckCircle2 size={16} aria-hidden="true" />{item.status}</div>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+              <a class="legal-card-link" href={item.href}>{item.label}<ArrowRight size={16} aria-hidden="true" /></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section legal-tracking" aria-labelledby="tracking-title">
+      <div class="shell legal-tracking-grid">
+        <div>
+          <p class="eyebrow">Analytics choice</p>
+          <h2 id="tracking-title">Google Analytics is optional.</h2>
+          <p>GA4 is blocked until a visitor chooses to allow analytics. Continuing without analytics keeps the Google tag blocked. Advertising storage, advertising user data, and ad personalization remain disabled in the current configuration.</p>
+        </div>
+        <button type="button" class="button button-primary" data-open-privacy-settings>Open privacy settings</button>
+      </div>
+    </section>
+
+    <section class="section legal-request" aria-labelledby="request-title">
+      <div class="shell">
+        <div class="legal-section-heading">
+          <p class="eyebrow">Available on request</p>
+          <h2 id="request-title">Specific terms for a specific transaction or workflow</h2>
+          <p>These details should be concrete before you pay, sign, or submit information into a workflow, but they cannot be truthfully made universal across every Hermes direction.</p>
+        </div>
+        <div class="legal-grid request-grid">
+          {requestItems.map((item) => (
+            <article class="legal-card legal-request-card">
+              <div class="legal-icon"><FileText size={22} aria-hidden="true" /></div>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+              <a class="button legal-request-button" href={`mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(item.subject)}`}>{item.label}<ArrowRight size={16} aria-hidden="true" /></a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section legal-before-pay" aria-labelledby="before-pay-title">
+      <div class="shell legal-before-pay-inner">
+        <ShieldCheck size={34} aria-hidden="true" />
+        <div>
+          <p class="eyebrow">Before payment or signature</p>
+          <h2 id="before-pay-title">The commercial document must identify the actual deal.</h2>
+          <ul>
+            <li>Contracting or selling legal entity.</li>
+            <li>Exact service, scope, deliverables, limitations, and start conditions.</li>
+            <li>Price or percentage, payment timing, mandatory charges, and whether billing is one-time or recurring.</li>
+            <li>Cancellation, refund or credit terms that apply to that service.</li>
+            <li>For recurring billing, renewal frequency, conversion terms, and the mechanism to stop future charges.</li>
+            <li>The version of the agreement, order, proposal, or service terms that controls the relationship.</li>
+          </ul>
+          <a class="button button-primary" href="mailto:officeus@hermeslogisticsus.com?subject=Hermes%20pre-payment%20terms%20request">Request terms before payment</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script is:inline>
+  document.querySelector('[data-open-privacy-settings]')?.addEventListener('click', () => {
+    const settings = document.querySelector('[data-consent-settings]');
+    if (settings instanceof HTMLElement) settings.click();
+  });
+</script>
+
+<style>
+  .legal-page { background: #f7f9ff; color: #10204e; }
+  .legal-hero { padding: 9rem 0 5rem; background: linear-gradient(145deg,#07143d,#122b72 60%,#214a9e); color:#fff; }
+  .legal-hero-inner { max-width: 980px; }
+  .legal-breadcrumb { display:flex; gap:.55rem; margin-bottom:1.5rem; color:rgba(255,255,255,.7); font-size:.9rem; }
+  .legal-breadcrumb a { color:inherit; }
+  .legal-hero h1 { margin:.6rem 0 1rem; font-size:clamp(3rem,7vw,5.7rem); line-height:.96; letter-spacing:-.05em; }
+  .legal-intro { max-width:900px; font-size:clamp(1.05rem,2vw,1.28rem); line-height:1.72; color:rgba(255,255,255,.82); }
+  .legal-hero-actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:1.5rem; }
+  .legal-hero-actions a { display:inline-flex; gap:.45rem; align-items:center; }
+  .legal-secondary { border:1px solid rgba(255,255,255,.35); color:#fff; }
+  .legal-reviewed { margin-top:1rem; color:rgba(255,255,255,.6); font-size:.84rem; }
+  .legal-section-heading { max-width:800px; margin-bottom:1.6rem; }
+  .legal-section-heading h2,.legal-tracking h2,.legal-before-pay h2 { margin:.35rem 0 .7rem; font-size:clamp(2rem,4vw,3.15rem); line-height:1.08; letter-spacing:-.03em; }
+  .legal-section-heading p,.legal-card p,.legal-tracking p,.legal-before-pay li { color:#596886; line-height:1.7; }
+  .legal-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+  .legal-card { display:flex; flex-direction:column; min-height:100%; padding:1.45rem; border:1px solid rgba(28,62,141,.14); border-radius:18px; background:#fff; box-shadow:0 18px 48px rgba(17,43,103,.05); }
+  .legal-card h3 { margin:.65rem 0 .45rem; font-size:1.2rem; }
+  .legal-card p { flex:1; }
+  .legal-card-status { display:inline-flex; align-items:center; gap:.4rem; width:max-content; padding:.32rem .55rem; border-radius:999px; background:#edf8f2; color:#14663c; font-size:.76rem; font-weight:800; }
+  .legal-card-link { display:inline-flex; align-items:center; gap:.35rem; margin-top:.7rem; color:#4c25c7; font-weight:800; }
+  .legal-tracking { padding-top:0; }
+  .legal-tracking-grid { display:grid; grid-template-columns:1fr auto; gap:2rem; align-items:center; padding:2rem; border-radius:22px; background:#0a1842; color:#fff; }
+  .legal-tracking p { color:rgba(255,255,255,.74); }
+  .request-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .legal-icon { display:grid; place-items:center; width:44px; height:44px; border-radius:12px; background:#eee9fb; color:#5a2bd1; }
+  .legal-request-button { display:inline-flex; align-items:center; justify-content:space-between; gap:.5rem; margin-top:.75rem; border:1px solid rgba(50,42,120,.18); color:#10204e; }
+  .legal-before-pay { padding-top:0; }
+  .legal-before-pay-inner { display:grid; grid-template-columns:auto 1fr; gap:1.3rem; padding:clamp(1.5rem,4vw,2.6rem); border:1px solid rgba(28,62,141,.14); border-radius:22px; background:#fff; }
+  .legal-before-pay ul { display:grid; gap:.45rem; padding-left:1.2rem; margin:1rem 0 1.4rem; }
+  @media (max-width:900px) { .legal-grid { grid-template-columns:1fr 1fr; } }
+  @media (max-width:650px) { .legal-grid,.request-grid,.legal-tracking-grid,.legal-before-pay-inner { grid-template-columns:1fr; } .legal-hero { padding-top:7.5rem; } }
+</style>

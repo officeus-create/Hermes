@@ -1,0 +1,58 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const requestHref = "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20payment%20refund%20and%20cancellation%20terms";
+const sections = [
+  {
+    title: "Current website payment status",
+    body: [
+      "The public Hermes website does not currently present one universal checkout, subscription, or automatic-renewal flow that applies across every Hermes direction.",
+      "A price shown in service information, a percentage discussed for logistics support, or a project estimate does not by itself authorize a charge. The applicable commercial document must identify the actual selling or contracting entity and the terms for that engagement.",
+    ],
+  },
+  {
+    title: "What must be clear before payment",
+    bullets: [
+      "The contracting or selling legal entity.",
+      "The exact service, scope, deliverables, limitations, and start conditions.",
+      "The price or percentage, payment timing, and any mandatory charges that apply to the engagement.",
+      "Whether the payment is one-time, milestone-based, usage-based, percentage-based, or recurring.",
+      "The cancellation timing and effect for that service.",
+      "The refund or credit rule, including any approved non-refundable items or completed work, if applicable.",
+      "The controlling proposal, order, invoice, statement of work, or agreement version.",
+    ],
+  },
+  {
+    title: "Recurring billing",
+    body: [
+      "Recurring billing is not treated as the default simply because a service may continue month to month. If a future engagement uses automatic renewal, a subscription, a free-to-paid conversion, or another recurring charge, the frequency, amount or pricing method, renewal mechanics, conversion terms, and cancellation route must be disclosed for that specific offer before the recurring billing flow is activated.",
+      "Hermes does not use a pre-checked website box to silently convert an ordinary inquiry into recurring billing.",
+    ],
+  },
+  {
+    title: "Refunds and credits",
+    body: [
+      "There is no single universal refund percentage or cancellation window published for every Hermes service because logistics support, marketing work, education, software development, retainers, project milestones, and completed deliverables can have materially different commercial structures.",
+      "The applicable refund, cancellation, or credit terms must therefore be stated in the service-specific commercial document before payment where relevant. If those terms are unclear, request them before paying.",
+    ],
+  },
+  {
+    title: "Payment processors and billing data",
+    body: [
+      "A future online payment flow must identify its payment processor and data-handling boundary before launch. Ordinary website contact forms are not intended for card numbers, bank credentials, or other payment credentials.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Payments, Refunds & Cancellation | Hermes"
+  description="Current Hermes payment status and the information that must be confirmed before payment, including entity, scope, price, recurring billing, cancellation, and refund terms."
+  eyebrow="Commercial terms"
+  h1="Payments, Refunds & Cancellation"
+  intro="What is fixed at website level, what must be specific to the actual engagement, and what to request before you pay."
+  reviewedAt="2026-08-10"
+  actionLabel="Request payment terms"
+  actionHref={requestHref}
+  {sections}
+/>
