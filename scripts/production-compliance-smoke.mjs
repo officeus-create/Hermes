@@ -9,6 +9,7 @@ const checks = [
   ["/payments-cancellations/", "Payments"],
   ["/data-security/", "Data Security"],
   ["/asset-licensing/", "Asset Licensing"],
+  ["/regional-privacy/", "Regional Privacy & International Data"],
 ];
 
 const failures = [];
