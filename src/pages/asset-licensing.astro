@@ -1,0 +1,53 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const requestHref = "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20website%20asset%20licensing%20request";
+const sections = [
+  {
+    title: "Current website fonts",
+    body: [
+      "The current Hermes website self-hosts the font families Manrope, Source Sans 3, and IBM Plex Mono through local webfont files. Their deployed source files are treated as governed website assets rather than anonymous downloads.",
+      "Asset provenance and license evidence is being verified and maintained as part of the website compliance process. If a deployed asset cannot be tied to a source and compatible permission, it should be replaced rather than left undocumented.",
+    ],
+  },
+  {
+    title: "Images, video, icons, and downloadable material",
+    body: [
+      "Website media should come from an owned, commissioned, licensed, open-license, or otherwise authorized source appropriate for the intended use. Client-supplied media remains subject to the rights represented by the supplying party and the applicable project agreement.",
+    ],
+  },
+  {
+    title: "Third-party names and marks",
+    body: [
+      "References to search engines, software platforms, government sources, logistics marketplaces, carriers, brokers, vendors, or other third parties do not by themselves imply sponsorship, endorsement, affiliation, or trademark ownership by Hermes.",
+    ],
+  },
+  {
+    title: "Publication rule",
+    bullets: [
+      "Do not add a self-hosted font or media asset when its source is unknown.",
+      "Record the source, applicable license or permission, relevant web-use rights, and a stable file identifier where practical.",
+      "Preserve attribution or notice requirements when the applicable license requires them.",
+      "Replace or remove an asset when its provenance or permission cannot be established.",
+    ],
+  },
+  {
+    title: "Licensing questions",
+    body: [
+      "A rights holder, customer, vendor, or other interested party may request review of a specific website asset. Include the page URL and enough detail to identify the font, image, video, icon, downloadable file, or other material at issue.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Asset Licensing & Intellectual Property | Hermes"
+  description="Hermes website asset-governance rules for fonts, images, video, icons, downloadable materials, third-party marks, provenance, and licensing requests."
+  eyebrow="Intellectual property"
+  h1="Asset Licensing & Intellectual Property"
+  intro="How Hermes handles website fonts and media, what is currently deployed, and how to request review of a specific asset."
+  reviewedAt="2026-08-10"
+  actionLabel="Request licensing information"
+  actionHref={requestHref}
+  {sections}
+/>
