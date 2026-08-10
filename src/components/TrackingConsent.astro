@@ -1,0 +1,140 @@
+---
+const measurementId = "G-RY26321PVW";
+---
+
+<div class="tracking-consent" data-tracking-consent data-measurement-id={measurementId}>
+  <aside class="tracking-consent-banner" data-consent-banner role="dialog" aria-modal="false" aria-labelledby="tracking-consent-title" hidden>
+    <p class="tracking-consent-eyebrow">Privacy settings</p>
+    <h2 id="tracking-consent-title">Choose whether to allow website analytics.</h2>
+    <p>Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled.</p>
+    <div class="tracking-consent-actions">
+      <button type="button" class="button button-primary" data-consent-accept>Allow analytics</button>
+      <button type="button" class="button" data-consent-decline>Continue without analytics</button>
+      <a href="/privacy/">Privacy Policy</a>
+    </div>
+  </aside>
+  <button type="button" class="tracking-consent-settings" data-consent-settings aria-haspopup="dialog">Privacy settings</button>
+</div>
+
+<script is:inline define:vars={{ measurementId }}>
+  (() => {
+    const STORAGE_KEY = "hermes-analytics-consent";
+    const root = document.querySelector("[data-tracking-consent]");
+    const banner = root?.querySelector("[data-consent-banner]");
+    const accept = root?.querySelector("[data-consent-accept]");
+    const decline = root?.querySelector("[data-consent-decline]");
+    const settings = root?.querySelector("[data-consent-settings]");
+
+    const readChoice = () => {
+      try {
+        const value = localStorage.getItem(STORAGE_KEY);
+        return value === "granted" || value === "denied" ? value : null;
+      } catch {
+        return null;
+      }
+    };
+
+    const saveChoice = (value) => {
+      try { localStorage.setItem(STORAGE_KEY, value); } catch { /* keep the current session usable */ }
+      document.documentElement.dataset.analyticsConsent = value;
+    };
+
+    const loadAnalytics = () => {
+      if (document.querySelector('script[data-hermes-ga4]')) return;
+
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+      window.gtag('consent', 'default', {
+        analytics_storage: 'denied',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
+      });
+      window.gtag('consent', 'update', {
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
+      });
+      window.gtag('set', 'ads_data_redaction', true);
+      window.gtag('js', new Date());
+      window.gtag('config', measurementId, {
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false
+      });
+
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+      script.dataset.hermesGa4 = "true";
+      document.head.appendChild(script);
+    };
+
+    const applyChoice = (choice) => {
+      if (choice === "granted") loadAnalytics();
+      if (banner) banner.hidden = choice !== null;
+      if (choice) document.documentElement.dataset.analyticsConsent = choice;
+    };
+
+    const initialChoice = readChoice();
+    applyChoice(initialChoice);
+
+    accept?.addEventListener("click", () => {
+      saveChoice("granted");
+      loadAnalytics();
+      if (banner) banner.hidden = true;
+    });
+
+    decline?.addEventListener("click", () => {
+      saveChoice("denied");
+      if (banner) banner.hidden = true;
+    });
+
+    settings?.addEventListener("click", () => {
+      if (!banner) return;
+      banner.hidden = false;
+      banner.querySelector("button")?.focus();
+    });
+  })();
+</script>
+
+<style>
+  .tracking-consent-banner {
+    position: fixed;
+    z-index: 120;
+    right: 1rem;
+    bottom: 1rem;
+    width: min(520px, calc(100vw - 2rem));
+    padding: 1.25rem;
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 18px;
+    background: rgba(7,20,61,.98);
+    color: #fff;
+    box-shadow: 0 24px 70px rgba(3,12,39,.34);
+  }
+  .tracking-consent-banner[hidden] { display: none; }
+  .tracking-consent-eyebrow { margin: 0 0 .4rem; text-transform: uppercase; letter-spacing: .12em; font-size: .72rem; opacity: .68; }
+  .tracking-consent-banner h2 { margin: 0 0 .65rem; font-size: 1.25rem; }
+  .tracking-consent-banner p { line-height: 1.55; color: rgba(255,255,255,.78); }
+  .tracking-consent-actions { display: flex; flex-wrap: wrap; gap: .65rem; align-items: center; margin-top: 1rem; }
+  .tracking-consent-actions a { color: #fff; }
+  .tracking-consent-settings {
+    position: fixed;
+    z-index: 70;
+    left: .7rem;
+    bottom: .7rem;
+    padding: .45rem .7rem;
+    border: 1px solid rgba(16,32,78,.2);
+    border-radius: 999px;
+    background: rgba(255,255,255,.94);
+    color: #10204e;
+    font: inherit;
+    font-size: .76rem;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(16,32,78,.08);
+  }
+  @media (max-width: 700px) {
+    .tracking-consent-banner { right: .65rem; bottom: .65rem; width: calc(100vw - 1.3rem); }
+    .tracking-consent-actions { display: grid; }
+  }
+</style>
