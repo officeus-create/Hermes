@@ -1,0 +1,40 @@
+name: Production compliance smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/pages/legal-compliance.astro'
+      - 'src/pages/privacy.astro'
+      - 'src/pages/privacy-choices.astro'
+      - 'src/pages/company-information.astro'
+      - 'src/pages/payments-cancellations.astro'
+      - 'src/pages/data-security.astro'
+      - 'src/pages/asset-licensing.astro'
+      - 'src/components/SiteFooter.astro'
+      - 'src/components/AnalyticsConsent.astro'
+      - 'scripts/production-compliance-smoke.mjs'
+      - '.github/workflows/production-compliance-smoke.yml'
+  schedule:
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for production deploy
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - name: Verify public compliance routes
+        env:
+          HERMES_PRODUCTION_URL: https://hermeslogisticsus.com
+        run: node scripts/production-compliance-smoke.mjs
