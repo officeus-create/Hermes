@@ -6,6 +6,7 @@ import CarrierQualificationEnhancer from "../components/CarrierQualificationEnha
 import ContactLinkEnhancer from "../components/ContactLinkEnhancer.astro";
 import MoneyPageActionBar from "../components/MoneyPageActionBar.astro";
 import MotionLayer from "../components/MotionLayer.astro";
+import PrivacyConsent from "../components/PrivacyConsent.astro";
 import ProductionContactMode from "../components/ProductionContactMode.astro";
 import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
@@ -101,8 +102,6 @@ const safeSchema = schema
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
-<link rel="preconnect" href="https://www.googletagmanager.com" />
-<link rel="preconnect" href="https://www.google-analytics.com" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
@@ -116,7 +115,7 @@ const safeSchema = schema
     <meta property="og:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />
-{alternateOgLocales.map((altLocale) => <meta property="og:locale:alternate" content={altLocale} />)}
+    {alternateOgLocales.map((altLocale) => <meta property="og:locale:alternate" content={altLocale} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
@@ -124,14 +123,6 @@ const safeSchema = schema
     <meta name="twitter:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <!-- Google Analytics 4: deployed site-wide -->
-    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-RY26321PVW"></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-RY26321PVW');
-    </script>
     <script is:inline>
       try {
         const canAnimate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -200,6 +191,7 @@ const safeSchema = schema
     <VehicleTransportCtaEnhancer />
     <RouteEstimateEnhancer />
     <MotionLayer />
+    <PrivacyConsent />
     <!--/email_off-->
   </body>
 </html>
