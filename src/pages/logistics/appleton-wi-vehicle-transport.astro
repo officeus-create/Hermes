@@ -18,6 +18,8 @@ const title = "Appleton Vehicle Transport | Hermes Logistics";
 const description =
   "Request vehicle transport to or from Appleton, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, timing, and equipment.";
 const canonicalUrl = new URL("/logistics/appleton-wi-vehicle-transport/", Astro.site).toString();
+const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
+const loadBoardDemo = "/load-board/?role=private_party&origin=Appleton%2C%20WI#post-load";
 
 const faq = [
   {
@@ -114,16 +116,17 @@ import "../../styles/features/appleton.css";
                 customers. Start with the exact route, vehicle condition, timing, and access details.
               </p>
               <div class="logistics-audience-actions">
-                <a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Appleton%2C%20WI#post-load">
+                <a class="button button-primary" href={directTransportIntake} data-appleton-direct-intake>
                   Prepare a transport request <ArrowRight size={18} aria-hidden="true" />
                 </a>
+                <a class="button" href={loadBoardDemo} data-appleton-demo>Preview the Appleton Load Board demo</a>
                 <a class="button" href="/load-board/?role=carrier&amp;area=Appleton%2C%20WI#carrier-access">
-                  Carrier: share capacity
+                  Carrier: share capacity in demo
                 </a>
               </div>
               <p class="appleton-boundary">
-                Submitting the form prepares a request for Logistics Sales review. It does not guarantee price, timing,
-                equipment, or carrier availability.
+                The direct intake starts a Logistics Sales review. It does not publish a request, notify a carrier,
+                confirm capacity, create a booking, or guarantee price, timing, equipment, or carrier availability.
               </p>
             </div>
             <aside class="appleton-hero-panel" aria-label="Request review summary">
@@ -318,7 +321,7 @@ import "../../styles/features/appleton.css";
             </p>
           </div>
           <div class="appleton-final-actions">
-            <a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Appleton%2C%20WI#post-load">
+            <a class="button button-primary" href={directTransportIntake} data-appleton-direct-intake-bottom>
               Prepare customer request <ArrowRight size={18} aria-hidden="true" />
             </a>
             <a class="button" href="/logistics/shipper-dealer/">Shipper and dealer information</a>
