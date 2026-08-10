@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+test.use({ storageState: { cookies: [], origins: [] } });
+
 const isGoogleAnalyticsRequest = (url: string) =>
   /https:\/\/(?:www\.)?(?:googletagmanager\.com|google-analytics\.com)\//.test(url);
 
