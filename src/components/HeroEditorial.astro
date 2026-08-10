@@ -5,16 +5,17 @@ import { site } from "../data/site";
 
 <section class="hero" id="top" data-motion-hero>
   <div class="hero-media">
-    <img src={site.hero.image} alt={site.hero.imageAlt} width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" sizes="100vw" />
+    <figure>
+      <img src={site.hero.image} alt={site.hero.imageAlt} width="1920" height="1080" loading="eager" fetchpriority="high" decoding="async" sizes="100vw" />
+      <figcaption class="sr-only">Hermes ecosystem: U.S. Logistics, Marketing, Academy and AI &amp; Web Systems.</figcaption>
+    </figure>
   </div>
   <div class="hero-shade"></div>
   <div class="hero-content shell">
     <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
-    <h1 class="hero-title" aria-label={site.hero.title}>
-      <span class="hero-title-office" aria-hidden="true">
-        Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.
-      </span>
-      <em class="hero-title-script" aria-hidden="true">One way forward.</em>
+    <h1 class="hero-title" aria-label="Hermes — U.S. Logistics, Marketing, Academy & AI Systems">
+      <span class="hero-title-office">Hermes: U.S. Logistics,</span>
+      <em class="hero-title-script">Marketing, Academy &amp; AI Systems.</em>
     </h1>
     <p class="hero-copy">{site.hero.body}</p>
     <div class="hero-actions">
