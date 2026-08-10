@@ -75,8 +75,11 @@ const routes = [
     required: [
       "Vehicle transport to and from Appleton, Wisconsin.",
       "Prepare a transport request",
-      "Carrier: share capacity",
-      "does not guarantee price, timing",
+      "Preview the Appleton Load Board demo",
+      "does not publish a request, notify a carrier",
+      "/logistics/request-vehicle-transport/?role=customer&amp;request=customer_delivery#transport-intake",
+      "data-appleton-direct-intake",
+      "data-appleton-demo",
       "Auction and dealer planning",
       "Hermes is not presented as affiliated",
       "How much does vehicle transport to or from Appleton cost?",
