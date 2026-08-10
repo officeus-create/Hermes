@@ -1,0 +1,157 @@
+<div class="privacy-consent" data-privacy-consent hidden role="dialog" aria-modal="false" aria-labelledby="privacy-consent-title">
+  <div class="privacy-consent-copy">
+    <p class="privacy-consent-eyebrow">Privacy settings</p>
+    <h2 id="privacy-consent-title">Choose whether analytics may load.</h2>
+    <p>Hermes uses necessary browser storage for site preferences. Google Analytics is optional and stays off until you accept it. Analytics is used for limited page and interaction measurement and must not receive form-entered personal details.</p>
+    <p><a href="/privacy/">Read the Privacy Policy &amp; Notice at Collection</a></p>
+  </div>
+  <div class="privacy-consent-actions">
+    <button type="button" class="button button-primary" data-privacy-accept>Accept analytics</button>
+    <button type="button" class="button" data-privacy-necessary>Necessary only</button>
+  </div>
+</div>
+
+<script is:inline>
+  (() => {
+    const STORAGE_KEY = "hermes-privacy-consent-v1";
+    const MEASUREMENT_ID = "G-RY26321PVW";
+    const panel = document.querySelector("[data-privacy-consent]");
+    const accept = document.querySelector("[data-privacy-accept]");
+    const necessary = document.querySelector("[data-privacy-necessary]");
+
+    const readChoice = () => {
+      try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (parsed?.version !== 1) return null;
+        if (parsed?.analytics === true) return "analytics";
+        if (parsed?.analytics === false) return "necessary";
+      } catch {
+        return null;
+      }
+      return null;
+    };
+
+    const writeChoice = (analytics) => {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          version: 1,
+          analytics,
+          updated_at: new Date().toISOString(),
+        }));
+      } catch {
+        // Choice applies to the current page even if browser storage is unavailable.
+      }
+    };
+
+    const clearAnalyticsCookies = () => {
+      const names = document.cookie.split(";").map((part) => part.split("=")[0]?.trim()).filter(Boolean);
+      const analyticsNames = names.filter((name) => name === "_ga" || name.startsWith("_ga_"));
+      for (const name of analyticsNames) {
+        document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+        document.cookie = `${name}=; Max-Age=0; path=/; domain=.${window.location.hostname}; SameSite=Lax`;
+      }
+    };
+
+    const loadAnalytics = () => {
+      if (document.querySelector('script[data-hermes-ga4="true"]')) return;
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function(){ window.dataLayer.push(arguments); };
+      window.gtag("js", new Date());
+      window.gtag("config", MEASUREMENT_ID);
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.dataset.hermesGa4 = "true";
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;
+      document.head.appendChild(script);
+    };
+
+    const showPanel = () => {
+      if (!panel) return;
+      panel.hidden = false;
+      accept?.focus();
+    };
+
+    const hidePanel = () => {
+      if (panel) panel.hidden = true;
+    };
+
+    const current = readChoice();
+    if (current === "analytics") loadAnalytics();
+    else if (current === null) {
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", showPanel, { once: true });
+      else showPanel();
+    }
+
+    accept?.addEventListener("click", () => {
+      writeChoice(true);
+      loadAnalytics();
+      hidePanel();
+    });
+
+    necessary?.addEventListener("click", () => {
+      const hadAnalytics = readChoice() === "analytics" || Boolean(document.querySelector('script[data-hermes-ga4="true"]'));
+      writeChoice(false);
+      clearAnalyticsCookies();
+      hidePanel();
+      if (hadAnalytics) window.location.reload();
+    });
+
+    document.addEventListener("click", (event) => {
+      const trigger = event.target instanceof Element ? event.target.closest("[data-privacy-settings-open]") : null;
+      if (!trigger) return;
+      event.preventDefault();
+      showPanel();
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key !== STORAGE_KEY) return;
+      const next = readChoice();
+      if (next === "analytics") loadAnalytics();
+      if (next === "necessary") {
+        clearAnalyticsCookies();
+        if (document.querySelector('script[data-hermes-ga4="true"]')) window.location.reload();
+      }
+    });
+  })();
+</script>
+
+<style is:global>
+  .privacy-consent[hidden] { display: none !important; }
+  .privacy-consent {
+    position: fixed;
+    z-index: 120;
+    right: 1rem;
+    bottom: 1rem;
+    left: 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.25rem;
+    align-items: end;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(1rem, 2vw, 1.4rem);
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 18px;
+    background: rgba(7,20,61,.98);
+    color: white;
+    box-shadow: 0 24px 70px rgba(5,16,52,.35);
+  }
+  .privacy-consent h2 { margin: .2rem 0 .6rem; font-size: clamp(1.2rem, 2vw, 1.6rem); }
+  .privacy-consent p { margin: 0; max-width: 720px; color: rgba(255,255,255,.78); line-height: 1.6; }
+  .privacy-consent p + p { margin-top: .55rem; }
+  .privacy-consent a { color: white; }
+  .privacy-consent-eyebrow { font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .privacy-consent-actions { display: grid; gap: .55rem; min-width: 180px; }
+  .privacy-consent-actions .button { justify-content: center; min-height: 44px; }
+  [data-privacy-settings-open] { background: none; border: 0; padding: 0; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+  @media (max-width: 760px) {
+    .privacy-consent { grid-template-columns: 1fr; }
+    .privacy-consent-actions { grid-template-columns: 1fr 1fr; min-width: 0; }
+  }
+  @media (max-width: 480px) {
+    .privacy-consent-actions { grid-template-columns: 1fr; }
+  }
+</style>
