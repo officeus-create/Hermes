@@ -6,6 +6,8 @@ import SiteFooter from "../../components/SiteFooter.astro";
 const title = "Wisconsin Vehicle Transport | Hermes Logistics";
 const description = "Request vehicle transport in Wisconsin for dealer, auction, business, or private moves. Explore Hermes vehicle transport pages for major Wisconsin service areas.";
 const canonicalUrl = new URL("/logistics/wisconsin-vehicle-transport/", Astro.site).toString();
+const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
+const loadBoardDemo = "/load-board/?role=private_party&origin=Wisconsin#post-load";
 
 const locations = [
   ["Milwaukee", "/logistics/milwaukee-wi-vehicle-transport/", "Southeastern Wisconsin dealer, auction, business, and private vehicle requests."],
@@ -45,8 +47,8 @@ import "../../styles/features/appleton.css";
       <p class="eyebrow">Hermes Logistics · Wisconsin</p>
       <h1>Vehicle transport across Wisconsin.</h1>
       <p>Hermes reviews vehicle transport requests for dealers, auction buyers and sellers, businesses, and private customers. Use the closest local page or submit the exact route directly for review.</p>
-      <div class="logistics-audience-actions"><a class="button button-primary" href="/load-board/?role=private_party&amp;origin=Wisconsin#post-load">Prepare a Wisconsin transport request</a><a class="button" href="/load-board/?role=carrier&amp;area=Wisconsin#carrier-access">Carrier: share Wisconsin capacity</a></div>
-      <p>Submitting a request does not guarantee price, timing, equipment, or carrier availability.</p>
+      <div class="logistics-audience-actions"><a class="button button-primary" href={directTransportIntake} data-wisconsin-direct-intake>Prepare a Wisconsin transport request</a><a class="button" href={loadBoardDemo} data-wisconsin-demo>Preview the Wisconsin Load Board demo</a><a class="button" href="/load-board/?role=carrier&amp;area=Wisconsin#carrier-access">Carrier: share Wisconsin capacity in demo</a></div>
+      <p>The direct intake starts a Logistics Sales review. It does not publish a request, notify a carrier, confirm capacity, create a booking, or guarantee price, timing, equipment, or carrier availability.</p>
     </div></section>
 
     <section class="section"><div class="shell"><p class="eyebrow">Wisconsin service areas</p><h2>Choose a local vehicle transport page.</h2><div class="appleton-card-grid">{locations.map(([name, href, copy]) => (<article><h3>{name}</h3><p>{copy}</p><a href={href}>Open {name} vehicle transport</a></article>))}</div></div></section>
