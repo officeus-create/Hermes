@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "payments_enabled": false,
+  "seller_entity": null,
+  "offer_id": null,
+  "payment_processor": null,
+  "terms_of_sale_url": null,
+  "refund_policy_url": null,
+  "cancellation_policy_url": null,
+  "recurring_billing": false,
+  "approved_at": null,
+  "approved_by": null,
+  "note": "Payment activation requires the Payment Launch Gate to be completed for the specific selling workflow."
+}
