@@ -17,6 +17,10 @@ import { site } from "../data/site";
       <span class="hero-title-office">Hermes: U.S. Logistics,</span>
       <em class="hero-title-script">Marketing, Academy &amp; AI Systems.</em>
     </h1>
+    <p class="hero-legacy-tagline" role="heading" aria-level="2" aria-label="Four directions. One way forward.">
+      <span class="hero-title-office" aria-hidden="true">Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.</span>
+      <em class="hero-title-script" aria-hidden="true">One way forward.</em>
+    </p>
     <p class="hero-copy">Hermes connects four practical business directions: U.S. logistics operations for carriers, dealers, shippers and vehicle transport; marketing systems for visibility and qualified demand; business education built around operational workflows; and AI, CRM, automation and web development for teams that need better digital systems. Choose the path that matches the bottleneck you need to solve now.</p>
     <div class="hero-actions">
       <a class="button button-primary" href={site.hero.primaryCta.href}>
@@ -34,3 +38,24 @@ import { site } from "../data/site";
     <ArrowDown size={18} aria-hidden="true" />
   </a>
 </section>
+
+<style>
+  .hero-legacy-tagline {
+    display: flex;
+    align-items: baseline;
+    gap: .45rem;
+    margin: .65rem 0 .25rem;
+    font-size: clamp(.82rem, 1.2vw, 1rem);
+    line-height: 1.2;
+    opacity: .78;
+  }
+  .hero-legacy-tagline :global(.hero-title-office),
+  .hero-legacy-tagline :global(.hero-title-script) {
+    display: inline;
+    font-size: inherit;
+    line-height: inherit;
+  }
+  @media (max-width: 700px) {
+    .hero-legacy-tagline { flex-wrap: wrap; gap: .2rem .4rem; }
+  }
+</style>
