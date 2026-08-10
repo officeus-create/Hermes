@@ -1,0 +1,55 @@
+---
+import TrustPage from "../components/TrustPage.astro";
+
+const sections = [
+  {
+    title: "Website and public contact",
+    body: [
+      "The public website is hermeslogisticsus.com. The primary public coordination email is officeus@hermeslogisticsus.com. U.S. logistics pages may also display the approved Logistics Sales telephone route.",
+    ],
+  },
+  {
+    title: "U.S. logistics entity",
+    body: [
+      "Hermes Logistics LLC is the U.S. logistics business identified on this website for logistics-related services and communications. A specific proposal, carrier agreement, order, invoice, or other written agreement controls the exact contracting relationship, service scope, authority, fees, responsibilities, and applicable legal terms.",
+    ],
+  },
+  {
+    title: "Other Hermes directions",
+    body: [
+      "The website also presents marketing, academy, and technology directions. Their inclusion on one website does not automatically mean every service is contracted through Hermes Logistics LLC. Before a paid engagement, the proposal, order, invoice, or agreement should identify the applicable contracting entity and the service-specific terms.",
+    ],
+  },
+  {
+    title: "No implied licensing or affiliation",
+    body: [
+      "A logo, public link, industry reference, government source, platform name, or third-party service mentioned on the site does not by itself create an endorsement, partnership, agency, license, or affiliation. Regulated authority, insurance, brokerage, carrier, professional, or other status should be stated only where it is current, verified, and relevant to the service being offered.",
+    ],
+  },
+  {
+    title: "Before payment or signing",
+    bullets: [
+      "Confirm the legal entity shown on the proposal, order, invoice, or agreement.",
+      "Confirm the exact service scope, price or percentage, payment timing, cancellation or refund terms, and any recurring billing terms.",
+      "For logistics representation or carrier services, confirm the written authority and service model applicable to that relationship.",
+      "For marketing, academy, and technology services, confirm the entity and service-specific commercial terms before payment.",
+    ],
+  },
+  {
+    title: "Corrections",
+    body: [
+      "If any public company identity, contact route, authority, or service statement appears outdated or inconsistent with a written agreement, contact officeus@hermeslogisticsus.com so the public record can be reviewed and corrected.",
+    ],
+  },
+];
+---
+
+<TrustPage
+  title="Company Information | Hermes"
+  description="Public company identity, contracting-entity boundaries, contact information, and pre-payment verification guidance for Hermes website visitors."
+  eyebrow="Company identity"
+  h1="Company Information"
+  intro="Who operates the relevant Hermes service, how contracting-entity boundaries work, and what to verify before payment or signing."
+  reviewedAt="2026-08-10"
+  {sections}
+/>
