@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import HeroEditorial from "../components/HeroEditorial.astro";
+import HomeAnswerEngineAuthority from "../components/HomeAnswerEngineAuthority.astro";
 import HomeLogisticsDiscovery from "../components/HomeLogisticsDiscovery.astro";
 import HomeRoleRouter from "../components/HomeRoleRouter.astro";
 import HomeTechnologyPreview from "../components/HomeTechnologyPreview.astro";
@@ -19,6 +20,7 @@ import { approvedHermesSameAs } from "../data/public-entity-registry";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
+const webpageId = "https://hermeslogisticsus.com/#webpage";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -39,18 +41,12 @@ const organizationSchema = {
   contactPoint: {
     "@type": "ContactPoint",
     telephone: "+1-262-302-3626",
-    email: "freight_301@hermeslogisticsus.com",
+    email: "officeus@hermeslogisticsus.com",
     contactType: "Logistics Sales",
     areaServed: "US",
     availableLanguage: ["English", "Russian", "Ukrainian"],
   },
-  areaServed: [
-    { "@type": "Country", name: "United States" },
-    { "@type": "Country", name: "Italy" },
-    { "@type": "Country", name: "Germany" },
-    { "@type": "Country", name: "France" },
-    { "@type": "Country", name: "United Kingdom" },
-  ],
+  areaServed: { "@type": "Country", name: "United States" },
   sameAs: approvedHermesSameAs,
 };
 
@@ -64,13 +60,58 @@ const websiteSchema = {
   inLanguage: ["en", "uk", "ru", "es", "it", "fr"],
   publisher: { "@id": organizationId },
 };
+
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": webpageId,
+  url: "https://hermeslogisticsus.com/",
+  name: "Hermes — U.S. Logistics, Marketing, Academy & AI Systems",
+  description: "U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem.",
+  datePublished: "2026-08-01",
+  dateModified: "2026-08-10",
+  inLanguage: "en",
+  author: { "@id": organizationId },
+  publisher: { "@id": organizationId },
+  isPartOf: { "@id": websiteId },
+  breadcrumb: { "@id": "https://hermeslogisticsus.com/#breadcrumb" },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": "https://hermeslogisticsus.com/#breadcrumb",
+  itemListElement: [{ "@type": "ListItem", position: 1, name: "Hermes", item: "https://hermeslogisticsus.com/" }],
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What does Hermes do?",
+      acceptedAnswer: { "@type": "Answer", text: "Hermes coordinates four business directions: U.S. logistics, marketing, practical business education, and AI/web systems." },
+    },
+    {
+      "@type": "Question",
+      name: "How should you choose a Hermes service?",
+      acceptedAnswer: { "@type": "Answer", text: "Choose the direction that addresses the business constraint closest to revenue, delivery, capability, or operating capacity, then measure the result before adding another layer." },
+    },
+    {
+      "@type": "Question",
+      name: "What evidence should you expect before making a decision?",
+      acceptedAnswer: { "@type": "Answer", text: "Look for a clear scope, current public terms, specific workflow explanations, measurable acceptance criteria, and evidence that can be verified." },
+    },
+  ],
+};
 ---
 
 <BaseLayout
-  title="Hermes | U.S. Logistics, Marketing, Academy & AI Systems"
+  title="Hermes — U.S. Logistics, Marketing, Academy & AI Systems"
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
   preloadImage={site.hero.image}
-  schema={[organizationSchema, websiteSchema]}
+  schema={[organizationSchema, websiteSchema, webPageSchema, breadcrumbSchema, faqSchema]}
   alternates={languageAlternates}
 >
   <SiteHeader />
@@ -95,6 +136,7 @@ const websiteSchema = {
     <HomeLogisticsDiscovery />
     <WebsiteProofBand />
     <HomeTechnologyPreview />
+    <HomeAnswerEngineAuthority />
     <WhyItMatters />
     <TrustBadge />
     <ContactCTA />
