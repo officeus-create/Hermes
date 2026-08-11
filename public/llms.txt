@@ -41,7 +41,7 @@
 
 ## Discovery files
 
-- [Sitemap index](https://hermeslogisticsus.com/sitemap-index.xml)
+- [Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)
 - [Robots.txt](https://hermeslogisticsus.com/robots.txt)
 
 ## Public and private boundaries
