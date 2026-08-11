@@ -1,0 +1,61 @@
+/* Homepage-only performance/accessibility refinements from the 2026-08-11 PSI baseline. */
+
+/* Keep inactive verbs clearly secondary while meeting readable contrast on the navy intro. */
+.site-intro-verbs span {
+  color: rgba(255, 255, 255, 0.55);
+  transition: transform 500ms ease, text-shadow 500ms ease;
+}
+
+/* Preserve the visual arrival without animating filter/blur on the main-thread paint path. */
+.hero-title-script {
+  animation-name: hero-script-arrive-composite;
+}
+
+@keyframes hero-script-arrive-composite {
+  from {
+    opacity: 0;
+    transform: translateY(.28em) rotate(1deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-1.25deg);
+  }
+}
+
+/* Replace the non-composited box-shadow pulse with transform/opacity. */
+.site-intro-sound[aria-pressed="true"] [data-intro-sound-icon] {
+  animation-name: intro-sound-pulse-composite;
+}
+
+@keyframes intro-sound-pulse-composite {
+  0%, 100% { opacity: .82; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+
+/* Avoid animating filter and max-height while preserving the same active-state hierarchy. */
+.site-intro-rail {
+  transition: flex-grow 820ms cubic-bezier(.22,.75,.2,1), opacity 620ms ease, background 620ms ease, transform 620ms ease;
+}
+
+.site-intro-rail[data-active="true"],
+.site-intro-rail[data-sound-playing="true"] {
+  filter: none;
+}
+
+.site-intro-rail-story > span {
+  transition: opacity 420ms ease, transform 520ms ease;
+}
+
+/* The product portfolio is far below the first viewport. Defer its layout/paint work until needed. */
+.product-showcase {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 3200px;
+}
+
+@media (max-width: 700px) {
+  /* Keep mobile entrance motion short and compositor-friendly on constrained devices. */
+  .site-intro-rail {
+    animation-duration: 560ms;
+    transition-duration: 420ms;
+  }
+}
