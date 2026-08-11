@@ -1,47 +1,167 @@
 ---
 import { ArrowRight } from "@lucide/astro";
 
+type BusinessLeadLocale = "en" | "ru" | "uk";
+
 interface Props {
   selectedPath?: string;
+  locale?: BusinessLeadLocale;
 }
 
-const { selectedPath = "ProgressoPro" } = Astro.props;
+const { selectedPath = "ProgressoPro", locale = "en" } = Astro.props;
 const interest = selectedPath === "IT Development" ? "IT Development" : "ProgressoPro";
 const contactMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 
 const services = [
-  "Website development",
-  "Web applications",
-  "CRM & business automation",
-  "AI bots / AI sales assistant",
-  "SEO",
-  "Google Ads",
-  "Meta Ads (Facebook / Instagram)",
-  "Social media marketing & organic growth",
-  "TikTok / Threads / X growth",
-  "Video & content production",
-  "Marketing / sales consulting",
-  "Training / courses",
+  { value: "Website development", en: "Website development", ru: "Разработка сайта", uk: "Розробка сайту" },
+  { value: "Web applications", en: "Web applications", ru: "Веб-приложения", uk: "Вебзастосунки" },
+  { value: "CRM & business automation", en: "CRM & business automation", ru: "CRM и автоматизация бизнеса", uk: "CRM та автоматизація бізнесу" },
+  { value: "AI bots / AI sales assistant", en: "AI bots / AI sales assistant", ru: "AI-боты / AI-ассистент продаж", uk: "AI-боти / AI-асистент продажів" },
+  { value: "SEO", en: "SEO", ru: "SEO", uk: "SEO" },
+  { value: "Google Ads", en: "Google Ads", ru: "Google Ads", uk: "Google Ads" },
+  { value: "Meta Ads (Facebook / Instagram)", en: "Meta Ads (Facebook / Instagram)", ru: "Meta Ads (Facebook / Instagram)", uk: "Meta Ads (Facebook / Instagram)" },
+  { value: "Social media marketing & organic growth", en: "Social media marketing & organic growth", ru: "SMM и органический рост", uk: "SMM та органічне зростання" },
+  { value: "TikTok / Threads / X growth", en: "TikTok / Threads / X growth", ru: "Продвижение TikTok / Threads / X", uk: "Просування TikTok / Threads / X" },
+  { value: "Video & content production", en: "Video & content production", ru: "Видео и производство контента", uk: "Відео та виробництво контенту" },
+  { value: "Marketing / sales consulting", en: "Marketing / sales consulting", ru: "Консалтинг по маркетингу / продажам", uk: "Консалтинг з маркетингу / продажів" },
+  { value: "Training / courses", en: "Training / courses", ru: "Обучение / курсы", uk: "Навчання / курси" },
 ];
+
+const copy = {
+  en: {
+    eyebrow: "Direct business inquiry",
+    title: "Tell us what you want to launch or improve.",
+    body: "Leave the shortest useful brief. We will use your preferred WhatsApp or Telegram contact and the time window you choose.",
+    connect: "This form is structured so the same lead can later flow into Hermes Connect without asking you to enter the same information again.",
+    name: "Your name",
+    company: "Company / project",
+    cityCountry: "City / country",
+    cityCountryPlaceholder: "Kyiv, Ukraine",
+    whatsapp: "WhatsApp number",
+    telegram: "Telegram username / link",
+    messengerHint: "Please provide at least one direct contact: WhatsApp or Telegram.",
+    websiteSocial: "Website / Instagram / social profile",
+    websitePlaceholder: "https://... or @handle; write 'not launched yet' if needed",
+    servicesLegend: "What do you want help with? Select all that apply.",
+    preferredLanguage: "Preferred language",
+    chooseLanguage: "Choose a language",
+    russian: "Russian",
+    ukrainian: "Ukrainian",
+    english: "English",
+    bestTime: "Best time to contact (include time zone)",
+    bestTimePlaceholder: "10:00–13:00, Kyiv time",
+    result: "What result do you want?",
+    resultPlaceholder: "For example: launch a new website and start getting qualified leads from Google and Instagram.",
+    honeypot: "Leave this field empty",
+    consentPrefix: "I agree that Hermes may use these details to respond to this request.",
+    privacy: "Privacy notice",
+    send: "Send request",
+    preview: "Preview request",
+    sending: "Sending...",
+    messengerError: "Please provide a WhatsApp number or Telegram contact.",
+    servicesError: "Please select at least one service.",
+    previewReady: "Preview ready. No request was sent from this environment.",
+    received: "Request received. We will use the contact channel and time window you provided.",
+    deliveryError: "Contact delivery is temporarily unavailable. Please try again later.",
+  },
+  ru: {
+    eyebrow: "Прямой запрос для бизнеса",
+    title: "Расскажите, что вы хотите запустить или улучшить.",
+    body: "Оставьте короткий бриф. Мы свяжемся через выбранный вами WhatsApp или Telegram в удобное для вас время.",
+    connect: "Форма уже структурирована так, чтобы позже передать эту же заявку в Hermes Connect без повторного заполнения данных.",
+    name: "Ваше имя",
+    company: "Компания / проект",
+    cityCountry: "Город / страна",
+    cityCountryPlaceholder: "Варшава, Польша",
+    whatsapp: "Номер WhatsApp",
+    telegram: "Telegram: username / ссылка",
+    messengerHint: "Укажите хотя бы один прямой контакт: WhatsApp или Telegram.",
+    websiteSocial: "Сайт / Instagram / социальная сеть",
+    websitePlaceholder: "https://... или @username; если ещё нет — напишите «ещё не запущен»",
+    servicesLegend: "Что вам нужно? Можно выбрать несколько вариантов.",
+    preferredLanguage: "Язык общения",
+    chooseLanguage: "Выберите язык",
+    russian: "Русский",
+    ukrainian: "Украинский",
+    english: "Английский",
+    bestTime: "Удобное время для связи (укажите часовой пояс)",
+    bestTimePlaceholder: "10:00–13:00, Варшава",
+    result: "Какой результат вы хотите получить?",
+    resultPlaceholder: "Например: запустить новый сайт и получать целевые заявки из Google и Instagram.",
+    honeypot: "Оставьте это поле пустым",
+    consentPrefix: "Я согласен, чтобы Hermes использовал эти данные для ответа на мой запрос.",
+    privacy: "Политика конфиденциальности",
+    send: "Отправить заявку",
+    preview: "Проверить заявку",
+    sending: "Отправляем...",
+    messengerError: "Укажите номер WhatsApp или контакт в Telegram.",
+    servicesError: "Выберите хотя бы одну услугу.",
+    previewReady: "Предпросмотр готов. Из этого окружения заявка не отправлена.",
+    received: "Заявка получена. Мы свяжемся через указанный канал в выбранное вами время.",
+    deliveryError: "Сейчас отправка заявки временно недоступна. Попробуйте ещё раз позже.",
+  },
+  uk: {
+    eyebrow: "Прямий запит для бізнесу",
+    title: "Розкажіть, що ви хочете запустити або покращити.",
+    body: "Залиште короткий бриф. Ми зв'яжемося через обраний вами WhatsApp або Telegram у зручний для вас час.",
+    connect: "Форма вже структурована так, щоб пізніше передати цю саму заявку в Hermes Connect без повторного введення даних.",
+    name: "Ваше ім'я",
+    company: "Компанія / проєкт",
+    cityCountry: "Місто / країна",
+    cityCountryPlaceholder: "Варшава, Польща",
+    whatsapp: "Номер WhatsApp",
+    telegram: "Telegram: username / посилання",
+    messengerHint: "Вкажіть хоча б один прямий контакт: WhatsApp або Telegram.",
+    websiteSocial: "Сайт / Instagram / соціальна мережа",
+    websitePlaceholder: "https://... або @username; якщо ще немає — напишіть «ще не запущено»",
+    servicesLegend: "Що вам потрібно? Можна обрати кілька варіантів.",
+    preferredLanguage: "Мова спілкування",
+    chooseLanguage: "Оберіть мову",
+    russian: "Російська",
+    ukrainian: "Українська",
+    english: "Англійська",
+    bestTime: "Зручний час для зв'язку (вкажіть часовий пояс)",
+    bestTimePlaceholder: "10:00–13:00, Варшава",
+    result: "Який результат ви хочете отримати?",
+    resultPlaceholder: "Наприклад: запустити новий сайт і отримувати цільові заявки з Google та Instagram.",
+    honeypot: "Залиште це поле порожнім",
+    consentPrefix: "Я погоджуюся, щоб Hermes використав ці дані для відповіді на мій запит.",
+    privacy: "Політика конфіденційності",
+    send: "Надіслати заявку",
+    preview: "Перевірити заявку",
+    sending: "Надсилаємо...",
+    messengerError: "Вкажіть номер WhatsApp або контакт у Telegram.",
+    servicesError: "Оберіть хоча б одну послугу.",
+    previewReady: "Попередній перегляд готовий. Із цього середовища заявку не надіслано.",
+    received: "Заявку отримано. Ми зв'яжемося через вказаний канал у вибраний вами час.",
+    deliveryError: "Зараз надсилання заявки тимчасово недоступне. Спробуйте ще раз пізніше.",
+  },
+} as const;
+
+const t = copy[locale];
 ---
 
 <section class="section contact-section" id="business-lead">
   <div class="shell contact-layout">
     <div class="contact-copy">
-      <p class="eyebrow">Direct business inquiry</p>
-      <h2>Tell us what you want to launch or improve.</h2>
-      <p>
-        Leave the shortest useful brief. We will use your preferred WhatsApp or Telegram contact and the time window you choose.
-      </p>
-      <p>
-        This form is structured so the same lead can later flow into Hermes Connect without asking you to enter the same information again.
-      </p>
+      <p class="eyebrow">{t.eyebrow}</p>
+      <h2>{t.title}</h2>
+      <p>{t.body}</p>
+      <p>{t.connect}</p>
     </div>
 
     <form
       class="contact-form"
       data-business-lead-form
       data-contact-mode={contactMode}
+      data-send-label={t.send}
+      data-preview-label={t.preview}
+      data-sending-label={t.sending}
+      data-messenger-error={t.messengerError}
+      data-services-error={t.servicesError}
+      data-preview-ready={t.previewReady}
+      data-received={t.received}
+      data-delivery-error={t.deliveryError}
       novalidate
     >
       <input type="hidden" name="interest" value={interest} />
@@ -49,7 +169,7 @@ const services = [
 
       <div class="field-row">
         <label>
-          Your name
+          {t.name}
           <input type="text" name="name" autocomplete="name" minlength="2" maxlength="100" required />
         </label>
         <label>
@@ -60,94 +180,94 @@ const services = [
 
       <div class="field-row">
         <label>
-          Company / project
+          {t.company}
           <input type="text" name="company" maxlength="140" required />
         </label>
         <label>
-          City / country
-          <input type="text" name="city_country" maxlength="120" placeholder="Kyiv, Ukraine" required />
+          {t.cityCountry}
+          <input type="text" name="city_country" maxlength="120" placeholder={t.cityCountryPlaceholder} required />
         </label>
       </div>
 
       <div class="field-row">
         <label>
-          WhatsApp number
+          {t.whatsapp}
           <input type="text" name="whatsapp" maxlength="120" placeholder="+380..." autocomplete="tel" />
         </label>
         <label>
-          Telegram username / link
+          {t.telegram}
           <input type="text" name="telegram" maxlength="120" placeholder="@username or t.me/..." />
         </label>
       </div>
-      <p class="form-status">Please provide at least one direct contact: WhatsApp or Telegram.</p>
+      <p class="form-status">{t.messengerHint}</p>
 
       <label>
-        Website / Instagram / social profile
+        {t.websiteSocial}
         <input
           type="text"
           name="website_or_social"
           maxlength="240"
-          placeholder="https://... or @handle; write 'not launched yet' if needed"
+          placeholder={t.websitePlaceholder}
           required
         />
       </label>
 
       <fieldset class="contact-direction-platforms" data-service-group>
-        <legend>What do you want help with? Select all that apply.</legend>
+        <legend>{t.servicesLegend}</legend>
         {services.map((service) => (
           <label class="contact-direction-checkbox">
-            <input type="checkbox" name="services" value={service} />
-            <span>{service}</span>
+            <input type="checkbox" name="services" value={service.value} />
+            <span>{service[locale]}</span>
           </label>
         ))}
       </fieldset>
 
       <div class="field-row">
         <label>
-          Preferred language
+          {t.preferredLanguage}
           <select name="preferred_language" required>
-            <option value="">Choose a language</option>
-            <option value="Russian">Russian</option>
-            <option value="Ukrainian">Ukrainian</option>
-            <option value="English">English</option>
+            <option value="">{t.chooseLanguage}</option>
+            <option value="Russian" selected={locale === "ru"}>{t.russian}</option>
+            <option value="Ukrainian" selected={locale === "uk"}>{t.ukrainian}</option>
+            <option value="English" selected={locale === "en" ? undefined : false}>{t.english}</option>
           </select>
         </label>
         <label>
-          Best time to contact (include time zone)
+          {t.bestTime}
           <input
             type="text"
             name="preferred_contact_time"
             maxlength="120"
-            placeholder="10:00–13:00, Kyiv time"
+            placeholder={t.bestTimePlaceholder}
             required
           />
         </label>
       </div>
 
       <label>
-        What result do you want?
+        {t.result}
         <textarea
           name="message"
           rows="4"
           minlength="10"
           maxlength="2000"
-          placeholder="For example: launch a new website and start getting qualified leads from Google and Instagram."
+          placeholder={t.resultPlaceholder}
           required
         ></textarea>
       </label>
 
       <label class="honeypot" aria-hidden="true">
-        Leave this field empty
+        {t.honeypot}
         <input type="text" name="middle_name" tabindex="-1" autocomplete="off" />
       </label>
 
       <label class="consent-field">
         <input type="checkbox" name="consent" required />
-        <span>I agree that Hermes may use these details to respond to this request. <a href="/privacy/">Privacy notice</a>.</span>
+        <span>{t.consentPrefix} <a href="/privacy/">{t.privacy}</a>.</span>
       </label>
 
       <button class="button button-primary" type="submit">
-        <span data-submit-label>{contactMode === "live" ? "Send request" : "Preview request"}</span>
+        <span data-submit-label>{contactMode === "live" ? t.send : t.preview}</span>
         <ArrowRight size={18} aria-hidden="true" />
       </button>
       <p class="form-status" role="status" data-form-status></p>
@@ -169,14 +289,14 @@ const services = [
   };
 
   const setSubmitting = (submitting: boolean) => {
-    if (!submitButton || !submitLabel) return;
+    if (!submitButton || !submitLabel || !form) return;
     submitButton.disabled = submitting;
     submitButton.setAttribute("aria-busy", String(submitting));
     submitLabel.textContent = submitting
-      ? "Sending..."
-      : form?.dataset.contactMode === "live"
-        ? "Send request"
-        : "Preview request";
+      ? form.dataset.sendingLabel || "Sending..."
+      : form.dataset.contactMode === "live"
+        ? form.dataset.sendLabel || "Send request"
+        : form.dataset.previewLabel || "Preview request";
   };
 
   const getAttribution = () => {
@@ -208,13 +328,13 @@ const services = [
     const whatsapp = String(data.get("whatsapp") ?? "").trim();
     const telegram = String(data.get("telegram") ?? "").trim();
     if (!whatsapp && !telegram) {
-      setAlert("Please provide a WhatsApp number or Telegram contact.");
+      setAlert(form.dataset.messengerError || "Please provide a WhatsApp number or Telegram contact.");
       return;
     }
 
-    const services = data.getAll("services").map((value) => String(value));
-    if (!services.length) {
-      setAlert("Please select at least one service.");
+    const selectedServices = data.getAll("services").map((value) => String(value));
+    if (!selectedServices.length) {
+      setAlert(form.dataset.servicesError || "Please select at least one service.");
       return;
     }
 
@@ -232,14 +352,14 @@ const services = [
       website_or_social: String(data.get("website_or_social") ?? ""),
       preferred_language: String(data.get("preferred_language") ?? ""),
       preferred_contact_time: String(data.get("preferred_contact_time") ?? ""),
-      services,
+      services: selectedServices,
       message: String(data.get("message") ?? ""),
       consent: data.get("consent") === "on",
       attribution: getAttribution(),
     };
 
     if (form.dataset.contactMode !== "live") {
-      if (status) status.textContent = "Preview ready. No request was sent from this environment.";
+      if (status) status.textContent = form.dataset.previewReady || "Preview ready. No request was sent from this environment.";
       return;
     }
 
@@ -260,9 +380,9 @@ const services = [
       if (!response.ok) throw new Error("delivery_failed");
 
       form.reset();
-      if (status) status.textContent = "Request received. We will use the contact channel and time window you provided.";
+      if (status) status.textContent = form.dataset.received || "Request received. We will use the contact channel and time window you provided.";
     } catch {
-      setAlert("Contact delivery is temporarily unavailable. Please try again later.");
+      setAlert(form.dataset.deliveryError || "Contact delivery is temporarily unavailable. Please try again later.");
     } finally {
       window.clearTimeout(timeout);
       setSubmitting(false);
