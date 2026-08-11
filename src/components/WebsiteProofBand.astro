@@ -1,5 +1,9 @@
 ---
 import { ArrowRight, Bot, CalendarDays, Check, ExternalLink, PackageOpen, Truck, Users } from "@lucide/astro";
+import crmCssUrl from "../styles/features/crm.css?url";
+import connectCssUrl from "../styles/features/connect.css?url";
+import productCssUrl from "../styles/features/product.css?url";
+import loadCssUrl from "../styles/features/load.css?url";
 
 const websiteProof = [
   "Original visual system",
@@ -14,13 +18,18 @@ const crmStages = [
   { name: "Review", count: 7, color: "#f59f00" },
   { name: "Next action", count: 4, color: "#d6336c" },
 ];
-import "../styles/features/crm.css";
-import "../styles/features/connect.css";
-import "../styles/features/product.css";
-import "../styles/features/load.css";
+
+const deferredFeatureStyles = [crmCssUrl, connectCssUrl, productCssUrl, loadCssUrl];
 ---
 
-<section class="product-showcase" id="product-portfolio" aria-labelledby="website-proof-title">
+<template data-product-feature-styles>
+  {deferredFeatureStyles.map((href) => <link rel="stylesheet" href={href} />)}
+</template>
+<noscript>
+  {deferredFeatureStyles.map((href) => <link rel="stylesheet" href={href} />)}
+</noscript>
+
+<section class="product-showcase" id="product-portfolio" aria-labelledby="website-proof-title" data-product-feature-section>
   <div class="shell product-showcase-heading" data-reveal>
     <p class="eyebrow">Products built by Hermes IT Development</p>
     <h2>From one live website to a connected product portfolio.</h2>
@@ -203,3 +212,27 @@ import "../styles/features/load.css";
     </div>
   </article>
 </section>
+
+<script>
+  const section = document.querySelector<HTMLElement>("[data-product-feature-section]");
+  const template = document.querySelector<HTMLTemplateElement>("[data-product-feature-styles]");
+  let loaded = false;
+
+  const loadProductStyles = () => {
+    if (loaded || !template) return;
+    loaded = true;
+    document.head.append(template.content.cloneNode(true));
+    template.remove();
+  };
+
+  if (!section || !template || !("IntersectionObserver" in window)) {
+    loadProductStyles();
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      loadProductStyles();
+      observer.disconnect();
+    }, { rootMargin: "1600px 0px" });
+    observer.observe(section);
+  }
+</script>
