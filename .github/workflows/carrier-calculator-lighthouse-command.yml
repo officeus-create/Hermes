@@ -1,0 +1,126 @@
+name: Measure carrier calculator Lighthouse on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: carrier-calculator-lighthouse-${{ github.event.comment.id }}
+  cancel-in-progress: false
+
+jobs:
+  measure:
+    if: >-
+      github.event.issue.number == 380 &&
+      github.event.comment.body == '/measure-carrier-calculators' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RPM_URL: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
+      FACTORING_URL: https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Prepare output directory
+        run: mkdir -p artifacts/carrier-calculator-lighthouse
+
+      - name: Measure mobile calculator routes
+        shell: bash
+        run: |
+          npx --yes lighthouse@13.4.1 "$RPM_URL" \
+            --output=json \
+            --output-path=artifacts/carrier-calculator-lighthouse/rpm-mobile.json \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+          npx --yes lighthouse@13.4.1 "$FACTORING_URL" \
+            --output=json \
+            --output-path=artifacts/carrier-calculator-lighthouse/factoring-mobile.json \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+
+      - name: Measure desktop calculator routes
+        shell: bash
+        run: |
+          npx --yes lighthouse@13.4.1 "$RPM_URL" \
+            --preset=desktop \
+            --output=json \
+            --output-path=artifacts/carrier-calculator-lighthouse/rpm-desktop.json \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+          npx --yes lighthouse@13.4.1 "$FACTORING_URL" \
+            --preset=desktop \
+            --output=json \
+            --output-path=artifacts/carrier-calculator-lighthouse/factoring-desktop.json \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+
+      - name: Summarize sanitized lab evidence
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const dir = 'artifacts/carrier-calculator-lighthouse';
+          const runs = [
+            ['RPM calculator', 'mobile', 'rpm-mobile.json'],
+            ['RPM calculator', 'desktop', 'rpm-desktop.json'],
+            ['Factoring calculator', 'mobile', 'factoring-mobile.json'],
+            ['Factoring calculator', 'desktop', 'factoring-desktop.json'],
+          ];
+          const rows = [];
+          for (const [route, mode, file] of runs) {
+            const report = JSON.parse(fs.readFileSync(`${dir}/${file}`, 'utf8'));
+            const score = (name) => Math.round((report.categories?.[name]?.score ?? 0) * 100);
+            const lcp = ((report.audits?.['largest-contentful-paint']?.numericValue ?? 0) / 1000).toFixed(2);
+            const cls = Number(report.audits?.['cumulative-layout-shift']?.numericValue ?? 0).toFixed(3);
+            const tbt = Math.round(report.audits?.['total-blocking-time']?.numericValue ?? 0);
+            rows.push(`| ${route} | ${mode} | ${score('performance')} | ${score('accessibility')} | ${score('best-practices')} | ${score('seo')} | ${lcp}s | ${cls} | ${tbt}ms |`);
+          }
+          const markdown = [
+            '## Carrier calculator production Lighthouse',
+            '',
+            '| Route | Mode | Performance | Accessibility | Best practices | SEO | LCP | CLS | TBT |',
+            '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
+            ...rows,
+            '',
+            'Evidence class: production lab measurement from a GitHub-hosted runner. It is not CrUX field data and does not prove rankings, traffic, leads, or revenue.',
+          ].join('\n');
+          fs.writeFileSync(`${dir}/summary.md`, `${markdown}\n`);
+          NODE
+
+      - name: Publish measurement to calculator issue
+        shell: bash
+        run: |
+          {
+            cat artifacts/carrier-calculator-lighthouse/summary.md
+            echo
+            echo "Measured approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/carrier-calculator-lighthouse-comment.md
+          gh issue comment 380 --repo "${{ github.repository }}" --body-file /tmp/carrier-calculator-lighthouse-comment.md
+
+      - name: Upload lab reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: carrier-calculator-lighthouse
+          path: artifacts/carrier-calculator-lighthouse/
+          if-no-files-found: error
+          retention-days: 30
