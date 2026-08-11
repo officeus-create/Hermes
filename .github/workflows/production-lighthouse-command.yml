@@ -8,9 +8,11 @@ permissions:
   contents: read
   issues: write
 
+# Every issue comment triggers workflow evaluation. Scope concurrency to the exact
+# comment so an unrelated later comment cannot cancel an approved measurement run.
 concurrency:
-  group: production-lighthouse-command
-  cancel-in-progress: true
+  group: production-lighthouse-command-${{ github.event.comment.id }}
+  cancel-in-progress: false
 
 jobs:
   measure:
