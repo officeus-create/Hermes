@@ -3,7 +3,9 @@
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-08-10-compliance-trust-pages",
   "generated_at": "2026-08-10T09:00:00+03:00",
-  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "status": "PRODUCTION_VERIFIED",
+  "production_verified_at": "2026-08-11",
+  "production_verification_run": "31525633223",
   "additions": [
     {
       "route": "/privacy-choices/",
@@ -17,7 +19,7 @@
       "blocker": null,
       "response_status": 200,
       "comparison": {
-        "production": "pending_deployment",
+        "production": "verified_2026-08-11",
         "immutable_release": "missing"
       }
     },
@@ -33,7 +35,7 @@
       "blocker": null,
       "response_status": 200,
       "comparison": {
-        "production": "pending_deployment",
+        "production": "verified_2026-08-11",
         "immutable_release": "missing"
       }
     },
@@ -49,7 +51,7 @@
       "blocker": null,
       "response_status": 200,
       "comparison": {
-        "production": "pending_deployment",
+        "production": "verified_2026-08-11",
         "immutable_release": "missing"
       }
     },
@@ -65,7 +67,7 @@
       "blocker": null,
       "response_status": 200,
       "comparison": {
-        "production": "pending_deployment",
+        "production": "verified_2026-08-11",
         "immutable_release": "missing"
       }
     },
@@ -81,7 +83,7 @@
       "blocker": null,
       "response_status": 200,
       "comparison": {
-        "production": "pending_deployment",
+        "production": "verified_2026-08-11",
         "immutable_release": "missing"
       }
     },
@@ -97,7 +99,7 @@
       "blocker": null,
       "response_status": 200,
       "comparison": {
-        "production": "pending_deployment",
+        "production": "verified_2026-08-11",
         "immutable_release": "missing"
       }
     }
@@ -106,6 +108,6 @@
     "route_count_added": 6,
     "indexable_route_count_added": 6,
     "requires_green_current_head_ci": true,
-    "requires_production_snapshot_reconciliation_after_deploy": true
+    "requires_production_snapshot_reconciliation_after_deploy": false
   }
 }
