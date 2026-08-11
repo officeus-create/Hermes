@@ -13,9 +13,8 @@ interface Props {
 
 const { campaign, locale } = Astro.props;
 const t = campaign.copy[locale];
-const localePath = locale === "ru" ? "ru" : "ua";
 const alternates = [
-  { lang: "en", href: `/business-growth/?service=${encodeURIComponent(campaign.slug)}` },
+  { lang: "en", href: "/business-growth/" },
   { lang: "ru", href: `/ru/business-growth/${campaign.slug}/` },
   { lang: "uk", href: `/ua/business-growth/${campaign.slug}/` },
   { lang: "x-default", href: "/business-growth/" },
