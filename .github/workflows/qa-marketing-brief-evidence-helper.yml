@@ -1,7 +1,7 @@
 name: QA Marketing Brief evidence helper
 
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - main
 
@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   refresh-marketing-evidence:
-    if: github.event.pull_request.number == 340 && github.head_ref == 'qa/marketing-brief-evidence-v1'
+    if: github.event.pull_request.number == 340 && github.event.pull_request.head.ref == 'qa/marketing-brief-evidence-v1'
     runs-on: ubuntu-latest
     steps:
       - name: Check out QA branch
