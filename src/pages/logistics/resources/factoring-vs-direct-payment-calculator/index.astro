@@ -6,19 +6,21 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
 const title = "Factoring vs Direct Payment Calculator for Carriers | Hermes Logistics";
 const description =
-  "Compare factoring and direct payment using your own invoice amount, percentage and fixed fees, and expected payment days. See net cash, retained percentage, timing difference, and cost per accelerated day.";
+  "Compare factoring and direct payment using your own invoice amount, fees, expected payment days, and annual working-capital assumption. See explicit net cash, timing-cost estimates, and adjusted comparison.";
 const canonicalUrl = new URL("/logistics/resources/factoring-vs-direct-payment-calculator/", Astro.site).toString();
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
 
 const formulas = [
   ["Factoring fee", "Invoice × factoring fee % + factoring fixed fee"],
-  ["Factoring net cash", "Invoice − factoring fee"],
+  ["Factoring explicit net cash", "Invoice − factoring fee"],
   ["Direct payment fee", "Invoice × direct/quick-pay fee % + direct fixed fee"],
-  ["Direct net cash", "Invoice − direct payment fee"],
-  ["Net cash difference", "Direct net cash − factoring net cash"],
+  ["Direct explicit net cash", "Invoice − direct payment fee"],
+  ["Waiting-cost estimate", "Invoice × annual working-capital assumption % × payment days ÷ 365"],
+  ["Net after entered costs", "Explicit net cash − waiting-cost estimate"],
+  ["Adjusted difference", "Direct net after entered costs − factoring net after entered costs"],
   ["Days accelerated", "Direct payment days − factoring payment days"],
-  ["Cost per accelerated day", "Net cash difference ÷ days accelerated, when factoring is faster"],
-  ["Amount retained", "Net cash ÷ invoice × 100"],
+  ["Explicit cost per accelerated day", "Explicit net-cash difference ÷ days accelerated, when factoring is faster"],
+  ["Amount retained", "Explicit net cash ÷ invoice × 100"],
 ];
 
 const schema = [
@@ -66,8 +68,8 @@ const schema = [
                 <p class="eyebrow">Free carrier tool · Cash-flow comparison</p>
                 <h1>Factoring vs Direct Payment Calculator</h1>
                 <p>
-                  Compare two payment paths using only the terms you enter. See how fees affect net cash, how many days one option may accelerate payment,
-                  and the arithmetic cost of that timing difference.
+                  Compare two payment paths using only the terms you enter. See how explicit fees affect cash received, how many days one option may accelerate payment,
+                  and how your own annual working-capital assumption changes the timing comparison.
                 </p>
                 <div class="logistics-audience-actions">
                   <a class="button button-primary" href="#calculator">Compare payment paths <ArrowRight size={18} aria-hidden="true" /></a>
@@ -77,7 +79,7 @@ const schema = [
               <aside class="resource-safety-card">
                 <ShieldCheck size={30} aria-hidden="true" />
                 <h2>Your invoice assumptions stay in your browser.</h2>
-                <p>The calculator does not send entered invoice amounts, fee percentages, fixed fees, or payment-day assumptions to general analytics.</p>
+                <p>The calculator does not send entered invoice amounts, fee percentages, fixed fees, payment-day assumptions, or working-capital assumptions to general analytics.</p>
               </aside>
             </div>
           </div>
@@ -90,8 +92,7 @@ const schema = [
               <p class="eyebrow">Cash timing versus cost</p>
               <h2 id="factoring-why-title">A faster payment can cost more even when the invoice value is unchanged.</h2>
               <p>
-                This comparison separates two questions: how much cash remains after the entered fees, and how many calendar days separate the expected payment dates.
-                It does not decide which option is better for your business.
+                This comparison separates explicit fees from the value you assign to waiting for cash. The working-capital input is your own assumption, not a financing quote, APR, market benchmark, or recommendation.
               </p>
             </div>
           </div>
@@ -138,10 +139,14 @@ const schema = [
                     <span>Expected direct payment (days)</span>
                     <input name="directDays" type="number" min="0" step="1" value="30" inputmode="numeric" required />
                   </label>
+                  <label>
+                    <span>Your annual working-capital assumption (%)</span>
+                    <input name="capitalRate" type="number" min="0" max="1000" step="0.1" value="12" inputmode="decimal" required />
+                  </label>
                 </div>
 
                 <p class="factoring-form-note">
-                  The defaults are an editable illustration, not a market benchmark. Replace every value with the actual terms you are evaluating. Do not enter broker names, bank details, invoice numbers, customer information, or other private data.
+                  The defaults are an editable illustration, not a market benchmark. Replace every value with the actual terms and your own working-capital assumption. Do not enter broker names, bank details, invoice numbers, customer information, or other private data.
                 </p>
                 <button class="button button-primary factoring-calculate" type="submit">Compare payment paths <ArrowRight size={18} aria-hidden="true" /></button>
                 <p class="factoring-error" data-factoring-error role="alert" hidden></p>
@@ -158,23 +163,27 @@ const schema = [
               </div>
 
               <div class="factoring-primary-results">
-                <div><span>Factoring net cash</span><strong data-output="factoringNet">—</strong></div>
-                <div><span>Direct net cash</span><strong data-output="directNet">—</strong></div>
-                <div><span>Net cash difference</span><strong data-output="netDifference">—</strong></div>
+                <div><span>Factoring net after entered costs</span><strong data-output="factoringAdjustedNet">—</strong></div>
+                <div><span>Direct net after entered costs</span><strong data-output="directAdjustedNet">—</strong></div>
+                <div><span>Adjusted difference</span><strong data-output="adjustedDifference">—</strong></div>
               </div>
 
               <dl class="factoring-result-list">
+                <div><dt>Factoring explicit net cash</dt><dd data-output="factoringNet">—</dd></div>
+                <div><dt>Direct explicit net cash</dt><dd data-output="directNet">—</dd></div>
                 <div><dt>Factoring fee total</dt><dd data-output="factoringFee">—</dd></div>
                 <div><dt>Direct fee total</dt><dd data-output="directFee">—</dd></div>
+                <div><dt>Factoring waiting-cost estimate</dt><dd data-output="factoringWaitCost">—</dd></div>
+                <div><dt>Direct waiting-cost estimate</dt><dd data-output="directWaitCost">—</dd></div>
                 <div><dt>Factoring amount retained</dt><dd data-output="factoringRetained">—</dd></div>
                 <div><dt>Direct amount retained</dt><dd data-output="directRetained">—</dd></div>
                 <div><dt>Payment timing difference</dt><dd data-output="daysDifference">—</dd></div>
-                <div><dt>Cost per accelerated day</dt><dd data-output="costPerDay">—</dd></div>
+                <div><dt>Explicit cost per accelerated day</dt><dd data-output="costPerDay">—</dd></div>
               </dl>
 
               <div class="factoring-sensitivity" data-output="summary">Enter your terms and compare the two payment paths.</div>
               <p class="factoring-disclaimer">
-                Arithmetic estimate only. This tool is not accounting, tax, legal, lending, credit, factoring-contract, banking, or financial advice. It does not model every contract term and does not predict payment, disputes, recourse, chargebacks, broker credit, cash flow, profit, or revenue.
+                Arithmetic estimate only. The waiting-cost estimate applies your own annual assumption as invoice × annual rate × days ÷ 365. This tool is not accounting, tax, legal, lending, credit, factoring-contract, banking, or financial advice. It does not model every contract term and does not predict payment, disputes, recourse, chargebacks, broker credit, cash flow, profit, or revenue.
               </p>
             </div>
           </div>
@@ -185,7 +194,7 @@ const schema = [
             <div>
               <p class="eyebrow">Transparent math</p>
               <h2 id="factoring-formulas-title">The comparison uses only the terms you enter.</h2>
-              <p>No industry-average factoring fee, payment speed, broker credit assumption, or profitability recommendation is inserted by Hermes.</p>
+              <p>No industry-average factoring fee, payment speed, cost of capital, broker credit assumption, or profitability recommendation is inserted by Hermes.</p>
             </div>
             <dl>
               {formulas.map(([label, formula]) => <div><dt>{label}</dt><dd>{formula}</dd></div>)}
@@ -257,6 +266,7 @@ const schema = [
     const directPercent = read("directPercent");
     const directFixed = read("directFixed");
     const directDays = read("directDays");
+    const capitalRate = read("capitalRate");
 
     const valid =
       Number.isFinite(invoice) && invoice > 0 &&
@@ -265,11 +275,12 @@ const schema = [
       Number.isFinite(factoringDays) && factoringDays >= 0 &&
       Number.isFinite(directPercent) && directPercent >= 0 && directPercent <= 100 &&
       Number.isFinite(directFixed) && directFixed >= 0 &&
-      Number.isFinite(directDays) && directDays >= 0;
+      Number.isFinite(directDays) && directDays >= 0 &&
+      Number.isFinite(capitalRate) && capitalRate >= 0 && capitalRate <= 1000;
 
     if (!valid) {
       error.hidden = false;
-      error.textContent = "Check the inputs: invoice must be above zero; fees and days cannot be negative; percentage fees must be between 0% and 100%.";
+      error.textContent = "Check the inputs: invoice must be above zero; fees and days cannot be negative; percentage fees must be between 0% and 100%; the annual working-capital assumption must be between 0% and 1000%.";
       return;
     }
 
@@ -280,35 +291,47 @@ const schema = [
     const directFee = invoice * (directPercent / 100) + directFixed;
     const factoringNet = invoice - factoringFee;
     const directNet = invoice - directFee;
-    const netDifference = directNet - factoringNet;
+    const explicitNetDifference = directNet - factoringNet;
     const daysAccelerated = directDays - factoringDays;
     const factoringRetained = (factoringNet / invoice) * 100;
     const directRetained = (directNet / invoice) * 100;
+    const annualRate = capitalRate / 100;
+    const factoringWaitCost = invoice * annualRate * (factoringDays / 365);
+    const directWaitCost = invoice * annualRate * (directDays / 365);
+    const factoringAdjustedNet = factoringNet - factoringWaitCost;
+    const directAdjustedNet = directNet - directWaitCost;
+    const adjustedDifference = directAdjustedNet - factoringAdjustedNet;
 
     setOutput("factoringNet", money.format(factoringNet));
     setOutput("directNet", money.format(directNet));
-    setOutput("netDifference", `${netDifference >= 0 ? "+" : "−"}${money.format(Math.abs(netDifference))} direct`);
+    setOutput("factoringAdjustedNet", money.format(factoringAdjustedNet));
+    setOutput("directAdjustedNet", money.format(directAdjustedNet));
+    setOutput("adjustedDifference", `${adjustedDifference >= 0 ? "+" : "−"}${money.format(Math.abs(adjustedDifference))} direct`);
     setOutput("factoringFee", money.format(factoringFee));
     setOutput("directFee", money.format(directFee));
+    setOutput("factoringWaitCost", money.format(factoringWaitCost));
+    setOutput("directWaitCost", money.format(directWaitCost));
     setOutput("factoringRetained", `${percent.format(factoringRetained)}%`);
     setOutput("directRetained", `${percent.format(directRetained)}%`);
 
     if (daysAccelerated > 0) {
       setOutput("daysDifference", `${daysAccelerated} day${daysAccelerated === 1 ? "" : "s"} faster with factoring`);
-      const costPerDay = netDifference > 0 ? netDifference / daysAccelerated : 0;
-      setOutput("costPerDay", netDifference > 0 ? `${money.format(costPerDay)}/day` : "$0.00/day");
-      setOutput("summary", netDifference > 0
-        ? `Under these assumptions, factoring accelerates expected cash by ${daysAccelerated} days while reducing net cash by ${money.format(netDifference)}.`
-        : `Under these assumptions, factoring is ${daysAccelerated} days faster and does not reduce net cash relative to the entered direct-payment fees.`);
+      const costPerDay = explicitNetDifference > 0 ? explicitNetDifference / daysAccelerated : 0;
+      setOutput("costPerDay", explicitNetDifference > 0 ? `${money.format(costPerDay)}/day` : "$0.00/day");
+      setOutput("summary", adjustedDifference > 0
+        ? `Under the entered fees, timing, and ${percent.format(capitalRate)}% annual working-capital assumption, factoring accelerates expected cash by ${daysAccelerated} days while direct payment leaves ${money.format(adjustedDifference)} more after the simplified waiting-cost estimate.`
+        : `Under the entered fees, timing, and ${percent.format(capitalRate)}% annual working-capital assumption, factoring accelerates expected cash by ${daysAccelerated} days and leaves ${money.format(Math.abs(adjustedDifference))} more after the simplified waiting-cost estimate.`);
     } else if (daysAccelerated < 0) {
       const directFaster = Math.abs(daysAccelerated);
       setOutput("daysDifference", `${directFaster} day${directFaster === 1 ? "" : "s"} faster with direct payment`);
       setOutput("costPerDay", "Not applicable");
-      setOutput("summary", `Under these assumptions, direct payment is ${directFaster} days faster. Cost-per-accelerated-day is therefore not calculated for factoring.`);
+      setOutput("summary", adjustedDifference >= 0
+        ? `Under the entered fees, timing, and ${percent.format(capitalRate)}% annual working-capital assumption, direct payment is ${directFaster} days faster and leaves ${money.format(adjustedDifference)} more after the simplified waiting-cost estimate.`
+        : `Under the entered fees, timing, and ${percent.format(capitalRate)}% annual working-capital assumption, direct payment is ${directFaster} days faster while factoring leaves ${money.format(Math.abs(adjustedDifference))} more after the simplified waiting-cost estimate.`);
     } else {
       setOutput("daysDifference", "Same expected timing");
       setOutput("costPerDay", "Not applicable");
-      setOutput("summary", `Both paths use the same expected payment timing. The remaining comparison is the ${money.format(Math.abs(netDifference))} difference in net cash.`);
+      setOutput("summary", `Both paths use the same expected payment timing. Under the entered ${percent.format(capitalRate)}% annual working-capital assumption, the adjusted difference is ${money.format(Math.abs(adjustedDifference))}.`);
     }
 
     if (trackCompletion) trackEvent("factoring_calculator_completed", { tool: "factoring_vs_direct_payment" });
