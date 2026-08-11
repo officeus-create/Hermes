@@ -121,10 +121,9 @@ test("direct auction request is noindex, preselected, reviewable, and privacy-sa
   await expect(result.locator("[data-transport-preview]")).toContainText("Equipment preference: open");
   await expect(result.locator("[data-transport-preview]")).toContainText("Request frequency: repeat");
   await expect(result.locator("[data-transport-boundary]")).toContainText("Preview mode creates no booking");
-  await expect(result.getByRole("link", { name: "Open prepared email" })).toHaveAttribute(
-    "href",
-    /^mailto:freight_301@hermeslogisticsus\.com/,
-  );
+  const preparedEmail = result.getByRole("link", { name: "Open prepared email" });
+  await expect(preparedEmail).toHaveAttribute("href", /^mailto:officeus@hermeslogisticsus\.com/);
+  await expect(preparedEmail).not.toHaveAttribute("href", /^mailto:freight_301@hermeslogisticsus\.com/);
 
   const starts = await analyticsEvents(page, "vehicle_transport_intake_start");
   const previews = await analyticsEvents(page, "vehicle_transport_preview_ready");
