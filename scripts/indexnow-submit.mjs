@@ -1,6 +1,10 @@
+import { readdir, readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+
 const host = "hermeslogisticsus.com";
 const key = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e";
 const keyLocation = `https://${host}/${key}.txt`;
+const publicDirectory = fileURLToPath(new URL("../public/", import.meta.url));
 
 const defaultUrls = [
   `https://${host}/`,
@@ -17,6 +21,25 @@ function parseUrls(input) {
     .split(/[\n,\s]+/)
     .map((value) => value.trim())
     .filter(Boolean);
+}
+
+async function urlsFromSitemaps() {
+  const files = (await readdir(publicDirectory, { withFileTypes: true }))
+    .filter((entry) => entry.isFile() && /^sitemap(?:-[a-z0-9-]+)?\.xml$/i.test(entry.name) && entry.name !== "sitemap-index.xml")
+    .map((entry) => entry.name)
+    .sort();
+
+  const values = [];
+  for (const file of files) {
+    const xml = await readFile(new URL(`../public/${file}`, import.meta.url), "utf8");
+    for (const match of xml.matchAll(/<loc>\s*(https:\/\/[^<\s]+)\s*<\/loc>/gi)) {
+      const value = match[1].replaceAll("&amp;", "&").trim();
+      if (!value.endsWith(".xml")) values.push(value);
+    }
+  }
+
+  if (!values.length) throw new Error("No public page URLs were found in sitemap files");
+  return values;
 }
 
 function validateUrls(values) {
@@ -41,7 +64,9 @@ function validateUrls(values) {
   return unique;
 }
 
-const urlList = validateUrls(parseUrls(process.env.INDEXNOW_URLS));
+const useSitemaps = ["1", "true", "yes"].includes(String(process.env.INDEXNOW_USE_SITEMAPS || "").toLowerCase());
+const requestedUrls = useSitemaps ? await urlsFromSitemaps() : parseUrls(process.env.INDEXNOW_URLS);
+const urlList = validateUrls(requestedUrls);
 const payload = { host, key, keyLocation, urlList };
 
 if (process.env.INDEXNOW_DRY_RUN === "1") {
