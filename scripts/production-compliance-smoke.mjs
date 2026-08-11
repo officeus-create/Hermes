@@ -11,6 +11,7 @@ const checks = [
   ["/data-security/", "Data Security"],
   ["/asset-licensing/", "Asset Licensing"],
   ["/regional-privacy/", "Regional Privacy & International Data"],
+  ["/.well-known/security.txt", "Contact: mailto:officeus@hermeslogisticsus.com"],
 ];
 
 const failures = [];
