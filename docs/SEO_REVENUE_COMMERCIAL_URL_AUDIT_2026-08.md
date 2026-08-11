@@ -10,7 +10,7 @@ The original revenue sprint is complete at the repository level. The 14 priority
 
 The audit no longer treats the fictional Load Board as the primary commercial destination for Appleton, Wisconsin transport, dealer transport, auction pickup or car-hauling dispatch. Those pages now route to the appropriate direct intake. The Load Board may remain as an explicitly labelled product demo or secondary related link.
 
-No historical impressions, clicks, traffic, leads, rankings, contracts or revenue are inferred from code. Authenticated measurement remains in Issue #206, permissioned proof in Issue #176, profile corrections in Issue #204 and final carrier agreement execution in Issue #280.
+No historical impressions, clicks, traffic, leads, rankings, contracts or revenue are inferred from code. Authenticated measurement remains in Issue #206, permissioned proof and revenue-first execution in SEO 11 master Issue #346, profile corrections in Issue #204 and final carrier agreement execution in Issue #280.
 
 ## Status definition used
 
@@ -29,20 +29,20 @@ It does **not** mean that the page already has traffic, rankings, qualified inqu
 
 | URL | Primary intent | Current primary destination | Handoff | Revenue status | Main external dependency |
 | --- | --- | --- | --- | --- | --- |
-| `/logistics/appleton-wi-vehicle-transport/` | Appleton vehicle transport | Direct vehicle-transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | GSC/GA4 #206; proof #176 |
+| `/logistics/appleton-wi-vehicle-transport/` | Appleton vehicle transport | Direct vehicle-transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | GSC/GA4 #206; proof #346 |
 | `/logistics/wisconsin-vehicle-transport/` | Wisconsin vehicle transport | Direct vehicle-transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | State/city query ownership #206 |
-| `/logistics/dealer-vehicle-transportation/` | Dealer vehicle transportation | Dealer-prefilled direct transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | Events #206; dealer proof #176 |
-| `/logistics/car-hauling-dispatch/` | Car-hauling dispatch | Direct carrier dispatch review | Qualification, fallback and receiver confirmation | `READY_TO_MEASURE` | Events #206; carrier proof #176 |
-| `/logistics/auction-vehicle-pickup/` | Auction vehicle pickup | Auction-prefilled direct transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | Events #206; auction proof #176 |
+| `/logistics/dealer-vehicle-transportation/` | Dealer vehicle transportation | Dealer-prefilled direct transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | Events #206; dealer proof #346 |
+| `/logistics/car-hauling-dispatch/` | Car-hauling dispatch | Direct carrier dispatch review | Qualification, fallback and receiver confirmation | `READY_TO_MEASURE` | Events #206; carrier proof #346 |
+| `/logistics/auction-vehicle-pickup/` | Auction vehicle pickup | Auction-prefilled direct transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | Events #206; auction proof #346 |
 | `/logistics/wisconsin-dealer-vehicle-transport/` | Wisconsin dealer transport | Dealer-prefilled direct transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | Query ownership/events #206 |
 | `/logistics/wisconsin-auction-vehicle-pickup/` | Wisconsin auction pickup | Auction-prefilled direct transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | Query ownership/events #206 |
 | `/logistics/green-bay-wi-vehicle-transport/` | Representative Wisconsin city transport | Direct vehicle-transport intake | Review, fallback and receiver confirmation | `READY_TO_MEASURE` | City query evidence #206 |
-| `/services/seo-for-logistics-companies/` | Logistics SEO | Marketing SEO intake | Structured preview and handoff | `READY_TO_MEASURE` | Events #206; proof #176 |
-| `/services/seo-for-independent-auto-dealers/` | Auto dealer SEO | Marketing SEO intake | Structured preview and handoff | `READY_TO_MEASURE` | Events #206; dealer proof #176 |
+| `/services/seo-for-logistics-companies/` | Logistics SEO | Marketing SEO intake | Structured preview and handoff | `READY_TO_MEASURE` | Events #206; proof #346 |
+| `/services/seo-for-independent-auto-dealers/` | Auto dealer SEO | Marketing SEO intake | Structured preview and handoff | `READY_TO_MEASURE` | Events #206; dealer proof #346 |
 | `/services/seo/` | General U.S. SEO services | Marketing SEO intake | Structured preview and handoff | `READY_TO_MEASURE` | GSC/GA4 #206 |
 | `/services/local-seo/` | Local SEO | Marketing SEO intake | Structured Local SEO preview and handoff | `READY_TO_MEASURE` | Profile eligibility #204; events #206 |
-| `/services/website-development/` | New website and website + SEO | Technology Project Brief | Structured preview and IT handoff | `READY_TO_MEASURE` | Events #206; cases #176 |
-| `/services/website-redesign/` | Redesign and migration protection | Technology Project Brief | Structured preview and IT handoff | `READY_TO_MEASURE` | Events #206; cases #176 |
+| `/services/website-development/` | New website and website + SEO | Technology Project Brief | Structured preview and IT handoff | `READY_TO_MEASURE` | Events #206; cases #346 |
+| `/services/website-redesign/` | Redesign and migration protection | Technology Project Brief | Structured preview and IT handoff | `READY_TO_MEASURE` | Events #206; cases #346 |
 
 ## Implemented logistics conversion paths
 
@@ -119,3 +119,12 @@ Repository configuration does not complete:
 ## Promotion rule
 
 A page may remain `READY_TO_MEASURE` while proof is pending, but paid promotion, strong outcome claims, new location expansion or derivative pages require verified evidence and owner review. Measurement begins before page multiplication.
+
+## Routing note — SEO 11
+
+Issue #176 is closed as the completed historical parent conversion audit. Current execution routes are:
+
+- measurement, indexing and production funnel evidence → #206;
+- permissioned proof, query-to-page optimization, CTR experiments and controlled scale → #346;
+- external company/profile identity → #204;
+- final carrier legal execution → #280.

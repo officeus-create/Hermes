@@ -25,7 +25,7 @@
       "proof_state": "direct request path, service boundaries and FAQ present; production query and qualified-inquiry evidence pending",
       "cannibalization_risk": "low when Appleton remains a distinct local intent",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "Search Console and GA4 verification tracked in issue #206; permissioned proof tracked in issue #176"
+      "external_blocker": "Search Console and GA4 verification tracked in issue #206; permissioned proof tracked in SEO 11 master issue #346"
     },
     {
       "route": "/logistics/wisconsin-vehicle-transport/",
@@ -55,7 +55,7 @@
       "proof_state": "service, qualification, direct request and carrier-review boundaries present",
       "cannibalization_risk": "low; Wisconsin dealer page is geographic support",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; approved dealer case evidence tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; approved dealer case evidence tracked in SEO 11 master issue #346"
     },
     {
       "route": "/logistics/car-hauling-dispatch/",
@@ -70,7 +70,7 @@
       "proof_state": "authority, insurance, fleet, dispatch, equipment, availability and direct carrier qualification present",
       "cannibalization_risk": "low; carrier path pages are supporting audiences",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; permissioned carrier proof tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; permissioned carrier proof tracked in SEO 11 master issue #346"
     },
     {
       "route": "/logistics/auction-vehicle-pickup/",
@@ -85,7 +85,7 @@
       "proof_state": "condition, release, timing, direct request and no-affiliation boundaries explained",
       "cannibalization_risk": "low; Wisconsin auction page is geographic support",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; auction/customer evidence tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; auction/customer evidence tracked in SEO 11 master issue #346"
     },
     {
       "route": "/logistics/wisconsin-dealer-vehicle-transport/",
@@ -145,7 +145,7 @@
       "proof_state": "vertical context, access status and problem qualification present",
       "cannibalization_risk": "low when it supports general SEO rather than duplicating it",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; permissioned case evidence tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; permissioned case evidence tracked in SEO 11 master issue #346"
     },
     {
       "route": "/services/seo-for-independent-auto-dealers/",
@@ -160,7 +160,7 @@
       "proof_state": "dealer vertical and local/national context present",
       "cannibalization_risk": "low when it supports general SEO rather than duplicating it",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; dealer case evidence tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; dealer case evidence tracked in SEO 11 master issue #346"
     },
     {
       "route": "/services/seo/",
@@ -205,7 +205,7 @@
       "proof_state": "project type, market, pages, integrations, languages, timing and budget qualification present",
       "cannibalization_risk": "medium; redesign remains separate intent",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; approved case evidence tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; approved case evidence tracked in SEO 11 master issue #346"
     },
     {
       "route": "/services/website-redesign/",
@@ -220,7 +220,7 @@
       "proof_state": "current URL, redesign type, market, pages, integrations, languages and migration context present",
       "cannibalization_risk": "low when redesign/migration risk remains distinct",
       "status": "READY_TO_MEASURE",
-      "external_blocker": "production event verification tracked in issue #206; redesign case evidence tracked in issue #176"
+      "external_blocker": "production event verification tracked in issue #206; redesign case evidence tracked in SEO 11 master issue #346"
     }
   ]
 }
