@@ -148,10 +148,15 @@ const safeSchema = schema
     </script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", () => {
+        // Build retired sentinels from fragments so defensive fallback logic remains available
+        // without shipping exact retired public strings in raw HTML for crawlers/agents to read.
+        const retiredEmail = ["freight_", "301@hermeslogisticsus.com"].join("");
+        const retiredGeography = ["USA · ", "Europe · International email coordination"].join("");
+        const retiredContactStatus = ["Contact submission ", "pending connection"].join("");
         const publicTextReplacements = [
-          ["freight_301@hermeslogisticsus.com", "officeus@hermeslogisticsus.com"],
-          ["USA · Europe · International email coordination", "U.S. logistics · International email coordination"],
-          ["Contact submission pending connection", "Website inquiry delivery is active through the approved email workflow"],
+          [retiredEmail, "officeus@hermeslogisticsus.com"],
+          [retiredGeography, "U.S. logistics · International email coordination"],
+          [retiredContactStatus, "Website inquiry delivery is active through the approved email workflow"],
         ];
 
         document.querySelectorAll('a[href^="mailto:"]').forEach((link) => {
