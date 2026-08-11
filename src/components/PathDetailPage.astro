@@ -23,6 +23,16 @@ interface Props {
 const { path } = Astro.props;
 const isAcademy = path.id === "academy";
 const isLogistics = path.id === "logistics";
+const primaryCtaHref = path.id === "technology" ? "#project-brief" : isLogistics ? "#find-your-path" : "#contact";
+const primaryCtaLabel = path.id === "technology"
+  ? "Build your project brief"
+  : isLogistics
+    ? "Find your logistics path"
+    : path.id === "marketing"
+      ? "Prepare a marketing brief"
+      : isAcademy
+        ? "Ask about the Academy path"
+        : "Start with a conversation";
 const directContactTitle = {
   logistics: "Reach the right logistics team.",
   marketing: "Reach ProgressoPro directly.",
@@ -40,7 +50,7 @@ const directContactTitle = {
       <p class="eyebrow hero-eyebrow">{path.number} · {path.category}</p>
       <h1>{path.title}</h1>
       <p>{path.audience}</p>
-      <a class="button button-primary" href={path.id === "technology" ? "#project-brief" : isLogistics ? "#find-your-path" : "#contact"}>{path.id === "technology" ? "Build your project brief" : isLogistics ? "Find your logistics path" : "Start with a conversation"}<ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="button button-primary" href={primaryCtaHref}>{primaryCtaLabel}<ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   </section>
 
