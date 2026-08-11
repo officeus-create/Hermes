@@ -8,6 +8,10 @@ on:
       - 'tests/marketing-academy-cta-copy.spec.ts'
       - 'scripts/production-cta-smoke.mjs'
       - '.github/workflows/production-cta-smoke.yml'
+  pull_request:
+    paths:
+      - 'scripts/production-cta-smoke.mjs'
+      - '.github/workflows/production-cta-smoke.yml'
   schedule:
     - cron: '47 9 * * *'
   workflow_dispatch:
