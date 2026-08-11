@@ -1,0 +1,88 @@
+name: Measure production Lighthouse on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-lighthouse-command
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    if: >-
+      github.event.issue.number == 354 &&
+      github.event.comment.body == '/measure-production-lighthouse' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_URL: https://hermeslogisticsus.com/
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Prepare output directory
+        run: mkdir -p artifacts/lighthouse-production
+
+      - name: Run three comparable mobile lab passes
+        shell: bash
+        run: |
+          for run in 1 2 3; do
+            npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+              --output=json \
+              --output-path="artifacts/lighthouse-production/mobile-${run}.json" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet
+          done
+
+      - name: Run three comparable desktop lab passes
+        shell: bash
+        run: |
+          for run in 1 2 3; do
+            npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+              --preset=desktop \
+              --output=json \
+              --output-path="artifacts/lighthouse-production/desktop-${run}.json" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet
+          done
+
+      - name: Summarize medians and baseline comparison
+        run: node scripts/summarize-production-lighthouse.mjs
+
+      - name: Publish sanitized performance evidence
+        shell: bash
+        run: |
+          {
+            echo "## Production Lighthouse measurement"
+            echo
+            cat artifacts/lighthouse-production/summary.md
+            echo
+            echo "Measured approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/production-lighthouse-comment.md
+          gh issue comment 354 --repo "${{ github.repository }}" --body-file /tmp/production-lighthouse-comment.md
+
+      - name: Upload lab reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-lighthouse-measurement
+          path: artifacts/lighthouse-production/
+          if-no-files-found: error
+          retention-days: 30
