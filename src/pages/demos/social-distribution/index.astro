@@ -15,6 +15,7 @@ const platformLabels = {
   threads: "Threads",
   instagram: "Instagram",
   x: "X",
+  telegram: "Telegram",
 } as const;
 ---
 
@@ -37,7 +38,7 @@ const platformLabels = {
             <div>
               <p class="eyebrow">Hermes Internal Preview · Issue #144</p>
               <h1>Approved Website Asset → Platform Draft Review Queue</h1>
-              <p>One canonical website page produces four distinct drafts, privacy-safe tracked links, duplicate fingerprints, and an auditable human-review path. Release A stops at manual export.</p>
+              <p>One canonical website page produces five distinct drafts, privacy-safe tracked links, duplicate fingerprints, and an auditable human-review path. Release A stops at manual export.</p>
               <div class="logistics-audience-actions">
                 <a class="button button-primary" href={syntheticApprovedWebsiteAsset.canonicalUrl}>Open canonical website asset <ArrowRight size={18} aria-hidden="true" /></a>
                 <a class="button" href="/demos/content-pipeline/">Review source pipeline</a>
@@ -62,7 +63,7 @@ const platformLabels = {
             <article><strong>{syntheticApprovedWebsiteAsset.status}</strong><p>Distribution status.</p></article>
             <article><strong>{syntheticApprovedWebsiteAsset.campaign}</strong><p>Allowlisted campaign.</p></article>
             <article><strong>{syntheticApprovedWebsiteAsset.contentVersion}</strong><p>Content version used for deduplication.</p></article>
-            <article><strong>{syntheticChannelEligibility.filter((item) => item.eligibility.eligible).length}/4</strong><p>Synthetic preview channels eligible; zero live accounts verified.</p></article>
+            <article><strong>{syntheticChannelEligibility.filter((item) => item.eligibility.eligible).length}/5</strong><p>Synthetic preview channels eligible; zero live accounts verified.</p></article>
           </div>
         </div>
       </section>
@@ -136,8 +137,8 @@ const platformLabels = {
         <div class="shell">
           <div class="section-heading"><p class="eyebrow">Release A boundaries</p><h2 id="distribution-boundaries-title">Manual export is the final state.</h2></div>
           <div class="capacity-boundary-grid">
-            <article><strong>No provider call</strong><p>No Facebook, Threads, Instagram, X, Meta, or other publishing endpoint is connected.</p></article>
-            <article><strong>No credential storage</strong><p>No access token, account identifier, app secret, callback, recovery data, or private export is present.</p></article>
+            <article><strong>No provider call</strong><p>No Facebook, Threads, Instagram, X, Telegram, Meta, or other publishing endpoint is connected.</p></article>
+            <article><strong>No credential storage</strong><p>No access token, bot token, chat ID, account identifier, app secret, callback, recovery data, or private export is present.</p></article>
             <article><strong>No automatic retry</strong><p>There is no live request and therefore no ambiguous provider timeout or duplicate-post retry.</p></article>
             <article><strong>No SEO guarantee</strong><p>Distribution can support discovery and referrals but does not guarantee ranking, traffic, leads, sales, or revenue.</p></article>
           </div>
