@@ -27,6 +27,8 @@ type AttributionInput = {
   utm_term?: unknown;
   utm_content?: unknown;
   gclid?: unknown;
+  gbraid?: unknown;
+  wbraid?: unknown;
   referrer?: unknown;
 };
 
@@ -119,6 +121,8 @@ const getAttribution = (value: unknown) => {
     utm_term: clean(input.utm_term, 180),
     utm_content: clean(input.utm_content, 180),
     gclid: clean(input.gclid, 240),
+    gbraid: clean(input.gbraid, 240),
+    wbraid: clean(input.wbraid, 240),
     referrer: clean(input.referrer, 500),
   };
 };
@@ -183,7 +187,7 @@ export async function onRequestPost({ request, env }: Context) {
   const services = getServices(input.services);
   const message = clean(input.message, 2_000);
   const sourcePathRaw = clean(input.source_path, 160);
-  const sourcePath = sourcePathRaw.startsWith("/") ? sourcePathRaw : "/paths/marketing/";
+  const sourcePath = sourcePathRaw.startsWith("/") ? sourcePathRaw : "/business-growth/";
   const submittedAt = clean(input.submitted_at, 40);
   const attribution = getAttribution(input.attribution);
 
@@ -224,6 +228,8 @@ export async function onRequestPost({ request, env }: Context) {
     attribution.utm_term ? `UTM term: ${attribution.utm_term}` : "",
     attribution.utm_content ? `UTM content: ${attribution.utm_content}` : "",
     attribution.gclid ? `GCLID: ${attribution.gclid}` : "",
+    attribution.gbraid ? `GBRAID: ${attribution.gbraid}` : "",
+    attribution.wbraid ? `WBRAID: ${attribution.wbraid}` : "",
     attribution.referrer ? `Referrer: ${attribution.referrer}` : "",
   ].filter(Boolean);
 
@@ -245,6 +251,7 @@ export async function onRequestPost({ request, env }: Context) {
     message,
     ...(attributionLines.length ? ["", "Attribution:", ...attributionLines] : []),
     "",
+    ...(submittedAt ? [`Submitted at: ${submittedAt}`] : []),
     `Submitted from: ${sourcePath}`,
   ].join("\n").slice(0, 12_000);
 
