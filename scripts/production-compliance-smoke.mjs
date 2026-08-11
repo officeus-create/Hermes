@@ -6,6 +6,7 @@ const checks = [
   ["/privacy/", "Privacy"],
   ["/privacy-choices/", "Privacy Choices"],
   ["/company-information/", "Company Information"],
+  ["/terms/", "Terms of Use"],
   ["/payments-cancellations/", "Payments"],
   ["/data-security/", "Data Security"],
   ["/asset-licensing/", "Asset Licensing"],
