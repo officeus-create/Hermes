@@ -143,6 +143,11 @@ await access(join(dist, "sitemap.xml"));
 await access(join(dist, "llms.txt"));
 const html = await readFile(indexPath, "utf8");
 const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
+const bingVerificationTag = '<meta name="msvalidate.01" content="6C08FCA62443E761BAB1CCF747A4A7A7">';
+
+if (!html.includes(bingVerificationTag)) {
+  throw new Error("Exact Bing Webmaster Tools verification tag is missing from the homepage head");
+}
 
 if (/<img\b[^>]*\balt=""/i.test(html)) {
   throw new Error("Homepage contains an image without a descriptive alt value");
