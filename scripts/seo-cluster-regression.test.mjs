@@ -123,7 +123,6 @@ for (const url of clusterUrls) {
   const sitemapOwners = urlOwners.get(url) ?? [];
   const isCaseStudy = sitemapOwners.includes("sitemap-cases.xml");
   const isTrustPage = sitemapOwners.includes("sitemap-trust.xml");
-  const isWebApplication = route === "/logistics/resources/rpm-calculator/";
   let html;
   try {
     html = await readFile(join(dist, htmlPath), "utf8");
@@ -158,6 +157,7 @@ for (const url of clusterUrls) {
 
   const schemas = parseJsonLd(html, route);
   const schemaTypes = collectSchemaTypes(schemas);
+  const isWebApplication = schemaTypes.has("WebApplication");
   const requiredTypes = isTrustPage
     ? ["WebPage", "BreadcrumbList"]
     : isCaseStudy
