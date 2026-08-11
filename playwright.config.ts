@@ -11,7 +11,6 @@ const ordinaryE2eStorageState = {
 };
 
 const globalExcludedTests = /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery/i;
-const mobileExcludedTests = /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery|premium opening explains four directions, supports choice, and runs once per session|premium opening plays a direction cue after consented interaction and keeps sound optional/i;
 
 export default defineConfig({
   testDir: "./tests",
@@ -29,7 +28,6 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     {
       name: "mobile",
-      grepInvert: mobileExcludedTests,
       use: {
         browserName: "chromium",
         viewport: { width: 390, height: 844 },
