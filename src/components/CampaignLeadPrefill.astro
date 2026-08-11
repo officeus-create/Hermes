@@ -86,18 +86,6 @@ const { locale = "en" } = Astro.props;
       if (input) input.checked = true;
     }
 
-    const location = (params.get("location") ?? params.get("city") ?? "").trim().slice(0, 120);
-    if (location) {
-      const locationInput = form.querySelector<HTMLInputElement>('input[name="city_country"]');
-      if (locationInput && !locationInput.value) locationInput.value = location;
-    }
-
-    const goal = (params.get("goal") ?? "").trim().slice(0, 2000);
-    if (goal.length >= 10) {
-      const goalInput = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
-      if (goalInput && !goalInput.value) goalInput.value = goal;
-    }
-
     const language = (params.get("language") ?? "").trim().toLowerCase();
     const languageMap: Record<string, string> = {
       ru: "Russian",
@@ -114,13 +102,13 @@ const { locale = "en" } = Astro.props;
     }
 
     const context = document.querySelector<HTMLElement>("[data-campaign-context]");
-    if (context && (selectedServices.length || location)) {
+    if (context && selectedServices.length) {
       const labels = selectedServices.map((service) => serviceLabels[service]?.[locale] ?? service);
       const serviceText = labels.join(", ");
       const messages = {
-        en: serviceText && location ? `Selected for this request: ${serviceText} · ${location}.` : serviceText ? `Selected for this request: ${serviceText}.` : `Business location: ${location}.`,
-        ru: serviceText && location ? `Для этой заявки выбрано: ${serviceText} · ${location}.` : serviceText ? `Для этой заявки выбрано: ${serviceText}.` : `География бизнеса: ${location}.`,
-        uk: serviceText && location ? `Для цієї заявки обрано: ${serviceText} · ${location}.` : serviceText ? `Для цієї заявки обрано: ${serviceText}.` : `Географія бізнесу: ${location}.`,
+        en: `Selected for this request: ${serviceText}.`,
+        ru: `Для этой заявки выбрано: ${serviceText}.`,
+        uk: `Для цієї заявки обрано: ${serviceText}.`,
       };
       context.textContent = messages[locale];
       context.hidden = false;
