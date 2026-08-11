@@ -123,6 +123,7 @@ for (const url of clusterUrls) {
   const sitemapOwners = urlOwners.get(url) ?? [];
   const isCaseStudy = sitemapOwners.includes("sitemap-cases.xml");
   const isTrustPage = sitemapOwners.includes("sitemap-trust.xml");
+  const isWebApplication = route === "/logistics/resources/rpm-calculator/";
   let html;
   try {
     html = await readFile(join(dist, htmlPath), "utf8");
@@ -163,7 +164,9 @@ for (const url of clusterUrls) {
       ? route === "/case/"
         ? ["CollectionPage", "BreadcrumbList"]
         : ["CreativeWork", "BreadcrumbList"]
-      : ["Service", "BreadcrumbList", "FAQPage"];
+      : isWebApplication
+        ? ["WebApplication", "BreadcrumbList"]
+        : ["Service", "BreadcrumbList", "FAQPage"];
   for (const requiredType of requiredTypes) {
     if (!schemaTypes.has(requiredType)) errors.push(`${route}: required ${requiredType} schema is missing`);
   }

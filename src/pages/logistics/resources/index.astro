@@ -2,6 +2,7 @@
 import {
   ArrowRight,
   BookOpen,
+  Calculator,
   CircleCheck,
   ClipboardCheck,
   FileText,
@@ -17,11 +18,18 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 
 const title = "Carrier Knowledge Hub for Car Haulers | Hermes Logistics";
 const description =
-  "Use the Hermes carrier knowledge hub to review car-hauling dispatch models, new-authority readiness, broker setup packets, carrier control, load review, and practical next steps.";
+  "Use the Hermes carrier knowledge hub to review car-hauling dispatch models, RPM and trip economics, new-authority readiness, broker setup packets, carrier control, load review, and practical next steps.";
 const canonicalUrl = new URL("/logistics/resources/", Astro.site).toString();
 const carrierIntake = "/logistics/start-car-hauling-dispatch/";
 
 const coreGuides = [
+  {
+    icon: Calculator,
+    label: "Trip economics",
+    title: "RPM & Load Profitability Calculator",
+    body: "Calculate loaded RPM, all-mile RPM, fuel, reserves, optional service fees, estimated net before tax, and break-even RPM using your own assumptions.",
+    href: "/logistics/resources/rpm-calculator/",
+  },
   {
     icon: Users,
     label: "Dispatch model",
@@ -83,11 +91,11 @@ const reviewOrder = [
 const faq = [
   {
     question: "What is included in the Carrier Knowledge Hub?",
-    answer: "The hub organizes Hermes resources for dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
+    answer: "The hub organizes Hermes resources for trip-economics review, dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
   },
   {
-    question: "Does reading a guide qualify a carrier or create dispatch service?",
-    answer: "No. The guides are educational and operational preparation resources. Qualification, service scope, authority, insurance, equipment, availability, agreement terms, and carrier approval still require direct review.",
+    question: "Does reading a guide or using the calculator qualify a carrier or create dispatch service?",
+    answer: "No. The tools and guides are educational and operational preparation resources. Qualification, service scope, authority, insurance, equipment, availability, agreement terms, and carrier approval still require direct review.",
   },
   {
     question: "Can Hermes guarantee loads, rates, miles, utilization, payment, profit, or revenue?",
@@ -115,9 +123,10 @@ const schema = [
       { "@type": "Thing", name: "Car hauling dispatch" },
       { "@type": "Thing", name: "Motor carrier operations" },
       { "@type": "Thing", name: "Carrier onboarding" },
+      { "@type": "Thing", name: "Rate per mile calculation" },
     ],
     hasPart: coreGuides.map((guide) => ({
-      "@type": "Article",
+      "@type": guide.href.includes("rpm-calculator") ? "WebApplication" : "Article",
       name: guide.title,
       url: new URL(guide.href, Astro.site).toString(),
     })),
@@ -180,7 +189,7 @@ const schema = [
               <p class="eyebrow">Hermes Logistics · Carrier Operations</p>
               <h1>Carrier Knowledge Hub for Car Haulers</h1>
               <p>
-                Start with the operating question in front of you: choosing a dispatch model, preparing a new authority,
+                Start with the operating question in front of you: comparing trip economics, choosing a dispatch model, preparing a new authority,
                 organizing a broker setup packet, defining carrier approval, or requesting a structured dispatch-fit review.
               </p>
               <div class="logistics-audience-actions">
@@ -205,7 +214,7 @@ const schema = [
           <div>
             <p class="eyebrow">Start with a complete review</p>
             <h2 id="hub-start-title">Use one controlled source for carrier preparation and next steps.</h2>
-            <p>This hub connects existing Hermes guides and service routes without inventing live load availability, rates, authority status, broker approval, revenue, or operational outcomes.</p>
+            <p>This hub connects existing Hermes tools, guides, and service routes without inventing live load availability, rates, authority status, broker approval, revenue, or operational outcomes.</p>
           </div>
         </div>
       </section>
@@ -214,8 +223,8 @@ const schema = [
         <div class="shell">
           <div class="section-heading split-heading">
             <div>
-              <p class="eyebrow">Core carrier guides</p>
-              <h2 id="carrier-guides-title">Three practical resources to review first.</h2>
+              <p class="eyebrow">Core carrier tools and guides</p>
+              <h2 id="carrier-guides-title">Four practical resources to review first.</h2>
             </div>
             <p>Each resource has a distinct purpose, visible carrier-control boundary, direct next step, and no guarantee language.</p>
           </div>
@@ -226,7 +235,7 @@ const schema = [
                 <span>{guide.label}</span>
                 <h3>{guide.title}</h3>
                 <p>{guide.body}</p>
-                <strong>Open guide <ArrowRight size={16} aria-hidden="true" /></strong>
+                <strong>Open resource <ArrowRight size={16} aria-hidden="true" /></strong>
               </a>
             ))}
           </div>
