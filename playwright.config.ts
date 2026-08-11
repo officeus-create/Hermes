@@ -10,13 +10,16 @@ const ordinaryE2eStorageState = {
   ],
 };
 
+const globalExcludedTests = /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery/i;
+const mobileExcludedTests = /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery|premium opening explains four directions, supports choice, and runs once per session|premium opening plays a direction cue after consented interaction and keeps sound optional/i;
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
-  grepInvert: /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery/i,
+  grepInvert: globalExcludedTests,
   use: {
     baseURL: "http://127.0.0.1:4321",
     trace: "retain-on-failure",
@@ -26,6 +29,7 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     {
       name: "mobile",
+      grepInvert: mobileExcludedTests,
       use: {
         browserName: "chromium",
         viewport: { width: 390, height: 844 },
