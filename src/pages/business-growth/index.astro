@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import BusinessLeadForm from "../../components/BusinessLeadForm.astro";
+import CampaignLeadPrefill from "../../components/CampaignLeadPrefill.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 
@@ -33,11 +34,13 @@ const alternates = [
           We can work directly with Russian-, Ukrainian-, or English-speaking business owners worldwide. Tell us
           what you need, where your business operates, and how to reach you.
         </p>
+        <p class="form-status" data-campaign-context hidden></p>
         <a class="button button-primary" href="#business-lead">Send a business inquiry</a>
       </div>
     </section>
 
     <BusinessLeadForm selectedPath="ProgressoPro" locale="en" />
+    <CampaignLeadPrefill locale="en" />
   </main>
   <SiteFooter />
 </BaseLayout>

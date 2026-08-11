@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import BusinessLeadForm from "../../../components/BusinessLeadForm.astro";
+import CampaignLeadPrefill from "../../../components/CampaignLeadPrefill.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
@@ -31,11 +32,13 @@ const alternates = [
         <p>
           Работаем с русскоязычными владельцами бизнеса в США, Европе и других странах. Укажите город, компанию, удобный мессенджер и результат, который хотите получить.
         </p>
+        <p class="form-status" data-campaign-context hidden></p>
         <a class="button button-primary" href="#business-lead">Оставить заявку</a>
       </div>
     </section>
 
     <BusinessLeadForm selectedPath="ProgressoPro" locale="ru" />
+    <CampaignLeadPrefill locale="ru" />
   </main>
   <SiteFooter />
 </BaseLayout>

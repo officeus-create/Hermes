@@ -1,0 +1,129 @@
+---
+type CampaignLocale = "en" | "ru" | "uk";
+
+interface Props {
+  locale?: CampaignLocale;
+}
+
+const { locale = "en" } = Astro.props;
+---
+
+<div data-campaign-lead-prefill data-locale={locale} hidden></div>
+
+<script>
+  const marker = document.querySelector<HTMLElement>("[data-campaign-lead-prefill]");
+  const form = document.querySelector<HTMLFormElement>("[data-business-lead-form]");
+
+  if (marker && form) {
+    const locale = marker.dataset.locale === "ru" || marker.dataset.locale === "uk" ? marker.dataset.locale : "en";
+    const params = new URLSearchParams(window.location.search);
+
+    const serviceAliases: Record<string, string> = {
+      website: "Website development",
+      "website-development": "Website development",
+      web: "Website development",
+      "web-app": "Web applications",
+      "web-application": "Web applications",
+      "web-applications": "Web applications",
+      crm: "CRM & business automation",
+      automation: "CRM & business automation",
+      "business-automation": "CRM & business automation",
+      ai: "AI bots / AI sales assistant",
+      "ai-bot": "AI bots / AI sales assistant",
+      "ai-sales": "AI bots / AI sales assistant",
+      seo: "SEO",
+      "google-ads": "Google Ads",
+      ppc: "Google Ads",
+      "meta-ads": "Meta Ads (Facebook / Instagram)",
+      facebook: "Meta Ads (Facebook / Instagram)",
+      instagram: "Meta Ads (Facebook / Instagram)",
+      smm: "Social media marketing & organic growth",
+      social: "Social media marketing & organic growth",
+      "organic-growth": "Social media marketing & organic growth",
+      tiktok: "TikTok / Threads / X growth",
+      threads: "TikTok / Threads / X growth",
+      x: "TikTok / Threads / X growth",
+      content: "Video & content production",
+      video: "Video & content production",
+      consulting: "Marketing / sales consulting",
+      marketing: "Marketing / sales consulting",
+      sales: "Marketing / sales consulting",
+      training: "Training / courses",
+      courses: "Training / courses",
+    };
+
+    const serviceLabels: Record<string, Record<string, string>> = {
+      "Website development": { en: "website development", ru: "разработка сайта", uk: "розробка сайту" },
+      "Web applications": { en: "web application development", ru: "разработка веб-приложения", uk: "розробка вебзастосунку" },
+      "CRM & business automation": { en: "CRM and business automation", ru: "CRM и автоматизация бизнеса", uk: "CRM та автоматизація бізнесу" },
+      "AI bots / AI sales assistant": { en: "AI bots and sales automation", ru: "AI-боты и автоматизация продаж", uk: "AI-боти та автоматизація продажів" },
+      SEO: { en: "SEO", ru: "SEO-продвижение", uk: "SEO-просування" },
+      "Google Ads": { en: "Google Ads", ru: "Google Ads", uk: "Google Ads" },
+      "Meta Ads (Facebook / Instagram)": { en: "Meta Ads", ru: "реклама Facebook и Instagram", uk: "реклама Facebook та Instagram" },
+      "Social media marketing & organic growth": { en: "social media growth", ru: "SMM и органическое продвижение", uk: "SMM та органічне просування" },
+      "TikTok / Threads / X growth": { en: "TikTok, Threads and X growth", ru: "продвижение TikTok, Threads и X", uk: "просування TikTok, Threads та X" },
+      "Video & content production": { en: "video and content production", ru: "видео и контент", uk: "відео та контент" },
+      "Marketing / sales consulting": { en: "marketing and sales consulting", ru: "консалтинг по маркетингу и продажам", uk: "консалтинг з маркетингу та продажів" },
+      "Training / courses": { en: "training and courses", ru: "обучение и курсы", uk: "навчання та курси" },
+    };
+
+    const normalizeService = (value: string) => {
+      const raw = value.trim();
+      if (!raw) return "";
+      const checkbox = form.querySelector<HTMLInputElement>(`input[name="services"][value="${CSS.escape(raw)}"]`);
+      if (checkbox) return raw;
+      return serviceAliases[raw.toLowerCase()] ?? "";
+    };
+
+    const requestedServices = (params.get("service") ?? "")
+      .split(",")
+      .map(normalizeService)
+      .filter(Boolean);
+
+    const selectedServices = [...new Set(requestedServices)];
+    for (const service of selectedServices) {
+      const input = form.querySelector<HTMLInputElement>(`input[name="services"][value="${CSS.escape(service)}"]`);
+      if (input) input.checked = true;
+    }
+
+    const location = (params.get("location") ?? params.get("city") ?? "").trim().slice(0, 120);
+    if (location) {
+      const locationInput = form.querySelector<HTMLInputElement>('input[name="city_country"]');
+      if (locationInput && !locationInput.value) locationInput.value = location;
+    }
+
+    const goal = (params.get("goal") ?? "").trim().slice(0, 2000);
+    if (goal.length >= 10) {
+      const goalInput = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+      if (goalInput && !goalInput.value) goalInput.value = goal;
+    }
+
+    const language = (params.get("language") ?? "").trim().toLowerCase();
+    const languageMap: Record<string, string> = {
+      ru: "Russian",
+      russian: "Russian",
+      uk: "Ukrainian",
+      ua: "Ukrainian",
+      ukrainian: "Ukrainian",
+      en: "English",
+      english: "English",
+    };
+    if (languageMap[language]) {
+      const languageSelect = form.querySelector<HTMLSelectElement>('select[name="preferred_language"]');
+      if (languageSelect) languageSelect.value = languageMap[language];
+    }
+
+    const context = document.querySelector<HTMLElement>("[data-campaign-context]");
+    if (context && (selectedServices.length || location)) {
+      const labels = selectedServices.map((service) => serviceLabels[service]?.[locale] ?? service);
+      const serviceText = labels.join(", ");
+      const messages = {
+        en: serviceText && location ? `Selected for this request: ${serviceText} · ${location}.` : serviceText ? `Selected for this request: ${serviceText}.` : `Business location: ${location}.`,
+        ru: serviceText && location ? `Для этой заявки выбрано: ${serviceText} · ${location}.` : serviceText ? `Для этой заявки выбрано: ${serviceText}.` : `География бизнеса: ${location}.`,
+        uk: serviceText && location ? `Для цієї заявки обрано: ${serviceText} · ${location}.` : serviceText ? `Для цієї заявки обрано: ${serviceText}.` : `Географія бізнесу: ${location}.`,
+      };
+      context.textContent = messages[locale];
+      context.hidden = false;
+    }
+  }
+</script>
