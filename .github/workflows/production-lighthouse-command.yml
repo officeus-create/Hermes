@@ -21,7 +21,7 @@ jobs:
       github.event.comment.body == '/measure-production-lighthouse' &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 24
     env:
       GH_TOKEN: ${{ github.token }}
       TARGET_URL: https://hermeslogisticsus.com/
@@ -64,6 +64,16 @@ jobs:
               --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
               --quiet
           done
+
+      - name: Run deterministic Agentic Browsing readiness pass
+        shell: bash
+        run: |
+          npx --yes lighthouse@13.4.1 "$TARGET_URL" \
+            --output=json \
+            --output-path="artifacts/lighthouse-production/agentic.json" \
+            --only-categories=agentic-browsing \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
 
       - name: Summarize medians and baseline comparison
         run: node scripts/summarize-production-lighthouse.mjs
