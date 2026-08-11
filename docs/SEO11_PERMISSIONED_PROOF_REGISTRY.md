@@ -31,8 +31,8 @@ Do not place here:
 
 - Direction: Logistics
 - Proof type: Carrier / owner-operator workflow
-- Candidate state: `candidate_identified`
-- Private evidence status: `PRIVATE_CANDIDATE_SELECTED`
+- Candidate state: `eligibility_reviewed`
+- Private evidence status: `DIRECT_HISTORICAL_RELATIONSHIP_VERIFIED`
 - Source class: `OWNER_CONTROLLED_PRIVATE_RECORD`
 - Identity verified for publication: `PENDING_PRIVATE_REVIEW`
 - Permission status: `NOT_REQUESTED`
@@ -40,8 +40,8 @@ Do not place here:
 - Quantitative claims approved: `NO`
 - Public copy approved: `NO`
 - Publication target: `PENDING`
-- Evidence boundary: one exact private carrier-side operating record set has now been selected for eligibility review. The public registry intentionally does not name the carrier, counterparties, people, routes, rates, dates, load identifiers or outcomes.
-- Next action: verify the current/appropriate relationship privately → select only evidenced process facts → decide whether manual outreach is appropriate under the existing trust workflow.
+- Evidence boundary: one exact private carrier-side operating record set is supported by owner-controlled billing evidence that verifies a direct historical Hermes-to-carrier service relationship. The public registry intentionally does not name the carrier, counterparties, people, routes, rates, dates, invoice/load identifiers, payment details or outcomes.
+- Next action: confirm that manual outreach to the historical carrier relationship is still appropriate and identify a current authorized contact privately; if yes, request feedback/permission under the existing trust workflow. Do not infer publication permission from the historic commercial relationship.
 
 ### PROOF-LOG-DEALER-001
 
