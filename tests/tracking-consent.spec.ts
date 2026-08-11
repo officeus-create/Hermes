@@ -18,6 +18,15 @@ const isGoogleAnalyticsRequest = (url: string) => {
   );
 };
 
+const isHermesGaCollectRequest = (url: string) => {
+  const parsed = new URL(url);
+  return (
+    (parsed.hostname === "google-analytics.com" || parsed.hostname.endsWith(".google-analytics.com")) &&
+    parsed.pathname.endsWith("/g/collect") &&
+    parsed.searchParams.get("tid") === "G-RY26321PVW"
+  );
+};
+
 test("analytics stays off before choice and after decline", async ({ page }) => {
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
@@ -53,6 +62,11 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
   await expect.poll(() => analyticsRequests.some((url) => url.includes("googletagmanager.com/gtag/js?id=G-RY26321PVW"))).toBe(true);
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(1);
+
+  // Synchronize the baseline with the initial GA4 hit that is allowed by the
+  // user's explicit consent. Otherwise the first page-view request can start
+  // after the withdrawal count is captured and look like post-withdrawal traffic.
+  await expect.poll(() => analyticsRequests.some(isHermesGaCollectRequest)).toBe(true);
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
