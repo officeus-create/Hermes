@@ -25,7 +25,7 @@ const services = [
 ];
 ---
 
-<section class="section contact-section" id="contact">
+<section class="section contact-section" id="business-lead">
   <div class="shell contact-layout">
     <div class="contact-copy">
       <p class="eyebrow">Direct business inquiry</p>
@@ -71,15 +71,15 @@ const services = [
 
       <div class="field-row">
         <label>
-          WhatsApp
+          WhatsApp number
           <input type="text" name="whatsapp" maxlength="120" placeholder="+380..." autocomplete="tel" />
         </label>
         <label>
-          Telegram
+          Telegram username / link
           <input type="text" name="telegram" maxlength="120" placeholder="@username or t.me/..." />
         </label>
       </div>
-      <p class="form-status">Please provide at least one: WhatsApp or Telegram.</p>
+      <p class="form-status">Please provide at least one direct contact: WhatsApp or Telegram.</p>
 
       <label>
         Website / Instagram / social profile
@@ -113,7 +113,7 @@ const services = [
           </select>
         </label>
         <label>
-          Best time to contact
+          Best time to contact (include time zone)
           <input
             type="text"
             name="preferred_contact_time"
@@ -189,6 +189,8 @@ const services = [
       utm_term: pick("utm_term"),
       utm_content: pick("utm_content"),
       gclid: pick("gclid"),
+      gbraid: pick("gbraid"),
+      wbraid: pick("wbraid"),
       referrer: document.referrer.slice(0, 500),
     };
   };
