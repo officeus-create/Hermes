@@ -1,0 +1,361 @@
+---
+import { ArrowLeft, ArrowRight, Calculator, Clock, DollarSign, FileText, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Factoring vs Direct Payment Calculator for Carriers | Hermes Logistics";
+const description =
+  "Compare factoring and direct payment using your own invoice amount, percentage and fixed fees, and expected payment days. See net cash, retained percentage, timing difference, and cost per accelerated day.";
+const canonicalUrl = new URL("/logistics/resources/factoring-vs-direct-payment-calculator/", Astro.site).toString();
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+
+const formulas = [
+  ["Factoring fee", "Invoice × factoring fee % + factoring fixed fee"],
+  ["Factoring net cash", "Invoice − factoring fee"],
+  ["Direct payment fee", "Invoice × direct/quick-pay fee % + direct fixed fee"],
+  ["Direct net cash", "Invoice − direct payment fee"],
+  ["Net cash difference", "Direct net cash − factoring net cash"],
+  ["Days accelerated", "Direct payment days − factoring payment days"],
+  ["Cost per accelerated day", "Net cash difference ÷ days accelerated, when factoring is faster"],
+  ["Amount retained", "Net cash ÷ invoice × 100"],
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Hermes Factoring vs Direct Payment Calculator",
+    description,
+    url: canonicalUrl,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Carrier Knowledge Hub", item: "https://hermeslogisticsus.com/logistics/resources/" },
+      { "@type": "ListItem", position: 4, name: "Factoring vs Direct Payment Calculator", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <a href="/logistics/resources/">Resources</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Factoring vs direct payment</span>
+            </nav>
+            <a class="detail-back" href="/logistics/resources/"><ArrowLeft size={18} aria-hidden="true" />Carrier Knowledge Hub</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Free carrier tool · Cash-flow comparison</p>
+                <h1>Factoring vs Direct Payment Calculator</h1>
+                <p>
+                  Compare two payment paths using only the terms you enter. See how fees affect net cash, how many days one option may accelerate payment,
+                  and the arithmetic cost of that timing difference.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="#calculator">Compare payment paths <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href="/logistics/resources/broker-setup-packet-checklist/">Review broker setup checklist</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Your invoice assumptions stay in your browser.</h2>
+                <p>The calculator does not send entered invoice amounts, fee percentages, fixed fees, or payment-day assumptions to general analytics.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro" aria-labelledby="factoring-why-title">
+          <div class="shell resource-lead">
+            <Clock size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Cash timing versus cost</p>
+              <h2 id="factoring-why-title">A faster payment can cost more even when the invoice value is unchanged.</h2>
+              <p>
+                This comparison separates two questions: how much cash remains after the entered fees, and how many calendar days separate the expected payment dates.
+                It does not decide which option is better for your business.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section factoring-tool-section" id="calculator" aria-labelledby="factoring-calculator-title">
+          <div class="shell factoring-tool-grid" data-factoring-calculator>
+            <div class="factoring-panel factoring-input-panel">
+              <div class="factoring-panel-heading">
+                <Calculator size={26} aria-hidden="true" />
+                <div>
+                  <p class="eyebrow">Your terms</p>
+                  <h2 id="factoring-calculator-title">Compare one invoice.</h2>
+                </div>
+              </div>
+
+              <form data-factoring-form>
+                <div class="factoring-field-grid">
+                  <label>
+                    <span>Invoice amount ($)</span>
+                    <input name="invoiceAmount" type="number" min="0.01" step="0.01" value="2500" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Factoring fee (%)</span>
+                    <input name="factoringPercent" type="number" min="0" max="100" step="0.01" value="3" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Factoring fixed fee ($)</span>
+                    <input name="factoringFixed" type="number" min="0" step="0.01" value="10" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Expected factoring payment (days)</span>
+                    <input name="factoringDays" type="number" min="0" step="1" value="1" inputmode="numeric" required />
+                  </label>
+                  <label>
+                    <span>Direct / quick-pay fee (%)</span>
+                    <input name="directPercent" type="number" min="0" max="100" step="0.01" value="0" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Direct fixed fee ($)</span>
+                    <input name="directFixed" type="number" min="0" step="0.01" value="0" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Expected direct payment (days)</span>
+                    <input name="directDays" type="number" min="0" step="1" value="30" inputmode="numeric" required />
+                  </label>
+                </div>
+
+                <p class="factoring-form-note">
+                  The defaults are an editable illustration, not a market benchmark. Replace every value with the actual terms you are evaluating. Do not enter broker names, bank details, invoice numbers, customer information, or other private data.
+                </p>
+                <button class="button button-primary factoring-calculate" type="submit">Compare payment paths <ArrowRight size={18} aria-hidden="true" /></button>
+                <p class="factoring-error" data-factoring-error role="alert" hidden></p>
+              </form>
+            </div>
+
+            <div class="factoring-panel factoring-result-panel" aria-live="polite">
+              <div class="factoring-panel-heading">
+                <DollarSign size={26} aria-hidden="true" />
+                <div>
+                  <p class="eyebrow">Estimated comparison</p>
+                  <h2>Cash received and timing</h2>
+                </div>
+              </div>
+
+              <div class="factoring-primary-results">
+                <div><span>Factoring net cash</span><strong data-output="factoringNet">—</strong></div>
+                <div><span>Direct net cash</span><strong data-output="directNet">—</strong></div>
+                <div><span>Net cash difference</span><strong data-output="netDifference">—</strong></div>
+              </div>
+
+              <dl class="factoring-result-list">
+                <div><dt>Factoring fee total</dt><dd data-output="factoringFee">—</dd></div>
+                <div><dt>Direct fee total</dt><dd data-output="directFee">—</dd></div>
+                <div><dt>Factoring amount retained</dt><dd data-output="factoringRetained">—</dd></div>
+                <div><dt>Direct amount retained</dt><dd data-output="directRetained">—</dd></div>
+                <div><dt>Payment timing difference</dt><dd data-output="daysDifference">—</dd></div>
+                <div><dt>Cost per accelerated day</dt><dd data-output="costPerDay">—</dd></div>
+              </dl>
+
+              <div class="factoring-sensitivity" data-output="summary">Enter your terms and compare the two payment paths.</div>
+              <p class="factoring-disclaimer">
+                Arithmetic estimate only. This tool is not accounting, tax, legal, lending, credit, factoring-contract, banking, or financial advice. It does not model every contract term and does not predict payment, disputes, recourse, chargebacks, broker credit, cash flow, profit, or revenue.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="factoring-formulas-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Transparent math</p>
+              <h2 id="factoring-formulas-title">The comparison uses only the terms you enter.</h2>
+              <p>No industry-average factoring fee, payment speed, broker credit assumption, or profitability recommendation is inserted by Hermes.</p>
+            </div>
+            <dl>
+              {formulas.map(([label, formula]) => <div><dt>{label}</dt><dd>{formula}</dd></div>)}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section capacity-review" aria-labelledby="factoring-not-modeled-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Contract terms still matter</p>
+              <h2 id="factoring-not-modeled-title">A fee-and-days comparison is not a full factoring-contract review.</h2>
+              <p>Before making a payment decision, separately verify the terms that can change the real economic or operational result.</p>
+            </div>
+            <div class="capacity-boundary-grid">
+              <article><strong>Recourse and chargebacks</strong><p>Who bears nonpayment or dispute risk, and under what events can funds be charged back?</p></article>
+              <article><strong>Reserve and release timing</strong><p>Does the provider hold a reserve, and when can any retained balance become available?</p></article>
+              <article><strong>Minimums and extra fees</strong><p>Check ACH/wire, same-day, monthly minimum, invoice-processing, termination, and other contractual charges.</p></article>
+              <article><strong>Notice of assignment</strong><p>Confirm where the broker must remit payment and how payment instructions are verified before any change.</p></article>
+              <article><strong>Contract duration</strong><p>Review exclusivity, termination notice, renewal, minimum volume, and any obligation to factor eligible invoices.</p></article>
+              <article><strong>Broker approval and disputes</strong><p>Funding can depend on customer credit, documentation, delivery evidence, claim status, and provider rules.</p></article>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="factoring-next-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Related carrier tools</p><h2 id="factoring-next-title">Connect payment timing to the rest of the trip economics.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/logistics/resources/rpm-calculator/"><Calculator size={22} aria-hidden="true" /><h3>RPM & Load Profitability Calculator</h3><p>Compare loaded RPM, all-mile RPM, fuel, reserves, service fees, net, and break-even values.</p><strong>Open RPM calculator <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/broker-setup-packet-checklist/"><FileText size={22} aria-hidden="true" /><h3>Broker Setup Packet Checklist</h3><p>Review payment, factoring, notice-of-assignment, identity, authority, insurance, and document controls.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href={intakeHref}><ShieldCheck size={22} aria-hidden="true" /><h3>Carrier readiness review</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open carrier intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import { trackEvent } from "../../../../lib/analytics";
+
+  const root = document.querySelector<HTMLElement>("[data-factoring-calculator]");
+  const form = root?.querySelector<HTMLFormElement>("[data-factoring-form]");
+  const error = root?.querySelector<HTMLElement>("[data-factoring-error]");
+  let started = false;
+
+  const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+  const percent = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
+
+  function setOutput(name: string, value: string) {
+    root?.querySelector<HTMLElement>(`[data-output="${name}"]`)?.replaceChildren(value);
+  }
+
+  function read(name: string): number {
+    const input = form?.elements.namedItem(name);
+    return input instanceof HTMLInputElement ? Number(input.value) : Number.NaN;
+  }
+
+  function calculate(trackCompletion: boolean) {
+    if (!form || !error) return;
+
+    const invoice = read("invoiceAmount");
+    const factoringPercent = read("factoringPercent");
+    const factoringFixed = read("factoringFixed");
+    const factoringDays = read("factoringDays");
+    const directPercent = read("directPercent");
+    const directFixed = read("directFixed");
+    const directDays = read("directDays");
+
+    const valid =
+      Number.isFinite(invoice) && invoice > 0 &&
+      Number.isFinite(factoringPercent) && factoringPercent >= 0 && factoringPercent <= 100 &&
+      Number.isFinite(factoringFixed) && factoringFixed >= 0 &&
+      Number.isFinite(factoringDays) && factoringDays >= 0 &&
+      Number.isFinite(directPercent) && directPercent >= 0 && directPercent <= 100 &&
+      Number.isFinite(directFixed) && directFixed >= 0 &&
+      Number.isFinite(directDays) && directDays >= 0;
+
+    if (!valid) {
+      error.hidden = false;
+      error.textContent = "Check the inputs: invoice must be above zero; fees and days cannot be negative; percentage fees must be between 0% and 100%.";
+      return;
+    }
+
+    error.hidden = true;
+    error.textContent = "";
+
+    const factoringFee = invoice * (factoringPercent / 100) + factoringFixed;
+    const directFee = invoice * (directPercent / 100) + directFixed;
+    const factoringNet = invoice - factoringFee;
+    const directNet = invoice - directFee;
+    const netDifference = directNet - factoringNet;
+    const daysAccelerated = directDays - factoringDays;
+    const factoringRetained = (factoringNet / invoice) * 100;
+    const directRetained = (directNet / invoice) * 100;
+
+    setOutput("factoringNet", money.format(factoringNet));
+    setOutput("directNet", money.format(directNet));
+    setOutput("netDifference", `${netDifference >= 0 ? "+" : "−"}${money.format(Math.abs(netDifference))} direct`);
+    setOutput("factoringFee", money.format(factoringFee));
+    setOutput("directFee", money.format(directFee));
+    setOutput("factoringRetained", `${percent.format(factoringRetained)}%`);
+    setOutput("directRetained", `${percent.format(directRetained)}%`);
+
+    if (daysAccelerated > 0) {
+      setOutput("daysDifference", `${daysAccelerated} day${daysAccelerated === 1 ? "" : "s"} faster with factoring`);
+      const costPerDay = netDifference > 0 ? netDifference / daysAccelerated : 0;
+      setOutput("costPerDay", netDifference > 0 ? `${money.format(costPerDay)}/day` : "$0.00/day");
+      setOutput("summary", netDifference > 0
+        ? `Under these assumptions, factoring accelerates expected cash by ${daysAccelerated} days while reducing net cash by ${money.format(netDifference)}.`
+        : `Under these assumptions, factoring is ${daysAccelerated} days faster and does not reduce net cash relative to the entered direct-payment fees.`);
+    } else if (daysAccelerated < 0) {
+      const directFaster = Math.abs(daysAccelerated);
+      setOutput("daysDifference", `${directFaster} day${directFaster === 1 ? "" : "s"} faster with direct payment`);
+      setOutput("costPerDay", "Not applicable");
+      setOutput("summary", `Under these assumptions, direct payment is ${directFaster} days faster. Cost-per-accelerated-day is therefore not calculated for factoring.`);
+    } else {
+      setOutput("daysDifference", "Same expected timing");
+      setOutput("costPerDay", "Not applicable");
+      setOutput("summary", `Both paths use the same expected payment timing. The remaining comparison is the ${money.format(Math.abs(netDifference))} difference in net cash.`);
+    }
+
+    if (trackCompletion) trackEvent("factoring_calculator_completed", { tool: "factoring_vs_direct_payment" });
+  }
+
+  form?.addEventListener("input", () => {
+    if (!started) {
+      started = true;
+      trackEvent("factoring_calculator_started", { tool: "factoring_vs_direct_payment" });
+    }
+  });
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    calculate(true);
+  });
+
+  calculate(false);
+</script>
+
+<style>
+  .factoring-tool-section { background: color-mix(in srgb, var(--bg, #f7f5ef) 92%, #0d2438 8%); }
+  .factoring-tool-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr); gap: 1.25rem; align-items: start; }
+  .factoring-panel { border: 1px solid color-mix(in srgb, currentColor 14%, transparent); border-radius: 24px; padding: clamp(1.25rem, 2vw, 2rem); background: #fff; box-shadow: 0 18px 50px rgba(18, 35, 52, 0.08); }
+  .factoring-result-panel { position: sticky; top: 1rem; }
+  .factoring-panel-heading { display: flex; gap: 0.9rem; align-items: flex-start; margin-bottom: 1.25rem; }
+  .factoring-panel-heading h2, .factoring-panel-heading p { margin: 0; }
+  .factoring-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
+  .factoring-field-grid label { display: grid; gap: 0.4rem; font-weight: 700; color: #162b3f; }
+  .factoring-field-grid span { font-size: 0.9rem; }
+  .factoring-field-grid input { width: 100%; min-height: 46px; border: 1px solid #c8d0d7; border-radius: 12px; padding: 0.72rem 0.8rem; font: inherit; color: #102437; background: #fff; }
+  .factoring-field-grid input:focus { outline: 3px solid rgba(22, 96, 136, 0.18); border-color: #166088; }
+  .factoring-form-note, .factoring-disclaimer { color: #536472; font-size: 0.88rem; line-height: 1.55; }
+  .factoring-form-note { margin: 1rem 0; }
+  .factoring-calculate { width: 100%; justify-content: center; }
+  .factoring-error { margin: 0.8rem 0 0; color: #8f241e; font-weight: 700; }
+  .factoring-primary-results { display: grid; gap: 0.75rem; margin-bottom: 1rem; }
+  .factoring-primary-results > div { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; padding: 0.9rem 1rem; border-radius: 14px; background: #f1f5f7; }
+  .factoring-primary-results span { color: #4c5d69; font-size: 0.88rem; font-weight: 700; }
+  .factoring-primary-results strong { color: #102437; font-size: clamp(1.05rem, 2vw, 1.35rem); text-align: right; }
+  .factoring-result-list { margin: 0; display: grid; }
+  .factoring-result-list > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.62rem 0; border-bottom: 1px solid #e3e7ea; }
+  .factoring-result-list dt { color: #536472; }
+  .factoring-result-list dd { margin: 0; color: #102437; font-weight: 800; text-align: right; }
+  .factoring-sensitivity { margin-top: 1rem; padding: 0.9rem 1rem; border-left: 4px solid #166088; border-radius: 10px; background: #edf6fa; color: #17394c; font-weight: 700; line-height: 1.5; }
+  @media (max-width: 860px) {
+    .factoring-tool-grid, .factoring-field-grid { grid-template-columns: 1fr; }
+    .factoring-result-panel { position: static; }
+  }
+</style>

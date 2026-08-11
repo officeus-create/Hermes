@@ -18,7 +18,7 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 
 const title = "Carrier Knowledge Hub for Car Haulers | Hermes Logistics";
 const description =
-  "Use the Hermes carrier knowledge hub to review car-hauling dispatch models, RPM and trip economics, new-authority readiness, broker setup packets, carrier control, load review, and practical next steps.";
+  "Use the Hermes carrier knowledge hub to review RPM and trip economics, factoring vs direct payment, dispatch models, new-authority readiness, broker setup packets, carrier control, and practical next steps.";
 const canonicalUrl = new URL("/logistics/resources/", Astro.site).toString();
 const carrierIntake = "/logistics/start-car-hauling-dispatch/";
 
@@ -29,6 +29,13 @@ const coreGuides = [
     title: "RPM & Load Profitability Calculator",
     body: "Calculate loaded RPM, all-mile RPM, fuel, reserves, optional service fees, estimated net before tax, and break-even RPM using your own assumptions.",
     href: "/logistics/resources/rpm-calculator/",
+  },
+  {
+    icon: Calculator,
+    label: "Cash-flow comparison",
+    title: "Factoring vs Direct Payment Calculator",
+    body: "Compare user-entered fees and expected payment days to see net cash, retained percentage, timing difference, and cost per accelerated day.",
+    href: "/logistics/resources/factoring-vs-direct-payment-calculator/",
   },
   {
     icon: Users,
@@ -91,10 +98,10 @@ const reviewOrder = [
 const faq = [
   {
     question: "What is included in the Carrier Knowledge Hub?",
-    answer: "The hub organizes Hermes resources for trip-economics review, dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
+    answer: "The hub organizes Hermes resources for trip economics, payment-timing comparison, dispatch-model review, new-authority readiness, broker setup packets, carrier control, operational preparation, service paths, intake, and Academy learning.",
   },
   {
-    question: "Does reading a guide or using the calculator qualify a carrier or create dispatch service?",
+    question: "Does reading a guide or using a calculator qualify a carrier or create dispatch service?",
     answer: "No. The tools and guides are educational and operational preparation resources. Qualification, service scope, authority, insurance, equipment, availability, agreement terms, and carrier approval still require direct review.",
   },
   {
@@ -124,9 +131,10 @@ const schema = [
       { "@type": "Thing", name: "Motor carrier operations" },
       { "@type": "Thing", name: "Carrier onboarding" },
       { "@type": "Thing", name: "Rate per mile calculation" },
+      { "@type": "Thing", name: "Carrier payment timing" },
     ],
     hasPart: coreGuides.map((guide) => ({
-      "@type": guide.href.includes("rpm-calculator") ? "WebApplication" : "Article",
+      "@type": guide.href.includes("calculator") ? "WebApplication" : "Article",
       name: guide.title,
       url: new URL(guide.href, Astro.site).toString(),
     })),
@@ -189,7 +197,7 @@ const schema = [
               <p class="eyebrow">Hermes Logistics · Carrier Operations</p>
               <h1>Carrier Knowledge Hub for Car Haulers</h1>
               <p>
-                Start with the operating question in front of you: comparing trip economics, choosing a dispatch model, preparing a new authority,
+                Start with the operating question in front of you: comparing trip economics or payment timing, choosing a dispatch model, preparing a new authority,
                 organizing a broker setup packet, defining carrier approval, or requesting a structured dispatch-fit review.
               </p>
               <div class="logistics-audience-actions">
@@ -224,7 +232,7 @@ const schema = [
           <div class="section-heading split-heading">
             <div>
               <p class="eyebrow">Core carrier tools and guides</p>
-              <h2 id="carrier-guides-title">Four practical resources to review first.</h2>
+              <h2 id="carrier-guides-title">Five practical resources to review first.</h2>
             </div>
             <p>Each resource has a distinct purpose, visible carrier-control boundary, direct next step, and no guarantee language.</p>
           </div>
