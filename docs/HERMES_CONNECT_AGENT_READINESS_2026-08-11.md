@@ -1,65 +1,84 @@
 # Hermes Connect Agent Readiness — 2026-08-11
 
-Status: evidence captured from authenticated Cloudflare Agent Readiness screenshots supplied by the owner. This document is intentionally implementation-neutral and exists to prevent score-chasing or duplicate work across concurrent SEO/Claude/Codex sessions.
+Status: authenticated Cloudflare Agent Readiness evidence captured for both the preserved legacy prototype (`app.hermeslogisticsus.com`) and the approved current Hermes Connect Web App (`connect.hermeslogisticsus.com`). This document exists to prevent score-chasing, fake protocol placeholders, or duplicate work across concurrent SEO/Claude/Codex sessions.
 
 ## 1. Hostname boundary
-
-Cloudflare Diagnostics was run against:
-
-- `app.hermeslogisticsus.com`
 
 Repository deployment ownership currently defines:
 
 - `connect.hermeslogisticsus.com` — approved current Hermes Connect Web App, served by the main `hermes` Cloudflare Pages project and routed by `functions/_middleware.js` to `public/demos/hermes-connect/`;
 - `app.hermeslogisticsus.com` — preserved legacy booking/profile prototype on the separate `hermes-connect-prototype` Pages project.
 
-Therefore Agent Readiness improvements for `app.` must not be treated automatically as improvements to the current Hermes Connect product. The next meaningful Cloudflare scan should target `connect.hermeslogisticsus.com` unless the owner explicitly decides that the legacy `app.` prototype remains an active agent surface.
+The owner first supplied a full authenticated scan of `app.` and then, at approximately 17:08–17:09 local time on 2026-08-11, supplied the requested authenticated scan of the correct current hostname `connect.hermeslogisticsus.com`.
 
-## 2. Exact Cloudflare diagnostics captured for `app.`
+The `connect.` scan is now the authoritative Agent Readiness baseline for current Hermes Connect work.
+
+## 2. Current authoritative Cloudflare diagnostics — `connect.hermeslogisticsus.com`
 
 ### Level 1 — Quick Wins: 3/5
 
 PASS:
 
 - `robots.txt` — valid format detected;
-- AI Crawler Rules — rules detected for AI crawlers;
+- AI Crawler Rules — AI crawler rules detected;
 - Content Signals — signals detected in `robots.txt`.
 
 FAIL:
 
 - Sitemap — `sitemap.xml not found`;
-- Markdown Negotiation — site does not support Markdown for Agents. The Cloudflare UI states that the managed Cloudflare feature requires Pro or higher.
+- Markdown Negotiation — `Site does not support Markdown for Agents`.
+
+Cloudflare's UI states its managed "Markdown for Agents" switch requires Pro or higher. A repository implementation for equivalent content negotiation is being evaluated separately; Cloudflare may or may not recognize a custom implementation in this beta scanner.
 
 ### Level 2 — Technical Groundwork: 0/3
 
-- API Catalog — discovery path returned HTML instead of JSON;
-- Link Headers — no discovery Link headers found on the homepage;
-- `auth.md` — path returned HTML instead of Markdown.
+- API Catalog — `API Catalog not found`;
+- Link Headers — `No Link headers found on homepage`;
+- `auth.md` — `auth.md not found`.
 
-Cloudflare's own guidance says the API Catalog should be skipped when the site has no API. `auth.md` is only meaningful when a real protected API/login contract exists.
+Important interpretation:
+
+- Cloudflare explicitly says to skip API Catalog if the site has no API;
+- `auth.md` should describe a real registration/sign-in contract and should not be fabricated before such a flow exists;
+- Link Headers should point to real structured/API resources, not placeholders created only for the score.
 
 ### Level 3 — Advanced Integration: 0/8
 
-- OAuth Discovery — no OAuth/OIDC discovery metadata;
-- OAuth Protected Resource — no protected-resource metadata;
-- A2A Agent Card — returned HTML instead of JSON;
-- Agent Skills Index — returned HTML instead of JSON;
-- MCP Server Card — not found;
-- Web Bot Auth — directory returned HTML instead of JSON; scanner labels this informational;
-- WebMCP — no WebMCP tools detected on page load;
-- DNS-AID — well-known entrypoint records not found.
+- OAuth Discovery — no OAuth/OIDC discovery metadata found;
+- OAuth Protected Resource — no protected-resource metadata found;
+- A2A Agent Card — `A2A Agent Card not found`;
+- Agent Skills Index — `Agent Skills Index not found`;
+- MCP Server Card — `MCP Server Card not found`;
+- Web Bot Auth — directory returned informational-only/non-usable discovery output;
+- WebMCP — `No WebMCP tools detected on page load`;
+- DNS-AID — `DNS for AI Discovery (DNS-AID) well-known entrypoint records not found`.
+
+These are not eight bugs. Most are capability-discovery checks that should pass only after Hermes Connect genuinely offers the corresponding capability.
 
 ### Commerce: 0/5 — Optional
 
-- ACP — discovery document returned HTML instead of JSON; scanner notes this is not a commerce site;
-- AP2 — not detected; scanner notes this is not a commerce site;
-- MPP — payment discovery not detected; scanner notes this is not a commerce site;
-- UCP — profile returned HTML instead of expected format; scanner notes this is not a commerce site;
-- x402 — payment protocol not detected; scanner notes this is not a commerce site.
+- ACP — discovery document not found; scanner identifies the target as not a commerce site;
+- AP2 — not detected / no A2A Agent Card; scanner identifies the target as not a commerce site;
+- MPP — payment discovery not detected; scanner identifies the target as not a commerce site;
+- UCP — profile not found; scanner identifies the target as not a commerce site;
+- x402 — payment protocol not detected; scanner identifies the target as not a commerce site.
 
 Commerce is not an implementation target merely to increase Agent Readiness score.
 
-## 3. Current `connect.` product boundary from repository
+## 3. Comparison with the legacy `app.` scan
+
+The score shape is the same on both hosts:
+
+- Quick Wins: 3/5;
+- Technical Groundwork: 0/3;
+- Advanced Integration: 0/8;
+- Commerce: 0/5 optional.
+
+However the current `connect.` host is cleaner at several discovery paths: instead of some legacy paths falling through to generic HTML, the scanner reports several resources as simply not found (for example API Catalog, `auth.md`, A2A card and Skills Index). This is still a fail in the beta score, but it is a more accurate representation of absent capabilities than serving unrelated HTML.
+
+The legacy `app.` scan remains historical evidence only and must not drive current product implementation.
+
+## 4. Current `connect.` product boundary from repository
 
 The approved Hermes Connect Web App is currently a controlled single-page access-request experience under `public/demos/hermes-connect/`.
 
@@ -71,21 +90,24 @@ Its reviewed page currently declares:
 
 This means publishing a `connect.hermeslogisticsus.com/sitemap.xml` that advertises the Connect root as an indexable canonical page would conflict with the present noindex/canonical contract. Do not add such a sitemap only to make Cloudflare show 4/5.
 
-## 4. Implementation decisions
+A sitemap becomes appropriate only after an explicit product/indexability decision defines which Connect URLs are intended to be public canonical discovery surfaces.
+
+## 5. Implementation decisions after the correct-host rescan
 
 ### Safe now
 
 - preserve current `robots.txt`, AI Crawler Rules and Content Signals behavior;
-- use Cloudflare Diagnostics as an evidence source;
-- re-scan the correct current hostname (`connect.`) before changing code;
+- keep the correct-host baseline fixed at `connect.`;
+- test a bounded Markdown content-negotiation implementation without changing browser HTML or the noindex boundary;
 - keep root-site SEO/Agentic Browsing work separate from Hermes Connect product-agent work;
 - document future machine interfaces only after a real endpoint or tool contract exists.
 
-### Not safe to implement yet
+### Do not create placeholders for score
 
-Do not create placeholders purely for score:
+Do not create:
 
 - API Catalog without a stable public API;
+- Link Headers pointing to nonexistent catalogs or tools;
 - `auth.md` without a real supported registration/login flow for agents;
 - OAuth metadata without a working authorization server and protected-resource contract;
 - A2A card before Hermes Connect actually exposes an agent endpoint;
@@ -95,16 +117,17 @@ Do not create placeholders purely for score:
 - DNS-AID before Hermes operates outbound/discoverable AI agents;
 - ACP/AP2/MPP/UCP/x402 before an approved agent-commerce use case and payment backend exist.
 
-## 5. Recommended execution order
+## 6. Recommended execution order
 
-### Phase A — verify the correct target
+### Phase A — bounded Quick Win
 
-1. In Cloudflare Agent Readiness select `connect.hermeslogisticsus.com`.
-2. Run Rescan.
-3. Capture the exact pass/fail result for all levels.
-4. Compare with this `app.` legacy baseline.
+1. Validate the Markdown-negotiation branch/preview.
+2. Keep normal browser HTML unchanged.
+3. Keep `noindex,nofollow` unchanged.
+4. If approved and merged, re-scan `connect.` to see whether Cloudflare recognizes the standards-based response.
+5. Do not treat scanner recognition as the only success criterion; verify the actual HTTP behavior directly.
 
-### Phase B — decide public discovery contract
+### Phase B — public discovery decision
 
 Before adding a Connect sitemap or changing canonical/indexability, make one explicit product decision:
 
@@ -113,19 +136,20 @@ Before adding a Connect sitemap or changing canonical/indexability, make one exp
 
 If the app remains noindex, a sitemap score is not worth contradicting the product boundary.
 
-### Phase C — first real agent capability
+### Phase C — real machine capabilities
 
-When Hermes Connect gains a stable machine capability, implement discovery in this order:
+When Hermes Connect gains stable machine capabilities, use this sequence:
 
 1. stable API/tool contract;
-2. machine-readable catalog/card for that real capability;
+2. API Catalog and truthful discovery Link headers for those real resources;
 3. authentication/authorization metadata if required;
-4. MCP or WebMCP only when the corresponding tools exist;
-5. A2A/Skills/DNS-AID only when Hermes operates an actual discoverable agent.
+4. MCP or WebMCP only when corresponding tools exist;
+5. A2A/Skills/DNS-AID only when Hermes operates an actual discoverable agent;
+6. commerce protocols only when a real approved agent-payment flow exists.
 
-## 6. Relationship to concurrent work
+## 7. Relationship to concurrent work
 
-This report must not overlap or override:
+This Agent Readiness track must not overlap or override:
 
 - SEO 10 / SEO 11 root-site measurement, performance or conversion work;
 - root-site Agentic Browsing task #354;
