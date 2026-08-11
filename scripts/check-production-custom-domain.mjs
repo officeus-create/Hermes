@@ -8,16 +8,21 @@ const canonicalPages = [
   "/",
   "/logistics/car-hauling-dispatch/",
   "/logistics/dealer-vehicle-transportation/",
+  "/logistics/auction-vehicle-pickup/",
+  "/logistics/appleton-wi-vehicle-transport/",
   "/load-board/",
   "/services/seo/",
+  "/services/website-development/",
+  "/academy/us-logistics-operations/",
 ];
 
 const noindexPages = [
   "/logistics/start-car-hauling-dispatch/",
   "/logistics/request-vehicle-transport/",
+  "/business-growth/",
 ];
 
-const sitemapPaths = [
+const childSitemapPaths = [
   "/sitemap.xml",
   "/sitemap-local.xml",
   "/sitemap-services.xml",
@@ -26,6 +31,8 @@ const sitemapPaths = [
   "/sitemap-cases.xml",
   "/sitemap-trust.xml",
 ];
+const sitemapIndexPath = "/sitemapindex.xml";
+const sitemapPaths = [sitemapIndexPath, ...childSitemapPaths];
 
 const expectedCurrentMarkers = [
   "Website inquiries are delivered securely by email",
@@ -58,7 +65,7 @@ async function fetchPublic(pathname) {
     const response = await fetch(url, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesProductionVerifier/1.0 (+public read-only release check)",
+        "user-agent": "HermesProductionVerifier/1.1 (+public read-only release check)",
         accept: "text/html,application/xml,text/plain;q=0.9,*/*;q=0.8",
         "cache-control": "no-cache",
         pragma: "no-cache",
@@ -102,6 +109,8 @@ function inspectCanonicalPage(pathname, fetched) {
     path: pathname,
     status: fetched.status,
     finalUrl: fetched.finalUrl,
+    finalUrlMatches: fetched.finalUrl === expectedCanonical,
+    unexpectedRedirect: Boolean(fetched.finalUrl && fetched.finalUrl !== expectedCanonical),
     canonical,
     expectedCanonical,
     canonicalMatches: canonical === expectedCanonical,
@@ -115,12 +124,15 @@ function inspectCanonicalPage(pathname, fetched) {
 }
 
 function inspectNoindexPage(pathname, fetched) {
+  const expectedUrl = new URL(pathname, baseUrl).toString();
   const canonical = extractAttribute(fetched.body, "link", "rel", "canonical", "href");
   const robots = extractAttribute(fetched.body, "meta", "name", "robots", "content");
   return {
     path: pathname,
     status: fetched.status,
     finalUrl: fetched.finalUrl,
+    finalUrlMatches: fetched.finalUrl === expectedUrl,
+    unexpectedRedirect: Boolean(fetched.finalUrl && fetched.finalUrl !== expectedUrl),
     canonical,
     robots,
     hasNoindex: Boolean(robots?.toLowerCase().includes("noindex")),
@@ -156,6 +168,7 @@ const robotsFetch = await fetchPublic("/robots.txt");
 const robotsResult = {
   status: robotsFetch.status,
   finalUrl: robotsFetch.finalUrl,
+  finalUrlMatches: robotsFetch.finalUrl === new URL("/robots.txt", baseUrl).toString(),
   includesAllSitemaps: sitemapPaths.every((pathname) =>
     robotsFetch.body.includes(new URL(pathname, baseUrl).toString()),
   ),
@@ -167,12 +180,17 @@ const robotsResult = {
 };
 
 const sitemapResults = [];
+let sitemapIndexLocs = [];
 for (const pathname of sitemapPaths) {
   const fetched = await fetchPublic(pathname);
+  if (pathname === sitemapIndexPath) {
+    sitemapIndexLocs = [...fetched.body.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
+  }
   sitemapResults.push({
     path: pathname,
     status: fetched.status,
     finalUrl: fetched.finalUrl,
+    finalUrlMatches: fetched.finalUrl === new URL(pathname, baseUrl).toString(),
     contentType: fetched.contentType,
     looksLikeSitemap: /<(urlset|sitemapindex)\b/i.test(fetched.body),
     durationMs: fetched.durationMs,
@@ -180,11 +198,53 @@ for (const pathname of sitemapPaths) {
   });
 }
 
+const expectedChildSitemapUrls = childSitemapPaths.map((pathname) => new URL(pathname, baseUrl).toString());
+const sitemapIndexMissingChildren = expectedChildSitemapUrls.filter((url) => !sitemapIndexLocs.includes(url));
+const sitemapIndexUnexpectedChildren = sitemapIndexLocs.filter((url) => !expectedChildSitemapUrls.includes(url));
+const sitemapIndexResult = {
+  path: sitemapIndexPath,
+  expectedChildren: expectedChildSitemapUrls.length,
+  discoveredChildren: sitemapIndexLocs.length,
+  referencesAllChildren: sitemapIndexMissingChildren.length === 0,
+  exactControlledChildren: sitemapIndexMissingChildren.length === 0 && sitemapIndexUnexpectedChildren.length === 0,
+  missingChildren: sitemapIndexMissingChildren,
+  unexpectedChildren: sitemapIndexUnexpectedChildren,
+};
+
+const llmsFetch = await fetchPublic("/llms.txt");
+const llmsExpectedUrl = new URL("/llms.txt", baseUrl).toString();
+const llmsResult = {
+  status: llmsFetch.status,
+  finalUrl: llmsFetch.finalUrl,
+  finalUrlMatches: llmsFetch.finalUrl === llmsExpectedUrl,
+  contentType: llmsFetch.contentType,
+  hasMarkdownH1: /^#\s+\S.+$/m.test(llmsFetch.body),
+  markdownLinkCount: (llmsFetch.body.match(/\[[^\]]+\]\(https?:\/\/[^)]+\)/g) ?? []).length,
+  hasMarkdownLinks: /\[[^\]]+\]\(https?:\/\/[^)]+\)/.test(llmsFetch.body),
+  durationMs: llmsFetch.durationMs,
+  error: llmsFetch.error,
+};
+
+const notFoundPath = "/__hermes-seo-healthcheck-nonexistent__/";
+const notFoundFetch = await fetchPublic(notFoundPath);
+const notFoundResult = {
+  path: notFoundPath,
+  status: notFoundFetch.status,
+  finalUrl: notFoundFetch.finalUrl,
+  expectedUrl: new URL(notFoundPath, baseUrl).toString(),
+  finalUrlMatches: notFoundFetch.finalUrl === new URL(notFoundPath, baseUrl).toString(),
+  isReal404: notFoundFetch.status === 404,
+  durationMs: notFoundFetch.durationMs,
+  error: notFoundFetch.error,
+};
+
 const networkFailure = [
   ...canonicalResults,
   ...noindexResults,
   robotsResult,
   ...sitemapResults,
+  llmsResult,
+  notFoundResult,
 ].some((result) => result.error || !result.status);
 
 const missingCurrentMarkers = Object.entries(currentMarkerChecks)
@@ -196,11 +256,19 @@ const presentStaleMarkers = Object.entries(staleMarkerChecks)
 const allCurrentMarkersFound = missingCurrentMarkers.length === 0;
 const staleMarkerFound = presentStaleMarkers.length > 0;
 const routeContractHealthy =
-  canonicalResults.every((result) => result.status === 200 && result.canonicalMatches && result.indexableByMeta) &&
-  noindexResults.every((result) => result.status === 200 && result.hasNoindex && result.allowsFollow) &&
+  canonicalResults.every((result) => result.status === 200 && result.finalUrlMatches && result.canonicalMatches && result.indexableByMeta) &&
+  noindexResults.every((result) => result.status === 200 && result.finalUrlMatches && result.hasNoindex && result.allowsFollow) &&
   robotsResult.status === 200 &&
+  robotsResult.finalUrlMatches &&
   robotsResult.includesAllSitemaps &&
-  sitemapResults.every((result) => result.status === 200 && result.looksLikeSitemap);
+  sitemapResults.every((result) => result.status === 200 && result.finalUrlMatches && result.looksLikeSitemap) &&
+  sitemapIndexResult.exactControlledChildren &&
+  llmsResult.status === 200 &&
+  llmsResult.finalUrlMatches &&
+  llmsResult.hasMarkdownH1 &&
+  llmsResult.hasMarkdownLinks &&
+  notFoundResult.isReal404 &&
+  notFoundResult.finalUrlMatches;
 
 let classification = "MIXED_EDGE_OR_CACHE_STATE";
 const classificationReasons = [];
@@ -217,9 +285,9 @@ if (networkFailure) {
   }
 } else if (routeContractHealthy) {
   classification = "LIVE_CURRENT";
-  classificationReasons.push("Required current markers and the public route contract are present.");
+  classificationReasons.push("Required current markers and the public route/discovery/index-hygiene contract are present.");
 } else {
-  classificationReasons.push("Homepage markers are current, but one or more route/discovery contracts are inconsistent.");
+  classificationReasons.push("Homepage markers are current, but one or more route, discovery, redirect, llms.txt, sitemap-index, or 404 contracts are inconsistent.");
 }
 
 const result = {
@@ -232,7 +300,8 @@ const result = {
     noFormsSubmitted: true,
     noCredentialsUsed: true,
     noPrivateDataCollected: true,
-    note: "This verifies the public custom-domain response from a GitHub-hosted runner. It does not identify private Cloudflare resource IDs or replace Search Console/Bing crawl evidence.",
+    noThirdPartyLinkCrawl: true,
+    note: "This verifies the public custom-domain response from a GitHub-hosted runner. It does not replace authenticated Search Console/Bing index reasons, Google-selected canonical evidence, or search-engine soft-404 classification.",
   },
   homepage: {
     status: homepage.status,
@@ -250,6 +319,9 @@ const result = {
   noindexPages: noindexResults,
   robots: robotsResult,
   sitemaps: sitemapResults,
+  sitemapIndex: sitemapIndexResult,
+  llms: llmsResult,
+  notFound: notFoundResult,
   routeContractHealthy,
 };
 
@@ -259,7 +331,7 @@ const markdown = [
   `- Checked: ${result.checkedAt}`,
   `- Domain: ${baseUrl}`,
   `- Classification: **${classification}**`,
-  `- Route contract healthy: **${routeContractHealthy ? "yes" : "no"}**`,
+  `- Route/index-hygiene contract healthy: **${routeContractHealthy ? "yes" : "no"}**`,
   `- Homepage status: ${homepage.status ?? "unavailable"}`,
   `- Homepage final URL: ${homepage.finalUrl ?? "unavailable"}`,
   `- Cloudflare cache status: ${homepage.cacheStatus ?? "not exposed"}`,
@@ -276,23 +348,26 @@ const markdown = [
   "",
   "## Canonical pages",
   "",
-  "| Path | Status | Canonical matches | Indexable by meta | Cache |",
-  "| --- | ---: | --- | --- | --- |",
-  ...canonicalResults.map((item) => `| ${item.path} | ${item.status ?? "—"} | ${item.canonicalMatches ? "yes" : "no"} | ${item.indexableByMeta ? "yes" : "no"} | ${item.cacheStatus ?? "—"} |`),
+  "| Path | Status | Final URL matches | Canonical matches | Indexable by meta | Cache |",
+  "| --- | ---: | --- | --- | --- | --- |",
+  ...canonicalResults.map((item) => `| ${item.path} | ${item.status ?? "—"} | ${item.finalUrlMatches ? "yes" : "no"} | ${item.canonicalMatches ? "yes" : "no"} | ${item.indexableByMeta ? "yes" : "no"} | ${item.cacheStatus ?? "—"} |`),
   "",
   "## Noindex workspaces",
   "",
-  "| Path | Status | noindex | follow allowed |",
-  "| --- | ---: | --- | --- |",
-  ...noindexResults.map((item) => `| ${item.path} | ${item.status ?? "—"} | ${item.hasNoindex ? "yes" : "no"} | ${item.allowsFollow ? "yes" : "no"} |`),
+  "| Path | Status | Final URL matches | noindex | follow allowed |",
+  "| --- | ---: | --- | --- | --- |",
+  ...noindexResults.map((item) => `| ${item.path} | ${item.status ?? "—"} | ${item.finalUrlMatches ? "yes" : "no"} | ${item.hasNoindex ? "yes" : "no"} | ${item.allowsFollow ? "yes" : "no"} |`),
   "",
   "## Discovery files",
   "",
   `- robots.txt status: ${robotsResult.status ?? "—"}`,
-  `- robots.txt declares all seven controlled sitemaps: ${robotsResult.includesAllSitemaps ? "yes" : "no"}`,
-  ...sitemapResults.map((item) => `- ${item.path}: status ${item.status ?? "—"}; sitemap XML ${item.looksLikeSitemap ? "recognized" : "not recognized"}`),
+  `- robots.txt declares sitemap index + all seven controlled child sitemaps: ${robotsResult.includesAllSitemaps ? "yes" : "no"}`,
+  ...sitemapResults.map((item) => `- ${item.path}: status ${item.status ?? "—"}; final URL ${item.finalUrlMatches ? "matches" : "drifted"}; sitemap XML ${item.looksLikeSitemap ? "recognized" : "not recognized"}`),
+  `- sitemap index controlled children: ${sitemapIndexResult.discoveredChildren}/${sitemapIndexResult.expectedChildren}; exact set ${sitemapIndexResult.exactControlledChildren ? "yes" : "no"}`,
+  `- llms.txt: status ${llmsResult.status ?? "—"}; H1 ${llmsResult.hasMarkdownH1 ? "yes" : "no"}; Markdown links ${llmsResult.markdownLinkCount}`,
+  `- synthetic nonexistent path: status ${notFoundResult.status ?? "—"}; real HTTP 404 ${notFoundResult.isReal404 ? "yes" : "no"}; final URL ${notFoundResult.finalUrlMatches ? "matches" : "drifted"}`,
   "",
-  "> Read-only verification only. No form was submitted, no lead was created, and no credentials or private infrastructure identifiers were collected.",
+  "> Read-only verification only. No form was submitted, no lead was created, no credentials or private infrastructure identifiers were collected. A real HTTP 404 check is only a basic server contract and does not substitute for Google/Bing soft-404 or index-reason evidence.",
   "",
 ].join("\n");
 
