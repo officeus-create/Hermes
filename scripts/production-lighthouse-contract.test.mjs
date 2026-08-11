@@ -11,6 +11,8 @@ const workflow = await readFile(new URL("../.github/workflows/production-lightho
 for (const required of [
   "github.event.issue.number == 354",
   "github.event.comment.body == '/measure-production-lighthouse'",
+  "group: production-lighthouse-command-${{ github.event.comment.id }}",
+  "cancel-in-progress: false",
   "lighthouse@13.4.1",
   "mobile-${run}.json",
   "desktop-${run}.json",
@@ -19,6 +21,11 @@ for (const required of [
 ]) {
   assert.ok(workflow.includes(required), `production Lighthouse workflow must preserve ${required}`);
 }
+assert.equal(
+  workflow.includes("group: production-lighthouse-command\n  cancel-in-progress: true"),
+  false,
+  "Unrelated issue comments must not be able to cancel an active Lighthouse measurement",
+);
 
 const source = await readFile(new URL("./summarize-production-lighthouse.mjs", import.meta.url), "utf8");
 for (const required of ["median", "largest-contentful-paint", "first-contentful-paint", "total-blocking-time", "cumulative-layout-shift", "speed-index", "CrUX field"] ) {
