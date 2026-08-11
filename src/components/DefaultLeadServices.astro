@@ -1,0 +1,29 @@
+---
+interface Props {
+  services: string[];
+}
+
+const { services } = Astro.props;
+---
+
+<div data-default-lead-services data-services={JSON.stringify(services)} hidden></div>
+
+<script>
+  const marker = document.querySelector<HTMLElement>("[data-default-lead-services]");
+  const form = document.querySelector<HTMLFormElement>("[data-business-lead-form]");
+
+  if (marker && form) {
+    let defaults: string[] = [];
+    try {
+      const parsed = JSON.parse(marker.dataset.services || "[]");
+      if (Array.isArray(parsed)) defaults = parsed.filter((item): item is string => typeof item === "string");
+    } catch {
+      defaults = [];
+    }
+
+    for (const service of defaults) {
+      const input = form.querySelector<HTMLInputElement>(`input[name="services"][value="${CSS.escape(service)}"]`);
+      if (input) input.checked = true;
+    }
+  }
+</script>
