@@ -32,9 +32,18 @@
   50% { opacity: 1; transform: scale(1.12); }
 }
 
-/* Avoid animating filter and max-height while preserving the same active-state hierarchy. */
+/*
+ * Lighthouse LCP repeatedly lands around the intro's 5.2s auto-cycle. Keep the
+ * active-direction color/opacity/story signal, but do not let the passive cycle
+ * resize/translate rails and trigger a late layout/repaint of the hero beneath.
+ */
 .site-intro-rail {
-  transition: flex-grow 820ms cubic-bezier(.22,.75,.2,1), opacity 620ms ease, background 620ms ease, transform 620ms ease;
+  transition: opacity 420ms ease, transform 420ms ease;
+}
+
+.site-intro-rail[data-active="true"] {
+  flex-grow: .82;
+  transform: translateY(0);
 }
 
 .site-intro-rail[data-active="true"],
