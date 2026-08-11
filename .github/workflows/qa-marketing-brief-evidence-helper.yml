@@ -37,11 +37,11 @@ jobs:
           text = path.read_text()
           old = '''  await page.locator('input[name="primary_goal"]').fill("More qualified leads <script>alert(1)</script>");
 
-  if (testInfo.project.name === "desktop") {
-    await page.locator("[data-direction-fields]").screenshot({ path: "docs/screenshots/intake02-marketing-desktop.png" });
-  }
+            if (testInfo.project.name === "desktop") {
+              await page.locator("[data-direction-fields]").screenshot({ path: "docs/screenshots/intake02-marketing-desktop.png" });
+            }
 
-  await page.locator('button[type="submit"]').click();'''
+            await page.locator('button[type="submit"]').click();'''
           new = '''  const primaryGoal = page.locator('input[name="primary_goal"]');
           await primaryGoal.fill("More qualified leads for a service business");
 
@@ -63,13 +63,13 @@ jobs:
           log = Path('docs/CURSOR_WORK_LOG.md')
           log_text = log.read_text()
           old_log = '''### Screenshots / UI evidence
-- `docs/screenshots/intake02-marketing-desktop.png`
-'''
+          - `docs/screenshots/intake02-marketing-desktop.png`
+          '''
           new_log = '''### Screenshots / UI evidence
-- `docs/screenshots/intake02-marketing-desktop.png`
-- `docs/screenshots/intake02-marketing-mobile.png`
-- Evidence refreshed on 2026-08-11 with sticky header and privacy settings hidden only during capture; production UI behavior is unchanged.
-'''
+          - `docs/screenshots/intake02-marketing-desktop.png`
+          - `docs/screenshots/intake02-marketing-mobile.png`
+          - Evidence refreshed on 2026-08-11 with sticky header and privacy settings hidden only during capture; production UI behavior is unchanged.
+          '''
           if old_log not in log_text:
               raise SystemExit('Expected Session 02 screenshot log block not found; refusing broad edit')
           log.write_text(log_text.replace(old_log, new_log, 1))
