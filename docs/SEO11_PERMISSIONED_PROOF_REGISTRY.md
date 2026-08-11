@@ -32,7 +32,7 @@ Do not place here:
 - Direction: Logistics
 - Proof type: Carrier / owner-operator workflow
 - Candidate state: `candidate_identified`
-- Private evidence status: `PRIVATE_EVIDENCE_EXISTS`
+- Private evidence status: `PRIVATE_CANDIDATE_SELECTED`
 - Source class: `OWNER_CONTROLLED_PRIVATE_RECORD`
 - Identity verified for publication: `PENDING_PRIVATE_REVIEW`
 - Permission status: `NOT_REQUESTED`
@@ -40,15 +40,15 @@ Do not place here:
 - Quantitative claims approved: `NO`
 - Public copy approved: `NO`
 - Publication target: `PENDING`
-- Evidence boundary: existing operational records indicate a real carrier-side relationship/workflow suitable for eligibility review; no outcome claim or identity is approved here.
-- Next action: private eligibility review → select exact evidenced process facts → determine whether outreach is appropriate under the existing trust workflow.
+- Evidence boundary: one exact private carrier-side operating record set has now been selected for eligibility review. The public registry intentionally does not name the carrier, counterparties, people, routes, rates, dates, load identifiers or outcomes.
+- Next action: verify the current/appropriate relationship privately → select only evidenced process facts → decide whether manual outreach is appropriate under the existing trust workflow.
 
 ### PROOF-LOG-DEALER-001
 
 - Direction: Logistics
 - Proof type: Dealer/customer vehicle-movement workflow
 - Candidate state: `candidate_identified`
-- Private evidence status: `PRIVATE_EVIDENCE_EXISTS`
+- Private evidence status: `WORKFLOW_ARTIFACT_SELECTED_RELATIONSHIP_PENDING`
 - Source class: `OWNER_CONTROLLED_PRIVATE_RECORD`
 - Identity verified for publication: `PENDING_PRIVATE_REVIEW`
 - Permission status: `NOT_REQUESTED`
@@ -56,8 +56,8 @@ Do not place here:
 - Quantitative claims approved: `NO`
 - Public copy approved: `NO`
 - Publication target: `PENDING`
-- Evidence boundary: existing owner-controlled logistics records include vehicle-movement/customer-side artifacts suitable for private evidence review; no public customer identity, shipment detail, result or testimonial is approved here.
-- Next action: private eligibility review → isolate the minimum useful process proof → determine whether consent outreach is appropriate.
+- Evidence boundary: one exact private vehicle-movement artifact has been selected because it documents a real dealership-origin workflow, but the current review does not yet prove that the dealer/recipient was a direct Hermes customer. It therefore remains process evidence only, not a customer case or testimonial.
+- Next action: reconcile the selected artifact against private relationship records. If an appropriate direct relationship cannot be verified, replace the candidate rather than upgrading the artifact into a customer claim.
 
 ## Named trust-role decisions
 
