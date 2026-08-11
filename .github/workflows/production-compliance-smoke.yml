@@ -15,6 +15,7 @@ on:
       - 'src/pages/regional-privacy.astro'
       - 'src/components/SiteFooter.astro'
       - 'src/components/TrackingConsent.astro'
+      - 'public/.well-known/security.txt'
       - 'scripts/production-compliance-smoke.mjs'
       - '.github/workflows/production-compliance-smoke.yml'
   schedule:
