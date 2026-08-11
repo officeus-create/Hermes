@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BusinessLeadForm from "../../components/BusinessLeadForm.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Business Growth & Digital Launch | Hermes"
+  description="Request a website, web app, CRM, AI automation, SEO, Google Ads, Meta Ads, social media growth, content production, or marketing and sales consulting."
+  robots="noindex,follow"
+>
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview" aria-labelledby="business-growth-title">
+      <div class="shell detail-intro" data-reveal>
+        <p class="eyebrow">Business growth · direct inquiry</p>
+        <h1 id="business-growth-title">Launch the system your business needs to get clients.</h1>
+        <p>
+          Websites, web applications, CRM and AI automation, SEO, Google Ads, Meta Ads, social media growth,
+          content production, and marketing or sales consulting can be planned as one connected project or as a
+          focused service.
+        </p>
+        <p>
+          We can work directly with Russian-, Ukrainian-, or English-speaking business owners worldwide. Tell us
+          what you need, where your business operates, and how to reach you.
+        </p>
+        <a class="button button-primary" href="#business-lead">Send a business inquiry</a>
+      </div>
+    </section>
+
+    <BusinessLeadForm selectedPath="ProgressoPro" />
+  </main>
+  <SiteFooter />
+</BaseLayout>
