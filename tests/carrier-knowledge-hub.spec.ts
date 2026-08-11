@@ -4,6 +4,7 @@ const hubPath = "/logistics/resources/";
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
 const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
 const coreGuides = [
+  "/logistics/resources/rpm-calculator/",
   "/logistics/resources/dispatch-service-vs-self-dispatch/",
   "/logistics/resources/new-authority-car-hauler-readiness-checklist/",
   "/logistics/resources/broker-setup-packet-checklist/",
@@ -15,12 +16,13 @@ const servicePaths = [
   "/logistics/new-authority-car-hauler-support/",
 ];
 
-test("carrier knowledge hub organizes reviewed guides and controlled next steps", async ({ page }) => {
+test("carrier knowledge hub organizes reviewed tools, guides, and controlled next steps", async ({ page }) => {
   await page.goto(hubPath);
 
   await expect(page).toHaveTitle(/Carrier Knowledge Hub for Car Haulers/);
   await expect(page.getByRole("heading", { level: 1, name: "Carrier Knowledge Hub for Car Haulers" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Three practical resources to review first." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Four practical resources to review first." })).toBeVisible();
+  await expect(page.getByText("RPM & Load Profitability Calculator", { exact: true })).toBeVisible();
   await expect(page.getByText("Dispatch Service vs Self-Dispatch", { exact: true })).toBeVisible();
   await expect(page.getByText("Car Hauler Readiness Checklist", { exact: true })).toBeVisible();
   await expect(page.getByText("Broker Setup Packet Checklist", { exact: true })).toBeVisible();
@@ -55,6 +57,7 @@ test("carrier knowledge hub is indexable with one sitemap owner and matching sch
   expect(schemaText).toContain('"ItemList"');
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).toContain('"BreadcrumbList"');
+  expect(schemaText).toContain('"WebApplication"');
   for (const href of coreGuides) expect(schemaText).toContain(`https://hermeslogisticsus.com${href}`);
 
   const sitemapResponse = await page.request.get("/sitemap-services.xml");
