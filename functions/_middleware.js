@@ -16,8 +16,17 @@ function isConnectHost(request) {
   return requestHost(request) === CONNECT_HOST;
 }
 
+function acceptsMarkdown(request) {
+  const accept = request.headers.get("accept") || "";
+  return accept.toLowerCase().includes("text/markdown");
+}
+
+function isConnectDocument(pathname) {
+  return pathname === "/" || pathname === "/index.html";
+}
+
 function connectAssetPath(pathname) {
-  if (pathname === "/" || pathname === "/index.html") {
+  if (isConnectDocument(pathname)) {
     return `${CONNECT_ASSET_ROOT}/`;
   }
 
@@ -26,6 +35,26 @@ function connectAssetPath(pathname) {
   }
 
   return `${CONNECT_ASSET_ROOT}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
+}
+
+function markdownResponse(response) {
+  const headers = new Headers(response.headers);
+  headers.set("content-type", "text/markdown; charset=utf-8");
+  headers.set("x-robots-tag", "noindex, nofollow");
+
+  const vary = headers.get("vary");
+  if (!vary) {
+    headers.set("vary", "Accept");
+  } else if (!vary.toLowerCase().split(",").map((value) => value.trim()).includes("accept")) {
+    headers.set("vary", `${vary}, Accept`);
+  }
+
+  headers.delete("content-length");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 async function routeConnectHost(context) {
@@ -41,6 +70,19 @@ async function routeConnectHost(context) {
   // shadowing an API endpoint later.
   if (incomingUrl.pathname.startsWith("/api/")) {
     return context.next();
+  }
+
+  // Cloudflare Agent Readiness can request a compact Markdown representation
+  // by sending `Accept: text/markdown`. Serve only the reviewed public Connect
+  // document in this form; browsers and all other routes keep the existing
+  // HTML/static-asset behavior. The noindex boundary is preserved explicitly.
+  if (isConnectDocument(incomingUrl.pathname) && acceptsMarkdown(context.request)) {
+    const markdownUrl = new URL(incomingUrl);
+    markdownUrl.pathname = `${CONNECT_ASSET_ROOT}/index.md`;
+    const response = await context.env.ASSETS.fetch(
+      new Request(markdownUrl, context.request),
+    );
+    if (response.ok) return markdownResponse(response);
   }
 
   const assetUrl = new URL(incomingUrl);
