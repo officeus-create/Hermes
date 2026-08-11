@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
-import BusinessLeadForm from "../../components/BusinessLeadForm.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
@@ -60,7 +59,6 @@ const faqSchema = path.faq?.length
 const schema = faqSchema
   ? [serviceSchema, breadcrumbSchema, faqSchema]
   : [serviceSchema, breadcrumbSchema];
-const usesBusinessLeadForm = path.id === "marketing" || path.id === "technology";
 ---
 
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema}>
@@ -78,8 +76,6 @@ const usesBusinessLeadForm = path.id === "marketing" || path.id === "technology"
     </>
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
-  {usesBusinessLeadForm
-    ? <BusinessLeadForm selectedPath={path.category} />
-    : <ContactCTA selectedPath={path.category} />}
+  <ContactCTA selectedPath={path.category} />
   <SiteFooter />
 </BaseLayout>
