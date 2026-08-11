@@ -1,0 +1,512 @@
+---
+import { ArrowLeft, ArrowRight, Calculator, Fuel, Gauge, Route, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Free RPM & Load Profitability Calculator for Carriers | Hermes Logistics";
+const description =
+  "Calculate loaded RPM, all-mile RPM, estimated fuel cost, operating cost, net before tax, and break-even RPM using your own loaded miles, deadhead, fuel, MPG, reserves, fixed trip costs, and optional service percentage.";
+const canonicalUrl = new URL("/logistics/resources/rpm-calculator/", Astro.site).toString();
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+
+const formulas = [
+  ["Total miles", "Loaded miles + deadhead miles"],
+  ["Gross loaded RPM", "Gross load pay ÷ loaded miles"],
+  ["All-mile RPM", "Gross load pay ÷ total miles"],
+  ["Estimated fuel cost", "(Total miles ÷ MPG) × fuel price per gallon"],
+  ["Maintenance / variable reserve", "Total miles × reserve per mile"],
+  ["Service fee", "Gross load pay × optional service percentage"],
+  ["Estimated operating cost", "Fuel + reserve + fixed trip costs + service fee"],
+  ["Estimated net before tax", "Gross load pay − estimated operating cost"],
+  ["Break-even gross pay", "(Fuel + reserve + fixed trip costs) ÷ (1 − service percentage)"],
+  ["Break-even loaded RPM", "Break-even gross pay ÷ loaded miles"],
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Hermes Carrier RPM & Load Profitability Calculator",
+    description,
+    url: canonicalUrl,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Carrier Knowledge Hub", item: "https://hermeslogisticsus.com/logistics/resources/" },
+      { "@type": "ListItem", position: 4, name: "RPM Calculator", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <a href="/logistics/resources/">Resources</a><span aria-hidden="true">/</span>
+              <span aria-current="page">RPM calculator</span>
+            </nav>
+            <a class="detail-back" href="/logistics/resources/"><ArrowLeft size={18} aria-hidden="true" />Carrier Knowledge Hub</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Free carrier tool · Trip economics</p>
+                <h1>RPM & Load Profitability Calculator</h1>
+                <p>
+                  Compare the loaded rate with the rate across every mile the truck actually moves. Enter your own load,
+                  deadhead, fuel, MPG, reserve, fixed trip costs, and optional service percentage to estimate trip economics.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="#calculator">Calculate a trip <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href={intakeHref}>Request dispatch-fit review</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Your numbers stay in your browser.</h2>
+                <p>The calculator does not send entered rates, routes, miles, fuel assumptions, customer details, or invoice values to general analytics.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro" aria-labelledby="rpm-why-title">
+          <div class="shell resource-lead">
+            <Gauge size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Why all-mile RPM matters</p>
+              <h2 id="rpm-why-title">A strong loaded rate can look very different after deadhead.</h2>
+              <p>
+                Loaded RPM only divides gross pay by loaded miles. All-mile RPM includes deadhead too, which makes it a better trip-level comparison when you are evaluating fuel, reserve, fixed costs, and the miles required to position the truck.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section rpm-tool-section" id="calculator" aria-labelledby="rpm-calculator-title">
+          <div class="shell rpm-tool-grid" data-rpm-calculator>
+            <div class="rpm-panel rpm-input-panel">
+              <div class="rpm-panel-heading">
+                <Calculator size={26} aria-hidden="true" />
+                <div>
+                  <p class="eyebrow">Your assumptions</p>
+                  <h2 id="rpm-calculator-title">Calculate one trip.</h2>
+                </div>
+              </div>
+
+              <form data-rpm-form>
+                <div class="rpm-field-grid">
+                  <label>
+                    <span>Loaded miles</span>
+                    <input name="loadedMiles" type="number" min="1" step="1" value="500" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Deadhead miles</span>
+                    <input name="deadheadMiles" type="number" min="0" step="1" value="75" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Gross load pay ($)</span>
+                    <input name="grossPay" type="number" min="0.01" step="0.01" value="1500" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Fuel price ($/gal)</span>
+                    <input name="fuelPrice" type="number" min="0" step="0.01" value="4.00" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Truck MPG</span>
+                    <input name="mpg" type="number" min="0.1" step="0.1" value="7.5" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Reserve per all mile ($)</span>
+                    <input name="reservePerMile" type="number" min="0" step="0.01" value="0.25" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Fixed / allocated trip costs ($)</span>
+                    <input name="fixedCosts" type="number" min="0" step="0.01" value="75" inputmode="decimal" required />
+                  </label>
+                  <label>
+                    <span>Optional service fee (%)</span>
+                    <input name="servicePercent" type="number" min="0" max="99" step="0.1" value="8" inputmode="decimal" required />
+                  </label>
+                </div>
+
+                <p class="rpm-form-note">
+                  Put any trip-level allocation you want included—tolls, parking, driver allocation, insurance allocation, truck payment allocation, or other costs—inside fixed / allocated trip costs. Do not enter private customer or shipment information.
+                </p>
+                <button class="button button-primary rpm-calculate" type="submit">Calculate trip economics <ArrowRight size={18} aria-hidden="true" /></button>
+                <p class="rpm-error" data-rpm-error role="alert" hidden></p>
+              </form>
+            </div>
+
+            <div class="rpm-panel rpm-result-panel" aria-live="polite">
+              <div class="rpm-panel-heading">
+                <Truck size={26} aria-hidden="true" />
+                <div>
+                  <p class="eyebrow">Estimated result</p>
+                  <h2>Trip economics</h2>
+                </div>
+              </div>
+
+              <div class="rpm-primary-results">
+                <div><span>Gross loaded RPM</span><strong data-output="grossLoadedRpm">—</strong></div>
+                <div><span>All-mile RPM</span><strong data-output="allMileRpm">—</strong></div>
+                <div><span>Estimated net before tax</span><strong data-output="estimatedNet">—</strong></div>
+              </div>
+
+              <dl class="rpm-result-list">
+                <div><dt>Total miles</dt><dd data-output="totalMiles">—</dd></div>
+                <div><dt>Estimated fuel cost</dt><dd data-output="fuelCost">—</dd></div>
+                <div><dt>Reserve amount</dt><dd data-output="reserveCost">—</dd></div>
+                <div><dt>Service fee</dt><dd data-output="serviceFee">—</dd></div>
+                <div><dt>Estimated operating cost</dt><dd data-output="operatingCost">—</dd></div>
+                <div><dt>Break-even gross pay</dt><dd data-output="breakEvenGross">—</dd></div>
+                <div><dt>Break-even loaded RPM</dt><dd data-output="breakEvenLoadedRpm">—</dd></div>
+                <div><dt>Break-even all-mile RPM</dt><dd data-output="breakEvenAllMileRpm">—</dd></div>
+              </dl>
+
+              <div class="rpm-sensitivity" data-output="sensitivity">Enter your assumptions and calculate the trip.</div>
+              <p class="rpm-disclaimer">
+                Estimate only. This tool is not accounting, tax, financial, legal, safety, insurance, regulatory, or investment advice and does not predict market rates, load availability, payment, utilization, profit, or revenue.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="rpm-formulas-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Transparent math</p>
+              <h2 id="rpm-formulas-title">The formulas use only the assumptions you enter.</h2>
+              <p>No market average, target RPM, fuel benchmark, lane rate, or profitability promise is inserted by Hermes.</p>
+            </div>
+            <dl>
+              {formulas.map(([label, formula]) => (
+                <div><dt>{label}</dt><dd>{formula}</dd></div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="rpm-next-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Use the result in context</p>
+              <h2 id="rpm-next-title">Continue with the operating decision behind the number.</h2>
+            </div>
+            <div class="resource-related-grid">
+              <a href="/logistics/resources/dispatch-service-vs-self-dispatch/"><Gauge size={22} aria-hidden="true" /><h3>Dispatch vs self-dispatch</h3><p>Compare workload, control, calls, paperwork, fees, and approval boundaries.</p><strong>Open comparison <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/car-hauling-dispatch/"><Route size={22} aria-hidden="true" /><h3>Car hauling dispatch</h3><p>Review dispatch scope, carrier control, qualification, communication, and paperwork.</p><strong>Review service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href={intakeHref}><Fuel size={22} aria-hidden="true" /><h3>Dispatch-fit review</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open carrier intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">From estimate to operating review</p>
+              <h2>Need help evaluating whether a dispatch workflow fits your carrier?</h2>
+              <p>Use the carrier intake to prepare a structured review. Hermes does not guarantee acceptance, loads, rates, lanes, mileage, utilization, payment, profit, or revenue.</p>
+            </div>
+            <a class="button button-primary" href={intakeHref} data-rpm-cta>Open carrier intake <ArrowRight size={18} aria-hidden="true" /></a>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import { trackEvent } from "../../../../lib/analytics";
+
+  const root = document.querySelector<HTMLElement>("[data-rpm-calculator]");
+  const form = root?.querySelector<HTMLFormElement>("[data-rpm-form]");
+  const error = root?.querySelector<HTMLElement>("[data-rpm-error]");
+  const cta = document.querySelector<HTMLElement>("[data-rpm-cta]");
+  let started = false;
+
+  const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+  const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+
+  function setOutput(name: string, value: string) {
+    root?.querySelector<HTMLElement>(`[data-output="${name}"]`)?.replaceChildren(value);
+  }
+
+  function read(name: string): number {
+    const input = form?.elements.namedItem(name);
+    return input instanceof HTMLInputElement ? Number(input.value) : Number.NaN;
+  }
+
+  function calculate(trackCompletion: boolean) {
+    if (!form || !error) return;
+
+    const loadedMiles = read("loadedMiles");
+    const deadheadMiles = read("deadheadMiles");
+    const grossPay = read("grossPay");
+    const fuelPrice = read("fuelPrice");
+    const mpg = read("mpg");
+    const reservePerMile = read("reservePerMile");
+    const fixedCosts = read("fixedCosts");
+    const servicePercent = read("servicePercent");
+
+    const valid =
+      Number.isFinite(loadedMiles) && loadedMiles > 0 &&
+      Number.isFinite(deadheadMiles) && deadheadMiles >= 0 &&
+      Number.isFinite(grossPay) && grossPay > 0 &&
+      Number.isFinite(fuelPrice) && fuelPrice >= 0 &&
+      Number.isFinite(mpg) && mpg > 0 &&
+      Number.isFinite(reservePerMile) && reservePerMile >= 0 &&
+      Number.isFinite(fixedCosts) && fixedCosts >= 0 &&
+      Number.isFinite(servicePercent) && servicePercent >= 0 && servicePercent < 100;
+
+    if (!valid) {
+      error.hidden = false;
+      error.textContent = "Check the inputs: loaded miles, gross pay, and MPG must be above zero; other costs cannot be negative; service percentage must be below 100%.";
+      return;
+    }
+
+    error.hidden = true;
+    error.textContent = "";
+
+    const totalMiles = loadedMiles + deadheadMiles;
+    const grossLoadedRpm = grossPay / loadedMiles;
+    const allMileRpm = grossPay / totalMiles;
+    const fuelCost = (totalMiles / mpg) * fuelPrice;
+    const reserveCost = totalMiles * reservePerMile;
+    const serviceFee = grossPay * (servicePercent / 100);
+    const directCosts = fuelCost + reserveCost + fixedCosts;
+    const operatingCost = directCosts + serviceFee;
+    const estimatedNet = grossPay - operatingCost;
+    const retainedShare = 1 - servicePercent / 100;
+    const breakEvenGross = directCosts / retainedShare;
+    const breakEvenLoadedRpm = breakEvenGross / loadedMiles;
+    const breakEvenAllMileRpm = breakEvenGross / totalMiles;
+    const deadheadShare = totalMiles > 0 ? deadheadMiles / totalMiles : 0;
+
+    setOutput("grossLoadedRpm", `${money.format(grossLoadedRpm)}/mi`);
+    setOutput("allMileRpm", `${money.format(allMileRpm)}/mi`);
+    setOutput("estimatedNet", money.format(estimatedNet));
+    setOutput("totalMiles", `${number.format(totalMiles)} mi`);
+    setOutput("fuelCost", money.format(fuelCost));
+    setOutput("reserveCost", money.format(reserveCost));
+    setOutput("serviceFee", money.format(serviceFee));
+    setOutput("operatingCost", money.format(operatingCost));
+    setOutput("breakEvenGross", money.format(breakEvenGross));
+    setOutput("breakEvenLoadedRpm", `${money.format(breakEvenLoadedRpm)}/mi`);
+    setOutput("breakEvenAllMileRpm", `${money.format(breakEvenAllMileRpm)}/mi`);
+
+    const sensitivity = deadheadShare >= 0.25
+      ? `Deadhead is ${Math.round(deadheadShare * 100)}% of all miles, so all-mile RPM is materially lower than loaded RPM.`
+      : deadheadMiles > 0
+        ? `Deadhead is ${Math.round(deadheadShare * 100)}% of all miles. Compare all-mile RPM, not loaded RPM alone.`
+        : servicePercent > 0
+          ? "No deadhead is entered. The optional service percentage is still included in the net and break-even estimates."
+          : "No deadhead or service percentage is entered; fuel, reserve, and fixed-cost assumptions drive the estimate.";
+    setOutput("sensitivity", sensitivity);
+
+    if (trackCompletion) {
+      trackEvent("rpm_calculator_completed", { tool: "rpm_calculator" });
+    }
+  }
+
+  form?.addEventListener("input", () => {
+    if (!started) {
+      started = true;
+      trackEvent("rpm_calculator_started", { tool: "rpm_calculator" });
+    }
+  });
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    calculate(true);
+  });
+
+  cta?.addEventListener("click", () => {
+    trackEvent("rpm_calculator_cta_clicked", { tool: "rpm_calculator", destination: "carrier_intake" });
+  });
+
+  calculate(false);
+</script>
+
+<style>
+  .rpm-tool-section {
+    background: color-mix(in srgb, var(--bg, #f7f5ef) 92%, #0d2438 8%);
+  }
+
+  .rpm-tool-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .rpm-panel {
+    border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+    border-radius: 24px;
+    padding: clamp(1.25rem, 2vw, 2rem);
+    background: #fff;
+    box-shadow: 0 18px 50px rgba(18, 35, 52, 0.08);
+  }
+
+  .rpm-result-panel {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .rpm-panel-heading {
+    display: flex;
+    gap: 0.9rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+  }
+
+  .rpm-panel-heading h2,
+  .rpm-panel-heading p {
+    margin: 0;
+  }
+
+  .rpm-field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .rpm-field-grid label {
+    display: grid;
+    gap: 0.4rem;
+    font-weight: 700;
+    color: #162b3f;
+  }
+
+  .rpm-field-grid span {
+    font-size: 0.9rem;
+  }
+
+  .rpm-field-grid input {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid #c8d0d7;
+    border-radius: 12px;
+    padding: 0.72rem 0.8rem;
+    font: inherit;
+    color: #102437;
+    background: #fff;
+  }
+
+  .rpm-field-grid input:focus {
+    outline: 3px solid rgba(22, 96, 136, 0.18);
+    border-color: #166088;
+  }
+
+  .rpm-form-note,
+  .rpm-disclaimer {
+    color: #536472;
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .rpm-form-note {
+    margin: 1rem 0;
+  }
+
+  .rpm-calculate {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .rpm-error {
+    margin: 0.8rem 0 0;
+    color: #8f241e;
+    font-weight: 700;
+  }
+
+  .rpm-primary-results {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .rpm-primary-results > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.9rem 1rem;
+    border-radius: 14px;
+    background: #f1f5f7;
+  }
+
+  .rpm-primary-results span {
+    color: #4c5d69;
+    font-size: 0.88rem;
+    font-weight: 700;
+  }
+
+  .rpm-primary-results strong {
+    color: #102437;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    text-align: right;
+  }
+
+  .rpm-result-list {
+    margin: 0;
+    display: grid;
+  }
+
+  .rpm-result-list > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.62rem 0;
+    border-bottom: 1px solid #e3e7ea;
+  }
+
+  .rpm-result-list dt {
+    color: #536472;
+  }
+
+  .rpm-result-list dd {
+    margin: 0;
+    color: #102437;
+    font-weight: 800;
+    text-align: right;
+  }
+
+  .rpm-sensitivity {
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    border-left: 4px solid #166088;
+    border-radius: 10px;
+    background: #edf6fa;
+    color: #17394c;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 860px) {
+    .rpm-tool-grid,
+    .rpm-field-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .rpm-result-panel {
+      position: static;
+    }
+  }
+</style>
