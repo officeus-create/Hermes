@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-11-business-growth-localized",
+  "generated_at": "2026-08-11T13:32:00-05:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/ru/business-growth/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "canonical": "https://hermeslogisticsus.com/ru/business-growth/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/ru/business-growth/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Intentionally noindex during paid-search conversion validation; locale-specific search pages will be indexed only after query and location validation.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/ua/business-growth/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "canonical": "https://hermeslogisticsus.com/ua/business-growth/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/ua/business-growth/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Intentionally noindex during paid-search conversion validation; locale-specific search pages will be indexed only after query and location validation.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
