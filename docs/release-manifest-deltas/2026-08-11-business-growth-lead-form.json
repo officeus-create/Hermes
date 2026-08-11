@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-11-business-growth-lead-form",
+  "generated_at": "2026-08-11T13:16:00-05:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/business-growth/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,follow",
+      "canonical": "https://hermeslogisticsus.com/business-growth/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/business-growth/index.astro",
+      "status": "COMPLETE",
+      "blocker": "Intentionally noindex during initial paid-search conversion validation; live form delivery uses the existing approved lead-service bindings.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
