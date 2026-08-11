@@ -16,6 +16,8 @@ for (const required of [
   "lighthouse@13.4.1",
   "mobile-${run}.json",
   "desktop-${run}.json",
+  "agentic.json",
+  "--only-categories=agentic-browsing",
   "node scripts/summarize-production-lighthouse.mjs",
   "gh issue comment 354",
 ]) {
@@ -28,7 +30,18 @@ assert.equal(
 );
 
 const source = await readFile(new URL("./summarize-production-lighthouse.mjs", import.meta.url), "utf8");
-for (const required of ["median", "largest-contentful-paint", "first-contentful-paint", "total-blocking-time", "cumulative-layout-shift", "speed-index", "CrUX field"] ) {
+for (const required of [
+  "median",
+  "largest-contentful-paint",
+  "first-contentful-paint",
+  "total-blocking-time",
+  "cumulative-layout-shift",
+  "speed-index",
+  "CrUX field",
+  'categories?.["agentic-browsing"]',
+  "Agentic Browsing all applicable audits pass",
+  "failedAudits",
+]) {
   assert.ok(source.includes(required), `Lighthouse summarizer must preserve ${required}`);
 }
 
