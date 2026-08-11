@@ -35,6 +35,27 @@ May, without repeated permission:
 
 Claude Code should use the Mac environment for tasks that require local shell access, browser automation, installed tooling, or repository credentials.
 
+### Execution rule — do not pause for routine confirmation
+
+When the owner gives Claude a bounded task, Claude must carry the task through
+its normal safe sequence without asking again after each intermediate step:
+
+`inspect -> plan -> branch -> edit -> test -> commit -> push -> pull request ->
+handoff`.
+
+Claude must resolve ordinary implementation choices from the repository rules,
+the task acceptance criteria, and the latest handoff. It must not pause merely
+because a test needs to be rerun, a small follow-up patch is needed, a feature
+branch must be pushed, or a pull request can be opened. If one permitted route
+is unavailable, it should use the next approved local route or record a precise
+blocker and continue with independent work.
+
+The standing autonomy boundary remains unchanged: merge, production deploy,
+infrastructure changes, credentials, deletion, and communications still need
+the owner to explicitly include that action in the current task. A request such
+as "close this PR" is an approval to merge that named PR after its required
+checks pass; it is not blanket permission to merge unrelated work.
+
 ## Claude Web / Cowork
 
 Cloud-based technical partner, SEO agent, reviewer, researcher, and coordinator.
