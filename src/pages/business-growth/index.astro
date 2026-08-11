@@ -3,12 +3,20 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import BusinessLeadForm from "../../components/BusinessLeadForm.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
+
+const alternates = [
+  { lang: "en", href: "/business-growth/" },
+  { lang: "ru", href: "/ru/business-growth/" },
+  { lang: "uk", href: "/ua/business-growth/" },
+  { lang: "x-default", href: "/business-growth/" },
+];
 ---
 
 <BaseLayout
   title="Business Growth & Digital Launch | Hermes"
   description="Request a website, web app, CRM, AI automation, SEO, Google Ads, Meta Ads, social media growth, content production, or marketing and sales consulting."
   robots="noindex,follow"
+  alternates={alternates}
 >
   <SiteHeader theme="dark" />
   <main id="main-content">
@@ -29,7 +37,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
       </div>
     </section>
 
-    <BusinessLeadForm selectedPath="ProgressoPro" />
+    <BusinessLeadForm selectedPath="ProgressoPro" locale="en" />
   </main>
   <SiteFooter />
 </BaseLayout>

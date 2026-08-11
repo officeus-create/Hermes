@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BusinessLeadForm from "../../../components/BusinessLeadForm.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const alternates = [
+  { lang: "en", href: "/business-growth/" },
+  { lang: "ru", href: "/ru/business-growth/" },
+  { lang: "uk", href: "/ua/business-growth/" },
+  { lang: "x-default", href: "/business-growth/" },
+];
+---
+
+<BaseLayout
+  title="Сайт, SEO, реклама и AI для бизнеса | Hermes"
+  description="Оставьте заявку на разработку сайта, веб-приложения, CRM, AI-автоматизацию, SEO, Google Ads, Meta Ads, SMM, контент или маркетинговый консалтинг."
+  robots="noindex,follow"
+  locale="ru"
+  alternates={alternates}
+>
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview" aria-labelledby="business-growth-title">
+      <div class="shell detail-intro" data-reveal>
+        <p class="eyebrow">Рост бизнеса · прямой запрос</p>
+        <h1 id="business-growth-title">Сайт, реклама и автоматизация, которые должны приводить клиентов.</h1>
+        <p>
+          Можно начать с одной задачи — сайта, SEO, Google Ads, Instagram, CRM или AI-автоматизации — либо собрать их в одну систему привлечения и обработки клиентов.
+        </p>
+        <p>
+          Работаем с русскоязычными владельцами бизнеса в США, Европе и других странах. Укажите город, компанию, удобный мессенджер и результат, который хотите получить.
+        </p>
+        <a class="button button-primary" href="#business-lead">Оставить заявку</a>
+      </div>
+    </section>
+
+    <BusinessLeadForm selectedPath="ProgressoPro" locale="ru" />
+  </main>
+  <SiteFooter />
+</BaseLayout>
