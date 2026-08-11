@@ -99,6 +99,7 @@ const safeSchema = schema
     <meta name="description" content={metaDescription} />
     <meta name="robots" content={robots} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="msvalidate.01" content="6C08FCA62443E761BAB1CCF747A4A7A7" />
     <link rel="canonical" href={canonical} />
     {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
