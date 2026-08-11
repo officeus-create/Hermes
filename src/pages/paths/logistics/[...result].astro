@@ -2,6 +2,7 @@
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import PartnerReviewMatrix from "../../../components/PartnerReviewMatrix.astro";
+import RouteDemandDevelopment from "../../../components/RouteDemandDevelopment.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import { logisticsRecommendations } from "../../../data/logistics-path-engine";
@@ -22,6 +23,7 @@ const carHaulingCommercialAudienceIds = new Set([
 ]);
 const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recommendation.id);
 const showPartnerReviewMatrix = recommendation.id === "agency-development";
+const showRouteDemandDevelopment = recommendation.id === "carrier-direct-freight";
 const isBrokerCapacityPath = recommendation.id === "broker-carrier-capacity";
 const isCarHaulingPath = recommendation.id === "carrier-car-hauling";
 const customerIntakeById: Record<string, {
@@ -123,6 +125,7 @@ import "../../../styles/features/case.css";
         </div>
       </section>
 
+      {showRouteDemandDevelopment && <RouteDemandDevelopment />}
       {showPartnerReviewMatrix && <PartnerReviewMatrix />}
 
       {isBrokerCapacityPath && (
@@ -238,6 +241,15 @@ import "../../../styles/features/case.css";
       direction: "logistics",
       resultRoute: window.location.pathname,
       contactRoute: link.getAttribute("href")?.startsWith("tel:") ? "phone" : "form",
+    }));
+  });
+  document.querySelectorAll<HTMLAnchorElement>("[data-route-demand-customer-intake]").forEach((link) => {
+    link.addEventListener("click", () => trackEvent("logistics_cta_click", {
+      cta_type: "route_demand_customer_intake",
+      audience_role: "carrier",
+      page_cluster: "direct_freight_development",
+      page_path: window.location.pathname,
+      destination_path: link.getAttribute("href") || "/logistics/request-vehicle-transport/",
     }));
   });
 </script>
