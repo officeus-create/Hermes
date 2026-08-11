@@ -1,0 +1,271 @@
+---
+import { ArrowRight } from "@lucide/astro";
+
+interface Props {
+  selectedPath?: string;
+}
+
+const { selectedPath = "ProgressoPro" } = Astro.props;
+const interest = selectedPath === "IT Development" ? "IT Development" : "ProgressoPro";
+const contactMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
+
+const services = [
+  "Website development",
+  "Web applications",
+  "CRM & business automation",
+  "AI bots / AI sales assistant",
+  "SEO",
+  "Google Ads",
+  "Meta Ads (Facebook / Instagram)",
+  "Social media marketing & organic growth",
+  "TikTok / Threads / X growth",
+  "Video & content production",
+  "Marketing / sales consulting",
+  "Training / courses",
+];
+---
+
+<section class="section contact-section" id="business-lead">
+  <div class="shell contact-layout">
+    <div class="contact-copy">
+      <p class="eyebrow">Direct business inquiry</p>
+      <h2>Tell us what you want to launch or improve.</h2>
+      <p>
+        Leave the shortest useful brief. We will use your preferred WhatsApp or Telegram contact and the time window you choose.
+      </p>
+      <p>
+        This form is structured so the same lead can later flow into Hermes Connect without asking you to enter the same information again.
+      </p>
+    </div>
+
+    <form
+      class="contact-form"
+      data-business-lead-form
+      data-contact-mode={contactMode}
+      novalidate
+    >
+      <input type="hidden" name="interest" value={interest} />
+      <div class="form-alert" role="alert" data-form-alert hidden></div>
+
+      <div class="field-row">
+        <label>
+          Your name
+          <input type="text" name="name" autocomplete="name" minlength="2" maxlength="100" required />
+        </label>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" maxlength="160" required />
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label>
+          Company / project
+          <input type="text" name="company" maxlength="140" required />
+        </label>
+        <label>
+          City / country
+          <input type="text" name="city_country" maxlength="120" placeholder="Kyiv, Ukraine" required />
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label>
+          WhatsApp number
+          <input type="text" name="whatsapp" maxlength="120" placeholder="+380..." autocomplete="tel" />
+        </label>
+        <label>
+          Telegram username / link
+          <input type="text" name="telegram" maxlength="120" placeholder="@username or t.me/..." />
+        </label>
+      </div>
+      <p class="form-status">Please provide at least one direct contact: WhatsApp or Telegram.</p>
+
+      <label>
+        Website / Instagram / social profile
+        <input
+          type="text"
+          name="website_or_social"
+          maxlength="240"
+          placeholder="https://... or @handle; write 'not launched yet' if needed"
+          required
+        />
+      </label>
+
+      <fieldset class="contact-direction-platforms" data-service-group>
+        <legend>What do you want help with? Select all that apply.</legend>
+        {services.map((service) => (
+          <label class="contact-direction-checkbox">
+            <input type="checkbox" name="services" value={service} />
+            <span>{service}</span>
+          </label>
+        ))}
+      </fieldset>
+
+      <div class="field-row">
+        <label>
+          Preferred language
+          <select name="preferred_language" required>
+            <option value="">Choose a language</option>
+            <option value="Russian">Russian</option>
+            <option value="Ukrainian">Ukrainian</option>
+            <option value="English">English</option>
+          </select>
+        </label>
+        <label>
+          Best time to contact (include time zone)
+          <input
+            type="text"
+            name="preferred_contact_time"
+            maxlength="120"
+            placeholder="10:00–13:00, Kyiv time"
+            required
+          />
+        </label>
+      </div>
+
+      <label>
+        What result do you want?
+        <textarea
+          name="message"
+          rows="4"
+          minlength="10"
+          maxlength="2000"
+          placeholder="For example: launch a new website and start getting qualified leads from Google and Instagram."
+          required
+        ></textarea>
+      </label>
+
+      <label class="honeypot" aria-hidden="true">
+        Leave this field empty
+        <input type="text" name="middle_name" tabindex="-1" autocomplete="off" />
+      </label>
+
+      <label class="consent-field">
+        <input type="checkbox" name="consent" required />
+        <span>I agree that Hermes may use these details to respond to this request. <a href="/privacy/">Privacy notice</a>.</span>
+      </label>
+
+      <button class="button button-primary" type="submit">
+        <span data-submit-label>{contactMode === "live" ? "Send request" : "Preview request"}</span>
+        <ArrowRight size={18} aria-hidden="true" />
+      </button>
+      <p class="form-status" role="status" data-form-status></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-business-lead-form]");
+  const status = form?.querySelector<HTMLElement>("[data-form-status]");
+  const alert = form?.querySelector<HTMLElement>("[data-form-alert]");
+  const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const submitLabel = form?.querySelector<HTMLElement>("[data-submit-label]");
+
+  const setAlert = (message = "") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.hidden = !message;
+  };
+
+  const setSubmitting = (submitting: boolean) => {
+    if (!submitButton || !submitLabel) return;
+    submitButton.disabled = submitting;
+    submitButton.setAttribute("aria-busy", String(submitting));
+    submitLabel.textContent = submitting
+      ? "Sending..."
+      : form?.dataset.contactMode === "live"
+        ? "Send request"
+        : "Preview request";
+  };
+
+  const getAttribution = () => {
+    const params = new URLSearchParams(window.location.search);
+    const pick = (name: string) => (params.get(name) ?? "").trim().slice(0, 240);
+    return {
+      utm_source: pick("utm_source"),
+      utm_medium: pick("utm_medium"),
+      utm_campaign: pick("utm_campaign"),
+      utm_term: pick("utm_term"),
+      utm_content: pick("utm_content"),
+      gclid: pick("gclid"),
+      gbraid: pick("gbraid"),
+      wbraid: pick("wbraid"),
+      referrer: document.referrer.slice(0, 500),
+    };
+  };
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setAlert();
+    if (status) status.textContent = "";
+
+    if (!form.reportValidity()) return;
+
+    const data = new FormData(form);
+    if (String(data.get("middle_name") ?? "")) return;
+
+    const whatsapp = String(data.get("whatsapp") ?? "").trim();
+    const telegram = String(data.get("telegram") ?? "").trim();
+    if (!whatsapp && !telegram) {
+      setAlert("Please provide a WhatsApp number or Telegram contact.");
+      return;
+    }
+
+    const services = data.getAll("services").map((value) => String(value));
+    if (!services.length) {
+      setAlert("Please select at least one service.");
+      return;
+    }
+
+    const payload = {
+      request_id: crypto.randomUUID(),
+      submitted_at: new Date().toISOString(),
+      source_path: window.location.pathname,
+      interest: String(data.get("interest") ?? ""),
+      name: String(data.get("name") ?? ""),
+      email: String(data.get("email") ?? ""),
+      company: String(data.get("company") ?? ""),
+      city_country: String(data.get("city_country") ?? ""),
+      whatsapp,
+      telegram,
+      website_or_social: String(data.get("website_or_social") ?? ""),
+      preferred_language: String(data.get("preferred_language") ?? ""),
+      preferred_contact_time: String(data.get("preferred_contact_time") ?? ""),
+      services,
+      message: String(data.get("message") ?? ""),
+      consent: data.get("consent") === "on",
+      attribution: getAttribution(),
+    };
+
+    if (form.dataset.contactMode !== "live") {
+      if (status) status.textContent = "Preview ready. No request was sent from this environment.";
+      return;
+    }
+
+    setSubmitting(true);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+
+    try {
+      const response = await fetch("/api/business-lead", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": payload.request_id,
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("delivery_failed");
+
+      form.reset();
+      if (status) status.textContent = "Request received. We will use the contact channel and time window you provided.";
+    } catch {
+      setAlert("Contact delivery is temporarily unavailable. Please try again later.");
+    } finally {
+      window.clearTimeout(timeout);
+      setSubmitting(false);
+    }
+  });
+</script>
