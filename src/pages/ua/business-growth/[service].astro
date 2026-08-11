@@ -1,0 +1,19 @@
+---
+import PaidSearchBusinessServicePage from "../../../components/PaidSearchBusinessServicePage.astro";
+import { paidSearchBusinessServices, type PaidSearchBusinessService } from "../../../data/paid-search-business-services";
+
+export function getStaticPaths() {
+  return paidSearchBusinessServices.map((campaign) => ({
+    params: { service: campaign.slug },
+    props: { campaign },
+  }));
+}
+
+interface Props {
+  campaign: PaidSearchBusinessService;
+}
+
+const { campaign } = Astro.props;
+---
+
+<PaidSearchBusinessServicePage {campaign} locale="uk" />
