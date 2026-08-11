@@ -1,0 +1,37 @@
+name: Production CTA smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/components/PathDetailPage.astro'
+      - 'tests/marketing-academy-cta-copy.spec.ts'
+      - 'scripts/production-cta-smoke.mjs'
+      - '.github/workflows/production-cta-smoke.yml'
+  pull_request:
+    paths:
+      - 'scripts/production-cta-smoke.mjs'
+      - '.github/workflows/production-cta-smoke.yml'
+  schedule:
+    - cron: '47 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-ctas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for production deploy
+        if: github.event_name == 'push'
+        run: sleep 120
+
+      - name: Verify deployed Marketing and Academy CTAs
+        env:
+          HERMES_PRODUCTION_URL: https://hermeslogisticsus.com
+        run: node scripts/production-cta-smoke.mjs

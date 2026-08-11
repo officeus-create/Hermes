@@ -1,7 +1,22 @@
 import { expect, test } from "@playwright/test";
 
-const isGoogleAnalyticsRequest = (url: string) =>
-  /https:\/\/(?:www\.)?(?:googletagmanager\.com|google-analytics\.com)\//.test(url);
+test.use({ storageState: { cookies: [], origins: [] } });
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    sessionStorage.setItem("hermes-intro-seen", "true");
+  });
+});
+
+const isGoogleAnalyticsRequest = (url: string) => {
+  const hostname = new URL(url).hostname;
+  return (
+    hostname === "googletagmanager.com" ||
+    hostname.endsWith(".googletagmanager.com") ||
+    hostname === "google-analytics.com" ||
+    hostname.endsWith(".google-analytics.com")
+  );
+};
 
 test("analytics stays off before choice and after decline", async ({ page }) => {
   const analyticsRequests: string[] = [];
@@ -21,6 +36,7 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
+  await page.waitForTimeout(400);
   expect(analyticsRequests).toEqual([]);
 });
 
@@ -40,6 +56,7 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
+  const analyticsRequestCountBeforeWithdrawal = analyticsRequests.length;
 
   await Promise.all([
     page.waitForNavigation({ waitUntil: "domcontentloaded" }),
@@ -48,4 +65,6 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
+  await page.waitForTimeout(400);
+  expect(analyticsRequests).toHaveLength(analyticsRequestCountBeforeWithdrawal);
 });

@@ -1,0 +1,47 @@
+name: Production consent smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/components/TrackingConsent.astro'
+      - 'src/layouts/BaseLayout.astro'
+      - 'src/pages/privacy.astro'
+      - 'tests/tracking-consent.spec.ts'
+      - 'playwright.production.config.ts'
+      - '.github/workflows/production-consent-smoke.yml'
+  schedule:
+    - cron: '37 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-consent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      HERMES_PRODUCTION_URL: https://hermeslogisticsus.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for production deploy
+        if: github.event_name == 'push'
+        run: sleep 120
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify deployed consent behavior
+        run: npx playwright test tests/tracking-consent.spec.ts --config=playwright.production.config.ts

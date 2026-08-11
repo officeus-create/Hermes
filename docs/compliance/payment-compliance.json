@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-08-11",
+  "payments_enabled": false,
+  "processor": null,
+  "recurring_billing_enabled": false,
+  "approved_offers": [],
+  "terms_route": null,
+  "refund_cancellation_route": null,
+  "consent_mechanism": null,
+  "legal_reviewed_at": null,
+  "review_owner": null,
+  "release_state": "blocked_until_offer_review",
+  "required_before_enablement": [
+    "contracting_entity",
+    "exact_product_or_service_scope",
+    "total_price_and_mandatory_fees",
+    "payment_timing_and_tax_treatment",
+    "one_time_or_recurring_model",
+    "renewal_trial_and_promotion_terms_if_recurring",
+    "cancellation_timing_and_effect",
+    "approved_refund_or_credit_rule",
+    "delivery_or_start_conditions",
+    "terms_route_and_version",
+    "affirmative_consent_evidence_where_required",
+    "processor_and_payment_data_flow",
+    "state_and_international_applicability_review"
+  ],
+  "notes": [
+    "No live website checkout or recurring billing flow is approved by this manifest.",
+    "Do not infer or publish a refund window, cancellation promise, processor, price, or renewal term from this file.",
+    "Re-review the actual offer, entity, geography, processor, data flow, and customer-facing terms before changing payments_enabled to true."
+  ]
+}
