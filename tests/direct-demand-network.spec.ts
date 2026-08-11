@@ -12,20 +12,18 @@ test("direct demand network is a canonical public page with real customer and ca
   await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/i);
   await expect(page.getByRole("heading", { level: 1, name: /Direct Vehicle Transport Network/i })).toBeVisible();
 
-  const customerLinks = page.locator('a[href="/logistics/request-vehicle-transport/#transport-intake"]');
-  await expect(customerLinks.first()).toBeVisible();
-  await expect(page.locator('a[href="/logistics/car-hauling-dispatch/"]')).toBeVisible();
-  await expect(page.locator('a[href="/logistics/start-car-hauling-dispatch/"]')).toBeVisible();
+  await expect(page.locator('a[href="/logistics/request-vehicle-transport/#transport-intake"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/logistics/car-hauling-dispatch/"]').first()).toBeVisible();
+  await expect(page.locator('a[href="/logistics/start-car-hauling-dispatch/"]').first()).toBeVisible();
 });
 
 test("direct demand network separates real request flow from the fictional Load Board and avoids guarantees", async ({ page }) => {
   await page.goto(route);
 
-  await expect(page.getByText(/The public Load Board is a fictional product preview/i)).toBeVisible();
-  await expect(page.getByText(/does not guarantee direct loads, customer demand, a route page, ranking, rate, mileage, utilization, or revenue/i)).toBeVisible();
-  await expect(page.getByText(/Private carrier lanes and shipment records are not automatically published/i)).toBeVisible();
-
-  const body = await page.locator("main").innerText();
+  const body = (await page.locator("main").textContent()) ?? "";
+  expect(body).toMatch(/The public Load Board is a fictional product preview/i);
+  expect(body).toMatch(/does not guarantee direct loads, customer demand, a route page, ranking, rate, mileage, utilization, or revenue/i);
+  expect(body).toMatch(/Private carrier lanes and shipment records are not automatically published/i);
   expect(body).not.toMatch(/guaranteed direct loads|guaranteed rankings|rank in 2.?3 months|get direct loads in 2.?3 months/i);
 });
 
