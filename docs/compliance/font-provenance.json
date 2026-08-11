@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "reviewed_at": "2026-08-11",
-  "compliance_state": "inventory_guard_active_exact_binary_provenance_pending",
+  "compliance_state": "inventory_guard_active_exact_binary_provenance_verified",
   "policy": "Every self-hosted font must be registered by public path and exact repository blob identity. Family licensing and exact binary provenance are separate claims; do not mark exact provenance verified until the deployed binary is matched to a documented upstream or generation source.",
   "fonts": [
     {
       "path": "public/fonts/manrope-latin.woff2",
       "family": "Manrope",
       "css_weight": "500 800",
-      "repository_blob_sha": "9d7abb17d323bff647995a94222b92b26a0fc93d",
+      "repository_blob_sha": "71eb731d558046199aa7f985adbf812890a093a1",
       "license": "SIL Open Font License 1.1",
       "license_status": "family_license_verified",
       "license_source": "https://github.com/google/fonts/blob/main/ofl/manrope/OFL.txt",
@@ -16,8 +16,8 @@
       "web_embedding_status": "permitted_under_ofl_1_1_subject_to_license_conditions",
       "modification_or_subsetting_status": "permitted_under_ofl_1_1_subject_to_reserved_name_and_notice_conditions",
       "notice_requirement": "Preserve the applicable copyright and OFL notice when redistributing font software.",
-      "binary_origin_status": "pending_exact_provenance",
-      "exact_binary_source": null,
+      "binary_origin_status": "verified_exact_provenance",
+      "exact_binary_source": "https://fonts.gstatic.com/s/manrope/v20/xn7gYHE41ni1AdIRggexSg.woff2",
       "verified_at": "2026-08-11",
       "replacement_if_unresolved": "Replace with a newly sourced and documented upstream build before claiming exact binary provenance."
     },
@@ -25,7 +25,7 @@
       "path": "public/fonts/source-sans-3-latin.woff2",
       "family": "Source Sans 3",
       "css_weight": "400 700",
-      "repository_blob_sha": "ea8c1457aaaa42e31346b8fbd338d5a91f737454",
+      "repository_blob_sha": "864cc4177aab8cc9312a81d4b7b6af7fdcf4092c",
       "license": "SIL Open Font License 1.1",
       "license_status": "family_license_verified",
       "license_source": "https://github.com/adobe-fonts/source-sans/blob/release/LICENSE.md",
@@ -33,8 +33,8 @@
       "web_embedding_status": "permitted_under_ofl_1_1_subject_to_license_conditions",
       "modification_or_subsetting_status": "permitted_under_ofl_1_1_subject_to_reserved_name_and_notice_conditions",
       "notice_requirement": "Preserve the applicable copyright and OFL notice when redistributing font software.",
-      "binary_origin_status": "pending_exact_provenance",
-      "exact_binary_source": null,
+      "binary_origin_status": "verified_exact_provenance",
+      "exact_binary_source": "https://fonts.gstatic.com/s/sourcesans3/v19/nwpStKy2OAdR1K-IwhWudF-R3w8aZQ.woff2",
       "verified_at": "2026-08-11",
       "replacement_if_unresolved": "Replace with a newly sourced and documented upstream build before claiming exact binary provenance."
     },
@@ -42,7 +42,7 @@
       "path": "public/fonts/ibm-plex-mono-500-latin.woff2",
       "family": "IBM Plex Mono",
       "css_weight": "500",
-      "repository_blob_sha": "3308bce2432c298817ed344eeac33007c83cecd0",
+      "repository_blob_sha": "090f82f7ec7997047324e07650865305a099969a",
       "license": "SIL Open Font License 1.1",
       "license_status": "family_license_verified",
       "license_source": "https://github.com/IBM/plex/blob/master/LICENSE.txt",
@@ -50,8 +50,8 @@
       "web_embedding_status": "permitted_under_ofl_1_1_subject_to_license_conditions",
       "modification_or_subsetting_status": "permitted_under_ofl_1_1_subject_to_reserved_name_and_notice_conditions",
       "notice_requirement": "Preserve the applicable copyright and OFL notice when redistributing font software.",
-      "binary_origin_status": "pending_exact_provenance",
-      "exact_binary_source": null,
+      "binary_origin_status": "verified_exact_provenance",
+      "exact_binary_source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3twJwlBFgg.woff2",
       "verified_at": "2026-08-11",
       "replacement_if_unresolved": "Replace with a newly sourced and documented upstream build before claiming exact binary provenance."
     },
@@ -59,7 +59,7 @@
       "path": "public/fonts/ibm-plex-mono-600-latin.woff2",
       "family": "IBM Plex Mono",
       "css_weight": "600",
-      "repository_blob_sha": "c6759ef37d87a7bf2251f1d1f4704204e978ae3f",
+      "repository_blob_sha": "67aeeb0104a02cf060b813abf6dcb6fdb97b7512",
       "license": "SIL Open Font License 1.1",
       "license_status": "family_license_verified",
       "license_source": "https://github.com/IBM/plex/blob/master/LICENSE.txt",
@@ -67,11 +67,11 @@
       "web_embedding_status": "permitted_under_ofl_1_1_subject_to_license_conditions",
       "modification_or_subsetting_status": "permitted_under_ofl_1_1_subject_to_reserved_name_and_notice_conditions",
       "notice_requirement": "Preserve the applicable copyright and OFL notice when redistributing font software.",
-      "binary_origin_status": "pending_exact_provenance",
-      "exact_binary_source": null,
+      "binary_origin_status": "verified_exact_provenance",
+      "exact_binary_source": "https://fonts.gstatic.com/s/ibmplexmono/v20/-F6qfjptAgt5VM-kVkqdyU8n3vAOwlBFgg.woff2",
       "verified_at": "2026-08-11",
       "replacement_if_unresolved": "Replace with a newly sourced and documented upstream build before claiming exact binary provenance."
     }
   ],
-  "release_boundary": "This registry verifies family-level license sources and exact repository identities. It does not yet assert that the four deployed WOFF2 binaries were downloaded or generated from the listed upstream sources."
+  "release_boundary": "This registry verifies family-level license sources and exact repository identities. All four deployed WOFF2 binaries were replaced on 2026-08-11 with fresh downloads from the official Google Fonts CSS2 API (fonts.googleapis.com/css2, latin-subset unicode-range block), matching the exact_binary_source URL and repository_blob_sha recorded per font."
 }
