@@ -1,6 +1,6 @@
 import { normalizeSourceUrl, type ContentDirection } from "./content-pipeline.ts";
 
-export type DistributionPlatform = "facebook" | "threads" | "instagram" | "x";
+export type DistributionPlatform = "facebook" | "threads" | "instagram" | "x" | "telegram";
 export type DistributionCampaign =
   | "logistics_insights"
   | "marketing_insights"
@@ -89,7 +89,7 @@ export interface DistributionAuditEntry {
   reason: string;
 }
 
-const allowedSources = new Set<DistributionPlatform>(["facebook", "threads", "instagram", "x"]);
+const allowedSources = new Set<DistributionPlatform>(["facebook", "threads", "instagram", "x", "telegram"]);
 const allowedCampaigns = new Set<DistributionCampaign>([
   "logistics_insights",
   "marketing_insights",
@@ -211,6 +211,15 @@ const xDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
   };
 };
 
+const telegramDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
+  const points = asset.practicalPoints.slice(0, 3).map((point) => `• ${point}`).join("\n");
+  return {
+    hook: `Hermes update: ${asset.title}`,
+    copy: `Hermes update\n\n${asset.conciseValue}\n\n${points}\n\n${asset.ctaLabel}:\n${trackedUrl}`,
+    destinationStrategy: "Copy-ready Telegram group/channel message after production verification and owner approval. No bot send occurs in preview mode.",
+  };
+};
+
 export const generatePlatformDraft = (
   asset: ApprovedWebsiteAsset,
   channel: DistributionChannel,
@@ -231,7 +240,9 @@ export const generatePlatformDraft = (
       ? threadsDraft(asset, trackedUrl)
       : channel.platform === "instagram"
         ? instagramDraft(asset, trackedUrl)
-        : xDraft(asset, trackedUrl);
+        : channel.platform === "x"
+          ? xDraft(asset, trackedUrl)
+          : telegramDraft(asset, trackedUrl);
   const fingerprint = createDistributionFingerprint(asset, channel);
 
   return {
