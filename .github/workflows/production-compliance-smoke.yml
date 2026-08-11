@@ -8,6 +8,7 @@ on:
       - 'src/pages/privacy.astro'
       - 'src/pages/privacy-choices.astro'
       - 'src/pages/company-information.astro'
+      - 'src/pages/terms.astro'
       - 'src/pages/payments-cancellations.astro'
       - 'src/pages/data-security.astro'
       - 'src/pages/asset-licensing.astro'
