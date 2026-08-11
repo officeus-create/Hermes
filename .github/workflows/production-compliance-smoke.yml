@@ -11,8 +11,9 @@ on:
       - 'src/pages/payments-cancellations.astro'
       - 'src/pages/data-security.astro'
       - 'src/pages/asset-licensing.astro'
+      - 'src/pages/regional-privacy.astro'
       - 'src/components/SiteFooter.astro'
-      - 'src/components/AnalyticsConsent.astro'
+      - 'src/components/TrackingConsent.astro'
       - 'scripts/production-compliance-smoke.mjs'
       - '.github/workflows/production-compliance-smoke.yml'
   schedule:
