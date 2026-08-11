@@ -2,53 +2,47 @@
 
 > U.S. logistics and internationally coordinated marketing, education, and technology services in one business ecosystem.
 
-Canonical site: https://hermeslogisticsus.com/
-Last verified against the public repository: 2026-08-06
+- [Canonical Hermes website](https://hermeslogisticsus.com/)
+- Last verified against the public repository: 2026-08-11
 
-Localized overviews:
-- Ukrainian: https://hermeslogisticsus.com/ua/
-- Russian: https://hermeslogisticsus.com/ru/
-- Spanish: https://hermeslogisticsus.com/es/
-- Italian: https://hermeslogisticsus.com/it/
-- French: https://hermeslogisticsus.com/fr/
+## Localized overviews
+
+- [English](https://hermeslogisticsus.com/)
+- [Ukrainian](https://hermeslogisticsus.com/ua/)
+- [Russian](https://hermeslogisticsus.com/ru/)
+- [Spanish](https://hermeslogisticsus.com/es/)
+- [Italian](https://hermeslogisticsus.com/it/)
+- [French](https://hermeslogisticsus.com/fr/)
 
 ## Public business directions
 
-- Hermes Logistics: carrier support, vehicle-transport request coordination, dispatch and back-office preparation, public operating guidance, and role-specific logistics paths.
-  https://hermeslogisticsus.com/paths/logistics/
-- Car Hauling Dispatch Services: qualification, carrier-controlled load approval, broker communication, paperwork, invoicing follow-through, equipment fit, and direct dispatch-review preparation.
-  https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
-- Dealer Vehicle Transportation: dealership, auction, transfer, delivery, multi-vehicle, open, enclosed, and specialty transport-request preparation.
-  https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
-- Carrier Knowledge Hub: dispatch-model comparison, new-authority readiness, broker setup packets, capacity preparation, carrier control, and direct carrier-review next steps.
-  https://hermeslogisticsus.com/logistics/resources/
-- Appleton, Wisconsin Vehicle Transport Guide: request preparation for dealer, auction, business, private-customer, carrier, and car-hauler needs. Submission does not guarantee price, timing, or carrier availability.
-  https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/
-- Auction Vehicle Pickup Checklist: release, facility access, condition, storage deadline, delivery, and equipment information to prepare before requesting transport.
-  https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/
-- Car Hauler Capacity Checklist: equipment, available spaces, operating area, route, dates, authority, and vehicle-fit information carriers can prepare for review.
-  https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/
-- Car Hauling Load Board Preview: fictional/local demonstration of request validation and dry-run routing. It does not publish a load, notify a carrier, create an account, confirm capacity, or make a booking.
-  https://hermeslogisticsus.com/load-board/
-- ProgressoPro Marketing: positioning, content, social media, lead generation, sales workflow, SEO, Local SEO, and marketing automation.
-  https://hermeslogisticsus.com/paths/marketing/
-- SEO Services: structured SEO project review for eligible U.S. businesses, with separate Local SEO, logistics SEO, and independent auto-dealer SEO intent owners.
-  https://hermeslogisticsus.com/services/seo/
-- Hermes Business Academy: practical logistics, marketing, and operational leadership education. Participation and employment are not guaranteed.
-  https://hermeslogisticsus.com/paths/academy/
-- Hermes IT Development: websites, redesign, CRM systems, AI-assisted workflows, automation, and connected business platforms.
-  https://hermeslogisticsus.com/paths/technology/
-- Hermes Connect Overview: iterative connected-workflow product direction across application, web experience, website integration, and promotion.
-  https://hermeslogisticsus.com/services/hermes-connect/
+- [Hermes Logistics](https://hermeslogisticsus.com/paths/logistics/) — carrier support, vehicle-transport request coordination, dispatch and back-office preparation, public operating guidance, and role-specific logistics paths.
+- [Car Hauling Dispatch Services](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/) — qualification, carrier-controlled load approval, broker communication, paperwork, invoicing follow-through, equipment fit, and direct dispatch-review preparation.
+- [Dealer Vehicle Transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/) — dealership, auction, transfer, delivery, multi-vehicle, open, enclosed, and specialty transport-request preparation.
+- [Carrier Knowledge Hub](https://hermeslogisticsus.com/logistics/resources/) — dispatch-model comparison, new-authority readiness, broker setup packets, capacity preparation, carrier control, and direct carrier-review next steps.
+- [Appleton, Wisconsin Vehicle Transport Guide](https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/) — request preparation for dealer, auction, business, private-customer, carrier, and car-hauler needs. Submission does not guarantee price, timing, or carrier availability.
+- [Auction Vehicle Pickup Checklist](https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/) — release, facility access, condition, storage deadline, delivery, and equipment information to prepare before requesting transport.
+- [Car Hauler Capacity Checklist](https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/) — equipment, available spaces, operating area, route, dates, authority, and vehicle-fit information carriers can prepare for review.
+- [Car Hauling Load Board Preview](https://hermeslogisticsus.com/load-board/) — fictional/local demonstration of request validation and dry-run routing. It does not publish a load, notify a carrier, create an account, confirm capacity, or make a booking.
+- [ProgressoPro Marketing](https://hermeslogisticsus.com/paths/marketing/) — positioning, content, social media, lead generation, sales workflow, SEO, Local SEO, and marketing automation.
+- [SEO Services](https://hermeslogisticsus.com/services/seo/) — structured SEO project review for eligible U.S. businesses, with separate Local SEO, logistics SEO, and independent auto-dealer SEO intent owners.
+- [Hermes Business Academy](https://hermeslogisticsus.com/paths/academy/) — practical logistics, marketing, and operational leadership education. Participation and employment are not guaranteed.
+- [Hermes IT Development](https://hermeslogisticsus.com/paths/technology/) — websites, redesign, CRM systems, AI-assisted workflows, automation, and connected business platforms.
+- [Hermes Connect](https://hermeslogisticsus.com/services/hermes-connect/) — iterative connected-workflow product direction across application, web experience, website integration, and promotion.
 
-## Public evidence
+## Public evidence and useful resources
 
-- Hermes Corporate Website Case: strategy, original interface system, responsive engineering, QA, and production delivery for four business directions.
-  https://hermeslogisticsus.com/case/it-development/
-- Appleton Vehicle Transport SEO Case: a public implementation case about page structure, local intent, internal links, schema, direct request preparation, and measurement boundaries. It is not a ranking or revenue guarantee.
-  https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/
-- Logistics SEO Audit Sample: an educational sample that demonstrates review categories and evidence boundaries without representing a private client result.
-  https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/
+- [Hermes Corporate Website Case](https://hermeslogisticsus.com/case/it-development/) — strategy, original interface system, responsive engineering, QA, and production delivery for four business directions.
+- [Appleton Vehicle Transport SEO Case](https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/) — public implementation case about page structure, local intent, internal links, schema, direct request preparation, and measurement boundaries. It is not a ranking or revenue guarantee.
+- [Logistics SEO Audit Sample](https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/) — educational sample that demonstrates review categories and evidence boundaries without representing a private client result.
+- [Website Project Brief Template](https://hermeslogisticsus.com/resources/website-project-brief-template/) — structured preparation resource for website projects.
+- [Technical SEO Checklist](https://hermeslogisticsus.com/resources/technical-seo-checklist/) — public technical SEO preparation resource.
+- [Search-to-Inquiry Conversion Checklist](https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/) — public resource for connecting search visibility to qualified inquiry paths.
+
+## Discovery files
+
+- [Sitemap index](https://hermeslogisticsus.com/sitemap-index.xml)
+- [Robots.txt](https://hermeslogisticsus.com/robots.txt)
 
 ## Public and private boundaries
 
