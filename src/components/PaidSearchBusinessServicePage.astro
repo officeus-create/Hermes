@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BusinessLeadForm from "./BusinessLeadForm.astro";
+import DefaultLeadServices from "./DefaultLeadServices.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import type { PaidSearchBusinessService, PaidSearchLocale } from "../data/paid-search-business-services";
+
+interface Props {
+  campaign: PaidSearchBusinessService;
+  locale: PaidSearchLocale;
+}
+
+const { campaign, locale } = Astro.props;
+const t = campaign.copy[locale];
+const alternates = [
+  { lang: "en", href: "/business-growth/" },
+  { lang: "ru", href: `/ru/business-growth/${campaign.slug}/` },
+  { lang: "uk", href: `/ua/business-growth/${campaign.slug}/` },
+  { lang: "x-default", href: "/business-growth/" },
+];
+---
+
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  robots="noindex,follow"
+  locale={locale === "uk" ? "uk" : "ru"}
+  alternates={alternates}
+>
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview" aria-labelledby="paid-service-title">
+      <div class="shell detail-intro" data-reveal>
+        <p class="eyebrow">{t.eyebrow}</p>
+        <h1 id="paid-service-title">{t.h1}</h1>
+        <p>{t.intro}</p>
+        <p>{t.system}</p>
+        <ul class="paid-service-points" aria-label={locale === "ru" ? "Что входит в работу" : "Що входить у роботу"}>
+          {t.points.map((point) => <li>{point}</li>)}
+        </ul>
+        <a class="button button-primary" href="#business-lead">{t.cta}</a>
+        <p class="form-status">
+          {locale === "ru"
+            ? "Выбранная услуга уже отмечена в форме. При необходимости добавьте другие направления."
+            : "Обрану послугу вже позначено у формі. За потреби додайте інші напрями."}
+        </p>
+      </div>
+    </section>
+
+    <BusinessLeadForm selectedPath="ProgressoPro" locale={locale} />
+    <DefaultLeadServices services={campaign.services} />
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .paid-service-points {
+    display: grid;
+    gap: .65rem;
+    margin: 1.15rem 0 1.5rem;
+    padding-left: 1.2rem;
+  }
+
+  .paid-service-points li {
+    line-height: 1.6;
+  }
+</style>
