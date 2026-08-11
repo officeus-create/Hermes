@@ -5,22 +5,24 @@ const sections = [
   {
     title: "Scope and current website boundary",
     body: [
-      "This Privacy Notice explains how hermeslogisticsus.com handles personal information through website visits, public contact routes, qualification tools, preview interfaces, and limited analytics. It does not replace a service-specific privacy notice or contract where a separate workflow, product, or legal entity provides additional disclosures.",
+      "This Privacy Notice explains how hermeslogisticsus.com handles personal information through website visits, public contact routes, qualification tools, preview interfaces, live business-inquiry delivery, and limited analytics. It does not replace a service-specific privacy notice or contract where a separate workflow, product, or legal entity provides additional disclosures.",
       "Some website tools remain in preview mode or operate as dry-run interfaces. A preview does not send or store submitted information unless the page clearly identifies a live delivery workflow. Direct email and phone actions are handled through the provider selected by the user and the published Hermes contact route.",
     ],
   },
   {
     title: "Notice at Collection: categories and purposes",
     body: [
-      "At or before a website form asks for personal information, Hermes provides a short notice linking here. Depending on the selected workflow, the site may request identifiers and business contact information such as name, email, phone number, company, role, MC/USDOT number, equipment, operating area, project needs, budget range, or a message supplied by the user.",
-      "The purposes are to respond to a request, route it to the appropriate business direction, qualify a logistics, marketing, academy, or technology inquiry, prepare a user-requested preview or summary, prevent abuse, maintain security, and improve the website. Do not submit passwords, payment credentials, Social Security numbers, identity documents, confidential records, or other sensitive information unless a future secure workflow explicitly requires and explains it.",
+      "At or before a website form asks for personal information, Hermes provides a short notice linking here. Depending on the selected workflow, the site may request identifiers and business contact information such as name, email, phone number, company, role, city or country, WhatsApp or Telegram contact, website or social profile, preferred language and contact time, selected services, MC/USDOT number, equipment, operating area, project needs, budget range, or a message supplied by the user.",
+      "When a visitor deliberately submits the business-growth inquiry form after arriving through a paid or tagged campaign, the submitted lead may also include the landing-page path, referring page, UTM source, medium, campaign, term or content values, and Google click identifiers such as GCLID, GBRAID, or WBRAID when those values are already present in the landing URL. These values are used to understand which source or campaign produced the inquiry, support routing and follow-up, and evaluate lead-generation performance.",
+      "The purposes are to respond to a request, route it to the appropriate business direction, qualify a logistics, marketing, academy, or technology inquiry, prepare a user-requested preview or summary, understand inquiry source, prevent duplicate or abusive submissions, maintain security, and improve the website. Do not submit passwords, payment credentials, Social Security numbers, identity documents, confidential records, or other sensitive information unless a future secure workflow explicitly requires and explains it.",
     ],
   },
   {
     title: "Website analytics, cookies, and tracking choices",
     body: [
       "Google Analytics 4 is the currently approved analytics integration. Hermes uses a consent-gated setup: the Google Analytics tag is not loaded until a visitor chooses “Allow analytics.” If analytics is allowed, GA4 may use first-party analytics cookies to distinguish users and sessions. Hermes stores the visitor’s analytics choice in first-party browser storage so the site can remember that preference.",
-      "Advertising storage, advertising user data, and ad personalization remain disabled in the current implementation. The site does not currently deploy Meta Pixel or a parallel Google Tag Manager container. Analytics events must not contain names, email addresses, phone numbers, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages. Visitors can reopen Privacy settings and change the analytics choice.",
+      "Advertising storage, advertising user data, and ad personalization remain disabled in the current implementation. The site does not currently deploy Meta Pixel or a parallel Google Tag Manager container. A business inquiry may include campaign parameters or Google click identifiers that were already present in the landing URL, but those values are attached to the lead only when the visitor submits the form; their inclusion does not by itself load analytics, advertising cookies, remarketing, or ad-personalization storage.",
+      "Analytics events must not contain names, email addresses, phone numbers, WhatsApp or Telegram contacts, MC/USDOT numbers, VINs, exact private addresses, routes, budgets, document contents, or free-form messages. Visitors can reopen Privacy settings and change the analytics choice.",
       "If advertising, remarketing, additional cookies, a consent-management platform, or new tracking providers are introduced, this notice, the applicable regional requirements, and the technical consent controls must be reviewed before deployment.",
     ],
   },
@@ -28,7 +30,8 @@ const sections = [
     title: "How information is used and disclosed",
     bullets: [
       "To respond to or route a request the user chooses to send.",
-      "To perform qualification, security, fraud-prevention, troubleshooting, and website operations.",
+      "To understand which campaign, source, page, or referral generated a deliberately submitted business inquiry where attribution values are available.",
+      "To perform qualification, duplicate prevention, rate limiting, security, fraud-prevention, troubleshooting, and website operations.",
       "To work with service providers that support hosting, email, analytics, security, or other approved operational functions, subject to the relevant service configuration and agreements.",
       "To comply with applicable law, legal process, or protect rights, safety, systems, and users where legally permitted.",
       "Hermes does not publish form submissions as public content unless a separate workflow obtains the necessary authorization.",
@@ -44,7 +47,7 @@ const sections = [
   {
     title: "Security",
     body: [
-      "Hermes uses a data-minimization and least-access approach: do not collect unnecessary sensitive information, limit access to people and systems that need it, use controlled delivery routes, and avoid sending private form fields into analytics or public URLs. No internet transmission or storage system can be guaranteed to be completely secure.",
+      "Hermes uses a data-minimization and least-access approach: do not collect unnecessary sensitive information, limit access to people and systems that need it, use controlled delivery routes, and avoid sending private form fields into analytics or public URLs. Lead-delivery workflows may use technical request identifiers, duplicate controls, and rate limits to reduce accidental repeat delivery and abuse. No internet transmission or storage system can be guaranteed to be completely secure.",
     ],
   },
   {
@@ -79,10 +82,10 @@ const sections = [
 
 <TrustPage
   title="Privacy Policy & Notice at Collection | Hermes"
-  description="Hermes privacy policy and notice at collection covering website forms, consent-gated analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
+  description="Hermes privacy policy and notice at collection covering website forms, business lead attribution, consent-gated analytics, data minimization, retention, security, privacy requests, California disclosures, and international visitors."
   eyebrow="Privacy notice"
   h1="Privacy Policy & Notice at Collection"
   intro="What the Hermes website collects, why it is used, how long it should be kept, and how to make a privacy request."
-  reviewedAt="2026-08-10"
+  reviewedAt="2026-08-11"
   {sections}
 />
