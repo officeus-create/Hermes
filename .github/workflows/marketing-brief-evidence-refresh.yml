@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - qa/marketing-brief-evidence-v1
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   refresh-evidence:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && github.head_ref == 'qa/marketing-brief-evidence-v1'
     runs-on: ubuntu-latest
     steps:
       - name: Check out QA branch
