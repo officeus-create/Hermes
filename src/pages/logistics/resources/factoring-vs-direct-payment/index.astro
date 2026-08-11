@@ -1,0 +1,304 @@
+---
+import { ArrowLeft, ArrowRight, Clock, DollarSign, Scale, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Factoring vs Direct Payment Calculator | Hermes Logistics";
+const description =
+  "Compare factoring and direct payment using your own invoice amount, fees, payment timing, and annual working-capital assumption. See estimated proceeds and waiting-cost impact without provider recommendations.";
+const canonicalUrl = new URL("/logistics/resources/factoring-vs-direct-payment/", Astro.site).toString();
+const intakeHref = "/logistics/start-car-hauling-dispatch/";
+
+const faq = [
+  {
+    question: "Does this calculator recommend factoring or direct payment?",
+    answer: "No. It compares only the assumptions you enter. Provider terms, recourse, reserves, chargebacks, credit risk, eligibility, collections, disputes, non-payment risk, and contract terms can change the real outcome.",
+  },
+  {
+    question: "What does the working-capital assumption mean?",
+    answer: "It is a user-entered annual percentage used only to estimate the cost you assign to waiting for cash. The calculator converts that annual assumption into a simple day-based estimate for each payment timeline.",
+  },
+  {
+    question: "Is the factoring fee a market average?",
+    answer: "No. Hermes inserts no market-rate or provider benchmark. Replace the illustrative starting values with the actual terms you are evaluating.",
+  },
+  {
+    question: "Does the result include taxes, financing agreements, or legal risk?",
+    answer: "No. The result is a simplified operating comparison and is not accounting, tax, financial, legal, credit, or investment advice.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Hermes Factoring vs Direct Payment Calculator",
+    description,
+    url: canonicalUrl,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Carrier Payment Timing Comparison Tool",
+    description,
+    url: canonicalUrl,
+    areaServed: { "@type": "Country", name: "United States" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Carrier Knowledge Hub", item: "https://hermeslogisticsus.com/logistics/resources/" },
+      { "@type": "ListItem", position: 4, name: "Factoring vs Direct Payment", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page logistics-resource-carrier">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero resource-hero-carrier" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <a href="/logistics/resources/">Resources</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Factoring vs direct payment</span>
+            </nav>
+            <a class="detail-back" href="/logistics/resources/"><ArrowLeft size={18} aria-hidden="true" />Carrier Knowledge Hub</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Free carrier tool · Cash timing</p>
+                <h1>Factoring vs Direct Payment Calculator</h1>
+                <p>
+                  Compare two payment paths using the invoice amount, fees, expected payment timing, and working-capital assumption you enter. The tool does not choose a provider or declare one payment model universally better.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href="#payment-calculator">Compare payment paths <ArrowRight size={18} aria-hidden="true" /></a>
+                  <a class="button" href={intakeHref}>Request carrier workflow review</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <ShieldCheck size={30} aria-hidden="true" />
+                <h2>Your invoice assumptions stay in your browser.</h2>
+                <p>Entered invoice amounts, fees, payment timing, and working-capital assumptions are not sent to general analytics.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro" aria-labelledby="payment-why-title">
+          <div class="shell resource-lead">
+            <Clock size={36} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Compare cost and timing separately</p>
+              <h2 id="payment-why-title">A lower fee can still come with a longer wait for cash.</h2>
+              <p>
+                This comparison keeps two ideas visible: explicit fees and the value you assign to waiting for payment. It does not model every factoring contract, broker quick-pay program, credit event, dispute, reserve, recourse term, or collection risk.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section rpm-tool-section" id="payment-calculator" aria-labelledby="payment-calculator-title">
+          <div class="shell rpm-tool-grid" data-payment-calculator>
+            <div class="rpm-panel rpm-input-panel">
+              <div class="rpm-panel-heading">
+                <DollarSign size={26} aria-hidden="true" />
+                <div>
+                  <p class="eyebrow">Your assumptions</p>
+                  <h2 id="payment-calculator-title">Compare one invoice.</h2>
+                </div>
+              </div>
+
+              <form data-payment-form>
+                <div class="rpm-field-grid">
+                  <label><span>Invoice amount ($)</span><input name="invoiceAmount" type="number" min="0.01" step="0.01" value="2500" inputmode="decimal" required /></label>
+                  <label><span>Factoring fee (%)</span><input name="factoringFee" type="number" min="0" max="99" step="0.1" value="3" inputmode="decimal" required /></label>
+                  <label><span>Expected factoring payment (days)</span><input name="factoringDays" type="number" min="0" step="1" value="1" inputmode="decimal" required /></label>
+                  <label><span>Expected direct payment (days)</span><input name="directDays" type="number" min="0" step="1" value="30" inputmode="decimal" required /></label>
+                  <label><span>Direct / quick-pay fee (%)</span><input name="directFee" type="number" min="0" max="99" step="0.1" value="0" inputmode="decimal" required /></label>
+                  <label><span>Your annual working-capital assumption (%)</span><input name="capitalRate" type="number" min="0" max="1000" step="0.1" value="12" inputmode="decimal" required /></label>
+                </div>
+
+                <p class="rpm-form-note"><strong>Illustrative starting values only.</strong> They are not market averages or recommended terms. Replace every value with the actual invoice and payment terms you are evaluating.</p>
+                <button class="button button-primary rpm-calculate" type="submit">Compare payment economics <ArrowRight size={18} aria-hidden="true" /></button>
+                <p class="rpm-error" data-payment-error role="alert" hidden></p>
+              </form>
+            </div>
+
+            <div class="rpm-panel rpm-result-panel" aria-live="polite">
+              <div class="rpm-panel-heading">
+                <Scale size={26} aria-hidden="true" />
+                <div><p class="eyebrow">Estimated comparison</p><h2>Payment economics</h2></div>
+              </div>
+
+              <div class="rpm-primary-results">
+                <div><span>Factoring net after entered costs</span><strong data-output="factoringNet">—</strong></div>
+                <div><span>Direct net after entered costs</span><strong data-output="directNet">—</strong></div>
+                <div><span>Difference under your assumptions</span><strong data-output="difference">—</strong></div>
+              </div>
+
+              <dl class="rpm-result-list">
+                <div><dt>Factoring fee</dt><dd data-output="factoringFeeCost">—</dd></div>
+                <div><dt>Factoring waiting-cost estimate</dt><dd data-output="factoringWaitCost">—</dd></div>
+                <div><dt>Factoring explicit proceeds</dt><dd data-output="factoringProceeds">—</dd></div>
+                <div><dt>Direct / quick-pay fee</dt><dd data-output="directFeeCost">—</dd></div>
+                <div><dt>Direct waiting-cost estimate</dt><dd data-output="directWaitCost">—</dd></div>
+                <div><dt>Direct explicit proceeds</dt><dd data-output="directProceeds">—</dd></div>
+              </dl>
+
+              <div class="rpm-sensitivity" data-output="summary">Enter your assumptions and compare the invoice.</div>
+              <p class="rpm-disclaimer">Estimate only. This tool is not accounting, tax, financial, legal, credit, collections, or investment advice and does not predict payment, approval, disputes, non-payment, cash flow, profit, or revenue.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section capacity-example" aria-labelledby="payment-formulas-title">
+          <div class="shell capacity-example-grid">
+            <div>
+              <p class="eyebrow">Transparent formulas</p>
+              <h2 id="payment-formulas-title">The calculator uses only your entered terms.</h2>
+              <p>The working-capital estimate is a simple annual-rate × days / 365 calculation. It is not a financing quote, APR disclosure, or provider-specific cost model.</p>
+            </div>
+            <dl>
+              <div><dt>Factoring fee</dt><dd>Invoice × factoring fee %</dd></div>
+              <div><dt>Direct / quick-pay fee</dt><dd>Invoice × direct fee %</dd></div>
+              <div><dt>Waiting-cost estimate</dt><dd>Invoice × annual working-capital % × payment days ÷ 365</dd></div>
+              <div><dt>Explicit proceeds</dt><dd>Invoice − explicit fee</dd></div>
+              <div><dt>Net after entered costs</dt><dd>Invoice − explicit fee − waiting-cost estimate</dd></div>
+            </dl>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="payment-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="payment-faq-title">What this comparison does and does not tell you.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="payment-next-title">
+          <div class="shell">
+            <div class="section-heading"><p class="eyebrow">Related carrier tools</p><h2 id="payment-next-title">Use payment timing alongside trip economics and operating workflow.</h2></div>
+            <div class="resource-related-grid">
+              <a href="/logistics/resources/rpm-calculator/"><DollarSign size={22} aria-hidden="true" /><h3>RPM & Load Profitability Calculator</h3><p>Compare loaded RPM, all-mile RPM, fuel, reserves, costs, and break-even assumptions.</p><strong>Open calculator <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/dispatch-service-vs-self-dispatch/"><Scale size={22} aria-hidden="true" /><h3>Dispatch vs self-dispatch</h3><p>Compare workload, control, calls, documents, fees, and carrier approval boundaries.</p><strong>Open comparison <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href={intakeHref}><ShieldCheck size={22} aria-hidden="true" /><h3>Carrier workflow review</h3><p>Prepare authority, equipment, capacity, operating area, availability, and contact information for review.</p><strong>Open carrier intake <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  import { trackEvent } from "../../../../lib/analytics";
+
+  const root = document.querySelector<HTMLElement>("[data-payment-calculator]");
+  const form = root?.querySelector<HTMLFormElement>("[data-payment-form]");
+  const error = root?.querySelector<HTMLElement>("[data-payment-error]");
+  let started = false;
+
+  const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+
+  function setOutput(name: string, value: string) {
+    root?.querySelector<HTMLElement>(`[data-output="${name}"]`)?.replaceChildren(value);
+  }
+
+  function read(name: string): number {
+    const input = form?.elements.namedItem(name);
+    return input instanceof HTMLInputElement ? Number(input.value) : Number.NaN;
+  }
+
+  function calculate(trackCompletion: boolean) {
+    if (!form || !error) return;
+    const invoice = read("invoiceAmount");
+    const factoringFee = read("factoringFee");
+    const factoringDays = read("factoringDays");
+    const directDays = read("directDays");
+    const directFee = read("directFee");
+    const capitalRate = read("capitalRate");
+
+    const valid =
+      Number.isFinite(invoice) && invoice > 0 &&
+      Number.isFinite(factoringFee) && factoringFee >= 0 && factoringFee < 100 &&
+      Number.isFinite(factoringDays) && factoringDays >= 0 &&
+      Number.isFinite(directDays) && directDays >= 0 &&
+      Number.isFinite(directFee) && directFee >= 0 && directFee < 100 &&
+      Number.isFinite(capitalRate) && capitalRate >= 0;
+
+    if (!valid) {
+      error.hidden = false;
+      error.textContent = "Check the inputs: invoice must be above zero; fees must be from 0% to below 100%; days and working-capital assumption cannot be negative.";
+      return;
+    }
+    error.hidden = true;
+
+    const factorFeeCost = invoice * (factoringFee / 100);
+    const directFeeCost = invoice * (directFee / 100);
+    const annualRate = capitalRate / 100;
+    const factorWait = invoice * annualRate * (factoringDays / 365);
+    const directWait = invoice * annualRate * (directDays / 365);
+    const factorProceeds = invoice - factorFeeCost;
+    const directProceeds = invoice - directFeeCost;
+    const factorNet = invoice - factorFeeCost - factorWait;
+    const directNet = invoice - directFeeCost - directWait;
+    const difference = directNet - factorNet;
+
+    setOutput("factoringFeeCost", money.format(factorFeeCost));
+    setOutput("factoringWaitCost", money.format(factorWait));
+    setOutput("factoringProceeds", money.format(factorProceeds));
+    setOutput("directFeeCost", money.format(directFeeCost));
+    setOutput("directWaitCost", money.format(directWait));
+    setOutput("directProceeds", money.format(directProceeds));
+    setOutput("factoringNet", money.format(factorNet));
+    setOutput("directNet", money.format(directNet));
+    setOutput("difference", money.format(Math.abs(difference)));
+
+    const summary = Math.abs(difference) < 0.005
+      ? "Under the assumptions entered, the simplified estimated costs are effectively equal."
+      : difference > 0
+        ? `Under the assumptions entered, direct payment leaves ${money.format(difference)} more after the entered fee and waiting-cost estimate, but this does not account for provider, recourse, reserve, credit, dispute, or non-payment terms.`
+        : `Under the assumptions entered, factoring leaves ${money.format(Math.abs(difference))} more after the entered fee and waiting-cost estimate, but this does not account for provider, recourse, reserve, credit, dispute, or non-payment terms.`;
+    setOutput("summary", summary);
+
+    if (!started) {
+      started = true;
+      trackEvent("payment_comparison_started", { tool: "factoring_vs_direct" });
+    }
+    if (trackCompletion) trackEvent("payment_comparison_completed", { tool: "factoring_vs_direct" });
+  }
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    calculate(true);
+  });
+
+  calculate(false);
+</script>
