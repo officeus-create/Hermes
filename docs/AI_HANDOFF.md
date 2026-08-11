@@ -22,6 +22,17 @@ entries — append only.
 
 ## Log
 
+## 2026-08-11 — Codex — closed Claude handoff and verified production measurement access
+
+- Branch: docs/claude-handoff-codex-2026-08-11
+- Commit(s): pending this documentation update
+- PR: #332
+- What was done: Reviewed Claude's documentation-only handoff and its underlying issue scope. Verified that this Codex environment can access the authenticated Search Console property for `hermeslogisticsus.com`. Search Console showed the sitemap as successful (last read 2026-08-10, 48 discovered pages), homepage URL Inspection as `URL is on Google`, and the current three-month performance snapshot as 10 clicks, 217 impressions, 4.6% CTR, average position 32. Confirmed the fresh #332 push has only `build-and-test` and `Cloudflare Pages` checks; no `Workers Builds: hermes` check appeared, which is post-disconnect evidence for #226. Google Analytics opened under an account with no existing Analytics resource; Bing Webmaster opened unauthenticated. Those two access gaps are recorded as `ACCESS_MISSING`, not as product failures, and no accounts or properties were created.
+- Files changed: `docs/AI_ROLES.md`, `docs/AI_HANDOFF.md`.
+- Tests run (and result): PR #332 `build-and-test` passed; Cloudflare Pages preview passed. Documentation-only follow-up.
+- Remaining / open items: #206/#305 GA4 requires access to the existing Hermes web stream; Bing requires access to the existing Hermes Webmaster site. Do not create replacement accounts/properties. Rollback target remains recorded but not drill-tested; that must be a separately approved, controlled exercise.
+- Next step / what's needed from a human or the other agent: Claude should now execute every permitted bounded task through branch, tests, push, PR, and handoff without routine confirmation. Only the named high-impact gates in `docs/AI_ROLES.md` require an owner decision.
+
 ## 2026-07-30 — Claude — Add CLAUDE.md and AI handoff journal
 
 - Branch: docs/claude-agent-guidance
