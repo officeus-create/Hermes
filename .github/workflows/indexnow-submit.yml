@@ -7,6 +7,11 @@ on:
         description: "Optional comma, space, or newline separated Hermes URLs. Leave blank for the five priority URLs."
         required: false
         type: string
+      all_public_urls:
+        description: "Submit every canonical public URL currently listed in Hermes child sitemaps. Use only after a real release/update batch."
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -38,9 +43,11 @@ jobs:
         env:
           INDEXNOW_DRY_RUN: "1"
           INDEXNOW_URLS: ${{ inputs.urls }}
+          INDEXNOW_USE_SITEMAPS: ${{ inputs.all_public_urls }}
         run: node scripts/indexnow-submit.mjs
 
       - name: Submit URLs to IndexNow
         env:
           INDEXNOW_URLS: ${{ inputs.urls }}
+          INDEXNOW_USE_SITEMAPS: ${{ inputs.all_public_urls }}
         run: node scripts/indexnow-submit.mjs

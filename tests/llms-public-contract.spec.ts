@@ -25,7 +25,9 @@ test("llms.txt describes current public owners and transaction boundaries", asyn
   expect(response.headers()["content-type"] ?? "").toMatch(/text\/plain|application\/octet-stream/);
   const body = await response.text();
 
-  expect(body).toContain("Last verified against the public repository: 2026-08-06");
+  expect(body).toContain("Last verified against the public repository: 2026-08-11");
+  expect(body).toContain("[Canonical Hermes website](https://hermeslogisticsus.com/)");
+  expect(body).toContain("[Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)");
   expect(body).toContain("## Public business directions");
   expect(body).toContain("## Public evidence");
   expect(body).toContain("## Public and private boundaries");
