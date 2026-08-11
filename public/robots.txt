@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://hermeslogisticsus.com/sitemap-index.xml
+Sitemap: https://hermeslogisticsus.com/sitemapindex.xml
 Sitemap: https://hermeslogisticsus.com/sitemap.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-local.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-services.xml
