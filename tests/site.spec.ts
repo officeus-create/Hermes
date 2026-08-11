@@ -668,13 +668,20 @@ test("marketing field group supports multiple platforms + 3/6/9/12 horizon and i
   await page.locator('input[name="platforms"][value="SEO / Google Search"]').check();
   await page.locator('input[name="platforms"][value="Google Ads / Paid Search"]').check();
   await page.locator('select[name="planning_horizon"]').selectOption("6 months");
-  await page.locator('input[name="primary_goal"]').fill("More qualified leads <script>alert(1)</script>");
+  const primaryGoal = page.locator('input[name="primary_goal"]');
+await primaryGoal.fill("More qualified leads for a service business");
 
-  if (testInfo.project.name === "desktop") {
-    await page.locator("[data-direction-fields]").screenshot({ path: "docs/screenshots/intake02-marketing-desktop.png" });
-  }
+await page.addStyleTag({
+  content: "[data-header], [data-consent-settings] { visibility: hidden !important; }",
+});
+const evidencePath = testInfo.project.name === "mobile"
+  ? "docs/screenshots/intake02-marketing-mobile.png"
+  : "docs/screenshots/intake02-marketing-desktop.png";
+await page.locator("[data-direction-fields]").screenshot({ path: evidencePath, animations: "disabled" });
 
-  await page.locator('button[type="submit"]').click();
+// Preserve the sanitization contract after clean synthetic visual evidence is captured.
+await primaryGoal.fill("More qualified leads <script>alert(1)</script>");
+await page.locator('button[type="submit"]').click();
 
   await expect(page.locator("[data-contact-handoff]")).toBeVisible();
   await expect(page.locator("[data-handoff-summary]")).toContainText("Platforms: SEO / Google Search, Google Ads / Paid Search");

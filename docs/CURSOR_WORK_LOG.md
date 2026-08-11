@@ -128,6 +128,8 @@ npm run test:e2e
 
 ### Screenshots / UI evidence
 - `docs/screenshots/intake02-marketing-desktop.png`
+- `docs/screenshots/intake02-marketing-mobile.png`
+- Evidence refreshed on 2026-08-11 with sticky header and privacy settings hidden only during capture; production UI behavior is unchanged.
 
 ### Assumptions
 - “I am not sure yet” keeps direction-specific fields hidden and produces a copyable summary without an approved primary handoff route.
