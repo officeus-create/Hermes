@@ -24,6 +24,36 @@ test("business growth landing page shows the focused paid-search lead form", asy
   await expect(form.locator('input[name="interest"]')).toHaveValue("ProgressoPro");
 });
 
+test("Russian paid-search landing localizes the brief and preselects Russian", async ({ page }) => {
+  await page.goto("/ru/business-growth/?utm_source=google&utm_campaign=warsaw_ru_site");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+  await expect(page.getByRole("heading", { name: "Сайт, реклама и автоматизация, которые должны приводить клиентов." })).toBeVisible();
+
+  const form = page.locator("[data-business-lead-form]");
+  await expect(form.getByText("Разработка сайта", { exact: true })).toBeVisible();
+  await expect(form.getByText("CRM и автоматизация бизнеса", { exact: true })).toBeVisible();
+  await expect(form.getByText("Консалтинг по маркетингу / продажам", { exact: true })).toBeVisible();
+  await expect(form.locator('select[name="preferred_language"]')).toHaveValue("Russian");
+  await expect(form.getByRole("button", { name: /Проверить заявку|Отправить заявку/ })).toBeVisible();
+});
+
+test("Ukrainian paid-search landing localizes the brief and preselects Ukrainian", async ({ page }) => {
+  await page.goto("/ua/business-growth/?utm_source=google&utm_campaign=warsaw_ua_site");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "uk");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+  await expect(page.getByRole("heading", { name: "Сайт, реклама та автоматизація, які мають приводити клієнтів." })).toBeVisible();
+
+  const form = page.locator("[data-business-lead-form]");
+  await expect(form.getByText("Розробка сайту", { exact: true })).toBeVisible();
+  await expect(form.getByText("CRM та автоматизація бізнесу", { exact: true })).toBeVisible();
+  await expect(form.getByText("Консалтинг з маркетингу / продажів", { exact: true })).toBeVisible();
+  await expect(form.locator('select[name="preferred_language"]')).toHaveValue("Ukrainian");
+  await expect(form.getByRole("button", { name: /Перевірити заявку|Надіслати заявку/ })).toBeVisible();
+});
+
 test("core Marketing and Technology pages retain the existing contact intake", async ({ page }) => {
   await page.goto("/paths/marketing/?service=SEO%20%2F%20Google%20Search");
   await expect(page.locator("[data-contact-form]")).toBeVisible();
