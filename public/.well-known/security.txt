@@ -1,0 +1,4 @@
+Contact: mailto:officeus@hermeslogisticsus.com
+Expires: 2027-08-10T23:59:59Z
+Canonical: https://hermeslogisticsus.com/.well-known/security.txt
+Policy: https://hermeslogisticsus.com/data-security/
