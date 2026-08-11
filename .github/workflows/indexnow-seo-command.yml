@@ -1,0 +1,78 @@
+name: Submit current public URLs to IndexNow on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: indexnow-seo-command-${{ github.event.comment.id }}
+  cancel-in-progress: false
+
+jobs:
+  submit:
+    if: >-
+      github.event.issue.number == 346 &&
+      github.event.comment.body == '/submit-indexnow-all' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    env:
+      GH_TOKEN: ${{ github.token }}
+      INDEXNOW_USE_SITEMAPS: "1"
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Verify public ownership key
+        shell: bash
+        run: |
+          test "$(tr -d '\r\n' < public/8e3c1f6a9d4b72c5e0a8f31d67b2c94e.txt)" = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e"
+
+      - name: Validate current sitemap-backed payload
+        id: dryrun
+        shell: bash
+        env:
+          INDEXNOW_DRY_RUN: "1"
+        run: |
+          node scripts/indexnow-submit.mjs > /tmp/indexnow-dryrun.json
+          count="$(node -e 'const p=require("/tmp/indexnow-dryrun.json"); console.log(p.urlList.length)')"
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          test "$count" -gt 0
+
+      - name: Submit current canonical URL batch
+        id: submit
+        shell: bash
+        run: |
+          set -o pipefail
+          output="$(node scripts/indexnow-submit.mjs)"
+          printf '%s\n' "$output"
+          status="$(printf '%s\n' "$output" | sed -nE 's/.*HTTP ([0-9]{3}).*/\1/p' | tail -1)"
+          test "$status" = "200" -o "$status" = "202"
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+
+      - name: Publish sanitized release evidence
+        shell: bash
+        run: |
+          {
+            echo "## IndexNow release submission"
+            echo
+            echo "- Result: **ACCEPTED**"
+            echo "- Canonical sitemap-backed URLs submitted: **${{ steps.dryrun.outputs.count }}**"
+            echo "- IndexNow HTTP status: **${{ steps.submit.outputs.status }}**"
+            echo "- Approved main commit: \`${{ github.sha }}\`"
+            echo
+            echo "This is a release notification only. IndexNow acceptance does not guarantee crawling, indexing, ranking, traffic, or leads. Google indexing remains managed through Search Console/sitemaps rather than this IndexNow submission."
+          } > /tmp/indexnow-comment.md
+          gh issue comment 346 --repo "${{ github.repository }}" --body-file /tmp/indexnow-comment.md
