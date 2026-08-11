@@ -127,9 +127,8 @@ const safeSchema = schema
     <script is:inline>
       try {
         const canAnimate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const canShowPremiumIntro = window.matchMedia("(min-width: 768px)").matches;
         const firstHomeView = window.location.pathname === "/" && !window.location.hash && !window.sessionStorage.getItem("hermes-intro-seen");
-        if (canAnimate && canShowPremiumIntro && firstHomeView) document.documentElement.classList.add("intro-pending");
+        if (canAnimate && firstHomeView) document.documentElement.classList.add("intro-pending");
       } catch {
         // Continue directly to the page when browser storage is unavailable.
       }
