@@ -288,12 +288,15 @@ const schema = [
         : `Under the assumptions entered, factoring leaves ${money.format(Math.abs(difference))} more after the entered fee and waiting-cost estimate, but this does not account for provider, recourse, reserve, credit, dispute, or non-payment terms.`;
     setOutput("summary", summary);
 
+    if (trackCompletion) trackEvent("payment_comparison_completed", { tool: "factoring_vs_direct" });
+  }
+
+  form?.addEventListener("input", () => {
     if (!started) {
       started = true;
       trackEvent("payment_comparison_started", { tool: "factoring_vs_direct" });
     }
-    if (trackCompletion) trackEvent("payment_comparison_completed", { tool: "factoring_vs_direct" });
-  }
+  });
 
   form?.addEventListener("submit", (event) => {
     event.preventDefault();
