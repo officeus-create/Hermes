@@ -37,13 +37,13 @@ export type PathDetail = {
 export const site = {
   brand: "Hermes",
   domain: "hermeslogisticsus.com",
-  location: "USA · Europe · International email coordination",
+  location: "U.S. logistics · International email coordination",
   logisticsLocation: "United States",
   internationalOfficeLocations: ["Milan", "Berlin", "Paris", "Miami", "California", "New York", "England"],
   logisticsEmail: {
     label: "Logistics Email",
-    value: "freight_301@hermeslogisticsus.com",
-    href: "mailto:freight_301@hermeslogisticsus.com",
+    value: "officeus@hermeslogisticsus.com",
+    href: "mailto:officeus@hermeslogisticsus.com",
     note: "Email the U.S. Logistics team about freight, documents, dispatch, or operating support",
   },
   publicPhones: [
@@ -136,7 +136,7 @@ export const site = {
       ],
       directContacts: [
         { label: "Logistics Sales Department", value: "+1 (262) 302-3626", href: "tel:+12623023626", note: "Single public phone for all incoming Hermes Logistics calls in the United States" },
-        { label: "Logistics Email", value: "freight_301@hermeslogisticsus.com", href: "mailto:freight_301@hermeslogisticsus.com", note: "Freight, documents, dispatch, and operating-support questions" },
+        { label: "Logistics Email", value: "officeus@hermeslogisticsus.com", href: "mailto:officeus@hermeslogisticsus.com", note: "Freight, documents, dispatch, and operating-support questions" },
       ],
     },
     {

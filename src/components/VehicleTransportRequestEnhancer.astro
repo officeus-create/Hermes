@@ -158,7 +158,7 @@
       fillList("[data-transport-routing]", review.routing.length ? review.routing : ["No routing — correct the request first."]);
       preview.textContent = transportPreview;
       email.hidden = !deliverable;
-      if (activeLead) email.href = buildLogisticsSalesMailto(activeLead, "freight_301@hermeslogisticsus.com");
+      if (activeLead) email.href = buildLogisticsSalesMailto(activeLead, "officeus@hermeslogisticsus.com");
 
       const live = form.dataset.leadMode === "live";
       sendButton.hidden = !live || !deliverable;
