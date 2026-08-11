@@ -8,7 +8,7 @@ for (const required of [
   "INDEXNOW_USE_SITEMAPS: \"1\"",
   "INDEXNOW_DRY_RUN: \"1\"",
   "node scripts/indexnow-submit.mjs",
-  "status=\"$status\"",
+  "echo \"status=$status\" >> \"$GITHUB_OUTPUT\"",
   "IndexNow acceptance does not guarantee crawling, indexing, ranking, traffic, or leads",
 ]) {
   assert.ok(workflow.includes(required), `IndexNow owner command must preserve ${required}`);
