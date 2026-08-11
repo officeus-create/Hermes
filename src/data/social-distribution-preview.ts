@@ -81,6 +81,17 @@ export const syntheticPreviewChannels: DistributionChannel[] = [
     accountLabel: "Synthetic X preview",
     note: syntheticDistributionNotice,
   },
+  {
+    alias: "synthetic-hermes-telegram-preview",
+    platform: "telegram",
+    direction: "hermes_logistics",
+    mode: "synthetic_preview",
+    readiness: "preview_only",
+    entityApproved: false,
+    ownerVerified: false,
+    accountLabel: "Synthetic Telegram group/channel preview",
+    note: `${syntheticDistributionNotice} No Telegram bot token, chat ID, channel, or sendMessage call is connected.`,
+  },
 ];
 
 export const syntheticChannelEligibility = syntheticPreviewChannels.map((channel) => ({
