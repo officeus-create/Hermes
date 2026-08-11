@@ -1,8 +1,25 @@
 # Hermes SEO Growth Sprint — 100 Tasks
 
-Status legend: `[ ]` queued, `[~]` in progress, `[x]` completed.
+> **Status as of 2026-08-11: `HISTORICAL IMPLEMENTATION BASELINE — NOT THE ACTIVE BACKLOG`.**
+>
+> This file preserves the original ordered 100-task sprint and its state at the time it was executed. Many `[~]` and `[ ]` markers below became stale as later PRs implemented new funnels, claim guards, direct carrier/customer intake, conversion events, entity governance, Cloudflare cleanup, and production measurement work. Do **not** restart tasks from this checklist merely because an old marker is open.
+>
+> Current execution sources of truth:
+> - **#346** — SEO 11 revenue-first master backlog and execution order;
+> - **#206** — authenticated Search Console / GA4 / Bing / qualified-lead measurement;
+> - **#204** — external company/entity/profile reconciliation;
+> - **#320** — remaining media/asset provenance only;
+> - **#280 / #319 / #321 / #324** — trigger-based legal/payment/international/advertising gates.
+>
+> Historical remaining-task mapping:
+> - original tasks **71–84**: implementation is substantially superseded by later commercial/intake/evidence work; remaining permissioned proof, authorship/reviewer evidence, and conversion optimization belong in #346;
+> - task **85** and **96–100**: measurement/editorial prioritization belongs in #206, then #346 after authenticated evidence;
+> - tasks **86–95**: keep only as performance/mobile review candidates. Current CI already enforces performance budgets and later code added LCP priority/loading work; make further CSS/JS/image changes only from current measurements and visual regression evidence;
+> - do not use this file to justify bulk city/state/equipment page creation. New-page decisions follow #206 evidence and #346's controlled-scale gate.
 
-The sprint is ordered from low-risk technical hygiene to higher-complexity content, authority, data, and automation work. Public claims must remain evidence-backed. Production merge and deployment remain separate approval steps.
+Status legend below is the **historical** legend: `[ ]` queued, `[~]` in progress, `[x]` completed at the time this sprint was maintained.
+
+The sprint was ordered from low-risk technical hygiene to higher-complexity content, authority, data, and automation work. Public claims must remain evidence-backed. Production merge and deployment are always separate from evidence collection and historical task status.
 
 ## Phase 1 — Crawlability, indexability, and metadata QA
 
@@ -137,6 +154,6 @@ The fourth batch implemented two approved commercial logistics pages with visibl
 
 The fifth batch connected localized pages to stable site entities, localized partnership labels, added natural-language CTA and English-leakage regression checks, and made localized hero image priority explicit.
 
-The release checklist now also enforces claim governance, indexation policy, crawlable inbound links, click depth, commercial-to-intake architecture, privacy-safe analytics, performance budgets, and the full automated audit suite.
+The release checklist also enforces claim governance, indexation policy, crawlable inbound links, click depth, commercial-to-intake architecture, privacy-safe analytics, performance budgets, and the full automated audit suite.
 
-GitHub Actions `Website checks` run #191 passed completely after the multilingual fixes. No production merge or deployment has been performed.
+Historical note: at the time this sprint file was last actively maintained, GitHub Actions `Website checks` run #191 had passed and the associated implementation batch had not yet been merged/deployed. That statement is retained only as historical context and must not be read as the current production state.
