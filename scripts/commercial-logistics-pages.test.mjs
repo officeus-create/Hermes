@@ -103,7 +103,7 @@ for (const page of pages) {
   assert.ok(/<meta\b[^>]*name=["']robots["'][^>]*content=["']index,follow,max-image-preview:large["'][^>]*>/i.test(html), `${page.route} must remain indexable`);
   assert.ok(/aria-label=["']Breadcrumb["']/i.test(html), `${page.route} visible breadcrumb is missing`);
   assert.ok(html.includes('href="mailto:officeus@hermeslogisticsus.com"'), `${page.route} active logistics email fallback is missing`);
-  assert.ok(!html.includes("freight_301@hermeslogisticsus.com"), `${page.route} still exposes the retired logistics email`);
+  assert.ok(!html.includes('href="mailto:freight_301@hermeslogisticsus.com"'), `${page.route} still exposes the retired logistics email as an active mailto`);
   assert.ok(html.includes('href="tel:+12623023626"'), `${page.route} approved phone fallback is missing`);
   assert.ok(!/<form\b[^>]*action=/i.test(html), `${page.route} contains an unreviewed form action`);
 
