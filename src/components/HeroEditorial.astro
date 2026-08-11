@@ -1,6 +1,22 @@
 ---
 import { ArrowDown, ArrowUpRight } from "@lucide/astro";
 import { site } from "../data/site";
+
+const commercialHero = {
+  eyebrow: "U.S. vehicle logistics · Dispatch · Dealer transport",
+  title: "Move vehicles with less uncertainty.",
+  body: "Dispatch support, dealer transport, and coordinated vehicle logistics for carriers, fleets, auction buyers, and shippers across the United States.",
+  primaryCta: {
+    label: "Request vehicle transport",
+    href: "/logistics/request-vehicle-transport/",
+    id: "transport_request",
+  },
+  secondaryCta: {
+    label: "Get dispatch support",
+    href: "/logistics/start-car-hauling-dispatch/",
+    id: "dispatch_support",
+  },
+};
 ---
 
 <section class="hero" id="top" data-motion-hero>
@@ -9,27 +25,48 @@ import { site } from "../data/site";
   </div>
   <div class="hero-shade"></div>
   <div class="hero-content shell">
-    <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
-    <h1 class="hero-title" aria-label={site.hero.title}>
-      <span class="hero-title-office" aria-hidden="true">
-        Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.
-      </span>
-      <em class="hero-title-script" aria-hidden="true">One way forward.</em>
+    <p class="eyebrow hero-eyebrow">{commercialHero.eyebrow}</p>
+    <h1 class="hero-title" aria-label={commercialHero.title}>
+      <span class="hero-title-office" aria-hidden="true">Move vehicles.</span>
+      <em class="hero-title-script" aria-hidden="true">With less uncertainty.</em>
     </h1>
-    <p class="hero-copy">{site.hero.body}</p>
+    <p class="hero-copy">{commercialHero.body}</p>
     <div class="hero-actions">
-      <a class="button button-primary" href={site.hero.primaryCta.href}>
-        {site.hero.primaryCta.label}
-        <ArrowDown size={18} aria-hidden="true" />
+      <a
+        class="button button-primary"
+        href={commercialHero.primaryCta.href}
+        data-home-hero-cta={commercialHero.primaryCta.id}
+        data-destination-path={commercialHero.primaryCta.href}
+      >
+        {commercialHero.primaryCta.label}
+        <ArrowUpRight size={18} aria-hidden="true" />
       </a>
-      <a class="button button-ghost" href={site.hero.secondaryCta.href}>
-        {site.hero.secondaryCta.label}
+      <a
+        class="button button-ghost"
+        href={commercialHero.secondaryCta.href}
+        data-home-hero-cta={commercialHero.secondaryCta.id}
+        data-destination-path={commercialHero.secondaryCta.href}
+      >
+        {commercialHero.secondaryCta.label}
         <ArrowUpRight size={18} aria-hidden="true" />
       </a>
     </div>
   </div>
-  <a class="hero-scroll-cue" href="#paths" aria-label="Scroll to choose a Hermes direction">
-    <span>Choose a direction</span>
+  <a class="hero-scroll-cue" href="#paths" aria-label="Explore all Hermes directions">
+    <span>Explore all directions</span>
     <ArrowDown size={18} aria-hidden="true" />
   </a>
 </section>
+
+<script>
+  import { trackEvent } from "../lib/analytics.ts";
+
+  document.querySelectorAll<HTMLAnchorElement>("[data-home-hero-cta]").forEach((link) => {
+    link.addEventListener("click", () => {
+      trackEvent("homepage_logistics_hero_click", {
+        cta: link.dataset.homeHeroCta || "unknown",
+        destination_path: link.dataset.destinationPath || link.getAttribute("href") || "unknown",
+      });
+    });
+  });
+</script>
