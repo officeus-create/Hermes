@@ -15,7 +15,7 @@ import WhyItMatters from "../components/WhyItMatters.astro";
 import { publicPaths } from "../data/public-paths";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
-import homepagePerformanceCss from "../styles/homepage-performance.css?raw";
+import "../styles/homepage-performance.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
@@ -72,9 +72,6 @@ const websiteSchema = {
   schema={[organizationSchema, websiteSchema]}
   alternates={languageAlternates}
 >
-  <Fragment slot="head">
-    <style is:inline set:html={homepagePerformanceCss}></style>
-  </Fragment>
   <SiteHeader />
   <main id="main-content">
     <HeroEditorial />

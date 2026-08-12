@@ -11,7 +11,6 @@ assert.ok(html.includes("data-product-feature-section"), "homepage must identify
 assert.ok(html.includes("IntersectionObserver"), "homepage must load deferred product styles before the section reaches the viewport");
 assert.ok(html.includes("1600px 0px"), "homepage deferred CSS should keep a generous prefetch margin");
 assert.ok(html.includes("<noscript>"), "homepage must retain a no-JavaScript stylesheet fallback");
-assert.ok(head.includes("Homepage-only performance/accessibility refinements from the 2026-08-11 PSI baseline."), "homepage performance CSS must be inlined into the document head");
 
 assert.equal(/\/_astro\/(?:load|product)\.[^"']+\.css/i.test(head), false, "load/product feature CSS must not remain render-blocking in the homepage head");
 
