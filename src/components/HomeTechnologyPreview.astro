@@ -1,5 +1,7 @@
 ---
 import { ArrowRight, Bot, CalendarDays, Network, Truck } from "@lucide/astro";
+import technologyCssUrl from "../styles/features/technology.css?url";
+import "../styles/features/home-connect-bridge.css";
 
 const systems = [
   { title: "AI Assistants", body: "Company knowledge, Telegram workflows, structured tasks, and human-controlled actions.", icon: Bot },
@@ -12,11 +14,16 @@ const systems = [
     href: "/services/hermes-connect/",
   },
 ];
-import "../styles/features/technology.css";
-import "../styles/features/home-connect-bridge.css";
 ---
 
-<section class="section home-technology-preview" aria-labelledby="home-technology-title">
+<template data-home-technology-styles>
+  <link rel="stylesheet" href={technologyCssUrl} />
+</template>
+<noscript>
+  <link rel="stylesheet" href={technologyCssUrl} />
+</noscript>
+
+<section class="section home-technology-preview" aria-labelledby="home-technology-title" data-home-technology-section>
   <div class="shell">
     <div class="section-heading split-heading" data-reveal>
       <div><p class="eyebrow">Digital systems we build</p><h2 id="home-technology-title">Start with one workflow. Build the connected system around it.</h2></div>
@@ -38,3 +45,27 @@ import "../styles/features/home-connect-bridge.css";
     <a class="home-technology-link" href="/paths/technology/#capabilities">Explore IT & Development solutions <ArrowRight size={18} aria-hidden="true" /></a>
   </div>
 </section>
+
+<script>
+  const section = document.querySelector<HTMLElement>("[data-home-technology-section]");
+  const template = document.querySelector<HTMLTemplateElement>("[data-home-technology-styles]");
+  let loaded = false;
+
+  const loadHomeTechnologyStyles = () => {
+    if (loaded || !template) return;
+    loaded = true;
+    document.head.append(template.content.cloneNode(true));
+    template.remove();
+  };
+
+  if (!section || !template || !("IntersectionObserver" in window)) {
+    loadHomeTechnologyStyles();
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      loadHomeTechnologyStyles();
+      observer.disconnect();
+    }, { rootMargin: "1600px 0px" });
+    observer.observe(section);
+  }
+</script>
