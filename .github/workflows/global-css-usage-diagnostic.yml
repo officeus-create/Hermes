@@ -1,0 +1,99 @@
+name: Global CSS usage diagnostic
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/global-css-usage-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  measure-usage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan global CSS class usage
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          from collections import defaultdict
+
+          css_path = Path('src/styles/global.css')
+          source_roots = [Path('src'), Path('scripts'), Path('e2e')]
+          source_exts = {'.astro', '.ts', '.tsx', '.js', '.mjs', '.cjs', '.html', '.md', '.json'}
+
+          sources = {}
+          for root in source_roots:
+              if not root.exists():
+                  continue
+              for path in root.rglob('*'):
+                  if not path.is_file() or path.suffix not in source_exts:
+                      continue
+                  try:
+                      sources[str(path)] = path.read_text(errors='ignore')
+                  except Exception:
+                      pass
+
+          class_re = re.compile(r'\.([A-Za-z_][A-Za-z0-9_-]*)')
+          usage_cache = {}
+
+          def owners(token):
+              if token not in usage_cache:
+                  needle = token
+                  usage_cache[token] = sorted(path for path, text in sources.items() if needle in text)
+              return usage_cache[token]
+
+          dead = []
+          narrow = []
+          total_class_rule_bytes = 0
+
+          for lineno, raw in enumerate(css_path.read_text().splitlines(), start=1):
+              line = raw.strip()
+              if not line or line.startswith('/*') or line.startswith('@') or '{' not in line:
+                  continue
+              classes = sorted(set(class_re.findall(line.split('{', 1)[0])))
+              if not classes:
+                  continue
+              size = len(raw.encode()) + 1
+              total_class_rule_bytes += size
+              owner_union = sorted(set().union(*(set(owners(token)) for token in classes)))
+              if not owner_union:
+                  dead.append((size, lineno, classes, line[:180]))
+              elif len(owner_union) == 1:
+                  narrow.append((size, lineno, classes, owner_union[0], line[:180]))
+
+          dead.sort(reverse=True)
+          narrow.sort(reverse=True)
+          dead_bytes = sum(row[0] for row in dead)
+          narrow_bytes = sum(row[0] for row in narrow)
+
+          print(f'TOTAL_GLOBAL_CLASS_RULE_BYTES={total_class_rule_bytes}')
+          print(f'NO_SOURCE_USAGE_RULE_BYTES={dead_bytes}')
+          print(f'NO_SOURCE_USAGE_RULE_COUNT={len(dead)}')
+          print(f'SINGLE_OWNER_RULE_BYTES={narrow_bytes}')
+          print(f'SINGLE_OWNER_RULE_COUNT={len(narrow)}')
+
+          print('\nTOP_NO_SOURCE_USAGE_RULES')
+          for size, lineno, classes, preview in dead[:60]:
+              print(f'{size}B line={lineno} classes={"|".join(classes)} :: {preview}')
+
+          by_owner = defaultdict(lambda: [0, 0])
+          for size, _, _, owner, _ in narrow:
+              by_owner[owner][0] += size
+              by_owner[owner][1] += 1
+
+          print('\nTOP_SINGLE_OWNER_FILES')
+          for owner, (size, count) in sorted(by_owner.items(), key=lambda item: item[1][0], reverse=True)[:40]:
+              print(f'{size}B rules={count} owner={owner}')
+
+          print('\nTOP_SINGLE_OWNER_RULES')
+          for size, lineno, classes, owner, preview in narrow[:60]:
+              print(f'{size}B line={lineno} owner={owner} classes={"|".join(classes)} :: {preview}')
+
+          print('\nBoundary: text-source usage is a conservative diagnostic, not deletion proof. Dynamic/runtime class construction, content outside scanned roots, inheritance, responsive coupling and shared semantic classes must be checked before any production removal/extraction.')
+          PY
