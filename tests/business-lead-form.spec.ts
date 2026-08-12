@@ -1,10 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-test("business growth landing page shows the focused paid-search lead form", async ({ page }) => {
+test("business growth landing page shows the growth roadmap and focused lead form", async ({ page }) => {
   await page.goto("/business-growth/?utm_source=google&utm_medium=cpc&utm_campaign=test&utm_term=seo&gclid=test-gclid");
 
-  await expect(page.getByRole("heading", { name: "Launch the system your business needs to get clients." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Start with the business problem, budget, and next useful step." })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+  await expect(page.getByRole("heading", { name: /Do the smallest useful thing first/i })).toBeVisible();
+  await expect(page.getByText("3 months", { exact: true })).toBeVisible();
+  await expect(page.getByText("6 months", { exact: true })).toBeVisible();
+  await expect(page.getByText("9 months", { exact: true })).toBeVisible();
+  await expect(page.getByText("12 months", { exact: true })).toBeVisible();
+  await expect(page.getByText("Budget is a planning constraint, not a target to spend.", { exact: true })).toBeVisible();
+  await expect(page.getByText(/barter component may be discussed/i)).toBeAttached();
 
   const form = page.locator("[data-business-lead-form]");
   await expect(form).toBeVisible();
@@ -13,6 +20,8 @@ test("business growth landing page shows the focused paid-search lead form", asy
   await expect(form.locator('input[name="whatsapp"]')).toBeVisible();
   await expect(form.locator('input[name="telegram"]')).toBeVisible();
   await expect(form.locator('input[name="website_or_social"]')).toBeVisible();
+  await expect(form.locator('select[name="planning_budget"]')).toHaveValue("Not sure yet");
+  await expect(form.locator('select[name="planning_horizon"]')).toHaveValue("Not sure yet");
   await expect(form.getByText("Website development", { exact: true })).toBeVisible();
   await expect(form.getByText("Web applications", { exact: true })).toBeVisible();
   await expect(form.getByText("CRM & business automation", { exact: true })).toBeVisible();
@@ -24,7 +33,7 @@ test("business growth landing page shows the focused paid-search lead form", asy
   await expect(form.locator('input[name="interest"]')).toHaveValue("ProgressoPro");
 });
 
-test("Russian paid-search landing localizes the brief and preselects Russian", async ({ page }) => {
+test("Russian paid-search landing localizes the brief and planning inputs", async ({ page }) => {
   await page.goto("/ru/business-growth/?utm_source=google&utm_campaign=warsaw_ru_site");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
@@ -35,11 +44,13 @@ test("Russian paid-search landing localizes the brief and preselects Russian", a
   await expect(form.getByText("Разработка сайта", { exact: true })).toBeVisible();
   await expect(form.getByText("CRM и автоматизация бизнеса", { exact: true })).toBeVisible();
   await expect(form.getByText("Консалтинг по маркетингу / продажам", { exact: true })).toBeVisible();
+  await expect(form.getByText("Планируемый бюджет на следующий этап", { exact: true })).toBeVisible();
+  await expect(form.getByText("Горизонт плана", { exact: true })).toBeVisible();
   await expect(form.locator('select[name="preferred_language"]')).toHaveValue("Russian");
   await expect(form.getByRole("button", { name: /Проверить заявку|Отправить заявку/ })).toBeVisible();
 });
 
-test("Ukrainian paid-search landing localizes the brief and preselects Ukrainian", async ({ page }) => {
+test("Ukrainian paid-search landing localizes the brief and planning inputs", async ({ page }) => {
   await page.goto("/ua/business-growth/?utm_source=google&utm_campaign=warsaw_ua_site");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
@@ -50,6 +61,8 @@ test("Ukrainian paid-search landing localizes the brief and preselects Ukrainian
   await expect(form.getByText("Розробка сайту", { exact: true })).toBeVisible();
   await expect(form.getByText("CRM та автоматизація бізнесу", { exact: true })).toBeVisible();
   await expect(form.getByText("Консалтинг з маркетингу / продажів", { exact: true })).toBeVisible();
+  await expect(form.getByText("Плановий бюджет на наступний етап", { exact: true })).toBeVisible();
+  await expect(form.getByText("Горизонт плану", { exact: true })).toBeVisible();
   await expect(form.locator('select[name="preferred_language"]')).toHaveValue("Ukrainian");
   await expect(form.getByRole("button", { name: /Перевірити заявку|Надіслати заявку/ })).toBeVisible();
 });
@@ -73,6 +86,8 @@ test("business lead form requires a messenger and at least one service", async (
   await form.locator('input[name="company"]').fill("Example Company");
   await form.locator('input[name="city_country"]').fill("Kyiv, Ukraine");
   await form.locator('input[name="website_or_social"]').fill("https://example.com");
+  await form.locator('select[name="planning_budget"]').selectOption("$3,000–$10,000");
+  await form.locator('select[name="planning_horizon"]').selectOption("6 months");
   await form.locator('select[name="preferred_language"]').selectOption("Ukrainian");
   await form.locator('input[name="preferred_contact_time"]').fill("10:00-12:00 Kyiv time");
   await form.locator('textarea[name="message"]').fill("We need more qualified leads for our business.");
