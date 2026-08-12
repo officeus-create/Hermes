@@ -3,7 +3,7 @@
   "reviewed_at": "2026-08-12",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "862872d09d6c08a94f256b961700f4bc834833d7",
+  "main_commit_at_review": "6b5eb2c728d22ea9e82e7feecad105ed005ec268",
   "freshness": {
     "state_class": "current_main_snapshot",
     "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, or AI execution ownership; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
@@ -100,11 +100,11 @@
     },
     "mobile_performance": {
       "issue": 354,
-      "status": "responsive_hero_merged_production_measurement_pending",
+      "status": "responsive_hero_measured_target_not_met",
       "known_result": "Removing the premium mobile intro was tested and reverted; do not repeat that experiment without new evidence.",
       "landed_change": "PR #432 merged: Astro Picture-based responsive AVIF/WebP/JPEG hero delivery with 640/960/1280/1600/1920 widths, preserved eager/high-priority LCP discovery, and no duplicate legacy hero preload.",
-      "verification": "Website checks #1365 passed on the final PR head.",
-      "next_required_evidence": "Run repeated comparable production/mobile Lighthouse measurements and compare median LCP/FCP/Speed Index/LCP phase breakdown against the recorded baseline before claiming improvement."
+      "verification": "Website checks #1365 passed on the final PR head. Production Lighthouse run 31590353392 completed 3 mobile + 3 desktop Lighthouse 13.4.1 passes plus the deterministic Agentic Browsing pass on the approved production build.",
+      "next_required_evidence": "Current production lab median is mobile Performance 94, Accessibility 100, Best Practices 100, SEO 100, FCP 2.00s and LCP 2.81s. The <=2.5s LCP target is not yet met. Isolate the remaining render-delay/critical-path cause in one bounded experiment and rerun the comparable median before claiming another improvement."
     },
     "production_compliance": {
       "issue": 321,
@@ -128,7 +128,8 @@
       "boundary": "Do not infer safe permissions or public editor access. Review effective permissions in an authenticated owner/admin sharing UI before changing them."
     },
     "ai_knowledge_and_inbox_triage": {
-      "status": "evidence_packet_ready_second_pass_response_pending",
+      "issue": 435,
+      "status": "evidence_packet_ready_second_pass_issue_open",
       "evidence_date": "2026-08-11",
       "verified_packet_facts": [
         "174 total quarantined system-noise rows versus 163 in the last-300-row AI Brief window is reconciled by 11 older quarantined rows outside that window",
@@ -139,7 +140,7 @@
         "AI Inbox Triage behavior 7/7 passed",
         "six Apps Script files passed preview/read-only source validation"
       ],
-      "remaining_gate": "A returned Claude second-pass decision was not found in the reviewed Drive results. Do not recreate the evidence package; route the existing packet for second-pass review if that independent sign-off is still required."
+      "remaining_gate": "Issue #435 tracks one bounded Claude independent second-pass decision on the existing evidence packet. Do not recreate the packet; record PASS, PARTIAL_PASS, or FAIL with only explicit unresolved evidence requests."
     }
   },
   "search_platform_state": {
