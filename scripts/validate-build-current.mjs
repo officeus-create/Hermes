@@ -5,12 +5,9 @@ const legacyValidatorUrl = new URL("./validate-build.mjs", import.meta.url);
 const temporaryValidatorUrl = new URL("./.validate-build-current.generated.mjs", import.meta.url);
 const retiredEmail = "freight_301@hermeslogisticsus.com";
 const activeEmail = "officeus@hermeslogisticsus.com";
-const legacyHomepageHero = "Four directions. One way forward.";
-const currentHomepageHero = "Start with what you need. Go straight to the right team.";
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
 const retiredExpectationCount = legacySource.split(retiredEmail).length - 1;
-const legacyHomepageHeroExpectationCount = legacySource.split(legacyHomepageHero).length - 1;
 
 assert.equal(
   retiredExpectationCount,
@@ -18,15 +15,7 @@ assert.equal(
   `Expected exactly two historical retired-email assertions in validate-build.mjs, found ${retiredExpectationCount}. Update the compatibility runner intentionally if the legacy validator changes.`,
 );
 
-assert.equal(
-  legacyHomepageHeroExpectationCount,
-  1,
-  `Expected exactly one historical homepage-hero assertion in validate-build.mjs, found ${legacyHomepageHeroExpectationCount}. Update the compatibility runner intentionally if the legacy validator changes.`,
-);
-
-const currentSource = legacySource
-  .replaceAll(retiredEmail, activeEmail)
-  .replace(legacyHomepageHero, currentHomepageHero);
+const currentSource = legacySource.replaceAll(retiredEmail, activeEmail);
 await writeFile(temporaryValidatorUrl, currentSource, "utf8");
 
 try {
