@@ -262,6 +262,10 @@
 @media (max-width: 900px) {
 .technology-build-pulse-layout { grid-template-columns: 1fr; }
 .candidate-pipeline-feature, .technology-industries { grid-template-columns: 1fr; }
+.solution-mockup-grid { grid-template-columns: 1fr; }
+.solution-mockup-carrier { grid-row: auto; }
+.solution-mockup-dashboard { grid-column: auto; }
+.executive-dashboard-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 .technology-solution-grid { grid-template-columns: 1fr 1fr; }
 .technology-solution-grid article:first-child { grid-column: span 2; }
 .technology-delivery-process ol { grid-template-columns: 1fr 1fr; }
@@ -274,6 +278,11 @@
 .technology-package-list > article { grid-template-columns: .75fr 1.25fr; }
 }
 @media (max-width: 620px) {
+.candidate-pipeline-feature { gap: 1.5rem; }
+.candidate-pipeline-visual { grid-template-columns: 1fr; }
+.candidate-pipeline-visual > svg { justify-self: center; transform: rotate(90deg); }
+.candidate-pipeline-visual > div { min-height: 120px; }
+.candidate-pipeline-visual > div strong { margin-top: 1.4rem; }
 .technology-build-pulse { padding: 3.5rem 0; }
 .technology-build-track { padding: .85rem; }
 .technology-build-track-head { align-items: flex-start; }
@@ -298,6 +307,17 @@
 .technology-channel-map { grid-template-columns: 1fr; }
 .technology-channel-map > p { grid-column: auto; }
 .technology-package-list > article { grid-template-columns: 1fr; min-height: 0; }
+}
+@media (max-width: 560px) {
+.solution-mockup { min-height: 0; }
+.solution-mockup-heading { flex-wrap: wrap; }
+.solution-mockup-heading strong { width: 100%; margin: .2rem 0 0; }
+.route-risk-map { grid-template-columns: 1fr; }
+.route-risk-map i { width: 2px; height: 24px; margin-left: 1rem; }
+.recruiting-pipeline { grid-template-columns: 1fr; gap: .8rem; }
+.recruiting-pipeline li { grid-template-columns: 36px 1fr; }
+.recruiting-pipeline li::after { top: 1rem; bottom: -.8rem; left: .7rem; width: 2px; height: auto; }
+.executive-dashboard-grid { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {
 .technology-build-status > span, .technology-build-track li[data-state="active"] > i { animation: none !important; }

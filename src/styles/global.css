@@ -565,22 +565,10 @@ h3 { font-size: 1.75rem; }
 .home-technology-link { display: inline-flex; gap: .5rem; align-items: center; margin-top: 1.5rem; color: #173f94; font: 750 .75rem/1.3 var(--font-mono); }
 
 @media (max-width: 900px) {
-  .solution-mockup-grid { grid-template-columns: 1fr; }
-  .solution-mockup-carrier { grid-row: auto; }
-  .solution-mockup-dashboard { grid-column: auto; }
-  .executive-dashboard-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .home-technology-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width: 560px) {
-  .solution-mockup { min-height: 0; }
-  .solution-mockup-heading { flex-wrap: wrap; }
-  .solution-mockup-heading strong { width: 100%; margin: .2rem 0 0; }
-  .route-risk-map { grid-template-columns: 1fr; }
-  .route-risk-map i { width: 2px; height: 24px; margin-left: 1rem; }
-  .recruiting-pipeline { grid-template-columns: 1fr; gap: .8rem; }
-  .recruiting-pipeline li { grid-template-columns: 36px 1fr; }
-  .recruiting-pipeline li::after { top: 1rem; bottom: -.8rem; left: .7rem; width: 2px; height: auto; }
-  .executive-dashboard-grid, .home-technology-grid { grid-template-columns: 1fr; }
+  .home-technology-grid { grid-template-columns: 1fr; }
   .home-technology-grid article { min-height: 210px; }
 }
 /* End IT catalog expansion */
@@ -1322,11 +1310,6 @@ h3 { font-size: 1.75rem; }
   
   
   
-  .candidate-pipeline-feature { gap: 1.5rem; }
-  .candidate-pipeline-visual { grid-template-columns: 1fr; }
-  .candidate-pipeline-visual > svg { justify-self: center; transform: rotate(90deg); }
-  .candidate-pipeline-visual > div { min-height: 120px; }
-  .candidate-pipeline-visual > div strong { margin-top: 1.4rem; }
   
   
   
