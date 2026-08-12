@@ -1,0 +1,92 @@
+---
+const levels = [
+  {
+    label: "Foundation",
+    title: "I am starting from the beginning",
+    body: "Learn the vocabulary, roles, workflow, responsibilities, basic decisions, and the mistakes that must be avoided before moving into harder practice.",
+  },
+  {
+    label: "Working level",
+    title: "I understand the basics and need practice",
+    body: "Use realistic scenarios, calls, briefs, documents, calculations, or reviews to turn theory into repeatable working habits.",
+  },
+  {
+    label: "Advanced",
+    title: "I already work in the field",
+    body: "Focus on negotiation, prioritization, quality control, handoffs, KPI interpretation, edge cases, leadership, and correcting weak parts of an existing process.",
+  },
+];
+
+const loop = [
+  { step: "1", title: "Explanation", body: "Understand the job, the reason behind the process, the decision boundary, and what a good result looks like." },
+  { step: "2", title: "Example", body: "Review a concrete case, conversation, document, calculation, campaign, route, or workflow and see why each choice was made." },
+  { step: "3", title: "Task", body: "Do the work: answer, calculate, prepare, analyze, call, write, review, or build the approved exercise." },
+  { step: "4", title: "Feedback", body: "A reviewer identifies what was correct, what needs correction, and what the next practice target should be when the program format includes review." },
+  { step: "5", title: "Repeat", body: "Repeat the skill with a new variation until the result is reliable enough for the next stage rather than moving forward only because time passed." },
+];
+---
+
+<section class="section academy-learning-method" aria-labelledby="academy-learning-method-title">
+  <div class="shell">
+    <div class="academy-learning-heading">
+      <div>
+        <p class="eyebrow">Choose the right level</p>
+        <h2 id="academy-learning-method-title">The goal is usable ability, not just completed lessons.</h2>
+      </div>
+      <p>Beginners, people with some knowledge, and working specialists should not receive the same exercises. Placement and progression depend on demonstrated readiness, the approved program format, and human review.</p>
+    </div>
+
+    <div class="academy-level-grid">
+      {levels.map((level) => (
+        <article>
+          <span>{level.label}</span>
+          <h3>{level.title}</h3>
+          <p>{level.body}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="academy-loop-heading">
+      <p class="eyebrow">Practice loop</p>
+      <h2>Explanation → Example → Task → Feedback → Repeat</h2>
+      <p>A certificate or finished module is not treated as proof that a person can perform the work. The useful condition is whether the learner can explain the decision, do the task, correct mistakes, and repeat the result in a new situation.</p>
+    </div>
+
+    <ol class="academy-loop-grid">
+      {loop.map((item) => (
+        <li>
+          <span>{item.step}</span>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="academy-condition-note">
+      <strong>Progression condition</strong>
+      <p>Completion, certification, employment, income, promotion, access to live operations, and a fixed timeline are not automatic. A learner advances only when the approved program rules and human review support the next step.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .academy-learning-method { background: #f5f7ff; }
+  .academy-learning-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: end; margin-bottom: 2rem; }
+  .academy-learning-heading h2, .academy-loop-heading h2 { margin: .35rem 0 0; max-width: 15ch; font-size: clamp(2rem, 4vw, 3.8rem); line-height: 1.02; letter-spacing: -.035em; }
+  .academy-learning-heading > p, .academy-loop-heading > p { color: #5f6d8e; line-height: 1.7; }
+  .academy-level-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: clamp(3rem, 7vw, 6rem); }
+  .academy-level-grid article, .academy-loop-grid li, .academy-condition-note { border: 1px solid #dce3f3; border-radius: 12px; background: #fff; padding: 1.3rem; }
+  .academy-level-grid span, .academy-loop-grid > li > span { display: inline-block; margin-bottom: .8rem; color: #5d47cf; font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .academy-level-grid h3, .academy-loop-grid h3 { margin: 0 0 .6rem; font-size: 1.08rem; }
+  .academy-level-grid p, .academy-loop-grid p, .academy-condition-note p { margin: 0; color: #64718f; line-height: 1.62; }
+  .academy-loop-heading { margin-bottom: 1.5rem; }
+  .academy-loop-heading h2 { max-width: 20ch; }
+  .academy-loop-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .8rem; padding: 0; margin: 0 0 1rem; list-style: none; }
+  .academy-condition-note { display: grid; grid-template-columns: minmax(150px, .3fr) 1fr; gap: 1rem; align-items: start; }
+  @media (max-width: 960px) {
+    .academy-loop-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .academy-learning-heading, .academy-level-grid, .academy-loop-grid, .academy-condition-note { grid-template-columns: 1fr; }
+  }
+</style>
