@@ -82,6 +82,10 @@ function parseClasses(html) {
   return classes;
 }
 
+function parseCssClasses(css) {
+  return new Set([...css.matchAll(/\.([A-Za-z_][A-Za-z0-9_-]*)/g)].map((match) => match[1]));
+}
+
 function containsClass(css, className) {
   const escaped = className.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`\\.${escaped}(?![A-Za-z0-9_-])`).test(css);
@@ -106,6 +110,7 @@ for (const absolutePath of cssFiles) {
 
 const allCss = [...cssAssets.values()].map((asset) => asset.content).join("\n");
 const routeRows = [];
+const routeClasses = new Map();
 const errors = [];
 
 for (const htmlFile of htmlFiles) {
@@ -128,6 +133,7 @@ for (const htmlFile of htmlFiles) {
 
   const loadedCss = loadedCssParts.join("\n");
   const classes = parseClasses(html);
+  routeClasses.set(route, classes);
   for (const className of classes) {
     if (!featurePrefixes.some((prefix) => className.startsWith(prefix))) continue;
     if (!containsClass(allCss, className)) continue;
@@ -157,6 +163,38 @@ for (const route of representativeRoutes) {
   if (!routeRows.some((row) => row.route === route)) errors.push(`Representative route is missing from the build: ${route}`);
 }
 
+const globalCssSource = await readFile(join(root, "src/styles/global.css"), "utf8");
+const technologyCssSource = await readFile(join(root, "src/styles/features/technology.css"), "utf8");
+const technologyGlobalStart = globalCssSource.indexOf(".detail-page-technology .detail-hero");
+const technologyGlobalEnd = globalCssSource.indexOf("/* Homepage IT preview */", technologyGlobalStart);
+let technologyGlobalOwnership = null;
+
+if (technologyGlobalStart === -1 || technologyGlobalEnd === -1 || technologyGlobalEnd <= technologyGlobalStart) {
+  errors.push("Technology ownership diagnostic markers are missing or out of order in src/styles/global.css");
+} else {
+  const block = globalCssSource.slice(technologyGlobalStart, technologyGlobalEnd);
+  const blockClasses = parseCssClasses(block);
+  const homepageClasses = routeClasses.get("/") ?? new Set();
+  const technologyRoute = routeClasses.has("/paths/technology/")
+    ? "/paths/technology/"
+    : [...routeClasses.keys()].find((route) => route.includes("technology")) ?? null;
+  const technologyClasses = technologyRoute ? routeClasses.get(technologyRoute) ?? new Set() : new Set();
+  const homepageMatches = [...blockClasses].filter((className) => homepageClasses.has(className)).sort();
+  const technologyMatches = [...blockClasses].filter((className) => technologyClasses.has(className)).sort();
+
+  technologyGlobalOwnership = {
+    sourceBytes: Buffer.byteLength(block),
+    selectorClassCount: blockClasses.size,
+    homepageMatchedClassCount: homepageMatches.length,
+    homepageMatchedClasses: homepageMatches,
+    technologyRoute,
+    technologyRouteMatchedClassCount: technologyMatches.length,
+    technologyRouteMatchedClasses: technologyMatches,
+    technologyOwnerAlreadyContainsCandidateResponsiveRule: containsClass(technologyCssSource, "candidate-pipeline-feature"),
+    sampleCandidateClasses: [...blockClasses].slice(0, 30),
+  };
+}
+
 const report = {
   htmlRoutes: routeRows.length,
   indexableRoutes: indexableRows.length,
@@ -172,6 +210,7 @@ const report = {
   representativeRoutes: Object.fromEntries(
     representativeRoutes.map((route) => [route, routeRows.find((row) => row.route === route)?.cssBytes ?? null]),
   ),
+  technologyGlobalOwnership,
 };
 
 console.log(`Route CSS report:\n${JSON.stringify(report, null, 2)}`);
