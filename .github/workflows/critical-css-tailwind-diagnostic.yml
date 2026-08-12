@@ -1,0 +1,59 @@
+name: Critical CSS Tailwind diagnostic
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/critical-css-tailwind-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compare-css-builds:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Baseline build and CSS report
+        run: |
+          npm run build >/tmp/hermes-baseline-build.log
+          echo '=== BASELINE ROUTE CSS ==='
+          node scripts/route-css-coverage.test.mjs | tee /tmp/hermes-baseline-css.log
+
+      - name: Build preflight-only Tailwind variant
+        run: |
+          cp src/styles/global.css /tmp/hermes-global.css
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('src/styles/global.css')
+          text = path.read_text()
+          old = '@import "tailwindcss";'
+          new = '@layer base;\n@import "tailwindcss/preflight.css" layer(base);'
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'expected exactly one {old!r}, found {count}')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          rm -rf dist .astro
+          npm run build >/tmp/hermes-variant-build.log
+          echo '=== PREFLIGHT-ONLY ROUTE CSS ==='
+          node scripts/route-css-coverage.test.mjs | tee /tmp/hermes-variant-css.log
+          cp /tmp/hermes-global.css src/styles/global.css
+
+      - name: Report experiment boundary
+        if: always()
+        run: |
+          echo 'This job is diagnostic only.'
+          echo 'It does not change production CSS or prove a Lighthouse improvement.'
+          echo 'If the variant materially reduces shared/homepage CSS and builds successfully, implement the source change separately and require full browser CI plus the existing 3x mobile / 3x desktop production Lighthouse keep/revert gate.'
