@@ -23,8 +23,8 @@ test("homepage hero uses responsive modern assets without the obsolete JPEG prel
   await expect(image).toHaveAttribute("loading", "eager");
   await expect(image).toHaveAttribute("fetchpriority", "high");
   await expect(image).toHaveAttribute("sizes", "100vw");
-  await expect(image).toHaveAttribute("width", "1920");
-  await expect(image).toHaveAttribute("height", "1080");
+  await expect(image).toHaveAttribute("width", "2200");
+  await expect(image).toHaveAttribute("height", "1238");
 
   await expect(page.locator('link[rel="preload"][href="/images/hermes-ecosystem-hero.jpg"]')).toHaveCount(0);
 });
