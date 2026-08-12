@@ -1,72 +1,63 @@
 ---
-import { ArrowRight, BriefcaseBusiness, GraduationCap, Megaphone, MonitorCog, PackageSearch, Truck } from "@lucide/astro";
+import { ArrowRight, BriefcaseBusiness, GraduationCap, MonitorCog, PackageSearch, Truck } from "@lucide/astro";
 
 const roles = [
   {
     id: "carrier",
     eyebrow: "Carrier / owner-operator",
-    title: "I need car-hauling dispatch support",
-    body: "Start with authority, insurance, equipment, capacity, operating area, availability, and a direct Logistics Sales handoff.",
-    label: "Start dispatch review",
+    title: "I own a trucking company",
+    body: "Review dispatch, load search, broker communication, paperwork, invoicing, and the operating support that fits the carrier's authority, equipment, and current availability.",
+    label: "Review carrier support",
     href: "/logistics/start-car-hauling-dispatch/",
     icon: Truck,
   },
   {
-    id: "dealer",
-    eyebrow: "Dealer / auction buyer",
-    title: "I need vehicles transported",
-    body: "Prepare dealer inventory, auction pickup, dealer-to-dealer, open, enclosed, or multi-vehicle requirements.",
-    label: "Review dealer transport",
-    href: "/logistics/dealer-vehicle-transportation/",
+    id: "transport",
+    eyebrow: "Customer / dealer / shipper",
+    title: "I need to move a vehicle",
+    body: "Send the pickup and delivery markets, vehicle details, timing, condition, and contact information for a transportation review.",
+    label: "Request vehicle transport",
+    href: "/logistics/request-vehicle-transport/",
     icon: PackageSearch,
   },
   {
-    id: "shipper",
-    eyebrow: "Shipper / logistics manager",
-    title: "I need transportation coordination",
-    body: "Choose the customer-side logistics path for vehicle moves, repeat requests, documentation, and capacity review.",
-    label: "Open shipper path",
-    href: "/logistics/shipper-dealer/",
-    icon: BriefcaseBusiness,
-  },
-  {
-    id: "seo",
-    eyebrow: "Logistics company / dealer",
-    title: "I need SEO or marketing",
-    body: "Review specialist SEO for logistics, trucking, dispatch, freight-broker, and independent dealer businesses.",
-    label: "Review logistics SEO",
-    href: "/services/seo-for-logistics-companies/",
-    icon: Megaphone,
-  },
-  {
-    id: "technology",
-    eyebrow: "Business owner / operations team",
-    title: "I need a website or automation",
-    body: "Prepare a website, redesign, CRM, workflow, AI automation, or systems-development project brief.",
-    label: "Review technology services",
-    href: "/services/website-development/",
+    id: "business",
+    eyebrow: "Business owner / team",
+    title: "I own a business",
+    body: "Start with the business problem: more customers, a better website, SEO, social media, CRM, automation, or a clearer sales workflow.",
+    label: "Choose a growth path",
+    href: "/business-growth/",
     icon: MonitorCog,
   },
   {
     id: "academy",
-    eyebrow: "Candidate / future specialist",
-    title: "I want practical U.S.-market training",
-    body: "Compare the U.S. Logistics Operations and Marketing programs, participation models, process, and application path.",
+    eyebrow: "Student / future specialist",
+    title: "I want to learn",
+    body: "Review practical Logistics and Marketing programs, how training works, what is expected, and how to apply.",
     label: "Explore the Academy",
     href: "/paths/academy/",
     icon: GraduationCap,
   },
+  {
+    id: "career",
+    eyebrow: "Candidate",
+    title: "I want to work with Hermes",
+    body: "See the current careers path, then apply with the experience, availability, languages, and measurable results that match the role.",
+    label: "Review careers",
+    href: "/logistics/careers/",
+    icon: BriefcaseBusiness,
+  },
 ];
 ---
 
-<section class="home-role-router" aria-labelledby="home-role-router-title" data-home-role-router>
+<section class="home-role-router" id="start" aria-labelledby="home-role-router-title" data-home-role-router>
   <div class="shell">
     <div class="home-role-heading">
       <div>
-        <p class="eyebrow">Start with your immediate goal</p>
-        <h2 id="home-role-router-title">What do you need to do today?</h2>
+        <p class="eyebrow">Start with the situation</p>
+        <h2 id="home-role-router-title">What needs to happen next?</h2>
       </div>
-      <p>Choose your role first. The broader four-direction ecosystem remains below, but you do not need to understand every Hermes business before reaching the correct next step.</p>
+      <p>No need to learn the company structure first. Choose the situation that matches the job to be done and go directly to the team, page, or request that handles it.</p>
     </div>
 
     <div class="home-role-grid">
