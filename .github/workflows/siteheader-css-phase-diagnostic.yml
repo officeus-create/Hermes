@@ -1,0 +1,184 @@
+name: SiteHeader shared CSS phase diagnostic
+
+on:
+  push:
+    branches:
+      - agent/siteheader-css-phase-diagnostic
+    paths:
+      - .github/workflows/siteheader-css-phase-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build current site
+        run: npm run build
+
+      - name: Create CSS coverage diagnostic
+        shell: bash
+        run: |
+          cat > /tmp/shared-css-coverage.cjs <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const { chromium } = require('@playwright/test');
+
+          const root = process.cwd();
+          const dist = path.join(root, 'dist');
+          const html = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+          const head = html.split('</head>')[0] || html;
+          const headStyles = [...head.matchAll(/<link\b[^>]*rel=["'][^"']*stylesheet[^"']*["'][^>]*>/gi)]
+            .map(m => m[0])
+            .map(tag => ({
+              tag,
+              href: tag.match(/\bhref=["']([^"']+)["']/i)?.[1] || '',
+            }))
+            .filter(x => x.href.startsWith('/_astro/'));
+
+          const countUsed = (entry) => {
+            const ranges = [...entry.ranges].sort((a,b) => a.start - b.start || a.end - b.end);
+            let used = 0;
+            let start = null, end = null;
+            for (const r of ranges) {
+              if (start === null) { start = r.start; end = r.end; continue; }
+              if (r.start <= end) end = Math.max(end, r.end);
+              else { used += end - start; start = r.start; end = r.end; }
+            }
+            if (start !== null) used += end - start;
+            return used;
+          };
+
+          const classify = (url) => {
+            const name = url.split('/').pop() || url;
+            return name.replace(/\.[A-Za-z0-9_-]{6,}\.css$/, '.css');
+          };
+
+          async function runScenario(label, interact) {
+            const browser = await chromium.launch();
+            const context = await browser.newContext({
+              viewport: { width: 412, height: 915 },
+              deviceScaleFactor: 1,
+              isMobile: true,
+              hasTouch: true,
+              reducedMotion: 'reduce',
+            });
+            const page = await context.newPage();
+            await page.coverage.startCSSCoverage({ resetOnNavigation: false });
+            await page.goto('http://127.0.0.1:4321/', { waitUntil: 'load' });
+            await page.evaluate(() => document.fonts?.ready);
+            await page.waitForTimeout(1200);
+            if (interact) await interact(page);
+            await page.waitForTimeout(200);
+            const entries = await page.coverage.stopCSSCoverage();
+            const rows = entries
+              .filter(e => e.url.includes('/_astro/') && e.url.endsWith('.css'))
+              .map(e => ({
+                url: e.url,
+                file: classify(e.url),
+                totalBytes: Buffer.byteLength(e.text),
+                usedBytes: countUsed(e),
+              }))
+              .map(r => ({ ...r, unusedBytes: r.totalBytes - r.usedBytes, usedPct: +(100 * r.usedBytes / Math.max(r.totalBytes, 1)).toFixed(1) }))
+              .sort((a,b) => b.totalBytes - a.totalBytes);
+            await browser.close();
+            return { label, rows };
+          }
+
+          (async () => {
+            const baseline = await runScenario('first-view', null);
+            const menu = await runScenario('mobile-menu-open', async (page) => {
+              const button = page.locator('[data-menu-button]');
+              if (await button.count()) await button.click();
+            });
+            const language = await runScenario('language-menu-open', async (page) => {
+              const details = page.locator('[data-language-menu]').first();
+              if (await details.count()) await details.evaluate(el => { el.open = true; });
+            });
+
+            const byScenario = [baseline, menu, language];
+            const headHrefSet = new Set(headStyles.map(x => x.href));
+            const normalizePath = (url) => new URL(url).pathname;
+            for (const scenario of byScenario) {
+              for (const row of scenario.rows) row.renderBlockingHead = headHrefSet.has(normalizePath(row.url));
+            }
+
+            const allFiles = [...new Set(byScenario.flatMap(s => s.rows.map(r => r.file)))];
+            const matrix = allFiles.map(file => {
+              const rowFor = (s) => s.rows.find(r => r.file === file);
+              const first = rowFor(baseline);
+              const menuRow = rowFor(menu);
+              const langRow = rowFor(language);
+              return {
+                file,
+                totalBytes: first?.totalBytes ?? menuRow?.totalBytes ?? langRow?.totalBytes ?? 0,
+                renderBlockingHead: Boolean(first?.renderBlockingHead ?? menuRow?.renderBlockingHead ?? langRow?.renderBlockingHead),
+                firstViewUsedBytes: first?.usedBytes ?? 0,
+                firstViewUsedPct: first?.usedPct ?? 0,
+                menuUsedBytes: menuRow?.usedBytes ?? 0,
+                languageUsedBytes: langRow?.usedBytes ?? 0,
+                addedByMenu: Math.max(0, (menuRow?.usedBytes ?? 0) - (first?.usedBytes ?? 0)),
+                addedByLanguage: Math.max(0, (langRow?.usedBytes ?? 0) - (first?.usedBytes ?? 0)),
+              };
+            }).sort((a,b) => b.totalBytes - a.totalBytes);
+
+            const summary = {
+              generatedAt: new Date().toISOString(),
+              headStyles,
+              matrix,
+              decisionHints: {
+                blockingLargeLowUse: matrix.filter(r => r.renderBlockingHead && r.totalBytes >= 10000 && r.firstViewUsedPct < 40),
+                blockingMostlyUnused: matrix.filter(r => r.renderBlockingHead && r.totalBytes - r.firstViewUsedBytes >= 10000),
+              },
+            };
+
+            fs.mkdirSync('/tmp/siteheader-css-diagnostic', { recursive: true });
+            fs.writeFileSync('/tmp/siteheader-css-diagnostic/summary.json', JSON.stringify(summary, null, 2));
+            fs.writeFileSync('/tmp/siteheader-css-diagnostic/scenarios.json', JSON.stringify(byScenario, null, 2));
+
+            let md = '# SiteHeader/shared CSS first-view coverage\n\n';
+            md += '| CSS | Total B | Blocking head | First-view used | Used % | + mobile menu | + language |\n';
+            md += '|---|---:|:---:|---:|---:|---:|---:|\n';
+            for (const r of matrix) md += `| ${r.file} | ${r.totalBytes} | ${r.renderBlockingHead ? 'yes' : 'no'} | ${r.firstViewUsedBytes} | ${r.firstViewUsedPct}% | ${r.addedByMenu} | ${r.addedByLanguage} |\n`;
+            md += '\n## Interpretation guard\n\nCoverage marks executed/matched CSS ranges in Chromium for these controlled scenarios. It is diagnostic evidence for ownership/splitting; it is not a production LCP claim and does not justify deleting unmatched rules.\n';
+            fs.writeFileSync('/tmp/siteheader-css-diagnostic/summary.md', md);
+            console.log(md);
+            console.log(JSON.stringify(summary.decisionHints, null, 2));
+          })().catch(err => { console.error(err); process.exit(1); });
+          EOF
+
+      - name: Run local preview and capture coverage
+        shell: bash
+        run: |
+          ./node_modules/.bin/astro preview --host 127.0.0.1 --port 4321 >/tmp/siteheader-preview.log 2>&1 &
+          PREVIEW_PID=$!
+          trap 'kill $PREVIEW_PID || true' EXIT
+          for i in $(seq 1 40); do
+            curl -fsS http://127.0.0.1:4321/ >/dev/null && break
+            sleep 1
+          done
+          NODE_PATH="$PWD/node_modules" node /tmp/shared-css-coverage.cjs
+
+      - name: Upload diagnostic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: siteheader-shared-css-phase-diagnostic
+          path: /tmp/siteheader-css-diagnostic/
+          if-no-files-found: error
+          retention-days: 7
