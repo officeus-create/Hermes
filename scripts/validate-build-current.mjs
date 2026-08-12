@@ -6,7 +6,7 @@ const temporaryValidatorUrl = new URL("./.validate-build-current.generated.mjs",
 const retiredEmail = "freight_301@hermeslogisticsus.com";
 const activeEmail = "officeus@hermeslogisticsus.com";
 const legacyHomepageHero = "Four directions. One way forward.";
-const currentHomepageHero = "Move vehicles with less uncertainty.";
+const currentHomepageHero = "Start with what you need. Go straight to the right team.";
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
 const retiredExpectationCount = legacySource.split(retiredEmail).length - 1;
