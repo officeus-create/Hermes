@@ -14,12 +14,12 @@ import {
   syntheticPreviewChannels,
 } from "../src/data/social-distribution-preview.ts";
 
-assert.equal(syntheticDistributionDrafts.length, 4);
+assert.equal(syntheticDistributionDrafts.length, 5);
 assert.deepEqual(
   syntheticDistributionDrafts.map((draft) => draft.platform),
-  ["facebook", "threads", "instagram", "x"],
+  ["facebook", "threads", "instagram", "x", "telegram"],
 );
-assert.equal(new Set(syntheticDistributionDrafts.map((draft) => draft.copy)).size, 4, "Platform copy must be materially distinct.");
+assert.equal(new Set(syntheticDistributionDrafts.map((draft) => draft.copy)).size, 5, "Platform copy must be materially distinct.");
 assert.ok(syntheticDistributionDrafts.every((draft) => draft.channelMode === "synthetic_preview"));
 assert.ok(syntheticPreviewChannels.every((channel) => !channel.entityApproved && !channel.ownerVerified));
 assert.ok(syntheticPreviewChannels.every((channel) => validateDistributionEligibility(syntheticApprovedWebsiteAsset, channel).eligible));
@@ -42,6 +42,13 @@ assert.doesNotMatch(instagram.copy, /https:\/\//, "Instagram caption copy should
 const xDraft = syntheticDistributionDrafts.find((draft) => draft.platform === "x");
 assert.ok(xDraft);
 assert.ok(xDraft.copy.length <= 280, `X draft must stay within 280 characters, got ${xDraft.copy.length}.`);
+
+const telegram = syntheticDistributionDrafts.find((draft) => draft.platform === "telegram");
+assert.ok(telegram);
+assert.match(telegram.copy, /Hermes update/);
+assert.match(telegram.copy, /utm_source=telegram/);
+assert.match(telegram.destinationStrategy, /No bot send occurs in preview mode/);
+assert.doesNotMatch(telegram.copy, /bot token|chat id|sendMessage|access_token|client_secret/i);
 
 assert.throws(
   () => buildTrackedUrl(syntheticApprovedWebsiteAsset.canonicalUrl, "facebook", "logistics_insights", "john@example.com"),
@@ -150,4 +157,4 @@ assert.throws(
   /Invalid distribution transition/,
 );
 
-console.log("Social distribution checks passed: 4 distinct preview drafts, safe UTM, duplicate protection, human review, rejection, and manual export only.");
+console.log("Social distribution checks passed: 5 distinct preview drafts including Telegram, safe UTM, duplicate protection, human review, rejection, and manual export only.");

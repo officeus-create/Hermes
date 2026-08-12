@@ -1,26 +1,27 @@
 import { expect, test } from "@playwright/test";
 
-test("social distribution workspace is noindex and creates four distinct preview drafts", async ({ page }) => {
+test("social distribution workspace is noindex and creates five distinct preview drafts", async ({ page }) => {
   const response = await page.goto("/demos/social-distribution/");
   expect(response?.ok()).toBeTruthy();
   await expect(page).toHaveTitle(/Social Distribution Preview Queue/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow,noarchive");
   await expect(page.getByRole("heading", { level: 1, name: /Approved Website Asset.*Platform Draft Review Queue/ })).toBeVisible();
-  await expect(page.locator("[data-distribution-card]")).toHaveCount(4);
+  await expect(page.locator("[data-distribution-card]")).toHaveCount(5);
   await expect(page.locator('[data-platform="facebook"]')).toHaveCount(1);
   await expect(page.locator('[data-platform="threads"]')).toHaveCount(1);
   await expect(page.locator('[data-platform="instagram"]')).toHaveCount(1);
   await expect(page.locator('[data-platform="x"]')).toHaveCount(1);
+  await expect(page.locator('[data-platform="telegram"]')).toHaveCount(1);
   await expect(page.getByRole("button", { name: /^Publish$/i })).toHaveCount(0);
 
   const copies = await page.locator("[data-distribution-copy]").evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLTextAreaElement).value),
   );
-  expect(new Set(copies).size).toBe(4);
+  expect(new Set(copies).size).toBe(5);
 
   const trackedUrls = await page.locator("[data-tracked-url]").allTextContents();
-  expect(trackedUrls).toHaveLength(4);
-  for (const platform of ["facebook", "threads", "instagram", "x"]) {
+  expect(trackedUrls).toHaveLength(5);
+  for (const platform of ["facebook", "threads", "instagram", "x", "telegram"]) {
     expect(trackedUrls.some((url) => url.includes(`utm_source=${platform}`))).toBeTruthy();
   }
   expect(trackedUrls.every((url) => url.includes("utm_medium=organic_social"))).toBeTruthy();
@@ -29,6 +30,7 @@ test("social distribution workspace is noindex and creates four distinct preview
   const xCopy = await page.locator('[data-platform="x"] [data-distribution-copy]').inputValue();
   expect(xCopy.length).toBeLessThanOrEqual(280);
   await expect(page.locator('[data-platform="instagram"]')).toContainText("Do not assume a clickable caption link");
+  await expect(page.locator('[data-platform="telegram"]')).toContainText(/Telegram/i);
   await expect(page.getByText(/zero live accounts verified/i)).toBeVisible();
 });
 
