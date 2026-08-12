@@ -27,11 +27,14 @@ const services = [
   { value: "Training / courses", en: "Training / courses", ru: "Обучение / курсы", uk: "Навчання / курси" },
 ];
 
+const budgets = ["Not sure yet", "Under $1,000", "$1,000–$3,000", "$3,000–$10,000", "$10,000–$25,000", "$25,000+"] as const;
+const horizons = ["Not sure yet", "3 months", "6 months", "9 months", "12 months"] as const;
+
 const copy = {
   en: {
     eyebrow: "Direct business inquiry",
-    title: "Tell us what you want to launch or improve.",
-    body: "Leave the shortest useful brief. We will use your preferred WhatsApp or Telegram contact and the time window you choose.",
+    title: "Tell us the result, budget, and time horizon.",
+    body: "Leave the shortest useful brief. Budget is used to choose scope and sequence, not to push the largest first project.",
     connect: "This form is structured so the same lead can later flow into Hermes Connect without asking you to enter the same information again.",
     name: "Your name",
     company: "Company / project",
@@ -43,6 +46,9 @@ const copy = {
     websiteSocial: "Website / Instagram / social profile",
     websitePlaceholder: "https://... or @handle; write 'not launched yet' if needed",
     servicesLegend: "What do you want help with? Select all that apply.",
+    budget: "Planning budget for the next stage",
+    budgetHint: "This is a planning input, not a quote or required spend.",
+    horizon: "Roadmap horizon",
     preferredLanguage: "Preferred language",
     chooseLanguage: "Choose a language",
     russian: "Russian",
@@ -66,8 +72,8 @@ const copy = {
   },
   ru: {
     eyebrow: "Прямой запрос для бизнеса",
-    title: "Расскажите, что вы хотите запустить или улучшить.",
-    body: "Оставьте короткий бриф. Мы свяжемся через выбранный вами WhatsApp или Telegram в удобное для вас время.",
+    title: "Опишите результат, бюджет и горизонт планирования.",
+    body: "Оставьте короткий бриф. Бюджет нужен для выбора объёма и последовательности работ, а не для увеличения первой продажи.",
     connect: "Форма уже структурирована так, чтобы позже передать эту же заявку в Hermes Connect без повторного заполнения данных.",
     name: "Ваше имя",
     company: "Компания / проект",
@@ -79,6 +85,9 @@ const copy = {
     websiteSocial: "Сайт / Instagram / социальная сеть",
     websitePlaceholder: "https://... или @username; если ещё нет — напишите «ещё не запущен»",
     servicesLegend: "Что вам нужно? Можно выбрать несколько вариантов.",
+    budget: "Планируемый бюджет на следующий этап",
+    budgetHint: "Это входные данные для планирования, а не цена и не обязательная сумма расходов.",
+    horizon: "Горизонт плана",
     preferredLanguage: "Язык общения",
     chooseLanguage: "Выберите язык",
     russian: "Русский",
@@ -102,8 +111,8 @@ const copy = {
   },
   uk: {
     eyebrow: "Прямий запит для бізнесу",
-    title: "Розкажіть, що ви хочете запустити або покращити.",
-    body: "Залиште короткий бриф. Ми зв'яжемося через обраний вами WhatsApp або Telegram у зручний для вас час.",
+    title: "Опишіть результат, бюджет і горизонт планування.",
+    body: "Залиште короткий бриф. Бюджет потрібен для вибору обсягу та послідовності робіт, а не для збільшення першого продажу.",
     connect: "Форма вже структурована так, щоб пізніше передати цю саму заявку в Hermes Connect без повторного введення даних.",
     name: "Ваше ім'я",
     company: "Компанія / проєкт",
@@ -115,6 +124,9 @@ const copy = {
     websiteSocial: "Сайт / Instagram / соціальна мережа",
     websitePlaceholder: "https://... або @username; якщо ще немає — напишіть «ще не запущено»",
     servicesLegend: "Що вам потрібно? Можна обрати кілька варіантів.",
+    budget: "Плановий бюджет на наступний етап",
+    budgetHint: "Це вхідні дані для планування, а не ціна чи обов'язкова сума витрат.",
+    horizon: "Горизонт плану",
     preferredLanguage: "Мова спілкування",
     chooseLanguage: "Оберіть мову",
     russian: "Російська",
@@ -221,6 +233,22 @@ const t = copy[locale];
           </label>
         ))}
       </fieldset>
+
+      <div class="field-row">
+        <label>
+          {t.budget}
+          <select name="planning_budget">
+            {budgets.map((budget) => <option value={budget}>{budget}</option>)}
+          </select>
+          <small>{t.budgetHint}</small>
+        </label>
+        <label>
+          {t.horizon}
+          <select name="planning_horizon">
+            {horizons.map((horizon) => <option value={horizon}>{horizon}</option>)}
+          </select>
+        </label>
+      </div>
 
       <div class="field-row">
         <label>
@@ -350,6 +378,8 @@ const t = copy[locale];
       whatsapp,
       telegram,
       website_or_social: String(data.get("website_or_social") ?? ""),
+      planning_budget: String(data.get("planning_budget") ?? ""),
+      planning_horizon: String(data.get("planning_horizon") ?? ""),
       preferred_language: String(data.get("preferred_language") ?? ""),
       preferred_contact_time: String(data.get("preferred_contact_time") ?? ""),
       services: selectedServices,
