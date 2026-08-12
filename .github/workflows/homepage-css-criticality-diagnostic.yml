@@ -1,0 +1,249 @@
+name: Homepage CSS criticality diagnostic
+
+on:
+  push:
+    branches:
+      - seo12/homepage-css-criticality-diagnostic
+    paths:
+      - .github/workflows/homepage-css-criticality-diagnostic.yml
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies and Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Build current site
+        run: npm run build
+
+      - name: Create diagnostic helpers
+        shell: bash
+        run: |
+          mkdir -p /tmp/css-criticality
+          cat > /tmp/capture-viewport.cjs <<'EOF'
+          const fs = require('fs');
+          const { chromium } = require('@playwright/test');
+          const [port, output] = process.argv.slice(2);
+          const props = [
+            'display','position','boxSizing','color','backgroundColor','backgroundImage',
+            'fontFamily','fontSize','fontWeight','lineHeight','textAlign','whiteSpace',
+            'gridTemplateColumns','gridTemplateRows','gridColumn','gridRow','gap','columnGap','rowGap',
+            'flexDirection','flexGrow','flexShrink','flexBasis','alignItems','justifyContent',
+            'paddingTop','paddingRight','paddingBottom','paddingLeft',
+            'marginTop','marginRight','marginBottom','marginLeft',
+            'borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth',
+            'borderTopStyle','borderRightStyle','borderBottomStyle','borderLeftStyle',
+            'borderRadius','minWidth','maxWidth','minHeight','maxHeight','width','height',
+            'overflowX','overflowY','objectFit','objectPosition','boxShadow','filter','opacity',
+            'visibility','zIndex','transform'
+          ];
+          const round = (n) => Math.round(n * 100) / 100;
+          (async () => {
+            const browser = await chromium.launch();
+            const context = await browser.newContext({
+              viewport: { width: 412, height: 915 },
+              deviceScaleFactor: 1,
+              isMobile: true,
+              hasTouch: true,
+              reducedMotion: 'reduce',
+            });
+            const page = await context.newPage();
+            await page.goto(`http://127.0.0.1:${port}/`, { waitUntil: 'load' });
+            await page.evaluate(() => document.fonts && document.fonts.ready);
+            await page.waitForTimeout(150);
+            const data = await page.evaluate(({ props }) => {
+              const vw = innerWidth, vh = innerHeight;
+              return Array.from(document.querySelectorAll('body *')).map((el, index) => {
+                const r = el.getBoundingClientRect();
+                const s = getComputedStyle(el);
+                const values = {};
+                for (const p of props) values[p] = s[p] || '';
+                return {
+                  index,
+                  tag: el.tagName,
+                  id: el.id || '',
+                  className: typeof el.className === 'string' ? el.className : '',
+                  inViewport: r.bottom > 0 && r.top < vh && r.right > 0 && r.left < vw && s.display !== 'none' && s.visibility !== 'hidden',
+                  rect: { top: r.top, left: r.left, right: r.right, bottom: r.bottom, width: r.width, height: r.height },
+                  values,
+                };
+              });
+            }, { props });
+            for (const row of data) for (const k of Object.keys(row.rect)) row.rect[k] = round(row.rect[k]);
+            fs.writeFileSync(output, JSON.stringify(data));
+            await browser.close();
+          })().catch((e) => { console.error(e); process.exit(1); });
+          EOF
+
+          cat > /tmp/compare-viewport.cjs <<'EOF'
+          const fs = require('fs');
+          const [beforePath, afterPath, label, output] = process.argv.slice(2);
+          const before = JSON.parse(fs.readFileSync(beforePath, 'utf8'));
+          const after = JSON.parse(fs.readFileSync(afterPath, 'utf8'));
+          const diffs = [];
+          const changedElements = new Set();
+          const n = Math.min(before.length, after.length);
+          if (before.length !== after.length) diffs.push(`element-count ${before.length} -> ${after.length}`);
+          for (let i = 0; i < n; i++) {
+            const a = before[i], b = after[i];
+            if (!(a.inViewport || b.inViewport)) continue;
+            const ident = `${a.tag}#${a.id}.${a.className}`;
+            if (a.tag !== b.tag || a.id !== b.id || a.className !== b.className) {
+              diffs.push(`node[${i}] identity ${ident} -> ${b.tag}#${b.id}.${b.className}`);
+              changedElements.add(i);
+              continue;
+            }
+            for (const key of Object.keys(a.rect)) {
+              if (Math.abs(Number(a.rect[key]) - Number(b.rect[key])) > 0.5) {
+                diffs.push(`node[${i}] ${ident} rect.${key}: ${a.rect[key]} -> ${b.rect[key]}`);
+                changedElements.add(i);
+              }
+            }
+            for (const [prop, value] of Object.entries(a.values)) {
+              if (value !== b.values[prop]) {
+                diffs.push(`node[${i}] ${ident} ${prop}: ${value} -> ${b.values[prop]}`);
+                changedElements.add(i);
+              }
+            }
+          }
+          const summary = {
+            stylesheet: label,
+            viewportDiffs: diffs.length,
+            changedViewportElements: changedElements.size,
+            baselineViewportElements: before.filter(x => x.inViewport).length,
+            variantViewportElements: after.filter(x => x.inViewport).length,
+            sampleDiffs: diffs.slice(0, 120),
+          };
+          fs.writeFileSync(output, JSON.stringify(summary, null, 2));
+          console.log(JSON.stringify(summary, null, 2));
+          EOF
+
+          cat > /tmp/list-stylesheets.cjs <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const html = fs.readFileSync('dist/index.html', 'utf8');
+          const tags = [...html.matchAll(/<link\b[^>]*>/gi)].map(m => m[0]);
+          const rows = [];
+          for (const tag of tags) {
+            const rel = tag.match(/\brel=["']([^"']+)["']/i)?.[1] || '';
+            if (!rel.split(/\s+/).includes('stylesheet')) continue;
+            const href = tag.match(/\bhref=["']([^"']+)["']/i)?.[1];
+            if (!href || !href.startsWith('/_astro/')) continue;
+            const file = path.join('dist', href.replace(/^\//, ''));
+            rows.push({ href, bytes: fs.statSync(file).size, tag });
+          }
+          fs.writeFileSync('/tmp/css-criticality/stylesheets.json', JSON.stringify(rows, null, 2));
+          for (const row of rows) console.log(`${row.href}\t${row.bytes}`);
+          EOF
+
+          cat > /tmp/source-owner-hints.cjs <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const rows = JSON.parse(fs.readFileSync('/tmp/css-criticality/stylesheets.json', 'utf8'));
+          const sourceFiles = [];
+          const walk = (dir) => {
+            for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+              const p = path.join(dir, e.name);
+              if (e.isDirectory()) walk(p);
+              else if (/\.(astro|css|ts|tsx|js|mjs|cjs)$/.test(p)) sourceFiles.push([p.replaceAll('\\','/'), fs.readFileSync(p,'utf8')]);
+            }
+          };
+          walk('src');
+          const output = [];
+          for (const row of rows) {
+            const css = fs.readFileSync(path.join('dist', row.href.replace(/^\//,'')), 'utf8');
+            const classes = [...new Set([...css.matchAll(/\.([A-Za-z_][A-Za-z0-9_-]*)/g)].map(m => m[1]))];
+            const counts = new Map();
+            for (const token of classes) {
+              for (const [file, text] of sourceFiles) if (text.includes(token)) counts.set(file, (counts.get(file) || 0) + 1);
+            }
+            const owners = [...counts.entries()].sort((a,b) => b[1]-a[1]).slice(0,20).map(([file,count]) => ({file,count}));
+            output.push({ href: row.href, bytes: row.bytes, classTokens: classes.length, ownerHints: owners, sampleClasses: classes.slice(0,40) });
+          }
+          fs.writeFileSync('/tmp/css-criticality/source-owner-hints.json', JSON.stringify(output, null, 2));
+          console.log(JSON.stringify(output, null, 2));
+          EOF
+
+      - name: Identify synchronous homepage stylesheets and source-owner hints
+        run: |
+          node /tmp/list-stylesheets.cjs
+          node /tmp/source-owner-hints.cjs
+
+      - name: Capture baseline first viewport
+        shell: bash
+        run: |
+          ./node_modules/.bin/astro preview --host 127.0.0.1 --port 4321 >/tmp/css-criticality/baseline-preview.log 2>&1 &
+          echo $! >/tmp/css-criticality/baseline.pid
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:4321/ >/dev/null && break; sleep 1; done
+          NODE_PATH="$PWD/node_modules" node /tmp/capture-viewport.cjs 4321 /tmp/css-criticality/baseline.json
+          kill $(cat /tmp/css-criticality/baseline.pid) || true
+          fuser -k 4321/tcp || true
+
+      - name: Remove each stylesheet one-at-a-time and compare first viewport
+        shell: bash
+        run: |
+          cp dist/index.html /tmp/css-criticality/index-original.html
+          node <<'EOF'
+          const fs = require('fs');
+          const rows = JSON.parse(fs.readFileSync('/tmp/css-criticality/stylesheets.json','utf8'));
+          fs.writeFileSync('/tmp/css-criticality/hrefs.txt', rows.map(x => x.href).join('\n') + '\n');
+          EOF
+
+          i=0
+          while IFS= read -r href; do
+            [ -z "$href" ] && continue
+            i=$((i+1))
+            cp /tmp/css-criticality/index-original.html dist/index.html
+            HREF="$href" node <<'EOF'
+          const fs = require('fs');
+          const href = process.env.HREF;
+          let html = fs.readFileSync('dist/index.html','utf8');
+          const tags = [...html.matchAll(/<link\b[^>]*>/gi)].map(m => m[0]);
+          const target = tags.find(tag => (tag.match(/\bhref=["']([^"']+)["']/i)?.[1] || '') === href);
+          if (!target) throw new Error(`stylesheet tag not found: ${href}`);
+          html = html.replace(target, '');
+          fs.writeFileSync('dist/index.html', html);
+          EOF
+            port=$((4330+i))
+            ./node_modules/.bin/astro preview --host 127.0.0.1 --port "$port" >"/tmp/css-criticality/variant-${i}-preview.log" 2>&1 &
+            pid=$!
+            for j in $(seq 1 40); do curl -fsS "http://127.0.0.1:${port}/" >/dev/null && break; sleep 1; done
+            NODE_PATH="$PWD/node_modules" node /tmp/capture-viewport.cjs "$port" "/tmp/css-criticality/variant-${i}.json"
+            kill "$pid" || true
+            fuser -k "${port}/tcp" || true
+            safe=$(echo "$href" | tr '/.' '__')
+            node /tmp/compare-viewport.cjs /tmp/css-criticality/baseline.json "/tmp/css-criticality/variant-${i}.json" "$href" "/tmp/css-criticality/report-${safe}.json"
+          done < /tmp/css-criticality/hrefs.txt
+          cp /tmp/css-criticality/index-original.html dist/index.html
+
+      - name: Print decision summary
+        shell: bash
+        run: |
+          echo '=== SYNCHRONOUS STYLESHEETS ==='
+          cat /tmp/css-criticality/stylesheets.json
+          echo '=== FIRST-VIEWPORT REMOVAL REPORTS ==='
+          for f in /tmp/css-criticality/report-*.json; do cat "$f"; done
+
+      - name: Upload diagnostic evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-css-criticality-diagnostic
+          path: /tmp/css-criticality/
+          if-no-files-found: error
+          retention-days: 7
