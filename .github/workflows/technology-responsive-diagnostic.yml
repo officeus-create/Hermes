@@ -1,0 +1,39 @@
+name: Inspect Technology responsive ownership
+
+on:
+  push:
+    branches:
+      - seo12/technology-global-css-route-split
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Report Technology selectors inside media blocks
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const css = fs.readFileSync('src/styles/global.css', 'utf8');
+          const needles = ['candidate-pipeline','solution-mockup','route-risk-map','recruiting-pipeline','executive-dashboard-grid','detail-page-technology'];
+          let i = 0;
+          while ((i = css.indexOf('@media', i)) !== -1) {
+            const open = css.indexOf('{', i);
+            if (open === -1) break;
+            let depth = 1, j = open + 1;
+            while (j < css.length && depth) {
+              if (css[j] === '{') depth++;
+              else if (css[j] === '}') depth--;
+              j++;
+            }
+            const block = css.slice(i, j);
+            if (needles.some((needle) => block.includes(needle))) {
+              console.log('\n--- MEDIA BLOCK ---\n' + block + '\n--- END ---');
+            }
+            i = j;
+          }
+          NODE
