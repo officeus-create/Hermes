@@ -417,7 +417,7 @@ test("Load Board routes each role to the right workspace and keeps demo loads no
   });
 
   await page.goto("/load-board/?role=carrier#available-loads");
-  await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("link", { name: /Carrier \/ owner-operator/ })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("heading", { name: "See the lane before you spend time on it." })).toBeVisible();
   await expect(page.locator(".available-load-card")).toHaveCount(4);
   await expect(page.getByText("Demo data", { exact: false }).first()).toBeVisible();
