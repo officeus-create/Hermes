@@ -1,0 +1,226 @@
+name: Technology Studio route CSS v4 diagnostic
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/technology-studio-route-css-v4-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compare-route-css:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies and browser
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Create computed-style helpers
+        run: |
+          cat > /tmp/capture-styles.cjs <<'EOF'
+          const fs = require('fs');
+          const { chromium } = require('@playwright/test');
+          const [port, output] = process.argv.slice(2);
+          const properties = [
+            'display','position','boxSizing','color','backgroundColor','backgroundImage',
+            'fontFamily','fontSize','fontWeight','lineHeight','textAlign','textTransform','whiteSpace',
+            'gridTemplateColumns','gridTemplateRows','gridColumn','gridRow','gap','columnGap','rowGap',
+            'flexDirection','flexGrow','flexShrink','flexBasis','alignItems','alignContent','justifyContent','justifyItems',
+            'paddingTop','paddingRight','paddingBottom','paddingLeft','marginTop','marginRight','marginBottom','marginLeft',
+            'borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth',
+            'borderTopStyle','borderRightStyle','borderBottomStyle','borderLeftStyle',
+            'borderTopColor','borderRightColor','borderBottomColor','borderLeftColor','borderRadius',
+            'minWidth','maxWidth','minHeight','maxHeight','overflowX','overflowY','objectFit','objectPosition',
+            'boxShadow','filter','opacity','visibility','zIndex'
+          ];
+          (async () => {
+            const browser = await chromium.launch();
+            const context = await browser.newContext({ viewport: { width: 1440, height: 1200 }, reducedMotion: 'reduce' });
+            const page = await context.newPage();
+            await page.goto(`http://127.0.0.1:${port}/paths/technology/`, { waitUntil: 'load' });
+            await page.evaluate(() => document.fonts && document.fonts.ready);
+            const data = await page.evaluate((props) => Array.from(document.querySelectorAll('body *')).map((el, index) => {
+              const style = getComputedStyle(el);
+              const values = {};
+              for (const prop of props) values[prop] = style[prop] || '';
+              return { index, tag: el.tagName, id: el.id || '', className: typeof el.className === 'string' ? el.className : '', values };
+            }), properties);
+            fs.writeFileSync(output, JSON.stringify(data));
+            await browser.close();
+          })().catch((error) => { console.error(error); process.exit(1); });
+          EOF
+
+          cat > /tmp/compare-styles.cjs <<'EOF'
+          const fs = require('fs');
+          const [beforePath, afterPath] = process.argv.slice(2);
+          const before = JSON.parse(fs.readFileSync(beforePath, 'utf8'));
+          const after = JSON.parse(fs.readFileSync(afterPath, 'utf8'));
+          const diffs = [];
+          if (before.length !== after.length) diffs.push(`element-count ${before.length} -> ${after.length}`);
+          const count = Math.min(before.length, after.length);
+          for (let i = 0; i < count; i++) {
+            const a = before[i], b = after[i];
+            if (a.tag !== b.tag || a.id !== b.id || a.className !== b.className) {
+              diffs.push(`node[${i}] identity changed: ${a.tag}#${a.id}.${a.className} -> ${b.tag}#${b.id}.${b.className}`);
+              continue;
+            }
+            for (const [prop, value] of Object.entries(a.values)) {
+              if (value !== b.values[prop]) diffs.push(`node[${i}] ${a.tag}.${a.className} ${prop}: ${value} -> ${b.values[prop]}`);
+            }
+          }
+          if (diffs.length) {
+            console.error(`COMPUTED_STYLE_DIFF_COUNT=${diffs.length}`);
+            for (const diff of diffs.slice(0, 120)) console.error(diff);
+            process.exit(1);
+          }
+          console.log(`COMPUTED_STYLE_EQUIVALENCE=PASS elements=${before.length}`);
+          EOF
+
+      - name: Baseline build and snapshot
+        run: |
+          npm run build >/tmp/hermes-baseline-build.log
+          echo '=== BASELINE ROUTE CSS ==='
+          node scripts/route-css-coverage.test.mjs | tee /tmp/hermes-baseline-css.log
+          ./node_modules/.bin/astro preview --host 127.0.0.1 --port 4321 >/tmp/hermes-baseline-preview.log 2>&1 &
+          echo $! >/tmp/hermes-baseline-preview.pid
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:4321/paths/technology/ >/dev/null && break; sleep 1; done
+          NODE_PATH="$PWD/node_modules" node /tmp/capture-styles.cjs 4321 /tmp/before-styles.json
+          kill $(cat /tmp/hermes-baseline-preview.pid) || true
+          fuser -k 4321/tcp || true
+
+      - name: Move owner-only rules into dedicated route stylesheet
+        run: |
+          cp src/styles/global.css /tmp/hermes-global.css
+          cp src/components/TechnologyStudioProof.astro /tmp/hermes-TechnologyStudioProof.astro
+          node <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const postcss = require('postcss');
+          const targetOwner = 'src/components/TechnologyStudioProof.astro';
+          const sourceRoots = ['src', 'scripts', 'e2e'];
+          const sourceExts = new Set(['.astro','.ts','.tsx','.js','.mjs','.cjs','.html','.md','.json']);
+          const sources = new Map();
+          function walk(dir) {
+            if (!fs.existsSync(dir)) return;
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+              const full = path.join(dir, entry.name);
+              if (entry.isDirectory()) walk(full);
+              else if (sourceExts.has(path.extname(full))) sources.set(full.replaceAll('\\','/'), fs.readFileSync(full, 'utf8'));
+            }
+          }
+          sourceRoots.forEach(walk);
+          const ownerCache = new Map();
+          const owners = (token) => {
+            if (!ownerCache.has(token)) ownerCache.set(token, [...sources].filter(([, text]) => text.includes(token)).map(([file]) => file).sort());
+            return ownerCache.get(token);
+          };
+          const classRe = /\.([A-Za-z_][A-Za-z0-9_-]*)/g;
+          const root = postcss.parse(fs.readFileSync('src/styles/global.css', 'utf8'));
+          const moved = postcss.root();
+          let movedRules = 0;
+          let movedBytes = 0;
+          const wrapWithAncestors = (rule) => {
+            let node = rule.clone();
+            const ancestors = [];
+            let parent = rule.parent;
+            while (parent && parent.type !== 'root') {
+              if (parent.type !== 'atrule') return null;
+              ancestors.push({ name: parent.name, params: parent.params });
+              parent = parent.parent;
+            }
+            for (const ancestor of ancestors) {
+              const wrapper = postcss.atRule({ name: ancestor.name, params: ancestor.params });
+              wrapper.append(node);
+              node = wrapper;
+            }
+            return node;
+          };
+          const candidateRules = [];
+          root.walkRules((rule) => {
+            const classes = [...rule.selector.matchAll(classRe)].map((m) => m[1]);
+            if (!classes.length) return;
+            const union = [...new Set(classes.flatMap(owners))].sort();
+            if (union.length === 1 && union[0] === targetOwner) candidateRules.push(rule);
+          });
+          for (const rule of candidateRules) {
+            const wrapped = wrapWithAncestors(rule);
+            if (!wrapped) continue;
+            movedRules += 1;
+            movedBytes += Buffer.byteLength(rule.toString()) + 1;
+            moved.append(wrapped);
+            rule.remove();
+          }
+          root.walkAtRules((at) => {
+            if (Array.isArray(at.nodes) && at.nodes.length === 0) at.remove();
+          });
+          const globalText = root.toString();
+          if (!globalText.includes('@import "tailwindcss";')) throw new Error('Tailwind import was lost');
+          fs.writeFileSync('src/styles/global.css', globalText);
+          fs.writeFileSync('src/styles/features/technology-studio.css', `/* TechnologyStudioProof-only route styles moved unchanged from global.css. */\n${moved.toString()}\n`);
+          const componentPath = 'src/components/TechnologyStudioProof.astro';
+          let component = fs.readFileSync(componentPath, 'utf8');
+          const anchor = 'import "../styles/features/technology.css";';
+          if (!component.includes(anchor)) throw new Error('technology.css import anchor not found');
+          component = component.replace(anchor, `import "../styles/features/technology-studio.css";\n${anchor}`);
+          fs.writeFileSync(componentPath, component);
+          console.log(`MOVED_RULES=${movedRules}`);
+          console.log(`MOVED_RULE_SOURCE_BYTES=${movedBytes}`);
+          console.log(`ROUTE_STYLESHEET_BYTES=${fs.statSync('src/styles/features/technology-studio.css').size}`);
+          EOF
+
+      - name: Variant build and exact style comparison
+        run: |
+          rm -rf dist .astro
+          npm run build >/tmp/hermes-variant-build.log
+          echo '=== ROUTE-SCOPED VARIANT CSS ==='
+          node scripts/route-css-coverage.test.mjs | tee /tmp/hermes-variant-css.log
+          ./node_modules/.bin/astro preview --host 127.0.0.1 --port 4322 >/tmp/hermes-variant-preview.log 2>&1 &
+          echo $! >/tmp/hermes-variant-preview.pid
+          for i in $(seq 1 40); do curl -fsS http://127.0.0.1:4322/paths/technology/ >/dev/null && break; sleep 1; done
+          NODE_PATH="$PWD/node_modules" node /tmp/capture-styles.cjs 4322 /tmp/after-styles.json
+          kill $(cat /tmp/hermes-variant-preview.pid) || true
+          fuser -k 4322/tcp || true
+          node /tmp/compare-styles.cjs /tmp/before-styles.json /tmp/after-styles.json
+
+      - name: Run static contracts
+        run: npm test
+
+      - name: Run full browser suite
+        run: |
+          fuser -k 4321/tcp || true
+          fuser -k 4322/tcp || true
+          npm run test:e2e
+
+      - name: Upload production-candidate files
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technology-studio-route-css-v4-candidate
+          path: |
+            src/styles/global.css
+            src/styles/features/technology-studio.css
+            src/components/TechnologyStudioProof.astro
+          if-no-files-found: error
+          retention-days: 3
+
+      - name: Restore diagnostic source
+        if: always()
+        run: |
+          cp /tmp/hermes-global.css src/styles/global.css || true
+          cp /tmp/hermes-TechnologyStudioProof.astro src/components/TechnologyStudioProof.astro || true
+          rm -f src/styles/features/technology-studio.css
+          fuser -k 4321/tcp || true
+          fuser -k 4322/tcp || true
+          echo 'Diagnostic only: source restored; no production CSS change committed.'
