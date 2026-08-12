@@ -1,9 +1,15 @@
 {
-  "schema_version": 2,
-  "reviewed_at": "2026-08-02",
+  "schema_version": 3,
+  "reviewed_at": "2026-08-12",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "8ffb88171deb7aa587d0c5101389a556c270ecd6",
+  "main_commit_at_review": "0bd2170a4e7f705c6efdbd5002cabc3ab1a8611a",
+  "freshness": {
+    "state_class": "current_main_snapshot",
+    "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, or AI execution ownership; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
+    "historical_handoff_is_not_current_state": true,
+    "conflict_rule": "Current main code/tests and newer authenticated platform evidence supersede older handoff classifications. Preserve the contradiction in the audit trail; do not silently blend statuses."
+  },
   "platform": {
     "framework": "Astro static site",
     "runtime": "Node 22",
@@ -15,7 +21,7 @@
       "npm run test:e2e"
     ]
   },
-  "business_priority": "qualified organic inquiries and revenue without loss of indexation, trust, privacy, or existing rankings",
+  "business_priority": "qualified organic inquiries and revenue without loss of indexation, trust, privacy, accessibility, or existing rankings",
   "canonical_commercial_owners": [
     {
       "direction": "car_hauling_dispatch",
@@ -25,6 +31,12 @@
       "intake_event": "carrier_intake_start",
       "preview_event": "carrier_intake_preview_ready",
       "handoff_event": "carrier_handoff_ready"
+    },
+    {
+      "direction": "vehicle_transport_request",
+      "path": "/logistics/request-vehicle-transport/",
+      "supporting_owner": "/load-board/",
+      "maturity": "real_request_path_human_review_required"
     },
     {
       "direction": "website_development",
@@ -48,121 +60,171 @@
       "handoff_event": "seo_handoff_ready"
     }
   ],
+  "current_execution_state": {
+    "open_pull_requests_at_review": 0,
+    "human_first_website_and_ai": {
+      "issue": 418,
+      "status": "implementation_phases_1_to_7_complete_phase_8_evidence_gated",
+      "merged_phases": {
+        "1_homepage_situation_router": 419,
+        "2_logistics_two_team_value": 421,
+        "3_load_board_dual_entry": 429,
+        "4_business_growth_roadmap": 424,
+        "5_academy_method": 425,
+        "6_careers_metric_first": 426,
+        "7_ai_sales_assistant_contract": 428
+      },
+      "remaining_gate": "Issue #362 must produce permissioned publishable proof; do not fabricate or infer current-client status."
+    },
+    "production_measurement": {
+      "issue": 206,
+      "status": "authenticated_evidence_incomplete",
+      "methodology_status": "complete",
+      "next_required_evidence": [
+        "current 7-day and 28-day GSC page/query rows for priority money pages",
+        "current index-state readout for DATA_PENDING priority pages",
+        "existing Hermes GA4 property/stream ownership resolution and production event receipt verification",
+        "private-safe delivery to human-review to qualification to commercial-outcome reconciliation",
+        "first complete 7-day and 28-day revenue-facing funnel scorecard"
+      ]
+    },
+    "permissioned_proof": {
+      "issue": 362,
+      "status": "eligibility_reviewed_permission_not_ready",
+      "rule": "Historical direct carrier and customer relationships are private evidence only until current authorized contact, exact publication consent, sanitization, and copy approval are documented."
+    },
+    "entity_reconciliation": {
+      "issue": 204,
+      "status": "copy_ready_external_authenticated_action_required",
+      "staff_am": "Profile-contact ownership evidence exists; current authenticated correction session is not verified. Do not create a duplicate profile."
+    },
+    "mobile_performance": {
+      "issue": 354,
+      "status": "lab_optimization_remaining",
+      "known_result": "Removing the premium mobile intro was tested and reverted; do not repeat that experiment without new evidence.",
+      "next_isolated_experiment": "responsive hero-image delivery with preserved design, CTA, social fallback, and regression coverage"
+    },
+    "ai_knowledge_and_inbox_triage": {
+      "status": "evidence_packet_ready_second_pass_response_pending",
+      "evidence_date": "2026-08-11",
+      "verified_packet_facts": [
+        "174 total quarantined system-noise rows versus 163 in the last-300-row AI Brief window is reconciled by 11 older quarantined rows outside that window",
+        "source-first Gmail system-noise filtering is applied before relevance scoring/storage/phrase extraction and excluded again from the AI Brief",
+        "AI Inbox Triage allowed enums and safe fallbacks are documented",
+        "Sales Gmail classifier 33/33 passed",
+        "Sales Coach 20/20 passed",
+        "AI Inbox Triage behavior 7/7 passed",
+        "six Apps Script files passed preview/read-only source validation"
+      ],
+      "remaining_gate": "A returned Claude second-pass decision was not found in the reviewed Drive results. Do not recreate the evidence package; route the existing packet for second-pass review if that independent sign-off is still required."
+    }
+  },
+  "search_platform_state": {
+    "google_search_console": {
+      "status": "access_confirmed",
+      "evidence_class": "authenticated_platform_readout",
+      "latest_recorded_checkpoint": "2026-08-10",
+      "recorded_facts": [
+        "sitemap successful",
+        "48 discovered pages at that checkpoint",
+        "homepage URL Inspection reported URL is on Google",
+        "three-month property snapshot: 10 clicks, 217 impressions, 4.6% CTR, average position 32"
+      ],
+      "boundary": "These are platform/search observations, not revenue or guaranteed-ranking claims."
+    },
+    "bing_webmaster_tools": {
+      "status": "access_confirmed",
+      "evidence_class": "owner_provided_authenticated_platform_evidence",
+      "latest_recorded_checkpoint": "2026-08-11",
+      "recorded_facts": [
+        "existing hermeslogisticsus.com property verified in the active execution context",
+        "sitemapindex.xml successfully processed at the latest owner checkpoint"
+      ],
+      "next_required_evidence": "Bing page/index/search-performance evidence after processing; do not create a duplicate site/property."
+    },
+    "ga4": {
+      "status": "access_missing_existing_ownership_unresolved",
+      "recorded_fact": "Google Analytics is reachable, but no existing Hermes property/stream was available in the reviewed environment.",
+      "boundary": "Do not create a replacement property, stream, or tag merely to satisfy the checklist. Resolve existing ownership/access first."
+    }
+  },
   "completed_foundations": [
     "technical SEO build and static validation",
     "desktop and mobile Playwright coverage",
-    "privacy-safe GA4 event taxonomy",
-    "car hauling CTA, carrier intake, preview and explicit handoff",
-    "website development and redesign service-specific project brief",
-    "general, local, logistics and dealer SEO service-specific intake",
+    "privacy-safe analytics event taxonomy",
+    "direct carrier and vehicle-transport request paths with human-review boundaries",
+    "website development and SEO service-specific intake foundations",
     "manual qualified-lead, contract and revenue runbook",
     "query-to-page ownership foundation",
-    "SEO outreach CRM and operating playbook",
-    "About, Terms, Editorial and Corrections, and Accessibility pages",
-    "public trust sitemap",
+    "About, Terms, Editorial and Corrections, Accessibility, Privacy and security/trust foundations",
     "vendor-neutral AI operating system and consolidated error register",
-    "SEO-2 public clean-room baseline with 30 commercial and problem-solving queries",
-    "car hauling dispatch and Load Board owner strengthening",
-    "logistics SEO and independent auto-dealer SEO owner strengthening",
-    "Website Development owner strengthening for logistics and operational businesses",
-    "entity, profile, local eligibility and reputation verification audit"
-  ],
-  "seo2_cycle": {
-    "status": "implementation_complete_measurement_pending",
-    "new_urls_created": 0,
-    "queries_mapped": 30,
-    "existing_owners_strengthened": 5,
-    "merged_pull_requests": [118, 119, 121, 126, 127, 129],
-    "superseded_pull_requests_closed_without_merge": [122, 124, 130],
-    "next_page_decision": "Do not create a logistics website development niche URL until verified query, indexing and cannibalization evidence supports it.",
-    "measurement_windows_days": [7, 28, 90]
-  },
-  "active_programs": [
-    {
-      "name": "Organic measurement and qualified-lead review",
-      "scope": "Measure the strengthened owners through impressions, clicks, CTR, selected canonical, CTA, intake, preview, explicit handoff, qualified inquiry, proposal, contract and revenue.",
-      "blocked_by": [
-        "verified Google Search Console access",
-        "verified Bing Webmaster Tools access",
-        "consistent manual qualified-lead register operation"
-      ]
-    },
-    {
-      "name": "External authority and reputation activation",
-      "scope": "Verify canonical entity data, correct conflicting listings, create only eligible controlled profiles, request real reviews, publish approved cases and execute clean outreach.",
-      "rules": [
-        "no virtual offices",
-        "no fake or incentivized reviews",
-        "no mass directory submissions",
-        "no paid-link or PBN schemes",
-        "sameAs only for controlled verified profiles"
-      ]
-    }
+    "human-first homepage situation router",
+    "two-team carrier value proposition with no-guarantee boundaries",
+    "Load Board real-customer versus fictional-carrier-preview dual entry",
+    "business growth need-budget-roadmap qualification",
+    "Academy application/practice/feedback methodology",
+    "metric-first Careers qualification",
+    "shared Hermes AI sales-assistant reasoning and claim-maturity contract"
   ],
   "active_external_dependencies": [
     {
-      "id": "EXT-GSC-OWNERSHIP",
-      "status": "owner_or_account_action_required",
-      "detail": "Google Search Console Domain Property ownership and sitemap submission are not confirmed by repository or reviewed mailbox evidence."
+      "id": "EXT-GSC-MEASUREMENT",
+      "status": "authenticated_access_confirmed_data_refresh_required",
+      "detail": "GSC exists and is accessible; current 7/28-day page/query exports and pending page index states are still required for #206."
     },
     {
-      "id": "EXT-BING-WMT",
-      "status": "owner_or_account_action_required",
-      "detail": "Bing Webmaster Tools ownership and sitemap submission are not confirmed."
+      "id": "EXT-BING-MEASUREMENT",
+      "status": "authenticated_access_confirmed_measurement_pending",
+      "detail": "Existing Bing property and sitemap processing are confirmed in the latest owner evidence; collect index/search-performance evidence without duplicating setup."
     },
     {
-      "id": "EXT-GOOGLE-SECURITY",
-      "status": "owner_review_required",
-      "detail": "Multiple Google account sign-in and third-party access alerts exist; verify devices and OAuth grants in Google Account Security before treating them as resolved."
+      "id": "EXT-GA4-OWNERSHIP",
+      "status": "owner_or_account_resolution_required",
+      "detail": "Existing Hermes GA4 ownership/property/stream must be located before any new resource is created or event receipt is classified as verified."
     },
     {
-      "id": "EXT-ENTITY-TRUTH",
-      "status": "owner_review_required",
-      "detail": "Exact legal/public NAP, leadership, FMCSA relationship and authorized profile managers require owner-controlled verification before schema sameAs or profile claims."
+      "id": "EXT-PROOF-PERMISSION",
+      "status": "authorized_contact_and_consent_required",
+      "detail": "At least one carrier and one customer/dealer proof package require current authorized contact, exact publication permission, sanitization, and public-copy approval."
     },
     {
-      "id": "EXT-LOCAL-PROFILES",
-      "status": "eligibility_and_verification_required",
-      "detail": "Google Business Profile and location profiles must not be created until the real customer-facing or eligible service-area model is confirmed."
+      "id": "EXT-ENTITY-PROFILE-CORRECTION",
+      "status": "authenticated_profile_action_required",
+      "detail": "Staff.am correction copy and profile-contact ownership evidence are ready; apply changes only through the existing authorized profile/account."
+    }
+  ],
+  "historical_archives": [
+    {
+      "pr": 83,
+      "status": "closed_unmerged_historical_reference",
+      "scope": "feature-gated Google Routes planning estimate; rebuild from current main only if reprioritized"
+    },
+    {
+      "pr": 85,
+      "status": "closed_unmerged_historical_reference",
+      "scope": "Shipment History experimental workspace; rebuild bounded slices from current main only if reprioritized"
     }
   ],
   "protected_boundaries": [
     "no credentials or private company records in the repository",
     "no PII, submitted URLs, budgets, routes or free text in analytics",
-    "no production merge or infrastructure/account changes without required approval",
-    "no parallel edits to the same files without written handoff",
+    "no duplicate GSC, GA4, Bing, entity or profile resources merely to satisfy a checklist",
     "no claims without approved evidence",
     "no automatic live delivery by default",
-    "no mass pages, doorway variants, fake locations, bought links, PBNs or fake reviews"
-  ],
-  "open_high_risk_branches": [
-    {
-      "pr": 85,
-      "status": "draft_diverged_do_not_merge",
-      "ahead_by": 35,
-      "behind_by": 26,
-      "scope": "Shipment History lifecycle and private synthetic workspace"
-    },
-    {
-      "pr": 83,
-      "status": "draft_diverged_rebuild_if_prioritized",
-      "ahead_by": 24,
-      "behind_by": 26,
-      "scope": "feature-gated Google Routes estimate requiring separate billing, provider and Cloudflare approval"
-    }
+    "no fabricated testimonials, current-client status, loads, rankings, revenue, offices or availability",
+    "no mass pages, doorway variants, fake locations, bought links, PBNs or fake reviews",
+    "one active owner per task/branch; avoid parallel duplicate implementations"
   ],
   "primary_docs": [
     "docs/AI_START_HERE.md",
+    "docs/ai-project-state.json",
     "AGENTS.md",
+    "docs/AI_ROLES.md",
     "docs/ERROR_REGISTER.md",
-    "docs/SEO2_CLEAN_ROOM_BASELINE_2026-08-02.md",
-    "docs/seo2-keyword-opportunities-2026-08-02.csv",
-    "docs/SEO_RELEASE_CHECKLIST.md",
-    "docs/SEO_QUALIFIED_LEAD_OPERATING_RUNBOOK.md",
-    "docs/SEO_OUTREACH_OPERATING_PLAYBOOK_2026-08-02.md",
-    "docs/SEO_ENTITY_PROFILE_OPERATING_GUIDE_2026-08-02.md",
-    "docs/seo-entity-profile-audit-2026-08-02.csv",
-    "docs/SEO2_CLOSEOUT_2026-08-02.md",
+    "docs/PRODUCTION_MEASUREMENT_BASELINE_RUNBOOK.md",
+    "docs/SEO11_GSC_QUERY_PAGE_SCORECARD_2026-08-11.md",
+    "docs/SEO11_PERMISSIONED_PROOF_REGISTRY.csv",
+    "docs/CANONICAL_COMPANY_FACTS_APPROVAL.md",
     "docs/AI_HANDOFF.md"
   ]
 }

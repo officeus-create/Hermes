@@ -22,14 +22,14 @@ Latest verified handoff evidence:
 - Homepage URL Inspection: `URL is on Google`.
 - Appleton canonical page: previously recorded as indexed in the authenticated GSC checkpoint.
 - Current three-month GSC property snapshot: 10 clicks / 217 impressions / 4.6% CTR / average position 32.
-- Bing Webmaster access: `ACCESS_CONFIRMED` from the owner-provided Codex handoff on 2026-08-11.
+- Bing Webmaster access: `ACCESS_CONFIRMED` from owner-provided authenticated platform evidence on 2026-08-11.
 - Bing site `hermeslogisticsus.com`: verified in the existing Webmaster property; do not create a replacement site.
-- Bing sitemap index `https://hermeslogisticsus.com/sitemapindex.xml`: submitted; latest handoff status `Submitted / Processing`, with 0 reported errors and 0 reported warnings at that checkpoint.
-- Bing authenticated execution owner: Codex. SEO11 consumes sanitized index/performance evidence from that lane rather than repeating setup work.
+- Bing sitemap index `https://hermeslogisticsus.com/sitemapindex.xml`: **successfully processed**; latest owner checkpoint records last processed `2026-08-11`.
+- Bing authenticated execution owner at that checkpoint: Codex. Other agents should consume sanitized index/performance evidence from that lane rather than repeating setup work.
 - IndexNow current sitemap-backed release notification: 107 canonical URLs accepted with HTTP 200 in the latest SEO11 release submission. This is release notification evidence, not proof that every URL is indexed or ranking.
 - GA4 existing Hermes resource/stream in the current environment: `ACCESS_MISSING`.
 
-The property snapshot is not a per-page baseline and must not be copied into page rows. Bing submission and IndexNow acceptance are discovery signals, not substitutes for page-level index/performance evidence.
+The property snapshot is not a per-page baseline and must not be copied into page rows. Bing sitemap processing and IndexNow acceptance are discovery/submission evidence, not substitutes for page-level index/performance evidence.
 
 ## Priority canonical money-page set
 
@@ -131,7 +131,7 @@ Use Search Console Sitemaps, URL Inspection, Performance, Page Indexing, Links, 
 
 ### Bing / Copilot
 
-Use the existing verified Hermes Bing Webmaster site owned by the current authenticated Codex lane. Do not create a replacement property or repeat verification. The sitemap index is already submitted and processing; the remaining #206 work is to consume sanitized Bing URL Inspection, index-state and search-performance evidence for the same canonical money pages when available. Use IndexNow only for genuinely new/updated/deleted canonical URLs and treat HTTP acceptance as submission evidence, not indexation proof.
+Use the existing verified Hermes Bing Webmaster site from the latest authenticated owner-provided platform evidence. Do not create a replacement property or repeat verification. The sitemap index is already successfully processed; the remaining #206 work is to consume sanitized Bing URL Inspection, index-state and search-performance evidence for the same canonical money pages when available. Use IndexNow only for genuinely new/updated/deleted canonical URLs and treat HTTP acceptance as submission evidence, not indexation proof.
 
 ### GA4
 
