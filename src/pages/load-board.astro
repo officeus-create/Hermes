@@ -21,7 +21,7 @@ import "../styles/features/load.css";
           <div>
             <p class="eyebrow">Hermes Logistics · Car Hauling Loads Preview</p>
             <h1>Review Car Hauling Loads Before You Commit</h1>
-            <p>Owner-operators and small fleets can review fictional load examples, evaluate equipment and lane fit, and prepare a carrier-access request. Shippers, dealers, and brokers can prepare a vehicle-move request. This local preview does not publish a load, register an account, book freight, or contact a carrier.</p>
+            <p>Owner-operators and small fleets can review fictional load examples, evaluate equipment and lane fit, and prepare a carrier-access request. Customers, shippers, and dealers who need real vehicle transportation can go directly to the production transport-request path. This local Load Board preview does not publish a load, register an account, book freight, or contact a carrier.</p>
           </div>
           <div class="load-board-safety">
             <ShieldCheck size={28} aria-hidden="true" />
@@ -34,28 +34,29 @@ import "../styles/features/load.css";
       <section class="load-board-role-router" aria-labelledby="load-board-role-title">
         <div class="shell">
           <div class="load-board-section-heading">
-            <p class="eyebrow">Choose your workspace</p>
-            <h2 id="load-board-role-title">Start with the job you need to do.</h2>
+            <p class="eyebrow">Two ways to start</p>
+            <h2 id="load-board-role-title">What are you here to do?</h2>
+            <p>Customer requests and carrier freight review are different workflows. Start with the job that matches the reason for visiting.</p>
           </div>
           <div class="load-board-role-grid">
-            <a href="?role=shipper#post-load" data-role-link="shipper">
+            <a href="/logistics/request-vehicle-transport/#transport-intake" data-primary-entry="customer">
               <Building2 size={25} aria-hidden="true" />
-              <span>Shipper or dealer</span>
-              <strong>Post a vehicle load</strong>
-              <small>Add the route, vehicles, timing, condition, and target price.</small>
+              <span>Customer / dealer / shipper</span>
+              <strong>I need to move a vehicle</strong>
+              <small>Use the real transportation-request path for route, vehicle, timing, condition, and contact review.</small>
             </a>
-            <a href="?role=broker#post-load" data-role-link="broker">
-              <Search size={25} aria-hidden="true" />
-              <span>Freight broker</span>
-              <strong>Post and manage capacity</strong>
-              <small>Bring a verified opportunity to compatible car-hauling capacity.</small>
-            </a>
-            <a href="?role=carrier#available-loads" data-role-link="carrier">
+            <a href="?role=carrier#available-loads" data-primary-entry="carrier" data-role-link="carrier">
               <Truck size={25} aria-hidden="true" />
-              <span>Carrier or owner-operator</span>
-              <strong>Find available loads</strong>
-              <small>Search by lane, equipment, date, units, miles, and offered rate.</small>
+              <span>Carrier / owner-operator</span>
+              <strong>I have a truck</strong>
+              <small>Review fictional demo freight, lane fit, equipment, rates, and the proposed carrier-access workflow before requesting support.</small>
             </a>
+          </div>
+          <div class="load-board-section-heading">
+            <p><strong>Customer → Hermes → Carrier</strong></p>
+            <p>Hermes reviews a transportation request first, then checks authority, insurance, equipment, geography, timing, and actual carrier availability before representing an option as suitable. Submission itself is not a booking.</p>
+            <p><strong>No load shown on this page is live or bookable.</strong> The load examples and carrier search below remain a product preview.</p>
+            <p><a href="/paths/logistics/brokers/carrier-capacity/"><Search size={17} aria-hidden="true" /> Broker? Request verified carrier capacity.</a></p>
           </div>
         </div>
       </section>
@@ -177,7 +178,6 @@ import "../styles/features/load.css";
               <p class="eyebrow">Carrier / Owner-operator</p>
               <h3>Request free access</h3>
               <p class="load-board-form-note">Simple information for a Logistics Sales follow-up. Equipment-specific details can be confirmed during the call.</p>
-
               <div class="field-row">
                 <label>Your role *
                   <select name="carrier_role" required>
