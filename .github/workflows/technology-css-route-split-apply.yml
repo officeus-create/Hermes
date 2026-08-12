@@ -1,4 +1,4 @@
-name: Apply bounded technology CSS ownership move
+name: Apply technology CSS route split
 
 on:
   push:
@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   apply:
-    if: github.event.head_commit.message == 'SEO12: prepare bounded technology CSS ownership move'
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch
@@ -18,57 +17,20 @@ jobs:
         with:
           ref: seo12/technology-global-css-route-split
 
-      - name: Move Technology-only block out of global CSS
-        shell: bash
+      - name: Apply bounded CSS move
+        run: node scripts/apply-technology-css-route-split.mjs
+
+      - name: Verify and remove temporary helpers
         run: |
-          node <<'NODE'
-          const fs = require('node:fs');
-          const globalPath = 'src/styles/global.css';
-          const technologyPath = 'src/styles/features/technology.css';
-          let globalCss = fs.readFileSync(globalPath, 'utf8');
-          let technologyCss = fs.readFileSync(technologyPath, 'utf8');
-
-          const startMarker = '.detail-page-technology .detail-hero';
-          const endMarker = '/* Homepage IT preview */';
-          const insertMarker = '@media (max-width: 900px) {';
-
-          const start = globalCss.indexOf(startMarker);
-          const end = globalCss.indexOf(endMarker, start);
-          const insertAt = technologyCss.indexOf(insertMarker);
-          if (start === -1 || end === -1 || end <= start) throw new Error('Global Technology block markers missing or out of order');
-          if (insertAt === -1) throw new Error('Technology responsive insertion marker missing');
-
-          const block = globalCss.slice(start, end).trimEnd();
-          if (!block.includes('.candidate-pipeline-feature') || !block.includes('.solution-mockup-grid')) {
-            throw new Error('Expected Technology-only selectors are missing from bounded block');
-          }
-          if (block.includes('.home-technology-preview')) {
-            throw new Error('Homepage preview styles unexpectedly entered bounded Technology block');
-          }
-          if (technologyCss.includes('.detail-page-technology .detail-hero')) {
-            throw new Error('Technology detail block already exists in technology.css');
-          }
-
-          globalCss = `${globalCss.slice(0, start).trimEnd()}\n\n${globalCss.slice(end)}`;
-          const ownershipComment = '/* Technology detail and interface styles — moved from global.css so the homepage can defer them with the existing Technology bundle. */\n';
-          technologyCss = `${technologyCss.slice(0, insertAt).trimEnd()}\n\n${ownershipComment}${block}\n\n${technologyCss.slice(insertAt)}`;
-
-          fs.writeFileSync(globalPath, globalCss);
-          fs.writeFileSync(technologyPath, technologyCss);
-          NODE
-
-      - name: Verify bounded diff and self-remove helper
-        shell: bash
-        run: |
+          rm scripts/apply-technology-css-route-split.mjs
           rm .github/workflows/technology-css-route-split-apply.yml
           git diff --check
           git diff -- src/styles/global.css src/styles/features/technology.css
 
       - name: Commit bounded CSS move
-        shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src/styles/global.css src/styles/features/technology.css .github/workflows/technology-css-route-split-apply.yml
+          git add -A
           git commit -m 'SEO12: move Technology-only CSS out of global bundle'
           git push origin HEAD:seo12/technology-global-css-route-split
