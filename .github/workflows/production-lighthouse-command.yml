@@ -21,10 +21,11 @@ jobs:
       github.event.comment.body == '/measure-production-lighthouse' &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
-    timeout-minutes: 24
+    timeout-minutes: 28
     env:
       GH_TOKEN: ${{ github.token }}
       TARGET_URL: https://hermeslogisticsus.com/
+      REGULAR_HOME_URL: https://hermeslogisticsus.com/#regular-home-lab
 
     steps:
       - name: Check out approved main
@@ -40,13 +41,25 @@ jobs:
       - name: Prepare output directory
         run: mkdir -p artifacts/lighthouse-production
 
-      - name: Run three comparable mobile lab passes
+      - name: Run three comparable first-visit mobile lab passes
         shell: bash
         run: |
           for run in 1 2 3; do
             npx --yes lighthouse@13.4.1 "$TARGET_URL" \
               --output=json \
               --output-path="artifacts/lighthouse-production/mobile-${run}.json" \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet
+          done
+
+      - name: Run three comparable regular-home mobile lab passes
+        shell: bash
+        run: |
+          for run in 1 2 3; do
+            npx --yes lighthouse@13.4.1 "$REGULAR_HOME_URL" \
+              --output=json \
+              --output-path="artifacts/lighthouse-production/regular-mobile-${run}.json" \
               --only-categories=performance,accessibility,best-practices,seo \
               --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
               --quiet
@@ -78,6 +91,9 @@ jobs:
       - name: Summarize medians and baseline comparison
         run: node scripts/summarize-production-lighthouse.mjs
 
+      - name: Summarize first-visit versus regular-home LCP phases
+        run: node scripts/summarize-production-lighthouse-modes.mjs
+
       - name: Publish sanitized performance evidence
         shell: bash
         run: |
@@ -85,6 +101,8 @@ jobs:
             echo "## Production Lighthouse measurement"
             echo
             cat artifacts/lighthouse-production/summary.md
+            echo
+            cat artifacts/lighthouse-production/mode-diagnostic.md
             echo
             echo "Measured approved \`main\` commit: \`${{ github.sha }}\`."
           } > /tmp/production-lighthouse-comment.md
