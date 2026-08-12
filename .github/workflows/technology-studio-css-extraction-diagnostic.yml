@@ -1,0 +1,104 @@
+name: Technology Studio CSS extraction diagnostic
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/technology-studio-css-extraction-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test-extraction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Baseline build and route CSS
+        run: |
+          npm run build >/tmp/hermes-baseline-build.log
+          echo '=== BASELINE ROUTE CSS ==='
+          node scripts/route-css-coverage.test.mjs | tee /tmp/hermes-baseline-css.log
+
+      - name: Remove TechnologyStudioProof-only global rules in runner
+        run: |
+          cp src/styles/global.css /tmp/hermes-global.css
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          css_path = Path('src/styles/global.css')
+          target_owner = 'src/components/TechnologyStudioProof.astro'
+          source_roots = [Path('src'), Path('scripts'), Path('e2e')]
+          source_exts = {'.astro', '.ts', '.tsx', '.js', '.mjs', '.cjs', '.html', '.md', '.json'}
+
+          sources = {}
+          for root in source_roots:
+              if not root.exists():
+                  continue
+              for path in root.rglob('*'):
+                  if path.is_file() and path.suffix in source_exts:
+                      sources[str(path)] = path.read_text(errors='ignore')
+
+          class_re = re.compile(r'\.([A-Za-z_][A-Za-z0-9_-]*)')
+          usage_cache = {}
+          def owners(token):
+              if token not in usage_cache:
+                  usage_cache[token] = sorted(path for path, text in sources.items() if token in text)
+              return usage_cache[token]
+
+          output = []
+          removed = []
+          for lineno, raw in enumerate(css_path.read_text().splitlines(), start=1):
+              line = raw.strip()
+              if not line or line.startswith('/*') or line.startswith('@') or '{' not in line:
+                  output.append(raw)
+                  continue
+              classes = sorted(set(class_re.findall(line.split('{', 1)[0])))
+              if not classes:
+                  output.append(raw)
+                  continue
+              owner_union = sorted(set().union(*(set(owners(token)) for token in classes)))
+              if owner_union == [target_owner]:
+                  removed.append((lineno, len(raw.encode()) + 1, classes, line[:160]))
+                  continue
+              output.append(raw)
+
+          css_path.write_text('\n'.join(output) + '\n')
+          print(f'REMOVED_RULES={len(removed)}')
+          print(f'REMOVED_SOURCE_BYTES={sum(row[1] for row in removed)}')
+          for lineno, size, classes, preview in removed[:120]:
+              print(f'{size}B line={lineno} classes={"|".join(classes)} :: {preview}')
+          PY
+
+      - name: Build extracted variant and compare CSS
+        run: |
+          rm -rf dist .astro
+          npm run build >/tmp/hermes-variant-build.log
+          echo '=== EXTRACTED VARIANT ROUTE CSS ==='
+          node scripts/route-css-coverage.test.mjs | tee /tmp/hermes-variant-css.log
+
+      - name: Run static contracts on extracted variant
+        run: npm test
+
+      - name: Run browser suite on extracted variant
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+
+      - name: Restore source boundary
+        if: always()
+        run: |
+          cp /tmp/hermes-global.css src/styles/global.css || true
+          echo 'Diagnostic only: no production source change is committed by this workflow.'
