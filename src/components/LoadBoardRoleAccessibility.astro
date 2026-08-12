@@ -1,0 +1,13 @@
+<script is:inline>
+  if (window.location.pathname === "/load-board/") {
+    document.addEventListener("DOMContentLoaded", () => {
+      const carrierEntry = document.querySelector('[data-role-link="carrier"]');
+      if (carrierEntry instanceof HTMLAnchorElement) {
+        carrierEntry.setAttribute(
+          "aria-label",
+          "Carrier or owner-operator — I have a truck — fictional demo freight",
+        );
+      }
+    }, { once: true });
+  }
+</script>
