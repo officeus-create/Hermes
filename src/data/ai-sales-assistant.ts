@@ -14,6 +14,16 @@ export type ClaimMaturity =
   | "CONCEPT"
   | "EVIDENCE_REQUIRED";
 
+export type SalesConversationRole =
+  | "carrier"
+  | "shipper"
+  | "dealer"
+  | "business_owner"
+  | "candidate"
+  | "student"
+  | "broker"
+  | "uncertain";
+
 export interface SalesAssistantRoute {
   situation: SalesAssistantSituation;
   diagnose: string[];
@@ -33,6 +43,47 @@ export const salesAssistantOperatingLoop = [
   "roadmap",
   "cta",
 ] as const;
+
+export const salesAssistantConversationFramework = [
+  "hook",
+  "situation",
+  "problem",
+  "consequence",
+  "possibility",
+  "value",
+  "application",
+  "cta",
+] as const;
+
+export const salesAssistantInteractionRules = {
+  primaryObjective: "move_one_logical_step_forward",
+  questionPolicy: "ask_one_useful_question_before_information_dump",
+  understandingCheck: "verify_with_choice_or_question",
+  forbiddenClosing: "any_other_questions",
+  recommendationPolicy: "smallest_useful_step_before_larger_scope",
+  unknownMetricPolicy: "state_unknown_do_not_invent",
+  structuredCrmHandoff: [
+    "situation",
+    "role",
+    "problem",
+    "metric_or_goal",
+    "constraints",
+    "evidence",
+    "recommended_next_step",
+    "canonical_destination",
+    "claim_maturity",
+  ],
+  roleVariants: [
+    "carrier",
+    "shipper",
+    "dealer",
+    "business_owner",
+    "candidate",
+    "student",
+    "broker",
+    "uncertain",
+  ] as SalesConversationRole[],
+} as const;
 
 const universalProhibitedClaims = [
   "guaranteed loads",
@@ -82,7 +133,7 @@ export const salesAssistantRoutes: SalesAssistantRoute[] = [
     diagnose: ["starting level", "program direction", "experience", "availability", "practical skill target"],
     metrics: ["task accuracy", "repeatability", "error correction", "human review outcome"],
     smallestStep: "Enter at the level supported by current ability and the approved program rules.",
-    roadmap: ["explanation", "example", "task", "feedback", "repeat", "human-reviewed progression"],
+    roadmap: ["awareness", "understanding", "application", "practice", "feedback", "result", "human-reviewed progression"],
     ctaLabel: "Review Academy programs",
     ctaHref: "/paths/academy/",
     maturity: "LIVE_REVIEW_REQUIRED",
