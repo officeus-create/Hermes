@@ -3,7 +3,7 @@
   "reviewed_at": "2026-08-12",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "0bd2170a4e7f705c6efdbd5002cabc3ab1a8611a",
+  "main_commit_at_review": "862872d09d6c08a94f256b961700f4bc834833d7",
   "freshness": {
     "state_class": "current_main_snapshot",
     "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, or AI execution ownership; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
@@ -100,9 +100,32 @@
     },
     "mobile_performance": {
       "issue": 354,
-      "status": "lab_optimization_remaining",
+      "status": "responsive_hero_merged_production_measurement_pending",
       "known_result": "Removing the premium mobile intro was tested and reverted; do not repeat that experiment without new evidence.",
-      "next_isolated_experiment": "responsive hero-image delivery with preserved design, CTA, social fallback, and regression coverage"
+      "landed_change": "PR #432 merged: Astro Picture-based responsive AVIF/WebP/JPEG hero delivery with 640/960/1280/1600/1920 widths, preserved eager/high-priority LCP discovery, and no duplicate legacy hero preload.",
+      "verification": "Website checks #1365 passed on the final PR head.",
+      "next_required_evidence": "Run repeated comparable production/mobile Lighthouse measurements and compare median LCP/FCP/Speed Index/LCP phase breakdown against the recorded baseline before claiming improvement."
+    },
+    "production_compliance": {
+      "issue": 321,
+      "status": "production_routes_and_consent_smoke_pass_remaining_launch_gates_are_conditional",
+      "recorded_facts": [
+        "Production compliance smoke run 31587545325 passed 10 public compliance routes on 2026-08-12.",
+        "Production consent smoke run 31588338790 passed 2/2 Playwright consent tests on 2026-08-12.",
+        "Regional Privacy production route is present and its release delta is reconciled to PRODUCTION_VERIFIED."
+      ],
+      "remaining_gates": [
+        "service/state/country-specific legal review when the relevant launch is activated",
+        "payment/recurring-billing offer review before website payment activation",
+        "advertising/vendor/data-transfer review before new tracking or ad technology activation",
+        "remaining non-font media provenance under #320"
+      ]
+    },
+    "ai_handoff_drive_permissions": {
+      "issue": 431,
+      "status": "authenticated_permission_list_required",
+      "recorded_fact": "Connected Drive metadata shows the AI collaboration/handoff structure is shared but does not expose effective permissions; visibility remains access_not_verified.",
+      "boundary": "Do not infer safe permissions or public editor access. Review effective permissions in an authenticated owner/admin sharing UI before changing them."
     },
     "ai_knowledge_and_inbox_triage": {
       "status": "evidence_packet_ready_second_pass_response_pending",
@@ -144,8 +167,9 @@
     },
     "ga4": {
       "status": "access_missing_existing_ownership_unresolved",
-      "recorded_fact": "Google Analytics is reachable, but no existing Hermes property/stream was available in the reviewed environment.",
-      "boundary": "Do not create a replacement property, stream, or tag merely to satisfy the checklist. Resolve existing ownership/access first."
+      "measurement_id": "G-RY26321PVW",
+      "recorded_fact": "The production consent-gated source contract is pinned to G-RY26321PVW, but the existing GA4 account/property/stream ownership has not been authenticated in the reviewed environment.",
+      "boundary": "Do not create a replacement property, stream, tag, or GTM container merely to satisfy the checklist. Locate the existing web stream by Measurement ID first."
     }
   },
   "completed_foundations": [
@@ -164,7 +188,8 @@
     "business growth need-budget-roadmap qualification",
     "Academy application/practice/feedback methodology",
     "metric-first Careers qualification",
-    "shared Hermes AI sales-assistant reasoning and claim-maturity contract"
+    "shared Hermes AI sales-assistant reasoning and claim-maturity contract",
+    "responsive modern homepage hero asset delivery with regression coverage"
   ],
   "active_external_dependencies": [
     {
@@ -180,7 +205,7 @@
     {
       "id": "EXT-GA4-OWNERSHIP",
       "status": "owner_or_account_resolution_required",
-      "detail": "Existing Hermes GA4 ownership/property/stream must be located before any new resource is created or event receipt is classified as verified."
+      "detail": "Locate the existing Hermes GA4 web stream by Measurement ID G-RY26321PVW before any new resource is created or event receipt is classified as verified."
     },
     {
       "id": "EXT-PROOF-PERMISSION",
@@ -191,6 +216,16 @@
       "id": "EXT-ENTITY-PROFILE-CORRECTION",
       "status": "authenticated_profile_action_required",
       "detail": "Staff.am correction copy and profile-contact ownership evidence are ready; apply changes only through the existing authorized profile/account."
+    },
+    {
+      "id": "EXT-AI-DRIVE-PERMISSIONS",
+      "status": "authenticated_owner_admin_review_required",
+      "detail": "Effective sharing permissions for the AI handoff/source-of-truth tree are not exposed by the connected Drive metadata. Review inherited/direct grants in the authenticated sharing UI before making changes."
+    },
+    {
+      "id": "EXT-HERO-PROVENANCE",
+      "status": "owner_provenance_required",
+      "detail": "The current hero asset is traceable in repository history but its original photographer/generator/vendor/license evidence is not documented in the reviewed repository or Drive search. Do not infer a license defect; locate original permission evidence or later replace with a newly documented asset."
     }
   ],
   "historical_archives": [
