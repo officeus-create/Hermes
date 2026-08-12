@@ -1,0 +1,63 @@
+name: Apply verified Technology CSS artifact
+
+on:
+  push:
+    branches:
+      - seo12/technology-studio-route-css-production
+    paths:
+      - '.github/workflows/apply-verified-technology-css.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  apply-verified-artifact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout production candidate branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download exact verified diagnostic artifact
+        run: |
+          rm -rf /tmp/technology-css-candidate
+          mkdir -p /tmp/technology-css-candidate
+          gh run download 31604649132 \
+            --repo "$GITHUB_REPOSITORY" \
+            --name technology-studio-route-css-v4-candidate \
+            --dir /tmp/technology-css-candidate
+
+      - name: Verify candidate file identities
+        run: |
+          test -f /tmp/technology-css-candidate/styles/global.css
+          test -f /tmp/technology-css-candidate/styles/features/technology-studio.css
+          test -f /tmp/technology-css-candidate/components/TechnologyStudioProof.astro
+          echo 'ede928b1a69391b6a640326b46dbe9e7e19b1c2b78e846c36563ff31b838285b  /tmp/technology-css-candidate/styles/global.css' | sha256sum -c -
+          echo '27ad5908dfc0a7033d5eb5a5148ae352623a2f287e3c3101c7aac0e0631db8c8  /tmp/technology-css-candidate/styles/features/technology-studio.css' | sha256sum -c -
+          echo '2ca21469b9c073e0aeee70105e703f5550677fa77c1c51b55d204db8c7c3b96f  /tmp/technology-css-candidate/components/TechnologyStudioProof.astro' | sha256sum -c -
+
+      - name: Apply verified source files and remove applicator
+        run: |
+          cp /tmp/technology-css-candidate/styles/global.css src/styles/global.css
+          mkdir -p src/styles/features
+          cp /tmp/technology-css-candidate/styles/features/technology-studio.css src/styles/features/technology-studio.css
+          cp /tmp/technology-css-candidate/components/TechnologyStudioProof.astro src/components/TechnologyStudioProof.astro
+          git rm .github/workflows/apply-verified-technology-css.yml
+          git diff --check
+          git add src/styles/global.css src/styles/features/technology-studio.css src/components/TechnologyStudioProof.astro
+          git diff --cached --stat
+          git diff --cached --quiet && { echo 'Expected production candidate diff is empty'; exit 1; } || true
+
+      - name: Commit exact verified candidate
+        run: |
+          git config user.name 'hermes-seo12-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'SEO12: scope TechnologyStudioProof CSS to technology route'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
