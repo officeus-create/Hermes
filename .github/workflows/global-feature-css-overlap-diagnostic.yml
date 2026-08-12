@@ -1,0 +1,54 @@
+name: Global feature CSS overlap diagnostic
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/global-feature-css-overlap-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  measure-overlap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Measure exact rule-line overlap
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          global_path = Path('src/styles/global.css')
+          feature_dir = Path('src/styles/features')
+
+          def material_lines(path):
+              rows = []
+              for raw in path.read_text().splitlines():
+                  line = raw.strip()
+                  if not line or line.startswith('/*') or line.endswith('*/'):
+                      continue
+                  rows.append(line)
+              return rows
+
+          global_lines = set(material_lines(global_path))
+          results = []
+          for path in sorted(feature_dir.glob('*.css')):
+              lines = material_lines(path)
+              duplicated = [line for line in lines if line in global_lines]
+              duplicate_bytes = sum(len(line.encode()) + 1 for line in duplicated)
+              material_bytes = sum(len(line.encode()) + 1 for line in lines)
+              results.append((duplicate_bytes, material_bytes, len(duplicated), len(lines), path.name))
+
+          results.sort(reverse=True)
+          print('feature,duplicate_bytes,material_bytes,duplicate_lines,total_lines,overlap_pct')
+          for duplicate_bytes, material_bytes, dup_count, total_count, name in results:
+              pct = (duplicate_bytes / material_bytes * 100) if material_bytes else 0
+              print(f'{name},{duplicate_bytes},{material_bytes},{dup_count},{total_count},{pct:.1f}')
+
+          total_duplicate = sum(row[0] for row in results)
+          print(f'\nTOTAL_EXACT_DUPLICATE_LINE_BYTES={total_duplicate}')
+          print('Boundary: this is a source-overlap diagnostic, not proof that every matching line can be removed independently. Route ownership and responsive dependencies must be verified before any production deletion.')
+          PY
