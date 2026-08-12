@@ -1,6 +1,6 @@
 # SEO 11 Permissioned Proof Registry
 
-Date: 2026-08-11  
+Date: 2026-08-12  
 Owner: SEO 11 / Issue #362  
 Scope: public-safe proof status only. Private source evidence and consent records remain in owner-controlled systems.
 
@@ -47,8 +47,8 @@ Do not place here:
 
 - Direction: Logistics
 - Proof type: Dealer/customer vehicle-movement workflow
-- Candidate state: `candidate_identified`
-- Private evidence status: `WORKFLOW_ARTIFACT_SELECTED_RELATIONSHIP_PENDING`
+- Candidate state: `eligibility_reviewed`
+- Private evidence status: `DIRECT_HISTORICAL_CUSTOMER_RELATIONSHIP_VERIFIED`
 - Source class: `OWNER_CONTROLLED_PRIVATE_RECORD`
 - Identity verified for publication: `PENDING_PRIVATE_REVIEW`
 - Permission status: `NOT_REQUESTED`
@@ -56,8 +56,8 @@ Do not place here:
 - Quantitative claims approved: `NO`
 - Public copy approved: `NO`
 - Publication target: `PENDING`
-- Evidence boundary: one exact private vehicle-movement artifact has been selected because it documents a real dealership-origin workflow, but the current review does not yet prove that the dealer/recipient was a direct Hermes customer. It therefore remains process evidence only, not a customer case or testimonial.
-- Next action: reconcile the selected artifact against private relationship records. If an appropriate direct relationship cannot be verified, replace the candidate rather than upgrading the artifact into a customer claim.
+- Evidence boundary: owner-controlled billing evidence now independently verifies a direct historical Hermes-to-customer commercial relationship for a customer-side vehicle-movement candidate. The billing record contains multiple vehicle-movement service rows and a service amount due to Hermes. The public registry intentionally does not name the customer or expose routes, vehicles, dates, prices, percentages, contacts, invoice identifiers, payment information or outcomes. This verification establishes a historical customer relationship; it does not by itself establish that the organization should be publicly described as a dealer.
+- Next action: confirm that manual outreach to the historical customer is appropriate and identify a current authorized contact privately; if yes, request feedback and exact publication permission under the existing trust workflow. If outreach is not appropriate, retain the evidence privately and select another permissionable customer candidate.
 
 ## Named trust-role decisions
 
