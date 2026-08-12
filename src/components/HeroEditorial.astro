@@ -1,11 +1,23 @@
 ---
 import { ArrowDown, ArrowUpRight } from "@lucide/astro";
+import { Picture } from "astro:assets";
+import heroImage from "../assets/hermes-ecosystem-hero.jpg";
 import { site } from "../data/site";
 ---
 
 <section class="hero" id="top" data-motion-hero>
   <div class="hero-media">
-    <img src={site.hero.image} alt={site.hero.imageAlt} width="1920" height="1080" loading="eager" fetchpriority="high" sizes="100vw" />
+    <Picture
+      src={heroImage}
+      formats={["avif", "webp"]}
+      fallbackFormat="jpg"
+      widths={[640, 960, 1280, 1600, 1920]}
+      sizes="100vw"
+      alt={site.hero.imageAlt}
+      priority
+      quality="high"
+      pictureAttributes={{ style: "display:block;width:100%;height:100%;" }}
+    />
   </div>
   <div class="hero-shade"></div>
   <div class="hero-content shell">
