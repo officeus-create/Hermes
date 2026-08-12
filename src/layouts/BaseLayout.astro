@@ -179,7 +179,6 @@ const safeSchema = schema
     </script>
     {safeSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(safeSchema)} />}
     <title>{title}</title>
-    <slot name="head" />
   </head>
   <body>
     <!--email_off-->
