@@ -5,7 +5,7 @@ const calculatorPath = "/logistics/resources/rpm-calculator/";
 test("RPM calculator returns transparent trip-economics estimates", async ({ page }) => {
   await page.goto(calculatorPath);
 
-  await expect(page).toHaveTitle(/Free RPM & Load Profitability Calculator for Carriers/);
+  await expect(page).toHaveTitle(/Free RPM & Load Profit Calculator for Carriers/);
   await expect(page.getByRole("heading", { level: 1, name: "RPM & Load Profitability Calculator" })).toBeVisible();
 
   await expect(page.locator('[data-output="grossLoadedRpm"]')).toHaveText("$3.00/mi");
