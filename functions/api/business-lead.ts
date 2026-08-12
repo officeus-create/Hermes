@@ -44,6 +44,8 @@ type BusinessLeadInput = {
   whatsapp?: unknown;
   telegram?: unknown;
   website_or_social?: unknown;
+  planning_budget?: unknown;
+  planning_horizon?: unknown;
   preferred_language?: unknown;
   preferred_contact_time?: unknown;
   services?: unknown;
@@ -74,6 +76,15 @@ const allowedServices = new Set([
   "Training / courses",
 ]);
 
+const allowedBudgets = new Set([
+  "Not sure yet",
+  "Under $1,000",
+  "$1,000–$3,000",
+  "$3,000–$10,000",
+  "$10,000–$25,000",
+  "$25,000+",
+]);
+const allowedHorizons = new Set(["Not sure yet", "3 months", "6 months", "9 months", "12 months"]);
 const allowedLanguages = new Set(["Russian", "Ukrainian", "English"]);
 const allowedInterests = new Set(["ProgressoPro", "IT Development"]);
 
@@ -182,6 +193,8 @@ export async function onRequestPost({ request, env }: Context) {
   const whatsapp = clean(input.whatsapp, 120);
   const telegram = clean(input.telegram, 120);
   const websiteOrSocial = clean(input.website_or_social, 240);
+  const planningBudget = clean(input.planning_budget, 80);
+  const planningHorizon = clean(input.planning_horizon, 40);
   const preferredLanguage = clean(input.preferred_language, 40);
   const preferredContactTime = clean(input.preferred_contact_time, 120);
   const services = getServices(input.services);
@@ -202,6 +215,8 @@ export async function onRequestPost({ request, env }: Context) {
     cityCountry.length < 2 ||
     (!whatsapp && !telegram) ||
     websiteOrSocial.length < 2 ||
+    (planningBudget && !allowedBudgets.has(planningBudget)) ||
+    (planningHorizon && !allowedHorizons.has(planningHorizon)) ||
     !allowedLanguages.has(preferredLanguage) ||
     preferredContactTime.length < 2 ||
     services.length < 1 ||
@@ -244,6 +259,8 @@ export async function onRequestPost({ request, env }: Context) {
     `WhatsApp: ${whatsapp || "not provided"}`,
     `Telegram: ${telegram || "not provided"}`,
     `Website / social: ${websiteOrSocial}`,
+    `Planning budget: ${planningBudget || "not provided"}`,
+    `Roadmap horizon: ${planningHorizon || "not provided"}`,
     `Preferred language: ${preferredLanguage}`,
     `Best time to contact: ${preferredContactTime}`,
     `Services: ${services.join(", ")}`,
