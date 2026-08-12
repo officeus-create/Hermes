@@ -38,6 +38,8 @@ const validPayload = {
   whatsapp: "+48 555 123 456",
   telegram: "@exampleowner",
   website_or_social: "https://instagram.com/example",
+  planning_budget: "$3,000–$10,000",
+  planning_horizon: "6 months",
   preferred_language: "Russian",
   preferred_contact_time: "10:00-13:00 Warsaw time",
   services: ["Website development", "SEO", "Google Ads"],
@@ -75,6 +77,8 @@ assert.equal(serviceCalls[0].payload.reply_to, "owner@example.com");
 assert.match(serviceCalls[0].payload.text, /Company \/ project: Example Studio/);
 assert.match(serviceCalls[0].payload.text, /WhatsApp: \+48 555 123 456/);
 assert.match(serviceCalls[0].payload.text, /Telegram: @exampleowner/);
+assert.match(serviceCalls[0].payload.text, /Planning budget: \$3,000–\$10,000/);
+assert.match(serviceCalls[0].payload.text, /Roadmap horizon: 6 months/);
 assert.match(serviceCalls[0].payload.text, /Services: Website development, SEO, Google Ads/);
 assert.match(serviceCalls[0].payload.text, /UTM source: google/);
 assert.match(serviceCalls[0].payload.text, /UTM term: создание сайта варшава/);
@@ -101,6 +105,32 @@ const telegramOnly = await onRequest({
 assert.equal(telegramOnly.status, 200);
 assert.equal(serviceCalls.at(-1).payload.subject, "[HERMES INQUIRY] [IT DEVELOPMENT]");
 assert.match(serviceCalls.at(-1).payload.text, /Telegram: @telegramonly/);
+
+const backwardCompatiblePayload = {
+  ...validPayload,
+  request_id: "business_old_client_12345",
+};
+delete backwardCompatiblePayload.planning_budget;
+delete backwardCompatiblePayload.planning_horizon;
+const backwardCompatible = await onRequest({
+  request: makeRequest(backwardCompatiblePayload, { "CF-Connecting-IP": "192.0.2.57" }),
+  env,
+});
+assert.equal(backwardCompatible.status, 200);
+assert.match(serviceCalls.at(-1).payload.text, /Planning budget: not provided/);
+assert.match(serviceCalls.at(-1).payload.text, /Roadmap horizon: not provided/);
+
+const invalidBudget = await onRequest({
+  request: makeRequest({ ...validPayload, request_id: "business_bad_budget_12345", planning_budget: "Spend everything" }, { "CF-Connecting-IP": "192.0.2.58" }),
+  env,
+});
+assert.equal(invalidBudget.status, 400);
+
+const invalidHorizon = await onRequest({
+  request: makeRequest({ ...validPayload, request_id: "business_bad_horizon_12345", planning_horizon: "tomorrow" }, { "CF-Connecting-IP": "192.0.2.59" }),
+  env,
+});
+assert.equal(invalidHorizon.status, 400);
 
 const noMessenger = await onRequest({
   request: makeRequest({ ...validPayload, request_id: "business_no_msg_12345", whatsapp: "", telegram: "" }, { "CF-Connecting-IP": "192.0.2.52" }),
