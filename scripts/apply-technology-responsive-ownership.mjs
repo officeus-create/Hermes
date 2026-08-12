@@ -88,7 +88,9 @@ const tech560 = `@media (max-width: 560px) {
 .executive-dashboard-grid { grid-template-columns: 1fr; }
 }
 `;
-technologyCss = replaceOnce(technologyCss, reducedMotionAnchor, tech560 + reducedMotionAnchor, "technology.css reduced-motion anchor");
+const reducedMotionIndex = technologyCss.indexOf(reducedMotionAnchor);
+if (reducedMotionIndex === -1) throw new Error("Missing first technology.css reduced-motion anchor");
+technologyCss = technologyCss.slice(0, reducedMotionIndex) + tech560 + technologyCss.slice(reducedMotionIndex);
 
 writeFileSync(globalPath, globalCss);
 writeFileSync(technologyPath, technologyCss);
