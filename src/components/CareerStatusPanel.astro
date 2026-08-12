@@ -1,6 +1,32 @@
 ---
-import { BriefcaseBusiness, ShieldCheck } from "@lucide/astro";
+import { BriefcaseBusiness, Check, ShieldCheck } from "@lucide/astro";
 import { careerPublicBoundaries, verifiedOpenVacancies } from "../data/careers-governance";
+
+const qualification = [
+  {
+    title: "Relevant work or a clear starting level",
+    body: "Describe the role or direction that makes sense, recent experience, tools used, and what work can already be done without pretending to have experience that is not there.",
+  },
+  {
+    title: "Measurable results",
+    body: "Use numbers where they exist: calls, leads, contracts, campaigns, traffic, revenue responsibility, loads, hiring volume, response time, or another result that can be explained and checked.",
+  },
+  {
+    title: "Real availability",
+    body: "State country, city, time zone, languages, English level where relevant, daily or weekly availability, and any schedule limits before an interview is considered.",
+  },
+  {
+    title: "Role-specific proof",
+    body: "A suitable next step may be a short answer, portfolio item, call sample, practical task, scenario, or other approved evidence. Not every role uses the same test.",
+  },
+];
+
+const screening = [
+  "General inquiry and minimum qualification details",
+  "Human review for role, evidence, language, schedule, and current need",
+  "Practical question, sample, or test only when relevant",
+  "Interview only after the earlier screening gives enough reason to continue",
+];
 ---
 
 <section class="section career-status" aria-labelledby="career-status-title">
@@ -20,6 +46,38 @@ import { careerPublicBoundaries, verifiedOpenVacancies } from "../data/careers-g
       {careerPublicBoundaries.map((item) => <li><ShieldCheck size={18} aria-hidden="true" />{item}</li>)}
     </ul>
   </div>
+
+  <div class="shell career-qualification" aria-labelledby="career-qualification-title">
+    <div class="career-qualification-heading">
+      <div>
+        <p class="eyebrow">Before an interview</p>
+        <h2 id="career-qualification-title">Show fit first. Interview time comes after screening.</h2>
+      </div>
+      <p>A resume can provide context, but it is not the whole decision. The useful information is what work has actually been done, what result was produced, what schedule is realistic, and what evidence can support the claim.</p>
+    </div>
+
+    <div class="career-qualification-grid">
+      {qualification.map((item) => (
+        <article>
+          <Check size={20} aria-hidden="true" />
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="career-screening-flow">
+      <div>
+        <p class="eyebrow">Screening flow</p>
+        <h3>Application → review → evidence → interview</h3>
+      </div>
+      <ol>
+        {screening.map((item, index) => <li><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>)}
+      </ol>
+    </div>
+
+    <p class="career-screening-boundary"><strong>Important:</strong> submitting an inquiry, completing a test, joining training, or reaching an interview does not guarantee a job, compensation, placement, promotion, or a future vacancy. Consequential decisions remain human-reviewed.</p>
+  </div>
 </section>
 
 <style>
@@ -32,5 +90,29 @@ import { careerPublicBoundaries, verifiedOpenVacancies } from "../data/careers-g
   .career-status-layout ul { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
   .career-status-layout li { display: flex; gap: .75rem; align-items: flex-start; padding: 1rem; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); line-height: 1.55; color: #344567; }
   .career-status-layout li svg { flex: none; margin-top: .15rem; color: #315fd7; }
-  @media (max-width: 800px) { .career-status-layout { grid-template-columns: 1fr; } }
+  .career-qualification { margin-top: clamp(3rem, 7vw, 6rem); }
+  .career-qualification-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: end; margin-bottom: 1.5rem; }
+  .career-qualification-heading h2 { margin: .35rem 0 0; max-width: 15ch; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.02; letter-spacing: -.035em; }
+  .career-qualification-heading > p { margin: 0; color: #526181; line-height: 1.7; }
+  .career-qualification-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem; }
+  .career-qualification-grid article { padding: 1.2rem; border: 1px solid rgba(28,62,141,.14); border-radius: 14px; background: #fff; }
+  .career-qualification-grid article svg { color: #315fd7; }
+  .career-qualification-grid h3 { margin: .8rem 0 .55rem; color: #122b72; font-size: 1.05rem; }
+  .career-qualification-grid p { margin: 0; color: #526181; line-height: 1.6; }
+  .career-screening-flow { display: grid; grid-template-columns: minmax(220px, .45fr) 1fr; gap: 1.5rem; margin-top: 1rem; padding: 1.3rem; border-radius: 14px; background: #071038; color: white; }
+  .career-screening-flow h3 { margin: .35rem 0 0; }
+  .career-screening-flow ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .65rem; margin: 0; padding: 0; list-style: none; }
+  .career-screening-flow li { padding: .8rem; border: 1px solid rgba(255,255,255,.16); border-radius: 10px; }
+  .career-screening-flow li span { font-size: .76rem; font-weight: 800; color: #aebdff; }
+  .career-screening-flow li p { margin: .45rem 0 0; color: rgba(255,255,255,.76); line-height: 1.5; }
+  .career-screening-boundary { margin: 1rem 0 0; padding: 1rem 1.15rem; border-left: 4px solid #315fd7; background: #fff; color: #526181; line-height: 1.6; }
+  @media (max-width: 960px) {
+    .career-qualification-grid, .career-screening-flow ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 800px) {
+    .career-status-layout, .career-qualification-heading, .career-screening-flow { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 620px) {
+    .career-qualification-grid, .career-screening-flow ol { grid-template-columns: 1fr; }
+  }
 </style>
