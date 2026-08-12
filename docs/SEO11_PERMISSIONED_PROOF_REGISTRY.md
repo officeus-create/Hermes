@@ -63,19 +63,19 @@ Do not place here:
 
 ### Logistics SEO reviewer
 
-- Decision state: `PENDING`
-- Allowed outcomes:
-  - verified real reviewer + explicit publication permission; or
-  - `NO_NAMED_REVIEWER`.
-- Prohibited outcome: synthetic identity, implied review, invented credential or borrowed authority.
+- Decision state: `NO_NAMED_REVIEWER_CURRENT_CYCLE`
+- Publication decision: current Logistics SEO content remains institutionally/repository reviewed; no named reviewer biography, credential, photograph, endorsement, or `reviewedBy` person is published for this cycle.
+- Reason: no sufficiently verified real reviewer identity + current review responsibility + publication permission was established in the reviewed owner-controlled sources. Absence of evidence is not replaced with a synthetic expert.
+- Reopen condition: a real reviewer may be added later only after identity, actual review responsibility, biography/credential wording and publication permission are verified.
 
 ### Academy instructor / mentor
 
-- Decision state: `PENDING`
-- Allowed outcomes:
-  - verified real instructor/mentor + explicit publication permission; or
-  - `NO_NAMED_INSTRUCTOR`.
-- Prohibited outcome: synthetic instructor profile, fabricated employment/teaching history or implied endorsement.
+- Decision state: `NO_NAMED_INSTRUCTOR_CURRENT_CYCLE`
+- Publication decision: current Academy pages do not create a named instructor/mentor profile merely to strengthen trust signals.
+- Reason: no sufficiently verified real instructor/mentor identity + current approved program responsibility + publication permission was established for public use in this cycle.
+- Reopen condition: a real instructor/mentor may be added later only after the current program role, identity, biography/credential wording and publication permission are verified.
+
+These are conservative publication defaults, not claims that no real reviewer, instructor, mentor, employee, contractor, or contributor exists. They prevent an unresolved trust slot from blocking unrelated SEO work or being filled with invented authority.
 
 ## Promotion gates
 
