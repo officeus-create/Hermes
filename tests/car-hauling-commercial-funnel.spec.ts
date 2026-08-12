@@ -18,7 +18,12 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   await expect(actions.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
 
   const publicCopy = await page.locator("main").innerText();
-  expect(publicCopy).toContain("one vehicle through multi-car capacity");
+  expect(publicCopy).toContain("You do not get just a dispatcher.");
+  expect(publicCopy).toContain("Team 1 · Keep today moving");
+  expect(publicCopy).toContain("Team 2 · Build tomorrow's demand");
+  expect(publicCopy).toContain("Scope before percentage");
+  expect(publicCopy).toContain("Why can the Full Partnership option be 8%?");
+  expect(publicCopy).toContain("Can I reject a load?");
   expect(publicCopy).toContain("MC or USDOT number");
   expect(publicCopy).toContain("Does Hermes guarantee loads, rates, or revenue?");
   expect(publicCopy).toContain("No guaranteed lanes or revenue claims.");
@@ -28,6 +33,7 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   expect(publicCopy).toContain("What happens during the first 24–48 hours after approval?");
   expect(publicCopy).toContain("not a guarantee of dispatcher assignment, response time, load availability, booking, rate, mileage, lane consistency, or revenue");
   expect(publicCopy).toContain("Missing documents, market conditions, broker requirements, or carrier changes can extend the sequence.");
+  expect(publicCopy).not.toMatch(/guaranteed direct loads|guaranteed rankings|guaranteed customers/i);
 
   await page.evaluate(() => {
     document.querySelector("[data-commercial-primary-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
