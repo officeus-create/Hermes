@@ -22,6 +22,9 @@ test("AI sales assistant uses the same consultant-first operating loop for every
   expect(salesAssistantRoutes.every((route) => route.smallestStep.length > 0)).toBeTruthy();
   expect(salesAssistantRoutes.every((route) => route.roadmap.length > 0)).toBeTruthy();
   expect(salesAssistantRoutes.every((route) => route.ctaHref.startsWith("/"))).toBeTruthy();
+  expect(salesAssistantRoutes.every((route) => route.prohibitedClaims.includes("guaranteed loads"))).toBeTruthy();
+  expect(salesAssistantRoutes.every((route) => route.prohibitedClaims.includes("guaranteed rankings"))).toBeTruthy();
+  expect(salesAssistantRoutes.every((route) => route.prohibitedClaims.includes("guaranteed revenue"))).toBeTruthy();
 });
 
 test("carrier assistant explains broader scope without promising the market outcome", async () => {
