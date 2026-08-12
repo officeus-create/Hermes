@@ -12,7 +12,6 @@ import SiteHeader from "../components/SiteHeader.astro";
 import TrustBadge from "../components/TrustBadge.astro";
 import WebsiteProofBand from "../components/WebsiteProofBand.astro";
 import WhyItMatters from "../components/WhyItMatters.astro";
-import { site } from "../data/site";
 import { publicPaths } from "../data/public-paths";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
@@ -70,7 +69,6 @@ const websiteSchema = {
 <BaseLayout
   title="Hermes | U.S. Logistics, Marketing, Academy & AI Systems"
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
-  preloadImage={site.hero.image}
   schema={[organizationSchema, websiteSchema]}
   alternates={languageAlternates}
 >
