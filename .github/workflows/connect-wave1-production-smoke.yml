@@ -1,0 +1,67 @@
+name: Verify Hermes Connect Wave 1 production routes
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/connect-wave1-production-smoke.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connect-wave1-production-smoke
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify five Wave 1 Connect routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify production routes and noindex boundary
+        run: |
+          node <<'NODE'
+          const targets = [
+            ["https://connect.hermeslogisticsus.com/load-analyzer/", "Hermes Connect Load Analyzer"],
+            ["https://connect.hermeslogisticsus.com/search-opportunity-radar/", "Search Opportunity Radar"],
+            ["https://connect.hermeslogisticsus.com/revenue-dashboard/", "Revenue Dashboard"],
+            ["https://connect.hermeslogisticsus.com/multi-car-planner/", "Multi-Car Transport Planner"],
+            ["https://connect.hermeslogisticsus.com/logistics-seo-analyzer/", "Logistics SEO Analyzer"],
+          ];
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const results = [];
+          for (const [url, marker] of targets) {
+            let passed = false;
+            let last = {};
+            for (let attempt = 1; attempt <= 12; attempt += 1) {
+              try {
+                const response = await fetch(`${url}?wave1=${Date.now()}`, {
+                  redirect: "follow",
+                  headers: {
+                    "cache-control": "no-cache",
+                    pragma: "no-cache",
+                    "user-agent": "HermesConnectWave1ReleaseVerifier/1.0",
+                  },
+                  signal: AbortSignal.timeout(20_000),
+                });
+                const body = await response.text();
+                const noindex = /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(body)
+                  || /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(body);
+                last = { status: response.status, marker: body.includes(marker), noindex };
+                if (response.status === 200 && body.includes(marker) && noindex) {
+                  passed = true;
+                  break;
+                }
+              } catch (error) {
+                last = { error: error instanceof Error ? error.message : String(error) };
+              }
+              if (attempt < 12) await sleep(10_000);
+            }
+            results.push({ url, passed, ...last });
+          }
+          console.log(JSON.stringify(results, null, 2));
+          if (results.some((item) => !item.passed)) process.exit(1);
+          NODE
