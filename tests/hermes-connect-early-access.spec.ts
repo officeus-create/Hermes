@@ -2,12 +2,14 @@ import { expect, test } from "@playwright/test";
 
 const route = "/demos/hermes-connect/";
 
-test("Hermes Connect routes every category into one Web App access form", async ({ page }) => {
+test("Hermes Connect surfaces live tools and keeps one Web App access form", async ({ page }) => {
   await page.goto(route);
 
-  await expect(page).toHaveTitle("Hermes Connect Web App · Request Access");
+  await expect(page).toHaveTitle("Hermes Connect Web App · Live Tools");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
-  await expect(page.getByRole("heading", { name: /One clear client path/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /One clear workflow/i })).toBeVisible();
+  await expect(page.locator("#live-tools")).toBeVisible();
+  await expect(page.locator("[data-connect-tool]")).toHaveCount(5);
 
   const categoryCards = page.locator("[data-category-id]");
   await expect(categoryCards).toHaveCount(10);
@@ -22,7 +24,8 @@ test("Hermes Connect routes every category into one Web App access form", async 
   await expect(page.getByText(/iPhone|Android|App Store|Google Play/i)).toHaveCount(0);
   await expect(page.getByRole("heading", { name: /Requests become reviewed product tasks/i })).toBeVisible();
   await expect(page.getByText(/AI tools support implementation/i)).toBeVisible();
-  await expect(page.getByText(/accepts Web App access requests only/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Need a workflow that is not in Live Tools yet/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Request Web App access/i })).toBeVisible();
   await expect(page.locator('footer a[href="https://hermeslogisticsus.com/services/hermes-connect/"]')).toBeVisible();
   await expect(page.locator('footer a[href="https://hermeslogisticsus.com/services/hermes-connect/"]')).toHaveText("Hermes Connect overview");
 });
@@ -47,6 +50,7 @@ test("Hermes Connect exposes the automotive and equipment categories on mobile",
   await expect(page.locator('[name="category_id"]')).toHaveValue("oversize-specialty-equipment");
   await expect(page.locator("[data-selected-summary] strong")).toContainText("Oversize & specialty equipment · Hermes Connect Web App");
   await expect(page.locator(".mobile-apply")).toBeVisible();
+  await expect(page.locator(".mobile-apply")).toHaveAttribute("href", "#live-tools");
 });
 
 test("Hermes Connect submits a privacy-safe Web App access request through the protected adapter", async ({ page }) => {
