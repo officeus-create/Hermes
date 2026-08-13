@@ -8,6 +8,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Service, Appointment, UserRole } from '../types';
+import { BeautyBentoDashboard } from '../components/BeautyBentoDashboard';
 
 interface BeautyWorkspaceProps {
   services: Service[];
@@ -61,7 +62,10 @@ export const BeautyWorkspace: React.FC<BeautyWorkspaceProps> = ({
   const confirmedCount = appointments.filter(a => a.status === 'confirmed').length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* 8-in-1 Bento Studio Dashboard */}
+      <BeautyBentoDashboard />
+
       {/* Top Banner KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="glass-card p-4 border border-indigo-500/30 flex flex-col justify-between min-h-[96px]">

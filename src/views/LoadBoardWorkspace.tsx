@@ -11,6 +11,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { FreightLoad, UserRole } from '../types';
+import { LogisticsDispatcherControlCenter } from '../components/LogisticsDispatcherControlCenter';
 
 interface LoadBoardWorkspaceProps {
   loads: FreightLoad[];
@@ -53,7 +54,10 @@ export const LoadBoardWorkspace: React.FC<LoadBoardWorkspaceProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Car Hauler & Logistics Dispatcher Control Center */}
+      <LogisticsDispatcherControlCenter />
+
       {/* Logistics Banner */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <div className="glass-card p-4 border border-amber-500/30 flex flex-col justify-between min-h-[96px]">
