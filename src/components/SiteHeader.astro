@@ -2,6 +2,7 @@
 import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
+import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 
 interface Props {
   theme?: "dark" | "light";
@@ -46,6 +47,7 @@ const languageLinks = siteLocales.map((language) => ({
   </nav>
 
   <div class="header-actions">
+    <HermesConnectLauncher variant="header" />
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[locale].name}`}>
         <Languages size={16} aria-hidden="true" />
@@ -71,6 +73,7 @@ const languageLinks = siteLocales.map((language) => ({
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
+    <HermesConnectLauncher variant="mobile" />
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">

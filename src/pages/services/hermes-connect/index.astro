@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, CalendarDays, Check, Globe, LayoutDashboard, MessageSquareText, ShieldCheck, Sparkles, UsersRound } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
@@ -243,6 +244,8 @@ import "../../../styles/features/hermes-connect-faq.css";
       </div>
     </section>
 
+    <HermesConnectLauncher variant="banner" context="general" />
+
     <section class="connect-service-final" aria-labelledby="connect-final-title">
       <div class="shell connect-service-final-grid">
         <div>
@@ -250,7 +253,7 @@ import "../../../styles/features/hermes-connect-faq.css";
           <h2 id="connect-final-title">Choose your category and show us the client workflow that matters most.</h2>
           <p>The access request does not create an account, booking, payment, or subscription automatically. Hermes reviews the request before sending access instructions.</p>
         </div>
-        <a class="button button-primary" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={18} aria-hidden="true" /></a>
+        <HermesConnectLauncher variant="inline" href="https://connect.hermeslogisticsus.com/#apply" label="Request Web App access" />
       </div>
     </section>
   </main>

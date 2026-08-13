@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
+import HermesConnectLauncher from "../../components/HermesConnectLauncher.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
@@ -76,6 +77,7 @@ const schema = faqSchema
     </>
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
+  <HermesConnectLauncher variant="banner" context={path.id as any} />
   <ContactCTA selectedPath={path.category} />
   <SiteFooter />
 </BaseLayout>

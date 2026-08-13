@@ -2,6 +2,7 @@
 import { ArrowUp, Phone } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
+import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 
 interface Props {
   locale?: SiteLocale;
@@ -149,6 +150,7 @@ const localePath = localeConfig[locale].path;
       <p class="footer-brand">{site.brand}</p>
       <p>{localized.statement}</p>
       <p class="footer-location">{publicLocationBoundary}</p>
+      <HermesConnectLauncher variant="footer" />
     </div>
     <nav aria-label="Footer navigation">
       {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
