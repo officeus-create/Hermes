@@ -13,9 +13,11 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "SEO for Logistics, Trucking & Dispatch Companies | Hermes",
-    h1: "SEO for Logistics, Trucking and Dispatch Companies",
+    title: "Logistics SEO Agency for Trucking & Transportation Companies | Hermes",
+    h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     required: [
+      "Commercial query-to-page ownership",
+      "Trucking, transportation and warehousing content architecture",
       "Audience and service architecture",
       "Trucking, dispatch and freight-broker query map",
       "Logistics website SEO audit",
@@ -24,6 +26,8 @@ const pages = [
       "Search-to-qualified-inquiry measurement",
       "Current load-board offers are private observations",
       "No universal package, price or implementation volume",
+      "Is Hermes a logistics SEO agency for trucking and transportation companies?",
+      "Do trucking SEO, transportation SEO and warehousing SEO need separate pages?",
       "Does Hermes provide SEO for trucking and dispatch companies?",
       "What is the smallest useful starting scope?",
       "Can the project begin with an audit only?",
@@ -87,9 +91,7 @@ for (const page of pages) {
   assert.ok(!html.includes('href="/case/it-development/">View the website case'), `${page.route} must not use the IT case as its hero proof`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
   const schemaTypes = parseSchema(html).map((entity) => entity?.["@type"]);
-  for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) {
-    assert.ok(schemaTypes.includes(requiredType), `${page.route} missing ${requiredType}`);
-  }
+  for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) assert.ok(schemaTypes.includes(requiredType), `${page.route} missing ${requiredType}`);
   assert.ok(sitemap.includes(`<loc>https://hermeslogisticsus.com${page.route}</loc>`), `${page.route} missing from sitemap`);
   assert.ok(seoHub.includes(`href="${page.route}"`), `${page.route} missing from national SEO hub`);
 }
@@ -104,10 +106,7 @@ for (const cta of digitalGrowthCtaVariants) {
 }
 
 assert.equal(digitalNicheResearch.length, 4);
-assert.deepEqual(
-  digitalNicheResearch.map((record) => record.id).sort(),
-  ["beauty_and_salon", "education_and_training", "home_services", "professional_services"],
-);
+assert.deepEqual(digitalNicheResearch.map((record) => record.id).sort(), ["beauty_and_salon", "education_and_training", "home_services", "professional_services"]);
 for (const record of digitalNicheResearch) {
   assert.ok(record.researchQuestions.length >= 4);
   assert.ok(record.requiredEvidence.length >= 5);
@@ -122,13 +121,7 @@ for (const record of digitalNicheResearch) {
 }
 
 const researchReady = evaluateDigitalNicheResearch({
-  ...digitalNicheResearch[0],
-  sourceIds: ["fixture-niche-source-001"],
-  reviewedAt: "2026-07-31",
-  measurableDemand: true,
-  serviceResponseCapacityConfirmed: true,
-  proofReviewed: true,
-  uniqueContentPlan: true,
+  ...digitalNicheResearch[0], sourceIds: ["fixture-niche-source-001"], reviewedAt: "2026-07-31", measurableDemand: true, serviceResponseCapacityConfirmed: true, proofReviewed: true, uniqueContentPlan: true,
 });
 assert.equal(researchReady.status, "eligible_for_editorial_review");
 assert.deepEqual(researchReady.blockers, []);
