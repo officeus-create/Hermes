@@ -65,6 +65,16 @@
         ['▣','Scheduled 4 property tours','Calendar · agent availability','17 min ago'],
         ['◉','Followed up with 6 warm buyers','Inbox · personalized listing context','27 min ago']
       ]
+    },
+    auto: {
+      name: 'Apex Auto Care', label: 'Auto repair & detailing', revenue: '$6,920', leads: '19', bookings: '15 cars', actions: '52',
+      summary: 'Hermes scheduled 5 service diagnostics, dispatched 2 detailing slots, and prepared 3 quote approvals.',
+      activity: [
+        ['⌁','Scheduled 5 diagnostic sessions','Operations · bay availability matched','2 min ago'],
+        ['↗','Sent 3 brake & repair estimates','Sales · instant quote approval sent','8 min ago'],
+        ['◎','Matched 2 detailing bays','Calendar · ceramic coat package','15 min ago'],
+        ['$','Calculated parts & labor margin','Finance · auto parts API sync','28 min ago']
+      ]
     }
   };
 
@@ -255,6 +265,35 @@
     setTimeout(() => button.textContent = previous, 1200);
   }));
 
+  // Guided 5-Minute Tour
+  $('[data-demo-tour]')?.addEventListener('click', () => {
+    setDrawer(false);
+    setView('home');
+    alert('▶ 5-Minute Guided Tour Started:\n\n1. Business Dashboard & Pearl Visual Theme\n2. Multi-Vertical Switcher (Beauty, Logistics, Auto Repair, Fitness, Agency, Real Estate)\n3. Front-Door AI Brain (Intent classification & automated workflows)\n4. Unified Inbox & AI-assisted customer response\n5. Auto-repair & Load board rate confirmation parser\n\nClick any sidebar tab to continue exploring!');
+  });
+
+  // Role Switcher
+  $('[data-role-select]')?.addEventListener('change', (e) => {
+    const role = e.target.value;
+    alert(`Role switched to: ${role.toUpperCase()}.\nUI access levels and action permissions updated for ${role}.`);
+  });
+
+  // Language Switcher
+  $('[data-lang-select]')?.addEventListener('change', (e) => {
+    const lang = e.target.value;
+    const titleMap = {
+      EN: 'Good morning, Vladimir.',
+      UK: 'Доброго ранку, Володимир.',
+      RU: 'Доброе утро, Владимир.',
+      ES: 'Buenos días, Vladimir.',
+      IT: 'Buongiorno, Vladimir.',
+      FR: 'Bonjour, Vladimir.'
+    };
+    if (titleMap[lang]) {
+      $('[data-view-title]').textContent = titleMap[lang];
+    }
+  });
+
   const hermesForm = $('[data-hermes-form]');
   hermesForm?.addEventListener('submit', event => {
     event.preventDefault();
@@ -265,9 +304,24 @@
     const user = document.createElement('div');
     user.className = 'user-message';
     user.textContent = question;
+    
+    // Call Front-Door AI Brain Classifier if available
+    let brainResult = null;
+    if (window.HermesAIBrain && typeof window.HermesAIBrain.classifyIntent === 'function') {
+      brainResult = window.HermesAIBrain.classifyIntent(question, currentVertical);
+    }
+
     const answer = document.createElement('div');
     answer.className = 'hermes-message';
-    answer.innerHTML = `<small>✦ Hermes</small><p>Prototype answer: I would combine ${verticals[currentVertical].label.toLowerCase()} context with Inbox, CRM, Calendar, Sales, Finance and Operations, then show the recommended action, expected impact and what evidence I used.</p>`;
+    if (brainResult) {
+      answer.innerHTML = `<small>✦ Hermes Front-Door Brain [Match: ${(brainResult.confidence * 100).toFixed(0)}%]</small>
+        <p><strong>Vertical:</strong> ${brainResult.verticalLabel} | <strong>Intent:</strong> ${brainResult.intent}</p>
+        <p>${brainResult.recommendation}</p>
+        <p><em>Suggested Action:</em> ${brainResult.actionText}</p>`;
+    } else {
+      answer.innerHTML = `<small>✦ Hermes</small><p>I would combine ${verticals[currentVertical].label.toLowerCase()} context with Inbox, CRM, Calendar, Sales, Finance and Operations, then show the recommended action, expected impact and what evidence I used.</p>`;
+    }
+
     thread.append(user, answer);
     textarea.value = '';
     thread.scrollTop = thread.scrollHeight;

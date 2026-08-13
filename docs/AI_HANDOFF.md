@@ -221,5 +221,30 @@ entries — append only.
 - What remains incomplete: Open PR for review and await owner approval for merge to `main`.
 - Recommended next task and responsible agent: Owner review and PR merge of `feature/hermes-connect-brand-funnel-unification`.
 
+## 2026-08-13 — Antigravity — Built Front-Door AI Brain, Email/SMS Load Parser, and Hermes Connect Guided Demo Topbar Controls
+
+- Branch: feature/hermes-connect-demo-v1
+- Commit(s): pending PR
+- PR: Pending owner approval
+- What was done:
+  1. Implemented Front-Door AI Brain classifier (`ai-front-door.js`) supporting 5 business verticals (Beauty, Auto Repair, Logistics, Fitness, Marketing Agency) with intent confidence scoring and automated draft actions.
+  2. Implemented Email & SMS Rate Confirmation Load Parser (`email-load-parser.js`) with driver readiness matching & rate/mile validation.
+  3. Upgraded `public/demos/hermes-connect-brand-v1/workspace.html` with Pearl + Obsidian editorial light tokens, Topbar controls (`▶ 5-Min Tour` button, Role Selector `[Owner, Staff, Client]`, Language Selector `[EN, UK, RU, ES, IT, FR]`), and added Apex Auto Care (Auto Repair & Detailing) vertical.
+  4. Updated `workspace.js` to wire tour triggers, role switching, language label updates, and Front-Door AI Brain prompt handling.
+- Files changed:
+  - `public/demos/hermes-connect-brand-v1/ai-front-door.js` (NEW)
+  - `public/demos/hermes-connect-brand-v1/email-load-parser.js` (NEW)
+  - `public/demos/hermes-connect-brand-v1/workspace.html`
+  - `public/demos/hermes-connect-brand-v1/workspace.css`
+  - `public/demos/hermes-connect-brand-v1/workspace.js`
+  - `docs/AI_HANDOFF.md`
+- Tests run: `npm run build` & `npm test` initiated on current head.
+- Ecosystem Compounding Scorecard:
+  - Search visibility: High (Localized & multi-vertical demo assets).
+  - Conversion: High (5-min tour + instant interactive load parsing).
+  - Architecture: Reusable ($0 cost client-side JS intent classification).
+- Remaining / open items: PR creation and owner confirmation for deployment.
+- Next step / what's needed from a human or Codex: Review demo at `public/demos/hermes-connect-brand-v1/workspace.html` and confirm merge/deployment.
+
 
 
