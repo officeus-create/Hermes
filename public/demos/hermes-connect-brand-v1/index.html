@@ -4,9 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <meta name="theme-color" content="#F7F6F3">
+  <meta name="theme-color" content="#F7F6F3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0B0D12" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hermes Connect">
   <meta name="description" content="Hermes Connect Brand V1 interactive web lab for visual testing of the approved AI Operating System for Business direction.">
   <title>Hermes Connect · Brand V1 Web Lab</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon-192.svg">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body class="theme-pearl">
@@ -248,5 +256,18 @@
   </footer>
 
   <script src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            console.log('[Hermes PWA] Service Worker registered with scope:', reg.scope);
+          })
+          .catch((err) => {
+            console.warn('[Hermes PWA] Service Worker registration failed:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
