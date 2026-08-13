@@ -16,10 +16,7 @@
       "status": "COMPLETE",
       "blocker": "Controlled Brand V1 visual lab remains noindex and is not a public product, revenue, customer-result, or autonomous-AI claim.",
       "response_status": 200,
-      "comparison": {
-        "production": "pending_deployment",
-        "immutable_release": "missing"
-      }
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
     },
     {
       "route": "/demos/hermes-connect-brand-v1/sales-roleplay.html",
@@ -32,14 +29,24 @@
       "status": "COMPLETE",
       "blocker": "Controlled Hermes Sales Coach visual prototype only: no live microphone/video/cloud processing, no production scoring authority, and no public performance or revenue claim.",
       "response_status": 200,
-      "comparison": {
-        "production": "pending_deployment",
-        "immutable_release": "missing"
-      }
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/demos/hermes-connect-brand-v1/mobile.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/mobile.html",
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect-brand-v1/mobile.html",
+      "status": "COMPLETE",
+      "blocker": "Controlled Hermes Connect mobile-web visual preview only: displayed metrics and activity are illustrative UI data, not verified customer, revenue, booking, or autonomous-operation results.",
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
     }
   ],
   "acceptance": {
-    "route_count_added": 2,
+    "route_count_added": 3,
     "indexable_route_count_added": 0,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
