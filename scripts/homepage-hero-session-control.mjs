@@ -106,6 +106,7 @@ async function runMode(mode, pair, order) {
         naturalWidth: hero.naturalWidth,
         naturalHeight: hero.naturalHeight,
         currentSrc,
+        alt: hero.alt || null,
         rect: hero.getBoundingClientRect().toJSON(),
         style: heroStyle ? {
           display: heroStyle.display,
@@ -232,6 +233,25 @@ const summary = {
 await fs.mkdir(OUTPUT_DIR, { recursive: true });
 await fs.writeFile(`${OUTPUT_DIR}/runs.json`, `${JSON.stringify(runs, null, 2)}\n`);
 await fs.writeFile(`${OUTPUT_DIR}/summary.json`, `${JSON.stringify(summary, null, 2)}\n`);
-await fs.writeFile(`${OUTPUT_DIR}/summary.md`, `# Homepage hero session-control diagnostic\n\n- URL: ${URL}\n- Pairs: ${PAIRS}\n- Control: exact same \\`/\\` URL, fresh context per run, no hash/query bypass.\n- Regular mode: \\`sessionStorage.hermes-intro-seen=true\\` injected before page scripts.\n\n| Metric | First visit | Regular home | First - regular |\n|---|---:|---:|---:|\n| LCP median | ${first.lcpMedianMs} ms | ${regular.lcpMedianMs} ms | ${summary.deltaFirstMinusRegular.lcpMedianMs} ms |\n| Hero render delay median | ${first.heroRenderDelayMedianMs} ms | ${regular.heroRenderDelayMedianMs} ms | ${summary.deltaFirstMinusRegular.heroRenderDelayMedianMs} ms |\n| TTFB median | ${first.ttfbMedianMs} ms | ${regular.ttfbMedianMs} ms | ${summary.deltaFirstMinusRegular.ttfbMedianMs} ms |\n| Hero-is-LCP | ${first.heroIsLcpCount}/${first.runs} | ${regular.heroIsLcpCount}/${regular.runs} | — |\n| intro-pending | ${first.introPendingCount}/${first.runs} | ${regular.introPendingCount}/${regular.runs} | — |\n\nDiagnostic only; do not infer a production change unless the same-URL paired result is stable and the LCP node is the same hero in both modes.\n`);
+const markdown = [
+  "# Homepage hero session-control diagnostic",
+  "",
+  `- URL: ${URL}`,
+  `- Pairs: ${PAIRS}`,
+  "- Control: exact same / URL, fresh context per run, no hash/query bypass.",
+  "- Regular mode: sessionStorage.hermes-intro-seen=true injected before page scripts.",
+  "",
+  "| Metric | First visit | Regular home | First - regular |",
+  "|---|---:|---:|---:|",
+  `| LCP median | ${first.lcpMedianMs} ms | ${regular.lcpMedianMs} ms | ${summary.deltaFirstMinusRegular.lcpMedianMs} ms |`,
+  `| Hero render delay median | ${first.heroRenderDelayMedianMs} ms | ${regular.heroRenderDelayMedianMs} ms | ${summary.deltaFirstMinusRegular.heroRenderDelayMedianMs} ms |`,
+  `| TTFB median | ${first.ttfbMedianMs} ms | ${regular.ttfbMedianMs} ms | ${summary.deltaFirstMinusRegular.ttfbMedianMs} ms |`,
+  `| Hero-is-LCP | ${first.heroIsLcpCount}/${first.runs} | ${regular.heroIsLcpCount}/${regular.runs} | — |`,
+  `| intro-pending | ${first.introPendingCount}/${first.runs} | ${regular.introPendingCount}/${regular.runs} | — |`,
+  "",
+  "Diagnostic only; do not infer a production change unless the same-URL paired result is stable and the LCP node is the same hero in both modes.",
+  "",
+].join("\n");
+await fs.writeFile(`${OUTPUT_DIR}/summary.md`, markdown);
 
 console.log(JSON.stringify(summary, null, 2));
