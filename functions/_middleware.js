@@ -6,6 +6,8 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
+const CONNECT_ACCESS_REDIRECT = "/workspace-access-redirect.js";
+const CONNECT_ACCESS_REDIRECT_MARKER = "data-hermes-connect-access-redirect";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
 const STALE_PUBLIC_COPY = [
   "Your information was not sent or stored.",
@@ -26,6 +28,7 @@ const BRAND_ROOT_ASSETS = new Set([
   "/workspace.js",
   "/workspace-launch-v2.js",
   "/workspace-v2.js",
+  "/workspace-access-redirect.js",
   "/styles.css",
   "/app.js",
 ]);
@@ -125,6 +128,11 @@ async function connectHtmlResponse(response, { legacy = false } = {}) {
 
   let html = await response.text();
   if (legacy) html = applyLegacyBrandShell(html);
+
+  if (!legacy && !html.includes(CONNECT_ACCESS_REDIRECT_MARKER)) {
+    const compatibility = `<script src="${CONNECT_ACCESS_REDIRECT}" ${CONNECT_ACCESS_REDIRECT_MARKER}></script>`;
+    html = /<\/body\s*>/i.test(html) ? html.replace(/<\/body\s*>/i, `${compatibility}</body>`) : `${html}${compatibility}`;
+  }
 
   if (!html.includes(CONNECT_ANALYTICS_MARKER)) {
     const bootstrap = `<script type="module" src="${CONNECT_ANALYTICS_SCRIPT}" ${CONNECT_ANALYTICS_MARKER}></script>`;
