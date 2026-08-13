@@ -6,6 +6,8 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
+const OLD_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/#apply";
+const NEW_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/request-access/#apply";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
 const STALE_PUBLIC_COPY = [
   "Your information was not sent or stored.",
@@ -177,10 +179,11 @@ async function sanitizeMainDomainCopy(context) {
   if (!contentType.toLowerCase().includes("text/html")) return response;
 
   const original = await response.text();
-  const sanitized = STALE_PUBLIC_COPY.reduce(
+  let sanitized = STALE_PUBLIC_COPY.reduce(
     (html, staleCopy) => html.replaceAll(staleCopy, LIVE_DELIVERY_COPY),
     original,
   );
+  sanitized = sanitized.replaceAll(OLD_CONNECT_ACCESS, NEW_CONNECT_ACCESS);
   if (sanitized === original) return new Response(original, response);
 
   const headers = new Headers(response.headers);
