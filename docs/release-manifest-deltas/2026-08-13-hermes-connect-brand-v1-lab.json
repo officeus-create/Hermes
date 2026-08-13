@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-13-hermes-connect-brand-v1-lab",
+  "generated_at": "2026-08-13T05:10:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/demos/hermes-connect-brand-v1/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/",
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect-brand-v1/index.html",
+      "status": "COMPLETE",
+      "blocker": "Controlled Brand V1 visual lab remains noindex and is not a public product, revenue, customer-result, or autonomous-AI claim.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
