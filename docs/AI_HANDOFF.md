@@ -22,6 +22,24 @@ entries — append only.
 
 ## Log
 
+## 2026-08-13 — Antigravity — Hermes Connect GEO context index & revenue expansion suite
+
+- Branch: feature/hermes-connect-brand-funnel-unification
+- Commit(s): 41b9404
+- PR: Pending review / merge
+- What was done:
+  1. Created `public/llms-full.txt` providing exhaustive GEO corporate & commercial documentation for LLM crawlers (ChatGPT, Perplexity, Claude, Gemini, SearchGPT) covering SaaS tiers ($99/$299/$799), zero-dependency PWA, and direct lead intake.
+  2. Implemented direct lead intake modal, Command Center Inbox with status filtering (NEW, QUALIFIED, PROPOSAL_SENT), and `window.HermesAIBrain` qualification.
+  3. Integrated B2B Freight Rate Negotiator calculating RPM, fuel, driver pay, net margin %, and 3 counter-offer generation strategies.
+  4. Added Instant Proposal Generator modal with billing toggles and HTML/PDF export.
+  5. Built Interactive ROI Calculator Widget estimating weekly hours saved and monthly recovered revenue.
+  6. Verified PWA offline manifest & service worker contract (`scripts/hermes-connect-pwa-contract.test.mjs`).
+- Files changed: `public/llms-full.txt`, `public/demos/hermes-connect-brand-v1/workspace.html`, `public/demos/hermes-connect-brand-v1/workspace.css`, `public/demos/hermes-connect-brand-v1/workspace.js`, `public/demos/hermes-connect-brand-v1/manifest.webmanifest`, `public/demos/hermes-connect-brand-v1/sw.js`, `scripts/hermes-connect-pwa-contract.test.mjs`, `scripts/generate-pwa-png-icons.mjs`.
+- Tests run (and result): `npm run build && npm test` passed 100% (152 static pages, 0 errors, 0 warnings, brand/funnel & PWA contracts green).
+- Remaining / open items: Deploy preview and review PR with Tech Lead (Codex) / CEO (Vladimir).
+- Next step: Continue ecosystem compounding roadmap across multi-vertical funnel activations.
+
+
 ## 2026-08-11 — Codex — closed Claude handoff and verified production measurement access
 
 - Branch: docs/claude-handoff-codex-2026-08-11
