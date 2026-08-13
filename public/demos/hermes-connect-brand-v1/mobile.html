@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#F7F6F3">
+  <title>Hermes Connect · Mobile Preview</title>
+  <style>
+    :root{--pearl:#F7F6F3;--ink:#0B0D12;--graphite:#1C1E26;--violet:#7C5CFF;--blue:#5AC8FA;--mint:#7FD1B6;--sand:#F3E9DC;--line:rgba(11,13,18,.10);--muted:#6F7480;--card:rgba(255,255,255,.78)}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#fbfaf7 0%,var(--pearl) 45%,#efede8 100%);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;min-height:100vh}
+    button{font:inherit}.app{width:min(100%,430px);min-height:100vh;margin:0 auto;background:rgba(247,246,243,.92);position:relative;overflow:hidden;padding-bottom:96px;box-shadow:0 0 80px rgba(11,13,18,.10)}
+    .glow{position:absolute;width:260px;height:260px;border-radius:50%;filter:blur(55px);opacity:.26;pointer-events:none}.g1{background:var(--violet);top:-100px;right:-100px}.g2{background:var(--blue);top:280px;left:-170px}
+    header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;background:rgba(247,246,243,.82);backdrop-filter:blur(22px);border-bottom:1px solid rgba(11,13,18,.06)}
+    .brand{display:flex;align-items:center;gap:9px}.mark{width:31px;height:31px;border-radius:10px;background:var(--ink);display:grid;place-items:center;box-shadow:0 7px 18px rgba(11,13,18,.18)}.mark svg{width:20px;height:20px}.brand b{display:block;font-size:13px;letter-spacing:-.02em}.brand small{display:block;color:var(--muted);font-size:9px;margin-top:1px}
+    .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--blue));color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700}
+    main{position:relative;z-index:2;padding:18px}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);margin:4px 0 10px}.hero h1{font-size:37px;line-height:.96;letter-spacing:-.055em;margin:0;max-width:360px}.hero h1 span{background:linear-gradient(115deg,var(--violet),#4d7df7 65%,#2ab1c7);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{font-size:13px;line-height:1.55;color:#555b66;margin:14px 0 16px;max-width:355px}
+    .intelligence{background:var(--ink);color:#fff;border-radius:24px;padding:18px;position:relative;overflow:hidden;box-shadow:0 20px 50px rgba(11,13,18,.22)}.wave{position:absolute;inset:auto -60px -55px -40px;height:160px;opacity:.7}.wave:before,.wave:after{content:"";position:absolute;left:0;right:0;height:80px;border:1px solid rgba(124,92,255,.35);border-radius:50%;transform:rotate(-8deg)}.wave:after{top:28px;border-color:rgba(90,200,250,.25);transform:rotate(7deg)}
+    .intel-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.intel-top small{display:block;color:#9da3b4;font-size:10px;text-transform:uppercase;letter-spacing:.1em}.intel-top h2{font-size:21px;letter-spacing:-.035em;margin:4px 0 0}.status{font-size:10px;color:var(--mint);background:rgba(127,209,182,.10);border:1px solid rgba(127,209,182,.23);border-radius:999px;padding:6px 8px;white-space:nowrap}
+    .intel-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px;position:relative;z-index:2}.intel-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);padding:11px;border-radius:14px}.intel-card span{display:block;color:#9da3b4;font-size:9px}.intel-card b{font-size:17px;display:block;margin-top:3px}.intel-card em{font-size:9px;color:var(--mint);font-style:normal}
+    .section-title{display:flex;align-items:end;justify-content:space-between;margin:24px 0 10px}.section-title h3{font-size:18px;margin:0;letter-spacing:-.035em}.section-title button{border:0;background:transparent;color:var(--violet);font-size:11px;font-weight:600}
+    .verticals{display:flex;gap:8px;overflow:auto;padding-bottom:4px;scrollbar-width:none}.verticals::-webkit-scrollbar{display:none}.chip{border:1px solid var(--line);background:rgba(255,255,255,.62);color:#5a606b;border-radius:999px;padding:8px 11px;font-size:10px;white-space:nowrap}.chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.metric{background:var(--card);border:1px solid rgba(11,13,18,.07);border-radius:16px;padding:12px 10px;backdrop-filter:blur(12px)}.metric small{font-size:9px;color:var(--muted);display:block}.metric b{font-size:18px;letter-spacing:-.04em;display:block;margin:5px 0 2px}.metric em{font-size:8px;color:#319d78;font-style:normal}
+    .tasks{display:grid;gap:9px}.task{background:rgba(255,255,255,.74);border:1px solid rgba(11,13,18,.07);border-radius:17px;padding:13px;display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center}.task-icon{width:34px;height:34px;border-radius:11px;background:#f0ecff;display:grid;place-items:center;font-size:14px}.task b{display:block;font-size:11px}.task small{display:block;color:var(--muted);font-size:9px;margin-top:3px}.pill{font-size:8px;border-radius:999px;padding:5px 7px;background:#ecf8f3;color:#288568}.pill.pending{background:#fff4df;color:#9a6817}
+    .flow{background:linear-gradient(135deg,rgba(124,92,255,.08),rgba(90,200,250,.10));border:1px solid rgba(124,92,255,.12);border-radius:20px;padding:14px}.flow-line{display:flex;align-items:center;justify-content:space-between;gap:5px}.node{font-size:8px;text-align:center}.node i{width:29px;height:29px;background:#fff;border:1px solid rgba(11,13,18,.08);border-radius:10px;display:grid;place-items:center;margin:0 auto 5px;font-style:normal}.arrow{color:#a0a5ae;font-size:11px}
+    .bottom{position:fixed;z-index:30;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 24px),406px);background:rgba(11,13,18,.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:20px;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));box-shadow:0 18px 44px rgba(11,13,18,.28)}.nav{color:#8f96a6;text-align:center;font-size:8px}.nav i{display:block;font-style:normal;font-size:17px;margin-bottom:2px}.nav.active{color:#fff}.nav.active i{color:#a995ff}
+    .note{font-size:9px;color:#7d828b;text-align:center;margin:18px 14px 0;line-height:1.4}
+    @media(min-width:700px){body{padding:28px 0}.app{min-height:900px;border-radius:34px;border:8px solid #16181d}.bottom{position:absolute;bottom:12px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="glow g1"></div><div class="glow g2"></div>
+    <header>
+      <div class="brand"><div class="mark"><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" fill="none" stroke="#9b86ff" stroke-width="5" stroke-linecap="round"/><path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round"/></svg></div><div><b>Hermes Connect</b><small>Business running</small></div></div>
+      <div class="avatar">HC</div>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="eyebrow">Hermes Intelligence · Live overview</div>
+        <h1>Run your business <span>with AI.</span></h1>
+        <p>One intelligent layer connects leads, customers, bookings, marketing, revenue and operations.</p>
+      </section>
+
+      <section class="intelligence">
+        <div class="intel-top"><div><small>Hermes Intelligence</small><h2>Everything is moving.</h2></div><div class="status">● Active</div></div>
+        <div class="intel-row">
+          <div class="intel-card"><span>Conversations handled</span><b>43</b><em>+12 today</em></div>
+          <div class="intel-card"><span>Revenue influenced</span><b>$2,840</b><em>+14.2%</em></div>
+          <div class="intel-card"><span>Bookings</span><b>24</b><em>6 automated</em></div>
+          <div class="intel-card"><span>Need attention</span><b>3</b><em>Owner review</em></div>
+        </div><div class="wave"></div>
+      </section>
+
+      <div class="section-title"><h3>Your business</h3><button type="button">Customize</button></div>
+      <div class="verticals">
+        <button class="chip active">Beauty</button><button class="chip">Logistics</button><button class="chip">Fitness</button><button class="chip">Agency</button><button class="chip">Real Estate</button>
+      </div>
+
+      <div class="section-title"><h3>Today</h3><button type="button">Details</button></div>
+      <section class="metrics">
+        <div class="metric"><small>New leads</small><b>18</b><em>↑ 22%</em></div>
+        <div class="metric"><small>Bookings</small><b>24</b><em>↑ 12%</em></div>
+        <div class="metric"><small>Revenue</small><b>$2.8k</b><em>↑ 14%</em></div>
+      </section>
+
+      <div class="section-title"><h3>Hermes is working on</h3><button type="button">See all</button></div>
+      <section class="tasks">
+        <div class="task"><div class="task-icon">✦</div><div><b>Following up with 8 warm leads</b><small>Sales · next action personalized</small></div><span class="pill">Running</span></div>
+        <div class="task"><div class="task-icon">↗</div><div><b>Optimizing tomorrow's campaign</b><small>Marketing · audience + creative</small></div><span class="pill">Running</span></div>
+        <div class="task"><div class="task-icon">✓</div><div><b>3 decisions need approval</b><small>Finance · discounts and refund</small></div><span class="pill pending">Review</span></div>
+      </section>
+
+      <div class="section-title"><h3>Customer flow</h3><button type="button">Live</button></div>
+      <section class="flow"><div class="flow-line"><div class="node"><i>◎</i>Lead</div><div class="arrow">→</div><div class="node"><i>✦</i>AI reply</div><div class="arrow">→</div><div class="node"><i>✓</i>Booked</div><div class="arrow">→</div><div class="node"><i>$</i>Paid</div><div class="arrow">→</div><div class="node"><i>★</i>Retain</div></div></section>
+      <p class="note">Hermes Connect Mobile Web Preview · Approved Brand Direction V1 · visual prototype only</p>
+    </main>
+    <nav class="bottom" aria-label="Mobile navigation"><div class="nav active"><i>⌂</i>Home</div><div class="nav"><i>◉</i>Inbox</div><div class="nav"><i>◇</i>Clients</div><div class="nav"><i>✦</i>Hermes</div><div class="nav"><i>≡</i>More</div></nav>
+  </div>
+  <script>
+    document.querySelectorAll('.chip').forEach(chip=>chip.addEventListener('click',()=>{document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active')}));
+  </script>
+</body>
+</html>
