@@ -4,39 +4,40 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'SF Pro Display', 'Inter', system-ui, sans-serif;
 
-  /* Master Brand Color Architecture */
-  --hermes-violet: #7C3AED;
-  --hermes-logistics-pink: #E11D48;
-  --hermes-academy-amber: #F59E0B;
-  --hermes-it-sky: #3B82F6;
+  /* Master Signature Bespoke Accents (Non-standard luxury swatches) */
+  --hermes-sovereign-violet: #6D28D9;
+  --hermes-electric-cobalt: #2563EB;
+  --hermes-bespoke-amber: #D97706;
+  --hermes-crimson-velvet: #BE123C;
+  --hermes-emerald-mint: #059669;
 
-  /* Theme Modes Defaults (Anthracite Depth Dark) */
-  --canvas-bg: #0A0A0F;
-  --surface-glass: rgba(15, 23, 42, 0.75);
-  --card-bg: rgba(30, 41, 59, 0.6);
-  --card-bg-hover: rgba(30, 41, 59, 0.85);
+  /* Obsidian Cosmic Dark Spectrum (Default Dark Mode) */
+  --canvas-bg: #090A0F;
+  --surface-glass: rgba(18, 19, 31, 0.85);
+  --card-bg: rgba(26, 28, 44, 0.7);
+  --card-bg-hover: rgba(35, 38, 59, 0.9);
 
   --border-glass: rgba(255, 255, 255, 0.12);
-  --border-glass-hover: rgba(255, 255, 255, 0.25);
+  --border-glass-hover: rgba(255, 255, 255, 0.28);
 
-  --text-primary: #F8F5F2;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-primary: #F8F6F0;
+  --text-secondary: #A0A5BB;
+  --text-muted: #6B7280;
 }
 
-/* Light Pearl Canvas Theme (#F8F5F2) */
+/* Lexus Pearl Warm Silk Theme (#F8F6F0 Canvas) */
 body.theme-light-pearl {
-  --canvas-bg: #F8F5F2;
-  --surface-glass: rgba(255, 255, 255, 0.85);
-  --card-bg: rgba(255, 255, 255, 0.9);
-  --card-bg-hover: #FFFFFF;
+  --canvas-bg: #F8F6F0;
+  --surface-glass: rgba(250, 248, 243, 0.9);
+  --card-bg: #FFFFFF;
+  --card-bg-hover: #FAF8F5;
 
-  --border-glass: rgba(10, 10, 15, 0.12);
-  --border-glass-hover: rgba(10, 10, 15, 0.25);
+  --border-glass: rgba(26, 25, 24, 0.12);
+  --border-glass-hover: rgba(26, 25, 24, 0.28);
 
-  --text-primary: #0A0A0F;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
+  --text-primary: #1A1918;
+  --text-secondary: #4A4845;
+  --text-muted: #787571;
 }
 
 * {
@@ -50,9 +51,9 @@ body {
   background-color: var(--canvas-bg);
   color: var(--text-primary);
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(124, 58, 237, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 90% 80%, rgba(225, 29, 72, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 60%);
+    radial-gradient(circle at 10% 20%, rgba(109, 40, 217, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(190, 18, 60, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.06) 0%, transparent 60%);
   background-attachment: fixed;
   min-height: 100vh;
   overflow-x: hidden;
@@ -63,8 +64,8 @@ body {
 
 body.brand-theme-active {
   background-image: var(--dynamic-bg-gradient, 
-    radial-gradient(circle at 10% 20%, rgba(225, 29, 72, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.12) 0%, transparent 50%)
+    radial-gradient(circle at 10% 20%, rgba(190, 18, 60, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 90% 80%, rgba(109, 40, 217, 0.12) 0%, transparent 50%)
   );
 }
 
@@ -98,12 +99,12 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--card-bg-hover);
   border-color: var(--border-glass-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
+  box-shadow: 0 8px 24px rgba(109, 40, 217, 0.15);
 }
 
 /* Pill CTA Buttons (9999px radius) */
 .btn-primary {
-  background: linear-gradient(135deg, #7C3AED 0%, #6366F1 100%);
+  background: linear-gradient(135deg, #6D28D9 0%, #2563EB 100%);
   color: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 8px 18px;
@@ -116,18 +117,18 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.35);
   white-space: nowrap;
 }
 
 .btn-primary:hover {
   opacity: 0.95;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.5);
 }
 
 .btn-secondary {
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(109, 40, 217, 0.08);
   color: var(--text-primary);
   border: 1px solid var(--border-glass);
   padding: 8px 18px;
@@ -144,7 +145,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover {
-  background: rgba(124, 58, 237, 0.16);
+  background: rgba(109, 40, 217, 0.16);
   border-color: var(--border-glass-hover);
 }
 
@@ -162,33 +163,33 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .badge-primary {
-  background: rgba(124, 58, 237, 0.15);
+  background: rgba(109, 40, 217, 0.15);
   color: #8B5CF6;
-  border: 1px solid rgba(124, 58, 237, 0.3);
+  border: 1px solid rgba(109, 40, 217, 0.3);
 }
 
 .badge-emerald {
-  background: rgba(16, 185, 129, 0.15);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(5, 150, 105, 0.15);
+  color: #059669;
+  border: 1px solid rgba(5, 150, 105, 0.3);
 }
 
 .badge-amber {
-  background: rgba(245, 158, 11, 0.15);
+  background: rgba(217, 119, 6, 0.15);
   color: #D97706;
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  border: 1px solid rgba(217, 119, 6, 0.3);
 }
 
 .badge-rose {
-  background: rgba(225, 29, 72, 0.15);
-  color: #E11D48;
-  border: 1px solid rgba(225, 29, 72, 0.3);
+  background: rgba(190, 18, 60, 0.15);
+  color: #BE123C;
+  border: 1px solid rgba(190, 18, 60, 0.3);
 }
 
 .badge-sky {
-  background: rgba(59, 130, 246, 0.15);
-  color: #3B82F6;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563EB;
+  border: 1px solid rgba(37, 99, 235, 0.3);
 }
 
 /* Custom Scrollbar */

@@ -4,6 +4,7 @@ import { Navigation } from './components/Navigation';
 import { Sidebar } from './components/Sidebar';
 import { AIBrainWidget } from './components/AIBrainWidget';
 import { AdaptiveOnboardingModal } from './components/AdaptiveOnboardingModal';
+import { BrandLogoExplorerModal, LogoConceptId } from './components/BrandLogoExplorerV2';
 
 import { BeautyWorkspace } from './views/BeautyWorkspace';
 import { AutoRepairWorkspace } from './views/AutoRepairWorkspace';
@@ -37,6 +38,8 @@ export function App() {
 
   const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [selectedLogoConcept, setSelectedLogoConcept] = useState<LogoConceptId>('quantum_node');
+  const [isLogoExplorerOpen, setIsLogoExplorerOpen] = useState(false);
 
   useEffect(() => {
     if (themeMode === 'light') {
@@ -61,6 +64,8 @@ export function App() {
         themeMode={themeMode}
         onToggleThemeMode={toggleThemeMode}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        selectedLogoConcept={selectedLogoConcept}
+        onOpenLogoExplorer={() => setIsLogoExplorerOpen(true)}
       />
 
       {/* Main Content Layout */}
@@ -128,6 +133,14 @@ export function App() {
           </div>
         </div>
       </main>
+
+      {/* Brand Exploration V2 Logo Explorer Modal */}
+      <BrandLogoExplorerModal
+        isOpen={isLogoExplorerOpen}
+        onClose={() => setIsLogoExplorerOpen(false)}
+        selectedConcept={selectedLogoConcept}
+        onSelectConcept={(concept) => setSelectedLogoConcept(concept)}
+      />
 
       {/* 1-Click Adaptive Onboarding Modal */}
       <AdaptiveOnboardingModal
