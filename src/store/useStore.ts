@@ -8,7 +8,8 @@ import {
   VehicleJob, 
   FreightLoad, 
   FitnessClient, 
-  AIMessage 
+  AIMessage,
+  BrandTheme
 } from '../types';
 import { 
   INITIAL_WORKSPACES, 
@@ -24,7 +25,7 @@ export function useConnectStore() {
   const [activeVertical, setActiveVertical] = useState<VerticalCategory>('beauty');
   const [activeRole, setActiveRole] = useState<UserRole>('owner');
   
-  const [workspaces] = useState<Record<string, Workspace>>(INITIAL_WORKSPACES);
+  const [workspaces, setWorkspaces] = useState<Record<string, Workspace>>(INITIAL_WORKSPACES);
   const [services, setServices] = useState<Service[]>(INITIAL_SERVICES);
   const [appointments, setAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
   const [vehicleJobs, setVehicleJobs] = useState<VehicleJob[]>(INITIAL_VEHICLE_JOBS);
@@ -32,8 +33,76 @@ export function useConnectStore() {
   const [fitnessClients, setFitnessClients] = useState<FitnessClient[]>(INITIAL_FITNESS_CLIENTS);
   const [aiMessages, setAiMessages] = useState<AIMessage[]>(INITIAL_AI_MESSAGES);
 
+  const [activeBrandTheme, setActiveBrandTheme] = useState<BrandTheme | null>(null);
+
   // Current active workspace metadata
   const currentWorkspace = workspaces[activeVertical] || workspaces.beauty;
+
+  // Apply CSS background whenever brandTheme changes
+  useEffect(() => {
+    if (activeBrandTheme && activeBrandTheme.active) {
+      document.body.classList.add('brand-theme-active');
+      document.documentElement.style.setProperty('--dynamic-bg-gradient', activeBrandTheme.bgGradient);
+    } else {
+      document.body.classList.remove('brand-theme-active');
+      document.documentElement.style.removeProperty('--dynamic-bg-gradient');
+    }
+  }, [activeBrandTheme]);
+
+  // Brand Analysis & Auto-Theme Generator Engine
+  const analyzeAndApplyBrandTheme = (sourceUrl: string) => {
+    const input = sourceUrl.trim().toLowerCase();
+    let theme: BrandTheme;
+
+    if (input.includes('instagram') || input.includes('beauty') || input.includes('salon') || input.includes('@')) {
+      theme = {
+        brandName: sourceUrl.includes('/') ? sourceUrl.split('/').pop() || 'Aura Luxe Instagram' : sourceUrl,
+        sourceUrl,
+        primaryColor: '#ec4899',
+        accentColor: '#f472b6',
+        bgGradient: `radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.22) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(244, 114, 182, 0.22) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 60%)`,
+        moodDescription: 'Glamour Luxe & Rose Gold aesthetic extracted from social profile',
+        active: true
+      };
+    } else if (input.includes('auto') || input.includes('repair') || input.includes('garage')) {
+      theme = {
+        brandName: 'Apex Precision Garage',
+        sourceUrl,
+        primaryColor: '#06b6d4',
+        accentColor: '#38bdf8',
+        bgGradient: `radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.25) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, transparent 60%)`,
+        moodDescription: 'Cyber Technical Carbon & Cyan Neon precision styling',
+        active: true
+      };
+    } else if (input.includes('fit') || input.includes('gym') || input.includes('coach')) {
+      theme = {
+        brandName: 'Morgan Performance',
+        sourceUrl,
+        primaryColor: '#a855f7',
+        accentColor: '#c084fc',
+        bgGradient: `radial-gradient(circle at 10% 20%, rgba(168, 85, 247, 0.25) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%)`,
+        moodDescription: 'High Energy Athletic Purple & Crimson Glass theme',
+        active: true
+      };
+    } else {
+      theme = {
+        brandName: sourceUrl || 'Custom Brand',
+        sourceUrl,
+        primaryColor: '#10b981',
+        accentColor: '#34d399',
+        bgGradient: `radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.25) 0%, transparent 50%), radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.2) 0%, transparent 50%), radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 60%)`,
+        moodDescription: 'Emerald Enterprise Growth & Modern Glassmorphism theme',
+        active: true
+      };
+    }
+
+    setActiveBrandTheme(theme);
+    return theme;
+  };
+
+  const clearBrandTheme = () => {
+    setActiveBrandTheme(null);
+  };
 
   // Actions
   const addAppointment = (newApt: Omit<Appointment, 'id'>) => {
@@ -101,7 +170,6 @@ export function useConnectStore() {
 
     setAiMessages(prev => [...prev, userMsg]);
 
-    // Simple Rule-based Intent Engine
     setTimeout(() => {
       const lower = userInput.toLowerCase();
       let replyContent = '';
@@ -156,6 +224,9 @@ export function useConnectStore() {
     freightLoads,
     fitnessClients,
     aiMessages,
+    activeBrandTheme,
+    analyzeAndApplyBrandTheme,
+    clearBrandTheme,
     addAppointment,
     updateAppointmentStatus,
     addVehicleJob,

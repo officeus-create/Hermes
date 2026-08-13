@@ -9,6 +9,17 @@ export type VerticalCategory =
 
 export type UserRole = 'owner' | 'specialist' | 'client' | 'driver' | 'ai_copilot';
 
+export interface BrandTheme {
+  brandName: string;
+  sourceUrl: string;
+  primaryColor: string;
+  accentColor: string;
+  bgGradient: string;
+  bgOverlayUrl?: string;
+  moodDescription: string;
+  active: boolean;
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -21,6 +32,7 @@ export interface Workspace {
   location: string;
   phone: string;
   email: string;
+  brandTheme?: BrandTheme;
 }
 
 // Beauty & Salon Models
