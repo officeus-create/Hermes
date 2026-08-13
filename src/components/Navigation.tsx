@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   LayoutDashboard,
   Puzzle,
-  Search
+  Search,
+  Award
 } from 'lucide-react';
 import { VerticalCategory, UserRole } from '../types';
 import { BrandLogoV2, LogoConceptId } from './BrandLogoExplorerV2';
@@ -49,7 +50,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   const verticals: { id: VerticalCategory; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'hero_landing', label: 'Обзор ОС & Бренд', icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />, badge: 'V1 OS' },
     { id: 'os_command_center', label: 'Центр ОС V1.1', icon: <LayoutDashboard className="w-3.5 h-3.5 text-indigo-400" />, badge: 'V1.1 PRO' },
-    { id: 'integrations', label: 'Интеграции & ИИ-Продажи', icon: <Puzzle className="w-3.5 h-3.5 text-purple-400" />, badge: 'COMPOSIO / AWS' },
+    { id: 'integrations', label: 'Интеграции & ИИ-Продажи', icon: <Puzzle className="w-3.5 h-3.5 text-purple-400" />, badge: 'COMPOSIO' },
+    { id: 'sales_coach', label: 'ИИ-Тренер Продаж', icon: <Award className="w-3.5 h-3.5 text-amber-400" />, badge: 'AWS AI' },
     { id: 'candidate_auditor', label: 'ИИ-Аудит Резюме', icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />, badge: 'НОВОЕ' },
     { id: 'beauty', label: 'Салон красоты', icon: <Scissors className="w-3.5 h-3.5" /> },
     { id: 'auto_repair', label: 'Авторемонт', icon: <Wrench className="w-3.5 h-3.5" /> },
@@ -124,7 +126,8 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <span>{v.label}</span>
                 {v.badge && (
                   <span className={`text-[8px] px-1.5 py-0.2 rounded-full font-bold ${
-                    v.badge === 'COMPOSIO / AWS' ? 'bg-purple-500/30 text-purple-200 border border-purple-400/40' :
+                    v.badge === 'AWS AI' ? 'bg-amber-500/30 text-amber-200 border border-amber-400/40' :
+                    v.badge === 'COMPOSIO' ? 'bg-purple-500/30 text-purple-200 border border-purple-400/40' :
                     v.badge === 'V1.1 PRO' ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/40' :
                     v.badge === 'НОВОЕ' ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/40' :
                     v.badge === 'V1 OS' ? 'bg-amber-500/30 text-amber-200 border border-amber-400/40' :

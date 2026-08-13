@@ -40,9 +40,11 @@ export const LoadBoardWorkspace: React.FC<LoadBoardWorkspaceProps> = ({
   };
 
   const availableLoads = loads.filter(l => l.status === 'available' || l.status === 'bid_submitted');
-  const totalValue = loads.reduce((sum, l) => sum + l.offerRateUSD, 0);
+  const totalValue = loads.reduce((sum, l) => sum + (l.offerRateUSD || l.rateUsd || 0), 0);
 
   const statusLabelMap: Record<FreightLoad['status'], string> = {
+    posted: 'доступен',
+    bidded: 'ставка отправлена',
     available: 'доступен',
     bid_submitted: 'ставка отправлена',
     assigned: 'назначен',
@@ -110,7 +112,7 @@ export const LoadBoardWorkspace: React.FC<LoadBoardWorkspaceProps> = ({
                   key={load.id}
                   onClick={() => {
                     setSelectedLoad(load);
-                    setBidRate(load.offerRateUSD);
+                    setBidRate(load.offerRateUSD || load.rateUsd || 2500);
                   }}
                   className={`p-4 rounded-xl border transition-all cursor-pointer space-y-3 ${
                     selectedLoad?.id === load.id

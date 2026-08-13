@@ -11,6 +11,7 @@ import { MobileBottomDock } from './components/MobileBottomDock';
 import { HeroLandingView } from './views/HeroLandingView';
 import { OSCommandCenterView } from './views/OSCommandCenterView';
 import { IntegrationMarketplaceView } from './views/IntegrationMarketplaceView';
+import { SalesCoachView } from './views/SalesCoachView';
 import { CandidateResumeAuditorView } from './views/CandidateResumeAuditorView';
 import { BeautyWorkspace } from './views/BeautyWorkspace';
 import { AutoRepairWorkspace } from './views/AutoRepairWorkspace';
@@ -64,6 +65,7 @@ export function App() {
     activeVertical === 'hero_landing' || 
     activeVertical === 'os_command_center' ||
     activeVertical === 'integrations' ||
+    activeVertical === 'sales_coach' ||
     activeVertical === 'candidate_auditor' ||
     activeVertical === 'global_network' || 
     activeVertical === 'website_demo';
@@ -109,6 +111,10 @@ export function App() {
 
             {activeVertical === 'integrations' && (
               <IntegrationMarketplaceView />
+            )}
+
+            {activeVertical === 'sales_coach' && (
+              <SalesCoachView />
             )}
 
             {activeVertical === 'candidate_auditor' && (

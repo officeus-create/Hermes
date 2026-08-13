@@ -42,7 +42,7 @@ export function useConnectStore() {
   useEffect(() => {
     if (activeBrandTheme && activeBrandTheme.active) {
       document.body.classList.add('brand-theme-active');
-      document.documentElement.style.setProperty('--dynamic-bg-gradient', activeBrandTheme.bgGradient);
+      document.documentElement.style.setProperty('--dynamic-bg-gradient', activeBrandTheme.bgGradient || '');
     } else {
       document.body.classList.remove('brand-theme-active');
       document.documentElement.style.removeProperty('--dynamic-bg-gradient');
@@ -137,7 +137,7 @@ export function useConnectStore() {
         return {
           ...l,
           offerRateUSD: rateUSD,
-          ratePerMile: Number((rateUSD / l.miles).toFixed(2)),
+          ratePerMile: Number((rateUSD / (l.miles || 1)).toFixed(2)),
           status: 'bid_submitted',
           carrierName
         };

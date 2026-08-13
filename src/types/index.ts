@@ -2,140 +2,175 @@ export type VerticalCategory =
   | 'hero_landing'
   | 'os_command_center'
   | 'integrations'
-  | 'beauty' 
-  | 'auto_repair' 
-  | 'logistics' 
-  | 'fitness' 
-  | 'marketing' 
-  | 'global_network' 
+  | 'sales_coach'
+  | 'beauty'
+  | 'auto_repair'
+  | 'logistics'
+  | 'fitness'
+  | 'marketing'
+  | 'global_network'
   | 'website_demo'
   | 'candidate_auditor';
 
-export type UserRole = 'owner' | 'specialist' | 'client' | 'driver' | 'ai_copilot' | 'candidate';
+export type UserRole = 
+  | 'owner'
+  | 'specialist'
+  | 'client'
+  | 'driver'
+  | 'ai_copilot'
+  | 'candidate';
 
-export interface BrandTheme {
-  brandName: string;
-  sourceUrl: string;
-  primaryColor: string;
-  accentColor: string;
-  bgGradient: string;
-  bgOverlayUrl?: string;
-  moodDescription: string;
-  active: boolean;
+export interface AIMessage {
+  id: string;
+  sender: 'user' | 'ai' | 'assistant';
+  text?: string;
+  content?: string;
+  timestamp?: string;
+  evidenceBadge?: string;
+  routedVertical?: VerticalCategory;
+  suggestedActions?: any[];
 }
 
 export interface Workspace {
   id: string;
   name: string;
   vertical: VerticalCategory;
-  tagline: string;
-  ownerName: string;
+  description?: string;
+  tagline?: string;
+  ownerName?: string;
+  location?: string;
+  phone?: string;
+  email?: string;
+  logoUrl?: string;
   avatarUrl?: string;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  phone: string;
-  email: string;
-  brandTheme?: BrandTheme;
-}
-
-// Beauty & Salon Models
-export interface Service {
-  id: string;
-  name: string;
-  category: string;
-  durationMinutes: number;
-  priceUSD: number;
-  description: string;
-}
-
-export interface Appointment {
-  id: string;
-  clientName: string;
-  clientHandle: string;
-  clientEmail: string;
-  serviceId: string;
-  serviceName: string;
-  staffName: string;
-  date: string;
-  timeSlot: string;
-  status: 'confirmed' | 'pending' | 'completed' | 'cancelled';
-  notes?: string;
-  priceUSD: number;
-}
-
-// Auto Repair Models
-export interface VehicleJob {
-  id: string;
-  clientName: string;
-  clientPhone: string;
-  vehicleMakeModel: string;
-  year: number;
-  vin?: string;
-  issueDescription: string;
-  estimatedCostUSD: number;
-  status: 'intake' | 'diagnosing' | 'in_progress' | 'ready_for_pickup' | 'completed';
-  scheduledDate: string;
-  assignedTechnician: string;
-}
-
-// Freight & Logistics Load Board Models
-export interface FreightLoad {
-  id: string;
-  origin: string;
-  destination: string;
-  equipmentType: 'Dry Van' | 'Reefer' | 'Flatbed' | 'Stepdeck' | 'Power Only';
-  weightLbs: number;
-  miles: number;
-  offerRateUSD: number;
-  ratePerMile: number;
-  pickupDate: string;
-  deliveryDate: string;
-  status: 'available' | 'bid_submitted' | 'assigned' | 'in_transit' | 'delivered';
-  assignedDriver?: string;
-  carrierName?: string;
-  shipperName: string;
-  notes?: string;
-}
-
-// Fitness & Science Models
-export interface FitnessClient {
-  id: string;
-  name: string;
-  email: string;
-  stage: 'Active' | 'New Intake' | 'Needs Review' | 'At Risk';
-  primaryGoal: 'Hypertrophy' | 'Fat Loss' | 'Mobility' | 'Endurance';
-  parqApproved: boolean;
-  weeklyCompliance: number; // percentage 0 - 100
-  lastCheckInDate: string;
-  currentProgram: string;
-  weightLbs: number;
-}
-
-export interface ExerciseItem {
-  id: string;
-  name: string;
-  sets: number;
-  reps: string;
-  targetRpe: number;
-  notes: string;
+  rating?: number;
+  reviewCount?: number;
+  metrics?: {
+    label: string;
+    value: string;
+    trend: string;
+  }[];
 }
 
 export interface ScientificClaim {
   id: string;
-  title: string;
-  evidenceTier: 'FACT' | 'EVIDENCE' | 'HYPOTHESIS' | 'COACHING_PRACTICE';
-  citation: string;
-  summary: string;
+  claim?: string;
+  title?: string;
+  summary?: string;
+  citation?: string;
+  evidenceLevel?: 'high' | 'medium' | 'experimental';
+  evidenceTier?: string;
+  source?: string;
 }
 
-// Front-Door AI Brain Message Model
-export interface AIMessage {
+export interface BrandTheme {
+  id?: string;
+  active?: boolean;
+  brandName?: string;
+  moodDescription?: string;
+  bgGradient?: string;
+  sourceUrl?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  mode?: 'dark' | 'light';
+  primaryHex?: string;
+  accentHex?: string;
+}
+
+export interface Service {
   id: string;
-  sender: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: string;
-  routedVertical?: VerticalCategory;
-  suggestedActions?: string[];
-  evidenceBadge?: 'FACT' | 'EVIDENCE' | 'HYPOTHESIS' | 'COACHING_PRACTICE';
+  name: string;
+  category: string;
+  price?: number;
+  priceUSD?: number;
+  durationMinutes: number;
+  description: string;
+}
+
+export type ServiceItem = Service;
+
+export interface Appointment {
+  id: string;
+  clientName: string;
+  clientPhone?: string;
+  clientEmail?: string;
+  clientHandle?: string;
+  serviceName: string;
+  serviceId?: string;
+  staffName?: string;
+  date: string;
+  time?: string;
+  timeSlot?: string;
+  notes?: string;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  price?: number;
+  priceUSD?: number;
+}
+
+export interface VehicleJob {
+  id: string;
+  customerName?: string;
+  clientName?: string;
+  clientPhone?: string;
+  vehicleModel?: string;
+  vehicleMakeModel?: string;
+  year?: number;
+  vin?: string;
+  issueDescription: string;
+  assignedTechnician?: string;
+  scheduledDate?: string;
+  status: 'intake' | 'diagnostics' | 'parts_ordered' | 'repair' | 'ready' | 'in_progress' | 'ready_for_pickup' | 'diagnosing' | 'completed';
+  estimatedCost?: number;
+  estimatedCostUSD?: number;
+  createdAt?: string;
+}
+
+export interface FreightLoad {
+  id: string;
+  origin: string;
+  destination: string;
+  weightLbs: number;
+  rateUsd?: number;
+  offerRateUSD?: number;
+  ratePerMile?: number;
+  miles?: number;
+  notes?: string;
+  assignedDriver?: string;
+  equipmentType: string;
+  pickupDate: string;
+  deliveryDate?: string;
+  shipperName?: string;
+  carrierName?: string;
+  status: 'posted' | 'bidded' | 'in_transit' | 'delivered' | 'available' | 'bid_submitted' | 'assigned';
+  currentBidCount?: number;
+}
+
+export interface FitnessClient {
+  id: string;
+  name: string;
+  email?: string;
+  goal?: string;
+  primaryGoal?: string;
+  bodyFatPercent?: number;
+  lastWorkoutDate?: string;
+  lastCheckInDate?: string;
+  dailyProteinGrams?: number;
+  weightLbs?: number;
+  weeklyCompliance?: number;
+  currentProgram?: string;
+  stage?: string;
+  parqApproved?: boolean;
+  status?: 'active' | 'resting' | 'at_risk';
+}
+
+export interface WorkspaceConfig {
+  id: VerticalCategory;
+  title: string;
+  description: string;
+  primaryColor: string;
+  metrics: {
+    label: string;
+    value: string;
+    trend: string;
+  }[];
 }

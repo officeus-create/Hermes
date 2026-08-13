@@ -57,7 +57,7 @@ export const BeautyWorkspace: React.FC<BeautyWorkspaceProps> = ({
     }, 3000);
   };
 
-  const totalRevenue = appointments.reduce((sum, a) => sum + (a.status === 'confirmed' || a.status === 'completed' ? a.priceUSD : 0), 0);
+  const totalRevenue = appointments.reduce((sum, a) => sum + (a.status === 'confirmed' || a.status === 'completed' ? (a.priceUSD || a.price || 0) : 0), 0);
   const confirmedCount = appointments.filter(a => a.status === 'confirmed').length;
 
   return (

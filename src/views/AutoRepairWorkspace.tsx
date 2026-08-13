@@ -56,6 +56,10 @@ export const AutoRepairWorkspace: React.FC<AutoRepairWorkspaceProps> = ({
   const statusLabelMap: Record<VehicleJob['status'], string> = {
     intake: 'прием',
     diagnosing: 'диагностика',
+    diagnostics: 'диагностика',
+    parts_ordered: 'заказ запчастей',
+    repair: 'в ремонте',
+    ready: 'готово',
     in_progress: 'в работе',
     ready_for_pickup: 'готово к выдаче',
     completed: 'завершен'
@@ -91,7 +95,7 @@ export const AutoRepairWorkspace: React.FC<AutoRepairWorkspaceProps> = ({
             <DollarSign className="w-4 h-4 text-emerald-400" />
           </div>
           <div className="text-2xl font-bold text-emerald-400 mt-1 font-heading">
-            ${vehicleJobs.reduce((sum, j) => sum + j.estimatedCostUSD, 0)} USD
+            ${vehicleJobs.reduce((sum, j) => sum + (j.estimatedCostUSD || j.estimatedCost || 0), 0)} USD
           </div>
           <span className="text-[11px] text-slate-400">Предварительный чек</span>
         </div>
