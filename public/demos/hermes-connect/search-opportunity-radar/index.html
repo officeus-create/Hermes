@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hermes Connect Search Opportunity Radar classifies sanitized aggregate search rows into explainable SEO actions without uploading query data or creating pages automatically.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#07152f">
+  <link rel="canonical" href="https://connect.hermeslogisticsus.com/search-opportunity-radar/">
+  <title>Search Opportunity Radar · Hermes Connect</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Hermes Connect home">
+      <span class="brand-mark">H</span>
+      <span><strong>Hermes Connect</strong><small>Search intelligence workspace</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#radar">Analyze</a>
+      <a href="#workflow">Workflow</a>
+      <a href="https://hermeslogisticsus.com/services/seo/">SEO Services</a>
+      <a href="https://hermeslogisticsus.com/services/seo-for-logistics-companies/">Logistics SEO</a>
+    </nav>
+    <a class="header-cta" href="https://hermeslogisticsus.com/paths/marketing/?service=logistics_seo#contact" data-search-radar-action>SEO review →</a>
+  </header>
+
+  <main data-search-radar>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Hermes Connect · search intelligence</p>
+          <h1>Search Opportunity Radar</h1>
+          <p>Paste a sanitized aggregate query-to-page CSV and turn raw search visibility into an explainable queue: keep the owner, fix CTR, strengthen a position opportunity, flag an intent mismatch, or hold a new page until the evidence is real.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#radar">Analyze sanitized rows</a>
+            <a class="button button-secondary" href="https://hermeslogisticsus.com/services/seo-for-logistics-companies/">Open Logistics SEO</a>
+          </div>
+        </div>
+        <aside class="boundary-card" aria-label="Search Radar boundaries">
+          <span>Review-first MVP</span>
+          <h2>It drafts decisions. It does not manufacture pages.</h2>
+          <ul>
+            <li>No GSC credentials or property IDs are needed.</li>
+            <li>Query/page rows stay in the browser.</li>
+            <li>No query text or uploaded row is sent to analytics.</li>
+            <li>No page, title, link, or deployment is changed automatically.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="radar-section" id="radar" aria-labelledby="radar-title">
+      <div class="shell">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Sanitized GSC evidence → action queue</p>
+            <h2 id="radar-title">Prioritize the pages Google is already testing before creating another URL.</h2>
+          </div>
+          <p>This first release uses a deliberately small approved ownership map and visible thresholds. Anything outside the map is held for manual review instead of being treated as permission to generate content.</p>
+        </div>
+
+        <div class="radar-grid">
+          <section class="panel input-panel" aria-labelledby="input-title">
+            <div class="panel-heading">
+              <div>
+                <h3 id="input-title">Paste sanitized aggregate CSV</h3>
+                <p>One row per query/page observation. No credentials, account IDs, user data, leads, carrier/customer records, routes, rates, or private messages.</p>
+              </div>
+              <span class="local-only">Browser only</span>
+            </div>
+
+            <form data-search-radar-form>
+              <textarea data-search-radar-input aria-label="Sanitized search CSV" spellcheck="false" placeholder="query,page,clicks,impressions,ctr,position,date_range,country_bucket,device_bucket&#10;seo for logistics companies,/services/seo-for-logistics-companies/,0,47,0%,64.83,7d,USA,desktop"></textarea>
+              <p class="format-note"><strong>Required:</strong> query, page, clicks, impressions, ctr, position. <strong>Optional:</strong> date_range, country_bucket, device_bucket. Private or unsupported columns are rejected rather than silently ignored.</p>
+              <div class="form-actions">
+                <button class="button button-primary" type="submit">Classify opportunities</button>
+                <button class="button button-secondary" type="button" data-search-radar-sample>Load synthetic example</button>
+              </div>
+              <p class="error" data-search-radar-error role="alert" hidden></p>
+            </form>
+          </section>
+
+          <aside class="panel rules-panel" aria-labelledby="rules-title">
+            <h3 id="rules-title">Visible first-release decision rules</h3>
+            <div class="rules-list">
+              <div class="rule"><strong>Known query, wrong page</strong><small>INTENT_MISMATCH + INTERNAL_LINK_GAP. Review attribution and ownership before content changes.</small></div>
+              <div class="rule"><strong>Position ≤10, ≥5 impressions, CTR &lt;2%</strong><small>CTR_PROBLEM + KEEP_OWNER. Review title/snippet and buyer clarity.</small></div>
+              <div class="rule"><strong>Position ≤30 or meaningful commercial impressions</strong><small>POSITION_OPPORTUNITY + KEEP_OWNER. Strengthen the existing owner before expanding.</small></div>
+              <div class="rule"><strong>Known unsupported intent</strong><small>INTENT_MISMATCH + NEW_PAGE_NOT_JUSTIFIED. Visibility does not authorize an invented service.</small></div>
+              <div class="rule"><strong>No approved mapping</strong><small>LOW_PRIORITY/manual review. Never auto-create a page from an unknown query.</small></div>
+            </div>
+            <p class="privacy-note"><strong>Privacy boundary:</strong> this tool intentionally rejects columns such as email, phone, company, MC/USDOT, VIN, route, rate, token, cookie, account/property/stream IDs, and user IDs.</p>
+          </aside>
+        </div>
+
+        <section class="panel results-panel" data-search-radar-results hidden aria-labelledby="results-title">
+          <div class="results-header">
+            <div>
+              <h3 id="results-title">Opportunity queue</h3>
+              <p data-search-radar-summary>Rows classified.</p>
+            </div>
+            <div class="results-actions">
+              <a class="button button-primary" href="https://hermeslogisticsus.com/paths/marketing/?service=logistics_seo#contact" data-search-radar-action>Start an SEO review</a>
+              <a class="button button-secondary" href="https://hermeslogisticsus.com/services/seo/">Review public SEO service</a>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Score</th><th>Query</th><th>Observed page</th><th>Expected owner</th><th>Metrics</th><th>Decision</th><th>Why</th><th>Next action</th>
+                </tr>
+              </thead>
+              <tbody data-search-radar-body></tbody>
+            </table>
+          </div>
+          <div class="results-foot">
+            <p>Score is a prioritization aid using visible commercial weight, impressions, and position. It is not a forecast of traffic, rankings, leads, or revenue.</p>
+            <a href="https://hermeslogisticsus.com/services/seo-for-logistics-companies/">Logistics / trucking SEO owner →</a>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="workflow-section" id="workflow" aria-labelledby="workflow-title">
+      <div class="shell workflow-grid">
+        <div>
+          <p class="eyebrow">Revenue-first search loop</p>
+          <h2 id="workflow-title">Search evidence becomes a reviewed task, then returns to measurement.</h2>
+          <p>Later phases can ingest authenticated aggregate GSC/Bing/GA4 evidence, but the operating rule remains the same: the tool may recommend work; code, content, publication, and commercial decisions stay review-gated.</p>
+        </div>
+        <div class="workflow-steps">
+          <div><span>1</span><div><strong>Import sanitized evidence</strong><small>Query/page performance only, without credentials or private lead data.</small></div></div>
+          <div><span>2</span><div><strong>Check approved owner</strong><small>Compare search behavior with the existing query-to-page contract.</small></div></div>
+          <div><span>3</span><div><strong>Classify the next action</strong><small>CTR, position, mismatch, ownership, or hold for manual review.</small></div></div>
+          <div><span>4</span><div><strong>Measure again</strong><small>Compare 7/28-day discovery and qualified actions before deciding whether to scale.</small></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Hermes Connect Search Opportunity Radar</strong> · controlled noindex MVP · <a href="/">Back to Hermes Connect</a> · <a href="https://hermeslogisticsus.com/privacy/">Privacy</a></p>
+  </footer>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
