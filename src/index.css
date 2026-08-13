@@ -4,40 +4,42 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'SF Pro Display', 'Inter', system-ui, sans-serif;
 
-  /* Master Signature Bespoke Accents (Non-standard luxury swatches) */
-  --hermes-sovereign-violet: #6D28D9;
-  --hermes-electric-cobalt: #2563EB;
-  --hermes-bespoke-amber: #D97706;
-  --hermes-crimson-velvet: #BE123C;
-  --hermes-emerald-mint: #059669;
+  /* Approved Hermes Connect Brand Direction v1 Palette */
+  --hermes-pearl-light: #F7F6F3;
+  --hermes-anthracite-dark: #0B0D12;
+  --hermes-iris-violet: #7C5CFF;
+  --hermes-ocean-blue: #5AC8FA;
+  --hermes-sage-mint: #7FD1B6;
+  --hermes-graphite-neutral: #1C1E26;
+  --hermes-sand-warm: #F3E9DC;
 
-  /* Obsidian Cosmic Dark Spectrum (Default Dark Mode) */
-  --canvas-bg: #090A0F;
-  --surface-glass: rgba(18, 19, 31, 0.85);
-  --card-bg: rgba(26, 28, 44, 0.7);
-  --card-bg-hover: rgba(35, 38, 59, 0.9);
+  /* Default Anthracite Cosmic Operating Theme */
+  --canvas-bg: #0B0D12;
+  --surface-glass: rgba(28, 30, 38, 0.85);
+  --card-bg: rgba(28, 30, 38, 0.7);
+  --card-bg-hover: rgba(38, 41, 52, 0.9);
 
   --border-glass: rgba(255, 255, 255, 0.12);
   --border-glass-hover: rgba(255, 255, 255, 0.28);
 
-  --text-primary: #F8F6F0;
-  --text-secondary: #A0A5BB;
+  --text-primary: #F7F6F3;
+  --text-secondary: #9DA3B4;
   --text-muted: #6B7280;
 }
 
-/* Lexus Pearl Warm Silk Theme (#F8F6F0 Canvas) */
+/* Pearl Light Canvas Theme (#F7F6F3) */
 body.theme-light-pearl {
-  --canvas-bg: #F8F6F0;
-  --surface-glass: rgba(250, 248, 243, 0.9);
+  --canvas-bg: #F7F6F3;
+  --surface-glass: rgba(255, 255, 255, 0.9);
   --card-bg: #FFFFFF;
-  --card-bg-hover: #FAF8F5;
+  --card-bg-hover: #FAF9F6;
 
-  --border-glass: rgba(26, 25, 24, 0.12);
-  --border-glass-hover: rgba(26, 25, 24, 0.28);
+  --border-glass: rgba(11, 13, 18, 0.12);
+  --border-glass-hover: rgba(11, 13, 18, 0.28);
 
-  --text-primary: #1A1918;
-  --text-secondary: #4A4845;
-  --text-muted: #787571;
+  --text-primary: #0B0D12;
+  --text-secondary: #4B5162;
+  --text-muted: #787E8F;
 }
 
 * {
@@ -51,9 +53,9 @@ body {
   background-color: var(--canvas-bg);
   color: var(--text-primary);
   background-image: 
-    radial-gradient(circle at 10% 20%, rgba(109, 40, 217, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 90% 80%, rgba(190, 18, 60, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.06) 0%, transparent 60%);
+    radial-gradient(circle at 10% 20%, rgba(124, 92, 255, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 90% 80%, rgba(90, 200, 250, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(127, 209, 182, 0.06) 0%, transparent 60%);
   background-attachment: fixed;
   min-height: 100vh;
   overflow-x: hidden;
@@ -62,20 +64,13 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease, background-image 0.4s ease;
 }
 
-body.brand-theme-active {
-  background-image: var(--dynamic-bg-gradient, 
-    radial-gradient(circle at 10% 20%, rgba(190, 18, 60, 0.12) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(109, 40, 217, 0.12) 0%, transparent 50%)
-  );
-}
-
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   letter-spacing: -0.03em;
   line-height: 1.2;
 }
 
-/* Tactile Realism 2026 Glassmorphism & Bento Cards */
+/* Tactile Realism Glassmorphism & Bento Cards */
 .glass-panel {
   background: var(--surface-glass);
   backdrop-filter: blur(24px);
@@ -99,12 +94,12 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--card-bg-hover);
   border-color: var(--border-glass-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(109, 40, 217, 0.15);
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.15);
 }
 
 /* Pill CTA Buttons (9999px radius) */
 .btn-primary {
-  background: linear-gradient(135deg, #6D28D9 0%, #2563EB 100%);
+  background: linear-gradient(135deg, #7C5CFF 0%, #5AC8FA 100%);
   color: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 8px 18px;
@@ -117,18 +112,18 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.35);
+  box-shadow: 0 4px 14px rgba(124, 92, 255, 0.35);
   white-space: nowrap;
 }
 
 .btn-primary:hover {
   opacity: 0.95;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.5);
+  box-shadow: 0 6px 20px rgba(124, 92, 255, 0.5);
 }
 
 .btn-secondary {
-  background: rgba(109, 40, 217, 0.08);
+  background: rgba(124, 92, 255, 0.08);
   color: var(--text-primary);
   border: 1px solid var(--border-glass);
   padding: 8px 18px;
@@ -145,7 +140,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover {
-  background: rgba(109, 40, 217, 0.16);
+  background: rgba(124, 92, 255, 0.16);
   border-color: var(--border-glass-hover);
 }
 
@@ -163,33 +158,26 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .badge-primary {
-  background: rgba(109, 40, 217, 0.15);
-  color: #8B5CF6;
-  border: 1px solid rgba(109, 40, 217, 0.3);
+  background: rgba(124, 92, 255, 0.15);
+  color: #7C5CFF;
+  border: 1px solid rgba(124, 92, 255, 0.3);
 }
 
 .badge-emerald {
-  background: rgba(5, 150, 105, 0.15);
-  color: #059669;
-  border: 1px solid rgba(5, 150, 105, 0.3);
-}
-
-.badge-amber {
-  background: rgba(217, 119, 6, 0.15);
-  color: #D97706;
-  border: 1px solid rgba(217, 119, 6, 0.3);
-}
-
-.badge-rose {
-  background: rgba(190, 18, 60, 0.15);
-  color: #BE123C;
-  border: 1px solid rgba(190, 18, 60, 0.3);
+  background: rgba(127, 209, 182, 0.15);
+  color: #7FD1B6;
+  border: 1px solid rgba(127, 209, 182, 0.3);
 }
 
 .badge-sky {
-  background: rgba(37, 99, 235, 0.15);
-  color: #2563EB;
-  border: 1px solid rgba(37, 99, 235, 0.3);
+  background: rgba(90, 200, 250, 0.15);
+  color: #5AC8FA;
+  border: 1px solid rgba(90, 200, 250, 0.3);
+}
+
+/* Digital Flow Waves Background Utility */
+.bg-digital-waves {
+  background-image: radial-gradient(ellipse at center, rgba(124, 92, 255, 0.15) 0%, transparent 70%);
 }
 
 /* Custom Scrollbar */
