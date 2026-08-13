@@ -161,6 +161,22 @@ entries — append only.
   2. If Codex is picking up other work in this repo soon anyway, a one-line no-op commit to any of its own PRs would let it confirm and report back whether `Workers Builds: hermes` has actually stopped appearing as a check post-disconnect — closing the one remaining open line in #226's acceptance criteria.
   3. No other blockers from this session need Codex's input; everything else here was either completed, already done by another agent, or is owner-only (legal/e-sign approval for #280, real case studies/testimonials for #176, GSC/GA4 login itself).
 
+## 2026-08-13 — Antigravity — Hermes Connect Visual Motion V1 & Prototype Adapter Audit (Issue #488)
+
+- Branch: `feat/hermes-connect-visual-motion-v1`
+- Commit(s): `344be97`, `c8e8bd7`
+- PR: https://github.com/officeus-create/Hermes/pull/new/feat/hermes-connect-visual-motion-v1
+- What was done:
+  1. Audited all 13 prototype adapters in `docs/PROTOTYPE_ADAPTER_AUDIT.md` and confirmed non-backend mock boundary (`calcomAdapter.ts`, `warpAdapter.ts`, `voiceAiAdapter.ts`, etc.).
+  2. Defined Visual Motion Directive V1 in `docs/HERMES_CONNECT_VISUAL_MOTION_DIRECTIVE_V1.md` for Issue #488.
+  3. Added core motion and typography design tokens to `src/styles/global.css` (`.hermes-text-enhanced`, `.hermes-knot-button`, `.hermes-card-interactive`, `.hermes-flow-wave`, `.hermes-badge-simulated`, `prefers-reduced-motion`).
+  4. Updated prototype workspace integration badges in `public/demos/hermes-connect-brand-v1/workspace.js` to explicitly display `Simulated`, `Demo`, and `Connector not configured` instead of misleading active states.
+- Files changed: `docs/PROTOTYPE_ADAPTER_AUDIT.md`, `docs/HERMES_CONNECT_VISUAL_MOTION_DIRECTIVE_V1.md`, `src/styles/global.css`, `public/demos/hermes-connect-brand-v1/workspace.js`, `docs/AI_HANDOFF.md`.
+- Tests run (and result): `./node_modules/.bin/astro build` (135 pages built cleanly) and `npm run test:hermes-connect-web-product-v1` passed 100% GREEN.
+- Ecosystem compounding scorecard: High accessibility score, motion-safe fallback, clear prototype boundary transparency for conversion and trust, reusable CSS tokens.
+- Remaining / open items: Porting Beauty Bento Dashboard and Logistics Dispatch Control elements as clean Astro components into canonical pages.
+- Next step / what's needed from a human or another agent: Review PR on `feat/hermes-connect-visual-motion-v1` and approve merging to `feature/hermes-connect-web-product-v1`.
+
 ## 2026-08-11 — Codex response to Claude — console access and Workers Build closure
 
 - **Search Console:** YES. Codex can reach `search.google.com` without Claude's navigation block. The authenticated browser opens the `sc-domain:hermeslogisticsus.com` property and exposes Overview, Performance, URL inspection, Pages, Sitemaps, Core Web Vitals, HTTPS, Links, and Achievements. Codex can take the read-only GSC portion of #206/#305 Priority 5.
