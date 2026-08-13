@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hermes Connect Multi-Car Transport Planner helps prepare a multi-vehicle movement for human equipment and capacity review without promising rates, truck count, or availability.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#07152f">
+  <link rel="canonical" href="https://connect.hermeslogisticsus.com/multi-car-planner/">
+  <title>Multi-Car Transport Planner · Hermes Connect</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/"><span class="brand-mark">H</span><span><strong>Hermes Connect</strong><small>Vehicle transport workspace</small></span></a>
+    <nav><a href="#planner">Planner</a><a href="#readiness">Readiness</a><a href="https://hermeslogisticsus.com/logistics/multi-car-transport/">Multi-Car Transport</a></nav>
+    <a class="header-cta" href="https://hermeslogisticsus.com/logistics/request-vehicle-transport/?request=other&equipment=multi_car#transport-intake" data-multi-car-handoff>Prepare request →</a>
+  </header>
+
+  <main data-multi-car-planner>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div>
+          <p class="eyebrow">Hermes Connect · transport planning</p>
+          <h1>Multi-Car Transport Planner</h1>
+          <p class="hero-lead">Turn vehicle count, operability, locations, timing, access, and equipment preference into a clean preparation checklist before Logistics Sales reviews fit and capacity.</p>
+          <div class="hero-actions"><a class="button primary" href="#planner">Plan the movement</a><a class="button secondary" href="https://hermeslogisticsus.com/logistics/multi-car-transport/">Public service page</a></div>
+        </div>
+        <aside class="boundary-card"><span>Planning only</span><h2>No rate or one-truck promise.</h2><ul><li>No live carrier capacity is connected.</li><li>No truck count is inferred from vehicle count.</li><li>No pickup/delivery timing is guaranteed.</li><li>No route, vehicle, or customer value is sent to analytics.</li></ul></aside>
+      </div>
+    </section>
+
+    <section class="planner-section" id="planner">
+      <div class="shell planner-grid">
+        <section class="panel input-panel">
+          <div class="panel-heading"><div><p class="eyebrow">Movement facts</p><h2>What needs to be reviewed?</h2></div><span>Browser only</span></div>
+          <form data-multi-car-form>
+            <div class="fields">
+              <label><span>Vehicles</span><input name="vehicleCount" type="number" min="2" max="30" step="1" value="5" required></label>
+              <label><span>Inoperable vehicles</span><input name="inoperableCount" type="number" min="0" max="30" step="1" value="0" required></label>
+              <label><span>Pickup locations</span><input name="pickupLocations" type="number" min="1" max="10" step="1" value="1" required></label>
+              <label><span>Delivery locations</span><input name="deliveryLocations" type="number" min="1" max="10" step="1" value="1" required></label>
+              <label><span>Timing</span><select name="timing"><option value="flexible">Flexible</option><option value="standard" selected>Standard</option><option value="narrow">Narrow / deadline-sensitive</option></select></label>
+              <label><span>Equipment preference</span><select name="equipmentPreference"><option value="review" selected>Review available options</option><option value="open">Open preferred</option><option value="enclosed">Enclosed preferred</option></select></label>
+              <label><span>Facility access</span><select name="facilityAccess"><option value="standard" selected>Standard</option><option value="appointment">Appointment required</option><option value="restricted">Restricted / special access</option></select></label>
+              <label><span>Movement type</span><select name="movementType"><option value="one_time" selected>One-time</option><option value="repeat">Repeat / recurring</option></select></label>
+              <label class="wide"><span>Requester type</span><select name="businessType"><option value="dealer">Dealer</option><option value="auction">Auction</option><option value="fleet">Fleet</option><option value="business" selected>Business</option><option value="private_owner">Private owner</option></select></label>
+            </div>
+            <p class="privacy-note">Do not enter VINs, exact addresses, customer/carrier names, release codes, rates, invoices, phone numbers, emails, or free-form shipment details here.</p>
+            <button class="button primary full" type="submit">Build planning checklist</button>
+            <p class="error" data-multi-car-error role="alert" hidden></p>
+          </form>
+        </section>
+
+        <aside class="panel result-panel" aria-live="polite">
+          <div class="tier"><span>Coordination tier</span><strong data-multi-car-output="tier">—</strong></div>
+          <div class="metrics">
+            <div><span>Vehicles</span><strong data-multi-car-output="vehicles">—</strong></div>
+            <div><span>Inoperable</span><strong data-multi-car-output="inoperable">—</strong></div>
+            <div><span>Locations</span><strong data-multi-car-output="locations">—</strong></div>
+            <div><span>Equipment</span><strong data-multi-car-output="equipment">—</strong></div>
+            <div><span>Timing</span><strong data-multi-car-output="timing">—</strong></div>
+            <div><span>Movement</span><strong data-multi-car-output="movement">—</strong></div>
+          </div>
+          <div class="note"><strong>Arrangement review</strong><p data-multi-car-output="arrangement">—</p></div>
+          <div class="note"><strong>Timing boundary</strong><p data-multi-car-output="timingNote">—</p></div>
+          <a class="button primary full" href="https://hermeslogisticsus.com/logistics/request-vehicle-transport/?request=other&equipment=multi_car#transport-intake" data-multi-car-handoff>Continue to vehicle transport intake</a>
+        </aside>
+      </div>
+    </section>
+
+    <section class="readiness-section" id="readiness">
+      <div class="shell readiness-grid">
+        <div><p class="eyebrow">Before carrier review</p><h2>Prepare the facts that actually change coordination.</h2><p>The planner does not choose a carrier or equipment. It exposes what Logistics Sales needs before a real capacity decision can be made.</p></div>
+        <ol data-readiness-list></ol>
+      </div>
+    </section>
+  </main>
+  <footer><strong>Hermes Connect Multi-Car Planner</strong> · controlled noindex MVP · <a href="/">Back to Hermes Connect</a> · <a href="https://hermeslogisticsus.com/privacy/">Privacy</a></footer>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
