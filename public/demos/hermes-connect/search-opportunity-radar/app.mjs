@@ -8,6 +8,7 @@ const results = root?.querySelector("[data-search-radar-results]");
 const tbody = root?.querySelector("[data-search-radar-body]");
 const summary = root?.querySelector("[data-search-radar-summary]");
 const sampleButton = root?.querySelector("[data-search-radar-sample]");
+const actionLinks = document.querySelectorAll("[data-search-radar-action]");
 
 const sampleCsv = `query,page,clicks,impressions,ctr,position,date_range,country_bucket,device_bucket
 seo for logistics companies,/services/seo-for-logistics-companies/,0,47,0%,64.83,example,USA,desktop
@@ -113,3 +114,7 @@ sampleButton?.addEventListener("click", () => {
   }
   analyze();
 });
+
+for (const link of actionLinks) {
+  link.addEventListener("click", () => pushPublicEvent("search_radar_action_selected"));
+}
