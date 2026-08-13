@@ -1,4 +1,4 @@
-# Recheck marker: Wave 1 discovery propagation — 2026-08-13
+# Recheck marker: Wave 1 + controlled labs — 2026-08-13
 name: Verify Hermes Connect Wave 1 production routes
 
 on:
@@ -18,11 +18,11 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify Wave 1 hub, tools, and public handoffs
+    name: Verify Wave 1 and controlled labs
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Verify production discovery and noindex boundaries
+      - name: Verify production discovery, tools, and noindex labs
         run: |
           node <<'NODE'
           const connectTools = [
@@ -33,46 +33,17 @@ jobs:
             "https://connect.hermeslogisticsus.com/logistics-seo-analyzer/",
           ];
           const targets = [
-            {
-              url: "https://connect.hermeslogisticsus.com/",
-              markers: ["Live Hermes Connect tools", ...connectTools],
-              expectNoindex: true,
-            },
-            {
-              url: connectTools[0],
-              markers: ["Hermes Connect Load Analyzer"],
-              expectNoindex: true,
-            },
-            {
-              url: connectTools[1],
-              markers: ["Search Opportunity Radar"],
-              expectNoindex: true,
-            },
-            {
-              url: connectTools[2],
-              markers: ["Revenue Dashboard"],
-              expectNoindex: true,
-            },
-            {
-              url: connectTools[3],
-              markers: ["Multi-Car Transport Planner"],
-              expectNoindex: true,
-            },
-            {
-              url: connectTools[4],
-              markers: ["Logistics SEO Analyzer"],
-              expectNoindex: true,
-            },
-            {
-              url: "https://hermeslogisticsus.com/logistics/multi-car-transport/",
-              markers: [connectTools[3], "Open Multi-Car Transport Planner"],
-              expectNoindex: false,
-            },
-            {
-              url: "https://hermeslogisticsus.com/services/seo-for-logistics-companies/",
-              markers: [connectTools[4], "Open Logistics SEO Analyzer"],
-              expectNoindex: false,
-            },
+            { url: "https://connect.hermeslogisticsus.com/", markers: ["Live Hermes Connect tools", ...connectTools], expectNoindex: true },
+            { url: connectTools[0], markers: ["Hermes Connect Load Analyzer"], expectNoindex: true },
+            { url: connectTools[1], markers: ["Search Opportunity Radar"], expectNoindex: true },
+            { url: connectTools[2], markers: ["Revenue Dashboard"], expectNoindex: true },
+            { url: connectTools[3], markers: ["Multi-Car Transport Planner"], expectNoindex: true },
+            { url: connectTools[4], markers: ["Logistics SEO Analyzer"], expectNoindex: true },
+            { url: "https://hermeslogisticsus.com/logistics/multi-car-transport/", markers: [connectTools[3], "Open Multi-Car Transport Planner"], expectNoindex: false },
+            { url: "https://hermeslogisticsus.com/services/seo-for-logistics-companies/", markers: [connectTools[4], "Open Logistics SEO Analyzer"], expectNoindex: false },
+            { url: "https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/", markers: ["Hermes Connect"], expectNoindex: true },
+            { url: "https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/sales-roleplay.html", markers: ["Hermes Sales Coach", "Web Prototype"], expectNoindex: true },
+            { url: "https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/mobile.html", markers: ["Hermes Connect", "Mobile Preview"], expectNoindex: true },
           ];
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           const results = [];
@@ -81,14 +52,9 @@ jobs:
             let last = {};
             for (let attempt = 1; attempt <= 12; attempt += 1) {
               try {
-                const separator = target.url.includes("?") ? "&" : "?";
-                const response = await fetch(`${target.url}${separator}wave1=${Date.now()}`, {
+                const response = await fetch(`${target.url}?release=${Date.now()}`, {
                   redirect: "follow",
-                  headers: {
-                    "cache-control": "no-cache",
-                    pragma: "no-cache",
-                    "user-agent": "HermesConnectWave1ReleaseVerifier/1.1",
-                  },
+                  headers: { "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectReleaseVerifier/1.2" },
                   signal: AbortSignal.timeout(20_000),
                 });
                 const body = await response.text();
@@ -97,13 +63,8 @@ jobs:
                 const markers = target.markers.every((marker) => body.includes(marker));
                 const indexBoundary = target.expectNoindex ? noindex : !noindex;
                 last = { status: response.status, markers, noindex };
-                if (response.status === 200 && markers && indexBoundary) {
-                  passed = true;
-                  break;
-                }
-              } catch (error) {
-                last = { error: error instanceof Error ? error.message : String(error) };
-              }
+                if (response.status === 200 && markers && indexBoundary) { passed = true; break; }
+              } catch (error) { last = { error: error instanceof Error ? error.message : String(error) }; }
               if (attempt < 12) await sleep(10_000);
             }
             results.push({ url: target.url, passed, ...last });
@@ -115,31 +76,19 @@ jobs:
             try {
               const response = await fetch(`https://connect.hermeslogisticsus.com/?agent=${Date.now()}`, {
                 redirect: "follow",
-                headers: {
-                  accept: "text/markdown",
-                  "cache-control": "no-cache",
-                  pragma: "no-cache",
-                  "user-agent": "HermesConnectWave1ReleaseVerifier/1.1",
-                },
+                headers: { accept: "text/markdown", "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectReleaseVerifier/1.2" },
                 signal: AbortSignal.timeout(20_000),
               });
               const body = await response.text();
-              const markers = ["Load Analyzer", "Search Opportunity Radar", "Revenue Dashboard", "Multi-Car Transport Planner", "Logistics SEO Analyzer"]
-                .every((marker) => body.includes(marker));
+              const markers = ["Load Analyzer", "Search Opportunity Radar", "Revenue Dashboard", "Multi-Car Transport Planner", "Logistics SEO Analyzer"].every((marker) => body.includes(marker));
               const contentType = response.headers.get("content-type") || "";
               const robots = response.headers.get("x-robots-tag") || "";
               markdownLast = { status: response.status, markers, contentType, robots };
-              if (response.status === 200 && markers && contentType.includes("text/markdown") && robots.includes("noindex")) {
-                markdownPassed = true;
-                break;
-              }
-            } catch (error) {
-              markdownLast = { error: error instanceof Error ? error.message : String(error) };
-            }
+              if (response.status === 200 && markers && contentType.includes("text/markdown") && robots.includes("noindex")) { markdownPassed = true; break; }
+            } catch (error) { markdownLast = { error: error instanceof Error ? error.message : String(error) }; }
             if (attempt < 12) await sleep(10_000);
           }
           results.push({ url: "https://connect.hermeslogisticsus.com/ [text/markdown]", passed: markdownPassed, ...markdownLast });
-
           console.log(JSON.stringify(results, null, 2));
           if (results.some((item) => !item.passed)) process.exit(1);
           NODE
