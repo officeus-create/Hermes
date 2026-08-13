@@ -265,29 +265,466 @@
     setTimeout(() => button.textContent = previous, 1200);
   }));
 
-  // Guided 5-Minute Tour
-  $('[data-demo-tour]')?.addEventListener('click', () => {
-    setDrawer(false);
-    setView('home');
-    alert('▶ 5-Minute Guided Tour Started:\n\n1. Business Dashboard & Pearl Visual Theme\n2. Multi-Vertical Switcher (Beauty, Logistics, Auto Repair, Fitness, Agency, Real Estate)\n3. Front-Door AI Brain (Intent classification & automated workflows)\n4. Unified Inbox & AI-assisted customer response\n5. Auto-repair & Load board rate confirmation parser\n\nClick any sidebar tab to continue exploring!');
+  // Apex Auto Care Estimation Engine
+  const APEX_AUTO_SERVICES = {
+    brakes: {
+      name: 'Brake Pad & Rotor Service',
+      duration: '1.5 Hours',
+      costRange: '$280 - $380',
+      bay: 'Bay 2 · Brake & Suspension Specialist',
+      slot: 'Today at 2:00 PM',
+      summary: 'Includes OEM ceramic brake pads, rotor inspection/resurfacing, and hydraulic fluid check.'
+    },
+    diagnostic: {
+      name: 'Full Vehicle Diagnostic & Inspection',
+      duration: '1.0 Hour',
+      costRange: '$120 - $180',
+      bay: 'Bay 1 · Master Diagnostic Tech',
+      slot: 'Today at 11:30 AM',
+      summary: 'OBD-II computer scan, battery/alternator load test, and 50-point safety inspection.'
+    },
+    oil: {
+      name: 'Synthetic Oil & Filter Service',
+      duration: '35 Mins',
+      costRange: '$65 - $95',
+      bay: 'Bay 3 · Express Lube Bay',
+      slot: 'Today at 3:15 PM',
+      summary: 'Full synthetic OEM oil replacement, filter swap, tire pressure & fluid top-off.'
+    },
+    detailing: {
+      name: 'Full Ceramic Coat & Detailing',
+      duration: '3.5 Hours',
+      costRange: '$350 - $550',
+      bay: 'Detail Bay A · Master Detailer',
+      slot: 'Tomorrow at 9:00 AM',
+      summary: 'Exterior paint correction, 2-year ceramic coating application, interior steam cleaning.'
+    },
+    engine: {
+      name: 'Engine & Transmission Check',
+      duration: '2.5 Hours',
+      costRange: '$450 - $850',
+      bay: 'Bay 4 · Heavy Mechanical Tech',
+      slot: 'Tomorrow at 1:00 PM',
+      summary: 'Compression testing, transmission pressure analysis, and mechanical fault diagnosis.'
+    }
+  };
+
+  function getApexEstimate(serviceKey, vehicleName) {
+    const service = APEX_AUTO_SERVICES[serviceKey] || APEX_AUTO_SERVICES.brakes;
+    return {
+      serviceKey,
+      serviceName: service.name,
+      vehicle: vehicleName || '2022 Ford F-150',
+      duration: service.duration,
+      costRange: service.costRange,
+      bay: service.bay,
+      slot: service.slot,
+      summary: service.summary
+    };
+  }
+
+  // Command Center Lead Store & Status Workflow
+  let activeStatusFilter = 'ALL';
+  let selectedLeadId = 'lead-101';
+
+  const leadStore = [
+    {
+      id: 'lead-101',
+      name: 'Alex Morgan',
+      email: 'alex.morgan@example.com',
+      phone: '(555) 839-2041',
+      company: 'Apex Client Fleet',
+      initials: 'AM',
+      verticalKey: 'auto',
+      verticalName: 'Apex Auto Care',
+      message: 'I need brake pad and rotor replacement for my 2022 Ford F-150 as soon as possible.',
+      status: 'NEW',
+      confidenceNum: 0.94,
+      confidence: '94%',
+      priority: 'HIGH',
+      timestamp: '2m ago',
+      autoBooking: {
+        serviceKey: 'brakes',
+        serviceName: 'Brake Pad & Rotor Service',
+        vehicle: '2022 Ford F-150',
+        duration: '1.5 Hours',
+        costRange: '$280 - $380',
+        bay: 'Bay 2 · Brake & Suspension Specialist',
+        slot: 'Today at 2:00 PM',
+        summary: 'Includes OEM ceramic brake pads, rotor inspection/resurfacing, and hydraulic fluid check.'
+      },
+      aiSuggestedAction: 'Generate digital repair estimate ($330) & reserve Bay 2 slot.'
+    },
+    {
+      id: 'lead-102',
+      name: 'James Reed',
+      email: 'james.reed@example.com',
+      phone: '(555) 492-1180',
+      company: 'Reed & Co',
+      initials: 'JR',
+      verticalKey: 'beauty',
+      verticalName: 'Aurelia Studio',
+      message: 'Interested in full balayage styling package for Friday afternoon.',
+      status: 'QUALIFIED',
+      confidenceNum: 0.88,
+      confidence: '88%',
+      priority: 'MEDIUM',
+      timestamp: '15m ago',
+      autoBooking: null,
+      aiSuggestedAction: 'Send Friday 2:30 PM appointment booking link + $25 deposit request.'
+    },
+    {
+      id: 'lead-103',
+      name: 'David Miller',
+      email: 'david.miller@example.com',
+      phone: '(555) 771-9923',
+      company: 'Meridian Real Estate',
+      initials: 'DM',
+      verticalKey: 'realestate',
+      verticalName: 'Meridian Property Group',
+      message: 'Looking for 3-bedroom property tour in North Shore this weekend. Budget $1.2M.',
+      status: 'PROPOSAL_SENT',
+      confidenceNum: 0.92,
+      confidence: '92%',
+      priority: 'HIGH',
+      timestamp: '1h ago',
+      autoBooking: null,
+      aiSuggestedAction: 'Send property tour schedule & pre-approval buyer package.'
+    }
+  ];
+
+  function renderLeadInbox() {
+    const list = $('[data-conversation-list]');
+    if (!list) return;
+
+    const filtered = leadStore.filter(lead => {
+      if (activeStatusFilter === 'ALL') return true;
+      return lead.status === activeStatusFilter;
+    });
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div style="padding:20px;text-align:center;color:#858A97;font-size:9px;">No leads found in status: <strong>${activeStatusFilter}</strong></div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(lead => {
+      const activeClass = lead.id === selectedLeadId ? 'active' : '';
+      const statusClass = lead.status === 'NEW' ? 'status-new' : (lead.status === 'QUALIFIED' ? 'status-qualified' : 'status-proposal');
+      const statusLabel = lead.status === 'PROPOSAL_SENT' ? 'PROPOSAL SENT' : lead.status;
+      return `
+        <button class="conversation-card ${activeClass}" type="button" data-lead-card-id="${lead.id}">
+          <span class="conversation-avatar">${lead.initials}</span>
+          <div>
+            <b>${lead.name} <span class="status-badge ${statusClass}">${statusLabel}</span></b>
+            <small>${lead.verticalName} · ${lead.message}</small>
+          </div>
+          <em>${lead.timestamp}</em>
+        </button>
+      `;
+    }).join('');
+
+    $$('[data-lead-card-id]', list).forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedLeadId = btn.dataset.leadCardId;
+        renderLeadInbox();
+        renderLeadDetail(selectedLeadId);
+      });
+    });
+  }
+
+  function renderLeadDetail(leadId) {
+    const header = $('[data-inbox-header]');
+    const thread = $('[data-inbox-thread]');
+    const suggested = $('[data-inbox-suggested]');
+
+    const lead = leadStore.find(l => l.id === leadId) || leadStore[0];
+    if (!lead) return;
+
+    selectedLeadId = lead.id;
+
+    if (header) {
+      header.innerHTML = `
+        <div>
+          <span class="contact-avatar">${lead.initials}</span>
+          <div>
+            <b>${lead.name} <small>(${lead.email} · ${lead.phone})</small></b>
+            <small>${lead.company} · Target Vertical: <strong>${lead.verticalName}</strong></small>
+          </div>
+        </div>
+        <div class="lead-status-control">
+          <small>STATUS:</small>
+          <button class="status-btn ${lead.status==='NEW'?'active':''}" data-set-status="NEW" data-lead-id="${lead.id}">NEW</button>
+          <button class="status-btn ${lead.status==='QUALIFIED'?'active':''}" data-set-status="QUALIFIED" data-lead-id="${lead.id}">QUALIFIED</button>
+          <button class="status-btn ${lead.status==='PROPOSAL_SENT'?'active':''}" data-set-status="PROPOSAL_SENT" data-lead-id="${lead.id}">PROPOSAL SENT</button>
+        </div>
+      `;
+
+      $$('[data-set-status]', header).forEach(btn => {
+        btn.addEventListener('click', () => {
+          const newStatus = btn.dataset.setStatus;
+          lead.status = newStatus;
+          renderLeadInbox();
+          renderLeadDetail(lead.id);
+        });
+      });
+    }
+
+    if (thread) {
+      let bookingHTML = '';
+      if (lead.autoBooking) {
+        bookingHTML = `
+          <div class="hc-load-card" style="border-color: rgba(90, 200, 250, 0.4); background: linear-gradient(135deg, rgba(90, 200, 250, 0.05), rgba(124, 92, 255, 0.05));">
+            <div class="hc-load-card-head">
+              <b>🚗 APEX AUTO CARE · INSTANT BOOKING ESTIMATE</b>
+              <span>STATUS: AUTO-CONFIRMED</span>
+            </div>
+            <div class="hc-load-details">
+              <div><b>Vehicle:</b> ${lead.autoBooking.vehicle}</div>
+              <div><b>Service:</b> ${lead.autoBooking.serviceName}</div>
+              <div><b>Duration:</b> ${lead.autoBooking.duration}</div>
+              <div><b>Price Estimate:</b> ${lead.autoBooking.costRange}</div>
+              <div><b>Assigned Bay:</b> ${lead.autoBooking.bay}</div>
+              <div><b>Available Slot:</b> ${lead.autoBooking.slot}</div>
+            </div>
+            <div class="hc-driver-match" style="margin-top:8px;">
+              <small><strong>Service Summary:</strong> ${lead.autoBooking.summary}</small>
+            </div>
+          </div>
+        `;
+      }
+
+      thread.innerHTML = `
+        <div class="message customer">
+          <small style="display:block;color:#64748B;font-size:7px;margin-bottom:3px;">INCOMING INQUIRY (${lead.timestamp})</small>
+          <p style="margin:0;">${lead.message}</p>
+        </div>
+        ${bookingHTML}
+        <div class="message ai">
+          <small>✦ Hermes Front-Door AI Brain [Confidence: ${lead.confidence} · Priority: ${lead.priority}]</small>
+          <p style="margin:0 0 4px;">Intent classified for <strong>${lead.verticalName}</strong>.</p>
+          <p style="margin:0;"><em>Automated Next Step:</em> ${lead.aiSuggestedAction}</p>
+        </div>
+      `;
+    }
+
+    if (suggested) {
+      suggested.innerHTML = `
+        <span>✦</span>
+        <div>
+          <b>Hermes AI Next Action</b>
+          <small>${lead.aiSuggestedAction}</small>
+        </div>
+        <button type="button" data-approve-action>Approve & Send</button>
+      `;
+      $('[data-approve-action]', suggested)?.addEventListener('click', () => {
+        lead.status = 'PROPOSAL_SENT';
+        renderLeadInbox();
+        renderLeadDetail(lead.id);
+      });
+    }
+  }
+
+  // Filter chips in Command Center Inbox
+  $$('[data-status-filter]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      $$('[data-status-filter]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      activeStatusFilter = chip.dataset.statusFilter;
+      renderLeadInbox();
+    });
   });
 
-  // Role Switcher
+  // Lead Intake Modal Management
+  function setLeadModal(open) {
+    const modal = $('[data-lead-modal]');
+    if (!modal) return;
+    modal.classList.toggle('open', open);
+    modal.setAttribute('aria-hidden', String(!open));
+    if (open) {
+      updateModalPreview();
+    }
+  }
+
+  function updateModalPreview() {
+    const verticalSelect = $('[data-lead-vertical-select]');
+    const messageInput = $('[data-lead-message-input]');
+    const vehicleInput = $('[data-vehicle-input]');
+    const autoServiceSelect = $('[data-auto-service-select]');
+    const autoPanel = $('[data-auto-booking-panel]');
+    const autoEstimateCard = $('[data-auto-estimate-card]');
+    const aiPreview = $('[data-ai-intent-preview]');
+
+    const verticalKey = verticalSelect?.value || 'auto';
+    const messageText = messageInput?.value || '';
+
+    // Show Apex Auto Panel when vertical is auto or message mentions auto repair
+    const isAuto = verticalKey === 'auto' || /brake|rotor|oil|repair|vehicle|car|ford|diagnostic/i.test(messageText);
+    if (autoPanel) {
+      autoPanel.style.display = isAuto ? 'grid' : 'none';
+    }
+
+    if (isAuto && autoEstimateCard) {
+      const estimate = getApexEstimate(autoServiceSelect?.value || 'brakes', vehicleInput?.value || '2022 Ford F-150');
+      autoEstimateCard.innerHTML = `
+        <div class="estimate-stat">
+          <span>Est. Duration</span>
+          <b>${estimate.duration}</b>
+          <small>Standard Bay Time</small>
+        </div>
+        <div class="estimate-stat">
+          <span>Cost Range</span>
+          <b>${estimate.costRange}</b>
+          <small>Parts + Labor</small>
+        </div>
+        <div class="estimate-stat">
+          <span>Recommended Bay</span>
+          <b>${estimate.bay}</b>
+          <small>Certified Tech</small>
+        </div>
+        <div class="estimate-stat">
+          <span>Next Slot</span>
+          <b>${estimate.slot}</b>
+          <small>Instant Reservation</small>
+        </div>
+      `;
+    }
+
+    // Process with window.HermesAIBrain
+    if (aiPreview) {
+      let brainResult = null;
+      if (window.HermesAIBrain && typeof window.HermesAIBrain.classifyIntent === 'function') {
+        brainResult = window.HermesAIBrain.classifyIntent(messageText || 'Inquiry', verticalKey);
+      }
+
+      const confPct = brainResult ? Math.round(brainResult.confidence * 100) : 92;
+      const priority = confPct >= 90 ? 'HIGH' : (confPct >= 75 ? 'MEDIUM' : 'NORMAL');
+      const priorityClass = priority.toLowerCase();
+      const actionText = brainResult ? brainResult.actionText : 'Routing inquiry to workspace intake pipeline.';
+
+      aiPreview.innerHTML = `
+        <div class="ai-intent-info">
+          <b>✦ HERMES AI FRONT-DOOR INTENT CLASSIFICATION</b>
+          <p>${actionText}</p>
+        </div>
+        <div class="ai-badges">
+          <span class="confidence-chip">${confPct}% Confidence</span>
+          <span class="priority-pill ${priorityClass}">${priority} PRIORITY</span>
+        </div>
+      `;
+    }
+  }
+
+  // Bind live form listeners
+  $('[data-lead-vertical-select]')?.addEventListener('change', updateModalPreview);
+  $('[data-lead-message-input]')?.addEventListener('input', updateModalPreview);
+  $('[data-vehicle-input]')?.addEventListener('input', updateModalPreview);
+  $('[data-auto-service-select]')?.addEventListener('change', updateModalPreview);
+
+  // CTA Click handlers
+  $$('[data-request-access]').forEach(btn => btn.addEventListener('click', () => {
+    setLeadModal(true);
+  }));
+
+  $$('[data-open-lead-modal]').forEach(btn => btn.addEventListener('click', () => {
+    setLeadModal(true);
+  }));
+
+  $$('[data-demo-tour]').forEach(btn => btn.addEventListener('click', () => {
+    const msgInput = $('[data-lead-message-input]');
+    if (msgInput) msgInput.value = 'Requesting interactive 5-minute product tour for Hermes Connect AI platform.';
+    setLeadModal(true);
+  }));
+
+  $$('[data-modal-close]').forEach(btn => btn.addEventListener('click', () => {
+    setLeadModal(false);
+  }));
+
+  // Submit Lead Form
+  $('[data-lead-intake-form]')?.addEventListener('submit', event => {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const phone = form.phone.value.trim() || '(555) 234-5678';
+    const company = form.company.value.trim() || 'Direct Client';
+    const verticalKey = form.vertical.value;
+    const message = form.message.value.trim();
+
+    if (!name || !email || !message) return;
+
+    let brainResult = null;
+    if (window.HermesAIBrain && typeof window.HermesAIBrain.classifyIntent === 'function') {
+      brainResult = window.HermesAIBrain.classifyIntent(message, verticalKey);
+    }
+
+    const confNum = brainResult ? brainResult.confidence : 0.92;
+    const confPct = Math.round(confNum * 100) + '%';
+    const priority = confNum >= 0.90 ? 'HIGH' : (confNum >= 0.75 ? 'MEDIUM' : 'NORMAL');
+
+    const verticalNames = {
+      auto: 'Apex Auto Care',
+      beauty: 'Aurelia Studio',
+      logistics: 'Hermes Logistics Ops',
+      fitness: 'Northline Performance',
+      agency: 'Progresso Growth Lab',
+      realestate: 'Meridian Property Group'
+    };
+
+    const autoBookingData = verticalKey === 'auto' ? getApexEstimate(form.autoService?.value || 'brakes', form.vehicle?.value || '2022 Ford F-150') : null;
+
+    const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) || 'LD';
+
+    const newLead = {
+      id: 'lead-' + Date.now(),
+      name,
+      email,
+      phone,
+      company,
+      initials,
+      verticalKey,
+      verticalName: verticalNames[verticalKey] || 'Hermes Workspace',
+      message,
+      status: 'NEW',
+      confidenceNum: confNum,
+      confidence: confPct,
+      priority,
+      timestamp: 'Just now',
+      autoBooking: autoBookingData,
+      aiSuggestedAction: brainResult ? brainResult.actionText : 'Direct lead captured & queued for Command Center processing.'
+    };
+
+    leadStore.unshift(newLead);
+    selectedLeadId = newLead.id;
+
+    // Update KPI counters
+    const leadsKpi = $('[data-kpi="leads"]');
+    if (leadsKpi) {
+      const current = parseInt(leadsKpi.textContent, 10) || 18;
+      leadsKpi.textContent = String(current + 1);
+    }
+
+    setLeadModal(false);
+    setView('inbox');
+    renderLeadInbox();
+    renderLeadDetail(newLead.id);
+  });
+
+  // Role & Language Switchers
   $('[data-role-select]')?.addEventListener('change', (e) => {
     const role = e.target.value;
-    alert(`Role switched to: ${role.toUpperCase()}.\nUI access levels and action permissions updated for ${role}.`);
+    const title = $('[data-view-title]');
+    if (title) title.textContent = `Good morning, Vladimir. (${role.toUpperCase()} View)`;
   });
 
-  // Language Switcher
   $('[data-lang-select]')?.addEventListener('change', (e) => {
     const lang = e.target.value;
     const titleMap = {
-      EN: 'Good morning, Vladimir.',
-      UK: 'Доброго ранку, Володимир.',
-      RU: 'Доброе утро, Владимир.',
-      ES: 'Buenos días, Vladimir.',
-      IT: 'Buongiorno, Vladimir.',
-      FR: 'Bonjour, Vladimir.'
+      en: 'Good morning, Vladimir.',
+      uk: 'Доброго ранку, Володимир.',
+      ru: 'Доброе утро, Владимир.',
+      es: 'Buenos días, Vladimir.',
+      it: 'Buongiorno, Vladimir.',
+      fr: 'Bonjour, Vladimir.'
     };
     if (titleMap[lang]) {
       $('[data-view-title]').textContent = titleMap[lang];
@@ -305,7 +742,6 @@
     user.className = 'user-message';
     user.textContent = question;
     
-    // Call Front-Door AI Brain Classifier if available
     let brainResult = null;
     if (window.HermesAIBrain && typeof window.HermesAIBrain.classifyIntent === 'function') {
       brainResult = window.HermesAIBrain.classifyIntent(question, currentVertical);
@@ -338,7 +774,8 @@
   });
 
   renderActivity();
-  renderConversations();
+  renderLeadInbox();
+  renderLeadDetail(selectedLeadId);
   renderCustomers();
   renderWeek();
   renderKanban();
