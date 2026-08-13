@@ -1,0 +1,8 @@
+name = "hermes-connect-prototype"
+pages_build_output_dir = "prototype"
+compatibility_date = "2026-07-12"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hermes-connect-prototype"
+database_id = "ead19786-db06-4ed6-9078-0ddf97005abd"

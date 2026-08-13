@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hermes Connect Next — Modular Operating Platform</title>
+  <link rel="stylesheet" href="src/ui/styles.css">
+</head>
+<body>
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo">H</div>
+      <div>
+        <span class="brand-name">Hermes Connect</span>
+        <span class="brand-tag">NEXT • TRAINERS VERTICAL</span>
+      </div>
+    </div>
+
+    <!-- Active User & Role Switcher Toolbar -->
+    <div class="role-bar">
+      <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.5rem;">Role View:</span>
+      <button class="btn-role active" id="role-btn-trainer" onclick="window.switchRole('trainer')">Trainer (Alex)</button>
+      <button class="btn-role" id="role-btn-client" onclick="window.switchRole('client')">Client (Marcus)</button>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <main class="main-layout">
+    <!-- Center Content View -->
+    <section id="app-main"></section>
+
+    <!-- Right Drawer: Multi-Agent AI Subsystem -->
+    <aside id="app-ai-drawer"></aside>
+  </main>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

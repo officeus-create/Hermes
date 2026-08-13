@@ -1,0 +1,107 @@
+.book-page { background: #edf1f7; }
+.book-main { display: flex; justify-content: center; padding: clamp(24px, 5vw, 64px) 16px; min-height: 100vh; position: relative; }
+.lang-switcher-slot { position: absolute; top: clamp(16px, 3vw, 28px); right: clamp(16px, 3vw, 28px); }
+.lang-switcher {
+  padding: 7px 10px;
+  border: 1px solid #c8d1e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #213154;
+  font: 650 12px/1.2 monospace;
+  cursor: pointer;
+}
+.book-loading { color: #59647b; font: 650 12px/1.4 monospace; padding-top: 40px; }
+.book-error { max-width: 480px; text-align: center; padding-top: 40px; }
+.book-error h1 { font-size: 28px; margin: 10px 0; }
+
+.book-card {
+  width: min(560px, 100%);
+  height: fit-content;
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid #2b3a6a22;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 35px 90px rgba(0,0,0,.12);
+}
+.book-specialist { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+.book-specialist h1 { margin: 0; font-size: 26px; }
+.book-specialist-role { margin: 2px 0 0; color: #3e4a61; font-weight: 650; }
+.book-specialist-location { margin: 2px 0 0; color: #0b8d74; font: 650 11px/1.2 monospace; text-transform: uppercase; }
+.book-bio { color: #59647b; margin: 14px 0 0; }
+
+.book-card form { margin-top: 22px; }
+.book-card fieldset { margin: 0 0 22px; padding: 0; border: 0; }
+.optional { color: #9aa4b8; font-weight: 500; text-transform: none; }
+.book-no-slots { margin: 9px 0 0; color: #9aa4b8; font-size: 13px; }
+
+.choice-btn {
+  display: block;
+  padding: 10px 12px;
+  border: 1px solid #c8d1e0;
+  border-radius: 8px;
+  background: #fff;
+  color: #213154;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.choice-btn small { display: block; color: #748096; }
+.choice-btn[data-selected="true"] { border-color: #19a286; background: #dcf5ef; color: #0b765f; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.choices .choice-btn { flex: 0 0 auto; }
+
+.contact-methods { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.contact-method-btn { display: flex; align-items: center; gap: 8px; }
+.contact-method-btn svg { flex: none; color: #59647b; }
+.contact-method-btn[data-selected="true"] svg { color: #0b765f; }
+.contact-handle-field { margin-top: 12px; }
+.contact-handle-field input:disabled { background: #f2f4f8; color: #9aa4b8; }
+
+[data-book-submit] {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: #0a164f;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 750;
+}
+[data-book-submit]:disabled { background: #b7c0d6; cursor: not-allowed; }
+
+.book-confirmation { text-align: left; }
+.confirmation-mark {
+  display: grid; place-items: center;
+  width: 48px; height: 48px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: #dcf5ef; color: #0b765f;
+  font-size: 22px; font-weight: 800;
+}
+.confirmation-lede { color: #59647b; }
+.confirmation-details { margin: 20px 0; padding: 16px 0; border-top: 1px solid #e1e5ed; border-bottom: 1px solid #e1e5ed; }
+.confirmation-details div { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.confirmation-details div[hidden] { display: none; }
+.confirmation-details dt { color: #7a8498; font: 650 11px/1.4 monospace; text-transform: uppercase; }
+.confirmation-details dd { margin: 0; font-weight: 650; text-align: right; }
+.confirmation-manage p { color: #59647b; font-size: 13px; margin: 0 0 8px; }
+.confirmation-link-row { display: flex; gap: 8px; }
+.confirmation-link-row input { flex: 1; padding: 10px; border: 1px solid #c9d1df; border-radius: 6px; background: #f7f9fc; color: #0a164f; font: 12px monospace; }
+.confirmation-link-row button { padding: 10px 16px; border: 0; border-radius: 6px; background: #0a164f; color: #fff; cursor: pointer; font-weight: 700; }
+
+[data-cancel-button] {
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px 16px;
+  border: 1px solid #d94f4f;
+  border-radius: 6px;
+  background: #fff;
+  color: #b83a3a;
+  cursor: pointer;
+  font-weight: 750;
+}
+[data-cancel-button]:hover { background: #fdf1f1; }
+[data-cancel-button]:disabled { opacity: .5; cursor: not-allowed; }
+[data-manage-status] { text-transform: capitalize; }

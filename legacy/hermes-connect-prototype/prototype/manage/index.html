@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="View or cancel your appointment.">
+  <title>Manage your booking · Hermes Connect</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../book/book.css">
+</head>
+<body class="book-page">
+  <main class="book-main">
+    <div class="lang-switcher-slot" data-lang-switcher-slot></div>
+
+    <div class="book-loading" data-loading data-i18n="common.loading">Loading…</div>
+
+    <div class="book-error" data-error hidden>
+      <p class="eyebrow">Hermes Connect</p>
+      <h1 data-i18n="manage.errorTitle">We couldn't find that booking.</h1>
+      <p data-i18n="manage.errorBody">The link may be incorrect, or the booking may have already been removed.</p>
+    </div>
+
+    <div class="book-card" data-manage-view hidden>
+      <p class="eyebrow" data-status-eyebrow data-i18n="manage.eyebrow">Your booking</p>
+      <h1 data-manage-title></h1>
+      <dl class="confirmation-details">
+        <div><dt data-i18n="common.specialist">Specialist</dt><dd data-manage-specialist></dd></div>
+        <div><dt data-i18n="common.service">Service</dt><dd data-manage-service></dd></div>
+        <div><dt data-i18n="common.when">When</dt><dd data-manage-time></dd></div>
+        <div><dt data-i18n="common.status">Status</dt><dd data-manage-status></dd></div>
+        <div><dt data-i18n="common.contact">Contact</dt><dd data-manage-contact></dd></div>
+        <div data-manage-topic-row hidden><dt data-i18n="common.topic">Topic</dt><dd data-manage-topic></dd></div>
+        <div data-manage-link-row hidden><dt data-i18n="common.meetingLink">Meeting link</dt><dd><a data-manage-link href="#" target="_blank" rel="noopener"></a></dd></div>
+      </dl>
+      <button type="button" data-cancel-button data-i18n="manage.cancelButton">Cancel this booking</button>
+      <p class="status" role="status" data-manage-message></p>
+    </div>
+  </main>
+  <script type="module" src="./manage.mjs"></script>
+</body>
+</html>

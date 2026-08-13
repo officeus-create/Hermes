@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Set up your Hermes Connect specialist profile, services, and availability, then share your booking link with clients.">
+  <link rel="canonical" href="https://hermeslogisticsus.com/demos/hermes-connect/">
+  <title>Hermes Connect · Specialist Dashboard</title>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0a164f">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+  <main>
+    <section class="editor" data-auth-gate>
+      <p class="eyebrow">Hermes Connect · specialist dashboard</p>
+      <h1 data-auth-title>Sign in to build your specialist page.</h1>
+      <p class="intro">Your account and bookings are real and saved securely. Calendar sync, payments, and automatic messages aren't built yet.</p>
+
+      <form data-login-form>
+        <div class="fields">
+          <label class="wide">Email<input type="email" name="email" required autocomplete="email"></label>
+          <label class="wide">Password<input type="password" name="password" required autocomplete="current-password"></label>
+        </div>
+        <button type="submit">Sign in <span>→</span></button>
+        <p class="status" role="status" data-login-status></p>
+        <p class="toggle-auth">No account yet? <button type="button" data-show-register>Create one</button></p>
+      </form>
+
+      <p class="divider">or</p>
+      <script src="https://telegram.org/js/telegram-widget.js?22"></script>
+      <button type="button" class="telegram-login-button" data-telegram-login-button>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.568 8.16-1.61 7.59c-.121.54-.44.673-.89.42l-2.46-1.814-1.187 1.145c-.131.131-.241.241-.494.241l.177-2.5 4.55-4.11c.198-.176-.043-.274-.307-.098l-5.62 3.54-2.42-.757c-.526-.164-.536-.526.11-.78l9.46-3.646c.438-.164.822.106.681.759z"/></svg>
+        Log in with Telegram
+      </button>
+      <p class="hint">For specialists: sign in instantly with your Telegram account instead of a password.</p>
+      <p class="status" role="status" data-telegram-login-status></p>
+
+      <form data-register-form hidden>
+        <div class="fields">
+          <label class="wide">Email<input type="email" name="email" required autocomplete="email"></label>
+          <label class="wide">Password (min 8 characters)<input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+          <label>Name<input name="name" value="Maya Santos" required></label>
+          <label>Professional role<input name="role" value="Business consultant" required></label>
+          <label>Location<input name="location" value="Miami / Remote" required></label>
+          <label class="wide">Short profile<textarea name="bio" rows="3" required>Operations, customer journey, and practical growth systems.</textarea></label>
+        </div>
+        <button type="submit">Create account <span>→</span></button>
+        <p class="status" role="status" data-register-status></p>
+        <p class="toggle-auth">Already have an account? <button type="button" data-show-login>Sign in</button></p>
+      </form>
+    </section>
+
+    <div data-app hidden>
+      <section class="editor">
+        <p class="eyebrow">Hermes Connect · specialist dashboard</p>
+        <h1>Set up your specialist page and start taking bookings.</h1>
+        <p class="intro">Edit your profile, choose services and availability, then save. Use "Create test booking" below to confirm your setup works before sharing your link.</p>
+        <button type="button" class="back-link" data-logout>Sign out ←</button>
+
+        <form data-profile-form>
+          <div class="fields">
+            <label>Name<input name="name" required></label>
+            <label>Professional role<input name="role" required></label>
+            <label>Location<input name="location" required></label>
+            <label class="wide">Short profile<textarea name="bio" rows="3" required></textarea></label>
+          </div>
+
+          <fieldset>
+            <legend>Services</legend>
+            <div class="choices" data-services></div>
+            <div class="add-service-row">
+              <input type="text" placeholder="New service name (e.g. Gel manicure)" data-new-service-name>
+              <input type="number" placeholder="Min" min="5" max="480" data-new-service-duration>
+              <button type="button" data-add-service-button>+ Add service</button>
+            </div>
+            <p class="status" role="status" data-add-service-status></p>
+          </fieldset>
+          <fieldset>
+            <legend>Availability</legend>
+            <div class="choices" data-availability></div>
+          </fieldset>
+          <button type="submit">Save profile <span>→</span></button>
+          <p class="status" role="status" data-status>Saved to your account. Nothing external is sent.</p>
+        </form>
+      </section>
+
+      <section class="editor">
+        <p class="eyebrow">Hermes Connect · team</p>
+        <h1>Add staff to your business.</h1>
+        <p class="intro">Each staff member gets their own services and availability. Once you add staff, clients pick who they want to book with on your public pages.</p>
+
+        <div data-staff-list></div>
+
+        <form data-add-staff-form>
+          <div class="fields">
+            <label>Name<input name="name" required></label>
+            <label>Role<input name="role" required></label>
+          </div>
+          <fieldset>
+            <legend>Services</legend>
+            <div class="choices" data-add-staff-services></div>
+          </fieldset>
+          <fieldset>
+            <legend>Availability</legend>
+            <div class="choices" data-add-staff-availability></div>
+          </fieldset>
+          <button type="submit">Add staff member <span>→</span></button>
+          <p class="status" role="status" data-add-staff-status></p>
+        </form>
+      </section>
+
+      <aside class="profile-card" data-profile-preview>
+        <div class="preview-bar"><span></span><span></span><span></span><p>Personal booking preview</p></div>
+        <div class="profile-avatar" data-preview-avatar></div>
+        <p class="profile-location" data-preview-location></p>
+        <h2 data-preview-name></h2>
+        <strong data-preview-role></strong>
+        <p data-preview-bio></p>
+        <div class="preview-section">
+          <span>Your public booking link · share this with clients</span>
+          <div class="confirmation-link-row">
+            <input type="text" readonly data-public-link>
+            <button type="button" data-copy-public-link>Copy</button>
+          </div>
+        </div>
+        <div class="preview-section">
+          <span>Your personal meeting link · for 1:1 requests</span>
+          <div class="confirmation-link-row">
+            <input type="text" readonly data-meeting-link>
+            <button type="button" data-copy-meeting-link>Copy</button>
+          </div>
+        </div>
+        <div class="preview-section"><span>Services · pick one to test-book</span><div data-preview-services></div></div>
+        <div class="preview-section"><span>Available times · pick one to test-book</span><div data-preview-times></div></div>
+        <button type="button" data-create-booking disabled>Create test booking <span>→</span></button>
+        <p class="status" role="status" data-booking-status></p>
+        <div class="preview-section"><span>Business analytics</span><div class="analytics-grid" data-analytics></div></div>
+        <div class="preview-section"><span>Bookings on this account</span><div data-bookings-list></div></div>
+        <div class="preview-section"><span>Your clients</span><div class="clients-list" data-clients-list></div></div>
+        <p class="boundary">Real account and database record. Calendar sync, payments, and automatic messages aren't built yet.</p>
+      </aside>
+    </div>
+  </main>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

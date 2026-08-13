@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "prototype",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "prototype"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "prototype-full",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "pages", "dev", "prototype", "--local", "--persist-to=.wrangler/state"],
+      "port": 8788,
+      "autoPort": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "hermes-connect-next",
+  "version": "1.0.0",
+  "description": "Hermes Connect Next — Modular Operating Platform for Service Businesses (Trainers & Fitness Vertical)",
+  "main": "src/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node tests/run-all.mjs"
+  },
+  "keywords": [
+    "hermes-connect",
+    "fitness",
+    "coaching",
+    "crm",
+    "ai-copilot",
+    "modular-platform"
+  ],
+  "author": "Antigravity Engineering",
+  "license": "MIT"
+}

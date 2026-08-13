@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="description" content="Book an appointment — no account or app download needed.">
+  <title>Book an appointment · Hermes Connect</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./book.css">
+</head>
+<body class="book-page">
+  <main class="book-main">
+    <div class="lang-switcher-slot" data-lang-switcher-slot></div>
+
+    <div class="book-loading" data-loading data-i18n="common.loading">Loading…</div>
+
+    <div class="book-error" data-error hidden>
+      <p class="eyebrow">Hermes Connect</p>
+      <h1 data-i18n="book.errorTitle">We couldn't find this page.</h1>
+      <p data-i18n="book.errorBody">The booking link you followed looks incomplete or the specialist's profile isn't available anymore.</p>
+    </div>
+
+    <div class="book-card" data-book-view hidden>
+      <p class="eyebrow" data-i18n="book.eyebrow">Hermes Connect · book an appointment</p>
+      <div class="book-specialist">
+        <div class="profile-avatar" data-specialist-avatar></div>
+        <div>
+          <h1 data-specialist-name></h1>
+          <p class="book-specialist-role" data-specialist-role></p>
+          <p class="book-specialist-location" data-specialist-location></p>
+        </div>
+      </div>
+      <p class="book-bio" data-specialist-bio></p>
+
+      <form data-book-form>
+        <fieldset data-staff-fieldset hidden>
+          <legend data-i18n="book.legendStaff">Choose your specialist</legend>
+          <div class="choices" data-book-staff></div>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="book.legendService">1. Choose a service</legend>
+          <div class="choices" data-book-services></div>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="book.legendTime">2. Choose a time</legend>
+          <div class="choices" data-book-times></div>
+          <p class="book-no-slots" data-no-slots data-i18n="book.noSlots" hidden>No open times right now — please check back soon.</p>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="book.legendDetails">3. Your details</legend>
+          <div class="fields">
+            <label class="wide"><span data-i18n="common.name">Name</span><input name="clientName" required autocomplete="name"></label>
+            <label class="wide"><span data-i18n="common.email">Email</span><input type="email" name="clientEmail" required autocomplete="email"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend data-i18n="book.legendContact">4. How should they reach you?</legend>
+          <div class="contact-methods" data-contact-methods></div>
+          <label class="wide contact-handle-field"><span data-contact-handle-label data-i18n="common.contactLegendPrefix">Handle</span><input name="contactHandle" data-contact-handle data-i18n-placeholder="common.contactHandlePlaceholder" placeholder="Select a method above" disabled></label>
+        </fieldset>
+        <button type="submit" data-book-submit disabled><span data-i18n="book.submit">Confirm booking</span> <span>→</span></button>
+        <p class="status" role="status" data-book-status></p>
+      </form>
+    </div>
+
+    <div class="book-card book-confirmation" data-confirmation hidden>
+      <div class="confirmation-mark">✓</div>
+      <p class="eyebrow" data-i18n="book.confEyebrow">Booking confirmed</p>
+      <h1 data-conf-heading>You're all set, {name}.</h1>
+      <p class="confirmation-lede" data-conf-lede>Your booking has been saved and confirmed. A calendar invite, payment, or automatic message hasn't been sent yet — save your link below to manage it.</p>
+      <dl class="confirmation-details">
+        <div><dt data-i18n="common.specialist">Specialist</dt><dd data-conf-specialist></dd></div>
+        <div><dt data-i18n="common.service">Service</dt><dd data-conf-service></dd></div>
+        <div><dt data-i18n="common.when">When</dt><dd data-conf-time></dd></div>
+        <div><dt data-i18n="common.contact">Contact</dt><dd data-conf-contact></dd></div>
+      </dl>
+      <div class="confirmation-manage">
+        <p data-i18n="book.confSaveLink">Save this link to view or cancel your booking later — it isn't emailed to you automatically yet.</p>
+        <div class="confirmation-link-row">
+          <input type="text" readonly data-conf-link>
+          <button type="button" data-copy-link data-i18n="common.copy">Copy</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="./book.mjs"></script>
+</body>
+</html>

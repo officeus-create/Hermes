@@ -1,0 +1,359 @@
+<title>Hermes Connect — Competitive Position</title>
+<style>
+  :root {
+    --bg: #f2f4fa;
+    --panel: #ffffff;
+    --ink: #0a164f;
+    --ink-soft: #4d5878;
+    --line: #dbe1ee;
+    --accent: #1b5ab6;
+    --good: #0b765f;
+    --good-bg: #e3f5ef;
+    --risk: #a24a1f;
+    --risk-bg: #fbeee4;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  :root[data-theme="dark"] {
+    --bg: #07113c;
+    --panel: #0e1a4d;
+    --ink: #eef1fb;
+    --ink-soft: #a9b3d6;
+    --line: #223066;
+    --accent: #6ea3ef;
+    --good: #4fd3ac;
+    --good-bg: #103b30;
+    --risk: #e2986a;
+    --risk-bg: #3d2416;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #07113c;
+      --panel: #0e1a4d;
+      --ink: #eef1fb;
+      --ink-soft: #a9b3d6;
+      --line: #223066;
+      --accent: #6ea3ef;
+      --good: #4fd3ac;
+      --good-bg: #103b30;
+      --risk: #e2986a;
+      --risk-bg: #3d2416;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 920px; margin: 0 auto; padding: clamp(28px, 5vw, 64px) 24px 96px; }
+
+  .eyebrow {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: var(--accent);
+    font: 700 11px/1 var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  h1 {
+    margin: 0 0 14px;
+    font-size: clamp(32px, 4.6vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .thesis {
+    max-width: 62ch;
+    margin: 0 0 40px;
+    color: var(--ink-soft);
+    font-size: 18px;
+  }
+  .thesis strong { color: var(--ink); font-weight: 650; }
+
+  section { margin-top: 56px; }
+  h2 {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 0 6px;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  h2 .tag {
+    font: 700 11px/1 var(--mono);
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .lede { max-width: 62ch; margin: 0 0 22px; color: var(--ink-soft); }
+
+  /* Trust timeline */
+  .timeline {
+    display: grid;
+    gap: 0;
+    border-left: 2px solid var(--line);
+    margin-left: 6px;
+    padding-left: 22px;
+  }
+  .timeline-row { position: relative; padding: 0 0 22px; }
+  .timeline-row:last-child { padding-bottom: 0; }
+  .timeline-row::before {
+    content: "";
+    position: absolute;
+    left: -27.5px;
+    top: 5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  .timeline-date { font: 700 12px/1 var(--mono); color: var(--accent); letter-spacing: .03em; }
+  .timeline-row p { margin: 6px 0 0; color: var(--ink-soft); max-width: 58ch; }
+  .timeline-row p strong { color: var(--ink); }
+
+  /* Comparison table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; font-size: 14px; }
+  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font: 700 11px/1.2 var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--ink-soft);
+    background: color-mix(in srgb, var(--panel) 92%, var(--ink) 8%);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.name { font-weight: 650; white-space: nowrap; }
+  td .sub { display: block; color: var(--ink-soft); font-size: 12px; margin-top: 2px; }
+  .price { font: 650 13px/1 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pill {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font: 650 11px/1.5 var(--sans);
+    white-space: nowrap;
+  }
+  .pill.good { background: var(--good-bg); color: var(--good); }
+  .pill.risk { background: var(--risk-bg); color: var(--risk); }
+  .pill.neutral { background: color-mix(in srgb, var(--panel) 88%, var(--ink) 12%); color: var(--ink-soft); }
+
+  /* Roadmap */
+  .tier { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 20px 22px; margin-bottom: 14px; }
+  .tier-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .tier-badge {
+    font: 700 11px/1 var(--mono);
+    letter-spacing: .04em;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #fff;
+  }
+  .tier-badge.p0 { background: var(--risk); }
+  .tier-badge.p1 { background: var(--accent); }
+  .tier-badge.p2 { background: var(--ink-soft); }
+  .tier h3 { margin: 0; font-size: 16px; }
+  .tier-why { margin: 0 0 12px; color: var(--ink-soft); font-size: 13px; max-width: 60ch; }
+  .tier ul { margin: 0; padding-left: 20px; }
+  .tier li { margin-bottom: 6px; }
+  .tier li::marker { color: var(--ink-soft); }
+
+  .not-now {
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    padding: 18px 22px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .not-now strong { color: var(--ink); }
+  .not-now ul { margin: 8px 0 0; padding-left: 20px; columns: 2; column-gap: 28px; }
+  .not-now li { break-inside: avoid; margin-bottom: 6px; }
+
+  .sources { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .sources h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }
+  .sources ol { margin: 10px 0 0; padding-left: 20px; color: var(--ink-soft); font-size: 13px; }
+  .sources li { margin-bottom: 4px; }
+  .sources a { color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .not-now ul { columns: 1; }
+  }
+</style>
+
+<main>
+  <p class="eyebrow">Hermes Connect · competitive position · 2026-08-04</p>
+  <h1>The incumbent for Ukrainian salons is still owned by the company that walked away from them.</h1>
+  <p class="thesis">
+    Every major booking platform in this market is either <strong>Russian-linked</strong> (Altegio/YCLIENTS),
+    <strong>feature-thin</strong> (appointer.ua), or <strong>not built for this market at all</strong>
+    (the US platforms). None of them are simple. Hermes Connect can win on trust and on design —
+    not by matching every feature, but by being the one calm, obviously-independent option.
+  </p>
+
+  <section>
+    <h2>Why "closed access to Ukrainian clients" checks out<span class="tag">Trust gap</span></h2>
+    <p class="lede">This isn't marketing spin — it's the documented ownership history of the market leader.</p>
+    <div class="timeline">
+      <div class="timeline-row">
+        <div class="timeline-date">2022</div>
+        <p><strong>YCLIENTS formally exits Ukraine</strong> shortly after the full-scale invasion. Local salons lose direct access to the platform they were running their business on.</p>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">2022</div>
+        <p><strong>Altegio launches as the replacement</strong> — presented as an independent spin-off, built on licensed YCLIENTS source code, serving roughly 500 Ukrainian businesses today.</p>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">Dec 2023</div>
+        <p><strong>VK (Russia) acquires 100% of the YCLIENTS group</strong> — the company whose code and technology Altegio is built on. Independent investigations describe Altegio as a Western-market rebrand of the same Russian company, not a clean break.</p>
+      </div>
+      <div class="timeline-row">
+        <div class="timeline-date">Now</div>
+        <p>Ukrainian salons are choosing between a platform with unresolved Russian ownership ties, or <strong>appointer.ua</strong> — a genuinely local product, but a dated, feature-thin one that still ships a Russian-language mode.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where everyone stands<span class="tag">7 platforms</span></h2>
+    <p class="lede">Starting price, the one thing they're known for, and the gap Hermes Connect can sit in.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>From</th>
+            <th>Design</th>
+            <th>Trust position</th>
+            <th>Notable gap</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="name">Altegio <span class="sub">ex-YCLIENTS</span></td>
+            <td class="price">~$14/mo</td>
+            <td><span class="pill neutral">Functional, dense</span></td>
+            <td><span class="pill risk">VK-owned since 2023</span></td>
+            <td>Deepest feature set in-market, but the ownership question never fully closes for a wartime client base.</td>
+          </tr>
+          <tr>
+            <td class="name">appointer.ua</td>
+            <td class="price">₴560–700/mo</td>
+            <td><span class="pill neutral">Dated forms UI</span></td>
+            <td><span class="pill good">Ukrainian-built</span></td>
+            <td>Genuinely local, but still offers a Russian-language mode and the UI hasn't moved in years.</td>
+          </tr>
+          <tr>
+            <td class="name">GlossGenius <span class="sub">US, solo</span></td>
+            <td class="price">$24/mo</td>
+            <td><span class="pill good">Beautiful, polished</span></td>
+            <td><span class="pill neutral">Not localized for UA</span></td>
+            <td>Closest design bar to aim for — but English-only, US payments only, no path into this market.</td>
+          </tr>
+          <tr>
+            <td class="name">Mangomint <span class="sub">US, premium</span></td>
+            <td class="price">$165+/mo</td>
+            <td><span class="pill good">"Invisible," clean</span></td>
+            <td><span class="pill neutral">Not localized for UA</span></td>
+            <td>The actual Apple-like benchmark for workflow design. Priced and built for premium US spas only.</td>
+          </tr>
+          <tr>
+            <td class="name">Vagaro <span class="sub">US, multi-chair</span></td>
+            <td class="price">$30/mo</td>
+            <td><span class="pill risk">Reviewers call it "dated"</span></td>
+            <td><span class="pill neutral">Not localized for UA</span></td>
+            <td>Deep staff/inventory tooling, but the interface is the thing every comparison article dings it for.</td>
+          </tr>
+          <tr>
+            <td class="name">Fresha <span class="sub">US/UK, marketplace</span></td>
+            <td class="price">Free</td>
+            <td><span class="pill good">Clean, modern</span></td>
+            <td><span class="pill risk">20% new-client fee</span></td>
+            <td>"Free" funds itself on a 20% commission for every marketplace-sourced client — a real cost salons feel.</td>
+          </tr>
+          <tr>
+            <td class="name">Booksy <span class="sub">US, marketplace</span></td>
+            <td class="price">$29.99/mo</td>
+            <td><span class="pill good">Clean, strong app</span></td>
+            <td><span class="pill neutral">Not localized for UA</span></td>
+            <td>No-show fees and deposits are locked behind the $49.99/mo Boost+ tier, not the base plan.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What "better" has to mean here<span class="tag">Not a feature race</span></h2>
+    <p class="lede">Matching Altegio feature-for-feature is a multi-year project and mostly the wrong fight. Three things actually move a Ukrainian salon owner:</p>
+    <div class="tier">
+      <div class="tier-head"><span class="tier-badge p0">Trust</span><h3>Visibly, verifiably not Russian-owned</h3></div>
+      <p class="tier-why">Say it plainly on the pricing page, not just imply it. This is the one advantage no competitor here can copy without lying.</p>
+    </div>
+    <div class="tier">
+      <div class="tier-head"><span class="tier-badge p0">Design</span><h3>Mangomint/GlossGenius-level simplicity, not Altegio/Vagaro density</h3></div>
+      <p class="tier-why">Every review of the market leaders eventually says "powerful but cluttered." One clear screen per task, generous spacing, no modal-inside-modal — that's the whole design brief.</p>
+    </div>
+    <div class="tier">
+      <div class="tier-head"><span class="tier-badge p1">Language</span><h3>Real multilingual, not a bolted-on switch</h3></div>
+      <p class="tier-why">Hermes already maintains en/es/fr/ua/it/ru locale infrastructure on the main site — reuse it here instead of building translation from zero, and it becomes a genuine reach advantage over the US-only platforms.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Build order<span class="tag">Roadmap</span></h2>
+    <p class="lede">What exists today: real accounts, profile + service/availability editing, and test bookings, all on Cloudflare D1. Ranked by what a salon owner would actually miss first.</p>
+
+    <div class="tier">
+      <div class="tier-head"><span class="tier-badge p0">P0</span><h3>Make the core loop trustworthy</h3></div>
+      <p class="tier-why">Nothing else matters if the basics feel fragile.</p>
+      <ul>
+        <li>Client-facing booking confirmation screen with all details, not just a status string</li>
+        <li>Reschedule and cancel, not just create — right now a mistake can't be undone by the client</li>
+        <li>Multi-master/multi-service calendar view for the owner, not just one profile at a time</li>
+        <li>Basic reminder (email first — SMS needs a paid provider decision from the owner)</li>
+      </ul>
+    </div>
+    <div class="tier">
+      <div class="tier-head"><span class="tier-badge p1">P1</span><h3>Close the gap with paid competitors</h3></div>
+      <p class="tier-why">The features every comparison article checks for.</p>
+      <ul>
+        <li>No-show policy: optional deposit or cancellation-fee rule per service</li>
+        <li>Client history view for the master (repeat vs. new, last visit)</li>
+        <li>Public booking page per salon/master — a real link to share, like Booksy's profile page</li>
+        <li>Wire in the existing en/es/fr/ua/it/ru locale system from the main Hermes site</li>
+      </ul>
+    </div>
+    <div class="tier">
+      <div class="tier-head"><span class="tier-badge p2">P2</span><h3>Only once P0/P1 are proven with real salons</h3></div>
+      <p class="tier-why">Real money and real infrastructure decisions — needs the owner in the room.</p>
+      <ul>
+        <li>Payments/deposits processing (which provider, in which countries)</li>
+        <li>SMS provider integration (cost-per-message adds up fast at scale)</li>
+        <li>Inventory/stock tracking for product-heavy salons</li>
+        <li>Staff payroll/commission calculation</li>
+      </ul>
+    </div>
+
+    <div class="not-now">
+      <strong>Deliberately not now:</strong> a client-discovery marketplace (Booksy/Fresha's model — needs real supply first), a native mobile app (the web version needs to prove itself first), multi-location franchise tooling, POS hardware integration.
+    </div>
+  </section>
+
+  <div class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li><a href="https://en.ain.ua/2023/12/26/russias-vk-acquires-yclients-operates-in-ukraine-altegio/">AIN.ua — Russia's VK acquires YCLIENTS, which continues to operate in Ukraine under the brand Altegio</a></li>
+      <li><a href="https://ain.ua/2022/06/16/yclients-pishla-z-ukrayiny-altegio-pryjshla-na-zaminu-shho-povyazuye-kompaniyi-rozsliduvannya/">AIN.ua — YCLIENTS left Ukraine, Altegio came as a replacement (investigation)</a></li>
+      <li><a href="https://forbes.ua/innovations/rosiyskiy-kholding-vk-kupiv-soft-avtomatizatsii-biznesu-yclients-vin-pratsyue-v-ukraini-pid-brendom-altegio-y-mae-shchonaymenshe-25-rinku-22122023-18111">Forbes.ua — Altegio (YCLIENTS) software still belongs to Russians</a></li>
+      <li><a href="https://alteg.io/en/stand-with-ukraine/">Altegio — Stand with Ukraine (company statement)</a></li>
+      <li><a href="https://www.thelocalgem.com/blog/best-salon-booking-software-2026-honest-comparison-free-option">The Local Gem — Best Salon Booking Software 2026</a></li>
+      <li><a href="https://www.reservio.com/blog/tips/choosing-the-best-salon-booking-software">Reservio — Best Salon Software in 2026: 7 Tools Compared</a></li>
+      <li><a href="https://thesalonbusiness.com/mangomint-review/">The Salon Business — Mangomint Review 2026</a></li>
+      <li><a href="https://biz.booksy.com/en-us/blog/use-booksy-to-reduce-no-shows-and-cancellations">Booksy — No-show and cancellation protection</a></li>
+      <li><a href="https://www.capterra.com/p/202854/YCLIENTS/">Capterra — YCLIENTS pricing and features</a></li>
+    </ol>
+  </div>
+</main>

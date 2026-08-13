@@ -1,0 +1,15 @@
+{
+  "name": "Hermes Connect",
+  "short_name": "Hermes Connect",
+  "description": "Your business, schedule, and clients in one system.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#edf1f7",
+  "theme_color": "#0a164f",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
