@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import {
   buildLoadBoardPayload,
   buildLoadBoardPreview,
@@ -144,4 +146,16 @@ const rejected = reviewLoadBoardPayload(buildLoadBoardPayload(bot), TEST_NOW);
 assert.equal(rejected.decision, "rejected");
 assert.deepEqual(rejected.routing, []);
 
-console.log("Load Board unit checks passed.");
+// Search ownership: role/equipment query parameters may remain useful UI state,
+// but the rendered document must expose one organic canonical owner: /load-board/.
+const root = new URL("../", import.meta.url).pathname;
+const loadBoardHtml = await readFile(join(root, "dist/load-board/index.html"), "utf8");
+assert.match(
+  loadBoardHtml,
+  /<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\/hermeslogisticsus\.com\/load-board\/["']/i,
+  "Load Board must expose /load-board/ as the single canonical search owner",
+);
+assert.match(loadBoardHtml, /fictional demo/i, "Load Board must keep its demo boundary visible");
+assert.doesNotMatch(loadBoardHtml, /live freight available now/i, "Load Board must not imply live freight availability");
+
+console.log("Load Board unit and canonical search-owner checks passed.");
