@@ -29,6 +29,18 @@ function contextFor(url, { body = "asset", contentType = "" } = {}) {
 }
 
 {
+  const html = '<html><head></head><body><section id="apply"><form data-application-form></form></section></body></html>';
+  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/request-access/", { body: html, contentType: "text/html" });
+  const response = await routeMiddleware(context);
+  const served = await response.text();
+  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/index.html");
+  assert.equal(served.includes('id="apply"'), true);
+  assert.equal(served.includes("data-application-form"), true);
+  assert.equal(served.includes("data-hermes-connect-brand-shell"), true);
+  assert.equal(served.includes("data-hermes-connect-analytics-consent"), true);
+}
+
+{
   const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/workspace.css", { body: "body{}", contentType: "text/css" });
   const response = await routeMiddleware(context);
   assert.equal(await response.text(), "body{}");
@@ -53,4 +65,4 @@ function contextFor(url, { body = "asset", contentType = "" } = {}) {
   assert.equal(observed.nextCalls, 1);
 }
 
-console.log("Connect hostname and Brand V1 routing contract passed.");
+console.log("Connect hostname, Brand V1, and request-access routing contract passed.");
