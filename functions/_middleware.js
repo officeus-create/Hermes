@@ -13,6 +13,12 @@ const STALE_PUBLIC_COPY = [
   "contact delivery is not connected",
 ];
 
+const ACCESS_DOCUMENTS = new Map([
+  ["/request-access", "/index.html"],
+  ["/request-access/", "/index.html"],
+  ["/request-access/index.html", "/index.html"],
+]);
+
 const BRAND_ROOT_ASSETS = new Set([
   "/workspace.css",
   "/workspace-launch-v2.css",
@@ -55,6 +61,10 @@ function isConnectDocument(pathname) {
 }
 
 function connectAssetPath(pathname) {
+  if (ACCESS_DOCUMENTS.has(pathname)) {
+    return `${LEGACY_CONNECT_ASSET_ROOT}${ACCESS_DOCUMENTS.get(pathname)}`;
+  }
+
   if (BRAND_DOCUMENTS.has(pathname)) {
     return `${BRAND_CONNECT_ASSET_ROOT}${BRAND_DOCUMENTS.get(pathname)}`;
   }
