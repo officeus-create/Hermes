@@ -111,17 +111,17 @@
   ];
 
   const integrations = [
-    ['G','Gmail','Email conversations, context and follow-up','Connected'],
-    ['▣','Google Calendar','Bookings, meetings and availability','Connected'],
-    ['GH','GitHub','Issues, code, releases and evidence','Connected'],
-    ['S','Slack','Team messages and operational signals','Available'],
-    ['N','Notion','Knowledge, SOPs and documentation','Available'],
-    ['L','Linear','Issue-to-outcome workflow','Available'],
-    ['WA','WhatsApp','Customer messaging and follow-up','Planned'],
-    ['☎','Telephony','Calls, transcripts and coaching','Planned'],
-    ['P','Payments','Payment events and receivables','Available'],
-    ['A','Analytics','Product and campaign intelligence','Available'],
-    ['CD','Carrier Data','Logistics matching and scoring','Planned'],
+    ['G','Gmail','Email conversations, context and follow-up','Simulated'],
+    ['▣','Google Calendar','Bookings, meetings and availability','Simulated'],
+    ['GH','GitHub','Issues, code, releases and evidence','Simulated'],
+    ['S','Slack','Team messages and operational signals','Demo'],
+    ['N','Notion','Knowledge, SOPs and documentation','Demo'],
+    ['L','Linear','Issue-to-outcome workflow','Demo'],
+    ['WA','WhatsApp','Customer messaging and follow-up','Connector not configured'],
+    ['☎','Telephony','Calls, transcripts and coaching','Connector not configured'],
+    ['P','Payments','Payment events and receivables','Demo'],
+    ['A','Analytics','Product and campaign intelligence','Demo'],
+    ['CD','Carrier Data','Logistics matching and scoring','Connector not configured'],
     ['+','1000+ tools','Expansion through approved connectors','Explore']
   ];
 
@@ -171,15 +171,15 @@
     const target = $('[data-integration-grid]');
     if (!target) return;
     target.innerHTML = integrations.map(([logo,name,desc,status]) => {
-      const connected = status === 'Connected';
-      const action = connected ? 'Connected ✓' : (status === 'Planned' ? 'Join waitlist' : status === 'Explore' ? 'Explore layer' : 'Connect');
-      return `<article class="integration-card ${connected ? 'connected' : ''}"><div class="integration-top"><span class="integration-logo">${logo}</span><span class="integration-status">${status}</span></div><h4>${name}</h4><p>${desc}</p><button type="button" data-integration-action>${action}</button></article>`;
+      const simulated = status === 'Simulated';
+      const action = simulated ? 'Simulated ✓' : (status === 'Connector not configured' ? 'Configure' : status === 'Explore' ? 'Explore layer' : 'Test Demo');
+      return `<article class="integration-card ${simulated ? 'connected' : ''}"><div class="integration-top"><span class="integration-logo">${logo}</span><span class="integration-status">${status}</span></div><h4>${name}</h4><p>${desc}</p><button type="button" data-integration-action>${action}</button></article>`;
     }).join('');
     $$('[data-integration-action]', target).forEach(button => button.addEventListener('click', () => {
       const card = button.closest('.integration-card');
       if (card.classList.contains('connected')) return;
-      button.textContent = 'Prototype request saved';
-      card.querySelector('.integration-status').textContent = 'Requested';
+      button.textContent = 'Simulated action';
+      card.querySelector('.integration-status').textContent = 'Demo Mode';
     }));
   }
 
