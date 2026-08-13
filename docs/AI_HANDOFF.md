@@ -191,8 +191,8 @@ entries — append only.
 ## 2026-08-13 — Antigravity — Hermes Connect Multi-Vertical End-to-End Simulation & Polish
 
 - Branch: `feat/hermes-connect-visual-motion-v1`
-- Commit(s): Pending git commit
-- PR: Pending push
+- Commit(s): `22b8045`
+- PR: https://github.com/officeus-create/Hermes/pull/new/feat/hermes-connect-visual-motion-v1
 - What was done:
   1. Expanded multi-vertical workspace dataset in `public/demos/hermes-connect-brand-v1/workspace.js` to equip all 5 verticals (`beauty`, `logistics`, `fitness`, `agency`, `realestate`) with tailored conversations, customers, week calendar schedules, kanban deal columns, and background ops tasks.
   2. Implemented dynamic vertical switching so selecting any vertical immediately re-renders all 5 operational views (Inbox, CRM, Calendar, Sales Kanban, Ops Tasks).
