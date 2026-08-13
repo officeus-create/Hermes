@@ -6,9 +6,10 @@ export type VerticalCategory =
   | 'fitness' 
   | 'marketing' 
   | 'global_network' 
-  | 'website_demo';
+  | 'website_demo'
+  | 'candidate_auditor';
 
-export type UserRole = 'owner' | 'specialist' | 'client' | 'driver' | 'ai_copilot';
+export type UserRole = 'owner' | 'specialist' | 'client' | 'driver' | 'ai_copilot' | 'candidate';
 
 export interface BrandTheme {
   brandName: string;

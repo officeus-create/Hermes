@@ -176,7 +176,10 @@ export function useConnectStore() {
       let routed: VerticalCategory = 'beauty';
       let badge: AIMessage['evidenceBadge'] = undefined;
 
-      if (lower.includes('груз') || lower.includes('load') || lower.includes('фура') || lower.includes('рейс') || lower.includes('диспетч')) {
+      if (lower.includes('резюме') || lower.includes('работа') || lower.includes('ваканс') || lower.includes('ats') || lower.includes('pyometrics') || lower.includes('найм')) {
+        routed = 'candidate_auditor';
+        replyContent = `Маршрутизирую в **Anti-ATS Resume Auditor & Candidate Portal**. Исследование Стэнфорда показало, что 90% ATS заносят резюме в теневой бан до 330 дней. Hermes Connect проверит ваш ATS Readines Score и создаст прямую ссылку для работодателей!`;
+      } else if (lower.includes('груз') || lower.includes('load') || lower.includes('фура') || lower.includes('рейс') || lower.includes('диспетч')) {
         routed = 'logistics';
         replyContent = `Отлично! Маршрутизирую ваш запрос в **Hermes Freight & Dispatch Network**. У нас доступно ${freightLoads.filter(l => l.status === 'available').length} активных грузов на Load Board. Желаете подать ставку или запросить авто-диспетчер?`;
       } else if (lower.includes('машин') || lower.includes('авто') || lower.includes('сервис') || lower.includes('ремонт') || lower.includes('двигател')) {

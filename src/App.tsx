@@ -7,6 +7,7 @@ import { AdaptiveOnboardingModal } from './components/AdaptiveOnboardingModal';
 import { BrandLogoExplorerModal, LogoConceptId } from './components/BrandLogoExplorerV2';
 
 import { HeroLandingView } from './views/HeroLandingView';
+import { CandidateResumeAuditorView } from './views/CandidateResumeAuditorView';
 import { BeautyWorkspace } from './views/BeautyWorkspace';
 import { AutoRepairWorkspace } from './views/AutoRepairWorkspace';
 import { LoadBoardWorkspace } from './views/LoadBoardWorkspace';
@@ -54,7 +55,11 @@ export function App() {
     setThemeMode(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  const isFullWidthView = activeVertical === 'hero_landing' || activeVertical === 'global_network' || activeVertical === 'website_demo';
+  const isFullWidthView = 
+    activeVertical === 'hero_landing' || 
+    activeVertical === 'candidate_auditor' ||
+    activeVertical === 'global_network' || 
+    activeVertical === 'website_demo';
 
   return (
     <div className="min-h-screen pb-20 transition-colors duration-300">
@@ -74,7 +79,7 @@ export function App() {
       {/* Main Content Layout */}
       <main className="px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Sidebar Area (Hidden on Full-Width Hero Landing, Global Network & Website Demo views) */}
+          {/* Sidebar Area (Hidden on Full-Width Hero Landing, Candidate Auditor, Global Network & Website Demo views) */}
           {!isFullWidthView && (
             <div className="lg:col-span-3">
               <Sidebar workspace={currentWorkspace} activeRole={activeRole} />
@@ -88,6 +93,10 @@ export function App() {
                 onNavigateVertical={setActiveVertical}
                 onOpenOnboarding={() => setIsOnboardingOpen(true)}
               />
+            )}
+
+            {activeVertical === 'candidate_auditor' && (
+              <CandidateResumeAuditorView />
             )}
 
             {activeVertical === 'beauty' && (

@@ -39,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ workspace, activeRole }) => {
 
   const roleLabelMap: Record<UserRole, string> = {
     owner: 'Владелец',
+    candidate: 'Кандидат',
     specialist: 'Специалист',
     client: 'Клиент',
     driver: 'Водитель',
@@ -160,6 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ workspace, activeRole }) => {
         </div>
         <p className="text-[11px] text-slate-300 leading-snug">
           {activeRole === 'owner' ? 'Полный доступ к аналитике, сервисам управления и расписаниям.' :
+           activeRole === 'candidate' ? 'Режим соискателя: ИИ-аудит резюме, подбор ключевых слов, прямая ссылка.' :
            activeRole === 'client' ? 'Интерфейс бронирования слотов и онлайн-записи.' :
            activeRole === 'driver' ? 'Интерфейс перевозчика: отклик на грузы, просмотр рейсов.' :
            'Специализированный экран мастера.'}

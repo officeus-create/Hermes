@@ -12,7 +12,8 @@ import {
   Moon,
   Zap,
   Palette,
-  Sparkles
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { VerticalCategory, UserRole } from '../types';
 import { BrandLogoV2, LogoConceptId } from './BrandLogoExplorerV2';
@@ -42,6 +43,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   const verticals: { id: VerticalCategory; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'hero_landing', label: 'Обзор ОС & Бренд', icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />, badge: 'V1 OS' },
+    { id: 'candidate_auditor', label: 'ИИ-Аудит Резюме', icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />, badge: 'НОВОЕ' },
     { id: 'beauty', label: 'Салон красоты', icon: <Scissors className="w-3.5 h-3.5" /> },
     { id: 'auto_repair', label: 'Авторемонт', icon: <Wrench className="w-3.5 h-3.5" /> },
     { id: 'logistics', label: 'US Load Board', icon: <Truck className="w-3.5 h-3.5" />, badge: 'ГОРЯЧИЙ' },
@@ -53,6 +55,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   const roles: { id: UserRole; label: string }[] = [
     { id: 'owner', label: 'Владелец бизнеса' },
+    { id: 'candidate', label: 'Кандидат / Соискатель' },
     { id: 'specialist', label: 'Специалист / Мастер' },
     { id: 'client', label: 'Клиент' },
     { id: 'driver', label: 'Водитель / Перевозчик' },
@@ -101,6 +104,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <span>{v.label}</span>
                 {v.badge && (
                   <span className={`text-[8px] px-1.5 py-0.2 rounded-full font-bold ${
+                    v.badge === 'НОВОЕ' ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/40' :
                     v.badge === 'V1 OS' ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/40' :
                     v.badge === 'ГОРЯЧИЙ' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
                     v.badge === 'ИИ' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
