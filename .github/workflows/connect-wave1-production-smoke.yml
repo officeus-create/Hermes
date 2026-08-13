@@ -1,4 +1,4 @@
-# Recheck marker: Wave 1 + controlled labs — 2026-08-13
+# Recheck marker: Wave 1 + labs + consent analytics — 2026-08-13
 name: Verify Hermes Connect Wave 1 production routes
 
 on:
@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify Wave 1 and controlled labs
+    name: Verify Wave 1, controlled labs, and consent analytics
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
@@ -54,7 +54,7 @@ jobs:
               try {
                 const response = await fetch(`${target.url}?release=${Date.now()}`, {
                   redirect: "follow",
-                  headers: { "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectReleaseVerifier/1.2" },
+                  headers: { "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectReleaseVerifier/1.3" },
                   signal: AbortSignal.timeout(20_000),
                 });
                 const body = await response.text();
@@ -76,7 +76,7 @@ jobs:
             try {
               const response = await fetch(`https://connect.hermeslogisticsus.com/?agent=${Date.now()}`, {
                 redirect: "follow",
-                headers: { accept: "text/markdown", "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectReleaseVerifier/1.2" },
+                headers: { accept: "text/markdown", "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectReleaseVerifier/1.3" },
                 signal: AbortSignal.timeout(20_000),
               });
               const body = await response.text();
@@ -91,4 +91,31 @@ jobs:
           results.push({ url: "https://connect.hermeslogisticsus.com/ [text/markdown]", passed: markdownPassed, ...markdownLast });
           console.log(JSON.stringify(results, null, 2));
           if (results.some((item) => !item.passed)) process.exit(1);
+          NODE
+
+      - name: Verify consent analytics bootstrap without pre-consent vendor load
+        run: |
+          node <<'NODE'
+          const rootUrl = `https://connect.hermeslogisticsus.com/?analytics=${Date.now()}`;
+          const root = await fetch(rootUrl, {
+            headers: { "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectAnalyticsVerifier/1.0" },
+            signal: AbortSignal.timeout(20_000),
+          });
+          const html = await root.text();
+          if (root.status !== 200) throw new Error(`Connect root returned ${root.status}`);
+          if (!html.includes("data-hermes-connect-analytics-consent")) throw new Error("Consent bootstrap marker missing from Connect HTML");
+          if (!html.includes('/connect-analytics-consent.mjs')) throw new Error("Consent bootstrap asset reference missing from Connect HTML");
+          if (html.includes("googletagmanager.com/gtag/js")) throw new Error("Google tag vendor URL must not be embedded directly in pre-consent HTML");
+
+          const assetUrl = `https://connect.hermeslogisticsus.com/connect-analytics-consent.mjs?analytics=${Date.now()}`;
+          const asset = await fetch(assetUrl, {
+            headers: { "cache-control": "no-cache", pragma: "no-cache", "user-agent": "HermesConnectAnalyticsVerifier/1.0" },
+            signal: AbortSignal.timeout(20_000),
+          });
+          const source = await asset.text();
+          const markers = ["G-RY26321PVW", "hermes-analytics-consent", "ALLOWED_EVENT_KEYS", "analytics_storage", "ad_personalization"];
+          if (asset.status !== 200 || !markers.every((marker) => source.includes(marker))) {
+            throw new Error(`Consent analytics asset verification failed: status=${asset.status}`);
+          }
+          console.log(JSON.stringify({ root: root.status, bootstrap: true, preConsentVendorUrl: false, asset: asset.status, markers: true }));
           NODE
