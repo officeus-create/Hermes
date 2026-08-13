@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-  Sparkles, 
   Scissors, 
   Wrench, 
   Truck, 
@@ -8,22 +7,32 @@ import {
   TrendingUp, 
   Globe, 
   Globe2, 
-  UserCheck
+  UserCheck,
+  Sun,
+  Moon,
+  Zap
 } from 'lucide-react';
 import { VerticalCategory, UserRole } from '../types';
+import { KineticWingLogo } from './KineticWingLogo';
 
 interface NavigationProps {
   activeVertical: VerticalCategory;
   setActiveVertical: (v: VerticalCategory) => void;
   activeRole: UserRole;
   setActiveRole: (r: UserRole) => void;
+  themeMode: 'dark' | 'light';
+  onToggleThemeMode: () => void;
+  onOpenOnboarding: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   activeVertical,
   setActiveVertical,
   activeRole,
-  setActiveRole
+  setActiveRole,
+  themeMode,
+  onToggleThemeMode,
+  onOpenOnboarding
 }) => {
   const verticals: { id: VerticalCategory; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'beauty', label: 'Салон красоты', icon: <Scissors className="w-3.5 h-3.5" /> },
@@ -44,23 +53,14 @@ export const Navigation: React.FC<NavigationProps> = ({
   ];
 
   return (
-    <header className="glass-panel mb-6 p-3.5 border-b border-white/10 sticky top-2 z-50 mx-4 backdrop-blur-xl">
+    <header className="glass-panel mb-6 p-3.5 border-b border-white/10 sticky top-2 z-40 mx-4 backdrop-blur-xl">
       <div className="flex flex-col xl:flex-row items-center justify-between gap-3">
-        {/* Brand & Logo */}
+        {/* Brand & Kinetic Wing Logo */}
         <div 
-          className="flex items-center gap-2.5 cursor-pointer shrink-0" 
           onClick={() => setActiveVertical('global_network')}
+          className="shrink-0"
         >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-            <Sparkles className="w-4 h-4 text-white animate-pulse" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base text-white font-heading tracking-tight">HERMES CONNECT</span>
-              <span className="badge badge-primary text-[9px] px-2 py-0.5">NEXT</span>
-            </div>
-            <p className="text-[10px] text-slate-400 leading-none mt-0.5">Платформа намерений и спроса</p>
-          </div>
+          <KineticWingLogo size={34} />
         </div>
 
         {/* Vertical Selector Tabs */}
@@ -93,21 +93,52 @@ export const Navigation: React.FC<NavigationProps> = ({
           })}
         </div>
 
-        {/* Role Switcher */}
-        <div className="flex items-center gap-1.5 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-white/10 text-xs shrink-0">
-          <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
-          <span className="text-slate-400 hidden sm:inline">Роль:</span>
-          <select
-            value={activeRole}
-            onChange={(e) => setActiveRole(e.target.value as UserRole)}
-            className="bg-transparent text-white font-medium focus:outline-none cursor-pointer border-none py-0.5 text-xs"
+        {/* Action Controls: 1-Click Adaptive Setup + Theme Toggle + Role Switcher */}
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          {/* 1-Click Adaptive Setup Modal Trigger */}
+          <button
+            onClick={onOpenOnboarding}
+            className="btn-secondary text-xs py-1.5 px-3 bg-indigo-500/10 border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/20"
           >
-            {roles.map(r => (
-              <option key={r.id} value={r.id} className="bg-slate-900 text-white">
-                {r.label}
-              </option>
-            ))}
-          </select>
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span className="hidden sm:inline">1-Click Setup</span>
+          </button>
+
+          {/* Light Pearl / Dark Theme Toggle */}
+          <button
+            onClick={onToggleThemeMode}
+            title={themeMode === 'dark' ? 'Переключить на Светлый Жемчуг (#F8F5F2)' : 'Переключить на Темный Космос (#0A0A0F)'}
+            className="p-1.5 rounded-xl bg-slate-900/90 border border-white/10 hover:bg-white/10 text-slate-300 transition-colors flex items-center gap-1 text-xs"
+          >
+            {themeMode === 'dark' ? (
+              <>
+                <Sun className="w-4 h-4 text-amber-400" />
+                <span className="text-[10px] hidden md:inline">Pearl Light</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-indigo-400" />
+                <span className="text-[10px] hidden md:inline">Dark</span>
+              </>
+            )}
+          </button>
+
+          {/* Role Switcher */}
+          <div className="flex items-center gap-1.5 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-white/10 text-xs">
+            <UserCheck className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-slate-400 hidden sm:inline">Роль:</span>
+            <select
+              value={activeRole}
+              onChange={(e) => setActiveRole(e.target.value as UserRole)}
+              className="bg-transparent text-white font-medium focus:outline-none cursor-pointer border-none py-0.5 text-xs"
+            >
+              {roles.map(r => (
+                <option key={r.id} value={r.id} className="bg-slate-900 text-white">
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </header>

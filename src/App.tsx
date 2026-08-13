@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useConnectStore } from './store/useStore';
 import { Navigation } from './components/Navigation';
 import { Sidebar } from './components/Sidebar';
 import { AIBrainWidget } from './components/AIBrainWidget';
+import { AdaptiveOnboardingModal } from './components/AdaptiveOnboardingModal';
 
 import { BeautyWorkspace } from './views/BeautyWorkspace';
 import { AutoRepairWorkspace } from './views/AutoRepairWorkspace';
@@ -34,14 +35,32 @@ export function App() {
     sendAIMessage
   } = useConnectStore();
 
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('dark');
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+
+  useEffect(() => {
+    if (themeMode === 'light') {
+      document.body.classList.add('theme-light-pearl');
+    } else {
+      document.body.classList.remove('theme-light-pearl');
+    }
+  }, [themeMode]);
+
+  const toggleThemeMode = () => {
+    setThemeMode(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   return (
-    <div className="min-h-screen pb-20">
+    <div className="min-h-screen pb-20 transition-colors duration-300">
       {/* Top Navigation */}
       <Navigation
         activeVertical={activeVertical}
         setActiveVertical={setActiveVertical}
         activeRole={activeRole}
         setActiveRole={setActiveRole}
+        themeMode={themeMode}
+        onToggleThemeMode={toggleThemeMode}
+        onOpenOnboarding={() => setIsOnboardingOpen(true)}
       />
 
       {/* Main Content Layout */}
@@ -109,6 +128,14 @@ export function App() {
           </div>
         </div>
       </main>
+
+      {/* 1-Click Adaptive Onboarding Modal */}
+      <AdaptiveOnboardingModal
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+        onSelectVertical={setActiveVertical}
+        activeVertical={activeVertical}
+      />
 
       {/* Front-Door AI Brain Floating Widget */}
       <AIBrainWidget
