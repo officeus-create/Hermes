@@ -1,28 +1,3 @@
 {
-  "schema_version": 1,
-  "base_manifest": "docs/release-manifest-2026-08-01.json",
-  "release_delta": "2026-08-13-hermes-connect-multi-car-planner",
-  "generated_at": "2026-08-13T03:45:00Z",
-  "status": "PENDING_PRODUCTION_DEPLOYMENT",
-  "additions": [
-    {
-      "route": "/demos/hermes-connect/multi-car-planner/",
-      "source_state": "current_main",
-      "indexability": "noindex",
-      "robots": "noindex,nofollow",
-      "canonical": "https://connect.hermeslogisticsus.com/multi-car-planner/",
-      "sitemap_owner": null,
-      "source_file": "public/demos/hermes-connect/multi-car-planner/index.html",
-      "status": "COMPLETE",
-      "blocker": "Controlled Hermes Connect planning MVP does not connect live capacity, rates, booking, private shipment data, or guaranteed equipment/timing.",
-      "response_status": 200,
-      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
-    }
-  ],
-  "acceptance": {
-    "route_count_added": 1,
-    "indexable_route_count_added": 0,
-    "requires_green_current_head_ci": true,
-    "requires_production_snapshot_reconciliation_after_deploy": true
-  }
+  "schema_version":1,"base_manifest":"docs/release-manifest-2026-08-01.json","release_delta":"2026-08-13-hermes-connect-multi-car-planner","generated_at":"2026-08-13T03:45:00Z","status":"PRODUCTION_VERIFIED","production_verified_at":"2026-08-13","production_verification_run":"31668926104","additions":[{"route":"/demos/hermes-connect/multi-car-planner/","source_state":"current_main","indexability":"noindex","robots":"noindex,nofollow","canonical":"https://connect.hermeslogisticsus.com/multi-car-planner/","sitemap_owner":null,"source_file":"public/demos/hermes-connect/multi-car-planner/index.html","status":"COMPLETE","blocker":"Controlled Hermes Connect planning MVP does not connect live capacity, rates, booking, private shipment data, or guaranteed equipment/timing.","response_status":200,"comparison":{"production":"present","immutable_release":"missing"}}],"acceptance":{"route_count_added":1,"indexable_route_count_added":0,"requires_green_current_head_ci":true,"requires_production_snapshot_reconciliation_after_deploy":true}
 }
