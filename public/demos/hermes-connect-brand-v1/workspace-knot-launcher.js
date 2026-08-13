@@ -2,6 +2,12 @@
   const existingControl = document.querySelector('[data-hermes-open]');
   if (!existingControl || document.querySelector('.hc-floating-knot')) return;
 
+  const approvedStyle = document.createElement('link');
+  approvedStyle.rel = 'stylesheet';
+  approvedStyle.href = '/workspace-v2-injected.css';
+  approvedStyle.dataset.hcV2Style = 'true';
+  document.head.appendChild(approvedStyle);
+
   const knotSvg = `
     <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
       <defs>
