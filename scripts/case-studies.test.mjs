@@ -6,9 +6,10 @@ const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const readBuilt = (path) => readFile(join(dist, path), "utf8");
 
-const [hub, appletonCase, sitemap, primarySitemap, robots, homepage] = await Promise.all([
+const [hub, appletonCase, appletonTransport, sitemap, primarySitemap, robots, homepage] = await Promise.all([
   readBuilt("case/index.html"),
   readBuilt("case/appleton-vehicle-transport-seo/index.html"),
+  readBuilt("logistics/appleton-wi-vehicle-transport/index.html"),
   readBuilt("sitemap-cases.xml"),
   readBuilt("sitemap.xml"),
   readBuilt("robots.txt"),
@@ -24,16 +25,22 @@ const descriptionFrom = (html) =>
   html.match(/<meta\b[^>]*name=["']description["'][^>]*content=["']([^"']+)["'][^>]*>/i)?.[1]
   ?? html.match(/<meta\b[^>]*content=["']([^"']+)["'][^>]*name=["']description["'][^>]*>/i)?.[1]
   ?? "";
+const h1Text = (html) => html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i)?.[1]?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() ?? "";
 const h1Count = (html) => [...html.matchAll(/<h1\b/gi)].length;
 
 assert.equal(canonicalFrom(hub), "https://hermeslogisticsus.com/case/");
 assert.equal(canonicalFrom(appletonCase), "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/");
+assert.equal(canonicalFrom(appletonTransport), "https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/");
 assert.match(titleFrom(hub), /Hermes Case Studies/i);
 assert.match(titleFrom(appletonCase), /Appleton Vehicle Transport SEO Case Study/i);
+assert.match(titleFrom(appletonTransport), /Appleton.*Vehicle Transport|Vehicle Transport.*Appleton/i);
+assert.match(h1Text(appletonTransport), /vehicle transport/i);
+assert.match(h1Text(appletonTransport), /Appleton/i);
 assert.ok(descriptionFrom(hub).length >= 70);
 assert.ok(descriptionFrom(appletonCase).length >= 70);
 assert.equal(h1Count(hub), 1);
 assert.equal(h1Count(appletonCase), 1);
+assert.equal(h1Count(appletonTransport), 1);
 
 for (const required of [
   '"@type":"CollectionPage"',
@@ -67,6 +74,16 @@ for (const prohibited of ["guaranteed rankings", "guaranteed leads", "ranks #1",
   assert.ok(!appletonCase.toLowerCase().includes(prohibited), `Appleton case contains prohibited claim: ${prohibited}`);
 }
 
+for (const misleadingIntent of ["appleton warehousing services", "appleton warehouse services", "warehousing in appleton"]) {
+  assert.ok(!appletonTransport.toLowerCase().includes(misleadingIntent), `Appleton vehicle-transport owner must not target unrelated intent: ${misleadingIntent}`);
+}
+assert.ok(
+  homepage.includes('href="/logistics/appleton-wi-vehicle-transport/"')
+  && homepage.includes("Appleton vehicle transport")
+  && homepage.includes("Plan Appleton vehicle transport"),
+  "Homepage must reinforce Appleton vehicle-transport intent with descriptive internal anchor copy",
+);
+
 for (const url of [
   "https://hermeslogisticsus.com/case/",
   "https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/",
@@ -78,4 +95,4 @@ assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-de
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
 
-console.log("Case studies release checks passed: hub, Appleton case, direct SEO intake, schema, links, claims, unique sitemap ownership, and crawl path.");
+console.log("Case studies and Appleton intent-boundary checks passed: exact vehicle-transport owner, descriptive crawl path, case schema/claims, unique sitemap ownership, and no warehousing-intent stuffing.");
