@@ -456,6 +456,7 @@
           <button class="status-btn ${lead.status==='NEW'?'active':''}" data-set-status="NEW" data-lead-id="${lead.id}">NEW</button>
           <button class="status-btn ${lead.status==='QUALIFIED'?'active':''}" data-set-status="QUALIFIED" data-lead-id="${lead.id}">QUALIFIED</button>
           <button class="status-btn ${lead.status==='PROPOSAL_SENT'?'active':''}" data-set-status="PROPOSAL_SENT" data-lead-id="${lead.id}">PROPOSAL SENT</button>
+          <button class="proposal-gen-btn" type="button" data-trigger-proposal="${lead.id}">⚡ Instant Proposal</button>
         </div>
       `;
 
@@ -465,6 +466,14 @@
           lead.status = newStatus;
           renderLeadInbox();
           renderLeadDetail(lead.id);
+        });
+      });
+
+      $$('[data-trigger-proposal]', header).forEach(btn => {
+        btn.addEventListener('click', () => {
+          const leadId = btn.dataset.triggerProposal;
+          const targetLead = leadStore.find(l => l.id === leadId) || lead;
+          setProposalModal(true, targetLead);
         });
       });
     }
@@ -772,6 +781,590 @@
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') setDrawer(false);
   });
+
+  // ==========================================
+  // MODULE 1: B2B Load Analyzer & AI Rate Negotiator
+  // ==========================================
+  const LOAD_PRESETS = {
+    chicago: { miles: 850, rate: 2200, fuel: 3.85, mpg: 6.5, driver: 0.65, tolls: 150, targetMargin: 20 },
+    milwaukee: { miles: 780, rate: 2100, fuel: 3.90, mpg: 6.2, driver: 0.68, tolls: 120, targetMargin: 22 },
+    indy: { miles: 1150, rate: 3200, fuel: 3.80, mpg: 6.6, driver: 0.65, tolls: 180, targetMargin: 20 },
+    email: { miles: 1020, rate: 2450, fuel: 3.85, mpg: 6.4, driver: 0.65, tolls: 160, targetMargin: 20 }
+  };
+
+  function initLoadAnalyzer() {
+    const panel = $('[data-load-analyzer-panel]');
+    if (!panel) return;
+
+    const milesInput = $('[data-la-input="miles"]');
+    const rateInput = $('[data-la-input="rate"]');
+    const fuelInput = $('[data-la-input="fuel"]');
+    const mpgInput = $('[data-la-input="mpg"]');
+    const driverInput = $('[data-la-input="driver"]');
+    const tollsInput = $('[data-la-input="tolls"]');
+    const marginInput = $('[data-la-input="targetMargin"]');
+    const strategySelect = $('[data-la-strategy]');
+    const counterMsg = $('[data-la-counter-msg]');
+
+    function recalculate() {
+      const miles = parseFloat(milesInput?.value) || 1;
+      const rate = parseFloat(rateInput?.value) || 0;
+      const fuel = parseFloat(fuelInput?.value) || 0;
+      const mpg = parseFloat(mpgInput?.value) || 1;
+      const driver = parseFloat(driverInput?.value) || 0;
+      const tolls = parseFloat(tollsInput?.value) || 0;
+      const targetMargin = parseFloat(marginInput?.value) || 20;
+
+      const offeredRpm = rate / miles;
+      const fuelCost = (miles / mpg) * fuel;
+      const driverPay = miles * driver;
+      const totalCost = fuelCost + driverPay + tolls;
+      const netProfit = rate - totalCost;
+      const marginPct = rate > 0 ? (netProfit / rate) * 100 : 0;
+      const targetRate = totalCost / (1 - (targetMargin / 100));
+      const targetRpm = targetRate / miles;
+
+      // Update UI outputs
+      const offeredRpmEl = $('[data-la-out="offeredRpm"]');
+      const rpmStatusEl = $('[data-la-out="rpmStatus"]');
+      const fuelCostEl = $('[data-la-out="fuelCost"]');
+      const driverPayEl = $('[data-la-out="driverPay"]');
+      const netProfitEl = $('[data-la-out="netProfit"]');
+      const marginPctEl = $('[data-la-out="marginPct"]');
+      const targetRateEl = $('[data-la-out="targetRate"]');
+      const targetRpmEl = $('[data-la-out="targetRpm"]');
+
+      if (offeredRpmEl) offeredRpmEl.textContent = `$${offeredRpm.toFixed(2)}/mi`;
+      if (fuelCostEl) fuelCostEl.textContent = `$${fuelCost.toFixed(2)}`;
+      if (driverPayEl) driverPayEl.textContent = `$${driverPay.toFixed(2)}`;
+      if (netProfitEl) netProfitEl.textContent = `$${netProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      if (marginPctEl) marginPctEl.textContent = `Margin: ${marginPct.toFixed(1)}%`;
+      if (targetRateEl) targetRateEl.textContent = `$${Math.ceil(targetRate).toLocaleString('en-US')}.00`;
+      if (targetRpmEl) targetRpmEl.textContent = `$${targetRpm.toFixed(2)}/mi required`;
+
+      if (rpmStatusEl) {
+        if (marginPct >= targetMargin) {
+          rpmStatusEl.textContent = '✓ Margin Target Met';
+          rpmStatusEl.className = 'positive';
+          rpmStatusEl.style.color = '#16A34A';
+        } else {
+          rpmStatusEl.textContent = `Below ${targetMargin}% Margin Target`;
+          rpmStatusEl.className = 'warning';
+          rpmStatusEl.style.color = '#DC2626';
+        }
+      }
+
+      // Generate Counter Offer Message
+      const strategy = strategySelect?.value || 'operating';
+      let message = '';
+      if (strategy === 'scarcity') {
+        message = `Attention Dispatch,\n\nWe have a staged team driver within 12 miles of origin for this ${miles}-mile lane. To secure immediate dispatch today, our target counter rate is $${Math.ceil(targetRate).toLocaleString()} ($${targetRpm.toFixed(2)}/mi vs offered $${offeredRpm.toFixed(2)}/mi). Please update rate confirmation to lock in dispatch.`;
+      } else if (strategy === 'firm') {
+        message = `Broker Dispatch Team,\n\nRe: ${miles}-mile load offer of $${rate.toLocaleString()} ($${offeredRpm.toFixed(2)}/mi). This rate falls below our floor carrier margin. Our firm floor counter for this lane is $${Math.ceil(targetRate).toLocaleString()} ($${targetRpm.toFixed(2)}/mi). Let us know if rate sheet can be revised by 2:00 PM.`;
+      } else {
+        message = `Hello Broker Team,\n\nThank you for the $${rate.toLocaleString()} offer on this ${miles}-mile load ($${offeredRpm.toFixed(2)}/mi). Based on current diesel overhead ($${fuel.toFixed(2)}/gal) and driver operating costs ($${totalCost.toFixed(2)} total trip cost), our minimum rate to maintain target margin is $${Math.ceil(targetRate).toLocaleString()} ($${targetRpm.toFixed(2)}/mi).\n\nWe have equipment staged and ready for immediate dispatch if we can lock in $${Math.ceil(targetRate).toLocaleString()}.\n\nBest regards,\nHermes Logistics Ops Team`;
+      }
+
+      if (counterMsg) counterMsg.value = message;
+    }
+
+    // Attach input listeners
+    $$('[data-la-input]', panel).forEach(input => input.addEventListener('input', recalculate));
+    strategySelect?.addEventListener('change', recalculate);
+
+    // Preset buttons
+    $$('[data-load-preset]', panel).forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('[data-load-preset]', panel).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.loadPreset;
+        const preset = LOAD_PRESETS[key] || LOAD_PRESETS.chicago;
+
+        if (key === 'email' && window.HermesEmailLoadParser && HermesEmailLoadParser.SAMPLE_EMAILS) {
+          const sample = HermesEmailLoadParser.SAMPLE_EMAILS[0];
+          const parsed = HermesEmailLoadParser.parseEmail(sample);
+          if (parsed && parsed.miles && parsed.rate) {
+            preset.miles = parsed.miles;
+            preset.rate = parsed.rate;
+          }
+        }
+
+        if (milesInput) milesInput.value = preset.miles;
+        if (rateInput) rateInput.value = preset.rate;
+        if (fuelInput) fuelInput.value = preset.fuel;
+        if (mpgInput) mpgInput.value = preset.mpg;
+        if (driverInput) driverInput.value = preset.driver;
+        if (tollsInput) tollsInput.value = preset.tolls;
+        if (marginInput) marginInput.value = preset.targetMargin;
+
+        recalculate();
+      });
+    });
+
+    // Copy & Send buttons
+    $('[data-la-copy-btn]', panel)?.addEventListener('click', () => {
+      if (counterMsg) {
+        navigator.clipboard?.writeText(counterMsg.value);
+        const btn = $('[data-la-copy-btn]', panel);
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied to Clipboard!';
+        setTimeout(() => btn.textContent = orig, 1500);
+      }
+    });
+
+    $('[data-la-send-btn]', panel)?.addEventListener('click', () => {
+      const btn = $('[data-la-send-btn]', panel);
+      const orig = btn.textContent;
+      btn.textContent = '✦ Counter Offer Sent ✓';
+      setTimeout(() => btn.textContent = orig, 1800);
+
+      // Add to ops queue
+      opsQueue.unshift({
+        id: 'ops_' + Date.now(),
+        title: 'B2B Rate Counter-Offer Transmitted',
+        time: 'Just now',
+        status: 'DISPATCH_WAITING',
+        impact: `Counter rate: ${$('[data-la-out="targetRate"]')?.textContent || ''}`
+      });
+      renderOps();
+    });
+
+    recalculate();
+  }
+
+  // ==========================================
+  // MODULE 2: Instant Proposal Generator Modal
+  // ==========================================
+  let currentProposalLead = null;
+  let selectedBilling = 'monthly';
+  let selectedTierKey = 'pro';
+  let proposalAddons = {
+    custom_workflow: true,
+    staff_onboarding: false,
+    sla_support: false
+  };
+
+  const PROPOSAL_ADDON_DEFINITIONS = [
+    { key: 'custom_workflow', name: 'Custom AI Agent Workflows & Webhooks Integration', type: 'One-Time', price: 450 },
+    { key: 'staff_onboarding', name: 'Interactive Team & Staff Roleplay Onboarding', type: 'One-Time', price: 300 },
+    { key: 'sla_support', name: '24/7 Priority SLA & Dedicated Account Manager', type: 'Monthly Recurring', price: 250 },
+    { key: 'multi_location', name: 'Multi-Location / Franchise Workspace Sync', type: 'Monthly Recurring', price: 500 }
+  ];
+
+  const TIER_PRICES = {
+    starter: { name: 'Starter', monthly: 299, annual: 250 },
+    pro: { name: 'Professional', monthly: 799, annual: 675 },
+    enterprise: { name: 'Enterprise', monthly: 1999, annual: 1695 }
+  };
+
+  function setProposalModal(open, lead = null) {
+    const modal = $('[data-proposal-modal]');
+    if (!modal) return;
+    if (lead) currentProposalLead = lead;
+    if (!currentProposalLead && leadStore.length > 0) currentProposalLead = leadStore[0];
+
+    modal.classList.toggle('open', open);
+    modal.setAttribute('aria-hidden', String(!open));
+
+    if (open) {
+      renderProposalModal();
+    }
+  }
+
+  function renderProposalModal() {
+    const lead = currentProposalLead || {
+      name: 'Client Partner',
+      email: 'client@company.com',
+      company: 'Enterprise Partner',
+      verticalName: 'Business Operations'
+    };
+
+    // Client Banner
+    const banner = $('[data-proposal-client-banner]');
+    if (banner) {
+      banner.innerHTML = `
+        <div>
+          <b>Prepared for: ${lead.name} (${lead.company || 'Business Partner'})</b>
+          <small>Target Industry: ${lead.verticalName || 'Hermes AI OS'} · Email: ${lead.email}</small>
+        </div>
+        <span class="active-chip">● Live Draft</span>
+      `;
+    }
+
+    // Billing toggle
+    $$('[data-billing]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.billing === selectedBilling);
+    });
+
+    // Update tier prices displayed
+    $('[data-price-starter]').textContent = selectedBilling === 'annual' ? '$250' : '$299';
+    $('[data-price-pro]').textContent = selectedBilling === 'annual' ? '$675' : '$799';
+    $('[data-price-enterprise]').textContent = selectedBilling === 'annual' ? '$1,695' : '$1,999';
+
+    // Tier Cards Active state
+    $$('[data-tier]').forEach(card => {
+      const isSelected = card.dataset.tier === selectedTierKey;
+      card.classList.toggle('active', isSelected);
+      const btn = $('button', card);
+      if (btn) {
+        btn.textContent = isSelected ? 'Selected ✓' : 'Select Tier';
+        btn.className = isSelected ? 'tier-select-btn primary' : 'tier-select-btn';
+      }
+    });
+
+    // Add-ons table body
+    const tableBody = $('[data-proposal-items-body]');
+    if (tableBody) {
+      tableBody.innerHTML = PROPOSAL_ADDON_DEFINITIONS.map(addon => {
+        const isChecked = !!proposalAddons[addon.key];
+        return `
+          <tr>
+            <td><input type="checkbox" data-addon-key="${addon.key}" ${isChecked ? 'checked' : ''}></td>
+            <td><strong>${addon.name}</strong></td>
+            <td><span class="active-chip" style="font-size:6px;">${addon.type}</span></td>
+            <td><strong>$${addon.price}.00</strong></td>
+          </tr>
+        `;
+      }).join('');
+
+      $$('[data-addon-key]', tableBody).forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          proposalAddons[e.target.dataset.addonKey] = e.target.checked;
+          updateProposalSummary();
+        });
+      });
+    }
+
+    updateProposalSummary();
+  }
+
+  function updateProposalSummary() {
+    const tierData = TIER_PRICES[selectedTierKey] || TIER_PRICES.pro;
+    const tierPrice = selectedBilling === 'annual' ? tierData.annual : tierData.monthly;
+
+    let addonsPrice = 0;
+    PROPOSAL_ADDON_DEFINITIONS.forEach(addon => {
+      if (proposalAddons[addon.key]) {
+        addonsPrice += addon.price;
+      }
+    });
+
+    const totalPrice = tierPrice + addonsPrice;
+
+    const tierNameEl = $('[data-summary-tier-name]');
+    const tierPriceEl = $('[data-summary-tier-price]');
+    const addonsPriceEl = $('[data-summary-addons-price]');
+    const totalPriceEl = $('[data-summary-total-price]');
+
+    if (tierNameEl) tierNameEl.textContent = tierData.name;
+    if (tierPriceEl) tierPriceEl.textContent = `$${tierPrice}.00/mo (${selectedBilling})`;
+    if (addonsPriceEl) addonsPriceEl.textContent = `$${addonsPrice}.00`;
+    if (totalPriceEl) totalPriceEl.textContent = `$${totalPrice.toLocaleString()}.00`;
+  }
+
+  function initProposalGenerator() {
+    $('[data-proposal-close]')?.addEventListener('click', () => setProposalModal(false));
+
+    $$('[data-billing]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedBilling = btn.dataset.billing;
+        renderProposalModal();
+      });
+    });
+
+    $$('[data-select-tier]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedTierKey = btn.dataset.selectTier;
+        renderProposalModal();
+      });
+    });
+
+    $('[data-export-html-btn]')?.addEventListener('click', () => {
+      const lead = currentProposalLead || { name: 'Client' };
+      const tierData = TIER_PRICES[selectedTierKey];
+      const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hermes Connect Business Proposal - ${lead.name}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0B0D12; color: #F7F6F3; padding: 40px; margin: 0; }
+    .card { max-width: 700px; margin: 0 auto; background: #131722; border: 1px solid #7C5CFF; border-radius: 20px; padding: 32px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    h1 { color: #5AC8FA; font-size: 24px; margin-top: 0; }
+    .badge { background: #7C5CFF; color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+    th { text-align: left; padding: 10px; background: #1E2433; color: #A995FF; }
+    td { padding: 10px; border-bottom: 1px solid #232A3B; }
+    .total-box { background: #0B0D12; border-radius: 12px; padding: 16px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <span class="badge">✦ HERMES CONNECT AI OS PROPOSAL</span>
+    <h1>Custom Business Automation Proposal</h1>
+    <p><strong>Prepared for:</strong> ${lead.name} (${lead.email})</p>
+    <p><strong>Company / Vertical:</strong> ${lead.company || 'Business Partner'} · ${lead.verticalName || 'Operations'}</p>
+    <hr style="border-color:#232A3B; margin: 20px 0;">
+    <h3>Selected Subscription Tier: ${tierData.name} ($${selectedBilling === 'annual' ? tierData.annual : tierData.monthly}/mo)</h3>
+    <table>
+      <thead><tr><th>Included Service / Implementation</th><th>Type</th><th>Price</th></tr></thead>
+      <tbody>
+        ${PROPOSAL_ADDON_DEFINITIONS.filter(a => proposalAddons[a.key]).map(a => `<tr><td>${a.name}</td><td>${a.type}</td><td>$${a.price}.00</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="total-box">
+      <h2 style="margin:0; color:#5AC8FA;">Total First Month Investment: ${$('[data-summary-total-price]')?.textContent || ''}</h2>
+      <p style="margin:6px 0 0; font-size:12px; color:#94A3B8;">Approved by Hermes Revenue Engine · Zero-dependency deployment ready.</p>
+    </div>
+  </div>
+</body>
+</html>`;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Hermes_Proposal_${(lead.name || 'Client').replace(/\s+/g, '_')}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    $('[data-export-pdf-btn]')?.addEventListener('click', () => {
+      window.print();
+    });
+
+    $('[data-send-approval-btn]')?.addEventListener('click', () => {
+      if (currentProposalLead) {
+        currentProposalLead.status = 'PROPOSAL_SENT';
+        renderLeadInbox();
+        renderLeadDetail(currentProposalLead.id);
+      }
+      setProposalModal(false);
+
+      // Toast feedback
+      const suggested = $('[data-inbox-suggested]');
+      if (suggested) {
+        suggested.innerHTML = `
+          <span>✦</span>
+          <div>
+            <b>Proposal Sent Successfully!</b>
+            <small>Client notified & proposal link generated.</small>
+          </div>
+          <span class="active-chip">PROPOSAL_SENT</span>
+        `;
+      }
+    });
+  }
+
+  // ==========================================
+  // MODULE 3: Interactive ROI Calculator Widget
+  // ==========================================
+  const ROI_VERTICAL_PRESETS = {
+    beauty: { leads: 50, ltv: 180, missed: 20, wage: 30 },
+    auto: { leads: 70, ltv: 450, missed: 25, wage: 45 },
+    logistics: { leads: 40, ltv: 2200, missed: 15, wage: 55 },
+    fitness: { leads: 60, ltv: 250, missed: 30, wage: 25 },
+    agency: { leads: 30, ltv: 1800, missed: 20, wage: 65 },
+    realestate: { leads: 25, ltv: 3500, missed: 35, wage: 75 }
+  };
+
+  let currentRoiState = { ...ROI_VERTICAL_PRESETS.beauty, vertKey: 'beauty' };
+
+  function setRoiModal(open) {
+    const modal = $('[data-roi-modal]');
+    if (!modal) return;
+    modal.classList.toggle('open', open);
+    modal.setAttribute('aria-hidden', String(!open));
+    if (open) {
+      calculateRoi();
+    }
+  }
+
+  function calculateRoi() {
+    const leads = currentRoiState.leads;
+    const ltv = currentRoiState.ltv;
+    const missed = currentRoiState.missed;
+    const wage = currentRoiState.wage;
+
+    // Formulas
+    const manualMinsPerLead = 15;
+    const weeklyHoursSaved = ((leads * 12 / 52) * (manualMinsPerLead / 60)).toFixed(1);
+    const monthlyHoursSaved = ((leads * manualMinsPerLead) / 60).toFixed(1);
+    const recoveredLeads = leads * (missed / 100) * 0.60;
+    const monthlyRecovered = Math.round(recoveredLeads * ltv);
+    const monthlyLaborSavings = Math.round(parseFloat(monthlyHoursSaved) * wage);
+    const totalMonthlyValue = monthlyRecovered + monthlyLaborSavings;
+    const hermesProCost = 799;
+    const netRoi = totalMonthlyValue - hermesProCost;
+    const roiMultiplier = (totalMonthlyValue / hermesProCost).toFixed(1);
+    const annualBoost = Math.round(monthlyRecovered * 12);
+
+    // Update Slider Value Displays
+    $('[data-roi-val="leads"]').textContent = `${leads} leads/mo`;
+    $('[data-roi-val="ltv"]').textContent = `$${ltv.toLocaleString()}`;
+    $('[data-roi-val="missed"]').textContent = `${missed}%`;
+    $('[data-roi-val="wage"]').textContent = `$${wage}/hr`;
+
+    // Update Output Elements in Modal
+    const weeklyHoursEl = $('[data-roi-out="weeklyHours"]');
+    const monthlyHoursEl = $('[data-roi-out="monthlyHours"]');
+    const monthlyRecoveredEl = $('[data-roi-out="monthlyRecovered"]');
+    const netRoiEl = $('[data-roi-out="netRoi"]');
+    const roiMultiplierEl = $('[data-roi-out="roiMultiplier"]');
+    const annualBoostEl = $('[data-roi-out="annualBoost"]');
+
+    if (weeklyHoursEl) weeklyHoursEl.textContent = `${weeklyHoursSaved} hrs/wk`;
+    if (monthlyHoursEl) monthlyHoursEl.textContent = `${monthlyHoursSaved} hrs/mo automated`;
+    if (monthlyRecoveredEl) monthlyRecoveredEl.textContent = `$${monthlyRecovered.toLocaleString()}`;
+    if (netRoiEl) netRoiEl.textContent = `$${netRoi.toLocaleString()}/mo`;
+    if (roiMultiplierEl) roiMultiplierEl.textContent = `${roiMultiplier}x ROI on Hermes Pro ($799)`;
+    if (annualBoostEl) annualBoostEl.textContent = `$${annualBoost.toLocaleString()}/yr`;
+
+    // Also update Embedded ROI Calculator in Sales View
+    renderEmbeddedRoi(weeklyHoursSaved, monthlyRecovered, netRoi, roiMultiplier, annualBoost);
+  }
+
+  function renderEmbeddedRoi(weeklyHoursSaved, monthlyRecovered, netRoi, roiMultiplier, annualBoost) {
+    const container = $('[data-embedded-roi-container]');
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="roi-vertical-selector" style="margin-bottom:12px;">
+        <small>SELECT INDUSTRY PRESET:</small>
+        <div class="roi-vertical-chips" data-roi-embedded-chips>
+          <button type="button" class="${currentRoiState.vertKey==='beauty'?'active':''}" data-roi-emb-vert="beauty">Beauty</button>
+          <button type="button" class="${currentRoiState.vertKey==='auto'?'active':''}" data-roi-emb-vert="auto">Auto Repair</button>
+          <button type="button" class="${currentRoiState.vertKey==='logistics'?'active':''}" data-roi-emb-vert="logistics">Logistics</button>
+          <button type="button" class="${currentRoiState.vertKey==='fitness'?'active':''}" data-roi-emb-vert="fitness">Fitness</button>
+          <button type="button" class="${currentRoiState.vertKey==='agency'?'active':''}" data-roi-emb-vert="agency">Agency</button>
+          <button type="button" class="${currentRoiState.vertKey==='realestate'?'active':''}" data-roi-emb-vert="realestate">Real Estate</button>
+        </div>
+      </div>
+      <div class="analyzer-metrics" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="metric-card">
+          <span>Weekly Hours Saved</span>
+          <strong>${weeklyHoursSaved} hrs/wk</strong>
+          <small>Automated response</small>
+        </div>
+        <div class="metric-card">
+          <span>Recovered Revenue</span>
+          <strong style="color:#16A34A;">+$${monthlyRecovered.toLocaleString()}/mo</strong>
+          <small>From missed leads</small>
+        </div>
+        <div class="metric-card highlight">
+          <span>Est. Net ROI Ratio</span>
+          <strong style="color:#7C5CFF;">${roiMultiplier}x Net Return</strong>
+          <small>Net Gain: $${netRoi.toLocaleString()}/mo</small>
+        </div>
+        <div class="metric-card">
+          <span>Annual Revenue Boost</span>
+          <strong>+$${annualBoost.toLocaleString()}/yr</strong>
+          <small>Top-line growth</small>
+        </div>
+      </div>
+    `;
+
+    $$('[data-roi-emb-vert]', container).forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.roiEmbVert;
+        currentRoiState = { ...ROI_VERTICAL_PRESETS[key], vertKey: key };
+        calculateRoi();
+      });
+    });
+  }
+
+  function initRoiCalculator() {
+    // Open modal triggers
+    $$('[data-open-roi-modal]').forEach(btn => btn.addEventListener('click', () => setRoiModal(true)));
+    $('[data-roi-close]')?.addEventListener('click', () => setRoiModal(false));
+
+    // Vertical chips
+    $$('[data-roi-vert]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('[data-roi-vert]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const key = btn.dataset.roiVert;
+        currentRoiState = { ...ROI_VERTICAL_PRESETS[key], vertKey: key };
+
+        // Sync slider positions
+        const leadsSlider = $('[data-roi-slider="leads"]');
+        const ltvSlider = $('[data-roi-slider="ltv"]');
+        const missedSlider = $('[data-roi-slider="missed"]');
+        const wageSlider = $('[data-roi-slider="wage"]');
+
+        if (leadsSlider) leadsSlider.value = currentRoiState.leads;
+        if (ltvSlider) ltvSlider.value = currentRoiState.ltv;
+        if (missedSlider) missedSlider.value = currentRoiState.missed;
+        if (wageSlider) wageSlider.value = currentRoiState.wage;
+
+        calculateRoi();
+      });
+    });
+
+    // Sliders
+    const leadsSlider = $('[data-roi-slider="leads"]');
+    const ltvSlider = $('[data-roi-slider="ltv"]');
+    const missedSlider = $('[data-roi-slider="missed"]');
+    const wageSlider = $('[data-roi-slider="wage"]');
+
+    [leadsSlider, ltvSlider, missedSlider, wageSlider].forEach(slider => {
+      slider?.addEventListener('input', () => {
+        currentRoiState.leads = parseInt(leadsSlider?.value || 60, 10);
+        currentRoiState.ltv = parseInt(ltvSlider?.value || 350, 10);
+        currentRoiState.missed = parseInt(missedSlider?.value || 25, 10);
+        currentRoiState.wage = parseInt(wageSlider?.value || 35, 10);
+        calculateRoi();
+      });
+    });
+
+    // Download HTML Summary
+    $('[data-roi-export-btn]')?.addEventListener('click', () => {
+      const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hermes Connect Business ROI Report</title>
+  <style>
+    body { font-family: sans-serif; background: #0B0D12; color: #fff; padding: 40px; }
+    .card { max-width: 600px; margin: 0 auto; background: #131722; border: 1px solid #5AC8FA; border-radius: 20px; padding: 28px; }
+    h1 { color: #5AC8FA; }
+    .kpi { background: #1E2433; padding: 14px; border-radius: 12px; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>✦ Hermes Connect Business ROI Analysis</h1>
+    <p>Projected return for inbound automation and instant response:</p>
+    <div class="kpi"><strong>Weekly Hours Saved:</strong> ${$('[data-roi-out="weeklyHours"]')?.textContent || ''}</div>
+    <div class="kpi"><strong>Monthly Recovered Revenue:</strong> ${$('[data-roi-out="monthlyRecovered"]')?.textContent || ''}</div>
+    <div class="kpi"><strong>Net ROI Ratio:</strong> ${$('[data-roi-out="roiMultiplier"]')?.textContent || ''}</div>
+    <div class="kpi"><strong>Annual Boost:</strong> ${$('[data-roi-out="annualBoost"]')?.textContent || ''}</div>
+  </div>
+</body>
+</html>`;
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Hermes_ROI_Analysis.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Attach ROI to Proposal
+    $('[data-roi-attach-proposal-btn]')?.addEventListener('click', () => {
+      setRoiModal(false);
+      setProposalModal(true);
+    });
+
+    calculateRoi();
+  }
+
+  // Initialize Modules
+  initLoadAnalyzer();
+  initProposalGenerator();
+  initRoiCalculator();
 
   renderActivity();
   renderLeadInbox();

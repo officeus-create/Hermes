@@ -384,3 +384,572 @@
   box-shadow: 0 4px 14px rgba(124, 92, 255, 0.25);
 }
 
+/* Revenue Expansion Module 1: B2B Load Analyzer & AI Rate Negotiator */
+.load-analyzer-panel {
+  background: #ffffff;
+  border: 1px solid rgba(124, 92, 255, 0.2);
+  box-shadow: 0 12px 40px rgba(11, 13, 18, 0.06);
+}
+.load-presets-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.load-presets-bar small {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #64748B;
+  white-space: nowrap;
+}
+.preset-btn {
+  border: 1px solid var(--line);
+  background: #F8F7F4;
+  color: #334155;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: all 180ms ease;
+}
+.preset-btn.active, .preset-btn:hover {
+  background: #0B0D12;
+  color: #ffffff;
+  border-color: #0B0D12;
+}
+.analyzer-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.analyzer-inputs {
+  display: grid;
+  gap: 10px;
+  background: #F8F7F4;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+}
+.analyzer-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.metric-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  gap: 3px;
+  box-shadow: 0 4px 12px rgba(11, 13, 18, 0.03);
+}
+.metric-card.highlight {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(90, 200, 250, 0.08));
+  border: 1px solid rgba(124, 92, 255, 0.28);
+}
+.metric-card span {
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748B;
+}
+.metric-card strong {
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  color: #0F172A;
+}
+.metric-card small {
+  font-size: 7px;
+  color: #64748B;
+  font-weight: 600;
+}
+.negotiator-box {
+  background: #0B0D12;
+  color: #F7F6F3;
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
+.negotiator-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+.negotiator-head b {
+  font-size: 10px;
+  color: #A995FF;
+}
+.negotiator-head small {
+  display: block;
+  font-size: 8px;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+.negotiator-head select {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 8px;
+  font-weight: 700;
+  outline: none;
+}
+.negotiator-box textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #F1F5F9;
+  padding: 10px;
+  font-size: 9px;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+.negotiator-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Revenue Expansion Module 2: Instant Proposal Generator Modal */
+.proposal-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 10, 15, 0.82);
+  backdrop-filter: blur(12px);
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.proposal-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.proposal-modal-card {
+  width: min(780px, 96vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid rgba(124, 92, 255, 0.25);
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4);
+  padding: 24px;
+}
+.proposal-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.proposal-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  color: #0B0D12;
+}
+.proposal-modal-header p {
+  margin: 4px 0 0;
+  font-size: 9px;
+  color: #64748B;
+}
+.proposal-modal-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: #F1EEE8;
+  color: #475569;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+.proposal-client-banner {
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(90, 200, 250, 0.08));
+  border: 1px solid rgba(124, 92, 255, 0.2);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.proposal-client-banner b {
+  font-size: 11px;
+  color: #0F172A;
+}
+.proposal-client-banner small {
+  font-size: 8px;
+  color: #64748B;
+}
+.proposal-section {
+  margin-bottom: 18px;
+}
+.section-label {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #7C5CFF;
+  margin-bottom: 10px;
+}
+.billing-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #334155;
+}
+.billing-toggle {
+  display: flex;
+  background: #F1EEE8;
+  padding: 3px;
+  border-radius: 999px;
+}
+.billing-btn {
+  border: 0;
+  background: transparent;
+  color: #64748B;
+  padding: 5px 12px;
+  font-size: 8px;
+  font-weight: 800;
+  border-radius: 999px;
+  transition: all 180ms ease;
+}
+.billing-btn.active {
+  background: #0B0D12;
+  color: #ffffff;
+}
+.proposal-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.tier-card {
+  background: #F8F7F4;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.tier-card.active {
+  background: #ffffff;
+  border-color: #7C5CFF;
+  box-shadow: 0 8px 24px rgba(124, 92, 255, 0.15);
+}
+.tier-badge {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  background: linear-gradient(135deg, #7C5CFF, #5AC8FA);
+  color: #ffffff;
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+.tier-head b {
+  display: block;
+  font-size: 11px;
+  color: #0F172A;
+}
+.tier-head small {
+  font-size: 7px;
+  color: #64748B;
+}
+.tier-price {
+  margin: 10px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.tier-price strong {
+  font-size: 20px;
+  letter-spacing: -0.04em;
+  color: #0F172A;
+}
+.tier-price span {
+  font-size: 8px;
+  color: #64748B;
+}
+.tier-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  font-size: 7px;
+  color: #475569;
+  display: grid;
+  gap: 5px;
+}
+.tier-select-btn {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: #475569;
+  border-radius: 999px;
+  padding: 6px;
+  font-size: 8px;
+  font-weight: 800;
+  width: 100%;
+  cursor: pointer;
+}
+.tier-select-btn.primary {
+  background: #0B0D12;
+  color: #ffffff;
+  border-color: #0B0D12;
+}
+.proposal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8px;
+}
+.proposal-table th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #F8F7F4;
+  color: #64748B;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.proposal-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.proposal-summary-box {
+  background: #0B0D12;
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #94A3B8;
+}
+.summary-line.total {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 8px;
+  margin-top: 4px;
+  font-weight: 800;
+  color: #ffffff;
+  font-size: 11px;
+}
+.summary-line.total strong {
+  color: #5AC8FA;
+}
+.proposal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* Revenue Expansion Module 3: Interactive ROI Calculator Widget & Modal */
+.roi-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 10, 15, 0.82);
+  backdrop-filter: blur(12px);
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.roi-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.roi-modal-card {
+  width: min(760px, 96vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid rgba(90, 200, 250, 0.28);
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4);
+  padding: 24px;
+}
+.roi-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.roi-modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+  color: #0B0D12;
+}
+.roi-modal-header p {
+  margin: 4px 0 0;
+  font-size: 9px;
+  color: #64748B;
+}
+.roi-modal-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: #F1EEE8;
+  color: #475569;
+  border-radius: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+.roi-vertical-selector {
+  margin-bottom: 16px;
+}
+.roi-vertical-selector small {
+  display: block;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #64748B;
+  margin-bottom: 8px;
+}
+.roi-vertical-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.roi-vertical-chips button {
+  border: 1px solid var(--line);
+  background: #F8F7F4;
+  color: #475569;
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 8px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.roi-vertical-chips button.active {
+  background: #0B0D12;
+  color: #ffffff;
+  border-color: #0B0D12;
+}
+.roi-calculator-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.roi-inputs-panel {
+  background: #F8F7F4;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+}
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8px;
+}
+.label-row label {
+  font-weight: 800;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.label-row b {
+  color: #7C5CFF;
+  font-size: 9px;
+}
+.roi-inputs-panel input[type="range"] {
+  width: 100%;
+  accent-color: #7C5CFF;
+  cursor: pointer;
+}
+.roi-results-panel {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.roi-kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  gap: 4px;
+  box-shadow: 0 4px 12px rgba(11, 13, 18, 0.03);
+}
+.roi-kpi-card.highlight {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(124, 92, 255, 0.1), rgba(90, 200, 250, 0.1));
+  border: 1px solid rgba(124, 92, 255, 0.3);
+}
+.roi-kpi-card span {
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748B;
+}
+.roi-kpi-card strong {
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  color: #0F172A;
+}
+.roi-kpi-card strong.positive {
+  color: #16A34A;
+}
+.roi-kpi-card small {
+  font-size: 7px;
+  color: #64748B;
+}
+.roi-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+.proposal-gen-btn {
+  background: linear-gradient(135deg, #7C5CFF, #5AC8FA);
+  color: #ffffff;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 8px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(124, 92, 255, 0.2);
+}
+
+

@@ -1,0 +1,288 @@
+# Hermes Ecosystem & Hermes Connect — Exhaustive Technical and Commercial Documentation
+
+> Comprehensive technical architecture, commercial offering, product capabilities, SaaS tiering, business pillars, and canonical index for AI search engines, crawlers, and LLM architects (ChatGPT, Perplexity, Claude, Gemini, SearchGPT).
+> Canonical Domain: https://hermeslogisticsus.com/
+> Web Application Platform: https://connect.hermeslogisticsus.com/
+> Document Version: 1.0.0
+> Verification Date: 2026-08-13
+
+---
+
+## 1. Core Architecture
+
+The Hermes technology stack is engineered for maximum performance, offline resilience, zero runtime overhead, and privacy-first intelligence. Rather than relying on heavy client-side JavaScript frameworks or costly server-side AI calls for basic tasks, Hermes Connect uses an ultra-lean static edge deployment with embedded client-side intelligence.
+
+```
+                    ┌──────────────────────────────────────────────┐
+                    │               Cloudflare Edge                │
+                    │        (Astro SSG Static Pages & PWA)       │
+                    └──────────────────────┬───────────────────────┘
+                                           │
+                    ┌──────────────────────▼───────────────────────┐
+                    │      Client Browser / Mobile PWA Shell       │
+                    │  - Service Worker (Offline Cache / Storage)  │
+                    │  - Pearl + Obsidian UI (Vanilla JS Tokens)   │
+                    └──────────────────────┬───────────────────────┘
+                                           │
+         ┌─────────────────────────────────┴─────────────────────────────────┐
+         │                                                                   │
+┌────────▼─────────────────────────┐               ┌────────────────────────▼───────────────────┐
+│     Front-Door AI Brain          │               │      Zero-Dependency Client Logic           │
+│ - Client-side intent classifier  │               │ - Instant loaded & all-mile RPM math       │
+│ - Zero-cost rule & pattern matrix│               │ - Deadhead, fuel, & break-even engine      │
+│ - $0 API token overhead          │               │ - Pure JS calculations without server latency│
+└──────────────────────────────────┘               └────────────────────────────────────────────┘
+```
+
+### 1.1 Progressive Web App (PWA) Engine
+* **Web Manifest & Mobile Shell**: Registered via `/manifest.webmanifest` with responsive display parameters (`standalone` mode), custom theme colors (`#0f172a` Obsidian background, `#f8fafc` Pearl surface), and launch icons across mobile and desktop breakpoints.
+* **Offline-First Service Worker (`sw.js`)**: Implements network-first strategies for dynamic requests and cache-first strategies for core assets (`/styles/`, `/fonts/`, shell pages). Ensures that core calculators, offline forms, and cached workspace views operate without an active internet connection.
+* **App Shell Architecture**: Light, fast initial load with instant hydration. Designed for single-hand mobile browser operations, eliminating reliance on mobile app store deployment barriers while maintaining native app-like UX.
+
+### 1.2 Front-Door AI Brain
+* **Zero-Cost Client-Side Classification**: Employs an autonomous client-side classifier (`public/demos/hermes-connect-brand-v1/ai-front-door.js`) that analyzes incoming inquiries, lead forms, and search intent in real time without outbound API calls.
+* **Prompt-Less Rule & Pattern Matrix**: Evaluates customer inputs across intent buckets (e.g., Car Hauling Request, SEO Audit, IT Development Inquiry, Academy Student Application) using deterministic pattern matching and semantic feature scoring.
+* **Cost & Latency Elimination**: Eliminates LLM API latency (0ms response time) and reduces token cost to $0 per front-door interaction, routing pre-qualified leads directly to the appropriate business module or human approval queue.
+
+### 1.3 Zero-Dependency Client Logic
+* **Framework-Free Core Execution**: Core analytical engines (Load Analyzer, RPM Calculator, Search Opportunity Radar, Multi-Car Transport Planner) are written in optimized Vanilla JavaScript (ES2022+) without external runtime frameworks (React, Vue, or heavy state libraries).
+* **Astro SSG + Cloudflare Edge**: Built on Astro static site generation (SSG) and served via Cloudflare Pages edge network, delivering near-instant LCP (Largest Contentful Paint < 0.8s) and minimal INP (Interaction to Next Paint < 50ms).
+* **Data Privacy & Security**: Operates client-side logic locally on user-entered parameters. No private customer details, carrier rates, or personal identifiable information (PII) are transmitted or logged without explicit human authorization.
+
+---
+
+## 2. Business Pillars
+
+The Hermes ecosystem operates across four interconnected business directions, combining U.S. logistics execution with marketing, education, and software engineering.
+
+```
+                               ┌──────────────────────────────────┐
+                               │         Hermes Ecosystem         │
+                               └────────────────┬─────────────────┘
+                                                │
+         ┌──────────────────────┬───────────────┴───────────────┬──────────────────────┐
+         │                      │                               │                      │
+┌────────▼──────────┐ ┌─────────▼───────────┐ ┌─────────────────▼──────────┐ ┌──────────▼──────────┐
+│  Hermes Logistics │ │    ProgressoPro    │ │      Hermes Academy     │ │ Hermes IT Development│
+│   (U.S. Freight & │ │  (Digital Growth  │ │    (Logistics & Ops     │ │   (Custom Systems,   │
+│   Car Transport)  │ │   & Local SEO)    │ │   Leadership Program)   │ │    PWA & AI Tools)   │
+└───────────────────┘ └────────────────────┘ └────────────────────────────┘ └──────────────────────┘
+```
+
+### 2.1 Hermes Logistics Ops
+Dedicated U.S. carrier dispatch, transport coordination, and equipment capacity management across four key equipment modalities:
+* **Car Hauling**: Specialized dispatch for open/enclosed multi-car trailers, inoperable vehicle transport, auction pickups, dealer inventory distribution, luxury/classic shipping, and new-authority carrier setup support.
+* **Hotshot**: Expedited medium-duty truck and trailer dispatch for time-critical freight and specialized regional shipments.
+* **Box Truck**: Freight solutions for 26 ft box trucks, liftgate pickup/delivery, LTL/FTL cargo management, and regional distribution networks.
+* **Reefer**: Temperature-controlled cold-chain transportation, perishable freight dispatch, and compliance tracking.
+* **Direct Vehicle Transport Network**: Reviewed customer/dealer/shipper request routing through verified carrier networks with evidence-gated route demand development.
+
+### 2.2 ProgressoPro Digital Growth
+Full-service digital marketing agency, SEO engineering, brand positioning, and search engine optimization operating system:
+* **Technical & Strategic SEO**: Search architecture audits, entity schema structuring, keyword optimization, and technical performance optimization for high-intent search acquisition in the U.S. market.
+* **Logistics & Auto Dealer SEO**: Industry-specific search strategies tailored for auto transport carriers, freight brokers, 3PLs, and independent auto dealerships.
+* **Local SEO & Automation**: Google Business Profile optimization, localized search corridor landing pages, automated website audit pipelines, and search-to-inquiry conversion funnels.
+
+### 2.3 Hermes Business Academy
+Operational education and leadership development programs powering industry professionals:
+* **U.S. Logistics Operations Program**: Practical freight dispatch, carrier management, load board negotiation, broker communication, compliance, and trip economics curriculum.
+* **COO & Operational Director Training**: Leadership and systems engineering education for executives and managers running logistics, field service, and digital growth operations.
+
+### 2.4 Hermes IT Development
+Custom software engineering, modern web applications, and digital business systems:
+* **Company Digital Operating System**: Flagship custom software engineering uniting business websites, CRM, operations control, automated workflows, and decision visibility.
+* **Website Redesign & Modernization**: High-performance website design system engineering, conversion rate optimization, and mobile-first PWA transformation.
+* **AI Workflow & CRM Integration**: Tailored internal operating tools, lead qualification engines, and API integrations for growing enterprises.
+
+---
+
+## 3. Hermes Connect Product Capabilities
+
+Hermes Connect is an AI Operating System for business—a unified command center that brings communication, CRM, finance, operations, and AI intelligence into one workspace.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              Hermes Connect Command Center                             │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ ┌──────────────────────┐ ┌──────────────────────┐ ┌───────────────────┐ ┌───────────────┐ │
+│ │ Unified Inbox        │ │ B2B Load Analyzer    │ │ Proposal Builder  │ │ Multi-Vertical│ │
+│ │ Multi-channel intake │ │ Loaded/All-mile RPM  │ │ Instant quote gen │ │ 10 Category   │ │
+│ │ AI-drafted replies   │ │ Fuel & Break-Even    │ │ Staged pricing    │ │ Workflows     │ │
+│ └──────────────────────┘ └──────────────────────┘ └───────────────────┘ └───────────────┘ │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.1 Command Center Inbox
+* **Multi-Channel Lead Intake**: Unifies incoming requests from email, web forms, SMS, and messaging channels into a single consolidated conversation stream.
+* **CRM Context & Lifecycle Tracking**: Automatically pairs messages with customer profile history, lead stage, contact timeline, and value/LTV signals.
+* **AI-Drafted Replies & Human Approval**: Generates context-aware response drafts using internal business knowledge while enforcing strict human approval gates before external transmission.
+
+### 3.2 B2B Load Analyzer & Trip Economics
+* **RPM Optimization**: Calculates exact loaded rate per mile (RPM) and all-mile RPM (including deadhead miles) for freight and vehicle haulers.
+* **Expense & Fuel Engine**: Factoring fuel price inputs, truck MPG, driver pay, toll estimates, and equipment maintenance reserves into per-trip economics.
+* **Break-Even & Net Margin Analysis**: Provides instant break-even thresholds and net profit margin visibility before accepting or bidding on loads.
+
+### 3.3 Instant Proposal Builder
+* **Dynamic Commercial Quotes**: Turns qualified client inquiries into structured, professional proposals and scope options in seconds.
+* **Staged Project Pricing**: Supports modular engagement packages (e.g., Discovery → System Build → Monthly Improvement Partnership) to reduce buyer friction.
+* **Automated Client Handoff**: Connects accepted proposals directly to onboarding check-lists, contract execution, and work management pipelines.
+
+### 3.4 Multi-Vertical Support
+Hermes Connect adapts its terminology, KPIs, intake forms, and recommended workflows across 10 specialized service verticals:
+1. **Beauty & Wellness**: Salons, barbershops, spas, independent estheticians, and specialists.
+2. **Logistics & Field Services**: Freight carriers, auto haulers, dispatchers, and mobile service teams.
+3. **Auto Service & Repair**: Auto repair shops, mobile mechanics, detailers, and diagnostic technicians.
+4. **Truck & Car-Hauler Repair**: Commercial diesel repair, fleet maintenance, and trailer mechanics.
+5. **Fitness & Coaching**: Personal trainers, fitness studios, sports coaches, and online programs.
+6. **Professional Services**: Consultants, agencies, corporate advisors, and client-facing specialists.
+7. **Heavy Equipment Service**: Construction, agricultural, and industrial equipment support teams.
+8. **Oversize & Specialty Equipment**: Machinery movers, oversize transport, and specialty haulers.
+9. **Education & Events**: Tutors, academies, vocational workshops, and cohort programs.
+10. **Home & Local Services**: Cleaning companies, home repair, photography, pet care, and trade teams.
+
+---
+
+## 4. SaaS Tiering & Commercial Packages
+
+Hermes Connect and Hermes IT Development provide transparent pricing structures designed for businesses at different growth stages, from independent operators to multi-department enterprises.
+
+```
+┌─────────────────────────┬─────────────────────────┬─────────────────────────┐
+│     STARTER TIER        │        PRO TIER         │     ENTERPRISE TIER     │
+│       $99 / mo          │       $299 / mo         │        $799 / mo        │
+├─────────────────────────┼─────────────────────────┼─────────────────────────┤
+│ • Core PWA Workspace    │ • Everything in Starter │ • Everything in Pro     │
+│ • Single Category       │ • Command Center Inbox  │ • Multi-Vertical Support│
+│ • Front-Door AI Brain   │ • B2B Load Analyzer     │ • Custom AI Workflows   │
+│ • Standard Service Catalog│ • Proposal Builder    │ • Full Company OS       │
+│ • Basic Request Intake  │ • CRM & Booking Engine  │ • White-Glove Onboarding│
+│ • Offline PWA Support   │ • Priority Support      │ • Dedicated SLA Support │
+└─────────────────────────┴─────────────────────────┴─────────────────────────┘
+```
+
+### 4.1 SaaS Subscription Tiers
+
+#### Starter Tier — $99 / month
+* **Target Audience**: Independent service professionals, single-truck operators, local specialists.
+* **Key Features**:
+  * Core browser-based PWA workspace access.
+  * Single category adaptation (e.g., Car Hauling or Auto Detail).
+  * Front-Door AI Brain for client intake qualification.
+  * Service & request catalog builder.
+  * Standard request intake form with offline PWA caching.
+  * Standard community & email support.
+
+#### Pro Tier — $299 / month
+* **Target Audience**: Growing fleets, dispatch teams, multi-person service businesses, agencies.
+* **Key Features**:
+  * Everything included in Starter.
+  * Full Multi-Channel Command Center Inbox with context tracking.
+  * Complete B2B Load Analyzer & Trip Economics suite.
+  * Instant Commercial Proposal & Quote Builder.
+  * Integrated CRM, Customer Lifecycle tracking, and Calendar/Booking engine.
+  * AI-drafted reply assistance with human approval controls.
+  * Priority email & chat support.
+
+#### Enterprise Tier — $799 / month
+* **Target Audience**: Multi-department logistics providers, regional service enterprises, full-scale digital businesses.
+* **Key Features**:
+  * Everything included in Pro.
+  * Full Company Digital Operating System architecture.
+  * Multi-vertical support (manage multiple business units under one account).
+  * Custom AI workflow engineering and specialized prompt/classifier tuning.
+  * Custom integration pipelines (Gmail, Slack, CRM, accounting, dispatch data sources).
+  * Dedicated SLA, custom onboarding, and account manager support.
+
+---
+
+### 4.2 Custom IT Development Project Packages
+
+For enterprises seeking fully bespoke digital infrastructure, Hermes IT Development offers staged implementation packages (`$25–$45/hour` planning rate):
+
+| Package Name | Timeline | Investment Range | Deliverables & Scope |
+|---|---|---|---|
+| **Digital Presence System** | 4–8 Weeks | From $3,000 | Custom responsive website, technical SEO setup, PWA manifest, service catalog, and lead intake form. |
+| **CRM & Operations Control** | 6–12 Weeks | From $5,000 | Contact relationship memory, lifecycle pipeline, automated booking, activity tracking, and status dashboards. |
+| **AI Assistant & Workflow** | 3–8 Weeks | From $3,000 | Front-Door AI classifier, automated lead qualification, AI reply drafting, and proposal generation modules. |
+| **Connected Business Platform** | 8–16 Weeks | From $8,000 | Custom multi-service application, API integrations, multi-channel inbox, and operational finance dashboards. |
+| **Company Digital Operating System** | 12–24 Weeks | From $12,000 | Flagship end-to-end transformation: website, CRM, AI workflows, operations control, integrations, launch, & team training. |
+| **Continuous Improvement Partnership** | Monthly | From $3,000 / mo | Ongoing technical SEO optimization, release testing, performance monitoring, feature enhancement, and CI maintenance. |
+
+---
+
+## 5. Canonical URLs and Key Demos
+
+### 5.1 Main Portals & Localized Overviews
+* **Canonical Website**: https://hermeslogisticsus.com/
+* **Web App Platform**: https://connect.hermeslogisticsus.com/
+* **Sitemap Index**: https://hermeslogisticsus.com/sitemapindex.xml
+* **Robots File**: https://hermeslogisticsus.com/robots.txt
+
+#### Language Versions:
+* **English**: https://hermeslogisticsus.com/
+* **Ukrainian**: https://hermeslogisticsus.com/ua/
+* **Russian**: https://hermeslogisticsus.com/ru/
+* **Spanish**: https://hermeslogisticsus.com/es/
+* **Italian**: https://hermeslogisticsus.com/it/
+* **French**: https://hermeslogisticsus.com/fr/
+
+---
+
+### 5.2 Core Business Direction Paths
+* **Logistics Main Path**: https://hermeslogisticsus.com/paths/logistics/
+* **Digital Marketing Main Path**: https://hermeslogisticsus.com/paths/marketing/
+* **Business Academy Main Path**: https://hermeslogisticsus.com/paths/academy/
+* **IT Development Main Path**: https://hermeslogisticsus.com/paths/technology/
+
+---
+
+### 5.3 Hermes Connect Product & Interactive Demos
+* **Hermes Connect Service Page**: https://hermeslogisticsus.com/services/hermes-connect/
+* **Hermes Connect Interactive Demos Hub**: https://hermeslogisticsus.com/demos/hermes-connect/
+* **Car Hauling Load Board Preview**: https://hermeslogisticsus.com/load-board/
+* **Brand V1 Workspace Incubator**: https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/workspace.html
+* **Brand V1 Design Review**: https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/review.html
+
+#### Standalone AI & Analytics Tools (Web App Subdomain):
+* **B2B Load Analyzer**: https://connect.hermeslogisticsus.com/load-analyzer/
+* **Search Opportunity Radar**: https://connect.hermeslogisticsus.com/search-opportunity-radar/
+* **SEO → Lead → Revenue Dashboard**: https://connect.hermeslogisticsus.com/revenue-dashboard/
+* **Multi-Car Transport Planner**: https://connect.hermeslogisticsus.com/multi-car-planner/
+* **Logistics SEO Analyzer**: https://connect.hermeslogisticsus.com/logistics-seo-analyzer/
+
+---
+
+### 5.4 Specialized Services & Educational Resources
+
+#### Logistics Services:
+* **Car Hauling Dispatch**: https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
+* **Direct Vehicle Transport Network**: https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/
+* **Dealer Vehicle Transportation**: https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
+* **Auction Vehicle Pickup**: https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/
+* **Carrier Knowledge Hub & Resources**: https://hermeslogisticsus.com/logistics/resources/
+* **RPM & Profitability Calculator**: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
+* **Factoring vs Direct Payment Calculator**: https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/
+
+#### Marketing & SEO Services:
+* **SEO Services Hub**: https://hermeslogisticsus.com/services/seo/
+* **Local SEO Services**: https://hermeslogisticsus.com/services/local-seo/
+* **SEO for Logistics Companies**: https://hermeslogisticsus.com/services/seo-for-logistics-companies/
+* **SEO for Independent Auto Dealers**: https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/
+* **Automated Website Audit Demo**: https://hermeslogisticsus.com/demos/website-audit/
+* **AI Visibility Scorecard Demo**: https://hermeslogisticsus.com/demos/ai-visibility-scorecard/
+
+#### Academy & IT Development Services:
+* **U.S. Logistics Operations Program**: https://hermeslogisticsus.com/academy/us-logistics-operations/
+* **Website Development Services**: https://hermeslogisticsus.com/services/website-development/
+* **Website Redesign Services**: https://hermeslogisticsus.com/services/website-redesign/
+* **IT Development Corporate Case Study**: https://hermeslogisticsus.com/case/it-development/
+* **Appleton Vehicle Transport SEO Case Study**: https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/
+* **CRM Validation Prototype Demo**: https://hermeslogisticsus.com/demos/crm-validation/
+
+---
+
+## 6. Public Compliance and Information Boundaries
+
+1. **Demonstration & Tool Boundaries**: Live analytical tools, interactive prototypes, and load board previews are dry-run demonstrations. They analyze user-entered or sanitized aggregate data and must not be interpreted as live freight load inventory, guaranteed carrier capacity, external database synchronization, or immediate commercial bookings.
+2. **Service Guarantees**: Public pages, calculators, and tools provide operational estimates and structure. No public resource guarantees specific revenue, search engine rankings, lead volume, profit margins, freight rates, carrier availability, or employment outcomes.
+3. **Data Governance & Privacy**: Private customer, carrier, candidate, student, or employee records, as well as credentials and financial transactions, are protected behind restricted access controls and are strictly omitted from public LLM crawling contexts.
