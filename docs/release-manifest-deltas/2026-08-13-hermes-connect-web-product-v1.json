@@ -22,6 +22,22 @@
       }
     },
     {
+      "route": "/demos/hermes-connect-brand-v1/workspace-v2.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/workspace-v2.html",
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect-brand-v1/workspace-v2.html",
+      "status": "COMPLETE",
+      "blocker": "Owner-approved animated visual review route; same demo data and no external business action. Kept noindex while visual/product behavior is being reviewed.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
       "route": "/demos/hermes-connect-brand-v1/review.html",
       "source_state": "current_main",
       "indexability": "noindex",
@@ -39,7 +55,7 @@
     }
   ],
   "acceptance": {
-    "route_count_added": 2,
+    "route_count_added": 3,
     "indexable_route_count_added": 0,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
