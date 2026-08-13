@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const productRoute = "/services/hermes-connect/";
 const connectUrl = "https://connect.hermeslogisticsus.com/#apply";
+const connectRoot = "https://connect.hermeslogisticsus.com/";
 
 test("Hermes Connect has an indexed product overview connected to the Web App", async ({ page }) => {
   await page.goto(productRoute);
@@ -29,6 +30,23 @@ test("Hermes Connect has an indexed product overview connected to the Web App", 
   expect(schemas.join("\n")).toContain('"@type":"WebApplication"');
   expect(schemas.join("\n")).toContain("https://connect.hermeslogisticsus.com/");
   expect(schemas.join("\n")).toContain("Any modern web browser");
+});
+
+test("the shared site shell keeps a canonical Hermes Connect entry on desktop and mobile", async ({ page }) => {
+  await page.goto("/logistics/car-hauling-dispatch/");
+
+  const desktopEntry = page.locator(`.header-actions a[href="${connectRoot}"]`);
+  await expect(desktopEntry).toHaveCount(1);
+  await expect(desktopEntry).toContainText("Hermes Connect");
+  await expect(desktopEntry).not.toContainText(/Live|Connected|Realtime/i);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  await page.getByRole("button", { name: "Open navigation" }).click();
+
+  const mobileEntry = page.locator(`#mobile-menu a[href="${connectRoot}"]`);
+  await expect(mobileEntry).toHaveCount(1);
+  await expect(mobileEntry).toContainText("Hermes Connect");
 });
 
 test("the IT Development section routes visitors into the current Hermes Connect product", async ({ page }) => {
