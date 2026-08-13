@@ -6,6 +6,8 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
+const CONNECT_KNOT_LAUNCHER = "/workspace-knot-launcher.js";
+const CONNECT_KNOT_LAUNCHER_MARKER = "data-hermes-connect-knot-launcher";
 const OLD_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/#apply";
 const NEW_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/request-access/#apply";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
@@ -28,6 +30,7 @@ const BRAND_ROOT_ASSETS = new Set([
   "/workspace.js",
   "/workspace-launch-v2.js",
   "/workspace-v2.js",
+  "/workspace-knot-launcher.js",
   "/styles.css",
   "/app.js",
 ]);
@@ -121,12 +124,19 @@ function applyLegacyBrandShell(html) {
   return next;
 }
 
+function applyKnotLauncher(html) {
+  if (!html.includes("data-hermes-open") || html.includes(CONNECT_KNOT_LAUNCHER_MARKER)) return html;
+  const script = `<script src="${CONNECT_KNOT_LAUNCHER}" ${CONNECT_KNOT_LAUNCHER_MARKER}></script>`;
+  return /<\/body\s*>/i.test(html) ? html.replace(/<\/body\s*>/i, `${script}</body>`) : `${html}${script}`;
+}
+
 async function connectHtmlResponse(response, { legacy = false } = {}) {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("text/html")) return response;
 
   let html = await response.text();
   if (legacy) html = applyLegacyBrandShell(html);
+  html = applyKnotLauncher(html);
 
   if (!html.includes(CONNECT_ANALYTICS_MARKER)) {
     const bootstrap = `<script type="module" src="${CONNECT_ANALYTICS_SCRIPT}" ${CONNECT_ANALYTICS_MARKER}></script>`;
