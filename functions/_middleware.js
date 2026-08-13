@@ -6,6 +6,8 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
+const CONNECT_KNOT_LAUNCHER = "/workspace-knot-launcher.js";
+const CONNECT_KNOT_LAUNCHER_MARKER = "data-hermes-connect-knot-launcher";
 const OLD_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/#apply";
 const NEW_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/request-access/#apply";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
@@ -28,6 +30,7 @@ const BRAND_ROOT_ASSETS = new Set([
   "/workspace.js",
   "/workspace-launch-v2.js",
   "/workspace-v2.js",
+  "/workspace-knot-launcher.js",
   "/styles.css",
   "/app.js",
 ]);
@@ -66,27 +69,17 @@ function connectAssetPath(pathname) {
   if (ACCESS_DOCUMENTS.has(pathname)) {
     return `${LEGACY_CONNECT_ASSET_ROOT}${ACCESS_DOCUMENTS.get(pathname)}`;
   }
-
   if (BRAND_DOCUMENTS.has(pathname)) {
     return `${BRAND_CONNECT_ASSET_ROOT}${BRAND_DOCUMENTS.get(pathname)}`;
   }
-
   if (BRAND_ROOT_ASSETS.has(pathname)) {
     return `${BRAND_CONNECT_ASSET_ROOT}${pathname}`;
   }
-
   if (pathname === CONNECT_BRAND_SHELL) {
     return `${LEGACY_CONNECT_ASSET_ROOT}${CONNECT_BRAND_SHELL}`;
   }
-
-  if (pathname === LEGACY_CONNECT_ASSET_ROOT || pathname.startsWith(`${LEGACY_CONNECT_ASSET_ROOT}/`)) {
-    return pathname;
-  }
-
-  if (pathname === BRAND_CONNECT_ASSET_ROOT || pathname.startsWith(`${BRAND_CONNECT_ASSET_ROOT}/`)) {
-    return pathname;
-  }
-
+  if (pathname === LEGACY_CONNECT_ASSET_ROOT || pathname.startsWith(`${LEGACY_CONNECT_ASSET_ROOT}/`)) return pathname;
+  if (pathname === BRAND_CONNECT_ASSET_ROOT || pathname.startsWith(`${BRAND_CONNECT_ASSET_ROOT}/`)) return pathname;
   return `${LEGACY_CONNECT_ASSET_ROOT}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 }
 
@@ -94,26 +87,16 @@ function markdownResponse(response) {
   const headers = new Headers(response.headers);
   headers.set("content-type", "text/markdown; charset=utf-8");
   headers.set("x-robots-tag", "noindex, nofollow");
-
   const vary = headers.get("vary");
-  if (!vary) {
-    headers.set("vary", "Accept");
-  } else if (!vary.toLowerCase().split(",").map((value) => value.trim()).includes("accept")) {
-    headers.set("vary", `${vary}, Accept`);
-  }
-
+  if (!vary) headers.set("vary", "Accept");
+  else if (!vary.toLowerCase().split(",").map((value) => value.trim()).includes("accept")) headers.set("vary", `${vary}, Accept`);
   headers.delete("content-length");
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
 function applyLegacyBrandShell(html) {
   let next = html.replaceAll('<span class="brand-mark">H</span>', KNOT_MARKUP);
   next = next.replaceAll('<strong>H</strong>', `<strong class="brand-mark-inline" aria-label="Hermes Connect">HC</strong>`);
-
   if (!next.includes(CONNECT_BRAND_SHELL_MARKER)) {
     const stylesheet = `<link rel="stylesheet" href="${CONNECT_BRAND_SHELL}" ${CONNECT_BRAND_SHELL_MARKER}>`;
     next = /<\/head\s*>/i.test(next) ? next.replace(/<\/head\s*>/i, `${stylesheet}</head>`) : `${stylesheet}${next}`;
@@ -121,78 +104,57 @@ function applyLegacyBrandShell(html) {
   return next;
 }
 
+function applyKnotLauncher(html) {
+  if (!html.includes("data-hermes-open") || html.includes(CONNECT_KNOT_LAUNCHER_MARKER)) return html;
+  const script = `<script src="${CONNECT_KNOT_LAUNCHER}" ${CONNECT_KNOT_LAUNCHER_MARKER}></script>`;
+  return /<\/body\s*>/i.test(html) ? html.replace(/<\/body\s*>/i, `${script}</body>`) : `${html}${script}`;
+}
+
 async function connectHtmlResponse(response, { legacy = false } = {}) {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("text/html")) return response;
-
   let html = await response.text();
   if (legacy) html = applyLegacyBrandShell(html);
-
+  html = applyKnotLauncher(html);
   if (!html.includes(CONNECT_ANALYTICS_MARKER)) {
     const bootstrap = `<script type="module" src="${CONNECT_ANALYTICS_SCRIPT}" ${CONNECT_ANALYTICS_MARKER}></script>`;
     html = /<\/head\s*>/i.test(html) ? html.replace(/<\/head\s*>/i, `${bootstrap}</head>`) : `${bootstrap}${html}`;
   }
-
   const headers = new Headers(response.headers);
   headers.delete("content-length");
-  return new Response(html, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  return new Response(html, { status: response.status, statusText: response.statusText, headers });
 }
 
 async function routeConnectHost(context) {
-  if (!isConnectHost(context.request)) {
-    return context.next();
-  }
-
+  if (!isConnectHost(context.request)) return context.next();
   const incomingUrl = new URL(context.request.url);
-
-  if (incomingUrl.pathname.startsWith("/api/")) {
-    return context.next();
-  }
-
+  if (incomingUrl.pathname.startsWith("/api/")) return context.next();
   if (isConnectDocument(incomingUrl.pathname) && acceptsMarkdown(context.request)) {
     const markdownUrl = new URL(incomingUrl);
     markdownUrl.pathname = `${LEGACY_CONNECT_ASSET_ROOT}/index.md`;
     const response = await context.env.ASSETS.fetch(new Request(markdownUrl, context.request));
     if (response.ok) return markdownResponse(response);
   }
-
   const assetUrl = new URL(incomingUrl);
   const assetPath = connectAssetPath(incomingUrl.pathname);
   assetUrl.pathname = assetPath;
-
   const assetResponse = await context.env.ASSETS.fetch(new Request(assetUrl, context.request));
   const legacy = assetPath.startsWith(`${LEGACY_CONNECT_ASSET_ROOT}/`) && incomingUrl.pathname !== CONNECT_BRAND_SHELL;
   return connectHtmlResponse(assetResponse, { legacy });
 }
 
 async function sanitizeMainDomainCopy(context) {
-  if (requestHost(context.request) !== MAIN_HOST) {
-    return routeConnectHost(context);
-  }
-
+  if (requestHost(context.request) !== MAIN_HOST) return routeConnectHost(context);
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("text/html")) return response;
-
   const original = await response.text();
-  let sanitized = STALE_PUBLIC_COPY.reduce(
-    (html, staleCopy) => html.replaceAll(staleCopy, LIVE_DELIVERY_COPY),
-    original,
-  );
+  let sanitized = STALE_PUBLIC_COPY.reduce((html, staleCopy) => html.replaceAll(staleCopy, LIVE_DELIVERY_COPY), original);
   sanitized = sanitized.replaceAll(OLD_CONNECT_ACCESS, NEW_CONNECT_ACCESS);
   if (sanitized === original) return new Response(original, response);
-
   const headers = new Headers(response.headers);
   headers.delete("content-length");
-  return new Response(sanitized, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  return new Response(sanitized, { status: response.status, statusText: response.statusText, headers });
 }
 
 export const onRequest = [sanitizeMainDomainCopy];
