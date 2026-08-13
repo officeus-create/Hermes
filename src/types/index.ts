@@ -1,4 +1,5 @@
 export type VerticalCategory = 
+  | 'hero_landing'
   | 'beauty' 
   | 'auto_repair' 
   | 'logistics' 

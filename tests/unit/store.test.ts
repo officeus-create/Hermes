@@ -3,9 +3,9 @@ import { renderHook, act } from '@testing-library/react';
 import { useConnectStore } from '../../src/store/useStore';
 
 describe('useConnectStore state management', () => {
-  it('initializes with default vertical as beauty and 3 initial services', () => {
+  it('initializes with default vertical as hero_landing and initial services', () => {
     const { result } = renderHook(() => useConnectStore());
-    expect(result.current.activeVertical).toBe('beauty');
+    expect(result.current.activeVertical).toBe('hero_landing');
     expect(result.current.services.length).toBeGreaterThan(0);
   });
 

@@ -22,7 +22,7 @@ import {
 } from '../data/mockData';
 
 export function useConnectStore() {
-  const [activeVertical, setActiveVertical] = useState<VerticalCategory>('beauty');
+  const [activeVertical, setActiveVertical] = useState<VerticalCategory>('hero_landing');
   const [activeRole, setActiveRole] = useState<UserRole>('owner');
   
   const [workspaces, setWorkspaces] = useState<Record<string, Workspace>>(INITIAL_WORKSPACES);

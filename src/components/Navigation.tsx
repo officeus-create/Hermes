@@ -11,7 +11,8 @@ import {
   Sun,
   Moon,
   Zap,
-  Palette
+  Palette,
+  Sparkles
 } from 'lucide-react';
 import { VerticalCategory, UserRole } from '../types';
 import { BrandLogoV2, LogoConceptId } from './BrandLogoExplorerV2';
@@ -40,6 +41,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   onOpenLogoExplorer
 }) => {
   const verticals: { id: VerticalCategory; label: string; icon: React.ReactNode; badge?: string }[] = [
+    { id: 'hero_landing', label: 'Обзор ОС & Бренд', icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />, badge: 'V1 OS' },
     { id: 'beauty', label: 'Салон красоты', icon: <Scissors className="w-3.5 h-3.5" /> },
     { id: 'auto_repair', label: 'Авторемонт', icon: <Wrench className="w-3.5 h-3.5" /> },
     { id: 'logistics', label: 'US Load Board', icon: <Truck className="w-3.5 h-3.5" />, badge: 'ГОРЯЧИЙ' },
@@ -72,11 +74,11 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div>
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-base text-white font-heading tracking-tight">HERMES CONNECT</span>
-              <span className="badge badge-primary text-[9px] px-2 py-0.5">V2</span>
+              <span className="badge badge-primary text-[9px] px-2 py-0.5">V1 OS</span>
             </div>
             <p className="text-[10px] text-slate-400 leading-none mt-0.5 flex items-center gap-1">
               <span>ОС БИЗНЕСА</span>
-              <span className="text-indigo-400 font-semibold text-[9px] underline group-hover:text-white">Логотипы (6)</span>
+              <span className="text-indigo-400 font-semibold text-[9px] underline group-hover:text-white">Лого-Лаборатория</span>
             </p>
           </div>
         </div>
@@ -99,6 +101,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <span>{v.label}</span>
                 {v.badge && (
                   <span className={`text-[8px] px-1.5 py-0.2 rounded-full font-bold ${
+                    v.badge === 'V1 OS' ? 'bg-indigo-500/30 text-indigo-200 border border-indigo-400/40' :
                     v.badge === 'ГОРЯЧИЙ' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
                     v.badge === 'ИИ' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' :
                     'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
