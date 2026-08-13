@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hermes Connect Load Analyzer compares carrier trip economics using only the assumptions entered in the browser. No live load-board, booking, or market-rate connection is used.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#07152f">
+  <link rel="canonical" href="https://connect.hermeslogisticsus.com/load-analyzer/">
+  <title>Load Analyzer · Hermes Connect</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Hermes Connect home">
+      <span class="brand-mark">H</span>
+      <span><strong>Hermes Connect</strong><small>Logistics intelligence workspace</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#analyzer">Analyze</a>
+      <a href="#workflow">Workflow</a>
+      <a href="https://hermeslogisticsus.com/load-board/">Load Board</a>
+      <a href="https://hermeslogisticsus.com/logistics/resources/rpm-calculator/">RPM calculator</a>
+    </nav>
+    <a class="header-cta" href="https://hermeslogisticsus.com/logistics/start-car-hauling-dispatch/" data-load-analyzer-handoff>Carrier review →</a>
+  </header>
+
+  <main data-load-analyzer>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Hermes Connect · logistics module</p>
+          <h1>Load Analyzer & Route Intelligence</h1>
+          <p>Compare one trip using your own gross, miles, fuel, reserve, fixed-cost, service-fee, and payment-fee assumptions. The result stays in your browser and never pretends to be a live market rate.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#analyzer">Analyze a trip</a>
+            <a class="button button-secondary" href="https://hermeslogisticsus.com/load-board/">Open public Load Board</a>
+          </div>
+        </div>
+        <aside class="boundary-card" aria-label="Current module boundaries">
+          <span>Controlled MVP</span>
+          <h2>Decision support, not autonomous dispatch.</h2>
+          <ul>
+            <li>No live load-board API is connected.</li>
+            <li>No route, rate, customer, or carrier value is sent to analytics.</li>
+            <li>No load is booked, negotiated, or accepted automatically.</li>
+            <li>GOOD / BORDERLINE / BAD uses your own target net, not a hidden market benchmark.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="analyzer-section" id="analyzer" aria-labelledby="analyzer-title">
+      <div class="shell">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Browser-only trip economics</p>
+            <h2 id="analyzer-title">See what deadhead and costs do to the load before you make the operating decision.</h2>
+          </div>
+          <p>The formulas mirror the public Hermes RPM calculator for total miles, loaded/all-mile RPM, fuel, reserve, service fee, net, and break-even. An optional payment fee is added only when you enter one.</p>
+        </div>
+
+        <div class="analyzer-grid">
+          <section class="panel input-panel" aria-labelledby="input-title">
+            <div class="panel-heading">
+              <div><h3 id="input-title">Trip assumptions</h3><p>Use numbers you control. Route labels are optional and remain local to this page.</p></div>
+              <span class="local-only">Local only</span>
+            </div>
+
+            <form data-load-analyzer-form>
+              <div class="field-grid">
+                <label><span>Origin label <small>(optional)</small></span><input name="originLabel" type="text" maxlength="80" placeholder="Chicago, IL"></label>
+                <label><span>Destination label <small>(optional)</small></span><input name="destinationLabel" type="text" maxlength="80" placeholder="Nashville, TN"></label>
+                <label><span>Loaded miles</span><input name="loadedMiles" type="number" min="1" step="1" value="500" inputmode="decimal" required></label>
+                <label><span>Deadhead miles</span><input name="deadheadMiles" type="number" min="0" step="1" value="75" inputmode="decimal" required></label>
+                <label><span>Gross load pay ($)</span><input name="grossPay" type="number" min="0.01" step="0.01" value="1500" inputmode="decimal" required></label>
+                <label><span>Fuel price ($/gal)</span><input name="fuelPrice" type="number" min="0" step="0.01" value="4.00" inputmode="decimal" required></label>
+                <label><span>Truck MPG</span><input name="mpg" type="number" min="0.1" step="0.1" value="7.5" inputmode="decimal" required></label>
+                <label><span>Reserve per all mile ($)</span><input name="reservePerMile" type="number" min="0" step="0.01" value="0.25" inputmode="decimal" required></label>
+                <label><span>Fixed / allocated trip costs ($)</span><input name="fixedCosts" type="number" min="0" step="0.01" value="75" inputmode="decimal" required></label>
+                <label><span>Service / dispatch fee (%)</span><input name="servicePercent" type="number" min="0" max="99" step="0.1" value="8" inputmode="decimal" required></label>
+                <label><span>Payment / factoring fee (%)</span><input name="paymentFeePercent" type="number" min="0" max="99" step="0.1" value="0" inputmode="decimal" required></label>
+                <label><span>Your target net for this trip ($)</span><input name="targetNet" type="number" min="0" step="1" value="500" inputmode="decimal" required></label>
+              </div>
+              <p class="form-note">Do not enter customer names, VINs, MC/USDOT, invoice numbers, private addresses, broker credentials, or other sensitive shipment details. No form submission or server request occurs.</p>
+              <div class="form-actions">
+                <button class="button button-primary" type="submit">Analyze trip economics</button>
+                <button class="button button-secondary" type="button" data-save-baseline>Save current as baseline</button>
+              </div>
+              <p class="error" data-load-analyzer-error role="alert" hidden></p>
+            </form>
+          </section>
+
+          <aside class="panel result-panel" aria-live="polite" aria-label="Load analysis result">
+            <div class="recommendation">
+              <div class="recommendation-top"><span>Your target check</span><strong data-load-recommendation data-state="good">GOOD</strong></div>
+              <p data-load-recommendation-reason>Estimated net meets or exceeds your target.</p>
+            </div>
+
+            <div class="primary-results">
+              <div><span>Gross loaded RPM</span><strong data-load-output="grossLoadedRpm">—</strong></div>
+              <div><span>All-mile RPM</span><strong data-load-output="allMileRpm">—</strong></div>
+              <div><span>Estimated net before tax</span><strong data-load-output="estimatedNet">—</strong></div>
+            </div>
+
+            <dl class="result-list">
+              <div><dt>Total miles</dt><dd data-load-output="totalMiles">—</dd></div>
+              <div><dt>Deadhead share</dt><dd data-load-output="deadheadPercent">—</dd></div>
+              <div><dt>Estimated fuel cost</dt><dd data-load-output="fuelCost">—</dd></div>
+              <div><dt>Reserve amount</dt><dd data-load-output="reserveCost">—</dd></div>
+              <div><dt>Service fee</dt><dd data-load-output="serviceFee">—</dd></div>
+              <div><dt>Payment fee</dt><dd data-load-output="paymentFee">—</dd></div>
+              <div><dt>Estimated operating cost</dt><dd data-load-output="operatingCost">—</dd></div>
+              <div><dt>Break-even gross pay</dt><dd data-load-output="breakEvenGross">—</dd></div>
+              <div><dt>Break-even all-mile RPM</dt><dd data-load-output="breakEvenAllMileRpm">—</dd></div>
+            </dl>
+
+            <div class="sensitivity" data-load-output="sensitivity">Enter your assumptions to review the trip.</div>
+            <div class="comparison" data-load-comparison hidden>
+              <strong>Comparison with saved baseline</strong>
+              <p data-load-comparison-copy></p>
+            </div>
+            <div class="result-footer">
+              <a class="button button-primary" href="https://hermeslogisticsus.com/logistics/start-car-hauling-dispatch/" data-load-analyzer-handoff>Request carrier / dispatch-fit review</a>
+              <a class="button button-secondary" href="https://hermeslogisticsus.com/logistics/resources/rpm-calculator/">Open the public RPM calculator</a>
+              <p>Estimate only. This module does not provide accounting, tax, legal, regulatory, safety, insurance, or financial advice and does not predict load availability, rates, utilization, payment, profit, or revenue.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow-section" id="workflow" aria-labelledby="workflow-title">
+      <div class="shell workflow-grid">
+        <div>
+          <p class="eyebrow">Route Intelligence path</p>
+          <h2 id="workflow-title">This calculator is the first layer of a larger operating workflow.</h2>
+          <p>The next product layers will connect selected opportunities, explain source status, compare alternatives, and hand a reviewed decision to the appropriate human workflow without turning private operational observations into public claims.</p>
+        </div>
+        <div class="workflow-steps">
+          <div><span>1</span><div><strong>Observe or enter</strong><small>One synthetic or user-entered opportunity with explicit assumptions.</small></div></div>
+          <div><span>2</span><div><strong>Analyze</strong><small>Loaded RPM, all-mile RPM, deadhead, costs, break-even, and user-target comparison.</small></div></div>
+          <div><span>3</span><div><strong>Compare</strong><small>Save one local baseline and compare the next opportunity without analytics receiving trip values.</small></div></div>
+          <div><span>4</span><div><strong>Human handoff</strong><small>Carrier, dispatcher, or trainee continues in the approved review process. No external booking action happens here.</small></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p><strong>Hermes Connect Load Analyzer</strong> · controlled logistics MVP · <a href="/">Back to Hermes Connect</a> · <a href="https://hermeslogisticsus.com/privacy/">Privacy</a></p>
+  </footer>
+
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

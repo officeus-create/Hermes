@@ -5,6 +5,10 @@ import {
   createEarlyAccessRequest,
   getCategory,
 } from "../public/demos/hermes-connect/profile-workspace.mjs";
+import {
+  calculateTripEconomics,
+  validateTripInputs,
+} from "../public/demos/hermes-connect/load-analyzer/trip-economics.mjs";
 
 const requiredCategoryIds = [
   "beauty-wellness",
@@ -68,11 +72,58 @@ for (const invalidId of ["", "other", "auto-repair<script>", "heavy equipment"])
   assert.equal(getCategory(invalidId), null, `Unknown category must not resolve: ${invalidId}`);
 }
 
-const [appSource, pageSource, serviceOverviewSource, salesPackage] = await Promise.all([
+const canonicalRpmInputs = {
+  loadedMiles: 500,
+  deadheadMiles: 75,
+  grossPay: 1500,
+  fuelPrice: 4,
+  mpg: 7.5,
+  reservePerMile: 0.25,
+  fixedCosts: 75,
+  servicePercent: 8,
+  paymentFeePercent: 0,
+  targetNet: 500,
+};
+const canonicalRpmResult = calculateTripEconomics(canonicalRpmInputs);
+assert.equal(canonicalRpmResult.grossLoadedRpm.toFixed(2), "3.00", "Load Analyzer loaded RPM must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.allMileRpm.toFixed(2), "2.61", "Load Analyzer all-mile RPM must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.fuelCost.toFixed(2), "306.67", "Load Analyzer fuel cost must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.reserveCost.toFixed(2), "143.75", "Load Analyzer reserve must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.serviceFee.toFixed(2), "120.00", "Load Analyzer service fee must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.operatingCost.toFixed(2), "645.42", "Load Analyzer operating cost must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.estimatedNet.toFixed(2), "854.58", "Load Analyzer estimated net must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.breakEvenGross.toFixed(2), "571.11", "Load Analyzer break-even gross must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.breakEvenLoadedRpm.toFixed(2), "1.14", "Load Analyzer loaded break-even RPM must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.breakEvenAllMileRpm.toFixed(2), "0.99", "Load Analyzer all-mile break-even RPM must match the public RPM calculator contract");
+assert.equal(canonicalRpmResult.recommendation, "GOOD", "The default result must meet its explicit user-entered target");
+assert.equal(
+  calculateTripEconomics({ ...canonicalRpmInputs, targetNet: 900 }).recommendation,
+  "BORDERLINE",
+  "Positive net below the user target must be BORDERLINE",
+);
+assert.equal(
+  calculateTripEconomics({ ...canonicalRpmInputs, grossPay: 400 }).recommendation,
+  "BAD",
+  "Negative estimated net must be BAD",
+);
+assert.equal(
+  calculateTripEconomics({ ...canonicalRpmInputs, paymentFeePercent: 2 }).paymentFee.toFixed(2),
+  "30.00",
+  "Optional payment/factoring fee must use only the user's entered percentage",
+);
+assert.equal(
+  validateTripInputs({ ...canonicalRpmInputs, servicePercent: 70, paymentFeePercent: 30 }).valid,
+  false,
+  "Combined percentage fees at or above 100% must be rejected",
+);
+
+const [appSource, pageSource, serviceOverviewSource, salesPackage, loadAnalyzerPage, loadAnalyzerApp] = await Promise.all([
   readFile(new URL("../public/demos/hermes-connect/app.mjs", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/index.html", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../docs/HERMES_CONNECT_SALES_TEST_PACKAGE.md", import.meta.url), "utf8"),
+  readFile(new URL("../public/demos/hermes-connect/load-analyzer/index.html", import.meta.url), "utf8"),
+  readFile(new URL("../public/demos/hermes-connect/load-analyzer/app.mjs", import.meta.url), "utf8"),
 ]);
 
 assert.match(appSource, /categoryCatalog/, "The Web App must render from the controlled category catalog");
@@ -82,6 +133,17 @@ assert.match(pageSource, /data-category-grid/, "The Web App category grid is mis
 assert.match(pageSource, /data-category-select/, "The access form category select is missing");
 assert.match(pageSource, /No client data needed for this request/, "The Web App privacy boundary is missing");
 assert.match(pageSource, /does not automatically create an account, booking, payment, calendar event, or subscription/i, "The controlled-release boundary is missing");
+
+assert.match(loadAnalyzerPage, /<meta name="robots" content="noindex,nofollow">/, "Load Analyzer must remain noindex during the controlled MVP");
+assert.match(loadAnalyzerPage, /data-load-analyzer-form/, "Load Analyzer form is missing");
+assert.match(loadAnalyzerPage, /GOOD \/ BORDERLINE \/ BAD uses your own target net/i, "Load Analyzer must explain its recommendation boundary");
+assert.match(loadAnalyzerPage, /No live load-board API is connected/i, "Load Analyzer must not imply a live load-board integration");
+assert.match(loadAnalyzerPage, /No form submission or server request occurs/i, "Load Analyzer local-only boundary is missing");
+assert.match(loadAnalyzerApp, /load_analyzer_start/, "Load Analyzer start analytics contract is missing");
+assert.match(loadAnalyzerApp, /load_analyzer_complete/, "Load Analyzer completion analytics contract is missing");
+assert.match(loadAnalyzerApp, /load_analyzer_compare/, "Load Analyzer comparison analytics contract is missing");
+assert.match(loadAnalyzerApp, /load_analyzer_handoff/, "Load Analyzer handoff analytics contract is missing");
+assert.doesNotMatch(loadAnalyzerApp, /\bfetch\s*\(/, "Load Analyzer must not transmit trip inputs over the network");
 
 for (const category of categoryCatalog) {
   assert.ok(salesPackage.includes(category.name), `Sales test package must include ${category.name}`);
@@ -105,4 +167,4 @@ for (const requiredText of [
   assert.ok(salesPackage.includes(requiredText), `Sales test package is missing: ${requiredText}`);
 }
 
-console.log(`Hermes Connect product contract passed for ${categoryCatalog.length} categories.`);
+console.log(`Hermes Connect product contract passed for ${categoryCatalog.length} categories plus Load Analyzer MVP.`);
