@@ -25,7 +25,6 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       TARGET_URL: https://hermeslogisticsus.com/
-      REGULAR_HOME_URL: https://hermeslogisticsus.com/#regular-home-lab
 
     steps:
       - name: Check out approved main
@@ -48,18 +47,6 @@ jobs:
             npx --yes lighthouse@13.4.1 "$TARGET_URL" \
               --output=json \
               --output-path="artifacts/lighthouse-production/mobile-${run}.json" \
-              --only-categories=performance,accessibility,best-practices,seo \
-              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-              --quiet
-          done
-
-      - name: Run three comparable regular-home mobile lab passes
-        shell: bash
-        run: |
-          for run in 1 2 3; do
-            npx --yes lighthouse@13.4.1 "$REGULAR_HOME_URL" \
-              --output=json \
-              --output-path="artifacts/lighthouse-production/regular-mobile-${run}.json" \
               --only-categories=performance,accessibility,best-practices,seo \
               --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
               --quiet
@@ -91,9 +78,6 @@ jobs:
       - name: Summarize medians and baseline comparison
         run: node scripts/summarize-production-lighthouse.mjs
 
-      - name: Summarize first-visit versus regular-home LCP phases
-        run: node scripts/summarize-production-lighthouse-modes.mjs
-
       - name: Publish sanitized performance evidence
         shell: bash
         run: |
@@ -102,7 +86,7 @@ jobs:
             echo
             cat artifacts/lighthouse-production/summary.md
             echo
-            cat artifacts/lighthouse-production/mode-diagnostic.md
+            echo "> Session-state causality is not measured with URL fragments. The prior hash-based regular-home lane was invalidated by same-URL paired evidence in #459."
             echo
             echo "Measured approved \`main\` commit: \`${{ github.sha }}\`."
           } > /tmp/production-lighthouse-comment.md
