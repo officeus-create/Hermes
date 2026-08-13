@@ -237,6 +237,10 @@ entries — append only.
   - `public/demos/hermes-connect-brand-v1/workspace.html`
   - `public/demos/hermes-connect-brand-v1/workspace.css`
   - `public/demos/hermes-connect-brand-v1/workspace.js`
+  - `scripts/audit-seo-production.mjs` (NEW)
+  - `/Users/progressopro/Documents/AI_WORKSPACE/15_Active_Tasks/SEO_TECHNICAL_CRAWL_2026-08-13.csv` (NEW)
+  - `/Users/progressopro/Documents/AI_WORKSPACE/13_AI_Handoffs/To_Codex/ANTIGRAVITY_SEO_CRAWL_AUDIT_2026-08-13.csv` (NEW)
+  - `/Users/progressopro/Documents/AI_WORKSPACE/13_AI_Handoffs/To_Codex/ANTIGRAVITY_TO_CODEX_HANDOFF_2026-08-13.md` (NEW)
   - `docs/AI_HANDOFF.md`
 - Tests run: `npm run build` & `npm test` passed 100% clean (exit code 0 across all 152 Astro pages, unit tests, and brand contract tests).
 - Ecosystem Compounding Scorecard:
