@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 for (const scenario of [
   {
     path: "/services/seo-for-logistics-companies/",
-    h1: "SEO for Logistics, Trucking and Dispatch Companies",
+    h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     heroLabel: "Start a logistics SEO review",
     supportingLabel: "Prepare the logistics SEO request",
     intakeHref: "/paths/marketing/?service=logistics_seo#contact",
