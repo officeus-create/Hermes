@@ -1,6 +1,8 @@
 const CONNECT_HOST = "connect.hermeslogisticsus.com";
 const MAIN_HOST = "hermeslogisticsus.com";
 const CONNECT_ASSET_ROOT = "/demos/hermes-connect";
+const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
+const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
 const STALE_PUBLIC_COPY = [
   "Your information was not sent or stored.",
@@ -57,6 +59,30 @@ function markdownResponse(response) {
   });
 }
 
+async function connectHtmlResponse(response) {
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.toLowerCase().includes("text/html")) return response;
+
+  const original = await response.text();
+  if (original.includes(CONNECT_ANALYTICS_MARKER)) {
+    return new Response(original, response);
+  }
+
+  const bootstrap = `<script type="module" src="${CONNECT_ANALYTICS_SCRIPT}" ${CONNECT_ANALYTICS_MARKER}></script>`;
+  const closingHead = /<\/head\s*>/i;
+  const injected = closingHead.test(original)
+    ? original.replace(closingHead, `${bootstrap}</head>`)
+    : `${bootstrap}${original}`;
+
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(injected, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 async function routeConnectHost(context) {
   if (!isConnectHost(context.request)) {
     return context.next();
@@ -64,18 +90,10 @@ async function routeConnectHost(context) {
 
   const incomingUrl = new URL(context.request.url);
 
-  // Keep the lead receiver and any future explicit API routes on their normal
-  // Pages Functions paths. The public Web App currently posts to the main
-  // Hermes origin, but this boundary prevents a static-asset rewrite from
-  // shadowing an API endpoint later.
   if (incomingUrl.pathname.startsWith("/api/")) {
     return context.next();
   }
 
-  // Cloudflare Agent Readiness can request a compact Markdown representation
-  // by sending `Accept: text/markdown`. Serve only the reviewed public Connect
-  // document in this form; browsers and all other routes keep the existing
-  // HTML/static-asset behavior. The noindex boundary is preserved explicitly.
   if (isConnectDocument(incomingUrl.pathname) && acceptsMarkdown(context.request)) {
     const markdownUrl = new URL(incomingUrl);
     markdownUrl.pathname = `${CONNECT_ASSET_ROOT}/index.md`;
@@ -92,10 +110,7 @@ async function routeConnectHost(context) {
     new Request(assetUrl, context.request),
   );
 
-  // Do not let the internal /demos path leak into the browser. The request URL
-  // remains on connect.hermeslogisticsus.com while Pages serves the approved
-  // Web App assets from the reviewed repository release.
-  return assetResponse;
+  return connectHtmlResponse(assetResponse);
 }
 
 async function sanitizeMainDomainCopy(context) {
