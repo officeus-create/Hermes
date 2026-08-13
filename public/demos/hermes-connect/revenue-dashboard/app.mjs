@@ -37,7 +37,9 @@ function setText(name, value) {
 }
 
 function money(value) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
+  return value === null
+    ? "DATA_PENDING"
+    : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
 }
 
 function percent(value) {
@@ -51,7 +53,7 @@ function count(value) {
 function stageCell(stage) {
   const span = document.createElement("span");
   span.className = stage.value === null ? "stage-pending" : "stage-verified";
-  span.textContent = stage.value === null ? "DATA_PENDING" : (typeof stage.value === "number" ? String(stage.value) : stage.value);
+  span.textContent = stage.value === null ? "DATA_PENDING" : String(stage.value);
   const small = document.createElement("small");
   small.textContent = stage.evidenceClass;
   const wrapper = document.createElement("div");
@@ -106,6 +108,22 @@ function renderPending(pending) {
 
 function render(data) {
   const summary = summarizeRevenueDashboard(data);
+  const stageComplete = (stageName) => data.directions.every((direction) => direction.stages[stageName].value !== null);
+  const totalOrPending = (stageName) => stageComplete(stageName) ? summary.totals[stageName] : null;
+
+  const delivered = totalOrPending("delivered");
+  const reviewed = totalOrPending("reviewed");
+  const qualified = totalOrPending("qualified");
+  const opportunities = totalOrPending("opportunities");
+  const won = totalOrPending("won");
+  const revenue = totalOrPending("revenue");
+
+  const qualifiedRate = reviewed !== null && qualified !== null && reviewed > 0 ? qualified / reviewed : null;
+  const opportunityRate = qualified !== null && opportunities !== null && qualified > 0 ? opportunities / qualified : null;
+  const winRate = opportunities !== null && won !== null && opportunities > 0 ? won / opportunities : null;
+  const revenuePerQualified = revenue !== null && qualified !== null && qualified > 0 ? revenue / qualified : null;
+  const revenuePerOpportunity = revenue !== null && opportunities !== null && opportunities > 0 ? revenue / opportunities : null;
+
   setText("period", `${data.period.dateRange} · ${data.period.timezone}`);
   setText("attribution", data.period.attributionBasis);
 
@@ -122,17 +140,17 @@ function render(data) {
     setText("searchLabel", data.search.label);
   }
 
-  setText("delivered", count(summary.totals.delivered));
-  setText("reviewed", count(summary.totals.reviewed));
-  setText("qualified", count(summary.totals.qualified));
-  setText("opportunities", count(summary.totals.opportunities));
-  setText("won", count(summary.totals.won));
-  setText("revenue", money(summary.totals.revenue));
-  setText("qualifiedRate", percent(summary.qualifiedRate));
-  setText("opportunityRate", percent(summary.opportunityRate));
-  setText("winRate", percent(summary.winRate));
-  setText("revenuePerQualified", summary.revenuePerQualified === null ? "DATA_PENDING" : money(summary.revenuePerQualified));
-  setText("revenuePerOpportunity", summary.revenuePerOpportunity === null ? "DATA_PENDING" : money(summary.revenuePerOpportunity));
+  setText("delivered", count(delivered));
+  setText("reviewed", count(reviewed));
+  setText("qualified", count(qualified));
+  setText("opportunities", count(opportunities));
+  setText("won", count(won));
+  setText("revenue", money(revenue));
+  setText("qualifiedRate", percent(qualifiedRate));
+  setText("opportunityRate", percent(opportunityRate));
+  setText("winRate", percent(winRate));
+  setText("revenuePerQualified", money(revenuePerQualified));
+  setText("revenuePerOpportunity", money(revenuePerOpportunity));
   setText("evidenceCompleteness", `${Math.round(summary.evidenceCompleteness * 100)}%`);
 
   renderDirections(data);
