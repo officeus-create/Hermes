@@ -2,10 +2,36 @@
 import DigitalServicePage from "../../../components/DigitalServicePage.astro";
 import { digitalNicheServicePages } from "../../../data/digital-niche-service-pages";
 
+const base = digitalNicheServicePages.logisticsSeo;
+
 const content = {
-  ...digitalNicheServicePages.logisticsSeo,
+  ...base,
+  title: "Logistics SEO Agency for Trucking & Transportation Companies | Hermes",
+  description:
+    "Logistics SEO for trucking, transportation, freight, dispatch and warehousing companies: technical audits, query ownership, service architecture, internal links, content, conversion paths and privacy-safe measurement.",
+  h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
+  intro:
+    "A logistics SEO program should help the right buyer find the right service page, understand what the company actually does, and reach a useful next step without forcing every trucking, transportation, freight, dispatch, warehouse, equipment or city keyword into a separate page. Hermes combines technical SEO, query-to-page ownership, commercial content architecture, internal linking, conversion review and privacy-safe measurement for logistics businesses that need clearer search demand and better-qualified inquiries.",
+  audience: [
+    "Logistics and transportation companies that already receive impressions but rank too low or attract the wrong search intent",
+    "Trucking companies, fleets, owner-operator services and dispatch-support businesses that need clearer commercial page ownership",
+    "Freight brokers, vehicle-transport companies, warehousing businesses and logistics technology teams that need distinct service and buyer journeys",
+    "Teams comparing a logistics SEO agency, trucking SEO company or logistics SEO consultant and wanting a documented scope before implementation",
+    "Companies with generic city, equipment or service pages that need consolidation, stronger internal links and a measurable search-to-inquiry path",
+  ],
+  deliverables: [
+    {
+      title: "Commercial query-to-page ownership",
+      body: "Map logistics SEO agency, trucking SEO company, transportation-company SEO, freight, dispatch, warehousing, carrier, customer and service-intent query families to one preferred canonical owner instead of allowing overlapping pages to compete with each other.",
+    },
+    {
+      title: "Trucking, transportation and warehousing content architecture",
+      body: "Strengthen the pages that explain real services, audiences, equipment, locations and operating problems while keeping adjacent industries such as warehousing or freight clearly scoped to the client business being optimized rather than inventing services Hermes does not provide.",
+    },
+    ...base.deliverables,
+  ],
   process: [
-    ...digitalNicheServicePages.logisticsSeo.process,
+    ...base.process,
     {
       title: "Use the first 30 days as a controlled review and release window",
       body: "Week 1 confirms scope, access, evidence, privacy boundaries, inquiry ownership and the priority commercial action. Week 2 produces the audit, URL ownership map and ordered P0/P1 findings. Week 3 releases only the approved focused batch with full tests. Week 4 validates the live routes, indexability, CTA and delivery behavior, then records the first measurement baseline that is actually available. Timing depends on access, evidence, review speed and implementation capacity; this sequence does not guarantee rankings, traffic, inquiries or revenue.",
@@ -13,16 +39,26 @@ const content = {
   ],
   faq: [
     {
+      question: "Is Hermes a logistics SEO agency for trucking and transportation companies?",
+      answer: "Hermes provides logistics-focused SEO strategy, audits and implementation for real trucking, transportation, dispatch, freight, vehicle-transport, warehousing and logistics-technology businesses when the service scope and public claims can be supported. The work focuses on canonical query ownership, technical quality, useful commercial content, internal links, conversion paths and measurement rather than creating thin pages for every keyword variation.",
+    },
+    {
+      question: "Do trucking SEO, transportation SEO and warehousing SEO need separate pages?",
+      answer: "Not automatically. If the same company, service and buyer decision are being described, one strong canonical owner may be better than several overlapping pages. A separate page is justified only when the business actually provides a distinct service, the buyer intent is different, the content can be genuinely useful, and the page has its own conversion path and evidence.",
+    },
+    {
       question: "What happens during the first 30 days of a Logistics SEO engagement?",
       answer: "The first month is used to confirm the real business scope and evidence, audit the existing search and conversion system, map URL ownership, prioritize defects, release one approved tested batch, and validate the live result. Search Console, analytics and inquiry-quality baselines are recorded only when the correct authenticated evidence is available. The sequence does not guarantee rankings, traffic, leads, revenue or a fixed implementation volume.",
     },
-    ...digitalNicheServicePages.logisticsSeo.faq,
+    ...base.faq,
   ],
   related: [
     { label: "Open Logistics SEO Analyzer", href: "https://connect.hermeslogisticsus.com/logistics-seo-analyzer/" },
     { label: "Logistics SEO Audit Sample", href: "/resources/logistics-seo-audit-sample/" },
-    ...digitalNicheServicePages.logisticsSeo.related,
+    { label: "General SEO Services", href: "/services/seo/" },
+    ...base.related,
   ],
+  reviewedAt: "August 13, 2026",
 };
 ---
 
