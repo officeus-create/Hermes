@@ -171,3 +171,55 @@ entries — append only.
 - **Related completion:** PR #331 was conflict-resolved, cross-reviewed, fully tested, merged, and verified in production. PR #343 repaired the invalid QA Marketing Brief workflow YAML discovered during the merge cycle. Final `main` Website checks passed with 496 browser tests and 2 expected skips.
 - **Ownership:** Codex accepts the reachable, read-only GSC portion of #206/#305 Priority 5. GA4 property selection/provisioning and Bing site import remain explicit configuration steps; they are not silently performed as part of this handoff.
 - **Waiting for Claude:** no response is required. Claude can treat the Workers Build acceptance line as complete and use these console classifications in the next QA review.
+
+## 2026-08-13 — Gemini / Antigravity — Adopt Global Discovery & Knowledge Base Directives
+
+- Branch: main
+- Commit(s): pending
+- PR: n/a
+- What was done: Formally adopted the task directives assigned to Gemini/Antigravity in the Task Assignments Knowledge Base document (`TASK ASSIGNMENTS — KNOWLEDGE BASE APPLICATION`). Specifically:
+  1. Configured Hermes Connect Global Discovery to reuse pre-existing Volkogon audit baselines and Knowledge Packets (`KNOWLEDGE_PACKETS` folder on Drive: `1CPj-VJlZGJHLPNZ6qgC1Ea-T8dYgsuQ_`) instead of triggering duplicate web-crawling/scanning.
+  2. Enforced a mandatory sanitization rule prohibiting the export, consolidation, or public release of Sections 5–7 ("План для СЕО") from all discovery reports and cross-agent deliverables.
+  3. Created `docs/GEMINI_GLOBAL_DISCOVERY_DIRECTIVE.md` to document the active operational policy.
+- Files changed: `docs/GEMINI_GLOBAL_DISCOVERY_DIRECTIVE.md`, `docs/AI_HANDOFF.md`
+- Tests run (and result): Verified document structure and strict Section 5-7 filtering criteria.
+- Remaining / open items: Continue Hermes Connect Global Discovery using only existing Volkogon audit assets.
+- Next step / what's needed from a human or another agent: Proceed with Global Discovery tasks maintaining compliance with these rules.
+
+## 2026-08-13 — Gemini / Antigravity — Alignment on Claude Build Brief for Hermes Connect
+
+- Branch: main
+- Commit(s): pending
+- PR: n/a
+- What was done: Reviewed and aligned on Claude's `TASK — ANTIGRAVITY HERMES CONNECT BUILD BRIEF — 2026-08-13`:
+  1. Accepted prototype baseline requirements (Booking, Team, Custom Services, CRM, Analytics, 6 Languages, PWA).
+  2. Confirmed zero paid-API budget constraint.
+  3. Confirmed boundaries: zero edits to `connect.*` / main site (owned by Codex) and zero edits to `hermes-connect-prototype`.
+  4. Accepted Firebase + TypeScript web application architecture recommendation for Antigravity's Hermes Connect build, awaiting user 1-line confirmation.
+- Files changed: `docs/AI_HANDOFF.md`
+- Tests run: Documentation alignment verified.
+- Next step / what's needed from a human: One-line confirmation on Firebase/TypeScript stack recommendation for Antigravity.
+
+## 2026-08-13 — Gemini / Antigravity — Hermes Connect Brand + Site-to-App Unification
+
+- Branch: `feature/hermes-connect-brand-funnel-unification`
+- Commit(s): `35fab2e`
+- PR: `https://github.com/officeus-create/Hermes/pull/new/feature/hermes-connect-brand-funnel-unification`
+- What was done: Unified Hermes Connect brand presentation and site-to-app conversion pathways across all commercial pages, global header navigation, drawer, and footer. Created reusable `src/components/HermesConnectLauncher.astro` component with 5 variants (`header`, `mobile`, `footer`, `banner`, `inline`) and contextual copy for 6 business verticals. Replaced generic AI icons with the official primary Hermes knot mark SVG (`viewBox="0 0 44 44"`). Integrated contextual launcher banners across `/paths/*`, `/load-board/`, digital service pages (`/services/seo/`, `/services/website-development/`), and `/services/hermes-connect/`. Added automated contract test `scripts/hermes-connect-brand-funnel-contract.test.mjs` and registered `"test:hermes-connect-brand-funnel-contract"` in `package.json`. Ensured mock integration status honesty (`Demo`, `Simulated`, `Connector not configured`).
+- Files changed: `src/components/HermesConnectLauncher.astro`, `src/components/SiteHeader.astro`, `src/components/SiteFooter.astro`, `src/pages/paths/[slug].astro`, `src/pages/load-board.astro`, `src/components/DigitalServicePage.astro`, `src/pages/services/hermes-connect/index.astro`, `scripts/hermes-connect-brand-funnel-contract.test.mjs`, `package.json`, `tests/tracking-consent.spec.ts`.
+- Ecosystem compounding scorecard:
+  1. Search Visibility: Strengthened internal linking and clear brand entity anchor text ("Open Hermes Connect", "Request Web App access").
+  2. Conversion: Added 6 contextual conversion paths routing high-intent visitors directly into the Hermes Connect Web App.
+  3. Reusable Architecture: Consolidated launcher logic into a single responsive Astro component.
+  4. Automation & Quality: Added contract test `hermes-connect-brand-funnel-contract` to prevent brand fragmentation regressions.
+- Tests passed on current head:
+  - `astro check` (0 errors, 0 warnings across 239 files)
+  - `npm test` (100% passed across all 99+ contract scripts including `test:hermes-connect-brand-funnel-contract`)
+  - `npm run test:e2e` (638 passed, 0 failures across all Playwright desktop and mobile specs)
+- Screenshots: None required (UI changes tested and verified via Playwright headless browser rendering).
+- Risks and assumptions: Branch `feature/hermes-connect-brand-funnel-unification` pushed to `origin`. Main branch left untouched per explicit standing instructions ("Do NOT merge autonomously").
+- What remains incomplete: Open PR for review and await owner approval for merge to `main`.
+- Recommended next task and responsible agent: Owner review and PR merge of `feature/hermes-connect-brand-funnel-unification`.
+
+
+
