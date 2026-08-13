@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const routes = [
-  ["/services/seo-for-logistics-companies/", "SEO for Logistics, Trucking and Dispatch Companies"],
+  ["/services/seo-for-logistics-companies/", "Logistics SEO for Trucking, Transportation and Freight Companies"],
   ["/services/seo-for-independent-auto-dealers/", "SEO for Independent and Used Car Dealers"],
 ] as const;
 
@@ -12,10 +12,7 @@ test.describe("Niche SEO service pages", () => {
       expect(response?.ok()).toBeTruthy();
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("h1")).toContainText(h1);
-      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-        "href",
-        `https://hermeslogisticsus.com${route}`,
-      );
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${route}`);
       await expect(page.locator('[aria-label="Breadcrumb"]')).toBeVisible();
       await expect(page.locator('[data-contact-form]')).toHaveAttribute("data-contact-mode", "preview");
       await expect(page.locator('a[href="mailto:officeus@hermeslogisticsus.com"]').first()).toBeVisible();
