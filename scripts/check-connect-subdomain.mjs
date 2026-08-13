@@ -17,6 +17,9 @@ if (!Number.isInteger(delayMs) || delayMs < 1000 || delayMs > 30000) {
 }
 
 const webAppMarkers = [
+  "Hermes Connect · Workspace",
+  "AI Operating System",
+  "Hermes Intelligence",
   "Hermes Connect Web App · Request Access",
   "One clear client path for",
   "Request Web App access",
@@ -41,7 +44,7 @@ async function fetchPublic() {
         accept: "text/html,application/xhtml+xml",
         "cache-control": "no-cache",
         pragma: "no-cache",
-        "user-agent": "HermesConnectReleaseVerifier/1.1 (+public read-only deployment check)",
+        "user-agent": "HermesConnectReleaseVerifier/1.2 (+public read-only deployment check)",
       },
       signal: AbortSignal.timeout(20_000),
     });
@@ -130,7 +133,7 @@ await fs.writeFile(
 
 const last = observations.at(-1);
 const interpretation = classification === "LIVE_APPROVED_WEB_APP"
-  ? "- The custom subdomain serves the approved web-only Hermes Connect release."
+  ? "- The custom subdomain serves the approved Hermes Connect Brand V1 workspace."
   : classification === "LIVE_PR_HEAD_EXPOSED"
     ? "- The custom subdomain exposed at least one marker that this isolation run treats as unapproved preview content. Correct Cloudflare branch/domain isolation before release."
     : classification === "LIVE_PREVIOUS_CONNECT"
