@@ -6,6 +6,7 @@ import { AIBrainWidget } from './components/AIBrainWidget';
 import { AdaptiveOnboardingModal } from './components/AdaptiveOnboardingModal';
 import { BrandLogoExplorerModal, LogoConceptId } from './components/BrandLogoExplorerV2';
 import { CommandPaletteModal } from './components/CommandPaletteModal';
+import { MobileBottomDock } from './components/MobileBottomDock';
 
 import { HeroLandingView } from './views/HeroLandingView';
 import { OSCommandCenterView } from './views/OSCommandCenterView';
@@ -68,7 +69,7 @@ export function App() {
     activeVertical === 'website_demo';
 
   return (
-    <div className="min-h-screen pb-20 transition-colors duration-300">
+    <div className="min-h-screen pb-24 lg:pb-20 transition-colors duration-300">
       {/* Top Navigation */}
       <Navigation
         activeVertical={activeVertical}
@@ -163,6 +164,13 @@ export function App() {
           </div>
         </div>
       </main>
+
+      {/* Mobile App Bottom Dock */}
+      <MobileBottomDock
+        activeVertical={activeVertical}
+        onSelectVertical={setActiveVertical}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+      />
 
       {/* Cmd + K Command Palette Modal */}
       <CommandPaletteModal
