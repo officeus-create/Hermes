@@ -1,95 +1,145 @@
 # Hermes Connect Design — Current State
 
-Last updated: 2026-08-06
-
-## Product perception goal
-
-Hermes Connect should feel like a serious connected operating platform rather than a generic trucking application, crypto project or template SaaS dashboard.
-
-## Brand attributes
-
-- Connected ecosystem
-- Speed and control
-- Intelligence and automation
-- Reliability and security
-- People, time and business coordination
-- Premium but practical enterprise software
-
-## Product-development rule
-
-Design must follow the actual product as it grows. Release simple useful workflows first, observe where users understand, convert, hesitate or fail, then improve the interface and add functions. The application, web version, main-site presentation and promotion must remain one system.
-
-## Mobile and web UI direction
-
-- Dark navy base with disciplined blue/cyan/teal or controlled violet accents.
-- High contrast and readable data density.
-- Clear messages, profiles, availability, calendars, confirmations and next actions.
-- Dashboard, logistics, carrier, customer, recruiting and service-business workflows may share one visual language while keeping role-specific tasks simple.
-- UI must remain usable in daylight and support a future light theme.
-- Visual effects should reinforce hierarchy, not reduce clarity.
-
-## Connection-thread concept
-
-A light thread can become a recurring visual and motion metaphor:
-
-- first message;
-- person or business profile;
-- availability and calendar;
-- confirmation;
-- real next action.
-
-The thread may connect scenarios such as client → business, candidate → company, driver → family and carrier → service. It can assemble into the Hermes `H` or another approved ecosystem symbol. This is a preserved concept for product identity, site motion, onboarding and promotion; it is not yet a final production animation.
-
-## Logo exploration so far
-
-Explored concepts include:
-
-1. Interlocking `H` geometry.
-2. Chain-link / connection symbols.
-3. Network nodes and route structures.
-4. Wing or speed cues associated with Hermes.
-5. App-icon-first geometric marks.
-6. Thread, path and connected-action symbolism.
-
-The strongest direction should work at app-icon, favicon, mobile-header, website and monochrome sizes without resembling a crypto or generic network logo.
-
-## Current strategic recommendation
-
-Run two parallel families:
-
-- **Family A — Connected H:** retain recognizable `H` construction but simplify it into a proprietary, balanced and highly legible symbol.
-- **Family B — Ecosystem Symbol:** avoid a literal letter and build an ownable mark from routes, nodes, thread, connection and movement.
-
-Do not produce many near-identical variants. Each family should represent a distinct idea.
-
-## Evaluation criteria
-
-Score every finalist from 1–10 on:
-
-- Distinctiveness
-- Meaning
-- Small-size legibility
-- App-icon performance
-- Monochrome performance
-- Website compatibility
-- Enterprise trust
-- Avoidance of crypto/Web3 clichés
-- Motion potential
-- Trademark/search risk
-
-## Required deliverables before approval
-
-- Primary logo and wordmark
-- App icon
-- Favicon at 16/32 px
-- Monochrome and inverse versions
-- Light and dark background versions
-- Mobile header test
-- Website hero test
-- Minimum clear-space and sizing rules
-- Exact website color tokens and accessible contrast checks
-- Competitor similarity review
+Last updated: 2026-08-12
 
 ## Decision status
 
-No final logo, color system or motion identity is approved.
+**Hermes Connect Brand System V1 is approved as the current base direction.**
+
+All AI assistants, designers and developers should read `APPROVED_BRAND_SYSTEM_V1.md` before proposing design changes.
+
+The approved system should be refined and extended, not restarted from zero unless Vladimir / Hermes explicitly reopens the brand decision.
+
+## Product perception goal
+
+Hermes Connect should feel like a premium **AI Operating System for Business** rather than a generic trucking application, crypto project, legacy CRM or template SaaS dashboard.
+
+Primary working message:
+
+> Run your business with AI.
+
+## Approved core visual language
+
+- Warm Pearl / premium light marketing canvas.
+- Anthracite / Obsidian dark operating and command-center environment.
+- One visual system across website, app, web dashboard, presentations and social.
+- Small interconnected loop / intelligent-knot / continuous-connection logo direction.
+- Fine digital flow waves as a recurring signature motif.
+- Restrained translucent / tactile 3D brand object for hero storytelling and motion.
+- Large, simple typography and generous whitespace.
+- Real product workflows shown in motion instead of feature-list overload.
+- Editorial industry cards with controlled niche-specific art direction.
+
+## Approved logo direction
+
+The preferred brand mark is a compact interconnected loop / knot representing connection, continuity, orchestration and multiple business processes working as one.
+
+Geometry may still be refined for optical quality, favicon/app-icon performance, motion and trademark differentiation, but entirely new logo families are experiments unless explicitly approved.
+
+## Approved flow-wave motif
+
+The dark Hermes panel with the small logo and elegant flowing digital waves is an approved reference. The wave system may be used in backgrounds, section transitions, launch videos, presentations, social templates and subtle product states.
+
+It must remain calm, thin and premium rather than neon/cyberpunk.
+
+## Light and dark product environments
+
+### Pearl
+
+Best suited for public storytelling, onboarding, presentations and selected service-business experiences.
+
+### Anthracite / Obsidian
+
+Best suited for dashboards, analytics, finance, logistics and dense operational work.
+
+The two modes must preserve the same geometry, hierarchy, typography and identity.
+
+## Hermes Intelligence
+
+The user-facing AI model should feel like **one Hermes Intelligence**. Specialized internal agents may handle reception, sales, marketing, finance, operations, recruiting and logistics, but they should not make the experience feel like a collection of disconnected bots.
+
+A transparent background-activity feed is allowed where useful.
+
+## Adaptive onboarding
+
+A fast adaptive setup is an approved product direction. Hermes should configure modules, navigation, AI capabilities, KPIs and workflows based on the user's business rather than showing every feature to every user.
+
+## Industry art direction
+
+Controlled mood families may adapt storytelling to different business categories while preserving one Hermes brand:
+
+- Monochrome — professional services / premium B2B.
+- Color Block — real estate / architecture / modern services.
+- Podium / gradient portrait — wellness / health / premium personal services.
+- Technicolor — beauty / lifestyle / fashion-forward businesses.
+
+These are visual storytelling modes, not separate brands.
+
+## Color direction
+
+Directional palette is locked around:
+
+- Pearl / warm off-white;
+- Graphite / Anthracite / Obsidian;
+- Iris / violet;
+- controlled blue / cobalt;
+- restrained sage / mint;
+- warm sand;
+- semantic amber / red.
+
+Exact production tokens require implementation-level accessibility and contrast validation.
+
+Antigravity Brand Exploration V2 proposed candidate tokens including `#F8F6F0`, `#090A0F`, `#6D28D9`, `#2563EB`, `#D97706` and `#BE123C`; these are candidate implementation tokens until validated, not a reason to restart the brand.
+
+## Hero direction
+
+The website should show Hermes operating:
+
+`New lead → Hermes replied → qualified → booking confirmed → payment received → review requested → retention workflow`
+
+The brand object, flow lines and product cards should help explain that orchestration.
+
+## Current Antigravity V2 status
+
+Antigravity reported a local branch `feature/brand-exploration-v2` containing:
+
+- six vector logo explorations;
+- Pearl / Obsidian themes;
+- unified Hermes Intelligence UX;
+- adaptive onboarding;
+- updated logo explorer and UI components.
+
+At the latest shared-GitHub check, that branch and its commit were not visible in `officeus-create/Hermes`. Treat the work as an **external/local implementation pending push and code review**.
+
+Once available remotely, review it against the approved V1 brand system. The six logo directions are exploration material; they do not automatically supersede the approved loop/knot direction.
+
+## Brand governance
+
+Every design change should be labeled:
+
+- `Refinement`
+- `Extension`
+- `Experiment`
+- `Rebrand Proposal`
+
+A Rebrand Proposal requires explicit owner approval.
+
+## Required production validation
+
+- Favicon 16/32 px
+- App icon
+- Monochrome and inverse logo
+- Light/dark backgrounds
+- Mobile header
+- Website hero
+- Social avatar
+- Exact accessible color tokens
+- Motion / reduced-motion behavior
+- Competitor similarity / trademark review
+- 3D and animation performance
+
+## Source of truth
+
+See:
+
+`ai-collaboration/01_DESIGN/hermes-connect/APPROVED_BRAND_SYSTEM_V1.md`
