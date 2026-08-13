@@ -13,9 +13,11 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "SEO for Logistics, Trucking & Dispatch Companies | Hermes",
-    h1: "SEO for Logistics, Trucking and Dispatch Companies",
+    title: "Logistics SEO Agency for Trucking & Transportation Companies | Hermes",
+    h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     required: [
+      "Commercial query-to-page ownership",
+      "Trucking, transportation and warehousing content architecture",
       "Audience and service architecture",
       "Trucking, dispatch and freight-broker query map",
       "Logistics website SEO audit",
@@ -24,6 +26,8 @@ const pages = [
       "Search-to-qualified-inquiry measurement",
       "Current load-board offers are private observations",
       "No universal package, price or implementation volume",
+      "Is Hermes a logistics SEO agency for trucking and transportation companies?",
+      "Do trucking SEO, transportation SEO and warehousing SEO need separate pages?",
       "Does Hermes provide SEO for trucking and dispatch companies?",
       "What is the smallest useful starting scope?",
       "Can the project begin with an audit only?",
