@@ -15,7 +15,8 @@ import {
   Sparkles,
   ShieldCheck,
   LayoutDashboard,
-  Puzzle
+  Puzzle,
+  Search
 } from 'lucide-react';
 import { VerticalCategory, UserRole } from '../types';
 import { BrandLogoV2, LogoConceptId } from './BrandLogoExplorerV2';
@@ -30,6 +31,7 @@ interface NavigationProps {
   onOpenOnboarding: () => void;
   selectedLogoConcept: LogoConceptId;
   onOpenLogoExplorer: () => void;
+  onOpenCommandPalette: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -41,7 +43,8 @@ export const Navigation: React.FC<NavigationProps> = ({
   onToggleThemeMode,
   onOpenOnboarding,
   selectedLogoConcept,
-  onOpenLogoExplorer
+  onOpenLogoExplorer,
+  onOpenCommandPalette
 }) => {
   const verticals: { id: VerticalCategory; label: string; icon: React.ReactNode; badge?: string }[] = [
     { id: 'hero_landing', label: 'Обзор ОС & Бренд', icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />, badge: 'V1 OS' },
@@ -70,24 +73,37 @@ export const Navigation: React.FC<NavigationProps> = ({
     <header className="glass-panel mb-6 p-3.5 border-b border-white/10 sticky top-2 z-40 mx-4 backdrop-blur-xl">
       <div className="flex flex-col xl:flex-row items-center justify-between gap-3">
         {/* Brand & Selected Logo V2 Concept */}
-        <div 
-          onClick={onOpenLogoExplorer}
-          title="Нажмите, чтобы примерить 6 вариантов логотипа (Brand Exploration V2)"
-          className="flex items-center gap-2.5 cursor-pointer shrink-0 group hover:opacity-90 transition-opacity"
-        >
-          <div className="p-1.5 rounded-xl bg-slate-900/90 border border-white/10 group-hover:border-indigo-500/50 transition-colors">
-            <BrandLogoV2 conceptId={selectedLogoConcept} size={32} />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base text-white font-heading tracking-tight">HERMES CONNECT</span>
-              <span className="badge badge-primary text-[9px] px-2 py-0.5">V1.1 OS</span>
+        <div className="flex items-center gap-3 shrink-0">
+          <div 
+            onClick={onOpenLogoExplorer}
+            title="Нажмите, чтобы примерить 6 вариантов логотипа (Brand Exploration V2)"
+            className="flex items-center gap-2.5 cursor-pointer group hover:opacity-90 transition-opacity"
+          >
+            <div className="p-1.5 rounded-xl bg-slate-900/90 border border-white/10 group-hover:border-indigo-500/50 transition-colors">
+              <BrandLogoV2 conceptId={selectedLogoConcept} size={32} />
             </div>
-            <p className="text-[10px] text-slate-400 leading-none mt-0.5 flex items-center gap-1">
-              <span>ОС БИЗНЕСА</span>
-              <span className="text-indigo-400 font-semibold text-[9px] underline group-hover:text-white">Лого-Лаборатория</span>
-            </p>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-base text-white font-heading tracking-tight">HERMES CONNECT</span>
+                <span className="badge badge-primary text-[9px] px-2 py-0.5">V1.1 OS</span>
+              </div>
+              <p className="text-[10px] text-slate-400 leading-none mt-0.5 flex items-center gap-1">
+                <span>ОС БИЗНЕСА</span>
+                <span className="text-indigo-400 font-semibold text-[9px] underline group-hover:text-white">Лого-Лаборатория</span>
+              </p>
+            </div>
           </div>
+
+          {/* Cmd + K Command Palette Trigger */}
+          <button
+            onClick={onOpenCommandPalette}
+            className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/90 border border-white/15 text-slate-300 hover:text-white hover:border-indigo-500/50 text-xs transition-all"
+            title="Открыть командную палитру (Cmd + K)"
+          >
+            <Search className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-[11px] font-medium">Поиск и Команды</span>
+            <kbd className="px-1.5 py-0.2 rounded bg-slate-800 text-[9px] font-mono text-slate-400 border border-white/10">⌘K</kbd>
+          </button>
         </div>
 
         {/* Vertical Selector Tabs */}

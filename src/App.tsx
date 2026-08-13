@@ -5,6 +5,7 @@ import { Sidebar } from './components/Sidebar';
 import { AIBrainWidget } from './components/AIBrainWidget';
 import { AdaptiveOnboardingModal } from './components/AdaptiveOnboardingModal';
 import { BrandLogoExplorerModal, LogoConceptId } from './components/BrandLogoExplorerV2';
+import { CommandPaletteModal } from './components/CommandPaletteModal';
 
 import { HeroLandingView } from './views/HeroLandingView';
 import { OSCommandCenterView } from './views/OSCommandCenterView';
@@ -44,6 +45,7 @@ export function App() {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [selectedLogoConcept, setSelectedLogoConcept] = useState<LogoConceptId>('quantum_node');
   const [isLogoExplorerOpen, setIsLogoExplorerOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   useEffect(() => {
     if (themeMode === 'light') {
@@ -78,6 +80,7 @@ export function App() {
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
         selectedLogoConcept={selectedLogoConcept}
         onOpenLogoExplorer={() => setIsLogoExplorerOpen(true)}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
       />
 
       {/* Main Content Layout */}
@@ -160,6 +163,14 @@ export function App() {
           </div>
         </div>
       </main>
+
+      {/* Cmd + K Command Palette Modal */}
+      <CommandPaletteModal
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onSelectVertical={setActiveVertical}
+        onSendMessage={sendAIMessage}
+      />
 
       {/* Brand Exploration V2 Logo Explorer Modal */}
       <BrandLogoExplorerModal
