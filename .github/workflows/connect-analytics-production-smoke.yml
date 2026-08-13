@@ -1,0 +1,90 @@
+name: Verify Hermes Connect consent analytics production
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/connect-analytics-production-smoke.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connect-analytics-production-smoke
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify consent bootstrap after Cloudflare propagation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify root injection and consent asset with retry
+        run: |
+          node <<'NODE'
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const requiredAssetMarkers = [
+            "G-RY26321PVW",
+            "hermes-analytics-consent",
+            "ALLOWED_EVENT_KEYS",
+            "analytics_storage",
+            "ad_personalization",
+          ];
+
+          let last = {};
+          for (let attempt = 1; attempt <= 18; attempt += 1) {
+            try {
+              const stamp = Date.now();
+              const root = await fetch(`https://connect.hermeslogisticsus.com/?analytics=${stamp}`, {
+                headers: {
+                  "cache-control": "no-cache",
+                  pragma: "no-cache",
+                  "user-agent": "HermesConnectAnalyticsVerifier/1.1",
+                },
+                signal: AbortSignal.timeout(20_000),
+              });
+              const html = await root.text();
+
+              const asset = await fetch(`https://connect.hermeslogisticsus.com/connect-analytics-consent.mjs?analytics=${stamp}`, {
+                headers: {
+                  "cache-control": "no-cache",
+                  pragma: "no-cache",
+                  "user-agent": "HermesConnectAnalyticsVerifier/1.1",
+                },
+                signal: AbortSignal.timeout(20_000),
+              });
+              const source = await asset.text();
+
+              const bootstrap = html.includes("data-hermes-connect-analytics-consent")
+                && html.includes("/connect-analytics-consent.mjs");
+              const preConsentVendorUrl = html.includes("googletagmanager.com/gtag/js");
+              const assetMarkers = requiredAssetMarkers.every((marker) => source.includes(marker));
+
+              last = {
+                attempt,
+                rootStatus: root.status,
+                bootstrap,
+                preConsentVendorUrl,
+                assetStatus: asset.status,
+                assetMarkers,
+              };
+
+              if (root.status === 200 && bootstrap && !preConsentVendorUrl && asset.status === 200 && assetMarkers) {
+                console.log(JSON.stringify({ ok: true, ...last }, null, 2));
+                process.exit(0);
+              }
+            } catch (error) {
+              last = {
+                attempt,
+                error: error instanceof Error ? error.message : String(error),
+              };
+            }
+
+            if (attempt < 18) await sleep(10_000);
+          }
+
+          console.error(JSON.stringify({ ok: false, ...last }, null, 2));
+          process.exit(1);
+          NODE
