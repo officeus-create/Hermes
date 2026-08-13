@@ -103,3 +103,88 @@
   .connect-service-capability-grid article { min-height: auto; }
   .connect-service-final-grid .button { justify-self: start; }
 }
+
+/* Interactive Demo Workspace Card */
+.connect-service-demo { background: #07152f; color: #fff; position: relative; overflow: hidden; }
+.connect-service-demo .section-heading h2 { color: #fff; }
+.connect-service-demo .section-heading p { color: #aebbd2; }
+
+.connect-demo-card {
+  margin-top: 2.5rem;
+  padding: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(11, 30, 66, 0.95), rgba(7, 21, 47, 0.98));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+  display: grid;
+  gap: 2rem;
+}
+
+.connect-demo-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.badge-tag {
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #aebbd2;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.badge-tag.is-active, .badge-tag:hover {
+  background: rgba(103, 232, 196, 0.15);
+  border-color: #67e8c4;
+  color: #67e8c4;
+}
+
+.connect-demo-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.connect-demo-features article {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.connect-demo-features svg {
+  color: #67e8c4;
+  margin-bottom: 0.8rem;
+}
+
+.connect-demo-features h4 {
+  color: #fff;
+  font-size: 1.1rem;
+  margin: 0 0 0.4rem;
+}
+
+.connect-demo-features p {
+  color: #9cb1ce;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.connect-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 900px) {
+  .connect-demo-features { grid-template-columns: 1fr; }
+  .connect-demo-card { padding: 1.5rem; }
+}
+
