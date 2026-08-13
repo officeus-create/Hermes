@@ -1,0 +1,51 @@
+name: SEO12 hero session-control diagnostic
+
+on:
+  push:
+    branches:
+      - seo12/diag-hero-session-control
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout diagnostic branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run same-URL first-vs-regular hero diagnostic
+        env:
+          PAIRS: "5"
+          OUTPUT_DIR: artifacts/homepage-hero-session-control
+        run: node scripts/homepage-hero-session-control.mjs
+
+      - name: Publish summary
+        if: always()
+        run: |
+          if [ -f artifacts/homepage-hero-session-control/summary.md ]; then
+            cat artifacts/homepage-hero-session-control/summary.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload diagnostic artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo12-homepage-hero-session-control
+          path: artifacts/homepage-hero-session-control
+          if-no-files-found: error
+          retention-days: 14
