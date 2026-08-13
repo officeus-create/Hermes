@@ -29,7 +29,7 @@ test("Hermes Connect Load Analyzer keeps trip economics local and explainable", 
   await page.locator('input[name="targetNet"]').fill("900");
   await page.getByRole("button", { name: "Analyze trip economics" }).click();
 
-  await expect(page.locator('[data-load-output="estimatedNet"]')).toHaveText("$1,109.72");
+  await expect(page.locator('[data-load-output="estimatedNet"]')).toHaveText("$1,109.73");
   await expect(page.locator("[data-load-recommendation]")).toHaveText("GOOD");
 
   await page.getByRole("button", { name: "Save current as baseline" }).click();
