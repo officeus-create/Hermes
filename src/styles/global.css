@@ -2202,3 +2202,123 @@ h3 { font-size: 1.75rem; }
   .path-engine-actions { flex-direction: column-reverse; }
   .path-engine-actions .button { width: 100%; justify-content: center; }
 }
+
+/* ==========================================================================
+   HERMES CONNECT VISUAL MOTION DIRECTIVE V1 (Issue #488)
+   ========================================================================== */
+
+/* 1. Enhanced Typography & Accent System */
+.hermes-text-enhanced {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: #1a2238;
+}
+
+.hermes-accent-iris { color: #7C5CFF; }
+.hermes-accent-ocean { color: #5AC8FA; }
+.hermes-accent-sage { color: #34C759; }
+
+.hermes-badge-simulated {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  background: rgba(124, 92, 255, 0.12);
+  color: #7C5CFF;
+  border: 1px solid rgba(124, 92, 255, 0.3);
+}
+
+/* 2. Floating Hermes Intelligent Knot Button (Hermes Intelligence Launcher) */
+.hermes-knot-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #7C5CFF, #0B0D12 80%);
+  border: 1px solid rgba(90, 200, 250, 0.4);
+  box-shadow: 0 12px 32px rgba(124, 92, 255, 0.35);
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  animation: hermesKnotPulse 3.5s infinite ease-in-out;
+}
+
+.hermes-knot-button:hover,
+.hermes-knot-button:focus-visible {
+  transform: scale(1.12) rotate(6deg);
+  box-shadow: 0 16px 42px rgba(124, 92, 255, 0.55), 0 0 20px rgba(90, 200, 250, 0.4);
+}
+
+@keyframes hermesKnotPulse {
+  0%, 100% {
+    box-shadow: 0 12px 32px rgba(124, 92, 255, 0.35);
+  }
+  50% {
+    box-shadow: 0 18px 48px rgba(124, 92, 255, 0.55), 0 0 24px rgba(90, 200, 250, 0.45);
+  }
+}
+
+/* 3. Interactive Card Motion, Lift, Tilt & Parallax */
+.hermes-card-interactive {
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+  border: 1px solid rgba(211, 217, 231, 0.8);
+  border-radius: 12px;
+}
+
+.hermes-card-interactive:hover,
+.hermes-card-interactive:focus-within {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 16px 36px rgba(12, 25, 79, 0.12), 0 0 18px rgba(124, 92, 255, 0.15);
+  border-color: #7C5CFF;
+}
+
+/* 4. Ambient Hermes Flow Wave Motion */
+.hermes-flow-wave {
+  background: linear-gradient(135deg, #F7F6F3 0%, #EAE8E1 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hermes-flow-wave::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.08) 0%, transparent 60%);
+  animation: hermesWaveFlow 12s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes hermesWaveFlow {
+  0% { transform: rotate(0deg) translate(0, 0); }
+  50% { transform: rotate(180deg) translate(2%, 2%); }
+  100% { transform: rotate(360deg) translate(0, 0); }
+}
+
+/* 5. Reduced Motion & Mobile Touch Adaptation */
+@media (prefers-reduced-motion: reduce) {
+  .hermes-knot-button,
+  .hermes-flow-wave::before {
+    animation: none !important;
+  }
+  .hermes-card-interactive {
+    transition: none !important;
+  }
+}
+
+@media (hover: none) {
+  .hermes-card-interactive:active {
+    transform: scale(0.98);
+    border-color: #7C5CFF;
+  }
+}
