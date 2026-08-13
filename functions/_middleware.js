@@ -6,12 +6,20 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
+const CONNECT_ACCESS_REDIRECT = "/workspace-access-redirect.js";
+const CONNECT_ACCESS_REDIRECT_MARKER = "data-hermes-connect-access-redirect";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
 const STALE_PUBLIC_COPY = [
   "Your information was not sent or stored.",
   "Contact delivery is not connected",
   "contact delivery is not connected",
 ];
+
+const ACCESS_DOCUMENTS = new Map([
+  ["/request-access", "/index.html"],
+  ["/request-access/", "/index.html"],
+  ["/request-access/index.html", "/index.html"],
+]);
 
 const BRAND_ROOT_ASSETS = new Set([
   "/workspace.css",
@@ -20,6 +28,7 @@ const BRAND_ROOT_ASSETS = new Set([
   "/workspace.js",
   "/workspace-launch-v2.js",
   "/workspace-v2.js",
+  "/workspace-access-redirect.js",
   "/styles.css",
   "/app.js",
 ]);
@@ -55,6 +64,10 @@ function isConnectDocument(pathname) {
 }
 
 function connectAssetPath(pathname) {
+  if (ACCESS_DOCUMENTS.has(pathname)) {
+    return `${LEGACY_CONNECT_ASSET_ROOT}${ACCESS_DOCUMENTS.get(pathname)}`;
+  }
+
   if (BRAND_DOCUMENTS.has(pathname)) {
     return `${BRAND_CONNECT_ASSET_ROOT}${BRAND_DOCUMENTS.get(pathname)}`;
   }
@@ -115,6 +128,11 @@ async function connectHtmlResponse(response, { legacy = false } = {}) {
 
   let html = await response.text();
   if (legacy) html = applyLegacyBrandShell(html);
+
+  if (!legacy && !html.includes(CONNECT_ACCESS_REDIRECT_MARKER)) {
+    const compatibility = `<script src="${CONNECT_ACCESS_REDIRECT}" ${CONNECT_ACCESS_REDIRECT_MARKER}></script>`;
+    html = /<\/body\s*>/i.test(html) ? html.replace(/<\/body\s*>/i, `${compatibility}</body>`) : `${html}${compatibility}`;
+  }
 
   if (!html.includes(CONNECT_ANALYTICS_MARKER)) {
     const bootstrap = `<script type="module" src="${CONNECT_ANALYTICS_SCRIPT}" ${CONNECT_ANALYTICS_MARKER}></script>`;
