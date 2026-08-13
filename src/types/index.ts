@@ -1,6 +1,7 @@
 export type VerticalCategory = 
   | 'hero_landing'
   | 'os_command_center'
+  | 'integrations'
   | 'beauty' 
   | 'auto_repair' 
   | 'logistics' 

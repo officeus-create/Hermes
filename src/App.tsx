@@ -8,6 +8,7 @@ import { BrandLogoExplorerModal, LogoConceptId } from './components/BrandLogoExp
 
 import { HeroLandingView } from './views/HeroLandingView';
 import { OSCommandCenterView } from './views/OSCommandCenterView';
+import { IntegrationMarketplaceView } from './views/IntegrationMarketplaceView';
 import { CandidateResumeAuditorView } from './views/CandidateResumeAuditorView';
 import { BeautyWorkspace } from './views/BeautyWorkspace';
 import { AutoRepairWorkspace } from './views/AutoRepairWorkspace';
@@ -59,6 +60,7 @@ export function App() {
   const isFullWidthView = 
     activeVertical === 'hero_landing' || 
     activeVertical === 'os_command_center' ||
+    activeVertical === 'integrations' ||
     activeVertical === 'candidate_auditor' ||
     activeVertical === 'global_network' || 
     activeVertical === 'website_demo';
@@ -81,7 +83,7 @@ export function App() {
       {/* Main Content Layout */}
       <main className="px-4 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Sidebar Area (Hidden on Full-Width Hero Landing, OS Command Center, Candidate Auditor, Global Network & Website Demo views) */}
+          {/* Sidebar Area */}
           {!isFullWidthView && (
             <div className="lg:col-span-3">
               <Sidebar workspace={currentWorkspace} activeRole={activeRole} />
@@ -99,6 +101,10 @@ export function App() {
 
             {activeVertical === 'os_command_center' && (
               <OSCommandCenterView />
+            )}
+
+            {activeVertical === 'integrations' && (
+              <IntegrationMarketplaceView />
             )}
 
             {activeVertical === 'candidate_auditor' && (
