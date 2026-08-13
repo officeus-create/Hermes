@@ -1,0 +1,24 @@
+name: Recheck Connect header production
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/connect-site-shell-recheck.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          node <<'NODE'
+          const target='https://hermeslogisticsus.com/logistics/car-hauling-dispatch/';
+          const href='href="https://connect.hermeslogisticsus.com/"';
+          for(let i=1;i<=12;i++){
+            const r=await fetch(target+'?v='+Date.now(),{headers:{'cache-control':'no-cache'}});
+            const h=await r.text();
+            const n=h.split(href).length-1;
+            if(r.status===200&&n>=2&&h.includes('Hermes Connect')){console.log({ok:true,attempt:i,count:n});process.exit(0)}
+            if(i<12) await new Promise(x=>setTimeout(x,10000));
+          }
+          process.exit(1);
+          NODE
