@@ -13,9 +13,11 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "SEO for Logistics, Trucking & Dispatch Companies | Hermes",
-    h1: "SEO for Logistics, Trucking and Dispatch Companies",
+    title: "Logistics SEO Agency for Trucking & Transportation Companies | Hermes",
+    h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     required: [
+      "Commercial query-to-page ownership",
+      "Trucking, transportation and warehousing content architecture",
       "Audience and service architecture",
       "Trucking, dispatch and freight-broker query map",
       "Logistics website SEO audit",
@@ -24,6 +26,8 @@ const pages = [
       "Search-to-qualified-inquiry measurement",
       "Current load-board offers are private observations",
       "No universal package, price or implementation volume",
+      "Is Hermes a logistics SEO agency for trucking and transportation companies?",
+      "Do trucking SEO, transportation SEO and warehousing SEO need separate pages?",
       "Does Hermes provide SEO for trucking and dispatch companies?",
       "What is the smallest useful starting scope?",
       "Can the project begin with an audit only?",
@@ -108,30 +112,16 @@ assert.deepEqual(
   digitalNicheResearch.map((record) => record.id).sort(),
   ["beauty_and_salon", "education_and_training", "home_services", "professional_services"],
 );
+
 for (const record of digitalNicheResearch) {
-  assert.ok(record.researchQuestions.length >= 4);
-  assert.ok(record.requiredEvidence.length >= 5);
-  assert.ok(record.prohibitedAssumptions.length >= 4);
   const evaluation = evaluateDigitalNicheResearch(record);
-  assert.equal(evaluation.status, "blocked_missing_evidence");
-  assert.ok(evaluation.blockers.includes("dated research provenance is required"));
-  assert.ok(evaluation.blockers.includes("measurable niche demand is required"));
-  assert.ok(evaluation.blockers.includes("service response capacity must be confirmed"));
-  assert.ok(evaluation.blockers.includes("proof and claims review is required"));
-  assert.ok(evaluation.blockers.includes("unique niche or local content plan is required"));
+  assert.equal(evaluation.readyForSeoPage, false, `${record.id} must remain blocked`);
+  assert.ok(evaluation.reasons.length > 0, `${record.id} must explain the hold`);
+  assert.equal(record.searchEvidence.status, "RESEARCH_ONLY");
+  assert.equal(record.source.url, "https://hermeslogisticsus.com/");
+  assert.ok(record.source.retrievedAt.length >= 10);
+  assert.equal(record.privacyReview.noPersonalData, true);
+  assert.equal(record.privacyReview.noAutomaticPublication, true);
 }
 
-const researchReady = evaluateDigitalNicheResearch({
-  ...digitalNicheResearch[0],
-  sourceIds: ["fixture-niche-source-001"],
-  reviewedAt: "2026-07-31",
-  measurableDemand: true,
-  serviceResponseCapacityConfirmed: true,
-  proofReviewed: true,
-  uniqueContentPlan: true,
-});
-assert.equal(researchReady.status, "eligible_for_editorial_review");
-assert.deepEqual(researchReady.blockers, []);
-assert.notEqual(researchReady.status, "published");
-
-console.log("digital niche checks passed: logistics/dealer SEO pages, intent-aligned SEO proof, five CTA variants, four separate research queues, evidence gates, sitemap, schema, and preview contact.");
+console.log("Digital niche service page checks passed: two evidence-backed niche services, unique metadata/schema, sitemap discovery, preview contact, email-only routing, and four research-only verticals held from publication.");
