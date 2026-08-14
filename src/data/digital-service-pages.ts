@@ -18,7 +18,7 @@ export const digitalServicePages: Record<string, DigitalServicePageContent> = {
   websiteDevelopment: {
     slug: "/services/website-development/",
     title: "Website Development Services for U.S. Businesses | Hermes",
-    description: "Custom website development for U.S. businesses, including logistics, trucking, dispatch and freight-broker companies: architecture, responsive engineering, SEO foundations, integrations, qualification and QA.",
+    description: "Website Development Services: High-Converting UX, Technical SEO, Scalable Architecture & Operational Systems. Get Your Free Project Scope & Estimate.",
     eyebrow: "Hermes IT Development · National Service",
     h1: "Custom Website Development for U.S. Businesses",
     intro: "Hermes plans and builds business websites around the company, its customers, and the action each visitor should take. The engagement starts with discovery and information architecture, then moves through responsive design, engineering, technical SEO, qualification, quality assurance, and a controlled release. Logistics, trucking, dispatch, freight-broker, vehicle-transport, dealer and other operational businesses can also separate customer, carrier, quote, apply, partner and resource journeys without exposing private records.",
@@ -73,8 +73,8 @@ export const digitalServicePages: Record<string, DigitalServicePageContent> = {
   },
   websiteRedesign: {
     slug: "/services/website-redesign/",
-    title: "Website Redesign Services | Hermes",
-    description: "Website redesign for U.S. businesses: conversion review, information architecture, responsive UX, content and redirect planning, technical SEO, analytics, QA, and controlled migration.",
+    title: "Website Redesign Services for U.S. Businesses | Hermes",
+    description: "Website Redesign Services: Technical SEO Audits, High-Converting UX, Search Traffic Migration & Controlled Release. Get Your Free Redesign Scope.",
     eyebrow: "Hermes IT Development · National Service",
     h1: "Website Redesign Built Around Business Priorities",
     intro: "A redesign should solve measurable business and customer problems, not only change colors. Hermes reviews the current website, conversion path, content, mobile experience, search foundation, analytics, and technical constraints before proposing a replacement or staged improvement plan.",
@@ -124,7 +124,7 @@ export const digitalServicePages: Record<string, DigitalServicePageContent> = {
   seo: {
     slug: "/services/seo/",
     title: "SEO Services for U.S. Businesses | Hermes",
-    description: "SEO services for U.S. businesses: technical audits, indexability, search-intent mapping, commercial content architecture, internal links, schema, Search Console, GA4, and refresh planning.",
+    description: "SEO Services for U.S. Businesses: Technical Audits, Search Intent Architecture, Schema & Proven Growth System. Get Your Free SEO Scope.",
     eyebrow: "Hermes IT Development · Search Growth",
     h1: "SEO Services Built on Technical Quality and Useful Content",
     intro: "Hermes combines technical SEO, search-intent research, commercial content architecture, internal linking, structured data, measurement, and controlled improvement. The work is tied to real services and customer needs rather than mass-produced pages or ranking promises.",
@@ -174,7 +174,7 @@ export const digitalServicePages: Record<string, DigitalServicePageContent> = {
   localSeo: {
     slug: "/services/local-seo/",
     title: "Local SEO Services for U.S. Businesses | Hermes",
-    description: "Local SEO for eligible U.S. businesses: real service-area research, local intent, Google Business Profile support, location content, schema, internal links, measurement, and review planning.",
+    description: "Local SEO Services: Google Business Profile Optimization, Real Service Area Coverage & High-Intent Local Leads. Get Your Free Local SEO Scope.",
     eyebrow: "Hermes IT Development · Local Search",
     h1: "Local SEO for Real U.S. Service Areas and Customer Needs",
     intro: "Hermes helps eligible businesses organize local search around real locations, service areas, services, customer questions, proof, and conversion paths. Local growth begins with one evidence-backed market and expands only after indexing, engagement, and business relevance are reviewed.",

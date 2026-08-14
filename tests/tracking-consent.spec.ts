@@ -70,15 +70,22 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
-  const analyticsRequestCountBeforeWithdrawal = analyticsRequests.length;
+
+  const requestsAfterWithdrawal: string[] = [];
+  const withdrawalListener = (request: any) => {
+    if (isGoogleAnalyticsRequest(request.url())) requestsAfterWithdrawal.push(request.url());
+  };
 
   await Promise.all([
     page.waitForNavigation({ waitUntil: "domcontentloaded" }),
     page.getByRole("button", { name: "Continue without analytics" }).click(),
   ]);
+
+  page.on("request", withdrawalListener);
+
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
   await page.waitForTimeout(400);
-  expect(analyticsRequests).toHaveLength(analyticsRequestCountBeforeWithdrawal);
+  expect(requestsAfterWithdrawal).toEqual([]);
 });

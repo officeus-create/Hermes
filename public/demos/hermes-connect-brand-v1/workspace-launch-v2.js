@@ -52,6 +52,16 @@
       week: [['MON','13',[['09:00','Brokerage sync','blue'],['11:30','Listing consult',''],['15:00','Property tour','mint']]],['TUE','14',[['10:00','Open-house prep',''],['13:30','Buyer consult','blue'],['17:00','Offer review','mint']]],['WED','15',[['09:30','Listing match','mint'],['12:00','Buyer meeting',''],['16:00','Contract draft','blue']]],['THU','16',[['10:30','New buyer lead',''],['14:30','Inspection demo','blue'],['18:00','Open slot','mint']]],['FRI','17',[['11:30','Tour route','mint'],['14:30','Seller review',''],['16:30','Escrow check','blue']]]],
       kanban: {'New':[['Amanda Lee','$650k','65%'],['David Park','$820k','58%']], 'Qualified':[['Ethan Hunt','$1.25M','84%'],['Claire Lumley','$850k','80%']], 'Proposal':[['Robert Bennett','$1.4M','88%']], 'Closing':[['Victor Stone','$1.1M','95%']]},
       ops: [['⌂','Listing-match simulation','Compare 5 demo listings with buyer needs'],['▣','Tour route demo','Model a four-property tour sequence'],['✦','Lead qualification demo','Score 16 synthetic inquiries'],['$','Escrow milestone demo','Model a deposit milestone']]
+    },
+    auto: {
+      name: 'Apex Auto & Truck Repair', label: 'Truck repair & dispatch partner', revenue: '$18,450', leads: '24', bookings: '9 active bays', actions: '64',
+      summary: 'Demo: Hermes matches heavy diesel and trailer repair inquiries to bay capacity, schedules roadside service, and models corporate offers.',
+      primary: ['TR','Titan Road Services','Outbound · Roadside dispatch','I have a reefer trailer that needs a brake-chamber swap near Chicago. Can you dispatch a service truck?','Demo response: I can prepare a quote ($380-$480) and match it with Trailer Repair Bay 6 for dispatcher confirmation.','Review repair & dispatch package'],
+      conversations: [['TR','Titan Road Services','Reefer trailer brake chamber · Chicago','1m'],['FL','Fleetline Express','Fleet maintenance contract demo','4m'],['DS','D&S Diesel Repair','Parts-supplier API check','8m'],['MM','Mobile Roadside Mechanic','Roadside dispatch confirmation','14m'],['TS','Trailer Supply Co.','Reefer seals restocking order','22m'],['NB','Noah Brown','Inbound trailer alignment lead','31m']],
+      customers: [['TR','Titan Road Services','Active fleet','Today · Phone','$8,400','Confirm trailer repair dispatch'],['FL','Fleetline Express','Enterprise demo','Today · Email','$12,500','Prepare corporate contract draft'],['DS','D&S Diesel Repair','Parts partner','Yesterday · API','$2,400','Check brake chamber stock'],['MM','Mobile Roadside Mechanic','Service partner','Yesterday · SMS','$4,800','Review service-radius bounds'],['TS','Trailer Supply Co.','Vendor partner','2 days ago · Portal','$6,900','Check purchase order draft'],['NB','Noah Brown','Warm lead','12 min ago · Web','$0','Qualify trailer subtype']],
+      week: [['MON','13',[['08:30','Diesel shop sync','blue'],['11:00','Trailer Bay 6 repair',''],['14:30','Roadside dispatch','mint']]],['TUE','14',[['09:30','Brake chamber swap',''],['13:00','Parts supplier check','blue'],['16:30','Fleet PM review','mint']]],['WED','15',[['08:30','Local parts pickup','mint'],['12:00','Titan Road Serv',''],['15:00','Trailer alignment','blue']]],['THU','16',[['10:00','Emergency dispatch',''],['14:00','DEF scan check','blue'],['17:30','Reefer seal install','mint']]],['FRI','17',[['11:00','Capacity optimization','mint'],['14:30','D&S Diesel service',''],['16:30','Weekend emergency line','blue']]]],
+      kanban: {'New':[['Titan Road Services','$4,800','85%'],['Noah Brown','$1,200','62%']], 'Qualified':[['Fleetline Express','$12,500','80%'],['D&S Diesel Repair','$2,400','74%']], 'Proposal':[['Trailer Supply Co.','$6,900','88%']], 'Closing':[['Apex Carrier Services','$16,800','93%']]},
+      ops: [['⌁','Parts inventory API match','Sync 8 brake chambers with suppliers'],['↗','Outbound dispatch route model','Model optimal service truck dispatches'],['!','Low-margin parts alert','Flag 3 parts suppliers below threshold'],['$','Corporate discount audit','Verify 12% discount bracket across 8 carriers']]
     }
   };
 
@@ -82,10 +92,60 @@
     if (conversations) conversations.innerHTML = d.conversations.map(([initials,name,preview,time],i) => `<button class="conversation-card ${i === 0 ? 'active' : ''}" type="button"><span class="conversation-avatar">${initials}</span><div><b>${name}</b><small>${preview}</small></div><em>${time}</em></button>`).join('');
 
     const customers = $('[data-customer-table]');
-    if (customers) customers.innerHTML = d.customers.map(([initials,name,stage,last,value,next]) => `<tr><td><div class="table-person"><span>${initials}</span><b>${name}</b></div></td><td><span class="stage">${stage}</span></td><td>${last}</td><td><b>${value}</b></td><td class="next-action">◇ ${next}</td><td>•••</td></tr>`).join('');
+    if (customers) {
+      let list = d.customers.map(c => [...c, '']); // Pad demo customers with empty vehicle string
+      if (id === 'auto') {
+        try {
+          const stored = localStorage.getItem('hermes_connect_bookings');
+          console.log("LAUNCH-V2 - stored bookings:", stored);
+          if (stored) {
+            const bookings = JSON.parse(stored);
+            console.log("LAUNCH-V2 - parsed bookings:", bookings);
+            const mappedBookings = bookings.map(b => {
+              const initials = b.customer_name ? b.customer_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'BC';
+              const stageText = b.status === 'NEW' ? 'Booked' : b.status === 'CONFIRMED' ? 'Confirmed' : b.status === 'IN_SERVICE' ? 'In Service' : 'Completed';
+              const valueOnly = b.price.split(' ')[0];
+              const nextText = b.status === 'NEW' ? 'Review & confirm time slot' : b.status === 'CONFIRMED' ? 'Prepare bay for check-in' : b.status === 'IN_SERVICE' ? 'Execute service checklist' : 'Archive to service history';
+              const vehicleName = b.vehicle ? `${b.vehicle.year} ${b.vehicle.make} ${b.vehicle.model}` : '';
+              return [initials, b.customer_name, stageText, `${b.date.split(',')[0]} · ${b.time_slot}`, valueOnly, nextText, vehicleName];
+            });
+            console.log("LAUNCH-V2 - mapped bookings:", mappedBookings);
+            list = [...mappedBookings, ...list];
+          }
+        } catch (e) {
+          console.error("LAUNCH-V2 - error parsing bookings:", e);
+        }
+      }
+      console.log("LAUNCH-V2 - final customers list length:", list.length);
+      customers.innerHTML = list.map(([initials,name,stage,last,value,next,vehicle]) => `<tr><td><div class="table-person"><span>${initials}</span><b>${name}</b>${vehicle ? `<small style="display:block; font-size:11px; opacity:0.75; font-weight:normal; margin-top:2px;">${vehicle}</small>` : ''}</div></td><td><span class="stage">${stage}</span></td><td>${last}</td><td><b>${value}</b></td><td class="next-action">◇ ${next}</td><td>•••</td></tr>`).join('');
+    }
 
     const week = $('[data-week-grid]');
-    if (week) week.innerHTML = d.week.map(([day,date,events]) => `<div class="day"><div class="day-head"><b>${day}</b><span>${date}</span></div>${events.map(([time,title,color]) => `<div class="booking ${color}"><small>${time}</small><b>${title}</b></div>`).join('')}</div>`).join('');
+    if (week) {
+      let currentWeek = JSON.parse(JSON.stringify(d.week));
+      if (id === 'auto') {
+        try {
+          const stored = localStorage.getItem('hermes_connect_bookings');
+          if (stored) {
+            const bookings = JSON.parse(stored);
+            bookings.forEach(b => {
+              if (b.status !== 'CANCELLED') {
+                const dayItem = currentWeek.find(day => day[0] === b.date_id);
+                if (dayItem) {
+                  const color = b.status === 'NEW' ? 'mint' : b.status === 'CONFIRMED' ? 'blue' : b.status === 'IN_SERVICE' ? 'purple' : 'completed';
+                  const titleText = `${b.customer_name} (${b.service.split(' ').slice(0, 2).join(' ')})`;
+                  dayItem[2].push([b.time_slot, titleText, color]);
+                  dayItem[2].sort((x, y) => x[0].localeCompare(y[0]));
+                }
+              }
+            });
+          }
+        } catch (e) {
+          console.error("LAUNCH-V2 - error parsing week bookings:", e);
+        }
+      }
+      week.innerHTML = currentWeek.map(([day,date,events]) => `<div class="day"><div class="day-head"><b>${day}</b><span>${date}</span></div>${events.map(([time,title,color]) => `<div class="booking ${color}"><small>${time}</small><b>${title}</b></div>`).join('')}</div>`).join('');
+    }
 
     const kanban = $('[data-sales-kanban]');
     if (kanban) kanban.innerHTML = Object.entries(d.kanban).map(([stage,deals]) => `<div class="kanban-col"><div class="kanban-title"><b>${stage}</b><span>${deals.length}</span></div>${deals.map(([name,value,confidence]) => `<div class="deal-card"><span>DEMO AI CONFIDENCE ${confidence}</span><b>${name}</b><small>${d.label}</small><div class="deal-footer"><strong>${value}</strong><span>◇ Next step ready</span></div></div>`).join('')}</div>`).join('');
@@ -122,5 +182,24 @@
     setTimeout(() => { if (button) button.textContent = 'Send'; }, 1250);
   }));
 
-  render('beauty');
+  const verticalMapLaunch = {
+    logistics: 'logistics',
+    auto_repair: 'auto',
+    auto_service: 'auto',
+    agency: 'agency',
+    beauty: 'beauty',
+    fitness: 'fitness',
+    real_estate: 'realestate',
+    professional_services: 'agency',
+    other: 'logistics'
+  };
+  const storedTypeLaunch = localStorage.getItem('hermes_business_type');
+  const urlParamsLaunch = new URLSearchParams(window.location.search);
+  const typeParamLaunch = urlParamsLaunch.get('business_type');
+  const activeVerticalLaunch = verticalMapLaunch[typeParamLaunch] || verticalMapLaunch[storedTypeLaunch] || 'beauty';
+  if (activeVerticalLaunch === 'auto') {
+    console.log("LAUNCH-V2 - auto vertical detected, bailing out to let workspace.js handle dynamic data.");
+    return;
+  }
+  render(activeVerticalLaunch);
 })();

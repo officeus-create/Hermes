@@ -3,7 +3,7 @@
 > U.S. logistics and internationally coordinated marketing, education, and technology services in one business ecosystem.
 
 - [Canonical Hermes website](https://hermeslogisticsus.com/)
-- Last verified against the public repository: 2026-08-11
+- Last verified against the public repository: 2026-08-13
 
 ## Localized overviews
 
@@ -16,22 +16,66 @@
 
 ## Public business directions
 
-- [Hermes Logistics](https://hermeslogisticsus.com/paths/logistics/) — carrier support, vehicle-transport request coordination, dispatch and back-office preparation, public operating guidance, and role-specific logistics paths.
-- [Car Hauling Dispatch Services](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/) — qualification, carrier-controlled load approval, broker communication, paperwork, invoicing follow-through, equipment fit, and direct dispatch-review preparation.
-- [Direct Vehicle Transport Network](https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/) — explains the reviewed customer/dealer/shipper request → Hermes → carrier-fit workflow and evidence-gated route/service demand development. It is not live load inventory and does not guarantee route pages, rankings, direct loads, capacity, rates, timing, mileage, utilization, customers, or revenue.
-- [Dealer Vehicle Transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/) — dealership, auction, transfer, delivery, multi-vehicle, open, enclosed, and specialty transport-request preparation.
-- [Carrier Knowledge Hub](https://hermeslogisticsus.com/logistics/resources/) — trip-economics and payment-timing tools, dispatch-model comparison, new-authority readiness, broker setup packets, capacity preparation, carrier control, and direct carrier-review next steps.
-- [RPM & Load Profitability Calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/) — free browser-side carrier calculator for loaded RPM, all-mile RPM, fuel, reserve, optional service fees, estimated net before tax, and break-even RPM using user-entered assumptions; no market rate or profit guarantee.
-- [Factoring vs Direct Payment Calculator](https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/) — free browser-side comparison of user-entered invoice fees and expected payment days, showing net cash, retained percentage, timing difference, and arithmetic cost per accelerated day; no financial recommendation or payment guarantee.
-- [Appleton, Wisconsin Vehicle Transport Guide](https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/) — request preparation for dealer, auction, business, private-customer, carrier, and car-hauler needs. Submission does not guarantee price, timing, or carrier availability.
-- [Auction Vehicle Pickup Checklist](https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/) — release, facility access, condition, storage deadline, delivery, and equipment information to prepare before requesting transport.
-- [Car Hauler Capacity Checklist](https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/) — equipment, available spaces, operating area, route, dates, authority, and vehicle-fit information carriers can prepare for review.
-- [Car Hauling Load Board Preview](https://hermeslogisticsus.com/load-board/) — fictional/local demonstration of request validation and dry-run routing. It does not publish a load, notify a carrier, create an account, confirm capacity, or make a booking.
-- [ProgressoPro Marketing](https://hermeslogisticsus.com/paths/marketing/) — positioning, content, social media, lead generation, sales workflow, SEO, Local SEO, and marketing automation.
-- [SEO Services](https://hermeslogisticsus.com/services/seo/) — structured SEO project review for eligible U.S. businesses, with separate Local SEO, logistics SEO, and independent auto-dealer SEO intent owners.
-- [Hermes Business Academy](https://hermeslogisticsus.com/paths/academy/) — practical logistics, marketing, and operational leadership education. Participation and employment are not guaranteed.
-- [Hermes IT Development](https://hermeslogisticsus.com/paths/technology/) — websites, redesign, CRM systems, AI-assisted workflows, automation, and connected business platforms.
-- [Hermes Connect](https://hermeslogisticsus.com/services/hermes-connect/) — iterative connected-workflow product direction across application, web experience, website integration, and promotion.
+The Hermes ecosystem operates across four interconnected core business pillars:
+
+### 1. Hermes Logistics
+Specialized U.S. logistics services, carrier dispatch coordination, direct vehicle transport network, and freight capacity management across four key equipment modalities:
+- **Car Hauling**: Dedicated open, enclosed, multi-car, inoperable, auction pickup, dealer transport, luxury/classic vehicle transport, and new-authority car hauler support.
+- **Hotshot**: Expedited freight, time-critical freight delivery, and medium-duty truck-and-trailer dispatch support.
+- **Box Truck**: 26 ft box truck freight, regional distribution, liftgate pickup/delivery, and LTL/FTL cargo solutions.
+- **Reefer**: Temperature-controlled cargo logistics, cold-chain transport management, and perishable freight dispatch.
+
+Canonical Logistics Links:
+- [Hermes Logistics Main Path](https://hermeslogisticsus.com/paths/logistics/) — comprehensive carrier dispatch, vehicle-transport coordination, and role-specific logistics workflows.
+- [Car Hauling Dispatch Services](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/) — carrier qualification, load approval, broker communication, rate negotiation, paperwork handling, invoicing, and equipment fit.
+- [Direct Vehicle Transport Network](https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/) — reviewed customer/dealer/shipper request routing through verified carrier networks and evidence-gated route demand development. It is not live load inventory and does not guarantee route pages, rankings, direct loads, capacity, rates, timing, mileage, utilization, customers, or revenue.
+- [Dealer Vehicle Transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/) — dealership transfers, auction pickups, multi-vehicle transport, open/enclosed shipping, and specialty vehicle delivery.
+- [Carrier Knowledge Hub & Resources](https://hermeslogisticsus.com/logistics/resources/) — trip-economics, dispatch model comparisons, broker setup packet checklists, and authority readiness tools.
+- [RPM & Load Profitability Calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/) — free browser-side calculator for loaded RPM, all-mile RPM, fuel expenses, and break-even analysis.
+- [Factoring vs Direct Payment Calculator](https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/) — cash-flow comparison tool evaluating invoice acceleration fees against standard payment terms.
+- [Appleton, Wisconsin Vehicle Transport Guide](https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/) — regional vehicle transport request preparation for dealers, auctions, businesses, and private owners in Northeast Wisconsin.
+
+### 2. Hermes Connect (Interactive Load Board & AI Brain)
+Iterative connected-workflow product direction combining load intelligence, interactive load board dry-run evaluation, AI routing analytics, and revenue management:
+- **Interactive Load Board Preview**: Interactive dry-run load evaluation and request validation interface for carriers, shippers, and brokers.
+- **AI Brain & Load Analytics**: Loaded vs. all-mile RPM calculation, fuel cost estimation, trip economics, multi-car vehicle fit planning, and regional market opportunity radar.
+
+Canonical Hermes Connect Links & Key Demos:
+- [Hermes Connect Service Hub](https://hermeslogisticsus.com/services/hermes-connect/) — core product vision, application architecture, and connected workspace integrations.
+- [Car Hauling Load Board Preview](https://hermeslogisticsus.com/load-board/) — fictional/local demonstration of request validation, dry-run routing, and load evaluation.
+- [Hermes Connect Interactive AI Demos](https://hermeslogisticsus.com/demos/hermes-connect/) — full suite of connected web applications, AI tools, and logistics workspace prototypes.
+- [Load Analyzer Demo](https://hermeslogisticsus.com/demos/hermes-connect/load-analyzer/) — interactive trip-economics analyzer for calculating loaded/all-mile RPM, fuel cost, and net margins.
+- [Search Opportunity Radar Demo](https://hermeslogisticsus.com/demos/hermes-connect/search-opportunity-radar/) — regional freight demand and high-intent search corridor visualization tool.
+- [Multi-Car Planner Demo](https://hermeslogisticsus.com/demos/hermes-connect/multi-car-planner/) — space optimization and trailer load planning calculator for car haulers.
+- [Revenue Dashboard Demo](https://hermeslogisticsus.com/demos/hermes-connect/revenue-dashboard/) — carrier analytics, weekly revenue performance, and cash-flow reporting interface.
+
+### 3. ProgressoPro (Digital Marketing & SEO)
+Full-service digital marketing agency, growth operating systems, brand positioning, search engine optimization (SEO), Local SEO, and marketing automation:
+- **SEO & Search Visibility**: Technical SEO audits, content architecture, keyword strategy, and conversion rate optimization for U.S. and international businesses.
+- **Specialized Industry SEO**: Dedicated search strategies tailored for logistics companies, freight brokers, and independent auto dealers.
+- **Local SEO & Marketing Automation**: Geo-targeted search optimization, Google Business Profile strategy, automated audit pipelines, and lead generation workflows.
+
+Canonical ProgressoPro Links & Key Demos:
+- [ProgressoPro Marketing Main Path](https://hermeslogisticsus.com/paths/marketing/) — positioning, social media strategy, lead generation systems, SEO, and marketing automation.
+- [SEO Services Hub](https://hermeslogisticsus.com/services/seo/) — structured technical and strategic SEO project execution for growing businesses.
+- [Local SEO Services](https://hermeslogisticsus.com/services/local-seo/) — local search optimization and high-intent local customer acquisition strategies.
+- [SEO for Logistics Companies](https://hermeslogisticsus.com/services/seo-for-logistics-companies/) — specialized organic search strategy for carriers, freight brokers, and logistics providers.
+- [SEO for Independent Auto Dealers](https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/) — vehicle inventory visibility, local dealer buyer intent, and dealership lead generation SEO.
+- [Automated Website Audit Demo](https://hermeslogisticsus.com/demos/website-audit/) — interactive technical SEO audit and website performance analyzer tool.
+
+### 4. Academy & IT Development
+Educational programs and custom technology engineering powering the Hermes ecosystem:
+- **Hermes Business Academy**: Practical logistics operations, marketing execution, and operational leadership (COO / Operational Director) education. Interactive training environment preparing professionals for real-world dispatch and business management.
+- **Hermes IT Development**: Custom software engineering, company website redesigns, CRM systems, AI-assisted workflows, and connected business platforms.
+
+Canonical Academy & IT Development Links & Key Demos:
+- [Hermes Business Academy Main Path](https://hermeslogisticsus.com/paths/academy/) — operational leadership, logistics training, and practical business education.
+- [U.S. Logistics Operations Program](https://hermeslogisticsus.com/academy/us-logistics-operations/) — hands-on freight dispatch, carrier management, and broker workflow curriculum.
+- [Hermes IT Development Main Path](https://hermeslogisticsus.com/paths/technology/) — custom web applications, CRM systems, AI automation, and digital company infrastructure.
+- [Website Development Services](https://hermeslogisticsus.com/services/website-development/) — modern high-performance website engineering and digital platform building.
+- [Website Redesign Services](https://hermeslogisticsus.com/services/website-redesign/) — interface modernization, SEO restructuring, and conversion system upgrades.
+- [Hermes Corporate Website Case Study](https://hermeslogisticsus.com/case/it-development/) — engineering strategy, design system, responsive architecture, and production delivery.
+- [CRM Validation Demo](https://hermeslogisticsus.com/demos/crm-validation/) — interactive prototype of candidate validation, customer management, and CRM workflow.
 
 ## Public evidence and useful resources
 
@@ -54,7 +98,7 @@
 - Direct intake workflows may prepare a local review preview and an explicit handoff. Delivery is considered confirmed only when the approved receiver reports success; submission alone is not a qualified inquiry, acceptance, booking, account, dispatcher assignment, or contract.
 - Verified internal operating history may identify route/service research candidates, but private carrier/customer/shipment rows are never automatically published. Every route/location page requires a separate human-reviewed publication decision and evidence/usefulness/privacy checks.
 - The carrier onboarding workflow can create a signed review/onboarding PDF packet. Final legal agreement execution is not represented as active until Hermes publishes an approved immutable master agreement with matching terms and completes the production execution gates.
-- The Load Board is a fictional preview and must not be cited as live load inventory, carrier capacity, external synchronization, or a commercial intake.
+- The Load Board is a fictional/local demonstration and must not be cited as live load inventory, carrier capacity, external synchronization, or a commercial intake.
 - Public performance claims, fleet counts, student counts, reviews, case outcomes, rankings, traffic, leads, contracts, and revenue are not published as verified without supporting evidence and permission.
 - Internal systems, employee-only processes, credentials, private contracts, candidate data, customer or carrier records, shipment details, payment information, and infrastructure secrets are not part of the public website.
 - No public page guarantees loads, rates, lanes, mileage, utilization, carrier availability, pickup or delivery timing, rankings, traffic, employment, customers, profit, or revenue.

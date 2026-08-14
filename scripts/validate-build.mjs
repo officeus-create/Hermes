@@ -470,6 +470,19 @@ for (const [pageName, pageHtml] of generatedPages) {
     if (!href || href.startsWith("#") || /^(mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
     const target = new URL(href, pageUrl);
     if (target.hostname !== "hermeslogisticsus.com") continue;
+
+    // Check if it's a direct file that exists in the dist directory (e.g., .apk, .pdf)
+    const distFilePath = join(dist, target.pathname);
+    let fileExists = false;
+    try {
+      const stats = await stat(distFilePath);
+      if (stats.isFile()) {
+        fileExists = true;
+      }
+    } catch {}
+
+    if (fileExists) continue;
+
     const targetPath = target.pathname.endsWith("/")
       ? target.pathname
       : target.pathname.endsWith(".html")

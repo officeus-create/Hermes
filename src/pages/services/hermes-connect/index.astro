@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, CalendarDays, Check, Globe, LayoutDashboard, MessageSquareText, ShieldCheck, Sparkles, UsersRound } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
@@ -187,6 +188,49 @@ import "../../../styles/features/hermes-connect-faq.css";
       </div>
     </section>
 
+    <section class="section connect-service-feature-modules" aria-labelledby="connect-features-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Interactive Modules &amp; Tools</p><h2 id="connect-features-title">Explore Hermes Connect Specialized Feature Tools</h2></div>
+          <p>Deep-dive into each specialized module built into our responsive Public Beta Web App.</p>
+        </div>
+        <div class="connect-service-capability-grid">
+          <article>
+            <h3><a href="/services/hermes-connect/ai-command-center/">AI Command Center &rarr;</a></h3>
+            <p>Automated lead classification, intent scoring, and real-time operational task queue.</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/unified-inbox/">Unified Command Inbox &rarr;</a></h3>
+            <p>Single multi-channel client inbox with status lifecycle management (NEW, QUALIFIED, PROPOSAL_SENT).</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/load-analyzer/">B2B Freight Load Analyzer &rarr;</a></h3>
+            <p>Interactive profit calculator computing Rate-Per-Mile (RPM), fuel costs, and net margin %.</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/rate-negotiator/">AI Rate Negotiator &rarr;</a></h3>
+            <p>Professional broker counter-offer message builder for dispatchers and freight operators.</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/proposal-builder/">Instant Proposal Builder &rarr;</a></h3>
+            <p>Itemized commercial quote and contract proposal generator with HTML/PDF export.</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/roi-calculator/">Business ROI Calculator &rarr;</a></h3>
+            <p>Interactive financial modeling tool projecting staff hours saved and recovered revenue.</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/business-automation/">Multi-Vertical Automation &rarr;</a></h3>
+            <p>Tailored intake and workflow automation engines for 7 service industry verticals.</p>
+          </article>
+          <article>
+            <h3><a href="/services/hermes-connect/repair-shops/">Repair Shop Partner Beta &rarr;</a></h3>
+            <p>On-demand roadside service dispatch, shop bay capacity management, and corporate partner offers.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section connect-service-categories" id="categories" aria-labelledby="connect-categories-title">
       <div class="shell">
         <div class="section-heading split-heading">
@@ -204,7 +248,7 @@ import "../../../styles/features/hermes-connect-faq.css";
           ))}
         </div>
         <p class="connect-service-category-note">
-          <strong>Beauty and wellness is the first category in active development.</strong> Hermes Connect is being built as an independently operated platform around controlled service-business workflows, clear client handoffs, and reviewable product releases.
+          <strong>Repair Shops and Commercial Truck Repair is our first focused outbound commercial pilot.</strong> Beauty, fitness, and other service categories remain supported Beta verticals. Hermes Connect is being built as an independently operated platform around controlled service-business workflows, clear client handoffs, and reviewable product releases.
         </p>
       </div>
     </section>
@@ -243,6 +287,8 @@ import "../../../styles/features/hermes-connect-faq.css";
       </div>
     </section>
 
+    <HermesConnectLauncher variant="banner" context="general" />
+
     <section class="connect-service-final" aria-labelledby="connect-final-title">
       <div class="shell connect-service-final-grid">
         <div>
@@ -250,7 +296,7 @@ import "../../../styles/features/hermes-connect-faq.css";
           <h2 id="connect-final-title">Choose your category and show us the client workflow that matters most.</h2>
           <p>The access request does not create an account, booking, payment, or subscription automatically. Hermes reviews the request before sending access instructions.</p>
         </div>
-        <a class="button button-primary" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={18} aria-hidden="true" /></a>
+        <HermesConnectLauncher variant="inline" href="https://connect.hermeslogisticsus.com/#apply" label="Request Web App access" />
       </div>
     </section>
   </main>

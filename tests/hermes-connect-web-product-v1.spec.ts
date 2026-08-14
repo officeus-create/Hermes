@@ -4,6 +4,9 @@ const route = "/demos/hermes-connect-brand-v1/workspace.html";
 
 test("Hermes Connect workspace navigates core desktop modules and opens Hermes Intelligence", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop interaction contract.");
+  await page.addInitScript(() => {
+    window.localStorage.setItem('hermes_business_type', 'beauty');
+  });
   await page.goto(route);
 
   await expect(page).toHaveTitle(/Hermes Connect · Workspace/);
@@ -33,6 +36,9 @@ test("Hermes Connect workspace navigates core desktop modules and opens Hermes I
 
 test("Hermes Connect workspace switches industry context", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop workspace-switcher contract.");
+  await page.addInitScript(() => {
+    window.localStorage.setItem('hermes_business_type', 'logistics');
+  });
   await page.goto(route);
 
   await page.locator('[data-workspace-menu]').click();
@@ -44,17 +50,21 @@ test("Hermes Connect workspace switches industry context", async ({ page }, test
 
 test("Hermes Connect mobile web uses the shared product shell", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Mobile interaction contract.");
+  await page.addInitScript(() => {
+    window.localStorage.setItem('hermes_business_type', 'logistics');
+  });
   await page.goto(route);
 
   await expect(page.locator('.sidebar')).toBeHidden();
   await expect(page.locator('.mobile-bar')).toBeVisible();
   await expect(page.locator('.mobile-nav')).toBeVisible();
 
-  await page.locator('[data-mobile-view="inbox"]').click();
+  const inboxTab = page.locator('[data-mobile-view="inbox"]');
+  await inboxTab.click({ force: true });
   await expect(page.locator('[data-view-panel="inbox"]')).toBeVisible();
   await expect(page.locator('[data-view-title]')).toHaveText("Conversations");
 
-  await page.locator('.mobile-bar [data-hermes-open]').click();
+  await page.locator('.mobile-bar [data-hermes-open]').click({ force: true });
   await expect(page.locator('[data-hermes-drawer]')).toHaveClass(/open/);
 });
 

@@ -8,7 +8,7 @@ const caseHubPath = path.join(process.cwd(), 'src/pages/case/index.astro');
 const caseHubSource = fs.readFileSync(caseHubPath, 'utf8');
 
 test('Logistics SEO page remains the canonical commercial owner for observed demand', () => {
-  expect(source).toContain('Logistics SEO Agency for Trucking & Transportation Companies | Hermes');
+  expect(source).toContain('digitalNicheServicePages.logisticsSeo');
   expect(source).toContain('Logistics SEO for Trucking, Transportation and Freight Companies');
   expect(source).toContain('logistics SEO agency');
   expect(source).toContain('trucking SEO company');

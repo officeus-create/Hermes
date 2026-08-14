@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#0B0D12">
-  <meta name="description" content="Hermes Connect interactive web product prototype.">
+  <meta name="description" content="Hermes Connect interactive web workspace for AI Operating System management.">
   <title>Hermes Connect · Workspace</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hermes Connect">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="stylesheet" href="./workspace.css">
   <link rel="stylesheet" href="./workspace-launch-v2.css">
 </head>
@@ -28,24 +35,703 @@
     </aside>
     <div class="mobile-bar"><div class="brand-row compact"><svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true"><path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#9D88FF" stroke-width="5" stroke-linecap="round"/></svg><strong>Hermes Connect</strong></div><button type="button" data-hermes-open>✦ Ask Hermes</button></div>
     <main class="main-area">
-      <header class="topbar"><div><p class="context-label" data-view-kicker>BUSINESS OVERVIEW</p><h1 data-view-title>Good morning, Vladimir.</h1></div><div class="top-actions"><div class="demo-pill"><span></span> Visual prototype</div><button class="icon-button" type="button">⌕</button><button class="avatar-button" type="button">VV</button></div></header>
-      <section class="view active" data-view-panel="home"><div class="hero-grid"><article class="hero-intelligence"><div class="wave-field" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="hero-intelligence-top"><div><small>Hermes Intelligence</small><h2>Your business is moving.</h2><p data-ai-summary-text>Demo: Hermes identifies booking gaps, warm leads, retention opportunities and owner approvals.</p></div><span class="active-chip">● Demo</span></div><div class="hero-intelligence-actions"><button type="button" data-hermes-open>Ask what matters →</button><button type="button" data-view-jump="operations">Review approvals</button></div></article><article class="focus-card"><small>OWNER FOCUS · DEMO</small><h3>3 things need you today</h3><div class="focus-row"><span>01</span><div><b>Approve pricing exception</b><small>Demo projected value $1,280</small></div><button type="button">Review</button></div><div class="focus-row"><span>02</span><div><b>Choose campaign creative</b><small>Simulated recommendation: Variant B</small></div><button type="button">Open</button></div><div class="focus-row"><span>03</span><div><b>Reply to VIP client</b><small>Demo draft prepared</small></div><button type="button">Send</button></div></article></div><div class="metric-grid"><article><span>Revenue today</span><strong data-kpi="revenue">$2,840</strong><small>Demo data</small></article><article><span>New leads</span><strong data-kpi="leads">18</strong><small>Demo leads</small></article><article><span>Bookings / deals</span><strong data-kpi="bookings">24</strong><small>Demo flow</small></article><article><span>AI actions</span><strong data-kpi="actions">43</strong><small>Demo activity</small></article></div><div class="content-grid two-thirds"><article class="panel activity-panel"><div class="panel-head"><div><small>SIMULATED ACTIVITY</small><h3>What Hermes can do</h3></div><button type="button" data-view-jump="operations">View all</button></div><div class="activity-list" data-activity-list></div></article><article class="panel pipeline-mini"><div class="panel-head"><div><small>CUSTOMER FLOW</small><h3>Signal → Revenue</h3></div><span class="live-dot">● Demo</span></div><div class="flow-visual"><div><i>◎</i><b>Lead</b><small>18</small></div><span>→</span><div><i>✦</i><b>Qualified</b><small>11</small></div><span>→</span><div><i>▣</i><b>Booked</b><small>7</small></div><span>→</span><div><i>$</i><b>Paid</b><small>5</small></div></div><div class="opportunity"><span>✦</span><div><b>Hermes found $1,850 in simulated recoverable opportunity</b><small>7 demo conversations have no next step.</small></div><button type="button" data-view-jump="sales">Recover</button></div></article></div></section>
-      <section class="view" data-view-panel="inbox"><div class="split-layout inbox-layout"><article class="panel conversation-list-panel"><div class="panel-head"><div><small>UNIFIED INBOX · DEMO</small><h3>All conversations</h3></div><button class="compact-button" type="button">+ New</button></div><div class="filter-chips"><button class="active">All</button><button>Needs reply</button><button>VIP</button><button>AI handled</button></div><div class="conversation-list" data-conversation-list></div></article><article class="panel conversation-panel"><div class="conversation-header"><div><span class="contact-avatar">AM</span><div><b>Anna Martinez</b><small>Instagram · Beauty consultation</small></div></div><button type="button">•••</button></div><div class="conversation-thread"><div class="message customer">Hi! Do you have anything available Friday afternoon?</div><div class="message ai"><small>✦ Hermes · Simulated AI</small>Demo response prepared for review.</div></div><div class="suggested-action"><span>✦</span><div><b>Suggested next action</b><small>Demo: prepare booking + deposit request.</small></div><button type="button">Approve</button></div><form class="composer" data-demo-form><input aria-label="Reply" placeholder="Reply or ask Hermes to draft…"><button type="submit">Send</button></form></article></div></section>
+      <header class="topbar"><div><p class="context-label" data-view-kicker>BUSINESS OVERVIEW</p><h1 data-view-title>Good morning, Vladimir.</h1></div><div class="top-actions"><button class="roi-calc-btn demo-tour-btn" type="button" data-open-roi-modal style="background: linear-gradient(135deg, #7C5CFF, #5AC8FA); color:#fff; border:0;">📊 ROI Calculator</button><button class="primary-small request-access-btn" type="button" data-request-access>Request Access / Schedule Demo</button><button class="demo-tour-btn" type="button" data-demo-tour>▶ 5-Min Tour</button><select class="topbar-select" data-role-select aria-label="Role selector"><option value="owner">Role: Owner</option><option value="staff">Role: Staff</option><option value="client">Role: Client</option></select><select class="topbar-select" data-lang-select aria-label="Language selector"><option value="en">🇺🇸 EN (English)</option><option value="uk">🇺🇦 UK (Українська)</option><option value="ru">🇷🇺 RU (Русский)</option><option value="es">🇪🇸 ES (Español)</option><option value="fr">🇫🇷 FR (Français)</option><option value="vi">🇻🇳 VI (Tiếng Việt)</option><option value="fil">🇵🇭 FIL (Filipino)</option><option value="id">🇮🇩 ID (Bahasa Indonesia)</option></select><div class="demo-pill"><span></span>Visual prototype</div><button class="icon-button" type="button">⌕</button><button class="avatar-button" type="button">VV</button></div></header>
+      <section class="view active" data-view-panel="home"><div class="hero-grid"><article class="hero-intelligence"><div class="wave-field" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="hero-intelligence-top"><div><small>Hermes Intelligence</small><h2>Your business is moving.</h2><p data-ai-summary-text>Demo: Hermes identifies booking gaps, warm leads, retention opportunities and owner approvals.</p></div><span class="active-chip">● Demo</span></div><div class="hero-intelligence-actions"><button type="button" class="request-access-btn" data-request-access>Request Access / Schedule Demo →</button><button type="button" data-hermes-open>Ask what matters →</button><button type="button" data-view-jump="operations">Review approvals</button></div></article><article class="focus-card"><small>OWNER FOCUS · DEMO</small><h3>3 things need you today</h3><div class="focus-row"><span>01</span><div><b>Approve pricing exception</b><small>Demo projected value $1,280</small></div><button type="button">Review</button></div><div class="focus-row"><span>02</span><div><b>Choose campaign creative</b><small>Simulated recommendation: Variant B</small></div><button type="button">Open</button></div><div class="focus-row"><span>03</span><div><b>Reply to VIP client</b><small>Demo draft prepared</small></div><button type="button">Send</button></div></article></div><div class="metric-grid"><article><span>Revenue today</span><strong data-kpi="revenue">$2,840</strong><small>Demo data</small></article><article><span>New leads</span><strong data-kpi="leads">18</strong><small>Demo leads</small></article><article><span>Bookings / deals</span><strong data-kpi="bookings">24</strong><small>Demo flow</small></article><article><span>AI actions</span><strong data-kpi="actions">43</strong><small>Demo activity</small></article></div><div class="content-grid two-thirds"><article class="panel activity-panel"><div class="panel-head"><div><small>SIMULATED ACTIVITY</small><h3>What Hermes can do</h3></div><button type="button" data-view-jump="operations">View all</button></div><div class="activity-list" data-activity-list></div></article><article class="panel pipeline-mini"><div class="panel-head"><div><small>CUSTOMER FLOW</small><h3>Signal → Revenue</h3></div><span class="live-dot">● Demo</span></div><div class="flow-visual"><div><i>◎</i><b>Lead</b><small>18</small></div><span>→</span><div><i>✦</i><b>Qualified</b><small>11</small></div><span>→</span><div><i>▣</i><b>Booked</b><small>7</small></div><span>→</span><div><i>$</i><b>Paid</b><small>5</small></div></div><div class="opportunity"><span>✦</span><div><b>Hermes found $1,850 in simulated recoverable opportunity</b><small>7 demo conversations have no next step.</small></div><button type="button" data-view-jump="sales">Recover</button></div></article>
+<!-- [NEW] Logistics Corporate Offer Panel -->
+<article class="panel corporate-offer-panel" data-corporate-offer-panel style="display:none; grid-column: span 2; margin-top: 14px;">
+  <div class="panel-head">
+    <div>
+      <small style="color:var(--violet);">◇ HERMES LOGISTICS · FLEET PARTNERSHIP</small>
+      <h3 style="margin-top: 4px;">Corporate Partner Offer Workflow</h3>
+      <p style="font-size: 11px; color: var(--muted-2); margin-top: 4px;">Track, submit, and simulate contract discount terms and service-area rates with Hermes Logistics fleet managers.</p>
+    </div>
+    <span class="active-chip" style="color: var(--violet); background: rgba(124,92,255,0.08); border-color: rgba(124,92,255,0.18);">Simulated Integration</span>
+  </div>
+
+  <div style="background: rgba(217, 154, 61, 0.08); border-left: 3px solid var(--amber); border-radius: 8px; padding: 10px 14px; margin-bottom: 18px; font-size: 10px; line-height: 1.5; color: #b37a2b;">
+    <strong>⚠️ Commission policy: NOT YET FINALIZED.</strong> All rates, referral splits, and volume percentages displayed are for simulator verification and beta piloting purposes only.
+  </div>
+
+  <!-- Status Lifecycle Tracker -->
+  <div style="margin-bottom: 20px;">
+    <small style="display:block; margin-bottom: 8px; font-weight: 800; font-size: 9px; letter-spacing: 0.05em; color: var(--muted);">PARTNERSHIP LIFECYCLE STATUS</small>
+    <div class="lifecycle-tracker" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); border: 1px solid var(--line); border-radius: 12px; padding: 12px; overflow-x: auto; gap: 8px;">
+      <div class="lifecycle-step active" data-step="REGISTERED" style="display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; min-width: 70px;">
+        <span class="step-dot" style="width: 16px; height: 16px; border-radius: 50%; background: var(--violet); border: 3px solid #fff; box-shadow: 0 0 0 2px var(--violet); display: block; margin-bottom: 6px; transition: all var(--ease);"></span>
+        <b style="font-size: 8px; color: var(--ink);">Registered</b>
+      </div>
+      <div style="height: 2px; background: var(--line); flex: 1; min-width: 10px; margin-top: -12px;" data-line="OFFER_DRAFT"></div>
+      <div class="lifecycle-step" data-step="OFFER_DRAFT" style="display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; min-width: 70px;">
+        <span class="step-dot" style="width: 16px; height: 16px; border-radius: 50%; background: #AFB2BA; border: 3px solid #fff; box-shadow: 0 0 0 2px #AFB2BA; display: block; margin-bottom: 6px; transition: all var(--ease);"></span>
+        <b style="font-size: 8px; color: var(--muted-2);">Draft Offer</b>
+      </div>
+      <div style="height: 2px; background: var(--line); flex: 1; min-width: 10px; margin-top: -12px;" data-line="OFFER_SUBMITTED"></div>
+      <div class="lifecycle-step" data-step="OFFER_SUBMITTED" style="display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; min-width: 70px;">
+        <span class="step-dot" style="width: 16px; height: 16px; border-radius: 50%; background: #AFB2BA; border: 3px solid #fff; box-shadow: 0 0 0 2px #AFB2BA; display: block; margin-bottom: 6px; transition: all var(--ease);"></span>
+        <b style="font-size: 8px; color: var(--muted-2);">Submitted</b>
+      </div>
+      <div style="height: 2px; background: var(--line); flex: 1; min-width: 10px; margin-top: -12px;" data-line="UNDER_REVIEW"></div>
+      <div class="lifecycle-step" data-step="UNDER_REVIEW" style="display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; min-width: 70px;">
+        <span class="step-dot" style="width: 16px; height: 16px; border-radius: 50%; background: #AFB2BA; border: 3px solid #fff; box-shadow: 0 0 0 2px #AFB2BA; display: block; margin-bottom: 6px; transition: all var(--ease);"></span>
+        <b style="font-size: 8px; color: var(--muted-2);">Under Review</b>
+      </div>
+      <div style="height: 2px; background: var(--line); flex: 1; min-width: 10px; margin-top: -12px;" data-line="APPROVED_PARTNER"></div>
+      <div class="lifecycle-step" data-step="APPROVED_PARTNER" style="display: flex; flex-direction: column; align-items: center; text-align: center; flex: 1; min-width: 70px;">
+        <span class="step-dot" style="width: 16px; height: 16px; border-radius: 50%; background: #AFB2BA; border: 3px solid #fff; box-shadow: 0 0 0 2px #AFB2BA; display: block; margin-bottom: 6px; transition: all var(--ease);"></span>
+        <b style="font-size: 8px; color: var(--muted-2);">Approved</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Form Inputs -->
+  <div id="corporate-offer-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+    <div>
+      <label style="display:block; font-size: 8px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom: 4px;">Preferred Fleet Discount %</label>
+      <select id="offer-discount" class="topbar-select" style="width: 100%; height: 38px; border-radius: 10px; font-size: 9px; padding: 0 10px; background:#fff; border: 1px solid var(--line);" required>
+        <option value="10">10% standard partner discount</option>
+        <option value="12">12% priority fleet discount</option>
+        <option value="15">15% premium high-volume discount</option>
+        <option value="20">20% exclusive diamond tier discount</option>
+      </select>
+    </div>
+    
+    <div>
+      <label style="display:block; font-size: 8px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom: 4px;">Payment Terms Requested</label>
+      <select id="offer-terms" class="topbar-select" style="width: 100%; height: 38px; border-radius: 10px; font-size: 9px; padding: 0 10px; background:#fff; border: 1px solid var(--line);" required>
+        <option value="Net 30">Net 30 standard invoicing</option>
+        <option value="Net 15">Net 15 expedited billing</option>
+        <option value="QuickPay">QuickPay (1.5% processing split)</option>
+        <option value="COD">COD instant release payment</option>
+      </select>
+    </div>
+
+    <div style="grid-column: span 2;">
+      <label style="display:block; font-size: 8px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom: 4px;">Primary Service Equipment & Logistics Focus</label>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; padding: 8px; background: rgba(255,255,255,0.5); border: 1px solid var(--line); border-radius: 10px;">
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="car_hauler" checked style="accent-color: var(--violet);"> Car Hauler
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="dry_van" checked style="accent-color: var(--violet);"> Dry Van
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="reefer" style="accent-color: var(--violet);"> Reefer
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="flatbed" checked style="accent-color: var(--violet);"> Flatbed
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="step_deck" style="accent-color: var(--violet);"> Step Deck
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="power_only" style="accent-color: var(--violet);"> Power Only
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="hotshot" style="accent-color: var(--violet);"> Hotshot
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="box_truck" style="accent-color: var(--violet);"> Box Truck
+        </label>
+        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 9px; padding: 4px 8px; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer;">
+          <input type="checkbox" name="equipment" value="diesel_repair" checked style="accent-color: var(--violet);"> Truck & Trailer Repair
+        </label>
+      </div>
+    </div>
+
+    <div>
+      <label style="display:block; font-size: 8px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); margin-bottom: 4px;">Authorized Service Radius</label>
+      <select id="offer-radius" class="topbar-select" style="width: 100%; height: 38px; border-radius: 10px; font-size: 9px; padding: 0 10px; background:#fff; border: 1px solid var(--line);" required>
+        <option value="25">Within 25 miles of shop</option>
+        <option value="50">Within 50 miles of shop</option>
+        <option value="100">Within 100 miles of shop</option>
+        <option value="statewide">Statewide coverage zone</option>
+        <option value="regional">Multi-state regional routing</option>
+        <option value="national">National breakdown support network</option>
+      </select>
+    </div>
+
+    <div style="display: flex; align-items: flex-end; gap: 8px;">
+      <button type="button" id="save-offer-draft" class="secondary-action" style="flex: 1; height: 38px; font-weight: 800; font-size: 9px;">Save Draft Terms</button>
+      <button type="button" id="submit-corporate-offer" class="primary-small" style="flex: 1; height: 38px; background: var(--violet); color:#fff; border: 0; font-weight: 800; font-size: 9px;">Submit Corporate Offer</button>
+    </div>
+  </div>
+</article>
+</div></section>
+      <section class="view" data-view-panel="inbox"><div class="split-layout inbox-layout"><article class="panel conversation-list-panel"><div class="panel-head"><div><small>COMMAND CENTER INBOX</small><h3>Unified Lead Inbox</h3></div><button class="compact-button" type="button" data-open-lead-modal>+ New Lead</button></div><div class="filter-chips" data-inbox-filters><button class="active" data-status-filter="ALL">All</button><button data-status-filter="NEW">New</button><button data-status-filter="QUALIFIED">Qualified</button><button data-status-filter="PROPOSAL_READY">Proposal Ready</button></div><div class="conversation-list" data-conversation-list data-inbox-list></div></article><article class="panel conversation-panel" data-inbox-panel><div class="conversation-header" data-inbox-header><div><span class="contact-avatar">AM</span><div><b>Anna Martinez</b><small>Instagram · Beauty consultation</small></div></div><button type="button">•••</button></div><div class="conversation-thread" data-inbox-thread><div class="message customer">Hi! Do you have anything available Friday afternoon?</div><div class="message ai"><small>✦ Hermes · Simulated AI</small>Demo response prepared for review.</div></div><div class="suggested-action" data-inbox-suggested><span>✦</span><div><b>Suggested next action</b><small>Demo: prepare booking + deposit request.</small></div><button type="button">Approve</button></div><form class="composer" data-demo-form><input aria-label="Reply" placeholder="Reply or ask Hermes to draft…"><button type="submit">Send</button></form></article></div></section>
       <section class="view" data-view-panel="crm"><div class="metric-grid compact-metrics"><article><span>Total customers</span><strong>1,284</strong><small>Demo dataset</small></article><article><span>VIP</span><strong>86</strong><small>Simulated LTV</small></article><article><span>At risk</span><strong>37</strong><small class="warning">Demo signal</small></article><article><span>Reactivated</span><strong>22</strong><small>Demo result</small></article></div><article class="panel table-panel"><div class="panel-head"><div><small>CRM · DEMO DATA</small><h3>Customers & relationships</h3></div><div class="panel-actions"><button class="compact-button">Filter</button><button class="primary-small">+ Customer</button></div></div><div class="table-wrap"><table><thead><tr><th>Customer</th><th>Stage</th><th>Last activity</th><th>Value</th><th>Hermes next step</th><th></th></tr></thead><tbody data-customer-table></tbody></table></div></article></section>
       <section class="view" data-view-panel="calendar"><div class="content-grid calendar-grid"><article class="panel calendar-panel"><div class="panel-head"><div><small>CALENDAR · DEMO</small><h3>This week</h3></div><div class="panel-actions"><button class="compact-button">Today</button><button class="primary-small">+ Booking</button></div></div><div class="week-grid" data-week-grid></div></article><article class="panel schedule-ai"><div class="panel-head"><div><small>AI SCHEDULING · SIMULATED</small><h3>Hermes found 3 gaps</h3></div></div><p>Based on demo client cadence, likelihood and service constraints.</p><div class="gap-card"><span>FRI 11:30</span><div><b>Best fit: Maria K.</b><small>82% demo likelihood</small></div><button>Offer slot</button></div><div class="gap-card"><span>SAT 14:00</span><div><b>Best fit: 4 warm leads</b><small>Prepare availability message</small></div><button>Draft</button></div><div class="gap-card"><span>MON 10:00</span><div><b>Campaign opportunity</b><small>Bundle with retention offer</small></div><button>Review</button></div></article></div></section>
-      <section class="view" data-view-panel="sales"><div class="metric-grid compact-metrics"><article><span>Pipeline</span><strong>$42.7k</strong><small>Demo opportunities</small></article><article><span>Weighted</span><strong>$26.4k</strong><small>Simulated confidence</small></article><article><span>Won this month</span><strong>$18.2k</strong><small>Demo result</small></article><article><span>Recovery</span><strong>$4.8k</strong><small>Demo stalled deals</small></article></div><article class="panel"><div class="panel-head"><div><small>SALES PIPELINE · DEMO</small><h3>Opportunities</h3></div><button class="primary-small">+ Opportunity</button></div><div class="kanban" data-sales-kanban></div></article></section>
+      <section class="view" data-view-panel="sales"><div class="metric-grid compact-metrics"><article><span>Pipeline</span><strong>$42.7k</strong><small>Demo opportunities</small></article><article><span>Weighted</span><strong>$26.4k</strong><small>Simulated confidence</small></article><article><span>Won this month</span><strong>$18.2k</strong><small>Demo result</small></article><article><span>Recovery</span><strong>$4.8k</strong><small>Demo stalled deals</small></article></div><article class="panel"><div class="panel-head"><div><small>SALES PIPELINE · DEMO</small><h3>Opportunities</h3></div><button class="primary-small">+ Opportunity</button></div><div class="kanban" data-sales-kanban></div></article>
+      <!-- Embedded ROI Calculator Panel -->
+      <article class="panel roi-calculator-panel" style="margin-top: 14px;">
+        <div class="panel-head">
+          <div>
+            <small>REVENUE ENGINE · VALUE CALCULATOR</small>
+            <h3>Interactive Business ROI & Recovered Revenue Calculator</h3>
+          </div>
+          <button class="primary-small" type="button" data-open-roi-modal>Expand Modal View ↗</button>
+        </div>
+        <div class="roi-embedded-body" data-embedded-roi-container></div>
+      </article>
+      </section>
       <section class="view" data-view-panel="marketing"><div class="content-grid marketing-grid"><article class="panel"><div class="panel-head"><div><small>CONTENT ENGINE · DEMO</small><h3>Campaign performance</h3></div><button class="primary-small">+ Campaign</button></div><div class="campaign-card winner"><div><span>SIMULATED WINNING CREATIVE</span><b>“Before you lose another client…”</b><small>Short-form video · Instagram / TikTok</small></div><strong>4.8×</strong></div><div class="bar-chart"><i style="--h:44%"></i><i style="--h:68%"></i><i style="--h:51%"></i><i style="--h:88%"></i><i style="--h:72%"></i><i style="--h:96%"></i><i style="--h:81%"></i></div><div class="chart-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></article><article class="panel"><div class="panel-head"><div><small>HERMES RECOMMENDS · DEMO</small><h3>Next growth moves</h3></div></div><div class="recommendation-list"><div><span>01</span><div><b>Reuse your top hook in 3 formats</b><small>Demo impact: high</small></div><button>Generate</button></div><div><span>02</span><div><b>Retarget engaged visitors</b><small>Demo audience prepared</small></div><button>Review</button></div><div><span>03</span><div><b>Reactivate dormant clients</b><small>Demo sequence ready</small></div><button>Launch</button></div></div></article></div></section>
       <section class="view" data-view-panel="finance"><div class="metric-grid"><article><span>Revenue MTD</span><strong>$18,420</strong><small>Demo data</small></article><article><span>Gross margin</span><strong>41.8%</strong><small>Demo target</small></article><article><span>Receivables</span><strong>$6,240</strong><small>Demo amount</small></article><article><span>Forecast</span><strong>$31.6k</strong><small>Simulated</small></article></div><div class="content-grid finance-grid"><article class="panel"><div class="panel-head"><div><small>CASH FLOW · DEMO</small><h3>Revenue vs expenses</h3></div><button class="compact-button">This month</button></div><div class="finance-bars"><div><span>Revenue</span><i style="--w:86%"></i><b>$18.4k</b></div><div><span>Payroll</span><i style="--w:42%"></i><b>$7.2k</b></div><div><span>Marketing</span><i style="--w:18%"></i><b>$3.1k</b></div><div><span>Tools</span><i style="--w:11%"></i><b>$1.9k</b></div></div></article><article class="panel"><div class="panel-head"><div><small>AI FINANCE WATCH · SIMULATED</small><h3>Needs attention</h3></div></div><div class="alert-card warning-card"><span>!</span><div><b>Demo invoice is overdue</b><small>Simulated follow-up prepared.</small></div><button>Review</button></div><div class="alert-card"><span>✦</span><div><b>Subscription-spend signal</b><small>Demo analysis only.</small></div><button>Analyze</button></div></article></div></section>
-      <section class="view" data-view-panel="operations"><div class="content-grid operations-grid"><article class="panel"><div class="panel-head"><div><small>BACKGROUND WORK · SIMULATED</small><h3>Hermes execution queue</h3></div><span class="active-chip">● Demo queue</span></div><div class="ops-list" data-ops-list></div></article><article class="panel"><div class="panel-head"><div><small>APPROVALS · DEMO</small><h3>Human-in-the-loop</h3></div><span class="count-chip">3</span></div><div class="approval-card"><div><span>HIGH IMPACT</span><b>Discount exception: 12%</b><small>Demo projected value</small></div><div><button class="secondary-action">Decline</button><button class="primary-small">Approve</button></div></div><div class="approval-card"><div><span>MARKETING</span><b>Reactivation sequence</b><small>Demo sequence for review</small></div><div><button class="secondary-action">Edit</button><button class="primary-small">Launch</button></div></div><div class="approval-card"><div><span>FINANCE</span><b>Refund request</b><small>Demo policy match</small></div><div><button class="secondary-action">Review</button><button class="primary-small">Approve</button></div></div></article></div></section>
+      <section class="view" data-view-panel="operations"><div class="content-grid operations-grid"><article class="panel"><div class="panel-head"><div><small>BACKGROUND WORK · SIMULATED</small><h3>Hermes execution queue</h3></div><span class="active-chip">● Demo queue</span></div><div class="ops-list" data-ops-list></div></article><article class="panel"><div class="panel-head"><div><small>APPROVALS · DEMO</small><h3>Human-in-the-loop</h3></div><span class="count-chip">3</span></div><div class="approval-card"><div><span>HIGH IMPACT</span><b>Discount exception: 12%</b><small>Demo projected value</small></div><div><button class="secondary-action">Decline</button><button class="primary-small">Approve</button></div></div><div class="approval-card"><div><span>MARKETING</span><b>Reactivation sequence</b><small>Demo sequence for review</small></div><div><button class="secondary-action">Edit</button><button class="primary-small">Launch</button></div></div><div class="approval-card"><div><span>FINANCE</span><b>Refund request</b><small>Demo policy match</small></div><div><button class="secondary-action">Review</button><button class="primary-small">Approve</button></div></div></article></div>
+      <!-- B2B Load Analyzer & AI Rate Negotiator Panel -->
+      <article class="panel load-analyzer-panel" data-load-analyzer-panel style="margin-top: 14px;">
+        <div class="panel-head">
+          <div>
+            <small>LOGISTICS OPS · B2B FREIGHT ECONOMICS</small>
+            <h3>B2B Load Analyzer & AI Rate Negotiator</h3>
+          </div>
+          <span class="active-chip">● Live Rate Engine</span>
+        </div>
+        <div class="load-analyzer-body">
+          <div class="load-presets-bar">
+            <small>LOAD PRESETS:</small>
+            <button type="button" class="preset-btn active" data-load-preset="chicago">Chicago → Dallas (850 mi)</button>
+            <button type="button" class="preset-btn" data-load-preset="milwaukee">Milwaukee → Atlanta (780 mi)</button>
+            <button type="button" class="preset-btn" data-load-preset="indy">Indy → Miami (1,150 mi)</button>
+            <button type="button" class="preset-btn" data-load-preset="email">Import Freight Email</button>
+          </div>
+
+          <div class="analyzer-grid">
+            <div class="analyzer-inputs">
+              <div class="form-row two-col">
+                <div class="field-group">
+                  <label for="la-miles">Total Miles</label>
+                  <input type="number" id="la-miles" value="850" min="1" data-la-input="miles">
+                </div>
+                <div class="field-group">
+                  <label for="la-rate">Gross Broker Offer ($)</label>
+                  <input type="number" id="la-rate" value="2200" min="1" data-la-input="rate">
+                </div>
+              </div>
+              <div class="form-row two-col">
+                <div class="field-group">
+                  <label for="la-fuel">Diesel Price ($/gal)</label>
+                  <input type="number" step="0.05" id="la-fuel" value="3.85" min="0" data-la-input="fuel">
+                </div>
+                <div class="field-group">
+                  <label for="la-mpg">Truck MPG</label>
+                  <input type="number" step="0.1" id="la-mpg" value="6.5" min="1" data-la-input="mpg">
+                </div>
+              </div>
+              <div class="form-row two-col">
+                <div class="field-group">
+                  <label for="la-driver">Driver Pay ($/mi)</label>
+                  <input type="number" step="0.05" id="la-driver" value="0.65" min="0" data-la-input="driver">
+                </div>
+                <div class="field-group">
+                  <label for="la-tolls">Tolls & Overhead ($)</label>
+                  <input type="number" id="la-tolls" value="150" min="0" data-la-input="tolls">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="field-group">
+                  <label for="la-target-margin">Target Net Margin (%)</label>
+                  <input type="number" id="la-target-margin" value="20" min="0" max="100" data-la-input="targetMargin">
+                </div>
+              </div>
+            </div>
+
+            <div class="analyzer-metrics">
+              <div class="metric-card">
+                <span>Offered RPM</span>
+                <strong data-la-out="offeredRpm">$2.59/mi</strong>
+                <small data-la-out="rpmStatus" class="warning">Below 20% Margin</small>
+              </div>
+              <div class="metric-card">
+                <span>Est. Fuel Cost</span>
+                <strong data-la-out="fuelCost">$503.46</strong>
+                <small>@ 6.5 MPG</small>
+              </div>
+              <div class="metric-card">
+                <span>Driver Pay</span>
+                <strong data-la-out="driverPay">$552.50</strong>
+                <small>@ $0.65/mi</small>
+              </div>
+              <div class="metric-card">
+                <span>Net Profit</span>
+                <strong data-la-out="netProfit">$994.04</strong>
+                <small data-la-out="marginPct">Margin: 45.2%</small>
+              </div>
+              <div class="metric-card highlight">
+                <span>Target Counter Rate</span>
+                <strong data-la-out="targetRate">$2,550.00</strong>
+                <small data-la-out="targetRpm">$3.00/mi required</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="negotiator-box">
+            <div class="negotiator-head">
+              <div>
+                <b>✦ AI BROKER RATE NEGOTIATOR</b>
+                <small>Automated counter-offer generation based on live lane economics</small>
+              </div>
+              <select id="la-strategy-select" data-la-strategy>
+                <option value="operating">Operating Cost Justified (Recommended)</option>
+                <option value="scarcity">Immediate Dispatch / Driver Proximity</option>
+                <option value="firm">Firm Floor Rate / Take It or Leave It</option>
+              </select>
+            </div>
+            <textarea id="la-counter-msg" rows="3" readonly data-la-counter-msg></textarea>
+            <div class="negotiator-actions">
+              <button type="button" class="btn-secondary" data-la-copy-btn>📋 Copy Broker Message</button>
+              <button type="button" class="btn-primary-lead" data-la-send-btn>✦ Send Counter Offer to Broker</button>
+            </div>
+          </div>
+        </div>
+      </article>
+      </section>
       <section class="view" data-view-panel="integrations"><div class="integration-hero"><div><small>INTEGRATION LAYER · PROTOTYPE</small><h2>Connect the tools you already use.</h2><p>Prototype statuses below are visual only; external connectors are not implied to be live.</p></div><button class="primary-small">Request integration</button></div><div class="integration-grid" data-integration-grid></div></section>
       <section class="view" data-view-panel="academy"><div class="academy-hero"><div><small>HERMES ACADEMY · DEMO</small><h2>Train people against AI before they talk to real customers.</h2><p>Roleplay, objection handling, compliance, scoring and post-call coaching become one training loop.</p><div class="hero-intelligence-actions"><a class="primary-link" href="./sales-roleplay.html">Open Sales Coach →</a><button type="button">Create scenario</button></div></div><div class="score-orbit"><span>87</span><small>DEMO TEAM SCORE</small><i>Trust 91</i><i>Progress 82</i><i>Compliance 96</i></div></div><div class="metric-grid compact-metrics"><article><span>Sessions</span><strong>126</strong><small>Demo</small></article><article><span>Average score</span><strong>87</strong><small>Demo</small></article><article><span>Top weakness</span><strong>Discovery</strong><small>Demo</small></article><article><span>Ready for calls</span><strong>9</strong><small>Demo readiness</small></article></div><article class="panel"><div class="panel-head"><div><small>TRAINING SCENARIOS · DEMO</small><h3>Recommended practice</h3></div><button class="primary-small">+ Scenario</button></div><div class="scenario-grid"><div><span>LOGISTICS</span><b>Skeptical carrier owner</b><small>Pricing · trust · objections</small><button>Practice →</button></div><div><span>HERMES CONNECT</span><b>Busy SaaS founder</b><small>Discovery · value · close</small><button>Practice →</button></div><div><span>MARKETING</span><b>Price-sensitive salon owner</b><small>ROI · retention · positioning</small><button>Practice →</button></div></div></article></section>
     </main>
-    <nav class="mobile-nav" aria-label="Mobile navigation"><button class="active" data-mobile-view="home"><i>⌂</i><span>Home</span></button><button data-mobile-view="inbox"><i>◉</i><span>Inbox</span></button><button data-mobile-view="crm"><i>◇</i><span>Clients</span></button><button data-hermes-open><i>✦</i><span>Hermes</span></button><button data-mobile-view="operations"><i>≡</i><span>More</span></button></nav>
   </div>
-  <div class="workspace-menu" data-workspace-popover aria-hidden="true"><small>DEMO WORKSPACE</small><button data-vertical="beauty"><b>Aurelia Studio</b><span>Beauty & wellness</span></button><button data-vertical="logistics"><b>Hermes Logistics Ops</b><span>US logistics</span></button><button data-vertical="fitness"><b>Northline Performance</b><span>Fitness & coaching</span></button><button data-vertical="agency"><b>Progresso Growth Lab</b><span>Marketing agency</span></button><button data-vertical="realestate"><b>Meridian Property Group</b><span>Real estate</span></button></div>
+  <nav class="mobile-nav" aria-label="Mobile navigation"><button class="active" data-mobile-view="home"><i>⌂</i><span>Home</span></button><button data-mobile-view="inbox"><i>◉</i><span>Inbox</span></button><button data-mobile-view="crm"><i>◇</i><span>Clients</span></button><button data-hermes-open><i>✦</i><span>Hermes</span></button><button data-mobile-view="operations"><i>≡</i><span>More</span></button></nav>
+  <div class="workspace-menu" data-workspace-popover aria-hidden="true"><small>DEMO WORKSPACE</small><button data-vertical="beauty"><b>Aurelia Studio</b><span>Beauty & wellness</span></button><button data-vertical="auto"><b>Apex Auto Care</b><span>Auto repair & detailing</span></button><button data-vertical="logistics"><b>Hermes Logistics Ops</b><span>US logistics & load board</span></button><button data-vertical="fitness"><b>Northline Performance</b><span>Fitness & coaching</span></button><button data-vertical="agency"><b>Progresso Growth Lab</b><span>Marketing agency</span></button><button data-vertical="realestate"><b>Meridian Property Group</b><span>Real estate</span></button></div>
   <aside class="hermes-drawer" data-hermes-drawer aria-hidden="true"><div class="drawer-head"><div><span>✦</span><div><b>Hermes Intelligence</b><small>One intelligence across your business · simulated</small></div></div><button type="button" data-hermes-close>×</button></div><div class="drawer-context"><span>Demo context</span><b>Sales · Inbox · Calendar · Finance · Operations</b></div><div class="drawer-thread" data-hermes-thread><div class="hermes-message"><small>✦ Hermes · Simulated AI</small><p>Good morning. This demo can analyze the current synthetic workspace and prepare next actions for review.</p></div></div><div class="quick-prompts"><button>Increase revenue today</button><button>What needs my approval?</button><button>Recover lost leads</button><button>Summarize the business</button></div><form class="drawer-form" data-hermes-form><textarea name="question" rows="2" placeholder="Ask Hermes anything about the demo business…"></textarea><button type="submit">↑</button></form></aside>
+
+  <!-- Direct Lead Intake & AI Front-Door Modal -->
+  <div class="lead-modal-overlay" data-lead-modal aria-hidden="true">
+    <div class="lead-modal-card" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+      <div class="lead-modal-header">
+        <div>
+          <span class="modal-badge">✦ HERMES AI FRONT-DOOR</span>
+          <h2 id="lead-modal-title">Direct Lead Intake & AI Processing</h2>
+          <p>Submit client inquiries, auto-classify intent, and generate instant booking estimates.</p>
+        </div>
+        <button class="lead-modal-close" type="button" data-modal-close aria-label="Close modal">×</button>
+      </div>
+
+      <form class="lead-modal-form" data-lead-intake-form>
+        <div class="form-row two-col">
+          <div class="field-group">
+            <label for="lead-name">Full Name *</label>
+            <input type="text" id="lead-name" name="name" placeholder="e.g. Alex Morgan" required value="Alex Morgan">
+          </div>
+          <div class="field-group">
+            <label for="lead-email">Email Address *</label>
+            <input type="email" id="lead-email" name="email" placeholder="e.g. alex@example.com" required value="alex.morgan@example.com">
+          </div>
+        </div>
+
+        <div class="form-row two-col">
+          <div class="field-group">
+            <label for="lead-phone">Phone Number</label>
+            <input type="tel" id="lead-phone" name="phone" placeholder="(555) 234-5678" value="(555) 839-2041">
+          </div>
+          <div class="field-group">
+            <label for="lead-company">Business / Organization</label>
+            <input type="text" id="lead-company" name="company" placeholder="e.g. Apex Auto Client / Studio" value="Apex Client Fleet">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field-group">
+            <label for="lead-vertical">Target Industry Vertical *</label>
+            <select id="lead-vertical" name="vertical" required data-lead-vertical-select>
+              <option value="auto" selected>Apex Auto Care (Auto Repair & Detailing)</option>
+              <option value="beauty">Aurelia Studio (Beauty & Wellness)</option>
+              <option value="logistics">Hermes Logistics Ops (US Logistics & Freight)</option>
+              <option value="fitness">Northline Performance (Fitness & Coaching)</option>
+              <option value="agency">Progresso Growth Lab (Marketing Agency)</option>
+              <option value="realestate">Meridian Property Group (Real Estate)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field-group">
+            <label for="lead-message">Primary Need / Service Request *</label>
+            <textarea id="lead-message" name="message" rows="3" placeholder="Describe requested service, brake issue, appointment preference, or inquiry..." required data-lead-message-input>I need brake pad and rotor replacement for my 2022 Ford F-150 as soon as possible.</textarea>
+          </div>
+        </div>
+
+        <!-- Apex Auto Care Instant Appointment Booking Estimator Panel -->
+        <div class="auto-booking-panel" data-auto-booking-panel>
+          <div class="auto-panel-head">
+            <span>🚗 APEX AUTO CARE · INSTANT APPOINTMENT ESTIMATOR</span>
+            <small>Automated bay matching & price calculation</small>
+          </div>
+          <div class="form-row two-col">
+            <div class="field-group">
+              <label for="vehicle-info">Vehicle Year / Make / Model</label>
+              <input type="text" id="vehicle-info" name="vehicle" placeholder="e.g. 2022 Ford F-150" value="2022 Ford F-150" data-vehicle-input>
+            </div>
+            <div class="field-group">
+              <label for="auto-service">Service Requested</label>
+              <select id="auto-service" name="autoService" data-auto-service-select>
+                <option value="brakes" selected>Brake Pad & Rotor Service</option>
+                <option value="diagnostic">Full Vehicle Diagnostic & Inspection</option>
+                <option value="oil">Synthetic Oil & Filter Service</option>
+                <option value="detailing">Full Ceramic Coat & Detailing</option>
+                <option value="engine">Engine & Transmission Check</option>
+                <option value="truck_diesel">Truck & Diesel Heavy Repair</option>
+                <option value="trailer_repair">Commercial Trailer & Alignment</option>
+                <option value="mobile_roadside">Mobile Roadside Emergency Dispatch</option>
+                <option value="parts_supplier">Heavy Parts Sourcing & Delivery</option>
+                <option value="fleet_maintenance">PM Fleet Maintenance Program</option>
+              </select>
+            </div>
+          </div>
+          <div class="auto-estimate-card" data-auto-estimate-card></div>
+        </div>
+
+        <!-- AI Intent Preview Panel -->
+        <div class="ai-intent-preview" data-ai-intent-preview></div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" data-modal-close>Cancel</button>
+          <button type="submit" class="btn-primary-lead">✦ Submit Lead to Command Center Inbox</button>
+        </div>
+      </form>
+  </div>
+
+  <!-- Instant Proposal Generator Modal -->
+  <div class="proposal-modal-overlay" data-proposal-modal aria-hidden="true">
+    <div class="proposal-modal-card" role="dialog" aria-modal="true" aria-labelledby="proposal-modal-title">
+      <div class="proposal-modal-header">
+        <div>
+          <span class="modal-badge">✦ HERMES INSTANT PROPOSAL GENERATOR</span>
+          <h2 id="proposal-modal-title">Custom Business & AI OS Proposal</h2>
+          <p>Itemized pricing, SaaS subscription tiering, and one-click export for client review.</p>
+        </div>
+        <button class="proposal-modal-close" type="button" data-proposal-close aria-label="Close proposal modal">×</button>
+      </div>
+
+      <div class="proposal-modal-body">
+        <div class="proposal-client-banner" data-proposal-client-banner>
+          <!-- Populated dynamically in workspace.js -->
+        </div>
+
+        <div class="proposal-section">
+          <div class="section-label">01. SAAS SUBSCRIPTION TIER</div>
+          <div class="billing-toggle-row">
+            <span>Billing Cycle:</span>
+            <div class="billing-toggle">
+              <button type="button" class="billing-btn active" data-billing="monthly">Monthly</button>
+              <button type="button" class="billing-btn" data-billing="annual">Annual (Save 15%)</button>
+            </div>
+          </div>
+          <div class="proposal-tier-grid">
+            <div class="tier-card" data-tier="starter">
+              <div class="tier-head">
+                <b>Starter</b>
+                <small>Small business core</small>
+              </div>
+              <div class="tier-price"><strong data-price-starter="$99">$99</strong><span>/mo</span></div>
+              <ul>
+                <li>✓ AI Front-Door Lead Intake</li>
+                <li>✓ Command Center Unified Inbox</li>
+                <li>✓ Up to 250 Monthly Leads</li>
+              </ul>
+              <button type="button" class="tier-select-btn" data-select-tier="starter">Select Tier</button>
+            </div>
+
+            <div class="tier-card active" data-tier="pro">
+              <div class="tier-badge">RECOMMENDED</div>
+              <div class="tier-head">
+                <b>Professional</b>
+                <small>Growth & Automation</small>
+              </div>
+              <div class="tier-price"><strong data-price-pro="$299">$299</strong><span>/mo</span></div>
+              <ul>
+                <li>✓ Full Vertical Automation Suite</li>
+                <li>✓ AI Intent Brain & Rate Calculator</li>
+                <li>✓ Unlimited Leads & Driver Matching</li>
+                <li>✓ Instant CRM & Calendar Sync</li>
+              </ul>
+              <button type="button" class="tier-select-btn primary" data-select-tier="pro">Selected</button>
+            </div>
+
+            <div class="tier-card" data-tier="enterprise">
+              <div class="tier-head">
+                <b>Enterprise</b>
+                <small>Multi-location & Custom</small>
+              </div>
+              <div class="tier-price"><strong data-price-enterprise="$799">$799</strong><span>/mo</span></div>
+              <ul>
+                <li>✓ Everything in Pro</li>
+                <li>✓ Custom AI Agent Training</li>
+                <li>✓ Dedicated SLA & Account Mgr</li>
+                <li>✓ Multi-workspace Orchestration</li>
+              </ul>
+              <button type="button" class="tier-select-btn" data-select-tier="enterprise">Select Tier</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="proposal-section">
+          <div class="section-label">02. ITEMIZED IMPLEMENTATION & ADD-ONS</div>
+          <table class="proposal-table">
+            <thead>
+              <tr>
+                <th>Include</th>
+                <th>Item / Service Description</th>
+                <th>Type</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody data-proposal-items-body>
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+
+        <div class="proposal-summary-box">
+          <div class="summary-line">
+            <span>Selected SaaS Tier (<b data-summary-tier-name>Professional</b>):</span>
+            <strong data-summary-tier-price>$799.00/mo</strong>
+          </div>
+          <div class="summary-line">
+            <span>One-Time Implementation Add-ons:</span>
+            <strong data-summary-addons-price>$450.00</strong>
+          </div>
+          <div class="summary-line total">
+            <span>Total First Month Investment:</span>
+            <strong data-summary-total-price>$1,249.00</strong>
+          </div>
+        </div>
+
+        <div class="proposal-actions">
+          <button type="button" class="btn-secondary" data-export-html-btn>📥 Export HTML Proposal</button>
+          <button type="button" class="btn-secondary" data-export-pdf-btn>🖨 Export PDF / Print</button>
+          <button type="button" class="btn-primary-lead" data-send-approval-btn>✦ Send for Client Approval</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive ROI Calculator Modal -->
+  <div class="roi-modal-overlay" data-roi-modal aria-hidden="true">
+    <div class="roi-modal-card" role="dialog" aria-modal="true" aria-labelledby="roi-modal-title">
+      <div class="roi-modal-header">
+        <div>
+          <span class="modal-badge">✦ HERMES REVENUE ENGINE</span>
+          <h2 id="roi-modal-title">Interactive Business ROI & Recovery Calculator</h2>
+          <p>Estimate weekly hours saved and dollars recovered from missed leads for your business.</p>
+        </div>
+        <button class="roi-modal-close" type="button" data-roi-close aria-label="Close ROI modal">×</button>
+      </div>
+
+      <div class="roi-modal-body">
+        <div class="roi-vertical-selector">
+          <small>SELECT INDUSTRY VERTICAL:</small>
+          <div class="roi-vertical-chips" data-roi-vertical-chips>
+            <button type="button" class="active" data-roi-vert="beauty">Beauty & Wellness</button>
+            <button type="button" data-roi-vert="auto">Auto Repair & Detailing</button>
+            <button type="button" data-roi-vert="logistics">US Freight & Logistics</button>
+            <button type="button" data-roi-vert="fitness">Fitness & Coaching</button>
+            <button type="button" data-roi-vert="agency">Marketing Agency</button>
+            <button type="button" data-roi-vert="realestate">Real Estate</button>
+          </div>
+        </div>
+
+        <div class="roi-calculator-grid">
+          <div class="roi-inputs-panel">
+            <div class="field-group">
+              <div class="label-row">
+                <label for="roi-leads-range">Monthly Inbound Leads</label>
+                <b data-roi-val="leads">60 leads/mo</b>
+              </div>
+              <input type="range" id="roi-leads-range" min="10" max="500" value="60" step="5" data-roi-slider="leads">
+            </div>
+
+            <div class="field-group">
+              <div class="label-row">
+                <label for="roi-ltv-range">Avg Lead Deal / LTV ($)</label>
+                <b data-roi-val="ltv">$350</b>
+              </div>
+              <input type="range" id="roi-ltv-range" min="50" max="5000" value="350" step="25" data-roi-slider="ltv">
+            </div>
+
+            <div class="field-group">
+              <div class="label-row">
+                <label for="roi-missed-range">Stalled / Missed Lead Rate (%)</label>
+                <b data-roi-val="missed">25%</b>
+              </div>
+              <input type="range" id="roi-missed-range" min="5" max="60" value="25" step="1" data-roi-slider="missed">
+            </div>
+
+            <div class="field-group">
+              <div class="label-row">
+                <label for="roi-wage-range">Staff Labor Cost ($/hr)</label>
+                <b data-roi-val="wage">$35/hr</b>
+              </div>
+              <input type="range" id="roi-wage-range" min="15" max="150" value="35" step="5" data-roi-slider="wage">
+            </div>
+          </div>
+
+          <div class="roi-results-panel">
+            <div class="roi-kpi-card">
+              <span>Weekly Hours Saved</span>
+              <strong data-roi-out="weeklyHours">3.8 hrs/wk</strong>
+              <small data-roi-out="monthlyHours">15.0 hrs/mo automated</small>
+            </div>
+
+            <div class="roi-kpi-card">
+              <span>Monthly Recovered Revenue</span>
+              <strong data-roi-out="monthlyRecovered" class="positive">$2,100</strong>
+              <small>From instant AI lead response</small>
+            </div>
+
+            <div class="roi-kpi-card highlight">
+              <span>Estimated Monthly Net ROI</span>
+              <strong data-roi-out="netRoi">$1,826/mo</strong>
+              <small data-roi-out="roiMultiplier">3.3x ROI on Hermes Pro ($799)</small>
+            </div>
+
+            <div class="roi-kpi-card">
+              <span>Projected Annual Growth</span>
+              <strong data-roi-out="annualBoost">$25,200/yr</strong>
+              <small>Added top-line revenue</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="roi-actions">
+          <button type="button" class="btn-secondary" data-roi-export-btn>📄 Download ROI Summary (HTML)</button>
+          <button type="button" class="btn-primary-lead" data-roi-attach-proposal-btn>✦ Attach ROI to Instant Proposal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Business Type Selector Modal -->
+  <div class="onboarding-modal-overlay" data-onboarding-modal aria-hidden="true">
+    <div class="onboarding-modal-card" role="dialog" aria-modal="true" aria-labelledby="onboarding-modal-title">
+      <div class="onboarding-modal-header">
+        <span class="modal-badge">✦ WELCOME TO HERMES CONNECT</span>
+        <h2 id="onboarding-modal-title">Configure Your AI Business Workspace</h2>
+        <p>Select your industry vertical to customize your AI Command Center, automated lead responses, and interactive calculators.</p>
+      </div>
+      <div class="onboarding-modal-body">
+        <div class="business-type-grid">
+          <button type="button" class="business-type-card active" data-onboarding-type="logistics">
+            <span class="type-icon">🚚</span>
+            <div>
+              <b>Logistics & Trucking</b>
+              <small>B2B load analyzer, rate negotiator counter-offers, carrier matching & dispatch</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="auto_repair">
+            <span class="type-icon">🔧</span>
+            <div>
+              <b>Auto Repair & Detailing</b>
+              <small>Service diagnostics, bay reservation estimation, labor margins & live estimates</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="agency">
+            <span class="type-icon">💼</span>
+            <div>
+              <b>Marketing Agency</b>
+              <small>Warm lead recovery, campaign creative optimization, LTV & CAC tracking</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="beauty">
+            <span class="type-icon">✨</span>
+            <div>
+              <b>Beauty & Wellness</b>
+              <small>Calendar gap optimization, Friday appointment booking, client retention outreach</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="fitness">
+            <span class="type-icon">💪</span>
+            <div>
+              <b>Fitness & Coaching</b>
+              <small>Inactive member recovery, coaching slot schedules, recurring subscription models</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="real_estate">
+            <span class="type-icon">🏠</span>
+            <div>
+              <b>Real Estate</b>
+              <small>Buyer/seller lead qualification, property tour scheduler, instant listing matching</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="professional_services">
+            <span class="type-icon">🖋</span>
+            <div>
+              <b>Professional Services</b>
+              <small>Direct contract intake, task list scheduling, custom client intake workflow</small>
+            </div>
+          </button>
+          <button type="button" class="business-type-card" data-onboarding-type="other">
+            <span class="type-icon">🏢</span>
+            <div>
+              <b>Other Business</b>
+              <small>General purpose lead intake, custom status workflow, custom ROI calculator</small>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="onboarding-modal-footer">
+        <button type="button" class="btn-launch-workspace" data-launch-workspace-btn>Launch Custom AI Workspace →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beta Feedback Widget -->
+  <div class="beta-feedback-widget" data-feedback-widget>
+    <div class="feedback-question-row" data-feedback-question>
+      <b>Was this workspace useful?</b>
+      <div class="feedback-btn-group">
+        <button type="button" data-feedback-btn="yes">Yes</button>
+        <button type="button" data-feedback-btn="no">No</button>
+      </div>
+    </div>
+    <div class="feedback-thanks-msg" data-feedback-thanks>
+      ✨ Thanks for your feedback!
+    </div>
+  <!-- Premium iOS PWA Installation Helper Drawer -->
+  <div class="ios-pwa-drawer" id="ios-pwa-drawer" aria-hidden="true">
+    <div class="ios-pwa-header">
+      <div class="pwa-badge">✦ PWA INSTANT SETUP</div>
+      <button type="button" class="close-pwa-drawer" id="close-ios-pwa" aria-label="Close guide">×</button>
+    </div>
+    <div class="ios-pwa-body">
+      <div class="pwa-icon-row">
+        <img class="pwa-app-icon" src="./apple-touch-icon.png" alt="Hermes Connect">
+        <div>
+          <h3>Install Hermes Connect</h3>
+          <p>Add to your iPhone Home Screen for an immersive standalone app experience.</p>
+        </div>
+      </div>
+      <div class="pwa-steps">
+        <div class="pwa-step">
+          <span class="step-num">1</span>
+          <p>Tap the <strong>Share</strong> button <span class="ios-icon">⎋</span> in Safari's bottom toolbar.</p>
+        </div>
+        <div class="pwa-step">
+          <span class="step-num">2</span>
+          <p>Scroll down the share menu and select <strong>Add to Home Screen</strong> <span class="ios-icon-plus">⊞</span>.</p>
+        </div>
+        <div class="pwa-step">
+          <span class="step-num">3</span>
+          <p>Tap <strong>Add</strong> in the top-right corner to complete installation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="scrim" data-scrim></div>
+  <script src="./ai-front-door.js"></script>
+  <script src="./email-load-parser.js"></script>
   <script src="./workspace.js"></script>
   <script src="./workspace-launch-v2.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            console.log('[Hermes PWA] Workspace Service Worker registered with scope:', reg.scope);
+          })
+          .catch((err) => {
+            console.warn('[Hermes PWA] Workspace Service Worker registration failed:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
