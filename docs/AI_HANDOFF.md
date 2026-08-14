@@ -22,6 +22,30 @@ entries — append only.
 
 ## Log
 
+## 2026-08-14 — Antigravity — Registered Hermes Connect Promo Pages and schema alignment
+
+- Branch: feature/hermes-connect-brand-funnel-unification
+- Commit(s): 0e74761
+- PR: Pending review / merge
+- What was done:
+  1. Created a new release manifest delta JSON file `docs/release-manifest-deltas/2026-08-14-hermes-connect-promo-pages.json` registering all 7 new indexable promotional pages under `/services/hermes-connect/*`.
+  2. Registered all 7 new pages in the canonical `public/sitemap-digital-services.xml`.
+  3. Aligned structured schemas on all 7 pages with `WebApplication` type and added reciprocal `BreadcrumbList` schemas.
+  4. Verified that the entire SEO cluster regression, build, and complete test suite passes 100% cleanly.
+- Files changed:
+  - `docs/release-manifest-deltas/2026-08-14-hermes-connect-promo-pages.json` [NEW]
+  - `public/sitemap-digital-services.xml` [MODIFY]
+  - `src/pages/services/hermes-connect/ai-command-center.astro` [MODIFY]
+  - `src/pages/services/hermes-connect/business-automation.astro` [MODIFY]
+  - `src/pages/services/hermes-connect/load-analyzer.astro` [MODIFY]
+  - `src/pages/services/hermes-connect/proposal-builder.astro` [MODIFY]
+  - `src/pages/services/hermes-connect/rate-negotiator.astro` [MODIFY]
+  - `src/pages/services/hermes-connect/roi-calculator.astro` [MODIFY]
+  - `src/pages/services/hermes-connect/unified-inbox.astro` [MODIFY]
+- Tests run (and result): `npm run build && npm test` passed 100% cleanly (159 pages, sitemaps indexable, 0 errors, 0 warnings, zero broken internal links).
+- Remaining / open items: Deploy preview and review PR with Tech Lead (Codex) / CEO (Vladimir).
+- Next step: Ready for PR merge and production deployment once approved.
+
 ## 2026-08-13 — Antigravity — Hermes Connect GEO context index & revenue expansion suite
 
 - Branch: feature/hermes-connect-brand-funnel-unification
