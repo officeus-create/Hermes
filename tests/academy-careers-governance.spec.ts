@@ -68,8 +68,10 @@ test.describe("Academy and careers governance", () => {
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
     const combined = jsonLd.join(" ");
     expect(combined.match(/\"@type\":\"JobPosting\"/g)?.length ?? 0).toBe(1);
+    expect(combined).toContain('"title":"Car Hauling Dispatcher"');
     expect(combined).toContain('"employmentType":"FULL_TIME"');
     expect(combined).toContain('"jobLocationType":"TELECOMMUTE"');
+    expect(combined).toContain('"applicantLocationRequirements":[{"@type":"Country","name":"United States"},{"@type":"Country","name":"Ukraine"}]');
     expect(combined).toContain('"directApply":false');
     expect(combined).toContain("Support car-hauling dispatch work for U.S.-market carrier operations.");
     expect(combined).toContain("Ability to work the applicable U.S. Central Time schedule.");
