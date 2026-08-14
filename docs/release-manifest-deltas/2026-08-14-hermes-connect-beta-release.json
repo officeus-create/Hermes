@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-14-hermes-connect-beta-release",
+  "generated_at": "2026-08-14T12:00:00Z",
+  "status": "RELEASE_CANDIDATE",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "additions": [
+    {
+      "route": "/download/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/download/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/download.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/repair-shops/booking/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/booking/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/repair-shops/booking.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 2,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

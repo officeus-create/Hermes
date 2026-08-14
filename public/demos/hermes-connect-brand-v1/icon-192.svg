@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192" role="img" aria-label="Hermes Connect 192 Icon">
+  <defs>
+    <linearGradient id="hermesBg192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141722"/>
+      <stop offset="100%" stop-color="#0B0D12"/>
+    </linearGradient>
+    <linearGradient id="hermesGrad192" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C5CFF"/>
+      <stop offset="50%" stop-color="#9E86FF"/>
+      <stop offset="100%" stop-color="#5AC8FA"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="192" height="192" rx="42" fill="url(#hermesBg192)"/>
+  <rect width="188" height="188" x="2" y="2" rx="40" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5"/>
+
+  <g transform="translate(39, 39) scale(2.59)">
+    <path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" 
+          fill="none" stroke="url(#hermesGrad192)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" 
+          fill="none" stroke="url(#hermesGrad192)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="36" cy="12" r="2.5" fill="#7FD1B6"/>
+  </g>
+</svg>

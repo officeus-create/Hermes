@@ -370,3 +370,42 @@ The current blocker is no longer “add analytics everywhere.” It is:
 3. reconcile delivery-confirmed browser events with the receiver and human qualification process;
 4. add only the missing direction-specific confirmed-delivery events that have a real commercial need;
 5. establish 7-day and 28-day aggregate baselines before optimization claims or new page expansion.
+
+---
+
+# 8. Hermes Connect Public Beta Event Taxonomy
+
+The following event vocabulary is registered for the Hermes Connect Public Beta application and product acquisition pages:
+
+### Acquisition & Workspace Launch
+- `connect_landing_view`: Triggered when visiting `/services/hermes-connect/` or a feature page. Parameters: `page_path`, `feature_group`.
+- `connect_workspace_open`: Triggered when opening the Workspace. Parameters: `source_page`, `deep_link_tool`, `business_type`.
+- `connect_request_access_click`: Triggered when clicking a Request Access CTA. Parameters: `source_page`, `cta_location`.
+
+### Navigation & Onboarding
+- `connect_module_open`: Triggered when switching tabs in the Workspace. Parameters: `module`, `source_page`, `business_type`.
+- `connect_onboarding_start`: Triggered when the business type onboarding modal opens.
+- `connect_onboarding_complete`: Triggered when a business type selection is saved. Parameter: `business_type` (controlled enum).
+
+### Inbox & Lead Intake
+- `connect_inbox_open`: Triggered when viewing the Command Center Inbox.
+- `connect_lead_intake_start`: Triggered when starting the lead intake modal.
+- `connect_lead_intake_preview`: Triggered when local lead preview is generated.
+- `connect_lead_delivery_confirmed`: Triggered ONLY when lead is sent to local receiver (never for previews).
+
+### Tools & Calculators
+- `connect_load_analyzer_open`: Triggered when opening Load Analyzer.
+- `connect_load_analysis_completed`: Triggered when a load calculation completes.
+- `connect_rate_negotiator_open`: Triggered when opening Rate Negotiator.
+- `connect_counter_offer_generated`: Triggered when an automated counter-offer strategy is generated. (Note: `counter_offer_sent` is prohibited until live dispatch API is connected).
+- `connect_proposal_open`: Triggered when opening Proposal Builder.
+- `connect_proposal_generated`: Triggered when generating an instant proposal.
+- `connect_proposal_export_html`: Triggered when exporting proposal HTML.
+- `connect_proposal_print_pdf`: Triggered when printing proposal PDF.
+- `connect_roi_open`: Triggered when opening ROI Calculator.
+- `connect_roi_calculated`: Triggered when calculating business ROI.
+
+### Feedback & Engagement
+- `connect_beta_feedback_open`: Triggered when opening Beta Feedback popup.
+- `connect_beta_feedback_submitted`: Triggered when feedback is submitted. Parameter: `feedback_rating` (`useful` or `not_useful`), `controlled_reason`. No PII or raw text.
+

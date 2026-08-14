@@ -1,0 +1,168 @@
+---
+import { ArrowLeft, ArrowRight, FileText, Download, Printer, ShieldCheck, Sparkles, CheckCircle2 } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import { HERMES_CONNECT_PRICING, CANONICAL_PRICING_TIERS } from "../../../data/hermes-connect-pricing";
+
+const canonicalUrl = "https://hermeslogisticsus.com/services/hermes-connect/proposal-builder/";
+
+const faqs = [
+  {
+    question: "What is the Instant Proposal Generator?",
+    answer: "The Proposal Generator creates itemized service proposals and SaaS subscription quotes with monthly/annual billing toggles and exportable HTML/PDF formats."
+  },
+  {
+    question: "What pricing tiers are included in proposals?",
+    answer: `Proposals reflect canonical Hermes Connect subscription pricing: Starter ($${HERMES_CONNECT_PRICING.starter.priceMonthly}/mo), Pro ($${HERMES_CONNECT_PRICING.pro.priceMonthly}/mo), and Enterprise ($${HERMES_CONNECT_PRICING.enterprise.priceMonthly}/mo).`
+  }
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Hermes Connect Instant Proposal Builder",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: canonicalUrl,
+    description: "Instant proposal generator for small businesses, agencies, and logistics fleets.",
+    offers: {
+      "@type": "Offer",
+      price: HERMES_CONNECT_PRICING.starter.priceMonthly,
+      priceCurrency: "USD"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map(faq => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer
+      }
+    }))
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 3, name: "Proposal Builder", item: canonicalUrl }
+    ]
+  }
+];
+---
+
+<BaseLayout
+  title="Instant Commercial Proposal Builder | Hermes Connect"
+  description="Generate itemized client proposals and SaaS quotes with instant PDF and HTML export via Hermes Connect."
+  schema={schema}
+>
+  <SiteHeader />
+
+  <main id="main-content" class="hc-feature-page">
+    <div class="page-container">
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/services/hermes-connect/">Hermes Connect</a></li>
+          <li aria-current="page">Proposal Builder</li>
+        </ol>
+      </nav>
+
+      <header class="hero-section">
+        <div class="badge">✦ Public Beta Tool</div>
+        <h1>Instant Commercial Proposal Builder</h1>
+        <p class="hero-lead">
+          Turn lead requests into professional, itemized commercial proposals in under 60 seconds.
+        </p>
+
+        <div class="cta-group">
+          <a class="btn primary-btn" href="/demos/hermes-connect-brand-v1/workspace.html?tool=proposal-builder">
+            <FileText size={18} aria-hidden="true" />
+            Build Proposal in Workspace
+          </a>
+          <HermesConnectLauncher variant="header" />
+        </div>
+      </header>
+
+      <section class="pricing-tiers-section">
+        <h2>Canonical Transparent Pricing Tiers</h2>
+        <p class="section-sub">Standardized pricing source-of-truth across all proposals and contracts.</p>
+        <div class="pricing-grid">
+          {CANONICAL_PRICING_TIERS.map(tier => (
+            <div class={`pricing-card ${tier.badge ? 'featured' : ''}`}>
+              {tier.badge && <div class="card-badge">{tier.badge}</div>}
+              <h3>{tier.name}</h3>
+              <div class="price">${tier.priceMonthly} <span>/ mo</span></div>
+              <p class="desc">{tier.description}</p>
+              <ul class="features">
+                {tier.features.map(f => (
+                  <li><CheckCircle2 size={16} class="check-icon" /> {f}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="demo-boundary-notice">
+        <ShieldCheck size={20} class="notice-icon" />
+        <div>
+          <strong>Public Beta Transparency Notice:</strong> Proposals can be printed or exported as static HTML. Automated e-signature & DocuSign bindings are currently labeled <em>Simulated / Beta</em>.
+        </div>
+      </section>
+
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+          {faqs.map(faq => (
+            <div class="faq-item">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .hc-feature-page { padding: 3rem 1.5rem 5rem; max-width: 1100px; margin: 0 auto; color: var(--color-text, #f3f4f6); }
+  .breadcrumb-list { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin-bottom: 2rem; font-size: 0.9rem; color: #9ca3af; }
+  .breadcrumb-list a { color: #38bdf8; text-decoration: none; }
+  .hero-section { text-align: center; margin-bottom: 4rem; }
+  .badge { display: inline-block; padding: 0.35rem 0.85rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
+  h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.2; }
+  .hero-lead { font-size: 1.25rem; color: #9ca3af; max-width: 800px; margin: 0 auto 2rem; line-height: 1.6; }
+  .cta-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: transform 0.2s, background 0.2s; }
+  .primary-btn { background: #38bdf8; color: #090d16; }
+  .primary-btn:hover { background: #7dd3fc; transform: translateY(-2px); }
+  .pricing-tiers-section { margin: 4rem 0; text-align: center; }
+  .section-sub { color: #9ca3af; margin-bottom: 2.5rem; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; text-align: left; }
+  .pricing-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 2rem; position: relative; }
+  .pricing-card.featured { border-color: #38bdf8; background: rgba(56, 189, 248, 0.05); }
+  .card-badge { position: absolute; top: -12px; right: 20px; background: #38bdf8; color: #090d16; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 999px; text-transform: uppercase; }
+  .price { font-size: 2.25rem; font-weight: 800; color: #f3f4f6; margin: 0.75rem 0; }
+  .price span { font-size: 1rem; font-weight: 400; color: #9ca3af; }
+  .desc { color: #9ca3af; font-size: 0.95rem; margin-bottom: 1.5rem; min-height: 48px; }
+  .features { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.65rem; font-size: 0.9rem; color: #d1d5db; }
+  .check-icon { color: #38bdf8; vertical-align: middle; }
+  .demo-boundary-notice { display: flex; align-items: center; gap: 0.75rem; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.25); color: #fde047; padding: 1.25rem; border-radius: 12px; margin: 3rem 0; font-size: 0.95rem; }
+  .notice-icon { flex-shrink: 0; }
+  .faq-section { margin-top: 4rem; }
+  .faq-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+  .faq-item { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
+  .faq-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #f3f4f6; }
+  .faq-item p { color: #9ca3af; font-size: 0.95rem; margin: 0; }
+</style>

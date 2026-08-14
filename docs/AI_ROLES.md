@@ -97,6 +97,19 @@ Primary responsibilities:
 - execute bounded repository work directly when doing so is faster and preserves the same branch/test/approval discipline;
 - route only the true environment-specific blocker to Claude Code or Codex instead of duplicating the whole task.
 
+## Antigravity — High-Throughput Product Builder
+
+Primary responsibilities:
+
+- Hermes Connect UI and product functionality;
+- rapid feature batches, onboarding, and PWA integration;
+- product experimentation and product SEO implementation per approved architecture;
+- analytics instrumentation and non-PII telemetry;
+- screenshots and evidence generation;
+- remediation of reviewer-identified defects.
+
+Execution rule: One active task owner per branch/files. Antigravity handles high-volume tasks but operates within bounded issue scope and does not overwrite files concurrently with another active agent.
+
 ## Other AI tools
 
 Gemini, Kimi, Perplexity, NotebookLM, and other approved tools may be used as specialists for research, long-context analysis, copy review, competitive analysis, data extraction, or a second opinion. They do not become a source of truth by themselves. Their useful conclusions must be verified and written into the current project state, applicable issue, or evidence/handoff record before implementation.

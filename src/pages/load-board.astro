@@ -3,6 +3,7 @@ import { ArrowRight, Building2, Search, ShieldCheck, Truck } from "@lucide/astro
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import HermesConnectLauncher from "../components/HermesConnectLauncher.astro";
 
 const leadMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const leadEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
@@ -429,6 +430,7 @@ import "../styles/features/load.css";
           </aside>
         </div>
       </section>
+      <HermesConnectLauncher variant="banner" context="logistics" />
     </main>
     <SiteFooter />
   </div>
