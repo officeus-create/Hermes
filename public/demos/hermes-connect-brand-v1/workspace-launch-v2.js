@@ -54,7 +54,7 @@
       ops: [['⌂','Listing-match simulation','Compare 5 demo listings with buyer needs'],['▣','Tour route demo','Model a four-property tour sequence'],['✦','Lead qualification demo','Score 16 synthetic inquiries'],['$','Escrow milestone demo','Model a deposit milestone']]
     },
     auto: {
-      name: 'Apex Auto & Truck Repair', label: 'Truck repair & dispatch partner', revenue: '$18,450', leads: '24', bookings: '9 active bays', actions: '64',
+      name: 'Apex Auto Care', label: 'Truck repair & dispatch partner', revenue: '$18,450', leads: '24', bookings: '9 active bays', actions: '64',
       summary: 'Demo: Hermes matches heavy diesel and trailer repair inquiries to bay capacity, schedules roadside service, and models corporate offers.',
       primary: ['TR','Titan Road Services','Outbound · Roadside dispatch','I have a reefer trailer that needs a brake-chamber swap near Chicago. Can you dispatch a service truck?','Demo response: I can prepare a quote ($380-$480) and match it with Trailer Repair Bay 6 for dispatcher confirmation.','Review repair & dispatch package'],
       conversations: [['TR','Titan Road Services','Reefer trailer brake chamber · Chicago','1m'],['FL','Fleetline Express','Fleet maintenance contract demo','4m'],['DS','D&S Diesel Repair','Parts-supplier API check','8m'],['MM','Mobile Roadside Mechanic','Roadside dispatch confirmation','14m'],['TS','Trailer Supply Co.','Reefer seals restocking order','22m'],['NB','Noah Brown','Inbound trailer alignment lead','31m']],

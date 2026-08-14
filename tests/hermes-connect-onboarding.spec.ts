@@ -8,6 +8,23 @@ test.describe("Hermes Connect Onboarding Business Type Selector", () => {
     page.on('console', msg => console.log(`[BROWSER CONSOLE]: ${msg.text()}`));
     page.on('pageerror', err => console.error(`[BROWSER ERROR]: ${err.message}`));
 
+    // Unregister active service workers and clear cache to prevent stale assets
+    await page.goto("/");
+    await page.evaluate(async () => {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        for (const key of keys) {
+          await caches.delete(key);
+        }
+      }
+    });
+
     // Force clean localStorage for onboarding tests, but allow reloads to preserve it
     await page.addInitScript(() => {
       if (!window.sessionStorage.getItem('hermes_cleared')) {
@@ -58,12 +75,12 @@ test.describe("Hermes Connect Onboarding Business Type Selector", () => {
     expect(storedType).toBe("auto_repair");
 
     // 9. Verify correct vertical is applied
-    await expect(page.locator('[data-workspace-name]').first()).toHaveText("Apex Auto & Truck Repair");
+    await expect(page.locator('[data-workspace-name]').first()).toHaveText("Apex Auto Care");
 
     // 10. Reload preserves selection and loads correct vertical directly without onboarding
     await page.reload();
     await expect(modal).not.toHaveClass(/open/);
-    await expect(page.locator('[data-workspace-name]').first()).toHaveText("Apex Auto & Truck Repair");
+    await expect(page.locator('[data-workspace-name]').first()).toHaveText("Apex Auto Care");
   });
 
   test("Logistics selection works and configures logistics vertical", async ({ page }, testInfo) => {
