@@ -1,11 +1,11 @@
 import { parseCookies, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: D1Database };
+type Env = { DB: any };
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   const cookies = parseCookies(request.headers.get("Cookie"));
-  const token = cookies.hermes_session;
+  const token = (cookies as any).hermes_session;
   if (token) {
     await env.DB.prepare("DELETE FROM sessions WHERE token = ?").bind(token).run();
   }

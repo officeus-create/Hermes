@@ -1,6 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: D1Database };
+type Env = { DB: any };
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const specialist = await getAuthenticatedSpecialist(request, env.DB);

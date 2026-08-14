@@ -1,7 +1,7 @@
 import { verifyTelegramAuth, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: D1Database; TELEGRAM_BOT_TOKEN: string };
+type Env = { DB: any; TELEGRAM_BOT_TOKEN: string };
 
 type TelegramAuthPayload = {
   id?: number | string;

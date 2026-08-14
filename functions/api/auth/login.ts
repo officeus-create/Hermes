@@ -1,7 +1,7 @@
 import { isValidEmail, verifyPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: D1Database };
+type Env = { DB: any };
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   let body: Record<string, unknown>;

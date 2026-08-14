@@ -1,7 +1,7 @@
 import { hashPassword, isValidEmail, isValidPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: D1Database };
+type Env = { DB: any };
 
 const CONTROL_CHARS = new RegExp(
   "[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]",
