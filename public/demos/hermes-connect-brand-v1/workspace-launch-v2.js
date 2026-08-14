@@ -122,5 +122,19 @@
     setTimeout(() => { if (button) button.textContent = 'Send'; }, 1250);
   }));
 
-  render('beauty');
+  const verticalMapLaunch = {
+    logistics: 'logistics',
+    auto_repair: 'auto',
+    agency: 'agency',
+    beauty: 'beauty',
+    fitness: 'fitness',
+    real_estate: 'realestate',
+    professional_services: 'agency',
+    other: 'logistics'
+  };
+  const storedTypeLaunch = localStorage.getItem('hermes_business_type');
+  const urlParamsLaunch = new URLSearchParams(window.location.search);
+  const typeParamLaunch = urlParamsLaunch.get('business_type');
+  const activeVerticalLaunch = verticalMapLaunch[typeParamLaunch] || verticalMapLaunch[storedTypeLaunch] || 'beauty';
+  render(activeVerticalLaunch);
 })();

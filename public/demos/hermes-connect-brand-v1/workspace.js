@@ -311,7 +311,20 @@
     ['+','1000+ tools','Expansion through approved connectors','Explore']
   ];
 
-  let currentVertical = 'beauty';
+  const verticalMapStartup = {
+    logistics: 'logistics',
+    auto_repair: 'auto',
+    agency: 'agency',
+    beauty: 'beauty',
+    fitness: 'fitness',
+    real_estate: 'realestate',
+    professional_services: 'agency',
+    other: 'logistics'
+  };
+  const startupStoredType = localStorage.getItem('hermes_business_type');
+  const urlParamsStartup = new URLSearchParams(window.location.search);
+  const startupTypeParam = urlParamsStartup.get('business_type');
+  let currentVertical = verticalMapStartup[startupTypeParam] || verticalMapStartup[startupStoredType] || 'beauty';
   let currentView = 'home';
 
   function renderActivity() {
@@ -1581,9 +1594,8 @@
     // Check if business type is already selected in URL or localStorage
     const hasTypeParam = urlParams.has('business_type') || urlParams.has('tool') || urlParams.has('module') || urlParams.has('tab');
     const storedType = localStorage.getItem('hermes_business_type');
-    const isAutomation = !!(window.navigator.webdriver || (window.navigator.userAgent && window.navigator.userAgent.includes('Playwright')));
     
-    if (!storedType && !hasTypeParam && !isAutomation && onboardingModal) {
+    if (!storedType && !hasTypeParam && onboardingModal) {
       // Show Onboarding Modal
       onboardingModal.classList.add('open');
       onboardingModal.setAttribute('aria-hidden', 'false');
@@ -1637,7 +1649,12 @@
         });
         
         // Apply vertical setting
-        setVertical(targetVertical);
+        const switcherBtn = document.querySelector(`[data-vertical="${targetVertical}"]`);
+        if (switcherBtn) {
+          switcherBtn.click();
+        } else {
+          setVertical(targetVertical);
+        }
         
         // Show success toast notification
         const msg = `✨ Workspace configured for ${selectedType.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}!`;
