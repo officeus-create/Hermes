@@ -51,6 +51,7 @@ assert.deepEqual(academyService.serviceType, ["U.S. Logistics Operations", "Mark
 assert.equal(publicVacancyRegistry.length, 1);
 assert.equal(verifiedOpenVacancies.length, 1);
 assert.equal(verifiedOpenVacancies[0]?.slug, "car-hauling-dispatcher");
+assert.equal(verifiedOpenVacancies[0]?.submissionUrl, "https://www.work.ua/jobs/7362244/");
 assert.ok(careers.includes("Verified public vacancies are open."));
 assert.ok(careers.includes("1</strong>"));
 assert.ok(careers.includes("Car Hauling Dispatcher — Remote / U.S. Market"));
@@ -60,6 +61,7 @@ assert.ok(careers.includes("does not guarantee review timing, interview, trainin
 assert.ok(!careers.includes('"@type":"JobPosting"'));
 assert.ok(!careers.includes('"@type": "JobPosting"'));
 assert.ok(careerPublicBoundaries.length >= 5);
+assert.ok(careerPublicBoundaries.some((item) => /real submission URL/i.test(item)));
 
 const jobSchemas = [...carHaulingDispatcher.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .flatMap((match) => {
@@ -68,13 +70,22 @@ const jobSchemas = [...carHaulingDispatcher.matchAll(/<script[^>]+type=["']appli
   });
 const jobPostings = jobSchemas.filter((entity) => entity?.["@type"] === "JobPosting");
 assert.equal(jobPostings.length, 1);
-assert.equal(jobPostings[0].title, "Car Hauling Dispatcher — Remote / U.S. Market");
+assert.equal(jobPostings[0].title, "Car Hauling Dispatcher");
 assert.equal(jobPostings[0].employmentType, "FULL_TIME");
 assert.equal(jobPostings[0].jobLocationType, "TELECOMMUTE");
+assert.deepEqual(jobPostings[0].applicantLocationRequirements, [
+  { "@type": "Country", name: "United States" },
+  { "@type": "Country", name: "Ukraine" },
+]);
+assert.equal(jobPostings[0].directApply, false);
+assert.match(jobPostings[0].description, /Support car-hauling dispatch work for U.S.-market carrier operations/);
+assert.match(jobPostings[0].description, /Ability to work the applicable U.S. Central Time schedule/);
 assert.equal(jobPostings[0].datePosted, "2026-02-26");
 assert.equal(jobPostings[0].validThrough, "2026-09-14T23:59:59Z");
 assert.ok(carHaulingDispatcher.includes("Remote worldwide"));
 assert.ok(carHaulingDispatcher.includes("U.S. Central Time schedule"));
+assert.ok(carHaulingDispatcher.includes('href="https://www.work.ua/jobs/7362244/"'));
+assert.ok(carHaulingDispatcher.includes("Prepare Hermes application preview"));
 assert.ok(carHaulingDispatcher.includes("source=hermes_careers"));
 assert.ok(!carHaulingDispatcher.includes("@ProgressoPro"));
 assert.ok(!carHaulingDispatcher.includes("one of the highest"));
@@ -93,6 +104,7 @@ const syntheticVacancy = {
   reviewedAt: "2026-07-31",
   expiresAt: "2026-08-31",
   applicationPath: "/logistics/apply/?for=career&role=fixture-role-001",
+  submissionUrl: "https://example.com/jobs/fixture-role-001/apply",
   ownerApprovedForPublication: true,
 };
 assert.equal(isVacancyEligibleForJobPosting(syntheticVacancy), true);
@@ -101,6 +113,9 @@ assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, status: "unve
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, expiresAt: "" }), false);
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, datePosted: "" }), false);
 assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, applicationPath: "" }), false);
+assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, submissionUrl: "" }), false);
+assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, submissionUrl: "http://example.com/apply" }), false);
+assert.equal(isVacancyEligibleForJobPosting({ ...syntheticVacancy, submissionUrl: "not-a-url" }), false);
 
 assert.equal(growthReleaseWatchlist.length, 8);
 assert.equal(new Set(growthReleaseWatchlist.map((item) => item.url)).size, growthReleaseWatchlist.length);
@@ -127,4 +142,4 @@ assert.ok(finalGrowthReadinessChecklist.some((item) => /Academy exposes only U.S
 assert.ok(finalGrowthReadinessChecklist.some((item) => /JobPosting is absent when none are verified open/i.test(item)));
 assert.ok(finalGrowthReadinessChecklist.some((item) => /Owner separately approves merge and production deployment/i.test(item)));
 
-console.log("academy/careers growth governance passed: two programs, verified vacancy registry, canonical JobPosting gate, privacy-safe recruiting route, watchlist, scorecards, and owner release approval.");
+console.log("academy/careers growth governance passed: two programs, verified vacancy registry, real JobPosting submission gate, privacy-safe recruiting preview, watchlist, scorecards, and owner release approval.");
