@@ -1,0 +1,35 @@
+name: Carrier Contract Live Activation
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/**"
+      - "functions/sign/**"
+      - "functions/logistics/carrier-*/**"
+      - "public/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf"
+      - "workers/lead-email/**"
+      - "scripts/carrier-contract-live-activation.test.mjs"
+      - ".github/workflows/carrier-contract-live-activation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "functions/api/**"
+      - "functions/sign/**"
+      - "functions/logistics/carrier-*/**"
+      - "public/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf"
+      - "workers/lead-email/**"
+      - "scripts/carrier-contract-live-activation.test.mjs"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-live-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --experimental-strip-types scripts/carrier-contract-live-activation.test.mjs
