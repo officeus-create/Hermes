@@ -15,6 +15,182 @@
     academy: ['TRAINING & ENABLEMENT', 'Hermes Academy']
   };
 
+  const i18n = {
+    en: {
+      kicker_home: 'BUSINESS OVERVIEW', title_home: 'Good morning, Vladimir.',
+      kicker_inbox: 'UNIFIED INBOX', title_inbox: 'Conversations',
+      kicker_crm: 'CUSTOMER INTELLIGENCE', title_crm: 'Customers',
+      kicker_calendar: 'SCHEDULING', title_calendar: 'Calendar',
+      kicker_sales: 'REVENUE ENGINE', title_sales: 'Sales',
+      kicker_marketing: 'GROWTH ENGINE', title_marketing: 'Marketing',
+      kicker_finance: 'FINANCIAL CONTROL', title_finance: 'Finance',
+      kicker_operations: 'AI ORCHESTRATION', title_operations: 'Operations',
+      kicker_integrations: 'CONNECTED ECOSYSTEM', title_integrations: 'Integrations',
+      kicker_academy: 'TRAINING & ENABLEMENT', title_academy: 'Hermes Academy',
+      tour_btn: '▶ 5-Min Tour', roi_btn: '📊 ROI Calculator', request_access: 'Request Access / Schedule Demo',
+      rev_today: 'Revenue today', new_leads: 'New leads', bookings: 'Bookings / deals', ai_actions: 'AI actions',
+      ask_hermes: '✦ Ask Hermes', prototype: 'Prototype', view_all: 'View all',
+      things_today: '3 things need you today'
+    },
+    uk: {
+      kicker_home: 'ОГЛЯД БІЗНЕСУ', title_home: 'Доброго ранку, Володимир.',
+      kicker_inbox: 'ЄДИНИЙ ВХІДНИЙ', title_inbox: 'Діалоги',
+      kicker_crm: 'КЛІЄНТСЬКА АНАЛІТИКА', title_crm: 'Клієнти',
+      kicker_calendar: 'РОЗКЛАД', title_calendar: 'Календар',
+      kicker_sales: 'ДВИГУН ДОХОДІВ', title_sales: 'Продажі',
+      kicker_marketing: 'МАРКЕТИНГ ТА РІСТ', title_marketing: 'Маркетинг',
+      kicker_finance: 'ФІНАНСОВИЙ КОНТРОЛЬ', title_finance: 'Фінанси',
+      kicker_operations: 'ШІ ОРКЕСТРАЦІЯ', title_operations: 'Операції',
+      kicker_integrations: 'ЕКОСИСТЕМА ИНТЕГРАЦІЙ', title_integrations: 'Інтеграції',
+      kicker_academy: 'НАВЧАННЯ ТА РОЗВИТОК', title_academy: 'Академія Hermes',
+      tour_btn: '▶ 5-хв Тур', roi_btn: '📊 Калькулятор ROI', request_access: 'Запити доступ / Демо',
+      rev_today: 'Дохід за сьогодні', new_leads: 'Нові ліди', bookings: 'Бронювання / угоди', ai_actions: 'Дії ШІ',
+      ask_hermes: '✦ Запитати Hermes', prototype: 'Прототип', view_all: 'Дивитися все',
+      things_today: '3 завдання вимагають вашої уваги'
+    },
+    ru: {
+      kicker_home: 'ОБЗОР БИЗНЕСА', title_home: 'Доброе утро, Владимир.',
+      kicker_inbox: 'ЕДИНЫЙ ВХОДЯЩИЙ', title_inbox: 'Диалоги',
+      kicker_crm: 'КЛИЕНТСКАЯ АНАЛИТИКА', title_crm: 'Клиенты',
+      kicker_calendar: 'РАСПИСАНИЕ', title_calendar: 'Календарь',
+      kicker_sales: 'ДВИГАТЕЛЬ ДОХОДОВ', title_sales: 'Продажи',
+      kicker_marketing: 'МАРКЕТИНГ И РОСТ', title_marketing: 'Маркетинг',
+      kicker_finance: 'ФИНАНСОВЫЙ КОНТРОЛЬ', title_finance: 'Финансы',
+      kicker_operations: 'ИИ ОРКЕСТРАЦИЯ', title_operations: 'Операции',
+      kicker_integrations: 'ЭКОСИСТЕМА ИНТЕГРАЦИЙ', title_integrations: 'Интеграции',
+      kicker_academy: 'ОБУЧЕНИЕ И РАЗВИТИЕ', title_academy: 'Академия Hermes',
+      tour_btn: '▶ 5-мин Тур', roi_btn: '📊 Калькулятор ROI', request_access: 'Запросить доступ / Демо',
+      rev_today: 'Выручка сегодня', new_leads: 'Новые лиды', bookings: 'Брони / сделки', ai_actions: 'Действия ИИ',
+      ask_hermes: '✦ Спросить Hermes', prototype: 'Прототип', view_all: 'Смотреть все',
+      things_today: '3 задачи требуют вашего внимания'
+    },
+    es: {
+      kicker_home: 'RESUMEN DEL NEGOCIO', title_home: 'Buenos días, Vladimir.',
+      kicker_inbox: 'BANDEJA UNIFICADA', title_inbox: 'Conversaciones',
+      kicker_crm: 'INTELIGENCIA DE CLIENTES', title_crm: 'Clientes',
+      kicker_calendar: 'PROGRAMACIÓN', title_calendar: 'Calendario',
+      kicker_sales: 'MOTOR DE INGRESOS', title_sales: 'Ventas',
+      kicker_marketing: 'MOTOR DE CRECIMIENTO', title_marketing: 'Marketing',
+      kicker_finance: 'CONTROL FINANCIERO', title_finance: 'Finanzas',
+      kicker_operations: 'ORQUESTACIÓN DE IA', title_operations: 'Operaciones',
+      kicker_integrations: 'ECOSISTEMA CONECTADO', title_integrations: 'Integraciones',
+      kicker_academy: 'CAPACITACIÓN Y DESARROLLO', title_academy: 'Academia Hermes',
+      tour_btn: '▶ Tour 5 Min', roi_btn: '📊 Calculadora ROI', request_access: 'Solicitar Acceso / Demo',
+      rev_today: 'Ingresos hoy', new_leads: 'Nuevos clientes', bookings: 'Reservas / ofertas', ai_actions: 'Acciones de IA',
+      ask_hermes: '✦ Preguntar a Hermes', prototype: 'Prototipo', view_all: 'Ver todo',
+      things_today: '3 asuntos requieren su atención hoy'
+    },
+    fr: {
+      kicker_home: 'APERÇU DE L’ENTREPRISE', title_home: 'Bonjour, Vladimir.',
+      kicker_inbox: 'BOÎTE UNIFIÉE', title_inbox: 'Conversations',
+      kicker_crm: 'INTELLIGENCE CLIENTS', title_crm: 'Clients',
+      kicker_calendar: 'PLANIFICATION', title_calendar: 'Calendrier',
+      kicker_sales: 'MOTEUR DE REVENUS', title_sales: 'Ventes',
+      kicker_marketing: 'MOTEUR DE CROISSANCE', title_marketing: 'Marketing',
+      kicker_finance: 'CONTRÔLE FINANCIER', title_finance: 'Finances',
+      kicker_operations: 'ORCHESTRATION IA', title_operations: 'Opérations',
+      kicker_integrations: 'ÉCOSYSTÈME CONNECTÉ', title_integrations: 'Intégrations',
+      kicker_academy: 'FORMATION ET DÉVELOPPEMENT', title_academy: 'Académie Hermes',
+      tour_btn: '▶ Tour de 5 Min', roi_btn: '📊 Calculateur ROI', request_access: 'Demander un Accès / Démo',
+      rev_today: 'Revenu aujourd’hui', new_leads: 'Nouveaux prospects', bookings: 'Réservations / ventes', ai_actions: 'Actions IA',
+      ask_hermes: '✦ Demander à Hermes', prototype: 'Prototype', view_all: 'Voir tout',
+      things_today: '3 choses nécessitent votre attention'
+    },
+    vi: {
+      kicker_home: 'TỔNG QUAN DOANH NGHIỆP', title_home: 'Chào buổi sáng, Vladimir.',
+      kicker_inbox: 'HỘP THƯ HỢP NHẤT', title_inbox: 'Cuộc trò chuyện',
+      kicker_crm: 'THÔNG TIN KHÁCH HÀNG', title_crm: 'Khách hàng',
+      kicker_calendar: 'LỊCH TRÌNH', title_calendar: 'Lịch làm việc',
+      kicker_sales: 'ĐỘNG CƠ DOANH THU', title_sales: 'Bán hàng',
+      kicker_marketing: 'ĐỘNG CƠ TĂNG TRƯỞNG', title_marketing: 'Tiếp thị',
+      kicker_finance: 'QUẢN LÝ TÀI CHÍNH', title_finance: 'Tài chính',
+      kicker_operations: 'ĐIỀU PHỐI AI', title_operations: 'Vận hành',
+      kicker_integrations: 'HỆ THỐNG KẾT NỐI', title_integrations: 'Tích hợp',
+      kicker_academy: 'ĐÀO TẠO & PHÁT TRIỂN', title_academy: 'Học viện Hermes',
+      tour_btn: '▶ Tour 5 Phút', roi_btn: '📊 Máy Tính ROI', request_access: 'Yêu Cầu Truy Cập / Demo',
+      rev_today: 'Doanh thu hôm nay', new_leads: 'Khách hàng mới', bookings: 'Lịch đặt / hợp đồng', ai_actions: 'Hành động AI',
+      ask_hermes: '✦ Hỏi Hermes', prototype: 'Bản thử nghiệm', view_all: 'Xem tất cả',
+      things_today: '3 công việc cần bạn duyệt hôm nay'
+    },
+    fil: {
+      kicker_home: 'PANGKALAHATANG TINGIN', title_home: 'Magandang umaga, Vladimir.',
+      kicker_inbox: 'PINAG-ISANG INBOX', title_inbox: 'Mga Usapan',
+      kicker_crm: 'IMPORMASYON NG KLIYENTE', title_crm: 'Mga Kliyente',
+      kicker_calendar: 'ISKEDYUL', title_calendar: 'Kalendaryo',
+      kicker_sales: 'KITA AT BENTA', title_sales: 'Mga Benta',
+      kicker_marketing: 'PAGPAPALAGO', title_marketing: 'Pemasar / Marketing',
+      kicker_finance: 'KONTROL SA PINANSYAL', title_finance: 'Pondo at Pinansyal',
+      kicker_operations: 'AI ORKESTRAYON', title_operations: 'Mga Operasyon',
+      kicker_integrations: 'KONEKTADONG SISTEMA', title_integrations: 'Mga Integrasyon',
+      kicker_academy: 'PAGSASSANAY AT PAG-AARAL', title_academy: 'Akademiya ng Hermes',
+      tour_btn: '▶ 5-Minutong Tour', roi_btn: '📊 ROI Karkulador', request_access: 'Humiling ng Access / Demo',
+      rev_today: 'Kinakita ngayong araw', new_leads: 'Bagong leads', bookings: 'Mga booking / kontrata', ai_actions: 'Mga aksyon ng AI',
+      ask_hermes: '✦ Magtanong kay Hermes', prototype: 'Prototipo', view_all: 'Tingnan lahat',
+      things_today: '3 bagay ang kailangan ng pansin mo ngayon'
+    },
+    id: {
+      kicker_home: 'RINGKASAN BISNIS', title_home: 'Selamat pagi, Vladimir.',
+      kicker_inbox: 'INBOX TERPADU', title_inbox: 'Percakapan',
+      kicker_crm: 'INTELIJEN PELANGGAN', title_crm: 'Pelanggan',
+      kicker_calendar: 'JADWAL', title_calendar: 'Kalender',
+      kicker_sales: 'MESIN PENDAPATAN', title_sales: 'Penjualan',
+      kicker_marketing: 'MESIN PERTUMBUHAN', title_marketing: 'Pemasaran',
+      kicker_finance: 'KONTROL KEUANGAN', title_finance: 'Keuangan',
+      kicker_operations: 'ORCHESTRASI AI', title_operations: 'Operasional',
+      kicker_integrations: 'EKOSISTEM TERHUBUNG', title_integrations: 'Integrasi',
+      kicker_academy: 'PELATIHAN & PENGEMBANGAN', title_academy: 'Akademi Hermes',
+      tour_btn: '▶ Tur 5 Menit', roi_btn: '📊 Kalkulator ROI', request_access: 'Minta Akses / Demo',
+      rev_today: 'Pendapatan hari ini', new_leads: 'Prospek baru', bookings: 'Pemesanan / transaksi', ai_actions: 'Tindakan AI',
+      ask_hermes: '✦ Tanya Hermes', prototype: 'Prototip', view_all: 'Lihat semua',
+      things_today: '3 hal membutuhkan perhatian Anda hari ini'
+    }
+  };
+
+  let currentLang = 'en';
+
+  function applyLanguage(lang) {
+    if (!i18n[lang]) return;
+    currentLang = lang;
+    const t = i18n[lang];
+
+    // Update ViewMeta kickers & titles
+    viewMeta.home = [t.kicker_home, t.title_home];
+    viewMeta.inbox = [t.kicker_inbox, t.title_inbox];
+    viewMeta.crm = [t.kicker_crm, t.title_crm];
+    viewMeta.calendar = [t.kicker_calendar, t.title_calendar];
+    viewMeta.sales = [t.kicker_sales, t.title_sales];
+    viewMeta.marketing = [t.kicker_marketing, t.title_marketing];
+    viewMeta.finance = [t.kicker_finance, t.title_finance];
+    viewMeta.operations = [t.kicker_operations, t.title_operations];
+    viewMeta.integrations = [t.kicker_integrations, t.title_integrations];
+    viewMeta.academy = [t.kicker_academy, t.title_academy];
+
+    // Refresh active view title/kicker
+    if (typeof currentView !== 'undefined' && viewMeta[currentView]) {
+      $('[data-view-kicker]') && ($('[data-view-kicker]').textContent = viewMeta[currentView][0]);
+      $('[data-view-title]') && ($('[data-view-title]').textContent = viewMeta[currentView][1]);
+    }
+
+    // Topbar Action Buttons
+    $$('[data-demo-tour]').forEach(el => el.textContent = t.tour_btn);
+    $$('[data-open-roi-modal]').forEach(el => el.textContent = t.roi_btn);
+    $$('[data-request-access]').forEach(el => el.textContent = t.request_access);
+    $$('[data-hermes-open]').forEach(el => el.textContent = t.ask_hermes);
+
+    // KPI Metrics Labels
+    const metricSpans = $$('.metric-grid article span');
+    if (metricSpans.length >= 4) {
+      metricSpans[0].textContent = t.rev_today;
+      metricSpans[1].textContent = t.new_leads;
+      metricSpans[2].textContent = t.bookings;
+      metricSpans[3].textContent = t.ai_actions;
+    }
+
+    // Focus Card Title
+    const focusCardH3 = $('.focus-card h3');
+    if (focusCardH3) focusCardH3.textContent = t.things_today;
+  }
+
   const verticals = {
     beauty: {
       name: 'Aurelia Studio', label: 'Beauty & wellness', revenue: '$2,840', leads: '18', bookings: '24', actions: '43',
@@ -393,6 +569,29 @@
     }
   ];
 
+  function saveLeadStoreToLocalStorage() {
+    try {
+      localStorage.setItem('hermes_lead_store', JSON.stringify(leadStore));
+    } catch (e) {
+      // safe fallback
+    }
+  }
+
+  function loadLeadStoreFromLocalStorage() {
+    try {
+      const stored = localStorage.getItem('hermes_lead_store');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          leadStore.length = 0;
+          parsed.forEach(item => leadStore.push(item));
+        }
+      }
+    } catch (e) {
+      // safe fallback
+    }
+  }
+
   function renderLeadInbox() {
     const list = $('[data-conversation-list]');
     if (!list) return;
@@ -464,6 +663,7 @@
         btn.addEventListener('click', () => {
           const newStatus = btn.dataset.setStatus;
           lead.status = newStatus;
+          saveLeadStoreToLocalStorage();
           renderLeadInbox();
           renderLeadDetail(lead.id);
         });
@@ -703,6 +903,7 @@
     };
 
     leadStore.unshift(newLead);
+    saveLeadStoreToLocalStorage();
     selectedLeadId = newLead.id;
 
     // Update KPI counters
@@ -919,13 +1120,12 @@
       setTimeout(() => btn.textContent = orig, 1800);
 
       // Add to ops queue
-      opsQueue.unshift({
-        id: 'ops_' + Date.now(),
-        title: 'B2B Rate Counter-Offer Transmitted',
-        time: 'Just now',
-        status: 'DISPATCH_WAITING',
-        impact: `Counter rate: ${$('[data-la-out="targetRate"]')?.textContent || ''}`
-      });
+      ops.unshift([
+        '✦',
+        'B2B Rate Counter-Offer Transmitted',
+        `Counter rate: ${$('[data-la-out="targetRate"]')?.textContent || '$2,450'}`,
+        'Dispatched'
+      ]);
       renderOps();
     });
 
@@ -952,9 +1152,9 @@
   ];
 
   const TIER_PRICES = {
-    starter: { name: 'Starter', monthly: 299, annual: 250 },
-    pro: { name: 'Professional', monthly: 799, annual: 675 },
-    enterprise: { name: 'Enterprise', monthly: 1999, annual: 1695 }
+    starter: { name: 'Starter', monthly: 99, annual: 79 },
+    pro: { name: 'Professional', monthly: 299, annual: 239 },
+    enterprise: { name: 'Enterprise', monthly: 799, annual: 639 }
   };
 
   function setProposalModal(open, lead = null) {
@@ -997,9 +1197,9 @@
     });
 
     // Update tier prices displayed
-    $('[data-price-starter]').textContent = selectedBilling === 'annual' ? '$250' : '$299';
-    $('[data-price-pro]').textContent = selectedBilling === 'annual' ? '$675' : '$799';
-    $('[data-price-enterprise]').textContent = selectedBilling === 'annual' ? '$1,695' : '$1,999';
+    $('[data-price-starter]').textContent = selectedBilling === 'annual' ? '$79' : '$99';
+    $('[data-price-pro]').textContent = selectedBilling === 'annual' ? '$239' : '$299';
+    $('[data-price-enterprise]').textContent = selectedBilling === 'annual' ? '$639' : '$799';
 
     // Tier Cards Active state
     $$('[data-tier]').forEach(card => {
@@ -1136,6 +1336,7 @@
     $('[data-send-approval-btn]')?.addEventListener('click', () => {
       if (currentProposalLead) {
         currentProposalLead.status = 'PROPOSAL_SENT';
+        saveLeadStoreToLocalStorage();
         renderLeadInbox();
         renderLeadDetail(currentProposalLead.id);
       }
@@ -1147,8 +1348,8 @@
         suggested.innerHTML = `
           <span>✦</span>
           <div>
-            <b>Proposal Sent Successfully!</b>
-            <small>Client notified & proposal link generated.</small>
+            <b>Proposal Dispatched to Client Record</b>
+            <small>Proposal generated & recorded in Command Center CRM.</small>
           </div>
           <span class="active-chip">PROPOSAL_SENT</span>
         `;
@@ -1367,6 +1568,7 @@
   initRoiCalculator();
 
   renderActivity();
+  loadLeadStoreFromLocalStorage();
   renderLeadInbox();
   renderLeadDetail(selectedLeadId);
   renderCustomers();
@@ -1374,6 +1576,12 @@
   renderKanban();
   renderOps();
   renderIntegrations();
+  // Language selector listener
+  const langSelect = $('[data-lang-select]');
+  if (langSelect) {
+    langSelect.addEventListener('change', () => applyLanguage(langSelect.value));
+  }
+
   setVertical(currentVertical);
   setView(currentView);
 })();

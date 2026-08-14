@@ -1,0 +1,44 @@
+name: Verify Hermes Connect site-shell entry production
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/connect-site-shell-production-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Verify canonical Connect entry after propagation
+        run: |
+          node <<'NODE'
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const target = 'https://hermeslogisticsus.com/logistics/car-hauling-dispatch/';
+          const connect = 'https://connect.hermeslogisticsus.com/';
+          let last = {};
+          for (let attempt = 1; attempt <= 18; attempt += 1) {
+            try {
+              const response = await fetch(`${target}?release=${Date.now()}`, { headers: { 'cache-control':'no-cache', pragma:'no-cache', 'user-agent':'HermesConnectSiteShellVerifier/1.0' }, signal: AbortSignal.timeout(20000) });
+              const html = await response.text();
+              const count = html.split(`href="${connect}"`).length - 1;
+              const label = html.includes('Hermes Connect');
+              const forbidden = /Hermes Connect[^<]{0,40}(Live|Connected|Realtime)/i.test(html);
+              last = { attempt, status: response.status, count, label, forbidden };
+              if (response.status === 200 && count >= 2 && label && !forbidden) {
+                console.log(JSON.stringify({ ok:true, ...last }, null, 2));
+                process.exit(0);
+              }
+            } catch (error) {
+              last = { attempt, error: error instanceof Error ? error.message : String(error) };
+            }
+            if (attempt < 18) await sleep(10000);
+          }
+          console.error(JSON.stringify({ ok:false, ...last }, null, 2));
+          process.exit(1);
+          NODE

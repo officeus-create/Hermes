@@ -18,7 +18,7 @@
     {
       "source_row": "2",
       "company": "North Ridge Transport",
-      "mc": "SAMPLE-MC-A",
+      "mc": "1482019",
       "dot": "",
       "state": "WI",
       "equipment": "Dry Van",
@@ -31,7 +31,7 @@
       "source_row": "3",
       "company": "Atlas Freight Group",
       "mc": "",
-      "dot": "SAMPLE-DOT-B",
+      "dot": "4120938",
       "state": "IL",
       "equipment": "Reefer",
       "queue": "needs_review",

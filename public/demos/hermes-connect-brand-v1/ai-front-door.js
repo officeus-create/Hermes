@@ -1,6 +1,6 @@
 /**
  * Hermes Connect — Front-Door AI Brain Intent Router
- * Categorizes incoming intent signals across 5 industry verticals and generates automated actions.
+ * Categorizes incoming intent signals across 7 industry verticals and generates automated actions.
  */
 
 window.HermesAIBrain = (function () {
@@ -49,16 +49,45 @@ window.HermesAIBrain = (function () {
         { label: 'Generate short-form video script', type: 'creative' },
         { label: 'Launch WhatsApp retargeting flow', type: 'crm' }
       ]
+    },
+    agency: {
+      name: 'Agency & Digital Services',
+      keywords: ['agency', 'client', 'retainer', 'proposal', 'audit', 'scope', 'contract', 'growth'],
+      suggestedActions: [
+        { label: 'Generate agency client proposal', type: 'proposal' },
+        { label: 'Schedule strategy kickoff call', type: 'calendar' },
+        { label: 'Send technical audit scorecard', type: 'analytics' }
+      ]
+    },
+    realestate: {
+      name: 'Real Estate & Properties',
+      keywords: ['listing', 'property', 'showing', 'tour', 'buyer', 'seller', 'lease', 'meridian'],
+      suggestedActions: [
+        { label: 'Schedule private property showing', type: 'booking' },
+        { label: 'Send digital buyer brochure', type: 'crm' },
+        { label: 'Qualify pre-approval status', type: 'operations' }
+      ]
     }
   };
 
-  function classifyIntent(text) {
+  function classifyIntent(text, hintVertical) {
+    const defaultVert = (hintVertical && VERTICALS[hintVertical]) ? hintVertical : 'beauty';
     if (!text || typeof text !== 'string') {
-      return { vertical: 'beauty', confidence: 0.5, meta: VERTICALS.beauty };
+      const meta = VERTICALS[defaultVert];
+      return {
+        vertical: defaultVert,
+        confidence: 0.85,
+        meta: meta,
+        rawText: text || '',
+        verticalLabel: meta.name,
+        actionText: meta.suggestedActions[0]?.label || 'Route lead to workspace pipeline.',
+        recommendation: meta.suggestedActions[0]?.label || 'Standard routing',
+        intent: defaultVert.toUpperCase() + '_INQUIRY'
+      };
     }
 
     const lower = text.toLowerCase();
-    let bestVertical = 'beauty';
+    let bestVertical = defaultVert;
     let maxScore = 0;
 
     Object.keys(VERTICALS).forEach((key) => {
@@ -73,18 +102,23 @@ window.HermesAIBrain = (function () {
       }
     });
 
-    const confidence = maxScore > 0 ? Math.min(0.95, 0.6 + maxScore * 0.15) : 0.65;
+    const confidence = maxScore > 0 ? Math.min(0.95, 0.65 + maxScore * 0.12) : 0.85;
+    const meta = VERTICALS[bestVertical];
 
     return {
       vertical: bestVertical,
       confidence: confidence,
-      meta: VERTICALS[bestVertical],
-      rawText: text
+      meta: meta,
+      rawText: text,
+      verticalLabel: meta.name,
+      actionText: meta.suggestedActions[0]?.label || 'Route lead to workspace pipeline.',
+      recommendation: meta.suggestedActions[0]?.label || 'Standard routing',
+      intent: bestVertical.toUpperCase() + '_INQUIRY'
     };
   }
 
   function generateResponse(intentResult) {
-    const v = intentResult.meta;
+    const v = intentResult.meta || VERTICALS[intentResult.vertical] || VERTICALS.beauty;
     const verticalName = v.name;
     const actions = v.suggestedActions;
 
@@ -102,3 +136,4 @@ window.HermesAIBrain = (function () {
     VERTICALS: VERTICALS
   };
 })();
+
