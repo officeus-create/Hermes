@@ -32,7 +32,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   let specialist = await env.DB
     .prepare("SELECT id FROM specialists WHERE telegram_id = ?")
     .bind(telegramId)
-    .first<{ id: string }>();
+    .first() as { id: string } | null;
 
   if (!specialist) {
     const name = [payload.first_name, payload.last_name].filter(Boolean).join(" ").trim()
