@@ -16,6 +16,8 @@ const executionVersion = "HERMES-CARRIER-EXECUTION-V2026-08-06";
 const executionBytes = await readFile(new URL(`../public${executionPath}`, import.meta.url));
 const executionSha = createHash("sha256").update(executionBytes).digest("hex");
 assert.equal(executionSha, "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8");
+const reviewPath = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
+const reviewBytes = await readFile(new URL(`../public${reviewPath}`, import.meta.url));
 
 const serviceToken = "synthetic-contract-service-token-long-enough";
 const sentMessages = [];
@@ -43,8 +45,13 @@ const env = {
   ASSETS: {
     async fetch(input) {
       const url = new URL(input instanceof Request ? input.url : String(input));
-      assert.equal(url.pathname, executionPath);
-      return new Response(executionBytes, { status: 200, headers: { "Content-Type": "application/pdf" } });
+      if (url.pathname === executionPath) {
+        return new Response(executionBytes, { status: 200, headers: { "Content-Type": "application/pdf" } });
+      }
+      if (url.pathname === reviewPath) {
+        return new Response(reviewBytes, { status: 200, headers: { "Content-Type": "application/pdf" } });
+      }
+      throw new Error(`Unexpected contract asset: ${url.pathname}`);
     },
   },
   LEAD_DELIVERY_MODE: "live",
