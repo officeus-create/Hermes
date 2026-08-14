@@ -183,11 +183,21 @@ const sendMessage = async (env, message) => {
     ...(message.attachments.length ? {
       attachments: message.attachments.map((attachment) => ({
         filename: attachment.filename,
-        contentType: attachment.contentType,
-        contentBase64: attachment.contentBase64,
+        type: attachment.contentType,
+        content: attachment.contentBase64,
+        disposition: "attachment",
       })),
     } : {}),
   });
+};
+
+const sendSafely = async (env, message) => {
+  try {
+    await sendMessage(env, message);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, mapped: classifyProviderError(error) };
+  }
 };
 
 const worker = {
@@ -232,44 +242,72 @@ const worker = {
     }
     if (replyTo && !isEmail(replyTo)) return json(400, { ok: false, error: "invalid_reply_to" });
 
-    let recipients = [];
-    let attachments = [];
     if (isContractPath) {
       if (subject !== "[HERMES CONTRACT] [CARRIER ONBOARDING]") return json(400, { ok: false, error: "invalid_contract_subject" });
       const carrierEmail = cleanHeader(input?.carrier_email, 320).toLowerCase();
-      attachments = normalizeAttachments(input?.attachments);
+      const attachments = normalizeAttachments(input?.attachments);
       const internalRecipients = parseInternalRecipients(env);
       if (!isEmail(carrierEmail) || !attachments || internalRecipients.length < 1) {
         return json(400, { ok: false, error: "invalid_contract_delivery" });
       }
-      recipients = [...new Set([...internalRecipients, carrierEmail])];
-    } else {
-      if (!env.SALES_DESTINATION || !isEmail(cleanHeader(env.SALES_DESTINATION, 320))) {
-        return json(503, { ok: false, error: "service_not_configured" });
+
+      const sender = cleanHeader(env.SALES_SENDER, 320);
+      const requiredRecipients = DEFAULT_CONTRACT_INTERNAL_RECIPIENTS.filter((recipient) => internalRecipients.includes(recipient));
+      for (const recipient of requiredRecipients) {
+        const result = await sendSafely(env, { to: recipient, from: sender, subject, text, replyTo, attachments, requestId });
+        if (!result.ok) {
+          console.error(JSON.stringify({ event: "contract_internal_delivery_failed", category: result.mapped.error }));
+          return json(result.mapped.status, { ok: false, error: result.mapped.error });
+        }
       }
-      recipients = [cleanHeader(env.SALES_DESTINATION, 320).toLowerCase()];
+
+      const optionalInternalRecipients = internalRecipients.filter((recipient) => !requiredRecipients.includes(recipient));
+      let optionalInternalDelivered = 0;
+      for (const recipient of optionalInternalRecipients) {
+        const result = await sendSafely(env, { to: recipient, from: sender, subject, text, replyTo, attachments, requestId });
+        if (result.ok) optionalInternalDelivered += 1;
+        else console.error(JSON.stringify({ event: "contract_optional_internal_delivery_pending", category: result.mapped.error }));
+      }
+
+      let carrierDelivered = internalRecipients.includes(carrierEmail);
+      if (!carrierDelivered) {
+        const carrierResult = await sendSafely(env, { to: carrierEmail, from: sender, subject, text, replyTo, attachments, requestId });
+        carrierDelivered = carrierResult.ok;
+        if (!carrierResult.ok) {
+          console.error(JSON.stringify({ event: "contract_carrier_copy_pending", category: carrierResult.mapped.error }));
+        }
+      }
+
+      return json(202, {
+        ok: true,
+        required_internal_delivered: requiredRecipients.length,
+        optional_internal_delivered: optionalInternalDelivered,
+        carrier_copy: carrierDelivered ? "delivered" : "download_only",
+      });
     }
 
+    if (!env.SALES_DESTINATION || !isEmail(cleanHeader(env.SALES_DESTINATION, 320))) {
+      return json(503, { ok: false, error: "service_not_configured" });
+    }
+    const message = {
+      to: cleanHeader(env.SALES_DESTINATION, 320).toLowerCase(),
+      from: cleanHeader(env.SALES_SENDER, 320),
+      subject,
+      text,
+      replyTo,
+      attachments: [],
+      requestId,
+    };
     try {
-      for (const recipient of recipients) {
-        await sendMessage(env, {
-          to: recipient,
-          from: cleanHeader(env.SALES_SENDER, 320),
-          subject,
-          text,
-          replyTo,
-          attachments,
-          requestId,
-        });
-      }
-      return json(202, { ok: true, recipient_count: recipients.length });
+      await sendMessage(env, message);
+      return json(202, { ok: true, recipient_count: 1 });
     } catch (error) {
       const mapped = classifyProviderError(error);
-      console.error(JSON.stringify({ event: isContractPath ? "contract_delivery_failed" : "lead_delivery_failed", category: mapped.error }));
+      console.error(JSON.stringify({ event: "lead_delivery_failed", category: mapped.error }));
       return json(mapped.status, { ok: false, error: mapped.error });
     }
   },
 };
 
-export { buildRawMime, classifyProviderError, constantTimeEqual, normalizeAttachments, parseInternalRecipients };
+export { buildRawMime, classifyProviderError, constantTimeEqual, normalizeAttachments, parseInternalRecipients, sendMessage };
 export default worker;
