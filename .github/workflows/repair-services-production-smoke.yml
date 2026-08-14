@@ -1,0 +1,114 @@
+name: One-time Repair Shop services production smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/repair-services-production-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Verify production Repair Shop owner services
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Exercise real production service persistence
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          TEST_ID="$(date +%s)-${GITHUB_RUN_ID}"
+          TEST_EMAIL="repair-services-test-${TEST_ID}@hermesconnect.app"
+          TEST_PASSWORD="HermesServices-${TEST_ID}-A9!"
+          SERVICE_NAME="Production Brake Test ${TEST_ID}"
+          COOKIE_JAR="${RUNNER_TEMP}/repair-services.cookies"
+
+          echo "::add-mask::$TEST_PASSWORD"
+          echo "TEST_ACCOUNT_EMAIL=$TEST_EMAIL"
+
+          DASHBOARD_CODE="$(curl -sS -o "${RUNNER_TEMP}/dashboard.html" -w '%{http_code}' https://hermeslogisticsus.com/services/hermes-connect/repair-shops/dashboard/ || true)"
+          echo "DASHBOARD_HTTP=$DASHBOARD_CODE"
+          grep -q "Shop Owner Workspace" "${RUNNER_TEMP}/dashboard.html"
+          grep -q "noindex,nofollow" "${RUNNER_TEMP}/dashboard.html"
+          echo "DASHBOARD_H1=YES"
+          echo "DASHBOARD_NOINDEX=YES"
+          test "$DASHBOARD_CODE" = "200"
+
+          UNAUTH_CODE="$(curl -sS -o "${RUNNER_TEMP}/unauth.body" -w '%{http_code}' https://hermeslogisticsus.com/api/services || true)"
+          echo "UNAUTH_SERVICES_HTTP=$UNAUTH_CODE"
+          cat "${RUNNER_TEMP}/unauth.body"; echo
+          test "$UNAUTH_CODE" = "401"
+          test "$(jq -r '.error // ""' "${RUNNER_TEMP}/unauth.body")" = "not_authenticated"
+
+          REGISTER_JSON="$(jq -nc --arg email "$TEST_EMAIL" --arg password "$TEST_PASSWORD" '{email:$email,password:$password,name:"Hermes Services Test",role:"Shop Owner",location:"United States",bio:"Temporary production services verification account for Hermes Connect Repair Shops."}')"
+          REGISTER_CODE="$(curl -sS -o "${RUNNER_TEMP}/register.body" -w '%{http_code}' -c "$COOKIE_JAR" -X POST https://hermeslogisticsus.com/api/auth/register -H 'Content-Type: application/json' --data-binary "$REGISTER_JSON")"
+          echo "REGISTER_HTTP=$REGISTER_CODE"
+          cat "${RUNNER_TEMP}/register.body"; echo
+          test "$REGISTER_CODE" = "201"
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/register.body")" = "true"
+          SPECIALIST_ID="$(jq -r '.specialist.id // ""' "${RUNNER_TEMP}/register.body")"
+          test -n "$SPECIALIST_ID"
+          echo "TEST_SPECIALIST_ID=$SPECIALIST_ID"
+
+          INITIAL_CODE="$(curl -sS -o "${RUNNER_TEMP}/initial.body" -w '%{http_code}' -b "$COOKIE_JAR" https://hermeslogisticsus.com/api/services)"
+          echo "INITIAL_SERVICES_HTTP=$INITIAL_CODE"
+          cat "${RUNNER_TEMP}/initial.body"; echo
+          test "$INITIAL_CODE" = "200"
+          test "$(jq '.services | length' "${RUNNER_TEMP}/initial.body")" = "0"
+          echo "INITIAL_SERVICES_EMPTY=YES"
+
+          CREATE_JSON="$(jq -nc --arg name "$SERVICE_NAME" '{name:$name,duration_minutes:45}')"
+          CREATE_CODE="$(curl -sS -o "${RUNNER_TEMP}/create.body" -w '%{http_code}' -b "$COOKIE_JAR" -X POST https://hermeslogisticsus.com/api/services -H 'Content-Type: application/json' --data-binary "$CREATE_JSON")"
+          echo "CREATE_SERVICE_HTTP=$CREATE_CODE"
+          cat "${RUNNER_TEMP}/create.body"; echo
+          test "$CREATE_CODE" = "201"
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/create.body")" = "true"
+          SERVICE_ID="$(jq -r '.service.id // ""' "${RUNNER_TEMP}/create.body")"
+          CREATED_OWNER="$(jq -r '.service.owner_specialist_id // ""' "${RUNNER_TEMP}/create.body")"
+          CREATED_DURATION="$(jq -r '.service.duration_minutes // 0' "${RUNNER_TEMP}/create.body")"
+          test -n "$SERVICE_ID"
+          test "$CREATED_OWNER" = "$SPECIALIST_ID"
+          test "$CREATED_DURATION" = "45"
+          echo "SERVICE_OWNER_MATCH=YES"
+          echo "SERVICE_DURATION_MATCH=YES"
+
+          LIST_CODE="$(curl -sS -o "${RUNNER_TEMP}/list.body" -w '%{http_code}' -b "$COOKIE_JAR" https://hermeslogisticsus.com/api/services)"
+          echo "LIST_AFTER_CREATE_HTTP=$LIST_CODE"
+          cat "${RUNNER_TEMP}/list.body"; echo
+          test "$LIST_CODE" = "200"
+          test "$(jq --arg id "$SERVICE_ID" '[.services[] | select(.id == $id)] | length' "${RUNNER_TEMP}/list.body")" = "1"
+          test "$(jq --arg id "$SERVICE_ID" -r '.services[] | select(.id == $id) | .owner_specialist_id' "${RUNNER_TEMP}/list.body")" = "$SPECIALIST_ID"
+          echo "SERVICE_PERSISTED_AND_RELOADED=YES"
+
+          DUPLICATE_NAME="$(printf '%s' "$SERVICE_NAME" | tr '[:upper:]' '[:lower:]')"
+          DUPLICATE_JSON="$(jq -nc --arg name "$DUPLICATE_NAME" '{name:$name,duration_minutes:60}')"
+          DUPLICATE_CODE="$(curl -sS -o "${RUNNER_TEMP}/duplicate.body" -w '%{http_code}' -b "$COOKIE_JAR" -X POST https://hermeslogisticsus.com/api/services -H 'Content-Type: application/json' --data-binary "$DUPLICATE_JSON")"
+          echo "DUPLICATE_SERVICE_HTTP=$DUPLICATE_CODE"
+          cat "${RUNNER_TEMP}/duplicate.body"; echo
+          test "$DUPLICATE_CODE" = "409"
+          test "$(jq -r '.error // ""' "${RUNNER_TEMP}/duplicate.body")" = "service_already_exists"
+          echo "DUPLICATE_PROTECTION=YES"
+
+          DELETE_CODE="$(curl -sS -o "${RUNNER_TEMP}/delete.body" -w '%{http_code}' -b "$COOKIE_JAR" -X DELETE "https://hermeslogisticsus.com/api/services/${SERVICE_ID}")"
+          echo "DELETE_SERVICE_HTTP=$DELETE_CODE"
+          cat "${RUNNER_TEMP}/delete.body"; echo
+          test "$DELETE_CODE" = "200"
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/delete.body")" = "true"
+
+          FINAL_CODE="$(curl -sS -o "${RUNNER_TEMP}/final.body" -w '%{http_code}' -b "$COOKIE_JAR" https://hermeslogisticsus.com/api/services)"
+          echo "FINAL_SERVICES_HTTP=$FINAL_CODE"
+          cat "${RUNNER_TEMP}/final.body"; echo
+          test "$FINAL_CODE" = "200"
+          test "$(jq '.services | length' "${RUNNER_TEMP}/final.body")" = "0"
+          echo "SERVICE_REMOVED_FROM_D1_VIEW=YES"
+
+          LOGOUT_CODE="$(curl -sS -o "${RUNNER_TEMP}/logout.body" -w '%{http_code}' -b "$COOKIE_JAR" -c "$COOKIE_JAR" -X POST https://hermeslogisticsus.com/api/auth/logout)"
+          echo "LOGOUT_HTTP=$LOGOUT_CODE"
+          test "$LOGOUT_CODE" = "200"
+
+          echo "FINAL_SERVICES_VERDICT=PASS"
