@@ -3,23 +3,23 @@
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-08-14-recruiting-growth-loop-phase1",
   "generated_at": "2026-08-14T11:20:00Z",
-  "status": "PR_VALIDATION",
+  "status": "COMPLETE_PENDING_DEPLOYMENT",
   "production_verified_at": null,
   "production_verification_run": null,
   "additions": [
     {
       "route": "/careers/car-hauling-dispatcher/",
-      "source_state": "pr_head",
-      "indexability": "index",
+      "source_state": "current_main",
+      "indexability": "indexable",
       "robots": "index,follow",
       "canonical": "https://hermeslogisticsus.com/careers/car-hauling-dispatcher/",
       "sitemap_owner": "sitemap.xml",
       "source_file": "src/pages/careers/car-hauling-dispatcher/index.astro",
-      "status": "PR_VALIDATION",
+      "status": "COMPLETE",
       "blocker": "Requires green current-head CI, merge and independent production verification before external job-board CTA migration.",
       "response_status": null,
       "comparison": {
-        "production": "unverified",
+        "production": "pending_deployment",
         "immutable_release": "missing"
       }
     }
