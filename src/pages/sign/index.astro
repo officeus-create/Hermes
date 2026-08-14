@@ -14,7 +14,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "Hermes Carrier Agreement and Signature",
-  description: "A private, phone-friendly carrier handoff for reviewing the working model and completing a carrier agreement review packet.",
+  description: "A private, phone-friendly carrier handoff for reviewing the working model and completing an approved carrier agreement execution packet.",
   url: shortUrl,
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
@@ -22,7 +22,7 @@ const schema = {
 
 <BaseLayout
   title="Carrier Agreement and Signature | Hermes Logistics"
-  description="Review the carrier working model, keep control of every load, and complete the carrier agreement review packet from a phone or computer."
+  description="Review the carrier working model, keep control of every load, and complete the approved carrier agreement packet from a phone or computer."
   robots="noindex,nofollow"
   schema={schema}
 >
@@ -34,7 +34,7 @@ const schema = {
           <p class="eyebrow">Hermes Logistics · Private carrier link</p>
           <h1>Everything is clear before you sign.</h1>
           <p class="sign-lead">
-            Review how the cooperation works, confirm the company and carrier-specific terms, and complete the review packet from your phone. You keep the final decision on every load, driver, route, and operating choice.
+            Review how the cooperation works, confirm the company and carrier-specific terms, and complete the approved agreement packet from your phone. You keep the final decision on every load, driver, route, and operating choice.
           </p>
           <div class="sign-trust-row" aria-label="Carrier control commitments">
             <span><Check size={17} aria-hidden="true" />Non-exclusive support</span>
@@ -48,7 +48,7 @@ const schema = {
             <a class="button sign-secondary" href={agreementPath}>Review the agreement first</a>
             <a class="button sign-call" href={phoneHref}><Phone size={18} aria-hidden="true" />Ask a question</a>
           </div>
-          <p class="sign-reassurance">This route contains no carrier identity, percentage, plan, or tracking identifier. Final legal execution remains disabled until Hermes activates an approved master agreement whose scope, percentage, version, and file fingerprint match the carrier packet.</p>
+          <p class="sign-reassurance">This route contains no carrier identity, percentage, plan, or tracking identifier. Standard 6% and 8% packets execute only when the approved master agreement, version, percentage, and SHA-256 file fingerprint all match. Custom terms remain subject to separate written approval.</p>
         </div>
 
         <aside class="sign-decision-card" aria-label="Choose the next step">
@@ -56,7 +56,7 @@ const schema = {
           <h2>Ready now, or reviewing first?</h2>
           <a class="decision decision-ready" href={onboardingPath}>
             <FileSignature size={23} aria-hidden="true" />
-            <span><strong>I’m ready to continue</strong><small>Choose the service model, confirm the company, and create the signed review packet.</small></span>
+            <span><strong>I’m ready to continue</strong><small>Choose the standard service model, confirm the company, and create the signed execution packet.</small></span>
             <ArrowRight size={18} aria-hidden="true" />
           </a>
           <a class="decision" href={agreementPath}>
@@ -99,7 +99,7 @@ const schema = {
         <ol>
           <li><span>01</span><div><strong>Confirm the offer</strong><small>Select the service model and enter the exact percentage discussed with Hermes.</small></div></li>
           <li><span>02</span><div><strong>Confirm company and signer</strong><small>Legal carrier name, MC or USDOT, authorized signer, business email, and phone.</small></div></li>
-          <li><span>03</span><div><strong>Review and sign</strong><small>Verify Appendix A, consent to electronic records, sign, and keep the PDF review packet.</small></div></li>
+          <li><span>03</span><div><strong>Review and sign</strong><small>Verify Appendix A, consent to electronic records, sign, and keep the downloaded execution packet.</small></div></li>
         </ol>
       </div>
     </section>

@@ -127,11 +127,18 @@ const smsCopy = `Hermes Logistics: here is the private carrier link we discussed
       if (!(source instanceof Element) || !source.closest("[data-next],[data-previous]")) return;
       window.requestAnimationFrame(recordStep);
     });
+    if (form) {
+      new MutationObserver(recordStep).observe(form, {
+        attributes: true,
+        attributeFilter: ["hidden"],
+        subtree: true,
+      });
+    }
     const title = form?.querySelector<HTMLElement>("[data-result-title]");
     if (title) {
       const recordResult = () => {
         const text = title.textContent?.trim() ?? "";
-        const previewStatus = text.startsWith("Your PDF packet is ready and copies were sent.") ? "delivered" : text.startsWith("Your PDF packet is ready; email delivery needs follow-up.") ? "pending" : text.startsWith("The packet was not completed.") ? "failed" : "";
+        const previewStatus = text.startsWith("Your PDF packet is ready and copies were sent.") ? "delivered" : text.startsWith("Your signed packet is ready; carrier email was not confirmed.") || text.startsWith("Your PDF packet is ready; email delivery needs follow-up.") ? "pending" : text.startsWith("The packet was not completed.") ? "failed" : "";
         if (!previewStatus || results.has(previewStatus)) return;
         results.add(previewStatus);
         pushCarrierAnalytics({ event: "carrier_contract_packet_result", preview_status: previewStatus, ...carrierEventBase("carrier_contract_onboarding") });

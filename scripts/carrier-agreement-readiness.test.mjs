@@ -14,15 +14,15 @@ const [pageSource, readiness, offerSource, activation, backend, protectionAddend
 
 for (const required of [
   'robots="noindex,nofollow"',
-  "ATTORNEY-REVIEW-V3-2026-08-06",
+  "HERMES-CARRIER-EXECUTION-V2026-08-06",
   "data-agreement-version",
-  "Review PDF SHA-256",
+  "Execution PDF SHA-256",
   "60-second version",
   "Percentage only in Appendix A",
   "No personal guaranty or UCC lien",
   "Do not submit passwords, PINs, W-9s",
-  "ATTORNEY_REVIEW.pdf",
-  "ATTORNEY_REVIEW.html",
+  "Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf",
+  "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8",
 ]) assert.ok(pageSource.includes(required), `Carrier agreement v3 review page is missing: ${required}`);
 
 assert.doesNotMatch(pageSource, /<strong>\s*(?:5|6|8)(?:\.00)?% service fee/i, "The v3 public review page must not publish one fixed carrier fee.");

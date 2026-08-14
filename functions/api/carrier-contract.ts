@@ -75,7 +75,7 @@ const MAX_REQUEST_BYTES = 420_000;
 const MAX_SIGNATURE_BYTES = 220_000;
 const RATE_LIMIT = 3;
 const RATE_WINDOW_SECONDS = 60 * 60;
-const RECORD_TTL_SECONDS = 24 * 60 * 60;
+const RECORD_TTL_SECONDS = 30 * 24 * 60 * 60;
 const DELIVERY_TIMEOUT_MS = 15_000;
 const encoder = new TextEncoder();
 
@@ -83,7 +83,7 @@ const responseHeaders = (origin: string) => ({
   "Access-Control-Allow-Origin": origin,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Idempotency-Key",
-  "Access-Control-Expose-Headers": "Content-Disposition, X-Hermes-Delivery, X-Hermes-Request-Id, X-Hermes-Pdf-Sha256, X-Hermes-Document-Mode",
+  "Access-Control-Expose-Headers": "Content-Disposition, X-Hermes-Delivery, X-Hermes-Internal-Delivery, X-Hermes-Carrier-Copy, X-Hermes-Request-Id, X-Hermes-Pdf-Sha256, X-Hermes-Document-Mode",
   "Cache-Control": "no-store",
   "Vary": "Origin",
 });
@@ -185,23 +185,142 @@ const createSignedAppendixPdf = (contract:NormalizedContract,mode:"review"|"live
   const header=asBytes("%PDF-1.4\n%Hermes\n");const parts:Uint8Array[]=[header];const offsets=[0];let total=header.length;for(let number=1;number<=10;number+=1){offsets[number]=total;const bytes=concatBytes(asBytes(`${number} 0 obj\n`),objects[number],asBytes("\nendobj\n"));parts.push(bytes);total+=bytes.length;}const xrefOffset=total;const lines=["xref","0 11","0000000000 65535 f "];for(let number=1;number<=10;number+=1)lines.push(`${String(offsets[number]).padStart(10,"0")} 00000 n `);parts.push(asBytes(`${lines.join("\n")}\ntrailer\n<< /Size 11 /Root 1 0 R /Info 10 0 R >>\nstartxref\n${xrefOffset}\n%%EOF\n`));return concatBytes(...parts);
 };
 const safeFilename=(company:string,suffix:string)=>`Hermes_${asciiSafe(company).replace(/[^a-zA-Z0-9]+/g,"_").replace(/^_+|_+$/g,"").slice(0,60)||"Carrier"}_${suffix}.pdf`;
-const pdfResponse=(origin:string,status:number,bytes:Uint8Array,metadata:{filename:string;delivery:string;requestId:string;pdfSha:string;mode:string})=>new Response(bytes,{status,headers:{...responseHeaders(origin),"Content-Type":"application/pdf","Content-Disposition":`attachment; filename="${metadata.filename}"`,"X-Hermes-Delivery":metadata.delivery,"X-Hermes-Request-Id":metadata.requestId,"X-Hermes-Pdf-Sha256":metadata.pdfSha,"X-Hermes-Document-Mode":metadata.mode}});
+type DeliveryRecord = {
+  pdf_base64: string;
+  filename: string;
+  delivery: string;
+  internal_delivery?: string;
+  carrier_copy?: string;
+  pdf_sha: string;
+  mode: string;
+  request_payload_sha256?: string;
+  delivery_attempts?: number;
+  last_delivery_attempt_at?: string;
+  last_delivery_error?: string | null;
+};
+type EmailServiceResult = {
+  ok?: boolean;
+  carrier_copy?: unknown;
+  delivery_ledger?: {
+    required_internal?: { status?: unknown };
+    carrier?: { status?: unknown; error?: unknown };
+  };
+  error?: unknown;
+};
+const normalizeDeliveryStatus = (value: unknown, allowed: string[], fallback: string) => {
+  const status = clean(value, 40).toLowerCase();
+  return allowed.includes(status) ? status : fallback;
+};
+const pdfResponse = (
+  origin: string,
+  status: number,
+  bytes: Uint8Array,
+  metadata: { filename: string; delivery: string; internalDelivery: string; carrierCopy: string; requestId: string; pdfSha: string; mode: string },
+) => new Response(bytes, {
+  status,
+  headers: {
+    ...responseHeaders(origin),
+    "Content-Type": "application/pdf",
+    "Content-Disposition": `attachment; filename="${metadata.filename}"`,
+    "X-Hermes-Delivery": metadata.delivery,
+    "X-Hermes-Internal-Delivery": metadata.internalDelivery,
+    "X-Hermes-Carrier-Copy": metadata.carrierCopy,
+    "X-Hermes-Request-Id": metadata.requestId,
+    "X-Hermes-Pdf-Sha256": metadata.pdfSha,
+    "X-Hermes-Document-Mode": metadata.mode,
+  },
+});
 
 export async function onRequestOptions({request,env}:Context){const allowedOrigin=env.ALLOWED_ORIGIN||DEFAULT_ORIGIN;const origin=request.headers.get("Origin")||"";if(origin!==allowedOrigin)return json(allowedOrigin,403,{success:false,error:"origin_not_allowed"});return new Response(null,{status:204,headers:responseHeaders(allowedOrigin)});}
 export async function onRequestPost({request,env}:Context){
-  const allowedOrigin=env.ALLOWED_ORIGIN||DEFAULT_ORIGIN;const origin=request.headers.get("Origin")||"";if(origin!==allowedOrigin)return json(allowedOrigin,403,{success:false,error:"origin_not_allowed"});if(!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json"))return json(allowedOrigin,415,{success:false,error:"content_type_required"});if(!env.ASSETS||!env.LEAD_EMAIL_SERVICE||!env.LEAD_LIMITS||!env.LEAD_SERVICE_TOKEN||env.LEAD_DELIVERY_MODE!=="live")return json(allowedOrigin,503,{success:false,error:"contract_delivery_not_configured"});
-  const contentLength=Number(request.headers.get("Content-Length")||"0");if(contentLength>MAX_REQUEST_BYTES)return json(allowedOrigin,413,{success:false,error:"request_too_large"});const raw=await request.text();if(encoder.encode(raw).length>MAX_REQUEST_BYTES)return json(allowedOrigin,413,{success:false,error:"request_too_large"});let input:ContractInput;try{input=JSON.parse(raw) as ContractInput;}catch{return json(allowedOrigin,400,{success:false,error:"invalid_json"});}
-  const contract=normalizeInput(input);const headerRequestId=clean(request.headers.get("Idempotency-Key"),80);if(!contract||headerRequestId!==contract.requestId)return json(allowedOrigin,400,{success:false,error:"invalid_contract_packet"});
-  const requestKeyHash=await sha256(contract.requestId);const requestKey=`contract:id:${requestKeyHash}`;const existing=await env.LEAD_LIMITS.get(requestKey);if(existing){try{const record=JSON.parse(existing) as {pdf_base64:string;filename:string;delivery:string;pdf_sha:string;mode:string};return pdfResponse(allowedOrigin,record.delivery==="delivered"?200:202,base64ToBytes(record.pdf_base64),{filename:record.filename,delivery:record.delivery,requestId:contract.requestId,pdfSha:record.pdf_sha,mode:record.mode});}catch{return json(allowedOrigin,409,{success:false,error:"duplicate_record_unavailable"});}}
-  const ipHash=await sha256(request.headers.get("CF-Connecting-IP")||"unknown");const rateKey=`contract:rate:${ipHash}`;const currentRate=Number(await env.LEAD_LIMITS.get(rateKey)||"0");if(currentRate>=RATE_LIMIT)return json(allowedOrigin,429,{success:false,error:"rate_limit_exceeded"});
+  const allowedOrigin=env.ALLOWED_ORIGIN||DEFAULT_ORIGIN;
+  const origin=request.headers.get("Origin")||"";
+  if(origin!==allowedOrigin)return json(allowedOrigin,403,{success:false,error:"origin_not_allowed"});
+  if(!request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json"))return json(allowedOrigin,415,{success:false,error:"content_type_required"});
+  if(!env.ASSETS||!env.LEAD_EMAIL_SERVICE||!env.LEAD_LIMITS||!env.LEAD_SERVICE_TOKEN||env.LEAD_DELIVERY_MODE!=="live")return json(allowedOrigin,503,{success:false,error:"contract_delivery_not_configured"});
+
+  const contentLength=Number(request.headers.get("Content-Length")||"0");
+  if(contentLength>MAX_REQUEST_BYTES)return json(allowedOrigin,413,{success:false,error:"request_too_large"});
+  const raw=await request.text();
+  if(encoder.encode(raw).length>MAX_REQUEST_BYTES)return json(allowedOrigin,413,{success:false,error:"request_too_large"});
+  let input:ContractInput;
+  try{input=JSON.parse(raw) as ContractInput;}catch{return json(allowedOrigin,400,{success:false,error:"invalid_json"});}
+
+  const contract=normalizeInput(input);
+  const headerRequestId=clean(request.headers.get("Idempotency-Key"),80);
+  if(!contract||headerRequestId!==contract.requestId)return json(allowedOrigin,400,{success:false,error:"invalid_contract_packet"});
+
+  const requestPayloadSha=await sha256(raw);
+  const requestKeyHash=await sha256(contract.requestId);
+  const requestKey=`contract:id:${requestKeyHash}`;
+  let existingRecord: DeliveryRecord | null = null;
+  const existing=await env.LEAD_LIMITS.get(requestKey);
+  if(existing){
+    try{
+      existingRecord=JSON.parse(existing) as DeliveryRecord;
+      if(existingRecord.request_payload_sha256&&existingRecord.request_payload_sha256!==requestPayloadSha){
+        return json(allowedOrigin,409,{success:false,error:"idempotency_key_payload_mismatch"});
+      }
+      const internalDelivery=normalizeDeliveryStatus(existingRecord.internal_delivery||existingRecord.delivery,["delivered","pending"],"pending");
+      if(internalDelivery==="delivered"){
+        const carrierCopy=normalizeDeliveryStatus(existingRecord.carrier_copy,["delivered","download_only","pending"],"pending");
+        return pdfResponse(allowedOrigin,200,base64ToBytes(existingRecord.pdf_base64),{
+          filename:existingRecord.filename,
+          delivery:"delivered",
+          internalDelivery,
+          carrierCopy,
+          requestId:contract.requestId,
+          pdfSha:existingRecord.pdf_sha,
+          mode:existingRecord.mode,
+        });
+      }
+    }catch{return json(allowedOrigin,409,{success:false,error:"duplicate_record_unavailable"});}
+  }
+
+  const ipHash=await sha256(request.headers.get("CF-Connecting-IP")||"unknown");
+  const rateKey=`contract:rate:${ipHash}`;
+  const currentRate=Number(await env.LEAD_LIMITS.get(rateKey)||"0");
+  if(!existingRecord&&currentRate>=RATE_LIMIT)return json(allowedOrigin,429,{success:false,error:"rate_limit_exceeded"});
   const requestedMode=clean(env.CARRIER_CONTRACT_MODE,20).toLowerCase();const approvedVersion=clean(env.CARRIER_CONTRACT_APPROVED_VERSION,80);const approvedPath=clean(env.CARRIER_CONTRACT_APPROVED_PDF_PATH,220);const approvedSha=clean(env.CARRIER_CONTRACT_APPROVED_PDF_SHA256,80).toLowerCase();const allowedPercentages=parseAllowedPercentages(env.CARRIER_CONTRACT_ALLOWED_PERCENTAGES);
   const liveApproved=requestedMode==="live"&&Boolean(approvedVersion)&&!/draft|review/i.test(approvedVersion)&&approvedPath.startsWith("/contracts/")&&/^[a-f0-9]{64}$/.test(approvedSha)&&contract.plan!=="custom"&&allowedPercentages.has(contract.percentageKey);
   const mode:"review"|"live"=liveApproved?"live":"review";const documentVersion=liveApproved?approvedVersion:REVIEW_DOCUMENT_VERSION;const documentPath=liveApproved?approvedPath:REVIEW_DOCUMENT_PATH;const documentSha=liveApproved?approvedSha:REVIEW_DOCUMENT_SHA256;
   const canonical=JSON.stringify({...contract,signatureBytes:undefined,signature_jpeg_sha256:await sha256(contract.signatureBytes),documentVersion,documentSha,mode});const inputHash=await sha256(canonical);const userAgentHash=await sha256(request.headers.get("User-Agent")||"unknown");const appendixPdf=createSignedAppendixPdf(contract,mode,documentVersion,documentSha,{inputHash,ipHash,userAgentHash});const appendixSha=await sha256(appendixPdf);const filename=safeFilename(contract.legalCompanyName,mode==="live"?"Signed_Appendix_A":"Signed_Review_Packet");
   const assetResponse=await env.ASSETS.fetch(new URL(documentPath,request.url));if(!assetResponse.ok||!assetResponse.headers.get("Content-Type")?.toLowerCase().includes("pdf"))return json(allowedOrigin,503,{success:false,error:"master_document_unavailable"});const masterBytes=new Uint8Array(await assetResponse.arrayBuffer());if(await sha256(masterBytes)!==documentSha)return json(allowedOrigin,503,{success:false,error:"master_document_hash_mismatch"});
   const emailText=[mode==="live"?"Hermes carrier agreement execution package":"Hermes carrier agreement signed review package","-----------------------------------------------",`Request ID: ${contract.requestId}`,`Document mode: ${mode}`,`Master version: ${documentVersion}`,`Master SHA-256: ${documentSha}`,`Appendix SHA-256: ${appendixSha}`,`Carrier: ${contract.legalCompanyName}`,`DBA: ${contract.dbaName||"not provided"}`,`MC: ${contract.mcNumber||"not provided"}`,`USDOT: ${contract.usdotNumber||"not provided"}`,`Website: ${contract.companyWebsite||"not provided"}`,`Signer: ${contract.signerName}, ${contract.signerTitle}`,`Email: ${contract.signerEmail}`,`Phone: ${contract.signerPhone}`,`Selected model: ${contract.planLabel}`,`Carrier-specific percentage: ${contract.percentage}`,`Hermes representative: ${contract.salesContact||"not provided"}`,`Offer code: ${contract.offerCode||"not provided"}`,"",mode==="live"?"The attached approved master agreement and signed Appendix A form the execution package.":"The attached files form a signed review packet and do not activate a final agreement until Hermes publishes and configures an approved execution version.","No password, PIN, API token, payment credential, W-9, CDL image, VIN list, full street address, lane profile, load-board access, or private shipment document was collected by the pre-signature form."].join("\n");
-  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),DELIVERY_TIMEOUT_MS);let delivery="pending";try{const serviceResponse=await env.LEAD_EMAIL_SERVICE.fetch(EMAIL_SERVICE_URL,{method:"POST",headers:{"Authorization":`Bearer ${env.LEAD_SERVICE_TOKEN}`,"Content-Type":"application/json","Cache-Control":"no-store"},body:JSON.stringify({request_id:contract.requestId,subject:"[HERMES CONTRACT] [CARRIER ONBOARDING]",text:emailText,reply_to:contract.signerEmail,carrier_email:contract.signerEmail,attachments:[{filename,content_type:"application/pdf",content_base64:bytesToBase64(appendixPdf)},{filename:`Hermes_Master_Agreement_${asciiSafe(documentVersion).replace(/[^a-zA-Z0-9._-]+/g,"_")}.pdf`,content_type:"application/pdf",content_base64:bytesToBase64(masterBytes)}]}),signal:controller.signal});if(serviceResponse.ok)delivery="delivered";}catch{delivery="pending";}finally{clearTimeout(timeout);}
-  await Promise.all([env.LEAD_LIMITS.put(requestKey,JSON.stringify({pdf_base64:bytesToBase64(appendixPdf),filename,delivery,pdf_sha:appendixSha,mode}),{expirationTtl:RECORD_TTL_SECONDS}),env.LEAD_LIMITS.put(rateKey,String(currentRate+1),{expirationTtl:RATE_WINDOW_SECONDS})]);return pdfResponse(allowedOrigin,delivery==="delivered"?200:202,appendixPdf,{filename,delivery,requestId:contract.requestId,pdfSha:appendixSha,mode});
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),DELIVERY_TIMEOUT_MS);
+  let internalDelivery="pending";
+  let carrierCopy="pending";
+  let deliveryError:string|null=null;
+  try{
+    const serviceResponse=await env.LEAD_EMAIL_SERVICE.fetch(EMAIL_SERVICE_URL,{
+      method:"POST",
+      headers:{"Authorization":`Bearer ${env.LEAD_SERVICE_TOKEN}`,"Content-Type":"application/json","Cache-Control":"no-store"},
+      body:JSON.stringify({request_id:contract.requestId,subject:"[HERMES CONTRACT] [CARRIER ONBOARDING]",text:emailText,reply_to:contract.signerEmail,carrier_email:contract.signerEmail,attachments:[{filename,content_type:"application/pdf",content_base64:bytesToBase64(appendixPdf)},{filename:`Hermes_Master_Agreement_${asciiSafe(documentVersion).replace(/[^a-zA-Z0-9._-]+/g,"_")}.pdf`,content_type:"application/pdf",content_base64:bytesToBase64(masterBytes)}]}),
+      signal:controller.signal,
+    });
+    const serviceResult=await serviceResponse.json().catch(()=>({})) as EmailServiceResult;
+    if(serviceResponse.ok){
+      internalDelivery=normalizeDeliveryStatus(serviceResult.delivery_ledger?.required_internal?.status,["delivered","pending"],"pending");
+      carrierCopy=normalizeDeliveryStatus(serviceResult.carrier_copy||serviceResult.delivery_ledger?.carrier?.status,["delivered","download_only","pending"],"pending");
+    }else{
+      deliveryError=clean(serviceResult.error,80)||`email_service_${serviceResponse.status}`;
+    }
+  }catch(error){
+    deliveryError=error instanceof DOMException&&error.name==="AbortError"?"delivery_timeout":"delivery_unavailable";
+  }finally{clearTimeout(timeout);}
+
+  const delivery=internalDelivery==="delivered"?"delivered":"pending";
+  const deliveryAttempts=Math.max(0,Number(existingRecord?.delivery_attempts||0))+1;
+  const deliveryRecord:DeliveryRecord={
+    pdf_base64:bytesToBase64(appendixPdf),filename,delivery,internal_delivery:internalDelivery,carrier_copy:carrierCopy,
+    pdf_sha:appendixSha,mode,request_payload_sha256:requestPayloadSha,delivery_attempts:deliveryAttempts,
+    last_delivery_attempt_at:new Date().toISOString(),last_delivery_error:deliveryError,
+  };
+  const writes=[env.LEAD_LIMITS.put(requestKey,JSON.stringify(deliveryRecord),{expirationTtl:RECORD_TTL_SECONDS})];
+  if(!existingRecord)writes.push(env.LEAD_LIMITS.put(rateKey,String(currentRate+1),{expirationTtl:RATE_WINDOW_SECONDS}));
+  await Promise.all(writes);
+  return pdfResponse(allowedOrigin,delivery==="delivered"?200:202,appendixPdf,{filename,delivery,internalDelivery,carrierCopy,requestId:contract.requestId,pdfSha:appendixSha,mode});
 }
 export async function onRequest(context:Context){if(context.request.method==="OPTIONS")return onRequestOptions(context);if(context.request.method==="POST")return onRequestPost(context);return json(context.env.ALLOWED_ORIGIN||DEFAULT_ORIGIN,405,{success:false,error:"method_not_allowed"});}
 export { createSignedAppendixPdf, normalizeInput, parseAllowedPercentages };

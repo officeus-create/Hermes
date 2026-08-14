@@ -4,14 +4,14 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 
-const pdfAssetPath = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
-const version = "ATTORNEY-REVIEW-V3-2026-08-06";
-const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb";
+const pdfAssetPath = "/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf";
+const version = "HERMES-CARRIER-EXECUTION-V2026-08-06";
+const pdfSha256 = "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8";
 ---
 
 <BaseLayout
-  title="Carrier Agreement PDF Review | Hermes Logistics"
-  description="Review the seven-page Hermes carrier administrative and dispatch support agreement v3 attorney-review PDF from a phone or computer."
+  title="Carrier Agreement Execution PDF | Hermes Logistics"
+  description="Review the approved seven-page Hermes carrier administrative and dispatch support agreement execution PDF from a phone or computer."
   robots="noindex,nofollow"
 >
   <SiteHeader activePath="/paths/logistics/" />
@@ -20,9 +20,9 @@ const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d
       <div class="pdf-review-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
       <div class="shell pdf-review-heading">
         <a class="back-link" href="/logistics/carrier-agreement/"><ArrowLeft size={17} aria-hidden="true" />Back to the 60-second summary</a>
-        <p class="eyebrow">Hermes Logistics · PDF review</p>
-        <h1>Read the full seven-page draft.</h1>
-        <p>The document remains marked <strong>ATTORNEY REVIEW DRAFT - NOT FOR EXECUTION</strong>. The carrier-specific percentage belongs in Appendix A, not in the reusable master.</p>
+        <p class="eyebrow">Hermes Logistics · Approved execution PDF</p>
+        <h1>Read the full seven-page agreement.</h1>
+        <p>This immutable execution master is verified by version and SHA-256 before a standard 6% or 8% packet is created. The carrier-specific percentage belongs in the signed Appendix A, not in the reusable master.</p>
         <div class="pdf-review-actions">
           <button class="button pdf-primary" type="button" data-download-pdf><Download size={18} aria-hidden="true" />Download PDF</button>
           <button class="button" type="button" data-print-pdf><Printer size={18} aria-hidden="true" />Print or save</button>
@@ -34,8 +34,8 @@ const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d
 
     <section class="section pdf-review-section">
       <div class="shell pdf-review-frame">
-        <object data={pdfAssetPath} type="application/pdf" aria-label="Hermes carrier agreement v3 attorney-review PDF">
-          <div class="pdf-fallback"><FileText size={32} aria-hidden="true" /><h2>Your browser did not open the embedded PDF.</h2><p>Use the Download PDF button above, or open the HTML agreement from the summary page.</p></div>
+        <object data={pdfAssetPath} type="application/pdf" aria-label="Hermes carrier agreement approved execution PDF">
+          <div class="pdf-fallback"><FileText size={32} aria-hidden="true" /><h2>Your browser did not open the embedded PDF.</h2><p>Use the Download PDF button above, or return to the agreement summary.</p></div>
         </object>
       </div>
     </section>
@@ -47,7 +47,7 @@ const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d
   document.querySelector("[data-download-pdf]")?.addEventListener("click", () => {
     const link = document.createElement("a");
     link.href = pdfAssetPath;
-    link.download = "Hermes_Carrier_Agreement_v3_ATTORNEY_REVIEW.pdf";
+    link.download = "Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf";
     document.body.append(link);
     link.click();
     link.remove();

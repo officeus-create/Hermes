@@ -1,12 +1,12 @@
 # Carrier contract live activation — 2026-08-14
 
-Status: `OWNER-AUTHORIZED / PRODUCTION ACTIVATION CANDIDATE`
+Status: `COUNSEL-CONFIRMED / STANDARD EXECUTION LIVE`
 
 ## Owner decision
 
 Vladimir authorized activation of the existing carrier e-sign flow for real carrier use and requested that each signed carrier packet be delivered to the main Hermes mailbox with a personal operational notification.
 
-This activation is an owner/business authorization. It is **not represented as outside-counsel approval**.
+Vladimir reported on 2026-08-14 that counsel confirmed the execution agreement. The repository records that owner-relayed decision and does not claim independent access to counsel correspondence.
 
 ## Standard execution scope
 
@@ -45,7 +45,9 @@ The delivery contains:
 2. immutable execution master;
 3. carrier/company/signer/MC/USDOT/plan/percentage summary in the email body.
 
-The private email worker sends the packet to the carrier and to the configured internal contract recipients. The current main Hermes fallback recipient is `officeus@hermeslogisticsus.com`. The retired `freight_301@hermeslogisticsus.com` address remains excluded.
+The private email worker guarantees the configured Hermes contract recipient before the API reports internal delivery. The current main Hermes recipient is `officeus@hermeslogisticsus.com`. The retired `freight_301@hermeslogisticsus.com` address remains excluded. The carrier always receives an immediate browser download; carrier email delivery is reported separately as `delivered`, `download_only`, or `pending` and is never inferred from internal delivery.
+
+Transient provider failures receive bounded retries. The API stores a 30-day operational recovery record with separate internal/carrier statuses, attempt count, last-attempt time, PDF hash, mode, and request-payload hash. The approved Hermes mailbox remains the durable business record containing both PDFs.
 
 ## Privacy and attribution controls retained
 
