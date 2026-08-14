@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, KeyRound, LogOut, ShieldCheck, User } from "@lucide/astro";
+import { ArrowLeft, KeyRound, LogOut, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
@@ -61,7 +61,7 @@ const schema: any[] = [];
         <div id="auth-forms" class="auth-section">
           <div class="auth-header text-center">
             <KeyRound size={32} class="text-iris mb-4" style="margin: 0 auto;" />
-            <h2>Repair Shop Owner Access</h2>
+            <h1>Repair Shop Owner Access</h1>
             <p class="auth-subtitle">Sign in or register to manage your bookings and CRM.</p>
           </div>
 
@@ -312,7 +312,7 @@ const schema: any[] = [];
   .mt-4 { margin-top: 16px; }
   .mt-6 { margin-top: 24px; }
 
-  h2 {
+  h1, h2 {
     font-size: 24px;
     font-weight: 700;
     margin: 0 0 8px;
