@@ -141,6 +141,19 @@
         "six Apps Script files passed preview/read-only source validation"
       ],
       "remaining_gate": "Issue #435 tracks one bounded Claude independent second-pass decision on the existing evidence packet. Do not recreate the packet; record PASS, PARTIAL_PASS, or FAIL with only explicit unresolved evidence requests."
+    },
+    "repair_shop_pilot_beta": {
+      "issue": "HC-REPAIR-BETA",
+      "status": "proposed_plan_coordination_stage",
+      "proposal_date": "2026-08-14",
+      "implementation_owner": "Hermes Connect - Автономная Разработка",
+      "reviewer": "Синхронизация Базы Знаний Агентов",
+      "facts": [
+        "A new CEO-approved truck and equipment repair shop outbound pilot has been established.",
+        "A detailed, natural-flow sales playbook has been created under docs/ISSUE_HC_REPAIR_BETA_TRUCK_REPAIR_PARTNER.md.",
+        "Durable, structured JSON schemas for partner profiles, US territory ownership maps, and privacy-safe attribution have been specified."
+      ],
+      "remaining_gate": "Wait for implementation owner to complete the workspace.js, UI, and E2E automation enhancements for the Repair vertical, then perform a synchronized validation of metrics and schemas."
     }
   },
   "search_platform_state": {
@@ -261,6 +274,7 @@
     "docs/SEO11_GSC_QUERY_PAGE_SCORECARD_2026-08-11.md",
     "docs/SEO11_PERMISSIONED_PROOF_REGISTRY.csv",
     "docs/CANONICAL_COMPANY_FACTS_APPROVAL.md",
-    "docs/AI_HANDOFF.md"
+    "docs/AI_HANDOFF.md",
+    "docs/ISSUE_HC_REPAIR_BETA_TRUCK_REPAIR_PARTNER.md"
   ]
 }
