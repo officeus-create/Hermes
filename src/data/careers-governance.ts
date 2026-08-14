@@ -6,6 +6,7 @@ export type VacancyVerificationStatus =
 
 export interface PublicVacancyRecord {
   id: string;
+  slug?: string;
   title: string;
   status: VacancyVerificationStatus;
   employmentType?: "FULL_TIME" | "PART_TIME" | "CONTRACTOR" | "TEMPORARY" | "INTERN";
@@ -13,12 +14,34 @@ export interface PublicVacancyRecord {
   locationLabel?: string;
   descriptionSourceIds: string[];
   compensationSourceIds: string[];
+  datePosted?: string;
   reviewedAt?: string;
   expiresAt?: string;
+  applicationPath?: string;
   ownerApprovedForPublication: boolean;
 }
 
-export const publicVacancyRegistry: PublicVacancyRecord[] = [];
+export const publicVacancyRegistry: PublicVacancyRecord[] = [
+  {
+    id: "car-hauling-dispatcher-2026",
+    slug: "car-hauling-dispatcher",
+    title: "Car Hauling Dispatcher — Remote / U.S. Market",
+    status: "verified_open",
+    employmentType: "FULL_TIME",
+    locationType: "remote",
+    locationLabel: "Remote worldwide · U.S. Central Time schedule",
+    descriptionSourceIds: [
+      "workua:7362244",
+      "owner:2026-08-14:recruiting-growth-loop",
+    ],
+    compensationSourceIds: [],
+    datePosted: "2026-02-26",
+    reviewedAt: "2026-08-14",
+    expiresAt: "2026-09-14",
+    applicationPath: "/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers",
+    ownerApprovedForPublication: true,
+  },
+];
 
 export const careerInquiryFields = [
   { id: "role_interest", label: "Role or professional direction", privacyClass: "public_safe_category" },
@@ -49,12 +72,15 @@ export function isVacancyEligibleForJobPosting(record: PublicVacancyRecord): boo
   return record.status === "verified_open"
     && record.ownerApprovedForPublication
     && Boolean(record.title.trim())
+    && Boolean(record.slug?.trim())
     && Boolean(record.employmentType)
     && Boolean(record.locationType)
     && Boolean(record.locationLabel?.trim())
     && record.descriptionSourceIds.some((sourceId) => sourceId.trim())
+    && validDate(record.datePosted)
     && validDate(record.reviewedAt)
-    && validDate(record.expiresAt);
+    && validDate(record.expiresAt)
+    && Boolean(record.applicationPath?.startsWith("/"));
 }
 
 export const verifiedOpenVacancies = publicVacancyRegistry.filter(isVacancyEligibleForJobPosting);

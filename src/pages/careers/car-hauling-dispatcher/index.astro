@@ -1,0 +1,178 @@
+---
+import { ArrowRight, Check, Clock3, Globe2, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import { verifiedOpenVacancies } from "../../../data/careers-governance";
+
+const vacancy = verifiedOpenVacancies.find((item) => item.slug === "car-hauling-dispatcher");
+if (!vacancy) throw new Error("Verified Car Hauling Dispatcher vacancy is missing from careers governance.");
+
+const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
+const title = "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics";
+const description = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
+const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
+
+const responsibilities = [
+  "Support car-hauling dispatch work for U.S.-market carrier operations.",
+  "Communicate clearly about availability, loads, routes, timing, and operating constraints within the assigned scope.",
+  "Use measurable operating information and keep handoffs organized for the team.",
+  "Follow the current company process, escalation path, and approved tools for the role.",
+];
+
+const screening = [
+  "Country and city of residence, languages, and working English level.",
+  "Ability to work the applicable U.S. Central Time schedule.",
+  "Recent U.S. logistics or car-hauling experience when applicable.",
+  "For experienced dispatchers: equipment handled, truck count, measurable recent performance, and relevant dealer/shipper experience where it can be truthfully described.",
+  "For entry-level candidates: current starting level, relevant skills, availability, and readiness for structured training or a practical test.",
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: "Car Hauling Dispatcher — Remote / U.S. Market",
+    description,
+    datePosted: vacancy.datePosted,
+    validThrough: `${vacancy.expiresAt}T23:59:59Z`,
+    employmentType: vacancy.employmentType,
+    jobLocationType: "TELECOMMUTE",
+    directApply: true,
+    url: canonicalUrl,
+    hiringOrganization: {
+      "@type": "Organization",
+      "@id": "https://hermeslogisticsus.com/#organization",
+      name: "Hermes Logistics LLC",
+      sameAs: "https://hermeslogisticsus.com/",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Careers", item: "https://hermeslogisticsus.com/logistics/careers/" },
+      { "@type": "ListItem", position: 3, name: "Car Hauling Dispatcher", item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="career-job-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <header class="career-job-hero">
+        <div class="shell career-job-hero-grid">
+          <div>
+            <nav class="career-job-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/logistics/careers/">Careers</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Car Hauling Dispatcher</span>
+            </nav>
+            <p class="eyebrow">Verified open · reviewed {vacancy.reviewedAt}</p>
+            <h1>Car Hauling Dispatcher — Remote / U.S. Market</h1>
+            <p class="career-job-lede">A full-time remote logistics role supporting U.S.-market car-hauling operations. We consider experienced dispatchers and candidates who have a clear entry-level starting point and are ready for structured screening.</p>
+            <div class="career-job-meta" aria-label="Vacancy facts">
+              <span><Globe2 size={18} aria-hidden="true" />Remote worldwide</span>
+              <span><Clock3 size={18} aria-hidden="true" />U.S. Central Time schedule</span>
+              <span><ShieldCheck size={18} aria-hidden="true" />Human-reviewed hiring process</span>
+            </div>
+            <div class="career-job-actions">
+              <a class="button button-primary" href={vacancy.applicationPath}>Start application <ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button" href="/logistics/careers/">View careers hub</a>
+            </div>
+          </div>
+          <aside class="career-job-status-card">
+            <p class="eyebrow">Application route</p>
+            <h2>One candidate intake, not a Telegram-only handoff.</h2>
+            <p>The Hermes application route collects the minimum information needed for recruiting review. Email remains the required contact fallback. Candidate account/status features move into Hermes Connect only after the current Connect production deployment and candidate identity contract are verified.</p>
+          </aside>
+        </div>
+      </header>
+
+      <section class="section">
+        <div class="shell career-job-columns">
+          <article>
+            <p class="eyebrow">Role scope</p>
+            <h2>What the work involves</h2>
+            <ul>{responsibilities.map((item) => <li><Check size={19} aria-hidden="true" />{item}</li>)}</ul>
+          </article>
+          <article>
+            <p class="eyebrow">Screening</p>
+            <h2>What to prepare before applying</h2>
+            <ul>{screening.map((item) => <li><Check size={19} aria-hidden="true" />{item}</li>)}</ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section career-job-process" aria-labelledby="career-process-title">
+        <div class="shell">
+          <p class="eyebrow">Hiring flow</p>
+          <h2 id="career-process-title">Application → human review → evidence → interview</h2>
+          <div class="career-job-process-grid">
+            <article><span>01</span><h3>Application</h3><p>Submit contact, location, languages, experience, role interest, and real availability through the Hermes application route.</p></article>
+            <article><span>02</span><h3>Human review</h3><p>Recruiting checks fit with the current role, schedule, experience level, and evidence. AI may assist organization but does not make the final hiring decision.</p></article>
+            <article><span>03</span><h3>Practical evidence</h3><p>When useful, the next step may be a short scenario, call sample, practical task, or training path appropriate to the candidate's starting level.</p></article>
+            <article><span>04</span><h3>Interview</h3><p>An interview is scheduled only when the earlier screening gives enough reason to continue. No step guarantees employment or compensation.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section career-job-final">
+        <div class="shell career-job-final-card">
+          <div>
+            <p class="eyebrow">Ready to apply?</p>
+            <h2>Start with the information recruiting can actually review.</h2>
+            <p>No identity documents, passwords, financial information, private customer records, or unrelated sensitive data are requested in this public application flow.</p>
+          </div>
+          <a class="button button-primary" href={vacancy.applicationPath}>Start application <ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+      </section>
+
+      <template data-application-url={applicationUrl}></template>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .career-job-hero { padding: clamp(6rem, 11vw, 9rem) 0 clamp(3rem, 7vw, 5rem); background: #071038; color: #fff; }
+  .career-job-hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .65fr); gap: clamp(2rem, 6vw, 5rem); align-items: center; }
+  .career-job-breadcrumbs { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: 1.2rem; font-size: .88rem; color: rgba(255,255,255,.65); }
+  .career-job-breadcrumbs a { color: rgba(255,255,255,.82); }
+  .career-job-hero h1 { max-width: 13ch; margin: .45rem 0 1rem; font-size: clamp(2.7rem, 6vw, 5.4rem); line-height: .98; letter-spacing: -.045em; }
+  .career-job-lede { max-width: 68ch; color: rgba(255,255,255,.76); font-size: 1.08rem; line-height: 1.7; }
+  .career-job-meta { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1.4rem 0; }
+  .career-job-meta span { display: inline-flex; align-items: center; gap: .45rem; padding: .55rem .7rem; border: 1px solid rgba(255,255,255,.17); border-radius: 999px; color: rgba(255,255,255,.86); }
+  .career-job-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+  .career-job-actions .button:not(.button-primary) { color: #fff; border-color: rgba(255,255,255,.35); }
+  .career-job-status-card { padding: 1.5rem; border: 1px solid rgba(255,255,255,.16); border-radius: 16px; background: rgba(255,255,255,.07); }
+  .career-job-status-card h2 { margin: .35rem 0 .8rem; font-size: 1.55rem; }
+  .career-job-status-card p:not(.eyebrow) { margin: 0; color: rgba(255,255,255,.72); line-height: 1.65; }
+  .career-job-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .career-job-columns article { padding: clamp(1.3rem, 3vw, 2rem); border: 1px solid #d9e0ef; border-radius: 16px; background: #fff; }
+  .career-job-columns h2 { color: #122b72; }
+  .career-job-columns ul { display: grid; gap: .75rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+  .career-job-columns li { display: flex; align-items: flex-start; gap: .7rem; color: #526181; line-height: 1.6; }
+  .career-job-columns li svg { flex: none; margin-top: .15rem; color: #315fd7; }
+  .career-job-process { background: #eef3ff; }
+  .career-job-process-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem; margin-top: 1.3rem; }
+  .career-job-process-grid article { padding: 1.2rem; border-radius: 14px; background: #fff; border: 1px solid rgba(28,62,141,.14); }
+  .career-job-process-grid span { font-size: .78rem; font-weight: 800; color: #315fd7; }
+  .career-job-process-grid h3 { margin: .55rem 0; color: #122b72; }
+  .career-job-process-grid p { margin: 0; color: #526181; line-height: 1.6; }
+  .career-job-final { background: #fff; }
+  .career-job-final-card { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); border-radius: 16px; background: #071038; color: #fff; }
+  .career-job-final-card h2 { margin: .35rem 0 .7rem; }
+  .career-job-final-card p:not(.eyebrow) { max-width: 68ch; color: rgba(255,255,255,.72); line-height: 1.65; }
+  @media (max-width: 900px) {
+    .career-job-hero-grid, .career-job-columns, .career-job-final-card { grid-template-columns: 1fr; }
+    .career-job-process-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .career-job-process-grid { grid-template-columns: 1fr; }
+    .career-job-actions .button, .career-job-final-card .button { width: 100%; justify-content: center; }
+  }
+</style>
