@@ -41,12 +41,16 @@ const schema = [
   {
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: "Car Hauling Dispatcher — Remote / U.S. Market",
+    title: "Car Hauling Dispatcher",
     description: jobDescription,
     datePosted: vacancy.datePosted,
     validThrough: `${vacancy.expiresAt}T23:59:59Z`,
     employmentType: vacancy.employmentType,
     jobLocationType: "TELECOMMUTE",
+    applicantLocationRequirements: [
+      { "@type": "Country", name: "United States" },
+      { "@type": "Country", name: "Ukraine" },
+    ],
     directApply: false,
     url: canonicalUrl,
     hiringOrganization: {
