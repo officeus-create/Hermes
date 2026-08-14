@@ -1,0 +1,46 @@
+name: One-time Repair Shop auth smoke cleanup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/repair-auth-cleanup-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: Remove production Repair Shop auth smoke account
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Call exact-target cleanup endpoint and verify it becomes idempotent
+        shell: bash
+        run: |
+          set -euo pipefail
+          CODE="000"
+          for attempt in $(seq 1 30); do
+            CODE="$(curl -sS -o "${RUNNER_TEMP}/cleanup.body" -w '%{http_code}' -X POST https://hermeslogisticsus.com/api/auth/cleanup-test || true)"
+            echo "CLEANUP_ATTEMPT_${attempt}_HTTP=$CODE"
+            if [ "$CODE" = "200" ]; then break; fi
+            sleep 10
+          done
+          cat "${RUNNER_TEMP}/cleanup.body"; echo
+          if [ "$CODE" != "200" ] || [ "$(jq -r '.success // false' "${RUNNER_TEMP}/cleanup.body" 2>/dev/null)" != "true" ]; then
+            exit 1
+          fi
+
+          VERIFY_CODE="$(curl -sS -o "${RUNNER_TEMP}/verify.body" -w '%{http_code}' -X POST https://hermeslogisticsus.com/api/auth/cleanup-test || true)"
+          echo "VERIFY_CLEANUP_HTTP=$VERIFY_CODE"
+          cat "${RUNNER_TEMP}/verify.body"; echo
+          if [ "$VERIFY_CODE" != "200" ] || [ "$(jq -r '.success // false' "${RUNNER_TEMP}/verify.body" 2>/dev/null)" != "true" ]; then
+            exit 1
+          fi
+          if [ "$(jq -r '.already_absent // false' "${RUNNER_TEMP}/verify.body" 2>/dev/null)" != "true" ]; then
+            exit 1
+          fi
+
+          echo "SMOKE_ACCOUNT_REMOVED=YES"
