@@ -1,5 +1,5 @@
 ---
-import { BriefcaseBusiness, Check, ShieldCheck } from "@lucide/astro";
+import { ArrowRight, BriefcaseBusiness, Check, ShieldCheck } from "@lucide/astro";
 import { careerPublicBoundaries, verifiedOpenVacancies } from "../data/careers-governance";
 
 const qualification = [
@@ -22,7 +22,7 @@ const qualification = [
 ];
 
 const screening = [
-  "General inquiry and minimum qualification details",
+  "Application and minimum qualification details",
   "Human review for role, evidence, language, schedule, and current need",
   "Practical question, sample, or test only when relevant",
   "Interview only after the earlier screening gives enough reason to continue",
@@ -33,14 +33,26 @@ const screening = [
   <div class="shell career-status-layout">
     <div>
       <p class="eyebrow">Current vacancy status</p>
-      <h2 id="career-status-title">General careers inquiries are open. No verified public vacancy is listed today.</h2>
-      <p>Hermes may review professional interest for Logistics, Marketing, Academy, and IT Development. A specific vacancy is published only after the role, location, employment type, scope, application route, review date, and status are verified and owner-approved.</p>
+      <h2 id="career-status-title">{verifiedOpenVacancies.length > 0 ? "Verified public vacancies are open." : "General careers inquiries are open. No verified public vacancy is listed today."}</h2>
+      <p>Hermes publishes a specific vacancy only after the role, location, employment type, scope, application route, review date, and status are verified and owner-approved. General professional interest remains separate from a specific role application.</p>
       <div class="career-status-count" aria-label="Verified public vacancies">
         <BriefcaseBusiness size={22} aria-hidden="true" />
         <strong>{verifiedOpenVacancies.length}</strong>
         <span>verified public vacancies</span>
       </div>
-      <a class="button button-primary" href="/logistics/apply/">Prepare a general careers inquiry</a>
+      {verifiedOpenVacancies.length > 0 && (
+        <div class="career-vacancy-list" aria-label="Open vacancies">
+          {verifiedOpenVacancies.map((vacancy) => (
+            <article>
+              <p class="eyebrow">Verified open · reviewed {vacancy.reviewedAt}</p>
+              <h3>{vacancy.title}</h3>
+              <p>{vacancy.locationLabel}</p>
+              <a class="button button-primary" href={`/careers/${vacancy.slug}/`}>View vacancy <ArrowRight size={17} aria-hidden="true" /></a>
+            </article>
+          ))}
+        </div>
+      )}
+      <a class="button" href="/logistics/apply/?for=career">Prepare a general careers inquiry</a>
     </div>
     <ul>
       {careerPublicBoundaries.map((item) => <li><ShieldCheck size={18} aria-hidden="true" />{item}</li>)}
@@ -87,6 +99,10 @@ const screening = [
   .career-status-count { display: flex; align-items: center; gap: .7rem; margin: 1.4rem 0; padding: 1rem 1.1rem; width: fit-content; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); }
   .career-status-count strong { font-size: 1.45rem; color: #122b72; }
   .career-status-count span { color: #526181; }
+  .career-vacancy-list { display: grid; gap: .8rem; margin: 0 0 1rem; }
+  .career-vacancy-list article { padding: 1rem; border-radius: 14px; background: #fff; border: 1px solid rgba(28,62,141,.14); }
+  .career-vacancy-list article h3 { margin: .25rem 0 .4rem; color: #122b72; }
+  .career-vacancy-list article p { margin: 0 0 .8rem; color: #526181; }
   .career-status-layout ul { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
   .career-status-layout li { display: flex; gap: .75rem; align-items: flex-start; padding: 1rem; border-radius: 14px; background: white; border: 1px solid rgba(28,62,141,.14); line-height: 1.55; color: #344567; }
   .career-status-layout li svg { flex: none; margin-top: .15rem; color: #315fd7; }
