@@ -9,4 +9,5 @@ test-results/
 .env.*
 !.env.example
 scratch/
-
+wrangler.jsonc
+wrangler.toml
