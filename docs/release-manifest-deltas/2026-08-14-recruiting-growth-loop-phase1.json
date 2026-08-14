@@ -13,7 +13,7 @@
       "indexability": "index",
       "robots": "index,follow",
       "canonical": "https://hermeslogisticsus.com/careers/car-hauling-dispatcher/",
-      "sitemap_owner": "sitemap-academy.xml",
+      "sitemap_owner": "sitemap.xml",
       "source_file": "src/pages/careers/car-hauling-dispatcher/index.astro",
       "status": "PR_VALIDATION",
       "blocker": "Requires green current-head CI, merge and independent production verification before external job-board CTA migration.",
