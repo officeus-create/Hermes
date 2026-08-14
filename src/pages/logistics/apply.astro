@@ -31,9 +31,10 @@ import "../../styles/features/load.css";
             ]}
             current="Application"
           />
-          <p class="eyebrow">Hermes Logistics · Application preview</p>
-          <h1>Tell us what path you want to explore.</h1>
-          <p>Prepare a structured application for a role or a remote agency conversation. Preview mode does not send or store your information.</p>
+          <p class="eyebrow">Hermes Logistics · Candidate intake preview</p>
+          <h1>Prepare a reviewable logistics application.</h1>
+          <p>This intake can preserve the approved role and non-personal source that brought you here. Preview mode does not send or store your information; production delivery remains controlled separately.</p>
+          <p data-application-context hidden></p>
         </div>
       </section>
       <section class="section">
@@ -57,13 +58,13 @@ import "../../styles/features/load.css";
             <label>Role or agency interest *<input name="interest" maxlength="180" required /></label>
             <label>Relevant experience and measurable results *<textarea name="experience" rows="5" minlength="20" maxlength="1800" required></textarea></label>
             <label>Availability and preferred working hours *<textarea name="availability" rows="3" minlength="10" maxlength="800" required></textarea></label>
-            <label class="consent-field"><input type="checkbox" name="consent" required /><span>I agree that Hermes may use these details to review this application. This pilot only creates a local preview.</span></label>
+            <label class="consent-field"><input type="checkbox" name="consent" required /><span>I agree that Hermes may use these details to review this application. This pilot only creates a local preview. <a href="/privacy/">Privacy notice</a>.</span></label>
             <button class="button button-primary" type="submit">Preview application <ArrowRight size={18} aria-hidden="true" /></button>
           </form>
           <aside class="load-board-result" data-application-result hidden aria-live="polite">
             <p class="eyebrow">Application preview</p>
-            <h2>Ready to copy</h2>
-            <p>Your information was not sent or stored.</p>
+            <h2>Ready to review</h2>
+            <p>Your information was not sent or stored. The candidate account/status layer will move into Hermes Connect only after its current production deployment and candidate identity contract are verified.</p>
             <pre data-application-preview tabindex="0"></pre>
             <button class="button" type="button" data-copy-application>Copy application</button>
             <p role="status" data-application-copy-status></p>
@@ -82,11 +83,26 @@ import "../../styles/features/load.css";
   const copy = document.querySelector<HTMLButtonElement>("[data-copy-application]");
   const copyStatus = document.querySelector<HTMLElement>("[data-application-copy-status]");
   const type = form?.querySelector<HTMLSelectElement>('select[name="application_type"]');
+  const interest = form?.querySelector<HTMLInputElement>('input[name="interest"]');
+  const context = document.querySelector<HTMLElement>("[data-application-context]");
   let activePreview = "";
 
   const sanitize = (value: FormDataEntryValue | null, max = 1800) => String(value ?? "").replace(/[<>\u0000-\u001f\u007f]/g, "").trim().slice(0, max);
-  const requestedType = new URLSearchParams(window.location.search).get("for");
+  const params = new URLSearchParams(window.location.search);
+  const requestedType = params.get("for");
+  const roleMap: Record<string, string> = {
+    "car-hauling-dispatcher": "Car Hauling Dispatcher — Remote / U.S. Market",
+  };
+  const allowedSources = new Set(["hermes_careers", "workua", "staffam", "linkedin", "indeed", "google", "referral"]);
+  const requestedRole = params.get("role") ?? "";
+  const source = allowedSources.has(params.get("source") ?? "") ? params.get("source")! : "direct";
+
   if (type && ["career", "agency"].includes(requestedType ?? "")) type.value = requestedType ?? "";
+  if (interest && roleMap[requestedRole]) interest.value = roleMap[requestedRole];
+  if (context && roleMap[requestedRole]) {
+    context.hidden = false;
+    context.textContent = `Application context: ${roleMap[requestedRole]} · source ${source}. No personal information is stored in this URL.`;
+  }
 
   form?.addEventListener("input", () => {
     if (result) result.hidden = true;
@@ -100,11 +116,11 @@ import "../../styles/features/load.css";
     activePreview = [
       "Hermes Logistics Application (Preview)",
       `Application type: ${sanitize(data.get("application_type"))}`,
+      `Role/source: ${sanitize(data.get("interest"), 180)} / ${source}`,
       `Name: ${sanitize(data.get("name"), 100)}`,
       `Email: ${sanitize(data.get("email"), 160)}`,
       `Location: ${sanitize(data.get("location"), 160)}`,
       `Languages: ${sanitize(data.get("languages"), 160)}`,
-      `Interest: ${sanitize(data.get("interest"), 180)}`,
       `Experience/results: ${sanitize(data.get("experience"))}`,
       `Availability: ${sanitize(data.get("availability"), 800)}`,
       "Delivery: preview only — no application was sent or stored.",
