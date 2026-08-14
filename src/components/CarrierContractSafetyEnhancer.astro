@@ -1,0 +1,57 @@
+<script>
+  const enhanceCarrierContractForm = () => {
+    if (window.location.pathname !== "/logistics/carrier-onboarding/") return;
+
+    const form = document.querySelector<HTMLFormElement>("#carrier-onboarding-form");
+    const percentage = form?.elements.namedItem("service_percentage");
+    if (!form || !(percentage instanceof HTMLInputElement)) return;
+
+    const standardRates: Record<string, string> = { essential: "6", pro: "8" };
+    const radios = [...form.querySelectorAll<HTMLInputElement>('input[name="selected_plan"]')];
+
+    const syncPercentageToPlan = () => {
+      const plan = radios.find((radio) => radio.checked)?.value ?? "";
+      const standardRate = standardRates[plan];
+
+      if (standardRate) {
+        percentage.value = standardRate;
+        percentage.readOnly = true;
+        percentage.min = standardRate;
+        percentage.max = standardRate;
+        percentage.step = "1";
+        percentage.dataset.standardRate = standardRate;
+        percentage.setAttribute("aria-readonly", "true");
+        percentage.title = `${plan === "essential" ? "Dispatch Support" : "Full Partnership"} uses the approved ${standardRate}% standard rate.`;
+      } else {
+        const previousStandardRate = percentage.dataset.standardRate;
+        if (previousStandardRate && percentage.value === previousStandardRate) percentage.value = "";
+        percentage.readOnly = false;
+        percentage.min = "1";
+        percentage.max = "15";
+        percentage.step = "0.25";
+        delete percentage.dataset.standardRate;
+        percentage.removeAttribute("aria-readonly");
+        percentage.title = "Enter the custom percentage proposed to Hermes.";
+      }
+
+      percentage.dispatchEvent(new Event("input", { bubbles: true }));
+      percentage.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+
+    radios.forEach((radio) => radio.addEventListener("change", syncPercentageToPlan));
+    syncPercentageToPlan();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", enhanceCarrierContractForm, { once: true });
+  } else {
+    enhanceCarrierContractForm();
+  }
+</script>
+
+<style is:global>
+  [data-carrier-contract-form] .plan-choice input[type="radio"]{width:1.15rem;height:1.15rem;accent-color:#675bff}
+  [data-carrier-contract-form] input[name="service_percentage"][readonly]{background:#f6f4ff;color:#312884;font-weight:850;cursor:not-allowed}
+  [data-carrier-contract-form] .form-step{scroll-margin-top:12.25rem}
+  @media(max-width:620px){[data-carrier-contract-form] .form-step{scroll-margin-top:11.25rem}}
+</style>
