@@ -16,92 +16,105 @@ jobs:
         with:
           node-version: "22"
       - name: Wait for production deployment and sign synthetic internal packet
-        env:
-          SIGNATURE_JPEG_B64: /9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAC0AlgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD2aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACioxNE07wCVDKiq7RhhuVSSASOwJVsH2PpUlABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUVS1bWNN0Kxa91S9htLdc/PK2NxwThR1ZsA4AyTjgV5N4r+Ov+stPC1p6r9uul/3hlI/++WBb3BWgD1nVtY03QrFr3VL2G0t1z88rY3HBOFHVmwDgDJOOBXk3iv46/wCstPC1p6r9uul/3hlI/wDvlgW9wVrF034aeNfHd8dU8SXU1kj5/e3wLS4yxwkXG1Q3Y7QA2QDXrPhf4e+G/CW2TT7Lzbsf8vlyRJL/ABdDgBeGI+UDIxnNAHk2m/DTxr47vjqniS6mskfP72+BaXGWOEi42qG7HaAGyAa9Z8L/AA98N+Etsmn2Xm3Y/wCXy5Ikl/i6HAC8MR8oGRjOa6eigDhfHvwv03xj5moW7/Y9XEW1JR/q5iMbRIMZPAxuHIB/iAArzPw94v8AFHwt1iLQ9etpjpy/O9m21iqvzviccHkHjO0ncODkj6GrI8R+F9I8Vac9lqtokoKlY5gB5sJOOUbHynIHscYII4oAf4e8Q6b4o0eLVNLm8yGThlPDxN3Rh2YZ/kRkEGtSvnbVvDHin4Sa/FrGmSvd2iKM3aQkRMpIDRzKCdoJIxk88EHcPl9S8B/E3S/GEENnO6WmslT5lrztk2gZaMnqCOdudwweoG4gHb0UUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUVS1bWNN0Kxa91S9htLdc/PK2NxwThR1ZsA4AyTjgUAXa5Lxl8R9D8HRmKeT7ZfnIWzgdS6nbkGT+4pyvJyecgHBrznxl8Y9S1m6Oj+EEmgieUxLdIuZrrI2gIuMpkk4x833funIqz4U+Ct7e3b6n40ncF28w20c++WR9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vJd2SvNp8bbpfs7efbuMBmZo/vKMJgvtUjGA3Iy/Ufix448QWtrpum2H2S4u4mIexgdpbgZcEx5yQoAxlckMhO4dAAex+JfGeg+E4C+rX6JKV3R2yfNNJwcYUdASpG44XPUivItf+MHiTxNdNpfhWymtEl3KnkoZbqUYbOMD5PlwflBKlchqteHfghqmpztf+Lb97YyszyQxSCWd2JbJaQ5UHOGz82QTnBr1zQ/DejeGrU22j6dDaI33ygy78kjcxyzY3HGScZ4oA8j8O/BDVNTna/8AFt+9sZWZ5IYpBLO7EtktIcqDnDZ+bIJzg165ofhvRvDVqbbR9OhtEb75QZd+SRuY5ZsbjjJOM8VqUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAcL49+F+m+MfM1C3f7Hq4i2pKP9XMRjaJBjJ4GNw5AP8QAFeZ+HvF/ij4W6xFoevW0x05fnezbaxVX53xOODyDxnaTuHByR9DVkeI/C+keKtOey1W0SUFSscwA82EnHKNj5TkD2OMEEcUAeQeK/jNqmvOmmeE7a5slmby/NwGuJtwwFVRnYck8qSx+UgjkG54U+Ct7e3b6n40ncF28w20c++WR92WMrjPBA/hJJ3dVI59N0DwZoPhq7urzS7BIrm7ZjJL3Cli2xR0VRkDCgcKuckZrdoAgs7K10+1S1sraG1t487IoYwiLk5OAOBySfxqeiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACoILK1tpHkt7aGJ5PvtHGFLfMzckdfmdz9WY9zU9FABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAf/9k=
         run: |
           node <<'NODE'
           const crypto = require('node:crypto');
           const sleep = ms => new Promise(r => setTimeout(r, ms));
           const base = 'https://hermeslogisticsus.com';
           const expectedSha = 'ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8';
-          const noCache = () => `?smoke=${Date.now()}`;
 
-          async function ready() {
-            try {
-              const [sign, onboarding, pdf] = await Promise.all([
-                fetch(base + '/sign/' + noCache(), {headers:{'Cache-Control':'no-cache'}}),
-                fetch(base + '/logistics/carrier-onboarding/' + noCache(), {headers:{'Cache-Control':'no-cache'}}),
-                fetch(base + '/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf' + noCache(), {headers:{'Cache-Control':'no-cache'}}),
-              ]);
-              if (!sign.ok || !onboarding.ok || !pdf.ok) return false;
-              const signText = await sign.text();
-              const onboardingText = await onboarding.text();
-              const pdfBytes = Buffer.from(await pdf.arrayBuffer());
-              const sha = crypto.createHash('sha256').update(pdfBytes).digest('hex');
-              return signText.includes('approved execution master') &&
-                onboardingText.includes('Execution agreement') &&
-                sha === expectedSha;
-            } catch (error) {
-              console.log('not ready:', error.message);
-              return false;
+          (async () => {
+            async function ready() {
+              try {
+                const stamp = `?smoke=${Date.now()}`;
+                const [sign, onboarding, pdf] = await Promise.all([
+                  fetch(base + '/sign/' + stamp, {headers:{'Cache-Control':'no-cache'}}),
+                  fetch(base + '/logistics/carrier-onboarding/' + stamp, {headers:{'Cache-Control':'no-cache'}}),
+                  fetch(base + '/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf' + stamp, {headers:{'Cache-Control':'no-cache'}}),
+                ]);
+                if (!sign.ok || !onboarding.ok || !pdf.ok) {
+                  console.log('GET status', sign.status, onboarding.status, pdf.status);
+                  return false;
+                }
+                const signText = await sign.text();
+                const onboardingText = await onboarding.text();
+                const pdfBytes = Buffer.from(await pdf.arrayBuffer());
+                const sha = crypto.createHash('sha256').update(pdfBytes).digest('hex');
+                console.log('observed master sha', sha);
+                return signText.includes('approved execution master') &&
+                  onboardingText.includes('Execution agreement') &&
+                  sha === expectedSha;
+              } catch (error) {
+                console.log('not ready:', error.message);
+                return false;
+              }
             }
-          }
 
-          let deployed = false;
-          for (let i = 1; i <= 36; i++) {
-            if (await ready()) { deployed = true; console.log(`production deployment ready on attempt ${i}`); break; }
-            console.log(`waiting for production deployment: ${i}/36`);
-            await sleep(10000);
-          }
-          if (!deployed) throw new Error('Production did not expose the activated carrier contract within 6 minutes.');
+            let deployed = false;
+            for (let i = 1; i <= 36; i++) {
+              if (await ready()) {
+                deployed = true;
+                console.log(`production deployment ready on attempt ${i}`);
+                break;
+              }
+              console.log(`waiting for production deployment: ${i}/36`);
+              await sleep(10000);
+            }
+            if (!deployed) throw new Error('Production did not expose the activated carrier contract within 6 minutes.');
 
-          const requestId = `contract_prod_smoke_${Date.now()}`;
-          const payload = {
-            request_id: requestId,
-            selected_plan: 'pro',
-            service_percentage: '8',
-            custom_scope: '',
-            legal_company_name: 'TEST — HERMES CONTRACT VERIFICATION — NOT A REAL CARRIER',
-            dba_name: 'TEST ONLY',
-            mc_number: '0000000',
-            usdot_number: '',
-            company_website: 'https://hermeslogisticsus.com',
-            signer_name: 'Hermes Internal Verification',
-            signer_title: 'Internal Synthetic Test',
-            signer_email: 'officeus@hermeslogisticsus.com',
-            signer_phone: '+1 262 302 3626',
-            sales_contact: 'INTERNAL-SMOKE',
-            offer_code: 'TEST-ONLY',
-            typed_signature: 'Hermes Internal Verification',
-            signature_jpeg: `data:image/jpeg;base64,${process.env.SIGNATURE_JPEG_B64}`,
-            signature_width: 600,
-            signature_height: 180,
-            consent_electronic_records: true,
-            consent_authority: true,
-            consent_document_review: true,
-            consent_selected_scope: true,
-            submitted_at: new Date().toISOString(),
-          };
-          const response = await fetch(base + '/api/carrier-contract', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Origin': base,
-              'Idempotency-Key': requestId,
-              'User-Agent': 'Hermes production contract smoke test',
-            },
-            body: JSON.stringify(payload),
+            const requestId = `contract_prod_smoke_${Date.now()}`;
+            const signature = Buffer.alloc(900, 23).toString('base64');
+            const payload = {
+              request_id: requestId,
+              selected_plan: 'pro',
+              service_percentage: '8',
+              custom_scope: '',
+              legal_company_name: 'TEST HERMES CONTRACT VERIFICATION NOT A REAL CARRIER',
+              dba_name: 'TEST ONLY',
+              mc_number: '0000000',
+              usdot_number: '',
+              company_website: 'https://hermeslogisticsus.com',
+              signer_name: 'Hermes Internal Verification',
+              signer_title: 'Internal Synthetic Test',
+              signer_email: 'officeus@hermeslogisticsus.com',
+              signer_phone: '+1 262 302 3626',
+              sales_contact: 'INTERNAL-SMOKE',
+              offer_code: 'TEST-ONLY',
+              typed_signature: 'Hermes Internal Verification',
+              signature_jpeg: `data:image/jpeg;base64,${signature}`,
+              signature_width: 600,
+              signature_height: 180,
+              consent_electronic_records: true,
+              consent_authority: true,
+              consent_document_review: true,
+              consent_selected_scope: true,
+              submitted_at: new Date().toISOString(),
+            };
+
+            const response = await fetch(base + '/api/carrier-contract', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Origin': base,
+                'Idempotency-Key': requestId,
+                'User-Agent': 'Hermes production contract smoke test',
+              },
+              body: JSON.stringify(payload),
+            });
+            const mode = response.headers.get('x-hermes-document-mode');
+            const delivery = response.headers.get('x-hermes-delivery');
+            console.log('POST status:', response.status, 'mode:', mode, 'delivery:', delivery, 'type:', response.headers.get('content-type'));
+            if (response.status !== 200 || mode !== 'live' || delivery !== 'delivered') {
+              const text = await response.text();
+              throw new Error(`Production signing failed: ${response.status} mode=${mode} delivery=${delivery} body=${text.slice(0,500)}`);
+            }
+            const signedPdf = Buffer.from(await response.arrayBuffer());
+            if (!signedPdf.subarray(0,8).toString().startsWith('%PDF-1.4')) throw new Error('Signed response is not a PDF.');
+            console.log('PRODUCTION_CARRIER_CONTRACT_SMOKE=PASS');
+            console.log('Synthetic company:', payload.legal_company_name);
+            console.log('Expected mailbox:', payload.signer_email);
+          })().catch(error => {
+            console.error(error);
+            process.exit(1);
           });
-          const mode = response.headers.get('x-hermes-document-mode');
-          const delivery = response.headers.get('x-hermes-delivery');
-          console.log('POST status:', response.status, 'mode:', mode, 'delivery:', delivery, 'type:', response.headers.get('content-type'));
-          if (response.status !== 200 || mode !== 'live' || delivery !== 'delivered') {
-            const text = await response.text();
-            throw new Error(`Production signing failed: ${response.status} mode=${mode} delivery=${delivery} body=${text.slice(0,500)}`);
-          }
-          const signedPdf = Buffer.from(await response.arrayBuffer());
-          if (!signedPdf.subarray(0,8).toString().startsWith('%PDF-1.4')) throw new Error('Signed response is not a PDF.');
-          console.log('PRODUCTION_CARRIER_CONTRACT_SMOKE=PASS');
-          console.log('Synthetic company:', payload.legal_company_name);
-          console.log('Expected mailbox:', payload.signer_email);
           NODE
