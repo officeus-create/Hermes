@@ -1,0 +1,145 @@
+name: One-time Repair Shop auth production smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/repair-auth-production-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Verify production Repair Shop owner auth
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Verify real production auth and clean test data
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "Required Cloudflare production credentials are unavailable." >&2
+            exit 1
+          fi
+
+          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
+          TEST_ID="$(date +%s)-${GITHUB_RUN_ID}"
+          TEST_EMAIL="repair-auth-test-${TEST_ID}@hermesconnect.app"
+          TEST_PASSWORD="HermesTest-${TEST_ID}-A9!"
+          COOKIE_JAR="${RUNNER_TEMP}/repair-auth.cookies"
+          LOGIN_COOKIE="${RUNNER_TEMP}/repair-auth-login.cookies"
+          FAIL=0
+
+          echo "::add-mask::$TEST_PASSWORD"
+
+          cleanup() {
+            set +e
+            echo "Cleaning temporary production auth data..."
+            npx --yes wrangler@4 d1 execute hermes-connect-prototype --remote \
+              --command "DELETE FROM sessions WHERE specialist_id=(SELECT id FROM specialists WHERE email='${TEST_EMAIL}');" >/tmp/cleanup-sessions.txt 2>&1
+            npx --yes wrangler@4 d1 execute hermes-connect-prototype --remote \
+              --command "DELETE FROM specialists WHERE email='${TEST_EMAIL}';" >/tmp/cleanup-specialist.txt 2>&1
+            VERIFY_CLEAN="$(npx --yes wrangler@4 d1 execute hermes-connect-prototype --remote \
+              --command "SELECT COUNT(*) AS remaining FROM specialists WHERE email='${TEST_EMAIL}';" 2>&1)"
+            echo "$VERIFY_CLEAN" | sed -E 's/[A-Za-z0-9_-]{32,}/[redacted]/g'
+            if ! echo "$VERIFY_CLEAN" | grep -Eq '"remaining"[[:space:]]*:[[:space:]]*0|remaining[^0-9]*0'; then
+              echo "Cleanup verification did not prove remaining=0." >&2
+              FAIL=1
+            else
+              echo "CLEANUP_TEST_USER_REMOVED=YES"
+            fi
+          }
+          trap cleanup EXIT
+
+          request() {
+            local label="$1"; shift
+            local body="${RUNNER_TEMP}/${label}.body"
+            local headers="${RUNNER_TEMP}/${label}.headers"
+            local code
+            code="$(curl -sS -D "$headers" -o "$body" -w '%{http_code}' "$@")" || code="000"
+            echo "${label}_HTTP=${code}"
+            cat "$body"
+            echo
+            printf '%s' "$code"
+          }
+
+          AUTH_CODE="$(curl -sS -o "${RUNNER_TEMP}/auth.html" -w '%{http_code}' https://hermeslogisticsus.com/services/hermes-connect/repair-shops/auth/ || true)"
+          echo "AUTH_PAGE_HTTP=$AUTH_CODE"
+          if [ "$AUTH_CODE" != "200" ]; then FAIL=1; fi
+          if grep -q "Repair Shop Owner Access" "${RUNNER_TEMP}/auth.html"; then echo "H1_PRESENT=YES"; else echo "H1_PRESENT=NO"; FAIL=1; fi
+          if grep -q "noindex,nofollow" "${RUNNER_TEMP}/auth.html"; then echo "NOINDEX=YES"; else echo "NOINDEX=NO"; FAIL=1; fi
+
+          REGISTER_JSON="$(jq -nc --arg email "$TEST_EMAIL" --arg password "$TEST_PASSWORD" '{email:$email,password:$password,name:"Hermes Repair Auth Test",role:"Shop Owner",location:"United States",bio:"Temporary production authentication verification account for Hermes Connect Repair Shops."}')"
+          REGISTER_CODE="$(curl -sS -D "${RUNNER_TEMP}/register.headers" -o "${RUNNER_TEMP}/register.body" -w '%{http_code}' -c "$COOKIE_JAR" -X POST https://hermeslogisticsus.com/api/auth/register -H 'Content-Type: application/json' --data-binary "$REGISTER_JSON" || true)"
+          echo "REGISTER_HTTP=$REGISTER_CODE"
+          cat "${RUNNER_TEMP}/register.body"; echo
+          if [ "$REGISTER_CODE" != "201" ] || [ "$(jq -r '.success // false' "${RUNNER_TEMP}/register.body" 2>/dev/null)" != "true" ]; then FAIL=1; fi
+
+          ME1_CODE="$(curl -sS -o "${RUNNER_TEMP}/me1.body" -w '%{http_code}' -b "$COOKIE_JAR" https://hermeslogisticsus.com/api/auth/me || true)"
+          echo "ME_AFTER_REGISTER_HTTP=$ME1_CODE"
+          cat "${RUNNER_TEMP}/me1.body"; echo
+          ME1_EMAIL="$(jq -r '.specialist.email // ""' "${RUNNER_TEMP}/me1.body" 2>/dev/null)"
+          ME1_ROLE="$(jq -r '.specialist.role // ""' "${RUNNER_TEMP}/me1.body" 2>/dev/null)"
+          if [ "$ME1_CODE" != "200" ] || [ "$ME1_EMAIL" != "$TEST_EMAIL" ] || [ "$ME1_ROLE" != "Shop Owner" ]; then FAIL=1; fi
+
+          ME2_CODE="$(curl -sS -o "${RUNNER_TEMP}/me2.body" -w '%{http_code}' -b "$COOKIE_JAR" https://hermeslogisticsus.com/api/auth/me || true)"
+          echo "SECOND_ME_HTTP=$ME2_CODE"
+          if [ "$ME2_CODE" != "200" ] || [ "$(jq -r '.specialist.email // ""' "${RUNNER_TEMP}/me2.body" 2>/dev/null)" != "$TEST_EMAIL" ]; then FAIL=1; fi
+
+          LOGOUT_CODE="$(curl -sS -o "${RUNNER_TEMP}/logout.body" -w '%{http_code}' -b "$COOKIE_JAR" -c "$COOKIE_JAR" -X POST https://hermeslogisticsus.com/api/auth/logout || true)"
+          echo "LOGOUT_HTTP=$LOGOUT_CODE"
+          cat "${RUNNER_TEMP}/logout.body"; echo
+          if [ "$LOGOUT_CODE" != "200" ] || [ "$(jq -r '.success // false' "${RUNNER_TEMP}/logout.body" 2>/dev/null)" != "true" ]; then FAIL=1; fi
+
+          AFTER_LOGOUT_CODE="$(curl -sS -o "${RUNNER_TEMP}/after-logout.body" -w '%{http_code}' -b "$COOKIE_JAR" https://hermeslogisticsus.com/api/auth/me || true)"
+          echo "ME_AFTER_LOGOUT_HTTP=$AFTER_LOGOUT_CODE"
+          cat "${RUNNER_TEMP}/after-logout.body"; echo
+          if [ "$AFTER_LOGOUT_CODE" != "401" ]; then FAIL=1; fi
+
+          LOGIN_JSON="$(jq -nc --arg email "$TEST_EMAIL" --arg password "$TEST_PASSWORD" '{email:$email,password:$password}')"
+          LOGIN_CODE="$(curl -sS -o "${RUNNER_TEMP}/login.body" -w '%{http_code}' -c "$LOGIN_COOKIE" -X POST https://hermeslogisticsus.com/api/auth/login -H 'Content-Type: application/json' --data-binary "$LOGIN_JSON" || true)"
+          echo "LOGIN_AGAIN_HTTP=$LOGIN_CODE"
+          cat "${RUNNER_TEMP}/login.body"; echo
+          if [ "$LOGIN_CODE" != "200" ] || [ "$(jq -r '.success // false' "${RUNNER_TEMP}/login.body" 2>/dev/null)" != "true" ]; then FAIL=1; fi
+
+          ME3_CODE="$(curl -sS -o "${RUNNER_TEMP}/me3.body" -w '%{http_code}' -b "$LOGIN_COOKIE" https://hermeslogisticsus.com/api/auth/me || true)"
+          echo "ME_AFTER_LOGIN_HTTP=$ME3_CODE"
+          if [ "$ME3_CODE" != "200" ] || [ "$(jq -r '.specialist.email // ""' "${RUNNER_TEMP}/me3.body" 2>/dev/null)" != "$TEST_EMAIL" ]; then FAIL=1; fi
+
+          ME4_CODE="$(curl -sS -o "${RUNNER_TEMP}/me4.body" -w '%{http_code}' -b "$LOGIN_COOKIE" https://hermeslogisticsus.com/api/auth/me || true)"
+          echo "SECOND_RELOAD_HTTP=$ME4_CODE"
+          if [ "$ME4_CODE" != "200" ] || [ "$(jq -r '.specialist.email // ""' "${RUNNER_TEMP}/me4.body" 2>/dev/null)" != "$TEST_EMAIL" ]; then FAIL=1; fi
+
+          D1_USER="$(npx --yes wrangler@4 d1 execute hermes-connect-prototype --remote --command "SELECT id,email,role FROM specialists WHERE email='${TEST_EMAIL}';" 2>&1)"
+          echo "$D1_USER" | sed -E 's/[A-Za-z0-9_-]{32,}/[redacted]/g'
+          if echo "$D1_USER" | grep -q "$TEST_EMAIL"; then echo "D1_USER_EXISTS=YES"; else echo "D1_USER_EXISTS=NO"; FAIL=1; fi
+
+          D1_SESSION="$(npx --yes wrangler@4 d1 execute hermes-connect-prototype --remote --command "SELECT COUNT(*) AS session_count FROM sessions WHERE specialist_id=(SELECT id FROM specialists WHERE email='${TEST_EMAIL}');" 2>&1)"
+          echo "$D1_SESSION" | sed -E 's/[A-Za-z0-9_-]{32,}/[redacted]/g'
+          if echo "$D1_SESSION" | grep -Eq '"session_count"[[:space:]]*:[[:space:]]*[1-9]|session_count[^0-9]*[1-9]'; then echo "D1_SESSION_EXISTS=YES"; else echo "D1_SESSION_EXISTS=NO"; FAIL=1; fi
+
+          if [ "$FAIL" -eq 0 ]; then
+            echo "FINAL_AUTH_VERDICT=PASS"
+          else
+            echo "FINAL_AUTH_VERDICT=FAIL"
+            exit 1
+          fi
