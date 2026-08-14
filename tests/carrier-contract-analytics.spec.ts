@@ -85,7 +85,8 @@ test("carrier sales choices, sharing, and document actions emit controlled event
 test("carrier onboarding records steps one through three and packet status without form values", async ({ page }) => {
   await page.goto("/logistics/carrier-onboarding/?plan=essential");
 
-  await page.locator('input[name="service_percentage"]').fill("6");
+  await expect(page.locator('input[name="service_percentage"]')).toHaveValue("6");
+  await expect(page.locator('input[name="service_percentage"]')).toHaveAttribute("readonly", "");
   await page.locator("[data-next]").click();
 
   await page.locator('input[name="legal_company_name"]').fill("PRIVATE TEST Carrier LLC");
