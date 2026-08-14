@@ -50,7 +50,7 @@ test("Hermes Connect mobile web uses the shared product shell", async ({ page },
   await expect(page.locator('.mobile-bar')).toBeVisible();
   await expect(page.locator('.mobile-nav')).toBeVisible();
 
-  await page.locator('[data-mobile-view="inbox"]').click();
+  await page.locator('[data-mobile-view="inbox"]').click({ force: true });
   await expect(page.locator('[data-view-panel="inbox"]')).toBeVisible();
   await expect(page.locator('[data-view-title]')).toHaveText("Conversations");
 

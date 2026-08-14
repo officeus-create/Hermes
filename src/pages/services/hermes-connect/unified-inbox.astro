@@ -1,0 +1,143 @@
+---
+import { ArrowLeft, ArrowRight, Inbox, Mail, MessageSquare, ShieldCheck, Sparkles, UserCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import { HERMES_CONNECT_PRICING } from "../../../data/hermes-connect-pricing";
+
+const canonicalUrl = "https://hermeslogisticsus.com/services/hermes-connect/unified-inbox/";
+
+const faqs = [
+  {
+    question: "What is the Unified Command Center Inbox?",
+    answer: "The Unified Inbox consolidates email, website form inquiries, direct request access applications, and chat messages into a single interactive list with status management (NEW, QUALIFIED, PROPOSAL_SENT)."
+  },
+  {
+    question: "Does the Unified Inbox store leads locally?",
+    answer: "Yes, during the Public Beta release, lead status updates and custom notes are persisted in client-side localStorage and processed locally without sending data to third-party ad networks."
+  }
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Hermes Connect Unified Inbox",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: canonicalUrl,
+    description: "Consolidated multi-channel client inbox with automated lead status tracking and instant response workflows.",
+    offers: {
+      "@type": "Offer",
+      price: HERMES_CONNECT_PRICING.starter.priceMonthly,
+      priceCurrency: "USD"
+    }
+  }
+];
+---
+
+<BaseLayout
+  title="Unified Inbox & Lead Management | Hermes Connect"
+  description="Manage client messages, lead intake applications, and qualified commercial status tracking in one unified inbox with Hermes Connect."
+  canonicalUrl={canonicalUrl}
+  schema={schema}
+>
+  <SiteHeader />
+
+  <main id="main-content" class="hc-feature-page">
+    <div class="page-container">
+      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+        <ol class="breadcrumb-list">
+          <li><a href="/">Home</a></li>
+          <li><a href="/services/hermes-connect/">Hermes Connect</a></li>
+          <li aria-current="page">Unified Inbox</li>
+        </ol>
+      </nav>
+
+      <header class="hero-section">
+        <div class="badge">✦ Public Beta Release</div>
+        <h1>Unified Command Center Inbox</h1>
+        <p class="hero-lead">
+          One inbox for all client communications. Track incoming leads from NEW to QUALIFIED to PROPOSAL SENT with zero response friction.
+        </p>
+
+        <div class="cta-group">
+          <a class="btn primary-btn" href="/demos/hermes-connect-brand-v1/workspace.html?tool=unified-inbox">
+            <Inbox size={18} aria-hidden="true" />
+            Open Unified Inbox in Workspace
+          </a>
+          <HermesConnectLauncher variant="header" />
+        </div>
+      </header>
+
+      <section class="feature-overview">
+        <h2>Key Capabilities &amp; Workflow Features</h2>
+        <div class="card-grid">
+          <div class="card">
+            <Mail class="icon" size={28} />
+            <h3>Multi-Channel Lead Intake</h3>
+            <p>Captures client requests from web forms, direct booking links, and service request buttons in real time.</p>
+          </div>
+          <div class="card">
+            <UserCheck class="icon" size={28} />
+            <h3>Status Lifecycle Management</h3>
+            <p>Move leads seamlessly through NEW, QUALIFIED, and PROPOSAL SENT stages with saved conversation notes.</p>
+          </div>
+          <div class="card">
+            <MessageSquare class="icon" size={28} />
+            <h3>AI Front-Door Pre-Qualification</h3>
+            <p>Automatically suggests optimal responses and flags high-value commercial inquiries immediately.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo-boundary-notice">
+        <ShieldCheck size={20} class="notice-icon" />
+        <div>
+          <strong>Public Beta Transparency Notice:</strong> The Unified Inbox stores leads in encrypted local storage. External SMS/Email gateway sync options are marked <em>Simulated / Beta</em>.
+        </div>
+      </section>
+
+      <section class="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <div class="faq-grid">
+          {faqs.map(faq => (
+            <div class="faq-item">
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .hc-feature-page { padding: 3rem 1.5rem 5rem; max-width: 1100px; margin: 0 auto; color: var(--color-text, #f3f4f6); }
+  .breadcrumb-list { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin-bottom: 2rem; font-size: 0.9rem; color: #9ca3af; }
+  .breadcrumb-list a { color: #38bdf8; text-decoration: none; }
+  .hero-section { text-align: center; margin-bottom: 4rem; }
+  .badge { display: inline-block; padding: 0.35rem 0.85rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
+  h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.2; }
+  .hero-lead { font-size: 1.25rem; color: #9ca3af; max-width: 800px; margin: 0 auto 2rem; line-height: 1.6; }
+  .cta-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: transform 0.2s, background 0.2s; }
+  .primary-btn { background: #38bdf8; color: #090d16; }
+  .primary-btn:hover { background: #7dd3fc; transform: translateY(-2px); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem; }
+  .card .icon { color: #38bdf8; margin-bottom: 1rem; }
+  .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+  .card p { color: #9ca3af; font-size: 0.95rem; line-height: 1.5; }
+  .demo-boundary-notice { display: flex; align-items: center; gap: 0.75rem; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.25); color: #fde047; padding: 1.25rem; border-radius: 12px; margin: 3rem 0; font-size: 0.95rem; }
+  .notice-icon { flex-shrink: 0; }
+  .faq-section { margin-top: 4rem; }
+  .faq-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+  .faq-item { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
+  .faq-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #f3f4f6; }
+  .faq-item p { color: #9ca3af; font-size: 0.95rem; margin: 0; }
+</style>

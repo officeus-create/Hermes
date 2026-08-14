@@ -952,4 +952,29 @@
   box-shadow: 0 4px 12px rgba(124, 92, 255, 0.2);
 }
 
+@media(max-width:850px){
+  .mobile-nav {
+    position: fixed !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    height: 64px !important;
+    background: rgba(11, 13, 18, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 20px !important;
+    z-index: 99999 !important;
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    padding: 6px !important;
+    pointer-events: auto !important;
+  }
+  .mobile-nav button {
+    position: relative !important;
+    z-index: 100000 !important;
+    pointer-events: auto !important;
+  }
+}
+
+
 

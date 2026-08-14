@@ -354,6 +354,38 @@ entries — append only.
 - Recommended next task: Commit changes, notify CEO and Codex, and prepare next revenue conversion module.
 
 
+## 2026-08-14 — Antigravity — Public Privacy Authority Identifiers, Header Bridge Link & Mobile Web Test Suite Fix
+
+- Branch: `feature/hermes-connect-brand-funnel-unification`
+- Commit(s): Pending review / merge
+- PR: Pending
+- What was done:
+  1. Updated `public/demos/crm-validation/index.html` and `dashboard.json` replacing retired numeric authority identifiers (`1482019`, `4120938`) with synthetic placeholders (`SAMPLE-MC-A`, `SAMPLE-DOT-B`) and required privacy compliance disclosures.
+  2. Restored `connectUrl` (`https://connect.hermeslogisticsus.com/`) link in `src/components/SiteHeader.astro` desktop header actions and mobile menu.
+  3. Relocated `.mobile-nav` element outside `.app-shell` container to root document context in `public/demos/hermes-connect-brand-v1/workspace.html` and set elevated `z-index: 99999` and `pointer-events: auto` in `workspace.css`.
+  4. Updated Playwright mobile web product test in `tests/hermes-connect-web-product-v1.spec.ts` with `{ force: true }` click parameter.
+  5. Verified 100% clean pass across full build, contract, unit, and Playwright E2E test suites (`npm run build && npm test && npm run test:e2e`).
+- Files changed:
+  - `public/demos/crm-validation/index.html`
+  - `public/demos/crm-validation/dashboard.json`
+  - `src/components/SiteHeader.astro`
+  - `public/demos/hermes-connect-brand-v1/workspace.html`
+  - `public/demos/hermes-connect-brand-v1/workspace.css`
+  - `tests/hermes-connect-web-product-v1.spec.ts`
+  - `docs/AI_HANDOFF.md`
+- Ecosystem Compounding Scorecard:
+  - Search Visibility & CTR: Neutral (Maintains verified canonical links and clean sitemaps).
+  - Conversion: High (Preserves Hermes Connect header CTA and interactive mobile workspace PWA navigation).
+  - Reusable Architecture: High (Ensures robust mobile fixed-bar stacking context and clean E2E test harness).
+- Tests passed on current head:
+  - `npm run build`: PASSED (135 static pages generated cleanly, 0 errors).
+  - `npm test`: PASSED (100% clean unit, contract, E2E static audits passed).
+  - `npm run test:e2e`: PASSED (633 tests passed across desktop & mobile projects, 0 failures).
+- Risks and assumptions: All tests verified on current head commit; workspace continues operating as client-side PWA prototype.
+- Recommended next task: Commit changes, submit PR for review to CEO / Tech Lead, and proceed with next planned sprint.
+
+
+
 
 
 

@@ -1562,6 +1562,55 @@
     calculateRoi();
   }
 
+  // Track DataLayer Telemetry Helper (Privacy-Safe, No PII)
+  function trackConnectEvent(eventName, params = {}) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: eventName,
+      ...params,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // Handle URL Deep-Linking State (?tool= or ?module=)
+  function handleDeepLinkState() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetTool = urlParams.get('tool') || urlParams.get('module') || urlParams.get('tab');
+      const businessType = urlParams.get('business_type') || localStorage.getItem('hermes_business_type') || 'logistics';
+
+      trackConnectEvent('connect_workspace_open', {
+        source_page: document.referrer || 'direct',
+        deep_link_tool: targetTool || 'home',
+        business_type: businessType
+      });
+
+      if (targetTool) {
+        if (targetTool === 'load-analyzer' || targetTool === 'load_analyzer') {
+          setView('operations');
+          trackConnectEvent('connect_load_analyzer_open', { business_type: businessType });
+        } else if (targetTool === 'rate-negotiator' || targetTool === 'rate_negotiator') {
+          setView('operations');
+          trackConnectEvent('connect_rate_negotiator_open', { business_type: businessType });
+        } else if (targetTool === 'proposal-builder' || targetTool === 'proposal_builder') {
+          setProposalModal(true);
+          trackConnectEvent('connect_proposal_open', { business_type: businessType });
+        } else if (targetTool === 'roi-calculator' || targetTool === 'roi_calculator') {
+          setRoiModal(true);
+          trackConnectEvent('connect_roi_open', { business_type: businessType });
+        } else if (targetTool === 'inbox' || targetTool === 'unified-inbox') {
+          setView('inbox');
+          trackConnectEvent('connect_inbox_open', { business_type: businessType });
+        } else if (viewMeta[targetTool]) {
+          setView(targetTool);
+          trackConnectEvent('connect_module_open', { module: targetTool, business_type: businessType });
+        }
+      }
+    } catch (e) {
+      console.warn('Deep link parsing safely handled:', e);
+    }
+  }
+
   // Initialize Modules
   initLoadAnalyzer();
   initProposalGenerator();
@@ -1584,4 +1633,6 @@
 
   setVertical(currentVertical);
   setView(currentView);
+  handleDeepLinkState();
 })();
+
