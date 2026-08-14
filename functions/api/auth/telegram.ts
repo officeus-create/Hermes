@@ -1,7 +1,7 @@
 import { verifyTelegramAuth, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: any; TELEGRAM_BOT_TOKEN: string };
+type Env = { DB?: any; TELEGRAM_BOT_TOKEN?: string };
 
 type TelegramAuthPayload = {
   id?: number | string;
@@ -14,6 +14,7 @@ type TelegramAuthPayload = {
 };
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   if (!env.TELEGRAM_BOT_TOKEN) return jsonResponse(500, { success: false, error: "telegram_login_not_configured" });
 
   let payload: TelegramAuthPayload;
