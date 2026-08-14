@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, Clock3, LogOut, Plus, Trash2, Wrench } from "@lucide/astro";
+import { ArrowLeft, Copy, ExternalLink, LogOut, Plus, Trash2 } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
@@ -7,343 +7,257 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
 <BaseLayout
   title="Repair Shop Workspace | Hermes Connect"
-  description="Manage your repair shop services in Hermes Connect."
+  description="Manage your repair shop profile and services in Hermes Connect."
   robots="noindex,nofollow"
 >
   <SiteHeader activePath="/paths/technology/" />
 
   <main class="workspace-page">
     <div class="workspace-shell">
-      <a href="/services/hermes-connect/repair-shops/" class="back-link">
-        <ArrowLeft size={16} /> Repair Shop Beta
-      </a>
+      <a href="/services/hermes-connect/repair-shops/" class="back-link"><ArrowLeft size={16} /> Repair Shop Beta</a>
 
-      <section class="workspace-header">
+      <header class="workspace-header">
         <div>
           <p class="eyebrow">Hermes Connect · Repair Shops</p>
           <h1>Shop Owner Workspace</h1>
           <p id="owner-summary" class="muted">Loading your secure workspace...</p>
         </div>
-        <button id="logout-btn" class="secondary-btn" type="button">
-          <LogOut size={16} /> Logout
-        </button>
-      </section>
+        <button id="logout-btn" class="secondary-btn" type="button"><LogOut size={16} /> Logout</button>
+      </header>
 
       <div id="workspace-alert" class="alert hidden" role="status"></div>
+
+      <section class="panel" aria-labelledby="profile-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Production profile</p>
+            <h2 id="profile-title">Shop profile</h2>
+            <p class="muted">This information identifies your repair shop and determines its local timezone.</p>
+          </div>
+          <span id="profile-state" class="count-pill">Not configured</span>
+        </div>
+
+        <form id="profile-form" class="profile-grid">
+          <label class="field span-2">Shop name<input id="shop-name" maxlength="120" required placeholder="Apex Auto Care" /></label>
+          <label class="field">Phone<input id="shop-phone" maxlength="32" inputmode="tel" placeholder="+1 414 555 0100" /></label>
+          <label class="field">Address<input id="shop-address" maxlength="160" placeholder="123 Main St" /></label>
+          <label class="field">City<input id="shop-city" maxlength="80" required placeholder="Milwaukee" /></label>
+          <label class="field">State<input id="shop-state" maxlength="2" required placeholder="WI" /></label>
+          <label class="field">ZIP<input id="shop-zip" maxlength="16" placeholder="53202" /></label>
+          <label class="field">Timezone
+            <select id="shop-timezone" required>
+              <option value="America/New_York">Eastern</option>
+              <option value="America/Chicago" selected>Central</option>
+              <option value="America/Denver">Mountain</option>
+              <option value="America/Phoenix">Arizona</option>
+              <option value="America/Los_Angeles">Pacific</option>
+              <option value="America/Anchorage">Alaska</option>
+              <option value="Pacific/Honolulu">Hawaii</option>
+            </select>
+          </label>
+          <button id="save-profile-btn" class="primary-btn span-2" type="submit">Save shop profile</button>
+        </form>
+
+        <div id="public-link-wrap" class="public-link hidden">
+          <div>
+            <span class="mini-label">Public booking link</span>
+            <strong id="public-link-text"></strong>
+          </div>
+          <div class="link-actions">
+            <button id="copy-link-btn" class="secondary-btn" type="button"><Copy size={15} /> Copy</button>
+            <a id="open-link-btn" class="secondary-btn" href="#" target="_blank" rel="noopener"><ExternalLink size={15} /> Open</a>
+          </div>
+        </div>
+      </section>
 
       <section class="panel" aria-labelledby="services-title">
         <div class="panel-heading">
           <div>
             <p class="eyebrow">Real D1 data</p>
             <h2 id="services-title">Services</h2>
-            <p class="muted">These services are stored for your authenticated shop owner account.</p>
+            <p class="muted">Only services stored for this authenticated owner appear here.</p>
           </div>
-          <div id="service-count" class="count-pill">0 services</div>
+          <span id="service-count" class="count-pill">0 services</span>
         </div>
 
         <form id="service-form" class="service-form">
-          <div class="field grow">
-            <label for="service-name">Service name</label>
-            <input id="service-name" name="service-name" type="text" minlength="2" maxlength="120" placeholder="Brake inspection" required />
-          </div>
-          <div class="field duration-field">
-            <label for="service-duration">Duration</label>
-            <select id="service-duration" name="service-duration" required>
-              <option value="15">15 min</option>
-              <option value="30" selected>30 min</option>
-              <option value="45">45 min</option>
-              <option value="60">60 min</option>
-              <option value="90">90 min</option>
-              <option value="120">120 min</option>
-              <option value="180">180 min</option>
-              <option value="240">240 min</option>
+          <label class="field grow">Service name<input id="service-name" minlength="2" maxlength="120" required placeholder="Brake inspection" /></label>
+          <label class="field duration-field">Duration
+            <select id="service-duration" required>
+              <option value="15">15 min</option><option value="30" selected>30 min</option><option value="45">45 min</option>
+              <option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option>
+              <option value="180">180 min</option><option value="240">240 min</option>
             </select>
-          </div>
-          <button id="add-service-btn" class="primary-btn" type="submit">
-            <Plus size={17} /> Add service
-          </button>
+          </label>
+          <button id="add-service-btn" class="primary-btn" type="submit"><Plus size={17} /> Add service</button>
         </form>
 
         <div id="services-loading" class="state-card">Loading services...</div>
-        <div id="services-empty" class="state-card hidden">
-          <Wrench size={28} />
-          <strong>No services yet</strong>
-          <span>Add the first service your shop accepts.</span>
-        </div>
+        <div id="services-empty" class="state-card hidden"><strong>No services yet</strong><span>Add the first service your shop accepts.</span></div>
         <div id="services-list" class="services-list hidden"></div>
       </section>
 
       <section class="next-panel">
-        <div>
-          <p class="eyebrow">Next production slice</p>
-          <h2>Availability & booking</h2>
-          <p class="muted">Not enabled here until shop-specific scheduling is connected to the production database.</p>
-        </div>
+        <p class="eyebrow">Next production slice</p>
+        <h2>Availability & booking</h2>
+        <p class="muted">Scheduling remains disabled until availability is owner-scoped and production-verified.</p>
       </section>
     </div>
   </main>
-
   <SiteFooter />
 </BaseLayout>
 
 <script>
-  type Service = {
-    id: string;
-    name: string;
-    duration_minutes: number;
-    owner_specialist_id: string;
-  };
+  type Service = { id: string; name: string; duration_minutes: number; owner_specialist_id: string };
+  type Shop = { id: string; name: string; slug: string; phone?: string | null; address_line1?: string | null; city: string; state: string; postal_code?: string | null; timezone: string };
 
-  const alertBox = document.getElementById("workspace-alert");
-  const servicesLoading = document.getElementById("services-loading");
-  const servicesEmpty = document.getElementById("services-empty");
-  const servicesList = document.getElementById("services-list");
-  const countPill = document.getElementById("service-count");
-  const form = document.getElementById("service-form") as HTMLFormElement | null;
-  const addButton = document.getElementById("add-service-btn") as HTMLButtonElement | null;
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+  const alertBox = $("workspace-alert");
+  const serviceForm = $<HTMLFormElement>("service-form");
+  const profileForm = $<HTMLFormElement>("profile-form");
+  const addServiceButton = $<HTMLButtonElement>("add-service-btn");
+  const saveProfileButton = $<HTMLButtonElement>("save-profile-btn");
+  let publicBookingUrl = "";
 
   function showAlert(message: string, kind: "error" | "success" = "error") {
     if (!alertBox) return;
     alertBox.textContent = message;
     alertBox.className = `alert ${kind}`;
   }
-
-  function clearAlert() {
-    if (!alertBox) return;
-    alertBox.className = "alert hidden";
-    alertBox.textContent = "";
-  }
-
-  async function readJson(response: Response) {
-    try {
-      return await response.json();
-    } catch {
-      return { success: false, error: "invalid_server_response" };
-    }
-  }
+  function clearAlert() { if (alertBox) { alertBox.textContent = ""; alertBox.className = "alert hidden"; } }
+  async function readJson(response: Response) { try { return await response.json(); } catch { return { success: false, error: "invalid_server_response" }; } }
+  function redirectToAuth() { window.location.replace("/services/hermes-connect/repair-shops/auth/"); }
 
   async function requireOwnerSession() {
     const response = await fetch("/api/auth/me", { credentials: "same-origin" });
-    if (response.status === 401) {
-      window.location.replace("/services/hermes-connect/repair-shops/auth/");
-      return null;
-    }
+    if (response.status === 401) { redirectToAuth(); return false; }
     const data = await readJson(response);
-    if (!response.ok || !data.success || !data.specialist) {
-      showAlert(data.error || "Unable to load your secure session.");
-      return null;
-    }
-    const summary = document.getElementById("owner-summary");
+    if (!response.ok || !data.success || !data.specialist) { showAlert(data.error || "Unable to load your secure session."); return false; }
+    const summary = $("owner-summary");
     if (summary) summary.textContent = `${data.specialist.name} · ${data.specialist.email}`;
-    return data.specialist;
+    return true;
   }
 
-  function renderServices(services: Service[]) {
-    if (!servicesList || !servicesEmpty || !servicesLoading || !countPill) return;
-
-    servicesLoading.classList.add("hidden");
-    countPill.textContent = `${services.length} ${services.length === 1 ? "service" : "services"}`;
-
-    if (services.length === 0) {
-      servicesList.classList.add("hidden");
-      servicesEmpty.classList.remove("hidden");
-      servicesList.innerHTML = "";
+  function fillProfile(shop: Shop | null) {
+    const state = $("profile-state");
+    const linkWrap = $("public-link-wrap");
+    if (!shop) {
+      if (state) state.textContent = "Not configured";
+      linkWrap?.classList.add("hidden");
       return;
     }
+    if (state) state.textContent = "Saved";
+    ($<HTMLInputElement>("shop-name")!).value = shop.name || "";
+    ($<HTMLInputElement>("shop-phone")!).value = shop.phone || "";
+    ($<HTMLInputElement>("shop-address")!).value = shop.address_line1 || "";
+    ($<HTMLInputElement>("shop-city")!).value = shop.city || "";
+    ($<HTMLInputElement>("shop-state")!).value = shop.state || "";
+    ($<HTMLInputElement>("shop-zip")!).value = shop.postal_code || "";
+    ($<HTMLSelectElement>("shop-timezone")!).value = shop.timezone || "America/Chicago";
+    publicBookingUrl = `${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
+    const linkText = $("public-link-text");
+    const openLink = $<HTMLAnchorElement>("open-link-btn");
+    if (linkText) linkText.textContent = publicBookingUrl;
+    if (openLink) openLink.href = publicBookingUrl;
+    linkWrap?.classList.remove("hidden");
+  }
 
-    servicesEmpty.classList.add("hidden");
-    servicesList.classList.remove("hidden");
-    servicesList.innerHTML = "";
+  async function loadProfile() {
+    const response = await fetch("/api/repair-shop/profile", { credentials: "same-origin" });
+    if (response.status === 401) return redirectToAuth();
+    const data = await readJson(response);
+    if (!response.ok || !data.success) return showAlert(data.error || "Unable to load shop profile.");
+    fillProfile(data.shop || null);
+  }
 
+  profileForm?.addEventListener("submit", async (event) => {
+    event.preventDefault(); clearAlert(); if (saveProfileButton) saveProfileButton.disabled = true;
+    try {
+      const response = await fetch("/api/repair-shop/profile", {
+        method: "PUT", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: $<HTMLInputElement>("shop-name")?.value,
+          phone: $<HTMLInputElement>("shop-phone")?.value,
+          address_line1: $<HTMLInputElement>("shop-address")?.value,
+          city: $<HTMLInputElement>("shop-city")?.value,
+          state: $<HTMLInputElement>("shop-state")?.value,
+          postal_code: $<HTMLInputElement>("shop-zip")?.value,
+          timezone: $<HTMLSelectElement>("shop-timezone")?.value,
+        }),
+      });
+      const data = await readJson(response);
+      if (!response.ok || !data.success) return showAlert(data.error || "Unable to save shop profile.");
+      fillProfile(data.shop); showAlert("Shop profile saved to production.", "success");
+    } catch { showAlert("Network error while saving shop profile."); }
+    finally { if (saveProfileButton) saveProfileButton.disabled = false; }
+  });
+
+  $("copy-link-btn")?.addEventListener("click", async () => {
+    if (!publicBookingUrl) return;
+    try { await navigator.clipboard.writeText(publicBookingUrl); showAlert("Public booking link copied.", "success"); }
+    catch { showAlert("Could not copy the link. Select it manually."); }
+  });
+
+  function renderServices(services: Service[]) {
+    const loading = $("services-loading"); const empty = $("services-empty"); const list = $("services-list"); const count = $("service-count");
+    loading?.classList.add("hidden"); if (count) count.textContent = `${services.length} ${services.length === 1 ? "service" : "services"}`;
+    if (!list || !empty) return;
+    list.innerHTML = "";
+    if (!services.length) { list.classList.add("hidden"); empty.classList.remove("hidden"); return; }
+    empty.classList.add("hidden"); list.classList.remove("hidden");
     for (const service of services) {
-      const row = document.createElement("article");
-      row.className = "service-row";
-
-      const details = document.createElement("div");
-      details.className = "service-details";
-
-      const name = document.createElement("strong");
-      name.textContent = service.name;
-
-      const duration = document.createElement("span");
-      duration.className = "service-duration";
-      duration.textContent = `${service.duration_minutes} min`;
-
-      details.append(name, duration);
-
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "delete-btn";
-      remove.setAttribute("aria-label", `Delete ${service.name}`);
-      remove.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v5"/><path d="M14 11v5"/></svg><span>Delete</span>';
-      remove.addEventListener("click", () => deleteService(service, remove));
-
-      row.append(details, remove);
-      servicesList.append(row);
+      const row = document.createElement("article"); row.className = "service-row";
+      const text = document.createElement("div"); text.className = "service-details";
+      const name = document.createElement("strong"); name.textContent = service.name;
+      const duration = document.createElement("span"); duration.textContent = `${service.duration_minutes} min`; duration.className = "muted small";
+      text.append(name, duration);
+      const remove = document.createElement("button"); remove.type = "button"; remove.className = "delete-btn"; remove.innerHTML = '<span>Delete</span>';
+      remove.addEventListener("click", async () => {
+        clearAlert(); remove.disabled = true;
+        try {
+          const response = await fetch(`/api/services/${encodeURIComponent(service.id)}`, { method: "DELETE", credentials: "same-origin" });
+          const data = await readJson(response);
+          if (!response.ok || !data.success) return showAlert(data.error === "service_has_bookings" ? "This service has bookings and cannot be deleted." : data.error || "Unable to delete service.");
+          showAlert(`${service.name} deleted.`, "success"); await loadServices();
+        } catch { showAlert("Network error while deleting service."); } finally { remove.disabled = false; }
+      });
+      row.append(text, remove); list.append(row);
     }
   }
 
   async function loadServices() {
     const response = await fetch("/api/services", { credentials: "same-origin" });
-    if (response.status === 401) {
-      window.location.replace("/services/hermes-connect/repair-shops/auth/");
-      return;
-    }
+    if (response.status === 401) return redirectToAuth();
     const data = await readJson(response);
-    if (!response.ok || !data.success) {
-      servicesLoading?.classList.add("hidden");
-      showAlert(data.error || "Unable to load services.");
-      return;
-    }
+    if (!response.ok || !data.success) { $("services-loading")?.classList.add("hidden"); return showAlert(data.error || "Unable to load services."); }
     renderServices(Array.isArray(data.services) ? data.services : []);
   }
 
-  async function deleteService(service: Service, button: HTMLButtonElement) {
-    clearAlert();
-    button.disabled = true;
-    try {
-      const response = await fetch(`/api/services/${encodeURIComponent(service.id)}`, {
-        method: "DELETE",
-        credentials: "same-origin",
-      });
-      const data = await readJson(response);
-      if (!response.ok || !data.success) {
-        const message = data.error === "service_has_bookings"
-          ? "This service already has bookings and cannot be deleted."
-          : data.error || "Unable to delete service.";
-        showAlert(message);
-        return;
-      }
-      showAlert(`${service.name} deleted.`, "success");
-      await loadServices();
-    } catch {
-      showAlert("Network error while deleting service.");
-    } finally {
-      button.disabled = false;
-    }
-  }
-
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearAlert();
-
-    const nameInput = document.getElementById("service-name") as HTMLInputElement | null;
-    const durationInput = document.getElementById("service-duration") as HTMLSelectElement | null;
-    if (!nameInput || !durationInput) return;
-
-    addButton && (addButton.disabled = true);
+  serviceForm?.addEventListener("submit", async (event) => {
+    event.preventDefault(); clearAlert(); if (addServiceButton) addServiceButton.disabled = true;
     try {
       const response = await fetch("/api/services", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: nameInput.value,
-          duration_minutes: Number(durationInput.value),
-        }),
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: $<HTMLInputElement>("service-name")?.value, duration_minutes: Number($<HTMLSelectElement>("service-duration")?.value) }),
       });
       const data = await readJson(response);
-      if (!response.ok || !data.success) {
-        const message = data.error === "service_already_exists"
-          ? "A service with this name already exists."
-          : data.error || "Unable to add service.";
-        showAlert(message);
-        return;
-      }
-      form.reset();
-      durationInput.value = "30";
-      showAlert(`${data.service.name} added to your real service list.`, "success");
-      await loadServices();
-    } catch {
-      showAlert("Network error while adding service.");
-    } finally {
-      addButton && (addButton.disabled = false);
-    }
+      if (!response.ok || !data.success) return showAlert(data.error === "service_already_exists" ? "A service with this name already exists." : data.error || "Unable to add service.");
+      serviceForm.reset(); ($<HTMLSelectElement>("service-duration")!).value = "30"; showAlert(`${data.service.name} added.`, "success"); await loadServices();
+    } catch { showAlert("Network error while adding service."); } finally { if (addServiceButton) addServiceButton.disabled = false; }
   });
 
-  document.getElementById("logout-btn")?.addEventListener("click", async () => {
-    clearAlert();
-    try {
-      const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-      if (!response.ok) {
-        const data = await readJson(response);
-        showAlert(data.error || "Logout failed.");
-        return;
-      }
-      window.location.replace("/services/hermes-connect/repair-shops/auth/");
-    } catch {
-      showAlert("Network error during logout.");
-    }
+  $("logout-btn")?.addEventListener("click", async () => {
+    const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+    if (response.ok) redirectToAuth(); else showAlert("Logout failed.");
   });
 
   async function initialize() {
-    try {
-      const owner = await requireOwnerSession();
-      if (!owner) return;
-      await loadServices();
-    } catch {
-      showAlert("Unable to initialize the shop workspace.");
-    }
+    try { if (!(await requireOwnerSession())) return; await Promise.all([loadProfile(), loadServices()]); }
+    catch { showAlert("Unable to initialize the shop workspace."); }
   }
-
   initialize();
 </script>
 
 <style>
-  .workspace-page {
-    min-height: 100vh;
-    padding: 116px 24px 80px;
-    color: #f6f7fb;
-    background:
-      radial-gradient(circle at 15% 10%, rgba(124, 92, 255, .17), transparent 32%),
-      radial-gradient(circle at 85% 20%, rgba(90, 200, 250, .11), transparent 30%),
-      #090a0f;
-  }
-  .workspace-shell { width: min(980px, 100%); margin: 0 auto; }
-  .back-link { display: inline-flex; align-items: center; gap: 8px; color: #a4a9b6; text-decoration: none; font-weight: 650; margin-bottom: 26px; }
-  .back-link:hover { color: #fff; }
-  .workspace-header, .panel-heading { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; }
-  .workspace-header { margin-bottom: 28px; }
-  .eyebrow { margin: 0 0 8px; text-transform: uppercase; letter-spacing: .12em; font-size: 12px; font-weight: 800; color: #9d88ff; }
-  h1 { margin: 0 0 8px; font-size: clamp(30px, 5vw, 48px); line-height: 1.05; }
-  h2 { margin: 0 0 8px; font-size: 25px; }
-  .muted { margin: 0; color: #a5aab8; line-height: 1.6; }
-  .panel, .next-panel { border: 1px solid rgba(255,255,255,.08); background: rgba(20,22,30,.76); border-radius: 22px; box-shadow: 0 24px 70px rgba(0,0,0,.25); }
-  .panel { padding: 28px; }
-  .next-panel { margin-top: 22px; padding: 24px 28px; }
-  .count-pill { white-space: nowrap; border-radius: 999px; padding: 8px 12px; background: rgba(124,92,255,.14); color: #c9bfff; font-size: 13px; font-weight: 750; }
-  .service-form { display: flex; gap: 14px; align-items: flex-end; margin: 28px 0 24px; padding: 18px; border-radius: 16px; background: rgba(255,255,255,.035); }
-  .field { display: flex; flex-direction: column; gap: 8px; }
-  .field.grow { flex: 1; }
-  .duration-field { width: 150px; }
-  label { color: #d9dce4; font-size: 13px; font-weight: 700; }
-  input, select { min-height: 46px; border: 1px solid rgba(255,255,255,.12); border-radius: 11px; background: #11131a; color: #fff; padding: 0 13px; font: inherit; outline: none; }
-  input:focus, select:focus { border-color: #7c5cff; box-shadow: 0 0 0 3px rgba(124,92,255,.13); }
-  .primary-btn, .secondary-btn, .delete-btn { border: 0; cursor: pointer; font: inherit; font-weight: 750; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-  .primary-btn { min-height: 46px; border-radius: 11px; padding: 0 18px; color: #fff; background: linear-gradient(135deg, #7c5cff, #4ba9dc); }
-  .secondary-btn { border-radius: 11px; padding: 11px 15px; color: #e8e9ee; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); }
-  button:disabled { opacity: .55; cursor: not-allowed; }
-  .state-card { min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; border: 1px dashed rgba(255,255,255,.12); border-radius: 15px; color: #aeb3c0; }
-  .services-list { display: grid; gap: 10px; }
-  .service-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 17px 18px; border: 1px solid rgba(255,255,255,.07); border-radius: 14px; background: rgba(7,8,12,.36); }
-  .service-details { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .service-details strong { overflow-wrap: anywhere; }
-  .service-duration { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; color: #aab0bd; font-size: 13px; }
-  .service-duration::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #7c5cff; }
-  .delete-btn { padding: 8px 10px; border-radius: 9px; color: #ffaaaa; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.12); }
-  .alert { margin: 0 0 18px; padding: 13px 15px; border-radius: 12px; font-weight: 650; }
-  .alert.error { color: #ffc1c1; background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.17); }
-  .alert.success { color: #a7f3d0; background: rgba(16,185,129,.09); border: 1px solid rgba(16,185,129,.17); }
-  .hidden { display: none !important; }
-  @media (max-width: 720px) {
-    .workspace-page { padding: 100px 16px 64px; }
-    .workspace-header, .panel-heading { flex-direction: column; }
-    .workspace-header .secondary-btn { width: 100%; }
-    .panel { padding: 20px; }
-    .service-form { flex-direction: column; align-items: stretch; padding: 15px; }
-    .duration-field { width: 100%; }
-    .service-row { align-items: flex-start; }
-    .service-details { flex-direction: column; align-items: flex-start; gap: 5px; }
-    .delete-btn span { display: none; }
-  }
+  .workspace-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 15% 10%,rgba(124,92,255,.17),transparent 32%),radial-gradient(circle at 85% 20%,rgba(90,200,250,.11),transparent 30%),#090a0f}.workspace-shell{width:min(980px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a4a9b6;text-decoration:none;font-weight:650;margin-bottom:26px}.workspace-header,.panel-heading{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.workspace-header{margin-bottom:28px}.eyebrow,.mini-label{margin:0 0 8px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:800;color:#9d88ff}h1{margin:0 0 8px;font-size:clamp(30px,5vw,48px);line-height:1.05}h2{margin:0 0 8px;font-size:25px}.muted{margin:0;color:#a5aab8;line-height:1.6}.small{font-size:13px}.panel,.next-panel{border:1px solid rgba(255,255,255,.08);background:rgba(20,22,30,.76);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.panel{padding:28px;margin-bottom:22px}.next-panel{padding:24px 28px}.count-pill{white-space:nowrap;border-radius:999px;padding:8px 12px;background:rgba(124,92,255,.14);color:#c9bfff;font-size:13px;font-weight:750}.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:26px}.span-2{grid-column:1/-1}.service-form{display:flex;gap:14px;align-items:flex-end;margin:28px 0 24px;padding:18px;border-radius:16px;background:rgba(255,255,255,.035)}.field{display:flex;flex-direction:column;gap:8px;color:#d9dce4;font-size:13px;font-weight:700}.grow{flex:1}.duration-field{width:150px}input,select{min-height:46px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#11131a;color:#fff;padding:0 13px;font:inherit;outline:none}input:focus,select:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.13)}.primary-btn,.secondary-btn,.delete-btn{cursor:pointer;font:inherit;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary-btn{min-height:46px;border:0;border-radius:11px;padding:0 18px;color:#fff;background:linear-gradient(135deg,#7c5cff,#4ba9dc)}.secondary-btn{border-radius:11px;padding:11px 15px;color:#e8e9ee;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);text-decoration:none}.delete-btn{padding:8px 12px;border-radius:9px;color:#ffaaaa;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.12)}button:disabled{opacity:.55;cursor:not-allowed}.public-link{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-top:20px;padding:16px;border-radius:14px;background:rgba(90,200,250,.07);border:1px solid rgba(90,200,250,.13)}.public-link strong{display:block;max-width:650px;overflow-wrap:anywhere;font-size:13px;color:#dfeaf1}.link-actions{display:flex;gap:8px}.state-card{min-height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px dashed rgba(255,255,255,.12);border-radius:15px;color:#aeb3c0}.services-list{display:grid;gap:10px}.service-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px 18px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(7,8,12,.36)}.service-details{display:flex;flex-direction:column;gap:3px}.alert{margin:0 0 18px;padding:13px 15px;border-radius:12px;font-weight:650}.alert.error{color:#ffc1c1;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.17)}.alert.success{color:#a7f3d0;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.17)}.hidden{display:none!important}@media(max-width:720px){.workspace-page{padding:100px 16px 64px}.workspace-header,.panel-heading,.public-link{flex-direction:column}.workspace-header .secondary-btn{width:100%}.panel{padding:20px}.profile-grid{grid-template-columns:1fr}.span-2{grid-column:auto}.service-form{flex-direction:column;align-items:stretch;padding:15px}.duration-field{width:100%}.link-actions{width:100%}.link-actions>*{flex:1}.service-row{align-items:flex-start}}
 </style>
