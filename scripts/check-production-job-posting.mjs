@@ -14,7 +14,7 @@ function extractAttribute(html, tagName, identifyingAttribute, identifyingValue,
   for (const tag of tags) {
     const identifier = tag.match(new RegExp(`${identifyingAttribute}=["']([^"']+)["']`, "i"))?.[1];
     if (!identifier) continue;
-    const tokens = identifier.toLowerCase().split(/\\s+/);
+    const tokens = identifier.toLowerCase().split(/\s+/);
     if (!tokens.includes(identifyingValue.toLowerCase())) continue;
     const target = tag.match(new RegExp(`${targetAttribute}=["']([^"']+)["']`, "i"))?.[1];
     if (target) return target;
@@ -39,7 +39,7 @@ async function fetchPublic(pathname, accept = "text/html,*/*;q=0.8") {
     return {
       expectedUrl,
       status: response.status,
-      finalUrl: response.url.replace(/[?&]seo-job-smoke=\\d+$/, ""),
+      finalUrl: response.url.replace(/[?&]seo-job-smoke=\d+$/, ""),
       contentType: response.headers.get("content-type"),
       body,
       error: null,
@@ -57,7 +57,7 @@ async function fetchPublic(pathname, accept = "text/html,*/*;q=0.8") {
 }
 
 function extractJsonLd(html) {
-  return [...html.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)]
+  return [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
     .map((match) => match[1].trim())
     .filter(Boolean);
 }
@@ -74,7 +74,7 @@ const canonical = extractAttribute(job.body, "link", "rel", "canonical", "href")
 const robots = extractAttribute(job.body, "meta", "name", "robots", "content");
 const jsonLdBlocks = extractJsonLd(job.body);
 const jobPostingCount = jsonLdBlocks.reduce(
-  (count, block) => count + (block.match(/"@type"\\s*:\\s*"JobPosting"/g) ?? []).length,
+  (count, block) => count + (block.match(/"@type"\s*:\s*"JobPosting"/g) ?? []).length,
   0,
 );
 const combinedJsonLd = jsonLdBlocks.join("\n");
@@ -88,12 +88,12 @@ const checks = {
   jobPostingUrlPresent: combinedJsonLd.includes(jobUrl),
   jobPostingEmploymentTypePresent: combinedJsonLd.includes('"employmentType":"FULL_TIME"') || combinedJsonLd.includes('"employmentType": "FULL_TIME"'),
   jobPostingTelecommutePresent: combinedJsonLd.includes('"jobLocationType":"TELECOMMUTE"') || combinedJsonLd.includes('"jobLocationType": "TELECOMMUTE"'),
-  jobPostingDatePostedPresent: /"datePosted"\\s*:\\s*"\\d{4}-\\d{2}-\\d{2}"/.test(combinedJsonLd),
-  jobPostingValidThroughPresent: /"validThrough"\\s*:\\s*"[^"\\n]+"/.test(combinedJsonLd),
+  jobPostingDatePostedPresent: /"datePosted"\s*:\s*"\d{4}-\d{2}-\d{2}"/.test(combinedJsonLd),
+  jobPostingValidThroughPresent: /"validThrough"\s*:\s*"[^"\n]+"/.test(combinedJsonLd),
   careersStatus200: careers.status === 200,
   careersFinalUrlMatches: careers.finalUrl === careersUrl,
   careersLinksToJob: careers.body.includes(`href="${jobPath}"`) || careers.body.includes(`href='${jobPath}'`),
-  careersDoesNotDuplicateJobPosting: !/"@type"\\s*:\\s*"JobPosting"/.test(extractJsonLd(careers.body).join("\n")),
+  careersDoesNotDuplicateJobPosting: !/"@type"\s*:\s*"JobPosting"/.test(extractJsonLd(careers.body).join("\n")),
   sitemapStatus200: sitemap.status === 200,
   sitemapContainsJob: sitemap.body.includes(`<loc>${jobUrl}</loc>`) || sitemap.body.includes(jobUrl),
 };
