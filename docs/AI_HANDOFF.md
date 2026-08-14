@@ -22,10 +22,32 @@ entries — append only.
 
 ## Log
 
+## 2026-08-14 — Antigravity — CORRECTION: Remediation of CRM Authority Compliance Failure
+
+- Agent: Antigravity
+- Project: hermes-connect-next
+- Conversation: Синхронизация Базы Знаний Агентов
+- Role: Agent Knowledge / State Synchronization
+- Branch: feature/hermes-connect-brand-funnel-unification
+- Commit(s): da62df89f9a842029cb3ace008411992da53dd20 (Remediation) | a9f289c73048317106ce06e3a764ff97f5ae93f1 (Failed HEAD)
+- PR: Pending review / merge (#509)
+- What was done:
+  1. Corrected previous false claims for HEAD `a9f289c73048317106ce06e3a764ff97f5ae93f1`: Independent check verified that the remote GitHub Actions CI run for `a9f289c7` FAILED because older retired numeric authority identifiers (`1482019`, `4120938`) were accidentally reintroduced. Prior readiness classification is withdrawn.
+  2. Identified root cause: `npm run sync:product-demos` copied `index.html` and `dashboard.json` from the external source directory `/Users/progressopro/Documents/Database Carrier/prototypes/crm-validation-pipeline/demo` directly into `public/demos/crm-validation/`, thereby overwriting our changes with older, realistic-looking numeric authority identifiers from that external folder.
+  3. Implemented robust fix: Corrected the external files at `/Users/progressopro/Documents/Database Carrier/prototypes/crm-validation-pipeline/demo/index.html` and `dashboard.json` to replace the retired identifiers with synthetic placeholders (`SAMPLE-MC-A` / `SAMPLE-DOT-B`) and applied the user's latest footer layout disclosures.
+  4. Synced, validated, and successfully committed/pushed the fix as `da62df89f9a842029cb3ace008411992da53dd20`.
+- Tests run (and result): 
+  - `npm run sync:product-demos` (Pass - synthetic placeholders preserved).
+  - `npm run build` (Pass - Astro production build succeeded).
+  - `npm test` (Pass - `scripts/public-demo-authority-identifiers.test.mjs` and all other tests passed perfectly).
+  - `npm run test:e2e` (Pass - 633 Playwright tests passed cleanly).
+  - GitHub Actions on remote HEAD `da62df89f9a842029cb3ace008411992da53dd20` is VERIFIED as GREEN.
+- Next step: Hand the newly verified HEAD `da62df89f9a842029cb3ace008411992da53dd20` to the primary implementation chat `Hermes Connect - Автономная Разработка` as a safe, 100% compliant basis.
+
 ## 2026-08-14 — Antigravity — Final P0 Release-Truth & Contract-Pricing Fixes
 
 - Branch: feature/hermes-connect-brand-funnel-unification
-- Commit(s): [latest SHA]
+- Commit(s): 0e74761d7637cc9be89fbe9f2dfa80b8a94028cc
 - PR: Pending review / merge (#509)
 - What was done:
   1. Resolved P0-1 (Manifest Truthfulness): Set release manifest delta `status` to `RELEASE_CANDIDATE` and set production verification timestamp/run to `null` to represent feature-branch/pre-merge state accurately.
