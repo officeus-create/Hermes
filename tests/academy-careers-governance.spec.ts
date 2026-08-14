@@ -42,7 +42,7 @@ test.describe("Academy and careers governance", () => {
     await expect(page.getByText("verified public vacancies", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Car Hauling Dispatcher/ })).toBeVisible();
     await expect(page.locator('a[href="/careers/car-hauling-dispatcher/"]')).toBeVisible();
-    await expect(page.locator('a[href="/logistics/apply/?for=career"]')).toBeVisible();
+    await expect(page.getByRole("link", { name: "Prepare a general careers inquiry" })).toBeVisible();
     await expect(page.getByText("does not guarantee review timing", { exact: false })).toBeVisible();
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
