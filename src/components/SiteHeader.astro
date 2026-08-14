@@ -49,6 +49,10 @@ const languageLinks = siteLocales.map((language) => ({
 
   <div class="header-actions">
     <HermesConnectLauncher variant="header" />
+    <a class="header-cta" href={connectUrl} aria-label="Open Hermes Connect">
+      Hermes Connect
+      <ArrowUpRight size={17} aria-hidden="true" />
+    </a>
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[locale].name}`}>
         <Languages size={16} aria-hidden="true" />
