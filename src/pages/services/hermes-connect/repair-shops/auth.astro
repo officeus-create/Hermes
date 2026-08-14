@@ -1,0 +1,461 @@
+---
+import { ArrowLeft, KeyRound, LogOut, ShieldCheck, User } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const schema = [];
+---
+
+<BaseLayout
+  title="Owner Authentication | Hermes Connect"
+  description="Sign in or register your repair shop on the Hermes Connect network."
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/technology/" />
+
+  <main class="auth-page">
+    <div class="auth-container">
+      <a href="/services/hermes-connect/repair-shops/" class="back-link">
+        <ArrowLeft class="icon" size={16} /> Back to Partner Portal
+      </a>
+
+      <div class="auth-card glass-panel">
+        <!-- Auth Checking / Loading State -->
+        <div id="auth-loading" class="auth-section active">
+          <p>Verifying secure session...</p>
+        </div>
+
+        <!-- Authenticated State -->
+        <div id="auth-authenticated" class="auth-section">
+          <div class="auth-header text-center">
+            <ShieldCheck size={32} class="text-green mb-4" style="margin: 0 auto;" />
+            <h2>Session Active</h2>
+            <p class="auth-subtitle">You are securely connected to the Hermes network.</p>
+          </div>
+          
+          <div class="user-details">
+            <div class="detail-row">
+              <span>Name:</span>
+              <strong id="user-name">...</strong>
+            </div>
+            <div class="detail-row">
+              <span>Email:</span>
+              <strong id="user-email">...</strong>
+            </div>
+            <div class="detail-row">
+              <span>Role:</span>
+              <strong id="user-role">...</strong>
+            </div>
+          </div>
+
+          <div class="auth-actions">
+            <a href="/services/hermes-connect/repair-shops/booking/" class="btn primary-btn full-width">Go to Shop Dashboard</a>
+            <button id="logout-btn" class="btn ghost-btn full-width mt-4">
+              <LogOut size={16} /> Secure Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- Unauthenticated State (Forms) -->
+        <div id="auth-forms" class="auth-section">
+          <div class="auth-header text-center">
+            <KeyRound size={32} class="text-iris mb-4" style="margin: 0 auto;" />
+            <h2>Repair Shop Owner Access</h2>
+            <p class="auth-subtitle">Sign in or register to manage your bookings and CRM.</p>
+          </div>
+
+          <div class="auth-tabs">
+            <button class="tab-btn active" data-tab="login">Login</button>
+            <button class="tab-btn" data-tab="register">Register New Shop</button>
+          </div>
+
+          <div id="alert-box" class="alert-box hidden"></div>
+
+          <!-- Login Form -->
+          <form id="login-form" class="auth-form active">
+            <div class="form-group">
+              <label for="login-email">Email Address</label>
+              <input type="email" id="login-email" required placeholder="owner@shop.com" />
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" required placeholder="••••••••" />
+            </div>
+            <button type="submit" class="btn primary-btn full-width mt-6">Secure Login</button>
+          </form>
+
+          <!-- Register Form -->
+          <form id="register-form" class="auth-form">
+            <div class="form-group">
+              <label for="reg-name">Your Full Name</label>
+              <input type="text" id="reg-name" required placeholder="Jane Doe" minlength="2" />
+            </div>
+            <div class="form-group">
+              <label for="reg-email">Business Email</label>
+              <input type="email" id="reg-email" required placeholder="owner@shop.com" />
+            </div>
+            <div class="form-group">
+              <label for="reg-password">Password</label>
+              <input type="password" id="reg-password" required placeholder="Min. 8 characters" minlength="8" />
+            </div>
+            <!-- Hidden defaults for MVP -->
+            <input type="hidden" id="reg-role" value="Shop Owner" />
+            <input type="hidden" id="reg-location" value="United States" />
+            <input type="hidden" id="reg-bio" value="Independent repair shop registered for Hermes Connect out-bound beta." />
+
+            <button type="submit" class="btn primary-btn full-width mt-6">Create Shop Account</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const sections = {
+    loading: document.getElementById("auth-loading"),
+    authenticated: document.getElementById("auth-authenticated"),
+    forms: document.getElementById("auth-forms")
+  };
+
+  const alertBox = document.getElementById("alert-box");
+
+  function showAlert(msg: string, isError = true) {
+    if (!alertBox) return;
+    alertBox.textContent = msg;
+    alertBox.className = `alert-box ${isError ? 'error' : 'success'}`;
+  }
+
+  function hideAlert() {
+    if (!alertBox) return;
+    alertBox.className = "alert-box hidden";
+  }
+
+  function showSection(name: keyof typeof sections) {
+    Object.values(sections).forEach(s => {
+      if (s) s.classList.remove("active");
+    });
+    if (sections[name]) sections[name].classList.add("active");
+  }
+
+  async function checkSession() {
+    try {
+      showSection("loading");
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.specialist) {
+          document.getElementById("user-name")!.textContent = data.specialist.name;
+          document.getElementById("user-email")!.textContent = data.specialist.email;
+          document.getElementById("user-role")!.textContent = data.specialist.role;
+          showSection("authenticated");
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    showSection("forms");
+  }
+
+  // Init
+  checkSession();
+
+  // Tabs
+  const tabBtns = document.querySelectorAll(".tab-btn");
+  const authForms = document.querySelectorAll(".auth-form");
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      hideAlert();
+      tabBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      const target = btn.getAttribute("data-tab");
+      authForms.forEach(f => {
+        f.classList.toggle("active", f.id === `${target}-form`);
+      });
+    });
+  });
+
+  // Logout
+  document.getElementById("logout-btn")?.addEventListener("click", async () => {
+    hideAlert();
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      await checkSession();
+    } catch (e) {
+      showAlert("Logout failed.");
+    }
+  });
+
+  // Login
+  document.getElementById("login-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideAlert();
+    
+    const email = (document.getElementById("login-email") as HTMLInputElement).value;
+    const password = (document.getElementById("login-password") as HTMLInputElement).value;
+
+    const btn = (e.target as HTMLFormElement).querySelector("button");
+    if (btn) btn.disabled = true;
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await checkSession();
+      } else {
+        showAlert(data.error || "Login failed");
+      }
+    } catch (err) {
+      showAlert("Network error during login");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+
+  // Register
+  document.getElementById("register-form")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    hideAlert();
+    
+    const email = (document.getElementById("reg-email") as HTMLInputElement).value;
+    const password = (document.getElementById("reg-password") as HTMLInputElement).value;
+    const name = (document.getElementById("reg-name") as HTMLInputElement).value;
+    const role = (document.getElementById("reg-role") as HTMLInputElement).value;
+    const location = (document.getElementById("reg-location") as HTMLInputElement).value;
+    const bio = (document.getElementById("reg-bio") as HTMLInputElement).value;
+
+    const btn = (e.target as HTMLFormElement).querySelector("button");
+    if (btn) btn.disabled = true;
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name, role, location, bio })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        await checkSession();
+      } else {
+        showAlert(data.error || data.errors?.join(", ") || "Registration failed");
+      }
+    } catch (err) {
+      showAlert("Network error during registration");
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .auth-page {
+    background-color: #090a0f;
+    color: #f3f4f6;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    padding: 120px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .auth-container {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #a0a5b2;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover { color: #7c5cff; }
+
+  .glass-panel {
+    background: rgba(23, 26, 35, 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 24px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    padding: 40px 32px;
+  }
+
+  .auth-section { display: none; }
+  .auth-section.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .text-center { text-align: center; }
+  .text-iris { color: #9d88ff; }
+  .text-green { color: #319a75; }
+  .mb-4 { margin-bottom: 16px; }
+  .mt-4 { margin-top: 16px; }
+  .mt-6 { margin-top: 24px; }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+    color: #a0a5b2;
+    margin: 0 0 32px;
+  }
+
+  .auth-tabs {
+    display: flex;
+    gap: 8px;
+    background: rgba(0,0,0,0.2);
+    padding: 6px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #8b8f9d;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: rgba(124, 92, 255, 0.15);
+    color: #fff;
+  }
+
+  .auth-form { display: none; }
+  .auth-form.active { display: block; }
+
+  .form-group {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #d1d5db;
+  }
+
+  .form-group input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus {
+    border-color: #7c5cff;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .primary-btn {
+    background: linear-gradient(135deg, #7c5cff, #5ac8fa);
+    color: #fff;
+  }
+
+  .primary-btn:hover:not(:disabled) {
+    box-shadow: 0 8px 25px rgba(124, 92, 255, 0.3);
+  }
+
+  .ghost-btn {
+    background: transparent;
+    color: #d1d5db;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ghost-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .full-width { width: 100%; }
+
+  .alert-box {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 24px;
+    font-weight: 600;
+  }
+
+  .alert-box.hidden { display: none; }
+  .alert-box.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+  }
+  .alert-box.success {
+    background: rgba(49, 154, 117, 0.1);
+    border: 1px solid rgba(49, 154, 117, 0.2);
+    color: #86efac;
+  }
+
+  .user-details {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .detail-row:last-child { margin-bottom: 0; }
+  .detail-row span { color: #8b8f9d; }
+  .detail-row strong { color: #fff; }
+</style>
