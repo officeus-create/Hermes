@@ -5,6 +5,7 @@ const baseUrl = "https://hermeslogisticsus.com";
 const jobPath = "/careers/car-hauling-dispatcher/";
 const careersPath = "/logistics/careers/";
 const sitemapPath = "/sitemap.xml";
+const workUaSubmissionUrl = "https://www.work.ua/jobs/7362244/";
 const outputDir = path.resolve("artifacts");
 const jsonPath = path.join(outputDir, "production-job-posting-check.json");
 const markdownPath = path.join(outputDir, "production-job-posting-check.md");
@@ -28,7 +29,7 @@ async function fetchPublic(pathname, accept = "text/html,*/*;q=0.8") {
     const response = await fetch(`${expectedUrl}${expectedUrl.includes("?") ? "&" : "?"}seo-job-smoke=${Date.now()}`, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesJobPostingProductionVerifier/1.0 (+public read-only SEO check)",
+        "user-agent": "HermesJobPostingProductionVerifier/1.1 (+public read-only SEO check)",
         accept,
         "cache-control": "no-cache",
         pragma: "no-cache",
@@ -62,6 +63,17 @@ function extractJsonLd(html) {
     .filter(Boolean);
 }
 
+function parseJsonLdEntities(html) {
+  return extractJsonLd(html).flatMap((block) => {
+    try {
+      const parsed = JSON.parse(block);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      return [];
+    }
+  });
+}
+
 await fs.mkdir(outputDir, { recursive: true });
 
 const job = await fetchPublic(jobPath);
@@ -72,28 +84,40 @@ const jobUrl = new URL(jobPath, baseUrl).toString();
 const careersUrl = new URL(careersPath, baseUrl).toString();
 const canonical = extractAttribute(job.body, "link", "rel", "canonical", "href");
 const robots = extractAttribute(job.body, "meta", "name", "robots", "content");
-const jsonLdBlocks = extractJsonLd(job.body);
-const jobPostingCount = jsonLdBlocks.reduce(
-  (count, block) => count + (block.match(/"@type"\s*:\s*"JobPosting"/g) ?? []).length,
-  0,
-);
-const combinedJsonLd = jsonLdBlocks.join("\n");
+const jobEntities = parseJsonLdEntities(job.body);
+const jobPostings = jobEntities.filter((entity) => entity?.["@type"] === "JobPosting");
+const jobPosting = jobPostings[0] ?? null;
+const applicantCountries = Array.isArray(jobPosting?.applicantLocationRequirements)
+  ? jobPosting.applicantLocationRequirements
+      .filter((item) => item?.["@type"] === "Country" && typeof item.name === "string")
+      .map((item) => item.name)
+  : [];
+const description = typeof jobPosting?.description === "string" ? jobPosting.description : "";
 
 const checks = {
   jobStatus200: job.status === 200,
   jobFinalUrlMatches: job.finalUrl === jobUrl,
   jobCanonicalMatches: canonical === jobUrl,
   jobIndexableByMeta: !robots?.toLowerCase().includes("noindex"),
-  exactlyOneJobPosting: jobPostingCount === 1,
-  jobPostingUrlPresent: combinedJsonLd.includes(jobUrl),
-  jobPostingEmploymentTypePresent: combinedJsonLd.includes('"employmentType":"FULL_TIME"') || combinedJsonLd.includes('"employmentType": "FULL_TIME"'),
-  jobPostingTelecommutePresent: combinedJsonLd.includes('"jobLocationType":"TELECOMMUTE"') || combinedJsonLd.includes('"jobLocationType": "TELECOMMUTE"'),
-  jobPostingDatePostedPresent: /"datePosted"\s*:\s*"\d{4}-\d{2}-\d{2}"/.test(combinedJsonLd),
-  jobPostingValidThroughPresent: /"validThrough"\s*:\s*"[^"\n]+"/.test(combinedJsonLd),
+  exactlyOneJobPosting: jobPostings.length === 1,
+  jobPostingUrlMatches: jobPosting?.url === jobUrl,
+  jobPostingTitleClean: jobPosting?.title === "Car Hauling Dispatcher",
+  jobPostingEmploymentTypePresent: jobPosting?.employmentType === "FULL_TIME",
+  jobPostingTelecommutePresent: jobPosting?.jobLocationType === "TELECOMMUTE",
+  jobPostingApplicantCountriesPresent: applicantCountries.includes("United States") && applicantCountries.includes("Ukraine"),
+  jobPostingDirectApplyTruthful: jobPosting?.directApply === false,
+  jobPostingDatePostedPresent: /^\d{4}-\d{2}-\d{2}$/.test(String(jobPosting?.datePosted ?? "")),
+  jobPostingValidThroughPresent: /^\d{4}-\d{2}-\d{2}T/.test(String(jobPosting?.validThrough ?? "")),
+  jobPostingDescriptionComplete: description.includes("Support car-hauling dispatch work for U.S.-market carrier operations.")
+    && description.includes("Ability to work the applicable U.S. Central Time schedule.")
+    && description.includes("The Hermes application page is a preparation preview only"),
+  visibleWorkUaSubmissionLinkPresent: job.body.includes(`href="${workUaSubmissionUrl}"`) || job.body.includes(`href='${workUaSubmissionUrl}'`),
+  visibleHermesPreviewBoundaryPresent: job.body.includes("does not yet send or store an application")
+    && job.body.includes("Prepare Hermes application preview"),
   careersStatus200: careers.status === 200,
   careersFinalUrlMatches: careers.finalUrl === careersUrl,
   careersLinksToJob: careers.body.includes(`href="${jobPath}"`) || careers.body.includes(`href='${jobPath}'`),
-  careersDoesNotDuplicateJobPosting: !/"@type"\s*:\s*"JobPosting"/.test(extractJsonLd(careers.body).join("\n")),
+  careersDoesNotDuplicateJobPosting: !parseJsonLdEntities(careers.body).some((entity) => entity?.["@type"] === "JobPosting"),
   sitemapStatus200: sitemap.status === 200,
   sitemapContainsJob: sitemap.body.includes(`<loc>${jobUrl}</loc>`) || sitemap.body.includes(jobUrl),
 };
@@ -109,7 +133,7 @@ const result = {
     noFormsSubmitted: true,
     noCredentialsUsed: true,
     noCandidateDataCollected: true,
-    note: "This verifies public production route/schema/discovery contracts only. Google/Bing indexing, rich-result eligibility and ranking remain separate authenticated/platform evidence.",
+    note: "This verifies public production route/schema/application/discovery contracts only. Google/Bing indexing, rich-result eligibility and ranking remain separate authenticated/platform evidence.",
   },
   job: {
     path: jobPath,
@@ -119,7 +143,12 @@ const result = {
     canonicalMatches: checks.jobCanonicalMatches,
     robots,
     indexableByMeta: checks.jobIndexableByMeta,
-    jobPostingCount,
+    jobPostingCount: jobPostings.length,
+    title: jobPosting?.title ?? null,
+    directApply: jobPosting?.directApply ?? null,
+    applicantCountries,
+    workUaSubmissionLinkPresent: checks.visibleWorkUaSubmissionLinkPresent,
+    hermesPreviewBoundaryPresent: checks.visibleHermesPreviewBoundaryPresent,
     error: job.error,
   },
   careers: {
@@ -150,7 +179,12 @@ const markdown = [
   `- Canonical matches: **${checks.jobCanonicalMatches ? "yes" : "no"}**`,
   `- Indexable by meta: **${checks.jobIndexableByMeta ? "yes" : "no"}**`,
   `- Exactly one JobPosting: **${checks.exactlyOneJobPosting ? "yes" : "no"}**`,
-  `- JobPosting remote/full-time/date fields present: **${checks.jobPostingTelecommutePresent && checks.jobPostingEmploymentTypePresent && checks.jobPostingDatePostedPresent && checks.jobPostingValidThroughPresent ? "yes" : "no"}**`,
+  `- Clean schema title: **${checks.jobPostingTitleClean ? "yes" : "no"}**`,
+  `- Remote/full-time/applicant-country fields: **${checks.jobPostingTelecommutePresent && checks.jobPostingEmploymentTypePresent && checks.jobPostingApplicantCountriesPresent ? "yes" : "no"}**`,
+  `- directApply matches current flow: **${checks.jobPostingDirectApplyTruthful ? "yes" : "no"}**`,
+  `- Complete visible-details description: **${checks.jobPostingDescriptionComplete ? "yes" : "no"}**`,
+  `- Real Work.ua submission link visible: **${checks.visibleWorkUaSubmissionLinkPresent ? "yes" : "no"}**`,
+  `- Hermes preview boundary visible: **${checks.visibleHermesPreviewBoundaryPresent ? "yes" : "no"}**`,
   `- Careers hub links to job: **${checks.careersLinksToJob ? "yes" : "no"}**`,
   `- Careers hub duplicates JobPosting: **${checks.careersDoesNotDuplicateJobPosting ? "no" : "yes"}**`,
   `- Primary sitemap contains job URL: **${checks.sitemapContainsJob ? "yes" : "no"}**`,
