@@ -1,14 +1,14 @@
 {
   "schema_version": 3,
-  "reviewed_at": "2026-08-12",
+  "reviewed_at": "2026-08-14",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "6b5eb2c728d22ea9e82e7feecad105ed005ec268",
+  "main_commit_at_review": "e20ccb45b2139d5050161ae3832bf07fc94002df",
   "freshness": {
-    "state_class": "current_main_snapshot",
-    "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, or AI execution ownership; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
+    "state_class": "current_main_snapshot_plus_labelled_owner_platform_handoff",
+    "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, AI execution ownership, or authenticated measurement evidence; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
     "historical_handoff_is_not_current_state": true,
-    "conflict_rule": "Current main code/tests and newer authenticated platform evidence supersede older handoff classifications. Preserve the contradiction in the audit trail; do not silently blend statuses."
+    "conflict_rule": "Current main code/tests and newer authenticated platform evidence supersede older handoff classifications. Owner-provided authenticated handoffs may guide prioritization but must remain labelled until independently re-read by the acting agent. Preserve contradictions in the audit trail; do not silently blend statuses."
   },
   "platform": {
     "framework": "Astro static site",
@@ -58,10 +58,25 @@
       "intake_event": "seo_intake_start",
       "preview_event": "seo_intake_preview_ready",
       "handoff_event": "seo_handoff_ready"
+    },
+    {
+      "direction": "logistics_seo",
+      "path": "/services/seo-for-logistics-companies/",
+      "canonical_intent": "logistics_trucking_transportation_seo_commercial_cluster",
+      "supporting_owner": "/services/seo/",
+      "last_material_content_change": "2026-08-13",
+      "measurement_rule": "Preserve the approximately 7-day and 28-day query-by-page observation windows unless a concrete production or canonical defect is found. Do not create wording-variant doorway pages."
     }
   ],
   "current_execution_state": {
-    "open_pull_requests_at_review": 0,
+    "open_pull_requests_at_review": 1,
+    "seo14_orchestration": {
+      "status": "implementation_pr_open_ci_running",
+      "pull_request": 512,
+      "branch": "seo14/chatgpt-orchestrator-2026-08-14",
+      "source_of_truth": "Issue #206 for measurement; issue #462 for completed Logistics SEO demand pass; SEO agent routing document for ownership.",
+      "rule": "One execution owner per slice, explicit evidence receipts, no duplicate search/analytics properties, no credential transfer between AIs."
+    },
     "human_first_website_and_ai": {
       "issue": 418,
       "status": "implementation_phases_1_to_7_complete_phase_8_evidence_gated",
@@ -78,12 +93,30 @@
     },
     "production_measurement": {
       "issue": 206,
-      "status": "authenticated_evidence_incomplete",
+      "status": "gsc_baseline_refreshed_ga4_and_bing_performance_incomplete",
       "methodology_status": "complete",
+      "latest_owner_provided_authenticated_handoff": {
+        "observed_at": "2026-08-14",
+        "gsc_date_range": "2026-07-28..2026-08-12",
+        "gsc_summary": "17 clicks / 487 impressions / 3.5% CTR / average position 40.8",
+        "gsc_us_summary": "306 impressions / 2 clicks",
+        "logistics_seo_page_summary": "119 impressions / 0 clicks for /services/seo-for-logistics-companies/",
+        "gsc_links_summary": "4 external links reported, all from work.ua; 28 internal links reported",
+        "production_sitemap_summary": "108 indexable URLs",
+        "google_sitemap": "Success",
+        "bing_sitemap": "Success; seven is the child-sitemap count, not total URL count",
+        "robots_summary": "eight sitemap references reported",
+        "bing_site_auth": "HTTP 200 reported",
+        "bing_search_performance": "processing",
+        "ga4": "existing Hermes property/stream receipt unresolved in the inspected environment",
+        "evidence_class": "owner_provided_authenticated_platform_handoff",
+        "boundary": "Use for prioritization and contradiction resolution; an agent must not claim it independently opened the platform unless it actually did."
+      },
       "next_required_evidence": [
-        "current 7-day and 28-day GSC page/query rows for priority money pages",
-        "current index-state readout for DATA_PENDING priority pages",
-        "existing Hermes GA4 property/stream ownership resolution and production event receipt verification",
+        "approximately 7-day and 28-day comparable GSC query-by-page rows after the 2026-08-13 Logistics SEO change",
+        "current index-state readout for priority money pages where still unresolved",
+        "existing Hermes GA4 property/stream ownership resolution and exact-once production event receipt verification",
+        "Bing page/index/search-performance evidence after current processing completes",
         "private-safe delivery to human-review to qualification to commercial-outcome reconciliation",
         "first complete 7-day and 28-day revenue-facing funnel scorecard"
       ]
@@ -96,7 +129,8 @@
     "entity_reconciliation": {
       "issue": 204,
       "status": "copy_ready_external_authenticated_action_required",
-      "staff_am": "Profile-contact ownership evidence exists; current authenticated correction session is not verified. Do not create a duplicate profile."
+      "staff_am": "Profile-contact ownership evidence exists; current authenticated correction session is not verified. Do not create a duplicate profile.",
+      "latest_public_signal": "2026-08-14 public search sampling continues to surface same-name Hermes entities plus Work.ua/robota.ua historical resume pages carrying hermeslogisticsus.com. Treat this as entity-disambiguation pressure, not as proof of search-engine deindexing."
     },
     "mobile_performance": {
       "issue": 354,
@@ -146,31 +180,38 @@
   "search_platform_state": {
     "google_search_console": {
       "status": "access_confirmed",
-      "evidence_class": "authenticated_platform_readout",
-      "latest_recorded_checkpoint": "2026-08-10",
+      "evidence_class": "owner_provided_authenticated_platform_handoff",
+      "latest_recorded_checkpoint": "2026-08-14",
+      "date_range": "2026-07-28..2026-08-12",
       "recorded_facts": [
-        "sitemap successful",
-        "48 discovered pages at that checkpoint",
-        "homepage URL Inspection reported URL is on Google",
-        "three-month property snapshot: 10 clicks, 217 impressions, 4.6% CTR, average position 32"
+        "17 clicks, 487 impressions, 3.5% CTR, average position 40.8",
+        "United States: 306 impressions and 2 clicks",
+        "/services/seo-for-logistics-companies/: 119 impressions and 0 clicks",
+        "4 external links reported, all from work.ua",
+        "28 internal links reported",
+        "Google sitemap reported Success",
+        "production sitemap set covers 108 indexable URLs in the same SEO14 handoff"
       ],
-      "boundary": "These are platform/search observations, not revenue or guaranteed-ranking claims."
+      "boundary": "These are authenticated platform observations supplied through the owner-provided Codex SEO14 handoff. They are not revenue claims and are not direct platform observations by every downstream agent."
     },
     "bing_webmaster_tools": {
-      "status": "access_confirmed",
-      "evidence_class": "owner_provided_authenticated_platform_evidence",
-      "latest_recorded_checkpoint": "2026-08-11",
+      "status": "access_confirmed_per_owner_handoff_performance_processing",
+      "evidence_class": "owner_provided_authenticated_platform_handoff",
+      "latest_recorded_checkpoint": "2026-08-14",
       "recorded_facts": [
-        "existing hermeslogisticsus.com property verified in the active execution context",
-        "sitemapindex.xml successfully processed at the latest owner checkpoint"
+        "existing Hermes site remains the intended property; do not create a duplicate",
+        "Bing sitemap status reported Success",
+        "seven represents child sitemap files, not total indexed URLs",
+        "BingSiteAuth.xml reported HTTP 200",
+        "Search Performance was still processing in the latest handoff"
       ],
-      "next_required_evidence": "Bing page/index/search-performance evidence after processing; do not create a duplicate site/property."
+      "next_required_evidence": "Capture page/index/search-performance evidence after processing completes; do not recreate or resubmit the existing site merely to make a checklist green."
     },
     "ga4": {
       "status": "access_missing_existing_ownership_unresolved",
       "measurement_id": "G-RY26321PVW",
-      "recorded_fact": "The production consent-gated source contract is pinned to G-RY26321PVW, but the existing GA4 account/property/stream ownership has not been authenticated in the reviewed environment.",
-      "boundary": "Do not create a replacement property, stream, tag, or GTM container merely to satisfy the checklist. Locate the existing web stream by Measurement ID first."
+      "recorded_fact": "The production consent-gated source contract is pinned to G-RY26321PVW, while the latest inspected environment still did not confirm the existing Hermes GA4 property/stream and showed the start-measuring state.",
+      "boundary": "Do not create a replacement property, stream, tag, or GTM container merely to satisfy the checklist. Locate and authenticate the existing web stream first, then verify exact-once controlled event receipt and privacy."
     }
   },
   "completed_foundations": [
@@ -190,18 +231,19 @@
     "Academy application/practice/feedback methodology",
     "metric-first Careers qualification",
     "shared Hermes AI sales-assistant reasoning and claim-maturity contract",
-    "responsive modern homepage hero asset delivery with regression coverage"
+    "responsive modern homepage hero asset delivery with regression coverage",
+    "SEO13 GSC-demand optimization of the existing Logistics SEO canonical owner"
   ],
   "active_external_dependencies": [
     {
       "id": "EXT-GSC-MEASUREMENT",
-      "status": "authenticated_access_confirmed_data_refresh_required",
-      "detail": "GSC exists and is accessible; current 7/28-day page/query exports and pending page index states are still required for #206."
+      "status": "authenticated_baseline_refreshed_followup_window_required",
+      "detail": "The 2026-08-14 owner-provided authenticated handoff records 17 clicks / 487 impressions for 2026-07-28..2026-08-12. Preserve the Aug 13 Logistics SEO change and collect comparable ~7-day/~28-day query-by-page follow-up evidence before another broad rewrite."
     },
     {
       "id": "EXT-BING-MEASUREMENT",
-      "status": "authenticated_access_confirmed_measurement_pending",
-      "detail": "Existing Bing property and sitemap processing are confirmed in the latest owner evidence; collect index/search-performance evidence without duplicating setup."
+      "status": "authenticated_access_confirmed_measurement_processing",
+      "detail": "Existing Bing site and sitemap success are confirmed in the latest owner handoff; collect search-performance evidence after processing without duplicating setup."
     },
     {
       "id": "EXT-GA4-OWNERSHIP",
@@ -216,7 +258,7 @@
     {
       "id": "EXT-ENTITY-PROFILE-CORRECTION",
       "status": "authenticated_profile_action_required",
-      "detail": "Staff.am correction copy and profile-contact ownership evidence are ready; apply changes only through the existing authorized profile/account."
+      "detail": "Issue #204 owns external entity reconciliation. Public search still shows significant same-name entity competition plus historical Work.ua/robota.ua records; correct only controlled profiles with approved current facts and do not create duplicates."
     },
     {
       "id": "EXT-AI-DRIVE-PERMISSIONS",
@@ -249,7 +291,8 @@
     "no automatic live delivery by default",
     "no fabricated testimonials, current-client status, loads, rankings, revenue, offices or availability",
     "no mass pages, doorway variants, fake locations, bought links, PBNs or fake reviews",
-    "one active owner per task/branch; avoid parallel duplicate implementations"
+    "one active owner per task/branch; avoid parallel duplicate implementations",
+    "a passing agent-bridge transport test does not prove current-state freshness"
   ],
   "primary_docs": [
     "docs/AI_START_HERE.md",
@@ -261,6 +304,9 @@
     "docs/SEO11_GSC_QUERY_PAGE_SCORECARD_2026-08-11.md",
     "docs/SEO11_PERMISSIONED_PROOF_REGISTRY.csv",
     "docs/CANONICAL_COMPANY_FACTS_APPROVAL.md",
-    "docs/AI_HANDOFF.md"
+    "docs/AI_HANDOFF.md",
+    "ai-collaboration/00_READ_FIRST/CURRENT_STATE.md",
+    "ai-collaboration/02_SEO/CURRENT_STATE.md",
+    "ai-collaboration/02_SEO/SEO_AGENT_ROUTING_2026-08-14.md"
   ]
 }
