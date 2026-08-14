@@ -10,8 +10,9 @@ if (!vacancy) throw new Error("Verified Car Hauling Dispatcher vacancy is missin
 
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
 const title = "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics";
-const description = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
+const metaDescription = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
 const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
+const workUaApplicationUrl = "https://www.work.ua/jobs/7362244/";
 
 const responsibilities = [
   "Support car-hauling dispatch work for U.S.-market carrier operations.",
@@ -28,17 +29,29 @@ const screening = [
   "For entry-level candidates: current starting level, relevant skills, availability, and readiness for structured training or a practical test.",
 ];
 
+const jobDescription = [
+  "A full-time remote logistics role supporting U.S.-market car-hauling operations. We consider experienced dispatchers and candidates who have a clear entry-level starting point and are ready for structured screening.",
+  "Work arrangement: remote worldwide. Working schedule: U.S. Central Time.",
+  `Responsibilities: ${responsibilities.join(" ")}`,
+  `Screening information to prepare: ${screening.join(" ")}`,
+  "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
+].join("\n\n");
+
 const schema = [
   {
     "@context": "https://schema.org",
     "@type": "JobPosting",
-    title: "Car Hauling Dispatcher — Remote / U.S. Market",
-    description,
+    title: "Car Hauling Dispatcher",
+    description: jobDescription,
     datePosted: vacancy.datePosted,
     validThrough: `${vacancy.expiresAt}T23:59:59Z`,
     employmentType: vacancy.employmentType,
     jobLocationType: "TELECOMMUTE",
-    directApply: true,
+    applicantLocationRequirements: [
+      { "@type": "Country", name: "United States" },
+      { "@type": "Country", name: "Ukraine" },
+    ],
+    directApply: false,
     url: canonicalUrl,
     hiringOrganization: {
       "@type": "Organization",
@@ -59,7 +72,7 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={title} description={description} schema={schema}>
+<BaseLayout title={title} description={metaDescription} schema={schema}>
   <div class="career-job-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">
@@ -80,14 +93,15 @@ const schema = [
               <span><ShieldCheck size={18} aria-hidden="true" />Human-reviewed hiring process</span>
             </div>
             <div class="career-job-actions">
-              <a class="button button-primary" href={vacancy.applicationPath}>Start application <ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button" href={vacancy.applicationPath}>Prepare Hermes application preview</a>
               <a class="button" href="/logistics/careers/">View careers hub</a>
             </div>
           </div>
           <aside class="career-job-status-card">
-            <p class="eyebrow">Application route</p>
-            <h2>One candidate intake, not a Telegram-only handoff.</h2>
-            <p>The Hermes application route collects the minimum information needed for recruiting review. Email remains the required contact fallback. Candidate account/status features move into Hermes Connect only after the current Connect production deployment and candidate identity contract are verified.</p>
+            <p class="eyebrow">Current application route</p>
+            <h2>Use the live Work.ua application while the Hermes form remains a preview.</h2>
+            <p>The Work.ua listing is the current public submission route for this opening. The Hermes application page can help prepare the information recruiting asks for, but it does not yet send or store an application. A direct Hermes candidate intake will replace this interim handoff only after its submission and persistence path is independently verified live.</p>
           </aside>
         </div>
       </header>
@@ -112,7 +126,7 @@ const schema = [
           <p class="eyebrow">Hiring flow</p>
           <h2 id="career-process-title">Application → human review → evidence → interview</h2>
           <div class="career-job-process-grid">
-            <article><span>01</span><h3>Application</h3><p>Submit contact, location, languages, experience, role interest, and real availability through the Hermes application route.</p></article>
+            <article><span>01</span><h3>Application</h3><p>Submit through the current Work.ua vacancy. If useful, prepare the same factual location, language, experience, role-interest, and availability details in the Hermes preview first.</p></article>
             <article><span>02</span><h3>Human review</h3><p>Recruiting checks fit with the current role, schedule, experience level, and evidence. AI may assist organization but does not make the final hiring decision.</p></article>
             <article><span>03</span><h3>Practical evidence</h3><p>When useful, the next step may be a short scenario, call sample, practical task, or training path appropriate to the candidate's starting level.</p></article>
             <article><span>04</span><h3>Interview</h3><p>An interview is scheduled only when the earlier screening gives enough reason to continue. No step guarantees employment or compensation.</p></article>
@@ -124,10 +138,10 @@ const schema = [
         <div class="shell career-job-final-card">
           <div>
             <p class="eyebrow">Ready to apply?</p>
-            <h2>Start with the information recruiting can actually review.</h2>
-            <p>No identity documents, passwords, financial information, private customer records, or unrelated sensitive data are requested in this public application flow.</p>
+            <h2>Use the current live vacancy to submit your application.</h2>
+            <p>The Hermes preview does not transmit candidate data yet. Until direct Hermes intake is verified, Work.ua remains the public submission route for this role.</p>
           </div>
-          <a class="button button-primary" href={vacancy.applicationPath}>Start application <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-primary" href={workUaApplicationUrl} rel="noopener noreferrer" data-external-job-apply>Apply on Work.ua <ArrowRight size={18} aria-hidden="true" /></a>
         </div>
       </section>
 
