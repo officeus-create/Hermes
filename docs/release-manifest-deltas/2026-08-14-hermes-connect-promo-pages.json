@@ -3,9 +3,9 @@
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-08-14-hermes-connect-promo-pages",
   "generated_at": "2026-08-14T06:30:00Z",
-  "status": "PRODUCTION_VERIFIED",
-  "production_verified_at": "2026-08-14",
-  "production_verification_run": "31668926104",
+  "status": "RELEASE_CANDIDATE",
+  "production_verified_at": null,
+  "production_verification_run": null,
   "additions": [
     {
       "route": "/services/hermes-connect/ai-command-center/",

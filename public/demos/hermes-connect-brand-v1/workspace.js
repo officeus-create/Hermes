@@ -559,7 +559,7 @@
       verticalKey: 'realestate',
       verticalName: 'Meridian Property Group',
       message: 'Looking for 3-bedroom property tour in North Shore this weekend. Budget $1.2M.',
-      status: 'PROPOSAL_SENT',
+      status: 'PROPOSAL_READY',
       confidenceNum: 0.92,
       confidence: '92%',
       priority: 'HIGH',
@@ -609,7 +609,7 @@
     list.innerHTML = filtered.map(lead => {
       const activeClass = lead.id === selectedLeadId ? 'active' : '';
       const statusClass = lead.status === 'NEW' ? 'status-new' : (lead.status === 'QUALIFIED' ? 'status-qualified' : 'status-proposal');
-      const statusLabel = lead.status === 'PROPOSAL_SENT' ? 'PROPOSAL SENT' : lead.status;
+      const statusLabel = lead.status === 'PROPOSAL_READY' ? 'PROPOSAL READY' : lead.status;
       return `
         <button class="conversation-card ${activeClass}" type="button" data-lead-card-id="${lead.id}">
           <span class="conversation-avatar">${lead.initials}</span>
@@ -654,7 +654,7 @@
           <small>STATUS:</small>
           <button class="status-btn ${lead.status==='NEW'?'active':''}" data-set-status="NEW" data-lead-id="${lead.id}">NEW</button>
           <button class="status-btn ${lead.status==='QUALIFIED'?'active':''}" data-set-status="QUALIFIED" data-lead-id="${lead.id}">QUALIFIED</button>
-          <button class="status-btn ${lead.status==='PROPOSAL_SENT'?'active':''}" data-set-status="PROPOSAL_SENT" data-lead-id="${lead.id}">PROPOSAL SENT</button>
+          <button class="status-btn ${lead.status==='PROPOSAL_READY'?'active':''}" data-set-status="PROPOSAL_READY" data-lead-id="${lead.id}">PROPOSAL READY</button>
           <button class="proposal-gen-btn" type="button" data-trigger-proposal="${lead.id}">⚡ Instant Proposal</button>
         </div>
       `;
@@ -723,10 +723,10 @@
           <b>Hermes AI Next Action</b>
           <small>${lead.aiSuggestedAction}</small>
         </div>
-        <button type="button" data-approve-action>Approve & Send</button>
+        <button type="button" data-approve-action>Approve & Record</button>
       `;
       $('[data-approve-action]', suggested)?.addEventListener('click', () => {
-        lead.status = 'PROPOSAL_SENT';
+        lead.status = 'PROPOSAL_READY';
         renderLeadInbox();
         renderLeadDetail(lead.id);
       });
@@ -1116,15 +1116,15 @@
     $('[data-la-send-btn]', panel)?.addEventListener('click', () => {
       const btn = $('[data-la-send-btn]', panel);
       const orig = btn.textContent;
-      btn.textContent = '✦ Counter Offer Sent ✓';
+      btn.textContent = '✦ Counter Offer Prepared ✓';
       setTimeout(() => btn.textContent = orig, 1800);
 
       // Add to ops queue
       ops.unshift([
         '✦',
-        'B2B Rate Counter-Offer Transmitted',
+        'B2B Rate Counter-Offer Prepared',
         `Counter rate: ${$('[data-la-out="targetRate"]')?.textContent || '$2,450'}`,
-        'Dispatched'
+        'Prepared'
       ]);
       renderOps();
     });
@@ -1153,8 +1153,8 @@
 
   const TIER_PRICES = {
     starter: { name: 'Starter', monthly: 99, annual: 79 },
-    pro: { name: 'Professional', monthly: 299, annual: 239 },
-    enterprise: { name: 'Enterprise', monthly: 799, annual: 639 }
+    pro: { name: 'Professional', monthly: 299, annual: 249 },
+    enterprise: { name: 'Enterprise', monthly: 799, annual: 699 }
   };
 
   function setProposalModal(open, lead = null) {
@@ -1198,8 +1198,8 @@
 
     // Update tier prices displayed
     $('[data-price-starter]').textContent = selectedBilling === 'annual' ? '$79' : '$99';
-    $('[data-price-pro]').textContent = selectedBilling === 'annual' ? '$239' : '$299';
-    $('[data-price-enterprise]').textContent = selectedBilling === 'annual' ? '$639' : '$799';
+    $('[data-price-pro]').textContent = selectedBilling === 'annual' ? '$249' : '$299';
+    $('[data-price-enterprise]').textContent = selectedBilling === 'annual' ? '$699' : '$799';
 
     // Tier Cards Active state
     $$('[data-tier]').forEach(card => {
@@ -1335,7 +1335,7 @@
 
     $('[data-send-approval-btn]')?.addEventListener('click', () => {
       if (currentProposalLead) {
-        currentProposalLead.status = 'PROPOSAL_SENT';
+        currentProposalLead.status = 'PROPOSAL_READY';
         saveLeadStoreToLocalStorage();
         renderLeadInbox();
         renderLeadDetail(currentProposalLead.id);
@@ -1348,10 +1348,10 @@
         suggested.innerHTML = `
           <span>✦</span>
           <div>
-            <b>Proposal Dispatched to Client Record</b>
+            <b>Proposal Generated & Recorded in Client Record</b>
             <small>Proposal generated & recorded in Command Center CRM.</small>
           </div>
-          <span class="active-chip">PROPOSAL_SENT</span>
+          <span class="active-chip">PROPOSAL_READY</span>
         `;
       }
     });
@@ -1572,6 +1572,135 @@
     });
   }
 
+  // Onboarding Business Type Selector & Beta Feedback Loop
+  function initOnboardingAndFeedback() {
+    const onboardingModal = $('[data-onboarding-modal]');
+    const feedbackWidget = $('[data-feedback-widget]');
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check if business type is already selected in URL or localStorage
+    const hasTypeParam = urlParams.has('business_type') || urlParams.has('tool') || urlParams.has('module') || urlParams.has('tab');
+    const storedType = localStorage.getItem('hermes_business_type');
+    
+    if (!storedType && !hasTypeParam && onboardingModal) {
+      // Show Onboarding Modal
+      onboardingModal.classList.add('open');
+      onboardingModal.setAttribute('aria-hidden', 'false');
+    }
+    
+    // Onboarding Cards selection click listeners
+    const typeCards = $$('.business-type-card');
+    let selectedType = storedType || 'logistics';
+    
+    // If a type is stored, ensure its card is selected inside the modal
+    if (storedType) {
+      typeCards.forEach(card => {
+        const type = card.getAttribute('data-onboarding-type');
+        card.classList.toggle('active', type === storedType);
+      });
+    }
+    
+    typeCards.forEach(card => {
+      card.addEventListener('click', () => {
+        typeCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedType = card.getAttribute('data-onboarding-type');
+      });
+    });
+    
+    // Launch Workspace listener
+    const launchBtn = $('[data-launch-workspace-btn]');
+    if (launchBtn) {
+      launchBtn.addEventListener('click', () => {
+        // Save choice
+        localStorage.setItem('hermes_business_type', selectedType);
+        
+        // Map types to workspace verticals
+        const verticalMap = {
+          logistics: 'logistics',
+          auto_repair: 'auto',
+          agency: 'agency',
+          beauty: 'beauty',
+          fitness: 'fitness',
+          real_estate: 'realestate',
+          professional_services: 'agency',
+          other: 'logistics'
+        };
+        
+        const targetVertical = verticalMap[selectedType] || 'logistics';
+        
+        // Track completed onboarding in dataLayer (privacy-safe telemetry)
+        trackConnectEvent('connect_onboarding_completed', {
+          business_type: selectedType,
+          mapped_vertical: targetVertical
+        });
+        
+        // Apply vertical setting
+        setVertical(targetVertical);
+        
+        // Show success toast notification
+        const msg = `✨ Workspace configured for ${selectedType.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}!`;
+        const container = $('.hermes-toast-container') || document.createElement('div');
+        if (!container.parentElement) {
+          container.className = 'hermes-toast-container';
+          document.body.appendChild(container);
+        }
+        const item = document.createElement('div');
+        item.className = 'hermes-toast';
+        item.innerHTML = `<span>✦</span><p>${msg}</p>`;
+        container.appendChild(item);
+        setTimeout(() => {
+          item.classList.add('fade-out');
+          setTimeout(() => item.remove(), 400);
+        }, 4000);
+        
+        // Close modal
+        if (onboardingModal) {
+          onboardingModal.classList.remove('open');
+          onboardingModal.setAttribute('aria-hidden', 'true');
+        }
+      });
+    }
+    
+    // Beta Feedback Widget logic
+    const feedbackYes = $('[data-feedback-btn="yes"]');
+    const feedbackNo = $('[data-feedback-btn="no"]');
+    const questionRow = $('[data-feedback-question]');
+    const thanksMsg = $('[data-feedback-thanks]');
+    
+    // Hide feedback widget if feedback has already been submitted in this session
+    if (localStorage.getItem('hermes_beta_feedback_submitted') === 'true' && feedbackWidget) {
+      feedbackWidget.classList.add('hidden');
+    }
+    
+    const handleFeedback = (isUseful) => {
+      localStorage.setItem('hermes_beta_feedback_submitted', 'true');
+      localStorage.setItem('hermes_beta_feedback_useful', String(isUseful));
+      
+      // Track event in analytics dataLayer
+      trackConnectEvent('connect_beta_feedback', {
+        useful: isUseful,
+        active_vertical: currentVertical
+      });
+      
+      // Switch UI to thank you message
+      if (questionRow && thanksMsg) {
+        questionRow.style.display = 'none';
+        thanksMsg.style.display = 'block';
+      }
+      
+      // Auto-slide out feedback widget after 4 seconds
+      setTimeout(() => {
+        if (feedbackWidget) {
+          feedbackWidget.classList.add('hidden');
+        }
+      }, 4000);
+    };
+    
+    if (feedbackYes) feedbackYes.addEventListener('click', () => handleFeedback(true));
+    if (feedbackNo) feedbackNo.addEventListener('click', () => handleFeedback(false));
+  }
+
   // Handle URL Deep-Linking State (?tool= or ?module=)
   function handleDeepLinkState() {
     try {
@@ -1615,6 +1744,7 @@
   initLoadAnalyzer();
   initProposalGenerator();
   initRoiCalculator();
+  initOnboardingAndFeedback();
 
   renderActivity();
   loadLeadStoreFromLocalStorage();

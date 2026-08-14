@@ -22,6 +22,45 @@ entries — append only.
 
 ## Log
 
+## 2026-08-14 — Antigravity — Final P0 Release-Truth & Contract-Pricing Fixes
+
+- Branch: feature/hermes-connect-brand-funnel-unification
+- Commit(s): [latest SHA]
+- PR: Pending review / merge (#509)
+- What was done:
+  1. Resolved P0-1 (Manifest Truthfulness): Set release manifest delta `status` to `RELEASE_CANDIDATE` and set production verification timestamp/run to `null` to represent feature-branch/pre-merge state accurately.
+  2. Resolved P0-2 (Honest Delivery States): Updated Rate Negotiator and Proposal Builder interactive widget text and state indicators in `workspace.html` and `workspace.js` to use demo-honest beta labels (`Counter Offer Prepared ✓`, `Prepared`, `PROPOSAL_READY`, `Approve & Record`, `Proposal Ready` instead of Sent/Transmitted/Dispatched).
+  3. Resolved P0-3 (Pricing Source of Truth): Standardized annual pricing in `workspace.js` to match `src/data/hermes-connect-pricing.ts` (Pro: $249/mo, Enterprise: $699/mo) and integrated a strict contract regression check inside `scripts/hermes-connect-brand-funnel-contract.test.mjs` verifying absolute alignment between TypeScript data model and Workspace JS hardcodings.
+  4. Verified full test suite execution, with 100% green compliance (633 Playwright tests passed, 0 failures, 7 skipped).
+- Files changed:
+  - `docs/release-manifest-deltas/2026-08-14-hermes-connect-promo-pages.json` [MODIFY]
+  - `public/demos/hermes-connect-brand-v1/workspace.html` [MODIFY]
+  - `public/demos/hermes-connect-brand-v1/workspace.js` [MODIFY]
+  - `scripts/hermes-connect-brand-funnel-contract.test.mjs` [MODIFY]
+- Tests run (and result): `npm run build && npm test` passes 100% cleanly (633 Playwright tests, sitemaps indexable, 0 errors, 0 warnings, zero broken internal links).
+- Next step: PR #509 is 100% ready for human final merge to main.
+
+## 2026-08-14 — Antigravity — Onboarding Business Selector, Beta Feedback Widget, & CRM Authority Fixes
+
+- Branch: feature/hermes-connect-brand-funnel-unification
+- Commit(s): 6a2c1f4
+- PR: Pending review / merge
+- What was done:
+  1. Programmed and activated Onboarding Business Type Selector Modal Overlay (`[data-onboarding-modal]`) supporting Pearl & Obsidian light/dark UI themes and mapping vertical card layouts (logistics, auto, agency, etc.) to underlying dashboard verticals via `localStorage` cache.
+  2. Implemented the unobtrusive, floating Beta Feedback Loop Widget (`[data-feedback-widget]`) enabling users to rate utility ("Was this useful? Yes/No") with seamless anonymous datalayer push.
+  3. Linked dataLayer telemetry events: `connect_onboarding_completed` (storing chosen vertical profile) and `connect_beta_feedback` (storing useful boolean).
+  4. Resolved authority identifier regression in the CRM Validation Pipeline demo by replacing retired numeric identifiers (`1482019`, `4120938`) with synthetic placeholders (`SAMPLE-MC-A`, `SAMPLE-DOT-B`) in `public/demos/crm-validation/index.html` and `dashboard.json`.
+  5. Verified successful sync and 100% green test execution of the entire compliance and regression suite.
+- Files changed:
+  - `public/demos/hermes-connect-brand-v1/workspace.html` [MODIFY]
+  - `public/demos/hermes-connect-brand-v1/workspace.css` [MODIFY]
+  - `public/demos/hermes-connect-brand-v1/workspace.js` [MODIFY]
+  - `public/demos/crm-validation/index.html` [MODIFY]
+  - `public/demos/crm-validation/dashboard.json` [MODIFY]
+- Tests run (and result): `npm run build && npm test` passes 100% cleanly (159 HTML routes, sitemap validations, PWA contracts, CRM demo authority rules, and funnel contracts).
+- Remaining / open items: Deploy preview and perform manual smoke-test of the onboarding selector vertical mapping.
+- Next step: Human/Codex code review of the premium interactive onboarding widget.
+
 ## 2026-08-14 — Antigravity — Registered Hermes Connect Promo Pages and schema alignment
 
 - Branch: feature/hermes-connect-brand-funnel-unification

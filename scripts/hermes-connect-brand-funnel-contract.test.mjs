@@ -49,4 +49,20 @@ assert(launcher.includes("hermes-knot-mark"), "Launcher must use official hermes
 const workspaceHtml = await text("public/demos/hermes-connect-brand-v1/workspace.html");
 assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Workspace HTML must state demo or simulated preview nature.");
 
+// 6. Verify Pricing Single Source of Truth Alignment across Workspace and TS pricing data
+const pricingTs = await text("src/data/hermes-connect-pricing.ts");
+const workspaceJs = await text("public/demos/hermes-connect-brand-v1/workspace.js");
+
+// Validate Starter pricing
+assert(pricingTs.includes("priceMonthly: 99") && pricingTs.includes("priceAnnualMonthly: 79"), "pricing.ts: Starter pricing mismatch.");
+assert(workspaceJs.includes("starter: { name: 'Starter', monthly: 99, annual: 79 }"), "workspace.js: Starter pricing mismatch.");
+
+// Validate Pro pricing
+assert(pricingTs.includes("priceMonthly: 299") && pricingTs.includes("priceAnnualMonthly: 249"), "pricing.ts: Pro pricing mismatch.");
+assert(workspaceJs.includes("pro: { name: 'Professional', monthly: 299, annual: 249 }"), "workspace.js: Pro pricing mismatch.");
+
+// Validate Enterprise pricing
+assert(pricingTs.includes("priceMonthly: 799") && pricingTs.includes("priceAnnualMonthly: 699"), "pricing.ts: Enterprise pricing mismatch.");
+assert(workspaceJs.includes("enterprise: { name: 'Enterprise', monthly: 799, annual: 699 }"), "workspace.js: Enterprise pricing mismatch.");
+
 console.log("✅ Hermes Connect Brand & Funnel Contract Test Passed successfully.");
