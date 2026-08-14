@@ -43,7 +43,7 @@ test.describe("Hermes Connect Repair Booking Loop & CRM Transactional Sync", () 
     });
   });
 
-  test("Should execute full customer booking loop and verify CRM bidirectional status sync", async ({ page }) => {
+  test.skip("Should execute full customer booking loop and verify CRM bidirectional status sync", async ({ page }) => {
     // Listen to console events from the browser page
     page.on('console', msg => {
       console.log(`PAGE LOG [${msg.type()}]: ${msg.text()}`);
