@@ -1,0 +1,77 @@
+name: Verify production JobPosting on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-job-posting-command
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 381 &&
+      github.event.comment.body == '/verify-production-job' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run public production JobPosting verifier
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          node scripts/check-production-job-posting.mjs
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish sanitized result to employer authority issue
+        shell: bash
+        run: |
+          {
+            echo "## Production JobPosting verification"
+            echo
+            if [ -f artifacts/production-job-posting-check.md ]; then
+              cat artifacts/production-job-posting-check.md
+            else
+              echo "The verifier did not produce its sanitized report."
+            fi
+            echo
+            echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
+            echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/production-job-posting-comment.md
+          gh issue comment 381 --repo "${{ github.repository }}" --body-file /tmp/production-job-posting-comment.md
+
+      - name: Upload sanitized report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-job-posting-verification
+          path: |
+            artifacts/production-job-posting-check.json
+            artifacts/production-job-posting-check.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce production JobPosting contract
+        shell: bash
+        run: test "${{ steps.verify.outputs.status }}" = "0"
