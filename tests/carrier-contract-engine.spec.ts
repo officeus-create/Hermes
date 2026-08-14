@@ -46,10 +46,10 @@ async function completeCarrierPacket(page: Page) {
   await expect(page.getByRole("heading", { name: /Review the exact terms. Sign from your phone/i })).toBeVisible();
   await expect(page.locator('input[name="selected_plan"][value="pro"]')).toBeChecked();
   await expect(page).toHaveURL(/\/logistics\/carrier-onboarding\/\?plan=pro$/);
-  await expect(page.locator('input[name="service_percentage"]')).toHaveValue("");
+  await expect(page.locator('input[name="service_percentage"]')).toHaveValue("8");
+  await expect(page.locator('input[name="service_percentage"]')).toHaveAttribute("readonly", "");
   await expect(page.locator('input[name="sales_contact"]')).toHaveValue("");
   await expect(page.locator('input[name="offer_code"]')).toHaveValue("");
-  await page.locator('input[name="service_percentage"]').fill("8");
   await page.locator('input[name="sales_contact"]').fill("TEST Assistant 107");
   await page.locator('input[name="offer_code"]').fill("PRO-AUG");
   await expect(page.locator("[data-step-label]")).toHaveText("Step 1 of 3");
