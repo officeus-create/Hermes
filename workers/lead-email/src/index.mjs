@@ -4,6 +4,7 @@ const MAX_MESSAGE_TEXT = 20_000;
 const MAX_ATTACHMENT_BYTES = 2_200_000;
 const MAX_TOTAL_ATTACHMENT_BYTES = 3_500_000;
 const RETIRED_INTERNAL_RECIPIENTS = new Set(["freight_301@hermeslogisticsus.com"]);
+const DEFAULT_CONTRACT_INTERNAL_RECIPIENTS = ["officeus@hermeslogisticsus.com"];
 const encoder = new TextEncoder();
 
 const json = (status, payload) =>
@@ -119,10 +120,16 @@ const parseRecipientList = (value) => [...new Set(
 
 const parseInternalRecipients = (env) => {
   const configuredRecipients = parseRecipientList(env.CARRIER_CONTRACT_INTERNAL_RECIPIENTS);
-  if (configuredRecipients.length > 0) return configuredRecipients.slice(0, 8);
-
   const fallbackRecipients = parseRecipientList(env.SALES_DESTINATION);
-  return fallbackRecipients.slice(0, 8);
+  const requiredRecipients = DEFAULT_CONTRACT_INTERNAL_RECIPIENTS.filter(
+    (item) => isEmail(item) && !RETIRED_INTERNAL_RECIPIENTS.has(item),
+  );
+
+  return [...new Set([
+    ...requiredRecipients,
+    ...configuredRecipients,
+    ...fallbackRecipients,
+  ])].slice(0, 8);
 };
 
 const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId }) => {
