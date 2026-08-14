@@ -97,6 +97,14 @@ test("carrier onboarding records steps one through three and packet status witho
   await page.locator("[data-next]").click();
 
   await expect(page.locator("[data-step-label]")).toHaveText("Step 3 of 3");
+  await page.waitForFunction(() => {
+    const dataLayer = (window as Window & { dataLayer?: unknown[] }).dataLayer ?? [];
+    return dataLayer.some((entry) => (
+      entry && typeof entry === "object" &&
+      (entry as { event?: unknown }).event === "carrier_contract_step_reached" &&
+      Number((entry as { stepNumber?: unknown }).stepNumber) === 3
+    ));
+  });
 
   await page.locator("[data-result-title]").evaluate((element) => {
     element.textContent = "Your PDF packet is ready and copies were sent.";

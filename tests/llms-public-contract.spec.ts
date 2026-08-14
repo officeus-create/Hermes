@@ -32,8 +32,9 @@ test("llms.txt describes current public owners and transaction boundaries", asyn
   expect(body).toContain("## Public evidence");
   expect(body).toContain("## Public and private boundaries");
   expect(body).toContain("fictional/local demonstration");
-  expect(body).toContain("signed review/onboarding PDF packet");
-  expect(body).toContain("Final legal agreement execution is not represented as active");
+  expect(body).toContain("signed execution PDF packet");
+  expect(body).toContain("approved standard 6% and 8% models");
+  expect(body).toContain("Custom percentages or scopes remain review proposals");
   expect(body).toContain("Delivery is considered confirmed only when the approved receiver reports success");
 
   for (const url of requiredPublicUrls) expect(body).toContain(url);

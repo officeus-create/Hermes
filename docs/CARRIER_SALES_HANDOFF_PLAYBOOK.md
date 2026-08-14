@@ -1,9 +1,9 @@
 # Carrier Sales Handoff - Agreement v3
 
-Status: SALES AND REVIEW FLOW READY / PRODUCTION EXECUTION STILL GATED  
+Status: COUNSEL-CONFIRMED STANDARD EXECUTION LIVE / CUSTOM TERMS REVIEW ONLY
 Primary SMS URL: `https://hermeslogisticsus.com/sign/`  
 Detailed proposal URL: `https://hermeslogisticsus.com/carrier/`  
-Current review master: `ATTORNEY-REVIEW-V3-2026-08-06`
+Current execution master: `HERMES-CARRIER-EXECUTION-V2026-08-06`
 
 ## Purpose
 
@@ -13,7 +13,7 @@ Give Logistics Sales one consistent phone-friendly path:
 2. carrier chooses Dispatch Support, Full Partnership, or Carrier Proposal;
 3. carrier confirms the company, authorized signer, and agreed percentage;
 4. carrier reviews the exact Appendix A summary;
-5. carrier signs and keeps a PDF review packet;
+5. carrier signs and keeps a downloaded PDF execution packet for a standard 6% or 8% selection;
 6. equipment, lanes, load boards, credentials, and operating details are collected later through the appropriate secure onboarding process.
 
 The signing form must remain short. Do not turn the agreement into an operational questionnaire.
@@ -134,22 +134,21 @@ Require affirmative electronic-record consent, signer-authority confirmation, do
 
 ## Current execution boundary
 
-The repository review master is:
+The counsel-confirmed repository execution master is:
 
-- version: `ATTORNEY-REVIEW-V3-2026-08-06`;
-- PDF: `/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf`;
-- PDF SHA-256: `9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb`;
+- version: `HERMES-CARRIER-EXECUTION-V2026-08-06`;
+- PDF: `/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf`;
+- PDF SHA-256: `ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8`;
 - master percentage: blank;
 - carrier-specific percentage: signed Appendix A.
 
-The endpoint must remain in review mode until production has all of the following:
+Standard execution remains live only while production has all of the following:
 
-- counsel-approved non-review master version;
+- the counsel-confirmed non-review master version;
 - immutable approved PDF path and SHA-256;
-- `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` containing the exact supported rates;
-- opaque signed-link or approved provider session for personalized execution;
+- `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` containing exactly the supported standard rates `6,8`;
 - preview/production binding isolation;
 - approved internal recipients and records retention;
-- successful synthetic phone execution.
+- passing automated execution, delivery, retry, and idempotency tests.
 
-A custom proposal never becomes live automatically.
+A custom proposal never becomes live automatically. The clean `/sign/` URL remains intentionally free of personal or commercial data; the exact terms are entered and confirmed inside the protected form.

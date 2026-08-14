@@ -1,10 +1,13 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const e2ePort = process.env.HERMES_E2E_PORT ?? "4321";
+const e2eBaseUrl = `http://127.0.0.1:${e2ePort}`;
+
 const ordinaryE2eStorageState = {
   cookies: [],
   origins: [
     {
-      origin: "http://127.0.0.1:4321",
+      origin: e2eBaseUrl,
       localStorage: [{ name: "hermes-analytics-consent", value: "denied" }],
     },
   ],
@@ -20,7 +23,7 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   grepInvert: globalExcludedTests,
   use: {
-    baseURL: "http://127.0.0.1:4321",
+    baseURL: e2eBaseUrl,
     trace: "retain-on-failure",
     storageState: ordinaryE2eStorageState,
   },
@@ -38,8 +41,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run preview -- --host 127.0.0.1 --port 4321",
-    url: "http://127.0.0.1:4321",
+    command: `npm run preview -- --host 127.0.0.1 --port ${e2ePort}`,
+    url: e2eBaseUrl,
     reuseExistingServer: !process.env.CI,
   },
 });

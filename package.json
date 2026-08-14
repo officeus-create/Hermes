@@ -30,6 +30,7 @@
     "test:hermes-connect-search-radar": "node scripts/hermes-connect-search-radar.test.mjs",
     "test:carrier-agreement-readiness": "node scripts/carrier-agreement-readiness.test.mjs",
     "test:carrier-contract-main-inbox": "node scripts/carrier-contract-main-inbox.test.mjs",
+    "test:carrier-contract-reliability": "node --experimental-strip-types scripts/carrier-contract-delivery-reliability.test.mjs",
     "test:carrier-contract-journey": "node scripts/carrier-contract-journey.test.mjs",
     "test:route-screenshots": "node scripts/route-screenshot-contract.test.mjs",
     "test:metric-provenance": "node --experimental-strip-types scripts/metric-provenance.test.mjs",

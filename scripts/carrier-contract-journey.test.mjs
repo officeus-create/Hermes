@@ -114,7 +114,7 @@ for (const required of [
   "service_percentage",
   "offer_code",
   "data-signature-canvas",
-  "Review mode is not final legal activation",
+  "Confirm the exact standard terms before signing",
   'const requestedPlan = currentUrl.searchParams.get("plan")',
   "window.history.replaceState",
 ]) assert.ok(onboarding.includes(required), `Minimized carrier signing form is missing: ${required}`);
@@ -125,11 +125,11 @@ for (const rawParameter of ["rate", "rep", "offer", "carrier_name", "mc", "usdot
   assert.ok(!onboarding.includes(`searchParams.get(\"${rawParameter}\")`), `Onboarding still trusts raw URL parameter: ${rawParameter}`);
 
 for (const required of [
-  "ATTORNEY-REVIEW-V3-2026-08-06",
+  "HERMES-CARRIER-EXECUTION-V2026-08-06",
   "Percentage only in Appendix A",
   "No personal guaranty or UCC lien",
   "Five-business-day objection window",
-  "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb",
+  "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8",
   'data-contract-download="pdf"',
 ]) assert.ok(agreement.includes(required), `v3 agreement page is missing: ${required}`);
 
@@ -162,7 +162,7 @@ for (const required of [
   "Continue to carrier packet",
   "No passwords, bank details, W-9, CDL image, VIN list, or shipment documents in this flow.",
   "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, hidden conditions, or threatening language.",
-  "ATTORNEY-REVIEW-V3-2026-08-06",
+  "HERMES-CARRIER-EXECUTION-V2026-08-06",
   "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
   "opaque, signed, expiring",
 ]) assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);

@@ -20,3 +20,5 @@ assert.deepEqual(
 );
 
 console.log("Carrier contract delivery always includes officeus@hermeslogisticsus.com and filters retired recipients.");
+
+await import("./carrier-contract-delivery-reliability.test.mjs");
