@@ -16,7 +16,7 @@ const schema = {
 
 <BaseLayout
   title="Carrier Agreement Packet | Hermes Logistics"
-  description="Confirm the carrier-specific service scope and percentage, provide authorized signer details, and create a signed review packet from a phone or computer."
+  description="Confirm the carrier-specific service scope and percentage, provide authorized signer details, and create a signed execution packet from a phone or computer."
   robots="noindex,nofollow"
   schema={schema}
 >
@@ -28,7 +28,7 @@ const schema = {
         <div>
           <p class="eyebrow">Hermes Logistics · Private agreement packet</p>
           <h1>Review the exact terms. Sign from your phone.</h1>
-          <p class="onboarding-lead">This short workflow asks only for the information needed to identify the carrier, confirm the authorized signer, record the agreed percentage in Appendix A, and create the signed PDF review packet.</p>
+          <p class="onboarding-lead">This short workflow asks only for the information needed to identify the carrier, confirm the authorized signer, record the agreed percentage in Appendix A, and create the signed PDF execution packet.</p>
           <div class="trust-row">
             <span><Check size={17} aria-hidden="true" />Three steps</span>
             <span><Check size={17} aria-hidden="true" />Carrier-specific percentage</span>
@@ -39,9 +39,9 @@ const schema = {
         <aside class="status-card">
           <ShieldCheck size={30} aria-hidden="true" />
           <p class="eyebrow">Current document status</p>
-          <strong>v3 attorney-review packet</strong>
-          <p>The page can create a signed review record. Final execution activates only when Hermes publishes a counsel-approved master PDF and production verifies its version, SHA-256, allowed percentage, and execution controls.</p>
-          <a href="/logistics/carrier-agreement/">Read the full v3 draft</a>
+          <strong>Approved execution master</strong>
+          <p>Standard 6% and 8% packets execute only after production verifies the approved master version, SHA-256, selected percentage, and signature controls. Custom terms remain a review proposal until separately accepted in writing.</p>
+          <a href="/logistics/carrier-agreement/">Read the approved agreement</a>
         </aside>
       </div>
     </section>
@@ -113,7 +113,7 @@ const schema = {
                 <li><Check size={17} aria-hidden="true" />No load, rate, mileage, customer, profit, or revenue is guaranteed.</li>
                 <li><Check size={17} aria-hidden="true" />The exact service fee is the percentage displayed in this Appendix A summary.</li>
               </ul>
-              <a href="/logistics/carrier-agreement/" target="_blank" rel="noopener noreferrer">Open the full v3 attorney-review draft in a new tab</a>
+              <a href="/logistics/carrier-agreement/" target="_blank" rel="noopener noreferrer">Open the approved execution agreement in a new tab</a>
             </div>
             <div class="consent-list">
               <label><input type="checkbox" name="consent_electronic_records" required />I consent to electronic records and signatures for this transaction, can access and retain PDF files, may request a paper copy, and may withdraw electronic consent before final execution.</label>
@@ -127,7 +127,7 @@ const schema = {
               <canvas width="600" height="180" data-signature-canvas aria-label="Signature drawing area" tabindex="0"></canvas>
               <p>Use a finger, stylus, mouse, or trackpad. The PDF also records the typed signer name and timestamp.</p>
             </div>
-            <div class="final-warning"><strong>Review mode is not final legal activation.</strong><p>Until Hermes activates a counsel-approved master version and allowed percentage, this workflow creates a signed review packet rather than a final executed agreement.</p></div>
+            <div class="final-warning"><strong>Confirm the exact standard terms before signing.</strong><p>Standard 6% and 8% selections create an execution packet only when the approved master version and SHA-256 match production. A custom percentage or scope creates a review proposal and requires separate written Hermes approval.</p></div>
           </section>
 
           <div class="form-error" data-form-error role="alert" hidden></div>
@@ -385,9 +385,19 @@ const schema = {
       const pdf = await response.blob();
       downloadBlob(pdf, response.headers.get("Content-Disposition"));
       const delivery = response.headers.get("X-Hermes-Delivery");
+      const internalDelivery = response.headers.get("X-Hermes-Internal-Delivery") || delivery;
+      const carrierCopy = response.headers.get("X-Hermes-Carrier-Copy") || "pending";
       const mode = response.headers.get("X-Hermes-Document-Mode");
-      if (resultTitle) resultTitle.textContent = delivery === "delivered" ? "Your PDF packet is ready and copies were sent." : "Your PDF packet is ready; email delivery needs follow-up.";
-      if (resultCopy) resultCopy.textContent = delivery === "delivered" ? `A copy was downloaded and emailed to the carrier and approved Hermes recipients. Document mode: ${mode || "review"}.` : "The PDF was downloaded, but automatic email delivery was not confirmed. Keep the copy and contact Logistics Sales.";
+      if (internalDelivery === "delivered" && carrierCopy === "delivered") {
+        if (resultTitle) resultTitle.textContent = "Your PDF packet is ready and copies were sent.";
+        if (resultCopy) resultCopy.textContent = `Your copy was downloaded, and the carrier and Hermes email copies were confirmed. Document mode: ${mode || "review"}.`;
+      } else if (internalDelivery === "delivered") {
+        if (resultTitle) resultTitle.textContent = "Your signed packet is ready; carrier email was not confirmed.";
+        if (resultCopy) resultCopy.textContent = `Hermes received the official email copy. Your signed PDF was downloaded to this device; keep it for your records because the separate carrier email could not be confirmed. Document mode: ${mode || "review"}.`;
+      } else {
+        if (resultTitle) resultTitle.textContent = "Your PDF packet is ready; email delivery needs follow-up.";
+        if (resultCopy) resultCopy.textContent = "The PDF was downloaded, but delivery to the Hermes contract mailbox was not confirmed. Keep the copy and contact Logistics Sales.";
+      }
       sessionStorage.removeItem("hermesCarrierContractRequestId");
     } catch (error) {
       const code = error instanceof Error ? error.message : "contract_generation_failed";

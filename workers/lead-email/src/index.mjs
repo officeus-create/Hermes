@@ -3,6 +3,7 @@ const MAX_CONTRACT_BODY_BYTES = 4_500_000;
 const MAX_MESSAGE_TEXT = 20_000;
 const MAX_ATTACHMENT_BYTES = 2_200_000;
 const MAX_TOTAL_ATTACHMENT_BYTES = 3_500_000;
+const MAX_SEND_ATTEMPTS = 3;
 const RETIRED_INTERNAL_RECIPIENTS = new Set(["freight_301@hermeslogisticsus.com"]);
 const DEFAULT_CONTRACT_INTERNAL_RECIPIENTS = ["officeus@hermeslogisticsus.com"];
 const encoder = new TextEncoder();
@@ -140,7 +141,7 @@ const buildRawMime = ({ from, to, subject, text, replyTo, attachments, requestId
     `Subject: ${subject}`,
     ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
     `Date: ${new Date().toUTCString()}`,
-    `Message-ID: <${requestId}.${Math.random().toString(36).slice(2)}@hermeslogisticsus.com>`,
+    `Message-ID: <${requestId}.${crypto.randomUUID()}@hermeslogisticsus.com>`,
     "MIME-Version: 1.0",
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     "",
@@ -170,11 +171,10 @@ const sendMessage = async (env, message) => {
   if (env.EMAIL_TRANSPORT_MODE === "cloudflare_email_message") {
     const { EmailMessage } = await import("cloudflare:email");
     const raw = buildRawMime(message);
-    await env.EMAIL.send(new EmailMessage(message.from, message.to, raw));
-    return;
+    return env.EMAIL.send(new EmailMessage(message.from, message.to, raw));
   }
 
-  await env.EMAIL.send({
+  return env.EMAIL.send({
     to: message.to,
     from: message.from,
     subject: message.subject,
@@ -191,13 +191,32 @@ const sendMessage = async (env, message) => {
   });
 };
 
+const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 const sendSafely = async (env, message) => {
-  try {
-    await sendMessage(env, message);
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, mapped: classifyProviderError(error) };
+  const configuredDelay = Number(env.EMAIL_RETRY_DELAY_MS ?? 250);
+  const retryDelay = Number.isFinite(configuredDelay) ? Math.max(0, Math.min(configuredDelay, 1_000)) : 250;
+  let lastMapped = { status: 502, error: "provider_rejected" };
+  let lastAttempt = 0;
+
+  for (let attempt = 1; attempt <= MAX_SEND_ATTEMPTS; attempt += 1) {
+    lastAttempt = attempt;
+    try {
+      const result = await sendMessage(env, message);
+      return {
+        ok: true,
+        attempts: attempt,
+        providerMessageId: cleanHeader(result?.messageId, 160) || null,
+      };
+    } catch (error) {
+      lastMapped = classifyProviderError(error);
+      const retryable = ["provider_throttled", "provider_unavailable"].includes(lastMapped.error);
+      if (!retryable || attempt === MAX_SEND_ATTEMPTS) break;
+      await wait(retryDelay * attempt);
+    }
   }
+
+  return { ok: false, attempts: lastAttempt, mapped: lastMapped };
 };
 
 const worker = {
@@ -253,36 +272,68 @@ const worker = {
 
       const sender = cleanHeader(env.SALES_SENDER, 320);
       const requiredRecipients = DEFAULT_CONTRACT_INTERNAL_RECIPIENTS.filter((recipient) => internalRecipients.includes(recipient));
+      let requiredInternalAttempts = 0;
       for (const recipient of requiredRecipients) {
         const result = await sendSafely(env, { to: recipient, from: sender, subject, text, replyTo, attachments, requestId });
+        requiredInternalAttempts += result.attempts;
         if (!result.ok) {
-          console.error(JSON.stringify({ event: "contract_internal_delivery_failed", category: result.mapped.error }));
-          return json(result.mapped.status, { ok: false, error: result.mapped.error });
+          console.error(JSON.stringify({ event: "contract_internal_delivery_failed", category: result.mapped.error, attempts: result.attempts, request_id: requestId }));
+          return json(result.mapped.status, {
+            ok: false,
+            error: result.mapped.error,
+            delivery_ledger: {
+              required_internal: { status: "pending", count: requiredRecipients.length, attempts: requiredInternalAttempts },
+              carrier: { status: "not_attempted", attempts: 0 },
+              attempted_at: new Date().toISOString(),
+            },
+          });
         }
       }
 
       const optionalInternalRecipients = internalRecipients.filter((recipient) => !requiredRecipients.includes(recipient));
       let optionalInternalDelivered = 0;
+      let optionalInternalAttempts = 0;
       for (const recipient of optionalInternalRecipients) {
         const result = await sendSafely(env, { to: recipient, from: sender, subject, text, replyTo, attachments, requestId });
+        optionalInternalAttempts += result.attempts;
         if (result.ok) optionalInternalDelivered += 1;
-        else console.error(JSON.stringify({ event: "contract_optional_internal_delivery_pending", category: result.mapped.error }));
+        else console.error(JSON.stringify({ event: "contract_optional_internal_delivery_pending", category: result.mapped.error, attempts: result.attempts, request_id: requestId }));
       }
 
       let carrierDelivered = internalRecipients.includes(carrierEmail);
+      let carrierAttempts = carrierDelivered ? 0 : null;
+      let carrierError = null;
       if (!carrierDelivered) {
         const carrierResult = await sendSafely(env, { to: carrierEmail, from: sender, subject, text, replyTo, attachments, requestId });
+        carrierAttempts = carrierResult.attempts;
         carrierDelivered = carrierResult.ok;
         if (!carrierResult.ok) {
-          console.error(JSON.stringify({ event: "contract_carrier_copy_pending", category: carrierResult.mapped.error }));
+          carrierError = carrierResult.mapped.error;
+          console.error(JSON.stringify({ event: "contract_carrier_copy_pending", category: carrierError, attempts: carrierResult.attempts, request_id: requestId }));
         }
       }
 
+      const attemptedAt = new Date().toISOString();
       return json(202, {
         ok: true,
         required_internal_delivered: requiredRecipients.length,
         optional_internal_delivered: optionalInternalDelivered,
         carrier_copy: carrierDelivered ? "delivered" : "download_only",
+        delivery_ledger: {
+          required_internal: { status: "delivered", count: requiredRecipients.length, attempts: requiredInternalAttempts },
+          optional_internal: {
+            status: optionalInternalDelivered === optionalInternalRecipients.length ? "delivered" : "partial",
+            delivered: optionalInternalDelivered,
+            count: optionalInternalRecipients.length,
+            attempts: optionalInternalAttempts,
+          },
+          carrier: {
+            status: carrierDelivered ? "delivered" : "download_only",
+            attempts: carrierAttempts ?? 0,
+            ...(carrierError ? { error: carrierError } : {}),
+          },
+          attempted_at: attemptedAt,
+        },
       });
     }
 
