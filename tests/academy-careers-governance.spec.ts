@@ -71,6 +71,8 @@ test.describe("Academy and careers governance", () => {
     expect(combined).toContain('"employmentType":"FULL_TIME"');
     expect(combined).toContain('"jobLocationType":"TELECOMMUTE"');
     expect(combined).toContain('"directApply":false');
+    expect(combined).toContain("Support car-hauling dispatch work for U.S.-market carrier operations.");
+    expect(combined).toContain("Ability to work the applicable U.S. Central Time schedule.");
     expect(combined).toContain('"datePosted":"2026-02-26"');
     expect(combined).toContain('"validThrough":"2026-09-14T23:59:59Z"');
     expect(combined).not.toContain("@ProgressoPro");
