@@ -10,7 +10,7 @@ if (!vacancy) throw new Error("Verified Car Hauling Dispatcher vacancy is missin
 
 const canonicalUrl = new URL(`/careers/${vacancy.slug}/`, Astro.site).toString();
 const title = "Car Hauling Dispatcher — Remote U.S. Market | Hermes Logistics";
-const description = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
+const metaDescription = "Apply for the verified remote full-time Car Hauling Dispatcher opening supporting U.S. carrier operations. International candidates with experience or a clear entry-level starting point may apply.";
 const applicationUrl = new URL(vacancy.applicationPath!, Astro.site).toString();
 const workUaApplicationUrl = "https://www.work.ua/jobs/7362244/";
 
@@ -29,12 +29,20 @@ const screening = [
   "For entry-level candidates: current starting level, relevant skills, availability, and readiness for structured training or a practical test.",
 ];
 
+const jobDescription = [
+  "A full-time remote logistics role supporting U.S.-market car-hauling operations. We consider experienced dispatchers and candidates who have a clear entry-level starting point and are ready for structured screening.",
+  "Work arrangement: remote worldwide. Working schedule: U.S. Central Time.",
+  `Responsibilities: ${responsibilities.join(" ")}`,
+  `Screening information to prepare: ${screening.join(" ")}`,
+  "Application process: submit through the current Work.ua vacancy. The Hermes application page is a preparation preview only and does not yet send or store an application. Applications are human reviewed and may proceed to practical evidence and an interview; no step guarantees employment or compensation.",
+].join("\n\n");
+
 const schema = [
   {
     "@context": "https://schema.org",
     "@type": "JobPosting",
     title: "Car Hauling Dispatcher — Remote / U.S. Market",
-    description,
+    description: jobDescription,
     datePosted: vacancy.datePosted,
     validThrough: `${vacancy.expiresAt}T23:59:59Z`,
     employmentType: vacancy.employmentType,
@@ -60,7 +68,7 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={title} description={description} schema={schema}>
+<BaseLayout title={title} description={metaDescription} schema={schema}>
   <div class="career-job-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
     <main id="main-content">
