@@ -18,3 +18,19 @@ export async function ensureRepairShopProfileSchema(db) {
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_owner ON repair_shops(owner_specialist_id)").run();
   await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_slug ON repair_shops(slug)").run();
 }
+
+export async function ensureRepairShopAvailabilitySchema(db) {
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS repair_shop_availability (
+      id TEXT PRIMARY KEY,
+      owner_specialist_id TEXT NOT NULL,
+      weekday INTEGER NOT NULL,
+      start_minutes INTEGER NOT NULL,
+      end_minutes INTEGER NOT NULL,
+      step_minutes INTEGER NOT NULL DEFAULT 30,
+      updated_at TEXT NOT NULL,
+      UNIQUE(owner_specialist_id, weekday)
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_repair_shop_availability_owner ON repair_shop_availability(owner_specialist_id)").run();
+}
