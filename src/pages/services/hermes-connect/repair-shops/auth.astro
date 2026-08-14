@@ -22,12 +22,10 @@ const schema: any[] = [];
       </a>
 
       <div class="auth-card glass-panel">
-        <!-- Auth Checking / Loading State -->
         <div id="auth-loading" class="auth-section active">
           <p>Verifying secure session...</p>
         </div>
 
-        <!-- Authenticated State -->
         <div id="auth-authenticated" class="auth-section">
           <div class="auth-header text-center">
             <ShieldCheck size={32} class="text-green mb-4" style="margin: 0 auto;" />
@@ -51,19 +49,18 @@ const schema: any[] = [];
           </div>
 
           <div class="auth-actions">
-            <a href="/services/hermes-connect/repair-shops/booking/" class="btn primary-btn full-width">Go to Shop Dashboard</a>
+            <a href="/services/hermes-connect/repair-shops/dashboard/" class="btn primary-btn full-width">Go to Shop Dashboard</a>
             <button id="logout-btn" class="btn ghost-btn full-width mt-4">
               <LogOut size={16} /> Secure Logout
             </button>
           </div>
         </div>
 
-        <!-- Unauthenticated State (Forms) -->
         <div id="auth-forms" class="auth-section">
           <div class="auth-header text-center">
             <KeyRound size={32} class="text-iris mb-4" style="margin: 0 auto;" />
             <h1>Repair Shop Owner Access</h1>
-            <p class="auth-subtitle">Sign in or register to manage your bookings and CRM.</p>
+            <p class="auth-subtitle">Sign in or register to manage your real shop services and upcoming booking tools.</p>
           </div>
 
           <div class="auth-tabs">
@@ -73,7 +70,6 @@ const schema: any[] = [];
 
           <div id="alert-box" class="alert-box hidden"></div>
 
-          <!-- Login Form -->
           <form id="login-form" class="auth-form active">
             <div class="form-group">
               <label for="login-email">Email Address</label>
@@ -86,7 +82,6 @@ const schema: any[] = [];
             <button type="submit" class="btn primary-btn full-width mt-6">Secure Login</button>
           </form>
 
-          <!-- Register Form -->
           <form id="register-form" class="auth-form">
             <div class="form-group">
               <label for="reg-name">Your Full Name</label>
@@ -100,7 +95,6 @@ const schema: any[] = [];
               <label for="reg-password">Password</label>
               <input type="password" id="reg-password" required placeholder="Min. 8 characters" minlength="8" />
             </div>
-            <!-- Hidden defaults for MVP -->
             <input type="hidden" id="reg-role" value="Shop Owner" />
             <input type="hidden" id="reg-location" value="United States" />
             <input type="hidden" id="reg-bio" value="Independent repair shop registered for Hermes Connect out-bound beta." />
@@ -162,10 +156,8 @@ const schema: any[] = [];
     showSection("forms");
   }
 
-  // Init
   checkSession();
 
-  // Tabs
   const tabBtns = document.querySelectorAll(".tab-btn");
   const authForms = document.querySelectorAll(".auth-form");
 
@@ -182,7 +174,6 @@ const schema: any[] = [];
     });
   });
 
-  // Logout
   document.getElementById("logout-btn")?.addEventListener("click", async () => {
     hideAlert();
     try {
@@ -193,7 +184,6 @@ const schema: any[] = [];
     }
   });
 
-  // Login
   document.getElementById("login-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideAlert();
@@ -223,7 +213,6 @@ const schema: any[] = [];
     }
   });
 
-  // Register
   document.getElementById("register-form")?.addEventListener("submit", async (e) => {
     e.preventDefault();
     hideAlert();
