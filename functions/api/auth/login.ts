@@ -1,9 +1,11 @@
 import { isValidEmail, verifyPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 
-type Env = { DB: any };
+type Env = { DB?: any };
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
+
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
