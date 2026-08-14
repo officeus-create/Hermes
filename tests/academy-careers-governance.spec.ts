@@ -49,21 +49,28 @@ test.describe("Academy and careers governance", () => {
     expect(jsonLd.join(" ")).not.toContain('"JobPosting"');
   });
 
-  test("Canonical Car Hauling Dispatcher page carries one truthful JobPosting and privacy-safe application route", async ({ page }) => {
+  test("Canonical Car Hauling Dispatcher page carries one truthful JobPosting and a real interim application route", async ({ page }) => {
     const response = await page.goto("/careers/car-hauling-dispatcher/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveText("Car Hauling Dispatcher — Remote / U.S. Market");
     await expect(page.getByText("Remote worldwide", { exact: true })).toBeVisible();
     await expect(page.getByText("U.S. Central Time schedule", { exact: true })).toBeVisible();
 
-    const applyLinks = page.locator('a[href^="/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers"]');
-    await expect(applyLinks).toHaveCount(2);
+    const previewLinks = page.locator('a[href^="/logistics/apply/?for=career&role=car-hauling-dispatcher&source=hermes_careers"]');
+    await expect(previewLinks).toHaveCount(1);
+    await expect(page.getByRole("link", { name: "Prepare Hermes application preview" })).toBeVisible();
+
+    const workUaLinks = page.locator('a[href="https://www.work.ua/jobs/7362244/"][data-external-job-apply]');
+    await expect(workUaLinks).toHaveCount(2);
+    await expect(workUaLinks.first()).toHaveText(/Apply on Work\.ua/);
+    await expect(page.getByText("does not yet send or store an application", { exact: false })).toBeVisible();
 
     const jsonLd = await page.locator('script[type="application/ld+json"]').allTextContents();
     const combined = jsonLd.join(" ");
     expect(combined.match(/\"@type\":\"JobPosting\"/g)?.length ?? 0).toBe(1);
     expect(combined).toContain('"employmentType":"FULL_TIME"');
     expect(combined).toContain('"jobLocationType":"TELECOMMUTE"');
+    expect(combined).toContain('"directApply":false');
     expect(combined).toContain('"datePosted":"2026-02-26"');
     expect(combined).toContain('"validThrough":"2026-09-14T23:59:59Z"');
     expect(combined).not.toContain("@ProgressoPro");
