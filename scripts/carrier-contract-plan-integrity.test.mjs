@@ -13,7 +13,7 @@ const callGuard = async (selectedPlan, servicePercentage) => {
     request,
     next: async () => {
       nextCalls += 1;
-      return new Response("next", { status: 204 });
+      return new Response(null, { status: 204 });
     },
   });
   return { response, nextCalls };
