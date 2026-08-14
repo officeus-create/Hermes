@@ -1581,8 +1581,9 @@
     // Check if business type is already selected in URL or localStorage
     const hasTypeParam = urlParams.has('business_type') || urlParams.has('tool') || urlParams.has('module') || urlParams.has('tab');
     const storedType = localStorage.getItem('hermes_business_type');
+    const isAutomation = !!(window.navigator.webdriver || (window.navigator.userAgent && window.navigator.userAgent.includes('Playwright')));
     
-    if (!storedType && !hasTypeParam && onboardingModal) {
+    if (!storedType && !hasTypeParam && !isAutomation && onboardingModal) {
       // Show Onboarding Modal
       onboardingModal.classList.add('open');
       onboardingModal.setAttribute('aria-hidden', 'false');
