@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-14-hermes-connect-promo-pages",
+  "generated_at": "2026-08-14T06:30:00Z",
+  "status": "PRODUCTION_VERIFIED",
+  "production_verified_at": "2026-08-14",
+  "production_verification_run": "31668926104",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/ai-command-center/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/ai-command-center/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/ai-command-center.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/business-automation/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/business-automation/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/business-automation.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/load-analyzer/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/load-analyzer.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/proposal-builder/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/proposal-builder/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/proposal-builder.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/rate-negotiator/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/rate-negotiator/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/rate-negotiator.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/roi-calculator/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/roi-calculator/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/roi-calculator.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/unified-inbox/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/unified-inbox/",
+      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "source_file": "src/pages/services/hermes-connect/unified-inbox.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 7,
+    "indexable_route_count_added": 7,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
