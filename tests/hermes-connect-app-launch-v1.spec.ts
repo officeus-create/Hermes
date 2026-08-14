@@ -10,6 +10,9 @@ test("Hermes Connect service page launches the interactive workspace", async ({ 
 
 test("Hermes Connect launch workspace keeps explicit demo boundaries and switches vertical data", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop launch contract.");
+  await page.addInitScript(() => {
+    window.localStorage.setItem('hermes_business_type', 'logistics');
+  });
   await page.goto(workspace);
 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,nofollow/);
@@ -33,6 +36,9 @@ test("Hermes Connect launch workspace keeps explicit demo boundaries and switche
 
 test("Hermes Connect mobile Web launches the same workspace and Hermes Intelligence", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Mobile launch contract.");
+  await page.addInitScript(() => {
+    window.localStorage.setItem('hermes_business_type', 'logistics');
+  });
   await page.goto(workspace);
   await expect(page.locator('.mobile-bar')).toBeVisible();
   await expect(page.locator('.mobile-nav')).toBeVisible();

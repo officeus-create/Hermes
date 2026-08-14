@@ -13,7 +13,7 @@ const pages = [
   {
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
-    title: "Logistics SEO Agency for Trucking & Transportation Companies | Hermes",
+    title: "Logistics & Trucking SEO Services | Hermes",
     h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
     required: [
       "Commercial query-to-page ownership",
@@ -39,7 +39,7 @@ const pages = [
   {
     route: "/services/seo-for-independent-auto-dealers/",
     file: "services/seo-for-independent-auto-dealers/index.html",
-    title: "SEO for Independent & Used Car Dealers | Hermes",
+    title: "Auto Dealer SEO Services | Used & Independent Dealerships | Hermes",
     h1: "SEO for Independent and Used Car Dealers",
     required: [
       "Independent dealer search architecture",

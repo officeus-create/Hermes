@@ -2,6 +2,7 @@
 import { ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "./ContactCTA.astro";
+import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { DigitalServicePageContent } from "../data/digital-service-pages";
@@ -289,6 +290,7 @@ const faqSchema = {
       </section>
     )}
 
+    <HermesConnectLauncher variant="banner" context={seoContext ? "marketing" : "general"} />
     <ContactCTA selectedPath={seoContext ? "ProgressoPro" : "IT Development"} />
   </main>
   <SiteFooter />

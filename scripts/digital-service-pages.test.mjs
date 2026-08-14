@@ -28,7 +28,7 @@ const routes = [
   {
     route: "/services/website-redesign/",
     file: "services/website-redesign/index.html",
-    title: "Website Redesign Services | Hermes",
+    title: "Website Redesign Services for U.S. Businesses | Hermes",
     h1: "Website Redesign Built Around Business Priorities",
     reviewedAt: "July 31, 2026",
     proofHref: "/case/it-development/",
