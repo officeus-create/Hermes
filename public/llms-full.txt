@@ -40,7 +40,7 @@ The Hermes technology stack is engineered for maximum performance, offline resil
 * **App Shell Architecture**: Light, fast initial load with instant hydration. Designed for single-hand mobile browser operations, eliminating reliance on mobile app store deployment barriers while maintaining native app-like UX.
 
 ### 1.2 Front-Door AI Brain
-* **Zero-Cost Client-Side Classification**: Employs an autonomous client-side classifier (`public/demos/hermes-connect-brand-v1/ai-front-door.js`) that analyzes incoming inquiries, lead forms, and search intent in real time without outbound API calls.
+* **Zero-Cost Client-Side Classification**: Employs an autonomous client-side classifier (`public/demos/hermes-connect/ai-front-door.js`) that analyzes incoming inquiries, lead forms, and search intent in real time without outbound API calls.
 * **Prompt-Less Rule & Pattern Matrix**: Evaluates customer inputs across intent buckets (e.g., Car Hauling Request, SEO Audit, IT Development Inquiry, Academy Student Application) using deterministic pattern matching and semantic feature scoring.
 * **Cost & Latency Elimination**: Eliminates LLM API latency (0ms response time) and reduces token cost to $0 per front-door interaction, routing pre-qualified leads directly to the appropriate business module or human approval queue.
 
@@ -240,8 +240,8 @@ For enterprises seeking fully bespoke digital infrastructure, Hermes IT Developm
 * **Hermes Connect Service Page**: https://hermeslogisticsus.com/services/hermes-connect/
 * **Hermes Connect Interactive Demos Hub**: https://hermeslogisticsus.com/demos/hermes-connect/
 * **Car Hauling Load Board Preview**: https://hermeslogisticsus.com/load-board/
-* **Brand V1 Workspace Incubator**: https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/workspace.html
-* **Brand V1 Design Review**: https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/review.html
+* **Brand V1 Workspace Incubator**: https://connect.hermeslogisticsus.com/workspace
+* **Brand V1 Design Review**: https://connect.hermeslogisticsus.com/review.html
 
 #### Standalone AI & Analytics Tools (Web App Subdomain):
 * **B2B Load Analyzer**: https://connect.hermeslogisticsus.com/load-analyzer/

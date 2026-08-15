@@ -228,7 +228,7 @@ const schema = [
             <div class="lifecycle-box">
               <h3>Partner Offer Status Tracker</h3>
               <p class="sub-text">All commercial offers go through a secure manual review queue. No automatic approval is given.</p>
-              
+
               <div class="lifecycle-steps" data-lifecycle-tracker>
                 <div class="step-item active" data-step="REGISTERED">
                   <div class="step-bullet">1</div>
@@ -354,7 +354,7 @@ const schema = [
                   <li><Check size={16} /> Multiple vertical dashboard switching</li>
                   <li><Check size={16} /> Fast, zero-dependency performance</li>
                 </ul>
-                <a href="/demos/hermes-connect-brand-v1/workspace.html" class="btn primary-btn m-top">Open Web App Workspace →</a>
+                <a href="https://connect.hermeslogisticsus.com/workspace" class="btn primary-btn m-top">Open Web App Workspace →</a>
               </div>
               <div class="platform-screenshot">
                 <div class="browser-shadow">
@@ -576,7 +576,7 @@ const schema = [
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      
+
       if (currentStep === "REGISTERED") {
         // Move to Offer Draft
         currentStep = "OFFER_DRAFT";
@@ -595,7 +595,7 @@ const schema = [
         if (submitBtn) submitBtn.querySelector("span")!.textContent = "✦ Offer Under Review";
         (submitBtn as HTMLButtonElement).disabled = true;
         (submitBtn as HTMLButtonElement).classList.add("disabled");
-        
+
         logEvent("connect_offer_submitted", {
           shop_subtype: (document.getElementById("shop-type") as HTMLSelectElement).value,
           city_state: (document.getElementById("city-state") as HTMLInputElement).value
@@ -632,7 +632,7 @@ const schema = [
   tabButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const target = btn.getAttribute("data-target-tab");
-      
+
       tabButtons.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
@@ -663,7 +663,7 @@ const schema = [
     const scrim = document.getElementById("ios-guide-scrim");
     const closeBtn = document.getElementById("ios-guide-close");
     const openBtn = document.getElementById("btn-trigger-iphone-guide");
-    
+
     const simShareBtn = document.getElementById("ios-sim-share-btn");
     const simShareSheet = document.getElementById("ios-sim-share-sheet");
     const simAddAction = document.getElementById("ios-sim-add-action");
@@ -721,7 +721,7 @@ const schema = [
           card.classList.toggle("active", idx === 2);
         });
         logEvent("connect_ios_guide_add_tapped");
-        
+
         // Mock PWA save and close
         setTimeout(() => {
           closeGuide();
@@ -735,7 +735,7 @@ const schema = [
     const ua = navigator.userAgent.toLowerCase();
     const isIphone = /iphone|ipad|ipod/.test(ua);
     const isAndroid = /android/.test(ua);
-    
+
     let detectedPlatform = "desktop";
     if (isIphone) {
       detectedPlatform = "iphone";
@@ -1824,7 +1824,7 @@ const schema = [
       gap: 24px;
     }
   }
-  
+
   /* Mock iOS Phone and Web Interface */
   .ios-sim-phone {
     width: 290px;
@@ -1936,7 +1936,7 @@ const schema = [
     50% { transform: scale(1.15); filter: drop-shadow(0 0 12px rgba(124, 92, 255, 0.9)); color: #5ac8fa; }
     100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(124, 92, 255, 0)); }
   }
-  
+
   /* Share sheet animation overlay */
   .ios-sim-share-sheet {
     position: absolute;
@@ -2017,7 +2017,7 @@ const schema = [
     50% { background: rgba(124, 92, 255, 0.35); }
     100% { background: rgba(124, 92, 255, 0.15); }
   }
-  
+
   /* Sidebar guides */
   .ios-guide-sidebar {
     display: grid;
