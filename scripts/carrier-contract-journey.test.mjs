@@ -18,6 +18,7 @@ const [carrierPage, signPage, journey, layout, logisticsLinks, playbook, onboard
 ]);
 
 for (const required of [
+  'title="Carrier Support & Agreement | Hermes Logistics"',
   'robots="noindex,nofollow"',
   'const pageUrl = "https://hermeslogisticsus.com/carrier/"',
   'const shareUrl = "https://hermeslogisticsus.com/sign/"',
@@ -125,6 +126,7 @@ for (const rawParameter of ["rate", "rep", "offer", "carrier_name", "mc", "usdot
   assert.ok(!onboarding.includes(`searchParams.get(\"${rawParameter}\")`), `Onboarding still trusts raw URL parameter: ${rawParameter}`);
 
 for (const required of [
+  'title="Carrier Agreement Terms | Hermes Logistics"',
   "HERMES-CARRIER-EXECUTION-V2026-08-06",
   "Percentage only in Appendix A",
   "No personal guaranty or UCC lien",
@@ -132,6 +134,12 @@ for (const required of [
   "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8",
   'data-contract-download="pdf"',
 ]) assert.ok(agreement.includes(required), `v3 agreement page is missing: ${required}`);
+
+assert.notEqual(
+  carrierPage.match(/<BaseLayout\s+[\s\S]*?title="([^"]+)"/)?.[1],
+  agreement.match(/<BaseLayout\s+[\s\S]*?title="([^"]+)"/)?.[1],
+  "Carrier entry and agreement terms pages must keep distinct, purpose-specific titles.",
+);
 
 for (const required of [
   "Dispatch Support",

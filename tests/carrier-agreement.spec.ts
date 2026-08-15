@@ -8,7 +8,7 @@ const version = "HERMES-CARRIER-EXECUTION-V2026-08-06";
 test("carrier agreement execution summary is private, links to the PDF viewer, and routes to signing", async ({ page, request }) => {
   await page.goto("/logistics/carrier-agreement/");
 
-  await expect(page).toHaveTitle("Carrier Agreement | Hermes Logistics");
+  await expect(page).toHaveTitle("Carrier Agreement Terms | Hermes Logistics");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
   await expect(page.locator("main[data-agreement-version]")).toHaveAttribute("data-agreement-version", version);
   await expect(page.getByRole("heading", { name: "Read the important terms without legal fog." })).toBeVisible();

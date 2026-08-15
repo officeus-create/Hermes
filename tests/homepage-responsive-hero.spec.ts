@@ -3,6 +3,10 @@ import { expect, test } from "@playwright/test";
 test("homepage hero uses responsive modern assets without the obsolete JPEG preload", async ({ page }) => {
   const response = await page.goto("/");
   expect(response?.status()).toBe(200);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://hermeslogisticsus.com/images/hermes-ecosystem-hero.jpg",
+  );
 
   const picture = page.locator(".hero-media picture");
   await expect(picture).toHaveCount(1);

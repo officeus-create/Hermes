@@ -128,7 +128,6 @@ const emailOnlyRoutes = [
   "paths/technology/index.html",
 ];
 const assets = [
-  "images/hermes-social-share-2026.jpg",
   "images/hermes-ecosystem-hero.jpg",
   "images/path-logistics-system.jpg",
   "images/path-marketing-system.jpg",
@@ -200,7 +199,7 @@ if (!html.includes('data-preview-status="Your information was not sent or stored
   throw new Error("Preview honesty message is missing from contact form");
 }
 
-if (!html.includes("/images/hermes-social-share-2026.jpg")) throw new Error("Updated social preview image missing");
+if (!html.includes("/images/hermes-ecosystem-hero.jpg")) throw new Error("Canonical social preview image missing");
 if (!html.includes('property="og:image:width" content="2048"')) throw new Error("Social image width metadata missing");
 if (!html.includes('property="og:image:height" content="1152"')) throw new Error("Social image height metadata missing");
 

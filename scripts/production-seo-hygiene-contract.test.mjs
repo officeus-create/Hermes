@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 
 const root = new URL("../", import.meta.url).pathname;
@@ -7,6 +7,20 @@ const verifierFiles = [
   "scripts/check-production-custom-domain.mjs",
   "scripts/check-production-seo-hygiene.mjs",
 ];
+
+const canonicalSocialImage = new URL("../public/images/hermes-ecosystem-hero.jpg", import.meta.url);
+const retiredSocialImage = new URL("../public/images/hermes-social-share-2026.jpg", import.meta.url);
+const [layout, homepage] = await Promise.all([
+  readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/index.astro", import.meta.url), "utf8"),
+  access(canonicalSocialImage),
+]);
+
+await assert.rejects(access(retiredSocialImage), undefined, "The redundant social-share JPEG must stay removed.");
+assert.ok(layout.includes('image = "/images/hermes-ecosystem-hero.jpg"'), "BaseLayout must use the canonical hero image for social previews.");
+assert.ok(homepage.includes("https://hermeslogisticsus.com/images/hermes-ecosystem-hero.jpg"), "Homepage schema must use the canonical hero image.");
+assert.ok(!layout.includes("hermes-social-share-2026.jpg"), "BaseLayout must not revive the retired social-share duplicate.");
+assert.ok(!homepage.includes("hermes-social-share-2026.jpg"), "Homepage schema must not revive the retired social-share duplicate.");
 
 for (const file of verifierFiles) {
   const check = spawnSync(process.execPath, ["--check", file], {
