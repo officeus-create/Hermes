@@ -16,13 +16,14 @@ Removed duplicate implementation surfaces:
 - `workspace-v2.html`, `workspace-v2.js`, `workspace-v2-injected.css` - superseded visual-review layer.
 - duplicate Brand V1 `index.html`, `app.js`, `styles.css` - superseded by canonical discovery/request-access files.
 - versioned `hermes-connect-web-product-v1` test contract - replaced by the canonical workspace contract.
+- versioned V1/V2 browser test names - replaced by canonical workspace, app-launch, interaction, and onboarding contracts.
 
 Release acceptance:
 
 - full repository build and tests must pass;
 - the same workspace must pass desktop and mobile Playwright projects without horizontal overflow;
 - Connect routing, manifest, service worker, review hub, request access, and bounded tools must resolve from the canonical tree;
-- no active workspace, launcher, PWA, or routing dependency may require `hermes-connect-brand-v1`, `workspace-v2`, or `workspace-launch-v2` files;
+- no active workspace, launcher, PWA, onboarding, or routing dependency may require `hermes-connect-brand-v1`, `workspace-v2`, or `workspace-launch-v2` files;
 - retired public Brand V1 URLs must redirect to the canonical Connect host;
 - after merge, the custom-domain production smoke must pass before the cleanup is considered done.
 
