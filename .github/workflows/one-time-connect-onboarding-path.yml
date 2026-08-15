@@ -1,0 +1,45 @@
+name: One-time Hermes Connect onboarding path update
+
+on:
+  push:
+    branches: [cleanup/connect-canonical-consolidation]
+    paths:
+      - .github/workflows/one-time-connect-onboarding-path.yml
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cleanup/connect-canonical-consolidation
+      - name: Replace retired onboarding workspace path
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('tests/hermes-connect-onboarding.spec.ts')
+          text = path.read_text()
+          old = '/demos/hermes-connect-brand-v1/workspace.html'
+          new = '/demos/hermes-connect/workspace.html'
+          if old not in text:
+              raise SystemExit('expected retired onboarding workspace path not found')
+          path.write_text(text.replace(old, new))
+          PY
+          if grep -R "hermes-connect-brand-v1" tests scripts --exclude-dir=node_modules; then
+            echo "Retired Brand V1 dependency still exists in active tests/scripts" >&2
+            exit 1
+          fi
+          git diff --check
+      - name: Commit onboarding path and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "Hermes Release Bot"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git rm .github/workflows/one-time-connect-onboarding-path.yml
+          git add tests/hermes-connect-onboarding.spec.ts
+          git commit -m "test(connect): point onboarding to canonical workspace"
+          git push origin HEAD:cleanup/connect-canonical-consolidation
