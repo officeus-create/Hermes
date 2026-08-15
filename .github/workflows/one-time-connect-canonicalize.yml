@@ -65,6 +65,10 @@ jobs:
                   updated = updated.replace(old, new)
               updated = updated.replace('public/demos/hermes-connect-brand-v1/', 'public/demos/hermes-connect/')
               if updated != original:
+                  had_newline = updated.endswith('\n')
+                  updated = '\n'.join(line.rstrip() for line in updated.splitlines())
+                  if had_newline:
+                      updated += '\n'
                   path.write_text(updated)
 
           report_lines = [
