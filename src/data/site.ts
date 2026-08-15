@@ -78,7 +78,6 @@ export const site = {
     body: "Choose what you need now: logistics operations, marketing and growth, practical business education, or custom digital systems.",
     primaryCta: { label: "Explore your path", href: "#paths" },
     secondaryCta: { label: "Talk to our team", href: "#contact" },
-    image: "/images/hermes-ecosystem-hero.jpg",
     imageAlt: "Four illuminated architectural portals representing the Hermes business directions",
   },
   paths: [

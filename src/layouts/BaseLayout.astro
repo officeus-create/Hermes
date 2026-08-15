@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import "../styles/shared-resource.css";
+import heroImage from "../assets/hermes-ecosystem-hero.jpg";
 import CarrierContractJourney from "../components/CarrierContractJourney.astro";
 import CarrierContractSafetyEnhancer from "../components/CarrierContractSafetyEnhancer.astro";
 import CarrierQualificationEnhancer from "../components/CarrierQualificationEnhancer.astro";
@@ -32,7 +33,7 @@ interface Props {
 const {
   title,
   description,
-  image = "/images/hermes-ecosystem-hero.jpg",
+  image = heroImage.src,
   schema,
   locale = "en",
   alternates = [],
@@ -112,8 +113,8 @@ const safeSchema = schema
     <meta property="og:image:url" content={socialImage} />
     <meta property="og:image:secure_url" content={socialImage} />
     <meta property="og:image:type" content="image/jpeg" />
-    <meta property="og:image:width" content="2048" />
-    <meta property="og:image:height" content="1152" />
+    <meta property="og:image:width" content="2200" />
+    <meta property="og:image:height" content="1238" />
     <meta property="og:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />

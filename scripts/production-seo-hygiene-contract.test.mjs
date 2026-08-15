@@ -8,7 +8,8 @@ const verifierFiles = [
   "scripts/check-production-seo-hygiene.mjs",
 ];
 
-const canonicalSocialImage = new URL("../public/images/hermes-ecosystem-hero.jpg", import.meta.url);
+const canonicalSocialImage = new URL("../src/assets/hermes-ecosystem-hero.jpg", import.meta.url);
+const retiredPublicHeroImage = new URL("../public/images/hermes-ecosystem-hero.jpg", import.meta.url);
 const retiredSocialImage = new URL("../public/images/hermes-social-share-2026.jpg", import.meta.url);
 const [layout, homepage] = await Promise.all([
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
@@ -17,10 +18,14 @@ const [layout, homepage] = await Promise.all([
 ]);
 
 await assert.rejects(access(retiredSocialImage), undefined, "The redundant social-share JPEG must stay removed.");
-assert.ok(layout.includes('image = "/images/hermes-ecosystem-hero.jpg"'), "BaseLayout must use the canonical hero image for social previews.");
-assert.ok(homepage.includes("https://hermeslogisticsus.com/images/hermes-ecosystem-hero.jpg"), "Homepage schema must use the canonical hero image.");
+await assert.rejects(access(retiredPublicHeroImage), undefined, "The redundant public hero JPEG must stay removed.");
+assert.ok(layout.includes('import heroImage from "../assets/hermes-ecosystem-hero.jpg"'), "BaseLayout must import the canonical hero source.");
+assert.ok(layout.includes("image = heroImage.src"), "BaseLayout must use the canonical Astro asset for social previews.");
+assert.ok(homepage.includes("image: ecosystemHeroUrl"), "Homepage schema must use the canonical Astro asset.");
 assert.ok(!layout.includes("hermes-social-share-2026.jpg"), "BaseLayout must not revive the retired social-share duplicate.");
 assert.ok(!homepage.includes("hermes-social-share-2026.jpg"), "Homepage schema must not revive the retired social-share duplicate.");
+assert.ok(!layout.includes("/images/hermes-ecosystem-hero.jpg"), "BaseLayout must not revive the retired public hero duplicate.");
+assert.ok(!homepage.includes("/images/hermes-ecosystem-hero.jpg"), "Homepage schema must not revive the retired public hero duplicate.");
 
 for (const file of verifierFiles) {
   const check = spawnSync(process.execPath, ["--check", file], {

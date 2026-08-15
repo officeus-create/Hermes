@@ -5,7 +5,7 @@ test("homepage hero uses responsive modern assets without the obsolete JPEG prel
   expect(response?.status()).toBe(200);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    "https://hermeslogisticsus.com/images/hermes-ecosystem-hero.jpg",
+    /https:\/\/hermeslogisticsus\.com\/_astro\/hermes-ecosystem-hero\.[^/]+\.jpg/,
   );
 
   const picture = page.locator(".hero-media picture");
@@ -30,5 +30,5 @@ test("homepage hero uses responsive modern assets without the obsolete JPEG prel
   await expect(image).toHaveAttribute("width", "2200");
   await expect(image).toHaveAttribute("height", "1238");
 
-  await expect(page.locator('link[rel="preload"][href="/images/hermes-ecosystem-hero.jpg"]')).toHaveCount(0);
+  await expect(page.locator('link[rel="preload"][href*="hermes-ecosystem-hero"]')).toHaveCount(0);
 });

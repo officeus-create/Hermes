@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ecosystemHeroImage from "../assets/hermes-ecosystem-hero.jpg";
 import ContactCTA from "../components/ContactCTA.astro";
 import HeroEditorial from "../components/HeroEditorial.astro";
 import HomeLogisticsDiscovery from "../components/HomeLogisticsDiscovery.astro";
@@ -19,6 +20,7 @@ import "../styles/homepage-performance.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
+const ecosystemHeroUrl = new URL(ecosystemHeroImage.src, Astro.site).href;
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -34,7 +36,7 @@ const organizationSchema = {
     contentUrl: "https://hermeslogisticsus.com/favicon.svg",
     caption: "Hermes",
   },
-  image: "https://hermeslogisticsus.com/images/hermes-ecosystem-hero.jpg",
+  image: ecosystemHeroUrl,
   email: "officeus@hermeslogisticsus.com",
   contactPoint: {
     "@type": "ContactPoint",
