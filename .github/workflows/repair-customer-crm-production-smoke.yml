@@ -1,0 +1,29 @@
+name: Repair Shop customer CRM production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/repair-shop/customers.ts
+      - functions/api/repair-shop/cleanup-customer-crm-smoke.ts
+      - src/pages/services/hermes-connect/repair-shops/customers.astro
+      - scripts/repair-customer-crm-production-smoke.sh
+      - .github/workflows/repair-customer-crm-production-smoke.yml
+
+permissions:
+  contents: read
+  checks: read
+
+jobs:
+  smoke:
+    name: Verify production customer CRM aggregation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+      - name: Wait for exact Cloudflare Pages deploy and run CRM smoke
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/repair-customer-crm-production-smoke.sh
