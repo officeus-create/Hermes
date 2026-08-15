@@ -2,6 +2,7 @@ import { jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopAvailabilitySchema } from "../_lib/repair-shop-availability-schema.mjs";
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
+import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-booking-history-schema.mjs";
 
 type Env = { DB?: any };
 type BookingInput = {
@@ -165,33 +166,43 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (overlaps) return jsonResponse(409, { success: false, error: "slot_unavailable" });
 
   await ensureRepairShopBookingsSchema(env.DB);
+  await ensureRepairShopBookingHistorySchema(env.DB);
   const id = `repair-booking-${crypto.randomUUID()}`;
+  const historyId = `repair-booking-history-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
   try {
-    await env.DB
-      .prepare(
-        `INSERT INTO repair_shop_bookings
-          (id,shop_id,owner_specialist_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,client_name,client_email,client_phone,created_at,updated_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-      )
-      .bind(
-        id,
-        shop.id,
-        shop.owner_specialist_id,
-        service.id,
-        service.name,
-        durationMinutes,
-        appointmentDate,
-        startTime,
-        endTime,
-        "confirmed",
-        clientName,
-        clientEmail,
-        clientPhone,
-        now,
-        now,
-      )
-      .run();
+    await env.DB.batch([
+      env.DB
+        .prepare(
+          `INSERT INTO repair_shop_bookings
+            (id,shop_id,owner_specialist_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,client_name,client_email,client_phone,created_at,updated_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        )
+        .bind(
+          id,
+          shop.id,
+          shop.owner_specialist_id,
+          service.id,
+          service.name,
+          durationMinutes,
+          appointmentDate,
+          startTime,
+          endTime,
+          "confirmed",
+          clientName,
+          clientEmail,
+          clientPhone,
+          now,
+          now,
+        ),
+      env.DB
+        .prepare(
+          `INSERT INTO repair_shop_booking_history
+            (id,booking_id,owner_specialist_id,from_status,to_status,changed_at)
+           VALUES (?,?,?,?,?,?)`,
+        )
+        .bind(historyId, id, shop.owner_specialist_id, null, "confirmed", now),
+    ]);
   } catch (error: any) {
     const message = String(error?.message ?? error ?? "");
     if (/unique|constraint/i.test(message)) return jsonResponse(409, { success: false, error: "slot_unavailable" });
