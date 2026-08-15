@@ -761,7 +761,7 @@ entries — append only.
 ## 2026-08-15 — Codex — Android release truth boundary and stale artifact retirement
 
 - Branch: `fix/android-release-boundary`.
-- PR: pending publication.
+- PR: #550.
 - What was done: audited the public beta APK, confirmed it bundled the pre-consolidation 2026-08-14 web runtime with 25 retired Brand V1/V2/mobile paths, and confirmed its APK v2 certificate was `Android Debug` rather than a controlled release certificate.
 - Files changed: removed `public/downloads/hermes-connect-beta.apk`; updated the access page, Issues #510/#511 coordination documents, project/current-state guidance and error register; added static and browser release-boundary regression tests.
 - Behavior delivered: Web/PWA remains the supported path, the public page no longer links or describes the retired binary as a secure signed release, the old binary URL temporarily redirects to the truthful status page, and future Android distribution is blocked until canonical-build, release-key, checksum and clean-device gates pass.
