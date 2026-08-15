@@ -32,7 +32,13 @@ jobs:
           OWNER_ID="$(jq -r '.specialist.id' "${RUNNER_TEMP}/register.json")"
           echo "OWNER_ID=$OWNER_ID"
 
-          GC="$(curl -sS -o "${RUNNER_TEMP}/get0.json" -w '%{http_code}' -b "$COOKIE" https://hermeslogisticsus.com/api/repair-shop/profile)"
+          GC="000"
+          for attempt in $(seq 1 36); do
+            GC="$(curl -sS -o "${RUNNER_TEMP}/get0.json" -w '%{http_code}' -b "$COOKIE" https://hermeslogisticsus.com/api/repair-shop/profile || true)"
+            echo "INITIAL_PROFILE_ATTEMPT_${attempt}_HTTP=$GC"
+            if [ "$GC" = 200 ]; then break; fi
+            sleep 10
+          done
           echo "INITIAL_PROFILE_HTTP=$GC"; cat "${RUNNER_TEMP}/get0.json"; echo
           test "$GC" = 200
           test "$(jq -r '.shop == null' "${RUNNER_TEMP}/get0.json")" = true
