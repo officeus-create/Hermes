@@ -1,0 +1,49 @@
+---
+const repairShopPath = "/services/hermes-connect/repair-shops";
+const isRepairShopPage = Astro.url.pathname.replace(/\/+$/, "") === repairShopPath;
+---
+
+{isRepairShopPage && (
+  <>
+    <template id="repair-partner-contact-template">
+      <div class="repair-partner-contact-fields" data-repair-partner-contact-fields>
+        <div class="repair-partner-contact-grid">
+          <label class="repair-partner-contact-field">
+            Contact Name
+            <input type="text" id="partner-contact-name" autocomplete="name" maxlength="100" placeholder="Your name" required />
+          </label>
+          <label class="repair-partner-contact-field">
+            Business Email
+            <input type="email" id="partner-contact-email" autocomplete="email" maxlength="160" placeholder="you@shop.com" required />
+          </label>
+        </div>
+        <label class="repair-partner-contact-field">
+          Phone <span>optional</span>
+          <input type="tel" id="partner-contact-phone" autocomplete="tel" maxlength="80" placeholder="+1 414 555 0100" />
+        </label>
+        <label class="repair-partner-consent">
+          <input type="checkbox" id="partner-contact-consent" required />
+          <span>I agree that Hermes may use this information to contact me about this Repair Shop Partner offer and pilot onboarding.</span>
+        </label>
+        <p class="repair-partner-privacy">Your offer is sent privately to Hermes Logistics for human review. Contact details, offer terms, and private salesperson attribution are not sent to public analytics.</p>
+        <p class="repair-partner-delivery-status" data-repair-partner-delivery-status role="status" aria-live="polite" hidden></p>
+      </div>
+    </template>
+    <script is:inline src="/repair-partner-offer.js"></script>
+  </>
+)}
+
+<style>
+  .repair-partner-contact-fields{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}
+  .repair-partner-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .repair-partner-contact-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;color:#dfe2ea;font-size:13px;font-weight:750}
+  .repair-partner-contact-field span{color:#858b9a;font-size:11px;font-weight:600}
+  .repair-partner-contact-field input{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.11);border-radius:12px;padding:12px 13px;background:#10121a;color:#fff;font:inherit;outline:none}
+  .repair-partner-contact-field input:focus{border-color:#8f78ff;box-shadow:0 0 0 3px rgba(143,120,255,.12)}
+  .repair-partner-consent{display:flex;align-items:flex-start;gap:10px;color:#d3d7e1;font-size:13px;line-height:1.5}
+  .repair-partner-consent input{margin-top:3px}
+  .repair-partner-privacy{margin:10px 0 0;color:#8f95a5;font-size:12px;line-height:1.5}
+  .repair-partner-delivery-status{margin:12px 0 0;padding:11px 12px;border-radius:10px;background:rgba(180,42,42,.14);color:#ffc4c4;font-size:13px;line-height:1.45}
+  .repair-partner-delivery-status[data-state="success"]{background:rgba(34,151,104,.14);color:#a8f1cf}
+  @media(max-width:720px){.repair-partner-contact-grid{grid-template-columns:1fr}}
+</style>
