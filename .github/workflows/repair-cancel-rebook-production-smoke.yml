@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - functions/api/_lib/repair-shop-bookings-schema.mjs
+      - functions/api/repair-shop/cleanup-cancel-rebook-smoke.ts
       - .github/workflows/repair-cancel-rebook-production-smoke.yml
 
 permissions:
@@ -24,7 +25,7 @@ jobs:
         run: |
           set -euo pipefail
           BASE="https://hermeslogisticsus.com"
-          EMAIL="repair-booking-production-smoke@hermesconnect.app"
+          EMAIL="repair-cancel-rebook-production-smoke@hermesconnect.app"
           CLIENT_EMAIL="repair-rebook-customer-smoke@hermesconnect.app"
           TEST_ID="${GITHUB_RUN_ID}-$(date +%s)"
           PASSWORD="HermesRebook-${TEST_ID}-A9!"
@@ -52,7 +53,7 @@ jobs:
           done
           test "$PAGES_READY" = true
 
-          CLEAN="$(curl -sS -o "${RUNNER_TEMP}/pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
+          CLEAN="$(curl -sS -o "${RUNNER_TEMP}/pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-cancel-rebook-smoke")"
           echo "PRE_CLEAN_HTTP=$CLEAN"; cat "${RUNNER_TEMP}/pre-clean.json"; echo
           test "$CLEAN" = 200
           test "$(jq -r '.success // false' "${RUNNER_TEMP}/pre-clean.json")" = true
@@ -124,7 +125,7 @@ jobs:
           test "$B3" = 409
           test "$(jq -r '.error' "${RUNNER_TEMP}/booking3.json")" = slot_unavailable
 
-          CLEAN2="$(curl -sS -o "${RUNNER_TEMP}/cleanup.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
+          CLEAN2="$(curl -sS -o "${RUNNER_TEMP}/cleanup.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-cancel-rebook-smoke")"
           echo "CLEANUP_HTTP=$CLEAN2"; cat "${RUNNER_TEMP}/cleanup.json"; echo
           test "$CLEAN2" = 200
           test "$(jq -r '.remaining' "${RUNNER_TEMP}/cleanup.json")" = 0
