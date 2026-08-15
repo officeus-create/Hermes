@@ -25,7 +25,7 @@ const isRepairShopPage = Astro.url.pathname.replace(/\/+$/, "") === repairShopPa
           <input type="checkbox" id="partner-contact-consent" required />
           <span>I agree that Hermes may use this information to contact me about this Repair Shop Partner offer and pilot onboarding.</span>
         </label>
-        <p class="repair-partner-privacy">Your offer is sent privately to Hermes Logistics for human review. Contact details, offer terms, and private salesperson attribution are not sent to public analytics.</p>
+        <p class="repair-partner-privacy">Your offer is sent privately to Hermes Logistics for human review. Contact details and offer terms are not sent to public analytics. Sales attribution is handled separately in the protected server-side pilot layer.</p>
         <p class="repair-partner-delivery-status" data-repair-partner-delivery-status role="status" aria-live="polite" hidden></p>
       </div>
     </template>
