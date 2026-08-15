@@ -80,6 +80,7 @@ For SEO/revenue execution, start with Issue #346. Detailed production measuremen
 | ERR-SUP-010 | SUPERSEDED | PR #330 AEO/GEO score-raising package | Large stale/conflicted homepage/FAQ/schema package lacked production evidence that the bundled changes were the highest-return work. | Use as an idea library only; selectively reimplement pieces supported by #206 query/page evidence. |
 | ERR-SUP-011 | SUPERSEDED | PR #340 Marketing Brief screenshot evidence | Evidence-only branch became stale after CI cleanup and main changes. | Reproduce only the small evidence delta on fresh `main` if a future audit explicitly requires it. |
 | ERR-SUP-012 | HISTORICAL | `fix/seo-meta-csp` branch | On 2026-08-11 it was 0 commits ahead and hundreds behind current `main`; the intended GA CSP/LCP/canonical themes are already represented in later current code. | Do not revive the branch. Verify current code/CI instead of reconstructing old local state. |
+| ERR-SUP-013 | SUPERSEDED | PR #509 Brand Funnel Unification | The open branch was 87 commits behind current `main` and would restore the retired Brand V1/mobile/V2 trees while removing later Repair Shop, carrier-contract, Android, canonical Connect and production-smoke work. | PR closed on 2026-08-15. Use merged PRs #529, #532-#548 and the canonical `public/demos/hermes-connect/` runtime; never merge or revive #509 wholesale. |
 
 ## Email audit policy
 

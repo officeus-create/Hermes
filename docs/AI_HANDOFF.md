@@ -744,3 +744,16 @@ entries — append only.
 - Data/privacy: removed debug logs that exposed aggregate in-browser booking structures to the console; no storage or analytics contract changed.
 - Verification: `node --check`, `git diff --check`, and retired-label search passed locally; full build/static/E2E must run in PR CI.
 - Deferred: none for this bounded naming cleanup.
+## 2026-08-15 — Codex — Connect source-of-truth reconciliation after consolidation
+
+- Agent/task owner: Codex; remove stale Connect execution blockers and branch guidance.
+- Branch: `docs/connect-current-state-2026-08-15`.
+- External triage: PR #509 was verified as 87 commits behind current main, with a diff that would restore retired Brand V1/V2/mobile surfaces and remove later Repair Shop, contract, Android and production verification work; it was closed and labelled superseded.
+- Files changed: machine-readable project state, global collaboration current state, Hermes Connect design current state, error register and this handoff.
+- Behavior delivered: current agents now see one canonical runtime, the real merged Repair Shop capabilities, the correct mobile artifact/PWA evidence boundary and the real next milestone of 5-10 permissioned users instead of waiting for obsolete PR #509.
+- Primary outcome: current source-of-truth documents match merged main at `0527355eb71df52249fcee4e7c6adb7e373f9c58`.
+- SEO/conversion/internal linking: no public route, sitemap, canonical, CTA or content changed.
+- Knowledge/AI/product/architecture: stale branch and V2 revival paths are explicitly blocked; canonical ownership and next product milestone are recorded.
+- Data/privacy: no private records, credentials, analytics identifiers or production data changed.
+- Verification: JSON parse, `git diff --check`, current-main/branch ancestry checks, PR metadata and merged PR history.
+- Deferred: verify APK source/signature/version/clean-device installation before making a renewed Android release claim; onboard real Repair Shop users before selecting another product slice.

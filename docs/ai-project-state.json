@@ -1,9 +1,9 @@
 {
   "schema_version": 3,
-  "reviewed_at": "2026-08-14",
+  "reviewed_at": "2026-08-15",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "e20ccb45b2139d5050161ae3832bf07fc94002df",
+  "main_commit_at_review": "0527355eb71df52249fcee4e7c6adb7e373f9c58",
   "freshness": {
     "state_class": "current_main_snapshot_plus_labelled_owner_platform_handoff",
     "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, AI execution ownership, or authenticated measurement evidence; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
@@ -69,7 +69,16 @@
     }
   ],
   "current_execution_state": {
-    "open_pull_requests_at_review": 1,
+    "open_pull_requests_at_review": 2,
+    "hermes_connect_canonical_runtime": {
+      "status": "single_canonical_runtime_production_verified",
+      "generic_preview_root": "public/demos/hermes-connect/",
+      "responsive_workspace": "public/demos/hermes-connect/workspace.html",
+      "repair_shop_runtime": "src/pages/services/hermes-connect/repair-shops* plus functions/api/repair-shop and functions/api/public repair endpoints",
+      "consolidation_prs": [546, 547, 548],
+      "superseded_pr": 509,
+      "rule": "Do not create another versioned Brand V1/V2/V3 tree or separate mobile workspace. Extend the canonical responsive runtime with bounded tests; keep retired URLs only as compatibility redirects and historical release evidence."
+    },
     "seo14_orchestration": {
       "status": "implementation_pr_open_ci_running",
       "pull_request": 512,
@@ -178,28 +187,27 @@
     },
     "repair_shop_pilot_beta": {
       "issue": 510,
-      "branch": "feature/hermes-connect-repair-shop-partner-beta",
-      "pr": null,
-      "status": "active_feature_branch_execution",
-      "latest_feature_sha": "c168063ae2c9ce2da5de5fb106f8996d6e9ea0c7",
+      "canonical_branch": "main",
+      "status": "production_mvp_runtime_verified_distribution_pending",
       "proposal_date": "2026-08-14",
       "implementation_owner": "Hermes Connect - Автономная Разработка",
       "reviewer": "Синхронизация Базы Знаний Агентов",
+      "merged_prs": [529, 532, 533, 534, 535, 536, 537, 538, 541, 542, 543, 544, 545],
       "facts": [
         "A new CEO-approved truck and equipment repair shop outbound pilot has been established.",
         "A detailed, natural-flow sales playbook has been created and corrected in docs/ISSUE_HC_REPAIR_BETA_TRUCK_REPAIR_PARTNER.md.",
-        "Durable, structured JSON schemas for partner profiles, US territory ownership maps, and privacy-safe attribution have been specified.",
-        "The real GitHub coordination Issue #510 has been created and documented under docs/ISSUE_510_REPAIR_SHOP_PILOT.md.",
-        "A read-only, daily 24-hour Sales Bridge V1 integration with the Codex CRM prospecting workbook has been specified."
+        "Production auth uses the D1-backed runtime and fails closed with a structured 503 when the DB binding is unavailable.",
+        "Owner-scoped services, shop profile/public link, weekly availability, real customer-to-owner booking, persisted status history, cancelled-slot rebooking, vehicle data and booking-derived customer CRM are merged on main.",
+        "The completed-visit next-appointment defect is fixed: only confirmed and in-progress bookings are eligible.",
+        "Repair Shop production smokes and the post-consolidation Connect route/PWA/custom-domain checks passed on the merged implementation.",
+        "PR #509 is closed as superseded because its old Brand V1 tree would remove or overwrite later production Repair Shop, carrier-contract, Android and canonical Connect work."
       ],
-      "remaining_gate": "Wait for previous Brand Funnel PR #509 to be merged and closed. Active product implementation for the Repair Beta will then begin under its own separate PR, where the implementation owner will align the workspace and verify with E2E automation."
+      "remaining_gate": "Move from repository completion to the first 5-10 permissioned real repair-shop users, capture privacy-safe feedback and measured booking outcomes, then select the smallest retention/reminder or fleet workflow supported by that evidence. Do not fork another app runtime."
     },
     "mobile_cross_platform_release": {
       "issue": 511,
-      "branch": "release/hermes-connect-mobile-public-beta-v1",
-      "pr": null,
-      "status": "active_feature_branch_execution",
-      "latest_feature_sha": null,
+      "canonical_branch": "main",
+      "status": "web_pwa_live_android_artifact_present_release_provenance_pending",
       "proposal_date": "2026-08-14",
       "implementation_owner": "Hermes Connect - Автономная Разработка",
       "reviewer": "Синхронизация Базы Знаний Агентов",
@@ -209,14 +217,14 @@
         "monetization": "DEFERRED"
       },
       "distribution_strategy": {
-        "phase_1_current": "Web App (LIVE), iPhone installable PWA (IN_PROGRESS), Android direct signed APK (NOT_STARTED)",
+        "phase_1_current": "Web App and installable browser PWA use the canonical responsive runtime; an Android APK artifact is present but its current signature/version/install provenance must be verified before a renewed release claim.",
         "phase_2_deferred_funding": "Apple App Store & Google Play native store submissions",
         "phase_3_trigger": "Desktop macOS & Windows apps packaging (triggered at approximately 10 real active beta users)"
       },
       "platform_matrix": {
         "web": "LIVE",
-        "iphone_pwa": "IN_PROGRESS",
-        "android_apk": "NOT_STARTED",
+        "iphone_pwa": "LIVE_WEB_INSTALL_PATH",
+        "android_apk": "ARTIFACT_PRESENT_VERIFICATION_REQUIRED",
         "android_aab": "NOT_STARTED",
         "app_store": "DEFERRED",
         "google_play": "DEFERRED",
@@ -231,7 +239,7 @@
         "iOS .ipa must NOT be distributed directly from the website (iPhone uses Web/PWA installation in Phase 1).",
         "Android .apk is authorized for direct, signed download from the website in Phase 1."
       ],
-      "remaining_gate": "Wait for previous Brand Funnel PR #509 to be merged and closed. Active Capacitor initialization, native builds, and monetization suppression will then begin on the mobile release branch."
+      "remaining_gate": "Verify the existing APK's source commit, package/version, signature and clean-device installation before promoting it. Keep iPhone on the canonical PWA path and App Store/Google Play submissions deferred until their account, testing and compliance gates are intentionally funded."
     }
   },
   "search_platform_state": {
