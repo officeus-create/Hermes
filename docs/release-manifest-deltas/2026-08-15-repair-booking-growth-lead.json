@@ -1,0 +1,17 @@
+{
+  "date": "2026-08-15",
+  "status": "RELEASE_CANDIDATE",
+  "scope": "repair-booking-growth-lead",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "routes": [
+    "/services/hermes-connect/repair-shops/booking/"
+  ],
+  "changes": [
+    "Adds an explicit opt-in Grow My Business / Talk to Hermes card after a successful Repair Shop booking.",
+    "Routes consented business-growth requests through the existing private /api/logistics-lead sales delivery path.",
+    "Keeps booking PII and free-text growth notes out of public analytics; telemetry records only the privacy-safe conversion event.",
+    "Does not add payment, pricing, forced advertising, or modify the underlying repair appointment after confirmation."
+  ],
+  "rollback": "Remove RepairBookingGrowthEnhancer from BaseLayout and delete the enhancer component; the existing Repair Shop booking flow remains unchanged."
+}
