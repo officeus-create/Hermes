@@ -49,6 +49,7 @@ async function routeWorkspaceBasics(page: any) {
   await page.route("**/api/auth/me", (route: any) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(owner) }));
   await page.route("**/api/repair-shop/profile", (route: any) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(profile) }));
   await page.route("**/api/services", (route: any) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, services: [] }) }));
+  await page.route("**/api/repair-shop/feedback", (route: any) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, feedback: [] }) }));
 }
 
 test.describe("Hermes Connect Repair Shop booking status browser contract", () => {
