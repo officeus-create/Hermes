@@ -4,8 +4,7 @@
   "release_delta": "2026-08-15-hermes-connect-repair-booking",
   "generated_at": "2026-08-15T06:30:00Z",
   "status": "PENDING_PRODUCTION_DEPLOYMENT",
-  "additions": [],
-  "changes": [
+  "additions": [
     {
       "route": "/services/hermes-connect/repair-shops/booking/",
       "source_state": "current_main",
@@ -19,7 +18,7 @@
       "response_status": 200,
       "comparison": {
         "production": "pending_deployment",
-        "immutable_release": "existing_route_replaced_with_real_booking_runtime"
+        "immutable_release": "missing"
       }
     },
     {
@@ -35,13 +34,12 @@
       "response_status": 200,
       "comparison": {
         "production": "pending_deployment",
-        "immutable_release": "existing_owner_workspace_extended_with_booking_inbox"
+        "immutable_release": "missing"
       }
     }
   ],
   "acceptance": {
-    "route_count_added": 0,
-    "route_count_changed": 2,
+    "route_count_added": 2,
     "indexable_route_count_added": 0,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
