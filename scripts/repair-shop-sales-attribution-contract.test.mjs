@@ -4,10 +4,11 @@ import { onRequestGet as captureReferral } from "../functions/api/repair-shop/re
 import { onRequestPost as register } from "../functions/api/auth/register.ts";
 
 class AttributionMockDb {
-  constructor() {
+  constructor({ failAttribution = false } = {}) {
     this.specialists = [];
     this.sessions = [];
     this.attribution = [];
+    this.failAttribution = failAttribution;
   }
 
   prepare(sql) {
@@ -31,6 +32,7 @@ class AttributionMockDb {
               const [id, email, password_hash, password_salt, name, role, location, bio, created_at] = args;
               db.specialists.push({ id, email, password_hash, password_salt, name, role, location, bio, created_at });
             } else if (cleanSql.includes("INSERT OR IGNORE INTO repair_shop_sales_attribution")) {
+              if (db.failAttribution) throw new Error("simulated_attribution_write_failure");
               const [owner_specialist_id, salesperson_code, referral_token_hash, source, captured_at, registered_at] = args;
               if (!db.attribution.some((item) => item.owner_specialist_id === owner_specialist_id)) {
                 db.attribution.push({ owner_specialist_id, salesperson_code, referral_token_hash, source, captured_at, registered_at });
@@ -70,13 +72,14 @@ assert.match(referralCookie, /HttpOnly/);
 assert.match(referralCookie, /Secure/);
 assert.match(referralCookie, /SameSite=Lax/);
 assert.doesNotMatch(referralCookie, new RegExp(privateSalespersonCode));
+const browserCookie = referralCookie.split(";")[0];
 
 const db = new AttributionMockDb();
 const registrationRequest = new Request("https://hermeslogisticsus.com/api/auth/register", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    Cookie: referralCookie.split(";")[0],
+    Cookie: browserCookie,
   },
   body: JSON.stringify({
     email: "pilot.shop@example.com",
@@ -113,6 +116,41 @@ assert.match(registrationCookies, /hermes_session=/);
 assert.match(registrationCookies, /hermes_repair_ref=;/);
 assert.match(registrationCookies, /Max-Age=0/);
 
+const failingDb = new AttributionMockDb({ failAttribution: true });
+const originalConsoleError = console.error;
+const loggedErrors = [];
+console.error = (...args) => loggedErrors.push(args);
+try {
+  const failOpenResponse = await register({
+    request: new Request("https://hermeslogisticsus.com/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Cookie: browserCookie },
+      body: JSON.stringify({
+        email: "pilot.failopen@example.com",
+        password: "StrongPilotPassword456!",
+        name: "Fail Open Shop Owner",
+        role: "Shop Owner",
+        location: "Madison, WI",
+        bio: "Repair shop signup must survive a temporary private attribution storage failure.",
+      }),
+    }),
+    env: { DB: failingDb, REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
+  });
+  assert.equal(failOpenResponse.status, 201);
+  const failOpenData = await failOpenResponse.json();
+  assert.equal(failOpenData.success, true);
+  assert.equal(failOpenData.attribution_captured, false);
+  assert.equal(failingDb.specialists.length, 1);
+  assert.equal(failingDb.sessions.length, 1);
+  assert.equal(failingDb.attribution.length, 0);
+  assert.match(failOpenResponse.headers.get("Set-Cookie") || "", /hermes_session=/);
+  assert.match(failOpenResponse.headers.get("Set-Cookie") || "", /hermes_repair_ref=;/);
+  assert.equal(loggedErrors.length, 1);
+  assert.equal(loggedErrors[0][0], "repair_shop_sales_attribution_failed");
+} finally {
+  console.error = originalConsoleError;
+}
+
 const invalidCapture = await captureReferral({
   request: new Request("https://hermeslogisticsus.com/api/repair-shop/referral?ref=UnknownOpaqueToken_0000"),
   env: { REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
@@ -121,4 +159,4 @@ assert.equal(invalidCapture.status, 302);
 assert.match(invalidCapture.headers.get("Location") || "", /referral=invalid/);
 assert.equal(invalidCapture.headers.get("Set-Cookie"), null);
 
-console.log("Repair Shop private referral capture and owner attribution contract passed.");
+console.log("Repair Shop private referral capture, resilient owner signup, and private attribution contract passed.");
