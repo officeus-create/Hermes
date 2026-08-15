@@ -1,6 +1,6 @@
 # Hermes Error Register
 
-Reviewed: 2026-08-11
+Reviewed: 2026-08-15
 
 Purpose: give every human or AI agent one place to distinguish active blockers, owner/account actions, resolved defects, superseded branches, historical conditions, and items that require monitoring. This file must not contain passwords, one-time codes, private customer data, raw security-alert details, or unverified legal/profile facts.
 
@@ -37,6 +37,7 @@ For SEO/revenue execution, start with Issue #346. Detailed production measuremen
 | ERR-GATE-003 | WATCH | International/state compliance | New market/state/data-flow requirement or production legal verification | #321. |
 | ERR-GATE-004 | WATCH | Advertising/vendor technology | Meta Pixel, Ads remarketing, new analytics vendor, international processor or similar activation | #324. |
 | ERR-GATE-005 | WATCH | Media/asset provenance | New or existing photo/video/icon/downloadable/client media whose publication rights are not documented | #320. Font binary provenance is already completed via PR #333. |
+| ERR-GATE-006 | ACTIVE | Android APK distribution | Any direct APK binary or download claim | #511 — the stale debug-signed binary was retired. Rebuild from the canonical runtime, use a controlled release key, record artifact/certificate checksums, and pass clean-device install/launch/core-flow smoke before restoring distribution. |
 
 ## Resolved repository and site errors
 

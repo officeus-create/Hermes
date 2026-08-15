@@ -9,10 +9,10 @@
 ## 1. Goal & Three-Phase Release Strategy
 To bypass store funding constraints and immediately start collecting real user feedback without sacrificing the modular architecture, Hermes Connect is delivered following a three-phase distribution policy:
 
-* **Phase 1: Direct Web & Standalone Package Release (CURRENT)**
+* **Phase 1: Web & PWA Release (CURRENT)**
   * **Web App:** Production website deployment at `hermeslogisticsus.com`.
   * **iPhone (iOS):** Standard Web App / PWA (Progressive Web App) home screen installation using the high-fidelity Safari Guided Installation simulator.
-  * **Android:** Standalone signed Android APK file downloadable directly from the website.
+  * **Android:** The Web App/PWA path remains available. Direct APK distribution is paused until a fresh canonical build passes release-signing, checksum, and clean-device gates.
 * **Phase 2: App Store & Google Play Releases (DEFERRED FOR FUNDING)**
   * Uploading and publishing native Capacitor builds (`.ipa` / App Store, `.aab` / Google Play) as soon as developer account fees are funded.
 * **Phase 3: Desktop Expansion (TRIGGERED AT ~10 REAL BETA USERS)**
@@ -25,9 +25,9 @@ To bypass store funding constraints and immediately start collecting real user f
 | Platform | Distribution Channel | Current Status | Notes / Truth Boundaries |
 | :--- | :--- | :---: | :--- |
 | **Web** | Production Web App | `LIVE` | Operating at `hermeslogisticsus.com` |
-| **iPhone PWA** | Web-based Home Screen Install | `IN_PROGRESS` | Uses high-fidelity Safari Guided Install simulator. |
-| **Android APK** | Direct Web Download (.apk) | `NOT_STARTED` | **TRUE BOUNDARY:** Allowed to be directly downloadable from our website. |
-| **Android AAB** | Google Play Store Build (.aab) | `NOT_STARTED` | Built and verified locally, but actual store submission is deferred. |
+| **iPhone PWA** | Web-based Home Screen Install | `LIVE` | Uses the canonical responsive runtime and Safari Add to Home Screen path. |
+| **Android APK** | Direct Web Download (.apk) | `BLOCKED` | The stale debug-signed artifact was retired on 2026-08-15. Restore a direct link only after all release gates pass. |
+| **Android AAB** | Google Play Store Build (.aab) | `NOT_STARTED` | Build and verification have not been completed; store submission remains deferred. |
 | **App Store** | Official Apple App Store | `DEFERRED` | Postponed until official Apple Developer account is funded. |
 | **Google Play** | Official Google Play Store | `DEFERRED` | Postponed until official Google Developer account is funded. |
 | **macOS** | Desktop Standalone App | `NOT_STARTED` | Phase 3 Expansion (Trigger: ~10 real active beta users). |
@@ -42,7 +42,7 @@ To bypass store funding constraints and immediately start collecting real user f
 > The app is positioned and structured as **Free Public Beta** / **Free early access**. No user payment credentials or card details shall be requested during onboarding or workspace interactions.
 > 
 > **CRITICAL TRUTH BOUNDARY:**
-> * Direct download of Android `.apk` files directly from our web pages is fully supported.
+> * Direct Android `.apk` distribution is permitted only for a current canonical build that is release-signed, checksum-recorded, and clean-device verified. No APK is currently offered.
 > * iOS `.ipa` files **must NOT** be advertised as general web downloads, as standard public iOS Safari users cannot install native iOS packages directly from web links. iPhone users will be routed exclusively to Web/PWA installation.
 
 * **Onboarding Path:** Register ➔ Choose Business Type ➔ Direct entry into Workspace.
@@ -54,7 +54,7 @@ To bypass store funding constraints and immediately start collecting real user f
 ---
 
 ## 4. Native App Utility (Deferred for Phase 2 Store Release)
-To eventually comply with Apple App Store Guideline 4.2 (Minimum Functionality) in Phase 2, the future native wrapping must support rich user utility beyond a simple website wrapper. (This is NOT a blocker for Phase 1 PWA / Android APK):
+To eventually comply with Apple App Store Guideline 4.2 (Minimum Functionality) in Phase 2, the future native wrapping must support rich user utility beyond a simple website wrapper. These items do not block the current Web/PWA path; Android direct distribution has the separate release gates below:
 
 * **Offline Shell & State:** Graceful transition to offline mode when network connection is lost. Persistent UI states so the app stays functional.
 * **Local Persistence:** Local workspace state cached securely across reboots using persistent client-side storage.
@@ -73,12 +73,25 @@ To eventually comply with Apple App Store Guideline 4.2 (Minimum Functionality) 
 * **Identifier (Bundle ID):** `com.hermeslogistics.connect` (**PROVISIONAL** - must be audited and verified against the official Apple Developer account first in Phase 2).
 * **Aesthetics:** High-priority eager LCP image preloads, native status bar color synchronization (Pearl Light / Obsidian Dark), viewport-safe layout boundaries, and proper keyboard-avoidance behavior.
 
-### B. Android Google Play Build (APK Active for Phase 1 / AAB Deferred)
-* **Status:** `ACTIVE` for direct `.apk` distribution; `DEFERRED` for Play Store `.aab` publication.
+### B. Android Google Play Build (APK Blocked / AAB Deferred)
+* **Status:** `BLOCKED` for direct `.apk` distribution; `DEFERRED` for Play Store `.aab` publication.
 * **Target SDK:** Android 16 / API Level 36.
 * **Identifier (Package ID):** `com.hermeslogistics.connect` (**PROVISIONAL** - must be audited and verified against the Google Play Console in Phase 2).
-* **Artifact:** Standalone signed Android `.apk` file for direct, secure download from the website.
+* **Artifact:** No public APK. The prior beta binary was removed because it bundled retired runtimes and used the Android Debug certificate.
 * **Aesthetics:** Custom Adaptive Icon with background/foreground layers, standard splash screen API, and hardware Back Button interception/navigation handling.
+
+### C. 2026-08-15 APK Audit Evidence
+
+The retired `public/downloads/hermes-connect-beta.apk` was inspected before removal:
+
+* **SHA-256:** `32e1c3cf35e77ac789cb8459dfddcfed6088e04e6aa4f113b34a95e8daf26b99`
+* **Package configuration:** `com.hermeslogistics.connect`, source version code `1`, version name `1.0`, target SDK 36.
+* **Provenance:** bundled web files matched source commit `bb27c196ff11fabcb5c14c9d356633c6b9dd58fe` from 2026-08-14.
+* **Staleness:** the package contained 25 retired Brand V1/V2/mobile paths removed by the canonical consolidation.
+* **Signing:** APK Signature Scheme v2 was present, but the certificate subject and issuer were `C=US,O=Android,CN=Android Debug`; certificate SHA-256 was `5b116b7f6393b7f1f0b87a5ab2d5045d73f3726ba4824687cf82cd62582eab72`.
+* **Install evidence:** no clean-device installation evidence exists for that artifact.
+
+A replacement may be published only when it bundles the current canonical runtime, uses a controlled release key, records the APK checksum and certificate fingerprint, and passes install/launch/core-flow smoke on a clean supported Android device. Until then, the retired binary URL returns a temporary redirect to the truthful `/download/` release-status page.
 
 ---
 
@@ -86,13 +99,13 @@ To eventually comply with Apple App Store Guideline 4.2 (Minimum Functionality) 
 
 ```mermaid
 graph TD
-  509["PR #509 (Brand Funnel)"] -.->|Independent Conflict Resolution| Main["main (Fresh Sync)"]
+  509["PR #509 (superseded)"] -.->|Do not merge| Main["main (canonical)"]
   Main -->|Create Release Branch| 511["Issue #511 (Mobile Release)"]
   510["Issue #510 (Repair Beta)"] -->|Independent Design & Prep| 511
 ```
 
-* **PR #509 (Brand Funnel):** Currently conflict-blocked. The implementation owner must resolve conflicts in an isolated, clean branch before merging.
-* **Issue #510 (Repair Shop Pilot) & #511 (Mobile Release) Autonomy:** Active development of the Repair booking system, direct APK building, and PWA simulation **must NOT be held up** by PR #509. Design, component styling, and local testing can proceed safely in parallel, isolated checkouts.
+* **PR #509 (Brand Funnel):** Closed as superseded. It predates the canonical runtime and must not be merged wholesale.
+* **Issue #510 (Repair Shop Pilot) & #511 (Mobile Release) Autonomy:** Repair Shop distribution and a fresh Android release build continue from `main`; neither should create another versioned application tree.
 
 ---
 
@@ -113,13 +126,13 @@ graph TD
 
 | Priority | Classification | Description / Criteria |
 | :---: | :--- | :--- |
-| **P0** | **Release Blocker** | App crashes on launch, broken core guest booking, paywalls or upgrade prompts visible (must be FREE), missing Privacy Policy, broken Support URL. |
-| **P1** | **Beta Fix (Post-Release)** | Minor visual layout shifts, cosmetic alignment on specific mobile viewports, offline cache optimization. *Do not block initial web/APK/PWA direct release.* |
+| **P0** | **Release Blocker** | App crashes on launch, stale/duplicate bundled runtime, debug or unverified signing certificate, missing checksum/install evidence, broken core guest booking, paywalls or upgrade prompts visible (must be FREE), missing Privacy Policy, broken Support URL. |
+| **P1** | **Beta Fix (Post-Release)** | Minor visual layout shifts, cosmetic alignment on specific mobile viewports, offline cache optimization. These do not block the current Web/PWA path and may be addressed after a verified Android beta release. |
 | **P2** | **Improvement** | Non-critical feature enhancements, advanced telemetry reports, expanded transition animations. |
 
 ---
 
-## 8. Feedback Loop & Analytics Compliance
+## 9. Feedback Loop & Analytics Compliance
 * **Controlled Non-PII Telemetry:** GA4 analytics tracking must utilize distribution sources: `web`, `ios_app`, or `android_app`.
 * **Zero PII Exposure:** Personal user details (name, email, exact location, phone number) or raw sales rep codes must **never** be transmitted to GA4.
 * **Private Feedback Loop:** User feedback text (free-text entries regarding usability or missing features) must go to a secure, private receiver/storage path, completely bypassed from public analytics streams.

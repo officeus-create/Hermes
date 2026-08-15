@@ -64,6 +64,12 @@ A transparent background-activity feed is allowed where useful.
 
 A fast adaptive setup is an approved product direction. Hermes should configure modules, navigation, AI capabilities, KPIs and workflows based on the user's business rather than showing every feature to every user.
 
+## Runtime and distribution boundary
+
+- Extend the one canonical responsive workspace under `public/demos/hermes-connect/`; do not recreate Brand V1/V2/V3 or a separate mobile page.
+- Web and installable PWA are the current supported distribution paths.
+- Any future Android package must be rebuilt from the current canonical runtime, signed with a controlled release key, checksum-recorded, and verified on a clean supported device before a direct download is restored.
+
 ## Industry art direction
 
 Controlled mood families may adapt storytelling to different business categories while preserving one Hermes brand:

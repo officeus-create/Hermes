@@ -113,12 +113,12 @@ Getting the first 5 to 10 real repair shops utilizing the profile and shareable 
 ### B. Distribution Clarification (Phase 1)
 * **Web:** Production site at `hermeslogisticsus.com`.
 * **iPhone PWA:** Safari Guided PWA installation (Simulated device mockup). Native Xcode `ios/` folder is NOT a Phase 1 requirement.
-* **Android APK:** Direct, signed `.apk` bundle download on the website via Capacitor wrapper.
+* **Android:** Web/PWA access remains supported. Direct `.apk` distribution is blocked until a fresh canonical Capacitor build is release-signed, checksum-recorded, and verified on a clean device.
 * *Note:* App Store and Google Play submissions belong to Phase 2 (Deferred for developer-account funding).
 
 ### C. Issue #509 Integration
-* PR #509 is currently in a conflict state. The implementation owner must resolve conflicts in an isolated, clean worktree before PR #509 can be merged.
-* **Autonomy Rule:** Development of the Repair booking system, direct APK building, and PWA simulation **must NOT be held up** by PR #509. Active design, preparation, and component mockups can proceed safely in a parallel, isolated worktree.
+* PR #509 is closed as superseded and must not be merged wholesale because it predates the canonical runtime.
+* **Autonomy Rule:** Repair Shop distribution, PWA validation, and any fresh Android release build continue from `main` without creating another application tree.
 
 ---
 
