@@ -18,6 +18,12 @@ Removed duplicate implementation surfaces:
 - versioned `hermes-connect-web-product-v1` test contract - replaced by the canonical workspace contract.
 - versioned V1/V2 browser test names - replaced by canonical workspace, app-launch, interaction, and onboarding contracts.
 
+Release manifest handling:
+
+- historical release deltas remain preserved as evidence of what previously existed;
+- the release-manifest contract now supports explicit retired-route removals so historical Brand V1 routes are not counted as current-main pages;
+- the canonical workspace, review hub, and sales roleplay routes are registered as the current replacement surfaces.
+
 Release acceptance:
 
 - full repository build and tests must pass;
