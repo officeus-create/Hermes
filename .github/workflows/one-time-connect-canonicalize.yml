@@ -1,0 +1,191 @@
+name: One-time Hermes Connect canonicalization
+
+on:
+  push:
+    branches: [cleanup/connect-canonical-consolidation]
+    paths:
+      - .github/workflows/one-time-connect-canonicalize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  canonicalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cleanup/connect-canonical-consolidation
+      - name: Canonicalize active Connect files and references
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          root = Path('.')
+
+          workspace = root / 'public/demos/hermes-connect/workspace.html'
+          text = workspace.read_text()
+          required = ['workspace-launch-v2.css', 'workspace-launch-v2.js']
+          for marker in required:
+              if marker not in text:
+                  raise SystemExit(f'missing expected workspace marker: {marker}')
+          text = text.replace('workspace-launch-v2.css', 'workspace-enhancements.css')
+          text = text.replace('workspace-launch-v2.js', 'workspace-enhancements.js')
+          workspace.write_text(text)
+
+          manifest_path = root / 'public/demos/hermes-connect/manifest.webmanifest'
+          manifest = json.loads(manifest_path.read_text())
+          manifest['id'] = 'hermes-connect'
+          manifest['name'] = 'Hermes Connect Preview Workspace'
+          manifest['description'] = 'Hermes Connect responsive preview workspace for browser-based business workflow demonstrations.'
+          manifest['start_url'] = './workspace.html'
+          manifest['scope'] = './'
+          manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n')
+
+          sw = root / 'public/demos/hermes-connect/sw.js'
+          sw.write_text("""const CACHE_NAME = 'hermes-connect-canonical-2026-08-15';
+
+const STATIC_ASSETS = [
+  './workspace.html',
+  './workspace.css',
+  './workspace.js',
+  './workspace-enhancements.css',
+  './workspace-enhancements.js',
+  './ai-front-door.js',
+  './email-load-parser.js',
+  './manifest.webmanifest',
+  './icon.svg',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png',
+  './icon-192.svg',
+  './icon-512.svg',
+  './icon-maskable.svg'
+];
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
+      .catch((err) => console.warn('[Hermes SW] Pre-cache warning:', err))
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((cacheNames) => Promise.all(cacheNames.map((cache) => cache === CACHE_NAME ? undefined : caches.delete(cache))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  if (event.request.mode === 'navigate' || (event.request.headers.get('accept') || '').includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseCopy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseCopy));
+          }
+          return networkResponse;
+        })
+        .catch(async () => (await caches.match(event.request)) || caches.match('./workspace.html'))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        })
+        .catch(() => undefined);
+      return cachedResponse || fetchPromise;
+    })
+  );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+""")
+
+          replacements = [
+              ('https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/workspace.html', 'https://connect.hermeslogisticsus.com/workspace'),
+              ('/demos/hermes-connect-brand-v1/workspace.html', 'https://connect.hermeslogisticsus.com/workspace'),
+              ('https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/mobile.html', 'https://connect.hermeslogisticsus.com/workspace'),
+              ('/demos/hermes-connect-brand-v1/mobile.html', 'https://connect.hermeslogisticsus.com/workspace'),
+              ('https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/review.html', 'https://connect.hermeslogisticsus.com/review.html'),
+              ('/demos/hermes-connect-brand-v1/review.html', 'https://connect.hermeslogisticsus.com/review.html'),
+              ('https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/sales-roleplay.html', 'https://connect.hermeslogisticsus.com/sales-roleplay.html'),
+              ('/demos/hermes-connect-brand-v1/sales-roleplay.html', 'https://connect.hermeslogisticsus.com/sales-roleplay.html'),
+          ]
+
+          active_files = list((root / 'src').rglob('*.astro'))
+          active_files += [p for p in (root / 'public').glob('llms*.txt') if p.is_file()]
+          active_files += [root / 'scripts/generate-pwa-png-icons.mjs']
+          for path in active_files:
+              if not path.exists():
+                  continue
+              original = path.read_text()
+              updated = original
+              for old, new in replacements:
+                  updated = updated.replace(old, new)
+              updated = updated.replace('public/demos/hermes-connect-brand-v1/', 'public/demos/hermes-connect/')
+              if updated != original:
+                  path.write_text(updated)
+
+          launcher = root / 'src/components/HermesConnectLauncher.astro'
+          launcher_text = launcher.read_text()
+          canonical_launcher = 'https://connect.hermeslogisticsus.com/workspace'
+          if '/demos/hermes-connect-brand-v1/workspace.html' in launcher_text:
+              launcher_text = launcher_text.replace('/demos/hermes-connect-brand-v1/workspace.html', canonical_launcher)
+              launcher.write_text(launcher_text)
+
+          report = root / 'docs/HERMES_CONNECT_CANONICAL_STRUCTURE.md'
+          report.write_text("""# Hermes Connect canonical structure
+
+Current implementation rule after consolidation:
+
+- `src/pages/services/hermes-connect/repair-shops*` — production-track Repair Shop web product.
+- `public/demos/hermes-connect/` — the single canonical generic Connect preview/tool asset tree used by `connect.hermeslogisticsus.com`.
+- `public/demos/hermes-connect/workspace.html` — one responsive desktop/mobile preview workspace.
+- `public/demos/hermes-connect/index.html` — controlled request-access/discovery document.
+- `public/demos/hermes-connect/<tool>/` — bounded browser tools.
+- `src/legacy-prototype/` — retained reference code only; not a second public app.
+
+Removed duplicate implementation surfaces:
+
+- `public/demos/hermes-connect-brand-v1/` — superseded by the canonical tree.
+- separate `mobile.html` — superseded by the responsive workspace.
+- `workspace-v2.html`, `workspace-v2.js`, `workspace-v2-injected.css` — superseded visual-review layer.
+- duplicate Brand V1 `index.html`, `app.js`, `styles.css` — superseded by canonical discovery/request-access files.
+
+Backward compatibility is handled by middleware redirects. Historical release/audit documents may still mention retired paths because they describe past states.
+""")
+          PY
+
+          git diff --check
+          git status --short
+      - name: Commit canonical active references
+        shell: bash
+        run: |
+          git config user.name "Hermes Release Bot"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git rm .github/workflows/one-time-connect-canonicalize.yml
+          git add public/demos/hermes-connect src public/llms*.txt scripts/generate-pwa-png-icons.mjs docs/HERMES_CONNECT_CANONICAL_STRUCTURE.md
+          git commit -m "refactor(connect): point active product surfaces to canonical workspace"
+          git push origin HEAD:cleanup/connect-canonical-consolidation
