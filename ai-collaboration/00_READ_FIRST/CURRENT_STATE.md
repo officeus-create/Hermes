@@ -1,6 +1,6 @@
 # Hermes AI Ecosystem — Current State
 
-Last updated: 2026-08-14
+Last updated: 2026-08-15
 
 ## Objective
 
@@ -23,6 +23,18 @@ Approved decisions now supersede the older exploratory design state:
 - Brand System V1 is the current approved base direction under DEC-004: Hermes Connect as an AI Operating System for Business, with the approved Pearl + Anthracite/Obsidian environments, compact intelligent-knot/loop identity direction, restrained digital-flow language and unified Hermes Intelligence.
 - DEC-005 establishes the web-first productization sequence: validate desktop/web first, derive responsive/mobile-web from the approved system, then begin native mobile implementation from validated components and workflows.
 - New contributors should refine or extend this approved direction rather than restarting the identity or product sequence without an explicit new decision.
+
+## Current Hermes Connect implementation
+
+- `public/demos/hermes-connect/` is the only canonical generic preview/tool tree.
+- `public/demos/hermes-connect/workspace.html` is one responsive desktop/mobile workspace; there is no separate mobile application page.
+- Repair Shop production routes and D1 APIs remain a separate real product track under `src/pages/services/hermes-connect/repair-shops*` and the owner/public Repair Shop API namespaces.
+- PRs #529 and #532-#545 delivered D1 auth hardening, owner services/profile/availability, real booking, persisted status history, cancelled-slot rebooking, vehicle data and booking-derived customer CRM.
+- PRs #546-#548 removed duplicate Brand V1/V2 physical runtimes, corrected active guidance and removed retired runtime labels/debug output.
+- PR #509 is closed as superseded. Its old branch must not be merged or used as a product source because it predates and conflicts with the later production runtime.
+- Historical retired URLs remain compatibility redirects and historical release deltas remain audit evidence; neither is an active duplicate application.
+
+The next Repair Shop milestone is distribution to the first 5-10 permissioned real shops and privacy-safe feedback/booking measurement, not another app rewrite.
 
 ## Current revenue and SEO state
 

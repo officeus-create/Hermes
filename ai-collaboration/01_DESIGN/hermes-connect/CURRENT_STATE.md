@@ -1,6 +1,6 @@
 # Hermes Connect Design — Current State
 
-Last updated: 2026-08-12
+Last updated: 2026-08-15
 
 ## Decision status
 
@@ -99,9 +99,9 @@ The website should show Hermes operating:
 
 The brand object, flow lines and product cards should help explain that orchestration.
 
-## Current Antigravity V2 status
+## Antigravity V2 historical experiment
 
-Antigravity reported a local branch `feature/brand-exploration-v2` containing:
+The remote branch `feature/brand-exploration-v2` contains:
 
 - six vector logo explorations;
 - Pearl / Obsidian themes;
@@ -109,9 +109,9 @@ Antigravity reported a local branch `feature/brand-exploration-v2` containing:
 - adaptive onboarding;
 - updated logo explorer and UI components.
 
-At the latest shared-GitHub check, that branch and its commit were not visible in `officeus-create/Hermes`. Treat the work as an **external/local implementation pending push and code review**.
+At the 2026-08-15 review it was 26 commits ahead of its old merge base but 1005 commits behind current `main`. Treat it as historical exploration material only; do not merge or revive it wholesale. Reimplement a bounded visual refinement from fresh `main` only when it still fits the approved system and has a current product need.
 
-Once available remotely, review it against the approved V1 brand system. The six logo directions are exploration material; they do not automatically supersede the approved loop/knot direction.
+The production implementation source of truth is the single canonical responsive tree at `public/demos/hermes-connect/`, consolidated by PR #546 and clarified by #547-#548. Retired Brand V1/V2 directories are not alternative design choices.
 
 ## Brand governance
 
