@@ -32,6 +32,7 @@ const shopPayload = {
 
 test("repair booking success can create an explicit-consent growth lead without PII analytics", async ({ page }) => {
   let growthPayload: Record<string, any> | null = null;
+  let growthRequestId = "";
   let idempotencyKey = "";
 
   await page.addInitScript(() => {
@@ -87,11 +88,12 @@ test("repair booking success can create an explicit-consent growth lead without 
 
   await page.route("**/api/logistics-lead", async (route) => {
     growthPayload = route.request().postDataJSON();
+    growthRequestId = String(growthPayload?.request_id || "");
     idempotencyKey = route.request().headers()["idempotency-key"] || "";
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ success: true, request_id: growthPayload?.request_id }),
+      body: JSON.stringify({ success: true, request_id: growthRequestId }),
     });
   });
 
@@ -137,8 +139,8 @@ test("repair booking success can create an explicit-consent growth lead without 
       },
     },
   });
-  expect(growthPayload?.request_id).toMatch(/^repair_growth_[a-z0-9]+_[a-z0-9]+$/i);
-  expect(idempotencyKey).toBe(growthPayload?.request_id);
+  expect(growthRequestId).toMatch(/^repair_growth_[a-z0-9]+_[a-z0-9]+$/i);
+  expect(idempotencyKey).toBe(growthRequestId);
 
   const analytics = await page.evaluate(() => (window as any).dataLayer || []);
   const growthEvent = analytics.find((item: any) => item?.event === "connect_hermes_growth_cta_requests");
