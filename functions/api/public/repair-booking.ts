@@ -62,7 +62,7 @@ async function readBusyIntervals(db: any, shopId: string, date: string) {
   await ensureRepairShopBookingsSchema(db);
   const result = await db
     .prepare(
-      `SELECT id,start_time,end_time,status
+      `SELECT start_time,end_time
        FROM repair_shop_bookings
        WHERE shop_id = ? AND appointment_date = ? AND lower(status) NOT IN ('cancelled','canceled')
        ORDER BY start_time ASC`,
@@ -87,7 +87,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   return jsonResponse(200, {
     success: true,
-    shop: { id: shop.id, slug: shop.slug, timezone: shop.timezone },
+    shop: { slug: shop.slug, timezone: shop.timezone },
     date,
     busy: await readBusyIntervals(env.DB, shop.id, date),
   });
