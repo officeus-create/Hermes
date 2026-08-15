@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("detailed carrier page remains private and routes to the minimized packet", async ({ page }) => {
   await page.goto("/carrier/");
 
-  await expect(page).toHaveTitle("Carrier Agreement | Hermes Logistics");
+  await expect(page).toHaveTitle("Carrier Support & Agreement | Hermes Logistics");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
   await expect(page.getByRole("heading", { name: "Keep control. Add a dispatch team." })).toBeVisible();
   await expect(page.getByRole("link", { name: /Review and sign/i }).first()).toHaveAttribute("href", /\/logistics\/carrier-onboarding\//);
