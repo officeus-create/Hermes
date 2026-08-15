@@ -1,6 +1,7 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
 import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-booking-history-schema.mjs";
+import { ensureRepairShopBookingVehicleSchema } from "../_lib/repair-shop-booking-vehicle-schema.mjs";
 
 type Env = { DB?: any };
 
@@ -11,6 +12,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureRepairShopBookingsSchema(env.DB);
   await ensureRepairShopBookingHistorySchema(env.DB);
+  await ensureRepairShopBookingVehicleSchema(env.DB);
 
   const result = await env.DB
     .prepare(
@@ -34,6 +36,15 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     .bind(specialist.id)
     .all();
 
+  const vehicleResult = await env.DB
+    .prepare(
+      `SELECT booking_id,vehicle_year,vehicle_make,vehicle_model,mileage,vin
+       FROM repair_shop_booking_vehicles
+       WHERE owner_specialist_id = ?`,
+    )
+    .bind(specialist.id)
+    .all();
+
   const historyByBooking = new Map<string, any[]>();
   for (const item of historyResult?.results ?? []) {
     const bookingId = String(item.booking_id ?? "");
@@ -42,8 +53,20 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     historyByBooking.set(bookingId, list);
   }
 
+  const vehicleByBooking = new Map<string, any>();
+  for (const item of vehicleResult?.results ?? []) {
+    vehicleByBooking.set(String(item.booking_id ?? ""), {
+      year: item.vehicle_year == null ? null : Number(item.vehicle_year),
+      make: String(item.vehicle_make ?? ""),
+      model: String(item.vehicle_model ?? ""),
+      mileage: item.mileage == null ? null : Number(item.mileage),
+      vin: item.vin == null ? null : String(item.vin),
+    });
+  }
+
   const bookings = (result?.results ?? []).map((booking: any) => ({
     ...booking,
+    vehicle: vehicleByBooking.get(String(booking.id)) ?? null,
     history: historyByBooking.get(String(booking.id)) ?? [],
   }));
 
