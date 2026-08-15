@@ -1,0 +1,108 @@
+name: Repair Shop cancel and rebook production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/_lib/repair-shop-bookings-schema.mjs
+      - .github/workflows/repair-cancel-rebook-production-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Verify cancelled slot can be booked again
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Exercise cancellation release and same-slot rebooking on production
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://hermeslogisticsus.com"
+          EMAIL="repair-booking-production-smoke@hermesconnect.app"
+          CLIENT_EMAIL="repair-rebook-customer-smoke@hermesconnect.app"
+          TEST_ID="${GITHUB_RUN_ID}-$(date +%s)"
+          PASSWORD="HermesRebook-${TEST_ID}-A9!"
+          COOKIE="${RUNNER_TEMP}/owner.cookies"
+          echo "::add-mask::$PASSWORD"
+
+          CLEAN="$(curl -sS -o "${RUNNER_TEMP}/pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
+          echo "PRE_CLEAN_HTTP=$CLEAN"; cat "${RUNNER_TEMP}/pre-clean.json"; echo
+          test "$CLEAN" = 200
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/pre-clean.json")" = true
+
+          REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Rebook Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production cancellation and rebooking verification account."}')"
+          RC="$(curl -sS -o "${RUNNER_TEMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
+          echo "REGISTER_HTTP=$RC"; cat "${RUNNER_TEMP}/register.json"; echo
+          test "$RC" = 201
+
+          PROFILE='{"name":"Hermes Rebook Smoke Shop","phone":"+1 414 555 0199","address_line1":"101 Rebook Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
+          PC="$(curl -sS -o "${RUNNER_TEMP}/profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
+          echo "PROFILE_HTTP=$PC"; cat "${RUNNER_TEMP}/profile.json"; echo
+          test "$PC" = 200
+          SLUG="$(jq -r '.shop.slug' "${RUNNER_TEMP}/profile.json")"
+
+          SERVICE='{"name":"Cancellation Rebook Smoke Service","duration_minutes":60}'
+          SC="$(curl -sS -o "${RUNNER_TEMP}/service.json" -w '%{http_code}' -b "$COOKIE" -X POST "$BASE/api/services" -H 'Content-Type: application/json' --data-binary "$SERVICE")"
+          echo "SERVICE_HTTP=$SC"; cat "${RUNNER_TEMP}/service.json"; echo
+          test "$SC" = 201
+          SERVICE_ID="$(jq -r '.service.id' "${RUNNER_TEMP}/service.json")"
+
+          AVAILABILITY='{"days":[{"day_of_week":0,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":1,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"17:00"}]}'
+          AC="$(curl -sS -o "${RUNNER_TEMP}/availability.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/availability" -H 'Content-Type: application/json' --data-binary "$AVAILABILITY")"
+          echo "AVAILABILITY_HTTP=$AC"; cat "${RUNNER_TEMP}/availability.json"; echo
+          test "$AC" = 200
+
+          APPOINTMENT_DATE="$(TZ=America/Chicago date -d 'tomorrow' +%F)"
+          BOOKING="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$APPOINTMENT_DATE" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Rebook Smoke Customer",client_email:$email,client_phone:"+1 414 555 0188"}')"
+
+          B1="$(curl -sS -o "${RUNNER_TEMP}/booking1.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+          echo "FIRST_BOOKING_HTTP=$B1"; cat "${RUNNER_TEMP}/booking1.json"; echo
+          test "$B1" = 201
+          BOOKING1_ID="$(jq -r '.booking.id' "${RUNNER_TEMP}/booking1.json")"
+          test -n "$BOOKING1_ID"
+
+          BUSY1="$(curl -sS -o "${RUNNER_TEMP}/busy1.json" -w '%{http_code}' "$BASE/api/public/repair-booking?shop=$SLUG&date=$APPOINTMENT_DATE")"
+          echo "BUSY_BEFORE_CANCEL_HTTP=$BUSY1"; cat "${RUNNER_TEMP}/busy1.json"; echo
+          test "$BUSY1" = 200
+          test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${RUNNER_TEMP}/busy1.json")" = 1
+
+          CANCEL="$(curl -sS -o "${RUNNER_TEMP}/cancel.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING1_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"cancelled"}')"
+          echo "CANCEL_HTTP=$CANCEL"; cat "${RUNNER_TEMP}/cancel.json"; echo
+          test "$CANCEL" = 200
+          test "$(jq -r '.booking.status' "${RUNNER_TEMP}/cancel.json")" = cancelled
+          test "$(jq -r '[.history[] | select(.from_status=="confirmed" and .to_status=="cancelled")] | length' "${RUNNER_TEMP}/cancel.json")" = 1
+
+          BUSY2="$(curl -sS -o "${RUNNER_TEMP}/busy2.json" -w '%{http_code}' "$BASE/api/public/repair-booking?shop=$SLUG&date=$APPOINTMENT_DATE")"
+          echo "BUSY_AFTER_CANCEL_HTTP=$BUSY2"; cat "${RUNNER_TEMP}/busy2.json"; echo
+          test "$BUSY2" = 200
+          test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${RUNNER_TEMP}/busy2.json")" = 0
+
+          B2="$(curl -sS -o "${RUNNER_TEMP}/booking2.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+          echo "REBOOK_SAME_SLOT_HTTP=$B2"; cat "${RUNNER_TEMP}/booking2.json"; echo
+          test "$B2" = 201
+          BOOKING2_ID="$(jq -r '.booking.id' "${RUNNER_TEMP}/booking2.json")"
+          test -n "$BOOKING2_ID"
+          test "$BOOKING2_ID" != "$BOOKING1_ID"
+
+          OWNER="$(curl -sS -o "${RUNNER_TEMP}/owner.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
+          echo "OWNER_BOOKINGS_HTTP=$OWNER"; cat "${RUNNER_TEMP}/owner.json"; echo
+          test "$OWNER" = 200
+          test "$(jq -r --arg id "$BOOKING1_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner.json")" = cancelled
+          test "$(jq -r --arg id "$BOOKING2_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner.json")" = confirmed
+          test "$(jq -r --arg id "$BOOKING1_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.to_status=="cancelled")] | length' "${RUNNER_TEMP}/owner.json")" = 1
+          test "$(jq -r --arg id "$BOOKING2_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.from_status==null and .to_status=="confirmed")] | length' "${RUNNER_TEMP}/owner.json")" = 1
+
+          B3="$(curl -sS -o "${RUNNER_TEMP}/booking3.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
+          echo "THIRD_ACTIVE_DUPLICATE_HTTP=$B3"; cat "${RUNNER_TEMP}/booking3.json"; echo
+          test "$B3" = 409
+          test "$(jq -r '.error' "${RUNNER_TEMP}/booking3.json")" = slot_unavailable
+
+          CLEAN2="$(curl -sS -o "${RUNNER_TEMP}/cleanup.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
+          echo "CLEANUP_HTTP=$CLEAN2"; cat "${RUNNER_TEMP}/cleanup.json"; echo
+          test "$CLEAN2" = 200
+          test "$(jq -r '.remaining' "${RUNNER_TEMP}/cleanup.json")" = 0
+
+          echo "REPAIR_CANCEL_REBOOK_PRODUCTION_PASS=YES"
