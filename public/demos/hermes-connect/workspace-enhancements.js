@@ -97,10 +97,8 @@
       if (id === 'auto') {
         try {
           const stored = localStorage.getItem('hermes_connect_bookings');
-          console.log("LAUNCH-V2 - stored bookings:", stored);
           if (stored) {
             const bookings = JSON.parse(stored);
-            console.log("LAUNCH-V2 - parsed bookings:", bookings);
             const mappedBookings = bookings.map(b => {
               const initials = b.customer_name ? b.customer_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'BC';
               const stageText = b.status === 'NEW' ? 'Booked' : b.status === 'CONFIRMED' ? 'Confirmed' : b.status === 'IN_SERVICE' ? 'In Service' : 'Completed';
@@ -109,14 +107,12 @@
               const vehicleName = b.vehicle ? `${b.vehicle.year} ${b.vehicle.make} ${b.vehicle.model}` : '';
               return [initials, b.customer_name, stageText, `${b.date.split(',')[0]} · ${b.time_slot}`, valueOnly, nextText, vehicleName];
             });
-            console.log("LAUNCH-V2 - mapped bookings:", mappedBookings);
             list = [...mappedBookings, ...list];
           }
         } catch (e) {
-          console.error("LAUNCH-V2 - error parsing bookings:", e);
+          console.error("Hermes Connect workspace - error parsing bookings:", e);
         }
       }
-      console.log("LAUNCH-V2 - final customers list length:", list.length);
       customers.innerHTML = list.map(([initials,name,stage,last,value,next,vehicle]) => `<tr><td><div class="table-person"><span>${initials}</span><b>${name}</b>${vehicle ? `<small style="display:block; font-size:11px; opacity:0.75; font-weight:normal; margin-top:2px;">${vehicle}</small>` : ''}</div></td><td><span class="stage">${stage}</span></td><td>${last}</td><td><b>${value}</b></td><td class="next-action">◇ ${next}</td><td>•••</td></tr>`).join('');
     }
 
@@ -141,7 +137,7 @@
             });
           }
         } catch (e) {
-          console.error("LAUNCH-V2 - error parsing week bookings:", e);
+          console.error("Hermes Connect workspace - error parsing week bookings:", e);
         }
       }
       week.innerHTML = currentWeek.map(([day,date,events]) => `<div class="day"><div class="day-head"><b>${day}</b><span>${date}</span></div>${events.map(([time,title,color]) => `<div class="booking ${color}"><small>${time}</small><b>${title}</b></div>`).join('')}</div>`).join('');
@@ -198,7 +194,6 @@
   const typeParamLaunch = urlParamsLaunch.get('business_type');
   const activeVerticalLaunch = verticalMapLaunch[typeParamLaunch] || verticalMapLaunch[storedTypeLaunch] || 'beauty';
   if (activeVerticalLaunch === 'auto') {
-    console.log("LAUNCH-V2 - auto vertical detected, bailing out to let workspace.js handle dynamic data.");
     return;
   }
   render(activeVerticalLaunch);
