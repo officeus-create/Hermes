@@ -2,12 +2,6 @@
   const repairShopRoute = "/services/hermes-connect/repair-shops";
   if (window.location.pathname.replace(/\/+$/, "") !== repairShopRoute) return;
 
-  const cleanPrivateSalespersonCode = () => {
-    const params = new URLSearchParams(window.location.search);
-    const raw = params.get("salesperson_code") || params.get("rep") || "";
-    return /^[A-Za-z0-9_-]{2,40}$/.test(raw) ? raw : "";
-  };
-
   const createRequestId = () => {
     const uuid = globalThis.crypto?.randomUUID?.() || "";
     const randomPart = uuid.replaceAll("-", "").slice(0, 12) || Math.random().toString(36).slice(2, 14);
@@ -96,7 +90,6 @@
         .filter((item) => item instanceof HTMLInputElement)
         .map((item) => item.value)
         .slice(0, 12);
-      const salespersonCode = cleanPrivateSalespersonCode();
       const requestId = createRequestId();
 
       if (!consent.checked) {
@@ -115,7 +108,6 @@
         `Parts discount: ${partsDiscount ? `${partsDiscount}%` : "not provided"}`,
         `Equipment: ${equipment.length ? equipment.join(", ") : "not provided"}`,
         `Minimum turnaround: ${turnaround ? `${turnaround} hours` : "not provided"}`,
-        `Private salesperson code: ${salespersonCode || "not provided"}`,
         "Requested action: human review for Repair Shop / Truck Repair Partner Beta onboarding.",
       ].join("\n");
 
