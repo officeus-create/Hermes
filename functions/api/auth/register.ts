@@ -70,13 +70,20 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   let attributionCaptured = false;
 
   if (referral && referralToken) {
-    attributionCaptured = await persistRepairShopSalesAttribution({
-      db: env.DB,
-      ownerSpecialistId: id,
-      referral,
-      referralToken,
-      registeredAt: createdAt,
-    });
+    try {
+      attributionCaptured = await persistRepairShopSalesAttribution({
+        db: env.DB,
+        ownerSpecialistId: id,
+        referral,
+        referralToken,
+        registeredAt: createdAt,
+      });
+    } catch (error) {
+      console.error("repair_shop_sales_attribution_failed", {
+        owner_specialist_id: id,
+        error: error instanceof Error ? error.message : "unknown_error",
+      });
+    }
   }
 
   const token = createSessionToken();
