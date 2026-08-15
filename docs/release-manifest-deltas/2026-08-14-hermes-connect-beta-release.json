@@ -26,10 +26,10 @@
     {
       "route": "/services/hermes-connect/repair-shops/booking/",
       "source_state": "current_main",
-      "indexability": "indexable",
-      "robots": "index,follow,max-image-preview:large",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
       "canonical": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/booking/",
-      "sitemap_owner": "public/sitemap-digital-services.xml",
+      "sitemap_owner": null,
       "source_file": "src/pages/services/hermes-connect/repair-shops/booking.astro",
       "status": "COMPLETE",
       "blocker": null,
@@ -42,7 +42,7 @@
   ],
   "acceptance": {
     "route_count_added": 2,
-    "indexable_route_count_added": 2,
+    "indexable_route_count_added": 1,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true
   }
