@@ -4,174 +4,178 @@ const isRepairBooking = Astro.url.pathname.replace(/\/+$/, "") === repairBooking
 ---
 
 {isRepairBooking && (
-  <>
-    <template id="repair-growth-template">
-      <section class="repair-growth-card" data-repair-growth-card aria-labelledby="repair-growth-title">
-        <p class="repair-growth-eyebrow">For Business Owners</p>
-        <h3 id="repair-growth-title">Want more customers for your business?</h3>
-        <p class="repair-growth-copy">
-          Hermes can help with websites, Google visibility and SEO, social media, paid ads, and CRM or workflow automation.
-          This is optional and separate from your repair appointment.
-        </p>
-        <button class="repair-growth-open" type="button" data-growth-open>Grow My Business / Talk to Hermes</button>
+  <template id="repair-growth-template">
+    <section class="repair-growth-card" data-repair-growth-card aria-labelledby="repair-growth-title">
+      <p class="repair-growth-eyebrow">For Business Owners</p>
+      <h3 id="repair-growth-title">Want more customers for your business?</h3>
+      <p class="repair-growth-copy">
+        Hermes can help with websites, Google visibility and SEO, social media, paid ads, and CRM or workflow automation.
+        This is optional and separate from your repair appointment.
+      </p>
+      <button class="repair-growth-open" type="button" data-growth-open>Grow My Business / Talk to Hermes</button>
 
-        <form class="repair-growth-form" data-growth-form hidden novalidate>
-          <label class="repair-growth-field">
-            What would help most?
-            <select data-growth-service required>
-              <option value="">Choose one</option>
-              <option value="Website / conversion">Website / conversion</option>
-              <option value="SEO / Google visibility">SEO / Google visibility</option>
-              <option value="Social media marketing">Social media marketing</option>
-              <option value="Paid advertising">Paid advertising</option>
-              <option value="CRM / workflow automation">CRM / workflow automation</option>
-              <option value="Not sure — recommend the best next step">Not sure — recommend the best next step</option>
-            </select>
-          </label>
+      <form class="repair-growth-form" data-growth-form hidden novalidate>
+        <label class="repair-growth-field">
+          What would help most?
+          <select data-growth-service required>
+            <option value="">Choose one</option>
+            <option value="Website / conversion">Website / conversion</option>
+            <option value="SEO / Google visibility">SEO / Google visibility</option>
+            <option value="Social media marketing">Social media marketing</option>
+            <option value="Paid advertising">Paid advertising</option>
+            <option value="CRM / workflow automation">CRM / workflow automation</option>
+            <option value="Not sure — recommend the best next step">Not sure — recommend the best next step</option>
+          </select>
+        </label>
 
-          <label class="repair-growth-field">
-            What result are you trying to get? <span>optional</span>
-            <textarea data-growth-message maxlength="1000" placeholder="Example: more local calls from Google, a better website, or a follow-up system for leads."></textarea>
-          </label>
+        <label class="repair-growth-field">
+          What result are you trying to get? <span>optional</span>
+          <textarea data-growth-message maxlength="1000" placeholder="Example: more local calls from Google, a better website, or a follow-up system for leads."></textarea>
+        </label>
 
-          <label class="repair-growth-consent">
-            <input type="checkbox" data-growth-consent required />
-            <span>I agree that Hermes may use the name and email from this booking to contact me about these business-growth services.</span>
-          </label>
+        <label class="repair-growth-consent">
+          <input type="checkbox" data-growth-consent required />
+          <span>I agree that Hermes may use the name and email from this booking to contact me about these business-growth services.</span>
+        </label>
 
-          <p class="repair-growth-privacy">Your repair booking remains unchanged. This request is sent only after you explicitly opt in. Personal details are not added to public analytics.</p>
-          <button class="repair-growth-submit" type="submit" data-growth-submit>Send business-growth request</button>
-          <p class="repair-growth-status" data-growth-status role="status" aria-live="polite" hidden></p>
-        </form>
-      </section>
-    </template>
-
-    <script is:inline>
-      (() => {
-        const setupGrowthBridge = () => {
-          const successPanel = document.getElementById("success-panel");
-          const template = document.getElementById("repair-growth-template");
-          if (!successPanel || !(template instanceof HTMLTemplateElement) || successPanel.querySelector("[data-repair-growth-card]")) return;
-
-          successPanel.append(template.content.cloneNode(true));
-          const card = successPanel.querySelector("[data-repair-growth-card]");
-          if (!(card instanceof HTMLElement)) return;
-
-          const openButton = card.querySelector("[data-growth-open]");
-          const form = card.querySelector("[data-growth-form]");
-          const serviceSelect = card.querySelector("[data-growth-service]");
-          const messageInput = card.querySelector("[data-growth-message]");
-          const consentInput = card.querySelector("[data-growth-consent]");
-          const submitButton = card.querySelector("[data-growth-submit]");
-          const status = card.querySelector("[data-growth-status]");
-
-          const setStatus = (message, state = "error") => {
-            if (!(status instanceof HTMLElement)) return;
-            status.textContent = message;
-            status.dataset.state = state;
-            status.hidden = false;
-          };
-
-          if (openButton instanceof HTMLButtonElement && form instanceof HTMLFormElement) {
-            openButton.addEventListener("click", () => {
-              form.hidden = false;
-              openButton.hidden = true;
-              if (serviceSelect instanceof HTMLSelectElement) serviceSelect.focus();
-            });
-          }
-
-          if (!(form instanceof HTMLFormElement)) return;
-          form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            if (!(serviceSelect instanceof HTMLSelectElement) || !(consentInput instanceof HTMLInputElement) || !(submitButton instanceof HTMLButtonElement)) return;
-
-            const requestedService = serviceSelect.value.trim();
-            if (!requestedService) {
-              setStatus("Choose the business-growth area you want help with.");
-              serviceSelect.focus();
-              return;
-            }
-            if (!consentInput.checked) {
-              setStatus("Please confirm that Hermes may contact you about this separate business-growth request.");
-              consentInput.focus();
-              return;
-            }
-
-            const bookingName = document.getElementById("client-name")?.value?.trim() || "";
-            const bookingEmail = document.getElementById("client-email")?.value?.trim() || "";
-            if (!bookingName || !bookingEmail) {
-              setStatus("Your booking contact details are unavailable. Please use the main Hermes contact form instead.");
-              return;
-            }
-
-            const note = messageInput instanceof HTMLTextAreaElement ? messageInput.value.trim() : "";
-            const randomPart = globalThis.crypto?.randomUUID?.().replaceAll("-", "").slice(0, 12) || Math.random().toString(36).slice(2, 14);
-            const requestId = `repair_growth_${Date.now().toString(36)}_${randomPart}`;
-            const payload = {
-              request_id: requestId,
-              submitted_at: new Date().toISOString(),
-              source_path: window.location.pathname,
-              name: bookingName,
-              email: bookingEmail,
-              interest: "ProgressoPro",
-              message: note || `Business growth request from a customer who completed a Hermes Connect Repair Shop booking. Requested help: ${requestedService}.`,
-              consent: true,
-              direction_fields: {
-                direction: "ProgressoPro",
-                fields: {
-                  service_needed: requestedService,
-                  primary_goal: "Grow business from Repair Shop booking flow",
-                  target_audience: "Business owner or manager using Hermes Connect Repair Shop booking",
-                },
-              },
-            };
-
-            submitButton.disabled = true;
-            submitButton.textContent = "Sending…";
-            if (status instanceof HTMLElement) status.hidden = true;
-
-            try {
-              const response = await fetch("/api/logistics-lead", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Idempotency-Key": requestId,
-                },
-                body: JSON.stringify(payload),
-              });
-              const result = await response.json().catch(() => null);
-              if (!response.ok || !result?.success) throw new Error("lead_delivery_failed");
-
-              setStatus("Request received. Hermes will use your booking email to contact you about the business-growth request.", "success");
-              serviceSelect.disabled = true;
-              if (messageInput instanceof HTMLTextAreaElement) messageInput.disabled = true;
-              consentInput.disabled = true;
-              submitButton.textContent = "Request sent";
-
-              window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({
-                event: "connect_hermes_growth_cta_requests",
-                source: "repair_booking_success",
-                request_state: "received",
-              });
-            } catch {
-              submitButton.disabled = false;
-              submitButton.textContent = "Send business-growth request";
-              setStatus("Business-growth request delivery is temporarily unavailable. Your repair appointment is still confirmed; please try this request again later.");
-            }
-          });
-        };
-
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", setupGrowthBridge, { once: true });
-        } else {
-          setupGrowthBridge();
-        }
-      })();
-    </script>
-
-    <style>
-      .repair-growth-card{margin-top:24px;padding:22px;text-align:left;border:1px solid rgba(157,136,255,.28);border-radius:18px;background:linear-gradient(135deg,rgba(128,104,255,.12),rgba(91,174,247,.07))}.repair-growth-eyebrow{margin:0 0 8px;color:#a996ff;text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:850}.repair-growth-card h3{margin:0 0 8px;font-size:22px;color:#f7f8fb}.repair-growth-copy{margin:0;color:#aeb4c2;line-height:1.6}.repair-growth-open,.repair-growth-submit{display:inline-flex;justify-content:center;align-items:center;margin-top:16px;border:0;border-radius:12px;padding:12px 16px;background:linear-gradient(135deg,#8068ff,#5baef7);color:#fff;font:inherit;font-weight:850;cursor:pointer}.repair-growth-form{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.repair-growth-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;color:#dfe2ea;font-size:13px;font-weight:750}.repair-growth-field span{color:#858b9a;font-size:11px;font-weight:600}.repair-growth-field select,.repair-growth-field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.11);border-radius:12px;padding:12px 13px;background:#10121a;color:#fff;font:inherit;outline:none}.repair-growth-field textarea{min-height:92px;resize:vertical}.repair-growth-field select:focus,.repair-growth-field textarea:focus{border-color:#8f78ff;box-shadow:0 0 0 3px rgba(143,120,255,.12)}.repair-growth-consent{display:flex;align-items:flex-start;gap:10px;color:#d3d7e1;font-size:13px;line-height:1.5}.repair-growth-consent input{margin-top:3px}.repair-growth-privacy{margin:12px 0 0;color:#8f95a5;font-size:12px;line-height:1.5}.repair-growth-submit:disabled{opacity:.6;cursor:not-allowed}.repair-growth-status{margin:12px 0 0;padding:11px 12px;border-radius:10px;background:rgba(180,42,42,.14);color:#ffc4c4;font-size:13px;line-height:1.45}.repair-growth-status[data-state="success"]{background:rgba(34,151,104,.14);color:#a8f1cf}@media(max-width:720px){.repair-growth-card{padding:18px}.repair-growth-open,.repair-growth-submit{width:100%}}
-    </style>
-  </>
+        <p class="repair-growth-privacy">Your repair booking remains unchanged. This request is sent only after you explicitly opt in. Personal details are not added to public analytics.</p>
+        <button class="repair-growth-submit" type="submit" data-growth-submit>Send business-growth request</button>
+        <p class="repair-growth-status" data-growth-status role="status" aria-live="polite" hidden></p>
+      </form>
+    </section>
+  </template>
 )}
+
+<script>
+  type GrowthLeadResponse = { success?: boolean } | null;
+  type AnalyticsWindow = Window & { dataLayer?: Array<Record<string, string>> };
+
+  const repairBookingRoute = "/services/hermes-connect/repair-shops/booking";
+
+  const setupGrowthBridge = () => {
+    if (window.location.pathname.replace(/\/+$/, "") !== repairBookingRoute) return;
+
+    const successPanel = document.getElementById("success-panel");
+    const template = document.getElementById("repair-growth-template");
+    if (!successPanel || !(template instanceof HTMLTemplateElement) || successPanel.querySelector("[data-repair-growth-card]")) return;
+
+    successPanel.append(template.content.cloneNode(true));
+    const card = successPanel.querySelector<HTMLElement>("[data-repair-growth-card]");
+    if (!card) return;
+
+    const openButton = card.querySelector<HTMLButtonElement>("[data-growth-open]");
+    const form = card.querySelector<HTMLFormElement>("[data-growth-form]");
+    const serviceSelect = card.querySelector<HTMLSelectElement>("[data-growth-service]");
+    const messageInput = card.querySelector<HTMLTextAreaElement>("[data-growth-message]");
+    const consentInput = card.querySelector<HTMLInputElement>("[data-growth-consent]");
+    const submitButton = card.querySelector<HTMLButtonElement>("[data-growth-submit]");
+    const status = card.querySelector<HTMLElement>("[data-growth-status]");
+
+    const setStatus = (message: string, state: "error" | "success" = "error") => {
+      if (!status) return;
+      status.textContent = message;
+      status.dataset.state = state;
+      status.hidden = false;
+    };
+
+    if (openButton && form) {
+      openButton.addEventListener("click", () => {
+        form.hidden = false;
+        openButton.hidden = true;
+        serviceSelect?.focus();
+      });
+    }
+
+    if (!form || !serviceSelect || !consentInput || !submitButton) return;
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const requestedService = serviceSelect.value.trim();
+      if (!requestedService) {
+        setStatus("Choose the business-growth area you want help with.");
+        serviceSelect.focus();
+        return;
+      }
+      if (!consentInput.checked) {
+        setStatus("Please confirm that Hermes may contact you about this separate business-growth request.");
+        consentInput.focus();
+        return;
+      }
+
+      const bookingName = document.querySelector<HTMLInputElement>("#client-name")?.value.trim() || "";
+      const bookingEmail = document.querySelector<HTMLInputElement>("#client-email")?.value.trim() || "";
+      if (!bookingName || !bookingEmail) {
+        setStatus("Your booking contact details are unavailable. Please use the main Hermes contact form instead.");
+        return;
+      }
+
+      const note = messageInput?.value.trim() || "";
+      const uuid = globalThis.crypto?.randomUUID?.() || "";
+      const randomPart = uuid.replaceAll("-", "").slice(0, 12) || Math.random().toString(36).slice(2, 14);
+      const requestId = `repair_growth_${Date.now().toString(36)}_${randomPart}`;
+      const payload = {
+        request_id: requestId,
+        submitted_at: new Date().toISOString(),
+        source_path: window.location.pathname,
+        name: bookingName,
+        email: bookingEmail,
+        interest: "ProgressoPro",
+        message: note || `Business growth request from a customer who completed a Hermes Connect Repair Shop booking. Requested help: ${requestedService}.`,
+        consent: true,
+        direction_fields: {
+          direction: "ProgressoPro",
+          fields: {
+            service_needed: requestedService,
+            primary_goal: "Grow business from Repair Shop booking flow",
+            target_audience: "Business owner or manager using Hermes Connect Repair Shop booking",
+          },
+        },
+      };
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending…";
+      if (status) status.hidden = true;
+
+      try {
+        const response = await fetch("/api/logistics-lead", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": requestId,
+          },
+          body: JSON.stringify(payload),
+        });
+        const result = await response.json().catch(() => null) as GrowthLeadResponse;
+        if (!response.ok || !result?.success) throw new Error("lead_delivery_failed");
+
+        setStatus("Request received. Hermes will use your booking email to contact you about the business-growth request.", "success");
+        serviceSelect.disabled = true;
+        if (messageInput) messageInput.disabled = true;
+        consentInput.disabled = true;
+        submitButton.textContent = "Request sent";
+
+        const analyticsWindow = window as AnalyticsWindow;
+        analyticsWindow.dataLayer = analyticsWindow.dataLayer || [];
+        analyticsWindow.dataLayer.push({
+          event: "connect_hermes_growth_cta_requests",
+          source: "repair_booking_success",
+          request_state: "received",
+        });
+      } catch {
+        submitButton.disabled = false;
+        submitButton.textContent = "Send business-growth request";
+        setStatus("Business-growth request delivery is temporarily unavailable. Your repair appointment is still confirmed; please try this request again later.");
+      }
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupGrowthBridge, { once: true });
+  } else {
+    setupGrowthBridge();
+  }
+</script>
+
+<style>
+  .repair-growth-card{margin-top:24px;padding:22px;text-align:left;border:1px solid rgba(157,136,255,.28);border-radius:18px;background:linear-gradient(135deg,rgba(128,104,255,.12),rgba(91,174,247,.07))}.repair-growth-eyebrow{margin:0 0 8px;color:#a996ff;text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:850}.repair-growth-card h3{margin:0 0 8px;font-size:22px;color:#f7f8fb}.repair-growth-copy{margin:0;color:#aeb4c2;line-height:1.6}.repair-growth-open,.repair-growth-submit{display:inline-flex;justify-content:center;align-items:center;margin-top:16px;border:0;border-radius:12px;padding:12px 16px;background:linear-gradient(135deg,#8068ff,#5baef7);color:#fff;font:inherit;font-weight:850;cursor:pointer}.repair-growth-form{margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08)}.repair-growth-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;color:#dfe2ea;font-size:13px;font-weight:750}.repair-growth-field span{color:#858b9a;font-size:11px;font-weight:600}.repair-growth-field select,.repair-growth-field textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.11);border-radius:12px;padding:12px 13px;background:#10121a;color:#fff;font:inherit;outline:none}.repair-growth-field textarea{min-height:92px;resize:vertical}.repair-growth-field select:focus,.repair-growth-field textarea:focus{border-color:#8f78ff;box-shadow:0 0 0 3px rgba(143,120,255,.12)}.repair-growth-consent{display:flex;align-items:flex-start;gap:10px;color:#d3d7e1;font-size:13px;line-height:1.5}.repair-growth-consent input{margin-top:3px}.repair-growth-privacy{margin:12px 0 0;color:#8f95a5;font-size:12px;line-height:1.5}.repair-growth-submit:disabled{opacity:.6;cursor:not-allowed}.repair-growth-status{margin:12px 0 0;padding:11px 12px;border-radius:10px;background:rgba(180,42,42,.14);color:#ffc4c4;font-size:13px;line-height:1.45}.repair-growth-status[data-state="success"]{background:rgba(34,151,104,.14);color:#a8f1cf}@media(max-width:720px){.repair-growth-card{padding:18px}.repair-growth-open,.repair-growth-submit{width:100%}}
+</style>
