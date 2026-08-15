@@ -33,6 +33,7 @@ Approved decisions now supersede the older exploratory design state:
 - PRs #546-#548 removed duplicate Brand V1/V2 physical runtimes, corrected active guidance and removed retired runtime labels/debug output.
 - PR #509 is closed as superseded. Its old branch must not be merged or used as a product source because it predates and conflicts with the later production runtime.
 - Historical retired URLs remain compatibility redirects and historical release deltas remain audit evidence; neither is an active duplicate application.
+- Web and installable PWA are the current supported distribution paths. The old Android APK was removed after it was found to bundle retired runtimes and use an Android Debug certificate; direct APK distribution remains blocked until a current release-signed build passes checksum and clean-device gates.
 
 The next Repair Shop milestone is distribution to the first 5-10 permissioned real shops and privacy-safe feedback/booking measurement, not another app rewrite.
 

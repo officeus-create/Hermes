@@ -5,14 +5,14 @@ import SiteFooter from "../components/SiteFooter.astro";
 import { languageAlternates } from "../data/locales";
 
 // SEO Metadata
-const title = "Hermes Connect Download Center | Web App, iOS PWA & Android APK";
-const description = "Access Hermes Connect B2B Command Center. Open the Interactive Web Workspace, view iOS Safari PWA setup guidelines, or download the direct Android APK package.";
+const title = "Hermes Connect Access Center | Web App & PWA";
+const description = "Open the canonical Hermes Connect workspace in a browser or install it as a PWA. The Android package is being rebuilt and release-verified before direct distribution resumes.";
 const canonicalUrl = "https://hermeslogisticsus.com/download/";
 
 const faqs = [
   {
-    question: "Where can I download the Hermes Connect Android APK?",
-    answer: "You can download the secure, signed Hermes Connect Beta APK directly from this page by clicking the 'Download for Android' button."
+    question: "Is the Hermes Connect Android APK available?",
+    answer: "Direct APK distribution is temporarily paused while the Android package is rebuilt from the canonical workspace, release-signed, and verified on a clean device. Android users can use the Web App or install the PWA now."
   },
   {
     question: "How do I install Hermes Connect on my iPhone?",
@@ -29,7 +29,7 @@ const schema = [
     "@context": "https://schema.org",
     "@type": "Service",
     name: "Hermes Connect Download & Deployment Center",
-    description: "Access Hermes Connect B2B Command Center on the web, iOS PWA, or direct Android APK download.",
+    description: "Access the canonical Hermes Connect B2B Command Center on the web or install it as a PWA while the Android release completes its verification gates.",
     provider: {
       "@type": "Organization",
       name: "Hermes Logistics",
@@ -76,11 +76,11 @@ const schema = [
     <section class="download-hero-section">
       <div class="shell">
         <div class="hero-content">
-          <span class="eyebrow-badge">Hermes Connect Release v1.0.0 (Beta)</span>
-          <h1>Ecosystem Distribution Loop</h1>
+          <span class="eyebrow-badge">Hermes Connect Public Beta</span>
+          <h1>Web &amp; PWA Access</h1>
           <p class="hero-desc">
             Equip your dispatchers, sales teams, and shop technicians with Hermes Connect B2B Command Center.
-            Choose your deployment target below for a premium, lightweight, zero-latency experience.
+            Open the supported web workspace or install the same responsive experience from your browser.
           </p>
         </div>
 
@@ -158,27 +158,27 @@ const schema = [
             </button>
           </div>
 
-          <!-- CARD 3: Direct Android APK -->
+          <!-- CARD 3: Android release status -->
           <div class="distribution-card glass-card android-card" data-reveal>
             <div class="card-glow"></div>
-            <div class="card-badge compat-badge">Android API Level 36 Ready</div>
+            <div class="card-badge compat-badge">Release verification in progress</div>
             <div class="card-icon">🤖</div>
-            <h3>Direct Android Wrapper</h3>
+            <h3>Android Release</h3>
             <p class="card-desc">
-              Fully compiled and signed application package (APK) built with Capacitor and configured with native bridge hooks. Optimized for performance and background notification reliability.
+              The previous beta package has been retired. A refreshed Android build must use the canonical workspace, a controlled release key, and a clean-device installation check before direct download returns.
             </p>
             <ul class="features-list">
-              <li>✦ Native device vibration & haptic loops</li>
-              <li>✦ Precision viewport scaling</li>
-              <li>✦ Full Android 16 (API Level 36) SDK compliance</li>
-              <li>✦ Zero payment processing / safe offline cache</li>
+              <li>✦ Canonical responsive workspace required</li>
+              <li>✦ Release certificate and checksum required</li>
+              <li>✦ Clean-device install and launch smoke required</li>
+              <li>✦ Web/PWA access remains available now</li>
             </ul>
             <a
-              href="/downloads/hermes-connect-beta.apk"
+              href="https://connect.hermeslogisticsus.com/workspace?business_type=auto_repair"
               class="cta-button primary-glow-btn"
-              id="download-android-apk"
+              id="open-android-web-fallback"
             >
-              Download for Android 🤖
+              Use Web/PWA Now ⚡
             </a>
           </div>
         </div>
@@ -193,18 +193,12 @@ const schema = [
           <p class="faq-subtitle">Everything you need to know about the Hermes Connect public release.</p>
         </div>
         <div class="faq-grid">
-          <div class="faq-item glass-card">
-            <h4>Where can I download the Hermes Connect Android APK?</h4>
-            <p>You can download the secure, signed Hermes Connect Beta APK directly from this page by clicking the 'Download for Android' button.</p>
-          </div>
-          <div class="faq-item glass-card">
-            <h4>How do I install Hermes Connect on my iPhone?</h4>
-            <p>On iPhone, open this page in Safari, click the Share icon, and select 'Add to Home Screen' to install Hermes Connect as a Progressive Web App (PWA).</p>
-          </div>
-          <div class="faq-item glass-card">
-            <h4>What features are included in the Hermes Connect Web App?</h4>
-            <p>The Web Workspace includes complete CRM pipeline views, live carrier intake widgets, and dual light/dark styling for dispatch and management operations.</p>
-          </div>
+          {faqs.map((faq) => (
+            <div class="faq-item glass-card">
+              <h4>{faq.question}</h4>
+              <p>{faq.answer}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

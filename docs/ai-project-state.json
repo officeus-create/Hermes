@@ -207,7 +207,7 @@
     "mobile_cross_platform_release": {
       "issue": 511,
       "canonical_branch": "main",
-      "status": "web_pwa_live_android_artifact_present_release_provenance_pending",
+      "status": "web_pwa_live_android_release_blocked_stale_debug_artifact_retired",
       "proposal_date": "2026-08-14",
       "implementation_owner": "Hermes Connect - Автономная Разработка",
       "reviewer": "Синхронизация Базы Знаний Агентов",
@@ -217,14 +217,14 @@
         "monetization": "DEFERRED"
       },
       "distribution_strategy": {
-        "phase_1_current": "Web App and installable browser PWA use the canonical responsive runtime; an Android APK artifact is present but its current signature/version/install provenance must be verified before a renewed release claim.",
+        "phase_1_current": "Web App and installable browser PWA use the canonical responsive runtime. The stale debug-signed Android artifact was removed; direct APK distribution remains blocked until a fresh canonical release build passes every release gate.",
         "phase_2_deferred_funding": "Apple App Store & Google Play native store submissions",
         "phase_3_trigger": "Desktop macOS & Windows apps packaging (triggered at approximately 10 real active beta users)"
       },
       "platform_matrix": {
         "web": "LIVE",
         "iphone_pwa": "LIVE_WEB_INSTALL_PATH",
-        "android_apk": "ARTIFACT_PRESENT_VERIFICATION_REQUIRED",
+        "android_apk": "BLOCKED_NO_PUBLIC_ARTIFACT",
         "android_aab": "NOT_STARTED",
         "app_store": "DEFERRED",
         "google_play": "DEFERRED",
@@ -237,9 +237,17 @@
         "Apple Guideline 4.2 compliance: tracking native share, haptics, deep links, persistent local state, and offline shell.",
         "Google Play Closed Testing audit: 12 testers for 14 continuous days is mandatory if developer account is personal and post-Nov 2023.",
         "iOS .ipa must NOT be distributed directly from the website (iPhone uses Web/PWA installation in Phase 1).",
-        "Android .apk is authorized for direct, signed download from the website in Phase 1."
+        "Android .apk direct distribution is authorized only for a current canonical build with a controlled release certificate, recorded artifact and certificate checksums, and clean-device install/launch/core-flow evidence."
       ],
-      "remaining_gate": "Verify the existing APK's source commit, package/version, signature and clean-device installation before promoting it. Keep iPhone on the canonical PWA path and App Store/Google Play submissions deferred until their account, testing and compliance gates are intentionally funded."
+      "apk_audit_2026_08_15": {
+        "retired_artifact_sha256": "32e1c3cf35e77ac789cb8459dfddcfed6088e04e6aa4f113b34a95e8daf26b99",
+        "source_commit": "bb27c196ff11fabcb5c14c9d356633c6b9dd58fe",
+        "retired_runtime_paths": 25,
+        "signature_scheme": "APK_V2_ANDROID_DEBUG",
+        "certificate_sha256": "5b116b7f6393b7f1f0b87a5ab2d5045d73f3726ba4824687cf82cd62582eab72",
+        "action": "Removed the stale public binary and direct-download claims; retained Android source for a future controlled release build."
+      },
+      "remaining_gate": "Build from the current canonical runtime, configure a controlled Android release key, record APK and certificate checksums, and pass clean-device install/launch/core-flow smoke before restoring direct APK distribution. Keep iPhone on the canonical PWA path and App Store/Google Play submissions deferred until their account, testing and compliance gates are intentionally funded."
     }
   },
   "search_platform_state": {

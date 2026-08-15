@@ -757,3 +757,13 @@ entries — append only.
 - Data/privacy: no private records, credentials, analytics identifiers or production data changed.
 - Verification: JSON parse, `git diff --check`, current-main/branch ancestry checks, PR metadata and merged PR history.
 - Deferred: verify APK source/signature/version/clean-device installation before making a renewed Android release claim; onboard real Repair Shop users before selecting another product slice.
+
+## 2026-08-15 — Codex — Android release truth boundary and stale artifact retirement
+
+- Branch: `fix/android-release-boundary`.
+- PR: pending publication.
+- What was done: audited the public beta APK, confirmed it bundled the pre-consolidation 2026-08-14 web runtime with 25 retired Brand V1/V2/mobile paths, and confirmed its APK v2 certificate was `Android Debug` rather than a controlled release certificate.
+- Files changed: removed `public/downloads/hermes-connect-beta.apk`; updated the access page, Issues #510/#511 coordination documents, project/current-state guidance and error register; added static and browser release-boundary regression tests.
+- Behavior delivered: Web/PWA remains the supported path, the public page no longer links or describes the retired binary as a secure signed release, and future Android distribution is blocked until canonical-build, release-key, checksum and clean-device gates pass.
+- Tests run: APK checksum/provenance/signature inspection; `astro check` (0 errors); production build (164 generated HTML routes, no APK in `dist`); full `npm test` (passed); focused browser test added for CI. Local Playwright launch was blocked by the managed environment's network-approval boundary, not by a test assertion.
+- Remaining: create a fresh Android build from current `main`, configure a controlled release key outside the repository, record artifact and certificate fingerprints, and pass install/launch/core-flow smoke on a clean supported Android device before restoring the download.
