@@ -1,0 +1,30 @@
+name: Repair Shop customer CRM contract
+
+on:
+  pull_request:
+    paths:
+      - functions/api/repair-shop/customers.ts
+      - src/pages/services/hermes-connect/repair-shops/customers.astro
+      - .github/workflows/repair-shop-customer-crm-contract.yml
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Verify owner-only customer CRM contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify customer CRM is booking-derived and private
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'getAuthenticatedSpecialist' functions/api/repair-shop/customers.ts
+          grep -q 'WHERE owner_specialist_id = ?' functions/api/repair-shop/customers.ts
+          grep -q 'repair_shop_booking_vehicles' functions/api/repair-shop/customers.ts
+          grep -q 'completed_visits' functions/api/repair-shop/customers.ts
+          grep -q 'next_appointment' functions/api/repair-shop/customers.ts
+          grep -q 'robots="noindex,nofollow"' src/pages/services/hermes-connect/repair-shops/customers.astro
+          grep -q '/api/repair-shop/customers' src/pages/services/hermes-connect/repair-shops/customers.astro
+          grep -q '/api/auth/me' src/pages/services/hermes-connect/repair-shops/customers.astro
