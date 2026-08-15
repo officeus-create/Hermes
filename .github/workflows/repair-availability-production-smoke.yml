@@ -1,0 +1,111 @@
+name: One-time Repair Shop availability production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/_lib/repair-shop-availability-schema.mjs
+      - functions/api/repair-shop/availability.ts
+      - functions/api/public/repair-shop.ts
+      - functions/api/repair-shop/cleanup-availability-smoke.ts
+      - src/pages/services/hermes-connect/repair-shops/availability.astro
+      - .github/workflows/repair-availability-production-smoke.yml
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Verify production Repair Shop weekly availability
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Exercise real production owner schedule and public read
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://hermeslogisticsus.com"
+          EMAIL="repair-availability-production-smoke@hermesconnect.app"
+          TEST_ID="${GITHUB_RUN_ID}-$(date +%s)"
+          PASSWORD="HermesAvailability-${TEST_ID}-A9!"
+          COOKIE="${RUNNER_TEMP}/availability.cookies"
+          echo "::add-mask::$PASSWORD"
+
+          CLEAN="000"
+          for attempt in $(seq 1 36); do
+            CLEAN="$(curl -sS -o "${RUNNER_TEMP}/pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-availability-smoke" || true)"
+            echo "PRE_CLEAN_ATTEMPT_${attempt}_HTTP=$CLEAN"
+            if [ "$CLEAN" = 200 ]; then break; fi
+            sleep 10
+          done
+          cat "${RUNNER_TEMP}/pre-clean.json"; echo
+          test "$CLEAN" = 200
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/pre-clean.json")" = true
+
+          REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Availability Smoke",role:"Shop Owner",location:"United States",bio:"Temporary production availability verification account for Hermes Connect Repair Shops."}')"
+          RC="$(curl -sS -o "${RUNNER_TEMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
+          echo "REGISTER_HTTP=$RC"; cat "${RUNNER_TEMP}/register.json"; echo
+          test "$RC" = 201
+
+          BEFORE_PROFILE="$(curl -sS -o "${RUNNER_TEMP}/before-profile.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/availability")"
+          echo "AVAILABILITY_BEFORE_PROFILE_HTTP=$BEFORE_PROFILE"; cat "${RUNNER_TEMP}/before-profile.json"; echo
+          test "$BEFORE_PROFILE" = 409
+          test "$(jq -r '.error' "${RUNNER_TEMP}/before-profile.json")" = shop_profile_required
+
+          PROFILE="$(jq -nc '{name:"Hermes Availability Test Shop",phone:"+1 414 555 0100",address_line1:"123 Schedule Street",city:"Milwaukee",state:"WI",postal_code:"53202",timezone:"America/Chicago"}')"
+          PC="$(curl -sS -o "${RUNNER_TEMP}/profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
+          echo "PROFILE_HTTP=$PC"; cat "${RUNNER_TEMP}/profile.json"; echo
+          test "$PC" = 200
+          SLUG="$(jq -r '.shop.slug' "${RUNNER_TEMP}/profile.json")"
+          test -n "$SLUG"
+
+          INITIAL="$(curl -sS -o "${RUNNER_TEMP}/initial.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/availability")"
+          echo "INITIAL_AVAILABILITY_HTTP=$INITIAL"; cat "${RUNNER_TEMP}/initial.json"; echo
+          test "$INITIAL" = 200
+          test "$(jq '.days | length' "${RUNNER_TEMP}/initial.json")" = 7
+          test "$(jq '[.days[] | select(.is_open == true)] | length' "${RUNNER_TEMP}/initial.json")" = 0
+          test "$(jq -r '.timezone' "${RUNNER_TEMP}/initial.json")" = America/Chicago
+
+          INVALID='{"days":[{"day_of_week":0,"is_open":false,"start_time":null,"end_time":null},{"day_of_week":1,"is_open":true,"start_time":"17:00","end_time":"08:00"},{"day_of_week":2,"is_open":false,"start_time":null,"end_time":null},{"day_of_week":3,"is_open":false,"start_time":null,"end_time":null},{"day_of_week":4,"is_open":false,"start_time":null,"end_time":null},{"day_of_week":5,"is_open":false,"start_time":null,"end_time":null},{"day_of_week":6,"is_open":false,"start_time":null,"end_time":null}]}'
+          IC="$(curl -sS -o "${RUNNER_TEMP}/invalid.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/availability" -H 'Content-Type: application/json' --data-binary "$INVALID")"
+          echo "INVALID_RANGE_HTTP=$IC"; cat "${RUNNER_TEMP}/invalid.json"; echo
+          test "$IC" = 400
+          test "$(jq -r '.error' "${RUNNER_TEMP}/invalid.json")" = invalid_time_range
+
+          SCHEDULE='{"days":[{"day_of_week":0,"is_open":false,"start_time":null,"end_time":null},{"day_of_week":1,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"13:00"}]}'
+          SC="$(curl -sS -o "${RUNNER_TEMP}/save.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/availability" -H 'Content-Type: application/json' --data-binary "$SCHEDULE")"
+          echo "SAVE_AVAILABILITY_HTTP=$SC"; cat "${RUNNER_TEMP}/save.json"; echo
+          test "$SC" = 200
+          test "$(jq '[.days[] | select(.is_open == true)] | length' "${RUNNER_TEMP}/save.json")" = 6
+          test "$(jq -r '.days[] | select(.day_of_week == 1) | .start_time' "${RUNNER_TEMP}/save.json")" = 08:00
+          test "$(jq -r '.days[] | select(.day_of_week == 6) | .end_time' "${RUNNER_TEMP}/save.json")" = 13:00
+
+          RELOAD="$(curl -sS -o "${RUNNER_TEMP}/reload.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/availability")"
+          echo "RELOAD_AVAILABILITY_HTTP=$RELOAD"; cat "${RUNNER_TEMP}/reload.json"; echo
+          test "$RELOAD" = 200
+          test "$(jq -r '.days[] | select(.day_of_week == 0) | .is_open' "${RUNNER_TEMP}/reload.json")" = false
+          test "$(jq -r '.days[] | select(.day_of_week == 1) | .end_time' "${RUNNER_TEMP}/reload.json")" = 17:00
+          echo "AVAILABILITY_PERSISTED_ACROSS_REQUESTS=YES"
+
+          PUBLIC="$(curl -sS -o "${RUNNER_TEMP}/public.json" -w '%{http_code}' "$BASE/api/public/repair-shop?slug=${SLUG}")"
+          echo "PUBLIC_SHOP_HTTP=$PUBLIC"; cat "${RUNNER_TEMP}/public.json"; echo
+          test "$PUBLIC" = 200
+          test "$(jq '.availability | length' "${RUNNER_TEMP}/public.json")" = 7
+          test "$(jq -r '.availability[] | select(.day_of_week == 1) | .start_time' "${RUNNER_TEMP}/public.json")" = 08:00
+          test "$(jq -r '.availability[] | select(.day_of_week == 0) | .is_open' "${RUNNER_TEMP}/public.json")" = false
+          if grep -q 'owner_specialist_id' "${RUNNER_TEMP}/public.json"; then echo 'PUBLIC_OWNER_ID_LEAK=YES'; exit 1; fi
+          echo "PUBLIC_OWNER_ID_LEAK=NO"
+
+          POST_CLEAN="$(curl -sS -o "${RUNNER_TEMP}/post-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-availability-smoke")"
+          echo "POST_CLEAN_HTTP=$POST_CLEAN"; cat "${RUNNER_TEMP}/post-clean.json"; echo
+          test "$POST_CLEAN" = 200
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/post-clean.json")" = true
+          test "$(jq -r '.remaining' "${RUNNER_TEMP}/post-clean.json")" = 0
+
+          VERIFY_CLEAN="$(curl -sS -o "${RUNNER_TEMP}/verify-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-availability-smoke")"
+          echo "VERIFY_CLEAN_HTTP=$VERIFY_CLEAN"; cat "${RUNNER_TEMP}/verify-clean.json"; echo
+          test "$VERIFY_CLEAN" = 200
+          test "$(jq -r '.deleted' "${RUNNER_TEMP}/verify-clean.json")" = false
+          test "$(jq -r '.remaining' "${RUNNER_TEMP}/verify-clean.json")" = 0
+
+          echo "FINAL_AVAILABILITY_VERDICT=PASS"
