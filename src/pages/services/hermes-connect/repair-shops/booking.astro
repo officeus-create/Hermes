@@ -1,1651 +1,285 @@
 ---
-import { ArrowLeft, ArrowRight, Check, CheckCircle2, Clock, Calendar, Smartphone, Sparkles, ShieldCheck, HelpCircle, Wrench } from "@lucide/astro";
+import { ArrowLeft, CalendarDays, CheckCircle2, Clock3, MapPin, Wrench } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
-
-const canonicalUrl = "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/booking/";
-
-const services = [
-  { id: "oil_change", name: "Full Synthetic Oil Change", duration: "45 mins", price: "$89.99", desc: "Includes premium OEM synthetic oil, high-efficiency filter, and 15-point inspection." },
-  { id: "brake_service", name: "Premium Brake Pad Replacement", duration: "1.5 hours", price: "$149.99", desc: "Includes premium ceramic brake pads and caliper inspection." },
-  { id: "diagnostic", name: "Engine Diagnostic Scan", duration: "30 mins", price: "$120.00", desc: "Full OBD-II sensor sweep and error code reports." },
-  { id: "tire_rotation", name: "Tire Rotation & Balance", duration: "40 mins", price: "$45.00", desc: "Improves tread life, balance correction for smooth highway runs." },
-  { id: "ac_recharge", name: "AC Recharge & Leak Check", duration: "1 hour", price: "$160.00", desc: "Eco-friendly refrigerant recharge and system integrity verification." }
-];
-
-const timeSlots = [
-  { id: "09:00", label: "09:00 AM" },
-  { id: "11:00", label: "11:00 AM" },
-  { id: "13:00", label: "01:00 PM" },
-  { id: "15:00", label: "03:00 PM" },
-  { id: "17:00", label: "05:00 PM" }
-];
-
-const weekdays = [
-  { id: "MON", label: "Monday, Aug 17" },
-  { id: "TUE", label: "Tuesday, Aug 18" },
-  { id: "WED", label: "Wednesday, Aug 19" },
-  { id: "THU", label: "Thursday, Aug 20" },
-  { id: "FRI", label: "Friday, Aug 21" }
-];
-
-const schema = [
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Apex Auto Care - Instant Booking Portal",
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: canonicalUrl,
-    description: "Book high-quality vehicle repair and maintenance slots at Apex Auto Care. Interactive scheduling and PWA early access.",
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
-      { "@type": "ListItem", position: 3, name: "Repair Shops", item: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/" },
-      { "@type": "ListItem", position: 4, name: "Booking Portal", item: canonicalUrl }
-    ]
-  }
-];
 ---
 
 <BaseLayout
-  title="Apex Auto Care - Live Booking Portal | Hermes Connect"
-  description="Schedule a synthetic oil change, brake service, tire rotation, or engine diagnostic. View live bay availability and book instantly."
-  schema={schema}
+  title="Repair Shop Booking | Hermes Connect"
+  description="Book a real appointment with a repair shop using Hermes Connect public beta scheduling."
+  robots="noindex,nofollow"
 >
   <SiteHeader activePath="/paths/technology/" />
+  <main class="booking-page">
+    <div class="shell">
+      <a class="back-link" href="/services/hermes-connect/repair-shops/"><ArrowLeft size={16} /> Repair Shop Beta</a>
 
-  <main id="main-content" class="booking-portal-page">
-    <div class="booking-glow-container">
-      <div class="radial-glow glow-1"></div>
-      <div class="radial-glow glow-2"></div>
-    </div>
-
-    <div class="container">
-      <!-- Back Link -->
-      <a href="/services/hermes-connect/repair-shops/" class="back-link">
-        <ArrowLeft class="icon" /> Back to Partner Portal
-      </a>
-
-      <!-- Page Header -->
-      <header class="portal-header">
-        <div class="shop-badge">
-          <span class="live-dot animate-pulse"></span>
-          <span class="badge-text">APEX AUTO CARE · OFFICIAL REPAIR PARTNER</span>
-        </div>
-        <h1>Live Customer Booking Intake</h1>
-        <p class="subtitle">
-          Secure your priority maintenance appointment below. During our <strong>Hermes Public Beta</strong>, 
-          all services are processed with 100% discount, zero subscriptions, and direct CRM scheduling.
-        </p>
+      <header class="hero">
+        <p class="eyebrow">Hermes Connect · Public Booking</p>
+        <h1 id="shop-title">Loading repair shop…</h1>
+        <p id="shop-meta" class="muted">Loading shop profile, services, and hours from production.</p>
       </header>
 
-      <!-- Main Booking Interface -->
-      <div class="booking-grid">
-        <!-- Form Panel -->
-        <div class="booking-card glass-panel" id="booking-wizard-card">
-          <!-- Step Tracker -->
-          <div class="steps-progress" role="navigation" aria-label="Booking steps progress">
-            <div class="step-progress-item active" data-step-indicator="1">
-              <span class="step-number">1</span>
-              <span class="step-label">Service</span>
-            </div>
-            <div class="step-divider"></div>
-            <div class="step-progress-item" data-step-indicator="2">
-              <span class="step-number">2</span>
-              <span class="step-label">Time Slot</span>
-            </div>
-            <div class="step-divider"></div>
-            <div class="step-progress-item" data-step-indicator="3">
-              <span class="step-number">3</span>
-              <span class="step-label">Vehicle</span>
-            </div>
-            <div class="step-divider"></div>
-            <div class="step-progress-item" data-step-indicator="4">
-              <span class="step-number">4</span>
-              <span class="step-label">Contact</span>
-            </div>
+      <div id="page-alert" class="alert hidden" role="status"></div>
+
+      <section id="booking-panel" class="panel hidden" aria-labelledby="booking-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Real appointment intake</p>
+            <h2 id="booking-title">Book a service</h2>
+            <p class="muted">Hermes Connect software is in free public beta. Repair services themselves are not advertised as free.</p>
           </div>
-
-          <form id="booking-form" class="mt-8">
-            <!-- STEP 1: Select Service -->
-            <div class="step-section active" data-step-section="1">
-              <h2 class="section-title">Select Your Vehicle Service</h2>
-              <p class="section-desc">Choose from our premium automotive service catalog. Pricing is fully waived during early access.</p>
-              
-              <div class="services-list" role="radiogroup" aria-label="Available services">
-                {services.map((svc) => (
-                  <label class="service-option" for={`svc-${svc.id}`}>
-                    <input type="radio" name="selected_service" id={`svc-${svc.id}`} value={svc.id} data-name={svc.name} data-price={svc.price} required class="sr-only" />
-                    <div class="service-selection-indicator"></div>
-                    <div class="service-details">
-                      <div class="service-header">
-                        <h3>{svc.name}</h3>
-                        <div class="price-badge-group">
-                          <span class="original-price">{svc.price}</span>
-                          <span class="free-badge">FREE BETA</span>
-                        </div>
-                      </div>
-                      <p class="service-desc">{svc.desc}</p>
-                      <div class="service-meta">
-                        <span class="meta-item"><Clock class="meta-icon" /> {svc.duration}</span>
-                        <span class="meta-item"><Wrench class="meta-icon" /> Bay 1 · Assigned</span>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <!-- STEP 2: Select Time Slot -->
-            <div class="step-section" data-step-section="2">
-              <h2 class="section-title">Select Date & Available Slot</h2>
-              <p class="section-desc">Our capacity is strictly capped at 3 active bays. Slots marked as exhausted cannot be booked.</p>
-
-              <!-- Day Selector -->
-              <h3 class="subsection-title">1. Select Weekday</h3>
-              <div class="days-grid" role="radiogroup" aria-label="Available weekdays">
-                {weekdays.map((day) => (
-                  <label class="day-option" for={`day-${day.id}`}>
-                    <input type="radio" name="selected_day" id={`day-${day.id}`} value={day.id} data-label={day.label} required class="sr-only" />
-                    <span class="day-label-text">{day.label.split(',')[0]}</span>
-                    <span class="day-date-text">{day.label.split(',')[1]}</span>
-                  </label>
-                ))}
-              </div>
-
-              <!-- Time Slot Selector -->
-              <h3 class="subsection-title mt-6">2. Choose Time</h3>
-              <div id="slots-container" class="slots-grid" role="radiogroup" aria-label="Available time slots">
-                {timeSlots.map((slot) => (
-                  <label class="slot-option" for={`slot-${slot.id}`} id={`label-slot-${slot.id}`}>
-                    <input type="radio" name="selected_slot" id={`slot-${slot.id}`} value={slot.id} data-label={slot.label} required class="sr-only" />
-                    <span class="slot-time-text">{slot.label}</span>
-                    <span class="slot-status-text" id={`capacity-slot-${slot.id}`}>3 of 3 Bays Open</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <!-- STEP 3: Vehicle Details -->
-            <div class="step-section" data-step-section="3">
-              <h2 class="section-title">Add Vehicle Information</h2>
-              <p class="section-desc">Provide accurate vehicle details to ensure our technicians prepare the correct equipment and fluids.</p>
-
-              <div class="form-group-grid mt-6">
-                <div class="form-group">
-                  <label for="vehicle_year">Model Year</label>
-                  <input type="number" id="vehicle_year" name="vehicle_year" min="1990" max="2027" placeholder="e.g. 2021" required class="form-input" />
-                </div>
-                <div class="form-group">
-                  <label for="vehicle_make">Vehicle Make</label>
-                  <input type="text" id="vehicle_make" name="vehicle_make" placeholder="e.g. Ford" required class="form-input" />
-                </div>
-                <div class="form-group">
-                  <label for="vehicle_model">Vehicle Model</label>
-                  <input type="text" id="vehicle_model" name="vehicle_model" placeholder="e.g. F-150" required class="form-input" />
-                </div>
-                <div class="form-group">
-                  <label for="vehicle_mileage">Current Odometer (Miles)</label>
-                  <input type="number" id="vehicle_mileage" name="vehicle_mileage" min="0" placeholder="e.g. 45000" required class="form-input" />
-                </div>
-              </div>
-            </div>
-
-            <!-- STEP 4: Contact Information -->
-            <div class="step-section" data-step-section="4">
-              <h2 class="section-title">Add Owner Contact</h2>
-              <p class="section-desc">Enter your contact details to receive booking alerts and direct sync status notifications.</p>
-
-              <div class="form-group-grid mt-6">
-                <div class="form-group">
-                  <label for="customer_name">Full Name</label>
-                  <input type="text" id="customer_name" name="customer_name" placeholder="John Doe" required class="form-input" />
-                </div>
-                <div class="form-group">
-                  <label for="customer_email">Email Address</label>
-                  <input type="email" id="customer_email" name="customer_email" placeholder="john@example.com" required class="form-input" />
-                </div>
-                <div class="form-group">
-                  <label for="customer_phone">Phone Number</label>
-                  <input type="tel" id="customer_phone" name="customer_phone" placeholder="(555) 000-0000" required class="form-input" />
-                </div>
-              </div>
-
-              <div class="form-group mt-4">
-                <label for="booking_notes">Special Service Notes (Optional)</label>
-                <textarea id="booking_notes" name="booking_notes" rows="3" placeholder="Describe any specific issues, codes, or requests..." class="form-input"></textarea>
-              </div>
-            </div>
-
-            <!-- Navigation Controls -->
-            <div class="form-nav-controls">
-              <button type="button" id="prev-btn" class="nav-btn prev-btn hidden">
-                <ArrowLeft class="icon" /> Back
-              </button>
-              <div class="spacer"></div>
-              <button type="button" id="next-btn" class="nav-btn next-btn">
-                Next <ArrowRight class="icon" />
-              </button>
-              <button type="submit" id="submit-btn" class="nav-btn submit-btn hidden">
-                Confirm Booking <CheckCircle2 class="icon" />
-              </button>
-            </div>
-          </form>
+          <span id="timezone-pill" class="pill"></span>
         </div>
 
-        <!-- Success Screen (Hidden by default) -->
-        <div class="booking-card glass-panel hidden" id="booking-success-card">
-          <div class="success-header">
-            <div class="success-icon-container">
-              <Check class="success-checkmark" />
-            </div>
-            <h2>Appointment Confirmed!</h2>
-            <p>Your repair slot is successfully persisted to Apex Auto Care's live CRM database.</p>
-          </div>
+        <form id="booking-form" class="booking-form">
+          <label class="field span-2">Service
+            <select id="service-select" required>
+              <option value="">Select a service</option>
+            </select>
+          </label>
 
-          <div class="receipt-card">
-            <h3>APEX AUTO CARE RECEIPT</h3>
-            <div class="receipt-divider"></div>
-            <div class="receipt-row">
-              <span>Appointment ID:</span>
-              <strong id="receipt-id">APX-738902</strong>
-            </div>
-            <div class="receipt-row">
-              <span>Customer:</span>
-              <strong id="receipt-customer">John Doe</strong>
-            </div>
-            <div class="receipt-row">
-              <span>Vehicle:</span>
-              <strong id="receipt-vehicle">2021 Ford F-150</strong>
-            </div>
-            <div class="receipt-row">
-              <span>Service:</span>
-              <strong id="receipt-service">Synthetic Oil Change</strong>
-            </div>
-            <div class="receipt-row">
-              <span>Time Slot:</span>
-              <strong id="receipt-slot">Friday, Aug 21 at 11:00 AM</strong>
-            </div>
-            <div class="receipt-divider"></div>
-            <div class="receipt-row total">
-              <span>Total Price (Early Access):</span>
-              <strong>$0.00 (FREE BETA)</strong>
-            </div>
-          </div>
+          <label class="field">Date
+            <select id="date-select" required disabled>
+              <option value="">Select a date</option>
+            </select>
+          </label>
 
-          <div class="success-actions mt-6">
-            <button id="download-ics-btn" class="success-btn primary-success-btn">
-              <Calendar class="icon" /> Add to Apple / Google Calendar (.ics)
-            </button>
-            <a href="/services/hermes-connect/repair-shops/" class="success-btn secondary-success-btn">
-              Book Another Appointment
-            </a>
-          </div>
+          <label class="field">Time
+            <select id="time-select" required disabled>
+              <option value="">Select a time</option>
+            </select>
+          </label>
 
-          <!-- Growth Loop Card -->
-          <article class="viral-growth-card mt-8">
-            <div class="viral-content">
-              <div class="viral-badge">
-                <Sparkles class="viral-icon" /> GROW YOUR BUSINESS
-              </div>
-              <h4>Are you an Auto Service or Fleet Owner?</h4>
-              <p>
-                Get your own custom-branded customer booking portal, high-impact localized SEO, 
-                and automated dispatch channels powered by Hermes Connect. Free early onboarding is currently open.
-              </p>
-            </div>
-            <button id="viral-loop-cta" class="viral-cta-btn">
-              Talk to Hermes Specialists <ArrowRight class="icon" />
-            </button>
-          </article>
-        </div>
+          <div id="slot-state" class="slot-state span-2">Choose a service and date to load current availability.</div>
 
-        <!-- Sidebar Summary / Bay Status -->
-        <aside class="sidebar-panel">
-          <!-- Active Bay Status Card -->
-          <section class="glass-panel bay-status-card" aria-labelledby="bay-status-title">
-            <h2 id="bay-status-title" class="card-title">Live Technician Bay Status</h2>
-            <p class="card-desc">Currently scheduling for our premium local service team in Madison, WI.</p>
+          <div class="divider span-2"></div>
 
-            <div class="bays-vertical-list">
-              <div class="bay-row">
-                <div class="bay-indicator active"></div>
-                <div class="bay-info">
-                  <strong>Bay 1 — Diagnostic & Maintenance</strong>
-                  <span class="bay-tech">Lead Tech: Marcus V. (ASE Certified)</span>
-                </div>
-                <span class="bay-status-tag">Live Active</span>
-              </div>
-              <div class="bay-row">
-                <div class="bay-indicator active"></div>
-                <div class="bay-info">
-                  <strong>Bay 2 — Heavy Engine & Brake Rig</strong>
-                  <span class="bay-tech">Lead Tech: Dave K. (Heavy Diesel)</span>
-                </div>
-                <span class="bay-status-tag">Live Active</span>
-              </div>
-              <div class="bay-row">
-                <div class="bay-indicator idle"></div>
-                <div class="bay-info">
-                  <strong>Bay 3 — Wheel Alignment & Balance</strong>
-                  <span class="bay-tech">Lead Tech: Chris R. (Suspension)</span>
-                </div>
-                <span class="bay-status-tag idle">Awaiting Crew</span>
-              </div>
-            </div>
-          </section>
+          <label class="field">Full name<input id="client-name" minlength="2" maxlength="120" autocomplete="name" required /></label>
+          <label class="field">Phone<input id="client-phone" minlength="7" maxlength="40" autocomplete="tel" inputmode="tel" required /></label>
+          <label class="field span-2">Email<input id="client-email" type="email" maxlength="200" autocomplete="email" required /></label>
 
-          <!-- System Trust Card -->
-          <section class="glass-panel trust-badge-card" aria-labelledby="trust-title">
-            <h2 id="trust-title" class="hidden">Trust Badges</h2>
-            <div class="trust-flex-row">
-              <ShieldCheck class="trust-icon" />
-              <div>
-                <strong>Hermes Verified Integrity</strong>
-                <p>All bookings write back to live CRM caches instantly. No ghost appointments or overlapping slots.</p>
-              </div>
-            </div>
-          </section>
-        </aside>
-      </div>
+          <button id="submit-btn" class="primary-btn span-2" type="submit">Confirm appointment</button>
+        </form>
+      </section>
+
+      <section id="success-panel" class="panel success-panel hidden" aria-live="polite">
+        <CheckCircle2 class="success-icon" size={54} />
+        <p class="eyebrow">Production booking created</p>
+        <h2>Appointment confirmed</h2>
+        <p id="success-summary" class="muted"></p>
+        <dl class="receipt">
+          <div><dt>Booking ID</dt><dd id="receipt-id"></dd></div>
+          <div><dt>Shop</dt><dd id="receipt-shop"></dd></div>
+          <div><dt>Service</dt><dd id="receipt-service"></dd></div>
+          <div><dt>Date</dt><dd id="receipt-date"></dd></div>
+          <div><dt>Time</dt><dd id="receipt-time"></dd></div>
+          <div><dt>Status</dt><dd id="receipt-status"></dd></div>
+        </dl>
+        <button id="calendar-btn" class="secondary-btn" type="button"><CalendarDays size={17} /> Add to calendar (.ics)</button>
+      </section>
+
+      <aside class="trust-panel">
+        <div><Wrench size={18} /><span>Services come from this shop’s owner workspace.</span></div>
+        <div><Clock3 size={18} /><span>Times are checked against the shop’s saved weekly hours and existing bookings.</span></div>
+        <div><MapPin size={18} /><span id="location-note">Shop location loads from the saved public profile.</span></div>
+      </aside>
     </div>
   </main>
-
   <SiteFooter />
 </BaseLayout>
 
-<style>
-  :root {
-    --purple-glow: rgba(124, 92, 255, 0.15);
-    --teal-glow: rgba(90, 200, 250, 0.08);
-  }
-
-  .booking-portal-page {
-    position: relative;
-    padding: 100px 0 160px;
-    background-color: #07080c;
-    color: #f7f6f3;
-    overflow: hidden;
-    min-height: 100vh;
-    font-family: 'Inter', -apple-system, sans-serif;
-  }
-
-  .booking-glow-container {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .radial-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(140px);
-  }
-
-  .glow-1 {
-    top: 5%;
-    left: 10%;
-    width: 450px;
-    height: 450px;
-    background: radial-gradient(circle, var(--purple-glow), transparent 70%);
-  }
-
-  .glow-2 {
-    bottom: 15%;
-    right: 5%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, var(--teal-glow), transparent 70%);
-  }
-
-  .container {
-    position: relative;
-    z-index: 10;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #a0a5b2;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 32px;
-    transition: color 0.2s ease;
-  }
-
-  .back-link:hover {
-    color: #7c5cff;
-  }
-
-  .back-link .icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .portal-header {
-    margin-bottom: 48px;
-  }
-
-  .shop-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(124, 92, 255, 0.08);
-    border: 1px solid rgba(124, 92, 255, 0.25);
-    border-radius: 999px;
-    padding: 6px 14px;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    color: #ab98ff;
-    margin-bottom: 16px;
-  }
-
-  .live-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: #319a75;
-    box-shadow: 0 0 10px #319a75;
-  }
-
-  .portal-header h1 {
-    font-size: 42px;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    margin: 0 0 16px;
-    background: linear-gradient(135deg, #ffffff, #d2caff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  .subtitle {
-    font-size: 16px;
-    color: #a0a5b2;
-    max-width: 800px;
-    line-height: 1.6;
-    margin: 0;
-  }
-
-  .booking-grid {
-    display: grid;
-    grid-template-columns: 1.35fr .65fr;
-    gap: 28px;
-    align-items: start;
-  }
-
-  .glass-panel {
-    background: rgba(23, 26, 35, 0.55);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 24px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-  }
-
-  .booking-card {
-    padding: 36px;
-  }
-
-  .steps-progress {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .step-progress-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #6a6e7d;
-    font-weight: 700;
-    font-size: 13px;
-  }
-
-  .step-progress-item.active {
-    color: #7c5cff;
-  }
-
-  .step-progress-item.completed {
-    color: #319a75;
-  }
-
-  .step-number {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    transition: all 0.2s ease;
-  }
-
-  .step-progress-item.active .step-number {
-    background-color: #7c5cff;
-    color: #fff;
-    border-color: #7c5cff;
-    box-shadow: 0 0 15px rgba(124, 92, 255, 0.4);
-  }
-
-  .step-progress-item.completed .step-number {
-    background-color: #319a75;
-    color: #fff;
-    border-color: #319a75;
-  }
-
-  .step-divider {
-    flex: 1;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.06);
-  }
-
-  .step-section {
-    display: none;
-    animation: fadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  .step-section.active {
-    display: block;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: none; }
-  }
-
-  .section-title {
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin: 0 0 8px;
-  }
-
-  .section-desc {
-    font-size: 14px;
-    color: #a0a5b2;
-    margin: 0 0 32px;
-  }
-
-  .services-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .service-option {
-    display: grid;
-    grid-template-columns: 24px 1fr;
-    gap: 16px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 18px;
-    padding: 20px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .service-option:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(124, 92, 255, 0.2);
-    transform: translateY(-1px);
-  }
-
-  .service-option.checked {
-    background: rgba(124, 92, 255, 0.06);
-    border-color: rgba(124, 92, 255, 0.4);
-    box-shadow: inset 0 0 20px rgba(124, 92, 255, 0.05);
-  }
-
-  .service-selection-indicator {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    margin-top: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: all 0.2s ease;
-  }
-
-  .service-option.checked .service-selection-indicator {
-    border-color: #7c5cff;
-  }
-
-  .service-option.checked .service-selection-indicator::after {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #7c5cff;
-    position: absolute;
-    box-shadow: 0 0 8px #7c5cff;
-  }
-
-  .service-details {
-    display: grid;
-  }
-
-  .service-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 6px;
-  }
-
-  .service-header h3 {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  .price-badge-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .original-price {
-    font-size: 14px;
-    color: #727685;
-    text-decoration: line-through;
-  }
-
-  .free-badge {
-    background: rgba(49, 154, 117, 0.08);
-    border: 1px solid rgba(49, 154, 117, 0.25);
-    border-radius: 4px;
-    padding: 3px 6px;
-    font-size: 9px;
-    font-weight: 800;
-    color: #5ad39d;
-  }
-
-  .service-desc {
-    font-size: 13px;
-    color: #8b8f9d;
-    line-height: 1.45;
-    margin: 0 0 12px;
-  }
-
-  .service-meta {
-    display: flex;
-    gap: 16px;
-  }
-
-  .meta-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: #a0a5b2;
-    font-weight: 600;
-  }
-
-  .meta-icon {
-    width: 13px;
-    height: 13px;
-    color: #7c5cff;
-  }
-
-  .subsection-title {
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #ab98ff;
-    margin-bottom: 12px;
-  }
-
-  .days-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-  }
-
-  .day-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s ease;
-  }
-
-  .day-option:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(124, 92, 255, 0.2);
-  }
-
-  .day-option.checked {
-    background: rgba(124, 92, 255, 0.06);
-    border-color: #7c5cff;
-    box-shadow: 0 0 15px rgba(124, 92, 255, 0.1);
-  }
-
-  .day-label-text {
-    font-size: 13px;
-    font-weight: 800;
-    margin-bottom: 4px;
-  }
-
-  .day-date-text {
-    font-size: 9px;
-    color: #8b8f9d;
-  }
-
-  .slots-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .slot-option {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .slot-option:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(124, 92, 255, 0.2);
-  }
-
-  .slot-option.checked {
-    background: rgba(124, 92, 255, 0.06);
-    border-color: #7c5cff;
-  }
-
-  .slot-option.exhausted {
-    opacity: 0.35;
-    cursor: not-allowed;
-    background: rgba(255, 255, 255, 0.01) !important;
-    border-color: rgba(255, 255, 255, 0.03) !important;
-  }
-
-  .slot-time-text {
-    font-size: 14px;
-    font-weight: 700;
-  }
-
-  .slot-status-text {
-    font-size: 10px;
-    font-weight: 800;
-    color: #319a75;
-  }
-
-  .slot-option.exhausted .slot-status-text {
-    color: #ff5c5c;
-  }
-
-  .form-group-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .form-group label {
-    font-size: 12px;
-    font-weight: 700;
-    color: #a0a5b2;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .form-input {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 12px 16px;
-    font-size: 14px;
-    color: #fff;
-    outline: none;
-    transition: all 0.2s ease;
-  }
-
-  .form-input:focus {
-    border-color: #7c5cff;
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: 0 0 10px rgba(124, 92, 255, 0.1);
-  }
-
-  .form-nav-controls {
-    margin-top: 40px;
-    padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    display: flex;
-    align-items: center;
-  }
-
-  .nav-btn {
-    border: 0;
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-size: 13px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .prev-btn {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #f7f6f3;
-  }
-
-  .prev-btn:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .next-btn, .submit-btn {
-    background: #7c5cff;
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(124, 92, 255, 0.25);
-  }
-
-  .next-btn:hover, .submit-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 12px 28px rgba(124, 92, 255, 0.35);
-  }
-
-  .submit-btn {
-    background: #319a75;
-    box-shadow: 0 8px 24px rgba(49, 154, 117, 0.25);
-  }
-
-  .submit-btn:hover {
-    box-shadow: 0 12px 28px rgba(49, 154, 117, 0.35);
-  }
-
-  .hidden {
-    display: none !important;
-  }
-
-  .mt-6 { margin-top: 24px; }
-  .mt-8 { margin-top: 32px; }
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-  }
-
-  /* Success Screen Styles */
-  .success-header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
-
-  .success-icon-container {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    background: rgba(49, 154, 117, 0.08);
-    border: 1px solid rgba(49, 154, 117, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-  }
-
-  .success-checkmark {
-    width: 28px;
-    height: 28px;
-    color: #319a75;
-  }
-
-  .success-header h2 {
-    font-size: 26px;
-    font-weight: 800;
-    margin: 0 0 8px;
-  }
-
-  .success-header p {
-    font-size: 14px;
-    color: #a0a5b2;
-    margin: 0;
-  }
-
-  .receipt-card {
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px dashed rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 24px;
-  }
-
-  .receipt-card h3 {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    color: #727685;
-    margin: 0 0 16px;
-  }
-
-  .receipt-divider {
-    height: 1px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.08);
-    margin: 16px 0;
-  }
-
-  .receipt-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    padding: 6px 0;
-  }
-
-  .receipt-row span {
-    color: #a0a5b2;
-  }
-
-  .receipt-row strong {
-    color: #fff;
-  }
-
-  .receipt-row.total {
-    font-size: 15px;
-    padding: 8px 0 0;
-  }
-
-  .receipt-row.total strong {
-    color: #5ad39d;
-  }
-
-  .success-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .success-btn {
-    width: 100%;
-    border: 0;
-    border-radius: 12px;
-    padding: 14px;
-    font-size: 13px;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .primary-success-btn {
-    background: rgba(124, 92, 255, 0.12);
-    border: 1px solid rgba(124, 92, 255, 0.25);
-    color: #c2beff;
-  }
-
-  .primary-success-btn:hover {
-    background: rgba(124, 92, 255, 0.18);
-    border-color: rgba(124, 92, 255, 0.4);
-  }
-
-  .secondary-success-btn {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: #f7f6f3;
-  }
-
-  .secondary-success-btn:hover {
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  /* Viral Growth Loop Styles */
-  .viral-growth-card {
-    background: linear-gradient(135deg, rgba(124, 92, 255, 0.08), rgba(90, 200, 250, 0.03));
-    border: 1px solid rgba(124, 92, 255, 0.18);
-    border-radius: 20px;
-    padding: 24px;
-    display: grid;
-    gap: 16px;
-    text-align: left;
-  }
-
-  .viral-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 9px;
-    font-weight: 800;
-    color: #ab98ff;
-    letter-spacing: 0.04em;
-    margin-bottom: 8px;
-  }
-
-  .viral-icon {
-    width: 11px;
-    height: 11px;
-  }
-
-  .viral-content h4 {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0 0 6px;
-    color: #fff;
-  }
-
-  .viral-content p {
-    font-size: 13px;
-    color: #a0a5b2;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .viral-cta-btn {
-    background: #fff;
-    color: #07080c;
-    border: 0;
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-size: 12px;
-    font-weight: 800;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .viral-cta-btn:hover {
-    background: #e2e1df;
-    transform: translateY(-1px);
-  }
-
-  /* Sidebar Styles */
-  .sidebar-panel {
-    display: grid;
-    gap: 24px;
-  }
-
-  .bay-status-card {
-    padding: 24px;
-  }
-
-  .card-title {
-    font-size: 16px;
-    font-weight: 700;
-    margin: 0 0 4px;
-  }
-
-  .card-desc {
-    font-size: 13px;
-    color: #8b8f9d;
-    margin: 0 0 20px;
-  }
-
-  .bays-vertical-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .bay-row {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 12px;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 12px;
-    padding: 12px 14px;
-  }
-
-  .bay-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-
-  .bay-indicator.active {
-    background-color: #319a75;
-    box-shadow: 0 0 8px #319a75;
-  }
-
-  .bay-indicator.idle {
-    background-color: #6a6e7d;
-  }
-
-  .bay-info {
-    display: grid;
-  }
-
-  .bay-info strong {
-    font-size: 12px;
-    color: #fff;
-  }
-
-  .bay-tech {
-    font-size: 10px;
-    color: #8b8f9d;
-    margin-top: 2px;
-  }
-
-  .bay-status-tag {
-    font-size: 9px;
-    font-weight: 800;
-    color: #319a75;
-    background: rgba(49, 154, 117, 0.08);
-    border: 1px solid rgba(49, 154, 117, 0.2);
-    border-radius: 4px;
-    padding: 2px 6px;
-  }
-
-  .bay-status-tag.idle {
-    color: #8b8f9d;
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
-  }
-
-  .trust-badge-card {
-    padding: 18px 20px;
-  }
-
-  .trust-flex-row {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-  }
-
-  .trust-icon {
-    width: 24px;
-    height: 24px;
-    color: #319a75;
-    flex: 0 0 auto;
-    margin-top: 2px;
-  }
-
-  .trust-flex-row strong {
-    font-size: 12px;
-    color: #fff;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .trust-flex-row p {
-    font-size: 11px;
-    color: #8b8f9d;
-    line-height: 1.45;
-    margin: 0;
-  }
-
-  @media (max-width: 991px) {
-    .booking-grid {
-      grid-template-columns: 1fr;
+<script>
+  type Service = { id: string; name: string; duration_minutes: number };
+  type AvailabilityDay = { day_of_week: number; is_open: boolean; start_time: string | null; end_time: string | null };
+  type Shop = { id: string; name: string; slug: string; phone?: string | null; address_line1?: string | null; city: string; state: string; postal_code?: string | null; timezone: string };
+  type BusyInterval = { start_time: string; end_time: string; status: string };
+  type PublicPayload = { success: boolean; shop?: Shop; services?: Service[]; availability?: AvailabilityDay[]; error?: string };
+
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+  const alertBox = $("page-alert");
+  const form = $<HTMLFormElement>("booking-form");
+  const serviceSelect = $<HTMLSelectElement>("service-select");
+  const dateSelect = $<HTMLSelectElement>("date-select");
+  const timeSelect = $<HTMLSelectElement>("time-select");
+  const submitButton = $<HTMLButtonElement>("submit-btn");
+  let shop: Shop | null = null;
+  let services: Service[] = [];
+  let availability: AvailabilityDay[] = [];
+  let lastBooking: any = null;
+
+  const toMinutes = (value: string) => { const [h, m] = value.split(":").map(Number); return h * 60 + m; };
+  const fromMinutes = (value: number) => `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(value % 60).padStart(2, "0")}`;
+  const formatTime = (value: string) => {
+    const [h, m] = value.split(":").map(Number);
+    const suffix = h >= 12 ? "PM" : "AM";
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2, "0")} ${suffix}`;
+  };
+  const readJson = async (response: Response) => { try { return await response.json(); } catch { return { success: false, error: "invalid_server_response" }; } };
+
+  function showAlert(message: string) {
+    if (!alertBox) return;
+    alertBox.textContent = message;
+    alertBox.className = "alert";
+  }
+  function clearAlert() { if (alertBox) { alertBox.textContent = ""; alertBox.className = "alert hidden"; } }
+
+  function localDateParts(timezone: string, date = new Date()) {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+    const pick = (type: string) => parts.find((part) => part.type === type)?.value || "";
+    return `${pick("year")}-${pick("month")}-${pick("day")}`;
+  }
+
+  function weekdayForDate(value: string) { return new Date(`${value}T12:00:00Z`).getUTCDay(); }
+
+  function buildDates() {
+    if (!shop || !dateSelect) return;
+    const today = localDateParts(shop.timezone);
+    const base = new Date(`${today}T12:00:00Z`);
+    dateSelect.innerHTML = '<option value="">Select a date</option>';
+    let count = 0;
+    for (let offset = 0; offset <= 21; offset++) {
+      const candidate = new Date(base.getTime() + offset * 86400000);
+      const date = candidate.toISOString().slice(0, 10);
+      const day = availability.find((item) => Number(item.day_of_week) === candidate.getUTCDay());
+      if (!day?.is_open || !day.start_time || !day.end_time) continue;
+      const option = document.createElement("option");
+      option.value = date;
+      option.textContent = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(candidate);
+      dateSelect.append(option);
+      count++;
     }
+    dateSelect.disabled = count === 0;
+    if (count === 0) showAlert("This shop has not opened any booking days yet.");
   }
 
-  @media (max-width: 600px) {
-    .booking-portal-page {
-      padding: 60px 0 100px;
+  function selectedService() { return services.find((item) => item.id === serviceSelect?.value) || null; }
+
+  async function refreshSlots() {
+    if (!shop || !dateSelect || !timeSelect) return;
+    const service = selectedService();
+    const date = dateSelect.value;
+    timeSelect.innerHTML = '<option value="">Select a time</option>';
+    timeSelect.disabled = true;
+    if (!service || !date) { $("slot-state")!.textContent = "Choose a service and date to load current availability."; return; }
+
+    const day = availability.find((item) => Number(item.day_of_week) === weekdayForDate(date));
+    if (!day?.is_open || !day.start_time || !day.end_time) { $("slot-state")!.textContent = "The shop is closed on this date."; return; }
+
+    $("slot-state")!.textContent = "Checking current production bookings…";
+    const response = await fetch(`/api/public/repair-booking?shop=${encodeURIComponent(shop.slug)}&date=${encodeURIComponent(date)}`);
+    const data = await readJson(response);
+    if (!response.ok || !data.success) { $("slot-state")!.textContent = data.error || "Unable to load live availability."; return; }
+    const busy = Array.isArray(data.busy) ? data.busy as BusyInterval[] : [];
+
+    const openStart = toMinutes(day.start_time);
+    const openEnd = toMinutes(day.end_time);
+    const duration = Number(service.duration_minutes);
+    let availableCount = 0;
+    for (let start = openStart; start + duration <= openEnd; start += 30) {
+      const end = start + duration;
+      const overlaps = busy.some((row) => start < toMinutes(row.end_time) && end > toMinutes(row.start_time));
+      if (overlaps) continue;
+      const value = fromMinutes(start);
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = `${formatTime(value)} · ${duration} min`;
+      timeSelect.append(option);
+      availableCount++;
     }
-    .portal-header h1 {
-      font-size: 32px;
-    }
-    .booking-card {
-      padding: 20px;
-    }
-    .steps-progress {
-      overflow-x: auto;
-      padding-bottom: 16px;
-    }
-    .step-label {
-      display: none;
-    }
-    .form-group-grid {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-    .days-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .slots-grid {
-      grid-template-columns: 1fr;
-    }
+    timeSelect.disabled = availableCount === 0;
+    $("slot-state")!.textContent = availableCount ? `${availableCount} live ${availableCount === 1 ? "time" : "times"} available.` : "No open times remain for this service on that date.";
   }
-</style>
 
-<script is:inline>
-  // Customer-Facing Booking Portal Logic
-  document.addEventListener('DOMContentLoaded', () => {
-    let currentStep = 1;
-    const maxSteps = 4;
+  async function loadShop() {
+    const slug = new URLSearchParams(window.location.search).get("shop")?.trim() || "";
+    if (!slug) { showAlert("This booking link is missing its shop identifier. Ask the repair shop for its current Hermes Connect booking link."); return; }
+    const response = await fetch(`/api/public/repair-shop?slug=${encodeURIComponent(slug)}`);
+    const data = await readJson(response) as PublicPayload;
+    if (!response.ok || !data.success || !data.shop) { showAlert(data.error === "shop_not_found" ? "This repair shop booking link is not active." : data.error || "Unable to load this repair shop."); return; }
 
-    // Elements
-    const form = document.getElementById('booking-form');
-    const wizardCard = document.getElementById('booking-wizard-card');
-    const successCard = document.getElementById('booking-success-card');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    const submitBtn = document.getElementById('submit-btn');
+    shop = data.shop;
+    services = Array.isArray(data.services) ? data.services : [];
+    availability = Array.isArray(data.availability) ? data.availability : [];
+    $("shop-title")!.textContent = shop.name;
+    $("shop-meta")!.textContent = `${shop.city}, ${shop.state} · ${shop.phone || "Contact details available from the shop"}`;
+    $("timezone-pill")!.textContent = shop.timezone;
+    $("location-note")!.textContent = `${shop.address_line1 ? `${shop.address_line1}, ` : ""}${shop.city}, ${shop.state}${shop.postal_code ? ` ${shop.postal_code}` : ""}`;
 
-    // Init custom checked class for service options
-    const serviceLabels = document.querySelectorAll('.service-option');
-    serviceLabels.forEach(label => {
-      const radio = label.querySelector('input[type="radio"]');
-      if (radio.checked) {
-        label.classList.add('checked');
+    if (serviceSelect) {
+      for (const service of services) {
+        const option = document.createElement("option"); option.value = service.id; option.textContent = `${service.name} · ${service.duration_minutes} min`; serviceSelect.append(option);
       }
-      radio.addEventListener('change', () => {
-        serviceLabels.forEach(l => l.classList.remove('checked'));
-        if (radio.checked) {
-          label.classList.add('checked');
-        }
+      serviceSelect.disabled = services.length === 0;
+    }
+    buildDates();
+    $("booking-panel")?.classList.remove("hidden");
+    if (!services.length) showAlert("This shop has not published any services yet.");
+  }
+
+  serviceSelect?.addEventListener("change", () => { if (dateSelect) dateSelect.value = ""; if (timeSelect) { timeSelect.value = ""; timeSelect.disabled = true; } clearAlert(); });
+  dateSelect?.addEventListener("change", () => { clearAlert(); refreshSlots().catch(() => showAlert("Unable to refresh live time slots.")); });
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault(); clearAlert();
+    if (!shop || !serviceSelect || !dateSelect || !timeSelect) return;
+    const service = selectedService();
+    if (!service) return showAlert("Select a service.");
+    submitButton!.disabled = true;
+    try {
+      const response = await fetch("/api/public/repair-booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shop_slug: shop.slug,
+          service_id: service.id,
+          appointment_date: dateSelect.value,
+          start_time: timeSelect.value,
+          client_name: $<HTMLInputElement>("client-name")?.value,
+          client_email: $<HTMLInputElement>("client-email")?.value,
+          client_phone: $<HTMLInputElement>("client-phone")?.value,
+        }),
       });
-    });
-
-    // Init custom checked class for day options
-    const dayLabels = document.querySelectorAll('.day-option');
-    dayLabels.forEach(label => {
-      const radio = label.querySelector('input[type="radio"]');
-      if (radio.checked) {
-        label.classList.add('checked');
+      const data = await readJson(response);
+      if (!response.ok || !data.success || !data.booking) {
+        if (data.error === "slot_unavailable") { showAlert("That time was just booked. Please choose another available time."); await refreshSlots(); return; }
+        return showAlert(data.error || "Unable to create the appointment.");
       }
-      radio.addEventListener('change', () => {
-        dayLabels.forEach(l => l.classList.remove('checked'));
-        if (radio.checked) {
-          label.classList.add('checked');
-          updateSlotsAvailability();
-        }
-      });
-    });
-
-    // Init custom checked class for slot options
-    const slotLabels = document.querySelectorAll('.slot-option');
-    slotLabels.forEach(label => {
-      const radio = label.querySelector('input[type="radio"]');
-      if (radio.checked) {
-        label.classList.add('checked');
-      }
-      radio.addEventListener('change', () => {
-        if (label.classList.contains('exhausted')) {
-          radio.checked = false;
-          return;
-        }
-        slotLabels.forEach(l => l.classList.remove('checked'));
-        if (radio.checked) {
-          label.classList.add('checked');
-        }
-      });
-    });
-
-    // Slots Capacity Engine
-    function updateSlotsAvailability() {
-      const selectedDayInput = document.querySelector('input[name="selected_day"]:checked');
-      if (!selectedDayInput) return;
-      const day = selectedDayInput.value;
-
-      // Read current bookings from local storage
-      let bookings = [];
-      try {
-        const bookingsStr = localStorage.getItem('hermes_connect_bookings');
-        if (bookingsStr) bookings = JSON.parse(bookingsStr);
-      } catch (e) {
-        // Safe fail
-      }
-
-      // Count bookings per slot for the selected day
-      const capacityMap = {};
-      bookings.forEach(b => {
-        if (b.status !== 'CANCELLED' && b.date_id === day) {
-          capacityMap[b.time_slot_id] = (capacityMap[b.time_slot_id] || 0) + 1;
-        }
-      });
-
-      // Update slot displays
-      const slotInputs = document.querySelectorAll('input[name="selected_slot"]');
-      slotInputs.forEach(input => {
-        const slotId = input.value;
-        const count = capacityMap[slotId] || 0;
-        const remaining = Math.max(0, 3 - count);
-        const label = document.getElementById(`label-slot-${slotId}`);
-        const textSpan = document.getElementById(`capacity-slot-${slotId}`);
-
-        if (label && textSpan) {
-          if (remaining === 0) {
-            label.classList.add('exhausted');
-            textSpan.textContent = "Fully Booked (0/3)";
-            textSpan.style.color = "#ff5c5c";
-            if (input.checked) {
-              input.checked = false;
-              label.classList.remove('checked');
-            }
-          } else {
-            label.classList.remove('exhausted');
-            textSpan.textContent = `${remaining} of 3 Bays Open`;
-            textSpan.style.color = "#319a75";
-          }
-        }
-      });
-    }
-
-    // Step navigation
-    function updateWizard() {
-      // Hide all steps
-      const sections = document.querySelectorAll('.step-section');
-      sections.forEach(s => s.classList.remove('active'));
-
-      // Show current step section
-      const activeSection = document.querySelector(`[data-step-section="${currentStep}"]`);
-      activeSection.classList.add('active');
-
-      // Update step headers
-      const indicators = document.querySelectorAll('[data-step-indicator]');
-      indicators.forEach(ind => {
-        const stepNum = parseInt(ind.dataset.stepIndicator);
-        ind.classList.remove('active', 'completed');
-        if (stepNum === currentStep) {
-          ind.classList.add('active');
-        } else if (stepNum < currentStep) {
-          ind.classList.add('completed');
-        }
-      });
-
-      // Nav buttons visibility
-      if (currentStep === 1) {
-        prevBtn.classList.add('hidden');
-      } else {
-        prevBtn.classList.remove('hidden');
-      }
-
-      if (currentStep === maxSteps) {
-        nextBtn.classList.add('hidden');
-        submitBtn.classList.remove('hidden');
-      } else {
-        nextBtn.classList.remove('hidden');
-        submitBtn.classList.add('hidden');
-      }
-    }
-
-    // Form inputs validation per step
-    function validateStep(step) {
-      if (step === 1) {
-        const checked = document.querySelector('input[name="selected_service"]:checked');
-        if (!checked) {
-          alert('Please select a service before continuing.');
-          return false;
-        }
-        return true;
-      }
-      if (step === 2) {
-        const dayChecked = document.querySelector('input[name="selected_day"]:checked');
-        const slotChecked = document.querySelector('input[name="selected_slot"]:checked');
-        if (!dayChecked) {
-          alert('Please select a weekday.');
-          return false;
-        }
-        if (!slotChecked) {
-          alert('Please select an available time slot.');
-          return false;
-        }
-        const label = document.getElementById(`label-slot-${slotChecked.value}`);
-        if (label && label.classList.contains('exhausted')) {
-          alert('The selected slot is fully booked. Please choose another time.');
-          return false;
-        }
-        return true;
-      }
-      if (step === 3) {
-        const year = document.getElementById('vehicle_year').value;
-        const make = document.getElementById('vehicle_make').value;
-        const model = document.getElementById('vehicle_model').value;
-        const mileage = document.getElementById('vehicle_mileage').value;
-        if (!year || !make || !model || !mileage) {
-          alert('All vehicle fields are required.');
-          return false;
-        }
-        return true;
-      }
-      return true;
-    }
-
-    nextBtn.addEventListener('click', () => {
-      if (validateStep(currentStep)) {
-        currentStep++;
-        updateWizard();
-      }
-    });
-
-    prevBtn.addEventListener('click', () => {
-      currentStep--;
-      updateWizard();
-    });
-
-    // Form submission
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      // Final validate
-      const name = document.getElementById('customer_name').value;
-      const email = document.getElementById('customer_email').value;
-      const phone = document.getElementById('customer_phone').value;
-      const notes = document.getElementById('booking_notes').value;
-
-      if (!name || !email || !phone) {
-        alert('Please complete all contact details.');
-        return;
-      }
-
-      // Collect complete state
-      const serviceInput = document.querySelector('input[name="selected_service"]:checked');
-      const dayInput = document.querySelector('input[name="selected_day"]:checked');
-      const slotInput = document.querySelector('input[name="selected_slot"]:checked');
-      
-      const vYear = document.getElementById('vehicle_year').value;
-      const vMake = document.getElementById('vehicle_make').value;
-      const vModel = document.getElementById('vehicle_model').value;
-      const vMileage = document.getElementById('vehicle_mileage').value;
-
-      const bookingId = `booking-${Date.now()}`;
-      const serviceName = serviceInput.dataset.name;
-      const originalPrice = serviceInput.dataset.price;
-      const weekdayLabel = dayInput.dataset.label;
-      const slotTimeLabel = slotInput.dataset.label;
-
-      const newBooking = {
-        booking_id: bookingId,
-        customer_name: name,
-        customer_phone: phone,
-        customer_email: email,
-        service: serviceName,
-        price: `${originalPrice} (Free during Beta)`,
-        date: weekdayLabel,
-        date_id: dayInput.value,
-        time_slot: slotTimeLabel,
-        time_slot_id: slotInput.value,
-        vehicle: {
-          make: vMake,
-          model: vModel,
-          year: vYear,
-          mileage: vMileage
-        },
-        status: "NEW",
-        notes: notes,
-        created_at: new Date().toISOString()
-      };
-
-      // Persist to local storage
-      let currentBookings = [];
-      try {
-        const storedStr = localStorage.getItem('hermes_connect_bookings');
-        if (storedStr) currentBookings = JSON.parse(storedStr);
-      } catch (err) {
-        // fail safe
-      }
-
-      currentBookings.push(newBooking);
-      localStorage.setItem('hermes_connect_bookings', JSON.stringify(currentBookings));
-
-      // Trigger automatic Lead Store synchronization
-      syncLeadStore(newBooking);
-
-      // Populate Success Receipts
-      document.getElementById('receipt-id').textContent = bookingId.replace('booking-', 'APX-').toUpperCase();
-      document.getElementById('receipt-customer').textContent = name;
-      document.getElementById('receipt-vehicle').textContent = `${vYear} ${vMake} ${vModel}`;
-      document.getElementById('receipt-service').textContent = serviceName;
-      document.getElementById('receipt-slot').textContent = `${weekdayLabel} at ${slotTimeLabel}`;
-
-      // Transition to Success Card
-      wizardCard.classList.add('hidden');
-      successCard.classList.remove('hidden');
-
-      // Setup Add to Calendar (.ics)
-      document.getElementById('download-ics-btn').onclick = () => {
-        downloadIcs(newBooking);
-      };
-    });
-
-    // Local Synchronization to CRM Lead Store
-    function syncLeadStore(booking) {
-      try {
-        let leads = [];
-        const storedLeads = localStorage.getItem('hermes_lead_store');
-        if (storedLeads) leads = JSON.parse(storedLeads);
-
-        // Map booking status to CRM status
-        let leadStatus = 'NEW';
-
-        const serviceKey = booking.service.toLowerCase().replace(/\s+/g, '_');
-        const initials = booking.customer_name ? booking.customer_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() : 'BC';
-
-        const newLead = {
-          id: booking.booking_id,
-          name: booking.customer_name,
-          email: booking.customer_email,
-          phone: booking.customer_phone,
-          company: `${booking.vehicle.year} ${booking.vehicle.make} ${booking.vehicle.model}`,
-          initials: initials,
-          verticalKey: 'auto',
-          verticalName: 'Apex Auto Care',
-          message: booking.notes || `Booked a ${booking.service} for my ${booking.vehicle.year} ${booking.vehicle.make} ${booking.vehicle.model} on ${booking.date} at ${booking.time_slot}.`,
-          status: leadStatus,
-          confidenceNum: 0.99,
-          confidence: '99%',
-          priority: 'HIGH',
-          timestamp: 'Just now',
-          autoBooking: {
-            serviceKey: serviceKey,
-            serviceName: booking.service,
-            vehicle: `${booking.vehicle.year} ${booking.vehicle.make} ${booking.vehicle.model} (Mileage: ${booking.vehicle.mileage})`,
-            duration: booking.service === 'Full Synthetic Oil Change' ? '45 mins' : booking.service === 'Premium Brake Pad Replacement' ? '1.5 Hours' : '30 mins',
-            costRange: booking.price,
-            bay: "Bay 1 · Live Booking",
-            slot: `${booking.date} at ${booking.time_slot}`,
-            summary: `Live booked appointment via public customer booking link.`
-          },
-          aiSuggestedAction: 'Review booking slot & click Confirm Booking.'
-        };
-
-        leads.unshift(newLead);
-        localStorage.setItem('hermes_lead_store', JSON.stringify(leads));
-      } catch (e) {
-        console.error('Error syncing dynamic lead store from booking client:', e);
-      }
-    }
-
-    // High-Compatibility iCalendar (.ics) Generator
-    function downloadIcs(booking) {
-      const startDateTime = "20260821T110000"; // Default static mapped date FRI 11AM
-      const endDateTime = "20260821T120000";
-
-      const icsLines = [
-        "BEGIN:VCALENDAR",
-        "VERSION:2.0",
-        "PRODID:-//Hermes Connect//Apex Auto Care Portal//EN",
-        "BEGIN:VEVENT",
-        `UID:${booking.booking_id}@connect.hermeslogisticsus.com`,
-        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'}`,
-        `DTSTART:${startDateTime}`,
-        `DTEND:${endDateTime}`,
-        `SUMMARY:Apex Auto Care Booking: ${booking.service}`,
-        `DESCRIPTION:Confirmed booking for ${booking.customer_name} \\nVehicle: ${booking.vehicle.year} ${booking.vehicle.make} ${booking.vehicle.model} \\nNotes: ${booking.notes || 'None'} \\nPrice: FREE BETA`,
-        "LOCATION:Apex Auto Care - Madison Facility, 1402 Atlas Ave, Madison, WI 53714",
-        "STATUS:CONFIRMED",
-        "END:VEVENT",
-        "END:VCALENDAR"
-      ];
-
-      const icsString = icsLines.join("\r\n");
-      const blob = new Blob([icsString], { type: "text/calendar;charset=utf-8" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `apex_auto_care_${booking.booking_id}.ics`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    // Viral Growth Loop Button Tracking
-    const viralBtn = document.getElementById('viral-loop-cta');
-    if (viralBtn) {
-      viralBtn.addEventListener('click', () => {
-        try {
-          const viralLeads = JSON.parse(localStorage.getItem('hermes_connect_viral_leads') || '[]');
-          viralLeads.push({
-            id: `viral-${Date.now()}`,
-            timestamp: new Date().toISOString(),
-            triggered_by_booking: document.getElementById('receipt-id').textContent
-          });
-          localStorage.setItem('hermes_connect_viral_leads', JSON.stringify(viralLeads));
-        } catch (e) {
-          // fail safe
-        }
-        viralBtn.innerHTML = "✓ Inquiry Request Sent!";
-        viralBtn.style.backgroundColor = "#319a75";
-        viralBtn.style.color = "#fff";
-        viralBtn.disabled = true;
-      });
-    }
-
-    // Initialize Slots Availability on Startup
-    updateSlotsAvailability();
+      lastBooking = data.booking;
+      $("receipt-id")!.textContent = data.booking.id;
+      $("receipt-shop")!.textContent = data.booking.shop_name;
+      $("receipt-service")!.textContent = data.booking.service_name;
+      $("receipt-date")!.textContent = data.booking.appointment_date;
+      $("receipt-time")!.textContent = `${formatTime(data.booking.start_time)} – ${formatTime(data.booking.end_time)} (${data.booking.timezone})`;
+      $("receipt-status")!.textContent = data.booking.status;
+      $("success-summary")!.textContent = `${data.booking.client_name}, your appointment was written to the shop’s Hermes Connect booking inbox.`;
+      $("booking-panel")?.classList.add("hidden");
+      $("success-panel")?.classList.remove("hidden");
+    } catch { showAlert("Network error while creating the appointment."); }
+    finally { submitButton!.disabled = false; }
   });
+
+  $("calendar-btn")?.addEventListener("click", () => {
+    if (!lastBooking) return;
+    const compact = (date: string, time: string) => `${date.replaceAll("-", "")}T${time.replace(":", "")}00`;
+    const lines = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Hermes Connect//Repair Booking//EN", "BEGIN:VEVENT",
+      `UID:${lastBooking.id}@hermeslogisticsus.com`,
+      `DTSTART;TZID=${lastBooking.timezone}:${compact(lastBooking.appointment_date, lastBooking.start_time)}`,
+      `DTEND;TZID=${lastBooking.timezone}:${compact(lastBooking.appointment_date, lastBooking.end_time)}`,
+      `SUMMARY:${lastBooking.service_name} - ${lastBooking.shop_name}`,
+      `DESCRIPTION:Hermes Connect booking ${lastBooking.id}`,
+      "END:VEVENT", "END:VCALENDAR",
+    ];
+    const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${lastBooking.id}.ics`; anchor.click(); URL.revokeObjectURL(url);
+  });
+
+  loadShop().catch(() => showAlert("Unable to initialize this booking link."));
 </script>
+
+<style>
+  .booking-page{min-height:100vh;padding:116px 24px 80px;color:#f7f8fb;background:radial-gradient(circle at 12% 8%,rgba(124,92,255,.16),transparent 34%),radial-gradient(circle at 88% 16%,rgba(63,185,255,.1),transparent 28%),#090a0f}.shell{width:min(920px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a7adba;text-decoration:none;font-weight:700;margin-bottom:28px}.hero{margin-bottom:26px}.eyebrow{margin:0 0 8px;color:#9e8cff;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:850}h1{margin:0 0 10px;font-size:clamp(34px,6vw,58px);line-height:1.02}h2{margin:0 0 8px;font-size:28px}.muted{margin:0;color:#a8adba;line-height:1.65}.panel,.trust-panel{border:1px solid rgba(255,255,255,.1);background:rgba(18,19,27,.88);box-shadow:0 22px 70px rgba(0,0,0,.28);backdrop-filter:blur(18px);border-radius:22px}.panel{padding:28px}.panel-heading{display:flex;justify-content:space-between;gap:22px;align-items:flex-start;margin-bottom:24px}.pill{padding:8px 11px;border-radius:999px;background:rgba(124,92,255,.14);border:1px solid rgba(157,136,255,.28);font-size:12px;font-weight:800;color:#d8d0ff}.booking-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{display:flex;flex-direction:column;gap:8px;color:#dfe2ea;font-size:13px;font-weight:750}.field input,.field select{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.11);border-radius:12px;padding:13px 14px;background:#10121a;color:#fff;font:inherit;outline:none}.field input:focus,.field select:focus{border-color:#8f78ff;box-shadow:0 0 0 3px rgba(143,120,255,.12)}.span-2{grid-column:1/-1}.divider{height:1px;background:rgba(255,255,255,.08);margin:2px 0}.slot-state{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);color:#aab0bd;font-size:13px}.primary-btn,.secondary-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border-radius:12px;padding:13px 17px;font-weight:850;cursor:pointer}.primary-btn{border:0;background:linear-gradient(135deg,#8068ff,#5baef7);color:white}.primary-btn:disabled{opacity:.55;cursor:not-allowed}.secondary-btn{border:1px solid rgba(255,255,255,.12);background:#151722;color:#fff}.alert{padding:14px 16px;border:1px solid rgba(255,114,114,.25);background:rgba(180,42,42,.14);border-radius:14px;color:#ffc4c4;margin-bottom:20px}.hidden{display:none!important}.success-panel{text-align:center}.success-icon{color:#79e7b1;margin-bottom:12px}.receipt{margin:24px auto;max-width:680px;text-align:left;border-top:1px solid rgba(255,255,255,.08)}.receipt div{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08)}.receipt dt{color:#9096a6}.receipt dd{margin:0;color:#f7f8fb;font-weight:720;overflow-wrap:anywhere}.trust-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:20px;overflow:hidden}.trust-panel>div{display:flex;gap:10px;align-items:flex-start;padding:18px;background:rgba(255,255,255,.018);color:#adb3c0;font-size:13px;line-height:1.5}.trust-panel svg{flex:none;color:#9e8cff}@media(max-width:720px){.booking-page{padding:100px 16px 60px}.panel{padding:20px}.panel-heading{display:block}.pill{display:inline-block;margin-top:12px}.booking-form{grid-template-columns:1fr}.span-2{grid-column:auto}.trust-panel{grid-template-columns:1fr}.receipt div{grid-template-columns:1fr;gap:4px}}
+</style>
