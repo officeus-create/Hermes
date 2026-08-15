@@ -15,6 +15,7 @@ type VehicleRow = {
 
 const normalizeEmail = (value: unknown) => String(value ?? "").trim().toLowerCase();
 const todayIso = () => new Date().toISOString().slice(0, 10);
+const ACTIVE_APPOINTMENT_STATUSES = new Set(["confirmed", "in_progress"]);
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
@@ -86,7 +87,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     }
     if (status === "cancelled" || status === "canceled") customer.cancelled_bookings += 1;
 
-    if (status !== "cancelled" && status !== "canceled" && appointmentDate >= today) {
+    if (ACTIVE_APPOINTMENT_STATUSES.has(status) && appointmentDate >= today) {
       const candidate = {
         booking_id: String(booking.id),
         appointment_date: appointmentDate,

@@ -31,6 +31,16 @@ PRE="$(curl -sS -o "${TMP}/crm-pre-clean.json" -w '%{http_code}' -X POST "$BASE/
 echo "PRE_CLEAN_HTTP=$PRE"; cat "${TMP}/crm-pre-clean.json"; echo
 test "$PRE" = 200
 
+cleanup_on_exit() {
+  exit_code=$?
+  set +e
+  cleanup_http="$(curl -sS -o "${TMP}/crm-exit-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-customer-crm-smoke")"
+  echo "EXIT_CLEANUP_HTTP=$cleanup_http"; cat "${TMP}/crm-exit-clean.json" 2>/dev/null || true; echo
+  if [[ "$cleanup_http" != 200 ]]; then echo "CRM smoke cleanup failed during exit handling" >&2; fi
+  exit "$exit_code"
+}
+trap cleanup_on_exit EXIT
+
 REGISTER="$(jq -nc --arg email "$OWNER_EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes CRM Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production customer CRM verification account for Hermes Connect Repair Shops."}')"
 RC="$(curl -sS -o "${TMP}/crm-register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
 test "$RC" = 201
@@ -75,6 +85,7 @@ test "$(jq -r '.customers[0].total_bookings' "${TMP}/crm-customers.json")" = 2
 test "$(jq -r '.customers[0].completed_visits' "${TMP}/crm-customers.json")" = 1
 test "$(jq -r '.customers[0].last_service_date' "${TMP}/crm-customers.json")" = "$DATE1"
 test "$(jq -r '.customers[0].next_appointment.booking_id' "${TMP}/crm-customers.json")" = "$ID2"
+test "$(jq -r '.customers[0].next_appointment.status' "${TMP}/crm-customers.json")" = confirmed
 test "$(jq -r '.customers[0].vehicles | length' "${TMP}/crm-customers.json")" = 1
 test "$(jq -r '.customers[0].vehicles[0].make' "${TMP}/crm-customers.json")" = Ford
 test "$(jq -r '.customers[0].vehicles[0].model' "${TMP}/crm-customers.json")" = F-150
@@ -86,5 +97,6 @@ CLEAN="$(curl -sS -o "${TMP}/crm-clean.json" -w '%{http_code}' -X POST "$BASE/ap
 echo "CLEANUP_HTTP=$CLEAN"; cat "${TMP}/crm-clean.json"; echo
 test "$CLEAN" = 200
 test "$(jq -r '.remaining' "${TMP}/crm-clean.json")" = 0
+trap - EXIT
 
 echo "REPAIR_CUSTOMER_CRM_PRODUCTION_PASS=YES"
