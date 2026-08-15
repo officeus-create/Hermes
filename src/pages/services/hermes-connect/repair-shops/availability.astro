@@ -1,0 +1,235 @@
+---
+import { ArrowLeft, Clock3, LogOut } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Repair Shop Availability | Hermes Connect"
+  description="Set the real weekly availability for your repair shop in Hermes Connect."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <main class="availability-page">
+    <div class="shell">
+      <a class="back-link" href="/services/hermes-connect/repair-shops/dashboard/"><ArrowLeft size={16} /> Owner workspace</a>
+
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">Hermes Connect · Repair Shops</p>
+          <h1>Weekly availability</h1>
+          <p id="owner-summary" class="muted">Loading your secure schedule...</p>
+        </div>
+        <button id="logout-btn" class="secondary-btn" type="button"><LogOut size={16} /> Logout</button>
+      </header>
+
+      <div id="availability-alert" class="alert hidden" role="status"></div>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Production D1 schedule</p>
+            <h2>Shop hours</h2>
+            <p class="muted">One continuous booking window per day for this beta. Times are interpreted in your saved shop timezone.</p>
+          </div>
+          <span id="timezone-pill" class="timezone-pill"><Clock3 size={14} /> Timezone</span>
+        </div>
+
+        <form id="availability-form">
+          <div id="availability-list" class="availability-list" aria-live="polite"></div>
+          <button id="save-availability-btn" class="primary-btn" type="submit">Save weekly availability</button>
+        </form>
+      </section>
+
+      <section class="note-panel">
+        <strong>What this controls</strong>
+        <p class="muted">This schedule is stored for your shop only and is also exposed through your public shop profile. Customer bookable time slots will be generated from these hours and each service duration in the next production slice.</p>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type AvailabilityDay = {
+    day_of_week: number;
+    is_open: boolean;
+    start_time: string | null;
+    end_time: string | null;
+  };
+
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const displayOrder = [1, 2, 3, 4, 5, 6, 0];
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+  const alertBox = $("availability-alert");
+  const form = $<HTMLFormElement>("availability-form");
+  const saveButton = $<HTMLButtonElement>("save-availability-btn");
+  let days: AvailabilityDay[] = Array.from({ length: 7 }, (_, day) => ({
+    day_of_week: day,
+    is_open: false,
+    start_time: null,
+    end_time: null,
+  }));
+
+  function showAlert(message: string, kind: "error" | "success" = "error") {
+    if (!alertBox) return;
+    alertBox.textContent = message;
+    alertBox.className = `alert ${kind}`;
+  }
+  function clearAlert() {
+    if (!alertBox) return;
+    alertBox.textContent = "";
+    alertBox.className = "alert hidden";
+  }
+  async function readJson(response: Response) {
+    try { return await response.json(); }
+    catch { return { success: false, error: "invalid_server_response" }; }
+  }
+  function redirectToAuth() {
+    window.location.replace("/services/hermes-connect/repair-shops/auth/");
+  }
+
+  async function requireOwnerSession() {
+    const response = await fetch("/api/auth/me", { credentials: "same-origin" });
+    if (response.status === 401) { redirectToAuth(); return false; }
+    const data = await readJson(response);
+    if (!response.ok || !data.success || !data.specialist) {
+      showAlert(data.error || "Unable to load your secure session.");
+      return false;
+    }
+    const summary = $("owner-summary");
+    if (summary) summary.textContent = `${data.specialist.name} · ${data.specialist.email}`;
+    return true;
+  }
+
+  function renderDays() {
+    const list = $("availability-list");
+    if (!list) return;
+    list.innerHTML = "";
+
+    for (const dayNumber of displayOrder) {
+      const day = days.find((item) => item.day_of_week === dayNumber) ?? {
+        day_of_week: dayNumber, is_open: false, start_time: null, end_time: null,
+      };
+      const row = document.createElement("div");
+      row.className = "day-row";
+      row.dataset.day = String(dayNumber);
+
+      const openLabel = document.createElement("label");
+      openLabel.className = "open-toggle";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = day.is_open;
+      checkbox.setAttribute("aria-label", `${dayNames[dayNumber]} open`);
+      const dayName = document.createElement("strong");
+      dayName.textContent = dayNames[dayNumber];
+      openLabel.append(checkbox, dayName);
+
+      const timeWrap = document.createElement("div");
+      timeWrap.className = "time-wrap";
+      const start = document.createElement("input");
+      start.type = "time";
+      start.value = day.start_time || "08:00";
+      start.disabled = !day.is_open;
+      start.setAttribute("aria-label", `${dayNames[dayNumber]} start time`);
+      const separator = document.createElement("span");
+      separator.textContent = "to";
+      separator.className = "muted";
+      const end = document.createElement("input");
+      end.type = "time";
+      end.value = day.end_time || "17:00";
+      end.disabled = !day.is_open;
+      end.setAttribute("aria-label", `${dayNames[dayNumber]} end time`);
+      timeWrap.append(start, separator, end);
+
+      checkbox.addEventListener("change", () => {
+        start.disabled = !checkbox.checked;
+        end.disabled = !checkbox.checked;
+      });
+      row.append(openLabel, timeWrap);
+      list.append(row);
+    }
+  }
+
+  async function loadAvailability() {
+    const response = await fetch("/api/repair-shop/availability", { credentials: "same-origin" });
+    if (response.status === 401) return redirectToAuth();
+    const data = await readJson(response);
+    if (response.status === 409 && data.error === "shop_profile_required") {
+      showAlert("Save your shop profile in the owner workspace before setting availability.");
+      if (saveButton) saveButton.disabled = true;
+      return;
+    }
+    if (!response.ok || !data.success) {
+      showAlert(data.error || "Unable to load weekly availability.");
+      return;
+    }
+    days = Array.isArray(data.days) ? data.days : days;
+    renderDays();
+    const pill = $("timezone-pill");
+    if (pill) pill.textContent = data.timezone || "Shop timezone";
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    if (saveButton) saveButton.disabled = true;
+    try {
+      const payload = displayOrder.map((dayNumber) => {
+        const row = document.querySelector<HTMLElement>(`.day-row[data-day="${dayNumber}"]`)!;
+        const checkbox = row.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+        const times = row.querySelectorAll<HTMLInputElement>('input[type="time"]');
+        return {
+          day_of_week: dayNumber,
+          is_open: checkbox.checked,
+          start_time: checkbox.checked ? times[0].value : null,
+          end_time: checkbox.checked ? times[1].value : null,
+        };
+      });
+      const response = await fetch("/api/repair-shop/availability", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ days: payload }),
+      });
+      const data = await readJson(response);
+      if (!response.ok || !data.success) {
+        const messages: Record<string, string> = {
+          invalid_time_range: "Every open day must end after it starts.",
+          invalid_time: "Enter a valid start and end time for every open day.",
+          seven_days_required: "The full seven-day schedule is required.",
+        };
+        showAlert(messages[data.error] || data.error || "Unable to save weekly availability.");
+        return;
+      }
+      days = data.days;
+      renderDays();
+      showAlert("Weekly availability saved to production.", "success");
+    } catch {
+      showAlert("Network error while saving weekly availability.");
+    } finally {
+      if (saveButton) saveButton.disabled = false;
+    }
+  });
+
+  $("logout-btn")?.addEventListener("click", async () => {
+    const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+    if (response.ok) redirectToAuth(); else showAlert("Logout failed.");
+  });
+
+  async function initialize() {
+    try {
+      if (!(await requireOwnerSession())) return;
+      renderDays();
+      await loadAvailability();
+    } catch {
+      showAlert("Unable to initialize availability settings.");
+    }
+  }
+  initialize();
+</script>
+
+<style>
+  .availability-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 15% 10%,rgba(124,92,255,.17),transparent 32%),radial-gradient(circle at 85% 20%,rgba(90,200,250,.11),transparent 30%),#090a0f}.shell{width:min(900px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a4a9b6;text-decoration:none;font-weight:650;margin-bottom:26px}.page-header,.panel-heading{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.page-header{margin-bottom:28px}.eyebrow{margin:0 0 8px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:800;color:#9d88ff}h1{margin:0 0 8px;font-size:clamp(30px,5vw,48px);line-height:1.05}h2{margin:0 0 8px;font-size:25px}.muted{margin:0;color:#a5aab8;line-height:1.6}.panel,.note-panel{border:1px solid rgba(255,255,255,.08);background:rgba(20,22,30,.76);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.panel{padding:28px;margin-bottom:22px}.note-panel{padding:22px 26px}.timezone-pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border-radius:999px;padding:8px 12px;background:rgba(124,92,255,.14);color:#c9bfff;font-size:13px;font-weight:750}.availability-list{display:grid;gap:10px;margin:28px 0 22px}.day-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 17px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(7,8,12,.36)}.open-toggle{display:flex;align-items:center;gap:11px;min-width:150px;cursor:pointer}.open-toggle input{width:18px;height:18px;accent-color:#7c5cff}.time-wrap{display:flex;align-items:center;gap:10px}.time-wrap input{min-height:42px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#11131a;color:#fff;padding:0 11px;font:inherit;outline:none;color-scheme:dark}.time-wrap input:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.13)}.time-wrap input:disabled{opacity:.4}.primary-btn,.secondary-btn{cursor:pointer;font:inherit;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary-btn{min-height:46px;border:0;border-radius:11px;padding:0 18px;color:#fff;background:linear-gradient(135deg,#7c5cff,#4ba9dc)}.secondary-btn{border-radius:11px;padding:11px 15px;color:#e8e9ee;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}button:disabled{opacity:.55;cursor:not-allowed}.alert{margin:0 0 18px;padding:13px 15px;border-radius:12px;font-weight:650}.alert.error{color:#ffc1c1;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.17)}.alert.success{color:#a7f3d0;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.17)}.hidden{display:none!important}@media(max-width:680px){.availability-page{padding:100px 16px 64px}.page-header,.panel-heading,.day-row{flex-direction:column;align-items:stretch}.page-header .secondary-btn{width:100%}.panel{padding:20px}.open-toggle{min-width:0}.time-wrap{display:grid;grid-template-columns:1fr auto 1fr}.primary-btn{width:100%}}
+</style>
