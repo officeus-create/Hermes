@@ -75,5 +75,5 @@ test("Hermes Connect review hub exposes only canonical review surfaces", async (
   await expect(page.getByText("Request Access", { exact: true })).toBeVisible();
   await expect(page.getByText("AI Sales Coach", { exact: true })).toBeVisible();
   await expect(page.getByText("Mobile Web", { exact: true })).toHaveCount(0);
-  await expect(page.getByText(/V1|V2/)).toHaveCount(0);
+  await expect(page.locator('a[href*="hermes-connect-brand-v1"], a[href*="workspace-v2"], a[href*="mobile.html"]')).toHaveCount(0);
 });
