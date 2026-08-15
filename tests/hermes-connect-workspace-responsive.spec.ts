@@ -9,13 +9,13 @@ test.describe("Hermes Connect canonical responsive workspace", () => {
 
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
     await expect(page.locator(".app-shell")).toBeVisible();
-    await expect(page.getByText("Hermes Connect").first()).toBeVisible();
 
     if (testInfo.project.name === "mobile") {
       await expect(page.locator(".mobile-bar")).toBeVisible();
       await expect(page.locator(".mobile-bar [data-hermes-open]")).toBeVisible();
     } else {
       await expect(page.locator(".sidebar")).toBeVisible();
+      await expect(page.locator(".sidebar").getByText("Hermes Connect").first()).toBeVisible();
     }
 
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
