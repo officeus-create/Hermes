@@ -155,6 +155,9 @@ async function routeConnectHost(context) {
     return context.next();
   }
 
+  const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
+  if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
+
   if (isConnectDocument(incomingUrl.pathname) && acceptsMarkdown(context.request)) {
     const markdownUrl = new URL(incomingUrl);
     markdownUrl.pathname = `${CONNECT_ASSET_ROOT}/index.md`;
