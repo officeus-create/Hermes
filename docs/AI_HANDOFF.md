@@ -767,3 +767,12 @@ entries — append only.
 - Behavior delivered: Web/PWA remains the supported path, the public page no longer links or describes the retired binary as a secure signed release, the old binary URL temporarily redirects to the truthful status page, and future Android distribution is blocked until canonical-build, release-key, checksum and clean-device gates pass.
 - Tests run: APK checksum/provenance/signature inspection; `astro check` (0 errors); production build (164 generated HTML routes, no APK in `dist`); full `npm test` (passed); focused browser test added for CI. Local Playwright launch was blocked by the managed environment's network-approval boundary, not by a test assertion.
 - Remaining: create a fresh Android build from current `main`, configure a controlled release key outside the repository, record artifact and certificate fingerprints, and pass install/launch/core-flow smoke on a clean supported Android device before restoring the download.
+
+## 2026-08-15 — Codex — Repair Shop private beta feedback
+
+- Branch: `feature/repair-shop-private-beta-feedback`.
+- Behavior: authenticated Repair Shop owners can submit and review category, 1–5 rating, and free-text product feedback from the canonical workspace.
+- Privacy: queries are owner-scoped; feedback is not sent to analytics or public pages; expired records are automatically deleted after 180 days.
+- Guardrails: category/rating/message validation, 2,000-character maximum, private D1 storage, and a static contract executed by the existing Hermes Connect test chain.
+- Verification: focused contract, module syntax check, and `git diff --check` pass locally. Full build and browser suite are delegated to PR CI because this fresh checkout has no installed dependencies.
+- Next: after green CI and owner-approved merge, onboard 5–10 permissioned Repair Shop pilots and review only privacy-safe aggregate outcomes.

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import "./repair-shop-feedback-contract.test.mjs";
 import { createHash, createHmac } from "node:crypto";
 import { hashPassword, verifyPassword, createSessionToken } from "../src/legacy-prototype/auth.mjs";
 import { getAuthenticatedSpecialist } from "../functions/api/_lib/session.mjs";

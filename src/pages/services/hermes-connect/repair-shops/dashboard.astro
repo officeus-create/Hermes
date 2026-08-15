@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, CalendarClock, Copy, ExternalLink, LogOut, Plus, Users } from "@lucide/astro";
+import { ArrowLeft, CalendarClock, Copy, ExternalLink, LogOut, MessageSquareText, Plus, Users } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
@@ -63,6 +63,20 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
         <div id="bookings-empty" class="state-card hidden"><strong>No bookings yet</strong><span>Share your public booking link after services and hours are configured.</span></div>
         <div id="bookings-list" class="booking-list hidden"></div>
       </section>
+
+      <section class="panel" aria-labelledby="feedback-title">
+        <div class="panel-heading"><div><p class="eyebrow">Private beta</p><h2 id="feedback-title"><MessageSquareText size={22} /> Product feedback</h2><p class="muted">Tell the Hermes team what helps or blocks your shop.</p></div><span id="feedback-count" class="pill">0 notes</span></div>
+        <form id="feedback-form" class="grid-form">
+          <label class="field">Area<select id="feedback-category" required><option value="setup">Setup</option><option value="booking">Booking</option><option value="customers">Customers</option><option value="mobile">Mobile use</option><option value="other">Other</option></select></label>
+          <label class="field">Rating<select id="feedback-rating" required><option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Okay</option><option value="2">2 — Difficult</option><option value="1">1 — Blocked</option></select></label>
+          <label class="field span-2">What happened?<textarea id="feedback-message" minlength="10" maxlength="2000" required placeholder="What worked, what was confusing, or what should change next?"></textarea></label>
+          <p class="privacy-note span-2">Private beta record. Your note is available only in your authenticated workspace and to the Hermes product team. It is never sent to GA4 or shown on public shop pages, and is automatically deleted after 180 days.</p>
+          <button id="submit-feedback-btn" class="primary-btn span-2" type="submit">Send private feedback</button>
+        </form>
+        <div id="feedback-loading" class="state-card">Loading feedback…</div>
+        <div id="feedback-empty" class="state-card hidden"><strong>No feedback sent yet</strong><span>Your recent private notes will appear here.</span></div>
+        <div id="feedback-list" class="list hidden"></div>
+      </section>
     </div>
   </main>
   <SiteFooter />
@@ -74,6 +88,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   type BookingHistory = { id: string; booking_id: string; from_status: string | null; to_status: string; changed_at: string };
   type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
   type Booking = { id: string; service_name: string; duration_minutes: number; appointment_date: string; start_time: string; end_time: string; status: string; client_name: string; client_email: string; client_phone: string; vehicle?: BookingVehicle | null; history?: BookingHistory[] };
+  type Feedback = { id: string; category: string; rating: number; message: string; created_at: string; retention_until: string };
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
   const alertBox = $("workspace-alert");
@@ -81,6 +96,8 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const profileForm = $<HTMLFormElement>("profile-form");
   const addServiceButton = $<HTMLButtonElement>("add-service-btn");
   const saveProfileButton = $<HTMLButtonElement>("save-profile-btn");
+  const feedbackForm = $<HTMLFormElement>("feedback-form");
+  const submitFeedbackButton = $<HTMLButtonElement>("submit-feedback-btn");
   let publicBookingUrl = "";
 
   const statusLabels: Record<string, string> = { confirmed: "Confirmed", in_progress: "In progress", completed: "Completed", cancelled: "Cancelled" };
@@ -189,11 +206,23 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
   async function loadBookings(){const response=await fetch("/api/repair-shop/bookings",{credentials:"same-origin"});if(response.status===401)return redirectToAuth();const data=await readJson(response);if(!response.ok||!data.success){$("bookings-loading")?.classList.add("hidden");return showAlert(data.error||"Unable to load booking inbox.");}renderBookings(Array.isArray(data.bookings)?data.bookings:[]);}
 
+  function renderFeedback(items: Feedback[]) {
+    $("feedback-loading")?.classList.add("hidden"); $("feedback-count")!.textContent = `${items.length} ${items.length === 1 ? "note" : "notes"}`;
+    const list=$("feedback-list")!; const empty=$("feedback-empty")!; list.innerHTML="";
+    if(!items.length){list.classList.add("hidden");empty.classList.remove("hidden");return;} empty.classList.add("hidden");list.classList.remove("hidden");
+    for(const item of items){const row=document.createElement("article");row.className="feedback-row";const top=document.createElement("div");const category=document.createElement("strong");category.textContent=item.category.charAt(0).toUpperCase()+item.category.slice(1);const rating=document.createElement("span");rating.className="pill";rating.textContent=`${item.rating}/5`;top.append(category,rating);const message=document.createElement("p");message.textContent=item.message;const time=document.createElement("span");time.className="muted small";time.textContent=formatHistoryTime(item.created_at);row.append(top,message,time);list.append(row);}
+  }
+
+  async function loadFeedback(){const response=await fetch("/api/repair-shop/feedback",{credentials:"same-origin"});if(response.status===401)return redirectToAuth();const data=await readJson(response);if(!response.ok||!data.success){$("feedback-loading")?.classList.add("hidden");return showAlert(data.error||"Unable to load private feedback.");}renderFeedback(Array.isArray(data.feedback)?data.feedback:[]);}
+
+  feedbackForm?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();if(submitFeedbackButton)submitFeedbackButton.disabled=true;try{const response=await fetch("/api/repair-shop/feedback",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({category:$<HTMLSelectElement>("feedback-category")?.value,rating:Number($<HTMLSelectElement>("feedback-rating")?.value),message:$<HTMLTextAreaElement>("feedback-message")?.value})});const data=await readJson(response);if(!response.ok||!data.success)return showAlert(data.error||"Unable to save private feedback.");feedbackForm.reset();$<HTMLSelectElement>("feedback-rating")!.value="5";showAlert("Private feedback saved. Thank you.","success");await loadFeedback();}catch{showAlert("Network error while saving private feedback.");}finally{if(submitFeedbackButton)submitFeedbackButton.disabled=false;}});
+
   $("logout-btn")?.addEventListener("click",async()=>{const response=await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});if(response.ok)redirectToAuth();else showAlert("Logout failed.");});
-  async function initialize(){try{if(!(await requireOwnerSession()))return;await Promise.all([loadProfile(),loadServices(),loadBookings()]);}catch{showAlert("Unable to initialize the shop workspace.");}}
+  async function initialize(){try{if(!(await requireOwnerSession()))return;await Promise.all([loadProfile(),loadServices(),loadBookings(),loadFeedback()]);}catch{showAlert("Unable to initialize the shop workspace.");}}
   initialize();
 </script>
 
 <style>
 .workspace-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 15% 10%,rgba(124,92,255,.17),transparent 32%),radial-gradient(circle at 85% 20%,rgba(90,200,250,.11),transparent 30%),#090a0f}.shell{width:min(980px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a4a9b6;text-decoration:none;font-weight:700;margin-bottom:26px}.workspace-header,.panel-heading,.availability-panel{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.workspace-header{margin-bottom:28px}.workspace-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.eyebrow,.mini-label{margin:0 0 8px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:800;color:#9d88ff}h1{margin:0 0 8px;font-size:clamp(32px,5vw,50px);line-height:1.05}h2{margin:0 0 8px;font-size:25px}.muted{margin:0;color:#a5aab7;line-height:1.55}.small{font-size:12px}.panel{border:1px solid rgba(255,255,255,.1);background:rgba(17,18,26,.88);box-shadow:0 20px 70px rgba(0,0,0,.24);border-radius:20px;padding:24px;margin-top:18px}.pill,.status-pill{padding:7px 10px;border-radius:999px;background:rgba(124,92,255,.13);border:1px solid rgba(157,136,255,.24);color:#d6cfff;font-size:12px;font-weight:800}.status-completed{background:rgba(32,156,101,.12);border-color:rgba(96,230,166,.22);color:#baf2d4}.status-cancelled{background:rgba(171,53,53,.12);border-color:rgba(255,108,108,.22);color:#ffc1c1}.status-in_progress{background:rgba(55,139,208,.12);border-color:rgba(100,185,255,.22);color:#c0e4ff}.grid-form{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:20px}.field{display:flex;flex-direction:column;gap:7px;color:#dfe2ea;font-size:13px;font-weight:700}.field input,.field select,.status-select{box-sizing:border-box;width:100%;border:1px solid rgba(255,255,255,.1);background:#0f1119;color:#fff;border-radius:11px;padding:12px 13px;outline:none}.field input:focus,.field select:focus,.status-select:focus{border-color:#8e78ff;box-shadow:0 0 0 3px rgba(142,120,255,.12)}.span-2{grid-column:1/-1}.primary-btn,.secondary-btn,.danger-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;padding:11px 14px;font-weight:800;text-decoration:none;cursor:pointer}.primary-btn{border:0;background:linear-gradient(135deg,#8068ff,#58aef5);color:#fff}.secondary-btn{border:1px solid rgba(255,255,255,.11);background:#151722;color:#fff}.danger-btn{border:1px solid rgba(255,102,102,.2);background:rgba(160,42,42,.12);color:#ffb6b6}.service-form{display:flex;gap:12px;align-items:flex-end;margin-top:20px}.grow{flex:1}.duration{width:150px}.state-card{margin-top:18px;padding:18px;border:1px dashed rgba(255,255,255,.1);border-radius:14px;color:#a9afbc;display:flex;flex-direction:column;gap:5px}.list,.booking-list{display:grid;gap:10px;margin-top:18px}.row,.booking-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:14px;padding:14px}.row{display:flex;align-items:center;justify-content:space-between;gap:16px}.row>div{display:flex;flex-direction:column;gap:4px}.public-link{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-top:18px;padding:15px;border-radius:14px;background:rgba(124,92,255,.07);border:1px solid rgba(124,92,255,.16)}.public-link strong{display:block;overflow-wrap:anywhere;font-size:13px}.link-actions{display:flex;gap:8px;flex:none}.availability-panel{align-items:center}.booking-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.booking-when{margin:8px 0 6px;color:#e7e9f0;font-weight:650}.vehicle-line{margin:7px 0;color:#d8dbe4;font-size:13px;font-weight:700}.booking-card code{display:block;margin-top:11px;color:#777f90;font-size:11px;overflow-wrap:anywhere}.status-control{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.status-select{width:auto;min-width:145px;padding:8px 10px;font-size:12px}.history{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)}.history ol{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:7px}.history li{display:flex;gap:7px;align-items:center;padding:6px 9px;border-radius:9px;background:rgba(255,255,255,.035);font-size:11px}.history li span{color:#8f96a7}.alert{padding:13px 15px;border-radius:12px;margin-bottom:18px;background:rgba(177,47,47,.15);border:1px solid rgba(255,100,100,.2);color:#ffc2c2}.alert.success{background:rgba(34,142,94,.14);border-color:rgba(95,231,164,.2);color:#bff4d8}.hidden{display:none!important}@media(max-width:720px){.workspace-page{padding:100px 15px 60px}.workspace-header,.panel-heading,.availability-panel,.public-link{display:block}.workspace-actions{margin-top:14px}.workspace-actions .secondary-btn{margin-top:0}.availability-panel .primary-btn{margin-top:14px}.grid-form{grid-template-columns:1fr}.span-2{grid-column:auto}.service-form{display:grid}.duration{width:auto}.link-actions{margin-top:12px}.row{align-items:flex-start}.panel{padding:19px}.booking-top{display:block}.status-control{justify-content:flex-start;margin-top:10px}.status-select{width:100%}.history ol{display:grid}}
+.field textarea{box-sizing:border-box;width:100%;min-height:120px;resize:vertical;border:1px solid rgba(255,255,255,.1);background:#0f1119;color:#fff;border-radius:11px;padding:12px 13px;outline:none}.field textarea:focus{border-color:#8e78ff;box-shadow:0 0 0 3px rgba(142,120,255,.12)}.feedback-row{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025);border-radius:14px;padding:14px}.feedback-row>div{display:flex;align-items:center;justify-content:space-between;gap:12px}.feedback-row p{margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere}.privacy-note{margin:0;color:#a5aab7;font-size:12px;line-height:1.55}.panel-heading h2{display:flex;align-items:center;gap:8px}
 </style>
