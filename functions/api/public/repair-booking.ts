@@ -118,12 +118,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const clientName = asText(body.client_name);
   const clientEmail = asText(body.client_email).toLowerCase();
   const clientPhone = asText(body.client_phone);
-  const vehicleYear = Number(body.vehicle_year);
+  const vehicleYearText = asText(body.vehicle_year);
   const vehicleMake = asText(body.vehicle_make);
   const vehicleModel = asText(body.vehicle_model);
   const mileageText = asText(body.mileage);
-  const mileage = mileageText ? Number(mileageText) : null;
   const vin = asText(body.vin).toUpperCase();
+  const hasVehicleInput = Boolean(vehicleYearText || vehicleMake || vehicleModel || mileageText || vin);
+  const vehicleYear = vehicleYearText ? Number(vehicleYearText) : null;
+  const mileage = mileageText ? Number(mileageText) : null;
 
   if (!/^[a-z0-9-]{3,80}$/.test(slug)) return jsonResponse(400, { success: false, error: "invalid_shop_slug" });
   if (!serviceId || serviceId.length > 160) return jsonResponse(400, { success: false, error: "invalid_service_id" });
@@ -131,11 +133,13 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (clientName.length < 2 || clientName.length > 120) return jsonResponse(400, { success: false, error: "invalid_client_name" });
   if (!EMAIL_RE.test(clientEmail) || clientEmail.length > 200) return jsonResponse(400, { success: false, error: "invalid_client_email" });
   if (clientPhone.length < 7 || clientPhone.length > 40) return jsonResponse(400, { success: false, error: "invalid_client_phone" });
-  if (!Number.isInteger(vehicleYear) || vehicleYear < 1900 || vehicleYear > 2100) return jsonResponse(400, { success: false, error: "invalid_vehicle_year" });
-  if (vehicleMake.length < 1 || vehicleMake.length > 80) return jsonResponse(400, { success: false, error: "invalid_vehicle_make" });
-  if (vehicleModel.length < 1 || vehicleModel.length > 80) return jsonResponse(400, { success: false, error: "invalid_vehicle_model" });
-  if (mileage !== null && (!Number.isInteger(mileage) || mileage < 0 || mileage > 2000000)) return jsonResponse(400, { success: false, error: "invalid_mileage" });
-  if (vin && !VIN_RE.test(vin)) return jsonResponse(400, { success: false, error: "invalid_vin" });
+  if (hasVehicleInput) {
+    if (!Number.isInteger(vehicleYear) || Number(vehicleYear) < 1900 || Number(vehicleYear) > 2100) return jsonResponse(400, { success: false, error: "invalid_vehicle_year" });
+    if (vehicleMake.length < 1 || vehicleMake.length > 80) return jsonResponse(400, { success: false, error: "invalid_vehicle_make" });
+    if (vehicleModel.length < 1 || vehicleModel.length > 80) return jsonResponse(400, { success: false, error: "invalid_vehicle_model" });
+    if (mileage !== null && (!Number.isInteger(mileage) || mileage < 0 || mileage > 2000000)) return jsonResponse(400, { success: false, error: "invalid_mileage" });
+    if (vin && !VIN_RE.test(vin)) return jsonResponse(400, { success: false, error: "invalid_vin" });
+  }
 
   const shop = await getPublicShop(env.DB, slug);
   if (!shop) return jsonResponse(404, { success: false, error: "shop_not_found" });
@@ -185,42 +189,44 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   await ensureRepairShopBookingsSchema(env.DB);
   await ensureRepairShopBookingHistorySchema(env.DB);
-  await ensureRepairShopBookingVehicleSchema(env.DB);
+  if (hasVehicleInput) await ensureRepairShopBookingVehicleSchema(env.DB);
   const id = `repair-booking-${crypto.randomUUID()}`;
   const historyId = `repair-booking-history-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
-  try {
-    await env.DB.batch([
-      env.DB
-        .prepare(
-          `INSERT INTO repair_shop_bookings
-            (id,shop_id,owner_specialist_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,client_name,client_email,client_phone,created_at,updated_at)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-        )
-        .bind(
-          id,
-          shop.id,
-          shop.owner_specialist_id,
-          service.id,
-          service.name,
-          durationMinutes,
-          appointmentDate,
-          startTime,
-          endTime,
-          "confirmed",
-          clientName,
-          clientEmail,
-          clientPhone,
-          now,
-          now,
-        ),
-      env.DB
-        .prepare(
-          `INSERT INTO repair_shop_booking_history
-            (id,booking_id,owner_specialist_id,from_status,to_status,changed_at)
-           VALUES (?,?,?,?,?,?)`,
-        )
-        .bind(historyId, id, shop.owner_specialist_id, null, "confirmed", now),
+  const statements = [
+    env.DB
+      .prepare(
+        `INSERT INTO repair_shop_bookings
+          (id,shop_id,owner_specialist_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,client_name,client_email,client_phone,created_at,updated_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      )
+      .bind(
+        id,
+        shop.id,
+        shop.owner_specialist_id,
+        service.id,
+        service.name,
+        durationMinutes,
+        appointmentDate,
+        startTime,
+        endTime,
+        "confirmed",
+        clientName,
+        clientEmail,
+        clientPhone,
+        now,
+        now,
+      ),
+    env.DB
+      .prepare(
+        `INSERT INTO repair_shop_booking_history
+          (id,booking_id,owner_specialist_id,from_status,to_status,changed_at)
+         VALUES (?,?,?,?,?,?)`,
+      )
+      .bind(historyId, id, shop.owner_specialist_id, null, "confirmed", now),
+  ];
+  if (hasVehicleInput) {
+    statements.push(
       env.DB
         .prepare(
           `INSERT INTO repair_shop_booking_vehicles
@@ -228,7 +234,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
            VALUES (?,?,?,?,?,?,?,?,?)`,
         )
         .bind(id, shop.owner_specialist_id, vehicleYear, vehicleMake, vehicleModel, mileage, vin || null, now, now),
-    ]);
+    );
+  }
+
+  try {
+    await env.DB.batch(statements);
   } catch (error: any) {
     const message = String(error?.message ?? error ?? "");
     if (/unique|constraint/i.test(message)) return jsonResponse(409, { success: false, error: "slot_unavailable" });
@@ -251,13 +261,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       client_name: clientName,
       client_email: clientEmail,
       client_phone: clientPhone,
-      vehicle: {
-        year: vehicleYear,
-        make: vehicleMake,
-        model: vehicleModel,
-        mileage,
-        vin: vin || null,
-      },
+      vehicle: hasVehicleInput
+        ? { year: vehicleYear, make: vehicleMake, model: vehicleModel, mileage, vin: vin || null }
+        : null,
       timezone: shop.timezone,
     },
   });
