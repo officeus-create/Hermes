@@ -1,7 +1,16 @@
 import { hashPassword, isValidEmail, isValidPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
+import {
+  parseRepairShopReferralCookie,
+  persistRepairShopSalesAttribution,
+  repairShopReferralCookieHeader,
+  resolveRepairShopReferral,
+} from "../_lib/repair-shop-sales-attribution.mjs";
 
-type Env = { DB?: any };
+type Env = {
+  DB?: any;
+  REPAIR_SHOP_REFERRAL_MAP_JSON?: string;
+};
 
 const CONTROL_CHARS = new RegExp(
   "[<>" + String.fromCharCode(0) + "-" + String.fromCharCode(31) + String.fromCharCode(127) + "]",
@@ -9,6 +18,13 @@ const CONTROL_CHARS = new RegExp(
 );
 const cleanText = (value: unknown, max: number) =>
   String(value ?? "").replace(CONTROL_CHARS, "").trim().slice(0, max);
+
+function createdResponse(payload: Record<string, unknown>, sessionToken: string, clearReferralCookie: boolean) {
+  const headers = new Headers({ "Content-Type": "application/json; charset=utf-8" });
+  headers.append("Set-Cookie", sessionCookieHeader(sessionToken));
+  if (clearReferralCookie) headers.append("Set-Cookie", repairShopReferralCookieHeader("", { clear: true }));
+  return new Response(JSON.stringify(payload), { status: 201, headers });
+}
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
@@ -49,15 +65,33 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     .bind(id, email, hash, salt, name, role, location, bio, createdAt)
     .run();
 
+  const referralToken = role === "Shop Owner" ? parseRepairShopReferralCookie(request.headers.get("Cookie")) : "";
+  const referral = referralToken ? resolveRepairShopReferral(env, referralToken) : null;
+  let attributionCaptured = false;
+
+  if (referral && referralToken) {
+    attributionCaptured = await persistRepairShopSalesAttribution({
+      db: env.DB,
+      ownerSpecialistId: id,
+      referral,
+      referralToken,
+      registeredAt: createdAt,
+    });
+  }
+
   const token = createSessionToken();
   const expiresAt = sessionExpiry();
   await env.DB.prepare("INSERT INTO sessions (token, specialist_id, created_at, expires_at) VALUES (?, ?, ?, ?)")
     .bind(token, id, createdAt, expiresAt)
     .run();
 
-  return jsonResponse(
-    201,
-    { success: true, specialist: { id, email, name, role, location, bio } },
-    { "Set-Cookie": sessionCookieHeader(token) },
+  return createdResponse(
+    {
+      success: true,
+      specialist: { id, email, name, role, location, bio },
+      attribution_captured: attributionCaptured,
+    },
+    token,
+    Boolean(referralToken),
   );
 }
