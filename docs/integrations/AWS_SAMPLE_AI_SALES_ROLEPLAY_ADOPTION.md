@@ -119,7 +119,7 @@ Then AWS can be one implementation, not the architecture itself.
 
 ## Current prototype
 
-`public/demos/hermes-connect-brand-v1/sales-roleplay.html`
+`public/demos/hermes-connect/sales-roleplay.html`
 
 Boundary: visual simulation only. No real microphone/video/cloud processing yet.
 
