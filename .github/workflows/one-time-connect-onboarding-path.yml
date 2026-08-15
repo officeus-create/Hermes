@@ -29,10 +29,11 @@ jobs:
               raise SystemExit('expected retired onboarding workspace path not found')
           path.write_text(text.replace(old, new))
           PY
-          if grep -R "hermes-connect-brand-v1" tests scripts --exclude-dir=node_modules; then
-            echo "Retired Brand V1 dependency still exists in active tests/scripts" >&2
+          if grep -q "/demos/hermes-connect-brand-v1/workspace.html" tests/hermes-connect-onboarding.spec.ts; then
+            echo "Onboarding still depends on retired Brand V1 workspace" >&2
             exit 1
           fi
+          grep -q "/demos/hermes-connect/workspace.html" tests/hermes-connect-onboarding.spec.ts
           git diff --check
       - name: Commit onboarding path and remove temporary workflow
         shell: bash
