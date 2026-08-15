@@ -5,6 +5,8 @@ on:
     paths:
       - functions/api/repair-shop/customers.ts
       - src/pages/services/hermes-connect/repair-shops/customers.astro
+      - src/pages/services/hermes-connect/repair-shops/dashboard.astro
+      - tests/hermes-connect-repair-customers.spec.ts
       - .github/workflows/repair-shop-customer-crm-contract.yml
 
 permissions:
@@ -28,3 +30,13 @@ jobs:
           grep -q 'robots="noindex,nofollow"' src/pages/services/hermes-connect/repair-shops/customers.astro
           grep -q '/api/repair-shop/customers' src/pages/services/hermes-connect/repair-shops/customers.astro
           grep -q '/api/auth/me' src/pages/services/hermes-connect/repair-shops/customers.astro
+          grep -q '/services/hermes-connect/repair-shops/customers/' src/pages/services/hermes-connect/repair-shops/dashboard.astro
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Verify Customers UI on desktop and mobile Chromium
+        run: npx playwright test tests/hermes-connect-repair-customers.spec.ts --project=desktop --project=mobile
