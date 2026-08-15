@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const workspace = "/demos/hermes-connect-brand-v1/workspace.html";
+const workspace = "/demos/hermes-connect/workspace.html";
 
 test.describe("Hermes Connect Onboarding Business Type Selector", () => {
   test.beforeEach(async ({ page }) => {
