@@ -1,4 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
 
 type Env = { DB?: any };
 
@@ -18,12 +19,18 @@ export async function onRequestDelete({ request, env, params }: { request: Reque
 
   if (!service) return jsonResponse(404, { success: false, error: "service_not_found" });
 
-  const booking = await env.DB
+  const legacyBooking = await env.DB
     .prepare("SELECT id FROM bookings WHERE service_id = ? LIMIT 1")
     .bind(id)
     .first();
 
-  if (booking) return jsonResponse(409, { success: false, error: "service_has_bookings" });
+  await ensureRepairShopBookingsSchema(env.DB);
+  const repairBooking = await env.DB
+    .prepare("SELECT id FROM repair_shop_bookings WHERE service_id = ? AND owner_specialist_id = ? LIMIT 1")
+    .bind(id, specialist.id)
+    .first();
+
+  if (legacyBooking || repairBooking) return jsonResponse(409, { success: false, error: "service_has_bookings" });
 
   await env.DB
     .prepare("DELETE FROM services WHERE id = ? AND owner_specialist_id = ?")
