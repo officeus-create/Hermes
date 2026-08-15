@@ -5,8 +5,10 @@ on:
     branches: [main]
     paths:
       - functions/api/_lib/repair-shop-bookings-schema.mjs
+      - functions/api/_lib/repair-shop-booking-history-schema.mjs
       - functions/api/public/repair-booking.ts
       - functions/api/repair-shop/bookings.ts
+      - functions/api/repair-shop/bookings/[id]/status.ts
       - functions/api/repair-shop/cleanup-booking-smoke.ts
       - functions/api/services/[id].ts
       - src/pages/services/hermes-connect/repair-shops/booking.astro
@@ -22,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Exercise real production booking persistence and owner visibility
+      - name: Exercise real booking persistence, status history, and owner visibility
         shell: bash
         run: |
           set -euo pipefail
@@ -93,6 +95,37 @@ jobs:
           test "$OWNER" = 200
           test "$(jq -r --arg id "$BOOKING_ID" '[.bookings[] | select(.id==$id)] | length' "${RUNNER_TEMP}/owner-bookings.json")" = 1
           test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .client_email' "${RUNNER_TEMP}/owner-bookings.json")" = "$CLIENT_EMAIL"
+          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner-bookings.json")" = confirmed
+          test "$(jq -r --arg id "$BOOKING_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.from_status==null and .to_status=="confirmed")] | length' "${RUNNER_TEMP}/owner-bookings.json")" = 1
+
+          S1="$(curl -sS -o "${RUNNER_TEMP}/status1.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"in_progress"}')"
+          echo "STATUS_IN_PROGRESS_HTTP=$S1"; cat "${RUNNER_TEMP}/status1.json"; echo
+          test "$S1" = 200
+          test "$(jq -r '.booking.status' "${RUNNER_TEMP}/status1.json")" = in_progress
+          test "$(jq -r '[.history[] | select(.from_status=="confirmed" and .to_status=="in_progress")] | length' "${RUNNER_TEMP}/status1.json")" = 1
+
+          OWNER2="$(curl -sS -o "${RUNNER_TEMP}/owner2.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
+          echo "OWNER_AFTER_IN_PROGRESS_HTTP=$OWNER2"; cat "${RUNNER_TEMP}/owner2.json"; echo
+          test "$OWNER2" = 200
+          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner2.json")" = in_progress
+          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .history | length' "${RUNNER_TEMP}/owner2.json")" = 2
+
+          S2="$(curl -sS -o "${RUNNER_TEMP}/status2.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"completed"}')"
+          echo "STATUS_COMPLETED_HTTP=$S2"; cat "${RUNNER_TEMP}/status2.json"; echo
+          test "$S2" = 200
+          test "$(jq -r '.booking.status' "${RUNNER_TEMP}/status2.json")" = completed
+          test "$(jq -r '[.history[] | select(.from_status=="in_progress" and .to_status=="completed")] | length' "${RUNNER_TEMP}/status2.json")" = 1
+
+          OWNER3="$(curl -sS -o "${RUNNER_TEMP}/owner3.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
+          echo "OWNER_AFTER_COMPLETED_HTTP=$OWNER3"; cat "${RUNNER_TEMP}/owner3.json"; echo
+          test "$OWNER3" = 200
+          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner3.json")" = completed
+          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .history | length' "${RUNNER_TEMP}/owner3.json")" = 3
+
+          TERMINAL="$(curl -sS -o "${RUNNER_TEMP}/terminal.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"cancelled"}')"
+          echo "TERMINAL_TRANSITION_HTTP=$TERMINAL"; cat "${RUNNER_TEMP}/terminal.json"; echo
+          test "$TERMINAL" = 409
+          test "$(jq -r '.error' "${RUNNER_TEMP}/terminal.json")" = invalid_status_transition
 
           DUP="$(curl -sS -o "${RUNNER_TEMP}/duplicate.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
           echo "DUPLICATE_BOOKING_HTTP=$DUP"; cat "${RUNNER_TEMP}/duplicate.json"; echo
@@ -120,4 +153,4 @@ jobs:
           echo "OWNER_SESSION_AFTER_CLEANUP_HTTP=$AFTER"; cat "${RUNNER_TEMP}/after.json"; echo
           test "$AFTER" = 401
 
-          echo "REPAIR_BOOKING_PRODUCTION_PASS=YES"
+          echo "REPAIR_BOOKING_STATUS_HISTORY_PRODUCTION_PASS=YES"

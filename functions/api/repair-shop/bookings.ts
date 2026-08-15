@@ -1,5 +1,6 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
+import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-booking-history-schema.mjs";
 
 type Env = { DB?: any };
 
@@ -9,6 +10,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
 
   await ensureRepairShopBookingsSchema(env.DB);
+  await ensureRepairShopBookingHistorySchema(env.DB);
+
   const result = await env.DB
     .prepare(
       `SELECT id,shop_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,
@@ -21,5 +24,28 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     .bind(specialist.id)
     .all();
 
-  return jsonResponse(200, { success: true, bookings: result?.results ?? [] });
+  const historyResult = await env.DB
+    .prepare(
+      `SELECT id,booking_id,from_status,to_status,changed_at
+       FROM repair_shop_booking_history
+       WHERE owner_specialist_id = ?
+       ORDER BY changed_at ASC, id ASC`,
+    )
+    .bind(specialist.id)
+    .all();
+
+  const historyByBooking = new Map<string, any[]>();
+  for (const item of historyResult?.results ?? []) {
+    const bookingId = String(item.booking_id ?? "");
+    const list = historyByBooking.get(bookingId) ?? [];
+    list.push(item);
+    historyByBooking.set(bookingId, list);
+  }
+
+  const bookings = (result?.results ?? []).map((booking: any) => ({
+    ...booking,
+    history: historyByBooking.get(String(booking.id)) ?? [],
+  }));
+
+  return jsonResponse(200, { success: true, bookings });
 }
