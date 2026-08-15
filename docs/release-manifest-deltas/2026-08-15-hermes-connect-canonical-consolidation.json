@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-15-hermes-connect-canonical-consolidation",
+  "generated_at": "2026-08-15T09:48:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/demos/hermes-connect/workspace.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect/workspace.html",
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect/workspace.html",
+      "status": "COMPLETE",
+      "blocker": "Canonical responsive generic Connect preview workspace for desktop and mobile browsers.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/hermes-connect/review.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect/review.html",
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect/review.html",
+      "status": "COMPLETE",
+      "blocker": "Private canonical review hub; retired V1/V2 alternatives are no longer separate product choices.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/hermes-connect/sales-roleplay.html",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/demos/hermes-connect/sales-roleplay.html",
+      "sitemap_owner": null,
+      "source_file": "public/demos/hermes-connect/sales-roleplay.html",
+      "status": "COMPLETE",
+      "blocker": "Controlled Hermes Sales Coach visual prototype retained in the canonical Connect tree.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "removals": [
+    {
+      "route": "/demos/hermes-connect-brand-v1/",
+      "replacement": "https://connect.hermeslogisticsus.com/",
+      "reason": "Duplicate Brand V1 landing shell retired during canonical consolidation."
+    },
+    {
+      "route": "/demos/hermes-connect-brand-v1/sales-roleplay.html",
+      "replacement": "https://connect.hermeslogisticsus.com/sales-roleplay.html",
+      "reason": "Moved into the canonical Connect asset tree."
+    },
+    {
+      "route": "/demos/hermes-connect-brand-v1/mobile.html",
+      "replacement": "https://connect.hermeslogisticsus.com/",
+      "reason": "Separate mobile implementation retired in favor of one responsive workspace."
+    },
+    {
+      "route": "/demos/hermes-connect-brand-v1/workspace.html",
+      "replacement": "https://connect.hermeslogisticsus.com/",
+      "reason": "Brand V1 workspace path retired after moving the best workspace into the canonical tree."
+    },
+    {
+      "route": "/demos/hermes-connect-brand-v1/workspace-v2.html",
+      "replacement": "https://connect.hermeslogisticsus.com/",
+      "reason": "Visual-review V2 duplicate retired."
+    },
+    {
+      "route": "/demos/hermes-connect-brand-v1/review.html",
+      "replacement": "https://connect.hermeslogisticsus.com/review.html",
+      "reason": "Review hub moved into the canonical Connect asset tree."
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 3,
+    "route_count_removed": 6,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

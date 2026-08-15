@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
-const distRoot = join(root, "dist", "demos", "hermes-connect-brand-v1");
+const distRoot = join(root, "dist", "demos", "hermes-connect");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -47,10 +47,15 @@ assert(workspace.includes('data-hermes-drawer'), "workspace.html: global Hermes 
 assert(workspace.includes('data-mobile-view="home"'), "workspace.html: responsive mobile navigation is missing.");
 assert(workspace.includes('./sales-roleplay.html'), "workspace.html: Academy must link to Sales Coach.");
 assert(workspace.includes('./workspace.css') && workspace.includes('./workspace.js'), "workspace.html: local product assets are not linked.");
+assert(workspace.includes('./workspace-enhancements.css') && workspace.includes('./workspace-enhancements.js'), "workspace.html: canonical enhancement assets are not linked.");
+assert(!workspace.includes('workspace-launch-v2'), "workspace.html: retired launch-v2 asset names must not remain.");
+assert(!workspace.includes('hermes-connect-brand-v1'), "workspace.html: retired Brand V1 path must not remain.");
 
-for (const marker of ["Web Brand Lab", "Hermes Workspace", "Mobile Web", "AI Sales Coach"]) {
-  assert(review.includes(marker), `review.html: missing review hub marker: ${marker}`);
+for (const marker of ["Canonical Review Hub", "Responsive Workspace", "Request Access", "AI Sales Coach"]) {
+  assert(review.includes(marker), `review.html: missing canonical review marker: ${marker}`);
 }
+assert(!review.includes("Brand Direction V1"), "review.html: retired V1 review language must not remain.");
+assert(!review.includes("workspace-v2"), "review.html: retired workspace-v2 references must not remain.");
 
 assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav"), "workspace.css: Hermes drawer or mobile navigation style is missing.");
 assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer"), "workspace.js: core interaction contracts are missing.");
@@ -66,4 +71,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect Web Product V1 contract passed: workspace, review hub, mobile shell, industry switching, Hermes Intelligence, and no-network prototype boundary are present.");
+console.log("Hermes Connect canonical workspace contract passed: one responsive workspace, review hub, industry switching, Hermes Intelligence, and no-network preview boundary are present.");

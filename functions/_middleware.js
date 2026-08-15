@@ -1,7 +1,7 @@
 const CONNECT_HOST = "connect.hermeslogisticsus.com";
 const MAIN_HOST = "hermeslogisticsus.com";
-const LEGACY_CONNECT_ASSET_ROOT = "/demos/hermes-connect";
-const BRAND_CONNECT_ASSET_ROOT = "/demos/hermes-connect-brand-v1";
+const CONNECT_ASSET_ROOT = "/demos/hermes-connect";
+const OLD_BRAND_CONNECT_ASSET_ROOT = "/demos/hermes-connect-brand-v1";
 const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
@@ -21,26 +21,21 @@ const ACCESS_DOCUMENTS = new Map([
   ["/request-access/index.html", "/index.html"],
 ]);
 
-const BRAND_ROOT_ASSETS = new Set([
-  "/workspace.css",
-  "/workspace-launch-v2.css",
-  "/workspace-v2-injected.css",
-  "/workspace.js",
-  "/workspace-launch-v2.js",
-  "/workspace-v2.js",
-  "/styles.css",
-  "/app.js",
-]);
-
-const BRAND_DOCUMENTS = new Map([
+const CONNECT_DOCUMENTS = new Map([
   ["/", "/workspace.html"],
   ["/index.html", "/workspace.html"],
   ["/workspace", "/workspace.html"],
   ["/workspace/", "/workspace.html"],
   ["/workspace.html", "/workspace.html"],
-  ["/mobile.html", "/mobile.html"],
+  ["/mobile.html", "/workspace.html"],
   ["/review.html", "/review.html"],
   ["/sales-roleplay.html", "/sales-roleplay.html"],
+]);
+
+const NATIVE_CONNECT_DOCUMENTS = new Set([
+  "/workspace.html",
+  "/review.html",
+  "/sales-roleplay.html",
 ]);
 
 const KNOT_MARKUP = `<span class="brand-mark brand-mark-knot" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" fill="none" stroke="#9D88FF" stroke-width="5" stroke-linecap="round"/><path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round"/></svg></span>`;
@@ -64,30 +59,18 @@ function isConnectDocument(pathname) {
 
 function connectAssetPath(pathname) {
   if (ACCESS_DOCUMENTS.has(pathname)) {
-    return `${LEGACY_CONNECT_ASSET_ROOT}${ACCESS_DOCUMENTS.get(pathname)}`;
+    return `${CONNECT_ASSET_ROOT}${ACCESS_DOCUMENTS.get(pathname)}`;
   }
 
-  if (BRAND_DOCUMENTS.has(pathname)) {
-    return `${BRAND_CONNECT_ASSET_ROOT}${BRAND_DOCUMENTS.get(pathname)}`;
+  if (CONNECT_DOCUMENTS.has(pathname)) {
+    return `${CONNECT_ASSET_ROOT}${CONNECT_DOCUMENTS.get(pathname)}`;
   }
 
-  if (BRAND_ROOT_ASSETS.has(pathname)) {
-    return `${BRAND_CONNECT_ASSET_ROOT}${pathname}`;
-  }
-
-  if (pathname === CONNECT_BRAND_SHELL) {
-    return `${LEGACY_CONNECT_ASSET_ROOT}${CONNECT_BRAND_SHELL}`;
-  }
-
-  if (pathname === LEGACY_CONNECT_ASSET_ROOT || pathname.startsWith(`${LEGACY_CONNECT_ASSET_ROOT}/`)) {
+  if (pathname === CONNECT_ASSET_ROOT || pathname.startsWith(`${CONNECT_ASSET_ROOT}/`)) {
     return pathname;
   }
 
-  if (pathname === BRAND_CONNECT_ASSET_ROOT || pathname.startsWith(`${BRAND_CONNECT_ASSET_ROOT}/`)) {
-    return pathname;
-  }
-
-  return `${LEGACY_CONNECT_ASSET_ROOT}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
+  return `${CONNECT_ASSET_ROOT}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
 }
 
 function markdownResponse(response) {
@@ -142,6 +125,25 @@ async function connectHtmlResponse(response, { legacy = false } = {}) {
   });
 }
 
+function canonicalOldBrandRedirect(incomingUrl) {
+  if (!incomingUrl.pathname.startsWith(OLD_BRAND_CONNECT_ASSET_ROOT)) return null;
+
+  const suffix = incomingUrl.pathname.slice(OLD_BRAND_CONNECT_ASSET_ROOT.length) || "/";
+  const target = new URL(`https://${CONNECT_HOST}/`);
+  target.search = incomingUrl.search;
+  target.hash = incomingUrl.hash;
+
+  if (["/", "/index.html", "/workspace", "/workspace/", "/workspace.html", "/mobile.html", "/workspace-v2.html"].includes(suffix)) {
+    return target;
+  }
+
+  if (suffix === "/workspace-launch-v2.css") target.pathname = "/workspace-enhancements.css";
+  else if (suffix === "/workspace-launch-v2.js") target.pathname = "/workspace-enhancements.js";
+  else if (["/workspace-v2-injected.css", "/workspace-v2.js"].includes(suffix)) target.pathname = "/";
+  else target.pathname = suffix;
+  return target;
+}
+
 async function routeConnectHost(context) {
   if (!isConnectHost(context.request)) {
     return context.next();
@@ -153,9 +155,12 @@ async function routeConnectHost(context) {
     return context.next();
   }
 
+  const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
+  if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
+
   if (isConnectDocument(incomingUrl.pathname) && acceptsMarkdown(context.request)) {
     const markdownUrl = new URL(incomingUrl);
-    markdownUrl.pathname = `${LEGACY_CONNECT_ASSET_ROOT}/index.md`;
+    markdownUrl.pathname = `${CONNECT_ASSET_ROOT}/index.md`;
     const response = await context.env.ASSETS.fetch(new Request(markdownUrl, context.request));
     if (response.ok) return markdownResponse(response);
   }
@@ -165,7 +170,8 @@ async function routeConnectHost(context) {
   assetUrl.pathname = assetPath;
 
   const assetResponse = await context.env.ASSETS.fetch(new Request(assetUrl, context.request));
-  const legacy = assetPath.startsWith(`${LEGACY_CONNECT_ASSET_ROOT}/`) && incomingUrl.pathname !== CONNECT_BRAND_SHELL;
+  const relativeAssetPath = assetPath.slice(CONNECT_ASSET_ROOT.length);
+  const legacy = !NATIVE_CONNECT_DOCUMENTS.has(relativeAssetPath) && incomingUrl.pathname !== CONNECT_BRAND_SHELL;
   return connectHtmlResponse(assetResponse, { legacy });
 }
 
@@ -173,6 +179,10 @@ async function sanitizeMainDomainCopy(context) {
   if (requestHost(context.request) !== MAIN_HOST) {
     return routeConnectHost(context);
   }
+
+  const incomingUrl = new URL(context.request.url);
+  const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
+  if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
 
   const response = await context.next();
   const contentType = response.headers.get("content-type") || "";

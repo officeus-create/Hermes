@@ -44,24 +44,22 @@ function createChunk(type, data) {
 function generatePNG(width, height) {
   const header = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
-  // IHDR
   const ihdrData = Buffer.alloc(13);
   ihdrData.writeUInt32BE(width, 0);
   ihdrData.writeUInt32BE(height, 4);
-  ihdrData[8] = 8;  // bit depth
-  ihdrData[9] = 2;  // RGB
-  ihdrData[10] = 0; // compression
-  ihdrData[11] = 0; // filter
-  ihdrData[12] = 0; // interlace
+  ihdrData[8] = 8;
+  ihdrData[9] = 2;
+  ihdrData[10] = 0;
+  ihdrData[11] = 0;
+  ihdrData[12] = 0;
   const ihdrChunk = createChunk('IHDR', ihdrData);
 
-  // Raw image pixels (RGB: 3 bytes per pixel + 1 filter byte per scanline)
   const rowSize = 1 + width * 3;
   const rawData = Buffer.alloc(height * rowSize);
 
-  const bgR = 0x0B, bgG = 0x0D, bgB = 0x12; // Obsidian dark
-  const brandR = 0x25, brandG = 0x63, brandB = 0xEB; // Iris Blue
-  const accentR = 0xF7, accentG = 0xF6, accentB = 0xF3; // Pearl
+  const bgR = 0x0B, bgG = 0x0D, bgB = 0x12;
+  const brandR = 0x25, brandG = 0x63, brandB = 0xEB;
+  const accentR = 0xF7, accentG = 0xF6, accentB = 0xF3;
 
   const cx = width / 2;
   const cy = height / 2;
@@ -70,7 +68,7 @@ function generatePNG(width, height) {
 
   for (let y = 0; y < height; y++) {
     const offset = y * rowSize;
-    rawData[offset] = 0; // Filter type 0 (None)
+    rawData[offset] = 0;
     for (let x = 0; x < width; x++) {
       const pxOffset = offset + 1 + x * 3;
       const dx = x - cx;
@@ -78,17 +76,14 @@ function generatePNG(width, height) {
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist <= innerR) {
-        // Center core Pearl
         rawData[pxOffset] = accentR;
         rawData[pxOffset + 1] = accentG;
         rawData[pxOffset + 2] = accentB;
       } else if (dist <= outerR) {
-        // Brand ring Iris Blue
         rawData[pxOffset] = brandR;
         rawData[pxOffset + 1] = brandG;
         rawData[pxOffset + 2] = brandB;
       } else {
-        // Obsidian background
         rawData[pxOffset] = bgR;
         rawData[pxOffset + 1] = bgG;
         rawData[pxOffset + 2] = bgB;
@@ -103,7 +98,7 @@ function generatePNG(width, height) {
   return Buffer.concat([header, ihdrChunk, idatChunk, iendChunk]);
 }
 
-const targetDir = path.resolve('public/demos/hermes-connect-brand-v1');
+const targetDir = path.resolve('public/demos/hermes-connect');
 
 const sizes = [
   { name: 'apple-touch-icon.png', width: 180, height: 180 },

@@ -50,14 +50,14 @@ const displayTitle = label || defaultLabels[context]?.title || defaultLabels.gen
 const displaySubtitle = sublabel || defaultLabels[context]?.subtitle || defaultLabels.general.subtitle;
 
 // Contextual Deep Link Parameters mapping
-const defaultHref = "/demos/hermes-connect-brand-v1/workspace.html";
+const defaultHref = "https://connect.hermeslogisticsus.com/workspace";
 let computedHref = href || defaultHref;
 
 if (computedHref === defaultHref) {
   const params = new URLSearchParams();
   if (context !== "general") {
     params.set("source_direction", context);
-    
+
     const typeMap = {
       logistics: "logistics",
       marketing: "agency",

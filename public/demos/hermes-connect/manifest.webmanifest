@@ -1,8 +1,8 @@
 {
-  "id": "hermes-connect-v1",
-  "name": "Hermes Connect · AI Operating System",
+  "id": "hermes-connect",
+  "name": "Hermes Connect Preview Workspace",
   "short_name": "Hermes Connect",
-  "description": "Hermes Connect · AI Operating System. Run operations, CRM, team simulations, and corporate load dispatching in one integrated workspace.",
+  "description": "Hermes Connect responsive preview workspace for browser-based business workflow demonstrations.",
   "start_url": "./workspace.html",
   "scope": "./",
   "display": "standalone",

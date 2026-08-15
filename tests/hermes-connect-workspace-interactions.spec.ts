@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const route = "/demos/hermes-connect-brand-v1/workspace.html";
+const route = "/demos/hermes-connect/workspace.html";
 
 test("Hermes Connect workspace navigates core desktop modules and opens Hermes Intelligence", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop interaction contract.");
@@ -48,7 +48,7 @@ test("Hermes Connect workspace switches industry context", async ({ page }, test
   await expect(page.locator('[data-activity-list]')).toContainText("load opportunities");
 });
 
-test("Hermes Connect mobile web uses the shared product shell", async ({ page }, testInfo) => {
+test("Hermes Connect mobile browser uses the same responsive product shell", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Mobile interaction contract.");
   await page.addInitScript(() => {
     window.localStorage.setItem('hermes_business_type', 'logistics');
@@ -68,11 +68,12 @@ test("Hermes Connect mobile web uses the shared product shell", async ({ page },
   await expect(page.locator('[data-hermes-drawer]')).toHaveClass(/open/);
 });
 
-test("Hermes Connect review hub exposes the four visual review surfaces", async ({ page }) => {
-  await page.goto("/demos/hermes-connect-brand-v1/review.html");
-  await expect(page).toHaveTitle(/Visual Review Hub/);
-  await expect(page.getByText("Web Brand Lab", { exact: true })).toBeVisible();
-  await expect(page.getByText("Hermes Workspace", { exact: true })).toBeVisible();
-  await expect(page.getByText("Mobile Web", { exact: true })).toBeVisible();
+test("Hermes Connect review hub exposes only canonical review surfaces", async ({ page }) => {
+  await page.goto("/demos/hermes-connect/review.html");
+  await expect(page).toHaveTitle(/Review Hub/);
+  await expect(page.getByText("Responsive Workspace", { exact: true })).toBeVisible();
+  await expect(page.getByText("Request Access", { exact: true })).toBeVisible();
   await expect(page.getByText("AI Sales Coach", { exact: true })).toBeVisible();
+  await expect(page.getByText("Mobile Web", { exact: true })).toHaveCount(0);
+  await expect(page.locator('a[href*="hermes-connect-brand-v1"], a[href*="workspace-v2"], a[href*="mobile.html"]')).toHaveCount(0);
 });

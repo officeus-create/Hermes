@@ -1,14 +1,15 @@
 import { expect, test } from "@playwright/test";
 
-const workspace = "/demos/hermes-connect-brand-v1/workspace.html";
+const workspace = "/demos/hermes-connect/workspace.html";
+const publicWorkspace = "https://connect.hermeslogisticsus.com/workspace";
 
-test("Hermes Connect service page launches the interactive workspace", async ({ page }) => {
+test("Hermes Connect service page launches the canonical interactive workspace", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
   const launch = page.getByRole("link", { name: "Open interactive workspace" });
-  await expect(launch).toHaveAttribute("href", workspace);
+  await expect(launch).toHaveAttribute("href", publicWorkspace);
 });
 
-test("Hermes Connect launch workspace keeps explicit demo boundaries and switches vertical data", async ({ page }, testInfo) => {
+test("Hermes Connect workspace keeps explicit demo boundaries and switches vertical data", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Desktop launch contract.");
   await page.addInitScript(() => {
     window.localStorage.setItem('hermes_business_type', 'logistics');
@@ -34,7 +35,7 @@ test("Hermes Connect launch workspace keeps explicit demo boundaries and switche
   await expect(page.locator('[data-ops-list]')).toContainText("Simulated");
 });
 
-test("Hermes Connect mobile Web launches the same workspace and Hermes Intelligence", async ({ page }, testInfo) => {
+test("Hermes Connect mobile browser launches the same workspace and Hermes Intelligence", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile", "Mobile launch contract.");
   await page.addInitScript(() => {
     window.localStorage.setItem('hermes_business_type', 'logistics');
