@@ -1,7 +1,17 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
+import { ensureRepairShopAvailabilitySchema } from "../_lib/repair-shop-availability-schema.mjs";
 
 type Env = { DB?: any };
+
+function serializeAvailability(row: any) {
+  return {
+    day_of_week: Number(row.day_of_week),
+    is_open: Number(row.is_open) === 1,
+    start_time: row.start_time ?? null,
+    end_time: row.end_time ?? null,
+  };
+}
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
@@ -28,6 +38,25 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     .bind(shop.owner_specialist_id)
     .all();
 
+  await ensureRepairShopAvailabilitySchema(env.DB);
+  const availabilityResult = await env.DB
+    .prepare(
+      "SELECT day_of_week,is_open,start_time,end_time FROM repair_shop_availability WHERE shop_id = ? ORDER BY day_of_week ASC",
+    )
+    .bind(shop.id)
+    .all();
+  const storedAvailability = new Map(
+    (availabilityResult?.results ?? []).map((row: any) => [Number(row.day_of_week), serializeAvailability(row)]),
+  );
+  const availability = Array.from({ length: 7 }, (_, day) =>
+    storedAvailability.get(day) ?? { day_of_week: day, is_open: false, start_time: null, end_time: null },
+  );
+
   const { owner_specialist_id: _owner, ...publicShop } = shop;
-  return jsonResponse(200, { success: true, shop: publicShop, services: services?.results ?? [] });
+  return jsonResponse(200, {
+    success: true,
+    shop: publicShop,
+    services: services?.results ?? [],
+    availability,
+  });
 }
