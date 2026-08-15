@@ -13,144 +13,24 @@ on:
       - functions/api/services/[id].ts
       - src/pages/services/hermes-connect/repair-shops/booking.astro
       - src/pages/services/hermes-connect/repair-shops/dashboard.astro
+      - scripts/repair-booking-production-smoke.sh
       - .github/workflows/repair-booking-production-smoke.yml
 
 permissions:
   contents: read
+  checks: read
 
 jobs:
   smoke:
     name: Verify production customer to owner booking loop
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Exercise real booking persistence, status history, and owner visibility
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+
+      - name: Wait for exact Cloudflare Pages deploy and run production smoke
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         shell: bash
-        run: |
-          set -euo pipefail
-          BASE="https://hermeslogisticsus.com"
-          EMAIL="repair-booking-production-smoke@hermesconnect.app"
-          CLIENT_EMAIL="repair-booking-customer-smoke@hermesconnect.app"
-          TEST_ID="${GITHUB_RUN_ID}-$(date +%s)"
-          PASSWORD="HermesBooking-${TEST_ID}-A9!"
-          COOKIE="${RUNNER_TEMP}/owner.cookies"
-          echo "::add-mask::$PASSWORD"
-
-          CLEAN="000"
-          for attempt in $(seq 1 45); do
-            CLEAN="$(curl -sS -o "${RUNNER_TEMP}/pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke" || true)"
-            echo "PRE_CLEAN_ATTEMPT_${attempt}_HTTP=$CLEAN"
-            if [ "$CLEAN" = 200 ]; then break; fi
-            sleep 10
-          done
-          cat "${RUNNER_TEMP}/pre-clean.json"; echo
-          test "$CLEAN" = 200
-          test "$(jq -r '.success // false' "${RUNNER_TEMP}/pre-clean.json")" = true
-
-          REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Booking Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production booking verification account for Hermes Connect Repair Shops."}')"
-          RC="$(curl -sS -o "${RUNNER_TEMP}/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
-          echo "REGISTER_HTTP=$RC"; cat "${RUNNER_TEMP}/register.json"; echo
-          test "$RC" = 201
-
-          PROFILE='{"name":"Hermes Booking Smoke Shop","phone":"+1 414 555 0199","address_line1":"100 Booking Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
-          PC="$(curl -sS -o "${RUNNER_TEMP}/profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
-          echo "PROFILE_HTTP=$PC"; cat "${RUNNER_TEMP}/profile.json"; echo
-          test "$PC" = 200
-          SLUG="$(jq -r '.shop.slug' "${RUNNER_TEMP}/profile.json")"
-          test -n "$SLUG"
-
-          SERVICE='{"name":"Production Booking Smoke Service","duration_minutes":60}'
-          SC="$(curl -sS -o "${RUNNER_TEMP}/service.json" -w '%{http_code}' -b "$COOKIE" -X POST "$BASE/api/services" -H 'Content-Type: application/json' --data-binary "$SERVICE")"
-          echo "SERVICE_HTTP=$SC"; cat "${RUNNER_TEMP}/service.json"; echo
-          test "$SC" = 201
-          SERVICE_ID="$(jq -r '.service.id' "${RUNNER_TEMP}/service.json")"
-          test -n "$SERVICE_ID"
-
-          AVAILABILITY='{"days":[{"day_of_week":0,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":1,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"09:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"17:00"}]}'
-          AC="$(curl -sS -o "${RUNNER_TEMP}/availability.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/availability" -H 'Content-Type: application/json' --data-binary "$AVAILABILITY")"
-          echo "AVAILABILITY_HTTP=$AC"; cat "${RUNNER_TEMP}/availability.json"; echo
-          test "$AC" = 200
-
-          PUBLIC="$(curl -sS -o "${RUNNER_TEMP}/public.json" -w '%{http_code}' "$BASE/api/public/repair-shop?slug=$SLUG")"
-          echo "PUBLIC_SHOP_HTTP=$PUBLIC"; cat "${RUNNER_TEMP}/public.json"; echo
-          test "$PUBLIC" = 200
-          test "$(jq -r --arg id "$SERVICE_ID" '[.services[] | select(.id==$id)] | length' "${RUNNER_TEMP}/public.json")" = 1
-
-          APPOINTMENT_DATE="$(TZ=America/Chicago date -d 'tomorrow' +%F)"
-          BUSY0="$(curl -sS -o "${RUNNER_TEMP}/busy0.json" -w '%{http_code}' "$BASE/api/public/repair-booking?shop=$SLUG&date=$APPOINTMENT_DATE")"
-          echo "BUSY_BEFORE_HTTP=$BUSY0"; cat "${RUNNER_TEMP}/busy0.json"; echo
-          test "$BUSY0" = 200
-          test "$(jq '.busy | length' "${RUNNER_TEMP}/busy0.json")" = 0
-
-          BOOKING="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$APPOINTMENT_DATE" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Booking Smoke Customer",client_email:$email,client_phone:"+1 414 555 0188"}')"
-          BC="$(curl -sS -o "${RUNNER_TEMP}/booking.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
-          echo "PUBLIC_BOOKING_HTTP=$BC"; cat "${RUNNER_TEMP}/booking.json"; echo
-          test "$BC" = 201
-          test "$(jq -r '.success' "${RUNNER_TEMP}/booking.json")" = true
-          BOOKING_ID="$(jq -r '.booking.id' "${RUNNER_TEMP}/booking.json")"
-          test -n "$BOOKING_ID"
-
-          OWNER="$(curl -sS -o "${RUNNER_TEMP}/owner-bookings.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
-          echo "OWNER_BOOKINGS_HTTP=$OWNER"; cat "${RUNNER_TEMP}/owner-bookings.json"; echo
-          test "$OWNER" = 200
-          test "$(jq -r --arg id "$BOOKING_ID" '[.bookings[] | select(.id==$id)] | length' "${RUNNER_TEMP}/owner-bookings.json")" = 1
-          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .client_email' "${RUNNER_TEMP}/owner-bookings.json")" = "$CLIENT_EMAIL"
-          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner-bookings.json")" = confirmed
-          test "$(jq -r --arg id "$BOOKING_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.from_status==null and .to_status=="confirmed")] | length' "${RUNNER_TEMP}/owner-bookings.json")" = 1
-
-          S1="$(curl -sS -o "${RUNNER_TEMP}/status1.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"in_progress"}')"
-          echo "STATUS_IN_PROGRESS_HTTP=$S1"; cat "${RUNNER_TEMP}/status1.json"; echo
-          test "$S1" = 200
-          test "$(jq -r '.booking.status' "${RUNNER_TEMP}/status1.json")" = in_progress
-          test "$(jq -r '[.history[] | select(.from_status=="confirmed" and .to_status=="in_progress")] | length' "${RUNNER_TEMP}/status1.json")" = 1
-
-          OWNER2="$(curl -sS -o "${RUNNER_TEMP}/owner2.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
-          echo "OWNER_AFTER_IN_PROGRESS_HTTP=$OWNER2"; cat "${RUNNER_TEMP}/owner2.json"; echo
-          test "$OWNER2" = 200
-          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner2.json")" = in_progress
-          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .history | length' "${RUNNER_TEMP}/owner2.json")" = 2
-
-          S2="$(curl -sS -o "${RUNNER_TEMP}/status2.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"completed"}')"
-          echo "STATUS_COMPLETED_HTTP=$S2"; cat "${RUNNER_TEMP}/status2.json"; echo
-          test "$S2" = 200
-          test "$(jq -r '.booking.status' "${RUNNER_TEMP}/status2.json")" = completed
-          test "$(jq -r '[.history[] | select(.from_status=="in_progress" and .to_status=="completed")] | length' "${RUNNER_TEMP}/status2.json")" = 1
-
-          OWNER3="$(curl -sS -o "${RUNNER_TEMP}/owner3.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
-          echo "OWNER_AFTER_COMPLETED_HTTP=$OWNER3"; cat "${RUNNER_TEMP}/owner3.json"; echo
-          test "$OWNER3" = 200
-          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${RUNNER_TEMP}/owner3.json")" = completed
-          test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .history | length' "${RUNNER_TEMP}/owner3.json")" = 3
-
-          TERMINAL="$(curl -sS -o "${RUNNER_TEMP}/terminal.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"cancelled"}')"
-          echo "TERMINAL_TRANSITION_HTTP=$TERMINAL"; cat "${RUNNER_TEMP}/terminal.json"; echo
-          test "$TERMINAL" = 409
-          test "$(jq -r '.error' "${RUNNER_TEMP}/terminal.json")" = invalid_status_transition
-
-          DUP="$(curl -sS -o "${RUNNER_TEMP}/duplicate.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
-          echo "DUPLICATE_BOOKING_HTTP=$DUP"; cat "${RUNNER_TEMP}/duplicate.json"; echo
-          test "$DUP" = 409
-          test "$(jq -r '.error' "${RUNNER_TEMP}/duplicate.json")" = slot_unavailable
-
-          BUSY1="$(curl -sS -o "${RUNNER_TEMP}/busy1.json" -w '%{http_code}' "$BASE/api/public/repair-booking?shop=$SLUG&date=$APPOINTMENT_DATE")"
-          echo "BUSY_AFTER_HTTP=$BUSY1"; cat "${RUNNER_TEMP}/busy1.json"; echo
-          test "$BUSY1" = 200
-          test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${RUNNER_TEMP}/busy1.json")" = 1
-          test "$(jq '[.busy[] | has("id") or has("status")] | any' "${RUNNER_TEMP}/busy1.json")" = false
-
-          DELETE_SERVICE="$(curl -sS -o "${RUNNER_TEMP}/delete-service.json" -w '%{http_code}' -b "$COOKIE" -X DELETE "$BASE/api/services/$SERVICE_ID")"
-          echo "DELETE_BOOKED_SERVICE_HTTP=$DELETE_SERVICE"; cat "${RUNNER_TEMP}/delete-service.json"; echo
-          test "$DELETE_SERVICE" = 409
-          test "$(jq -r '.error' "${RUNNER_TEMP}/delete-service.json")" = service_has_bookings
-
-          CLEAN2="$(curl -sS -o "${RUNNER_TEMP}/cleanup.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
-          echo "CLEANUP_HTTP=$CLEAN2"; cat "${RUNNER_TEMP}/cleanup.json"; echo
-          test "$CLEAN2" = 200
-          test "$(jq -r '.success' "${RUNNER_TEMP}/cleanup.json")" = true
-          test "$(jq -r '.remaining' "${RUNNER_TEMP}/cleanup.json")" = 0
-
-          AFTER="$(curl -sS -o "${RUNNER_TEMP}/after.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/bookings")"
-          echo "OWNER_SESSION_AFTER_CLEANUP_HTTP=$AFTER"; cat "${RUNNER_TEMP}/after.json"; echo
-          test "$AFTER" = 401
-
-          echo "REPAIR_BOOKING_STATUS_HISTORY_PRODUCTION_PASS=YES"
+        run: bash scripts/repair-booking-production-smoke.sh
