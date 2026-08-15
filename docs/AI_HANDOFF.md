@@ -774,5 +774,5 @@ entries — append only.
 - Behavior: authenticated Repair Shop owners can submit and review category, 1–5 rating, and free-text product feedback from the canonical workspace.
 - Privacy: queries are owner-scoped; feedback is not sent to analytics or public pages; expired records are automatically deleted after 180 days.
 - Guardrails: category/rating/message validation, 2,000-character maximum, private D1 storage, and a static contract executed by the existing Hermes Connect test chain.
-- Verification: focused contract, module syntax check, and `git diff --check` pass locally. Full build and browser suite are delegated to PR CI because this fresh checkout has no installed dependencies.
+- Verification: focused contract, auth integration chain, module syntax check, and `git diff --check` pass locally. A focused Playwright contract covers submission, persisted rendering, and the analytics privacy boundary; full build and browser execution are delegated to PR CI because this fresh checkout has no installed dependencies.
 - Next: after green CI and owner-approved merge, onboard 5–10 permissioned Repair Shop pilots and review only privacy-safe aggregate outcomes.
