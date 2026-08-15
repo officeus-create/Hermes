@@ -1,5 +1,5 @@
 export async function ensureRepairShopProfileSchema(db) {
-  await db.exec(`
+  await db.prepare(`
     CREATE TABLE IF NOT EXISTS repair_shops (
       id TEXT PRIMARY KEY,
       owner_specialist_id TEXT NOT NULL UNIQUE,
@@ -13,8 +13,8 @@ export async function ensureRepairShopProfileSchema(db) {
       timezone TEXT NOT NULL,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
-    );
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_owner ON repair_shops(owner_specialist_id);
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_slug ON repair_shops(slug);
-  `);
+    )
+  `).run();
+  await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_owner ON repair_shops(owner_specialist_id)").run();
+  await db.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shops_slug ON repair_shops(slug)").run();
 }
