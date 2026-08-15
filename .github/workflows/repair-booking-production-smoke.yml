@@ -6,6 +6,7 @@ on:
     paths:
       - functions/api/_lib/repair-shop-bookings-schema.mjs
       - functions/api/_lib/repair-shop-booking-history-schema.mjs
+      - functions/api/_lib/repair-shop-booking-vehicle-schema.mjs
       - functions/api/public/repair-booking.ts
       - functions/api/repair-shop/bookings.ts
       - functions/api/repair-shop/bookings/[id]/status.ts

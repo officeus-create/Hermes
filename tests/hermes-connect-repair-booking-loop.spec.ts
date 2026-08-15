@@ -30,6 +30,16 @@ const shopPayload = {
   })),
 };
 
+async function fillVehicleAndContact(page: any, values: { name: string; email: string; phone: string }) {
+  await page.locator("#vehicle-year").fill("2021");
+  await page.locator("#vehicle-make").fill("Ford");
+  await page.locator("#vehicle-model").fill("F-150");
+  await page.locator("#vehicle-mileage").fill("84500");
+  await page.locator("#client-name").fill(values.name);
+  await page.locator("#client-email").fill(values.email);
+  await page.locator("#client-phone").fill(values.phone);
+}
+
 test.describe("Hermes Connect Repair Shop real booking browser contract", () => {
   test("customer booking is driven by public APIs instead of localStorage demo state", async ({ page }) => {
     let bookingBody: Record<string, unknown> | null = null;
@@ -50,7 +60,7 @@ test.describe("Hermes Connect Repair Shop real booking browser contract", () => 
     await page.route("**/api/public/repair-booking", async (route) => {
       if (route.request().method() !== "POST") return route.continue();
       bookingBody = route.request().postDataJSON();
-      const body = bookingBody as Record<string, string>;
+      const body = bookingBody as Record<string, any>;
       await route.fulfill({
         status: 201,
         contentType: "application/json",
@@ -70,6 +80,13 @@ test.describe("Hermes Connect Repair Shop real booking browser contract", () => 
             client_name: body.client_name,
             client_email: body.client_email,
             client_phone: body.client_phone,
+            vehicle: {
+              year: body.vehicle_year,
+              make: body.vehicle_make,
+              model: body.vehicle_model,
+              mileage: Number(body.mileage),
+              vin: null,
+            },
             timezone: shopPayload.shop.timezone,
           },
         }),
@@ -89,14 +106,14 @@ test.describe("Hermes Connect Repair Shop real booking browser contract", () => 
     await page.locator("#date-select").selectOption(appointmentDate!);
     await expect(page.locator("#slot-state")).toContainText("live");
     await page.locator("#time-select").selectOption("10:00");
-    await page.locator("#client-name").fill("Jane Production Test");
-    await page.locator("#client-email").fill("jane@example.com");
-    await page.locator("#client-phone").fill("+1 414 555 0188");
+    await fillVehicleAndContact(page, { name: "Jane Production Test", email: "jane@example.com", phone: "+1 414 555 0188" });
     await page.locator("#submit-btn").click();
 
     await expect(page.locator("#success-panel")).toBeVisible();
     await expect(page.locator("#receipt-id")).toHaveText("repair-booking-browser-contract");
     await expect(page.locator("#receipt-service")).toHaveText("Brake inspection");
+    await expect(page.locator("#receipt-vehicle")).toContainText("2021 Ford F-150");
+    await expect(page.locator("#receipt-vehicle")).toContainText("84,500 mi");
     await expect(page.locator("#receipt-status")).toHaveText("confirmed");
 
     expect(bookingBody).toMatchObject({
@@ -107,6 +124,10 @@ test.describe("Hermes Connect Repair Shop real booking browser contract", () => 
       client_name: "Jane Production Test",
       client_email: "jane@example.com",
       client_phone: "+1 414 555 0188",
+      vehicle_year: 2021,
+      vehicle_make: "Ford",
+      vehicle_model: "F-150",
+      mileage: "84500",
     });
 
     const legacyStorage = await page.evaluate(() => ({
@@ -137,9 +158,7 @@ test.describe("Hermes Connect Repair Shop real booking browser contract", () => 
     const appointmentDate = await page.locator("#date-select option").nth(1).getAttribute("value");
     await page.locator("#date-select").selectOption(appointmentDate!);
     await page.locator("#time-select").selectOption("10:00");
-    await page.locator("#client-name").fill("Conflict Customer");
-    await page.locator("#client-email").fill("conflict@example.com");
-    await page.locator("#client-phone").fill("+1 414 555 0177");
+    await fillVehicleAndContact(page, { name: "Conflict Customer", email: "conflict@example.com", phone: "+1 414 555 0177" });
     await page.locator("#submit-btn").click();
 
     await expect(page.locator("#page-alert")).toContainText("just booked");

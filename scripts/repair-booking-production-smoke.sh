@@ -79,11 +79,16 @@ echo "BUSY_BEFORE_HTTP=$BUSY0"; cat "${TMP}/busy0.json"; echo
 test "$BUSY0" = 200
 test "$(jq '.busy | length' "${TMP}/busy0.json")" = 0
 
-BOOKING="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$APPOINTMENT_DATE" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Booking Smoke Customer",client_email:$email,client_phone:"+1 414 555 0188"}')"
+BOOKING="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_ID" --arg date "$APPOINTMENT_DATE" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Booking Smoke Customer",client_email:$email,client_phone:"+1 414 555 0188",vehicle_year:2021,vehicle_make:"Ford",vehicle_model:"F-150",mileage:84500,vin:"1FTFW1E50MFA12345"}')"
 BC="$(curl -sS -o "${TMP}/booking.json" -w '%{http_code}' -X POST "$BASE/api/public/repair-booking" -H 'Content-Type: application/json' --data-binary "$BOOKING")"
 echo "PUBLIC_BOOKING_HTTP=$BC"; cat "${TMP}/booking.json"; echo
 test "$BC" = 201
 test "$(jq -r '.success' "${TMP}/booking.json")" = true
+test "$(jq -r '.booking.vehicle.year' "${TMP}/booking.json")" = 2021
+test "$(jq -r '.booking.vehicle.make' "${TMP}/booking.json")" = Ford
+test "$(jq -r '.booking.vehicle.model' "${TMP}/booking.json")" = F-150
+test "$(jq -r '.booking.vehicle.mileage' "${TMP}/booking.json")" = 84500
+test "$(jq -r '.booking.vehicle.vin' "${TMP}/booking.json")" = 1FTFW1E50MFA12345
 BOOKING_ID="$(jq -r '.booking.id' "${TMP}/booking.json")"
 test -n "$BOOKING_ID"
 
@@ -93,6 +98,11 @@ test "$OWNER" = 200
 test "$(jq -r --arg id "$BOOKING_ID" '[.bookings[] | select(.id==$id)] | length' "${TMP}/owner-bookings.json")" = 1
 test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .client_email' "${TMP}/owner-bookings.json")" = "$CLIENT_EMAIL"
 test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${TMP}/owner-bookings.json")" = confirmed
+test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .vehicle.year' "${TMP}/owner-bookings.json")" = 2021
+test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .vehicle.make' "${TMP}/owner-bookings.json")" = Ford
+test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .vehicle.model' "${TMP}/owner-bookings.json")" = F-150
+test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .vehicle.mileage' "${TMP}/owner-bookings.json")" = 84500
+test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .vehicle.vin' "${TMP}/owner-bookings.json")" = 1FTFW1E50MFA12345
 test "$(jq -r --arg id "$BOOKING_ID" '[.bookings[] | select(.id==$id) | .history[] | select(.from_status==null and .to_status=="confirmed")] | length' "${TMP}/owner-bookings.json")" = 1
 
 S1="$(curl -sS -o "${TMP}/status1.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"in_progress"}')"
@@ -117,6 +127,7 @@ OWNER3="$(curl -sS -o "${TMP}/owner3.json" -w '%{http_code}' -b "$COOKIE" "$BASE
 echo "OWNER_AFTER_COMPLETED_HTTP=$OWNER3"; cat "${TMP}/owner3.json"; echo
 test "$OWNER3" = 200
 test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .status' "${TMP}/owner3.json")" = completed
+test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .vehicle.make' "${TMP}/owner3.json")" = Ford
 test "$(jq -r --arg id "$BOOKING_ID" '.bookings[] | select(.id==$id) | .history | length' "${TMP}/owner3.json")" = 3
 
 TERMINAL="$(curl -sS -o "${TMP}/terminal.json" -w '%{http_code}' -b "$COOKIE" -X PATCH "$BASE/api/repair-shop/bookings/$BOOKING_ID/status" -H 'Content-Type: application/json' --data-binary '{"status":"cancelled"}')"
@@ -150,4 +161,4 @@ AFTER="$(curl -sS -o "${TMP}/after.json" -w '%{http_code}' -b "$COOKIE" "$BASE/a
 echo "OWNER_SESSION_AFTER_CLEANUP_HTTP=$AFTER"; cat "${TMP}/after.json"; echo
 test "$AFTER" = 401
 
-echo "REPAIR_BOOKING_STATUS_HISTORY_PRODUCTION_PASS=YES"
+echo "REPAIR_BOOKING_VEHICLE_STATUS_HISTORY_PRODUCTION_PASS=YES"

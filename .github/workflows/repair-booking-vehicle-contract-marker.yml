@@ -1,0 +1,31 @@
+name: Repair Shop vehicle booking contract
+
+on:
+  pull_request:
+    paths:
+      - functions/api/_lib/repair-shop-booking-vehicle-schema.mjs
+      - functions/api/public/repair-booking.ts
+      - functions/api/repair-shop/bookings.ts
+      - src/pages/services/hermes-connect/repair-shops/booking.astro
+      - src/pages/services/hermes-connect/repair-shops/dashboard.astro
+      - scripts/repair-booking-production-smoke.sh
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Verify vehicle booking source contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify vehicle persistence contract is wired end to end
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'repair_shop_booking_vehicles' functions/api/_lib/repair-shop-booking-vehicle-schema.mjs
+          grep -q 'vehicle_year' functions/api/public/repair-booking.ts
+          grep -q 'ensureRepairShopBookingVehicleSchema' functions/api/repair-shop/bookings.ts
+          grep -q 'vehicle-year' src/pages/services/hermes-connect/repair-shops/booking.astro
+          grep -q 'booking.vehicle' src/pages/services/hermes-connect/repair-shops/dashboard.astro
+          grep -q 'REPAIR_BOOKING_VEHICLE_STATUS_HISTORY_PRODUCTION_PASS=YES' scripts/repair-booking-production-smoke.sh
