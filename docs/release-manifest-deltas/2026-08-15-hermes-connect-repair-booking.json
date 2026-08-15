@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-15-hermes-connect-repair-booking",
+  "generated_at": "2026-08-15T06:30:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [],
+  "changes": [
+    {
+      "route": "/services/hermes-connect/repair-shops/booking/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/booking/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/repair-shops/booking.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "existing_route_replaced_with_real_booking_runtime"
+      }
+    },
+    {
+      "route": "/services/hermes-connect/repair-shops/dashboard/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/dashboard/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/repair-shops/dashboard.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "existing_owner_workspace_extended_with_booking_inbox"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 0,
+    "route_count_changed": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
