@@ -24,4 +24,7 @@ export async function ensureRepairShopBookingsSchema(db) {
   await db.prepare(
     "CREATE INDEX IF NOT EXISTS idx_repair_shop_bookings_shop_date ON repair_shop_bookings(shop_id, appointment_date, start_time)",
   ).run();
+  await db.prepare(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shop_bookings_exact_slot ON repair_shop_bookings(shop_id, appointment_date, start_time)",
+  ).run();
 }
