@@ -102,7 +102,8 @@ jobs:
           BUSY1="$(curl -sS -o "${RUNNER_TEMP}/busy1.json" -w '%{http_code}' "$BASE/api/public/repair-booking?shop=$SLUG&date=$APPOINTMENT_DATE")"
           echo "BUSY_AFTER_HTTP=$BUSY1"; cat "${RUNNER_TEMP}/busy1.json"; echo
           test "$BUSY1" = 200
-          test "$(jq --arg id "$BOOKING_ID" '[.busy[] | select(.id==$id)] | length' "${RUNNER_TEMP}/busy1.json")" = 1
+          test "$(jq '[.busy[] | select(.start_time=="10:00" and .end_time=="11:00")] | length' "${RUNNER_TEMP}/busy1.json")" = 1
+          test "$(jq '[.busy[] | has("id") or has("status")] | any' "${RUNNER_TEMP}/busy1.json")" = false
 
           DELETE_SERVICE="$(curl -sS -o "${RUNNER_TEMP}/delete-service.json" -w '%{http_code}' -b "$COOKIE" -X DELETE "$BASE/api/services/$SERVICE_ID")"
           echo "DELETE_BOOKED_SERVICE_HTTP=$DELETE_SERVICE"; cat "${RUNNER_TEMP}/delete-service.json"; echo
