@@ -133,7 +133,7 @@ await fs.writeFile(
 
 const last = observations.at(-1);
 const interpretation = classification === "LIVE_APPROVED_WEB_APP"
-  ? "- The custom subdomain serves the approved Hermes Connect Brand V1 workspace."
+  ? "- The custom subdomain serves the approved canonical Hermes Connect workspace."
   : classification === "LIVE_PR_HEAD_EXPOSED"
     ? "- The custom subdomain exposed at least one marker that this isolation run treats as unapproved preview content. Correct Cloudflare branch/domain isolation before release."
     : classification === "LIVE_PREVIOUS_CONNECT"

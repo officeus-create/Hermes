@@ -16,6 +16,7 @@ const workspace = await text("workspace.html");
 const review = await text("review.html");
 const css = await text("workspace.css");
 const js = await text("workspace.js");
+const enhancements = await text("workspace-enhancements.js");
 
 for (const [name, html] of [["workspace.html", workspace], ["review.html", review]]) {
   assert(/name=["']robots["'][^>]*noindex/i.test(html), `${name}: must remain noindex.`);
@@ -59,6 +60,7 @@ assert(!review.includes("workspace-v2"), "review.html: retired workspace-v2 refe
 
 assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav"), "workspace.css: Hermes drawer or mobile navigation style is missing.");
 assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer"), "workspace.js: core interaction contracts are missing.");
+assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
 const forbiddenNetworkPatterns = [
   /\bfetch\s*\(/,

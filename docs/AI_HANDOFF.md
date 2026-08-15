@@ -732,3 +732,15 @@ entries — append only.
   - Production D1 Database binding `DB` is not fully configured or missing tables, causing 1101 errors on register. 
 - **What Remains Incomplete**: D1 Database Binding in Cloudflare needs to be bound/configured with the tables `specialists` and `sessions`.
 - **Recommended Next Task**: Fix D1 binding on Cloudflare dashboard and then proceed to REPAIR BOOKING REAL PERSISTENCE.
+## 2026-08-15 — Codex — Retired Connect runtime labels cleanup
+
+- Agent/task owner: Codex; post-consolidation runtime-name cleanup.
+- Branch: `cleanup/connect-retired-runtime-labels`.
+- Files changed: canonical workspace enhancements, Connect production verifier copy, canonical workspace contract.
+- Behavior delivered: removed obsolete `LAUNCH-V2` debug output from the canonical browser runtime, renamed retained parsing errors to `Hermes Connect workspace`, and updated the verifier to describe the canonical workspace rather than Brand V1.
+- Primary outcome: active runtime and verification output no longer suggest a separate V2/V1 application exists.
+- SEO/conversion/knowledge/internal linking/scale: neutral; no indexable page, CTA, route, sitemap, or user-facing product behavior changed.
+- AI/product/architecture: canonical ownership is clearer and guarded by a static contract.
+- Data/privacy: removed debug logs that exposed aggregate in-browser booking structures to the console; no storage or analytics contract changed.
+- Verification: `node --check`, `git diff --check`, and retired-label search passed locally; full build/static/E2E must run in PR CI.
+- Deferred: none for this bounded naming cleanup.
