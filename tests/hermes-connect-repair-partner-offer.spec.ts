@@ -20,7 +20,7 @@ test("repair shop corporate offer is delivered privately and waits for human rev
     });
   });
 
-  await page.goto("/services/hermes-connect/repair-shops/?salesperson_code=REP_17");
+  await page.goto("/services/hermes-connect/repair-shops/");
 
   await expect(page.locator("#partner-contact-name")).toBeVisible();
   await page.locator("#shop-name").fill("Revenue Test Auto Care");
@@ -67,8 +67,8 @@ test("repair shop corporate offer is delivered privately and waits for human rev
   const requestId = String((leadPayload as Record<string, any> | null)?.request_id || "");
   expect(requestId).toMatch(/^repair_partner_[a-z0-9]+_[a-z0-9]+$/i);
   expect(idempotencyKey).toBe(requestId);
-  expect(String((leadPayload as Record<string, any> | null)?.message || "")).toContain("Private salesperson code: REP_17");
   expect(String((leadPayload as Record<string, any> | null)?.message || "")).toContain("Labor discount: 15%");
+  expect(JSON.stringify(leadPayload)).not.toMatch(/salesperson_code|salesperson code|commission/i);
 
   await page.waitForTimeout(1800);
   await expect(page.locator("#status-label")).toContainText("OFFER_SUBMITTED");
@@ -88,6 +88,5 @@ test("repair shop corporate offer is delivered privately and waits for human rev
   expect(analyticsText).not.toContain("taylor.partner@example.com");
   expect(analyticsText).not.toContain("+1 414 555 0188");
   expect(analyticsText).not.toContain("Milwaukee, WI");
-  expect(analyticsText).not.toContain("REP_17");
   expect(analyticsText).not.toContain("15%");
 });
