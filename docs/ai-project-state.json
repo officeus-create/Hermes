@@ -245,7 +245,7 @@
         "retired_runtime_paths": 25,
         "signature_scheme": "APK_V2_ANDROID_DEBUG",
         "certificate_sha256": "5b116b7f6393b7f1f0b87a5ab2d5045d73f3726ba4824687cf82cd62582eab72",
-        "action": "Removed the stale public binary and direct-download claims; retained Android source for a future controlled release build."
+        "action": "Removed the stale public binary and direct-download claims, temporarily redirected its old URL to the release-status page, and retained Android source for a future controlled release build."
       },
       "remaining_gate": "Build from the current canonical runtime, configure a controlled Android release key, record APK and certificate checksums, and pass clean-device install/launch/core-flow smoke before restoring direct APK distribution. Keep iPhone on the canonical PWA path and App Store/Google Play submissions deferred until their account, testing and compliance gates are intentionally funded."
     }

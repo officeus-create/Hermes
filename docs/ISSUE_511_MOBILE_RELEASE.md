@@ -91,7 +91,7 @@ The retired `public/downloads/hermes-connect-beta.apk` was inspected before remo
 * **Signing:** APK Signature Scheme v2 was present, but the certificate subject and issuer were `C=US,O=Android,CN=Android Debug`; certificate SHA-256 was `5b116b7f6393b7f1f0b87a5ab2d5045d73f3726ba4824687cf82cd62582eab72`.
 * **Install evidence:** no clean-device installation evidence exists for that artifact.
 
-A replacement may be published only when it bundles the current canonical runtime, uses a controlled release key, records the APK checksum and certificate fingerprint, and passes install/launch/core-flow smoke on a clean supported Android device.
+A replacement may be published only when it bundles the current canonical runtime, uses a controlled release key, records the APK checksum and certificate fingerprint, and passes install/launch/core-flow smoke on a clean supported Android device. Until then, the retired binary URL returns a temporary redirect to the truthful `/download/` release-status page.
 
 ---
 

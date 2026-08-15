@@ -6,6 +6,7 @@ const root = new URL("../", import.meta.url).pathname;
 const publicDir = join(root, "public");
 const downloadPage = readFileSync(join(root, "src/pages/download.astro"), "utf8");
 const releaseTracker = readFileSync(join(root, "docs/ISSUE_511_MOBILE_RELEASE.md"), "utf8");
+const redirects = readFileSync(join(root, "public/_redirects"), "utf8");
 
 function findApks(directory) {
   const matches = [];
@@ -29,6 +30,8 @@ assert.match(downloadPage, /Release verification in progress/,
   "The access page must communicate the current Android release boundary.");
 assert.match(downloadPage, /open-android-web-fallback/,
   "Android visitors must retain a supported Web\/PWA fallback.");
+assert.match(redirects, /^\/downloads\/hermes-connect-beta\.apk \/download\/ 302$/m,
+  "The retired binary URL must temporarily redirect visitors to the truthful release-status page.");
 
 assert.match(releaseTracker, /Android APK.*`BLOCKED`/,
   "The mobile release tracker must keep Android direct distribution blocked.");
