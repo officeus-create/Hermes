@@ -23,10 +23,10 @@ The current controlled-access production funnel remains in `public/demos/hermes-
 
 The new product-design and interaction incubator lives in:
 
-- `public/demos/hermes-connect-brand-v1/review.html`
-- `public/demos/hermes-connect-brand-v1/workspace.html`
-- `public/demos/hermes-connect-brand-v1/workspace.css`
-- `public/demos/hermes-connect-brand-v1/workspace.js`
+- `public/demos/hermes-connect/review.html`
+- `public/demos/hermes-connect/workspace.html`
+- `public/demos/hermes-connect/workspace.css`
+- `public/demos/hermes-connect/workspace.js`
 
 Do not overwrite the current production funnel with the incubator in one step. Migrate product surfaces module-by-module with tests and privacy boundaries.
 
