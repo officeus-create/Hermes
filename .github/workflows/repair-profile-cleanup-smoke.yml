@@ -1,0 +1,38 @@
+name: One-time Repair Shop profile smoke cleanup
+
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/repair-profile-cleanup-smoke.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: Remove Repair Shop profile smoke accounts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Call exact-target cleanup endpoint and verify idempotence
+        shell: bash
+        run: |
+          set -euo pipefail
+          CODE="000"
+          for attempt in $(seq 1 36); do
+            CODE="$(curl -sS -o "${RUNNER_TEMP}/cleanup.json" -w '%{http_code}' -X POST https://hermeslogisticsus.com/api/repair-shop/cleanup-profile-smoke || true)"
+            echo "CLEANUP_ATTEMPT_${attempt}_HTTP=$CODE"
+            if [ "$CODE" = 200 ]; then break; fi
+            sleep 10
+          done
+          cat "${RUNNER_TEMP}/cleanup.json"; echo
+          test "$CODE" = 200
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/cleanup.json")" = true
+          test "$(jq '[.results[] | select(.remaining != 0)] | length' "${RUNNER_TEMP}/cleanup.json")" = 0
+
+          VERIFY="$(curl -sS -o "${RUNNER_TEMP}/verify.json" -w '%{http_code}' -X POST https://hermeslogisticsus.com/api/repair-shop/cleanup-profile-smoke || true)"
+          echo "VERIFY_CLEANUP_HTTP=$VERIFY"; cat "${RUNNER_TEMP}/verify.json"; echo
+          test "$VERIFY" = 200
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/verify.json")" = true
+          test "$(jq '[.results[] | select(.deleted == true or .remaining != 0)] | length' "${RUNNER_TEMP}/verify.json")" = 0
+          echo "PROFILE_SMOKE_ACCOUNTS_REMOVED=YES"
