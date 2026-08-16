@@ -4,12 +4,14 @@ const ok = (body: unknown) => ({ status: 200, contentType: "application/json", b
 
 const owner = { success: true, specialist: { id: "owner-1", name: "Alex Owner", email: "owner@example.com", role: "Shop Owner" } };
 const shop = { id: "shop-1", slug: "apex-auto", name: "Apex Auto", phone: "+14145550100", address_line1: "123 Main St", city: "Milwaukee", state: "WI", postal_code: "53202", timezone: "America/Chicago" };
+const emptyAvailability = Array.from({ length: 7 }, (_, day) => ({ day_of_week: day, is_open: false, start_time: null, end_time: null }));
 
 async function mockDashboard(page: any) {
   let services = [{ id: "svc-existing", name: "Tire rotation", duration_minutes: 30, owner_specialist_id: "owner-1" }];
   await page.route("**/api/auth/me", (route: any) => route.fulfill(ok(owner)));
   await page.route("**/api/repair-shop/profile", (route: any) => route.fulfill(ok({ success: true, shop })));
   await page.route("**/api/repair-shop/access", (route: any) => route.fulfill(ok({ success: true, access: { state: "trialing", plan_id: "repair_shop_founding", plan_name: "Founding Shop Plan", current_period_end: null, next_action: "choose_plan" } })));
+  await page.route("**/api/repair-shop/availability", (route: any) => route.fulfill(ok({ success: true, timezone: "America/Chicago", days: emptyAvailability })));
   await page.route("**/api/services", async (route: any) => {
     if (route.request().method() === "POST") {
       const input = route.request().postDataJSON();
@@ -23,10 +25,18 @@ async function mockDashboard(page: any) {
   await page.route("**/api/repair-shop/feedback", (route: any) => route.fulfill(ok({ success: true, feedback: [] })));
 }
 
-test("owner dashboard exposes access, one-tap services, share, customer contact and completion feedback at 390px", async ({ page }) => {
+test("owner dashboard exposes access, quick start, share, QR, customer contact and completion feedback at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "share", { configurable: true, value: async () => undefined });
+  });
+
+  let qrRequests = 0;
+  let lastQrUrl = "";
+  await page.route("https://quickchart.io/qr**", (route) => {
+    qrRequests += 1;
+    lastQrUrl = route.request().url();
+    return route.fulfill({ status: 200, contentType: "image/png", body: "" });
   });
   await mockDashboard(page);
   await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil: "domcontentloaded" });
@@ -38,6 +48,14 @@ test("owner dashboard exposes access, one-tap services, share, customer contact 
   await expect(page.locator("#service-count")).toContainText("2 services");
 
   await expect(page.locator("[data-web-v1-share]")).toBeVisible();
+  expect(qrRequests).toBe(0);
+  await page.locator("[data-repair-qr-toggle]").click();
+  await expect(page.locator("[data-repair-qr-panel]")).toBeVisible();
+  await expect(page.locator("[data-repair-qr-image]")).toHaveAttribute("src", /quickchart\.io\/qr/);
+  await expect.poll(() => qrRequests).toBe(1);
+  const parsedQr = new URL(lastQrUrl);
+  expect(parsedQr.searchParams.get("text")).toBe("http://localhost:4321/services/hermes-connect/repair-shops/booking/?shop=apex-auto");
+
   const contact = page.locator("[data-web-v1-contact]");
   await expect(contact.locator('a[href^="mailto:"]')).toHaveAttribute("href", /jamie%40example\.com|jamie@example\.com/);
   await expect(contact.locator('a[href^="tel:"]')).toHaveAttribute("href", "tel:+14145550111");
@@ -53,7 +71,7 @@ test("weekday quick start fills Mon-Fri 8-5 without saving", async ({ page }) =>
   await page.route("**/api/auth/me", (route) => route.fulfill(ok(owner)));
   await page.route("**/api/repair-shop/availability", (route) => {
     if (route.request().method() === "PUT") putCount += 1;
-    return route.fulfill(ok({ success: true, timezone: "America/Chicago", days: Array.from({ length: 7 }, (_, day) => ({ day_of_week: day, is_open: false, start_time: null, end_time: null })) }));
+    return route.fulfill(ok({ success: true, timezone: "America/Chicago", days: emptyAvailability }));
   });
   await page.goto("/services/hermes-connect/repair-shops/availability/", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: /Mon–Fri|Пн–Пт|Lun–Vie|Lun–Ven/ }).click();
