@@ -69,7 +69,7 @@ import "../styles/features/product.css";
         <div class="technology-prototype-copy">
           <div class="technology-prototype-label"><CalendarDays size={19} aria-hidden="true" /><span>Hermes Connect</span><strong>Demo capability</strong></div>
           <h3>Preview a service-business request pattern without creating a second Hermes Connect product.</h3>
-          <p>Repair Shop Partner Beta is the current live Hermes Connect pilot. This simulated service-business flow remains a demo capability and possible source of reusable product patterns.</p>
+          <p>Hermes Connect remains one category-aware Web App. Repair Shop Partner Beta is the current live pilot; this simulated service-business flow remains a demo capability and possible source of reusable product patterns.</p>
           <div class="connect-prototype-flow" aria-label="Hermes Connect demo flow">
             <span>Business page</span><ArrowRight size={14} aria-hidden="true" /><span>Service</span><ArrowRight size={14} aria-hidden="true" /><span>Availability</span><ArrowRight size={14} aria-hidden="true" /><span>Client request</span>
           </div>
@@ -94,7 +94,7 @@ import "../styles/features/product.css";
             <p>Available request windows</p>
             <div>{connectTimes.map((time) => <button type="button" data-connect-time aria-pressed="false">{time}</button>)}</div>
           </div>
-          <button type="button" class="connect-book-button" data-connect-book disabled>Create test request <ArrowRight size={17} aria-hidden="true" /></button>
+          <button type="button" class="connect-book-button" data-connect-book disabled>Create test booking <ArrowRight size={17} aria-hidden="true" /></button>
           <div class="connect-booking-result" data-connect-result hidden>
             <Check size={18} aria-hidden="true" />
             <div><strong>Test request created</strong><span data-connect-summary></span></div>
@@ -174,7 +174,7 @@ import "../styles/features/product.css";
       if (!selectedService || !selectedTime) return;
       if (summary) summary.textContent = `${selectedService} · ${selectedTime} · Maya Santos`;
       if (result instanceof HTMLElement) result.hidden = false;
-      if (status) status.textContent = "Test request created locally. Nothing was sent or saved.";
+      if (status) status.textContent = "Test booking created locally. Nothing was sent or saved.";
     });
     updateRequestButton();
   }
