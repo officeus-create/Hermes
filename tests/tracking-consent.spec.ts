@@ -90,7 +90,7 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   expect(requestsAfterWithdrawal).toEqual([]);
 });
 
-test("Hermes Connect mobile consent stays compact and does not cover the pilot CTA", async ({ page }) => {
+test("Hermes Connect mobile consent stays compact and does not cover the primary product CTA", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
 
@@ -107,7 +107,7 @@ test("Hermes Connect mobile consent stays compact and does not cover the pilot C
 
   const geometry = await page.evaluate(() => {
     const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
-    const ctaElement = document.querySelector<HTMLElement>(".hc-hub-primary");
+    const ctaElement = document.querySelector<HTMLElement>(".hc-os-primary");
     const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
     const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
     if (!bannerElement || !ctaElement || !acceptElement || !declineElement) return null;
