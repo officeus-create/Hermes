@@ -60,9 +60,10 @@ test("weekday quick start fills Mon-Fri 8-5 without saving", async ({ page }) =>
 
   const monday = page.locator('.day-row[data-day="1"]');
   const sunday = page.locator('.day-row[data-day="0"]');
+  const mondayTimes = monday.locator('input[type="time"]');
   await expect(monday.locator('input[type="checkbox"]')).toBeChecked();
-  await expect(monday.locator('input[type="time"]').first()).toHaveValue("08:00");
-  await expect(monday.locator('input[type="time"]').nth(1)).toHaveValue("17:00");
+  await expect(mondayTimes.nth(0)).toHaveValue("08:00");
+  await expect(mondayTimes.nth(1)).toHaveValue("17:00");
   await expect(sunday.locator('input[type="checkbox"]')).not.toBeChecked();
   expect(putCount).toBe(0);
 });
