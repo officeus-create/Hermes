@@ -1,26 +1,25 @@
 import { expect, test } from "@playwright/test";
 
-test("Hermes Connect exposes one working entry and opens the Repair Shop registration flow", async ({ page }) => {
+test("Hermes Connect keeps one visible header entry and opens the Repair Shop registration flow", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator(".site-header .hermes-connect-header-launcher")).toBeHidden();
-  const headerConnect = page.locator('.header-actions a[aria-label="Open Hermes Connect"]');
-  await expect(headerConnect).toBeVisible();
-  await expect(headerConnect).toHaveAttribute("href", /\/services\/hermes-connect\/?$/);
+  await expect(page.locator(".mobile-nav .hermes-connect-mobile-launcher")).toBeHidden();
+  await expect(page.locator('.header-actions > a[aria-label="Open Hermes Connect"]')).toHaveCount(1);
+  await expect(page.locator('.mobile-nav > a[aria-label="Open Hermes Connect"]')).toHaveCount(1);
 
-  const registerCta = page.getByRole("link", { name: "Create Repair Shop account" });
-  const repairPilotCta = page.getByRole("link", { name: "Open Repair Shop pilot" });
-  await expect(registerCta).toHaveAttribute("href", /\/repair-shops\/auth\/\?mode=register$/);
-  await expect(repairPilotCta).toHaveAttribute("href", /\/repair-shops\/$/);
+  const workspaceCta = page.getByRole("link", { name: "Open interactive workspace" });
+  await expect(workspaceCta).toHaveAttribute("href", "https://connect.hermeslogisticsus.com/workspace");
 
-  const previewButton = page.getByRole("button", { name: "Open Repair Shop pilot" });
-  await expect(previewButton).toBeEnabled();
-  await expect(previewButton).toHaveAttribute("tabindex", "0");
-
+  const repairPilotCta = page.getByRole("link", { name: "Open Repair Shop Partner Beta" });
+  await expect(repairPilotCta).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
   await repairPilotCta.click();
+
   await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/$/);
   const createShop = page.getByRole("link", { name: "Create Shop Account" });
+  const ownerLogin = page.getByRole("link", { name: "Open Shop Workspace" });
   await expect(createShop).toHaveAttribute("href", /\/repair-shops\/auth\/\?mode=register$/);
+  await expect(ownerLogin).toHaveAttribute("href", /\/repair-shops\/auth\/\?mode=login$/);
 
   await createShop.click();
   await expect(page).toHaveURL(/\/repair-shops\/auth\/\?mode=register$/);
