@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import "./hermes-connect-launch-readiness.test.mjs";
+import "./repair-shop-partner-offer-contract.test.mjs";
 
 const [enhancer, runtime, layout, leadReceiver] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
