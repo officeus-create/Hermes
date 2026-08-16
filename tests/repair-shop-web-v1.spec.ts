@@ -64,8 +64,31 @@ test("owner dashboard exposes access, quick start, share, QR, customer contact a
   await expect(contact.locator('a[href^="sms:"]')).toHaveAttribute("href", "sms:+14145550111");
   await expect(page.locator("[data-web-v1-feedback-nudge]")).toContainText("Первая работа завершена");
 
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
-  expect(overflow).toBe(false);
+  const overflowDetails = await page.evaluate(() => {
+    const viewport = document.documentElement.clientWidth;
+    const details = Array.from(document.querySelectorAll("body *"))
+      .map((element) => {
+        const node = element as HTMLElement;
+        const rect = element.getBoundingClientRect();
+        return {
+          tag: element.tagName,
+          id: element.id || "",
+          cls: typeof node.className === "string" ? node.className : "",
+          text: (element.textContent || "").trim().replace(/\s+/g, " ").slice(0, 120),
+          left: Math.round(rect.left * 10) / 10,
+          right: Math.round(rect.right * 10) / 10,
+          width: Math.round(rect.width * 10) / 10,
+          scrollWidth: node.scrollWidth,
+          clientWidth: node.clientWidth,
+        };
+      })
+      .filter((item) => item.right > viewport + 1 || item.left < -1)
+      .sort((a, b) => b.right - a.right)
+      .slice(0, 25);
+    return { viewport, scrollWidth: document.documentElement.scrollWidth, details };
+  });
+  expect(overflowDetails.details, JSON.stringify(overflowDetails, null, 2)).toEqual([]);
+  expect(overflowDetails.scrollWidth).toBeLessThanOrEqual(overflowDetails.viewport + 1);
 });
 
 test("weekday quick start fills Mon-Fri 8-5 without saving", async ({ page }) => {
