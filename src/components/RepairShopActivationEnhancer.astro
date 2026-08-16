@@ -2,6 +2,7 @@
 import "../styles/repair-shop-activation.css";
 import RepairShopAuthLocaleEnhancer from "./RepairShopAuthLocaleEnhancer.astro";
 import RepairShopQuickStartEnhancer from "./RepairShopQuickStartEnhancer.astro";
+import RepairShopRetentionShareEnhancer from "./RepairShopRetentionShareEnhancer.astro";
 
 const repairShopRoot = "/services/hermes-connect/repair-shops";
 const normalizedPath = Astro.url.pathname.replace(/\/+$/, "");
@@ -13,5 +14,6 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
     <script is:inline src="/repair-shop-activation.js"></script>
     <RepairShopAuthLocaleEnhancer />
     <RepairShopQuickStartEnhancer />
+    <RepairShopRetentionShareEnhancer />
   </>
 )}
