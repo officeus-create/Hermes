@@ -12,7 +12,7 @@ type Env = { DB?: any };
 
 async function getOwnedShop(db: any, ownerId: string) {
   return db
-    .prepare("SELECT id FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
+    .prepare("SELECT id,created_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
     .bind(ownerId)
     .first();
 }
@@ -28,7 +28,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!shop?.id) return jsonResponse(409, { success: false, error: "shop_profile_required" });
 
   await ensureRepairShopAccessSchema(env.DB);
-  await ensureDefaultRepairShopAccess(env.DB, shop.id);
+  await ensureDefaultRepairShopAccess(env.DB, shop.id, shop.created_at);
   const access = await getRepairShopAccess(env.DB, shop.id);
 
   if (!access) return jsonResponse(500, { success: false, error: "access_state_unavailable" });
