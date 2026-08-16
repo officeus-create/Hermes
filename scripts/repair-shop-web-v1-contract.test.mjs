@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [runtime, qrRuntime, activationLoader, accessApi, dashboard, availability, booking, customers] = await Promise.all([
+const [runtime, qrRuntime, activationLoader, headers, accessApi, dashboard, availability, booking, customers] = await Promise.all([
   readFile(new URL("../public/repair-shop-web-v1.js", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-shop-qr.js", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../public/_headers", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/repair-shop/access.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/dashboard.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/availability.astro", import.meta.url), "utf8"),
@@ -50,6 +51,8 @@ assert.match(qrRuntime, /connect_shop_qr_view/);
 assert.match(qrRuntime, /connect_shop_qr_download/);
 assert.match(qrRuntime, /connect_shop_qr_print/);
 assert.doesNotMatch(qrRuntime, /client_name|client_email|client_phone|\bvin\b|shopName/);
+assert.match(headers, /img-src[^;]*https:\/\/quickchart\.io/);
+assert.match(headers, /connect-src[^;]*https:\/\/quickchart\.io/);
 
 // Existing functional foundation remains present.
 assert.match(dashboard, /\/api\/repair-shop\/bookings/);
