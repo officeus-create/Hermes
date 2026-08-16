@@ -131,10 +131,10 @@ Issue #566 is now a confirmed containment gate rather than an unaudited placehol
 
 Read-only evidence established:
 
-- the local Mac bridge `/Users/progressopro/hermes_tunnel.py` contains an unsafe arbitrary-command execution primitive;
+- the local Mac bridge tracked in issue #566 contains an unsafe arbitrary-command execution primitive;
 - the tunnel process was **not running** at audit time;
 - no audited LaunchAgent/cron/autostart reference was found;
-- authenticated Drive evidence ties the legacy command source to `HERMES_CORE_OS` / `Agent_Commands`;
+- authenticated Drive evidence identifies the legacy command spreadsheet and its command-queue tab without publishing their direct identifiers;
 - that legacy command source currently has link-based public write access, so the upstream authorization boundary is not strong enough;
 - a full bounded queue scan found **0 PENDING**, **0 RUNNING**, and **1 historical FAILED** command row;
 - the command queue is therefore dormant rather than actively executing work;
