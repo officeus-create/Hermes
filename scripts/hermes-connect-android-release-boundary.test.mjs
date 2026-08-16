@@ -18,26 +18,23 @@ function findApks(directory) {
   return matches;
 }
 
-const publicApks = findApks(publicDir);
-assert.deepEqual(publicApks, [], "No APK may ship from public/ while Android release status is BLOCKED.");
-assert.ok(existsSync(join(root, "android/app/build.gradle")), "Android wrapper source must remain available for a fresh controlled build.");
-
-assert.doesNotMatch(downloadPage, /\/downloads\/hermes-connect-beta\.apk/,
-  "The access page must not link the retired APK.");
-assert.doesNotMatch(downloadPage, /download-android-apk|secure, signed Hermes Connect Beta APK|Fully compiled and signed application package/i,
-  "The access page must not claim that an unverified Android release is downloadable or release-signed.");
-assert.match(downloadPage, /Release verification in progress/,
-  "The access page must communicate the current Android release boundary.");
-assert.match(downloadPage, /open-android-web-fallback/,
-  "Android visitors must retain a supported Web\/PWA fallback.");
+assert.deepEqual(findApks(publicDir), [], "No APK may ship from public/ while Android release status is blocked.");
+assert.ok(existsSync(join(root, "android/app/build.gradle")), "Android wrapper source must remain available for a future controlled build.");
+assert.doesNotMatch(downloadPage, /\/downloads\/hermes-connect-beta\.apk|download-android-apk|signed Hermes Connect Beta APK/i,
+  "Access Center must not expose or claim an unverified APK.");
+assert.match(downloadPage, /No public mobile-store or direct APK release is currently presented as available/,
+  "Access Center must communicate the current native-mobile release boundary.");
+assert.match(downloadPage, /href="\/services\/hermes-connect\/repair-shops\/"/,
+  "Mobile visitors must retain the supported current Web App path.");
+assert.match(downloadPage, /No public APK, Google Play, or App Store release is currently claimed/,
+  "Access Center must not imply a released native distribution channel.");
 assert.match(redirects, /^\/downloads\/hermes-connect-beta\.apk \/download\/ 302$/m,
-  "The retired binary URL must temporarily redirect visitors to the truthful release-status page.");
-
+  "Retired binary URL must continue to redirect to the truthful Access Center.");
 assert.match(releaseTracker, /Android APK.*`BLOCKED`/,
-  "The mobile release tracker must keep Android direct distribution blocked.");
+  "Mobile release tracker must keep Android direct distribution blocked.");
 assert.match(releaseTracker, /C=US,O=Android,CN=Android Debug/,
-  "The release tracker must preserve the retired artifact's signing evidence.");
+  "Release tracker must preserve retired artifact signing evidence.");
 assert.match(releaseTracker, /32e1c3cf35e77ac789cb8459dfddcfed6088e04e6aa4f113b34a95e8daf26b99/,
-  "The release tracker must preserve the retired artifact checksum.");
+  "Release tracker must preserve the retired artifact checksum.");
 
-console.log("Hermes Connect Android release boundary passed: no public APK or false release claim remains, and Web/PWA fallback stays available.");
+console.log("Hermes Connect Android release boundary passed: browser-first current product, no public APK, and no false native release claim.");
