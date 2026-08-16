@@ -10,6 +10,7 @@ import MoneyPageActionBar from "../components/MoneyPageActionBar.astro";
 import MotionLayer from "../components/MotionLayer.astro";
 import ProductionContactMode from "../components/ProductionContactMode.astro";
 import RepairBookingGrowthEnhancer from "../components/RepairBookingGrowthEnhancer.astro";
+import RepairPartnerOfferEnhancer from "../components/RepairPartnerOfferEnhancer.astro";
 import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
@@ -151,8 +152,6 @@ const safeSchema = schema
     </script>
     <script is:inline>
       document.addEventListener("DOMContentLoaded", () => {
-        // Build retired sentinels from fragments so defensive fallback logic remains available
-        // without shipping exact retired public strings in raw HTML for crawlers/agents to read.
         const retiredEmail = ["freight_", "301@hermeslogisticsus.com"].join("");
         const retiredGeography = ["USA · ", "Europe · International email coordination"].join("");
         const retiredContactStatus = ["Contact submission ", "pending connection"].join("");
@@ -194,6 +193,7 @@ const safeSchema = schema
     <CarrierContractSafetyEnhancer />
     <ProductionContactMode />
     <RepairBookingGrowthEnhancer />
+    <RepairPartnerOfferEnhancer />
     <ContactLinkEnhancer />
     <SeoIntakeEnhancer />
     <SeoSupportingIntakeEnhancer />
