@@ -42,8 +42,10 @@
         if ((node.textContent || "").trim() === legacyHost) node.textContent = "hermeslogisticsus.com · Hermes Connect";
       });
 
-      // The shared family navigation replaces the old floating back-arrow treatment.
-      document.querySelectorAll(".repair-pilot-page .hero-header-nav").forEach((node) => node.remove());
+      // Shared family navigation replaces page-specific floating/back-arrow navigation.
+      document.querySelectorAll(
+        ".repair-pilot-page .hero-header-nav, .auth-page > .auth-container > .back-link, .workspace-page > .shell > .back-link, .booking-page > .shell > .back-link, .availability-page > .shell > .back-link, .customers-page > .shell > .back-link",
+      ).forEach((node) => node.remove());
 
       if (path.startsWith("/services/hermes-connect/repair-shops")) {
         const replacements = new Map([
@@ -51,6 +53,8 @@
           ["Hermes Connect Beta", "Hermes Connect Repair Shops"],
           ["Live Booking Demo →", "Booking flow →"],
           ["Public Beta Release", "Current Repair Shop Live Pilot"],
+          ["Sign in or register to manage your real shop services and upcoming booking tools.", "Sign in or register to manage your shop profile, services, availability, bookings, customers, and feedback."],
+          ["Hermes Connect software is in free public beta. Repair services themselves are not advertised as free.", "Hermes Connect Repair Shops is the current live pilot. Repair service pricing is set by each participating shop."],
         ]);
         const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
         let node = walker.nextNode();
@@ -66,17 +70,16 @@
           node = walker.nextNode();
         }
 
-        // Remove UI that reports a fake completed mobile installation. Keep browser/PWA guidance truthful.
-        document.querySelectorAll("[data-android-install-trigger]").forEach((button) => {
+        const registrationBio = document.querySelector("#reg-bio");
+        if (registrationBio instanceof HTMLInputElement) {
+          registrationBio.value = "Independent repair shop registered for the current Hermes Connect Repair Shop pilot.";
+        }
+
+        // Historical install-simulation controls must never survive on a Repair Shop page.
+        document.querySelectorAll("[data-android-install-trigger], #btn-trigger-iphone-guide").forEach((button) => {
           const replacement = document.createElement("p");
           replacement.className = "hc-browser-install-note";
-          replacement.textContent = "Use Hermes Connect in your browser. Public mobile-store distribution is not currently released.";
-          button.replaceWith(replacement);
-        });
-        document.querySelectorAll("#btn-trigger-iphone-guide").forEach((button) => {
-          const replacement = document.createElement("p");
-          replacement.className = "hc-browser-install-note";
-          replacement.textContent = "On iPhone, use Safari's standard Add to Home Screen option. No simulated install confirmation is used.";
+          replacement.textContent = "Use the current Hermes Connect product in your browser. No simulated native installation is reported as successful.";
           button.replaceWith(replacement);
         });
       }
