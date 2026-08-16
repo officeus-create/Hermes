@@ -5,9 +5,9 @@
   (() => {
     const run = () => {
       const SUPPORTED = new Set(["en", "uk", "ru", "es", "it", "fr"]);
-      const params = new URLSearchParams(window.location.search);
-      const requested = params.get("lang");
+      const requested = new URLSearchParams(window.location.search).get("lang");
       const locale = requested && SUPPORTED.has(requested) ? requested : "en";
+      const legacyHost = ["connect", "hermeslogisticsus", "com"].join(".");
 
       const ui = {
         en: { openCurrent: "Open current Repair Shop beta", contextBack: "Hermes Connect / Repair Shops" },
@@ -45,7 +45,7 @@
           "Interactive Modules & Tools": "Інтерактивні модулі та інструменти",
           "Category-aware product": "Продукт із урахуванням категорії бізнесу",
           "Connect your shop to our logistics fleet operations.": "Підключіть своє СТО до логістичних операцій нашого автопарку.",
-          "Give clients one clear place to understand, choose, and request your service.": "Дайте клієнтам одне зрозуміле місце, де можна ознайомитися, обрати та замовити вашу послугу.",
+          "Give clients one clear place to understand, choose, and request your service.": "Дайте клієнтам одне зрозуміле місце, де можна ознайомитися, обрати та замовити вашу послугу."
         },
         ru: {
           "Home": "Главная",
@@ -73,7 +73,7 @@
           "Interactive Modules & Tools": "Интерактивные модули и инструменты",
           "Category-aware product": "Продукт с учетом категории бизнеса",
           "Connect your shop to our logistics fleet operations.": "Подключите свое СТО к логистическим операциям нашего автопарка.",
-          "Give clients one clear place to understand, choose, and request your service.": "Дайте клиентам одно понятное место, где можно изучить, выбрать и заказать вашу услугу.",
+          "Give clients one clear place to understand, choose, and request your service.": "Дайте клиентам одно понятное место, где можно изучить, выбрать и заказать вашу услугу."
         },
         es: {
           "Home": "Inicio",
@@ -97,7 +97,7 @@
           "Human-reviewed access": "Acceso revisado por el equipo de Hermes",
           "Interactive Modules & Tools": "Módulos y herramientas interactivas",
           "Connect your shop to our logistics fleet operations.": "Conecta tu taller con las operaciones de nuestra flota logística.",
-          "Give clients one clear place to understand, choose, and request your service.": "Ofrece a tus clientes un lugar claro para conocer, elegir y solicitar tu servicio.",
+          "Give clients one clear place to understand, choose, and request your service.": "Ofrece a tus clientes un lugar claro para conocer, elegir y solicitar tu servicio."
         },
         it: {
           "Home": "Home",
@@ -121,7 +121,7 @@
           "Human-reviewed access": "Accesso verificato dal team Hermes",
           "Interactive Modules & Tools": "Moduli e strumenti interattivi",
           "Connect your shop to our logistics fleet operations.": "Collega la tua officina alle operazioni della nostra flotta logistica.",
-          "Give clients one clear place to understand, choose, and request your service.": "Offri ai clienti un unico posto chiaro per capire, scegliere e richiedere il tuo servizio.",
+          "Give clients one clear place to understand, choose, and request your service.": "Offri ai clienti un unico posto chiaro per capire, scegliere e richiedere il tuo servizio."
         },
         fr: {
           "Home": "Accueil",
@@ -145,8 +145,8 @@
           "Human-reviewed access": "Accès vérifié par l’équipe Hermes",
           "Interactive Modules & Tools": "Modules et outils interactifs",
           "Connect your shop to our logistics fleet operations.": "Connectez votre atelier aux opérations de notre flotte logistique.",
-          "Give clients one clear place to understand, choose, and request your service.": "Offrez à vos clients un endroit clair pour comprendre, choisir et demander votre service.",
-        },
+          "Give clients one clear place to understand, choose, and request your service.": "Offrez à vos clients un endroit clair pour comprendre, choisir et demander votre service."
+        }
       };
 
       const withLocale = (href) => {
@@ -173,9 +173,13 @@
         }
       }
 
-      document.querySelectorAll('main a[href^="https://connect.hermeslogisticsus.com"]').forEach((link) => {
-        const original = link.getAttribute("href") || "";
-        const target = original.includes("#apply")
+      document.querySelectorAll("main a[href]").forEach((link) => {
+        const href = link.getAttribute("href");
+        if (!href) return;
+        let url;
+        try { url = new URL(href, window.location.origin); } catch { return; }
+        if (url.hostname !== legacyHost) return;
+        const target = url.hash === "#apply"
           ? "/services/hermes-connect/repair-shops/auth/"
           : "/services/hermes-connect/repair-shops/";
         link.setAttribute("href", withLocale(target));
@@ -198,16 +202,11 @@
       }
 
       document.querySelectorAll(".connect-service-window-bar p, .mockup-header .window-url").forEach((node) => {
-        if ((node.textContent || "").includes("connect.hermeslogisticsus.com")) {
-          node.textContent = "hermeslogisticsus.com · Hermes Connect";
-        }
+        if ((node.textContent || "").trim() === legacyHost) node.textContent = "hermeslogisticsus.com · Hermes Connect";
       });
     };
 
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", run, { once: true });
-    } else {
-      run();
-    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
+    else run();
   })();
 </script>
