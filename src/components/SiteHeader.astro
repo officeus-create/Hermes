@@ -2,6 +2,7 @@
 import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
+import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 
 interface Props {
@@ -12,7 +13,12 @@ interface Props {
 
 const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
-const localeBase = localeConfig[locale].path;
+const isHermesConnectRoute = currentPath.startsWith("/services/hermes-connect");
+const requestedLocale = Astro.url.searchParams.get("lang");
+const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.includes(requestedLocale as SiteLocale)
+  ? requestedLocale as SiteLocale
+  : locale;
+const localeBase = localeConfig[activeLocale].path;
 const localizedLabels = {
   uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
   ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
@@ -20,20 +26,34 @@ const localizedLabels = {
   it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home" },
   fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil" },
 };
-const navigation = locale === "en"
+const navigation = activeLocale === "en"
   ? site.navigation.map((item) => {
       const url = `/${item.href}`;
       return { ...item, url, active: (activePath ?? currentPath) === url };
     })
-  : site.paths.map((path) => ({ label: localizedLabels[locale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
-const contactLabel = locale === "en" ? "Start a conversation" : localizedLabels[locale].contact;
+  : site.paths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
+const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
 const section = ["logistics", "marketing", "academy", "technology"].find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
-const languageLinks = siteLocales.map((language) => ({
-  locale: language,
-  name: localeConfig[language].name,
-  href: `${localeConfig[language].path}${locale === "en" && language !== "en" ? localizedHash : ""}`,
-}));
+const languageLinks = siteLocales.map((language) => {
+  if (isHermesConnectRoute) {
+    const params = new URLSearchParams(Astro.url.searchParams);
+    if (language === "en") params.delete("lang");
+    else params.set("lang", language);
+    const query = params.toString();
+    return {
+      locale: language,
+      name: localeConfig[language].name,
+      href: `${currentPath}${query ? `?${query}` : ""}`,
+    };
+  }
+
+  return {
+    locale: language,
+    name: localeConfig[language].name,
+    href: `${localeConfig[language].path}${locale === "en" && language !== "en" ? localizedHash : ""}`,
+  };
+});
 ---
 
 <header class={`site-header site-header-${theme}`} data-header>
@@ -54,15 +74,15 @@ const languageLinks = siteLocales.map((language) => ({
       sublabel="Repair Shop Partner Beta"
     />
     <details class="language-menu" data-language-menu>
-      <summary aria-label={`Language: ${localeConfig[locale].name}`}>
+      <summary aria-label={`Language: ${localeConfig[activeLocale].name}`}>
         <Languages size={16} aria-hidden="true" />
-        <span>{localeConfig[locale].name}</span>
+        <span>{localeConfig[activeLocale].name}</span>
         <ChevronDown size={15} aria-hidden="true" />
       </summary>
       <nav aria-label="Choose language">
         {languageLinks.map((item) => (
-          <a href={item.href} lang={item.locale} aria-current={item.locale === locale ? "page" : undefined}>
-            <span>{item.name}</span>{item.locale === locale && <Check size={15} aria-hidden="true" />}
+          <a href={item.href} lang={item.locale} aria-current={item.locale === activeLocale ? "page" : undefined}>
+            <span>{item.name}</span>{item.locale === activeLocale && <Check size={15} aria-hidden="true" />}
           </a>
         ))}
       </nav>
@@ -87,15 +107,17 @@ const languageLinks = siteLocales.map((language) => ({
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">
-      <strong>{localeConfig[locale].name}</strong>
+      <strong>{localeConfig[activeLocale].name}</strong>
       {languageLinks.map((item) => (
-        <a href={item.href} lang={item.locale} aria-current={item.locale === locale ? "page" : undefined}>
-          <span>{item.name}</span>{item.locale === locale && <Check size={15} aria-hidden="true" />}
+        <a href={item.href} lang={item.locale} aria-current={item.locale === activeLocale ? "page" : undefined}>
+          <span>{item.name}</span>{item.locale === activeLocale && <Check size={15} aria-hidden="true" />}
         </a>
       ))}
     </div>
   </nav>
 </header>
+
+{isHermesConnectRoute && <HermesConnectExperience />}
 
 <script>
   const button = document.querySelector<HTMLElement>("[data-menu-button]");
