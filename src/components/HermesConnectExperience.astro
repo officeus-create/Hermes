@@ -168,6 +168,12 @@
   .hc-product-context__dot{width:8px;height:8px;border-radius:999px;background:#60a5fa;box-shadow:0 0 0 5px rgba(96,165,250,.12)}.hc-product-context.is-live .hc-product-context__dot{background:#34d399;box-shadow:0 0 0 5px rgba(52,211,153,.12)}.hc-product-context.is-reference .hc-product-context__dot{background:#fbbf24;box-shadow:0 0 0 5px rgba(251,191,36,.12)}
   .hc-family-nav{display:flex;align-items:center;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}.hc-family-nav::-webkit-scrollbar{display:none}.hc-family-nav a{white-space:nowrap;color:#b9c5d8;text-decoration:none;font-size:.76rem;font-weight:680;padding:.42rem .62rem;border:1px solid rgba(255,255,255,.065);border-radius:999px;background:rgba(255,255,255,.025)}.hc-family-nav a:hover,.hc-family-nav a:focus-visible,.hc-family-nav a[aria-current="page"]{color:#fff;border-color:rgba(157,136,255,.38);background:rgba(157,136,255,.11)}
   .hc-language-truth{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:0 0 .65rem;color:#c8d0dc;font-size:.78rem;line-height:1.5}
+
+  /* D036 — Connect header carries product identity, not the whole corporate nav twice. */
+  .hc-experience .site-header .desktop-nav,
+  .hc-experience .site-header .header-cta{display:none}
+  .hc-experience .site-header .header-actions{margin-left:auto}
+
   .hc-experience .repair-pilot-page,.hc-experience .hc-capability-page{isolation:isolate}.hc-experience .repair-pilot-page .hero-header-nav{display:none!important}
   .hc-experience .repair-pilot-page .pipeline-card,.hc-experience .repair-pilot-page .form-container,.hc-experience .repair-pilot-page .workspace-mockup{border-color:rgba(255,255,255,.09)!important;box-shadow:0 12px 34px rgba(0,0,0,.12)!important}
 
@@ -197,16 +203,9 @@
   .hc-experience .site-header-scrolled{box-shadow:0 8px 24px rgba(8,12,21,.10)!important}
 
   /* D070 — keyboard focus, high-contrast fallback, and motion restraint. */
-  .hc-experience :where(a,button,summary,input,select,textarea):focus-visible{
-    outline:2px solid #6c56e8!important;
-    outline-offset:3px;
-  }
-  .hc-experience .repair-offer-grid :where(input,select,textarea):focus-visible{
-    outline-color:#8fdcff!important;
-  }
-  .hc-experience .hc-family-nav a:focus-visible{
-    box-shadow:0 0 0 3px rgba(157,136,255,.16);
-  }
+  .hc-experience :where(a,button,summary,input,select,textarea):focus-visible{outline:2px solid #6c56e8!important;outline-offset:3px}
+  .hc-experience .repair-offer-grid :where(input,select,textarea):focus-visible{outline-color:#8fdcff!important}
+  .hc-experience .hc-family-nav a:focus-visible{box-shadow:0 0 0 3px rgba(157,136,255,.16)}
   @media(forced-colors:active){
     .hc-intelligence-core{display:none}
     .hc-product-context,
