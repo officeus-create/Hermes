@@ -66,6 +66,23 @@ assert.match(captureLocation, /\/services\/hermes-connect\/repair-shops\/auth\/\
 assert.doesNotMatch(captureLocation, new RegExp(opaqueToken));
 assert.doesNotMatch(captureLocation, new RegExp(privateSalespersonCode));
 
+const localizedCapture = await captureReferral({
+  request: new Request(`https://hermeslogisticsus.com/api/repair-shop/referral?ref=${opaqueToken}&lang=es`),
+  env: { REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
+});
+assert.equal(localizedCapture.status, 302);
+const localizedLocation = localizedCapture.headers.get("Location") || "";
+assert.match(localizedLocation, /\/services\/hermes-connect\/repair-shops\/auth\/\?mode=register&lang=es&referral=captured$/);
+assert.doesNotMatch(localizedLocation, new RegExp(opaqueToken));
+assert.doesNotMatch(localizedLocation, new RegExp(privateSalespersonCode));
+
+const unsupportedLocaleCapture = await captureReferral({
+  request: new Request(`https://hermeslogisticsus.com/api/repair-shop/referral?ref=${opaqueToken}&lang=de`),
+  env: { REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
+});
+assert.equal(unsupportedLocaleCapture.status, 302);
+assert.doesNotMatch(unsupportedLocaleCapture.headers.get("Location") || "", /[?&]lang=/);
+
 const referralCookie = captureResponse.headers.get("Set-Cookie") || "";
 assert.match(referralCookie, /hermes_repair_ref=/);
 assert.match(referralCookie, /HttpOnly/);
@@ -152,11 +169,12 @@ try {
 }
 
 const invalidCapture = await captureReferral({
-  request: new Request("https://hermeslogisticsus.com/api/repair-shop/referral?ref=UnknownOpaqueToken_0000"),
+  request: new Request("https://hermeslogisticsus.com/api/repair-shop/referral?ref=UnknownOpaqueToken_0000&lang=fr"),
   env: { REPAIR_SHOP_REFERRAL_MAP_JSON: envConfig },
 });
 assert.equal(invalidCapture.status, 302);
+assert.match(invalidCapture.headers.get("Location") || "", /lang=fr/);
 assert.match(invalidCapture.headers.get("Location") || "", /referral=invalid/);
 assert.equal(invalidCapture.headers.get("Set-Cookie"), null);
 
-console.log("Repair Shop private referral capture, resilient owner signup, and private attribution contract passed.");
+console.log("Repair Shop private referral capture, locale preservation, resilient owner signup, and private attribution contract passed.");
