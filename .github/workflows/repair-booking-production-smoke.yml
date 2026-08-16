@@ -14,6 +14,10 @@ on:
       - functions/api/services/[id].ts
       - src/pages/services/hermes-connect/repair-shops/booking.astro
       - src/pages/services/hermes-connect/repair-shops/dashboard.astro
+      - src/components/RepairShopActivationEnhancer.astro
+      - public/repair-shop-web-v1.js
+      - public/repair-shop-qr.js
+      - public/_headers
       - scripts/repair-booking-production-smoke.sh
       - .github/workflows/repair-booking-production-smoke.yml
 
