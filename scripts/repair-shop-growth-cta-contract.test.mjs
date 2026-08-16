@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan, activationEnhancer, activationRuntime] = await Promise.all([
+const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-booking-growth.js", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
@@ -10,6 +10,7 @@ const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan, activat
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/plan.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-shop-activation.js", import.meta.url), "utf8"),
+  readFile(new URL("../src/data/hermes-connect-repair-shop-offer.ts", import.meta.url), "utf8"),
 ]);
 
 assert.match(layout, /RepairBookingGrowthEnhancer/);
@@ -32,8 +33,17 @@ assert.match(repairLanding, /\/services\/hermes-connect\/repair-shops\/plan\//);
 assert.match(repairLanding, /Founding Shop Plan: \$99\/month per location/);
 assert.doesNotMatch(repairLanding, /Current live pilot/);
 
+assert.match(offerContract, /REPAIR_SHOP_OFFER_STATUS\s*=\s*"current-public-offer"/);
+assert.match(offerContract, /id:\s*"repair_shop_founding"/);
+assert.match(offerContract, /priceMonthlyUsd:\s*99/);
+assert.match(offerContract, /purchaseFlow:\s*"human-confirmation-and-invoice"/);
+for (const state of ["trialing", "founding", "active", "past_due", "cancelled", "comped"]) {
+  assert.match(offerContract, new RegExp(`"${state}"`));
+}
+const publicPrice = offerContract.match(/priceMonthlyUsd:\s*(\d+)/)?.[1];
+assert.equal(publicPrice, "99");
+assert.match(paidPlan, new RegExp(`\\$${publicPrice}\\/month`));
 assert.match(paidPlan, /Founding Shop Plan/);
-assert.match(paidPlan, /\$99\/month/);
 assert.match(paidPlan, /per repair shop location/);
 assert.match(paidPlan, /Try the workspace first/);
 assert.match(paidPlan, /id="plan-consent" type="checkbox" required/);
@@ -70,6 +80,7 @@ assert.match(activationRuntime, /first_completed_booking/);
 assert.match(activationRuntime, /completedCount\/6|completedCount}\s*\/\s*6|completedCount}\/6/);
 assert.match(activationRuntime, /connect_shop_activation_view/);
 assert.match(activationRuntime, /connect_shop_share_link/);
+assert.match(activationRuntime, /connect_shop_plan_view/);
 assert.match(activationRuntime, /connect_shop_paid_cta/);
 assert.match(activationRuntime, /(?:\/repair-shops\/plan\/|\$\{ROOT\}\/plan\/)/);
 assert.match(activationRuntime, /CURRENT PRODUCT/);
@@ -80,4 +91,4 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop growth, revenue, six-step activation, multilingual UX cleanup, private lead routing, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop growth, revenue, offer state, six-step activation, multilingual UX cleanup, private lead routing, and zero-PII telemetry contracts passed.");
