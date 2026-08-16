@@ -1,0 +1,148 @@
+<script>
+  const ROOT = "/services/hermes-connect/repair-shops";
+  const path = window.location.pathname.replace(/\/+$/, "");
+  if (path === `${ROOT}/dashboard`) {
+    const locale = new URLSearchParams(window.location.search).get("lang") || document.documentElement.lang || "en";
+    const copy: Record<string, any> = {
+      en: {
+        share:"Share", copied:"Copied", shareTitle:"Book with my repair shop",
+        nudgeTitle:"You completed your first booking — help us improve the next one.",
+        nudgeBody:"What was confusing, slow, or missing? One short private note goes directly to the Hermes product team.",
+        feedback:"Give private feedback", dismiss:"Not now",
+      },
+      ru: {
+        share:"Поделиться", copied:"Скопировано", shareTitle:"Запись в моё СТО",
+        nudgeTitle:"Вы завершили первую запись — помогите сделать следующую ещё лучше.",
+        nudgeBody:"Что было непонятно, медленно или чего не хватило? Короткая приватная заметка попадёт напрямую продуктовой команде Hermes.",
+        feedback:"Оставить приватный отзыв", dismiss:"Не сейчас",
+      },
+      uk: {
+        share:"Поділитися", copied:"Скопійовано", shareTitle:"Запис у моє СТО",
+        nudgeTitle:"Ви завершили перший запис — допоможіть зробити наступний ще кращим.",
+        nudgeBody:"Що було незрозумілим, повільним або чого бракувало? Коротка приватна нотатка потрапить напряму продуктовій команді Hermes.",
+        feedback:"Залишити приватний відгук", dismiss:"Не зараз",
+      },
+      es: {
+        share:"Compartir", copied:"Copiado", shareTitle:"Reserva en mi taller",
+        nudgeTitle:"Completaste la primera reserva — ayúdanos a mejorar la siguiente.",
+        nudgeBody:"¿Qué fue confuso, lento o faltó? Una nota privada breve llega directamente al equipo de producto de Hermes.",
+        feedback:"Dar feedback privado", dismiss:"Ahora no",
+      },
+      it: {
+        share:"Condividi", copied:"Copiato", shareTitle:"Prenota nella mia officina",
+        nudgeTitle:"Hai completato la prima prenotazione — aiutaci a migliorare la prossima.",
+        nudgeBody:"Cosa è stato poco chiaro, lento o mancante? Una breve nota privata arriva direttamente al team prodotto Hermes.",
+        feedback:"Lascia feedback privato", dismiss:"Non ora",
+      },
+      fr: {
+        share:"Partager", copied:"Copié", shareTitle:"Réserver dans mon atelier",
+        nudgeTitle:"Vous avez terminé la première réservation — aidez-nous à améliorer la suivante.",
+        nudgeBody:"Qu’est-ce qui était confus, lent ou manquant ? Une courte note privée va directement à l’équipe produit Hermes.",
+        feedback:"Donner un avis privé", dismiss:"Pas maintenant",
+      },
+    };
+    const t = copy[locale] || copy.en;
+
+    const pushEvent = (event: string, extra: Record<string, unknown> = {}) => {
+      const win = window as any;
+      win.dataLayer = win.dataLayer || [];
+      win.dataLayer.push({ event, product: "repair_shops", ...extra });
+    };
+
+    function mountShareButton() {
+      const actions = document.querySelector("#public-link-wrap .link-actions");
+      if (!actions || actions.querySelector("[data-share-booking-link]")) return false;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "secondary-btn";
+      button.dataset.shareBookingLink = "true";
+      button.textContent = t.share;
+      button.addEventListener("click", async () => {
+        const url = document.getElementById("public-link-text")?.textContent?.trim() || "";
+        if (!url) return;
+        try {
+          if (navigator.share) {
+            await navigator.share({ title: t.shareTitle, url });
+            pushEvent("connect_shop_booking_link_share", { method: "native_share" });
+          } else {
+            await navigator.clipboard.writeText(url);
+            button.textContent = t.copied;
+            window.setTimeout(() => { button.textContent = t.share; }, 1600);
+            pushEvent("connect_shop_booking_link_share", { method: "copy_fallback" });
+          }
+        } catch (error: any) {
+          if (error?.name !== "AbortError") pushEvent("connect_shop_booking_link_share", { method: "failed" });
+        }
+      });
+      actions.append(button);
+      return true;
+    }
+
+    async function mountFeedbackNudge() {
+      try {
+        const [profileResponse, bookingResponse, feedbackResponse] = await Promise.all([
+          fetch("/api/repair-shop/profile", { credentials:"same-origin" }),
+          fetch("/api/repair-shop/bookings", { credentials:"same-origin" }),
+          fetch("/api/repair-shop/feedback", { credentials:"same-origin" }),
+        ]);
+        if (!profileResponse.ok || !bookingResponse.ok || !feedbackResponse.ok) return;
+        const [profileData, bookingData, feedbackData] = await Promise.all([
+          profileResponse.json(), bookingResponse.json(), feedbackResponse.json(),
+        ]);
+        const slug = String(profileData?.shop?.slug || "");
+        const bookings = Array.isArray(bookingData?.bookings) ? bookingData.bookings : [];
+        const feedback = Array.isArray(feedbackData?.feedback) ? feedbackData.feedback : [];
+        if (!slug || !bookings.some((item: any) => item?.status === "completed")) return;
+        if (feedback.some((item: any) => item?.category === "booking")) return;
+        const storageKey = `hc_repair_feedback_nudge:${slug}`;
+        try { if (sessionStorage.getItem(storageKey) === "dismissed") return; } catch {}
+        if (document.querySelector("[data-first-completion-feedback]")) return;
+
+        const nudge = document.createElement("section");
+        nudge.className = "repair-feedback-nudge";
+        nudge.dataset.firstCompletionFeedback = "true";
+        nudge.innerHTML = `
+          <div><strong class="repair-feedback-nudge-title"></strong><p class="repair-feedback-nudge-body"></p></div>
+          <div class="repair-feedback-nudge-actions"><button type="button" data-open-feedback></button><button type="button" data-dismiss-feedback></button></div>`;
+        nudge.querySelector<HTMLElement>(".repair-feedback-nudge-title")!.textContent = t.nudgeTitle;
+        nudge.querySelector<HTMLElement>(".repair-feedback-nudge-body")!.textContent = t.nudgeBody;
+        nudge.querySelector<HTMLButtonElement>("[data-open-feedback]")!.textContent = t.feedback;
+        nudge.querySelector<HTMLButtonElement>("[data-dismiss-feedback]")!.textContent = t.dismiss;
+
+        const activation = document.querySelector("[data-repair-activation]");
+        const workspaceAlert = document.getElementById("workspace-alert");
+        if (activation) activation.insertAdjacentElement("afterend", nudge);
+        else workspaceAlert?.insertAdjacentElement("afterend", nudge);
+
+        nudge.querySelector("[data-open-feedback]")?.addEventListener("click", () => {
+          const category = document.getElementById("feedback-category") as HTMLSelectElement | null;
+          if (category) category.value = "booking";
+          document.getElementById("feedback-title")?.scrollIntoView({ behavior:"smooth", block:"start" });
+          window.setTimeout(() => (document.getElementById("feedback-message") as HTMLTextAreaElement | null)?.focus(), 350);
+          pushEvent("connect_shop_first_completion_feedback_action", { action:"open" });
+        });
+        nudge.querySelector("[data-dismiss-feedback]")?.addEventListener("click", () => {
+          try { sessionStorage.setItem(storageKey, "dismissed"); } catch {}
+          nudge.remove();
+          pushEvent("connect_shop_first_completion_feedback_action", { action:"dismiss" });
+        });
+        pushEvent("connect_shop_first_completion_feedback_view");
+      } catch {}
+    }
+
+    const initialize = () => {
+      if (!mountShareButton()) {
+        const observer = new MutationObserver(() => { if (mountShareButton()) observer.disconnect(); });
+        observer.observe(document.body, { childList:true, subtree:true, characterData:true });
+        window.setTimeout(() => observer.disconnect(), 8000);
+      }
+      void mountFeedbackNudge();
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize, { once:true });
+    else initialize();
+  }
+</script>
+
+<style is:global>
+  .repair-feedback-nudge{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:18px 0;padding:16px 18px;border:1px solid rgba(90,200,250,.18);border-radius:15px;background:linear-gradient(135deg,rgba(36,110,154,.1),rgba(124,92,255,.06));color:#f5f7fb}.repair-feedback-nudge-title{font-size:14px}.repair-feedback-nudge-body{margin:5px 0 0;color:#9fa7b6;font-size:12px;line-height:1.5}.repair-feedback-nudge-actions{display:flex;gap:8px;flex:none}.repair-feedback-nudge-actions button{min-height:44px;border-radius:10px;padding:0 13px;font:inherit;font-size:12px;font-weight:820;cursor:pointer}.repair-feedback-nudge-actions [data-open-feedback]{border:0;background:linear-gradient(135deg,#8068ff,#5baef7);color:#fff}.repair-feedback-nudge-actions [data-dismiss-feedback]{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.035);color:#d9dde6}@media(max-width:680px){.repair-feedback-nudge{display:block}.repair-feedback-nudge-actions{display:grid;margin-top:12px}.repair-feedback-nudge-actions button{width:100%}}
+</style>
