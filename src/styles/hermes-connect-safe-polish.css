@@ -205,6 +205,175 @@
   background: transparent;
 }
 
+/* D024 / D053 — card hierarchy and calmer visual rhythm. */
+.hc-experience .repair-pilot-page .repair-heading {
+  max-width: 760px;
+  margin-bottom: clamp(1.5rem, 3vw, 2.15rem);
+}
+
+.hc-experience .repair-pilot-page .repair-heading h2,
+.hc-experience .repair-pilot-page .repair-offer-copy h2 {
+  line-height: 1.02;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+
+.hc-experience .repair-pilot-page .repair-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: 1.45rem;
+}
+
+.hc-experience .repair-pilot-page .repair-trust span {
+  min-height: 34px;
+  padding: .42rem .68rem;
+  border: 1px solid rgba(11,13,18,.08);
+  border-radius: 999px;
+  background: rgba(255,255,255,.58);
+  color: #626976;
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid,
+.hc-experience .repair-pilot-page .repair-link-grid,
+.hc-experience .repair-pilot-page .repair-faq-grid {
+  gap: 1.05rem;
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid article,
+.hc-experience .repair-pilot-page .repair-link-grid a {
+  position: relative;
+  min-height: 190px;
+  padding: 1.45rem;
+  overflow: hidden;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid article::after,
+.hc-experience .repair-pilot-page .repair-link-grid a::after {
+  position: absolute;
+  right: -52px;
+  bottom: -58px;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,92,255,.10), rgba(124,92,255,0) 68%);
+  content: "";
+  pointer-events: none;
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid article:hover,
+.hc-experience .repair-pilot-page .repair-link-grid a:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.92);
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid svg,
+.hc-experience .repair-pilot-page .repair-link-grid svg {
+  width: 40px;
+  height: 40px;
+  padding: 9px;
+  border: 1px solid rgba(124,92,255,.13);
+  border-radius: 12px;
+  background: rgba(124,92,255,.07);
+  box-sizing: border-box;
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid h3,
+.hc-experience .repair-pilot-page .repair-link-grid strong {
+  display: block;
+  margin-top: .95rem;
+  margin-bottom: .45rem;
+  font-size: 1.02rem;
+  line-height: 1.25;
+  letter-spacing: -.015em;
+}
+
+.hc-experience .repair-pilot-page .repair-capability-grid p,
+.hc-experience .repair-pilot-page .repair-link-grid span {
+  max-width: 34ch;
+  line-height: 1.58;
+}
+
+.hc-experience .repair-pilot-page .repair-live-card ol {
+  position: relative;
+}
+
+.hc-experience .repair-pilot-page .repair-live-card ol::before {
+  position: absolute;
+  top: 25px;
+  bottom: 25px;
+  left: 22px;
+  width: 1px;
+  background: linear-gradient(rgba(124,92,255,.38), rgba(90,200,250,.14));
+  content: "";
+  pointer-events: none;
+}
+
+.hc-experience .repair-pilot-page .repair-live-card li {
+  position: relative;
+  z-index: 1;
+  min-height: 56px;
+  padding: .74rem .8rem;
+  border-radius: 14px;
+}
+
+.hc-experience .repair-pilot-page .repair-live-card li strong {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 0 0 5px #10131a;
+}
+
+.hc-experience .repair-pilot-page .repair-quick-links .repair-link-grid a {
+  min-height: 160px;
+}
+
+.hc-experience .repair-pilot-page .repair-faq-grid article {
+  padding: 1.35rem 1.4rem;
+}
+
+.hc-experience .repair-pilot-page .repair-faq-grid h3 {
+  margin-bottom: .5rem;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.hc-experience .repair-pilot-page .repair-offer-boundary {
+  border-color: rgba(255,255,255,.09);
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+}
+
+.hc-experience .repair-pilot-page .repair-lifecycle {
+  gap: .42rem;
+}
+
+.hc-experience .repair-pilot-page .repair-lifecycle .step-item {
+  min-width: 0;
+}
+
+.hc-experience .repair-pilot-page .repair-offer-form label,
+.hc-experience .repair-pilot-page .repair-offer-form legend {
+  font-size: .78rem;
+  letter-spacing: .01em;
+}
+
+.hc-experience .repair-pilot-page .repair-offer-form input,
+.hc-experience .repair-pilot-page .repair-offer-form select {
+  min-height: 46px;
+  border-radius: 11px;
+  outline: none;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.hc-experience .repair-pilot-page .repair-offer-form input:focus,
+.hc-experience .repair-pilot-page .repair-offer-form select:focus {
+  border-color: rgba(143,220,255,.46);
+  background: rgba(255,255,255,.065);
+  box-shadow: 0 0 0 3px rgba(90,200,250,.09);
+}
+
 @media (max-width: 760px) {
   .hc-experience .repair-pilot-page .repair-live-hero {
     padding-top: 2.6rem;
@@ -223,12 +392,27 @@
     padding: 1rem;
     border-radius: 22px;
   }
+  .hc-experience .repair-pilot-page .repair-trust {
+    display: grid;
+  }
+  .hc-experience .repair-pilot-page .repair-trust span {
+    border-radius: 14px;
+  }
+  .hc-experience .repair-pilot-page .repair-capability-grid article,
+  .hc-experience .repair-pilot-page .repair-link-grid a {
+    min-height: 0;
+  }
+  .hc-experience .repair-pilot-page .repair-live-card ol::before {
+    left: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hc-experience .repair-pilot-page .repair-primary,
   .hc-experience .repair-pilot-page .repair-secondary,
-  .hc-experience .repair-pilot-page .repair-submit {
+  .hc-experience .repair-pilot-page .repair-submit,
+  .hc-experience .repair-pilot-page .repair-capability-grid article,
+  .hc-experience .repair-pilot-page .repair-link-grid a {
     transition: none;
   }
 }
