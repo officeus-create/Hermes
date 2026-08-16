@@ -38,7 +38,10 @@ test("owner dashboard exposes access, one-tap services, share, customer contact 
   await expect(page.locator("#service-count")).toContainText("2 services");
 
   await expect(page.locator("[data-web-v1-share]")).toBeVisible();
-  await expect(page.locator("[data-web-v1-contact]")).toContainText("jamie@example.com");
+  const contact = page.locator("[data-web-v1-contact]");
+  await expect(contact.locator('a[href^="mailto:"]')).toHaveAttribute("href", /jamie%40example\.com|jamie@example\.com/);
+  await expect(contact.locator('a[href^="tel:"]')).toHaveAttribute("href", "tel:+14145550111");
+  await expect(contact.locator('a[href^="sms:"]')).toHaveAttribute("href", "sms:+14145550111");
   await expect(page.locator("[data-web-v1-feedback-nudge]")).toContainText("Первая работа завершена");
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -65,7 +68,7 @@ test("weekday quick start fills Mon-Fri 8-5 without saving", async ({ page }) =>
 });
 
 test("booking confirmation offers a second service without clearing customer and vehicle details", async ({ page }) => {
-  await page.route("**/api/public/repair-shop?**", (route) => route.fulfill(ok({ success: true, shop, services: [{ id: "svc-1", name: "Oil change", duration_minutes: 30 }], availability: [{ day_of_week: 1, is_open: true, start_time: "08:00", end_time: "17:00" }] })));
+  await page.route("**/api/public/repair-shop**", (route) => route.fulfill(ok({ success: true, shop, services: [{ id: "svc-1", name: "Oil change", duration_minutes: 30 }], availability: [{ day_of_week: 1, is_open: true, start_time: "08:00", end_time: "17:00" }] })));
   await page.goto("/services/hermes-connect/repair-shops/booking/?shop=apex-auto", { waitUntil: "domcontentloaded" });
 
   await page.locator("#client-name").fill("Jamie Driver");
