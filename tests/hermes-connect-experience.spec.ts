@@ -12,7 +12,7 @@ const localeCases = [
 const ownerLocaleCases = [
   ["ru", "Доступ владельца СТО", "Зарегистрировать СТО", "Создать аккаунт СТО"],
   ["uk", "Доступ власника СТО", "Зареєструвати СТО", "Створити акаунт СТО"],
-  ["es", "Acceso para propietarios de talleres", "Registrar taller", "Crear cuenta del taller"],
+  ["es", "Acceso del propietario del taller", "Registrar taller", "Crear cuenta del taller"],
   ["it", "Accesso proprietario officina", "Registra officina", "Crea account officina"],
   ["fr", "Accès propriétaire d’atelier", "Inscrire un atelier", "Créer le compte de l’atelier"],
 ] as const;
@@ -55,14 +55,34 @@ test("Repair Shop owner language is preserved into workspace links", async ({ pa
   await expect(page.getByRole("link", { name: "Ir al panel del taller" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/?lang=es");
 });
 
-test("Hermes Connect product family navigation replaces the old Repair Shop back arrow", async ({ page }) => {
+test("Hermes Connect product family navigation presents Repair Shops as the current product", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
 
   const context = page.locator("[data-hc-product-context]");
-  await expect(context).toContainText("CURRENT LIVE PILOT");
+  await expect(context).toContainText("CURRENT PRODUCT");
+  await expect(context).not.toContainText("CURRENT LIVE PILOT");
   await expect(context.getByRole("link", { name: "Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
   await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveAttribute("href", "/services/hermes-connect/ai-command-center/");
   await expect(page.locator(".repair-pilot-page .hero-header-nav")).toHaveCount(0);
+});
+
+test("Repair Shop dashboard guides an owner from setup to first booking and paid activation", async ({ page }) => {
+  await page.route("**/api/auth/me", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, specialist: { name: "Owner", email: "owner@example.com", role: "Shop Owner" } }) }));
+  await page.route("**/api/repair-shop/profile", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, shop: { id: "shop-1", slug: "apex-auto", name: "Apex Auto", city: "Milwaukee", state: "WI", timezone: "America/Chicago" } }) }));
+  await page.route("**/api/services", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, services: [{ id: "svc-1", name: "Oil change", duration_minutes: 30 }] }) }));
+  await page.route("**/api/repair-shop/availability", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, days: [{ day_of_week: 1, is_open: true, start_time: "09:00", end_time: "17:00" }] }) }));
+  await page.route("**/api/repair-shop/bookings", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, bookings: [] }) }));
+  await page.route("**/api/repair-shop/feedback", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, feedback: [] }) }));
+
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/");
+
+  const activation = page.locator("[data-repair-activation]");
+  await expect(activation.getByRole("heading", { name: "Get your shop ready for customers" })).toBeVisible();
+  await expect(activation).toContainText("3/4 ready");
+  await expect(activation.getByRole("link", { name: "Open booking link" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/booking/?shop=apex-auto");
+  await expect(activation.getByRole("link", { name: "View $99 Founding Plan" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/");
+  await expect(page.getByRole("heading", { name: "Repair Shop workspace" })).toBeVisible();
+  await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
 test("Hermes Connect Hub presents one live product and reference capabilities", async ({ page }) => {
@@ -99,7 +119,7 @@ test("Hermes Connect family navigation remains usable on mobile without horizont
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/?lang=uk");
 
-  await expect(page.locator("[data-hc-product-context]")).toContainText("ПОТОЧНИЙ ЖИВИЙ ПІЛОТ");
+  await expect(page.locator("[data-hc-product-context]")).toContainText("ПОТОЧНИЙ ПРОДУКТ");
   await expect(page.locator("[data-hc-english-only]")).toBeVisible();
   await expect(page.locator(".hc-family-nav")).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -110,7 +130,7 @@ test("multilingual Repair Shop registration remains usable on mobile", async ({ 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register&lang=es");
 
-  await expect(page.getByRole("heading", { name: "Acceso para propietarios de talleres" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Acceso del propietario del taller" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Crear cuenta del taller" })).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
