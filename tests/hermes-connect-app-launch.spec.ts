@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test";
 
 const workspace = "/demos/hermes-connect/workspace.html";
-const publicWorkspace = "https://connect.hermeslogisticsus.com/workspace";
+const pilotRoute = "/services/hermes-connect/repair-shops/";
 
-test("Hermes Connect service page launches the canonical interactive workspace", async ({ page }) => {
+test("Hermes Connect service page launches the current Repair Shop product instead of the legacy workspace", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
-  const launch = page.getByRole("link", { name: "Open interactive workspace" });
-  await expect(launch).toHaveAttribute("href", publicWorkspace);
+
+  await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
+  const currentProductLinks = page.locator(`main a[href="${pilotRoute}"]`);
+  expect(await currentProductLinks.count()).toBeGreaterThan(0);
 });
 
 test("Hermes Connect workspace keeps explicit demo boundaries and switches vertical data", async ({ page }, testInfo) => {

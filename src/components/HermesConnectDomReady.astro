@@ -1,0 +1,212 @@
+---
+---
+
+<script is:inline>
+  (() => {
+    const run = () => {
+      const SUPPORTED = new Set(["en", "uk", "ru", "es", "it", "fr"]);
+      const requested = new URLSearchParams(window.location.search).get("lang");
+      const locale = requested && SUPPORTED.has(requested) ? requested : "en";
+      const legacyHost = ["connect", "hermeslogisticsus", "com"].join(".");
+
+      const ui = {
+        en: { openCurrent: "Open current Repair Shop beta", contextBack: "Hermes Connect / Repair Shops" },
+        uk: { openCurrent: "Відкрити поточну бета-версію СТО", contextBack: "Hermes Connect / СТО" },
+        ru: { openCurrent: "Открыть текущую бета-версию СТО", contextBack: "Hermes Connect / СТО" },
+        es: { openCurrent: "Abrir la beta actual de talleres", contextBack: "Hermes Connect / Talleres" },
+        it: { openCurrent: "Apri la beta attuale per officine", contextBack: "Hermes Connect / Officine" },
+        fr: { openCurrent: "Ouvrir la bêta actuelle des ateliers", contextBack: "Hermes Connect / Ateliers" },
+      };
+
+      const translations = {
+        uk: {
+          "Home": "Головна",
+          "Hermes IT Development": "Hermes IT-розробка",
+          "Repair Shop Partner Beta": "Бета для партнерських СТО",
+          "Owner Login / Get Started": "Вхід власника / Почати",
+          "Install Web App": "Встановити Web App",
+          "Request Web App access": "Запросити доступ до Web App",
+          "Open interactive workspace": "Відкрити поточну бета-версію СТО",
+          "Back to Hermes Connect Hub": "Hermes Connect / СТО",
+          "Public Beta Release": "Публічна бета-версія",
+          "Relationship Pipeline": "Модель партнерства",
+          "One Connection. Multiple Commercial Outcomes.": "Одне підключення. Кілька комерційних сценаріїв.",
+          "Logistics Partner": "Логістичний партнер",
+          "Marketing & Growth": "Маркетинг і зростання",
+          "Corporate Onboarding": "Корпоративне підключення",
+          "Submit Your Capabilities & Corporate Offer": "Надішліть можливості СТО та корпоративну пропозицію",
+          "Instant Access": "Швидкий доступ",
+          "Frequently Asked Questions": "Часті запитання",
+          "Works in a modern browser": "Працює в сучасному браузері",
+          "Human-reviewed access": "Доступ перевіряє команда Hermes",
+          "Interactive workspace uses clearly labeled demo data": "Демо-модулі використовують чітко позначені тестові дані",
+          "The problem it solves": "Яку проблему вирішує",
+          "Web App foundation": "Основа Web App",
+          "Interactive Modules & Tools": "Інтерактивні модулі та інструменти",
+          "Category-aware product": "Продукт із урахуванням категорії бізнесу",
+          "Connect your shop to our logistics fleet operations.": "Підключіть своє СТО до логістичних операцій нашого автопарку.",
+          "Give clients one clear place to understand, choose, and request your service.": "Дайте клієнтам одне зрозуміле місце, де можна ознайомитися, обрати та замовити вашу послугу."
+        },
+        ru: {
+          "Home": "Главная",
+          "Hermes IT Development": "Hermes IT-разработка",
+          "Repair Shop Partner Beta": "Бета для партнерских СТО",
+          "Owner Login / Get Started": "Вход владельца / Начать",
+          "Install Web App": "Установить Web App",
+          "Request Web App access": "Запросить доступ к Web App",
+          "Open interactive workspace": "Открыть текущую бета-версию СТО",
+          "Back to Hermes Connect Hub": "Hermes Connect / СТО",
+          "Public Beta Release": "Публичная бета-версия",
+          "Relationship Pipeline": "Модель партнерства",
+          "One Connection. Multiple Commercial Outcomes.": "Одно подключение. Несколько коммерческих сценариев.",
+          "Logistics Partner": "Логистический партнер",
+          "Marketing & Growth": "Маркетинг и рост",
+          "Corporate Onboarding": "Корпоративное подключение",
+          "Submit Your Capabilities & Corporate Offer": "Отправьте возможности СТО и корпоративное предложение",
+          "Instant Access": "Быстрый доступ",
+          "Frequently Asked Questions": "Частые вопросы",
+          "Works in a modern browser": "Работает в современном браузере",
+          "Human-reviewed access": "Доступ проверяет команда Hermes",
+          "Interactive workspace uses clearly labeled demo data": "Демо-модули используют явно отмеченные тестовые данные",
+          "The problem it solves": "Какую проблему решает",
+          "Web App foundation": "Основа Web App",
+          "Interactive Modules & Tools": "Интерактивные модули и инструменты",
+          "Category-aware product": "Продукт с учетом категории бизнеса",
+          "Connect your shop to our logistics fleet operations.": "Подключите свое СТО к логистическим операциям нашего автопарка.",
+          "Give clients one clear place to understand, choose, and request your service.": "Дайте клиентам одно понятное место, где можно изучить, выбрать и заказать вашу услугу."
+        },
+        es: {
+          "Home": "Inicio",
+          "Hermes IT Development": "Desarrollo IT de Hermes",
+          "Repair Shop Partner Beta": "Beta para talleres asociados",
+          "Owner Login / Get Started": "Acceso del propietario / Empezar",
+          "Install Web App": "Instalar Web App",
+          "Request Web App access": "Solicitar acceso a Web App",
+          "Open interactive workspace": "Abrir la beta actual de talleres",
+          "Back to Hermes Connect Hub": "Hermes Connect / Talleres",
+          "Public Beta Release": "Beta pública",
+          "Relationship Pipeline": "Flujo de colaboración",
+          "One Connection. Multiple Commercial Outcomes.": "Una conexión. Varias oportunidades comerciales.",
+          "Logistics Partner": "Socio logístico",
+          "Marketing & Growth": "Marketing y crecimiento",
+          "Corporate Onboarding": "Incorporación corporativa",
+          "Submit Your Capabilities & Corporate Offer": "Envía las capacidades y la oferta corporativa de tu taller",
+          "Instant Access": "Acceso rápido",
+          "Frequently Asked Questions": "Preguntas frecuentes",
+          "Works in a modern browser": "Funciona en un navegador moderno",
+          "Human-reviewed access": "Acceso revisado por el equipo de Hermes",
+          "Interactive Modules & Tools": "Módulos y herramientas interactivas",
+          "Connect your shop to our logistics fleet operations.": "Conecta tu taller con las operaciones de nuestra flota logística.",
+          "Give clients one clear place to understand, choose, and request your service.": "Ofrece a tus clientes un lugar claro para conocer, elegir y solicitar tu servicio."
+        },
+        it: {
+          "Home": "Home",
+          "Hermes IT Development": "Sviluppo IT Hermes",
+          "Repair Shop Partner Beta": "Beta per officine partner",
+          "Owner Login / Get Started": "Accesso proprietario / Inizia",
+          "Install Web App": "Installa Web App",
+          "Request Web App access": "Richiedi accesso alla Web App",
+          "Open interactive workspace": "Apri la beta attuale per officine",
+          "Back to Hermes Connect Hub": "Hermes Connect / Officine",
+          "Public Beta Release": "Beta pubblica",
+          "Relationship Pipeline": "Percorso di partnership",
+          "One Connection. Multiple Commercial Outcomes.": "Una connessione. Più risultati commerciali.",
+          "Logistics Partner": "Partner logistico",
+          "Marketing & Growth": "Marketing e crescita",
+          "Corporate Onboarding": "Onboarding aziendale",
+          "Submit Your Capabilities & Corporate Offer": "Invia capacità e offerta aziendale della tua officina",
+          "Instant Access": "Accesso rapido",
+          "Frequently Asked Questions": "Domande frequenti",
+          "Works in a modern browser": "Funziona in un browser moderno",
+          "Human-reviewed access": "Accesso verificato dal team Hermes",
+          "Interactive Modules & Tools": "Moduli e strumenti interattivi",
+          "Connect your shop to our logistics fleet operations.": "Collega la tua officina alle operazioni della nostra flotta logistica.",
+          "Give clients one clear place to understand, choose, and request your service.": "Offri ai clienti un unico posto chiaro per capire, scegliere e richiedere il tuo servizio."
+        },
+        fr: {
+          "Home": "Accueil",
+          "Hermes IT Development": "Développement IT Hermes",
+          "Repair Shop Partner Beta": "Bêta pour ateliers partenaires",
+          "Owner Login / Get Started": "Connexion propriétaire / Commencer",
+          "Install Web App": "Installer la Web App",
+          "Request Web App access": "Demander l’accès à la Web App",
+          "Open interactive workspace": "Ouvrir la bêta actuelle des ateliers",
+          "Back to Hermes Connect Hub": "Hermes Connect / Ateliers",
+          "Public Beta Release": "Bêta publique",
+          "Relationship Pipeline": "Parcours de partenariat",
+          "One Connection. Multiple Commercial Outcomes.": "Une connexion. Plusieurs résultats commerciaux.",
+          "Logistics Partner": "Partenaire logistique",
+          "Marketing & Growth": "Marketing et croissance",
+          "Corporate Onboarding": "Intégration entreprise",
+          "Submit Your Capabilities & Corporate Offer": "Envoyez les capacités et l’offre entreprise de votre atelier",
+          "Instant Access": "Accès rapide",
+          "Frequently Asked Questions": "Questions fréquentes",
+          "Works in a modern browser": "Fonctionne dans un navigateur moderne",
+          "Human-reviewed access": "Accès vérifié par l’équipe Hermes",
+          "Interactive Modules & Tools": "Modules et outils interactifs",
+          "Connect your shop to our logistics fleet operations.": "Connectez votre atelier aux opérations de notre flotte logistique.",
+          "Give clients one clear place to understand, choose, and request your service.": "Offrez à vos clients un endroit clair pour comprendre, choisir et demander votre service."
+        }
+      };
+
+      const withLocale = (href) => {
+        const url = new URL(href, window.location.origin);
+        if (locale === "en") url.searchParams.delete("lang");
+        else url.searchParams.set("lang", locale);
+        return `${url.pathname}${url.search}${url.hash}`;
+      };
+
+      const table = translations[locale] || {};
+      if (locale !== "en") {
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let node = walker.nextNode();
+        while (node) {
+          const raw = node.nodeValue || "";
+          const normalized = raw.replace(/\s+/g, " ").trim();
+          const translated = table[normalized];
+          if (translated) {
+            const leading = raw.match(/^\s*/)?.[0] || "";
+            const trailing = raw.match(/\s*$/)?.[0] || "";
+            node.nodeValue = `${leading}${translated}${trailing}`;
+          }
+          node = walker.nextNode();
+        }
+      }
+
+      document.querySelectorAll("main a[href]").forEach((link) => {
+        const href = link.getAttribute("href");
+        if (!href) return;
+        let url;
+        try { url = new URL(href, window.location.origin); } catch { return; }
+        if (url.hostname !== legacyHost) return;
+        const target = url.hash === "#apply"
+          ? "/services/hermes-connect/repair-shops/auth/"
+          : "/services/hermes-connect/repair-shops/";
+        link.setAttribute("href", withLocale(target));
+        link.setAttribute("data-hc-legacy-rewritten", "true");
+        const label = (link.textContent || "").replace(/\s+/g, " ").trim();
+        if (/workspace|web app access|command center/i.test(label)) link.textContent = ui[locale].openCurrent;
+      });
+
+      document.querySelectorAll('main a[href^="/services/hermes-connect/"]').forEach((link) => {
+        const href = link.getAttribute("href");
+        if (!href || href.includes("?lang=")) return;
+        link.setAttribute("href", withLocale(href));
+      });
+
+      const oldBack = document.querySelector(".repair-pilot-page .hero-header-nav .back-link");
+      if (oldBack) {
+        oldBack.textContent = ui[locale].contextBack;
+        oldBack.classList.add("hc-context-back");
+        oldBack.setAttribute("aria-label", ui[locale].contextBack);
+      }
+
+      document.querySelectorAll(".connect-service-window-bar p, .mockup-header .window-url").forEach((node) => {
+        if ((node.textContent || "").trim() === legacyHost) node.textContent = "hermeslogisticsus.com · Hermes Connect";
+      });
+    };
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
+    else run();
+  })();
+</script>
