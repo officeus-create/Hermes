@@ -1,13 +1,12 @@
 /* D030 — Hermes Knot production motion language.
    One branded object, one short entrance, no perpetual peripheral motion.
-   Reuses the existing intelligence-core container; no runtime or JS dependency. */
+   The animated master object belongs to Product Hub only; deeper task routes keep the static Knot in the header launcher. */
 
 .hc-experience .hc-intelligence-core {
   display: none !important;
 }
 
-.hc-experience body:has(.hc-hub-page) .hc-intelligence-core,
-.hc-experience body:has(.repair-pilot-page) .hc-intelligence-core {
+.hc-experience body:has(.hc-hub-page) .hc-intelligence-core {
   display: block !important;
   position: absolute !important;
   z-index: 2 !important;
@@ -29,8 +28,7 @@
   display: none !important;
 }
 
-.hc-experience body:has(.hc-hub-page) .hc-intelligence-core::before,
-.hc-experience body:has(.repair-pilot-page) .hc-intelligence-core::before {
+.hc-experience body:has(.hc-hub-page) .hc-intelligence-core::before {
   position: absolute;
   inset: 0;
   border-radius: 30%;
@@ -41,8 +39,7 @@
   content: "";
 }
 
-.hc-experience body:has(.hc-hub-page) .hc-intelligence-core::after,
-.hc-experience body:has(.repair-pilot-page) .hc-intelligence-core::after {
+.hc-experience body:has(.hc-hub-page) .hc-intelligence-core::after {
   position: absolute;
   inset: 12%;
   border: 1px solid rgba(124,92,255,.11);
@@ -64,22 +61,20 @@
 }
 
 @media (max-width: 1120px) {
-  .hc-experience .hc-intelligence-core {
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core {
     display: none !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hc-experience body:has(.hc-hub-page) .hc-intelligence-core,
-  .hc-experience body:has(.repair-pilot-page) .hc-intelligence-core,
-  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core::after,
-  .hc-experience body:has(.repair-pilot-page) .hc-intelligence-core::after {
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core::after {
     animation: none !important;
   }
 }
 
 @media (forced-colors: active) {
-  .hc-experience .hc-intelligence-core {
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core {
     display: none !important;
   }
 }
