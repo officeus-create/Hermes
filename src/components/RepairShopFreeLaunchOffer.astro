@@ -24,7 +24,7 @@ const { compact = false, showCta = true } = Astro.props;
   <div class="launch-icon" aria-hidden="true"><Gift size={20} /></div>
   <div class="launch-copy">
     <p class="launch-kicker" data-launch-kicker>Launch offer</p>
-    <h2 id="repair-free-launch-title" data-launch-title>Free repair shop registration for the next 14 days.</h2>
+    <h2 id="repair-free-launch-title" data-launch-title>14-day launch offer: free repair shop registration.</h2>
     <p data-launch-body>Set up your shop and use the current Hermes Connect workflow without a card while we finish online billing.</p>
     <p class="launch-policy" data-launch-policy>If online billing is still not active when this countdown ends, registration stays free until it is.</p>
   </div>
@@ -46,74 +46,86 @@ const { compact = false, showCta = true } = Astro.props;
   const strings: Record<string, any> = {
     en: {
       kicker: "Launch offer",
-      title: "Free repair shop registration for the next 14 days.",
+      title: "14-day launch offer: free repair shop registration.",
       body: "Set up your shop and use the current Hermes Connect workflow without a card while we finish online billing.",
       policy: "If online billing is still not active when this countdown ends, registration stays free until it is.",
       timer: "Free-registration countdown",
       days: "days", hours: "hours", minutes: "minutes", seconds: "seconds",
       cta: "Register free",
+      afterTitle: "Registration remains free while online billing is unavailable.",
       afterFree: "Online billing is not active yet — registration remains free.",
-      ended: "The launch free-registration window has ended. See the current Founding Shop Plan.",
+      endedTitle: "The free-registration launch offer has ended.",
+      ended: "See the current Founding Shop Plan.",
       plan: "View current plan",
     },
     ru: {
       kicker: "Стартовая акция",
-      title: "Бесплатная регистрация СТО на ближайшие 14 дней.",
+      title: "14-дневная стартовая акция: регистрация СТО бесплатно.",
       body: "Настройте СТО и пользуйтесь текущим Hermes Connect без банковской карты, пока мы подключаем онлайн-оплату.",
       policy: "Если к окончанию таймера онлайн-оплата ещё не будет подключена, регистрация останется бесплатной до её запуска.",
       timer: "До конца бесплатной регистрации",
       days: "дней", hours: "часов", minutes: "минут", seconds: "секунд",
       cta: "Зарегистрироваться бесплатно",
+      afterTitle: "Регистрация остаётся бесплатной, пока онлайн-оплата не подключена.",
       afterFree: "Онлайн-оплата ещё не подключена — регистрация остаётся бесплатной.",
-      ended: "Период бесплатной стартовой регистрации завершён. Посмотрите текущий тариф Founding Shop.",
+      endedTitle: "Стартовый период бесплатной регистрации завершён.",
+      ended: "Посмотрите текущий тариф Founding Shop.",
       plan: "Посмотреть тариф",
     },
     uk: {
       kicker: "Стартова акція",
-      title: "Безкоштовна реєстрація СТО на найближчі 14 днів.",
+      title: "14-денна стартова акція: реєстрація СТО безкоштовна.",
       body: "Налаштуйте СТО та користуйтеся поточним Hermes Connect без банківської картки, поки ми підключаємо онлайн-оплату.",
       policy: "Якщо до завершення таймера онлайн-оплата ще не буде підключена, реєстрація залишиться безкоштовною до її запуску.",
       timer: "До завершення безкоштовної реєстрації",
       days: "днів", hours: "годин", minutes: "хвилин", seconds: "секунд",
       cta: "Зареєструватися безкоштовно",
+      afterTitle: "Реєстрація залишається безкоштовною, поки онлайн-оплату не підключено.",
       afterFree: "Онлайн-оплату ще не підключено — реєстрація залишається безкоштовною.",
-      ended: "Період безкоштовної стартової реєстрації завершено. Перегляньте поточний тариф Founding Shop.",
+      endedTitle: "Стартовий період безкоштовної реєстрації завершено.",
+      ended: "Перегляньте поточний тариф Founding Shop.",
       plan: "Переглянути тариф",
     },
     es: {
       kicker: "Oferta de lanzamiento",
-      title: "Registro gratuito del taller durante los próximos 14 días.",
+      title: "Oferta de lanzamiento de 14 días: registro gratuito del taller.",
       body: "Configura tu taller y usa el flujo actual de Hermes Connect sin tarjeta mientras terminamos la facturación en línea.",
       policy: "Si la facturación en línea aún no está activa cuando termine la cuenta regresiva, el registro seguirá siendo gratuito hasta que lo esté.",
       timer: "Cuenta regresiva del registro gratuito",
       days: "días", hours: "horas", minutes: "minutos", seconds: "segundos",
       cta: "Registrarme gratis",
+      afterTitle: "El registro sigue siendo gratuito mientras la facturación en línea no esté disponible.",
       afterFree: "La facturación en línea aún no está activa — el registro sigue siendo gratuito.",
-      ended: "La ventana gratuita de lanzamiento terminó. Consulta el plan Founding Shop actual.",
+      endedTitle: "La oferta de registro gratuito de lanzamiento ha terminado.",
+      ended: "Consulta el plan Founding Shop actual.",
       plan: "Ver plan actual",
     },
     it: {
       kicker: "Offerta di lancio",
-      title: "Registrazione gratuita dell’officina per i prossimi 14 giorni.",
+      title: "Offerta di lancio di 14 giorni: registrazione gratuita dell’officina.",
       body: "Configura l’officina e usa l’attuale flusso Hermes Connect senza carta mentre completiamo la fatturazione online.",
       policy: "Se la fatturazione online non sarà ancora attiva alla fine del conto alla rovescia, la registrazione resterà gratuita fino alla sua attivazione.",
       timer: "Conto alla rovescia registrazione gratuita",
       days: "giorni", hours: "ore", minutes: "minuti", seconds: "secondi",
       cta: "Registrati gratis",
+      afterTitle: "La registrazione resta gratuita finché la fatturazione online non è disponibile.",
       afterFree: "La fatturazione online non è ancora attiva — la registrazione resta gratuita.",
-      ended: "La finestra di registrazione gratuita è terminata. Consulta il piano Founding Shop attuale.",
+      endedTitle: "L’offerta di registrazione gratuita di lancio è terminata.",
+      ended: "Consulta il piano Founding Shop attuale.",
       plan: "Vedi piano attuale",
     },
     fr: {
       kicker: "Offre de lancement",
-      title: "Inscription gratuite de l’atelier pendant les 14 prochains jours.",
+      title: "Offre de lancement de 14 jours : inscription gratuite de l’atelier.",
       body: "Configurez votre atelier et utilisez le flux Hermes Connect actuel sans carte pendant que nous finalisons la facturation en ligne.",
       policy: "Si la facturation en ligne n’est pas encore active à la fin du compte à rebours, l’inscription restera gratuite jusqu’à son activation.",
       timer: "Compte à rebours de l’inscription gratuite",
       days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes",
       cta: "S’inscrire gratuitement",
+      afterTitle: "L’inscription reste gratuite tant que la facturation en ligne n’est pas disponible.",
       afterFree: "La facturation en ligne n’est pas encore active — l’inscription reste gratuite.",
-      ended: "La période d’inscription gratuite de lancement est terminée. Consultez le forfait Founding Shop actuel.",
+      endedTitle: "L’offre de lancement avec inscription gratuite est terminée.",
+      ended: "Consultez le forfait Founding Shop actuel.",
       plan: "Voir le forfait",
     },
   };
@@ -198,6 +210,7 @@ const { compact = false, showCta = true } = Astro.props;
       if (remaining > 0) return;
       if (timer) window.clearInterval(timer);
 
+      setText(root, "[data-launch-title]", billingEnabled ? copy.endedTitle : copy.afterTitle);
       setText(root, "[data-launch-status]", billingEnabled ? copy.ended : copy.afterFree);
       root.dataset.expired = "true";
       if (cta && billingEnabled) {
