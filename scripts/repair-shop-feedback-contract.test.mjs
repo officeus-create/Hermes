@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import "./repair-shop-sales-attribution-contract.test.mjs";
 
 const api = await readFile(new URL("../functions/api/repair-shop/feedback.ts", import.meta.url), "utf8");
 const schema = await readFile(new URL("../functions/api/_lib/repair-shop-feedback-schema.mjs", import.meta.url), "utf8");
