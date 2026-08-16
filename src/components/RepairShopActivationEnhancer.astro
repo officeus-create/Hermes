@@ -1,4 +1,8 @@
 ---
+import "../styles/repair-shop-activation.css";
+import RepairShopAuthLocaleEnhancer from "./RepairShopAuthLocaleEnhancer.astro";
+import RepairShopQuickStartEnhancer from "./RepairShopQuickStartEnhancer.astro";
+
 const repairShopRoot = "/services/hermes-connect/repair-shops";
 const normalizedPath = Astro.url.pathname.replace(/\/+$/, "");
 const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.startsWith(`${repairShopRoot}/`);
@@ -7,77 +11,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
 {isRepairShopSurface && (
   <>
     <script is:inline src="/repair-shop-activation.js"></script>
-    <script is:inline>
-      (() => {
-        const root = "/services/hermes-connect/repair-shops";
-        const path = window.location.pathname.replace(/\/+$/, "");
-        if (path !== `${root}/auth`) return;
-
-        const params = new URLSearchParams(window.location.search);
-        const requested = params.get("lang") || document.documentElement.lang || "en";
-        const copy = {
-          en: { title:"Repair Shop access", subtitle:"Sign in or create your repair shop account to manage services, booking hours, appointments, and customers.", login:"Login", register:"Register New Shop", create:"Create Shop Account", dashboard:"Go to Shop Dashboard" },
-          ru: { title:"Доступ владельца СТО", subtitle:"Войдите или создайте аккаунт СТО, чтобы управлять услугами, часами записи, заявками и клиентами.", login:"Войти", register:"Зарегистрировать СТО", create:"Создать аккаунт СТО", dashboard:"Перейти в кабинет СТО" },
-          uk: { title:"Доступ власника СТО", subtitle:"Увійдіть або створіть акаунт СТО, щоб керувати послугами, годинами запису, заявками та клієнтами.", login:"Увійти", register:"Зареєструвати СТО", create:"Створити акаунт СТО", dashboard:"Перейти до кабінету СТО" },
-          es: { title:"Acceso del propietario del taller", subtitle:"Inicia sesión o crea la cuenta del taller para gestionar servicios, horarios, citas y clientes.", login:"Iniciar sesión", register:"Registrar taller", create:"Crear cuenta del taller", dashboard:"Ir al panel del taller" },
-          it: { title:"Accesso proprietario officina", subtitle:"Accedi o crea l’account dell’officina per gestire servizi, orari, appuntamenti e clienti.", login:"Accedi", register:"Registra officina", create:"Crea account officina", dashboard:"Vai al pannello officina" },
-          fr: { title:"Accès propriétaire d’atelier", subtitle:"Connectez-vous ou créez le compte de l’atelier pour gérer services, horaires, rendez-vous et clients.", login:"Connexion", register:"Inscrire un atelier", create:"Créer le compte de l’atelier", dashboard:"Accéder au tableau de bord" },
-        };
-        const locale = Object.prototype.hasOwnProperty.call(copy, requested) ? requested : "en";
-        const t = copy[locale];
-
-        const apply = () => {
-          const title = document.querySelector("#auth-forms .auth-header h1");
-          const subtitle = document.querySelector("#auth-forms .auth-header .auth-subtitle");
-          const loginTab = document.querySelector('[data-tab="login"]');
-          const registerTab = document.querySelector('[data-tab="register"]');
-          const createButton = document.querySelector("#register-form button[type='submit']");
-          const dashboardLink = document.querySelector("#auth-authenticated .auth-actions a[href*='/dashboard/']");
-
-          if (title) title.textContent = t.title;
-          if (subtitle) subtitle.textContent = t.subtitle;
-          if (loginTab) loginTab.textContent = t.login;
-          if (registerTab) registerTab.textContent = t.register;
-          if (createButton) createButton.textContent = t.create;
-          if (dashboardLink) {
-            dashboardLink.textContent = t.dashboard;
-            const url = new URL(dashboardLink.getAttribute("href") || `${root}/dashboard/`, window.location.origin);
-            if (locale === "en") url.searchParams.delete("lang");
-            else url.searchParams.set("lang", locale);
-            dashboardLink.setAttribute("href", `${url.pathname}${url.search}${url.hash}`);
-          }
-
-          if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) {
-            registerTab.click();
-          }
-        };
-
-        apply();
-        window.setTimeout(apply, 80);
-      })();
-    </script>
+    <RepairShopAuthLocaleEnhancer />
+    <RepairShopQuickStartEnhancer />
   </>
 )}
-
-<style is:global>
-  .repair-activation-panel{margin:0 0 24px;padding:20px;border:1px solid rgba(110,231,183,.24);border-radius:18px;background:linear-gradient(135deg,rgba(52,211,153,.07),rgba(90,200,250,.045),rgba(157,136,255,.05));box-shadow:0 18px 55px rgba(0,0,0,.16)}
-  .repair-activation-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:16px}
-  .repair-activation-eyebrow{margin:0 0 6px;color:#6ee7b7;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:850}
-  .repair-activation-panel h2{margin:0;color:#f7f9fc;font-size:22px;letter-spacing:-.02em}
-  .repair-activation-copy{margin:7px 0 0;color:#9faabd;font-size:13px;line-height:1.55}
-  .repair-activation-progress{min-width:72px;text-align:right;color:#dce5f2;font-size:13px;font-weight:800}
-  .repair-activation-track{height:7px;margin:0 0 16px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.07)}
-  .repair-activation-fill{height:100%;width:0;border-radius:inherit;background:linear-gradient(90deg,#34d399,#5ac8fa);transition:width .25s ease}
-  .repair-activation-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 16px;padding:0;list-style:none}
-  .repair-activation-step{display:flex;gap:8px;align-items:flex-start;padding:10px;border:1px solid rgba(255,255,255,.07);border-radius:11px;background:rgba(255,255,255,.025);color:#929eb0;font-size:12px;line-height:1.35}
-  .repair-activation-step strong{display:grid;place-items:center;flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:rgba(255,255,255,.06);color:#cbd5e1;font-size:11px}
-  .repair-activation-step[data-complete="true"]{border-color:rgba(52,211,153,.2);background:rgba(52,211,153,.045);color:#c6ead9}
-  .repair-activation-step[data-complete="true"] strong{background:rgba(52,211,153,.15);color:#6ee7b7}
-  .repair-activation-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-  .repair-activation-primary,.repair-activation-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 13px;border-radius:10px;text-decoration:none;font-size:13px;font-weight:800}
-  .repair-activation-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}
-  .repair-activation-secondary{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#eef2f7}
-  .repair-activation-next{margin:0;color:#8e99ab;font-size:12px;line-height:1.5}
-  @media(max-width:760px){.repair-activation-head{display:block}.repair-activation-progress{margin-top:8px;text-align:left}.repair-activation-steps{grid-template-columns:1fr 1fr}.repair-activation-actions{align-items:stretch;flex-direction:column}.repair-activation-primary,.repair-activation-secondary{width:100%;box-sizing:border-box}}
-  @media(max-width:440px){.repair-activation-steps{grid-template-columns:1fr}}
-</style>
