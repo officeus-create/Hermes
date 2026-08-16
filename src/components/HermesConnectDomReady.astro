@@ -9,6 +9,7 @@
       const locale = requested && SUPPORTED.has(requested) ? requested : "en";
       const legacyHost = ["connect", "hermeslogisticsus", "com"].join(".");
       const path = window.location.pathname;
+      const normalizedPath = path.replace(/\/+$/, "") || "/";
 
       const withLocale = (href) => {
         const url = new URL(href, window.location.origin);
@@ -75,6 +76,15 @@
         const registrationBio = document.querySelector("#reg-bio");
         if (registrationBio instanceof HTMLInputElement) {
           registrationBio.value = "Independent repair shop registered for the current Hermes Connect Repair Shop pilot.";
+        }
+
+        // Manager/referral links may request the correct auth tab directly without creating a second auth flow.
+        if (normalizedPath === "/services/hermes-connect/repair-shops/auth") {
+          const mode = new URLSearchParams(window.location.search).get("mode");
+          if (mode === "register" || mode === "login") {
+            const tab = document.querySelector(`[data-tab="${mode}"]`);
+            if (tab instanceof HTMLButtonElement) tab.click();
+          }
         }
 
         // Historical install-simulation controls must never survive on a Repair Shop page.
