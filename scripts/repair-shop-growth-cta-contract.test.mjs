@@ -1,11 +1,9 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
+const [enhancer, layout, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
-  readFile(new URL("../public/repair-booking-growth.js", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
-  readFile(new URL("../functions/api/logistics-lead.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/plan.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
@@ -13,18 +11,15 @@ const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan, activat
   readFile(new URL("../src/data/hermes-connect-repair-shop-offer.ts", import.meta.url), "utf8"),
 ]);
 
+// Public repair booking confirmation is customer-focused. Do not reuse a repair
+// customer's booking contact details to create an unrelated B2B marketing lead.
 assert.match(layout, /RepairBookingGrowthEnhancer/);
-assert.match(enhancer, /Grow My Business \/ Talk to Hermes/);
-assert.match(enhancer, /data-growth-consent required/);
-assert.match(enhancer, /\/repair-booking-growth\.js/);
-assert.match(runtime, /interest:\s*"ProgressoPro"/);
-assert.match(runtime, /fetch\("\/api\/logistics-lead"/);
-assert.match(runtime, /"Idempotency-Key": requestId/);
-assert.match(runtime, /event:\s*"connect_hermes_growth_cta_requests"/);
-assert.match(runtime, /source:\s*"repair_booking_success"/);
-assert.doesNotMatch(runtime, /dataLayer\.push\([\s\S]{0,400}(bookingName|bookingEmail|messageInput|client-phone)/);
-assert.match(leadReceiver, /\["ProgressoPro",\s*"GENERAL CONTACT \/ MARKETING"\]/);
-assert.match(leadReceiver, /input\.consent !== true/);
+assert.match(enhancer, /Intentionally no public booking-success cross-sell/);
+assert.doesNotMatch(enhancer, /Grow My Business \/ Talk to Hermes/);
+assert.doesNotMatch(enhancer, /data-growth-consent/);
+assert.doesNotMatch(enhancer, /repair-booking-growth\.js/);
+assert.doesNotMatch(enhancer, /ProgressoPro/);
+assert.doesNotMatch(enhancer, /\/api\/logistics-lead/);
 
 // Revenue V1: keep the public Repair Shop path value-first and route paid intent
 // through the existing private lead receiver without introducing website payment tech.
@@ -63,6 +58,7 @@ assert.doesNotMatch(
 // Activation: one Repair Shop runtime owns customer-ready copy and the six-step
 // first-value loop through the first completed booking and paid-plan decision.
 assert.match(layout, /RepairShopActivationEnhancer/);
+assert.match(layout, /RepairShopFreeLaunchOffer/);
 assert.match(activationEnhancer, /\/repair-shop-activation\.js/);
 assert.match(activationEnhancer, /repair-activation-panel/);
 assert.match(activationRuntime, /Get your shop ready for customers/);
@@ -91,4 +87,4 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop growth, revenue, offer state, six-step activation, multilingual UX cleanup, private lead routing, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop customer-focused booking, free launch entry, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
