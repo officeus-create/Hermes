@@ -32,6 +32,33 @@ const CONNECT_DOCUMENTS = new Map([
   ["/sales-roleplay.html", "/sales-roleplay.html"],
 ]);
 
+const CONNECT_COMPAT_ENTRY_PATHS = new Set([
+  "/",
+  "/index.html",
+  "/workspace",
+  "/workspace/",
+  "/workspace.html",
+  "/mobile.html",
+]);
+
+const CURRENT_CAPABILITY_PATHS = new Set([
+  "/ai-command-center",
+  "/unified-inbox",
+  "/load-analyzer",
+  "/rate-negotiator",
+  "/proposal-builder",
+  "/roi-calculator",
+  "/business-automation",
+  "/repair-shops",
+]);
+
+const EXPLICIT_DEMO_DOCUMENTS = new Set([
+  "/review.html",
+  "/sales-roleplay.html",
+]);
+
+const SUPPORTED_CONNECT_LANGS = new Set(["en", "es", "fr", "uk", "it", "ru"]);
+
 const NATIVE_CONNECT_DOCUMENTS = new Set([
   "/workspace.html",
   "/review.html",
@@ -55,6 +82,73 @@ function acceptsMarkdown(request) {
 
 function isConnectDocument(pathname) {
   return pathname === "/" || pathname === "/index.html";
+}
+
+function supportedConnectLang(incomingUrl) {
+  const lang = incomingUrl.searchParams.get("lang");
+  return lang && SUPPORTED_CONNECT_LANGS.has(lang) ? lang : null;
+}
+
+function normalizedCapabilityPath(pathname) {
+  const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  return CURRENT_CAPABILITY_PATHS.has(normalized) ? normalized : null;
+}
+
+function secureReferralCompatibilityRedirect(incomingUrl) {
+  const ref = incomingUrl.searchParams.get("ref");
+  if (!ref) return null;
+
+  const target = new URL(`https://${MAIN_HOST}/api/repair-shop/referral`);
+  target.searchParams.set("ref", ref);
+  const lang = supportedConnectLang(incomingUrl);
+  if (lang) target.searchParams.set("lang", lang);
+
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: target.toString(),
+      "Cache-Control": "no-store, private",
+      "Referrer-Policy": "no-referrer",
+    },
+  });
+}
+
+function canonicalConnectCompatibilityRedirect(incomingUrl) {
+  const isEntry = CONNECT_COMPAT_ENTRY_PATHS.has(incomingUrl.pathname);
+  const isAccess = ACCESS_DOCUMENTS.has(incomingUrl.pathname);
+
+  if ((isEntry || isAccess) && incomingUrl.searchParams.has("ref")) {
+    return secureReferralCompatibilityRedirect(incomingUrl);
+  }
+
+  let targetPath = null;
+  if (isEntry) {
+    targetPath = incomingUrl.searchParams.get("business_type") === "auto_repair"
+      ? "/services/hermes-connect/repair-shops/"
+      : "/services/hermes-connect/";
+  } else if (isAccess) {
+    targetPath = "/services/hermes-connect/repair-shops/auth/";
+  } else {
+    const capabilityPath = normalizedCapabilityPath(incomingUrl.pathname);
+    if (capabilityPath) targetPath = `/services/hermes-connect${capabilityPath}/`;
+    else if (EXPLICIT_DEMO_DOCUMENTS.has(incomingUrl.pathname)) targetPath = `${CONNECT_ASSET_ROOT}${incomingUrl.pathname}`;
+  }
+
+  if (!targetPath) return null;
+
+  const target = new URL(`https://${MAIN_HOST}${targetPath}`);
+  const lang = supportedConnectLang(incomingUrl);
+  if (lang && lang !== "en") target.searchParams.set("lang", lang);
+
+  if (isAccess) {
+    target.searchParams.set("mode", "register");
+    const referralState = incomingUrl.searchParams.get("referral");
+    if (referralState === "captured" || referralState === "invalid") {
+      target.searchParams.set("referral", referralState);
+    }
+  }
+
+  return Response.redirect(target.toString(), 308);
 }
 
 function connectAssetPath(pathname) {
@@ -164,6 +258,9 @@ async function routeConnectHost(context) {
     const response = await context.env.ASSETS.fetch(new Request(markdownUrl, context.request));
     if (response.ok) return markdownResponse(response);
   }
+
+  const compatibilityResponse = canonicalConnectCompatibilityRedirect(incomingUrl);
+  if (compatibilityResponse) return compatibilityResponse;
 
   const assetUrl = new URL(incomingUrl);
   const assetPath = connectAssetPath(incomingUrl.pathname);
