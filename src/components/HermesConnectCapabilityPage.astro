@@ -1,0 +1,157 @@
+---
+import { ArrowRight, CheckCircle2, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+
+interface Capability {
+  title: string;
+  body: string;
+}
+
+interface Faq {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  name: string;
+  pageTitle: string;
+  description: string;
+  canonicalUrl: string;
+  lead: string;
+  capabilities: Capability[];
+  boundary: string;
+  faqs: Faq[];
+}
+
+const {
+  name,
+  pageTitle,
+  description,
+  canonicalUrl,
+  lead,
+  capabilities,
+  boundary,
+  faqs,
+} = Astro.props;
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: `Hermes Connect ${name}`,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: canonicalUrl,
+    description: `${description} This page documents a Hermes Connect reference capability and is not a claim of current live availability.`,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 3, name, item: canonicalUrl },
+    ],
+  },
+];
+---
+
+<BaseLayout title={pageTitle} description={description} schema={schema}>
+  <SiteHeader />
+
+  <main id="main-content" class="hc-capability-page" data-hc-capability-page data-hc-live-status="reference">
+    <div class="hc-capability-shell">
+      <nav class="hc-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true">/</span>
+        <a href="/services/hermes-connect/">Hermes Connect</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{name}</span>
+      </nav>
+
+      <header class="hc-capability-hero">
+        <div class="hc-reference-badge">Reference capability · not current live pilot</div>
+        <h1>{name}</h1>
+        <p>{lead}</p>
+        <div class="hc-capability-actions">
+          <a class="hc-primary-action" href="/services/hermes-connect/repair-shops/">
+            Open current Repair Shop product <ArrowRight size={17} aria-hidden="true" />
+          </a>
+          <a class="hc-secondary-action" href="/services/hermes-connect/">Back to Product Hub</a>
+        </div>
+      </header>
+
+      <section class="hc-capability-section" aria-labelledby="capability-title">
+        <div class="hc-section-heading">
+          <p>Product family reference</p>
+          <h2 id="capability-title">What this capability is designed to cover</h2>
+        </div>
+        <div class="hc-capability-grid">
+          {capabilities.map((capability) => (
+            <article>
+              <CheckCircle2 size={22} aria-hidden="true" />
+              <h3>{capability.title}</h3>
+              <p>{capability.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="hc-boundary" aria-label="Current availability boundary">
+        <ShieldCheck size={22} aria-hidden="true" />
+        <div>
+          <strong>Current product boundary</strong>
+          <p>{boundary}</p>
+        </div>
+      </section>
+
+      <section class="hc-capability-section hc-faq" aria-labelledby="faq-title">
+        <div class="hc-section-heading">
+          <p>Clarity before access</p>
+          <h2 id="faq-title">Frequently asked questions</h2>
+        </div>
+        <div class="hc-faq-grid">
+          {faqs.map((faq) => (
+            <article>
+              <h3>{faq.question}</h3>
+              <p>{faq.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .hc-capability-page{min-height:70vh;padding:clamp(2rem,4vw,4.25rem) 1rem 5rem;color:#f8fafc}
+  .hc-capability-shell{width:min(1120px,100%);margin:0 auto}
+  .hc-breadcrumb{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin-bottom:clamp(2rem,4vw,3.25rem);font-size:.86rem;color:#8290a8}
+  .hc-breadcrumb a{color:#b9c7df;text-decoration:none}.hc-breadcrumb a:hover{color:#fff}
+  .hc-capability-hero{text-align:center;max-width:880px;margin:0 auto clamp(3rem,7vw,5.5rem)}
+  .hc-reference-badge{display:inline-flex;align-items:center;padding:.42rem .75rem;border:1px solid rgba(251,191,36,.3);border-radius:999px;background:rgba(251,191,36,.08);color:#fde68a;font-size:.76rem;font-weight:750;letter-spacing:.035em;text-transform:uppercase}
+  .hc-capability-hero h1{margin:1.15rem 0 .9rem;font-size:clamp(2.25rem,6vw,4.65rem);line-height:1.02;letter-spacing:-.045em}
+  .hc-capability-hero>p{max-width:760px;margin:0 auto;color:#aeb9cb;font-size:clamp(1.02rem,2vw,1.22rem);line-height:1.7}
+  .hc-capability-actions{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-top:1.7rem}
+  .hc-primary-action,.hc-secondary-action{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:44px;padding:.72rem 1rem;border-radius:11px;text-decoration:none;font-size:.9rem;font-weight:750}
+  .hc-primary-action{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}.hc-secondary-action{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.035);color:#e7edf7}
+  .hc-capability-section{margin:0 0 3rem}.hc-section-heading{max-width:720px;margin-bottom:1.35rem}.hc-section-heading>p{margin:0 0 .45rem;color:#9d88ff;font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.hc-section-heading h2{margin:0;font-size:clamp(1.6rem,3vw,2.35rem);letter-spacing:-.025em}
+  .hc-capability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-capability-grid article,.hc-faq-grid article{border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.018));box-shadow:0 18px 55px rgba(0,0,0,.16)}
+  .hc-capability-grid article{padding:1.35rem}.hc-capability-grid svg{color:#5ac8fa}.hc-capability-grid h3{margin:.85rem 0 .5rem;font-size:1.08rem}.hc-capability-grid p,.hc-faq-grid p{margin:0;color:#98a6bb;line-height:1.62;font-size:.92rem}
+  .hc-boundary{display:flex;gap:.9rem;align-items:flex-start;margin:3rem 0;padding:1.15rem 1.2rem;border:1px solid rgba(251,191,36,.22);border-radius:16px;background:rgba(251,191,36,.055);color:#f8fafc}.hc-boundary svg{flex:0 0 auto;color:#fbbf24}.hc-boundary strong{display:block;margin-bottom:.28rem}.hc-boundary p{margin:0;color:#c9b986;line-height:1.55;font-size:.9rem}
+  .hc-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.hc-faq-grid article{padding:1.25rem}.hc-faq-grid h3{margin:0 0 .5rem;font-size:1rem}
+  @media(max-width:760px){.hc-capability-page{padding-inline:.75rem}.hc-capability-grid,.hc-faq-grid{grid-template-columns:1fr}.hc-capability-actions{flex-direction:column}.hc-primary-action,.hc-secondary-action{width:100%}.hc-boundary{padding:1rem}.hc-capability-hero{text-align:left}.hc-capability-actions{align-items:stretch}.hc-reference-badge{line-height:1.35}.hc-capability-hero>p{margin-left:0}}
+</style>
