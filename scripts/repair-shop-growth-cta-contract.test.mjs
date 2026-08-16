@@ -39,10 +39,13 @@ assert.match(paidPlan, /fetch\("\/api\/logistics-lead"/);
 assert.match(paidPlan, /"Idempotency-Key": requestId/);
 assert.match(paidPlan, /connect_paid_plan_requested/);
 assert.match(paidPlan, /No payment is taken here/);
+assert.match(paidPlan, /"@type": "Service"/);
+assert.match(paidPlan, /"@type": "BreadcrumbList"/);
+assert.match(paidPlan, /"@type": "FAQPage"/);
 assert.doesNotMatch(paidPlan, /js\.stripe\.com|from\s+["']stripe["']|payment_intents|checkout\.sessions\.create|paypal\.com\/sdk/i);
 assert.doesNotMatch(
   paidPlan,
-  /window\.dataLayer\.push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
+  /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop growth CTA, paid activation intent, private lead routing, and zero-PII telemetry contract passed.");
+console.log("Repair Shop growth CTA, paid activation intent, indexed money-page schema, private lead routing, and zero-PII telemetry contract passed.");
