@@ -1,15 +1,15 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, runtime, page, layout, leadReceiver] = await Promise.all([
+const [enhancer, runtime, page, host, leadReceiver] = await Promise.all([
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-partner-offer.js", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
-  readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/logistics-lead.ts", import.meta.url), "utf8"),
 ]);
 
-assert.match(layout, /RepairPartnerOfferEnhancer/);
+assert.match(host, /RepairPartnerOfferEnhancer/);
 assert.match(page, /id="partner-beta-form"/);
 assert.match(enhancer, /Contact Name/);
 assert.match(enhancer, /Business Email/);
