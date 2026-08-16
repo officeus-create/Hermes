@@ -180,7 +180,7 @@ const schema = {
 
       setStatus("Request received. Hermes will contact you to confirm the plan and invoice before activation.", "success");
       submit.textContent = "Paid activation requested";
-      window.dataLayer.push({ event: "connect_paid_plan_requested", product: "repair_shop_founding_plan", price_usd: 99, request_state: "received" });
+      window.dataLayer?.push({ event: "connect_paid_plan_requested", product: "repair_shop_founding_plan", price_usd: 99, request_state: "received" });
     } catch {
       submit.disabled = false;
       setStatus("We could not deliver the request. Nothing was charged. Please try again.", "error");
