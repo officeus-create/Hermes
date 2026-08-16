@@ -35,11 +35,10 @@ assert.doesNotMatch(runtime, /Open interactive workspace[\s\S]{0,180}setLink/);
 
 assert.match(hub, /href="https:\/\/connect\.hermeslogisticsus\.com\/#apply"[^>]*>\s*Request Web App access/);
 assert.match(hub, /href="https:\/\/connect\.hermeslogisticsus\.com\/workspace"[^>]*>\s*Open interactive workspace/);
-assert.match(hub, /href="\/services\/hermes-connect\/repair-shops\/"/);
-assert.match(hub, /Open Repair Shop Partner Beta/);
+assert.match(hub, /<button type="button" tabindex="-1">Request<\/button>/);
 assert.match(repairPage, /Owner Login \/ Get Started/);
 assert.match(repairPage, /Open Web App Workspace/);
 assert.match(authPage, /data-tab="login"/);
 assert.match(authPage, /data-tab="register"/);
 
-console.log("Hermes Connect duplicate header is hidden, existing workspace/tool URLs stay canonical, and the Repair Shop hub/registration flow is clickable.");
+console.log("Hermes Connect duplicate header is hidden, existing workspace/tool URLs stay canonical, and the Repair Shop preview/registration flow is clickable.");
