@@ -5,6 +5,8 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const html = await readFile(join(root, "dist", "index.html"), "utf8");
 const performanceCss = await readFile(join(root, "src", "styles", "homepage-performance.css"), "utf8");
+const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
+const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
 
 assert.ok(html.includes("data-product-feature-styles"), "homepage must retain the inert deferred product-style template");
@@ -23,4 +25,20 @@ assert.ok(showcaseRule.includes("content-visibility: visible"), "homepage produc
 assert.equal(/content-visibility\s*:\s*auto/i.test(showcaseRule), false, "homepage product showcase must not restore offscreen auto-paint suppression");
 assert.equal(/contain-intrinsic-size\s*:\s*auto\s+3200px/i.test(performanceCss), false, "homepage must not reserve the historical 3200px blank product-showcase placeholder");
 
-console.log("Homepage deferred feature CSS contract passed.");
+assert.ok(performanceCss.includes("--hermes-pearl: #f7f6f3"), "homepage must retain the canonical Pearl shell token");
+assert.ok(performanceCss.includes("--hermes-obsidian: #0b0d12"), "homepage must retain the canonical Obsidian shell token");
+assert.ok(performanceCss.includes("--hermes-intelligence-violet: #6f5cff"), "homepage must retain the canonical Intelligence accent token");
+
+assert.ok(footerSource.includes('class="footer-desktop-nav"'), "footer must preserve desktop navigation");
+assert.ok(footerSource.includes('class="footer-mobile-groups"'), "footer must preserve compact mobile navigation groups");
+assert.ok(footerSource.includes("<details>"), "mobile footer grouping must use native details disclosure rather than a custom JavaScript accordion");
+assert.ok(/\.footer-mobile-groups nav a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile footer links must retain at least 44px touch targets");
+
+assert.ok(consentSource.includes('data-consent-accept'), "analytics allow action must remain present");
+assert.ok(consentSource.includes('data-consent-decline'), "continue-without-analytics action must remain present");
+assert.ok(consentSource.includes('href="/privacy/"'), "privacy policy link must remain present in consent UI");
+assert.ok(/\.tracking-consent-actions \.button\s*\{[\s\S]*?min-height:\s*44px/i.test(consentSource), "consent actions must retain at least 44px touch targets");
+assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
+assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");
+
+console.log("Homepage deferred feature and shell design contract passed.");
