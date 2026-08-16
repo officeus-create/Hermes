@@ -153,8 +153,10 @@ const { compact = false, showCta = true } = Astro.props;
   const placeOffer = (root: HTMLElement) => {
     let anchor: Element | null = null;
     if (route === repairRoot) anchor = document.querySelector(".repair-live-hero .repair-lead");
-    else if (route === `${repairRoot}/auth`) anchor = document.querySelector("#auth-forms .auth-header");
-    else if (route === `${repairRoot}/plan`) anchor = document.querySelector(".plan-page .hero-copy .lead");
+    else if (route === `${repairRoot}/auth`) {
+      anchor = document.querySelector("#auth-forms .auth-header");
+      root.classList.add("is-compact");
+    } else if (route === `${repairRoot}/plan`) anchor = document.querySelector(".plan-page .hero-copy .lead");
     if (!anchor) return false;
     anchor.insertAdjacentElement("afterend", root);
     root.hidden = false;
