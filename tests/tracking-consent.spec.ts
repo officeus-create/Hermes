@@ -108,18 +108,26 @@ test("Hermes Connect mobile consent stays compact and does not cover the pilot C
   const geometry = await page.evaluate(() => {
     const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
     const ctaElement = document.querySelector<HTMLElement>(".hc-hub-primary");
-    if (!bannerElement || !ctaElement) return null;
+    const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
+    const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
+    if (!bannerElement || !ctaElement || !acceptElement || !declineElement) return null;
     const bannerRect = bannerElement.getBoundingClientRect();
     const ctaRect = ctaElement.getBoundingClientRect();
+    const acceptRect = acceptElement.getBoundingClientRect();
+    const declineRect = declineElement.getBoundingClientRect();
     return {
       bannerHeight: bannerRect.height,
       bannerTop: bannerRect.top,
       ctaTop: ctaRect.top,
       ctaBottom: ctaRect.bottom,
+      acceptHeight: acceptRect.height,
+      declineHeight: declineRect.height,
     };
   });
 
   expect(geometry).not.toBeNull();
   expect(geometry!.bannerHeight).toBeLessThanOrEqual(120);
   expect(geometry!.ctaBottom).toBeLessThanOrEqual(geometry!.bannerTop);
+  expect(geometry!.acceptHeight).toBeGreaterThanOrEqual(44);
+  expect(geometry!.declineHeight).toBeGreaterThanOrEqual(44);
 });
