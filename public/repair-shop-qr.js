@@ -96,8 +96,9 @@
       if (!bookingUrl) return;
       const qrUrl = buildQrUrl(bookingUrl);
       emit("connect_shop_qr_print");
-      const printWindow = window.open("", "_blank", "noopener,noreferrer,width=640,height=760");
+      const printWindow = window.open("", "_blank", "width=640,height=760");
       if (!printWindow) return;
+      try { printWindow.opener = null; } catch {}
       const safeBookingUrl = bookingUrl.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
       printWindow.document.write(`<!doctype html><html><head><title>${copy.title}</title><style>body{font-family:Arial,sans-serif;text-align:center;padding:32px;color:#111}img{width:360px;height:360px;max-width:90vw}.url{font-size:12px;overflow-wrap:anywhere;margin-top:18px}</style></head><body><h1>${copy.title}</h1><img src="${qrUrl}" alt="${copy.alt.replaceAll('"','&quot;')}" onload="window.print()"><p class="url">${safeBookingUrl}</p></body></html>`);
       printWindow.document.close();
