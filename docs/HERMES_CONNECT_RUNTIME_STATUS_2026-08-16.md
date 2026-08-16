@@ -2,7 +2,7 @@
 
 Status: **CURRENT CANONICAL OPERATING NOTE**
 
-This document records the production boundary after the Hermes Connect Repair Shop stabilization cycle. It does not authorize deletion of legacy runtimes, production data, recovery material, or native-mobile source.
+This document records the verified Hermes Connect boundary after the Repair Shop stabilization, compatibility-host consolidation, Design Track merge, mobile first-visit QA fix, and P0 local-bridge audit. It does not authorize deletion of legacy runtimes, production data, recovery material, native-mobile source, secrets, or external account access.
 
 ## CURRENT PRODUCTION
 
@@ -10,16 +10,36 @@ This document records the production boundary after the Hermes Connect Repair Sh
 
 - Repository source: `officeus-create/Hermes`.
 - Production branch: `main`.
-- Current verified main SHA at this checkpoint: `9ea76245caac15360e7c2dcf882bbe6e92758bf6`.
+- Current verified main SHA at this checkpoint: `dc2a88aac82d62f2d27f8aa8225871c227207ff6`.
 - Cloudflare Pages deployment for that SHA: **SUCCESS**.
 - GitHub `build-and-test` for that SHA: **SUCCESS**.
+- Production route verification for that SHA: **SUCCESS**.
+- Production consent verification for that SHA: **SUCCESS**.
+- Current-main route screenshot workflow: **SUCCESS** on run `31956529810`; all 18 controlled observations returned HTTP 200. Those screenshots are `local-reviewed-build` visual QA and are explicitly **not** production-domain evidence.
 - Primary public Hermes Connect product family: `/services/hermes-connect/`.
-- Primary live vertical: `/services/hermes-connect/repair-shops/`.
+- Primary current vertical: `/services/hermes-connect/repair-shops/`.
 - Shared auth/data direction: the canonical Repair Shop flow uses the existing Hermes Connect D1-backed identity/data layer rather than creating a second database or auth system.
+
+### User-facing runtime consolidation
+
+- `connect.hermeslogisticsus.com` is a compatibility entry, not a second current product. Human entry/workspace/mobile paths were canonicalized to the main Hermes Connect product-family routes while API/PWA/static compatibility behavior was preserved where required.
+- Repair Shop referral capture remains server-side/private; raw attribution tokens are not carried into the public auth destination URL.
+- Product-family language state is constrained to the supported Hermes Connect locale set.
+- Historical workspace/demo surfaces remain explicit demo/compatibility material rather than current-product navigation.
+
+### Current Design Track state
+
+- PR #576 merged the selected Hermes visual language: **Hermes Knot silhouette + calm, short motion**.
+- The large animated Knot is limited to the Product Hub visual focus area; deeper task routes retain a static brand mark rather than decorative continuous motion.
+- `prefers-reduced-motion` removes the decorative animation; forced-colors hides the decorative object.
+- Connect routes receive the Pearl header treatment from first paint instead of waiting for client-side enhancement.
+- PR #578 fixed the 390×844 first-visit consent overlay that previously covered the primary Repair Shops CTA.
+- Fresh screenshot evidence confirms the compact mobile consent panel sits below the primary `Open Repair Shops` action and preserves both consent choices.
+- Mobile consent actions retain >=44px touch targets.
 
 ### Repair Shops / STO
 
-Current live-pilot flow:
+Current canonical flow:
 
 1. owner registration / login;
 2. shop profile;
@@ -36,11 +56,12 @@ Current live-pilot flow:
 
 No second Repair Shop application should be created.
 
-## BETA
+## BETA — EXTERNAL ACTIVATION PAUSED BY P0
 
-- **Repair Shops / STO** is the only current live pilot vertical.
-- Pilot objective: first 5–10 real repair shops using the full activation loop before choosing the next major feature.
+- **Repair Shops / STO** remains the only current Hermes Connect live-pilot vertical.
+- Pilot objective remains the first 5–10 real repair shops using the activation/booking loop before choosing the next major feature.
 - Product-development priority is operational learning, activation, booking conversion, support questions and missing-feature evidence — not demo feature expansion.
+- **Real external pilot outreach/activation is currently paused by security gate #566.** Product UX is not the blocker at this checkpoint.
 
 ## DEMO / REFERENCE CAPABILITY
 
@@ -60,38 +81,30 @@ Canonical pages must not present historical pricing, mocked success, unverified 
 
 ### `app.hermeslogisticsus.com`
 
-Current classification: **UNIQUE_FUNCTION_MIGRATION_REQUIRED — usage check pending**.
+Current classification: **TEMPORARY_COMPATIBILITY — retirement evidence pending**.
 
 Known evidence:
 
-- separate Cloudflare Pages project: `hermes-connect-prototype`;
-- historically used for the previous profile / availability / booking runtime;
-- forensic evidence identifies D1-backed specialists, services, availability, sessions, bookings, CRM notes and staff-management structures;
-- forensic evidence also identified a Telegram Login Widget and working booking flow;
-- the modern canonical Hermes Connect flow now uses the same existing D1 family for shared identity/data and Repair Shop tables.
+- it is a separate preserved Cloudflare Pages runtime (`hermes-connect-prototype`);
+- it historically contains profile / availability / booking behavior plus additional legacy structures;
+- the canonical Repair Shop product now covers the first-user path required for the initial 5–10 pilots;
+- no unique legacy capability should be ported pre-emptively;
+- issue #567 remains the read-only retirement/classification gate.
 
-Therefore `app.hermeslogisticsus.com` must **not** be disabled, redirected, deleted or have its D1 data removed until an authenticated inspection answers all of the following:
+`app.hermeslogisticsus.com` must **not** be disabled, redirected, deleted, or have its D1 data removed until authenticated evidence answers the remaining dependency questions, including current traffic/users/sessions, API/table activity, deployment identity, external links, and whether any unique capability is actually required by real pilot users.
 
-1. which routes still receive real traffic;
-2. whether any current users or sessions exist;
-3. which API routes are called;
-4. which D1 tables are read/written;
-5. the deployed source/runtime SHA or immutable deployment identifier;
-6. which capabilities remain unique versus current canonical Hermes Connect;
-7. which external links still point to `app.hermeslogisticsus.com`.
-
-Only after that evidence may the runtime be reclassified as `RETIRE`, `TEMPORARY_COMPATIBILITY`, or remain `UNIQUE_FUNCTION_MIGRATION_REQUIRED`.
+Issue #567 is **not** a blocker for first-user pilot activation once #566 is contained. Legacy inspection may continue read-only in parallel with real-user learning.
 
 ### `connect.hermeslogisticsus.com` / old visual workspace
 
-Treat historical visual workspace surfaces as **DEMO / COMPATIBILITY**, not as a second canonical application. User-facing current-product navigation should resolve to the canonical Hermes Connect product-family routes on the main site.
+Treat historical visual workspace surfaces as **DEMO / COMPATIBILITY**, not as a second canonical application. User-facing current-product navigation resolves to the canonical Hermes Connect product-family routes on the main site.
 
 No domain/runtime should be disabled as part of a documentation or UI cleanup without separate dependency evidence.
 
 ## RECOVERY — DO NOT DELETE
 
 - `hermes-connect-next`: retain until uncommitted files are reconciled; do not treat it as another product.
-- `hermes-connect-mobile`: protected unique local source; local forensic evidence found 25 unique historical mobile commits plus uncommitted Capacitor material.
+- `hermes-connect-mobile`: protected unique local source; historical native-wrapper material must not be inferred from remote branch state alone.
 - Hermes Connect prototype recovery package: retain, including D1 recovery material.
 - Telegram Hermes Connect bot: separate operational runtime; it is not a duplicate website copy.
 
@@ -110,43 +123,57 @@ Current salvage policy for unique local mobile material:
 - Brand V1/V2 mobile UI forks: **OBSOLETE or DUPLICATE unless a specific native-only behavior is proven unique**.
 - monetization-deferred guardrail: **KEEP** if it continues to enforce the no-pricing/no-release boundary.
 
-Remote branch `release/hermes-connect-mobile-v2-current-main` currently has no unique commits versus current `main`; the protected uniqueness is in the local Mac worktree and must not be inferred from the remote branch alone.
+Remote mobile branch state is not sufficient evidence for local protected-source uniqueness.
 
-## SECURITY GATE
+## SECURITY GATE — P0 / NOT CLEARED
 
-Before inviting the first real repair shops, complete a read-only audit of:
+Issue #566 is now a confirmed containment gate rather than an unaudited placeholder.
 
-`/Users/progressopro/hermes_tunnel.py`
+Read-only evidence established:
 
-Required checks:
+- the local Mac bridge `/Users/progressopro/hermes_tunnel.py` contains an unsafe arbitrary-command execution primitive;
+- the tunnel process was **not running** at audit time;
+- no audited LaunchAgent/cron/autostart reference was found;
+- authenticated Drive evidence ties the legacy command source to `HERMES_CORE_OS` / `Agent_Commands`;
+- that legacy command source currently has link-based public write access, so the upstream authorization boundary is not strong enough;
+- a full bounded queue scan found **0 PENDING**, **0 RUNNING**, and **1 historical FAILED** command row;
+- the command queue is therefore dormant rather than actively executing work;
+- no evidence of active compromise was found;
+- current Hermes Connect production code does **not** depend on this legacy local bridge;
+- the Apps Script deployment/project ACL remains a blind spot and must not be assumed safe.
 
-- inbound attack surface and bind interfaces/ports;
-- authentication;
-- accepted command format and validation;
-- `subprocess`, `os.system`, `shell=True` or equivalent shell execution;
-- shell injection paths;
-- secret/env access;
-- process privilege;
-- LaunchAgent/autostart/persistence;
-- realistic external exploitation path;
-- severity;
-- minimum safe fix.
+Security conclusion:
 
-If a realistic unauthenticated or weakly authenticated remote-command-execution path is confirmed at Critical/High severity, it becomes P0 and the real-user pilot pauses until contained.
+- **P0 / pilot gate NOT CLEARED**;
+- this is containment/retirement work for a dormant legacy control plane, not evidence that the current Repair Shop Pages runtime is compromised;
+- real Repair Shop outreach/activation remains paused until the unsafe path is contained and re-verified.
 
-This file is not present in the GitHub repository and was not available in the connected ChatGPT file library at this checkpoint, so no security conclusion is recorded here.
+Minimum closure criteria before pilot activation:
 
-## PLANNED — AFTER STABILIZATION GATES
+1. keep the legacy tunnel stopped and without autostart;
+2. remove public-writer access from the legacy command source and restrict access to explicitly approved principals;
+3. verify the Apps Script project/deployment does not expose an uncontrolled write/control path;
+4. disable/remove the arbitrary shell-command path locally, or retire the legacy tunnel entirely before it can be started again;
+5. re-run read-only proof of process/autostart state, upstream ACL, and absence of a reachable arbitrary-command dispatcher.
 
-1. authenticated legacy `app.` dependency/usage inspection;
-2. `hermes_tunnel.py` security audit;
-3. read-only desktop/mobile regression by an independent tester;
-4. first 5–10 real repair shops;
-5. measure activation rate, time to first value, registration abandonment, profile completion, booking conversion, operational errors, support questions, repeat booking and requested missing features;
-6. choose the next product feature only from observed pilot evidence.
+Changing only one layer (for example only the Sheet ACL) is not sufficient while the arbitrary-command primitive remains startable.
+
+Do not place direct writable-source identifiers, deployment URLs, secrets, or exploit payloads in public repository documentation.
+
+## NEXT OPERATING SEQUENCE
+
+1. contain and re-verify security gate #566;
+2. only after #566 is cleared, validate the already prepared Milwaukee first-user prospect rows for duplicates/DNC/current phone/site/Maps state;
+3. obtain explicit authorization before writing those vetted prospects into the authority `ACHEME` workbook tab;
+4. contact one repair shop at a time and log every attempt/follow-up in the authority workbook;
+5. target the first 5–10 real repair shops on the canonical Repair Shop flow;
+6. measure activation rate, time to first value, registration abandonment, profile completion, booking conversion, operational errors, support questions, repeat booking and requested missing features;
+7. keep issue #567 read-only in parallel; migrate a legacy capability only if real pilot evidence proves it is both unique and required;
+8. choose the next product feature only from observed pilot evidence.
 
 ## DO NOT DO YET
 
+- real Repair Shop outreach before #566 is cleared;
 - Brand V2/V3;
 - second Repair Shop product;
 - new D1;
@@ -159,7 +186,9 @@ This file is not present in the GitHub repository and was not available in the c
 - new vertical;
 - AI feature expansion for demo value only;
 - deletion of recovery material;
-- retirement of `app.hermeslogisticsus.com` without dependency evidence.
+- retirement of `app.hermeslogisticsus.com` without dependency evidence;
+- migration of legacy features merely because they exist;
+- publication of writable control-plane identifiers/secrets in public docs.
 
 ## Documentation labels
 
