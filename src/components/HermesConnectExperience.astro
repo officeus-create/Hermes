@@ -190,15 +190,30 @@
   .hc-experience .hc-hub-page .hc-module-grid article,
   .hc-experience .hc-hub-page .hc-hub-faq-grid article,
   .hc-experience .hc-capability-page .hc-capability-grid article,
-  .hc-experience .hc-capability-page .hc-faq-grid article{
-    box-shadow:0 10px 28px rgba(33,29,52,.055)!important;
-  }
+  .hc-experience .hc-capability-page .hc-faq-grid article{box-shadow:0 10px 28px rgba(33,29,52,.055)!important}
   .hc-experience .repair-pilot-page .repair-live-card,
   .hc-experience .repair-pilot-page .repair-offer-grid,
-  .hc-experience .hc-hub-page .hc-rules{
-    box-shadow:0 22px 54px rgba(11,13,18,.13)!important;
-  }
+  .hc-experience .hc-hub-page .hc-rules{box-shadow:0 22px 54px rgba(11,13,18,.13)!important}
   .hc-experience .site-header-scrolled{box-shadow:0 8px 24px rgba(8,12,21,.10)!important}
+
+  /* D070 — keyboard focus, high-contrast fallback, and motion restraint. */
+  .hc-experience :where(a,button,summary,input,select,textarea):focus-visible{
+    outline:2px solid #6c56e8!important;
+    outline-offset:3px;
+  }
+  .hc-experience .repair-offer-grid :where(input,select,textarea):focus-visible{
+    outline-color:#8fdcff!important;
+  }
+  .hc-experience .hc-family-nav a:focus-visible{
+    box-shadow:0 0 0 3px rgba(157,136,255,.16);
+  }
+  @media(forced-colors:active){
+    .hc-intelligence-core{display:none}
+    .hc-product-context,
+    .hc-experience .repair-pilot-page .repair-live-card,
+    .hc-experience .repair-pilot-page .repair-offer-grid{border:1px solid CanvasText}
+    .hc-experience :where(a,button,summary,input,select,textarea):focus-visible{outline:2px solid Highlight!important}
+  }
 
   @media(hover:none){
     .hc-experience .repair-pilot-page .repair-capability-grid article:hover,
@@ -250,5 +265,8 @@
     .hc-experience .hc-capability-page .hc-faq-grid article{border-radius:18px!important}
   }
 
-  @media(prefers-reduced-motion:reduce){.hc-intelligence-core__halo,.hc-intelligence-core__ring{animation:none!important}}
+  @media(prefers-reduced-motion:reduce){
+    .hc-intelligence-core__halo,.hc-intelligence-core__ring{animation:none!important}
+    .hc-experience :where(a,button,.repair-capability-grid article,.repair-link-grid a,.hc-module-grid article,.hc-capability-grid article){transition:none!important}
+  }
 </style>
