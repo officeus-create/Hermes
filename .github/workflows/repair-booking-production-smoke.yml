@@ -7,7 +7,9 @@ on:
       - functions/api/_lib/repair-shop-bookings-schema.mjs
       - functions/api/_lib/repair-shop-booking-history-schema.mjs
       - functions/api/_lib/repair-shop-booking-vehicle-schema.mjs
+      - functions/api/_lib/repair-shop-access.mjs
       - functions/api/public/repair-booking.ts
+      - functions/api/repair-shop/access.ts
       - functions/api/repair-shop/bookings.ts
       - functions/api/repair-shop/bookings/[id]/status.ts
       - functions/api/repair-shop/cleanup-booking-smoke.ts
@@ -39,3 +41,43 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         shell: bash
         run: bash scripts/repair-booking-production-smoke.sh
+
+      - name: Verify persisted default Repair Shop access state
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="https://hermeslogisticsus.com"
+          EMAIL="repair-booking-production-smoke@hermesconnect.app"
+          TEST_ID="${GITHUB_RUN_ID}-access-$(date +%s)"
+          PASSWORD="HermesAccess-${TEST_ID}-A9!"
+          COOKIE="${RUNNER_TEMP}/access.cookies"
+          echo "::add-mask::$PASSWORD"
+
+          cleanup() {
+            curl -sS -o "${RUNNER_TEMP}/access-cleanup.json" -X POST "$BASE/api/repair-shop/cleanup-booking-smoke" >/dev/null || true
+          }
+          trap cleanup EXIT
+
+          REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Access Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production access-state verification account."}')"
+          RC="$(curl -sS -o "${RUNNER_TEMP}/access-register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
+          echo "ACCESS_REGISTER_HTTP=$RC"; cat "${RUNNER_TEMP}/access-register.json"; echo
+          test "$RC" = 201
+
+          PROFILE='{"name":"Hermes Access Smoke Shop","phone":"+1 414 555 0197","address_line1":"102 Access Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
+          PC="$(curl -sS -o "${RUNNER_TEMP}/access-profile.json" -w '%{http_code}' -b "$COOKIE" -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
+          echo "ACCESS_PROFILE_HTTP=$PC"; cat "${RUNNER_TEMP}/access-profile.json"; echo
+          test "$PC" = 200
+
+          AC="$(curl -sS -o "${RUNNER_TEMP}/access-state.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/access")"
+          echo "ACCESS_STATE_HTTP=$AC"; cat "${RUNNER_TEMP}/access-state.json"; echo
+          test "$AC" = 200
+          test "$(jq -r '.success' "${RUNNER_TEMP}/access-state.json")" = true
+          test "$(jq -r '.access.state' "${RUNNER_TEMP}/access-state.json")" = trialing
+          test "$(jq -r '.access.plan_id' "${RUNNER_TEMP}/access-state.json")" = repair_shop_founding
+          test "$(jq -r '.access.next_action' "${RUNNER_TEMP}/access-state.json")" = choose_plan
+
+          cleanup
+          trap - EXIT
+          test "$(jq -r '.success // false' "${RUNNER_TEMP}/access-cleanup.json")" = true
+          test "$(jq -r '.remaining' "${RUNNER_TEMP}/access-cleanup.json")" = 0
+          echo "FINAL_ACCESS_STATE_VERDICT=PASS"
