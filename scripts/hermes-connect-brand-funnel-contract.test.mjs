@@ -2,63 +2,70 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
+const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const text = (path) => readFile(join(root, path), "utf8");
 
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
-
-async function text(path) {
-  return readFile(join(root, path), "utf8");
-}
-
-console.log("Running Hermes Connect Brand & Funnel Contract Test...");
+console.log("Running Hermes Connect Product Family Contract Test...");
 
 const launcher = await text("src/components/HermesConnectLauncher.astro");
-assert(launcher.includes("data-hermes-connect-launcher"), "HermesConnectLauncher.astro: Missing data-hermes-connect-launcher attribute.");
-assert(launcher.includes("https://connect.hermeslogisticsus.com/workspace"), "HermesConnectLauncher.astro: Missing canonical workspace target.");
-assert(!launcher.includes("hermes-connect-brand-v1"), "HermesConnectLauncher.astro: Retired Brand V1 path must not remain.");
-assert(launcher.includes("path d=\"M8 12c0-3 2.4-5.4 5.4-5.4h7.2"), "HermesConnectLauncher.astro: Missing brand knot SVG mark.");
+assert(launcher.includes("data-hermes-connect-launcher"), "Launcher: missing product launcher marker.");
+assert(launcher.includes('const computedHref = href || "/services/hermes-connect/"'), "Launcher: default must be the canonical Product Hub.");
+assert(!launcher.includes("connect.hermeslogisticsus.com/workspace"), "Launcher: legacy workspace must not be a current default target.");
+assert(!launcher.includes("hermes-connect-brand-v1"), "Launcher: retired Brand V1 path must not return.");
+assert(launcher.includes("hermes-knot-mark"), "Launcher: official Hermes knot mark is required.");
 
 const header = await text("src/components/SiteHeader.astro");
-assert(header.includes("HermesConnectLauncher"), "SiteHeader.astro: Missing HermesConnectLauncher import or usage.");
-assert(header.includes("variant=\"header\""), "SiteHeader.astro: Missing header launcher variant.");
-assert(header.includes("variant=\"mobile\""), "SiteHeader.astro: Missing mobile launcher variant.");
-assert(header.includes('href="/services/hermes-connect/repair-shops/"'), "SiteHeader.astro: Primary Hermes Connect entry must open the Repair Shop Partner Beta for pilot launch.");
-assert(!header.includes('const connectUrl = "https://connect.hermeslogisticsus.com/"'), "SiteHeader.astro: Duplicate standalone Hermes Connect header route must not return.");
-assert(!header.includes('<a class="header-cta" href={connectUrl}'), "SiteHeader.astro: Duplicate Hermes Connect desktop CTA must not return.");
-assert(!header.includes('<a href={connectUrl} aria-label="Open Hermes Connect">Hermes Connect</a>'), "SiteHeader.astro: Duplicate Hermes Connect mobile CTA must not return.");
+assert(header.includes("HermesConnectLauncher"), "Header: missing Hermes Connect launcher.");
+assert(header.includes('variant="header"') && header.includes('variant="mobile"'), "Header: desktop and mobile launcher variants are required.");
+assert(header.includes('href="/services/hermes-connect/repair-shops/"'), "Header: current Repair Shop product entry is required.");
+assert(header.includes("isHermesConnectRoute"), "Header: Connect-specific language routing is required.");
+assert(header.includes("params.set(\"lang\", language)"), "Header: language switching must preserve the equivalent Connect route.");
 
-const footer = await text("src/components/SiteFooter.astro");
-assert(footer.includes("HermesConnectLauncher"), "SiteFooter.astro: Missing HermesConnectLauncher import or usage.");
-assert(footer.includes("variant=\"footer\""), "SiteFooter.astro: Missing footer launcher variant.");
+const experience = await text("src/components/HermesConnectExperience.astro");
+assert(experience.includes("data-hc-product-context"), "Experience: product-family navigation is required.");
+assert(experience.includes("data-hc-english-only"), "Experience: non-English routes must disclose English-only page content until fully localized.");
+assert(experience.includes("REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT"), "Experience: reference-capability status is required.");
+assert(experience.includes("CURRENT LIVE PILOT"), "Experience: current live pilot status is required.");
 
-const pathSlug = await text("src/pages/paths/[slug].astro");
-assert(pathSlug.includes("HermesConnectLauncher"), "paths/[slug].astro: Missing HermesConnectLauncher integration.");
+const hub = await text("src/pages/services/hermes-connect/index.astro");
+assert(hub.includes("One product family. One current live pilot."), "Hub: product-family hierarchy statement is required.");
+assert(hub.includes("Reference capability"), "Hub: non-live modules must be classified as reference capabilities.");
+assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
+assert(!/\$99|\$299|\$799/.test(hub), "Hub: historical planning prices must not appear as current pricing.");
 
-const loadBoard = await text("src/pages/load-board.astro");
-assert(loadBoard.includes("HermesConnectLauncher"), "load-board.astro: Missing HermesConnectLauncher integration.");
+const capabilityPages = [
+  "ai-command-center.astro",
+  "unified-inbox.astro",
+  "load-analyzer.astro",
+  "rate-negotiator.astro",
+  "proposal-builder.astro",
+  "roi-calculator.astro",
+  "business-automation.astro",
+];
+for (const file of capabilityPages) {
+  const source = await text(`src/pages/services/hermes-connect/${file}`);
+  assert(source.includes("HermesConnectCapabilityPage"), `${file}: must use the shared Connect capability design system.`);
+  assert(!source.includes("HERMES_CONNECT_PRICING"), `${file}: historical pricing module must not be imported by canonical product pages.`);
+  assert(!source.includes("CANONICAL_PRICING_TIERS"), `${file}: historical price tiers must not be rendered.`);
+  assert(!source.includes("connect.hermeslogisticsus.com/workspace"), `${file}: legacy workspace must not be linked.`);
+  assert(!source.includes("Public Beta"), `${file}: non-live capability must not claim Public Beta.`);
+}
 
-const digitalPage = await text("src/components/DigitalServicePage.astro");
-assert(digitalPage.includes("HermesConnectLauncher"), "DigitalServicePage.astro: Missing HermesConnectLauncher integration.");
+const pricing = await text("src/data/hermes-connect-pricing.ts");
+assert(pricing.includes('HERMES_CONNECT_PRICING_STATUS = "historical-planning-only"'), "Pricing: legacy tier data must be explicitly historical-only.");
 
-const hermesConnectPage = await text("src/pages/services/hermes-connect/index.astro");
-assert(hermesConnectPage.includes("HermesConnectLauncher"), "services/hermes-connect/index.astro: Missing HermesConnectLauncher integration.");
+const download = await text("src/pages/download.astro");
+assert(download.includes("No public mobile-store or direct APK release"), "Access Center: mobile release boundary must be explicit.");
+assert(!download.includes("connect.hermeslogisticsus.com/workspace"), "Access Center: legacy workspace target must not remain.");
 
-assert(launcher.includes("hermes-knot-mark"), "Launcher must use official hermes-knot-mark CSS class.");
+const technology = await text("src/components/TechnologyInteractivePrototypes.astro");
+assert(technology.includes("Reference capability"), "Technology preview: Connect preview must be clearly classified.");
+assert(technology.includes("no calendar event, payment, account, or message is created"), "Technology preview: no-side-effect boundary must remain explicit.");
+assert(!technology.includes("https://connect.hermeslogisticsus.com"), "Technology preview: legacy Connect host must not be user-facing.");
 
 const workspaceHtml = await text("public/demos/hermes-connect/workspace.html");
-assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Workspace HTML must state demo or simulated preview nature.");
-assert(!workspaceHtml.includes("hermes-connect-brand-v1"), "Workspace HTML must not reference retired Brand V1 paths.");
-assert(!workspaceHtml.includes("workspace-v2"), "Workspace HTML must not reference retired workspace-v2 assets.");
+assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Preserved workspace: historical/demo nature must remain explicit.");
+assert(!workspaceHtml.includes("hermes-connect-brand-v1"), "Preserved workspace: Brand V1 path must not return.");
+assert(!workspaceHtml.includes("workspace-v2"), "Preserved workspace: retired workspace-v2 assets must not return.");
 
-const pricingTs = await text("src/data/hermes-connect-pricing.ts");
-const workspaceJs = await text("public/demos/hermes-connect/workspace.js");
-
-assert(pricingTs.includes("priceMonthly: 99") && pricingTs.includes("priceAnnualMonthly: 79"), "pricing.ts: Starter pricing mismatch.");
-assert(workspaceJs.includes("starter: { name: 'Starter', monthly: 99, annual: 79 }"), "workspace.js: Starter pricing mismatch.");
-assert(pricingTs.includes("priceMonthly: 299") && pricingTs.includes("priceAnnualMonthly: 249"), "pricing.ts: Pro pricing mismatch.");
-assert(workspaceJs.includes("pro: { name: 'Professional', monthly: 299, annual: 249 }"), "workspace.js: Pro pricing mismatch.");
-assert(pricingTs.includes("priceMonthly: 799") && pricingTs.includes("priceAnnualMonthly: 699"), "pricing.ts: Enterprise pricing mismatch.");
-assert(workspaceJs.includes("enterprise: { name: 'Enterprise', monthly: 799, annual: 699 }"), "workspace.js: Enterprise pricing mismatch.");
-
-console.log("Hermes Connect Brand & Funnel Contract Test passed against the canonical workspace.");
+console.log("Hermes Connect product-family navigation, truthfulness, localization boundary, and legacy-routing contract passed.");
