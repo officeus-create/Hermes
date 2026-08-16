@@ -184,6 +184,47 @@
   @keyframes hc-core-breathe{0%,100%{transform:scale(.94);opacity:.55}50%{transform:scale(1.06);opacity:1}}
 
   @media(max-width:1120px){.hc-intelligence-core{display:none}}
-  @media(max-width:760px){.hc-product-context__inner,.hc-language-truth{width:min(100% - 1rem,1180px)}.hc-product-context__summary{gap:.45rem}.hc-content-language{width:100%;margin-left:0}.hc-family-nav a{font-size:.73rem;padding:.4rem .58rem}.hc-language-truth{font-size:.75rem}.hc-experience .repair-pilot-page .hero-section{padding-top:1rem!important}}
+
+  /* D069 — tablet/mobile rhythm instead of a squeezed desktop layout. */
+  @media(max-width:768px){
+    .hc-product-context__inner,.hc-language-truth{width:min(100% - 1rem,1180px)}
+    .hc-product-context__inner{padding:.52rem 0 .45rem;gap:.5rem}
+    .hc-product-context__summary{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.18rem .58rem;font-size:.72rem}
+    .hc-product-context__dot{grid-row:1 / span 3;align-self:start;margin-top:.48rem}
+    .hc-product-context__summary strong{font-size:.66rem;line-height:1.25;letter-spacing:.025em}
+    .hc-content-language{grid-column:2;width:auto;margin-left:0;color:#8f9db1;font-size:.68rem}
+    .hc-family-nav{gap:.28rem;margin-inline:-.5rem;padding:.08rem .5rem .16rem;scroll-padding-inline:.5rem}
+    .hc-family-nav a{display:inline-flex;align-items:center;min-height:40px;padding:.42rem .62rem;font-size:.72rem}
+    .hc-language-truth{padding-bottom:.55rem;font-size:.72rem;line-height:1.42}
+    .hc-experience .repair-pilot-page .hero-section{padding-top:1rem!important}
+    .hc-experience .repair-pilot-page .repair-shell,
+    .hc-experience .hc-hub-page .hc-hub-shell,
+    .hc-experience .hc-capability-page .hc-capability-shell{width:min(100% - 1rem,1180px)!important}
+    .hc-experience .repair-pilot-page .repair-primary,
+    .hc-experience .repair-pilot-page .repair-secondary,
+    .hc-experience .repair-pilot-page .repair-submit,
+    .hc-experience .hc-hub-page .hc-hub-primary,
+    .hc-experience .hc-hub-page .hc-hub-secondary,
+    .hc-experience .hc-capability-page .hc-primary-action,
+    .hc-experience .hc-capability-page .hc-secondary-action{min-height:48px}
+  }
+
+  @media(max-width:430px){
+    .hc-product-context__inner,.hc-language-truth{width:calc(100% - .75rem)}
+    .hc-product-context__summary{gap:.14rem .5rem}
+    .hc-product-context__summary strong{font-size:.63rem}
+    .hc-family-nav{margin-inline:-.375rem;padding-inline:.375rem}
+    .hc-family-nav a{min-height:42px;padding:.44rem .58rem;font-size:.7rem}
+    .hc-experience .repair-pilot-page .repair-shell,
+    .hc-experience .hc-hub-page .hc-hub-shell,
+    .hc-experience .hc-capability-page .hc-capability-shell{width:calc(100% - .75rem)!important}
+    .hc-experience .repair-pilot-page .repair-live-card,
+    .hc-experience .repair-pilot-page .repair-capability-grid article,
+    .hc-experience .repair-pilot-page .repair-link-grid a,
+    .hc-experience .hc-hub-page .hc-module-grid article,
+    .hc-experience .hc-capability-page .hc-capability-grid article,
+    .hc-experience .hc-capability-page .hc-faq-grid article{border-radius:18px!important}
+  }
+
   @media(prefers-reduced-motion:reduce){.hc-intelligence-core__halo,.hc-intelligence-core__ring{animation:none!important}}
 </style>
