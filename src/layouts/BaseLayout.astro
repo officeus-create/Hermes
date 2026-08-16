@@ -11,6 +11,7 @@ import MotionLayer from "../components/MotionLayer.astro";
 import ProductionContactMode from "../components/ProductionContactMode.astro";
 import RepairBookingGrowthEnhancer from "../components/RepairBookingGrowthEnhancer.astro";
 import RepairPartnerOfferEnhancer from "../components/RepairPartnerOfferEnhancer.astro";
+import RepairShopAuthEntryEnhancer from "../components/RepairShopAuthEntryEnhancer.astro";
 import RepairShopFreeLaunchOffer from "../components/RepairShopFreeLaunchOffer.astro";
 import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
@@ -191,6 +192,7 @@ const safeSchema = schema
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
+    {isRepairShopLaunchRoute && <RepairShopAuthEntryEnhancer />}
     <TrackingConsent />
     <MoneyPageActionBar />
     <CarrierContractJourney />
