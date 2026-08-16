@@ -23,6 +23,10 @@ const header = await text("src/components/SiteHeader.astro");
 assert(header.includes("HermesConnectLauncher"), "SiteHeader.astro: Missing HermesConnectLauncher import or usage.");
 assert(header.includes("variant=\"header\""), "SiteHeader.astro: Missing header launcher variant.");
 assert(header.includes("variant=\"mobile\""), "SiteHeader.astro: Missing mobile launcher variant.");
+assert(header.includes('href="/services/hermes-connect/repair-shops/"'), "SiteHeader.astro: Primary Hermes Connect entry must open the Repair Shop Partner Beta for pilot launch.");
+assert(!header.includes('const connectUrl = "https://connect.hermeslogisticsus.com/"'), "SiteHeader.astro: Duplicate standalone Hermes Connect header route must not return.");
+assert(!header.includes('<a class="header-cta" href={connectUrl}'), "SiteHeader.astro: Duplicate Hermes Connect desktop CTA must not return.");
+assert(!header.includes('<a href={connectUrl} aria-label="Open Hermes Connect">Hermes Connect</a>'), "SiteHeader.astro: Duplicate Hermes Connect mobile CTA must not return.");
 
 const footer = await text("src/components/SiteFooter.astro");
 assert(footer.includes("HermesConnectLauncher"), "SiteFooter.astro: Missing HermesConnectLauncher import or usage.");
