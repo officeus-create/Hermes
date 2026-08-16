@@ -1,11 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, runtime, layout, leadReceiver] = await Promise.all([
+const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-booking-growth.js", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/logistics-lead.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/repair-shops/plan.astro", import.meta.url), "utf8"),
 ]);
 
 assert.match(layout, /RepairBookingGrowthEnhancer/);
@@ -21,4 +23,23 @@ assert.doesNotMatch(runtime, /dataLayer\.push\([\s\S]{0,400}(bookingName|booking
 assert.match(leadReceiver, /\["ProgressoPro",\s*"GENERAL CONTACT \/ MARKETING"\]/);
 assert.match(leadReceiver, /input\.consent !== true/);
 
-console.log("Repair Shop growth CTA consent, private lead routing, and zero-PII telemetry contract passed.");
+// Revenue V1: keep the public Repair Shop path value-first and route paid intent
+// through the existing private lead receiver without introducing website payment tech.
+assert.match(repairLanding, /Give customers one link to book your repair shop\./);
+assert.match(repairLanding, /\/services\/hermes-connect\/repair-shops\/plan\//);
+assert.match(repairLanding, /Founding Shop Plan: \$99\/month per location/);
+assert.doesNotMatch(repairLanding, /Current live pilot/);
+
+assert.match(paidPlan, /Founding Shop Plan/);
+assert.match(paidPlan, /\$99\/month/);
+assert.match(paidPlan, /per repair shop location/);
+assert.match(paidPlan, /Try the workspace first/);
+assert.match(paidPlan, /id="plan-consent" type="checkbox" required/);
+assert.match(paidPlan, /fetch\("\/api\/logistics-lead"/);
+assert.match(paidPlan, /"Idempotency-Key": requestId/);
+assert.match(paidPlan, /connect_paid_plan_requested/);
+assert.match(paidPlan, /No payment is taken here/);
+assert.doesNotMatch(paidPlan, /js\.stripe\.com|from\s+["']stripe["']|payment_intents|checkout\.sessions\.create|paypal\.com\/sdk/i);
+assert.doesNotMatch(paidPlan, /dataLayer\.push\([\s\S]{0,500}(plan-email|plan-phone|contactName|email,|phone,)/);
+
+console.log("Repair Shop growth CTA, paid activation intent, private lead routing, and zero-PII telemetry contract passed.");
