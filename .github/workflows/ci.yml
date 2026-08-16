@@ -34,6 +34,9 @@ jobs:
       - name: Validate static output
         run: npm test
 
+      - name: Validate repair shop access state
+        run: node scripts/repair-shop-access-contract.test.mjs
+
       - name: Validate carrier contract engine
         run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
 
