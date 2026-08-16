@@ -39,6 +39,9 @@ assert.equal((footerSource.match(/\/logistics\/car-hauling-dispatch\//g) ?? []).
 assert.ok(consentSource.includes('data-consent-accept'), "analytics allow action must remain present");
 assert.ok(consentSource.includes('data-consent-decline'), "continue-without-analytics action must remain present");
 assert.ok(consentSource.includes('href="/privacy/"'), "privacy policy link must remain present in consent UI");
+assert.ok(consentSource.includes('class="tracking-consent-copy"'), "consent copy must remain grouped separately from actions for compact layout");
+assert.ok(/@media \(min-width: 701px\)[\s\S]*?\.tracking-consent-banner\s*\{[\s\S]*?grid-template-columns:\s*minmax\(280px,\s*1fr\)\s+auto/i.test(consentSource), "desktop consent must remain a compact horizontal copy/actions bar");
+assert.ok(/@media \(min-width: 701px\)[\s\S]*?\.tracking-consent-banner\s*\{[\s\S]*?width:\s*min\(960px,\s*calc\(100vw - 1\.6rem\)\)/i.test(consentSource), "desktop consent must retain the bounded nonblocking width");
 assert.ok(/\.tracking-consent-actions \.button\s*\{[\s\S]*?min-height:\s*44px/i.test(consentSource), "consent actions must retain at least 44px touch targets");
 assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
 assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");

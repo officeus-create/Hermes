@@ -5,10 +5,12 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
 
 <div class:list={["tracking-consent", { "tracking-consent-connect": isHermesConnectRoute }]} data-tracking-consent data-measurement-id={measurementId}>
   <div class="tracking-consent-banner" data-consent-banner role="dialog" aria-modal="false" aria-labelledby="tracking-consent-title" hidden>
-    <p class="tracking-consent-eyebrow">Privacy settings</p>
-    <h2 id="tracking-consent-title">Choose whether to allow website analytics.</h2>
-    <p class="tracking-consent-detail">Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled.</p>
-    {isHermesConnectRoute && <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>}
+    <div class="tracking-consent-copy">
+      <p class="tracking-consent-eyebrow">Privacy settings</p>
+      <h2 id="tracking-consent-title">Choose whether to allow website analytics.</h2>
+      <p class="tracking-consent-detail">Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled.</p>
+      {isHermesConnectRoute && <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>}
+    </div>
     <div class="tracking-consent-actions">
       <button type="button" class="button button-primary" data-consent-accept>Allow analytics</button>
       <button type="button" class="button" data-consent-decline>Continue without analytics</button>
@@ -224,6 +226,48 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
   .tracking-consent-settings:focus-visible {
     outline: 2px solid #6f5cff;
     outline-offset: 3px;
+  }
+
+  @media (min-width: 701px) {
+    .tracking-consent-banner {
+      right: .8rem;
+      bottom: .8rem;
+      width: min(960px, calc(100vw - 1.6rem));
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) auto;
+      gap: .8rem 1rem;
+      align-items: center;
+      padding: .62rem .72rem;
+      border-radius: 14px;
+      box-shadow: 0 12px 34px rgba(11,13,18,.11);
+    }
+    .tracking-consent-eyebrow { display: none; }
+    .tracking-consent-banner h2 {
+      margin: 0 0 .08rem;
+      font-size: .88rem;
+      line-height: 1.2;
+    }
+    .tracking-consent-banner p {
+      max-width: 70ch;
+      font-size: .71rem;
+      line-height: 1.28;
+    }
+    .tracking-consent-actions {
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      gap: .34rem;
+      margin-top: 0;
+    }
+    .tracking-consent-actions .button {
+      padding: .48rem .62rem;
+      font-size: .72rem;
+      white-space: nowrap;
+    }
+    .tracking-consent-policy-link {
+      padding-inline: .28rem;
+      font-size: .7rem;
+      white-space: nowrap;
+    }
   }
 
   @media (max-width: 700px) {
