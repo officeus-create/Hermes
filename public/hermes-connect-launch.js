@@ -8,33 +8,48 @@
     return path || "/";
   };
 
-  const setLink = (anchor, href, label) => {
-    if (!(anchor instanceof HTMLAnchorElement)) return;
+  const makeLink = (href, label, className, marker) => {
+    const anchor = document.createElement("a");
     anchor.href = href;
-    if (label) anchor.textContent = label;
+    anchor.textContent = label;
+    anchor.className = className;
+    anchor.dataset[marker] = "true";
+    return anchor;
   };
 
-  const enhanceHubPreview = () => {
+  const enhanceHub = () => {
     if (normalizedPath() !== HUB_PATH) return;
+
+    const heroActions = document.querySelector(".connect-service-actions");
+    if (heroActions && !heroActions.querySelector("[data-repair-shop-launch]")) {
+      heroActions.appendChild(
+        makeLink(REPAIR_PATH, "Repair Shop / STO Pilot", "button button-ghost", "repairShopLaunch"),
+      );
+    }
+
     const previewButton = document.querySelector(".connect-service-profile button");
-    if (!(previewButton instanceof HTMLButtonElement)) return;
-    previewButton.tabIndex = 0;
-    previewButton.textContent = "Open Repair Shop";
-    previewButton.setAttribute("aria-label", "Open Repair Shop pilot");
-    previewButton.addEventListener("click", () => window.location.assign(REPAIR_PATH));
+    if (previewButton instanceof HTMLButtonElement) {
+      previewButton.tabIndex = 0;
+      previewButton.textContent = "Open Repair Shop";
+      previewButton.setAttribute("aria-label", "Open Repair Shop pilot");
+      previewButton.addEventListener("click", () => window.location.assign(REPAIR_PATH));
+    }
   };
 
   const enhanceRepairLanding = () => {
     if (normalizedPath() !== "/services/hermes-connect/repair-shops") return;
 
-    document.querySelectorAll("a").forEach((anchor) => {
-      const label = (anchor.textContent || "").replace(/\s+/g, " ").trim();
-      if (label.includes("Owner Login / Get Started")) {
-        setLink(anchor, `${AUTH_PATH}?mode=register`, "Create Shop Account");
-      } else if (label.includes("Open Web App Workspace")) {
-        setLink(anchor, `${AUTH_PATH}?mode=login`, "Open Shop Workspace →");
-      }
-    });
+    const heroNav = document.querySelector(".hero-header-nav");
+    if (heroNav && !heroNav.querySelector("[data-repair-launch-bar]")) {
+      const launchBar = document.createElement("div");
+      launchBar.className = "repair-launch-bar";
+      launchBar.dataset.repairLaunchBar = "true";
+      launchBar.append(
+        makeLink(`${AUTH_PATH}?mode=register`, "Create Shop Account", "repair-launch-primary", "repairRegisterLaunch"),
+        makeLink(`${AUTH_PATH}?mode=login`, "Owner Login", "repair-launch-secondary", "repairLoginLaunch"),
+      );
+      heroNav.appendChild(launchBar);
+    }
   };
 
   const selectAuthMode = () => {
@@ -46,7 +61,7 @@
   };
 
   const boot = () => {
-    enhanceHubPreview();
+    enhanceHub();
     enhanceRepairLanding();
     selectAuthMode();
   };
