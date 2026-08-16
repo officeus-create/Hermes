@@ -27,12 +27,69 @@
       fr: { currentBeta: "BÊTA ACTUELLE · PILOTE EN DIRECT", hub: "HUB PRODUIT · ACTUEL", demo: "CAPACITÉ DÉMO · PAS LE RUNTIME PRINCIPAL", currentProduct: "Produit actuel : Ateliers", hubLink: "Hub produit", repairLink: "Ateliers", ownerLink: "Connexion propriétaire" },
     };
 
+    const languageNames = {
+      en: "English",
+      uk: "Українська",
+      ru: "Русский",
+      es: "Español",
+      it: "Italiano",
+      fr: "Français",
+    };
+
+    const headerLabels = {
+      en: { logistics: "Logistics", marketing: "Marketing", academy: "Academy", technology: "IT Development", contact: "Start a conversation" },
+      uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову" },
+      ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор" },
+      es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Desarrollo IT", contact: "Iniciar una conversación" },
+      it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione" },
+      fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation" },
+    };
+
     const withLocale = (href) => {
       const url = new URL(href, window.location.origin);
       if (locale === "en") url.searchParams.delete("lang");
       else url.searchParams.set("lang", locale);
       return `${url.pathname}${url.search}${url.hash}`;
     };
+
+    document.querySelectorAll("[data-language-menu]").forEach((menu) => {
+      const currentName = menu.querySelector("summary span");
+      if (currentName) currentName.textContent = languageNames[locale];
+      const summary = menu.querySelector("summary");
+      summary?.setAttribute("aria-label", `Language: ${languageNames[locale]}`);
+      menu.querySelectorAll("a[lang]").forEach((link) => {
+        const targetLocale = link.getAttribute("lang") || "en";
+        if (targetLocale === locale) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    });
+    document.querySelectorAll(".mobile-language-switcher").forEach((switcher) => {
+      const currentName = switcher.querySelector("strong");
+      if (currentName) currentName.textContent = languageNames[locale];
+      switcher.querySelectorAll("a[lang]").forEach((link) => {
+        const targetLocale = link.getAttribute("lang") || "en";
+        if (targetLocale === locale) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+    });
+
+    const desktopNav = document.querySelector(".site-header .desktop-nav");
+    const desktopLinks = desktopNav ? Array.from(desktopNav.querySelectorAll("a")) : [];
+    ["logistics", "marketing", "academy", "technology"].forEach((key, index) => {
+      if (desktopLinks[index]) desktopLinks[index].textContent = headerLabels[locale][key];
+    });
+    document.querySelectorAll(".site-header .header-cta, #mobile-menu > a[href='#contact']").forEach((link) => {
+      const icon = link.querySelector("svg");
+      link.childNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) node.textContent = headerLabels[locale].contact;
+      });
+      if (!icon && !link.textContent?.trim()) link.textContent = headerLabels[locale].contact;
+    });
+
+    document.querySelectorAll('.site-header a[href^="/services/hermes-connect/"]:not([lang])').forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href) link.setAttribute("href", withLocale(href));
+    });
 
     const header = document.querySelector(".site-header");
     if (!header || document.querySelector("[data-hc-product-context]")) return;
