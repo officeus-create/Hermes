@@ -1,15 +1,17 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, runtime, header, hub, repairPage, authPage] = await Promise.all([
+const [enhancer, runtime, host, header, hub, repairPage, authPage] = await Promise.all([
   readFile(new URL("../src/components/HermesConnectLaunchEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/hermes-connect-launch.js", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/SiteHeader.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/auth.astro", import.meta.url), "utf8"),
 ]);
 
+assert.match(host, /HermesConnectLaunchEnhancer/);
 assert.match(header, /HermesConnectLauncher variant="header"/);
 assert.match(header, /aria-label="Open Hermes Connect"/);
 assert.match(enhancer, /hermes-connect-header-launcher/);
