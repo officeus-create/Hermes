@@ -52,11 +52,21 @@
           <span>${ui[locale].currentProduct}</span>
         </div>
         <nav aria-label="Hermes Connect product navigation">
-          <a href="${withLocale("/services/hermes-connect/")}">${ui[locale].hubLink}</a>
-          <a href="${withLocale("/services/hermes-connect/repair-shops/")}">${ui[locale].repairLink}</a>
-          <a href="${withLocale("/services/hermes-connect/repair-shops/auth/")}">${ui[locale].ownerLink}</a>
+          <a data-hc-nav="hub">${ui[locale].hubLink}</a>
+          <a data-hc-nav="repair">${ui[locale].repairLink}</a>
+          <a data-hc-nav="owner">${ui[locale].ownerLink}</a>
         </nav>
       </div>`;
+
+    const destinations = {
+      hub: "/services/hermes-connect/",
+      repair: "/services/hermes-connect/repair-shops/",
+      owner: "/services/hermes-connect/repair-shops/auth/",
+    };
+    for (const [key, destination] of Object.entries(destinations)) {
+      context.querySelector(`[data-hc-nav="${key}"]`)?.setAttribute("href", withLocale(destination));
+    }
+
     header.insertAdjacentElement("afterend", context);
   })();
 </script>
