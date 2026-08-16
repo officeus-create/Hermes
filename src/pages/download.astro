@@ -1,40 +1,36 @@
 ---
+import { ArrowRight, CheckCircle2, MonitorSmartphone, ShieldCheck, Wrench } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
-import { languageAlternates } from "../data/locales";
-
-// SEO Metadata
-const title = "Hermes Connect Access Center | Web App & PWA";
-const description = "Open the canonical Hermes Connect workspace in a browser or install it as a PWA. The Android package is being rebuilt and release-verified before direct distribution resumes.";
-const canonicalUrl = "https://hermeslogisticsus.com/download/";
+import SiteHeader from "../components/SiteHeader.astro";
 
 const faqs = [
-  {
-    question: "Is the Hermes Connect Android APK available?",
-    answer: "Direct APK distribution is temporarily paused while the Android package is rebuilt from the canonical workspace, release-signed, and verified on a clean device. Android users can use the Web App or install the PWA now."
-  },
-  {
-    question: "How do I install Hermes Connect on my iPhone?",
-    answer: "On iPhone, open this page in Safari, click the Share icon, and select 'Add to Home Screen' to install Hermes Connect as a Progressive Web App (PWA)."
-  },
-  {
-    question: "What features are included in the Hermes Connect Web App?",
-    answer: "The Web Workspace includes complete CRM pipeline views, live carrier intake widgets, and dual light/dark styling for dispatch and management operations."
-  }
+  { question: "What Hermes Connect access is available now?", answer: "The current supported product path is the responsive Repair Shop Web App in a modern browser. Shop owners can register or sign in from the canonical Hermes Connect Repair Shops flow." },
+  { question: "Is there a public Android APK or app-store release?", answer: "No public mobile-store or direct APK release is currently presented as available. Mobile users should use the responsive browser experience while release verification remains separate." },
+  { question: "Can I add Hermes Connect to my home screen?", answer: "Where the browser supports standard Add to Home Screen behavior, you may use that browser feature. The website does not simulate a successful native installation." },
 ];
 
 const schema = [
   {
     "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "Hermes Connect Access Center",
+    url: "https://hermeslogisticsus.com/download/",
+    description: "Current browser-first access to the Hermes Connect Repair Shop live pilot, with clear mobile distribution boundaries.",
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "Service",
-    name: "Hermes Connect Download & Deployment Center",
-    description: "Access the canonical Hermes Connect B2B Command Center on the web or install it as a PWA while the Android release completes its verification gates.",
-    provider: {
-      "@type": "Organization",
-      name: "Hermes Logistics",
-      url: "https://hermeslogisticsus.com"
-    }
+    name: "Hermes Connect Repair Shop Web App Access",
+    serviceType: "Browser-based repair shop operations software access",
+    provider: { "@type": "Organization", name: "Hermes Logistics LLC", url: "https://hermeslogisticsus.com/" },
+    url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+    description: "Browser-first access to the current Hermes Connect Repair Shop live pilot. No native mobile-store release or subscription offer is claimed here.",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
   },
   {
     "@context": "https://schema.org",
@@ -42,164 +38,63 @@ const schema = [
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
       { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
-      { "@type": "ListItem", position: 3, name: "Download", item: canonicalUrl }
-    ]
+      { "@type": "ListItem", position: 3, name: "Access Center", item: "https://hermeslogisticsus.com/download/" },
+    ],
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map(faq => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer
-      }
-    }))
-  }
 ];
 ---
 
 <BaseLayout
-  title={title}
-  description={description}
-  alternates={languageAlternates}
+  title="Hermes Connect Access Center | Current Web App"
+  description="Open the current Hermes Connect Repair Shop Web App in your browser. Public mobile-store and direct APK distribution are not currently released."
   schema={schema}
 >
   <SiteHeader />
 
-  <main id="main-content" class="download-page-root">
-    <!-- Fluid Aura Glow backgrounds -->
-    <div class="glow-orb glow-1"></div>
-    <div class="glow-orb glow-2"></div>
-
-    <section class="download-hero-section">
-      <div class="shell">
-        <div class="hero-content">
-          <span class="eyebrow-badge">Hermes Connect Public Beta</span>
-          <h1>Web &amp; PWA Access</h1>
-          <p class="hero-desc">
-            Equip your dispatchers, sales teams, and shop technicians with Hermes Connect B2B Command Center.
-            Open the supported web workspace or install the same responsive experience from your browser.
-          </p>
-        </div>
-
-        <div class="distribution-grid">
-          <!-- CARD 1: Web App Command Center -->
-          <div class="distribution-card glass-card workspace-card" data-reveal>
-            <div class="card-glow"></div>
-            <div class="card-badge">Web Platform</div>
-            <div class="card-icon">💻</div>
-            <h3>B2B CRM Workspace</h3>
-            <p class="card-desc">
-              Full-powered interactive workspace optimized for dual monitors, tablets, and desktop setups. Includes live carrier inbox, load routing margins, and multi-business vertical views.
-            </p>
-            <ul class="features-list">
-              <li>✦ Real-time lead synchronization</li>
-              <li>✦ Complete CRM pipeline views</li>
-              <li>✦ Integrated instant quote & invoice engines</li>
-              <li>✦ Dual-mode light/dark glassmorphic visual tier</li>
-            </ul>
-            <a
-              href="https://connect.hermeslogisticsus.com/workspace?business_type=auto_repair"
-              class="cta-button primary-glow-btn"
-              id="open-web-app"
-            >
-              Open Web Workspace ⚡
-            </a>
-          </div>
-
-          <!-- CARD 2: Apple iOS PWA -->
-          <div class="distribution-card glass-card ios-pwa-card" data-reveal>
-            <div class="card-glow"></div>
-            <div class="card-badge">Apple iOS</div>
-            <div class="card-icon">📱</div>
-            <h3>iPhone / iPad standalone</h3>
-            <p class="card-desc">
-              Stand-alone viewport, full hardware speed, custom haptic events, and persistent storage configurations directly on your home screen. No App Store account required.
-            </p>
-            <div class="pwa-steps-accordion">
-              <div class="pwa-accordion-header">
-                <span>View PWA Setup Instructions</span>
-                <span class="chevron">▼</span>
-              </div>
-              <div class="pwa-accordion-content">
-                <ol class="setup-steps">
-                  <li>
-                    <span class="step-num">1</span>
-                    <div>
-                      <strong>Open Safari</strong> and go to the CRM Workspace:
-                      <a href="https://connect.hermeslogisticsus.com/workspace?business_type=auto_repair" target="_blank" class="step-link">Open workspace link</a>
-                    </div>
-                  </li>
-                  <li>
-                    <span class="step-num">2</span>
-                    <div>
-                      Tap the <strong>Share</strong> button <span class="share-icon">⎙</span> in the navigation bar.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="step-num">3</span>
-                    <div>
-                      Scroll down and select <strong>Add to Home Screen</strong>.
-                    </div>
-                  </li>
-                  <li>
-                    <span class="step-num">4</span>
-                    <div>
-                      Tap <strong>Add</strong> in the top-right corner to pin the standalone icon on your spring-board.
-                    </div>
-                  </li>
-                </ol>
-              </div>
-            </div>
-            <button class="cta-button secondary-glow-btn" id="ios-info-trigger">
-              PWA Onboarding Guideline ✦
-            </button>
-          </div>
-
-          <!-- CARD 3: Android release status -->
-          <div class="distribution-card glass-card android-card" data-reveal>
-            <div class="card-glow"></div>
-            <div class="card-badge compat-badge">Release verification in progress</div>
-            <div class="card-icon">🤖</div>
-            <h3>Android Release</h3>
-            <p class="card-desc">
-              The previous beta package has been retired. A refreshed Android build must use the canonical workspace, a controlled release key, and a clean-device installation check before direct download returns.
-            </p>
-            <ul class="features-list">
-              <li>✦ Canonical responsive workspace required</li>
-              <li>✦ Release certificate and checksum required</li>
-              <li>✦ Clean-device install and launch smoke required</li>
-              <li>✦ Web/PWA access remains available now</li>
-            </ul>
-            <a
-              href="https://connect.hermeslogisticsus.com/workspace?business_type=auto_repair"
-              class="cta-button primary-glow-btn"
-              id="open-android-web-fallback"
-            >
-              Use Web/PWA Now ⚡
-            </a>
-          </div>
+  <main id="main-content" class="hc-access-page">
+    <section class="hc-access-hero">
+      <div class="hc-access-shell">
+        <p class="hc-access-kicker">Hermes Connect · Access Center</p>
+        <h1>Use the current product in your browser.</h1>
+        <p class="hc-access-lead">Repair Shops is the current Hermes Connect live pilot. Desktop, tablet, and mobile users use the same responsive product family—without a separate legacy workspace or an unverified native-app promise.</p>
+        <div class="hc-access-actions">
+          <a class="hc-access-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="hc-access-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner Login / Get Started</a>
         </div>
       </div>
     </section>
 
-    <!-- FAQ Section -->
-    <section class="download-faq-section" data-reveal>
-      <div class="shell">
-        <div class="faq-header">
-          <h2>Deployment & Onboarding FAQ</h2>
-          <p class="faq-subtitle">Everything you need to know about the Hermes Connect public release.</p>
+    <section class="hc-access-section" aria-labelledby="access-options-title">
+      <div class="hc-access-shell">
+        <div class="hc-access-heading"><p class="hc-access-kicker">Current distribution</p><h2 id="access-options-title">One supported access path, clear device guidance.</h2></div>
+        <div class="hc-access-grid">
+          <article class="is-current">
+            <MonitorSmartphone size={26} aria-hidden="true" />
+            <div class="hc-access-status">Current</div>
+            <h3>Responsive Web App</h3>
+            <p>Use the canonical Repair Shop product in a modern browser on desktop, tablet, iPhone, or Android.</p>
+            <a href="/services/hermes-connect/repair-shops/">Open current product <ArrowRight size={15} aria-hidden="true" /></a>
+          </article>
+          <article>
+            <CheckCircle2 size={26} aria-hidden="true" />
+            <div class="hc-access-status">Browser feature</div>
+            <h3>Add to Home Screen</h3>
+            <p>If your browser provides a standard Add to Home Screen option, you may use it as a shortcut. Hermes does not report a simulated install as successful.</p>
+          </article>
+          <article>
+            <ShieldCheck size={26} aria-hidden="true" />
+            <div class="hc-access-status">Not released</div>
+            <h3>Native mobile distribution</h3>
+            <p>No public APK, Google Play, or App Store release is currently claimed. Native distribution stays blocked until release signing and clean-device verification are separately complete.</p>
+          </article>
         </div>
-        <div class="faq-grid">
-          {faqs.map((faq) => (
-            <div class="faq-item glass-card">
-              <h4>{faq.question}</h4>
-              <p>{faq.answer}</p>
-            </div>
-          ))}
-        </div>
+      </div>
+    </section>
+
+    <section class="hc-access-section hc-access-faq" aria-labelledby="access-faq-title">
+      <div class="hc-access-shell">
+        <div class="hc-access-heading"><p class="hc-access-kicker">Access clarity</p><h2 id="access-faq-title">Frequently asked questions</h2></div>
+        <div class="hc-access-faq-grid">{faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div>
       </div>
     </section>
   </main>
@@ -208,416 +103,6 @@ const schema = [
 </BaseLayout>
 
 <style>
-  /* Base dark background with deep obsidian theme */
-  .download-page-root {
-    position: relative;
-    background-color: #0b0f19;
-    color: #f3f4f6;
-    padding: 100px 0 120px 0;
-    overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  }
-
-  /* Glow effects */
-  .glow-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(140px);
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.35;
-  }
-  .glow-1 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, #7c5cff 0%, transparent 70%);
-    top: -50px;
-    right: -50px;
-  }
-  .glow-2 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, #5ec0ff 0%, transparent 70%);
-    bottom: -100px;
-    left: -100px;
-  }
-
-  /* Hero Elements */
-  .download-hero-section {
-    position: relative;
-    z-index: 10;
-  }
-  .hero-content {
-    text-align: center;
-    max-width: 780px;
-    margin: 0 auto 60px auto;
-  }
-  .eyebrow-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, rgba(124, 92, 255, 0.2), rgba(94, 192, 255, 0.2));
-    border: 1px solid rgba(124, 92, 255, 0.4);
-    color: #a78bfa;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-  }
-  .hero-content h1 {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: -1px;
-  }
-  .hero-desc {
-    font-size: 18px;
-    color: #9ca3af;
-    line-height: 1.6;
-  }
-
-  /* Grid and Cards Layout */
-  .distribution-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 20px;
-  }
-  .distribution-card {
-    position: relative;
-    background: rgba(17, 24, 39, 0.65);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 10;
-  }
-  .distribution-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(124, 92, 255, 0.35);
-    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px -10px rgba(124, 92, 255, 0.15);
-  }
-
-  .card-glow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 120px;
-    background: linear-gradient(180deg, rgba(124, 92, 255, 0.06) 0%, transparent 100%);
-    border-radius: 24px 24px 0 0;
-    pointer-events: none;
-  }
-
-  .card-badge {
-    align-self: flex-start;
-    font-size: 10px;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 1px;
-    background: rgba(255, 255, 255, 0.06);
-    color: #e5e7eb;
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: 24px;
-  }
-  .compat-badge {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.2);
-    color: #34d399;
-  }
-
-  .card-icon {
-    font-size: 36px;
-    margin-bottom: 20px;
-  }
-  .distribution-card h3 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: #ffffff;
-    letter-spacing: -0.5px;
-  }
-  .card-desc {
-    font-size: 14px;
-    color: #9ca3af;
-    line-height: 1.6;
-    margin-bottom: 24px;
-  }
-
-  .features-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 32px 0;
-    flex-grow: 1;
-  }
-  .features-list li {
-    font-size: 13px;
-    color: #d1d5db;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-  }
-
-  /* CTAs & Buttons */
-  .cta-button {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    border-radius: 14px;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    cursor: pointer;
-    border: none;
-  }
-  .primary-glow-btn {
-    background: linear-gradient(135deg, #7c5cff 0%, #6366f1 100%);
-    color: #ffffff;
-    box-shadow: 0 10px 30px rgba(124, 92, 255, 0.25);
-  }
-  .primary-glow-btn:hover {
-    background: linear-gradient(135deg, #8b6eff 0%, #4f46e5 100%);
-    box-shadow: 0 15px 35px rgba(124, 92, 255, 0.35);
-    transform: scale(1.02);
-  }
-  .secondary-glow-btn {
-    background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
-  .secondary-glow-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-  .outline-btn {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #6b7280;
-  }
-  .disabled-btn {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  /* PWA Steps Accordion (Exclusive iOS Card detail) */
-  .pwa-steps-accordion {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 14px;
-    margin-bottom: 24px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.2);
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  .pwa-accordion-header {
-    padding: 14px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.03);
-    cursor: pointer;
-    user-select: none;
-    color: #e5e7eb;
-    transition: background 0.2s ease;
-  }
-  .pwa-accordion-header:hover {
-    background: rgba(255, 255, 255, 0.06);
-  }
-  .pwa-accordion-header .chevron {
-    font-size: 9px;
-    color: #9ca3af;
-    transition: transform 0.3s ease;
-  }
-  .pwa-steps-accordion.open .chevron {
-    transform: rotate(180deg);
-  }
-  .pwa-accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .pwa-steps-accordion.open .pwa-accordion-content {
-    max-height: 400px;
-    padding: 16px 20px 24px 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    overflow-y: auto;
-  }
-  .setup-steps {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .setup-steps li {
-    display: flex;
-    align-items: flex-start;
-    font-size: 13px;
-    color: #9ca3af;
-    line-height: 1.5;
-    margin-bottom: 16px;
-  }
-  .setup-steps li:last-child {
-    margin-bottom: 0;
-  }
-  .step-num {
-    background: rgba(124, 92, 255, 0.15);
-    border: 1px solid rgba(124, 92, 255, 0.3);
-    color: #a78bfa;
-    font-size: 11px;
-    font-weight: 700;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 12px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .step-link {
-    color: #8b5cf6;
-    text-decoration: underline;
-    font-weight: 500;
-    display: inline-block;
-    margin-left: 2px;
-  }
-  .step-link:hover {
-    color: #a78bfa;
-  }
-  .share-icon {
-    display: inline-block;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    padding: 1px 5px;
-    font-size: 10px;
-    margin: 0 2px;
-  }
-
-  /* FAQ Section Styling */
-  .download-faq-section {
-    margin-top: 100px;
-    position: relative;
-    z-index: 10;
-  }
-  .faq-header {
-    text-align: center;
-    margin-bottom: 50px;
-  }
-  .faq-header h2 {
-    font-size: 32px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, #ffffff 40%, #93c5fd 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .faq-subtitle {
-    font-size: 16px;
-    color: #9ca3af;
-  }
-  .faq-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-  }
-  .faq-item {
-    padding: 30px;
-    border-radius: 20px;
-    background: rgba(17, 24, 39, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    transition: all 0.3s ease;
-  }
-  .faq-item:hover {
-    border-color: rgba(147, 197, 253, 0.2);
-    transform: translateY(-4px);
-  }
-  .faq-item h4 {
-    font-size: 17px;
-    font-weight: 700;
-    color: #ffffff;
-    margin-bottom: 12px;
-    line-height: 1.4;
-  }
-  .faq-item p {
-    font-size: 14px;
-    color: #9ca3af;
-    line-height: 1.6;
-  }
-
-  @media (max-width: 1024px) {
-    .faq-grid {
-      grid-template-columns: 1fr;
-      gap: 20px;
-      max-width: 580px;
-      margin: 0 auto;
-    }
-  }
-
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .distribution-grid {
-      grid-template-columns: 1fr;
-      gap: 30px;
-      max-width: 580px;
-      margin: 0 auto;
-    }
-    .distribution-card {
-      padding: 30px;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .download-page-root {
-      padding: 60px 0 80px 0;
-    }
-    .hero-content h1 {
-      font-size: 32px;
-    }
-    .hero-desc {
-      font-size: 15px;
-    }
-  }
+  .hc-access-page{min-height:70vh;color:#f8fafc;background:radial-gradient(circle at 15% 8%,rgba(90,200,250,.09),transparent 30rem),radial-gradient(circle at 85% 10%,rgba(157,136,255,.1),transparent 32rem),#090d16}.hc-access-shell{width:min(1080px,calc(100% - 2rem));margin:0 auto}.hc-access-hero{padding:clamp(4rem,9vw,7rem) 0 3.5rem}.hc-access-kicker{margin:0 0 .65rem;color:#9d88ff;font-size:.77rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.hc-access-hero h1{max-width:800px;margin:0;font-size:clamp(2.6rem,7vw,5.4rem);line-height:1;letter-spacing:-.05em}.hc-access-lead{max-width:760px;margin:1.25rem 0 0;color:#a9b5c8;font-size:clamp(1rem,2vw,1.2rem);line-height:1.7}.hc-access-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem}.hc-access-primary,.hc-access-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:46px;padding:.75rem 1rem;border-radius:11px;text-decoration:none;font-weight:750}.hc-access-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}.hc-access-secondary{border:1px solid rgba(255,255,255,.14);color:#fff;background:rgba(255,255,255,.03)}.hc-access-section{padding:3rem 0}.hc-access-heading{max-width:720px;margin-bottom:1.25rem}.hc-access-heading h2{margin:0;font-size:clamp(1.65rem,4vw,2.6rem);letter-spacing:-.035em}.hc-access-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-access-grid article,.hc-access-faq-grid article{padding:1.3rem;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.018));box-shadow:0 18px 55px rgba(0,0,0,.15)}.hc-access-grid article.is-current{border-color:rgba(52,211,153,.3)}.hc-access-grid svg{color:#5ac8fa}.hc-access-status{margin:.8rem 0 .45rem;color:#9d88ff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.is-current .hc-access-status{color:#6ee7b7}.hc-access-grid h3,.hc-access-faq-grid h3{margin:.2rem 0 .5rem}.hc-access-grid p,.hc-access-faq-grid p{margin:0;color:#98a6bb;line-height:1.62;font-size:.9rem}.hc-access-grid a{display:inline-flex;align-items:center;gap:.3rem;margin-top:.8rem;color:#c4b5fd;text-decoration:none;font-size:.82rem;font-weight:750}.hc-access-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  @media(max-width:760px){.hc-access-shell{width:min(100% - 1rem,1080px)}.hc-access-grid,.hc-access-faq-grid{grid-template-columns:1fr}.hc-access-actions{flex-direction:column}.hc-access-primary,.hc-access-secondary{width:100%}}
 </style>
-
-<script>
-  // Accordion Toggle Logic
-  const accordion = document.querySelector('.pwa-steps-accordion');
-  const header = document.querySelector('.pwa-accordion-header');
-
-  if (header && accordion) {
-    header.addEventListener('click', () => {
-      accordion.classList.toggle('open');
-    });
-  }
-
-  // Floating Info Modal simulation trigger
-  const iosTrigger = document.querySelector('#ios-info-trigger');
-  if (iosTrigger) {
-    iosTrigger.addEventListener('click', () => {
-      if (accordion) {
-        accordion.classList.add('open');
-        accordion.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    });
-  }
-</script>

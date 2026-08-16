@@ -1,304 +1,131 @@
 ---
-import { ArrowLeft, ArrowRight, CalendarDays, Check, Globe, LayoutDashboard, MessageSquareText, ShieldCheck, Sparkles, UsersRound } from "@lucide/astro";
+import { ArrowRight, CheckCircle2, ShieldCheck, Wrench } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
-const categories = [
-  { name: "Beauty & wellness", detail: "Salons, barbers, nail, spa, and independent specialists" },
-  { name: "Fitness & coaching", detail: "Personal trainers, studios, coaches, and programs" },
-  { name: "Professional services", detail: "Consultants, agencies, experts, and client-facing teams" },
-  { name: "Logistics & field services", detail: "Transport, dispatch, mobile teams, and operational requests" },
-  { name: "Auto service & repair", detail: "Repair shops, mobile mechanics, detailers, diagnostics, and maintenance" },
-  { name: "Truck & car-hauler repair", detail: "Commercial trucks, trailers, diesel service, and car-hauler equipment" },
-  { name: "Heavy equipment service", detail: "Construction, agricultural, and industrial equipment support" },
-  { name: "Oversize & specialty equipment", detail: "Specialty vehicles, machinery, oversize units, and coordinated review" },
-  { name: "Education & events", detail: "Tutors, academies, workshops, and cohort programs" },
-  { name: "Home & local services", detail: "Cleaning, repair, photography, pet care, and local teams" },
-];
-
-const capabilities = [
-  { title: "Clear business profile", body: "Present the service, category, location, languages, and client promise in one focused web experience.", icon: LayoutDashboard },
-  { title: "Service and request catalog", body: "Turn scattered offers into clear services, durations, requirements, and request types.", icon: Sparkles },
-  { title: "Availability windows", body: "Show controlled request times or availability without forcing clients into long message threads.", icon: CalendarDays },
-  { title: "Structured client intake", body: "Collect the minimum information needed to understand and review the next client step.", icon: MessageSquareText },
+const modules = [
+  { name: "Repair Shops", href: "/services/hermes-connect/repair-shops/", status: "Current live pilot", body: "Owner registration, shop profile, services, availability, public booking, booking operations, customers, private feedback, and corporate partner intake." },
+  { name: "AI Command Center", href: "/services/hermes-connect/ai-command-center/", status: "Reference capability", body: "Decision-layer concept for request classification, prioritization, and recommended next actions." },
+  { name: "Unified Inbox", href: "/services/hermes-connect/unified-inbox/", status: "Reference capability", body: "Shared intake and lifecycle concept for approved business-request sources." },
+  { name: "Load Analyzer", href: "/services/hermes-connect/load-analyzer/", status: "Reference capability", body: "Freight decision-support concept for RPM, cost, deadhead, driver-pay, and margin estimates." },
+  { name: "Rate Negotiator", href: "/services/hermes-connect/rate-negotiator/", status: "Reference capability", body: "Human-controlled counter-offer drafting concept for freight negotiation." },
+  { name: "Proposal Builder", href: "/services/hermes-connect/proposal-builder/", status: "Reference capability", body: "Structured proposal assembly without publishing historical subscription pricing as current." },
+  { name: "ROI Calculator", href: "/services/hermes-connect/roi-calculator/", status: "Reference capability", body: "Scenario modeling for time savings and potential revenue recovery using explicit assumptions." },
+  { name: "Business Automation", href: "/services/hermes-connect/business-automation/", status: "Reference capability", body: "Reusable workflow patterns for future verified verticals without creating product forks." },
 ];
 
 const faqs = [
-  {
-    question: "Is Hermes Connect a mobile app or a Web App?",
-    answer: "The current approved product is a responsive Web App. It is designed to work in a modern browser on desktop, tablet, and phone without requiring an App Store or Google Play installation.",
-  },
-  {
-    question: "What happens after I request Web App access?",
-    answer: "Hermes reviews the business category and the must-have workflow before sending access instructions. The request does not automatically create an account, booking, payment, subscription, or guaranteed acceptance.",
-  },
-  {
-    question: "Which business categories can use Hermes Connect?",
-    answer: "The current funnel supports beauty and wellness, fitness and coaching, professional services, logistics and field services, auto service and repair, truck and car-hauler repair, heavy equipment service, oversize and specialty equipment, education and events, and home and local services. Other service businesses can choose the closest category and describe their workflow.",
-  },
-  {
-    question: "Does Hermes Connect already connect calendars, payments, or client databases?",
-    answer: "Not by default in the current controlled release. The foundation focuses on the business profile, service catalog, availability windows, and structured client requests. Advanced integrations require separate review and verification.",
-  },
+  { question: "What is the current live Hermes Connect product?", answer: "Repair Shops is the current live pilot. Other listed modules are reference capabilities and are not presented as separate production runtimes." },
+  { question: "Does Hermes Connect currently publish Starter, Pro, or Enterprise subscription pricing?", answer: "No current public Hermes Connect subscription pricing is published on this product family. Historical planning prices are not treated as live commercial offers." },
+  { question: "Is there a separate Brand V1 or second workspace users should open?", answer: "No. The website presents one canonical Hermes Connect product family. Preserved legacy surfaces are compatibility or historical assets, not the primary product path." },
+  { question: "Is Hermes Connect available as a public mobile-store release?", answer: "The current product path is browser-first and responsive. No App Store, Google Play, or public APK release is claimed here." },
 ];
 
 const schema = [
   {
     "@context": "https://schema.org",
-    "@type": "Service",
-    name: "Hermes Connect Web App access and workflow review",
-    serviceType: "Category-aware service-business Web App",
-    url: "https://hermeslogisticsus.com/services/hermes-connect/",
-    description: "A reviewed Web App path for service businesses that need a clearer way to present services, availability, and client requests.",
-    provider: {
-      "@type": "Organization",
-      name: "Hermes IT Development",
-      url: "https://hermeslogisticsus.com/paths/technology/",
-    },
-    audience: {
-      "@type": "BusinessAudience",
-      audienceType: "Service businesses",
-    },
-  },
-  {
-    "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Hermes Connect",
-    url: "https://connect.hermeslogisticsus.com/",
+    url: "https://hermeslogisticsus.com/services/hermes-connect/",
     applicationCategory: "BusinessApplication",
-    operatingSystem: "Any modern web browser",
-    description: "A category-aware web application for service businesses to present services, availability, and a clear client request path.",
-    creator: {
-      "@type": "Organization",
-      name: "Hermes IT Development",
-      url: "https://hermeslogisticsus.com/paths/technology/",
-    },
+    operatingSystem: "Modern web browser",
+    description: "Hermes Connect is one product family. Repair Shops is the current live pilot; other modules are reference capabilities pending production verification.",
   },
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: { "@type": "Answer", text: faq.answer },
-    })),
+    mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
   },
   {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "IT Development", item: "https://hermeslogisticsus.com/paths/technology/" },
-      { "@type": "ListItem", position: 3, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
     ],
   },
 ];
-
-import "../../../styles/features/hermes-connect-service.css";
-import "../../../styles/features/hermes-connect-faq.css";
 ---
 
 <BaseLayout
-  title="Hermes Connect Web App for Service Businesses"
-  description="Explore Hermes Connect, a category-aware web app for service businesses to present services, availability, and a clear client request path."
+  title="Hermes Connect | Product Family & Repair Shop Live Pilot"
+  description="Hermes Connect is one product family. Repair Shops is the current live pilot; other modules are reference capabilities pending production verification."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
-  <main id="main-content" class="connect-service-page">
-    <section class="connect-service-hero" id="top" aria-labelledby="connect-service-title">
-      <div class="connect-service-orbit connect-service-orbit-one"></div>
-      <div class="connect-service-orbit connect-service-orbit-two"></div>
-      <div class="shell connect-service-hero-grid">
-        <div class="connect-service-hero-copy">
-          <a class="detail-back" href="/paths/technology/"><ArrowLeft size={18} aria-hidden="true" />Hermes IT Development</a>
-          <p class="eyebrow hero-eyebrow">Hermes product · Web App</p>
-          <h1 id="connect-service-title">Give clients one clear place to understand, choose, and request your service.</h1>
-          <p>Hermes Connect is a browser-based product for service businesses. It combines a professional business page, clear services, availability windows, and structured client requests in one category-aware experience.</p>
-          <div class="connect-service-actions">
-            <a class="button button-primary" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="button button-ghost" href="https://connect.hermeslogisticsus.com/workspace">Open interactive workspace</a>
-          </div>
-          <ul class="connect-service-trust" aria-label="Hermes Connect release boundaries">
-            <li><Globe size={17} aria-hidden="true" />Works in a modern browser</li>
-            <li><ShieldCheck size={17} aria-hidden="true" />Human-reviewed access</li>
-            <li><UsersRound size={17} aria-hidden="true" />Interactive workspace uses clearly labeled demo data</li>
-          </ul>
-        </div>
 
-        <div class="connect-service-product" aria-label="Hermes Connect Web App interface preview">
-          <div class="connect-service-window">
-            <div class="connect-service-window-bar"><span></span><span></span><span></span><p>connect.hermeslogisticsus.com</p><b>Web App</b></div>
-            <div class="connect-service-window-body">
-              <aside><strong>H</strong><i class="is-active"></i><i></i><i></i><i></i></aside>
-              <div class="connect-service-screen">
-                <div class="connect-service-profile">
-                  <span>PS</span>
-                  <div><small>Professional services · Web profile</small><h2>Atlas Advisory</h2></div>
-                  <button type="button" tabindex="-1">Request</button>
-                </div>
-                <p>Explain the offer, qualify the request, and give prospects a professional next step.</p>
-                <div class="connect-service-offers">
-                  <article><span>01</span><strong>Strategy session</strong><small>45 min</small></article>
-                  <article><span>02</span><strong>Operations review</strong><small>60 min</small></article>
-                  <article><span>03</span><strong>Project discovery</strong><small>30 min</small></article>
-                </div>
-                <div class="connect-service-times"><span>Tue · 10:30</span><span>Tue · 14:00</span><span>Wed · 09:00</span></div>
-              </div>
-            </div>
-          </div>
-          <div class="connect-service-floating"><span></span><div><small>Client path</small><strong>Discover → choose → request</strong></div></div>
+  <main id="main-content" class="hc-hub-page">
+    <section class="hc-hub-hero">
+      <div class="hc-hub-shell">
+        <p class="hc-kicker">Hermes Connect · Product family</p>
+        <h1>One product family. One current live pilot.</h1>
+        <p class="hc-hub-lead">Repair Shops is the active Hermes Connect product path today. The rest of the family remains visible as reference capabilities so useful concepts can be evaluated without being confused with released production functionality.</p>
+        <div class="hc-hub-actions">
+          <a class="hc-hub-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="hc-hub-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner Login / Get Started</a>
+        </div>
+        <div class="hc-hub-trust">
+          <span><CheckCircle2 size={16} aria-hidden="true" />Canonical browser-based product family</span>
+          <span><CheckCircle2 size={16} aria-hidden="true" />No historical pricing presented as current</span>
+          <span><ShieldCheck size={16} aria-hidden="true" />Live vs reference status is explicit</span>
         </div>
       </div>
     </section>
 
-    <section class="section connect-service-problem" aria-labelledby="connect-problem-title">
-      <div class="shell connect-service-problem-grid">
-        <div>
-          <p class="eyebrow">The problem it solves</p>
-          <h2 id="connect-problem-title">Stop making every client reconstruct your business from messages.</h2>
+    <section class="hc-hub-section" aria-labelledby="family-title">
+      <div class="hc-hub-shell">
+        <div class="hc-hub-heading">
+          <p class="hc-kicker">Product hierarchy</p>
+          <h2 id="family-title">Every Hermes Connect module has one clear status.</h2>
         </div>
-        <div>
-          <p>Many service businesses spread their offer across social profiles, chats, screenshots, calendars, and individual explanations. The client has to ask what is available, how it works, and what to do next.</p>
-          <p>Hermes Connect is being built as one controlled web layer that makes the service journey visible before private client details are requested.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section connect-service-capabilities" aria-labelledby="connect-capabilities-title">
-      <div class="shell">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Web App foundation</p><h2 id="connect-capabilities-title">A useful first release, not a list of disconnected features.</h2></div>
-          <p>The first controlled release focuses on the client path that most service businesses need before advanced integrations: understand the offer, choose a service, see availability, and send a request.</p>
-        </div>
-        <div class="connect-service-capability-grid">
-          {capabilities.map((capability, index) => {
-            const Icon = capability.icon;
-            return (
-              <article>
-                <span>0{index + 1}</span>
-                <Icon size={23} aria-hidden="true" />
-                <h3>{capability.title}</h3>
-                <p>{capability.body}</p>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-
-    <section class="section connect-service-feature-modules" aria-labelledby="connect-features-title">
-      <div class="shell">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Interactive Modules &amp; Tools</p><h2 id="connect-features-title">Explore Hermes Connect Specialized Feature Tools</h2></div>
-          <p>Deep-dive into each specialized module built into our responsive Public Beta Web App.</p>
-        </div>
-        <div class="connect-service-capability-grid">
-          <article>
-            <h3><a href="/services/hermes-connect/ai-command-center/">AI Command Center &rarr;</a></h3>
-            <p>Automated lead classification, intent scoring, and real-time operational task queue.</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/unified-inbox/">Unified Command Inbox &rarr;</a></h3>
-            <p>Single multi-channel client inbox with status lifecycle management (NEW, QUALIFIED, PROPOSAL_SENT).</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/load-analyzer/">B2B Freight Load Analyzer &rarr;</a></h3>
-            <p>Interactive profit calculator computing Rate-Per-Mile (RPM), fuel costs, and net margin %.</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/rate-negotiator/">AI Rate Negotiator &rarr;</a></h3>
-            <p>Professional broker counter-offer message builder for dispatchers and freight operators.</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/proposal-builder/">Instant Proposal Builder &rarr;</a></h3>
-            <p>Itemized commercial quote and contract proposal generator with HTML/PDF export.</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/roi-calculator/">Business ROI Calculator &rarr;</a></h3>
-            <p>Interactive financial modeling tool projecting staff hours saved and recovered revenue.</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/business-automation/">Multi-Vertical Automation &rarr;</a></h3>
-            <p>Tailored intake and workflow automation engines for 7 service industry verticals.</p>
-          </article>
-          <article>
-            <h3><a href="/services/hermes-connect/repair-shops/">Repair Shop Partner Beta &rarr;</a></h3>
-            <p>On-demand roadside service dispatch, shop bay capacity management, and corporate partner offers.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section connect-service-categories" id="categories" aria-labelledby="connect-categories-title">
-      <div class="shell">
-        <div class="section-heading split-heading">
-          <div><p class="eyebrow">Category-aware product</p><h2 id="connect-categories-title">One platform. Different service language for each business.</h2></div>
-          <p>The same product structure adapts the services, examples, request language, and client next step to the selected category.</p>
-        </div>
-        <div class="connect-service-category-grid">
-          {categories.map((category, index) => (
-            <article>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{category.name}</h3>
-              <p>{category.detail}</p>
-              <Check size={18} aria-hidden="true" />
+        <div class="hc-module-grid">
+          {modules.map((module) => (
+            <article class={module.name === "Repair Shops" ? "is-live" : "is-reference"}>
+              <div class="hc-module-status">{module.status}</div>
+              <h3><a href={module.href}>{module.name} <ArrowRight size={15} aria-hidden="true" /></a></h3>
+              <p>{module.body}</p>
             </article>
           ))}
         </div>
-        <p class="connect-service-category-note">
-          <strong>Repair Shops and Commercial Truck Repair is our first focused outbound commercial pilot.</strong> Beauty, fitness, and other service categories remain supported Beta verticals. Hermes Connect is being built as an independently operated platform around controlled service-business workflows, clear client handoffs, and reviewable product releases.
-        </p>
       </div>
     </section>
 
-    <section class="section connect-service-process" aria-labelledby="connect-process-title">
-      <div class="shell connect-service-process-grid">
+    <section class="hc-hub-section" aria-labelledby="rules-title">
+      <div class="hc-hub-shell hc-rules">
         <div>
-          <p class="eyebrow">Connected development loop</p>
-          <h2 id="connect-process-title">Your recurring need can become the next reviewed product task.</h2>
-          <p>Applications are reviewed for patterns. Hermes converts repeated needs into bounded briefs, AI-assisted implementation, human review, automated tests, and controlled web releases.</p>
+          <p class="hc-kicker">Release rules</p>
+          <h2 id="rules-title">What we will not imply before it is verified.</h2>
         </div>
-        <ol>
-          <li><span>01</span><div><strong>Request access</strong><small>Choose the category and describe one must-have workflow.</small></div></li>
-          <li><span>02</span><div><strong>Human review</strong><small>Hermes checks fit, privacy boundaries, and repeated demand.</small></div></li>
-          <li><span>03</span><div><strong>AI-assisted build</strong><small>Approved work is implemented on a reviewable branch with tests.</small></div></li>
-          <li><span>04</span><div><strong>Controlled web release</strong><small>Verified changes move through CI with a rollback boundary.</small></div></li>
-        </ol>
+        <ul>
+          <li>Reference capability does not mean public beta, live integration, or production runtime.</li>
+          <li>No current subscription price is published until commercial terms are explicitly approved.</li>
+          <li>No mocked success state is presented as completed delivery, approval, payment, or external message.</li>
+          <li>No Brand V1, old workspace, or mobile-store path is presented as the primary Hermes Connect product.</li>
+        </ul>
       </div>
     </section>
 
-    <section class="section connect-service-faq" aria-labelledby="connect-faq-title">
-      <div class="shell connect-service-faq-grid">
-        <div>
-          <p class="eyebrow">Hermes Connect FAQ</p>
-          <h2 id="connect-faq-title">What the current Web App path does—and does not do.</h2>
-          <p>These answers describe the controlled access release. Future integrations require separate scope, testing, and release approval.</p>
+    <section class="hc-hub-section hc-faq-section" aria-labelledby="hub-faq-title">
+      <div class="hc-hub-shell">
+        <div class="hc-hub-heading"><p class="hc-kicker">Product clarity</p><h2 id="hub-faq-title">Frequently asked questions</h2></div>
+        <div class="hc-hub-faq-grid">
+          {faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}
         </div>
-        <div class="connect-service-faq-list">
-          {faqs.map((faq, index) => (
-            <details open={index === 0}>
-              <summary>{faq.question}<span aria-hidden="true">+</span></summary>
-              <p>{faq.answer}</p>
-            </details>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <HermesConnectLauncher variant="banner" context="general" />
-
-    <section class="connect-service-final" aria-labelledby="connect-final-title">
-      <div class="shell connect-service-final-grid">
-        <div>
-          <p class="eyebrow hero-eyebrow">Hermes Connect Web App</p>
-          <h2 id="connect-final-title">Choose your category and show us the client workflow that matters most.</h2>
-          <p>The access request does not create an account, booking, payment, or subscription automatically. Hermes reviews the request before sending access instructions.</p>
-        </div>
-        <HermesConnectLauncher variant="inline" href="https://connect.hermeslogisticsus.com/#apply" label="Request Web App access" />
       </div>
     </section>
   </main>
+
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  .hc-hub-page{color:#f8fafc;min-height:70vh}.hc-hub-shell{width:min(1160px,calc(100% - 2rem));margin:0 auto}.hc-hub-hero{padding:clamp(3.5rem,8vw,7rem) 0 4rem;background:radial-gradient(circle at 20% 10%,rgba(90,200,250,.12),transparent 30rem),radial-gradient(circle at 80% 20%,rgba(157,136,255,.14),transparent 32rem)}
+  .hc-kicker{margin:0 0 .65rem;color:#9d88ff;font-size:.78rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.hc-hub-hero h1{max-width:900px;margin:0;font-size:clamp(2.7rem,7vw,5.8rem);line-height:.98;letter-spacing:-.055em}.hc-hub-lead{max-width:800px;margin:1.35rem 0 0;color:#aeb9cb;font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.7}
+  .hc-hub-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.6rem}.hc-hub-primary,.hc-hub-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:46px;padding:.75rem 1rem;border-radius:11px;text-decoration:none;font-weight:750}.hc-hub-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}.hc-hub-secondary{color:#f8fafc;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.035)}
+  .hc-hub-trust{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.4rem;color:#aeb9cb;font-size:.82rem}.hc-hub-trust span{display:inline-flex;align-items:center;gap:.4rem}.hc-hub-trust svg{color:#34d399}.hc-hub-section{padding:3.5rem 0}.hc-hub-heading{max-width:760px;margin-bottom:1.4rem}.hc-hub-heading h2,.hc-rules h2{margin:0;font-size:clamp(1.7rem,4vw,2.8rem);letter-spacing:-.035em}
+  .hc-module-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.hc-module-grid article,.hc-hub-faq-grid article{padding:1.25rem;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.018));box-shadow:0 18px 55px rgba(0,0,0,.16)}.hc-module-grid article.is-live{border-color:rgba(52,211,153,.32);background:linear-gradient(160deg,rgba(52,211,153,.08),rgba(255,255,255,.018))}.hc-module-status{margin-bottom:.75rem;color:#fbbf24;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.is-live .hc-module-status{color:#6ee7b7}.hc-module-grid h3{margin:0 0 .55rem}.hc-module-grid h3 a{display:inline-flex;align-items:center;gap:.3rem;color:#f8fafc;text-decoration:none}.hc-module-grid p,.hc-hub-faq-grid p{margin:0;color:#98a6bb;line-height:1.6;font-size:.9rem}
+  .hc-rules{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem;padding:2rem;border:1px solid rgba(157,136,255,.18);border-radius:20px;background:rgba(157,136,255,.045)}.hc-rules ul{margin:0;padding-left:1.2rem;color:#aeb9cb;line-height:1.75}.hc-hub-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.hc-hub-faq-grid h3{margin:0 0 .5rem;font-size:1rem}
+  @media(max-width:900px){.hc-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hc-rules{grid-template-columns:1fr}}
+  @media(max-width:620px){.hc-hub-shell{width:min(100% - 1rem,1160px)}.hc-module-grid,.hc-hub-faq-grid{grid-template-columns:1fr}.hc-hub-actions{flex-direction:column}.hc-hub-primary,.hc-hub-secondary{width:100%}.hc-hub-trust{flex-direction:column}.hc-rules{padding:1.25rem}}
+</style>

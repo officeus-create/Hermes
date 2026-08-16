@@ -1,36 +1,29 @@
 import { expect, test } from "@playwright/test";
 
 const productRoute = "/services/hermes-connect/";
-const connectUrl = "https://connect.hermeslogisticsus.com/#apply";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
 const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
 
-test("Hermes Connect has an indexed product overview connected to the current Repair Shop product", async ({ page }) => {
+test("Hermes Connect has one indexed product-family overview and one current live pilot", async ({ page }) => {
   await page.goto(productRoute);
 
-  await expect(page).toHaveTitle("Hermes Connect Web App for Service Businesses");
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    "href",
-    `https://hermeslogisticsus.com${productRoute}`,
-  );
+  await expect(page).toHaveTitle("Hermes Connect | Product Family & Repair Shop Live Pilot");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${productRoute}`);
   await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/i);
-  await expect(page.getByRole("heading", { name: /Give clients one clear place/i })).toBeVisible();
-
-  const categoryCards = page.locator(".connect-service-category-grid article");
-  await expect(categoryCards).toHaveCount(10);
-  await expect(categoryCards.filter({ hasText: "Auto service & repair" })).toHaveCount(1);
-  await expect(categoryCards.filter({ hasText: "Truck & car-hauler repair" })).toHaveCount(1);
-  await expect(categoryCards.filter({ hasText: "Heavy equipment service" })).toHaveCount(1);
-  await expect(categoryCards.filter({ hasText: "Oversize & specialty equipment" })).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "One product family. One current live pilot." })).toBeVisible();
 
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
   expect(await page.locator(`main a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
+  await expect(page.getByText("Current live pilot", { exact: true }).first()).toBeVisible();
+  expect(await page.getByText("Reference capability", { exact: true }).count()).toBeGreaterThanOrEqual(7);
 
   const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
-  expect(schemas.join("\n")).toContain('"@type":"WebApplication"');
-  expect(schemas.join("\n")).toContain("https://connect.hermeslogisticsus.com/");
-  expect(schemas.join("\n")).toContain("Any modern web browser");
+  const schemaText = schemas.join("\n");
+  expect(schemaText).toContain('"@type":"WebApplication"');
+  expect(schemaText).toContain("https://hermeslogisticsus.com/services/hermes-connect/");
+  expect(schemaText).not.toContain("connect.hermeslogisticsus.com/workspace");
+  expect(schemaText).not.toMatch(/\"price\":(99|299|799)/);
 });
 
 test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop entry on desktop and mobile", async ({ page }) => {
@@ -39,8 +32,7 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   const desktopEntry = page.locator(`.header-actions a[href="${pilotRoute}"]`);
   await expect(desktopEntry).toHaveCount(1);
   await expect(desktopEntry).toContainText("Hermes Connect");
-  await expect(desktopEntry).toHaveAttribute("aria-label", /Repair Shop Partner Beta/);
-  await expect(desktopEntry).not.toContainText(/Live|Connected|Realtime/i);
+  await expect(desktopEntry).not.toContainText(/Realtime/i);
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
@@ -49,19 +41,18 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   const mobileEntry = page.locator(`#mobile-menu a[href="${pilotRoute}"]`);
   await expect(mobileEntry).toHaveCount(1);
   await expect(mobileEntry).toContainText("Hermes Connect");
-  await expect(mobileEntry).toContainText("Repair Shop Partner Beta");
 });
 
-test("the IT Development section routes visitors into the current Hermes Connect product", async ({ page }) => {
+test("the IT Development section routes visitors into the current Hermes Connect product family", async ({ page }) => {
   await page.goto("/paths/technology/");
 
   const connectPrototype = page.locator("[data-connect-prototype]");
   await expect(connectPrototype).toContainText("Hermes Connect");
-  await expect(connectPrototype).toContainText("Web App");
-  await expect(connectPrototype).toContainText("category");
-  await expect(connectPrototype.locator('a[href="/services/hermes-connect/"]')).toContainText("Explore Hermes Connect");
-  await expect(connectPrototype.locator(`a[href="${connectUrl}"]`)).toContainText("Request Web App access");
-  await expect(connectPrototype).not.toContainText(/iPhone|Android|App Store|Google Play/i);
+  await expect(connectPrototype).toContainText("Reference capability");
+  await expect(connectPrototype.locator('a[href="/services/hermes-connect/"]')).toContainText("Explore Hermes Connect Hub");
+  await expect(connectPrototype.locator(`a[href="${pilotRoute}"]`)).toContainText("Open current Repair Shop product");
+  await expect(connectPrototype.locator(`a[href="${ownerAuthRoute}"]`)).toContainText("Open profile & availability workspace");
+  await expect(connectPrototype.locator('a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
 });
 
 test("the homepage presents Hermes Connect as a first-class Web App product", async ({ page }) => {

@@ -9,13 +9,23 @@
   };
 
   const setupLivePartnerOffer = () => {
-    const form = document.getElementById("partner-beta-form");
+    const originalForm = document.getElementById("partner-beta-form");
     const template = document.getElementById("repair-partner-contact-template");
-    const submitButton = document.getElementById("submit-btn");
-    const statusLabel = document.getElementById("status-label");
-    const tracker = document.querySelector("[data-lifecycle-tracker]");
+    if (!(originalForm instanceof HTMLFormElement) || !(template instanceof HTMLTemplateElement)) return;
 
-    if (!(form instanceof HTMLFormElement) || !(template instanceof HTMLTemplateElement) || !(submitButton instanceof HTMLButtonElement) || !tracker) return;
+    // The page historically attached a browser-only simulated submit listener.
+    // Replace the node before attaching the live handler so no legacy listener can execute.
+    const form = originalForm.cloneNode(true);
+    if (!(form instanceof HTMLFormElement)) return;
+    form.removeAttribute("data-demo-form");
+    form.setAttribute("data-live-partner-offer", "true");
+    originalForm.replaceWith(form);
+
+    const submitButton = form.querySelector("#submit-btn");
+    const tracker = document.querySelector("[data-lifecycle-tracker]");
+    const statusLabel = document.getElementById("status-label");
+    if (!(submitButton instanceof HTMLButtonElement) || !tracker) return;
+
     if (!form.querySelector("[data-repair-partner-contact-fields]")) {
       form.insertBefore(template.content.cloneNode(true), submitButton);
     }
@@ -32,10 +42,14 @@
 
     const updateLifecycle = (nextState) => {
       state = nextState;
-      const stepsMap = { REGISTERED: 1, OFFER_DRAFT: 2, OFFER_SUBMITTED: 3, UNDER_REVIEW: 4 };
+      const stepsMap = { REGISTERED: 1, OFFER_DRAFT: 2, OFFER_SUBMITTED: 3 };
       const target = stepsMap[nextState] || 1;
       stepItems.forEach((item, index) => item.classList.toggle("active", index < target));
-      if (statusLabel) statusLabel.textContent = nextState === "OFFER_SUBMITTED" ? "OFFER_SUBMITTED — awaiting human review" : nextState;
+      if (statusLabel) {
+        statusLabel.textContent = nextState === "OFFER_SUBMITTED"
+          ? "OFFER_SUBMITTED — awaiting human review"
+          : nextState;
+      }
     };
 
     const setDeliveryStatus = (message, kind = "error") => {
@@ -53,14 +67,13 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       event.stopImmediatePropagation();
-      if (sending) return;
-      if (!form.reportValidity()) return;
+      if (sending || !form.reportValidity()) return;
 
       if (state === "REGISTERED") {
         updateLifecycle("OFFER_DRAFT");
         const label = submitButton.querySelector("span");
         if (label) label.textContent = "✦ Submit Offer For Review";
-        const shopType = document.getElementById("shop-type");
+        const shopType = form.querySelector("#shop-type");
         safeAnalytics("connect_offer_draft_prepared", {
           shop_subtype: shopType instanceof HTMLSelectElement ? shopType.value : "",
         });
@@ -71,13 +84,13 @@
       if (state !== "OFFER_DRAFT") return;
       if (!(contactName instanceof HTMLInputElement) || !(contactEmail instanceof HTMLInputElement) || !(contactPhone instanceof HTMLInputElement) || !(consent instanceof HTMLInputElement)) return;
 
-      const shopNameInput = document.getElementById("shop-name");
-      const shopTypeInput = document.getElementById("shop-type");
-      const cityStateInput = document.getElementById("city-state");
-      const roadsideInput = document.getElementById("roadside-rate");
-      const laborInput = document.getElementById("labor-discount");
-      const partsInput = document.getElementById("parts-discount");
-      const turnaroundInput = document.getElementById("turnaround");
+      const shopNameInput = form.querySelector("#shop-name");
+      const shopTypeInput = form.querySelector("#shop-type");
+      const cityStateInput = form.querySelector("#city-state");
+      const roadsideInput = form.querySelector("#roadside-rate");
+      const laborInput = form.querySelector("#labor-discount");
+      const partsInput = form.querySelector("#parts-discount");
+      const turnaroundInput = form.querySelector("#turnaround");
 
       const shopName = shopNameInput instanceof HTMLInputElement ? shopNameInput.value.trim() : "";
       const shopSubtype = shopTypeInput instanceof HTMLSelectElement ? shopTypeInput.value.trim() : "";
@@ -141,10 +154,7 @@
       try {
         const response = await fetch("/api/logistics-lead", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Idempotency-Key": requestId,
-          },
+          headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
           body: JSON.stringify(payload),
         });
         const result = await response.json().catch(() => null);
@@ -163,9 +173,6 @@
     }, true);
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupLivePartnerOffer, { once: true });
-  } else {
-    setupLivePartnerOffer();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", setupLivePartnerOffer, { once: true });
+  else setupLivePartnerOffer();
 })();

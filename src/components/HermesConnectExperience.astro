@@ -12,37 +12,43 @@
     document.documentElement.lang = locale;
     document.documentElement.classList.add("hc-experience");
 
-    try {
-      window.localStorage.setItem("hermes-connect-language", locale);
-    } catch {
-      // URL remains the source of truth when storage is unavailable.
-    }
-
-    const ui = {
-      en: { currentBeta: "CURRENT BETA · LIVE PILOT", hub: "PRODUCT HUB · CURRENT", demo: "DEMO CAPABILITY · NOT PRIMARY RUNTIME", currentProduct: "Current product: Repair Shops", hubLink: "Product Hub", repairLink: "Repair Shops", ownerLink: "Owner Login" },
-      uk: { currentBeta: "ПОТОЧНА БЕТА · ЖИВИЙ ПІЛОТ", hub: "ЦЕНТР ПРОДУКТУ · АКТУАЛЬНО", demo: "ДЕМО-МОДУЛЬ · НЕ ОСНОВНИЙ RUNTIME", currentProduct: "Поточний продукт: СТО", hubLink: "Центр Hermes Connect", repairLink: "СТО", ownerLink: "Вхід власника" },
-      ru: { currentBeta: "ТЕКУЩАЯ БЕТА · ЖИВОЙ ПИЛОТ", hub: "ЦЕНТР ПРОДУКТА · АКТУАЛЬНО", demo: "ДЕМО-МОДУЛЬ · НЕ ОСНОВНОЙ RUNTIME", currentProduct: "Текущий продукт: СТО", hubLink: "Центр Hermes Connect", repairLink: "СТО", ownerLink: "Вход владельца" },
-      es: { currentBeta: "BETA ACTUAL · PILOTO EN VIVO", hub: "CENTRO DEL PRODUCTO · ACTUAL", demo: "CAPACIDAD DEMO · NO ES EL RUNTIME PRINCIPAL", currentProduct: "Producto actual: Talleres", hubLink: "Centro del producto", repairLink: "Talleres", ownerLink: "Acceso del propietario" },
-      it: { currentBeta: "BETA ATTUALE · PILOTA LIVE", hub: "HUB PRODOTTO · ATTUALE", demo: "FUNZIONE DEMO · NON È IL RUNTIME PRINCIPALE", currentProduct: "Prodotto attuale: Officine", hubLink: "Hub prodotto", repairLink: "Officine", ownerLink: "Accesso proprietario" },
-      fr: { currentBeta: "BÊTA ACTUELLE · PILOTE EN DIRECT", hub: "HUB PRODUIT · ACTUEL", demo: "CAPACITÉ DÉMO · PAS LE RUNTIME PRINCIPAL", currentProduct: "Produit actuel : Ateliers", hubLink: "Hub produit", repairLink: "Ateliers", ownerLink: "Connexion propriétaire" },
-    };
+    try { window.localStorage.setItem("hermes-connect-language", locale); } catch {}
 
     const languageNames = {
-      en: "English",
-      uk: "Українська",
-      ru: "Русский",
-      es: "Español",
-      it: "Italiano",
-      fr: "Français",
+      en: "English", uk: "Українська", ru: "Русский", es: "Español", it: "Italiano", fr: "Français",
     };
 
-    const headerLabels = {
-      en: { logistics: "Logistics", marketing: "Marketing", academy: "Academy", technology: "IT Development", contact: "Start a conversation" },
-      uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову" },
-      ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор" },
-      es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Desarrollo IT", contact: "Iniciar una conversación" },
-      it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione" },
-      fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation" },
+    const chrome = {
+      en: {
+        live: "CURRENT LIVE PILOT", hub: "PRODUCT FAMILY · CURRENT", reference: "REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT",
+        currentProduct: "Current product: Repair Shops", content: "Content language: English",
+        englishOnly: "This page is currently English-only. Hermes Connect navigation is localized; page content is not partially translated.",
+      },
+      uk: {
+        live: "ПОТОЧНИЙ ЖИВИЙ ПІЛОТ", hub: "СІМЕЙСТВО ПРОДУКТІВ · АКТУАЛЬНО", reference: "ДОВІДКОВИЙ МОДУЛЬ · НЕ ПОТОЧНИЙ ЖИВИЙ ПІЛОТ",
+        currentProduct: "Поточний продукт: СТО", content: "Мова контенту: англійська",
+        englishOnly: "Ця сторінка поки доступна лише англійською. Навігація Hermes Connect локалізована; часткового перекладу контенту немає.",
+      },
+      ru: {
+        live: "ТЕКУЩИЙ ЖИВОЙ ПИЛОТ", hub: "СЕМЕЙСТВО ПРОДУКТОВ · АКТУАЛЬНО", reference: "СПРАВОЧНЫЙ МОДУЛЬ · НЕ ТЕКУЩИЙ ЖИВОЙ ПИЛОТ",
+        currentProduct: "Текущий продукт: СТО", content: "Язык контента: английский",
+        englishOnly: "Эта страница пока доступна только на английском. Навигация Hermes Connect локализована; частичного перевода контента нет.",
+      },
+      es: {
+        live: "PILOTO ACTUAL EN VIVO", hub: "FAMILIA DE PRODUCTOS · ACTUAL", reference: "CAPACIDAD DE REFERENCIA · NO ES EL PILOTO ACTUAL",
+        currentProduct: "Producto actual: Talleres", content: "Idioma del contenido: inglés",
+        englishOnly: "Esta página está disponible actualmente solo en inglés. La navegación de Hermes Connect está localizada; el contenido no se traduce parcialmente.",
+      },
+      it: {
+        live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
+        currentProduct: "Prodotto attuale: Officine", content: "Lingua dei contenuti: inglese",
+        englishOnly: "Questa pagina è attualmente disponibile solo in inglese. La navigazione Hermes Connect è localizzata; il contenuto non viene tradotto parzialmente.",
+      },
+      fr: {
+        live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
+        currentProduct: "Produit actuel : Ateliers", content: "Langue du contenu : anglais",
+        englishOnly: "Cette page est actuellement disponible uniquement en anglais. La navigation Hermes Connect est localisée ; le contenu n'est pas traduit partiellement.",
+      },
     };
 
     const withLocale = (href) => {
@@ -55,14 +61,14 @@
     document.querySelectorAll("[data-language-menu]").forEach((menu) => {
       const currentName = menu.querySelector("summary span");
       if (currentName) currentName.textContent = languageNames[locale];
-      const summary = menu.querySelector("summary");
-      summary?.setAttribute("aria-label", `Language: ${languageNames[locale]}`);
+      menu.querySelector("summary")?.setAttribute("aria-label", `Language: ${languageNames[locale]}`);
       menu.querySelectorAll("a[lang]").forEach((link) => {
         const targetLocale = link.getAttribute("lang") || "en";
         if (targetLocale === locale) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
       });
     });
+
     document.querySelectorAll(".mobile-language-switcher").forEach((switcher) => {
       const currentName = switcher.querySelector("strong");
       if (currentName) currentName.textContent = languageNames[locale];
@@ -71,19 +77,6 @@
         if (targetLocale === locale) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
       });
-    });
-
-    const desktopNav = document.querySelector(".site-header .desktop-nav");
-    const desktopLinks = desktopNav ? Array.from(desktopNav.querySelectorAll("a")) : [];
-    ["logistics", "marketing", "academy", "technology"].forEach((key, index) => {
-      if (desktopLinks[index]) desktopLinks[index].textContent = headerLabels[locale][key];
-    });
-    document.querySelectorAll(".site-header .header-cta, #mobile-menu > a[href='#contact']").forEach((link) => {
-      const icon = link.querySelector("svg");
-      link.childNodes.forEach((node) => {
-        if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) node.textContent = headerLabels[locale].contact;
-      });
-      if (!icon && !link.textContent?.trim()) link.textContent = headerLabels[locale].contact;
     });
 
     document.querySelectorAll('.site-header a[href^="/services/hermes-connect/"]:not([lang])').forEach((link) => {
@@ -96,32 +89,62 @@
 
     const isHub = path === "/services/hermes-connect/" || path === "/services/hermes-connect";
     const isRepair = path.startsWith("/services/hermes-connect/repair-shops");
-    const status = isHub ? ui[locale].hub : isRepair ? ui[locale].currentBeta : ui[locale].demo;
+    const status = isHub ? chrome[locale].hub : isRepair ? chrome[locale].live : chrome[locale].reference;
 
-    const context = document.createElement("div");
-    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : "is-demo"}`;
+    const context = document.createElement("section");
+    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : "is-reference"}`;
     context.setAttribute("data-hc-product-context", "true");
-    context.innerHTML = `
-      <div class="hc-product-context__inner">
-        <div class="hc-product-context__status">
-          <span class="hc-product-context__dot" aria-hidden="true"></span>
-          <strong>${status}</strong>
-          <span>${ui[locale].currentProduct}</span>
-        </div>
-        <nav aria-label="Hermes Connect product navigation">
-          <a data-hc-nav="hub">${ui[locale].hubLink}</a>
-          <a data-hc-nav="repair">${ui[locale].repairLink}</a>
-          <a data-hc-nav="owner">${ui[locale].ownerLink}</a>
-        </nav>
-      </div>`;
+    context.setAttribute("aria-label", "Hermes Connect product family navigation");
 
-    const destinations = {
-      hub: "/services/hermes-connect/",
-      repair: "/services/hermes-connect/repair-shops/",
-      owner: "/services/hermes-connect/repair-shops/auth/",
-    };
-    for (const [key, destination] of Object.entries(destinations)) {
-      context.querySelector(`[data-hc-nav="${key}"]`)?.setAttribute("href", withLocale(destination));
+    const inner = document.createElement("div");
+    inner.className = "hc-product-context__inner";
+
+    const summary = document.createElement("div");
+    summary.className = "hc-product-context__summary";
+    const dot = document.createElement("span");
+    dot.className = "hc-product-context__dot";
+    dot.setAttribute("aria-hidden", "true");
+    const strong = document.createElement("strong");
+    strong.textContent = status;
+    const product = document.createElement("span");
+    product.textContent = chrome[locale].currentProduct;
+    const contentLanguage = document.createElement("span");
+    contentLanguage.className = "hc-content-language";
+    contentLanguage.textContent = chrome[locale].content;
+    summary.append(dot, strong, product, contentLanguage);
+
+    const family = [
+      ["Product Hub", "/services/hermes-connect/"],
+      ["Repair Shops", "/services/hermes-connect/repair-shops/"],
+      ["AI Command Center", "/services/hermes-connect/ai-command-center/"],
+      ["Unified Inbox", "/services/hermes-connect/unified-inbox/"],
+      ["Load Analyzer", "/services/hermes-connect/load-analyzer/"],
+      ["Rate Negotiator", "/services/hermes-connect/rate-negotiator/"],
+      ["Proposal Builder", "/services/hermes-connect/proposal-builder/"],
+      ["ROI Calculator", "/services/hermes-connect/roi-calculator/"],
+      ["Business Automation", "/services/hermes-connect/business-automation/"],
+    ];
+
+    const nav = document.createElement("nav");
+    nav.className = "hc-family-nav";
+    nav.setAttribute("aria-label", "Hermes Connect modules");
+    family.forEach(([label, href]) => {
+      const link = document.createElement("a");
+      link.textContent = label;
+      link.href = withLocale(href);
+      if (path.replace(/\/+$/, "/") === href) link.setAttribute("aria-current", "page");
+      nav.append(link);
+    });
+
+    inner.append(summary, nav);
+    context.append(inner);
+
+    if (locale !== "en") {
+      const notice = document.createElement("div");
+      notice.className = "hc-language-truth";
+      notice.setAttribute("data-hc-english-only", "true");
+      notice.textContent = chrome[locale].englishOnly;
+      context.append(notice);
     }
 
     header.insertAdjacentElement("afterend", context);
@@ -129,35 +152,14 @@
 </script>
 
 <style is:global>
-  .hc-experience body {
-    background:
-      radial-gradient(circle at 8% 4%, rgba(90, 200, 250, 0.07), transparent 28rem),
-      radial-gradient(circle at 92% 12%, rgba(157, 136, 255, 0.08), transparent 32rem),
-      #090d16;
-  }
-  .hc-product-context { position: relative; z-index: 20; border-bottom: 1px solid rgba(255,255,255,.08); background: rgba(8,12,21,.9); backdrop-filter: blur(18px); }
-  .hc-product-context__inner { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  .hc-product-context__status, .hc-product-context nav { display: flex; align-items: center; gap: .7rem; }
-  .hc-product-context__status { min-width: 0; color: rgba(248,250,252,.72); font-size: .78rem; }
-  .hc-product-context__status strong { color: #f8fafc; letter-spacing: .045em; font-size: .73rem; }
-  .hc-product-context__dot { width: 8px; height: 8px; border-radius: 999px; background: #60a5fa; box-shadow: 0 0 0 5px rgba(96,165,250,.12); flex: 0 0 auto; }
-  .hc-product-context.is-live .hc-product-context__dot { background: #34d399; box-shadow: 0 0 0 5px rgba(52,211,153,.12); }
-  .hc-product-context.is-demo .hc-product-context__dot { background: #fbbf24; box-shadow: 0 0 0 5px rgba(251,191,36,.12); }
-  .hc-product-context nav a { color: rgba(248,250,252,.76); text-decoration: none; font-size: .78rem; font-weight: 650; padding: .42rem .65rem; border-radius: 999px; border: 1px solid transparent; }
-  .hc-product-context nav a:hover, .hc-product-context nav a:focus-visible { color: #fff; border-color: rgba(157,136,255,.36); background: rgba(157,136,255,.1); }
-  .hc-experience .hc-feature-page, .hc-experience .connect-service-page, .hc-experience .repair-pilot-page { isolation: isolate; }
-  .hc-experience .hc-feature-page .card, .hc-experience .connect-service-capability-grid article, .hc-experience .pipeline-card, .hc-experience .form-container, .hc-experience .workspace-mockup { box-shadow: 0 18px 55px rgba(0,0,0,.18); }
-  .hc-experience .breadcrumb-nav, .hc-experience .hero-header-nav { position: relative; z-index: 2; }
-  .hc-experience .repair-pilot-page .hero-header-nav { padding-top: 1.15rem; margin-bottom: 1.5rem; }
-  .hc-experience .repair-pilot-page .hero-header-nav .back-link.hc-context-back { position: static !important; inset: auto !important; transform: none !important; display: inline-flex; align-items: center; min-height: 38px; padding: .5rem .8rem; border: 1px solid rgba(157,136,255,.28); border-radius: 999px; background: rgba(10,15,27,.72); color: #dbeafe; text-decoration: none; font-size: .82rem; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
-  .hc-experience .repair-pilot-page .hero-header-nav .back-link.hc-context-back:hover { border-color: rgba(90,200,250,.5); color: #fff; background: rgba(18,28,48,.9); }
-  .hc-experience main a[data-hc-legacy-rewritten="true"] { border-color: rgba(52,211,153,.34) !important; }
-  @media (max-width: 760px) {
-    .hc-product-context__inner { width: min(100% - 1rem, 1180px); padding: .55rem 0; align-items: flex-start; flex-direction: column; gap: .45rem; }
-    .hc-product-context__status { width: 100%; flex-wrap: wrap; gap: .45rem; }
-    .hc-product-context nav { width: 100%; overflow-x: auto; scrollbar-width: none; padding-bottom: .1rem; }
-    .hc-product-context nav::-webkit-scrollbar { display: none; }
-    .hc-product-context nav a { white-space: nowrap; background: rgba(255,255,255,.035); border-color: rgba(255,255,255,.06); }
-    .hc-experience .repair-pilot-page .hero-header-nav { padding-top: .8rem; margin-bottom: 1rem; }
-  }
+  .hc-experience body{background:radial-gradient(circle at 8% 4%,rgba(90,200,250,.07),transparent 28rem),radial-gradient(circle at 92% 12%,rgba(157,136,255,.08),transparent 32rem),#090d16}
+  .hc-product-context{position:relative;z-index:20;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(8,12,21,.94);backdrop-filter:blur(18px)}
+  .hc-product-context__inner{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:.65rem 0 .55rem;display:grid;gap:.6rem}
+  .hc-product-context__summary{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;color:rgba(248,250,252,.7);font-size:.76rem}.hc-product-context__summary strong{color:#fff;letter-spacing:.04em;font-size:.72rem}.hc-content-language{margin-left:auto;color:#9eabc0}
+  .hc-product-context__dot{width:8px;height:8px;border-radius:999px;background:#60a5fa;box-shadow:0 0 0 5px rgba(96,165,250,.12)}.hc-product-context.is-live .hc-product-context__dot{background:#34d399;box-shadow:0 0 0 5px rgba(52,211,153,.12)}.hc-product-context.is-reference .hc-product-context__dot{background:#fbbf24;box-shadow:0 0 0 5px rgba(251,191,36,.12)}
+  .hc-family-nav{display:flex;align-items:center;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}.hc-family-nav::-webkit-scrollbar{display:none}.hc-family-nav a{white-space:nowrap;color:#b9c5d8;text-decoration:none;font-size:.76rem;font-weight:680;padding:.42rem .62rem;border:1px solid rgba(255,255,255,.065);border-radius:999px;background:rgba(255,255,255,.025)}.hc-family-nav a:hover,.hc-family-nav a:focus-visible,.hc-family-nav a[aria-current="page"]{color:#fff;border-color:rgba(157,136,255,.38);background:rgba(157,136,255,.11)}
+  .hc-language-truth{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:0 0 .65rem;color:#c8d0dc;font-size:.78rem;line-height:1.5}
+  .hc-experience .repair-pilot-page,.hc-experience .hc-capability-page{isolation:isolate}.hc-experience .repair-pilot-page .hero-header-nav{display:none!important}
+  .hc-experience .repair-pilot-page .pipeline-card,.hc-experience .repair-pilot-page .form-container,.hc-experience .repair-pilot-page .workspace-mockup{border-color:rgba(255,255,255,.09)!important;box-shadow:0 18px 55px rgba(0,0,0,.18)!important}
+  @media(max-width:760px){.hc-product-context__inner,.hc-language-truth{width:min(100% - 1rem,1180px)}.hc-product-context__summary{gap:.45rem}.hc-content-language{width:100%;margin-left:0}.hc-family-nav a{font-size:.73rem;padding:.4rem .58rem}.hc-language-truth{font-size:.75rem}.hc-experience .repair-pilot-page .hero-section{padding-top:1rem!important}}
 </style>
