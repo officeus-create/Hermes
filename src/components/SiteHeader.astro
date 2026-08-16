@@ -49,9 +49,9 @@ const languageLinks = siteLocales.map((language) => ({
   <div class="header-actions">
     <HermesConnectLauncher
       variant="header"
-      href="/services/hermes-connect/"
+      href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
-      sublabel="Open the Hermes Connect product hub"
+      sublabel="Repair Shop Partner Beta"
     />
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[locale].name}`}>
@@ -80,9 +80,9 @@ const languageLinks = siteLocales.map((language) => ({
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     <HermesConnectLauncher
       variant="mobile"
-      href="/services/hermes-connect/"
+      href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
-      sublabel="Open the Hermes Connect product hub"
+      sublabel="Repair Shop Partner Beta"
     />
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">{contactLabel}</a>
