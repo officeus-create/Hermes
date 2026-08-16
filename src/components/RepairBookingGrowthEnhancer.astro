@@ -1,5 +1,7 @@
 ---
-// Intentionally no public booking-success cross-sell.
-// A repair customer's booking contact details must not be reused for unrelated B2B marketing.
-// Business-owner growth offers belong only in authenticated owner contexts after core product value.
+import RepairBookingCustomerActionsEnhancer from "./RepairBookingCustomerActionsEnhancer.astro";
+// Public booking success intentionally has no Hermes/ProgressoPro B2B cross-sell.
+// This compatibility wrapper now owns only customer-focused shop contact actions.
 ---
+
+<RepairBookingCustomerActionsEnhancer />
