@@ -19,28 +19,28 @@ const categories = [
 ];
 
 const capabilities = [
-  { title: "Clear business profile", body: "Present the service, category, location, languages, and client promise in one focused web experience.", icon: LayoutDashboard },
-  { title: "Service and request catalog", body: "Turn scattered offers into clear services, durations, requirements, and request types.", icon: Sparkles },
-  { title: "Availability windows", body: "Show controlled request times or availability without forcing clients into long message threads.", icon: CalendarDays },
-  { title: "Structured client intake", body: "Collect the minimum information needed to understand and review the next client step.", icon: MessageSquareText },
+  { title: "Clear business profile", body: "Present the shop, location, service area, business details, and client promise in one focused web experience.", icon: LayoutDashboard },
+  { title: "Service catalog", body: "Publish repair services, durations, requirements, and operational details from the owner workspace.", icon: Sparkles },
+  { title: "Availability windows", body: "Set working hours and controlled booking availability without forcing customers into long message threads.", icon: CalendarDays },
+  { title: "Structured booking intake", body: "Collect the customer and vehicle information needed to create and process a repair booking.", icon: MessageSquareText },
 ];
 
 const faqs = [
   {
+    question: "What is the current live Hermes Connect product?",
+    answer: "Repair Shop Partner Beta is the current live pilot. Shop owners can register, create a profile, configure services and availability, share a public booking link, process booking statuses, use the customer CRM, submit private feedback, and send a consented corporate partner offer. Other Hermes Connect modules are retained as clearly labeled demo capabilities until real-user evidence justifies further development.",
+  },
+  {
     question: "Is Hermes Connect a mobile app or a Web App?",
-    answer: "The current approved product is a responsive Web App. It is designed to work in a modern browser on desktop, tablet, and phone without requiring an App Store or Google Play installation.",
+    answer: "The current product is a responsive Web App. It works in a modern browser on desktop, tablet, and phone without requiring an App Store or Google Play installation.",
   },
   {
-    question: "What happens after I request Web App access?",
-    answer: "Hermes reviews the business category and the must-have workflow before sending access instructions. The request does not automatically create an account, booking, payment, subscription, or guaranteed acceptance.",
+    question: "Can a Repair Shop owner create an account now?",
+    answer: "Yes. The current Repair Shop beta has a real owner registration and login flow. After signing in, the owner can configure the shop profile, services, availability, customers, bookings, and feedback inside the same canonical Hermes Connect product.",
   },
   {
-    question: "Which business categories can use Hermes Connect?",
-    answer: "The current funnel supports beauty and wellness, fitness and coaching, professional services, logistics and field services, auto service and repair, truck and car-hauler repair, heavy equipment service, oversize and specialty equipment, education and events, and home and local services. Other service businesses can choose the closest category and describe their workflow.",
-  },
-  {
-    question: "Does Hermes Connect already connect calendars, payments, or client databases?",
-    answer: "Not by default in the current controlled release. The foundation focuses on the business profile, service catalog, availability windows, and structured client requests. Advanced integrations require separate review and verification.",
+    question: "Are the other Hermes Connect modules live production tools?",
+    answer: "No. Modules outside the current Repair Shop pilot are product demonstrations or capability previews unless a page explicitly says otherwise. They are not a second Hermes Connect runtime and should not be presented as independently released production products.",
   },
 ];
 
@@ -48,10 +48,10 @@ const schema = [
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Hermes Connect Web App access and workflow review",
-    serviceType: "Category-aware service-business Web App",
-    url: "https://hermeslogisticsus.com/services/hermes-connect/",
-    description: "A reviewed Web App path for service businesses that need a clearer way to present services, availability, and client requests.",
+    name: "Hermes Connect Repair Shop Partner Beta",
+    serviceType: "Repair-shop operations and booking Web App",
+    url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+    description: "The current Hermes Connect live pilot for repair shops: owner profile, services, availability, customer booking, booking operations, CRM, feedback, and corporate partner intake.",
     provider: {
       "@type": "Organization",
       name: "Hermes IT Development",
@@ -59,17 +59,17 @@ const schema = [
     },
     audience: {
       "@type": "BusinessAudience",
-      audienceType: "Service businesses",
+      audienceType: "Repair shops and commercial vehicle service businesses",
     },
   },
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     name: "Hermes Connect",
-    url: "https://connect.hermeslogisticsus.com/",
+    url: "https://hermeslogisticsus.com/services/hermes-connect/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Any modern web browser",
-    description: "A category-aware web application for service businesses to present services, availability, and a clear client request path.",
+    description: "Hermes Connect is the canonical Web App product. Repair Shop Partner Beta is its current live production pilot; other modules are clearly labeled demos.",
     creator: {
       "@type": "Organization",
       name: "Hermes IT Development",
@@ -101,8 +101,8 @@ import "../../../styles/features/hermes-connect-faq.css";
 ---
 
 <BaseLayout
-  title="Hermes Connect Web App for Service Businesses"
-  description="Explore Hermes Connect, a category-aware web app for service businesses to present services, availability, and a clear client request path."
+  title="Hermes Connect | Repair Shop Partner Beta & Product Hub"
+  description="Explore the canonical Hermes Connect Web App. Repair Shop Partner Beta is the current live pilot; other Hermes Connect modules are clearly labeled demos."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
@@ -113,42 +113,42 @@ import "../../../styles/features/hermes-connect-faq.css";
       <div class="shell connect-service-hero-grid">
         <div class="connect-service-hero-copy">
           <a class="detail-back" href="/paths/technology/"><ArrowLeft size={18} aria-hidden="true" />Hermes IT Development</a>
-          <p class="eyebrow hero-eyebrow">Hermes product · Web App</p>
-          <h1 id="connect-service-title">Give clients one clear place to understand, choose, and request your service.</h1>
-          <p>Hermes Connect is a browser-based product for service businesses. It combines a professional business page, clear services, availability windows, and structured client requests in one category-aware experience.</p>
+          <p class="eyebrow hero-eyebrow">Hermes Connect · Current product</p>
+          <h1 id="connect-service-title">One Hermes Connect. One current live pilot: Repair Shops.</h1>
+          <p>Hermes Connect is the canonical browser-based product. The Repair Shop Partner Beta is the current live workflow for real shop owners and customers. Other modules remain visible as product demos, not separate production applications.</p>
           <div class="connect-service-actions">
-            <a class="button button-primary" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={18} aria-hidden="true" /></a>
-            <a class="button button-ghost" href="https://connect.hermeslogisticsus.com/workspace">Open interactive workspace</a>
+            <a class="button button-primary" href="/services/hermes-connect/repair-shops/">Open Repair Shop Partner Beta <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button button-ghost" href="/services/hermes-connect/repair-shops/auth/">Owner Login / Get Started</a>
           </div>
           <ul class="connect-service-trust" aria-label="Hermes Connect release boundaries">
-            <li><Globe size={17} aria-hidden="true" />Works in a modern browser</li>
-            <li><ShieldCheck size={17} aria-hidden="true" />Human-reviewed access</li>
-            <li><UsersRound size={17} aria-hidden="true" />Interactive workspace uses clearly labeled demo data</li>
+            <li><Globe size={17} aria-hidden="true" />Responsive Web App on desktop and mobile</li>
+            <li><ShieldCheck size={17} aria-hidden="true" />One shared owner identity and protected data flow</li>
+            <li><UsersRound size={17} aria-hidden="true" />Repair Shops are live beta; other modules are labeled demo</li>
           </ul>
         </div>
 
         <div class="connect-service-product" aria-label="Hermes Connect Web App interface preview">
           <div class="connect-service-window">
-            <div class="connect-service-window-bar"><span></span><span></span><span></span><p>connect.hermeslogisticsus.com</p><b>Web App</b></div>
+            <div class="connect-service-window-bar"><span></span><span></span><span></span><p>hermeslogisticsus.com · Hermes Connect</p><b>Web App</b></div>
             <div class="connect-service-window-body">
               <aside><strong>H</strong><i class="is-active"></i><i></i><i></i><i></i></aside>
               <div class="connect-service-screen">
                 <div class="connect-service-profile">
-                  <span>PS</span>
-                  <div><small>Professional services · Web profile</small><h2>Atlas Advisory</h2></div>
-                  <button type="button" tabindex="-1">Request</button>
+                  <span>RS</span>
+                  <div><small>Repair Shop · Partner Beta</small><h2>Shop Owner Workspace</h2></div>
+                  <button type="button" tabindex="-1">Booking</button>
                 </div>
-                <p>Explain the offer, qualify the request, and give prospects a professional next step.</p>
+                <p>Configure the shop, publish services and hours, share a booking link, and process customer requests in one workflow.</p>
                 <div class="connect-service-offers">
-                  <article><span>01</span><strong>Strategy session</strong><small>45 min</small></article>
-                  <article><span>02</span><strong>Operations review</strong><small>60 min</small></article>
-                  <article><span>03</span><strong>Project discovery</strong><small>30 min</small></article>
+                  <article><span>01</span><strong>Shop profile</strong><small>Owner managed</small></article>
+                  <article><span>02</span><strong>Services & hours</strong><small>Bookable</small></article>
+                  <article><span>03</span><strong>Booking inbox</strong><small>Status workflow</small></article>
                 </div>
-                <div class="connect-service-times"><span>Tue · 10:30</span><span>Tue · 14:00</span><span>Wed · 09:00</span></div>
+                <div class="connect-service-times"><span>Profile</span><span>Availability</span><span>Bookings</span></div>
               </div>
             </div>
           </div>
-          <div class="connect-service-floating"><span></span><div><small>Client path</small><strong>Discover → choose → request</strong></div></div>
+          <div class="connect-service-floating"><span></span><div><small>Current live path</small><strong>Register → configure → share → book</strong></div></div>
         </div>
       </div>
     </section>
@@ -156,12 +156,12 @@ import "../../../styles/features/hermes-connect-faq.css";
     <section class="section connect-service-problem" aria-labelledby="connect-problem-title">
       <div class="shell connect-service-problem-grid">
         <div>
-          <p class="eyebrow">The problem it solves</p>
-          <h2 id="connect-problem-title">Stop making every client reconstruct your business from messages.</h2>
+          <p class="eyebrow">Current product focus</p>
+          <h2 id="connect-problem-title">Give a Repair Shop one usable operating path instead of another disconnected demo.</h2>
         </div>
         <div>
-          <p>Many service businesses spread their offer across social profiles, chats, screenshots, calendars, and individual explanations. The client has to ask what is available, how it works, and what to do next.</p>
-          <p>Hermes Connect is being built as one controlled web layer that makes the service journey visible before private client details are requested.</p>
+          <p>The current priority is not adding more feature concepts. It is making the existing Repair Shop product easy for a real owner to activate, configure, share, and use with customers.</p>
+          <p>The same canonical Hermes Connect identity and data architecture stays underneath the product while future modules wait for real-user evidence.</p>
         </div>
       </div>
     </section>
@@ -169,8 +169,8 @@ import "../../../styles/features/hermes-connect-faq.css";
     <section class="section connect-service-capabilities" aria-labelledby="connect-capabilities-title">
       <div class="shell">
         <div class="section-heading split-heading">
-          <div><p class="eyebrow">Web App foundation</p><h2 id="connect-capabilities-title">A useful first release, not a list of disconnected features.</h2></div>
-          <p>The first controlled release focuses on the client path that most service businesses need before advanced integrations: understand the offer, choose a service, see availability, and send a request.</p>
+          <div><p class="eyebrow">Repair Shop foundation</p><h2 id="connect-capabilities-title">The live beta already covers the core owner-to-booking workflow.</h2></div>
+          <p>The current release focuses on activation and real use: create the shop, publish services and hours, share the public booking link, process bookings, manage customers, and submit feedback.</p>
         </div>
         <div class="connect-service-capability-grid">
           {capabilities.map((capability, index) => {
@@ -191,41 +191,41 @@ import "../../../styles/features/hermes-connect-faq.css";
     <section class="section connect-service-feature-modules" aria-labelledby="connect-features-title">
       <div class="shell">
         <div class="section-heading split-heading">
-          <div><p class="eyebrow">Interactive Modules &amp; Tools</p><h2 id="connect-features-title">Explore Hermes Connect Specialized Feature Tools</h2></div>
-          <p>Deep-dive into each specialized module built into our responsive Public Beta Web App.</p>
+          <div><p class="eyebrow">Demo capability library</p><h2 id="connect-features-title">Explore existing concepts without confusing them with the current live product.</h2></div>
+          <p>These modules remain available as demonstrations and possible donors of useful functionality. They are not separate production Hermes Connect products.</p>
         </div>
         <div class="connect-service-capability-grid">
           <article>
             <h3><a href="/services/hermes-connect/ai-command-center/">AI Command Center &rarr;</a></h3>
-            <p>Automated lead classification, intent scoring, and real-time operational task queue.</p>
+            <p>Demo capability: lead classification, intent scoring, and an operational task queue.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/unified-inbox/">Unified Command Inbox &rarr;</a></h3>
-            <p>Single multi-channel client inbox with status lifecycle management (NEW, QUALIFIED, PROPOSAL_SENT).</p>
+            <p>Demo capability: multi-channel client inbox and status lifecycle concepts.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/load-analyzer/">B2B Freight Load Analyzer &rarr;</a></h3>
-            <p>Interactive profit calculator computing Rate-Per-Mile (RPM), fuel costs, and net margin %.</p>
+            <p>Demo capability: RPM, fuel-cost, and margin calculations for freight workflows.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/rate-negotiator/">AI Rate Negotiator &rarr;</a></h3>
-            <p>Professional broker counter-offer message builder for dispatchers and freight operators.</p>
+            <p>Demo capability: professional broker counter-offer message building.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/proposal-builder/">Instant Proposal Builder &rarr;</a></h3>
-            <p>Itemized commercial quote and contract proposal generator with HTML/PDF export.</p>
+            <p>Demo capability: itemized commercial quote and proposal generation.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/roi-calculator/">Business ROI Calculator &rarr;</a></h3>
-            <p>Interactive financial modeling tool projecting staff hours saved and recovered revenue.</p>
+            <p>Demo capability: financial modeling for staff time and recovered revenue.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/business-automation/">Multi-Vertical Automation &rarr;</a></h3>
-            <p>Tailored intake and workflow automation engines for 7 service industry verticals.</p>
+            <p>Demo capability: intake and workflow automation concepts for additional service industries.</p>
           </article>
           <article>
             <h3><a href="/services/hermes-connect/repair-shops/">Repair Shop Partner Beta &rarr;</a></h3>
-            <p>On-demand roadside service dispatch, shop bay capacity management, and corporate partner offers.</p>
+            <p><strong>Current live pilot:</strong> owner workspace, services, availability, booking, customers, feedback, and partner intake.</p>
           </article>
         </div>
       </div>
@@ -234,8 +234,8 @@ import "../../../styles/features/hermes-connect-faq.css";
     <section class="section connect-service-categories" id="categories" aria-labelledby="connect-categories-title">
       <div class="shell">
         <div class="section-heading split-heading">
-          <div><p class="eyebrow">Category-aware product</p><h2 id="connect-categories-title">One platform. Different service language for each business.</h2></div>
-          <p>The same product structure adapts the services, examples, request language, and client next step to the selected category.</p>
+          <div><p class="eyebrow">Future category library</p><h2 id="connect-categories-title">One architecture can serve more categories later—without forking the product now.</h2></div>
+          <p>These categories describe future or demo use cases. They do not mean each category is currently released as a live production vertical.</p>
         </div>
         <div class="connect-service-category-grid">
           {categories.map((category, index) => (
@@ -248,7 +248,7 @@ import "../../../styles/features/hermes-connect-faq.css";
           ))}
         </div>
         <p class="connect-service-category-note">
-          <strong>Repair Shops and Commercial Truck Repair is our first focused outbound commercial pilot.</strong> Beauty, fitness, and other service categories remain supported Beta verticals. Hermes Connect is being built as an independently operated platform around controlled service-business workflows, clear client handoffs, and reviewable product releases.
+          <strong>Repair Shops and Commercial Truck Repair is the current focused live beta.</strong> Other category concepts remain demo/planned until real-user evidence from the first Repair Shop cohort identifies what should be ported into the canonical product next.
         </p>
       </div>
     </section>
@@ -256,15 +256,15 @@ import "../../../styles/features/hermes-connect-faq.css";
     <section class="section connect-service-process" aria-labelledby="connect-process-title">
       <div class="shell connect-service-process-grid">
         <div>
-          <p class="eyebrow">Connected development loop</p>
-          <h2 id="connect-process-title">Your recurring need can become the next reviewed product task.</h2>
-          <p>Applications are reviewed for patterns. Hermes converts repeated needs into bounded briefs, AI-assisted implementation, human review, automated tests, and controlled web releases.</p>
+          <p class="eyebrow">Real-user beta loop</p>
+          <h2 id="connect-process-title">The next product decision comes from real Repair Shop usage.</h2>
+          <p>The current release is ready for a small controlled cohort. The purpose is to measure activation, time to first value, first booking, operational errors, support questions, and requested missing functionality.</p>
         </div>
         <ol>
-          <li><span>01</span><div><strong>Request access</strong><small>Choose the category and describe one must-have workflow.</small></div></li>
-          <li><span>02</span><div><strong>Human review</strong><small>Hermes checks fit, privacy boundaries, and repeated demand.</small></div></li>
-          <li><span>03</span><div><strong>AI-assisted build</strong><small>Approved work is implemented on a reviewable branch with tests.</small></div></li>
-          <li><span>04</span><div><strong>Controlled web release</strong><small>Verified changes move through CI with a rollback boundary.</small></div></li>
+          <li><span>01</span><div><strong>Register owner</strong><small>Create a real Repair Shop owner account in the canonical product.</small></div></li>
+          <li><span>02</span><div><strong>Configure shop</strong><small>Add profile, services, and working hours.</small></div></li>
+          <li><span>03</span><div><strong>Share booking link</strong><small>Let a real customer submit the first booking request.</small></div></li>
+          <li><span>04</span><div><strong>Process and learn</strong><small>Complete the workflow, collect feedback, and fix observed friction before adding features.</small></div></li>
         </ol>
       </div>
     </section>
@@ -273,8 +273,8 @@ import "../../../styles/features/hermes-connect-faq.css";
       <div class="shell connect-service-faq-grid">
         <div>
           <p class="eyebrow">Hermes Connect FAQ</p>
-          <h2 id="connect-faq-title">What the current Web App path does—and does not do.</h2>
-          <p>These answers describe the controlled access release. Future integrations require separate scope, testing, and release approval.</p>
+          <h2 id="connect-faq-title">What is live now—and what remains demo.</h2>
+          <p>These answers describe the current canonical product boundary so managers and Repair Shop owners can tell production beta functionality from demonstrations.</p>
         </div>
         <div class="connect-service-faq-list">
           {faqs.map((faq, index) => (
@@ -292,11 +292,11 @@ import "../../../styles/features/hermes-connect-faq.css";
     <section class="connect-service-final" aria-labelledby="connect-final-title">
       <div class="shell connect-service-final-grid">
         <div>
-          <p class="eyebrow hero-eyebrow">Hermes Connect Web App</p>
-          <h2 id="connect-final-title">Choose your category and show us the client workflow that matters most.</h2>
-          <p>The access request does not create an account, booking, payment, or subscription automatically. Hermes reviews the request before sending access instructions.</p>
+          <p class="eyebrow hero-eyebrow">Hermes Connect · Repair Shop Partner Beta</p>
+          <h2 id="connect-final-title">Start with a real Repair Shop owner and a real booking—not another prototype.</h2>
+          <p>The current beta is for controlled real-user testing. No payment or subscription is created automatically, and demo modules remain separate from the live Repair Shop workflow.</p>
         </div>
-        <HermesConnectLauncher variant="inline" href="https://connect.hermeslogisticsus.com/#apply" label="Request Web App access" />
+        <HermesConnectLauncher variant="inline" href="/services/hermes-connect/repair-shops/auth/" label="Owner Login / Get Started" />
       </div>
     </section>
   </main>
