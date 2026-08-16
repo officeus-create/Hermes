@@ -2,6 +2,7 @@
 import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
+import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 
@@ -118,6 +119,7 @@ const languageLinks = siteLocales.map((language) => {
 </header>
 
 {isHermesConnectRoute && <HermesConnectExperience />}
+{isHermesConnectRoute && <HermesConnectDomReady />}
 
 <script>
   const button = document.querySelector<HTMLElement>("[data-menu-button]");
