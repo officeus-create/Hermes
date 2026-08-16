@@ -20,8 +20,26 @@ const schema = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Hermes Connect Repair Shop Web App Access",
+    serviceType: "Browser-based repair shop operations software access",
+    provider: { "@type": "Organization", name: "Hermes Logistics LLC", url: "https://hermeslogisticsus.com/" },
+    url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+    description: "Browser-first access to the current Hermes Connect Repair Shop live pilot. No native mobile-store release or subscription offer is claimed here.",
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 3, name: "Access Center", item: "https://hermeslogisticsus.com/download/" },
+    ],
   },
 ];
 ---
