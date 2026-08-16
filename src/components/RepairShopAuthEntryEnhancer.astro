@@ -1,0 +1,16 @@
+<script>
+  const repairShopAuthPath = "/services/hermes-connect/repair-shops/auth";
+  const currentPath = window.location.pathname.replace(/\/+$/, "");
+
+  if (currentPath === repairShopAuthPath && new URLSearchParams(window.location.search).get("mode") === "register") {
+    const openRegistration = () => {
+      const registerTab = document.querySelector<HTMLElement>('[data-tab="register"]');
+      const registerForm = document.getElementById("register-form");
+      if (!registerTab || !registerForm) return;
+      if (!registerTab.classList.contains("active")) registerTab.click();
+    };
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", openRegistration, { once: true });
+    else openRegistration();
+  }
+</script>
