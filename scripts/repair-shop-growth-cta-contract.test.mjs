@@ -1,13 +1,15 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan] = await Promise.all([
+const [enhancer, runtime, layout, leadReceiver, repairLanding, paidPlan, activationEnhancer, activationRuntime] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-booking-growth.js", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/logistics-lead.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/plan.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../public/repair-shop-activation.js", import.meta.url), "utf8"),
 ]);
 
 assert.match(layout, /RepairBookingGrowthEnhancer/);
@@ -48,4 +50,30 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop growth CTA, paid activation intent, indexed money-page schema, private lead routing, and zero-PII telemetry contract passed.");
+// Activation V1: one Repair Shop runtime owns customer-ready copy, setup progress,
+// multilingual activation guidance, and the transition from first value to the paid plan.
+assert.match(layout, /RepairShopActivationEnhancer/);
+assert.match(activationEnhancer, /\/repair-shop-activation\.js/);
+assert.match(activationEnhancer, /repair-activation-panel/);
+assert.match(activationRuntime, /Get your shop ready for customers/);
+assert.match(activationRuntime, /Подготовьте СТО к приёму клиентов/);
+assert.match(activationRuntime, /Prepara tu taller para recibir clientes/);
+assert.match(activationRuntime, /Prepara l’officina per i clienti/);
+assert.match(activationRuntime, /Préparez votre atelier à recevoir des clients/);
+assert.match(activationRuntime, /Підготуйте СТО до прийому клієнтів/);
+assert.match(activationRuntime, /\/api\/repair-shop\/profile/);
+assert.match(activationRuntime, /\/api\/services/);
+assert.match(activationRuntime, /\/api\/repair-shop\/availability/);
+assert.match(activationRuntime, /\/api\/repair-shop\/bookings/);
+assert.match(activationRuntime, /completedCount \* 25/);
+assert.match(activationRuntime, /connect_shop_activation_view/);
+assert.match(activationRuntime, /\/repair-shops\/plan\//);
+assert.match(activationRuntime, /CURRENT PRODUCT/);
+assert.match(activationRuntime, /Customer booking times are generated from these hours/);
+assert.match(activationRuntime, /Repair pricing is set by the shop/);
+assert.doesNotMatch(
+  activationRuntime,
+  /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
+);
+
+console.log("Repair Shop growth, revenue, activation progress, multilingual UX cleanup, private lead routing, and zero-PII telemetry contracts passed.");
