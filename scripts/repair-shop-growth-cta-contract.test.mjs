@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, layout, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
+const [enhancer, customerActions, layout, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/RepairBookingCustomerActionsEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/plan.astro", import.meta.url), "utf8"),
@@ -14,12 +15,18 @@ const [enhancer, layout, repairLanding, paidPlan, activationEnhancer, activation
 // Public repair booking confirmation is customer-focused. Do not reuse a repair
 // customer's booking contact details to create an unrelated B2B marketing lead.
 assert.match(layout, /RepairBookingGrowthEnhancer/);
-assert.match(enhancer, /Intentionally no public booking-success cross-sell/);
+assert.match(enhancer, /RepairBookingCustomerActionsEnhancer/);
+assert.match(enhancer, /no Hermes\/ProgressoPro B2B cross-sell/i);
 assert.doesNotMatch(enhancer, /Grow My Business \/ Talk to Hermes/);
 assert.doesNotMatch(enhancer, /data-growth-consent/);
 assert.doesNotMatch(enhancer, /repair-booking-growth\.js/);
-assert.doesNotMatch(enhancer, /ProgressoPro/);
 assert.doesNotMatch(enhancer, /\/api\/logistics-lead/);
+assert.match(customerActions, /\/api\/public\/repair-shop\?slug=/);
+assert.match(customerActions, /data-call-shop/);
+assert.match(customerActions, /data-shop-directions/);
+assert.match(customerActions, /tel:/);
+assert.match(customerActions, /google\.com\/maps\/search/);
+assert.doesNotMatch(customerActions, /client-name|client-email|client-phone|\/api\/logistics-lead|ProgressoPro/i);
 
 // Revenue V1: keep the public Repair Shop path value-first and route paid intent
 // through the existing private lead receiver without introducing website payment tech.
@@ -87,4 +94,4 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop customer-focused booking, free launch entry, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop customer-focused booking actions, free launch entry, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
