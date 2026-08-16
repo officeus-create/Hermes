@@ -4,6 +4,9 @@ import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
 const html = await readFile(join(root, "dist", "index.html"), "utf8");
+const performanceCss = await readFile(join(root, "src", "styles", "homepage-performance.css"), "utf8");
+const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
+const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
 
 assert.ok(html.includes("data-product-feature-styles"), "homepage must retain the inert deferred product-style template");
@@ -17,4 +20,27 @@ assert.ok(html.includes("<noscript>"), "homepage must retain a no-JavaScript sty
 assert.equal(/\/_astro\/(?:load|product)\.[^"']+\.css/i.test(head), false, "load/product feature CSS must not remain render-blocking in the homepage head");
 assert.equal(/\/_astro\/technology\.[^"']+\.css/i.test(head), false, "technology feature CSS must not remain render-blocking in the homepage head");
 
-console.log("Homepage deferred feature CSS contract passed.");
+const showcaseRule = performanceCss.match(/\.product-showcase\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+assert.ok(showcaseRule.includes("content-visibility: visible"), "homepage product showcase must remain paintable during full-page capture and fast scroll");
+assert.equal(/content-visibility\s*:\s*auto/i.test(showcaseRule), false, "homepage product showcase must not restore offscreen auto-paint suppression");
+assert.equal(/contain-intrinsic-size\s*:\s*auto\s+3200px/i.test(performanceCss), false, "homepage must not reserve the historical 3200px blank product-showcase placeholder");
+
+assert.ok(performanceCss.includes("--hermes-pearl: #f7f6f3"), "homepage must retain the canonical Pearl shell token");
+assert.ok(performanceCss.includes("--hermes-obsidian: #0b0d12"), "homepage must retain the canonical Obsidian shell token");
+assert.ok(performanceCss.includes("--hermes-intelligence-violet: #6f5cff"), "homepage must retain the canonical Intelligence accent token");
+
+assert.ok(footerSource.includes('class="footer-primary-nav"'), "footer must preserve one canonical navigation DOM");
+assert.equal(footerSource.includes('class="footer-mobile-groups"'), false, "footer must not duplicate navigation into a second hidden mobile DOM");
+assert.ok(/\.footer-primary-nav\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/i.test(footerSource), "mobile footer navigation must compact into two columns");
+assert.ok(/\.footer-primary-nav a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile footer links must retain at least 44px touch targets");
+assert.ok(/\.footer-contacts a,[\s\S]*?\.footer-social a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile contact and social links must retain at least 44px touch targets");
+assert.equal((footerSource.match(/\/logistics\/car-hauling-dispatch\//g) ?? []).length, 1, "footer source must not duplicate car-hauling navigation links across desktop/mobile DOMs");
+
+assert.ok(consentSource.includes('data-consent-accept'), "analytics allow action must remain present");
+assert.ok(consentSource.includes('data-consent-decline'), "continue-without-analytics action must remain present");
+assert.ok(consentSource.includes('href="/privacy/"'), "privacy policy link must remain present in consent UI");
+assert.ok(/\.tracking-consent-actions \.button\s*\{[\s\S]*?min-height:\s*44px/i.test(consentSource), "consent actions must retain at least 44px touch targets");
+assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
+assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");
+
+console.log("Homepage deferred feature and shell design contract passed.");

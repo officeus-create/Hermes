@@ -146,13 +146,13 @@ const localePath = localeConfig[locale].path;
 
 <footer class="site-footer">
   <div class="shell footer-main">
-    <div>
+    <div class="footer-intro">
       <p class="footer-brand">{site.brand}</p>
       <p>{localized.statement}</p>
       <p class="footer-location">{publicLocationBoundary}</p>
       <HermesConnectLauncher variant="footer" />
     </div>
-    <nav aria-label="Footer navigation">
+    <nav class="footer-primary-nav" aria-label="Footer navigation">
       {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
       <a href="/privacy/">{localized.privacy}</a>
       {locale === "en" && (
@@ -192,3 +192,58 @@ const localePath = localeConfig[locale].path;
     <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
 </footer>
+
+<style>
+  @media (max-width: 700px) {
+    .site-footer { padding-top: 2.6rem; }
+    .footer-main { grid-template-columns: 1fr; gap: .9rem; }
+    .footer-intro { max-width: 36rem; }
+
+    .footer-primary-nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 .85rem;
+      padding-top: .45rem;
+      border-top: 1px solid rgba(255,255,255,.16);
+    }
+
+    .footer-primary-nav a {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      padding: .35rem 0;
+      color: rgba(255,255,255,.76);
+      font-size: .82rem;
+      line-height: 1.22;
+    }
+
+    .footer-contacts {
+      gap: .08rem;
+      margin-top: .15rem;
+      padding-top: .55rem;
+      border-top: 1px solid rgba(255,255,255,.16);
+    }
+
+    .footer-contacts a,
+    .footer-social a {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+    }
+
+    .footer-social {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 1rem;
+      padding-top: .15rem;
+    }
+
+    .footer-primary-nav a:focus-visible,
+    .footer-contacts a:focus-visible,
+    .footer-social a:focus-visible {
+      color: #fff;
+      outline: 2px solid currentColor;
+      outline-offset: 3px;
+    }
+  }
+</style>
