@@ -36,6 +36,7 @@ const localized = {
     designed: "Designed and engineered by",
     method: "Human-led, AI-assisted",
     status: "Website inquiries are delivered securely by email",
+    groups: { explore: "Explore", services: "Services", contact: "Contact", legal: "Legal" },
   },
   uk: {
     statement: "Логістика, розвиток, освіта й технології за одним практичним стандартом.",
@@ -50,6 +51,7 @@ const localized = {
     designed: "Дизайн і розробка",
     method: "Під керівництвом людей, з підтримкою AI",
     status: "Звернення надсилаються електронною поштою",
+    groups: { explore: "Навігація", services: "Послуги", contact: "Контакт", legal: "Правова інформація" },
   },
   ru: {
     statement: "Логистика, развитие, образование и технологии по единому практическому стандарту.",
@@ -64,6 +66,7 @@ const localized = {
     designed: "Дизайн и разработка",
     method: "Под управлением людей, с поддержкой AI",
     status: "Обращения отправляются по электронной почте",
+    groups: { explore: "Навигация", services: "Услуги", contact: "Контакт", legal: "Правовая информация" },
   },
   es: {
     statement: "Logística, crecimiento, formación y tecnología con un mismo estándar práctico.",
@@ -73,6 +76,7 @@ const localized = {
     ],
     privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto", phone: "Ventas de logística en EE. UU.",
     designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
+    groups: { explore: "Explorar", services: "Servicios", contact: "Contacto", legal: "Legal" },
   },
   it: {
     statement: "Logistica, crescita, formazione e tecnologia con un unico standard pratico.",
@@ -82,6 +86,7 @@ const localized = {
     ],
     privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto", phone: "Vendite logistica USA",
     designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
+    groups: { explore: "Esplora", services: "Servizi", contact: "Contatti", legal: "Note legali" },
   },
   fr: {
     statement: "Logistique, croissance, formation et technologie selon un même standard pratique.",
@@ -91,9 +96,26 @@ const localized = {
     ],
     privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact", phone: "Ventes logistiques aux États-Unis",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
+    groups: { explore: "Explorer", services: "Services", contact: "Contact", legal: "Mentions légales" },
   },
 }[locale];
 const localePath = localeConfig[locale].path;
+const primaryNavCount = site.navigation.length + 1;
+const mobileExploreNav = locale === "en" ? localized.nav.slice(0, primaryNavCount) : localized.nav;
+const mobileServiceNav = locale === "en" ? localized.nav.slice(primaryNavCount) : [];
+const legalNav = [
+  { label: localized.privacy, href: "/privacy/" },
+  ...(locale === "en" ? [
+    { label: "Legal & Compliance", href: "/legal-compliance/" },
+    { label: "Regional Privacy", href: "/regional-privacy/" },
+    { label: "Privacy Choices", href: "/privacy-choices/" },
+    { label: "Company Information", href: "/company-information/" },
+    { label: "About Hermes", href: "/about/" },
+    { label: "Terms of Use", href: "/terms/" },
+    { label: "Editorial & Corrections", href: "/editorial-policy/" },
+    { label: "Accessibility", href: "/accessibility/" },
+  ] : []),
+];
 ---
 
 {showTransportRequestActions && (
@@ -146,34 +168,25 @@ const localePath = localeConfig[locale].path;
 
 <footer class="site-footer">
   <div class="shell footer-main">
-    <div>
+    <div class="footer-intro">
       <p class="footer-brand">{site.brand}</p>
       <p>{localized.statement}</p>
       <p class="footer-location">{publicLocationBoundary}</p>
       <HermesConnectLauncher variant="footer" />
     </div>
-    <nav aria-label="Footer navigation">
+
+    <nav class="footer-desktop-nav" aria-label="Footer navigation">
       {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
-      <a href="/privacy/">{localized.privacy}</a>
-      {locale === "en" && (
-        <>
-          <a href="/legal-compliance/">Legal & Compliance</a>
-          <a href="/regional-privacy/">Regional Privacy</a>
-          <a href="/privacy-choices/">Privacy Choices</a>
-          <a href="/company-information/">Company Information</a>
-          <a href="/about/">About Hermes</a>
-          <a href="/terms/">Terms of Use</a>
-          <a href="/editorial-policy/">Editorial & Corrections</a>
-          <a href="/accessibility/">Accessibility</a>
-        </>
-      )}
+      {legalNav.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
+
     <div class="footer-contacts" aria-label="Contact options">
       <p class="footer-contacts-label">{localized.contact}</p>
       <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
       {showLogisticsPhone && logisticsPhone && <a href={logisticsPhone.href}>{localized.phone} · {logisticsPhone.value}</a>}
       <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
     </div>
+
     <nav class="footer-social" aria-label="Social media">
       {site.social.map((item) => (
         <a href={item.href} target="_blank" rel="noopener noreferrer">
@@ -181,6 +194,44 @@ const localePath = localeConfig[locale].path;
         </a>
       ))}
     </nav>
+
+    <div class="footer-mobile-groups" aria-label="Footer navigation groups">
+      <details>
+        <summary>{localized.groups.explore}</summary>
+        <nav aria-label={localized.groups.explore}>
+          {mobileExploreNav.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+      </details>
+
+      {mobileServiceNav.length > 0 && (
+        <details>
+          <summary>{localized.groups.services}</summary>
+          <nav aria-label={localized.groups.services}>
+            {mobileServiceNav.map((item) => <a href={item.href}>{item.label}</a>)}
+          </nav>
+        </details>
+      )}
+
+      <details>
+        <summary>{localized.groups.contact}</summary>
+        <nav aria-label={localized.groups.contact}>
+          <a href={locale === "en" ? "/contacts/" : `${localePath}#contact`}>{localized.route}</a>
+          {showLogisticsPhone && logisticsPhone && <a href={logisticsPhone.href}>{localized.phone} · {logisticsPhone.value}</a>}
+          <a href="mailto:officeus@hermeslogisticsus.com">officeus@hermeslogisticsus.com</a>
+          {site.social.map((item) => (
+            <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
+          ))}
+        </nav>
+      </details>
+
+      <details>
+        <summary>{localized.groups.legal}</summary>
+        <nav aria-label={localized.groups.legal}>
+          {legalNav.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+      </details>
+    </div>
+
     <a class="back-to-top" href="#top" aria-label="Back to top">
       <ArrowUp size={20} aria-hidden="true" />
     </a>
@@ -192,3 +243,75 @@ const localePath = localeConfig[locale].path;
     <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
 </footer>
+
+<style>
+  .footer-mobile-groups { display: none; }
+
+  @media (max-width: 700px) {
+    .site-footer { padding-top: 2.6rem; }
+    .footer-main { grid-template-columns: 1fr; gap: 1.15rem; }
+    .footer-intro { max-width: 36rem; }
+    .footer-desktop-nav,
+    .footer-contacts,
+    .footer-social { display: none; }
+
+    .footer-mobile-groups {
+      display: grid;
+      border-top: 1px solid rgba(255,255,255,.16);
+    }
+
+    .footer-mobile-groups details {
+      border-bottom: 1px solid rgba(255,255,255,.16);
+    }
+
+    .footer-mobile-groups summary {
+      display: flex;
+      min-height: 50px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: #fff;
+      cursor: pointer;
+      list-style: none;
+      font-family: var(--font-display);
+      font-size: .92rem;
+      font-weight: 700;
+    }
+
+    .footer-mobile-groups summary::-webkit-details-marker { display: none; }
+    .footer-mobile-groups summary::after {
+      content: "+";
+      color: rgba(255,255,255,.62);
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+    .footer-mobile-groups details[open] summary::after { content: "−"; }
+
+    .footer-mobile-groups nav {
+      display: grid;
+      gap: .1rem;
+      padding: 0 0 .8rem;
+    }
+
+    .footer-mobile-groups nav a {
+      display: flex;
+      min-height: 44px;
+      align-items: center;
+      padding: .5rem 0;
+      color: rgba(255,255,255,.78);
+      font-size: .9rem;
+      line-height: 1.3;
+    }
+
+    .footer-mobile-groups nav a:focus-visible {
+      color: #fff;
+      outline: 2px solid currentColor;
+      outline-offset: 3px;
+    }
+  }
+
+  @media (min-width: 701px) {
+    .footer-mobile-groups { display: none; }
+  }
+</style>
