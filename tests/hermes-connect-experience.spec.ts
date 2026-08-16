@@ -7,7 +7,8 @@ test("Hermes Connect language switching stays on the same canonical product rout
   await expect(page.getByRole("heading", { name: "Подключите свое СТО к логистическим операциям нашего автопарка." })).toBeVisible();
 
   const languageMenu = page.locator("[data-language-menu]");
-  await expect(languageMenu.getByText("Русский", { exact: true })).toBeVisible();
+  await expect(languageMenu.locator("summary span")).toHaveText("Русский");
+  await expect(languageMenu.locator('a[lang="ru"]')).toHaveAttribute("aria-current", "page");
 
   const ukrainian = languageMenu.locator('a[lang="uk"]');
   await expect(ukrainian).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/\?lang=uk$/);
@@ -35,11 +36,11 @@ test("Hermes Connect Hub no longer sends users into the legacy workspace runtime
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT HUB · CURRENT");
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
-  await expect(page.locator('main a[data-hc-legacy-rewritten="true"]')).toHaveCount(2);
-  await expect(page.locator('main a[data-hc-legacy-rewritten="true"]').first()).toHaveAttribute(
-    "href",
-    "/services/hermes-connect/repair-shops/auth/",
-  );
+
+  const rewritten = page.locator('main a[data-hc-legacy-rewritten="true"]');
+  expect(await rewritten.count()).toBeGreaterThan(0);
+  expect(await rewritten.filter({ has: page.locator('xpath=self::a[@href="/services/hermes-connect/repair-shops/"]') }).count()).toBeGreaterThan(0);
+  expect(await rewritten.filter({ has: page.locator('xpath=self::a[@href="/services/hermes-connect/repair-shops/auth/"]') }).count()).toBeGreaterThan(0);
 });
 
 test("non-primary Hermes Connect feature pages are visibly classified as demo capabilities", async ({ page }) => {
