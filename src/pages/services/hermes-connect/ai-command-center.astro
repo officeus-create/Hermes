@@ -1,180 +1,31 @@
 ---
-import { ArrowLeft, ArrowRight, Bot, Check, Cpu, LayoutDashboard, ShieldCheck, Sparkles, Zap } from "@lucide/astro";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
-import SiteFooter from "../../../components/SiteFooter.astro";
-import SiteHeader from "../../../components/SiteHeader.astro";
-import { HERMES_CONNECT_PRICING } from "../../../data/hermes-connect-pricing";
-
-const canonicalUrl = "https://hermeslogisticsus.com/services/hermes-connect/ai-command-center/";
+import HermesConnectCapabilityPage from "../../../components/HermesConnectCapabilityPage.astro";
 
 const faqs = [
   {
-    question: "What is the Hermes AI Command Center?",
-    answer: "The AI Command Center is the central decision hub inside Hermes Connect. It categorizes incoming client leads, evaluates intent confidence, and automatically prioritizes urgent operational tasks across all business verticals."
+    question: "Is AI Command Center a current live Hermes Connect product?",
+    answer: "No. This page documents a reference capability in the Hermes Connect product family. Repair Shops is the current live pilot.",
   },
   {
-    question: "How does the Command Center route leads automatically?",
-    answer: "Using our client-side AI Front-Door brain, incoming inquiries are scored based on urgency, revenue potential, and service type, assigning actionable recommendations directly to your dashboard."
+    question: "What is the intended role of AI Command Center?",
+    answer: "The capability is designed to classify incoming requests, surface intent and urgency signals, and organize recommended operational actions in one decision view.",
   },
-  {
-    question: "Is this feature available in Public Beta?",
-    answer: "Yes, the AI Command Center is available as part of the Hermes Connect Public Beta with local lead classification and interactive decision preview."
-  }
 ];
 
-const schema = [
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Hermes Connect AI Command Center",
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: canonicalUrl,
-    description: "Centralized AI orchestrator for multi-vertical client lead classification, operational task queuing, and real-time business decision intelligence.",
-    offers: {
-      "@type": "Offer",
-      price: HERMES_CONNECT_PRICING.starter.priceMonthly,
-      priceCurrency: "USD"
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map(faq => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer
-      }
-    }))
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
-      { "@type": "ListItem", position: 3, name: "AI Command Center", item: canonicalUrl }
-    ]
-  }
+const capabilities = [
+  { title: "Intent scoring", body: "Classify request intent and confidence so operators can see which conversations need attention first." },
+  { title: "Action queue", body: "Group time-sensitive requests and recommended next actions into one prioritized operational view." },
+  { title: "Product-family orchestration", body: "Provide a shared decision layer that can eventually coordinate specialized Hermes Connect workflows without creating separate product silos." },
 ];
 ---
 
-<BaseLayout
-  title="AI Command Center | Central Business Orchestration | Hermes Connect"
-  description="Manage multi-vertical client leads, automated task scoring, and real-time business operational intelligence with the Hermes Connect AI Command Center."
-  schema={schema}
->
-  <SiteHeader />
-
-  <main id="main-content" class="hc-feature-page">
-    <div class="page-container">
-      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li><a href="/">Home</a></li>
-          <li><a href="/services/hermes-connect/">Hermes Connect</a></li>
-          <li aria-current="page">AI Command Center</li>
-        </ol>
-      </nav>
-
-      <header class="hero-section">
-        <div class="badge">✦ Public Beta Release</div>
-        <h1>AI Command Center &amp; Operational Orchestration</h1>
-        <p class="hero-lead">
-          Stop losing client inquiries in scattered tabs. The Hermes AI Command Center categorizes leads, scores intent, and presents instant high-priority actions for your business.
-        </p>
-
-        <div class="cta-group">
-          <a class="btn primary-btn" href="https://connect.hermeslogisticsus.com/workspace?tool=home">
-            <Sparkles size={18} aria-hidden="true" />
-            Try Command Center in Workspace
-          </a>
-          <HermesConnectLauncher variant="header" />
-        </div>
-      </header>
-
-      <section class="feature-overview">
-        <h2>Key Capabilities &amp; System Features</h2>
-        <div class="card-grid">
-          <div class="card">
-            <Cpu class="icon" size={28} />
-            <h3>Intent Scoring &amp; Classification</h3>
-            <p>Automatically scores lead confidence (e.g. HIGH, MEDIUM, LOW) and detects intent across 7 business verticals instantly.</p>
-          </div>
-          <div class="card">
-            <Zap class="icon" size={28} />
-            <h3>Real-Time Action Queue</h3>
-            <p>Ranks time-sensitive deals, missed calls, and counter-offers in a unified single-priority queue.</p>
-          </div>
-          <div class="card">
-            <LayoutDashboard class="icon" size={28} />
-            <h3>Multi-Vertical Workspace Adaptation</h3>
-            <p>Tailors your dashboard view for Logistics, Auto Service, Marketing Agencies, Real Estate, or Salon Operations.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="demo-boundary-notice">
-        <ShieldCheck size={20} class="notice-icon" />
-        <div>
-          <strong>Public Beta Transparency Notice:</strong> The AI Command Center runs zero-dependency local classification. Advanced external ERP/CRM synchronization features are currently labeled <em>Simulated / Beta</em>.
-        </div>
-      </section>
-
-      <section class="faq-section">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-grid">
-          {faqs.map(faq => (
-            <div class="faq-item">
-              <h3>{faq.question}</h3>
-              <p>{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <SiteFooter />
-</BaseLayout>
-
-<style>
-  .hc-feature-page {
-    padding: 3rem 1.5rem 5rem;
-    max-width: 1100px;
-    margin: 0 auto;
-    color: var(--color-text, #f3f4f6);
-  }
-  .breadcrumb-list {
-    display: flex;
-    gap: 0.5rem;
-    list-style: none;
-    padding: 0;
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-    color: #9ca3af;
-  }
-  .breadcrumb-list a { color: #38bdf8; text-decoration: none; }
-  .hero-section { text-align: center; margin-bottom: 4rem; }
-  .badge { display: inline-block; padding: 0.35rem 0.85rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
-  h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.2; }
-  .hero-lead { font-size: 1.25rem; color: #9ca3af; max-width: 800px; margin: 0 auto 2rem; line-height: 1.6; }
-  .cta-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: transform 0.2s, background 0.2s; }
-  .primary-btn { background: #38bdf8; color: #090d16; }
-  .primary-btn:hover { background: #7dd3fc; transform: translateY(-2px); }
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem; }
-  .card .icon { color: #38bdf8; margin-bottom: 1rem; }
-  .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-  .card p { color: #9ca3af; font-size: 0.95rem; line-height: 1.5; }
-  .demo-boundary-notice { display: flex; align-items: center; gap: 0.75rem; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.25); color: #fde047; padding: 1.25rem; border-radius: 12px; margin: 3rem 0; font-size: 0.95rem; }
-  .notice-icon { flex-shrink: 0; }
-  .faq-section { margin-top: 4rem; }
-  .faq-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
-  .faq-item { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
-  .faq-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #f3f4f6; }
-  .faq-item p { color: #9ca3af; font-size: 0.95rem; margin: 0; }
-</style>
+<HermesConnectCapabilityPage
+  name="AI Command Center"
+  pageTitle="AI Command Center Reference Capability | Hermes Connect"
+  description="Reference documentation for the Hermes Connect AI Command Center capability. Repair Shops is the current live pilot."
+  canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/ai-command-center/"
+  lead="A decision-layer concept for classifying incoming requests, prioritizing operational work, and presenting recommended next actions inside the Hermes Connect product family."
+  capabilities={capabilities}
+  boundary="This capability is not presented as a current public beta or production runtime. External ERP/CRM synchronization and autonomous operational actions are not claimed as live. Use the Repair Shop product for the current pilot flow."
+  faqs={faqs}
+/>
