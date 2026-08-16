@@ -46,10 +46,12 @@
   transition: opacity 420ms ease, transform 520ms ease;
 }
 
-/* The product portfolio is far below the first viewport. Defer its layout/paint work until needed. */
+/* Keep the portfolio paintable during full-page capture and fast programmatic scroll.
+   The previous 3200px intrinsic placeholder could render as a large blank band before
+   the browser decided the offscreen section was relevant. The feature styles themselves
+   are still deferred by WebsiteProofBand's IntersectionObserver. */
 .product-showcase {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 3200px;
+  content-visibility: visible;
 }
 
 @media (max-width: 700px) {
