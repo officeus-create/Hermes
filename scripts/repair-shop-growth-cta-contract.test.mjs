@@ -67,7 +67,7 @@ assert.match(activationRuntime, /\/api\/repair-shop\/availability/);
 assert.match(activationRuntime, /\/api\/repair-shop\/bookings/);
 assert.match(activationRuntime, /completedCount \* 25/);
 assert.match(activationRuntime, /connect_shop_activation_view/);
-assert.match(activationRuntime, /\/repair-shops\/plan\//);
+assert.match(activationRuntime, /(?:\/repair-shops\/plan\/|\$\{ROOT\}\/plan\/)/);
 assert.match(activationRuntime, /CURRENT PRODUCT/);
 assert.match(activationRuntime, /Customer booking times are generated from these hours/);
 assert.match(activationRuntime, /Repair pricing is set by the shop/);
