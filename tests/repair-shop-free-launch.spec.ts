@@ -19,6 +19,7 @@ test("Repair Shop free-launch policy is global, fixed, and honest about billing"
   expect(component).toContain("data-seconds");
   expect(component).toContain("window.setInterval(tick, 1000)");
   expect(component).toContain("registration stays free until it is");
+  expect(component).toContain("Registration remains free while online billing is unavailable.");
   expect(component).not.toMatch(/first\s+1[,.]?000|first\s+1000|первых\s+1000/i);
   expect(component).not.toMatch(/Date\.now\(\)\s*\+\s*14/);
 });
@@ -30,7 +31,7 @@ test("Repair Shop landing shows localized day-hour-minute-second countdown on mo
   const offer = page.locator("[data-repair-free-launch]");
   await expect(offer).toBeVisible();
   await expect(offer).toHaveAttribute("data-deadline", deadline);
-  await expect(offer.getByRole("heading", { name: "Бесплатная регистрация СТО на ближайшие 14 дней." })).toBeVisible();
+  await expect(offer.getByRole("heading", { name: "14-дневная стартовая акция: регистрация СТО бесплатно." })).toBeVisible();
   await expect(offer).toContainText("дней");
   await expect(offer).toContainText("часов");
   await expect(offer).toContainText("минут");
@@ -57,14 +58,14 @@ test("direct free-registration CTA opens the Repair Shop registration form", asy
   await expect(page.locator("#register-form")).toHaveClass(/active/);
   const offer = page.locator("[data-repair-free-launch]");
   await expect(offer).toBeVisible();
-  await expect(offer.getByRole("heading", { name: "Registro gratuito del taller durante los próximos 14 días." })).toBeVisible();
+  await expect(offer.getByRole("heading", { name: "Oferta de lanzamiento de 14 días: registro gratuito del taller." })).toBeVisible();
 });
 
 test("Founding Plan page keeps free registration as the lower-friction first step", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/plan/?lang=uk", { waitUntil: "domcontentloaded" });
   const offer = page.locator("[data-repair-free-launch]");
   await expect(offer).toBeVisible();
-  await expect(offer).toContainText("Безкоштовна реєстрація СТО на найближчі 14 днів.");
+  await expect(offer).toContainText("14-денна стартова акція: реєстрація СТО безкоштовна.");
   await expect(offer.getByRole("link", { name: "Зареєструватися безкоштовно" })).toHaveAttribute(
     "href",
     "/services/hermes-connect/repair-shops/auth/?mode=register&lang=uk",
