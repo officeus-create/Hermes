@@ -13,7 +13,6 @@ interface Props {
 const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const localeBase = localeConfig[locale].path;
-const connectUrl = "https://connect.hermeslogisticsus.com/";
 const localizedLabels = {
   uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
   ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
@@ -48,11 +47,12 @@ const languageLinks = siteLocales.map((language) => ({
   </nav>
 
   <div class="header-actions">
-    <HermesConnectLauncher variant="header" />
-    <a class="header-cta" href={connectUrl} aria-label="Open Hermes Connect">
-      Hermes Connect
-      <ArrowUpRight size={17} aria-hidden="true" />
-    </a>
+    <HermesConnectLauncher
+      variant="header"
+      href="/services/hermes-connect/repair-shops/"
+      label="Hermes Connect"
+      sublabel="Repair Shop Partner Beta"
+    />
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[locale].name}`}>
         <Languages size={16} aria-hidden="true" />
@@ -78,9 +78,13 @@ const languageLinks = siteLocales.map((language) => ({
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
-    <HermesConnectLauncher variant="mobile" />
+    <HermesConnectLauncher
+      variant="mobile"
+      href="/services/hermes-connect/repair-shops/"
+      label="Hermes Connect"
+      sublabel="Repair Shop Partner Beta"
+    />
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
-    <a href={connectUrl} aria-label="Open Hermes Connect">Hermes Connect</a>
     <a href="#contact">{contactLabel}</a>
     <div class="mobile-language-switcher" aria-label="Choose language">
       <strong>{localeConfig[locale].name}</strong>
