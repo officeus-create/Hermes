@@ -1,0 +1,80 @@
+/* D030 — Hermes Knot production motion language.
+   One branded object, one short entrance, no perpetual peripheral motion.
+   The animated master object belongs to Product Hub only; deeper task routes keep the static Knot in the header launcher. */
+
+.hc-experience .hc-intelligence-core {
+  display: none !important;
+}
+
+.hc-experience body:has(.hc-hub-page) .hc-intelligence-core {
+  display: block !important;
+  position: absolute !important;
+  z-index: 2 !important;
+  top: clamp(10.5rem, 17vw, 13.5rem) !important;
+  right: max(1.5rem, calc((100vw - 1180px) / 2)) !important;
+  width: clamp(88px, 8vw, 112px) !important;
+  height: clamp(88px, 8vw, 112px) !important;
+  pointer-events: none !important;
+  transform: none !important;
+  perspective: none !important;
+  filter: drop-shadow(0 18px 34px rgba(61, 48, 116, .12)) !important;
+  opacity: .92 !important;
+  animation: hc-knot-arrive 720ms cubic-bezier(.2,.8,.2,1) 1 both !important;
+}
+
+.hc-experience .hc-intelligence-core__halo,
+.hc-experience .hc-intelligence-core__ring,
+.hc-experience .hc-intelligence-core__dot {
+  display: none !important;
+}
+
+.hc-experience body:has(.hc-hub-page) .hc-intelligence-core::before {
+  position: absolute;
+  inset: 0;
+  border-radius: 30%;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120' fill='none'%3E%3Cpath d='M30 43C30 27 48 20 60 31L88 58C99 69 92 89 75 89C68 89 62 86 57 81L32 56C28 52 28 47 30 43Z' stroke='%237C5CFF' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M90 43C90 27 72 20 60 31L32 58C21 69 28 89 45 89C52 89 58 86 63 81L88 56C92 52 92 47 90 43Z' stroke='%235AC8FA' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M48 69L57 78C62 83 68 86 75 86' stroke='%23F7F6F3' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M48 69L57 78C62 83 68 86 75 86' stroke='%237C5CFF' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E") center / 82% 82% no-repeat,
+    radial-gradient(circle at 50% 48%, rgba(124,92,255,.11), rgba(90,200,250,.045) 48%, transparent 71%);
+  box-shadow: inset 0 0 0 1px rgba(124,92,255,.06);
+  content: "";
+}
+
+.hc-experience body:has(.hc-hub-page) .hc-intelligence-core::after {
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(124,92,255,.11);
+  border-radius: 42%;
+  content: "";
+  opacity: 0;
+  animation: hc-knot-halo 900ms ease-out 180ms 1 both;
+}
+
+@keyframes hc-knot-arrive {
+  from { opacity: 0; transform: translateY(8px) scale(.96); }
+  to { opacity: .92; transform: translateY(0) scale(1); }
+}
+
+@keyframes hc-knot-halo {
+  0% { opacity: 0; transform: scale(.9); }
+  45% { opacity: .55; }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+
+@media (max-width: 1120px) {
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core,
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core::after {
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .hc-experience body:has(.hc-hub-page) .hc-intelligence-core {
+    display: none !important;
+  }
+}
