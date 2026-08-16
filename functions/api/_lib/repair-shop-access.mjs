@@ -35,13 +35,14 @@ export async function ensureRepairShopAccessSchema(db) {
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_repair_shop_access_state ON repair_shop_access(access_state)").run();
 }
 
-export async function ensureDefaultRepairShopAccess(db, shopId) {
+export async function ensureDefaultRepairShopAccess(db, shopId, shopCreatedAt) {
   const now = new Date().toISOString();
+  const startedAt = typeof shopCreatedAt === "string" && shopCreatedAt ? shopCreatedAt : now;
   await db.prepare(`
     INSERT OR IGNORE INTO repair_shop_access
       (shop_id,access_state,plan_id,started_at,current_period_end,updated_at)
     VALUES (?,?,?,?,?,?)
-  `).bind(shopId, "trialing", REPAIR_SHOP_PLAN_ID, now, null, now).run();
+  `).bind(shopId, "trialing", REPAIR_SHOP_PLAN_ID, startedAt, null, now).run();
 }
 
 export async function getRepairShopAccess(db, shopId) {
