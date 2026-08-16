@@ -39,7 +39,7 @@ const computedHref = href || "/services/hermes-connect/";
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
 
 {variant === "header" && (
-  <a href={computedHref} class={`hc-launcher hc-launcher-header ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
+  <a href={computedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
     <svg class="hermes-knot-mark" viewBox="0 0 44 44" aria-hidden="true" width="18" height="18">
       <path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
       <path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round"/>
