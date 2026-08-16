@@ -11,14 +11,16 @@ test("Hermes Connect keeps one visible header entry and opens the Repair Shop re
   const workspaceCta = page.getByRole("link", { name: "Open interactive workspace" });
   await expect(workspaceCta).toHaveAttribute("href", "https://connect.hermeslogisticsus.com/workspace");
 
-  const previewButton = page.getByRole("button", { name: "Open Repair Shop pilot" });
-  await expect(previewButton).toBeEnabled();
-  await expect(previewButton).toHaveAttribute("tabindex", "0");
-  await previewButton.click();
+  const repairLaunch = page.locator("[data-repair-shop-launch]");
+  await expect(repairLaunch).toBeVisible();
+  await expect(repairLaunch).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
+  await repairLaunch.click();
 
   await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/$/);
-  const createShop = page.getByRole("link", { name: "Create Shop Account" });
-  const ownerLogin = page.getByRole("link", { name: "Open Shop Workspace" });
+  const createShop = page.locator("[data-repair-register-launch]");
+  const ownerLogin = page.locator("[data-repair-login-launch]");
+  await expect(createShop).toBeVisible();
+  await expect(ownerLogin).toBeVisible();
   await expect(createShop).toHaveAttribute("href", /\/repair-shops\/auth\/\?mode=register$/);
   await expect(ownerLogin).toHaveAttribute("href", /\/repair-shops\/auth\/\?mode=login$/);
 
