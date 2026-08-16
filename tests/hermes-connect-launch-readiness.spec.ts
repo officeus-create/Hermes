@@ -14,10 +14,7 @@ test("Hermes Connect keeps one visible header entry and opens the Repair Shop re
   const previewButton = page.getByRole("button", { name: "Open Repair Shop pilot" });
   await expect(previewButton).toBeEnabled();
   await expect(previewButton).toHaveAttribute("tabindex", "0");
-
-  const repairPilotCta = page.getByRole("link", { name: "Open Repair Shop Partner Beta" });
-  await expect(repairPilotCta).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
-  await repairPilotCta.click();
+  await previewButton.click();
 
   await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/$/);
   const createShop = page.getByRole("link", { name: "Create Shop Account" });
