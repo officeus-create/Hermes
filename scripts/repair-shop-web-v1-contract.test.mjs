@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [runtime, activationLoader, accessApi, dashboard, availability, booking, customers] = await Promise.all([
+const [runtime, qrRuntime, activationLoader, accessApi, dashboard, availability, booking, customers] = await Promise.all([
   readFile(new URL("../public/repair-shop-web-v1.js", import.meta.url), "utf8"),
+  readFile(new URL("../public/repair-shop-qr.js", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../functions/api/repair-shop/access.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/dashboard.astro", import.meta.url), "utf8"),
@@ -12,6 +13,7 @@ const [runtime, activationLoader, accessApi, dashboard, availability, booking, c
 ]);
 
 assert.match(activationLoader, /\/repair-shop-web-v1\.js/);
+assert.match(activationLoader, /\/repair-shop-qr\.js/);
 
 // Persisted access state from D1, not browser state.
 assert.match(runtime, /fetch\("\/api\/repair-shop\/access"/);
@@ -40,6 +42,15 @@ assert.match(runtime, /hc-repair-completed-feedback-dismissed/);
 assert.match(runtime, /feedback-message/);
 assert.match(dashboard, /\/api\/repair-shop\/feedback/);
 
+// QR is lazy and encodes only the already-public canonical booking URL.
+assert.match(qrRuntime, /https:\/\/quickchart\.io\/qr/);
+assert.match(qrRuntime, /url\.searchParams\.set\("text", bookingUrl\)/);
+assert.match(qrRuntime, /data-repair-qr-toggle/);
+assert.match(qrRuntime, /connect_shop_qr_view/);
+assert.match(qrRuntime, /connect_shop_qr_download/);
+assert.match(qrRuntime, /connect_shop_qr_print/);
+assert.doesNotMatch(qrRuntime, /client_name|client_email|client_phone|\bvin\b|shopName/);
+
 // Existing functional foundation remains present.
 assert.match(dashboard, /\/api\/repair-shop\/bookings/);
 assert.match(dashboard, /\/status/);
@@ -49,5 +60,6 @@ assert.match(customers, /\/api\/repair-shop\/customers/);
 
 // Do not add PII to public analytics.
 assert.doesNotMatch(runtime, /dataLayer\.push\([\s\S]{0,300}\b(?:email|phone|client_name|client_email|client_phone|shopName|slug|vin)\b/);
+assert.doesNotMatch(qrRuntime, /dataLayer\.push\([\s\S]{0,300}\b(?:email|phone|client_name|client_email|client_phone|shopName|slug|vin)\b/);
 
-console.log("Repair Shop Web V1 access, quick-start, sharing, repeat-booking, customer-contact, and feedback contracts passed.");
+console.log("Repair Shop Web V1 access, quick-start, sharing, QR, repeat-booking, customer-contact, and feedback contracts passed.");
