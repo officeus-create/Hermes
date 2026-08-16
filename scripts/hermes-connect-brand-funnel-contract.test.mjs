@@ -13,6 +13,7 @@ assert(launcher.includes('const computedHref = href || "/services/hermes-connect
 assert(!launcher.includes("connect.hermeslogisticsus.com/workspace"), "Launcher: legacy workspace must not be a current default target.");
 assert(!launcher.includes("hermes-connect-brand-v1"), "Launcher: retired Brand V1 path must not return.");
 assert(launcher.includes("hermes-knot-mark"), "Launcher: official Hermes knot mark is required.");
+assert(launcher.includes("hermes-connect-header-launcher"), "Launcher: header variant must expose the compatibility class used by the current Connect polish layer.");
 
 const header = await text("src/components/SiteHeader.astro");
 assert(header.includes("HermesConnectLauncher"), "Header: missing Hermes Connect launcher.");
@@ -26,6 +27,7 @@ assert(experience.includes("data-hc-product-context"), "Experience: product-fami
 assert(experience.includes("data-hc-english-only"), "Experience: non-English routes must disclose English-only page content until fully localized.");
 assert(experience.includes("REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT"), "Experience: reference-capability status is required.");
 assert(experience.includes("CURRENT LIVE PILOT"), "Experience: current live pilot status is required.");
+assert(experience.includes(".hermes-connect-header-launcher"), "Experience: current visual layer must target the launcher compatibility class.");
 
 const hub = await text("src/pages/services/hermes-connect/index.astro");
 assert(hub.includes("One product family. One current live pilot."), "Hub: product-family hierarchy statement is required.");
@@ -68,4 +70,4 @@ assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Preserved works
 assert(!workspaceHtml.includes("hermes-connect-brand-v1"), "Preserved workspace: Brand V1 path must not return.");
 assert(!workspaceHtml.includes("workspace-v2"), "Preserved workspace: retired workspace-v2 assets must not return.");
 
-console.log("Hermes Connect product-family navigation, truthfulness, localization boundary, and legacy-routing contract passed.");
+console.log("Hermes Connect product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
