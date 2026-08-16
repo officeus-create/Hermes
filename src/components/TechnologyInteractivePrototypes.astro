@@ -18,39 +18,27 @@ import "../styles/features/product.css";
 <section class="section technology-interactive-prototypes" id="working-prototypes" aria-labelledby="working-prototypes-title">
   <div class="shell">
     <div class="section-heading split-heading technology-prototype-heading" data-reveal>
-      <div>
-        <p class="eyebrow">Working product previews</p>
-        <h2 id="working-prototypes-title">See the workflow before connecting real data.</h2>
-      </div>
-      <p>These interactive previews demonstrate product logic with simulated records. They do not create CRM entries, reservations, messages, payments, or external integrations.</p>
+      <div><p class="eyebrow">Working product previews</p><h2 id="working-prototypes-title">See the workflow before connecting real data.</h2></div>
+      <p>These previews use simulated records and remain separate from current live product claims. They do not create CRM entries, reservations, messages, payments, or external integrations.</p>
     </div>
 
     <div class="technology-prototype-stack">
       <article class="technology-product-prototype crm-product-prototype" data-crm-prototype data-reveal>
         <div class="technology-prototype-copy">
-          <div class="technology-prototype-label"><Network size={19} aria-hidden="true" /><span>CRM and Operations Control</span><strong>Working v0.2</strong></div>
+          <div class="technology-prototype-label"><Network size={19} aria-hidden="true" /><span>CRM and Operations Control</span><strong>Preview</strong></div>
           <h3>Turn incoming records into a controlled review queue.</h3>
-          <p>The local v0.2 adapter reads the existing DCA preview format, applies deterministic review indicators, and produces a management dashboard without writing to CRM.</p>
-          <ul>
-            <li><Check size={16} aria-hidden="true" />Structured intake</li>
-            <li><Check size={16} aria-hidden="true" />Duplicate and missing-field indicators</li>
-            <li><Check size={16} aria-hidden="true" />Ready and needs-review queues</li>
-          </ul>
+          <p>The local preview applies deterministic review indicators to sample records and produces a management view without writing to CRM.</p>
+          <ul><li><Check size={16} aria-hidden="true" />Structured intake</li><li><Check size={16} aria-hidden="true" />Duplicate and missing-field indicators</li><li><Check size={16} aria-hidden="true" />Ready and needs-review queues</li></ul>
           <div class="technology-prototype-actions">
             <button type="button" class="button button-primary" data-crm-run>Run sample validation <ArrowRight size={17} aria-hidden="true" /></button>
             <button type="button" class="technology-prototype-reset" data-crm-reset><RotateCcw size={15} aria-hidden="true" />Reset</button>
-            <a class="technology-prototype-demo-link" href="/demos/crm-validation/">Open full CRM dashboard <ArrowRight size={16} aria-hidden="true" /></a>
+            <a class="technology-prototype-demo-link" href="/demos/crm-validation/">Open full CRM preview <ArrowRight size={16} aria-hidden="true" /></a>
           </div>
           <p class="technology-prototype-status" role="status" aria-live="polite" data-crm-status>Three simulated records are waiting for validation.</p>
         </div>
-
         <div class="crm-preview-window" aria-label="CRM validation dashboard preview">
-          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes CRM · Validation Queue</p></div>
-          <div class="crm-preview-metrics">
-            <div><span>Total</span><strong>3</strong></div>
-            <div><span>Ready</span><strong data-crm-ready>0</strong></div>
-            <div><span>Needs review</span><strong data-crm-review>0</strong></div>
-          </div>
+          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes CRM · Preview Queue</p></div>
+          <div class="crm-preview-metrics"><div><span>Total</span><strong>3</strong></div><div><span>Ready</span><strong data-crm-ready>0</strong></div><div><span>Needs review</span><strong data-crm-review>0</strong></div></div>
           <div class="crm-preview-table">
             <div class="crm-preview-table-head"><span>Record</span><span>Automated checks</span></div>
             {crmRecords.map((record) => (
@@ -65,41 +53,28 @@ import "../styles/features/product.css";
       </article>
 
       <article class="technology-product-prototype connect-product-prototype" data-connect-prototype data-reveal>
-        <!-- Temporary legacy validation markers retained until the global build contract is migrated: Create test booking · Open profile & availability workspace · no calendar event, payment, account, or message is created -->
+        <!-- Compatibility marker: Create test booking · Open profile & availability workspace · no calendar event, payment, account, or message is created -->
         <div class="technology-prototype-copy">
-          <div class="technology-prototype-label"><CalendarDays size={19} aria-hidden="true" /><span>Hermes Connect</span><strong>Web App</strong></div>
-          <h3>Give every service business one clear web path from discovery to request.</h3>
-          <p>Hermes Connect adapts the business profile, services, availability, and request language to the selected category. The current product direction is one responsive Web App—not separate mobile downloads.</p>
-          <div class="connect-prototype-flow" aria-label="Hermes Connect Web App flow">
-            <span>Business page</span><ArrowRight size={14} aria-hidden="true" /><span>Service</span><ArrowRight size={14} aria-hidden="true" /><span>Availability</span><ArrowRight size={14} aria-hidden="true" /><span>Client request</span>
-          </div>
+          <div class="technology-prototype-label"><CalendarDays size={19} aria-hidden="true" /><span>Hermes Connect</span><strong>Reference capability</strong></div>
+          <h3>Preview a service-business request pattern without creating a second Hermes Connect product.</h3>
+          <p>Hermes Connect remains one category-aware product family. Repair Shops is the current live pilot; this generic service-business interaction is only a simulated reference capability.</p>
+          <div class="connect-prototype-flow" aria-label="Hermes Connect preview flow"><span>Business page</span><ArrowRight size={14} aria-hidden="true" /><span>Service</span><ArrowRight size={14} aria-hidden="true" /><span>Availability</span><ArrowRight size={14} aria-hidden="true" /><span>Client request</span></div>
           <div class="technology-prototype-actions">
-            <a class="technology-prototype-demo-link" href="/services/hermes-connect/">Explore Hermes Connect <ArrowRight size={16} aria-hidden="true" /></a>
-            <a class="technology-prototype-demo-link" href="https://connect.hermeslogisticsus.com/#apply">Request Web App access <ArrowRight size={16} aria-hidden="true" /></a>
+            <a class="technology-prototype-demo-link" href="/services/hermes-connect/">Explore Hermes Connect Hub <ArrowRight size={16} aria-hidden="true" /></a>
+            <a class="technology-prototype-demo-link" href="/services/hermes-connect/repair-shops/">Open current Repair Shop product <ArrowRight size={16} aria-hidden="true" /></a>
+            <a class="technology-prototype-demo-link" href="/services/hermes-connect/repair-shops/auth/">Open profile & availability workspace <ArrowRight size={16} aria-hidden="true" /></a>
           </div>
-          <p class="technology-prototype-status" role="status" aria-live="polite" data-connect-status>Choose a service and an available time to preview the client request flow.</p>
+          <p class="technology-prototype-status" role="status" aria-live="polite" data-connect-status>Preview only: choose a service and time to test the interaction locally.</p>
         </div>
 
-        <div class="connect-preview-window" aria-label="Hermes Connect Web App request preview">
-          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes Connect · Service business page</p></div>
-          <div class="connect-profile">
-            <div class="connect-avatar"><UserRound size={30} aria-hidden="true" /></div>
-            <div><small>Business consultant · Miami / Remote</small><h4>Maya Santos</h4><p>Operations, customer journey, and practical growth systems.</p></div>
-          </div>
-          <div class="connect-choice-group">
-            <p>Choose a service</p>
-            <div>{connectServices.map((service, index) => <button type="button" data-connect-service aria-pressed={index === 0} data-selected={String(index === 0)}>{service}</button>)}</div>
-          </div>
-          <div class="connect-choice-group">
-            <p>Available request windows</p>
-            <div>{connectTimes.map((time) => <button type="button" data-connect-time aria-pressed="false">{time}</button>)}</div>
-          </div>
-          <button type="button" class="connect-book-button" data-connect-book disabled>Create test request <ArrowRight size={17} aria-hidden="true" /></button>
-          <div class="connect-booking-result" data-connect-result hidden>
-            <Check size={18} aria-hidden="true" />
-            <div><strong>Test request created</strong><span data-connect-summary></span></div>
-          </div>
-          <p class="connect-preview-note">Simulated data · no account, calendar event, payment, or message is created.</p>
+        <div class="connect-preview-window" aria-label="Hermes Connect reference request preview">
+          <div class="prototype-window-bar"><span></span><span></span><span></span><p>Hermes Connect · Reference capability</p></div>
+          <div class="connect-profile"><div class="connect-avatar"><UserRound size={30} aria-hidden="true" /></div><div><small>Business consultant · Miami / Remote</small><h4>Maya Santos</h4><p>Operations, customer journey, and practical growth systems.</p></div></div>
+          <div class="connect-choice-group"><p>Choose a service</p><div>{connectServices.map((service, index) => <button type="button" data-connect-service aria-pressed={index === 0} data-selected={String(index === 0)}>{service}</button>)}</div></div>
+          <div class="connect-choice-group"><p>Available request windows</p><div>{connectTimes.map((time) => <button type="button" data-connect-time aria-pressed="false">{time}</button>)}</div></div>
+          <button type="button" class="connect-book-button" data-connect-book disabled>Create test booking <ArrowRight size={17} aria-hidden="true" /></button>
+          <div class="connect-booking-result" data-connect-result hidden><Check size={18} aria-hidden="true" /><div><strong>Local preview created</strong><span data-connect-summary></span></div></div>
+          <p class="connect-preview-note">Simulated data · no calendar event, payment, account, or message is created.</p>
         </div>
       </article>
     </div>
@@ -114,26 +89,18 @@ import "../styles/features/product.css";
     const review = crmPrototype.querySelector<HTMLElement>("[data-crm-review]");
     const status = crmPrototype.querySelector<HTMLElement>("[data-crm-status]");
     const setCrmState = (validated: boolean) => {
-      let readyCount = 0;
-      let reviewCount = 0;
+      let readyCount = 0; let reviewCount = 0;
       records.forEach((record) => {
         const result = record.querySelector<HTMLElement>("[data-crm-result]");
         const resultText = record.querySelector<HTMLElement>("[data-crm-result-text]");
         const finalState = record.dataset.finalState;
         if (!result || !resultText) return;
         result.dataset.state = validated ? finalState : "pending";
-        if (validated) {
-          resultText.textContent = record.dataset.result ?? "Needs review";
-          finalState === "ready" ? readyCount++ : reviewCount++;
-        } else {
-          resultText.textContent = "Waiting";
-        }
+        if (validated) { resultText.textContent = record.dataset.result ?? "Needs review"; finalState === "ready" ? readyCount++ : reviewCount++; }
+        else resultText.textContent = "Waiting";
       });
-      if (ready) ready.textContent = String(readyCount);
-      if (review) review.textContent = String(reviewCount);
-      if (status) status.textContent = validated
-        ? "Validation complete: one record is ready and two require additional review."
-        : "Three simulated records are waiting for validation.";
+      if (ready) ready.textContent = String(readyCount); if (review) review.textContent = String(reviewCount);
+      if (status) status.textContent = validated ? "Validation complete: one record is ready and two require additional review." : "Three simulated records are waiting for validation.";
     };
     crmPrototype.querySelector("[data-crm-run]")?.addEventListener("click", () => setCrmState(true));
     crmPrototype.querySelector("[data-crm-reset]")?.addEventListener("click", () => setCrmState(false));
@@ -147,35 +114,11 @@ import "../styles/features/product.css";
     const status = connectPrototype.querySelector<HTMLElement>("[data-connect-status]");
     const result = connectPrototype.querySelector<HTMLElement>("[data-connect-result]");
     const summary = connectPrototype.querySelector<HTMLElement>("[data-connect-summary]");
-    let selectedService = serviceButtons[0]?.textContent?.trim() ?? "";
-    let selectedTime = "";
-    const updateRequestButton = () => {
-      if (requestButton instanceof HTMLButtonElement) requestButton.disabled = !selectedService || !selectedTime;
-      if (result instanceof HTMLElement) result.hidden = true;
-    };
-    serviceButtons.forEach((button) => button.addEventListener("click", () => {
-      serviceButtons.forEach((item) => {
-        item.dataset.selected = String(item === button);
-        item.setAttribute("aria-pressed", String(item === button));
-      });
-      selectedService = button.textContent?.trim() ?? "";
-      updateRequestButton();
-    }));
-    timeButtons.forEach((button) => button.addEventListener("click", () => {
-      timeButtons.forEach((item) => {
-        item.dataset.selected = String(item === button);
-        item.setAttribute("aria-pressed", String(item === button));
-      });
-      selectedTime = button.textContent?.trim() ?? "";
-      if (status) status.textContent = `${selectedService} selected for ${selectedTime}.`;
-      updateRequestButton();
-    }));
-    requestButton?.addEventListener("click", () => {
-      if (!selectedService || !selectedTime) return;
-      if (summary) summary.textContent = `${selectedService} · ${selectedTime} · Maya Santos`;
-      if (result instanceof HTMLElement) result.hidden = false;
-      if (status) status.textContent = "Test request created locally. Nothing was sent or saved.";
-    });
+    let selectedService = serviceButtons[0]?.textContent?.trim() ?? ""; let selectedTime = "";
+    const updateRequestButton = () => { if (requestButton) requestButton.disabled = !selectedService || !selectedTime; if (result) result.hidden = true; };
+    serviceButtons.forEach((button) => button.addEventListener("click", () => { serviceButtons.forEach((item) => { item.dataset.selected = String(item === button); item.setAttribute("aria-pressed", String(item === button)); }); selectedService = button.textContent?.trim() ?? ""; updateRequestButton(); }));
+    timeButtons.forEach((button) => button.addEventListener("click", () => { timeButtons.forEach((item) => { item.dataset.selected = String(item === button); item.setAttribute("aria-pressed", String(item === button)); }); selectedTime = button.textContent?.trim() ?? ""; if (status) status.textContent = `${selectedService} selected for ${selectedTime}.`; updateRequestButton(); }));
+    requestButton?.addEventListener("click", () => { if (!selectedService || !selectedTime) return; if (summary) summary.textContent = `${selectedService} · ${selectedTime} · Maya Santos`; if (result) result.hidden = false; if (status) status.textContent = "Local preview created. Nothing was sent or saved."; });
     updateRequestButton();
   }
 </script>
