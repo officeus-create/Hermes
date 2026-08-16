@@ -80,6 +80,10 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
   .repair-activation-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}
   .repair-activation-secondary{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#eef2f7}
   .repair-activation-next{margin:0;color:#8e99ab;font-size:12px;line-height:1.5}
-  @media(max-width:760px){.repair-activation-head{display:block}.repair-activation-progress{margin-top:8px;text-align:left}.repair-activation-steps{grid-template-columns:1fr 1fr}.repair-activation-actions{align-items:stretch;flex-direction:column}.repair-activation-primary,.repair-activation-secondary{width:100%;box-sizing:border-box}}
-  @media(max-width:440px){.repair-activation-steps{grid-template-columns:1fr}}
+  #public-link-wrap,#public-link-wrap>div,#public-link-text,#public-link-wrap .link-actions{min-width:0;max-width:100%}
+  #public-link-text{display:block;overflow-wrap:anywhere;word-break:break-word}
+  #public-link-wrap .link-actions{flex-wrap:wrap}
+  #public-link-wrap .link-actions>*{min-width:0;max-width:100%;white-space:normal}
+  @media(max-width:760px){.repair-activation-head{display:block}.repair-activation-progress{margin-top:8px;text-align:left}.repair-activation-steps{grid-template-columns:1fr 1fr}.repair-activation-actions{align-items:stretch;flex-direction:column}.repair-activation-primary,.repair-activation-secondary{width:100%;box-sizing:border-box}#public-link-wrap .link-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}#public-link-wrap .link-actions>*{width:100%;box-sizing:border-box}}
+  @media(max-width:440px){.repair-activation-steps{grid-template-columns:1fr}#public-link-wrap .link-actions{grid-template-columns:1fr}}
 </style>
