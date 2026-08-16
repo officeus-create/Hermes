@@ -1,7 +1,13 @@
 ---
+import HermesConnectLaunchEnhancer from "./HermesConnectLaunchEnhancer.astro";
+import RepairPartnerOfferEnhancer from "./RepairPartnerOfferEnhancer.astro";
+
 const repairBookingPath = "/services/hermes-connect/repair-shops/booking";
 const isRepairBooking = Astro.url.pathname.replace(/\/+$/, "") === repairBookingPath;
 ---
+
+<HermesConnectLaunchEnhancer />
+<RepairPartnerOfferEnhancer />
 
 {isRepairBooking && (
   <>
