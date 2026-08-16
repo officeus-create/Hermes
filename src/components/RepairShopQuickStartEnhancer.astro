@@ -1,0 +1,230 @@
+---
+const repairRoot = "/services/hermes-connect/repair-shops";
+const path = Astro.url.pathname.replace(/\/+$/, "");
+const isQuickStartSurface = path === `${repairRoot}/dashboard` || path === `${repairRoot}/availability`;
+---
+
+{isQuickStartSurface && (
+  <script>
+    const ROOT = "/services/hermes-connect/repair-shops";
+    const path = window.location.pathname.replace(/\/+$/, "");
+    const locale = new URLSearchParams(window.location.search).get("lang") || document.documentElement.lang || "en";
+    const copy: Record<string, any> = {
+      en: {
+        kicker: "Quick start",
+        servicesTitle: "Add 3 common services in one click",
+        servicesBody: "Adds customer-facing starter services only if they are missing. You can rename, delete, or add custom services anytime.",
+        servicesButton: "Add starter services",
+        servicesWorking: "Adding services…",
+        servicesDone: "Starter services added.",
+        servicesReady: "Your starter services are already set.",
+        hoursTitle: "Fill common weekday hours",
+        hoursBody: "Fills Monday–Friday, 8:00 AM–5:00 PM. Nothing is saved until you press Save weekly availability.",
+        hoursButton: "Use Mon–Fri · 8 AM–5 PM",
+        hoursDone: "Weekday hours filled. Review them, then save when ready.",
+      },
+      ru: {
+        kicker: "Быстрый старт",
+        servicesTitle: "Добавьте 3 популярные услуги одним нажатием",
+        servicesBody: "Добавятся только отсутствующие услуги для клиентов. Их можно переименовать, удалить или добавить свои в любой момент.",
+        servicesButton: "Добавить стартовые услуги",
+        servicesWorking: "Добавляем услуги…",
+        servicesDone: "Стартовые услуги добавлены.",
+        servicesReady: "Стартовые услуги уже настроены.",
+        hoursTitle: "Заполнить стандартные часы по будням",
+        hoursBody: "Заполнит понедельник–пятницу, 8:00–17:00. Ничего не сохранится, пока вы не нажмёте Save weekly availability.",
+        hoursButton: "Пн–Пт · 8:00–17:00",
+        hoursDone: "Часы заполнены. Проверьте их и сохраните, когда будете готовы.",
+      },
+      uk: {
+        kicker: "Швидкий старт",
+        servicesTitle: "Додайте 3 популярні послуги одним натисканням",
+        servicesBody: "Додадуться лише відсутні послуги для клієнтів. Їх можна перейменувати, видалити або додати власні.",
+        servicesButton: "Додати стартові послуги",
+        servicesWorking: "Додаємо послуги…",
+        servicesDone: "Стартові послуги додано.",
+        servicesReady: "Стартові послуги вже налаштовані.",
+        hoursTitle: "Заповнити стандартні години у будні",
+        hoursBody: "Заповнить понеділок–п’ятницю, 8:00–17:00. Нічого не збережеться, доки ви не натиснете Save weekly availability.",
+        hoursButton: "Пн–Пт · 8:00–17:00",
+        hoursDone: "Години заповнено. Перевірте їх і збережіть, коли будете готові.",
+      },
+      es: {
+        kicker: "Inicio rápido",
+        servicesTitle: "Añade 3 servicios comunes con un clic",
+        servicesBody: "Solo añade los servicios que falten. Puedes renombrarlos, eliminarlos o crear servicios personalizados cuando quieras.",
+        servicesButton: "Añadir servicios iniciales",
+        servicesWorking: "Añadiendo servicios…",
+        servicesDone: "Servicios iniciales añadidos.",
+        servicesReady: "Los servicios iniciales ya están configurados.",
+        hoursTitle: "Rellenar horario habitual entre semana",
+        hoursBody: "Rellena lunes–viernes, 8:00–17:00. No se guarda nada hasta que pulses Save weekly availability.",
+        hoursButton: "Lun–Vie · 8:00–17:00",
+        hoursDone: "Horario rellenado. Revísalo y guárdalo cuando esté listo.",
+      },
+      it: {
+        kicker: "Avvio rapido",
+        servicesTitle: "Aggiungi 3 servizi comuni con un clic",
+        servicesBody: "Aggiunge solo i servizi mancanti. Puoi rinominarli, eliminarli o aggiungere servizi personalizzati in qualsiasi momento.",
+        servicesButton: "Aggiungi servizi iniziali",
+        servicesWorking: "Aggiunta servizi…",
+        servicesDone: "Servizi iniziali aggiunti.",
+        servicesReady: "I servizi iniziali sono già configurati.",
+        hoursTitle: "Compila gli orari feriali comuni",
+        hoursBody: "Compila lunedì–venerdì, 8:00–17:00. Nulla viene salvato finché non premi Save weekly availability.",
+        hoursButton: "Lun–Ven · 8:00–17:00",
+        hoursDone: "Orari compilati. Controllali e salvali quando sei pronto.",
+      },
+      fr: {
+        kicker: "Démarrage rapide",
+        servicesTitle: "Ajoutez 3 services courants en un clic",
+        servicesBody: "Ajoute uniquement les services manquants. Vous pouvez les renommer, les supprimer ou ajouter des services personnalisés à tout moment.",
+        servicesButton: "Ajouter les services de départ",
+        servicesWorking: "Ajout des services…",
+        servicesDone: "Services de départ ajoutés.",
+        servicesReady: "Les services de départ sont déjà configurés.",
+        hoursTitle: "Préremplir les horaires de semaine",
+        hoursBody: "Préremplit lundi–vendredi, 8:00–17:00. Rien n’est enregistré avant d’appuyer sur Save weekly availability.",
+        hoursButton: "Lun–Ven · 8:00–17:00",
+        hoursDone: "Horaires préremplis. Vérifiez-les puis enregistrez quand vous êtes prêt.",
+      },
+    };
+    const t = copy[locale] || copy.en;
+    const starterServices = [
+      { id: "oil_change", name: "Oil change", duration_minutes: 30 },
+      { id: "diagnostics", name: "Diagnostics", duration_minutes: 45 },
+      { id: "brake_inspection", name: "Brake inspection", duration_minutes: 45 },
+    ];
+
+    const pushEvent = (event: string, extra: Record<string, unknown> = {}) => {
+      const win = window as any;
+      win.dataLayer = win.dataLayer || [];
+      win.dataLayer.push({ event, product: "repair_shops", ...extra });
+    };
+
+    const card = (title: string, body: string, buttonText: string) => {
+      const section = document.createElement("section");
+      section.className = "repair-quickstart";
+      section.innerHTML = `
+        <div class="repair-quickstart-copy">
+          <p class="repair-quickstart-kicker"></p>
+          <strong class="repair-quickstart-title"></strong>
+          <p class="repair-quickstart-body"></p>
+          <p class="repair-quickstart-status" role="status" aria-live="polite"></p>
+        </div>
+        <button class="repair-quickstart-button" type="button"></button>`;
+      section.querySelector<HTMLElement>(".repair-quickstart-kicker")!.textContent = t.kicker;
+      section.querySelector<HTMLElement>(".repair-quickstart-title")!.textContent = title;
+      section.querySelector<HTMLElement>(".repair-quickstart-body")!.textContent = body;
+      section.querySelector<HTMLButtonElement>(".repair-quickstart-button")!.textContent = buttonText;
+      return section;
+    };
+
+    async function setupServiceQuickStart() {
+      if (path !== `${ROOT}/dashboard`) return;
+      const serviceForm = document.getElementById("service-form");
+      if (!serviceForm || document.querySelector("[data-service-quickstart]")) return;
+
+      const section = card(t.servicesTitle, t.servicesBody, t.servicesButton);
+      section.dataset.serviceQuickstart = "true";
+      serviceForm.insertAdjacentElement("beforebegin", section);
+      const button = section.querySelector<HTMLButtonElement>(".repair-quickstart-button")!;
+      const status = section.querySelector<HTMLElement>(".repair-quickstart-status")!;
+
+      const refreshState = async () => {
+        try {
+          const response = await fetch("/api/services", { credentials: "same-origin" });
+          const data = await response.json();
+          if (!response.ok || !data?.success || !Array.isArray(data.services)) return;
+          const existing = new Set(data.services.map((item: any) => String(item.name || "").trim().toLowerCase()));
+          const missing = starterServices.filter((item) => !existing.has(item.name.toLowerCase()));
+          button.disabled = missing.length === 0;
+          if (!missing.length) status.textContent = t.servicesReady;
+          button.dataset.missingCount = String(missing.length);
+        } catch {}
+      };
+
+      button.addEventListener("click", async () => {
+        button.disabled = true;
+        status.textContent = t.servicesWorking;
+        try {
+          const listResponse = await fetch("/api/services", { credentials: "same-origin" });
+          const listData = await listResponse.json();
+          if (!listResponse.ok || !listData?.success || !Array.isArray(listData.services)) throw new Error("services_unavailable");
+          const existing = new Set(listData.services.map((item: any) => String(item.name || "").trim().toLowerCase()));
+          const missing = starterServices.filter((item) => !existing.has(item.name.toLowerCase()));
+          if (!missing.length) {
+            status.textContent = t.servicesReady;
+            return;
+          }
+
+          let added = 0;
+          for (const service of missing) {
+            const response = await fetch("/api/services", {
+              method: "POST",
+              credentials: "same-origin",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: service.name, duration_minutes: service.duration_minutes }),
+            });
+            const data = await response.json().catch(() => null);
+            if (!response.ok && data?.error !== "service_already_exists") throw new Error(data?.error || "service_create_failed");
+            if (response.ok) added += 1;
+          }
+          pushEvent("connect_shop_service_preset_used", { preset_id: "starter_three", added_count: added });
+          status.textContent = t.servicesDone;
+          window.setTimeout(() => window.location.reload(), 300);
+        } catch {
+          status.textContent = "Unable to add starter services. Use the service form below.";
+          button.disabled = false;
+        }
+      });
+
+      await refreshState();
+    }
+
+    function setupAvailabilityQuickStart() {
+      if (path !== `${ROOT}/availability`) return;
+      const form = document.getElementById("availability-form");
+      const list = document.getElementById("availability-list");
+      if (!form || !list || document.querySelector("[data-hours-quickstart]")) return;
+
+      const section = card(t.hoursTitle, t.hoursBody, t.hoursButton);
+      section.dataset.hoursQuickstart = "true";
+      list.insertAdjacentElement("beforebegin", section);
+      const button = section.querySelector<HTMLButtonElement>(".repair-quickstart-button")!;
+      const status = section.querySelector<HTMLElement>(".repair-quickstart-status")!;
+
+      button.addEventListener("click", () => {
+        const rows = Array.from(document.querySelectorAll<HTMLElement>(".day-row[data-day]"));
+        if (rows.length !== 7) {
+          status.textContent = "Availability is still loading. Try again in a moment.";
+          return;
+        }
+        for (const row of rows) {
+          const day = Number(row.dataset.day);
+          const checkbox = row.querySelector<HTMLInputElement>('input[type="checkbox"]');
+          const times = row.querySelectorAll<HTMLInputElement>('input[type="time"]');
+          if (!checkbox || times.length < 2) continue;
+          const weekday = day >= 1 && day <= 5;
+          checkbox.checked = weekday;
+          checkbox.dispatchEvent(new Event("change", { bubbles: true }));
+          times[0].value = "08:00";
+          times[1].value = "17:00";
+        }
+        status.textContent = t.hoursDone;
+        pushEvent("connect_shop_weekday_hours_preset_used", { preset_id: "mon_fri_0800_1700" });
+      });
+    }
+
+    const initialize = () => {
+      void setupServiceQuickStart();
+      setupAvailabilityQuickStart();
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize, { once: true });
+    else initialize();
+  </script>
+)}
+
+<style is:global>
+  .repair-quickstart{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:18px 0 4px;padding:14px 15px;border:1px solid rgba(96,230,166,.18);border-radius:14px;background:linear-gradient(135deg,rgba(34,142,94,.08),rgba(124,92,255,.055))}.repair-quickstart-copy{min-width:0}.repair-quickstart-kicker{margin:0 0 4px;color:#7ce6bb;text-transform:uppercase;letter-spacing:.1em;font-size:10px;font-weight:850}.repair-quickstart-title{display:block;color:#f4f7fb;font-size:14px}.repair-quickstart-body{margin:4px 0 0;color:#9fa7b5;font-size:12px;line-height:1.5}.repair-quickstart-status{margin:5px 0 0;color:#9ee8c8;font-size:11px;font-weight:700}.repair-quickstart-status:empty{display:none}.repair-quickstart-button{flex:none;min-height:44px;border:1px solid rgba(110,231,183,.24);border-radius:11px;padding:0 14px;background:rgba(25,108,75,.28);color:#d8f8ea;font:inherit;font-size:12px;font-weight:850;cursor:pointer}.repair-quickstart-button:disabled{opacity:.55;cursor:not-allowed}@media(max-width:680px){.repair-quickstart{display:block}.repair-quickstart-button{width:100%;margin-top:12px}}
+</style>
