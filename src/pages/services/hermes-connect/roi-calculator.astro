@@ -1,163 +1,31 @@
 ---
-import { ArrowLeft, ArrowRight, BarChart3, Clock, DollarSign, ShieldCheck, Sparkles, TrendingUp } from "@lucide/astro";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
-import SiteFooter from "../../../components/SiteFooter.astro";
-import SiteHeader from "../../../components/SiteHeader.astro";
-import { HERMES_CONNECT_PRICING } from "../../../data/hermes-connect-pricing";
-
-const canonicalUrl = "https://hermeslogisticsus.com/services/hermes-connect/roi-calculator/";
+import HermesConnectCapabilityPage from "../../../components/HermesConnectCapabilityPage.astro";
 
 const faqs = [
   {
-    question: "What is the Hermes Connect Business ROI Calculator?",
-    answer: "The ROI Calculator models the financial return of implementing AI front-door automation by calculating weekly staff hours saved and monthly recovered revenue from missed calls and slow responses."
+    question: "Does ROI Calculator guarantee recovered revenue or savings?",
+    answer: "No. It is a reference modeling capability and any output is an estimate based on user-supplied assumptions, not a guaranteed financial result.",
   },
   {
-    question: "How are the ROI metrics calculated?",
-    answer: "The tool evaluates monthly inbound lead volume, customer lifetime value (LTV), missed call percentage, and hourly staff wages to project net monthly revenue gains."
-  }
+    question: "Does the calculation use the old Hermes Connect subscription prices?",
+    answer: "No current subscription price is published on this page. Historical $99–$799 planning ranges are not used as a current product claim.",
+  },
 ];
 
-const schema = [
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Hermes Connect Business ROI Calculator",
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: canonicalUrl,
-    description: "Interactive return-on-investment calculator projecting hours saved and recovered revenue for small businesses.",
-    offers: {
-      "@type": "Offer",
-      price: HERMES_CONNECT_PRICING.starter.priceMonthly,
-      priceCurrency: "USD"
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map(faq => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer
-      }
-    }))
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
-      { "@type": "ListItem", position: 3, name: "ROI Calculator", item: canonicalUrl }
-    ]
-  }
+const capabilities = [
+  { title: "Time-savings model", body: "Estimate administrative time that could be reduced using user-supplied workflow assumptions." },
+  { title: "Revenue-recovery scenario", body: "Explore what missed or delayed inbound requests might mean financially without presenting the estimate as guaranteed revenue." },
+  { title: "Scenario comparison", body: "Compare conservative and optimistic assumptions while keeping the underlying inputs visible and reviewable." },
 ];
 ---
 
-<BaseLayout
-  title="Interactive Business ROI Calculator | Hermes Connect"
-  description="Project your business revenue gains and staff hours saved with the Hermes Connect Interactive ROI Calculator."
-  schema={schema}
->
-  <SiteHeader />
-
-  <main id="main-content" class="hc-feature-page">
-    <div class="page-container">
-      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li><a href="/">Home</a></li>
-          <li><a href="/services/hermes-connect/">Hermes Connect</a></li>
-          <li aria-current="page">ROI Calculator</li>
-        </ol>
-      </nav>
-
-      <header class="hero-section">
-        <div class="badge">✦ Interactive ROI Tool</div>
-        <h1>Interactive Business ROI Calculator</h1>
-        <p class="hero-lead">
-          Calculate how much money slow response times and missed calls are costing your business every single month.
-        </p>
-
-        <div class="cta-group">
-          <a class="btn primary-btn" href="https://connect.hermeslogisticsus.com/workspace?tool=roi-calculator">
-            <BarChart3 size={18} aria-hidden="true" />
-            Calculate Your ROI in Workspace
-          </a>
-          <HermesConnectLauncher variant="header" />
-        </div>
-      </header>
-
-      <section class="feature-overview">
-        <h2>Key Projected Metrics</h2>
-        <div class="card-grid">
-          <div class="card">
-            <Clock class="icon" size={28} />
-            <h3>Weekly Hours Recovered</h3>
-            <p>Calculates administrative time saved from manual phone tag, email scheduling, and repetitive lead qualification.</p>
-          </div>
-          <div class="card">
-            <DollarSign class="icon" size={28} />
-            <h3>Monthly Recovered Revenue</h3>
-            <p>Estimates additional closed deals by capturing missed after-hours leads with instant AI intake.</p>
-          </div>
-          <div class="card">
-            <TrendingUp class="icon" size={28} />
-            <h3>Annual ROI Multiplier</h3>
-            <p>Compares total annual net gains against Hermes Connect subscription costs ($99–$799/mo).</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="demo-boundary-notice">
-        <ShieldCheck size={20} class="notice-icon" />
-        <div>
-          <strong>Public Beta Transparency Notice:</strong> ROI modeling uses client-supplied estimates. Projections are interactive benchmarks and do not constitute guaranteed financial outcomes.
-        </div>
-      </section>
-
-      <section class="faq-section">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-grid">
-          {faqs.map(faq => (
-            <div class="faq-item">
-              <h3>{faq.question}</h3>
-              <p>{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <SiteFooter />
-</BaseLayout>
-
-<style>
-  .hc-feature-page { padding: 3rem 1.5rem 5rem; max-width: 1100px; margin: 0 auto; color: var(--color-text, #f3f4f6); }
-  .breadcrumb-list { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin-bottom: 2rem; font-size: 0.9rem; color: #9ca3af; }
-  .breadcrumb-list a { color: #38bdf8; text-decoration: none; }
-  .hero-section { text-align: center; margin-bottom: 4rem; }
-  .badge { display: inline-block; padding: 0.35rem 0.85rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
-  h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.2; }
-  .hero-lead { font-size: 1.25rem; color: #9ca3af; max-width: 800px; margin: 0 auto 2rem; line-height: 1.6; }
-  .cta-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: transform 0.2s, background 0.2s; }
-  .primary-btn { background: #38bdf8; color: #090d16; }
-  .primary-btn:hover { background: #7dd3fc; transform: translateY(-2px); }
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem; }
-  .card .icon { color: #38bdf8; margin-bottom: 1rem; }
-  .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-  .card p { color: #9ca3af; font-size: 0.95rem; line-height: 1.5; }
-  .demo-boundary-notice { display: flex; align-items: center; gap: 0.75rem; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.25); color: #fde047; padding: 1.25rem; border-radius: 12px; margin: 3rem 0; font-size: 0.95rem; }
-  .notice-icon { flex-shrink: 0; }
-  .faq-section { margin-top: 4rem; }
-  .faq-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
-  .faq-item { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
-  .faq-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #f3f4f6; }
-  .faq-item p { color: #9ca3af; font-size: 0.95rem; margin: 0; }
-</style>
+<HermesConnectCapabilityPage
+  name="ROI Calculator"
+  pageTitle="ROI Calculator Reference Capability | Hermes Connect"
+  description="Reference documentation for the Hermes Connect ROI Calculator. Financial outputs are illustrative estimates, not guarantees."
+  canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/roi-calculator/"
+  lead="A scenario-modeling concept for estimating time savings and potential revenue recovery from faster request handling using explicit user-supplied assumptions."
+  capabilities={capabilities}
+  boundary="This capability is not a current live paid module and does not use historical Hermes Connect subscription pricing as a public offer. Any modeled savings or revenue remain illustrative and require independent validation."
+  faqs={faqs}
+/>
