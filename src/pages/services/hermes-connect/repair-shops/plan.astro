@@ -1,0 +1,244 @@
+---
+import { ArrowLeft, ArrowRight, CalendarDays, Check, Clock3, DollarSign, UsersRound, Wrench } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const pageUrl = "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/plan/";
+
+const included = [
+  "Owner workspace for one repair shop location",
+  "Public shop profile and service catalog",
+  "Weekly availability and shareable booking link",
+  "Booking inbox with appointment status history",
+  "Customer and vehicle context connected to bookings",
+  "Private product feedback with founding-customer priority review",
+];
+
+const faqs = [
+  {
+    question: "Can I try the workspace before paying?",
+    answer: "Yes. Use the current owner registration flow, configure the shop, and see how the workspace fits your operation before requesting paid activation.",
+  },
+  {
+    question: "Will this form charge my card?",
+    answer: "No. The website does not collect a card on this step. Hermes confirms the paid activation and invoice with the shop directly.",
+  },
+  {
+    question: "What is included for $99/month?",
+    answer: "The current Founding Shop Plan covers one repair shop location and the owner workspace, public booking path, availability, booking inbox, customer and vehicle context, and private product feedback described on this page.",
+  },
+  {
+    question: "Does Hermes Connect guarantee more customers or revenue?",
+    answer: "No. Hermes Connect provides the repair shop booking and operating tools described here. Customer volume, demand, rankings, revenue, and other business results are not guaranteed.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Hermes Connect Repair Shops Founding Shop Plan",
+    serviceType: "Repair shop booking and customer operations software",
+    url: pageUrl,
+    description: "A browser-based repair shop workspace for services, weekly availability, public booking, booking operations, customers, vehicle context, and product feedback.",
+    provider: {
+      "@type": "Organization",
+      name: "Hermes Logistics",
+      url: "https://hermeslogisticsus.com/",
+    },
+    offers: {
+      "@type": "Offer",
+      price: "99",
+      priceCurrency: "USD",
+      url: pageUrl,
+      description: "Founding Shop Plan for one repair shop location, billed monthly after human confirmation and invoicing.",
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 3, name: "Repair Shops", item: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/" },
+      { "@type": "ListItem", position: 4, name: "Founding Shop Plan", item: pageUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: { "@type": "Answer", text: faq.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="Repair Shop Founding Plan — $99/month | Hermes Connect"
+  description="Activate Hermes Connect Repair Shops for $99/month per location: booking, availability, customers, vehicle context, and owner operations in one workspace."
+  schema={schema}
+>
+  <SiteHeader activePath="/paths/technology/" />
+
+  <main id="main-content" class="plan-page">
+    <div class="shell">
+      <a class="back-link" href="/services/hermes-connect/repair-shops/"><ArrowLeft size={16} aria-hidden="true" /> Back to Repair Shops</a>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Hermes Connect · Founding Shop Plan</p>
+          <h1>Activate Hermes Connect for your repair shop.</h1>
+          <p class="lead">Keep the booking workflow your shop can already try — services, hours, appointment requests, customers, and vehicle context — for <strong>$99/month per repair shop location</strong>.</p>
+          <div class="hero-actions">
+            <a class="primary" href="#activate">Request paid activation <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="secondary" href="/services/hermes-connect/repair-shops/auth/">Try the workspace first</a>
+          </div>
+          <p class="microcopy">No card is collected on this website. A paid activation request starts a human confirmation and invoice process.</p>
+        </div>
+
+        <aside class="price-card" aria-label="Founding Shop Plan pricing">
+          <p class="price-label">Launch price</p>
+          <div class="price"><span>$</span><strong>99</strong><small>/month</small></div>
+          <p class="price-note">per repair shop location</p>
+          <ul>
+            {included.map((item) => <li><Check size={17} aria-hidden="true" /><span>{item}</span></li>)}
+          </ul>
+          <a class="primary full" href="#activate">I want this plan <ArrowRight size={18} aria-hidden="true" /></a>
+        </aside>
+      </section>
+
+      <section class="value" aria-labelledby="value-title">
+        <div class="section-heading">
+          <p class="eyebrow">What the shop gets</p>
+          <h2 id="value-title">One simple operating loop from availability to repeat customer.</h2>
+        </div>
+        <div class="value-grid">
+          <article><Wrench size={22} aria-hidden="true" /><h3>Set up the shop</h3><p>Add business details and the services customers can request.</p></article>
+          <article><CalendarDays size={22} aria-hidden="true" /><h3>Open real booking times</h3><p>Configure weekly availability so customers can request useful appointment windows.</p></article>
+          <article><UsersRound size={22} aria-hidden="true" /><h3>Keep customer context</h3><p>Appointments, vehicle details, and customer history stay connected instead of living in separate notes.</p></article>
+          <article><Clock3 size={22} aria-hidden="true" /><h3>Reduce coordination</h3><p>Share one booking link instead of repeating the same scheduling conversation by phone or message.</p></article>
+        </div>
+      </section>
+
+      <section id="activate" class="activate" aria-labelledby="activate-title">
+        <div class="activate-copy">
+          <p class="eyebrow">Paid activation</p>
+          <h2 id="activate-title">Request the $99/month Founding Shop Plan.</h2>
+          <p>Send your shop details. Hermes will confirm the current plan scope, billing contact, and invoice before paid activation. Submitting this form does not charge you.</p>
+          <div class="signal"><DollarSign size={20} aria-hidden="true" /><span>This is a purchase-intent request for shops ready to keep using Hermes Connect — not a generic demo form.</span></div>
+        </div>
+
+        <form id="paid-plan-form" class="activation-card">
+          <label>Repair shop name<input id="plan-shop-name" name="shop_name" type="text" maxlength="120" required autocomplete="organization" placeholder="Apex Auto Care" /></label>
+          <div class="two-col">
+            <label>Contact name<input id="plan-contact-name" name="name" type="text" maxlength="100" required autocomplete="name" placeholder="Your name" /></label>
+            <label>Phone<input id="plan-phone" name="phone" type="tel" maxlength="40" required autocomplete="tel" placeholder="+1 414 555 0100" /></label>
+          </div>
+          <label>Email<input id="plan-email" name="email" type="email" maxlength="160" required autocomplete="email" placeholder="owner@shop.com" /></label>
+          <label>City / state<input id="plan-city-state" name="city_state" type="text" maxlength="120" required placeholder="Milwaukee, WI" /></label>
+          <label>What would make Hermes Connect worth paying for?<textarea id="plan-goal" name="goal" minlength="10" maxlength="1200" required placeholder="Fewer scheduling calls, easier appointments, customer history, more repeat bookings…"></textarea></label>
+          <label class="consent"><input id="plan-consent" type="checkbox" required /><span>I agree that Hermes may contact me about this paid activation request and billing setup.</span></label>
+          <button id="paid-plan-submit" class="primary full" type="submit">Request paid activation <ArrowRight size={18} aria-hidden="true" /></button>
+          <p id="paid-plan-status" class="form-status" role="status" aria-live="polite"></p>
+          <p class="form-note">No payment is taken here. The $99/month price is the current Founding Shop Plan launch offer; final activation details are confirmed before invoicing.</p>
+        </form>
+      </section>
+
+      <section class="faq" aria-labelledby="faq-title">
+        <div class="section-heading"><p class="eyebrow">Before you activate</p><h2 id="faq-title">Straight answers.</h2></div>
+        <div class="faq-grid">
+          {faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  const form = document.getElementById("paid-plan-form");
+  const submit = document.getElementById("paid-plan-submit");
+  const status = document.getElementById("paid-plan-status");
+
+  const value = (id: string) => (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null)?.value.trim() || "";
+  const setStatus = (message: string, state: "success" | "error" | "sending" = "error") => {
+    if (!(status instanceof HTMLElement)) return;
+    status.textContent = message;
+    status.dataset.state = state;
+  };
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ event: "connect_paid_plan_view", product: "repair_shop_founding_plan", price_usd: 99 });
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!(form instanceof HTMLFormElement) || !(submit instanceof HTMLButtonElement) || !form.reportValidity()) return;
+
+    const requestId = `repair_paid_${Date.now().toString(36)}_${crypto.randomUUID().replaceAll("-", "").slice(0, 12)}`;
+    const shopName = value("plan-shop-name");
+    const contactName = value("plan-contact-name");
+    const phone = value("plan-phone");
+    const email = value("plan-email");
+    const cityState = value("plan-city-state");
+    const goal = value("plan-goal");
+
+    const payload = {
+      request_id: requestId,
+      submitted_at: new Date().toISOString(),
+      source_path: window.location.pathname,
+      name: contactName,
+      email,
+      interest: "Hermes Logistics",
+      consent: true,
+      message: [
+        "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan",
+        "Launch price: $99/month per repair shop location",
+        `Shop: ${shopName}`,
+        `City / state: ${cityState}`,
+        `Phone: ${phone}`,
+        `Purchase reason / desired value: ${goal}`,
+        "Requested action: contact the shop, confirm current plan scope and billing details, then issue the activation invoice.",
+        "Website payment status: no card charged on submission.",
+      ].join("\n"),
+      direction_fields: {
+        direction: "Hermes Logistics",
+        fields: {
+          phone,
+          preferred_lanes: cityState,
+          service_needed: "Hermes Connect Repair Shops — Founding Shop Plan",
+          primary_goal: "Paid activation request — $99/month",
+          equipment_type: [],
+        },
+      },
+    };
+
+    submit.disabled = true;
+    setStatus("Sending your paid activation request…", "sending");
+
+    try {
+      const response = await fetch("/api/logistics-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) throw new Error("paid_activation_delivery_failed");
+
+      setStatus("Request received. Hermes will contact you to confirm the plan and invoice before activation.", "success");
+      submit.textContent = "Paid activation requested";
+      window.dataLayer?.push({ event: "connect_paid_plan_requested", product: "repair_shop_founding_plan", price_usd: 99, request_state: "received" });
+    } catch {
+      submit.disabled = false;
+      setStatus("We could not deliver the request. Nothing was charged. Please try again.", "error");
+    }
+  });
+</script>
+
+<style>
+  .plan-page{min-height:70vh;padding:2rem 0 5rem;color:#f8fafc;background:radial-gradient(circle at 12% 5%,rgba(90,200,250,.09),transparent 30rem),radial-gradient(circle at 88% 8%,rgba(157,136,255,.11),transparent 32rem),#090d16}.shell{width:min(1120px,calc(100% - 2rem));margin:0 auto}.back-link{display:inline-flex;align-items:center;gap:.4rem;color:#aeb9cb;text-decoration:none;font-size:.88rem}.hero{display:grid;grid-template-columns:1.08fr .92fr;gap:2.4rem;align-items:center;padding:4.2rem 0}.eyebrow{margin:0 0 .65rem;color:#9d88ff;font-size:.76rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.hero h1{max-width:760px;margin:0;font-size:clamp(2.7rem,7vw,5.3rem);line-height:.99;letter-spacing:-.055em}.lead{max-width:720px;margin:1.2rem 0 0;color:#a9b5c8;font-size:clamp(1.02rem,2vw,1.18rem);line-height:1.7}.lead strong{color:#e8ecf4}.hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.6rem}.primary,.secondary{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:48px;padding:.78rem 1.05rem;border-radius:11px;text-decoration:none;font-weight:800;border:0;cursor:pointer}.primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}.secondary{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:#fff}.full{width:100%;box-sizing:border-box}.microcopy,.form-note{color:#7f8ba0;font-size:.78rem;line-height:1.55}.microcopy{max-width:610px;margin:1rem 0 0}.price-card,.activation-card,.value-grid article,.faq-grid article{border:1px solid rgba(255,255,255,.09);background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.018));box-shadow:0 24px 70px rgba(0,0,0,.18)}.price-card{padding:1.45rem;border-radius:22px}.price-label{margin:0;color:#6ee7b7;font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.price{display:flex;align-items:flex-end;gap:.18rem;margin:.35rem 0 0}.price>span{font-size:1.5rem;font-weight:800;padding-bottom:.7rem}.price strong{font-size:4.4rem;line-height:1;letter-spacing:-.06em}.price small{color:#a9b5c8;font-size:.92rem;padding-bottom:.72rem}.price-note{margin:.25rem 0 1rem;color:#8b98ac}.price-card ul{display:grid;gap:.68rem;list-style:none;padding:1rem 0 0;margin:0 0 1.25rem;border-top:1px solid rgba(255,255,255,.08)}.price-card li{display:flex;gap:.55rem;align-items:flex-start;color:#c5cfdd;font-size:.88rem;line-height:1.5}.price-card li svg{flex:0 0 auto;color:#34d399;margin-top:.08rem}.value,.faq{padding:3.3rem 0}.section-heading{max-width:760px;margin-bottom:1.25rem}.section-heading h2,.activate-copy h2{margin:0;font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-.04em}.value-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.value-grid article,.faq-grid article{padding:1.2rem;border-radius:17px}.value-grid svg{color:#5ac8fa}.value-grid h3,.faq-grid h3{margin:.7rem 0 .45rem;font-size:1rem}.value-grid p,.faq-grid p,.activate-copy>p{margin:0;color:#98a6bb;line-height:1.62;font-size:.9rem}.activate{display:grid;grid-template-columns:.82fr 1.18fr;gap:2rem;align-items:start;padding:3.8rem 0}.signal{display:flex;gap:.55rem;margin-top:1rem;padding:.9rem;border:1px solid rgba(52,211,153,.22);border-radius:12px;background:rgba(52,211,153,.055);color:#b9dfce;font-size:.84rem;line-height:1.55}.signal svg{flex:0 0 auto;color:#34d399}.activation-card{display:grid;gap:.9rem;padding:1.35rem;border-radius:20px}.activation-card label{display:grid;gap:.42rem;color:#dfe5ef;font-size:.8rem;font-weight:760}.activation-card input,.activation-card textarea{width:100%;box-sizing:border-box;padding:.75rem .8rem;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:#0d111b;color:#fff;font:inherit}.activation-card textarea{min-height:120px;resize:vertical}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}.activation-card .consent{grid-template-columns:auto 1fr;align-items:start;gap:.6rem;color:#aeb9cb;font-weight:500;line-height:1.45}.activation-card .consent input{width:auto;margin-top:.18rem}.form-status{min-height:1.25rem;margin:0;font-size:.84rem;font-weight:750}.form-status[data-state="success"]{color:#6ee7b7}.form-status[data-state="error"]{color:#fca5a5}.form-status[data-state="sending"]{color:#93c5fd}.form-note{margin:0}.faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}@media(max-width:900px){.hero,.activate{grid-template-columns:1fr}.value-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.shell{width:min(100% - 1rem,1120px)}.hero{padding:3rem 0}.hero-actions{flex-direction:column}.hero-actions .primary,.hero-actions .secondary{width:100%;box-sizing:border-box}.value-grid,.faq-grid,.two-col{grid-template-columns:1fr}.price strong{font-size:3.8rem}}
+</style>
