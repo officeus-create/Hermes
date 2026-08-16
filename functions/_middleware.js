@@ -32,6 +32,33 @@ const CONNECT_DOCUMENTS = new Map([
   ["/sales-roleplay.html", "/sales-roleplay.html"],
 ]);
 
+const CONNECT_COMPAT_ENTRY_PATHS = new Set([
+  "/",
+  "/index.html",
+  "/workspace",
+  "/workspace/",
+  "/workspace.html",
+  "/mobile.html",
+]);
+
+const CURRENT_CAPABILITY_PATHS = new Set([
+  "/ai-command-center",
+  "/unified-inbox",
+  "/load-analyzer",
+  "/rate-negotiator",
+  "/proposal-builder",
+  "/roi-calculator",
+  "/business-automation",
+  "/repair-shops",
+]);
+
+const EXPLICIT_DEMO_DOCUMENTS = new Set([
+  "/review.html",
+  "/sales-roleplay.html",
+]);
+
+const SAFE_COMPAT_QUERY_PARAMS = new Set(["lang", "ref", "referral"]);
+
 const NATIVE_CONNECT_DOCUMENTS = new Set([
   "/workspace.html",
   "/review.html",
@@ -55,6 +82,42 @@ function acceptsMarkdown(request) {
 
 function isConnectDocument(pathname) {
   return pathname === "/" || pathname === "/index.html";
+}
+
+function normalizedCapabilityPath(pathname) {
+  const normalized = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+  return CURRENT_CAPABILITY_PATHS.has(normalized) ? normalized : null;
+}
+
+function copySafeCompatibilityParams(incomingUrl, target) {
+  for (const [key, value] of incomingUrl.searchParams.entries()) {
+    if (SAFE_COMPAT_QUERY_PARAMS.has(key)) target.searchParams.set(key, value);
+  }
+}
+
+function canonicalConnectEntryRedirect(incomingUrl) {
+  let targetPath = null;
+
+  if (CONNECT_COMPAT_ENTRY_PATHS.has(incomingUrl.pathname)) {
+    targetPath = incomingUrl.searchParams.get("business_type") === "auto_repair"
+      ? "/services/hermes-connect/repair-shops/"
+      : "/services/hermes-connect/";
+  } else if (ACCESS_DOCUMENTS.has(incomingUrl.pathname)) {
+    targetPath = "/services/hermes-connect/repair-shops/auth/";
+  } else {
+    const capabilityPath = normalizedCapabilityPath(incomingUrl.pathname);
+    if (capabilityPath) targetPath = `/services/hermes-connect${capabilityPath}/`;
+    else if (EXPLICIT_DEMO_DOCUMENTS.has(incomingUrl.pathname)) targetPath = `${CONNECT_ASSET_ROOT}${incomingUrl.pathname}`;
+  }
+
+  if (!targetPath) return null;
+
+  const target = new URL(`https://${MAIN_HOST}${targetPath}`);
+  copySafeCompatibilityParams(incomingUrl, target);
+  if (ACCESS_DOCUMENTS.has(incomingUrl.pathname) && !target.searchParams.has("mode")) {
+    target.searchParams.set("mode", "register");
+  }
+  return target;
 }
 
 function connectAssetPath(pathname) {
@@ -154,6 +217,9 @@ async function routeConnectHost(context) {
   if (incomingUrl.pathname.startsWith("/api/")) {
     return context.next();
   }
+
+  const compatibilityTarget = canonicalConnectEntryRedirect(incomingUrl);
+  if (compatibilityTarget) return Response.redirect(compatibilityTarget.toString(), 308);
 
   const oldBrandTarget = canonicalOldBrandRedirect(incomingUrl);
   if (oldBrandTarget) return Response.redirect(oldBrandTarget.toString(), 308);
