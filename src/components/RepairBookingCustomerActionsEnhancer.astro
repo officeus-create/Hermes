@@ -1,0 +1,88 @@
+---
+import { MapPinned, Phone } from "@lucide/astro";
+const bookingPath = "/services/hermes-connect/repair-shops/booking";
+const isBooking = Astro.url.pathname.replace(/\/+$/, "") === bookingPath;
+---
+
+{isBooking && (
+  <>
+    <template id="repair-customer-actions-template">
+      <div class="repair-customer-actions" data-repair-customer-actions>
+        <p data-customer-actions-note>Need to change your appointment? Contact the repair shop directly.</p>
+        <div class="repair-customer-action-row">
+          <a data-call-shop class="repair-customer-action" href="#" hidden><Phone size={16} /> <span>Call shop</span></a>
+          <a data-shop-directions class="repair-customer-action" href="#" target="_blank" rel="noopener" hidden><MapPinned size={16} /> <span>Directions</span></a>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      const bookingRoot = "/services/hermes-connect/repair-shops/booking";
+      const currentPath = window.location.pathname.replace(/\/+$/, "");
+      if (currentPath === bookingRoot) {
+        const locale = new URLSearchParams(window.location.search).get("lang") || "en";
+        const copy: Record<string, { note:string; call:string; directions:string }> = {
+          en:{note:"Need to change your appointment? Contact the repair shop directly.",call:"Call shop",directions:"Directions"},
+          ru:{note:"Нужно изменить запись? Свяжитесь напрямую с СТО.",call:"Позвонить в СТО",directions:"Маршрут"},
+          uk:{note:"Потрібно змінити запис? Зв’яжіться безпосередньо із СТО.",call:"Зателефонувати в СТО",directions:"Маршрут"},
+          es:{note:"¿Necesitas cambiar la cita? Contacta directamente con el taller.",call:"Llamar al taller",directions:"Cómo llegar"},
+          it:{note:"Devi modificare l’appuntamento? Contatta direttamente l’officina.",call:"Chiama l’officina",directions:"Indicazioni"},
+          fr:{note:"Besoin de modifier le rendez-vous ? Contactez directement l’atelier.",call:"Appeler l’atelier",directions:"Itinéraire"},
+        };
+        const t = copy[locale] || copy.en;
+
+        const setup = async () => {
+          const successPanel = document.getElementById("success-panel");
+          const template = document.getElementById("repair-customer-actions-template");
+          if (!successPanel || !(template instanceof HTMLTemplateElement) || successPanel.querySelector("[data-repair-customer-actions]")) return;
+
+          const slug = new URLSearchParams(window.location.search).get("shop")?.trim() || "";
+          if (!slug) return;
+
+          let shop: any = null;
+          try {
+            const response = await fetch(`/api/public/repair-shop?slug=${encodeURIComponent(slug)}`);
+            const data = await response.json();
+            if (response.ok && data?.success && data?.shop) shop = data.shop;
+          } catch {
+            return;
+          }
+          if (!shop) return;
+
+          successPanel.append(template.content.cloneNode(true));
+          const actions = successPanel.querySelector<HTMLElement>("[data-repair-customer-actions]");
+          if (!actions) return;
+          const note = actions.querySelector<HTMLElement>("[data-customer-actions-note]");
+          const call = actions.querySelector<HTMLAnchorElement>("[data-call-shop]");
+          const directions = actions.querySelector<HTMLAnchorElement>("[data-shop-directions]");
+          if (note) note.textContent = t.note;
+          if (call) {
+            const label = call.querySelector("span");
+            if (label) label.textContent = t.call;
+            if (shop.phone) {
+              call.href = `tel:${String(shop.phone).replace(/[^+\d]/g, "")}`;
+              call.hidden = false;
+            }
+          }
+          if (directions) {
+            const label = directions.querySelector("span");
+            if (label) label.textContent = t.directions;
+            const address = [shop.address_line1, shop.city, shop.state, shop.postal_code].filter(Boolean).join(", ");
+            if (address) {
+              directions.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+              directions.hidden = false;
+            }
+          }
+          if ((!call || call.hidden) && (!directions || directions.hidden)) actions.remove();
+        };
+
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => void setup(), { once:true });
+        else void setup();
+      }
+    </script>
+  </>
+)}
+
+<style>
+  .repair-customer-actions{margin:18px auto 0;max-width:680px;padding:16px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025);text-align:left}.repair-customer-actions p{margin:0;color:#aab2c0;font-size:13px;line-height:1.5}.repair-customer-action-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.repair-customer-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:0 14px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:#151722;color:#f7f8fb;text-decoration:none;font-size:13px;font-weight:800}.repair-customer-action:hover{border-color:rgba(126,110,255,.42)}@media(max-width:520px){.repair-customer-action-row{display:grid}.repair-customer-action{width:100%;box-sizing:border-box}}
+</style>

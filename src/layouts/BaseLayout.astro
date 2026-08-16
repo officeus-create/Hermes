@@ -11,6 +11,8 @@ import MotionLayer from "../components/MotionLayer.astro";
 import ProductionContactMode from "../components/ProductionContactMode.astro";
 import RepairBookingGrowthEnhancer from "../components/RepairBookingGrowthEnhancer.astro";
 import RepairPartnerOfferEnhancer from "../components/RepairPartnerOfferEnhancer.astro";
+import RepairShopActivationEnhancer from "../components/RepairShopActivationEnhancer.astro";
+import RepairShopFreeLaunchOffer from "../components/RepairShopFreeLaunchOffer.astro";
 import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
@@ -42,6 +44,8 @@ const {
   robots = "index,follow,max-image-preview:large",
   preloadImage,
 } = Astro.props;
+
+const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 
 const PUBLIC_TEXT_REPLACEMENTS = new Map([
   ["freight_301@hermeslogisticsus.com", "officeus@hermeslogisticsus.com"],
@@ -187,6 +191,7 @@ const safeSchema = schema
     <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
+    {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
     <TrackingConsent />
     <MoneyPageActionBar />
     <CarrierContractJourney />
@@ -194,6 +199,7 @@ const safeSchema = schema
     <ProductionContactMode />
     <RepairBookingGrowthEnhancer />
     <RepairPartnerOfferEnhancer />
+    <RepairShopActivationEnhancer />
     <ContactLinkEnhancer />
     <SeoIntakeEnhancer />
     <SeoSupportingIntakeEnhancer />

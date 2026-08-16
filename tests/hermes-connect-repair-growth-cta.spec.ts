@@ -30,10 +30,8 @@ const shopPayload = {
   })),
 };
 
-test("repair booking success can create an explicit-consent growth lead without PII analytics", async ({ page }) => {
-  let growthPayload: Record<string, any> | null = null;
-  let growthRequestId = "";
-  let idempotencyKey = "";
+test("repair booking success stays customer-focused and does not reuse customer PII for unrelated growth marketing", async ({ page }) => {
+  let unrelatedGrowthRequestCount = 0;
 
   await page.addInitScript(() => {
     (window as any).dataLayer = [];
@@ -87,18 +85,12 @@ test("repair booking success can create an explicit-consent growth lead without 
   });
 
   await page.route("**/api/logistics-lead", async (route) => {
-    growthPayload = route.request().postDataJSON();
-    growthRequestId = String(growthPayload?.request_id || "");
-    idempotencyKey = route.request().headers()["idempotency-key"] || "";
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ success: true, request_id: growthRequestId }),
-    });
+    unrelatedGrowthRequestCount += 1;
+    await route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ success: false }) });
   });
 
   await page.goto(bookingUrl);
-  await expect(page.locator("[data-repair-growth-card]")).toBeHidden();
+  await expect(page.locator("[data-repair-growth-card]")).toHaveCount(0);
 
   await page.locator("#service-select").selectOption(shopPayload.services[0].id);
   const appointmentDate = await page.locator("#date-select option").nth(1).getAttribute("value");
@@ -114,45 +106,12 @@ test("repair booking success can create an explicit-consent growth lead without 
   await page.locator("#submit-btn").click();
 
   await expect(page.locator("#success-panel")).toBeVisible();
-  await expect(page.locator("[data-repair-growth-card]")).toBeVisible();
-  await expect(page.locator("[data-growth-form]")).toBeHidden();
-
-  await page.locator("[data-growth-open]").click();
-  await expect(page.locator("[data-growth-form]")).toBeVisible();
-  await page.locator("[data-growth-service]").selectOption("SEO / Google visibility");
-  await page.locator("[data-growth-message]").fill("We want more qualified local calls from Google and a better conversion path.");
-  await page.locator("[data-growth-consent]").check();
-  await page.locator("[data-growth-submit]").click();
-
-  await expect(page.locator("[data-growth-status]")).toContainText("Request received");
-  expect(growthPayload).toMatchObject({
-    name: "Jane Growth Test",
-    email: "jane.growth@example.com",
-    interest: "ProgressoPro",
-    consent: true,
-    source_path: "/services/hermes-connect/repair-shops/booking/",
-    direction_fields: {
-      direction: "ProgressoPro",
-      fields: {
-        service_needed: "SEO / Google visibility",
-        primary_goal: "Grow business from Repair Shop booking flow",
-      },
-    },
-  });
-  expect(growthRequestId).toMatch(/^repair_growth_[a-z0-9]+_[a-z0-9]+$/i);
-  expect(idempotencyKey).toBe(growthRequestId);
+  await expect(page.locator("[data-repair-growth-card]")).toHaveCount(0);
+  expect(unrelatedGrowthRequestCount).toBe(0);
 
   const analytics = await page.evaluate(() => (window as any).dataLayer || []);
-  const growthEvent = analytics.find((item: any) => item?.event === "connect_hermes_growth_cta_requests");
-  expect(growthEvent).toEqual({
-    event: "connect_hermes_growth_cta_requests",
-    source: "repair_booking_success",
-    request_state: "received",
-  });
-
   const analyticsText = JSON.stringify(analytics);
   expect(analyticsText).not.toContain("Jane Growth Test");
   expect(analyticsText).not.toContain("jane.growth@example.com");
   expect(analyticsText).not.toContain("+1 414 555 0199");
-  expect(analyticsText).not.toContain("qualified local calls");
 });

@@ -1,0 +1,232 @@
+---
+import { ArrowRight, Clock3, Gift } from "@lucide/astro";
+import {
+  REPAIR_SHOP_FREE_REGISTRATION_END_ISO,
+  REPAIR_SHOP_ONLINE_BILLING_ENABLED,
+} from "../data/hermes-connect-repair-shop-launch";
+
+interface Props {
+  compact?: boolean;
+  showCta?: boolean;
+}
+
+const { compact = false, showCta = true } = Astro.props;
+---
+
+<section
+  hidden
+  class:list={["repair-free-launch", compact && "is-compact"]}
+  data-repair-free-launch
+  data-deadline={REPAIR_SHOP_FREE_REGISTRATION_END_ISO}
+  data-billing-enabled={String(REPAIR_SHOP_ONLINE_BILLING_ENABLED)}
+  aria-labelledby="repair-free-launch-title"
+>
+  <div class="launch-icon" aria-hidden="true"><Gift size={20} /></div>
+  <div class="launch-copy">
+    <p class="launch-kicker" data-launch-kicker>Launch offer</p>
+    <h2 id="repair-free-launch-title" data-launch-title>14-day launch offer: free repair shop registration.</h2>
+    <p data-launch-body>Set up your shop and use the current Hermes Connect workflow without a card while we finish online billing.</p>
+    <p class="launch-policy" data-launch-policy>If online billing is still not active when this countdown ends, registration stays free until it is.</p>
+  </div>
+
+  <div class="launch-timer-wrap">
+    <div class="launch-timer-label"><Clock3 size={15} aria-hidden="true" /><span data-launch-timer-label>Free-registration countdown</span></div>
+    <div class="launch-timer" data-launch-timer role="timer" aria-live="off">
+      <div><strong data-days>00</strong><span data-days-label>days</span></div>
+      <div><strong data-hours>00</strong><span data-hours-label>hours</span></div>
+      <div><strong data-minutes>00</strong><span data-minutes-label>minutes</span></div>
+      <div><strong data-seconds>00</strong><span data-seconds-label>seconds</span></div>
+    </div>
+    <p class="launch-status" data-launch-status aria-live="polite"></p>
+    {showCta && <a class="launch-cta" data-launch-cta href="/services/hermes-connect/repair-shops/auth/?mode=register">Register free <ArrowRight size={16} aria-hidden="true" /></a>}
+  </div>
+</section>
+
+<script>
+  const strings: Record<string, any> = {
+    en: {
+      kicker: "Launch offer",
+      title: "14-day launch offer: free repair shop registration.",
+      body: "Set up your shop and use the current Hermes Connect workflow without a card while we finish online billing.",
+      policy: "If online billing is still not active when this countdown ends, registration stays free until it is.",
+      timer: "Free-registration countdown",
+      days: "days", hours: "hours", minutes: "minutes", seconds: "seconds",
+      cta: "Register free",
+      afterTitle: "Registration remains free while online billing is unavailable.",
+      afterFree: "Online billing is not active yet — registration remains free.",
+      endedTitle: "The free-registration launch offer has ended.",
+      ended: "See the current Founding Shop Plan.",
+      plan: "View current plan",
+    },
+    ru: {
+      kicker: "Стартовая акция",
+      title: "14-дневная стартовая акция: регистрация СТО бесплатно.",
+      body: "Настройте СТО и пользуйтесь текущим Hermes Connect без банковской карты, пока мы подключаем онлайн-оплату.",
+      policy: "Если к окончанию таймера онлайн-оплата ещё не будет подключена, регистрация останется бесплатной до её запуска.",
+      timer: "До конца бесплатной регистрации",
+      days: "дней", hours: "часов", minutes: "минут", seconds: "секунд",
+      cta: "Зарегистрироваться бесплатно",
+      afterTitle: "Регистрация остаётся бесплатной, пока онлайн-оплата не подключена.",
+      afterFree: "Онлайн-оплата ещё не подключена — регистрация остаётся бесплатной.",
+      endedTitle: "Стартовый период бесплатной регистрации завершён.",
+      ended: "Посмотрите текущий тариф Founding Shop.",
+      plan: "Посмотреть тариф",
+    },
+    uk: {
+      kicker: "Стартова акція",
+      title: "14-денна стартова акція: реєстрація СТО безкоштовна.",
+      body: "Налаштуйте СТО та користуйтеся поточним Hermes Connect без банківської картки, поки ми підключаємо онлайн-оплату.",
+      policy: "Якщо до завершення таймера онлайн-оплата ще не буде підключена, реєстрація залишиться безкоштовною до її запуску.",
+      timer: "До завершення безкоштовної реєстрації",
+      days: "днів", hours: "годин", minutes: "хвилин", seconds: "секунд",
+      cta: "Зареєструватися безкоштовно",
+      afterTitle: "Реєстрація залишається безкоштовною, поки онлайн-оплату не підключено.",
+      afterFree: "Онлайн-оплату ще не підключено — реєстрація залишається безкоштовною.",
+      endedTitle: "Стартовий період безкоштовної реєстрації завершено.",
+      ended: "Перегляньте поточний тариф Founding Shop.",
+      plan: "Переглянути тариф",
+    },
+    es: {
+      kicker: "Oferta de lanzamiento",
+      title: "Oferta de lanzamiento de 14 días: registro gratuito del taller.",
+      body: "Configura tu taller y usa el flujo actual de Hermes Connect sin tarjeta mientras terminamos la facturación en línea.",
+      policy: "Si la facturación en línea aún no está activa cuando termine la cuenta regresiva, el registro seguirá siendo gratuito hasta que lo esté.",
+      timer: "Cuenta regresiva del registro gratuito",
+      days: "días", hours: "horas", minutes: "minutos", seconds: "segundos",
+      cta: "Registrarme gratis",
+      afterTitle: "El registro sigue siendo gratuito mientras la facturación en línea no esté disponible.",
+      afterFree: "La facturación en línea aún no está activa — el registro sigue siendo gratuito.",
+      endedTitle: "La oferta de registro gratuito de lanzamiento ha terminado.",
+      ended: "Consulta el plan Founding Shop actual.",
+      plan: "Ver plan actual",
+    },
+    it: {
+      kicker: "Offerta di lancio",
+      title: "Offerta di lancio di 14 giorni: registrazione gratuita dell’officina.",
+      body: "Configura l’officina e usa l’attuale flusso Hermes Connect senza carta mentre completiamo la fatturazione online.",
+      policy: "Se la fatturazione online non sarà ancora attiva alla fine del conto alla rovescia, la registrazione resterà gratuita fino alla sua attivazione.",
+      timer: "Conto alla rovescia registrazione gratuita",
+      days: "giorni", hours: "ore", minutes: "minuti", seconds: "secondi",
+      cta: "Registrati gratis",
+      afterTitle: "La registrazione resta gratuita finché la fatturazione online non è disponibile.",
+      afterFree: "La fatturazione online non è ancora attiva — la registrazione resta gratuita.",
+      endedTitle: "L’offerta di registrazione gratuita di lancio è terminata.",
+      ended: "Consulta il piano Founding Shop attuale.",
+      plan: "Vedi piano attuale",
+    },
+    fr: {
+      kicker: "Offre de lancement",
+      title: "Offre de lancement de 14 jours : inscription gratuite de l’atelier.",
+      body: "Configurez votre atelier et utilisez le flux Hermes Connect actuel sans carte pendant que nous finalisons la facturation en ligne.",
+      policy: "Si la facturation en ligne n’est pas encore active à la fin du compte à rebours, l’inscription restera gratuite jusqu’à son activation.",
+      timer: "Compte à rebours de l’inscription gratuite",
+      days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes",
+      cta: "S’inscrire gratuitement",
+      afterTitle: "L’inscription reste gratuite tant que la facturation en ligne n’est pas disponible.",
+      afterFree: "La facturation en ligne n’est pas encore active — l’inscription reste gratuite.",
+      endedTitle: "L’offre de lancement avec inscription gratuite est terminée.",
+      ended: "Consultez le forfait Founding Shop actuel.",
+      plan: "Voir le forfait",
+    },
+  };
+
+  const supported = new Set(Object.keys(strings));
+  const params = new URLSearchParams(window.location.search);
+  const requested = params.get("lang") || document.documentElement.lang || "en";
+  const locale = supported.has(requested) ? requested : "en";
+  const copy = strings[locale];
+  const route = window.location.pathname.replace(/\/+$/, "");
+  const repairRoot = "/services/hermes-connect/repair-shops";
+
+  const setText = (root: Element, selector: string, value: string) => {
+    const node = root.querySelector(selector);
+    if (node) node.textContent = value;
+  };
+
+  const localizeHref = (href: string) => {
+    const url = new URL(href, window.location.origin);
+    if (locale === "en") url.searchParams.delete("lang");
+    else url.searchParams.set("lang", locale);
+    return `${url.pathname}${url.search}${url.hash}`;
+  };
+
+  const placeOffer = (root: HTMLElement) => {
+    let anchor: Element | null = null;
+    if (route === repairRoot) anchor = document.querySelector(".repair-live-hero .repair-lead");
+    else if (route === `${repairRoot}/auth`) {
+      anchor = document.querySelector("#auth-forms .auth-header");
+      root.classList.add("is-compact");
+    } else if (route === `${repairRoot}/plan`) anchor = document.querySelector(".plan-page .hero-copy .lead");
+    if (!anchor) return false;
+    anchor.insertAdjacentElement("afterend", root);
+    root.hidden = false;
+    return true;
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-repair-free-launch]").forEach((root) => {
+    if (!placeOffer(root)) {
+      root.remove();
+      return;
+    }
+
+    const deadlineMs = Date.parse(root.dataset.deadline || "");
+    const billingEnabled = root.dataset.billingEnabled === "true";
+    const cta = root.querySelector<HTMLAnchorElement>("[data-launch-cta]");
+
+    setText(root, "[data-launch-kicker]", copy.kicker);
+    setText(root, "[data-launch-title]", copy.title);
+    setText(root, "[data-launch-body]", copy.body);
+    setText(root, "[data-launch-policy]", copy.policy);
+    setText(root, "[data-launch-timer-label]", copy.timer);
+    setText(root, "[data-days-label]", copy.days);
+    setText(root, "[data-hours-label]", copy.hours);
+    setText(root, "[data-minutes-label]", copy.minutes);
+    setText(root, "[data-seconds-label]", copy.seconds);
+    if (cta) {
+      const textNode = Array.from(cta.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+      if (textNode) textNode.textContent = copy.cta + " ";
+      cta.href = localizeHref(cta.getAttribute("href") || `${repairRoot}/auth/?mode=register`);
+      cta.addEventListener("click", () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "connect_free_registration_cta", product: "repair_shops", offer: "14_day_free_registration" });
+      });
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "connect_free_registration_offer_view", product: "repair_shops", offer: "14_day_free_registration" });
+
+    let timer: number | undefined;
+    const tick = () => {
+      const remaining = Math.max(0, deadlineMs - Date.now());
+      const totalSeconds = Math.floor(remaining / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      setText(root, "[data-days]", String(days).padStart(2, "0"));
+      setText(root, "[data-hours]", String(hours).padStart(2, "0"));
+      setText(root, "[data-minutes]", String(minutes).padStart(2, "0"));
+      setText(root, "[data-seconds]", String(seconds).padStart(2, "0"));
+
+      if (remaining > 0) return;
+      if (timer) window.clearInterval(timer);
+
+      setText(root, "[data-launch-title]", billingEnabled ? copy.endedTitle : copy.afterTitle);
+      setText(root, "[data-launch-status]", billingEnabled ? copy.ended : copy.afterFree);
+      root.dataset.expired = "true";
+      if (cta && billingEnabled) {
+        const textNode = Array.from(cta.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+        if (textNode) textNode.textContent = copy.plan + " ";
+        cta.href = localizeHref(`${repairRoot}/plan/`);
+      }
+    };
+
+    tick();
+    if (deadlineMs > Date.now()) timer = window.setInterval(tick, 1000);
+  });
+</script>
+
+<style>
+  .repair-free-launch[hidden]{display:none!important}.repair-free-launch{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center;margin:1.1rem 0 1.4rem;padding:1rem 1.05rem;border:1px solid rgba(110,231,183,.22);border-radius:18px;background:linear-gradient(135deg,rgba(16,185,129,.095),rgba(124,92,255,.075));box-shadow:0 18px 50px rgba(0,0,0,.12);color:#f8fafc}.launch-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:rgba(110,231,183,.12);color:#9ff0cf}.launch-copy{min-width:0}.launch-kicker{margin:0 0 .25rem;color:#75e7bd;font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.launch-copy h2{margin:0;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.25}.launch-copy>p:not(.launch-kicker){margin:.35rem 0 0;color:#bac5d4;font-size:.86rem;line-height:1.5}.launch-policy{color:#8f9bad!important;font-size:.75rem!important}.launch-timer-wrap{min-width:320px}.launch-timer-label{display:flex;align-items:center;justify-content:flex-end;gap:.35rem;margin-bottom:.45rem;color:#9ca8b9;font-size:.72rem;font-weight:800}.launch-timer{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem}.launch-timer>div{min-width:62px;padding:.5rem .45rem;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(5,10,18,.48);text-align:center}.launch-timer strong{display:block;font-variant-numeric:tabular-nums;font-size:1.12rem;line-height:1.1}.launch-timer span{display:block;margin-top:.18rem;color:#8f9bad;font-size:.62rem}.launch-status{margin:.45rem 0 0;color:#8ff0c7;font-size:.72rem;font-weight:800;text-align:right}.launch-cta{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;float:right;min-height:42px;margin-top:.55rem;padding:.55rem .75rem;border-radius:10px;background:#f8fafc;color:#0b1220;text-decoration:none;font-size:.78rem;font-weight:900}.repair-free-launch.is-compact{grid-template-columns:auto minmax(0,1fr);padding:.85rem}.repair-free-launch.is-compact .launch-timer-wrap{grid-column:1/-1;min-width:0}.repair-free-launch.is-compact .launch-timer-label,.repair-free-launch.is-compact .launch-status{text-align:left;justify-content:flex-start}.repair-free-launch.is-compact .launch-cta{float:none;width:100%;box-sizing:border-box}.repair-free-launch[data-expired="true"] .launch-timer{opacity:.6}@media(max-width:760px){.repair-free-launch{grid-template-columns:auto minmax(0,1fr);align-items:start}.launch-timer-wrap{grid-column:1/-1;min-width:0}.launch-timer-label,.launch-status{text-align:left;justify-content:flex-start}.launch-cta{float:none;width:100%;box-sizing:border-box}.launch-timer>div{min-width:0;padding:.5rem .2rem}.launch-timer strong{font-size:1rem}.launch-timer span{font-size:.58rem}}
+</style>
