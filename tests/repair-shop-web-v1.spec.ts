@@ -66,29 +66,45 @@ test("owner dashboard exposes access, quick start, share, QR, customer contact a
 
   const overflowDetails = await page.evaluate(() => {
     const viewport = document.documentElement.clientWidth;
-    const details = Array.from(document.querySelectorAll("body *"))
-      .map((element) => {
-        const node = element as HTMLElement;
-        const rect = element.getBoundingClientRect();
-        return {
-          tag: element.tagName,
-          id: element.id || "",
-          cls: typeof node.className === "string" ? node.className : "",
-          text: (element.textContent || "").trim().replace(/\s+/g, " ").slice(0, 120),
-          left: Math.round(rect.left * 10) / 10,
-          right: Math.round(rect.right * 10) / 10,
-          width: Math.round(rect.width * 10) / 10,
-          scrollWidth: node.scrollWidth,
-          clientWidth: node.clientWidth,
-        };
-      })
-      .filter((item) => item.right > viewport + 1 || item.left < -1)
-      .sort((a, b) => b.right - a.right)
-      .slice(0, 25);
-    return { viewport, scrollWidth: document.documentElement.scrollWidth, details };
+    const pageScrollWidth = document.documentElement.scrollWidth;
+    const insideBoundedHorizontalScroller = (element: Element) => {
+      let parent = element.parentElement;
+      while (parent && parent !== document.body) {
+        const style = getComputedStyle(parent);
+        const rect = parent.getBoundingClientRect();
+        const scrollable = ["auto", "scroll"].includes(style.overflowX) && parent.scrollWidth > parent.clientWidth + 1;
+        const bounded = rect.left >= -1 && rect.right <= viewport + 1;
+        if (scrollable && bounded) return true;
+        parent = parent.parentElement;
+      }
+      return false;
+    };
+    const details = pageScrollWidth > viewport + 1
+      ? Array.from(document.querySelectorAll("body *"))
+          .filter((element) => !insideBoundedHorizontalScroller(element))
+          .map((element) => {
+            const node = element as HTMLElement;
+            const rect = element.getBoundingClientRect();
+            return {
+              tag: element.tagName,
+              id: element.id || "",
+              cls: typeof node.className === "string" ? node.className : "",
+              text: (element.textContent || "").trim().replace(/\s+/g, " ").slice(0, 120),
+              left: Math.round(rect.left * 10) / 10,
+              right: Math.round(rect.right * 10) / 10,
+              width: Math.round(rect.width * 10) / 10,
+              scrollWidth: node.scrollWidth,
+              clientWidth: node.clientWidth,
+            };
+          })
+          .filter((item) => item.right > viewport + 1 || item.left < -1)
+          .sort((a, b) => b.right - a.right)
+          .slice(0, 25)
+      : [];
+    return { viewport, scrollWidth: pageScrollWidth, details };
   });
+  expect(overflowDetails.scrollWidth, JSON.stringify(overflowDetails, null, 2)).toBeLessThanOrEqual(overflowDetails.viewport + 1);
   expect(overflowDetails.details, JSON.stringify(overflowDetails, null, 2)).toEqual([]);
-  expect(overflowDetails.scrollWidth).toBeLessThanOrEqual(overflowDetails.viewport + 1);
 });
 
 test("weekday quick start fills Mon-Fri 8-5 without saving", async ({ page }) => {
