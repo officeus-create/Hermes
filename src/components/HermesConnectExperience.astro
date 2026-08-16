@@ -84,6 +84,15 @@
       if (href) link.setAttribute("href", withLocale(href));
     });
 
+    if (!document.querySelector("[data-hc-intelligence-core]")) {
+      const core = document.createElement("div");
+      core.className = "hc-intelligence-core";
+      core.setAttribute("data-hc-intelligence-core", "true");
+      core.setAttribute("aria-hidden", "true");
+      core.innerHTML = '<span class="hc-intelligence-core__halo"></span><span class="hc-intelligence-core__ring hc-intelligence-core__ring-a"></span><span class="hc-intelligence-core__ring hc-intelligence-core__ring-b"></span><span class="hc-intelligence-core__ring hc-intelligence-core__ring-c"></span><span class="hc-intelligence-core__dot"></span>';
+      document.body.append(core);
+    }
+
     const header = document.querySelector(".site-header");
     if (!header || document.querySelector("[data-hc-product-context]")) return;
 
@@ -159,7 +168,123 @@
   .hc-product-context__dot{width:8px;height:8px;border-radius:999px;background:#60a5fa;box-shadow:0 0 0 5px rgba(96,165,250,.12)}.hc-product-context.is-live .hc-product-context__dot{background:#34d399;box-shadow:0 0 0 5px rgba(52,211,153,.12)}.hc-product-context.is-reference .hc-product-context__dot{background:#fbbf24;box-shadow:0 0 0 5px rgba(251,191,36,.12)}
   .hc-family-nav{display:flex;align-items:center;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}.hc-family-nav::-webkit-scrollbar{display:none}.hc-family-nav a{white-space:nowrap;color:#b9c5d8;text-decoration:none;font-size:.76rem;font-weight:680;padding:.42rem .62rem;border:1px solid rgba(255,255,255,.065);border-radius:999px;background:rgba(255,255,255,.025)}.hc-family-nav a:hover,.hc-family-nav a:focus-visible,.hc-family-nav a[aria-current="page"]{color:#fff;border-color:rgba(157,136,255,.38);background:rgba(157,136,255,.11)}
   .hc-language-truth{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:0 0 .65rem;color:#c8d0dc;font-size:.78rem;line-height:1.5}
+
+  /* D036 — Connect header carries product identity, not the whole corporate nav twice. */
+  .hc-experience .site-header{
+    color:#0b0d12!important;
+    background:rgba(247,246,243,.88)!important;
+    border-bottom-color:rgba(11,13,18,.08)!important;
+    backdrop-filter:blur(20px) saturate(1.05);
+  }
+  .hc-experience .site-header-scrolled{
+    color:#0b0d12!important;
+    background:rgba(247,246,243,.95)!important;
+    border-bottom-color:rgba(11,13,18,.09)!important;
+  }
+  .hc-experience .site-header .desktop-nav,
+  .hc-experience .site-header .header-cta{display:none}
+  .hc-experience .site-header .header-actions{margin-left:auto}
+  .hc-experience .site-header .wordmark-mark{border-color:rgba(11,13,18,.24)!important}
+  .hc-experience .site-header .language-menu summary{color:#0b0d12!important;border-color:rgba(11,13,18,.14)!important;background:rgba(255,255,255,.58)!important}
+  .hc-experience .site-header .language-menu nav{border-color:rgba(11,13,18,.10)!important;background:#fff!important;box-shadow:0 14px 34px rgba(11,13,18,.10)!important}
+  .hc-experience .site-header .language-menu nav a{color:#0b0d12!important}
+  .hc-experience .site-header .language-menu nav a:hover,
+  .hc-experience .site-header .language-menu nav a:focus-visible,
+  .hc-experience .site-header .language-menu nav a[aria-current="page"]{color:#fff!important;background:#0b0d12!important}
+  .hc-experience .site-header .hermes-connect-header-launcher{color:#fff!important;border-color:#0b0d12!important;background:#0b0d12!important;box-shadow:none!important}
+
   .hc-experience .repair-pilot-page,.hc-experience .hc-capability-page{isolation:isolate}.hc-experience .repair-pilot-page .hero-header-nav{display:none!important}
-  .hc-experience .repair-pilot-page .pipeline-card,.hc-experience .repair-pilot-page .form-container,.hc-experience .repair-pilot-page .workspace-mockup{border-color:rgba(255,255,255,.09)!important;box-shadow:0 18px 55px rgba(0,0,0,.18)!important}
-  @media(max-width:760px){.hc-product-context__inner,.hc-language-truth{width:min(100% - 1rem,1180px)}.hc-product-context__summary{gap:.45rem}.hc-content-language{width:100%;margin-left:0}.hc-family-nav a{font-size:.73rem;padding:.4rem .58rem}.hc-language-truth{font-size:.75rem}.hc-experience .repair-pilot-page .hero-section{padding-top:1rem!important}}
+  .hc-experience .repair-pilot-page .pipeline-card,.hc-experience .repair-pilot-page .form-container,.hc-experience .repair-pilot-page .workspace-mockup{border-color:rgba(255,255,255,.09)!important;box-shadow:0 12px 34px rgba(0,0,0,.12)!important}
+
+  .hc-intelligence-core{position:fixed;z-index:18;top:50%;right:1rem;width:72px;height:72px;pointer-events:none;transform:translateY(-50%);filter:drop-shadow(0 10px 22px rgba(30,24,70,.12));perspective:240px;opacity:.88}
+  .hc-intelligence-core__halo{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.09),rgba(90,200,250,.025) 48%,transparent 70%);box-shadow:0 0 24px rgba(124,92,255,.08);animation:hc-core-breathe 5.5s ease-in-out infinite}
+  .hc-intelligence-core__ring{position:absolute;inset:17px;border:1.5px solid rgba(124,92,255,.5);border-radius:50%;transform-style:preserve-3d;box-shadow:inset 0 0 9px rgba(255,255,255,.14),0 0 9px rgba(124,92,255,.06)}
+  .hc-intelligence-core__ring-a{transform:rotateX(68deg) rotateZ(10deg);animation:hc-core-ring-a 13s linear infinite}
+  .hc-intelligence-core__ring-b{border-color:rgba(90,200,250,.55);transform:rotateY(68deg) rotateZ(34deg);animation:hc-core-ring-b 17s linear infinite reverse}
+  .hc-intelligence-core__ring-c{inset:22px;border-color:rgba(255,255,255,.46);transform:rotateX(45deg) rotateY(52deg);animation:hc-core-ring-c 11s linear infinite}
+  .hc-intelligence-core__dot{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#a99aff,#5ac8fa);box-shadow:0 0 0 4px rgba(124,92,255,.07),0 0 12px rgba(90,200,250,.18);transform:translate(-50%,-50%)}
+  @keyframes hc-core-ring-a{to{transform:rotateX(68deg) rotateZ(370deg)}}
+  @keyframes hc-core-ring-b{to{transform:rotateY(68deg) rotateZ(394deg)}}
+  @keyframes hc-core-ring-c{to{transform:rotateX(405deg) rotateY(52deg)}}
+  @keyframes hc-core-breathe{0%,100%{transform:scale(.94);opacity:.55}50%{transform:scale(1.06);opacity:.92}}
+
+  /* D020 — two controlled depth levels across the Connect family. */
+  .hc-experience .repair-pilot-page .repair-capability-grid article,
+  .hc-experience .repair-pilot-page .repair-link-grid a,
+  .hc-experience .repair-pilot-page .repair-faq-grid article,
+  .hc-experience .hc-hub-page .hc-module-grid article,
+  .hc-experience .hc-hub-page .hc-hub-faq-grid article,
+  .hc-experience .hc-capability-page .hc-capability-grid article,
+  .hc-experience .hc-capability-page .hc-faq-grid article{box-shadow:0 10px 28px rgba(33,29,52,.055)!important}
+  .hc-experience .repair-pilot-page .repair-live-card,
+  .hc-experience .repair-pilot-page .repair-offer-grid,
+  .hc-experience .hc-hub-page .hc-rules{box-shadow:0 22px 54px rgba(11,13,18,.13)!important}
+  .hc-experience .site-header-scrolled{box-shadow:0 8px 24px rgba(8,12,21,.10)!important}
+
+  /* D070 — keyboard focus, high-contrast fallback, and motion restraint. */
+  .hc-experience :where(a,button,summary,input,select,textarea):focus-visible{outline:2px solid #6c56e8!important;outline-offset:3px}
+  .hc-experience .repair-offer-grid :where(input,select,textarea):focus-visible{outline-color:#8fdcff!important}
+  .hc-experience .hc-family-nav a:focus-visible{box-shadow:0 0 0 3px rgba(157,136,255,.16)}
+  @media(forced-colors:active){
+    .hc-intelligence-core{display:none}
+    .hc-product-context,
+    .hc-experience .repair-pilot-page .repair-live-card,
+    .hc-experience .repair-pilot-page .repair-offer-grid{border:1px solid CanvasText}
+    .hc-experience :where(a,button,summary,input,select,textarea):focus-visible{outline:2px solid Highlight!important}
+  }
+
+  @media(hover:none){
+    .hc-experience .repair-pilot-page .repair-capability-grid article:hover,
+    .hc-experience .repair-pilot-page .repair-link-grid a:hover,
+    .hc-experience .hc-hub-page .hc-module-grid article:hover,
+    .hc-experience .hc-capability-page .hc-capability-grid article:hover{transform:none!important}
+  }
+
+  @media(max-width:1120px){.hc-intelligence-core{display:none}}
+
+  /* D069 — tablet/mobile rhythm instead of a squeezed desktop layout. */
+  @media(max-width:768px){
+    .hc-product-context__inner,.hc-language-truth{width:min(100% - 1rem,1180px)}
+    .hc-product-context__inner{padding:.52rem 0 .45rem;gap:.5rem}
+    .hc-product-context__summary{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.18rem .58rem;font-size:.72rem}
+    .hc-product-context__dot{grid-row:1 / span 3;align-self:start;margin-top:.48rem}
+    .hc-product-context__summary strong{font-size:.66rem;line-height:1.25;letter-spacing:.025em}
+    .hc-content-language{grid-column:2;width:auto;margin-left:0;color:#8f9db1;font-size:.68rem}
+    .hc-family-nav{gap:.28rem;margin-inline:-.5rem;padding:.08rem .5rem .16rem;scroll-padding-inline:.5rem}
+    .hc-family-nav a{display:inline-flex;align-items:center;min-height:40px;padding:.42rem .62rem;font-size:.72rem}
+    .hc-language-truth{padding-bottom:.55rem;font-size:.72rem;line-height:1.42}
+    .hc-experience .repair-pilot-page .hero-section{padding-top:1rem!important}
+    .hc-experience .repair-pilot-page .repair-shell,
+    .hc-experience .hc-hub-page .hc-hub-shell,
+    .hc-experience .hc-capability-page .hc-capability-shell{width:min(100% - 1rem,1180px)!important}
+    .hc-experience .repair-pilot-page .repair-primary,
+    .hc-experience .repair-pilot-page .repair-secondary,
+    .hc-experience .repair-pilot-page .repair-submit,
+    .hc-experience .hc-hub-page .hc-hub-primary,
+    .hc-experience .hc-hub-page .hc-hub-secondary,
+    .hc-experience .hc-capability-page .hc-primary-action,
+    .hc-experience .hc-capability-page .hc-secondary-action{min-height:48px}
+  }
+
+  @media(max-width:430px){
+    .hc-product-context__inner,.hc-language-truth{width:calc(100% - .75rem)}
+    .hc-product-context__summary{gap:.14rem .5rem}
+    .hc-product-context__summary strong{font-size:.63rem}
+    .hc-family-nav{margin-inline:-.375rem;padding-inline:.375rem}
+    .hc-family-nav a{min-height:42px;padding:.44rem .58rem;font-size:.7rem}
+    .hc-experience .repair-pilot-page .repair-shell,
+    .hc-experience .hc-hub-page .hc-hub-shell,
+    .hc-experience .hc-capability-page .hc-capability-shell{width:calc(100% - .75rem)!important}
+    .hc-experience .repair-pilot-page .repair-live-card,
+    .hc-experience .repair-pilot-page .repair-capability-grid article,
+    .hc-experience .repair-pilot-page .repair-link-grid a,
+    .hc-experience .hc-hub-page .hc-module-grid article,
+    .hc-experience .hc-capability-page .hc-capability-grid article,
+    .hc-experience .hc-capability-page .hc-faq-grid article{border-radius:18px!important}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    .hc-intelligence-core__halo,.hc-intelligence-core__ring{animation:none!important}
+    .hc-experience :where(a,button,.repair-capability-grid article,.repair-link-grid a,.hc-module-grid article,.hc-capability-grid article){transition:none!important}
+  }
 </style>

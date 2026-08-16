@@ -2,6 +2,7 @@
 import { ArrowUpRight, Check, ChevronDown, Languages, Menu } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
+import "../styles/hermes-connect-safe-polish.css";
 import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
@@ -174,3 +175,126 @@ const languageLinks = siteLocales.map((language) => {
     });
   });
 </script>
+
+<style is:global>
+  /* Hermes Connect safe-polish layer. Scoped so the rest of the site is untouched. */
+  .hc-experience .site-header {
+    min-height: 76px;
+    width: min(calc(100% - 2rem), 1180px);
+    border-bottom-color: rgba(255,255,255,.12);
+  }
+  .hc-experience .site-header-scrolled {
+    min-height: 64px;
+    background: rgba(8,12,21,.88);
+    border-bottom-color: rgba(255,255,255,.09);
+    box-shadow: 0 12px 36px rgba(0,0,0,.16);
+    backdrop-filter: blur(22px) saturate(1.08);
+  }
+  .hc-experience .wordmark {
+    gap: .55rem;
+    font-size: .98rem;
+  }
+  .hc-experience .wordmark-mark {
+    width: 30px;
+    height: 30px;
+    border-color: rgba(255,255,255,.28);
+    border-radius: 7px;
+  }
+  .hc-experience .desktop-nav {
+    gap: clamp(.85rem,1.35vw,1.35rem);
+    margin-left: clamp(1rem,2vw,2rem);
+    font-size: .82rem;
+  }
+  .hc-experience .header-actions {
+    gap: .62rem;
+  }
+  .hc-experience .language-menu summary {
+    min-height: 38px;
+    padding: .48rem .72rem;
+    border-color: rgba(255,255,255,.2);
+    border-radius: 999px;
+    background: rgba(255,255,255,.035);
+  }
+  .hc-experience .language-menu nav {
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(8,12,21,.98);
+  }
+  .hc-experience .header-cta {
+    min-height: 38px;
+    padding: .46rem .72rem;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 999px;
+    background: rgba(255,255,255,.035);
+    font-size: .8rem;
+  }
+  .hc-experience .site-header + .hc-product-context {
+    margin-top: 76px;
+  }
+  .hc-experience .hc-product-context {
+    border-bottom-color: rgba(255,255,255,.06);
+    background: rgba(8,12,21,.82);
+    backdrop-filter: blur(22px) saturate(1.06);
+  }
+  .hc-experience .hc-product-context__inner {
+    width: min(calc(100% - 2rem),1180px);
+    padding: .52rem 0 .48rem;
+    gap: .45rem;
+  }
+  .hc-experience .hc-product-context__summary {
+    gap: .5rem;
+    font-size: .7rem;
+  }
+  .hc-experience .hc-product-context__summary strong {
+    padding: .28rem .52rem;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 999px;
+    background: rgba(255,255,255,.035);
+    font-size: .66rem;
+    letter-spacing: .035em;
+  }
+  .hc-experience .hc-product-context__dot {
+    width: 7px;
+    height: 7px;
+  }
+  .hc-experience .hc-family-nav {
+    gap: .18rem;
+  }
+  .hc-experience .hc-family-nav a {
+    padding: .36rem .52rem;
+    border-color: transparent;
+    background: transparent;
+    color: #9eaabd;
+    font-size: .7rem;
+  }
+  .hc-experience .hc-family-nav a:hover,
+  .hc-experience .hc-family-nav a:focus-visible,
+  .hc-experience .hc-family-nav a[aria-current="page"] {
+    border-color: rgba(157,136,255,.22);
+    background: rgba(157,136,255,.085);
+    color: #fff;
+  }
+  .hc-experience .hc-language-truth {
+    width: min(calc(100% - 2rem),1180px);
+    padding-bottom: .52rem;
+    color: #9eaabd;
+    font-size: .72rem;
+  }
+  @media (max-width: 980px) {
+    .hc-experience .site-header { min-height: 70px; }
+    .hc-experience .site-header + .hc-product-context { margin-top: 70px; }
+    .hc-experience .desktop-nav { gap: .75rem; margin-left: 1rem; font-size: .76rem; }
+    .hc-experience .header-cta { display: none; }
+  }
+  @media (max-width: 760px) {
+    .hc-experience .site-header { width: min(calc(100% - 1rem),1180px); min-height: 64px; }
+    .hc-experience .site-header + .hc-product-context { margin-top: 64px; }
+    .hc-experience .hc-product-context__inner,
+    .hc-experience .hc-language-truth { width: min(calc(100% - 1rem),1180px); }
+    .hc-experience .hc-product-context__summary strong { padding: .26rem .46rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hc-experience .site-header,
+    .hc-experience .site-header-scrolled { transition: none; }
+  }
+</style>
