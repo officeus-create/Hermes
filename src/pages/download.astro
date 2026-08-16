@@ -49,7 +49,7 @@ const schema = [
   description="Open the current Hermes Connect Repair Shop Web App in your browser. Public mobile-store and direct APK distribution are not currently released."
   schema={schema}
 >
-  <SiteHeader />
+  <SiteHeader theme="light" />
 
   <main id="main-content" class="hc-access-page">
     <section class="hc-access-hero">
@@ -103,6 +103,50 @@ const schema = [
 </BaseLayout>
 
 <style>
-  .hc-access-page{min-height:70vh;color:#f8fafc;background:radial-gradient(circle at 15% 8%,rgba(90,200,250,.09),transparent 30rem),radial-gradient(circle at 85% 10%,rgba(157,136,255,.1),transparent 32rem),#090d16}.hc-access-shell{width:min(1080px,calc(100% - 2rem));margin:0 auto}.hc-access-hero{padding:clamp(4rem,9vw,7rem) 0 3.5rem}.hc-access-kicker{margin:0 0 .65rem;color:#9d88ff;font-size:.77rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.hc-access-hero h1{max-width:800px;margin:0;font-size:clamp(2.6rem,7vw,5.4rem);line-height:1;letter-spacing:-.05em}.hc-access-lead{max-width:760px;margin:1.25rem 0 0;color:#a9b5c8;font-size:clamp(1rem,2vw,1.2rem);line-height:1.7}.hc-access-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem}.hc-access-primary,.hc-access-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:46px;padding:.75rem 1rem;border-radius:11px;text-decoration:none;font-weight:750}.hc-access-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}.hc-access-secondary{border:1px solid rgba(255,255,255,.14);color:#fff;background:rgba(255,255,255,.03)}.hc-access-section{padding:3rem 0}.hc-access-heading{max-width:720px;margin-bottom:1.25rem}.hc-access-heading h2{margin:0;font-size:clamp(1.65rem,4vw,2.6rem);letter-spacing:-.035em}.hc-access-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-access-grid article,.hc-access-faq-grid article{padding:1.3rem;border:1px solid rgba(255,255,255,.09);border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.018));box-shadow:0 18px 55px rgba(0,0,0,.15)}.hc-access-grid article.is-current{border-color:rgba(52,211,153,.3)}.hc-access-grid svg{color:#5ac8fa}.hc-access-status{margin:.8rem 0 .45rem;color:#9d88ff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.is-current .hc-access-status{color:#6ee7b7}.hc-access-grid h3,.hc-access-faq-grid h3{margin:.2rem 0 .5rem}.hc-access-grid p,.hc-access-faq-grid p{margin:0;color:#98a6bb;line-height:1.62;font-size:.9rem}.hc-access-grid a{display:inline-flex;align-items:center;gap:.3rem;margin-top:.8rem;color:#c4b5fd;text-decoration:none;font-size:.82rem;font-weight:750}.hc-access-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
-  @media(max-width:760px){.hc-access-shell{width:min(100% - 1rem,1080px)}.hc-access-grid,.hc-access-faq-grid{grid-template-columns:1fr}.hc-access-actions{flex-direction:column}.hc-access-primary,.hc-access-secondary{width:100%}}
+  .hc-access-page{
+    min-height:70vh;
+    color:#0b0d12;
+    background:
+      radial-gradient(circle at 78% 6%,rgba(124,92,255,.09),transparent 28rem),
+      radial-gradient(circle at 18% 14%,rgba(90,200,250,.07),transparent 24rem),
+      #f7f6f3;
+  }
+  .hc-access-shell{width:min(1120px,calc(100% - 2rem));margin:0 auto}
+  .hc-access-hero{padding:clamp(8.5rem,12vw,11rem) 0 clamp(4rem,7vw,6.5rem);border-bottom:1px solid rgba(11,13,18,.08)}
+  .hc-access-kicker{margin:0 0 .8rem;color:#6f59df;font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+  .hc-access-hero h1{max-width:880px;margin:0;font-size:clamp(3rem,7.2vw,6.2rem);line-height:.94;letter-spacing:-.065em;text-wrap:balance}
+  .hc-access-lead{max-width:760px;margin:1.5rem 0 0;color:#626979;font-size:clamp(1rem,1.7vw,1.18rem);line-height:1.7}
+  .hc-access-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.8rem}
+  .hc-access-primary,.hc-access-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:48px;padding:.78rem 1.05rem;border-radius:999px;text-decoration:none;font-weight:760;transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
+  .hc-access-primary{background:#0b0d12;color:#fff;box-shadow:0 14px 30px rgba(11,13,18,.12)}
+  .hc-access-primary:hover,.hc-access-secondary:hover{transform:translateY(-1px)}
+  .hc-access-secondary{border:1px solid rgba(11,13,18,.13);color:#0b0d12;background:rgba(255,255,255,.62)}
+  .hc-access-section{padding:clamp(3.5rem,6vw,5.5rem) 0}
+  .hc-access-heading{max-width:760px;margin-bottom:1.6rem}
+  .hc-access-heading h2{margin:0;font-size:clamp(2rem,4.4vw,3.45rem);line-height:1.02;letter-spacing:-.05em;text-wrap:balance}
+  .hc-access-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+  .hc-access-grid article,.hc-access-faq-grid article{position:relative;padding:1.5rem;border:1px solid rgba(11,13,18,.09);border-radius:24px;background:rgba(255,255,255,.72);box-shadow:0 18px 55px rgba(42,32,90,.06);backdrop-filter:blur(16px)}
+  .hc-access-grid article.is-current{border-color:rgba(124,92,255,.25);box-shadow:0 22px 65px rgba(96,72,200,.09)}
+  .hc-access-grid svg{color:#7560ee}
+  .hc-access-status{display:inline-flex;margin:.9rem 0 .55rem;padding:.3rem .5rem;border-radius:999px;background:#f0edff;color:#6b55de;font-size:.65rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+  .is-current .hc-access-status{background:#e8f8f1;color:#23775b}
+  .hc-access-grid h3,.hc-access-faq-grid h3{margin:.2rem 0 .55rem;color:#11131a}
+  .hc-access-grid p,.hc-access-faq-grid p{margin:0;color:#697080;line-height:1.62;font-size:.92rem}
+  .hc-access-grid a{display:inline-flex;align-items:center;gap:.3rem;margin-top:1rem;color:#5f49d5;text-decoration:none;font-size:.84rem;font-weight:780}
+  .hc-access-faq{background:#0b0d12;color:#f8fafc}
+  .hc-access-faq .hc-access-kicker{color:#9d88ff}
+  .hc-access-faq .hc-access-heading h2{color:#fff}
+  .hc-access-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+  .hc-access-faq-grid article{border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.035);box-shadow:none}
+  .hc-access-faq-grid h3{color:#fff}
+  .hc-access-faq-grid p{color:#9ea8b9}
+  @media(max-width:760px){
+    .hc-access-shell{width:min(100% - 1rem,1120px)}
+    .hc-access-hero{padding-top:7.5rem}
+    .hc-access-grid,.hc-access-faq-grid{grid-template-columns:1fr}
+    .hc-access-actions{flex-direction:column}
+    .hc-access-primary,.hc-access-secondary{width:100%}
+    .hc-access-grid article,.hc-access-faq-grid article{border-radius:20px}
+  }
+  @media(prefers-reduced-motion:reduce){.hc-access-primary,.hc-access-secondary{transition:none}}
 </style>
