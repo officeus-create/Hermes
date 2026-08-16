@@ -3,9 +3,10 @@
   const path = window.location.pathname.replace(/\/+$/, "");
   if (!(path === ROOT || path.startsWith(`${ROOT}/`))) return;
 
-  const locale = ["en", "ru", "uk", "es", "it", "fr"].includes(document.documentElement.lang)
-    ? document.documentElement.lang
-    : "en";
+  const SUPPORTED = ["en", "ru", "uk", "es", "it", "fr"];
+  const requestedLocale = new URLSearchParams(window.location.search).get("lang");
+  const documentLocale = document.documentElement.lang;
+  const locale = SUPPORTED.includes(requestedLocale) ? requestedLocale : SUPPORTED.includes(documentLocale) ? documentLocale : "en";
 
   const strings = {
     en: {
@@ -18,13 +19,14 @@
       bookingCopy: "Choose a service and time. Repair pricing is set by the shop.", bookingCreated: "Booking created",
       customersCopy: "Customers and vehicle history from this shop’s bookings.", currentProduct: "CURRENT PRODUCT",
       eyebrow: "Shop setup", title: "Get your shop ready for customers",
-      intro: "Finish the essentials, share your booking link, and use the first real booking to validate the workflow.",
-      profile: "Shop profile", service: "First service", availability: "Booking hours", booking: "First booking",
-      nextProfile: "Next: save your shop profile.", nextService: "Next: add at least one service customers can book.",
-      nextAvailability: "Next: set the hours customers can book.", nextBooking: "Your booking link is ready. Share it with a customer and receive your first booking.",
-      nextReady: "Your core setup is working. Keep Hermes Connect active with the Founding Shop Plan.",
-      completeProfile: "Complete profile", addService: "Add first service", setHours: "Set booking hours", openLink: "Open booking link",
-      requestActivation: "Request paid activation", viewPlan: "View $99 Founding Plan", ready: "ready"
+      intro: "Finish the essentials, share your booking link, and process the first appointment from request to completion.",
+      profile: "Shop profile", services: "3 services", availability: "Booking hours", shared: "Share booking link", booking: "First booking", completed: "Completed booking",
+      nextProfile: "Next: save your shop profile.", nextServices: "Next: add at least three services customers can book.",
+      nextAvailability: "Next: set the hours customers can book.", nextShared: "Your booking link is ready. Open or share it with a customer.",
+      nextBooking: "The link is ready. Use it for a test or real customer booking.", nextCompleted: "Your first booking arrived. Move it through the workflow to Completed.",
+      nextReady: "Your first-value loop is complete. Decide whether to keep Hermes Connect active with the Founding Shop Plan.",
+      completeProfile: "Complete profile", addServices: "Add services", setHours: "Set booking hours", shareLink: "Open booking link", checkBookings: "View booking link", completeBooking: "Open booking inbox",
+      requestActivation: "Request paid activation", viewPlan: "View $99 Founding Plan", ready: "complete"
     },
     ru: {
       repairShops: "СТО", workspace: "Рабочее пространство СТО", authTitle: "Доступ владельца СТО",
@@ -36,12 +38,13 @@
       bookingCopy: "Выберите услугу и время. Стоимость ремонта устанавливает СТО.", bookingCreated: "Запись создана",
       customersCopy: "Клиенты и история автомобилей из записей этого СТО.", currentProduct: "ТЕКУЩИЙ ПРОДУКТ",
       eyebrow: "Настройка СТО", title: "Подготовьте СТО к приёму клиентов",
-      intro: "Завершите основные настройки, поделитесь ссылкой на запись и проверьте процесс на первой реальной записи.",
-      profile: "Профиль СТО", service: "Первая услуга", availability: "Часы записи", booking: "Первая запись",
-      nextProfile: "Далее: сохраните профиль СТО.", nextService: "Далее: добавьте хотя бы одну услугу для записи.",
-      nextAvailability: "Далее: укажите часы, доступные клиентам для записи.", nextBooking: "Ссылка на запись готова. Отправьте её клиенту и получите первую запись.",
-      nextReady: "Основной процесс работает. Подключите Founding Shop Plan, чтобы продолжать пользоваться Hermes Connect.",
-      completeProfile: "Заполнить профиль", addService: "Добавить услугу", setHours: "Настроить часы", openLink: "Открыть ссылку записи",
+      intro: "Завершите основные настройки, поделитесь ссылкой и проведите первую запись от заявки до завершения.",
+      profile: "Профиль СТО", services: "3 услуги", availability: "Часы записи", shared: "Поделиться ссылкой", booking: "Первая запись", completed: "Завершённая запись",
+      nextProfile: "Далее: сохраните профиль СТО.", nextServices: "Далее: добавьте минимум три услуги для записи.",
+      nextAvailability: "Далее: укажите часы, доступные клиентам для записи.", nextShared: "Ссылка готова. Откройте её или отправьте клиенту.",
+      nextBooking: "Ссылка готова. Создайте тестовую или реальную запись клиента.", nextCompleted: "Первая запись получена. Проведите её по процессу до статуса «Завершено».",
+      nextReady: "Первый полный цикл завершён. Решите, хотите ли вы продолжать пользоваться Hermes Connect по Founding Shop Plan.",
+      completeProfile: "Заполнить профиль", addServices: "Добавить услуги", setHours: "Настроить часы", shareLink: "Открыть ссылку записи", checkBookings: "Открыть запись", completeBooking: "Открыть входящие записи",
       requestActivation: "Запросить платную активацию", viewPlan: "Тариф Founding — $99", ready: "готово"
     },
     uk: {
@@ -54,12 +57,13 @@
       bookingCopy: "Оберіть послугу та час. Вартість ремонту встановлює СТО.", bookingCreated: "Запис створено",
       customersCopy: "Клієнти та історія автомобілів із записів цього СТО.", currentProduct: "ПОТОЧНИЙ ПРОДУКТ",
       eyebrow: "Налаштування СТО", title: "Підготуйте СТО до прийому клієнтів",
-      intro: "Завершіть основні налаштування, поділіться посиланням на запис і перевірте процес на першому реальному записі.",
-      profile: "Профіль СТО", service: "Перша послуга", availability: "Години запису", booking: "Перший запис",
-      nextProfile: "Далі: збережіть профіль СТО.", nextService: "Далі: додайте хоча б одну послугу для запису.",
-      nextAvailability: "Далі: вкажіть години, доступні клієнтам для запису.", nextBooking: "Посилання на запис готове. Надішліть його клієнту та отримайте перший запис.",
-      nextReady: "Основний процес працює. Підключіть Founding Shop Plan, щоб продовжувати користуватися Hermes Connect.",
-      completeProfile: "Заповнити профіль", addService: "Додати послугу", setHours: "Налаштувати години", openLink: "Відкрити запис",
+      intro: "Завершіть основні налаштування, поділіться посиланням і проведіть перший запис від заявки до завершення.",
+      profile: "Профіль СТО", services: "3 послуги", availability: "Години запису", shared: "Поділитися посиланням", booking: "Перший запис", completed: "Завершений запис",
+      nextProfile: "Далі: збережіть профіль СТО.", nextServices: "Далі: додайте щонайменше три послуги для запису.",
+      nextAvailability: "Далі: вкажіть години, доступні клієнтам для запису.", nextShared: "Посилання готове. Відкрийте його або надішліть клієнту.",
+      nextBooking: "Посилання готове. Створіть тестовий або реальний запис клієнта.", nextCompleted: "Перший запис отримано. Проведіть його до статусу «Завершено».",
+      nextReady: "Перший повний цикл завершено. Вирішіть, чи хочете продовжувати користуватися Hermes Connect за Founding Shop Plan.",
+      completeProfile: "Заповнити профіль", addServices: "Додати послуги", setHours: "Налаштувати години", shareLink: "Відкрити запис", checkBookings: "Відкрити запис", completeBooking: "Відкрити вхідні записи",
       requestActivation: "Запросити платну активацію", viewPlan: "Тариф Founding — $99", ready: "готово"
     },
     es: {
@@ -72,13 +76,14 @@
       bookingCopy: "Elige un servicio y una hora. El taller establece el precio de la reparación.", bookingCreated: "Cita creada",
       customersCopy: "Clientes e historial de vehículos de las reservas de este taller.", currentProduct: "PRODUCTO ACTUAL",
       eyebrow: "Configuración del taller", title: "Prepara tu taller para recibir clientes",
-      intro: "Completa lo esencial, comparte tu enlace de reservas y valida el flujo con la primera cita real.",
-      profile: "Perfil del taller", service: "Primer servicio", availability: "Horario de reservas", booking: "Primera reserva",
-      nextProfile: "Siguiente: guarda el perfil del taller.", nextService: "Siguiente: añade al menos un servicio reservable.",
-      nextAvailability: "Siguiente: define las horas que los clientes pueden reservar.", nextBooking: "Tu enlace de reservas está listo. Compártelo y recibe la primera reserva.",
-      nextReady: "La configuración principal funciona. Mantén Hermes Connect activo con el Founding Shop Plan.",
-      completeProfile: "Completar perfil", addService: "Añadir servicio", setHours: "Definir horarios", openLink: "Abrir enlace de reserva",
-      requestActivation: "Solicitar activación de pago", viewPlan: "Plan Founding — $99", ready: "listo"
+      intro: "Completa lo esencial, comparte el enlace y procesa la primera cita desde la solicitud hasta completarla.",
+      profile: "Perfil del taller", services: "3 servicios", availability: "Horario", shared: "Compartir enlace", booking: "Primera reserva", completed: "Reserva completada",
+      nextProfile: "Siguiente: guarda el perfil del taller.", nextServices: "Siguiente: añade al menos tres servicios reservables.",
+      nextAvailability: "Siguiente: define las horas que los clientes pueden reservar.", nextShared: "El enlace está listo. Ábrelo o compártelo con un cliente.",
+      nextBooking: "El enlace está listo. Crea una reserva de prueba o de un cliente real.", nextCompleted: "Llegó la primera reserva. Llévala por el flujo hasta Completada.",
+      nextReady: "El primer ciclo de valor está completo. Decide si quieres mantener Hermes Connect con el Founding Shop Plan.",
+      completeProfile: "Completar perfil", addServices: "Añadir servicios", setHours: "Definir horarios", shareLink: "Abrir enlace", checkBookings: "Abrir reserva", completeBooking: "Abrir reservas",
+      requestActivation: "Solicitar activación de pago", viewPlan: "Plan Founding — $99", ready: "completo"
     },
     it: {
       repairShops: "Officine", workspace: "Area officina", authTitle: "Accesso proprietario officina",
@@ -90,13 +95,14 @@
       bookingCopy: "Scegli un servizio e un orario. Il prezzo della riparazione è stabilito dall’officina.", bookingCreated: "Prenotazione creata",
       customersCopy: "Clienti e storico veicoli dalle prenotazioni di questa officina.", currentProduct: "PRODOTTO ATTUALE",
       eyebrow: "Configurazione officina", title: "Prepara l’officina per i clienti",
-      intro: "Completa gli elementi essenziali, condividi il link di prenotazione e valida il flusso con il primo appuntamento reale.",
-      profile: "Profilo officina", service: "Primo servizio", availability: "Orari prenotazioni", booking: "Prima prenotazione",
-      nextProfile: "Prossimo passo: salva il profilo dell’officina.", nextService: "Prossimo passo: aggiungi almeno un servizio prenotabile.",
-      nextAvailability: "Prossimo passo: imposta gli orari prenotabili.", nextBooking: "Il link di prenotazione è pronto. Condividilo e ricevi la prima prenotazione.",
-      nextReady: "La configurazione principale funziona. Mantieni Hermes Connect attivo con il Founding Shop Plan.",
-      completeProfile: "Completa profilo", addService: "Aggiungi servizio", setHours: "Imposta orari", openLink: "Apri prenotazione",
-      requestActivation: "Richiedi attivazione a pagamento", viewPlan: "Piano Founding — $99", ready: "pronto"
+      intro: "Completa gli elementi essenziali, condividi il link e gestisci il primo appuntamento dalla richiesta al completamento.",
+      profile: "Profilo officina", services: "3 servizi", availability: "Orari", shared: "Condividi link", booking: "Prima prenotazione", completed: "Prenotazione completata",
+      nextProfile: "Prossimo passo: salva il profilo dell’officina.", nextServices: "Prossimo passo: aggiungi almeno tre servizi prenotabili.",
+      nextAvailability: "Prossimo passo: imposta gli orari prenotabili.", nextShared: "Il link è pronto. Aprilo o condividilo con un cliente.",
+      nextBooking: "Il link è pronto. Crea una prenotazione di prova o reale.", nextCompleted: "È arrivata la prima prenotazione. Portala fino allo stato Completata.",
+      nextReady: "Il primo ciclo di valore è completo. Decidi se mantenere Hermes Connect con il Founding Shop Plan.",
+      completeProfile: "Completa profilo", addServices: "Aggiungi servizi", setHours: "Imposta orari", shareLink: "Apri link", checkBookings: "Apri prenotazione", completeBooking: "Apri prenotazioni",
+      requestActivation: "Richiedi attivazione a pagamento", viewPlan: "Piano Founding — $99", ready: "completo"
     },
     fr: {
       repairShops: "Ateliers", workspace: "Espace atelier", authTitle: "Accès propriétaire d’atelier",
@@ -108,18 +114,27 @@
       bookingCopy: "Choisissez un service et une heure. Le prix de la réparation est fixé par l’atelier.", bookingCreated: "Réservation créée",
       customersCopy: "Clients et historique des véhicules issus des réservations de cet atelier.", currentProduct: "PRODUIT ACTUEL",
       eyebrow: "Configuration de l’atelier", title: "Préparez votre atelier à recevoir des clients",
-      intro: "Terminez l’essentiel, partagez votre lien de réservation et validez le parcours avec le premier rendez-vous réel.",
-      profile: "Profil atelier", service: "Premier service", availability: "Horaires", booking: "Première réservation",
-      nextProfile: "Ensuite : enregistrez le profil de l’atelier.", nextService: "Ensuite : ajoutez au moins un service réservable.",
-      nextAvailability: "Ensuite : définissez les heures réservables.", nextBooking: "Votre lien de réservation est prêt. Partagez-le et recevez la première réservation.",
-      nextReady: "La configuration principale fonctionne. Gardez Hermes Connect actif avec le Founding Shop Plan.",
-      completeProfile: "Compléter le profil", addService: "Ajouter un service", setHours: "Définir les horaires", openLink: "Ouvrir la réservation",
-      requestActivation: "Demander l’activation payante", viewPlan: "Plan Founding — $99", ready: "prêt"
+      intro: "Terminez l’essentiel, partagez le lien et traitez le premier rendez-vous de la demande jusqu’à la fin.",
+      profile: "Profil atelier", services: "3 services", availability: "Horaires", shared: "Partager le lien", booking: "Première réservation", completed: "Réservation terminée",
+      nextProfile: "Ensuite : enregistrez le profil de l’atelier.", nextServices: "Ensuite : ajoutez au moins trois services réservables.",
+      nextAvailability: "Ensuite : définissez les heures réservables.", nextShared: "Le lien est prêt. Ouvrez-le ou partagez-le avec un client.",
+      nextBooking: "Le lien est prêt. Créez une réservation test ou réelle.", nextCompleted: "La première réservation est arrivée. Faites-la passer jusqu’au statut Terminée.",
+      nextReady: "Le premier cycle de valeur est terminé. Décidez si vous souhaitez conserver Hermes Connect avec le Founding Shop Plan.",
+      completeProfile: "Compléter le profil", addServices: "Ajouter des services", setHours: "Définir les horaires", shareLink: "Ouvrir le lien", checkBookings: "Ouvrir la réservation", completeBooking: "Ouvrir les réservations",
+      requestActivation: "Demander l’activation payante", viewPlan: "Plan Founding — $99", ready: "terminé"
     }
   };
 
   const t = strings[locale] || strings.en;
   const $ = (selector, root = document) => root.querySelector(selector);
+
+  function withLocale(href) {
+    if (!href || href.startsWith("#")) return href;
+    const url = new URL(href, window.location.origin);
+    if (locale === "en") url.searchParams.delete("lang");
+    else url.searchParams.set("lang", locale);
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
 
   function setText(selector, value, root = document) {
     const element = $(selector, root);
@@ -201,33 +216,64 @@
     }
   }
 
-  async function mountActivationPanel() {
+  function shareKey(slug) {
+    return slug ? `hc_repair_shop_shared:${slug}` : "";
+  }
+
+  function readShared(slug) {
+    const key = shareKey(slug);
+    if (!key) return false;
+    try { return localStorage.getItem(key) === "1"; } catch { return false; }
+  }
+
+  function storeShared(slug) {
+    const key = shareKey(slug);
+    if (!key) return;
+    try { localStorage.setItem(key, "1"); } catch {}
+  }
+
+  async function mountActivationPanel(refresh = false) {
     if (path !== `${ROOT}/dashboard`) return;
     const shell = $(".workspace-page .shell");
     const header = $(".workspace-header", shell || document);
-    if (!shell || !header || $("[data-repair-activation]", shell)) return;
+    if (!shell || !header) return;
+
+    const existing = $("[data-repair-activation]", shell);
+    if (existing && !refresh) return;
+    existing?.remove();
 
     const [profileData, servicesData, availabilityData, bookingsData] = await Promise.all([
       readJson("/api/repair-shop/profile"), readJson("/api/services"), readJson("/api/repair-shop/availability"), readJson("/api/repair-shop/bookings"),
     ]);
 
-    const profile = Boolean(profileData?.success && profileData?.shop);
-    const services = Boolean(servicesData?.success && Array.isArray(servicesData.services) && servicesData.services.length > 0);
+    const profile = Boolean(profileData?.success && profileData?.shop?.name && profileData?.shop?.city && profileData?.shop?.state && profileData?.shop?.timezone);
+    const serviceCount = servicesData?.success && Array.isArray(servicesData.services) ? servicesData.services.length : 0;
+    const services = serviceCount >= 3;
     const availability = Boolean(availabilityData?.success && Array.isArray(availabilityData.days) && availabilityData.days.some((day) => day?.is_open));
-    const booking = Boolean(bookingsData?.success && Array.isArray(bookingsData.bookings) && bookingsData.bookings.length > 0);
-    const complete = [profile, services, availability, booking];
-    const completedCount = complete.filter(Boolean).length;
-    const percent = completedCount * 25;
+    const bookingItems = bookingsData?.success && Array.isArray(bookingsData.bookings) ? bookingsData.bookings : [];
+    const booking = bookingItems.length > 0;
+    const completed = bookingItems.some((item) => item?.status === "completed");
     const slug = profileData?.shop?.slug ? String(profileData.shop.slug) : "";
-    const bookingUrl = slug ? `${ROOT}/booking/?shop=${encodeURIComponent(slug)}` : "";
+    const shared = Boolean(slug && (readShared(slug) || booking));
+    const states = [profile, services, availability, shared, booking, completed];
+    const completedCount = states.filter(Boolean).length;
+    const percent = Math.round((completedCount / states.length) * 100);
+    const bookingUrl = slug ? `${ROOT}/booking/?shop=${encodeURIComponent(slug)}` : `${ROOT}/booking/`;
 
     let nextCopy = t.nextProfile;
     let nextHref = "#profile-form";
     let nextLabel = t.completeProfile;
-    if (profile && !services) { nextCopy = t.nextService; nextHref = "#service-form"; nextLabel = t.addService; }
+    let shareAction = false;
+    if (profile && !services) { nextCopy = t.nextServices; nextHref = "#service-form"; nextLabel = t.addServices; }
     else if (profile && services && !availability) { nextCopy = t.nextAvailability; nextHref = `${ROOT}/availability/`; nextLabel = t.setHours; }
-    else if (profile && services && availability && !booking) { nextCopy = t.nextBooking; nextHref = bookingUrl || `${ROOT}/booking/`; nextLabel = t.openLink; }
-    else if (complete.every(Boolean)) { nextCopy = t.nextReady; nextHref = `${ROOT}/plan/`; nextLabel = t.requestActivation; }
+    else if (profile && services && availability && !shared) { nextCopy = t.nextShared; nextHref = bookingUrl; nextLabel = t.shareLink; shareAction = true; }
+    else if (profile && services && availability && shared && !booking) { nextCopy = t.nextBooking; nextHref = bookingUrl; nextLabel = t.checkBookings; }
+    else if (profile && services && availability && shared && booking && !completed) { nextCopy = t.nextCompleted; nextHref = "#bookings-title"; nextLabel = t.completeBooking; }
+    else if (states.every(Boolean)) { nextCopy = t.nextReady; nextHref = `${ROOT}/plan/`; nextLabel = t.requestActivation; }
+
+    const localizedNextHref = withLocale(nextHref);
+    const localizedPlanHref = withLocale(`${ROOT}/plan/`);
+    const labels = [t.profile, t.services, t.availability, t.shared, t.booking, t.completed];
 
     const panel = document.createElement("section");
     panel.className = "repair-activation-panel";
@@ -235,37 +281,56 @@
     panel.innerHTML = `
       <div class="repair-activation-head">
         <div><p class="repair-activation-eyebrow">${t.eyebrow}</p><h2>${t.title}</h2><p class="repair-activation-copy">${t.intro}</p></div>
-        <div class="repair-activation-progress">${completedCount}/4 ${t.ready}</div>
+        <div class="repair-activation-progress">${completedCount}/6 ${t.ready}</div>
       </div>
       <div class="repair-activation-track" aria-hidden="true"><div class="repair-activation-fill" style="width:${percent}%"></div></div>
       <ol class="repair-activation-steps">
-        <li class="repair-activation-step" data-complete="${profile}"><strong>${profile ? "✓" : "1"}</strong><span>${t.profile}</span></li>
-        <li class="repair-activation-step" data-complete="${services}"><strong>${services ? "✓" : "2"}</strong><span>${t.service}</span></li>
-        <li class="repair-activation-step" data-complete="${availability}"><strong>${availability ? "✓" : "3"}</strong><span>${t.availability}</span></li>
-        <li class="repair-activation-step" data-complete="${booking}"><strong>${booking ? "✓" : "4"}</strong><span>${t.booking}</span></li>
+        ${labels.map((label, index) => `<li class="repair-activation-step" data-complete="${states[index]}"><strong>${states[index] ? "✓" : index + 1}</strong><span>${label}</span></li>`).join("")}
       </ol>
       <div class="repair-activation-actions">
-        <a class="repair-activation-primary" data-repair-next href="${nextHref}">${nextLabel}</a>
-        <a class="repair-activation-secondary" href="${ROOT}/plan/">${t.viewPlan}</a>
+        <a class="repair-activation-primary" data-repair-next${shareAction ? " data-repair-share" : ""} href="${localizedNextHref}">${nextLabel}</a>
+        <a class="repair-activation-secondary" data-repair-plan href="${localizedPlanHref}">${t.viewPlan}</a>
         <p class="repair-activation-next">${nextCopy}</p>
       </div>`;
     header.insertAdjacentElement("afterend", panel);
 
-    if (bookingUrl && nextHref === bookingUrl) {
-      const next = $("[data-repair-next]", panel);
-      next?.setAttribute("target", "_blank");
-      next?.setAttribute("rel", "noopener");
+    const next = $("[data-repair-next]", panel);
+    if (next && nextHref.includes("/booking/")) {
+      next.setAttribute("target", "_blank");
+      next.setAttribute("rel", "noopener");
+    }
+    if (next && shareAction) {
+      next.addEventListener("click", () => {
+        storeShared(slug);
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "connect_shop_share_link", product: "repair_shops" });
+        window.setTimeout(() => mountActivationPanel(true), 0);
+      }, { once: true });
+    }
+    $("[data-repair-plan]", panel)?.addEventListener("click", () => {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "connect_shop_plan_view", product: "repair_shops" });
+    });
+    if (states.every(Boolean)) {
+      next?.addEventListener("click", () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "connect_shop_paid_cta", product: "repair_shops" });
+      });
     }
 
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: "connect_shop_activation_view",
-      completed_steps: completedCount,
-      profile_ready: profile,
-      service_ready: services,
-      availability_ready: availability,
-      first_booking: booking,
-    });
+    if (!refresh) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "connect_shop_activation_view",
+        completed_steps: completedCount,
+        profile_ready: profile,
+        services_ready: services,
+        availability_ready: availability,
+        link_shared: shared,
+        first_booking: booking,
+        first_completed_booking: completed,
+      });
+    }
   }
 
   function applySurfaceCopy() {
