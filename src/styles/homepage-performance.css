@@ -1,5 +1,92 @@
 /* Homepage-only performance/accessibility refinements from the 2026-08-11 PSI baseline. */
 
+/* Hermes Design System 1.0 — homepage compatibility layer.
+   These semantic tokens intentionally sit above the legacy palette so the homepage can
+   converge with Hermes Connect without forcing unrelated routes to restyle at once. */
+:root {
+  --hermes-pearl: #f7f6f3;
+  --hermes-surface: #ffffff;
+  --hermes-ink: #0b0d12;
+  --hermes-ink-soft: #5f6472;
+  --hermes-obsidian: #0b0d12;
+  --hermes-navy: #071038;
+  --hermes-intelligence-violet: #6f5cff;
+  --hermes-intelligence-blue: #58bff0;
+  --hermes-line: rgba(11, 13, 18, 0.12);
+  --hermes-shadow-soft: 0 18px 52px rgba(11, 13, 18, 0.08);
+  --hermes-radius-control: 999px;
+}
+
+/* Pearl shell: make the primary homepage navigation feel like the same product family
+   as Hermes Connect while preserving every existing destination and language control. */
+.site-header {
+  min-height: 76px;
+  color: var(--hermes-ink);
+  border-bottom-color: var(--hermes-line);
+  background: color-mix(in srgb, var(--hermes-pearl) 92%, transparent);
+  box-shadow: 0 10px 32px rgba(11, 13, 18, 0.05);
+  backdrop-filter: blur(18px) saturate(1.04);
+}
+
+.site-header-scrolled {
+  min-height: 68px;
+  color: var(--hermes-ink);
+  border-bottom-color: var(--hermes-line);
+  background: color-mix(in srgb, var(--hermes-pearl) 96%, transparent);
+  box-shadow: 0 14px 36px rgba(11, 13, 18, 0.08);
+}
+
+.site-header .wordmark-mark {
+  border-color: rgba(11, 13, 18, 0.28);
+  border-radius: 7px;
+}
+
+.site-header .desktop-nav {
+  gap: clamp(.9rem, 1.45vw, 1.45rem);
+  margin-left: clamp(1rem, 2vw, 2rem);
+  font-size: .84rem;
+}
+
+.site-header .header-actions {
+  gap: .65rem;
+}
+
+.site-header .language-menu summary {
+  min-height: 40px;
+  padding: .5rem .72rem;
+  border-color: rgba(11, 13, 18, .16);
+  border-radius: var(--hermes-radius-control);
+  background: rgba(255, 255, 255, .62);
+}
+
+.site-header .language-menu nav {
+  overflow: hidden;
+  border-color: var(--hermes-line);
+  border-radius: 14px;
+  background: var(--hermes-surface);
+  box-shadow: var(--hermes-shadow-soft);
+}
+
+.site-header .language-menu nav a {
+  color: var(--hermes-ink);
+}
+
+.site-header .language-menu nav a:hover,
+.site-header .language-menu nav a:focus-visible,
+.site-header .language-menu nav a[aria-current="page"] {
+  background: var(--hermes-obsidian);
+  color: #fff;
+}
+
+.site-header .header-cta {
+  min-height: 40px;
+  padding: .5rem .78rem;
+  border-radius: var(--hermes-radius-control);
+  background: var(--hermes-obsidian);
+  color: #fff;
+  font-size: .82rem;
+}
+
 /* Keep inactive verbs clearly secondary while meeting readable contrast on the navy intro. */
 .site-intro-verbs span {
   color: rgba(255, 255, 255, 0.55);
@@ -54,7 +141,24 @@
   content-visibility: visible;
 }
 
+@media (max-width: 920px) {
+  .site-header .menu-button {
+    color: var(--hermes-ink);
+  }
+
+  .site-header .mobile-nav {
+    color: var(--hermes-ink);
+    border-color: var(--hermes-line);
+    background: color-mix(in srgb, var(--hermes-pearl) 98%, transparent);
+    box-shadow: var(--hermes-shadow-soft);
+  }
+}
+
 @media (max-width: 700px) {
+  .site-header {
+    min-height: 68px;
+  }
+
   /* Keep mobile entrance motion short and compositor-friendly on constrained devices. */
   .site-intro-rail {
     animation-duration: 560ms;
