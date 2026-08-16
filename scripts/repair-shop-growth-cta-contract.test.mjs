@@ -50,8 +50,8 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
 );
 
-// Activation V1: one Repair Shop runtime owns customer-ready copy, setup progress,
-// multilingual activation guidance, and the transition from first value to the paid plan.
+// Activation: one Repair Shop runtime owns customer-ready copy and the six-step
+// first-value loop through the first completed booking and paid-plan decision.
 assert.match(layout, /RepairShopActivationEnhancer/);
 assert.match(activationEnhancer, /\/repair-shop-activation\.js/);
 assert.match(activationEnhancer, /repair-activation-panel/);
@@ -65,8 +65,12 @@ assert.match(activationRuntime, /\/api\/repair-shop\/profile/);
 assert.match(activationRuntime, /\/api\/services/);
 assert.match(activationRuntime, /\/api\/repair-shop\/availability/);
 assert.match(activationRuntime, /\/api\/repair-shop\/bookings/);
-assert.match(activationRuntime, /completedCount \* 25/);
+assert.match(activationRuntime, /serviceCount >= 3/);
+assert.match(activationRuntime, /first_completed_booking/);
+assert.match(activationRuntime, /completedCount\/6|completedCount}\s*\/\s*6|completedCount}\/6/);
 assert.match(activationRuntime, /connect_shop_activation_view/);
+assert.match(activationRuntime, /connect_shop_share_link/);
+assert.match(activationRuntime, /connect_shop_paid_cta/);
 assert.match(activationRuntime, /(?:\/repair-shops\/plan\/|\$\{ROOT\}\/plan\/)/);
 assert.match(activationRuntime, /CURRENT PRODUCT/);
 assert.match(activationRuntime, /Customer booking times are generated from these hours/);
@@ -76,4 +80,4 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop growth, revenue, activation progress, multilingual UX cleanup, private lead routing, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop growth, revenue, six-step activation, multilingual UX cleanup, private lead routing, and zero-PII telemetry contracts passed.");
