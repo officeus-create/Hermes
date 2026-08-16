@@ -38,7 +38,7 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   const desktopEntry = page.locator(`.header-actions a[href="${pilotRoute}"]`);
   await expect(desktopEntry).toHaveCount(1);
   await expect(desktopEntry).toContainText("Hermes Connect");
-  await expect(desktopEntry).toContainText("Repair Shop Partner Beta");
+  await expect(desktopEntry).toHaveAttribute("aria-label", /Repair Shop Partner Beta/);
   await expect(desktopEntry).not.toContainText(/Live|Connected|Realtime/i);
 
   await page.setViewportSize({ width: 390, height: 844 });
