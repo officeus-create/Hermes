@@ -38,18 +38,17 @@
 
   const enhanceRepairLanding = () => {
     if (normalizedPath() !== "/services/hermes-connect/repair-shops") return;
+    if (document.querySelector("[data-repair-launch-bar]")) return;
 
-    const heroNav = document.querySelector(".hero-header-nav");
-    if (heroNav && !heroNav.querySelector("[data-repair-launch-bar]")) {
-      const launchBar = document.createElement("div");
-      launchBar.className = "repair-launch-bar";
-      launchBar.dataset.repairLaunchBar = "true";
-      launchBar.append(
-        makeLink(`${AUTH_PATH}?mode=register`, "Create Shop Account", "repair-launch-primary", "repairRegisterLaunch"),
-        makeLink(`${AUTH_PATH}?mode=login`, "Owner Login", "repair-launch-secondary", "repairLoginLaunch"),
-      );
-      heroNav.appendChild(launchBar);
-    }
+    const launchBar = document.createElement("div");
+    launchBar.className = "repair-launch-bar";
+    launchBar.dataset.repairLaunchBar = "true";
+    launchBar.setAttribute("aria-label", "Repair Shop account actions");
+    launchBar.append(
+      makeLink(`${AUTH_PATH}?mode=register`, "Create Shop Account", "repair-launch-primary", "repairRegisterLaunch"),
+      makeLink(`${AUTH_PATH}?mode=login`, "Owner Login", "repair-launch-secondary", "repairLoginLaunch"),
+    );
+    document.body.appendChild(launchBar);
   };
 
   const selectAuthMode = () => {
