@@ -5,7 +5,58 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
 ---
 
 {isRepairShopSurface && (
-  <script is:inline src="/repair-shop-activation.js"></script>
+  <>
+    <script is:inline src="/repair-shop-activation.js"></script>
+    <script is:inline>
+      (() => {
+        const root = "/services/hermes-connect/repair-shops";
+        const path = window.location.pathname.replace(/\/+$/, "");
+        if (path !== `${root}/auth`) return;
+
+        const params = new URLSearchParams(window.location.search);
+        const requested = params.get("lang") || document.documentElement.lang || "en";
+        const copy = {
+          en: { title:"Repair Shop access", subtitle:"Sign in or create your repair shop account to manage services, booking hours, appointments, and customers.", login:"Login", register:"Register New Shop", create:"Create Shop Account", dashboard:"Go to Shop Dashboard" },
+          ru: { title:"Доступ владельца СТО", subtitle:"Войдите или создайте аккаунт СТО, чтобы управлять услугами, часами записи, заявками и клиентами.", login:"Войти", register:"Зарегистрировать СТО", create:"Создать аккаунт СТО", dashboard:"Перейти в кабинет СТО" },
+          uk: { title:"Доступ власника СТО", subtitle:"Увійдіть або створіть акаунт СТО, щоб керувати послугами, годинами запису, заявками та клієнтами.", login:"Увійти", register:"Зареєструвати СТО", create:"Створити акаунт СТО", dashboard:"Перейти до кабінету СТО" },
+          es: { title:"Acceso del propietario del taller", subtitle:"Inicia sesión o crea la cuenta del taller para gestionar servicios, horarios, citas y clientes.", login:"Iniciar sesión", register:"Registrar taller", create:"Crear cuenta del taller", dashboard:"Ir al panel del taller" },
+          it: { title:"Accesso proprietario officina", subtitle:"Accedi o crea l’account dell’officina per gestire servizi, orari, appuntamenti e clienti.", login:"Accedi", register:"Registra officina", create:"Crea account officina", dashboard:"Vai al pannello officina" },
+          fr: { title:"Accès propriétaire d’atelier", subtitle:"Connectez-vous ou créez le compte de l’atelier pour gérer services, horaires, rendez-vous et clients.", login:"Connexion", register:"Inscrire un atelier", create:"Créer le compte de l’atelier", dashboard:"Accéder au tableau de bord" },
+        };
+        const locale = Object.prototype.hasOwnProperty.call(copy, requested) ? requested : "en";
+        const t = copy[locale];
+
+        const apply = () => {
+          const title = document.querySelector("#auth-forms .auth-header h1");
+          const subtitle = document.querySelector("#auth-forms .auth-header .auth-subtitle");
+          const loginTab = document.querySelector('[data-tab="login"]');
+          const registerTab = document.querySelector('[data-tab="register"]');
+          const createButton = document.querySelector("#register-form button[type='submit']");
+          const dashboardLink = document.querySelector("#auth-authenticated .auth-actions a[href*='/dashboard/']");
+
+          if (title) title.textContent = t.title;
+          if (subtitle) subtitle.textContent = t.subtitle;
+          if (loginTab) loginTab.textContent = t.login;
+          if (registerTab) registerTab.textContent = t.register;
+          if (createButton) createButton.textContent = t.create;
+          if (dashboardLink) {
+            dashboardLink.textContent = t.dashboard;
+            const url = new URL(dashboardLink.getAttribute("href") || `${root}/dashboard/`, window.location.origin);
+            if (locale === "en") url.searchParams.delete("lang");
+            else url.searchParams.set("lang", locale);
+            dashboardLink.setAttribute("href", `${url.pathname}${url.search}${url.hash}`);
+          }
+
+          if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) {
+            registerTab.click();
+          }
+        };
+
+        apply();
+        window.setTimeout(apply, 80);
+      })();
+    </script>
+  </>
 )}
 
 <style is:global>
