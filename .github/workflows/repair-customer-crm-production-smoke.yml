@@ -7,6 +7,10 @@ on:
       - functions/api/repair-shop/customers.ts
       - functions/api/repair-shop/cleanup-customer-crm-smoke.ts
       - src/pages/services/hermes-connect/repair-shops/customers.astro
+      - src/components/RepairShopActivationEnhancer.astro
+      - public/repair-shop-web-v1.js
+      - public/repair-shop-qr.js
+      - public/_headers
       - scripts/repair-customer-crm-production-smoke.sh
       - .github/workflows/repair-customer-crm-production-smoke.yml
 
