@@ -23,25 +23,39 @@ function contextFor(url, { body = "asset", contentType = "" } = {}) {
 }
 
 {
-  const html = '<html><head></head><body><div class="app-shell">Hermes Connect</div></body></html>';
-  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/", { body: html, contentType: "text/html" });
+  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/");
   const response = await routeMiddleware(context);
-  const served = await response.text();
-  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/workspace.html");
-  assert.equal(served.includes("data-hermes-connect-analytics-consent"), true);
-  assert.equal(served.includes("data-hermes-connect-brand-shell"), false);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/hermes-connect/");
+  assert.equal(observed.assetRequests.length, 0);
 }
 
 {
-  const html = '<html><head></head><body><section id="apply"><form data-application-form></form></section></body></html>';
-  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/request-access/", { body: html, contentType: "text/html" });
+  const { context } = contextFor("https://connect.hermeslogisticsus.com/workspace.html?business_type=auto_repair&lang=ru");
   const response = await routeMiddleware(context);
-  const served = await response.text();
-  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/index.html");
-  assert.equal(served.includes('id="apply"'), true);
-  assert.equal(served.includes("data-application-form"), true);
-  assert.equal(served.includes("data-hermes-connect-brand-shell"), true);
-  assert.equal(served.includes("data-hermes-connect-analytics-consent"), true);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/?lang=ru");
+}
+
+{
+  const { context } = contextFor("https://connect.hermeslogisticsus.com/request-access/?lang=es&referral=captured");
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/auth/?lang=es&referral=captured&mode=register");
+}
+
+{
+  const { context } = contextFor("https://connect.hermeslogisticsus.com/load-analyzer/?lang=fr");
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/?lang=fr");
+}
+
+{
+  const { context } = contextFor("https://connect.hermeslogisticsus.com/review.html");
+  const response = await routeMiddleware(context);
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://hermeslogisticsus.com/demos/hermes-connect/review.html");
 }
 
 {
@@ -65,24 +79,6 @@ function contextFor(url, { body = "asset", contentType = "" } = {}) {
 }
 
 {
-  const html = '<html><head></head><body><div class="app-shell">Hermes Connect</div></body></html>';
-  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/mobile.html", { body: html, contentType: "text/html" });
-  await routeMiddleware(context);
-  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/workspace.html");
-}
-
-{
-  const html = '<html><head></head><body><header class="site-header"><span class="brand-mark">H</span></header></body></html>';
-  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/load-analyzer/", { body: html, contentType: "text/html" });
-  const response = await routeMiddleware(context);
-  const served = await response.text();
-  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/load-analyzer/");
-  assert.equal(served.includes("brand-mark-knot"), true);
-  assert.equal(served.includes("data-hermes-connect-brand-shell"), true);
-  assert.equal(served.includes("data-hermes-connect-analytics-consent"), true);
-}
-
-{
   const { context } = contextFor("https://hermeslogisticsus.com/demos/hermes-connect-brand-v1/workspace.html?tool=load-analyzer");
   const response = await routeMiddleware(context);
   assert.equal(response.status, 308);
@@ -103,4 +99,4 @@ function contextFor(url, { body = "asset", contentType = "" } = {}) {
   assert.equal(observed.nextCalls, 1);
 }
 
-console.log("Canonical Connect hostname, responsive workspace, PWA assets, redirects, and request-access routing contract passed.");
+console.log("Canonical Connect compatibility host redirect, demo boundary, assets, and API routing contract passed.");
