@@ -80,21 +80,25 @@ jobs:
       - name: Validate sanitized manifest
         shell: bash
         run: |
-          node <<'NODE'
-          const fs = require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { DEFAULT_SCREENSHOT_ROUTES, SCREENSHOT_VIEWPORTS } from './scripts/route-screenshot-contract.mjs';
+
           const path = 'artifacts/route-screenshots/manifest.json';
           const manifest = JSON.parse(fs.readFileSync(path, 'utf8'));
           const pngs = fs.readdirSync('artifacts/route-screenshots').filter((name) => name.endsWith('.png'));
+          const expectedCount = DEFAULT_SCREENSHOT_ROUTES.length * SCREENSHOT_VIEWPORTS.length;
+
           if (manifest.source !== 'local-reviewed-build') throw new Error('Unexpected source');
           if (manifest.productionEvidence !== false) throw new Error('Artifact must not claim production evidence');
           if (manifest.externalRequestsBlocked !== true) throw new Error('External requests were not recorded as blocked');
-          if (manifest.observations?.length !== 14 || pngs.length !== 14) {
-            throw new Error(`Expected 14 observations and PNGs; got ${manifest.observations?.length} and ${pngs.length}`);
+          if (manifest.observations?.length !== expectedCount || pngs.length !== expectedCount) {
+            throw new Error(`Expected ${expectedCount} observations and PNGs from the route contract; got ${manifest.observations?.length} and ${pngs.length}`);
           }
           if (manifest.observations.some((item) => item.status >= 400 || item.status === 0)) {
             throw new Error('At least one route failed');
           }
-          console.log('Screenshot manifest contract passed.');
+          console.log(`Screenshot manifest contract passed for ${expectedCount} route/viewport captures.`);
           NODE
 
       - name: Upload screenshot evidence
