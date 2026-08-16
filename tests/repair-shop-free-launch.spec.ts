@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 
 const deadline = "2026-08-30T20:28:52.000Z";
+const visibleOffer = "[data-repair-free-launch]:visible";
 
 test("Repair Shop free-launch policy is global, fixed, and honest about billing", async () => {
   const [policy, component] = await Promise.all([
@@ -28,7 +29,7 @@ test("Repair Shop landing shows localized day-hour-minute-second countdown on mo
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru", { waitUntil: "domcontentloaded" });
 
-  const offer = page.locator("[data-repair-free-launch]");
+  const offer = page.locator(visibleOffer);
   await expect(offer).toBeVisible();
   await expect(offer).toHaveAttribute("data-deadline", deadline);
   await expect(offer.getByRole("heading", { name: "14-дневная стартовая акция: регистрация СТО бесплатно." })).toBeVisible();
@@ -56,14 +57,14 @@ test("direct free-registration CTA opens the Repair Shop registration form", asy
 
   await expect(page.locator('[data-tab="register"]')).toHaveClass(/active/);
   await expect(page.locator("#register-form")).toHaveClass(/active/);
-  const offer = page.locator("[data-repair-free-launch]");
+  const offer = page.locator(visibleOffer);
   await expect(offer).toBeVisible();
   await expect(offer.getByRole("heading", { name: "Oferta de lanzamiento de 14 días: registro gratuito del taller." })).toBeVisible();
 });
 
 test("Founding Plan page keeps free registration as the lower-friction first step", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/plan/?lang=uk", { waitUntil: "domcontentloaded" });
-  const offer = page.locator("[data-repair-free-launch]");
+  const offer = page.locator(visibleOffer);
   await expect(offer).toBeVisible();
   await expect(offer).toContainText("14-денна стартова акція: реєстрація СТО безкоштовна.");
   await expect(offer.getByRole("link", { name: "Зареєструватися безкоштовно" })).toHaveAttribute(
