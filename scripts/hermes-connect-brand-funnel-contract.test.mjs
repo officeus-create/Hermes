@@ -30,8 +30,14 @@ assert(experience.includes("CURRENT LIVE PILOT"), "Experience: current live pilo
 assert(experience.includes(".hermes-connect-header-launcher"), "Experience: current visual layer must target the launcher compatibility class.");
 
 const hub = await text("src/pages/services/hermes-connect/index.astro");
-assert(hub.includes("One product family. One current live pilot."), "Hub: product-family hierarchy statement is required.");
-assert(hub.includes("Reference capability"), "Hub: non-live modules must be classified as reference capabilities.");
+assert(hub.includes("Run your business"), "Hub: adaptive operating-system hero is required.");
+assert(hub.includes("with AI."), "Hub: approved AI operating-system headline is required.");
+assert(hub.includes("One system. Different business realities."), "Hub: adaptive vertical hierarchy statement is required.");
+assert(hub.includes("LIVE PRODUCT") && hub.includes("Repair Shops"), "Hub: Repair Shops must remain the current live product vertical.");
+assert(hub.includes("PREVIEW CONFIGURATION"), "Hub: unreleased verticals must be classified as preview configurations.");
+assert(hub.includes("Configuration preview · not a released vertical"), "Hub: preview verticals must explicitly disclose that they are not released.");
+assert(hub.includes("WORKSPACE PREVIEW · SAMPLE DATA"), "Hub: illustrative workspace must disclose sample data.");
+assert(hub.includes("Hermes Connect Labs") && hub.includes("REFERENCE"), "Hub: reference capabilities must remain subordinate and clearly classified.");
 assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
 assert(!/\$99|\$299|\$799/.test(hub), "Hub: historical planning prices must not appear as current pricing.");
 
@@ -70,4 +76,4 @@ assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Preserved works
 assert(!workspaceHtml.includes("hermes-connect-brand-v1"), "Preserved workspace: Brand V1 path must not return.");
 assert(!workspaceHtml.includes("workspace-v2"), "Preserved workspace: retired workspace-v2 assets must not return.");
 
-console.log("Hermes Connect product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
+console.log("Hermes Connect adaptive vertical OS, product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
