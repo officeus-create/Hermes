@@ -29,10 +29,12 @@ assert.ok(performanceCss.includes("--hermes-pearl: #f7f6f3"), "homepage must ret
 assert.ok(performanceCss.includes("--hermes-obsidian: #0b0d12"), "homepage must retain the canonical Obsidian shell token");
 assert.ok(performanceCss.includes("--hermes-intelligence-violet: #6f5cff"), "homepage must retain the canonical Intelligence accent token");
 
-assert.ok(footerSource.includes('class="footer-desktop-nav"'), "footer must preserve desktop navigation");
-assert.ok(footerSource.includes('class="footer-mobile-groups"'), "footer must preserve compact mobile navigation groups");
-assert.ok(footerSource.includes("<details>"), "mobile footer grouping must use native details disclosure rather than a custom JavaScript accordion");
-assert.ok(/\.footer-mobile-groups nav a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile footer links must retain at least 44px touch targets");
+assert.ok(footerSource.includes('class="footer-primary-nav"'), "footer must preserve one canonical navigation DOM");
+assert.equal(footerSource.includes('class="footer-mobile-groups"'), false, "footer must not duplicate navigation into a second hidden mobile DOM");
+assert.ok(/\.footer-primary-nav\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/i.test(footerSource), "mobile footer navigation must compact into two columns");
+assert.ok(/\.footer-primary-nav a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile footer links must retain at least 44px touch targets");
+assert.ok(/\.footer-contacts a,[\s\S]*?\.footer-social a\s*\{[\s\S]*?min-height:\s*44px/i.test(footerSource), "mobile contact and social links must retain at least 44px touch targets");
+assert.equal((footerSource.match(/\/logistics\/car-hauling-dispatch\//g) ?? []).length, 1, "footer source must not duplicate car-hauling navigation links across desktop/mobile DOMs");
 
 assert.ok(consentSource.includes('data-consent-accept'), "analytics allow action must remain present");
 assert.ok(consentSource.includes('data-consent-decline'), "continue-without-analytics action must remain present");
