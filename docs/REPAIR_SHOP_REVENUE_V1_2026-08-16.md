@@ -51,6 +51,10 @@ For the first 10 real shops, record:
 - paid shop → retained active use;
 - top objections and top missing features.
 
+For every shop, keep one compact operating row with source/referral owner, city/state, first device, language, dates for each completed funnel milestone, strongest value reported, biggest friction, missing feature, $99 price objection (if any), support question, next action, owner, and due date.
+
+Decision rule: fix the earliest repeated funnel break before adding another major Repair Shop feature. If users use the product but do not buy, record the price/feature/trust objection before changing the offer.
+
 ## Definition of done for Repair Shops before Academy becomes the primary build stream
 
 Repair Shops is considered commercially launched when:
