@@ -48,13 +48,15 @@ test("owner dashboard exposes access, quick start, share, QR, customer contact a
   await expect(page.locator("#service-count")).toContainText("2 services");
 
   await expect(page.locator("[data-web-v1-share]")).toBeVisible();
+  const expectedBookingUrl = (await page.locator("#public-link-text").textContent())?.trim() || "";
+  expect(expectedBookingUrl).toContain("/services/hermes-connect/repair-shops/booking/?shop=apex-auto");
   expect(qrRequests).toBe(0);
   await page.locator("[data-repair-qr-toggle]").click();
   await expect(page.locator("[data-repair-qr-panel]")).toBeVisible();
   await expect(page.locator("[data-repair-qr-image]")).toHaveAttribute("src", /quickchart\.io\/qr/);
   await expect.poll(() => qrRequests).toBe(1);
   const parsedQr = new URL(lastQrUrl);
-  expect(parsedQr.searchParams.get("text")).toBe("http://localhost:4321/services/hermes-connect/repair-shops/booking/?shop=apex-auto");
+  expect(parsedQr.searchParams.get("text")).toBe(expectedBookingUrl);
 
   const contact = page.locator("[data-web-v1-contact]");
   await expect(contact.locator('a[href^="mailto:"]')).toHaveAttribute("href", /jamie%40example\.com|jamie@example\.com/);
