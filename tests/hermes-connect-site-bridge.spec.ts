@@ -3,8 +3,9 @@ import { expect, test } from "@playwright/test";
 const productRoute = "/services/hermes-connect/";
 const connectUrl = "https://connect.hermeslogisticsus.com/#apply";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
+const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
 
-test("Hermes Connect has an indexed product overview connected to the Web App", async ({ page }) => {
+test("Hermes Connect has an indexed product overview connected to the current Repair Shop product", async ({ page }) => {
   await page.goto(productRoute);
 
   await expect(page).toHaveTitle("Hermes Connect Web App for Service Businesses");
@@ -22,9 +23,9 @@ test("Hermes Connect has an indexed product overview connected to the Web App", 
   await expect(categoryCards.filter({ hasText: "Heavy equipment service" })).toHaveCount(1);
   await expect(categoryCards.filter({ hasText: "Oversize & specialty equipment" })).toHaveCount(1);
 
-  const webAccessLinks = page.locator(`a[href="${connectUrl}"]`);
-  await expect(webAccessLinks).toHaveCount(2);
-  await expect(webAccessLinks.first()).toContainText("Request Web App access");
+  await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
+  expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
+  expect(await page.locator(`main a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
 
   const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
   expect(schemas.join("\n")).toContain('"@type":"WebApplication"');
