@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, customerActions, layout, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
+const [enhancer, customerActions, layout, repairLanding, paidPlan, activationEnhancer, activationStyles, activationRuntime, offerContract] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairBookingCustomerActionsEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/repair-shops/plan.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/styles/repair-shop-activation.css", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-shop-activation.js", import.meta.url), "utf8"),
   readFile(new URL("../src/data/hermes-connect-repair-shop-offer.ts", import.meta.url), "utf8"),
 ]);
@@ -67,7 +68,8 @@ assert.doesNotMatch(
 assert.match(layout, /RepairShopActivationEnhancer/);
 assert.match(layout, /RepairShopFreeLaunchOffer/);
 assert.match(activationEnhancer, /\/repair-shop-activation\.js/);
-assert.match(activationEnhancer, /repair-activation-panel/);
+assert.match(activationEnhancer, /repair-shop-activation\.css/);
+assert.match(activationStyles, /\.repair-activation-panel/);
 assert.match(activationRuntime, /Get your shop ready for customers/);
 assert.match(activationRuntime, /Подготовьте СТО к приёму клиентов/);
 assert.match(activationRuntime, /Prepara tu taller para recibir clientes/);
@@ -94,4 +96,4 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop customer-focused booking actions, free launch entry, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop customer-focused booking actions, extracted activation styling, free launch entry, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
