@@ -18,6 +18,115 @@
         return `${url.pathname}${url.search}${url.hash}`;
       };
 
+      const translations = {
+        uk: {
+          "Back to Partner Portal": "Назад до порталу партнерів",
+          "Verifying secure session...": "Перевіряємо захищену сесію...",
+          "Session Active": "Сесію активовано",
+          "You are securely connected to the Hermes network.": "Ви безпечно підключені до мережі Hermes.",
+          "Name:": "Ім’я:", "Email:": "Email:", "Role:": "Роль:",
+          "Go to Shop Dashboard": "Перейти до панелі СТО", "Secure Logout": "Безпечний вихід",
+          "Repair Shop Owner Access": "Доступ власника СТО",
+          "Sign in or register to manage your shop profile, services, availability, bookings, customers, and feedback.": "Увійдіть або зареєструйтеся, щоб керувати профілем СТО, послугами, графіком, записами, клієнтами та відгуками.",
+          "Login": "Увійти", "Register New Shop": "Зареєструвати СТО", "Email Address": "Email адреса", "Password": "Пароль", "Secure Login": "Безпечний вхід",
+          "Your Full Name": "Ваше повне ім’я", "Business Email": "Робочий email", "Create Shop Account": "Створити акаунт СТО",
+          "Shop Owner Workspace": "Робочий простір власника СТО", "Loading your secure workspace…": "Завантажуємо захищений робочий простір…", "Customers": "Клієнти", "Logout": "Вийти",
+          "Production profile": "Робочий профіль", "Shop profile": "Профіль СТО", "Your saved profile controls the public booking link and timezone.": "Збережений профіль керує публічним посиланням для запису та часовим поясом.",
+          "Not configured": "Не налаштовано", "Shop name": "Назва СТО", "Phone": "Телефон", "Address": "Адреса", "City": "Місто", "State": "Штат", "ZIP": "ZIP-код", "Timezone": "Часовий пояс", "Save shop profile": "Зберегти профіль СТО",
+          "Public booking link": "Публічне посилання для запису", "Copy": "Копіювати", "Open": "Відкрити", "Services": "Послуги", "Service name": "Назва послуги", "Duration": "Тривалість", "Add service": "Додати послугу",
+          "Loading services…": "Завантажуємо послуги…", "No services yet": "Послуг ще немає", "Add the first service your shop accepts.": "Додайте першу послугу, яку надає ваше СТО.",
+          "Scheduling": "Графік", "Weekly availability": "Тижневий графік", "Set real opening hours before sharing your public booking link.": "Вкажіть реальні години роботи перед тим, як ділитися посиланням для запису.", "Manage availability": "Керувати графіком",
+          "Customer intake": "Записи клієнтів", "Booking inbox": "Вхідні записи", "Loading bookings…": "Завантажуємо записи…", "No bookings yet": "Записів ще немає",
+          "Private beta": "Приватна бета", "Product feedback": "Відгук про продукт", "Tell the Hermes team what helps or blocks your shop.": "Розкажіть команді Hermes, що допомагає вашому СТО або заважає роботі.",
+          "Area": "Розділ", "Setup": "Налаштування", "Booking": "Записи", "Mobile use": "Мобільне використання", "Other": "Інше", "Rating": "Оцінка", "What happened?": "Що сталося?", "Send private feedback": "Надіслати приватний відгук"
+        },
+        ru: {
+          "Back to Partner Portal": "Назад к порталу партнёров",
+          "Verifying secure session...": "Проверяем защищённую сессию...",
+          "Session Active": "Сессия активна",
+          "You are securely connected to the Hermes network.": "Вы безопасно подключены к сети Hermes.",
+          "Name:": "Имя:", "Email:": "Email:", "Role:": "Роль:",
+          "Go to Shop Dashboard": "Перейти в панель СТО", "Secure Logout": "Безопасный выход",
+          "Repair Shop Owner Access": "Доступ владельца СТО",
+          "Sign in or register to manage your shop profile, services, availability, bookings, customers, and feedback.": "Войдите или зарегистрируйтесь, чтобы управлять профилем СТО, услугами, расписанием, записями, клиентами и отзывами.",
+          "Login": "Войти", "Register New Shop": "Зарегистрировать СТО", "Email Address": "Email адрес", "Password": "Пароль", "Secure Login": "Безопасный вход",
+          "Your Full Name": "Ваше полное имя", "Business Email": "Рабочий email", "Create Shop Account": "Создать аккаунт СТО",
+          "Shop Owner Workspace": "Рабочее пространство владельца СТО", "Loading your secure workspace…": "Загружаем защищённое рабочее пространство…", "Customers": "Клиенты", "Logout": "Выйти",
+          "Production profile": "Рабочий профиль", "Shop profile": "Профиль СТО", "Your saved profile controls the public booking link and timezone.": "Сохранённый профиль управляет публичной ссылкой для записи и часовым поясом.",
+          "Not configured": "Не настроено", "Shop name": "Название СТО", "Phone": "Телефон", "Address": "Адрес", "City": "Город", "State": "Штат", "ZIP": "ZIP-код", "Timezone": "Часовой пояс", "Save shop profile": "Сохранить профиль СТО",
+          "Public booking link": "Публичная ссылка для записи", "Copy": "Копировать", "Open": "Открыть", "Services": "Услуги", "Service name": "Название услуги", "Duration": "Длительность", "Add service": "Добавить услугу",
+          "Loading services…": "Загружаем услуги…", "No services yet": "Услуг пока нет", "Add the first service your shop accepts.": "Добавьте первую услугу, которую оказывает ваше СТО.",
+          "Scheduling": "Расписание", "Weekly availability": "Недельный график", "Set real opening hours before sharing your public booking link.": "Укажите реальные часы работы перед публикацией ссылки для записи.", "Manage availability": "Управлять графиком",
+          "Customer intake": "Записи клиентов", "Booking inbox": "Входящие записи", "Loading bookings…": "Загружаем записи…", "No bookings yet": "Записей пока нет",
+          "Private beta": "Приватная бета", "Product feedback": "Отзыв о продукте", "Tell the Hermes team what helps or blocks your shop.": "Расскажите команде Hermes, что помогает вашему СТО или мешает работе.",
+          "Area": "Раздел", "Setup": "Настройка", "Booking": "Записи", "Mobile use": "Мобильное использование", "Other": "Другое", "Rating": "Оценка", "What happened?": "Что произошло?", "Send private feedback": "Отправить приватный отзыв"
+        },
+        es: {
+          "Back to Partner Portal": "Volver al portal de socios", "Verifying secure session...": "Verificando la sesión segura...", "Session Active": "Sesión activa", "You are securely connected to the Hermes network.": "Estás conectado de forma segura a la red Hermes.",
+          "Name:": "Nombre:", "Email:": "Email:", "Role:": "Rol:", "Go to Shop Dashboard": "Ir al panel del taller", "Secure Logout": "Cerrar sesión de forma segura", "Repair Shop Owner Access": "Acceso para propietarios de talleres",
+          "Sign in or register to manage your shop profile, services, availability, bookings, customers, and feedback.": "Inicia sesión o regístrate para gestionar el perfil, los servicios, la disponibilidad, las reservas, los clientes y los comentarios de tu taller.",
+          "Login": "Iniciar sesión", "Register New Shop": "Registrar taller", "Email Address": "Correo electrónico", "Password": "Contraseña", "Secure Login": "Acceso seguro", "Your Full Name": "Nombre completo", "Business Email": "Email de empresa", "Create Shop Account": "Crear cuenta del taller",
+          "Shop Owner Workspace": "Espacio del propietario del taller", "Loading your secure workspace…": "Cargando tu espacio seguro…", "Customers": "Clientes", "Logout": "Cerrar sesión", "Production profile": "Perfil operativo", "Shop profile": "Perfil del taller",
+          "Your saved profile controls the public booking link and timezone.": "Tu perfil guardado controla el enlace público de reservas y la zona horaria.", "Not configured": "Sin configurar", "Shop name": "Nombre del taller", "Phone": "Teléfono", "Address": "Dirección", "City": "Ciudad", "State": "Estado", "ZIP": "Código postal", "Timezone": "Zona horaria", "Save shop profile": "Guardar perfil del taller",
+          "Public booking link": "Enlace público de reservas", "Copy": "Copiar", "Open": "Abrir", "Services": "Servicios", "Service name": "Nombre del servicio", "Duration": "Duración", "Add service": "Añadir servicio", "Loading services…": "Cargando servicios…", "No services yet": "Aún no hay servicios", "Add the first service your shop accepts.": "Añade el primer servicio que ofrece tu taller.",
+          "Scheduling": "Horario", "Weekly availability": "Disponibilidad semanal", "Set real opening hours before sharing your public booking link.": "Configura el horario real antes de compartir tu enlace público de reservas.", "Manage availability": "Gestionar disponibilidad", "Customer intake": "Entrada de clientes", "Booking inbox": "Bandeja de reservas", "Loading bookings…": "Cargando reservas…", "No bookings yet": "Aún no hay reservas",
+          "Private beta": "Beta privada", "Product feedback": "Comentarios del producto", "Tell the Hermes team what helps or blocks your shop.": "Cuéntale al equipo de Hermes qué ayuda o bloquea a tu taller.", "Area": "Área", "Setup": "Configuración", "Booking": "Reservas", "Mobile use": "Uso móvil", "Other": "Otro", "Rating": "Valoración", "What happened?": "¿Qué ocurrió?", "Send private feedback": "Enviar comentarios privados"
+        },
+        it: {
+          "Back to Partner Portal": "Torna al portale partner", "Verifying secure session...": "Verifica della sessione protetta...", "Session Active": "Sessione attiva", "You are securely connected to the Hermes network.": "Sei connesso in modo sicuro alla rete Hermes.",
+          "Name:": "Nome:", "Email:": "Email:", "Role:": "Ruolo:", "Go to Shop Dashboard": "Vai alla dashboard dell’officina", "Secure Logout": "Logout sicuro", "Repair Shop Owner Access": "Accesso proprietario officina",
+          "Sign in or register to manage your shop profile, services, availability, bookings, customers, and feedback.": "Accedi o registrati per gestire profilo, servizi, disponibilità, prenotazioni, clienti e feedback della tua officina.",
+          "Login": "Accedi", "Register New Shop": "Registra officina", "Email Address": "Indirizzo email", "Password": "Password", "Secure Login": "Accesso sicuro", "Your Full Name": "Nome e cognome", "Business Email": "Email aziendale", "Create Shop Account": "Crea account officina",
+          "Shop Owner Workspace": "Area proprietario officina", "Loading your secure workspace…": "Caricamento area protetta…", "Customers": "Clienti", "Logout": "Esci", "Production profile": "Profilo operativo", "Shop profile": "Profilo officina", "Your saved profile controls the public booking link and timezone.": "Il profilo salvato controlla il link pubblico di prenotazione e il fuso orario.",
+          "Not configured": "Non configurato", "Shop name": "Nome officina", "Phone": "Telefono", "Address": "Indirizzo", "City": "Città", "State": "Stato", "ZIP": "CAP", "Timezone": "Fuso orario", "Save shop profile": "Salva profilo officina", "Public booking link": "Link pubblico prenotazioni", "Copy": "Copia", "Open": "Apri", "Services": "Servizi", "Service name": "Nome servizio", "Duration": "Durata", "Add service": "Aggiungi servizio", "Loading services…": "Caricamento servizi…", "No services yet": "Nessun servizio", "Add the first service your shop accepts.": "Aggiungi il primo servizio offerto dalla tua officina.",
+          "Scheduling": "Programmazione", "Weekly availability": "Disponibilità settimanale", "Set real opening hours before sharing your public booking link.": "Imposta gli orari reali prima di condividere il link pubblico di prenotazione.", "Manage availability": "Gestisci disponibilità", "Customer intake": "Richieste clienti", "Booking inbox": "Prenotazioni", "Loading bookings…": "Caricamento prenotazioni…", "No bookings yet": "Nessuna prenotazione",
+          "Private beta": "Beta privata", "Product feedback": "Feedback sul prodotto", "Tell the Hermes team what helps or blocks your shop.": "Comunica al team Hermes cosa aiuta o blocca la tua officina.", "Area": "Area", "Setup": "Configurazione", "Booking": "Prenotazioni", "Mobile use": "Uso mobile", "Other": "Altro", "Rating": "Valutazione", "What happened?": "Cosa è successo?", "Send private feedback": "Invia feedback privato"
+        },
+        fr: {
+          "Back to Partner Portal": "Retour au portail partenaires", "Verifying secure session...": "Vérification de la session sécurisée...", "Session Active": "Session active", "You are securely connected to the Hermes network.": "Vous êtes connecté en toute sécurité au réseau Hermes.",
+          "Name:": "Nom :", "Email:": "Email :", "Role:": "Rôle :", "Go to Shop Dashboard": "Accéder au tableau de bord de l’atelier", "Secure Logout": "Déconnexion sécurisée", "Repair Shop Owner Access": "Accès propriétaire d’atelier",
+          "Sign in or register to manage your shop profile, services, availability, bookings, customers, and feedback.": "Connectez-vous ou inscrivez-vous pour gérer le profil, les services, les disponibilités, les réservations, les clients et les retours de votre atelier.",
+          "Login": "Connexion", "Register New Shop": "Inscrire un atelier", "Email Address": "Adresse email", "Password": "Mot de passe", "Secure Login": "Connexion sécurisée", "Your Full Name": "Nom complet", "Business Email": "Email professionnel", "Create Shop Account": "Créer le compte de l’atelier",
+          "Shop Owner Workspace": "Espace propriétaire de l’atelier", "Loading your secure workspace…": "Chargement de votre espace sécurisé…", "Customers": "Clients", "Logout": "Déconnexion", "Production profile": "Profil opérationnel", "Shop profile": "Profil de l’atelier", "Your saved profile controls the public booking link and timezone.": "Votre profil enregistré contrôle le lien public de réservation et le fuseau horaire.",
+          "Not configured": "Non configuré", "Shop name": "Nom de l’atelier", "Phone": "Téléphone", "Address": "Adresse", "City": "Ville", "State": "État", "ZIP": "Code postal", "Timezone": "Fuseau horaire", "Save shop profile": "Enregistrer le profil", "Public booking link": "Lien public de réservation", "Copy": "Copier", "Open": "Ouvrir", "Services": "Services", "Service name": "Nom du service", "Duration": "Durée", "Add service": "Ajouter un service", "Loading services…": "Chargement des services…", "No services yet": "Aucun service pour le moment", "Add the first service your shop accepts.": "Ajoutez le premier service proposé par votre atelier.",
+          "Scheduling": "Planning", "Weekly availability": "Disponibilité hebdomadaire", "Set real opening hours before sharing your public booking link.": "Définissez vos horaires réels avant de partager le lien public de réservation.", "Manage availability": "Gérer les disponibilités", "Customer intake": "Demandes clients", "Booking inbox": "Réservations", "Loading bookings…": "Chargement des réservations…", "No bookings yet": "Aucune réservation pour le moment",
+          "Private beta": "Bêta privée", "Product feedback": "Retour produit", "Tell the Hermes team what helps or blocks your shop.": "Dites à l’équipe Hermes ce qui aide ou bloque votre atelier.", "Area": "Section", "Setup": "Configuration", "Booking": "Réservations", "Mobile use": "Utilisation mobile", "Other": "Autre", "Rating": "Évaluation", "What happened?": "Que s’est-il passé ?", "Send private feedback": "Envoyer un retour privé"
+        }
+      };
+
+      const placeholders = {
+        uk: { "Min. 8 characters": "Мінімум 8 символів", "What worked, what was confusing, or what should change next?": "Що працювало, що було незрозуміло або що потрібно змінити?" },
+        ru: { "Min. 8 characters": "Минимум 8 символов", "What worked, what was confusing, or what should change next?": "Что работало, что было непонятно или что нужно изменить?" },
+        es: { "Min. 8 characters": "Mínimo 8 caracteres", "What worked, what was confusing, or what should change next?": "¿Qué funcionó, qué resultó confuso o qué debería cambiar?" },
+        it: { "Min. 8 characters": "Minimo 8 caratteri", "What worked, what was confusing, or what should change next?": "Cosa ha funzionato, cosa era poco chiaro o cosa dovrebbe cambiare?" },
+        fr: { "Min. 8 characters": "8 caractères minimum", "What worked, what was confusing, or what should change next?": "Qu’est-ce qui a fonctionné, qu’est-ce qui était confus ou que faudrait-il changer ?" }
+      };
+
+      const translateTree = (root = document.body) => {
+        const table = translations[locale] || {};
+        if (locale === "en" || !root) return;
+        const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+        let node = walker.nextNode();
+        while (node) {
+          const raw = node.nodeValue || "";
+          const normalized = raw.replace(/\s+/g, " ").trim();
+          const translated = table[normalized];
+          if (translated) {
+            const leading = raw.match(/^\s*/)?.[0] || "";
+            const trailing = raw.match(/\s*$/)?.[0] || "";
+            node.nodeValue = `${leading}${translated}${trailing}`;
+          }
+          node = walker.nextNode();
+        }
+        root.querySelectorAll?.("input[placeholder], textarea[placeholder]").forEach((field) => {
+          const current = field.getAttribute("placeholder");
+          const translated = placeholders[locale]?.[current];
+          if (translated) field.setAttribute("placeholder", translated);
+        });
+      };
+
+      document.documentElement.lang = locale;
+
       // Preserve the current product route when navigating anywhere inside Hermes Connect.
       document.querySelectorAll('main a[href^="/services/hermes-connect/"]').forEach((link) => {
         const href = link.getAttribute("href");
@@ -94,6 +203,25 @@
           replacement.textContent = "Use the current Hermes Connect product in your browser. No simulated native installation is reported as successful.";
           button.replaceWith(replacement);
         });
+
+        translateTree(document.body);
+
+        // Owner workspace content is rendered asynchronously from real APIs. Keep language consistent
+        // for newly inserted labels without creating separate localized pages or runtimes.
+        if (locale !== "en") {
+          const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+              mutation.addedNodes.forEach((added) => {
+                if (added.nodeType === Node.ELEMENT_NODE) translateTree(added);
+                else if (added.nodeType === Node.TEXT_NODE) {
+                  const parent = added.parentElement;
+                  if (parent) translateTree(parent);
+                }
+              });
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        }
       }
     };
 
