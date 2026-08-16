@@ -40,6 +40,9 @@ assert.match(paidPlan, /"Idempotency-Key": requestId/);
 assert.match(paidPlan, /connect_paid_plan_requested/);
 assert.match(paidPlan, /No payment is taken here/);
 assert.doesNotMatch(paidPlan, /js\.stripe\.com|from\s+["']stripe["']|payment_intents|checkout\.sessions\.create|paypal\.com\/sdk/i);
-assert.doesNotMatch(paidPlan, /dataLayer\.push\([\s\S]{0,500}(plan-email|plan-phone|contactName|email,|phone,)/);
+assert.doesNotMatch(
+  paidPlan,
+  /window\.dataLayer\.push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
+);
 
 console.log("Repair Shop growth CTA, paid activation intent, private lead routing, and zero-PII telemetry contract passed.");
