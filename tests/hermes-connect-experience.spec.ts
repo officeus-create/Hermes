@@ -9,6 +9,14 @@ const localeCases = [
   ["ru", "/services/hermes-connect/repair-shops/?lang=ru"],
 ] as const;
 
+const ownerLocaleCases = [
+  ["ru", "Доступ владельца СТО", "Зарегистрировать СТО", "Создать аккаунт СТО"],
+  ["uk", "Доступ власника СТО", "Зареєструвати СТО", "Створити акаунт СТО"],
+  ["es", "Acceso para propietarios de talleres", "Registrar taller", "Crear cuenta del taller"],
+  ["it", "Accesso proprietario officina", "Registra officina", "Crea account officina"],
+  ["fr", "Accès propriétaire d’atelier", "Inscrire un atelier", "Créer le compte de l’atelier"],
+] as const;
+
 test("Hermes Connect language switching stays on the equivalent product route", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
 
@@ -23,6 +31,28 @@ test("Hermes Connect language switching stays on the equivalent product route", 
   for (const [locale, expectedHref] of localeCases) {
     await expect(languageMenu.locator(`a[lang="${locale}"]`)).toHaveAttribute("href", expectedHref);
   }
+});
+
+test("Repair Shop owner registration is localized without creating duplicate auth pages", async ({ page }) => {
+  for (const [locale, heading, registerTab, createAccount] of ownerLocaleCases) {
+    await page.goto(`/services/hermes-connect/repair-shops/auth/?mode=register&lang=${locale}`);
+    await expect(page.locator("html")).toHaveAttribute("lang", locale);
+    await expect(page.getByRole("heading", { name: heading })).toBeVisible();
+    await expect(page.getByRole("button", { name: registerTab })).toHaveClass(/active/);
+    await expect(page.getByRole("button", { name: createAccount })).toBeVisible();
+    await expect(page.locator("#reg-role")).toHaveValue("Shop Owner");
+    await expect(page.locator("#reg-location")).toHaveValue("United States");
+  }
+});
+
+test("Repair Shop owner language is preserved into workspace links", async ({ page }) => {
+  await page.route("**/api/auth/me", async (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ success: true, specialist: { name: "Pilot Owner", email: "owner@example.com", role: "Shop Owner" } }),
+  }));
+  await page.goto("/services/hermes-connect/repair-shops/auth/?lang=es");
+  await expect(page.getByRole("link", { name: "Ir al panel del taller" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/?lang=es");
 });
 
 test("Hermes Connect product family navigation replaces the old Repair Shop back arrow", async ({ page }) => {
@@ -72,6 +102,16 @@ test("Hermes Connect family navigation remains usable on mobile without horizont
   await expect(page.locator("[data-hc-product-context]")).toContainText("ПОТОЧНИЙ ЖИВИЙ ПІЛОТ");
   await expect(page.locator("[data-hc-english-only]")).toBeVisible();
   await expect(page.locator(".hc-family-nav")).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+});
+
+test("multilingual Repair Shop registration remains usable on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register&lang=es");
+
+  await expect(page.getByRole("heading", { name: "Acceso para propietarios de talleres" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Crear cuenta del taller" })).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
 });
