@@ -1,163 +1,31 @@
 ---
-import { ArrowLeft, ArrowRight, Calculator, DollarSign, Fuel, ShieldCheck, Sparkles, Truck } from "@lucide/astro";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import HermesConnectLauncher from "../../../components/HermesConnectLauncher.astro";
-import SiteFooter from "../../../components/SiteFooter.astro";
-import SiteHeader from "../../../components/SiteHeader.astro";
-import { HERMES_CONNECT_PRICING } from "../../../data/hermes-connect-pricing";
-
-const canonicalUrl = "https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/";
+import HermesConnectCapabilityPage from "../../../components/HermesConnectCapabilityPage.astro";
 
 const faqs = [
   {
-    question: "What is the B2B Load Analyzer?",
-    answer: "The Load Analyzer is an interactive financial calculator for freight and vehicle transport operators. It computes rate-per-mile (RPM), fuel costs, driver pay, estimated deadhead, and net margin percentage in seconds."
+    question: "Is Load Analyzer a current live paid Hermes Connect tool?",
+    answer: "No. The page now documents a reference capability only. It does not publish an active subscription price or claim a live load-board integration.",
   },
   {
-    question: "How does the Load Analyzer help car haulers and freight operators?",
-    answer: "By providing instant profit calculations before accepting a load offer, preventing low-margin or loss-making trips and giving dispatchers clear negotiation thresholds."
-  }
+    question: "What is the intended use of Load Analyzer?",
+    answer: "The capability is designed to help freight operators model RPM, fuel cost, deadhead, driver pay, and estimated margin before accepting or negotiating a load.",
+  },
 ];
 
-const schema = [
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Hermes Connect B2B Load Analyzer",
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
-    url: canonicalUrl,
-    description: "Interactive freight load profit analyzer calculating RPM, net margin %, fuel expenses, and driver pay thresholds.",
-    offers: {
-      "@type": "Offer",
-      price: HERMES_CONNECT_PRICING.pro.priceMonthly,
-      priceCurrency: "USD"
-    }
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map(faq => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer
-      }
-    }))
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
-      { "@type": "ListItem", position: 3, name: "Load Analyzer", item: canonicalUrl }
-    ]
-  }
+const capabilities = [
+  { title: "RPM verification", body: "Model gross rate per mile against trip distance and estimated deadhead before a dispatch decision." },
+  { title: "Cost inputs", body: "Combine fuel, driver-pay, and operating assumptions without presenting external fuel or load-board data as automatically live." },
+  { title: "Margin threshold", body: "Use the resulting estimate as a decision aid for human review and negotiation, not as a guaranteed financial outcome." },
 ];
 ---
 
-<BaseLayout
-  title="B2B Freight Load Analyzer & RPM Calculator | Hermes Connect"
-  description="Calculate freight rate-per-mile, net profit margin %, fuel cost, and driver pay with the Hermes Connect Load Analyzer."
-  schema={schema}
->
-  <SiteHeader />
-
-  <main id="main-content" class="hc-feature-page">
-    <div class="page-container">
-      <nav class="breadcrumb-nav" aria-label="Breadcrumb">
-        <ol class="breadcrumb-list">
-          <li><a href="/">Home</a></li>
-          <li><a href="/services/hermes-connect/">Hermes Connect</a></li>
-          <li aria-current="page">Load Analyzer</li>
-        </ol>
-      </nav>
-
-      <header class="hero-section">
-        <div class="badge">✦ Public Beta Tool</div>
-        <h1>B2B Freight Load Analyzer</h1>
-        <p class="hero-lead">
-          Know your net profit before accepting any load. Calculate gross pay, rate-per-mile (RPM), fuel costs, and net margin % instantly.
-        </p>
-
-        <div class="cta-group">
-          <a class="btn primary-btn" href="https://connect.hermeslogisticsus.com/workspace?tool=load-analyzer">
-            <Calculator size={18} aria-hidden="true" />
-            Try Load Analyzer in Workspace
-          </a>
-          <HermesConnectLauncher variant="header" />
-        </div>
-      </header>
-
-      <section class="feature-overview">
-        <h2>Key Calculations &amp; Operational Value</h2>
-        <div class="card-grid">
-          <div class="card">
-            <DollarSign class="icon" size={28} />
-            <h3>Rate-Per-Mile (RPM) Verification</h3>
-            <p>Computes exact gross RPM across trip distance plus estimated deadhead miles.</p>
-          </div>
-          <div class="card">
-            <Fuel class="icon" size={28} />
-            <h3>Fuel Expense Estimation</h3>
-            <p>Calculates estimated fuel consumption based on current regional diesel/gas prices and equipment MPG.</p>
-          </div>
-          <div class="card">
-            <Truck class="icon" size={28} />
-            <h3>Net Profit Margin %</h3>
-            <p>Deducts driver pay and fuel expenses to display net profit margin % and net profit dollars instantly.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="demo-boundary-notice">
-        <ShieldCheck size={20} class="notice-icon" />
-        <div>
-          <strong>Public Beta Transparency Notice:</strong> Calculations run locally inside your browser. Live DAT/Truckstop API load board auto-imports are currently labeled <em>Simulated / Beta</em>.
-        </div>
-      </section>
-
-      <section class="faq-section">
-        <h2>Frequently Asked Questions</h2>
-        <div class="faq-grid">
-          {faqs.map(faq => (
-            <div class="faq-item">
-              <h3>{faq.question}</h3>
-              <p>{faq.answer}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <SiteFooter />
-</BaseLayout>
-
-<style>
-  .hc-feature-page { padding: 3rem 1.5rem 5rem; max-width: 1100px; margin: 0 auto; color: var(--color-text, #f3f4f6); }
-  .breadcrumb-list { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin-bottom: 2rem; font-size: 0.9rem; color: #9ca3af; }
-  .breadcrumb-list a { color: #38bdf8; text-decoration: none; }
-  .hero-section { text-align: center; margin-bottom: 4rem; }
-  .badge { display: inline-block; padding: 0.35rem 0.85rem; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem; }
-  h1 { font-size: 2.75rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.2; }
-  .hero-lead { font-size: 1.25rem; color: #9ca3af; max-width: 800px; margin: 0 auto 2rem; line-height: 1.6; }
-  .cta-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1.75rem; border-radius: 10px; font-weight: 600; text-decoration: none; transition: transform 0.2s, background 0.2s; }
-  .primary-btn { background: #38bdf8; color: #090d16; }
-  .primary-btn:hover { background: #7dd3fc; transform: translateY(-2px); }
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-  .card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 1.75rem; }
-  .card .icon { color: #38bdf8; margin-bottom: 1rem; }
-  .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
-  .card p { color: #9ca3af; font-size: 0.95rem; line-height: 1.5; }
-  .demo-boundary-notice { display: flex; align-items: center; gap: 0.75rem; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.25); color: #fde047; padding: 1.25rem; border-radius: 12px; margin: 3rem 0; font-size: 0.95rem; }
-  .notice-icon { flex-shrink: 0; }
-  .faq-section { margin-top: 4rem; }
-  .faq-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
-  .faq-item { background: rgba(255,255,255,0.02); border-radius: 12px; padding: 1.25rem; border: 1px solid rgba(255,255,255,0.05); }
-  .faq-item h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #f3f4f6; }
-  .faq-item p { color: #9ca3af; font-size: 0.95rem; margin: 0; }
-</style>
+<HermesConnectCapabilityPage
+  name="Load Analyzer"
+  pageTitle="Load Analyzer Reference Capability | Hermes Connect"
+  description="Reference documentation for the Hermes Connect Load Analyzer capability. No current public subscription price is published on this page."
+  canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/"
+  lead="A freight decision-support concept for estimating RPM, fuel, deadhead, driver pay, and margin before accepting or negotiating a load."
+  capabilities={capabilities}
+  boundary="Live DAT, Truckstop, fuel-price, or broker integrations are not claimed on this page. The current live Hermes Connect pilot is Repair Shops; Load Analyzer remains a product-family reference capability until its production data sources and access model are verified."
+  faqs={faqs}
+/>
