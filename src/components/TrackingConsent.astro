@@ -28,6 +28,11 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     const accept = root?.querySelector("[data-consent-accept]");
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
+    const main = document.querySelector("main");
+
+    // Keep the desktop consent surface in normal document flow so it cannot cover primary content.
+    // Moving the root (not only the banner) preserves all route-specific descendant styling on resize.
+    if (root && main) main.before(root);
 
     const readChoice = () => {
       try {
@@ -126,6 +131,7 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     settings?.addEventListener("click", () => {
       if (!banner) return;
       banner.hidden = false;
+      if (window.matchMedia("(min-width: 701px)").matches) banner.scrollIntoView({ block: "nearest" });
       banner.querySelector("button")?.focus();
     });
   })();
@@ -229,14 +235,20 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
   }
 
   @media (min-width: 701px) {
+    .tracking-consent {
+      position: relative;
+      z-index: 65;
+      width: 100%;
+      padding: .55rem .8rem 0;
+    }
     .tracking-consent-banner {
-      right: .8rem;
-      bottom: .8rem;
-      width: min(960px, calc(100vw - 1.6rem));
+      position: static;
+      width: min(960px, 100%);
       display: grid;
       grid-template-columns: minmax(280px, 1fr) auto;
       gap: .8rem 1rem;
       align-items: center;
+      margin: 0 auto;
       padding: .62rem .72rem;
       border-radius: 14px;
       box-shadow: 0 12px 34px rgba(11,13,18,.11);
