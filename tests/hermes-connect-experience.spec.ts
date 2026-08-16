@@ -17,6 +17,21 @@ const ownerLocaleCases = [
   ["fr", "Accès propriétaire d’atelier", "Inscrire un atelier", "Créer le compte de l’atelier"],
 ] as const;
 
+const activationServices = [
+  { id: "svc-1", name: "Oil change", duration_minutes: 30 },
+  { id: "svc-2", name: "Diagnostics", duration_minutes: 45 },
+  { id: "svc-3", name: "Brake inspection", duration_minutes: 45 },
+];
+
+async function mockOwnerActivation(page: import("@playwright/test").Page, bookings: unknown[] = []) {
+  await page.route("**/api/auth/me", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, specialist: { name: "Owner", email: "owner@example.com", role: "Shop Owner" } }) }));
+  await page.route("**/api/repair-shop/profile", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, shop: { id: "shop-1", slug: "apex-auto", name: "Apex Auto", city: "Milwaukee", state: "WI", timezone: "America/Chicago" } }) }));
+  await page.route("**/api/services", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, services: activationServices }) }));
+  await page.route("**/api/repair-shop/availability", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, days: [{ day_of_week: 1, is_open: true, start_time: "09:00", end_time: "17:00" }] }) }));
+  await page.route("**/api/repair-shop/bookings", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, bookings }) }));
+  await page.route("**/api/repair-shop/feedback", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, feedback: [] }) }));
+}
+
 test("Hermes Connect language switching stays on the equivalent product route", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
 
@@ -66,22 +81,30 @@ test("Hermes Connect product family navigation presents Repair Shops as the curr
   await expect(page.locator(".repair-pilot-page .hero-header-nav")).toHaveCount(0);
 });
 
-test("Repair Shop dashboard guides an owner from setup to first booking and paid activation", async ({ page }) => {
-  await page.route("**/api/auth/me", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, specialist: { name: "Owner", email: "owner@example.com", role: "Shop Owner" } }) }));
-  await page.route("**/api/repair-shop/profile", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, shop: { id: "shop-1", slug: "apex-auto", name: "Apex Auto", city: "Milwaukee", state: "WI", timezone: "America/Chicago" } }) }));
-  await page.route("**/api/services", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, services: [{ id: "svc-1", name: "Oil change", duration_minutes: 30 }] }) }));
-  await page.route("**/api/repair-shop/availability", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, days: [{ day_of_week: 1, is_open: true, start_time: "09:00", end_time: "17:00" }] }) }));
-  await page.route("**/api/repair-shop/bookings", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, bookings: [] }) }));
-  await page.route("**/api/repair-shop/feedback", async (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, feedback: [] }) }));
-
-  await page.goto("/services/hermes-connect/repair-shops/dashboard/");
+test("Repair Shop dashboard guides a configured owner to share the booking link", async ({ page }) => {
+  await mockOwnerActivation(page, []);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=es");
 
   const activation = page.locator("[data-repair-activation]");
-  await expect(activation.getByRole("heading", { name: "Get your shop ready for customers" })).toBeVisible();
-  await expect(activation).toContainText("3/4 ready");
-  await expect(activation.getByRole("link", { name: "Open booking link" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/booking/?shop=apex-auto");
-  await expect(activation.getByRole("link", { name: "View $99 Founding Plan" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/");
-  await expect(page.getByRole("heading", { name: "Repair Shop workspace" })).toBeVisible();
+  await expect(activation.getByRole("heading", { name: "Prepara tu taller para recibir clientes" })).toBeVisible();
+  await expect(activation).toContainText("3/6 completo");
+  await expect(activation.getByRole("link", { name: "Abrir enlace" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/booking/?shop=apex-auto&lang=es");
+  await expect(activation.getByRole("link", { name: "Plan Founding — $99" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=es");
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+});
+
+test("completed first booking produces a 6/6 activation state and paid decision", async ({ page }) => {
+  await mockOwnerActivation(page, [{ id: "booking-1", status: "completed" }]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru");
+
+  const activation = page.locator("[data-repair-activation]");
+  await expect(activation).toContainText("6/6 готово");
+  await expect(activation.getByRole("link", { name: "Запросить платную активацию" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=ru");
+  await expect(activation).toContainText("Первый полный цикл завершён");
+  await expect(page.getByRole("heading", { name: "Рабочее пространство СТО" })).toBeVisible();
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
