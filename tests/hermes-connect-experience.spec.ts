@@ -39,8 +39,8 @@ test("Hermes Connect Hub no longer sends users into the legacy workspace runtime
 
   const rewritten = page.locator('main a[data-hc-legacy-rewritten="true"]');
   expect(await rewritten.count()).toBeGreaterThan(0);
-  expect(await rewritten.filter({ has: page.locator('xpath=self::a[@href="/services/hermes-connect/repair-shops/"]') }).count()).toBeGreaterThan(0);
-  expect(await rewritten.filter({ has: page.locator('xpath=self::a[@href="/services/hermes-connect/repair-shops/auth/"]') }).count()).toBeGreaterThan(0);
+  expect(await page.locator('main a[data-hc-legacy-rewritten="true"][href="/services/hermes-connect/repair-shops/"]').count()).toBeGreaterThan(0);
+  expect(await page.locator('main a[data-hc-legacy-rewritten="true"][href="/services/hermes-connect/repair-shops/auth/"]').count()).toBeGreaterThan(0);
 });
 
 test("non-primary Hermes Connect feature pages are visibly classified as demo capabilities", async ({ page }) => {
