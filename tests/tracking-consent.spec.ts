@@ -89,3 +89,37 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   await page.waitForTimeout(400);
   expect(requestsAfterWithdrawal).toEqual([]);
 });
+
+test("Hermes Connect mobile consent stays compact and does not cover the pilot CTA", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
+
+  const banner = page.locator("[data-consent-banner]");
+  const primaryCta = page.getByRole("link", { name: /Open Repair Shops/ });
+
+  await expect(banner).toBeVisible();
+  await expect(primaryCta).toBeVisible();
+  await expect(page.getByText("Analytics is off until you choose. Advertising storage and personalization stay disabled.", { exact: false })).toBeVisible();
+  await expect(page.locator(".tracking-consent-detail")).toBeHidden();
+  await expect(page.getByRole("button", { name: "Allow analytics" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Continue without analytics" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Privacy Policy" }).first()).toBeVisible();
+
+  const geometry = await page.evaluate(() => {
+    const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
+    const ctaElement = document.querySelector<HTMLElement>(".hc-hub-primary");
+    if (!bannerElement || !ctaElement) return null;
+    const bannerRect = bannerElement.getBoundingClientRect();
+    const ctaRect = ctaElement.getBoundingClientRect();
+    return {
+      bannerHeight: bannerRect.height,
+      bannerTop: bannerRect.top,
+      ctaTop: ctaRect.top,
+      ctaBottom: ctaRect.bottom,
+    };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry!.bannerHeight).toBeLessThanOrEqual(120);
+  expect(geometry!.ctaBottom).toBeLessThanOrEqual(geometry!.bannerTop);
+});
