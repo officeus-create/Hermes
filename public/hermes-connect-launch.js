@@ -1,4 +1,6 @@
 (() => {
+  const HUB_PATH = "/services/hermes-connect";
+  const REPAIR_PATH = "/services/hermes-connect/repair-shops/";
   const AUTH_PATH = "/services/hermes-connect/repair-shops/auth/";
 
   const normalizedPath = () => {
@@ -10,6 +12,16 @@
     if (!(anchor instanceof HTMLAnchorElement)) return;
     anchor.href = href;
     if (label) anchor.textContent = label;
+  };
+
+  const enhanceHubPreview = () => {
+    if (normalizedPath() !== HUB_PATH) return;
+    const previewButton = document.querySelector(".connect-service-profile button");
+    if (!(previewButton instanceof HTMLButtonElement)) return;
+    previewButton.tabIndex = 0;
+    previewButton.textContent = "Open Repair Shop";
+    previewButton.setAttribute("aria-label", "Open Repair Shop pilot");
+    previewButton.addEventListener("click", () => window.location.assign(REPAIR_PATH));
   };
 
   const enhanceRepairLanding = () => {
@@ -34,6 +46,7 @@
   };
 
   const boot = () => {
+    enhanceHubPreview();
     enhanceRepairLanding();
     selectAuthMode();
   };
