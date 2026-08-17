@@ -62,7 +62,13 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   await ensurePasswordResetSchema(env.DB);
   const now = new Date();
   const nowIso = now.toISOString();
-  await env.DB.prepare("DELETE FROM password_reset_tokens WHERE expires_at <= ? OR used_at IS NOT NULL").bind(nowIso).run();
+  const recentWindow = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+  // Keep one hour of request history so the hourly limit is real. Old expired/used
+  // rows are removed only after they no longer contribute to that window.
+  await env.DB
+    .prepare("DELETE FROM password_reset_tokens WHERE created_at < ? AND (expires_at <= ? OR used_at IS NOT NULL)")
+    .bind(recentWindow, nowIso)
+    .run();
 
   // Keep the public response identical for unknown, malformed, and eligible accounts.
   if (!isValidEmail(email)) return jsonResponse(200, acknowledgement);
@@ -74,7 +80,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   if (!specialist || specialist.role !== "Shop Owner") return jsonResponse(200, acknowledgement);
 
-  const recentWindow = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
   const recent = await env.DB
     .prepare("SELECT COUNT(*) AS count FROM password_reset_tokens WHERE specialist_id = ? AND created_at >= ?")
     .bind(specialist.id, recentWindow)
@@ -84,7 +89,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const token = createPasswordResetToken();
   const tokenHash = await hashPasswordResetToken(token);
   const expiresAt = passwordResetExpiry(now);
-  await env.DB.prepare("DELETE FROM password_reset_tokens WHERE specialist_id = ?").bind(specialist.id).run();
+  // Invalidate prior links without deleting their request-history rows.
+  await env.DB
+    .prepare("UPDATE password_reset_tokens SET used_at = ? WHERE specialist_id = ? AND used_at IS NULL")
+    .bind(nowIso, specialist.id)
+    .run();
   await env.DB.prepare(`
     INSERT INTO password_reset_tokens (token_hash, specialist_id, email, created_at, expires_at, used_at)
     VALUES (?, ?, ?, ?, ?, NULL)
