@@ -245,6 +245,7 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
 
 @media (max-width: 1040px) {
   .detail-page .detail-hero {
+    display: block;
     padding-top: 118px;
   }
 
@@ -261,8 +262,7 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
   .detail-page .detail-hero > img.detail-hero-media {
     position: relative;
     inset: auto;
-    order: 2;
-    width: min(100%, 760px);
+    width: min(calc(100% - 3rem), 760px);
     height: auto;
     aspect-ratio: 16 / 10;
     margin: 34px auto 0;
