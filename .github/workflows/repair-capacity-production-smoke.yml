@@ -1,0 +1,41 @@
+name: Repair Shop capacity production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/_lib/repair-shop-bookings-schema.mjs
+      - functions/api/_lib/repair-shop-capabilities-schema.mjs
+      - functions/api/_lib/repair-shop-capacity.mjs
+      - functions/api/public/repair-booking.ts
+      - functions/api/repair-shop/capabilities.ts
+      - functions/api/repair-shop/capacity.ts
+      - functions/api/repair-shop/cleanup-booking-smoke.ts
+      - public/repair-shop-capabilities.js
+      - public/repair-shop-capacity.js
+      - scripts/repair-capacity-production-smoke.sh
+      - .github/workflows/repair-capacity-production-smoke.yml
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+concurrency:
+  group: repair-shop-capacity-production
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    name: Verify production parallel booking capacity
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+
+      - name: Wait for baseline booking smoke and verify capacity concurrency
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/repair-capacity-production-smoke.sh
