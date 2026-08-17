@@ -9,19 +9,20 @@ test.beforeEach(async ({ page }) => {
 test("Logistics commercial directory uses the Hermes Pearl and Obsidian system", async ({ page }) => {
   await page.goto("/paths/logistics/");
 
+  await expect(page.locator(".detail-page-logistics")).toBeVisible();
   await expect(page.locator(".logistics-commercial-links")).toBeVisible();
   await expect(page.locator(".logistics-commercial-grid article").first()).toBeVisible();
   await expect(page.locator(".logistics-path-directory").first()).toBeVisible();
   await expect(page.locator(".logistics-customer-review")).toBeVisible();
 
   const visual = await page.evaluate(() => {
-    const section = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-commercial-links");
-    const card = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-commercial-grid article");
-    const proposal = document.querySelector<HTMLElement>(".detail-page-logistics .carrier-proposal-link");
-    const directory = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-path-directory");
-    const directoryLink = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-path-columns a");
-    const customer = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-customer-review");
-    const footerProposal = document.querySelector<HTMLElement>(".detail-page-logistics .carrier-footer-proposal");
+    const section = document.querySelector<HTMLElement>(".logistics-commercial-links");
+    const card = document.querySelector<HTMLElement>(".logistics-commercial-grid article");
+    const proposal = document.querySelector<HTMLElement>(".carrier-proposal-link");
+    const directory = document.querySelector<HTMLElement>(".logistics-path-directory");
+    const directoryLink = document.querySelector<HTMLElement>(".logistics-path-columns a");
+    const customer = document.querySelector<HTMLElement>(".logistics-customer-review");
+    const footerProposal = document.querySelector<HTMLElement>(".carrier-footer-proposal");
     if (!section || !card || !proposal || !directory || !directoryLink || !customer || !footerProposal) return null;
 
     return {
@@ -65,13 +66,14 @@ test("Logistics commercial directory remains usable at 390px", async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/paths/logistics/");
 
+  await expect(page.locator(".detail-page-logistics")).toBeVisible();
   await expect(page.locator(".logistics-commercial-grid article").first()).toBeVisible();
   await expect(page.locator(".logistics-commercial-footer")).toBeVisible();
 
   const mobile = await page.evaluate(() => {
-    const card = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-commercial-grid article");
-    const directory = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-path-directory");
-    const customer = document.querySelector<HTMLElement>(".detail-page-logistics .logistics-customer-review");
+    const card = document.querySelector<HTMLElement>(".logistics-commercial-grid article");
+    const directory = document.querySelector<HTMLElement>(".logistics-path-directory");
+    const customer = document.querySelector<HTMLElement>(".logistics-customer-review");
     if (!card || !directory || !customer) return null;
     return {
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
