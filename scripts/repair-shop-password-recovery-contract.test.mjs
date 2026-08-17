@@ -22,6 +22,7 @@ const enhancer = read("src/components/RepairShopActivationEnhancer.astro");
 const forgotPage = read("src/pages/services/hermes-connect/repair-shops/forgot-password.astro");
 const resetPage = read("src/pages/services/hermes-connect/repair-shops/reset-password.astro");
 const workerSource = read("workers/lead-email/src/index.mjs");
+const workerProductionConfig = JSON.parse(read("workers/lead-email/wrangler.production.jsonc"));
 
 assert.equal(PASSWORD_RESET_TTL_MS, 45 * 60 * 1000, "reset link TTL must stay 45 minutes");
 assert.equal(PASSWORD_RESET_SUBJECT, "[HERMES ACCOUNT] [PASSWORD RESET]");
@@ -61,6 +62,10 @@ assert.match(workerSource, /"\/v1\/send-account"/);
 assert.match(workerSource, /\[HERMES ACCOUNT\] \[PASSWORD RESET\]/);
 assert.match(workerSource, /recipient_email/);
 assert.match(workerSource, /isAccountSubject/);
+const emailBinding = workerProductionConfig.send_email?.find((binding) => binding.name === "EMAIL");
+assert.ok(emailBinding, "production Email Worker must keep EMAIL binding");
+assert.equal("destination_address" in emailBinding, false, "account recovery requires a recipient-unlocked Email Service binding");
+assert.deepEqual(emailBinding.allowed_sender_addresses, ["website@hermeslogisticsus.com"]);
 
 let capturedMessage = null;
 const env = {
