@@ -1,6 +1,7 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "hermes-lead-email",
+  "account_id": "ec00de0c2f5ffd6fda4034ca98f992f9",
   "main": "src/index.mjs",
   "compatibility_date": "2026-08-04",
   "workers_dev": false,
