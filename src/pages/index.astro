@@ -17,6 +17,7 @@ import { publicPaths } from "../data/public-paths";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
 import "../styles/homepage-performance.css";
+import "../styles/hermes-home-shell.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
@@ -75,7 +76,7 @@ const websiteSchema = {
   alternates={languageAlternates}
 >
   <SiteHeader />
-  <main id="main-content">
+  <main id="main-content" class="hermes-home-page">
     <HeroEditorial />
     <HomeRoleRouter />
     <template data-static-validator-compat data-required-copy="COO / Operational Director Program"></template>
