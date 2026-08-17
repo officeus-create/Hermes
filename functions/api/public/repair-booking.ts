@@ -74,7 +74,7 @@ async function readBusyIntervals(db: any, shopId: string, date: string) {
     .prepare(
       `SELECT start_time,end_time
        FROM repair_shop_bookings
-       WHERE shop_id = ? AND appointment_date = ? AND lower(status) NOT IN ('cancelled','canceled')
+       WHERE shop_id = ? AND appointment_date = ? AND lower(status) NOT IN ('cancelled','canceled','no_show')
        ORDER BY start_time ASC`,
     )
     .bind(shopId, date)
@@ -104,8 +104,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return jsonResponse(400, { success: false, error: "invalid_appointment_date" });
   }
 
-  // Keep schema initialization/read order deterministic on D1 instead of issuing
-  // two schema-ensuring reads concurrently on the same request.
   const capacity = await readBookingCapacity(env.DB, shop.id);
   const activeIntervals = await readBusyIntervals(env.DB, shop.id, date);
 
@@ -114,8 +112,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     shop: { slug: shop.slug, timezone: shop.timezone },
     date,
     capacity,
-    // `busy` means fully saturated intervals, so the existing browser slot UI
-    // stays correct for capacity=1 and for shops with multiple simultaneous bays.
     busy: saturatedRepairShopIntervals(activeIntervals, capacity),
   });
 }
@@ -206,10 +202,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const historyId = `repair-booking-history-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
 
-  // Keep the capacity decision inside the booking INSERT instead of doing an
-  // application-level COUNT followed by a separate write. This removes the
-  // ordinary preflight race; production concurrency smoke still verifies the
-  // deployed D1 behavior before we call capacity >1 released.
   const statements = [
     env.DB
       .prepare(
@@ -220,7 +212,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
            SELECT COUNT(*) FROM repair_shop_bookings
            WHERE shop_id = ?
              AND appointment_date = ?
-             AND lower(status) NOT IN ('cancelled','canceled')
+             AND lower(status) NOT IN ('cancelled','canceled','no_show')
              AND start_time < ?
              AND end_time > ?
          ) < ?`,
