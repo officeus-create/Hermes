@@ -76,7 +76,7 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
   width: min(46vw, 610px);
   height: min(520px, 62vw);
   border: 1px solid var(--hermes-line-light);
-  border-radius: var(--hermes-radius-hero);
+  border-radius: var(--hermes-radius-panel);
   object-fit: cover;
   transform: none;
   box-shadow: var(--hermes-shadow-card);
