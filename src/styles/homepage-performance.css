@@ -1,28 +1,16 @@
 /* Homepage-only performance/accessibility refinements from the 2026-08-11 PSI baseline. */
 
-/* Hermes Design System 1.0 — homepage compatibility layer.
-   These semantic tokens intentionally sit above the legacy palette so the homepage can
-   converge with Hermes Connect without forcing unrelated routes to restyle at once. */
-:root {
-  --hermes-pearl: #f7f6f3;
-  --hermes-surface: #ffffff;
-  --hermes-ink: #0b0d12;
-  --hermes-ink-soft: #5f6472;
-  --hermes-obsidian: #0b0d12;
-  --hermes-navy: #071038;
-  --hermes-intelligence-violet: #6f5cff;
-  --hermes-intelligence-blue: #58bff0;
-  --hermes-line: rgba(11, 13, 18, 0.12);
-  --hermes-shadow-soft: 0 18px 52px rgba(11, 13, 18, 0.08);
-  --hermes-radius-control: 999px;
-}
+/*
+ * The canonical visual tokens now live in hermes-brand-system.css.
+ * This homepage layer consumes those tokens instead of defining a second brand palette.
+ */
 
 /* Pearl shell: make the primary homepage navigation feel like the same product family
    as Hermes Connect while preserving every existing destination and language control. */
 .site-header {
   min-height: 76px;
   color: var(--hermes-ink);
-  border-bottom-color: var(--hermes-line);
+  border-bottom-color: var(--hermes-line-light);
   background: color-mix(in srgb, var(--hermes-pearl) 92%, transparent);
   box-shadow: 0 10px 32px rgba(11, 13, 18, 0.05);
   backdrop-filter: blur(18px) saturate(1.04);
@@ -31,7 +19,7 @@
 .site-header-scrolled {
   min-height: 68px;
   color: var(--hermes-ink);
-  border-bottom-color: var(--hermes-line);
+  border-bottom-color: var(--hermes-line-light);
   background: color-mix(in srgb, var(--hermes-pearl) 96%, transparent);
   box-shadow: 0 14px 36px rgba(11, 13, 18, 0.08);
 }
@@ -55,16 +43,16 @@
   min-height: 40px;
   padding: .5rem .72rem;
   border-color: rgba(11, 13, 18, .16);
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   background: rgba(255, 255, 255, .62);
 }
 
 .site-header .language-menu nav {
   overflow: hidden;
-  border-color: var(--hermes-line);
+  border-color: var(--hermes-line-light);
   border-radius: 14px;
-  background: var(--hermes-surface);
-  box-shadow: var(--hermes-shadow-soft);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
 }
 
 .site-header .language-menu nav a {
@@ -81,7 +69,7 @@
 .site-header .header-cta {
   min-height: 40px;
   padding: .5rem .78rem;
-  border-radius: var(--hermes-radius-control);
+  border-radius: var(--hermes-radius-pill);
   background: var(--hermes-obsidian);
   color: #fff;
   font-size: .82rem;
@@ -148,9 +136,9 @@
 
   .site-header .mobile-nav {
     color: var(--hermes-ink);
-    border-color: var(--hermes-line);
+    border-color: var(--hermes-line-light);
     background: color-mix(in srgb, var(--hermes-pearl) 98%, transparent);
-    box-shadow: var(--hermes-shadow-soft);
+    box-shadow: var(--hermes-shadow-card);
   }
 }
 
