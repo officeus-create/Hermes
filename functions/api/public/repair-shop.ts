@@ -1,6 +1,11 @@
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopAvailabilitySchema } from "../_lib/repair-shop-availability-schema.mjs";
+import {
+  defaultRepairShopCapabilities,
+  ensureRepairShopCapabilitiesSchema,
+  serializeRepairShopCapabilities,
+} from "../_lib/repair-shop-capabilities-schema.mjs";
 
 type Env = { DB?: any };
 
@@ -52,11 +57,30 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     storedAvailability.get(day) ?? { day_of_week: day, is_open: false, start_time: null, end_time: null },
   );
 
+  await ensureRepairShopCapabilitiesSchema(env.DB);
+  const capabilityRow = await env.DB
+    .prepare(
+      `SELECT shop_id,vehicle_types,fleet_service,mobile_roadside,emergency_24_7,parallel_booking_capacity,updated_at
+       FROM repair_shop_capabilities WHERE shop_id = ? LIMIT 1`,
+    )
+    .bind(shop.id)
+    .first();
+  const storedCapabilities = capabilityRow
+    ? serializeRepairShopCapabilities(capabilityRow, shop.id)
+    : defaultRepairShopCapabilities(shop.id);
+  const publicCapabilities = {
+    vehicle_types: storedCapabilities.vehicle_types,
+    fleet_service: storedCapabilities.fleet_service,
+    mobile_roadside: storedCapabilities.mobile_roadside,
+    emergency_24_7: storedCapabilities.emergency_24_7,
+  };
+
   const { owner_specialist_id: _owner, ...publicShop } = shop;
   return jsonResponse(200, {
     success: true,
     shop: publicShop,
     services: services?.results ?? [],
     availability,
+    capabilities: publicCapabilities,
   });
 }

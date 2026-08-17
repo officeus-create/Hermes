@@ -1,7 +1,11 @@
 ---
 const repairShopPath = "/services/hermes-connect/repair-shops";
-const isRepairShopPage = Astro.url.pathname.replace(/\/+$/, "") === repairShopPath;
+const normalizedPath = Astro.url.pathname.replace(/\/+$/, "");
+const isRepairShopPage = normalizedPath === repairShopPath;
+const isRepairShopSurface = isRepairShopPage || normalizedPath.startsWith(`${repairShopPath}/`);
 ---
+
+{isRepairShopSurface && <script is:inline src="/repair-shop-capabilities.js"></script>}
 
 {isRepairShopPage && (
   <>
