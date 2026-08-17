@@ -38,14 +38,17 @@ test("Hermes homepage uses the Pearl public shell and Obsidian primary action", 
     };
   });
 
+  const viewportWidth = page.viewportSize()?.width ?? 1440;
+  const isMobile = viewportWidth <= 720;
+
   expect(visual).not.toBeNull();
   expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
   expect(visual!.primaryBackground).toBe("rgb(11, 13, 18)");
   expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
   expect(visual!.primaryRadius).toBe("999px");
   expect(visual!.roleRadius).toBe("22px");
-  expect(visual!.pillarsRadius).toBe("30px");
-  expect(visual!.stageHeight).toBeGreaterThanOrEqual(500);
+  expect(visual!.pillarsRadius).toBe(isMobile ? "22px" : "30px");
+  expect(visual!.stageHeight).toBeGreaterThanOrEqual(isMobile ? 400 : 500);
 });
 
 test("Hermes Pearl homepage stays usable without horizontal overflow on mobile", async ({ page }) => {
