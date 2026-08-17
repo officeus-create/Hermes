@@ -139,24 +139,24 @@ test("premium opening explains four directions, supports choice, and runs once p
   await expect(intro).toHaveCount(0, { timeout: 1000 });
   await page.reload();
   await expect(page.locator("[data-site-intro]")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Move freight. Grow demand. Build capability. Build systems." })).toBeVisible();
 });
 
 test("premium opening honors the visitor's reduced-motion preference", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("[data-site-intro]")).toBeHidden();
-  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Move freight. Grow demand. Build capability. Build systems." })).toBeVisible();
 });
 
-test("homepage hero combines office and handwritten typography with a restrained living i-dot", async ({ page }) => {
+test("homepage hero uses action-led editorial typography with one intelligence signal", async ({ page }) => {
   await openRegularHome(page);
-  const title = page.getByRole("heading", { name: "Four directions. One way forward." });
+  const title = page.getByRole("heading", { name: "Move freight. Grow demand. Build capability. Build systems." });
   await expect(title).toBeVisible();
-  await expect(title.locator(".hero-title-office")).toHaveText("Four dırections.");
-  await expect(title.locator(".hero-title-script")).toHaveText("One way forward.");
-  await expect(title.locator(".hero-letter-i > i")).toHaveCount(1);
-  await expect(title.locator(".hero-letter-i > i")).not.toHaveCSS("animation-name", "none");
+  await expect(title.locator(".hero-title-office")).toHaveText("Move freight. Grow demand.");
+  await expect(title.locator(".hero-title-script")).toHaveText("Build capability. Build systems.");
+  await expect(title.locator(".hero-letter-i")).toHaveCount(0);
+  await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
 });
 
 test("Load Board demo search reveals a fictional load for a presented city", async ({ page }) => {
