@@ -43,7 +43,10 @@ assert.match(helper, /token_hash TEXT PRIMARY KEY/);
 assert.doesNotMatch(helper, /\n\s*token TEXT/);
 assert.match(forgotEndpoint, /role !== "Shop Owner"/);
 assert.match(forgotEndpoint, /return jsonResponse\(200, acknowledgement\)/);
-assert.match(forgotEndpoint, /DELETE FROM password_reset_tokens WHERE specialist_id = \?/);
+assert.match(forgotEndpoint, /SELECT COUNT\(\*\) AS count FROM password_reset_tokens WHERE specialist_id = \? AND created_at >= \?/);
+assert.match(forgotEndpoint, /if \(Number\(recent\?\.count \?\? 0\) >= 3\)/);
+assert.match(forgotEndpoint, /UPDATE password_reset_tokens SET used_at = \? WHERE specialist_id = \? AND used_at IS NULL/);
+assert.match(forgotEndpoint, /created_at < \? AND \(expires_at <= \? OR used_at IS NOT NULL\)/);
 assert.match(forgotEndpoint, /PASSWORD_RESET_EMAIL_PATH/);
 assert.match(resetEndpoint, /DELETE FROM sessions WHERE specialist_id = \?/);
 assert.match(resetEndpoint, /UPDATE password_reset_tokens SET used_at/);
@@ -114,4 +117,4 @@ const wrongAccountSubject = await worker.fetch(new Request("https://lead-email.i
 }), env);
 assert.equal(wrongAccountSubject.status, 400);
 
-console.log("Repair Shop owner password recovery token, UI, session invalidation, locale and bounded email contracts passed.");
+console.log("Repair Shop owner password recovery token, UI, session invalidation, request limiting, locale and bounded email contracts passed.");
