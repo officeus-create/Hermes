@@ -1,3 +1,5 @@
+@import "../hermes-academy-public.css";
+
 /* academy feature styles — extracted from global.css so they ship only on routes that use them */
 .academy-progression { background: #f8f6ef; }
 .academy-programs { background: #071038; color: white; }
