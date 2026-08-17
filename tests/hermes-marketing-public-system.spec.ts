@@ -35,6 +35,9 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
     };
   });
 
+  const viewportWidth = page.viewportSize()?.width ?? 1440;
+  const expectedConsoleRadius = viewportWidth <= 900 ? "22px" : "30px";
+
   expect(visual).not.toBeNull();
   expect(visual!.serviceBackground).toBe("rgb(247, 246, 243)");
   expect(visual!.cardBackground).toBe("rgb(255, 255, 255)");
@@ -42,7 +45,7 @@ test("Marketing uses Pearl capability cards with one Obsidian growth console", a
   expect(visual!.cardRadius).toBe("22px");
   expect(visual!.consoleBackground).toBe("rgb(11, 13, 18)");
   expect(visual!.consoleColor).toBe("rgb(255, 255, 255)");
-  expect(visual!.consoleRadius).toBe("30px");
+  expect(visual!.consoleRadius).toBe(expectedConsoleRadius);
   expect(visual!.selectedColor).toBe("rgb(255, 255, 255)");
   expect(visual!.headingColor).toBe("rgb(255, 255, 255)");
   expect(visual!.overflow).toBe(false);
