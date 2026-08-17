@@ -24,7 +24,6 @@ jobs:
     timeout-minutes: 15
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
 
     steps:
       - name: Check out approved main
@@ -40,12 +39,11 @@ jobs:
 
       - name: Validate Cloudflare credentials
         run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "Cloudflare API token/account ID required for hermes-lead-email deployment." >&2
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Cloudflare API token required for hermes-lead-email deployment." >&2
             exit 1
           fi
           echo "::add-mask::$CLOUDFLARE_API_TOKEN"
-          echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
 
       - name: Install dependencies
         run: npm ci
@@ -54,10 +52,9 @@ jobs:
         run: node scripts/repair-shop-password-recovery-contract.test.mjs
 
       - name: Deploy only hermes-lead-email
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
           command: deploy --config workers/lead-email/wrangler.production.jsonc --keep-vars
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
