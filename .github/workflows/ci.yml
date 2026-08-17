@@ -46,6 +46,9 @@ jobs:
       - name: Validate repair shop capacity-aware booking
         run: node scripts/repair-shop-capacity-contract.test.mjs
 
+      - name: Validate repair shop operating statuses
+        run: node scripts/repair-shop-operations-contract.test.mjs
+
       - name: Validate carrier contract engine
         run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
 
@@ -60,6 +63,9 @@ jobs:
 
       - name: Validate repair shop capacity browser flow
         run: npx playwright test tests/repair-shop-capacity.spec.ts --project=desktop
+
+      - name: Validate repair shop operating-status browser flow
+        run: npx playwright test tests/repair-shop-operations.spec.ts --project=desktop
 
       - name: Validate carrier onboarding browser flow
         run: npx playwright test tests/carrier-contract-engine.spec.ts --project=desktop --grep "carrier can complete"
