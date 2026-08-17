@@ -38,6 +38,10 @@ test("Logistics hub uses the shared Pearl modules and one Obsidian operating anc
     };
   });
 
+  const viewportWidth = page.viewportSize()?.width ?? 1440;
+  const expectedPanelRadius = viewportWidth <= 900 ? "22px" : "30px";
+  const expectedEngineRadius = viewportWidth <= 620 ? "22px" : "30px";
+
   expect(visual).not.toBeNull();
   expect(visual!.hubBackground).toBe("rgb(247, 246, 243)");
   expect(visual!.standardBackground).toBe("rgb(255, 255, 255)");
@@ -45,9 +49,9 @@ test("Logistics hub uses the shared Pearl modules and one Obsidian operating anc
   expect(visual!.loadBoardBackground).toBe("rgb(11, 13, 18)");
   expect(visual!.loadBoardColor).toBe("rgb(255, 255, 255)");
   expect(visual!.pilotBackground).toBe("rgb(11, 13, 18)");
-  expect(visual!.pilotRadius).toBe("30px");
+  expect(visual!.pilotRadius).toBe(expectedPanelRadius);
   expect(visual!.resourceRadius).toBe("22px");
-  expect(visual!.engineRadius).toBe("30px");
+  expect(visual!.engineRadius).toBe(expectedEngineRadius);
   expect(visual!.optionRadius).toBe("12px");
   expect(visual!.overflow).toBe(false);
 });
