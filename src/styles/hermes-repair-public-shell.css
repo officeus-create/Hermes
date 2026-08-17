@@ -24,14 +24,26 @@ html.hc-experience body .repair-pilot-page .repair-faq {
   background-color: transparent;
 }
 
-/* The public Founding Plan accidentally inherited the site's generic full-screen
-   `.hero` treatment. Scope it back to a Pearl decision page while the price card
-   remains the deliberate Obsidian conversion anchor. */
+/* The public Founding Plan shares the generic `.hero` class with older site pages.
+   Reset every layout property that can turn it back into a full-screen marketing hero.
+   The page remains a compact Pearl decision surface with one Obsidian price anchor. */
 html.hc-experience body .plan-page .hero {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr) !important;
+  gap: 2.4rem !important;
+  align-items: center !important;
+  width: auto !important;
+  height: auto !important;
   min-height: 0 !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 3.6rem 0 !important;
+  position: relative !important;
+  inset: auto !important;
   color: var(--hermes-ink) !important;
   background: transparent !important;
   text-shadow: none !important;
+  overflow: visible !important;
 }
 
 html.hc-experience body .plan-page .hero h1,
@@ -105,10 +117,17 @@ html.hc-experience body .repair-free-launch .launch-cta:focus-visible {
   background: #151922 !important;
 }
 
+@media (max-width: 900px) {
+  html.hc-experience body .plan-page .hero {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 1.5rem !important;
+    align-items: start !important;
+  }
+}
+
 @media (max-width: 760px) {
   html.hc-experience body .plan-page .hero {
-    padding-top: 2.5rem;
-    padding-bottom: 3rem;
+    padding: 2.25rem 0 2.75rem !important;
   }
 
   html.hc-experience body .repair-free-launch {
