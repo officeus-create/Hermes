@@ -30,6 +30,7 @@ const isAllowedSubject = (value) =>
   value === "[HERMES CONTRACT] [CARRIER ONBOARDING]" ||
   /^\[HERMES SALES\] \[POSTED LOAD\] \[(CUSTOMER|SHIPPER|DEALER|BROKER|OTHER BUSINESS)\]$/.test(value) ||
   /^\[HERMES INQUIRY\] \[(LOGISTICS|MARKETING|ACADEMY|IT DEVELOPMENT|GENERAL)\]$/.test(value);
+const isAccountSubject = (value) => value === "[HERMES ACCOUNT] [PASSWORD RESET]";
 
 const constantTimeEqual = async (left, right) => {
   const leftBytes = encoder.encode(left);
@@ -222,7 +223,7 @@ const sendSafely = async (env, message) => {
 const worker = {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (!["/v1/send", "/v1/send-contract"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
+    if (!["/v1/send", "/v1/send-contract", "/v1/send-account"].includes(url.pathname)) return json(404, { ok: false, error: "not_found" });
     if (request.method !== "POST") return json(405, { ok: false, error: "method_not_allowed" });
 
     if (!env.LEAD_SERVICE_TOKEN || !env.EMAIL || !env.SALES_SENDER) {
@@ -238,6 +239,7 @@ const worker = {
     }
 
     const isContractPath = url.pathname === "/v1/send-contract";
+    const isAccountPath = url.pathname === "/v1/send-account";
     const maxBodyBytes = isContractPath ? MAX_CONTRACT_BODY_BYTES : MAX_LEAD_BODY_BYTES;
     const contentLength = Number(request.headers.get("Content-Length") || "0");
     if (contentLength > maxBodyBytes) return json(413, { ok: false, error: "request_too_large" });
@@ -255,11 +257,31 @@ const worker = {
     const subject = cleanHeader(input?.subject, 160);
     const text = clean(input?.text, MAX_MESSAGE_TEXT);
     const replyTo = cleanHeader(input?.reply_to, 320).toLowerCase();
+    const subjectAllowed = isAccountPath ? isAccountSubject(subject) : isAllowedSubject(subject);
 
-    if (!isRequestId(requestId) || !isAllowedSubject(subject) || text.length < 80) {
+    if (!isRequestId(requestId) || !subjectAllowed || text.length < 80) {
       return json(400, { ok: false, error: "invalid_message" });
     }
     if (replyTo && !isEmail(replyTo)) return json(400, { ok: false, error: "invalid_reply_to" });
+
+    if (isAccountPath) {
+      const recipientEmail = cleanHeader(input?.recipient_email, 320).toLowerCase();
+      if (!isEmail(recipientEmail) || replyTo) return json(400, { ok: false, error: "invalid_account_delivery" });
+      const result = await sendSafely(env, {
+        to: recipientEmail,
+        from: cleanHeader(env.SALES_SENDER, 320),
+        subject,
+        text,
+        replyTo: "",
+        attachments: [],
+        requestId,
+      });
+      if (!result.ok) {
+        console.error(JSON.stringify({ event: "account_delivery_failed", category: result.mapped.error, attempts: result.attempts, request_id: requestId }));
+        return json(result.mapped.status, { ok: false, error: result.mapped.error });
+      }
+      return json(202, { ok: true, recipient_count: 1, attempts: result.attempts });
+    }
 
     if (isContractPath) {
       if (subject !== "[HERMES CONTRACT] [CARRIER ONBOARDING]") return json(400, { ok: false, error: "invalid_contract_subject" });
