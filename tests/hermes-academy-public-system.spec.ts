@@ -26,11 +26,14 @@ test("Academy uses a Pearl learning flow and preserves all five interactive scre
     };
   });
 
+  const viewportWidth = page.viewportSize()?.width ?? 1440;
+  const expectedPanelRadius = viewportWidth <= 900 ? "22px" : "30px";
+
   expect(opening).not.toBeNull();
   expect(opening!.progressBackground).toBe("rgb(255, 255, 255)");
   expect(opening!.progressRadius).toBe("22px");
   expect(opening!.screenBackground).toBe("rgb(255, 255, 255)");
-  expect(opening!.screenRadius).toBe("30px");
+  expect(opening!.screenRadius).toBe(expectedPanelRadius);
   expect(opening!.overflow).toBe(false);
 
   await page.locator('[data-academy-next="1"]').click();
@@ -63,7 +66,7 @@ test("Academy uses a Pearl learning flow and preserves all five interactive scre
   expect(lab).not.toBeNull();
   expect(lab!.background).toBe("rgb(11, 13, 18)");
   expect(lab!.color).toBe("rgb(255, 255, 255)");
-  expect(lab!.radius).toBe("30px");
+  expect(lab!.radius).toBe(expectedPanelRadius);
   expect(lab!.mockupRadius).toBe("22px");
   expect(lab!.overflow).toBe(false);
 });
