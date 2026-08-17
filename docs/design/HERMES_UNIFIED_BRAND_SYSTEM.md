@@ -11,7 +11,7 @@ Hermes must read as one company and one product ecosystem even when the business
 ## 1. Surface model
 
 ### Pearl outside
-Public discovery, marketing, education, explanation, onboarding, and product landing surfaces use Pearl as the dominant canvas.
+Public discovery, marketing, education, explanation, onboarding, customer booking, pricing/activation, and product landing surfaces use Pearl as the dominant canvas.
 
 - Pearl: `#F7F6F3`
 - Paper: `#FFFFFF`
@@ -19,7 +19,7 @@ Public discovery, marketing, education, explanation, onboarding, and product lan
 - Muted text: `#666C79`
 - Light border: `rgba(11,13,18,.10)`
 
-Public pages should feel bright, calm, spacious, precise, and premium. Dark sections are deliberate transitions, not the default page background.
+Public pages should feel bright, calm, spacious, precise, and premium. Dark sections are deliberate transitions, not the default page background. Owner login/registration, customer booking, and public purchase-intent forms remain part of the public Pearl journey even though they can lead into an Obsidian operational workspace.
 
 ### Obsidian inside
 Operational workspaces, dashboards, CRM, load boards, AI command surfaces, analytics, and dense work panels use Obsidian.
@@ -31,6 +31,8 @@ Operational workspaces, dashboards, CRM, load boards, AI command surfaces, analy
 - Dark border: `rgba(255,255,255,.09)`
 
 Darkness communicates: **the user has entered the operating environment**.
+
+A deliberate Obsidian conversion card may appear inside a Pearl public page when it marks a focused plan/decision checkpoint, but it should not turn the entire acquisition or onboarding flow dark.
 
 ### Violet intelligence
 Violet is the canonical AI/intelligence accent. Ocean may support it. Neither should become a full-page decorative wash.
@@ -206,14 +208,14 @@ Do **not** redesign the entire repository in one PR.
 Migrate template families in evidence-backed slices:
 
 1. master tokens + Hermes Connect public Product Hub
-2. Repair Shops public shell
-3. main Hermes homepage
+2. Repair Shops public landing + auth + customer booking + Founding Plan
+3. Repair Shops operational workspace + main Hermes homepage/shared primitives
 4. Logistics public family
 5. Marketing public family
 6. Academy public family
 7. IT Development public family
 8. SEO / contact / legal / localized secondary templates
-9. operational workspaces aligned to Obsidian primitives without forcing them into Pearl
+9. operational workspaces aligned to Obsidian primitives without forcing public surfaces into Obsidian
 
 Each slice requires desktop + mobile visual review and existing functional/SEO contract checks.
 
