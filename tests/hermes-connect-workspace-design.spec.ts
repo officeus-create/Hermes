@@ -56,9 +56,12 @@ test("Repair Shop owner availability uses the shared Obsidian workspace grammar"
     };
   });
 
+  const viewportWidth = page.viewportSize()?.width ?? 1440;
+  const expectedPanelRadius = viewportWidth <= 720 ? "18px" : "22px";
+
   expect(visual).not.toBeNull();
   expect(visual!.rootBackground).toBe("rgb(11, 13, 18)");
-  expect(visual!.panelRadius).toBe("22px");
+  expect(visual!.panelRadius).toBe(expectedPanelRadius);
   expect(visual!.buttonBackground).toBe("rgb(255, 255, 255)");
   expect(visual!.buttonBackgroundImage).toBe("none");
   expect(visual!.buttonColor).toBe("rgb(11, 13, 18)");
