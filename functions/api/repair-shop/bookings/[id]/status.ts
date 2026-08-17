@@ -6,10 +6,11 @@ type Env = { DB?: any };
 type StatusInput = { status?: unknown };
 
 const transitions: Record<string, string[]> = {
-  confirmed: ["in_progress", "completed", "cancelled"],
+  confirmed: ["in_progress", "completed", "cancelled", "no_show"],
   in_progress: ["completed", "cancelled"],
   completed: [],
   cancelled: [],
+  no_show: [],
 };
 
 export async function onRequestPatch({ request, env, params }: { request: Request; env: Env; params: { id?: string } }) {
