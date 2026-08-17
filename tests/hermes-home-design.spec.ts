@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+const commercialHeroTitle = "Move freight. Grow demand. Build capability. Build systems.";
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     sessionStorage.setItem("hermes-intro-seen", "true");
@@ -9,7 +11,7 @@ test.beforeEach(async ({ page }) => {
 test("Hermes homepage uses a commercial hierarchy instead of competing first-screen choices", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: commercialHeroTitle })).toBeVisible();
   await expect(page.locator(".home-hero-stage")).toBeVisible();
   await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
   await expect(page.locator(".home-hero-system-card")).toHaveCount(0);
@@ -78,7 +80,7 @@ test("Hermes Pearl homepage stays usable without horizontal overflow on mobile",
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: commercialHeroTitle })).toBeVisible();
   await expect(page.getByRole("link", { name: "Find the right next step" })).toBeVisible();
   await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
   await expect(page.locator("[data-role-priority='commercial']")).toHaveCount(3);
