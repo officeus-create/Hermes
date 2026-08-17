@@ -4,19 +4,22 @@ const productRoute = "/services/hermes-connect/";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
 const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
 
-test("Hermes Connect has one indexed product-family overview and one current live pilot", async ({ page }) => {
+test("Hermes Connect has one indexed adaptive product-family overview and one current live product", async ({ page }) => {
   await page.goto(productRoute);
 
-  await expect(page).toHaveTitle("Hermes Connect | Product Family & Repair Shop Live Pilot");
+  await expect(page).toHaveTitle("Hermes Connect | AI Operating System for Business");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${productRoute}`);
   await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute("content", /noindex/i);
-  await expect(page.getByRole("heading", { name: "One product family. One current live pilot." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Run your business with AI\./ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
 
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
-  expect(await page.locator(`main a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
-  await expect(page.getByText("Current live pilot", { exact: true }).first()).toBeVisible();
-  expect(await page.getByText("Reference capability", { exact: true }).count()).toBeGreaterThanOrEqual(7);
+  expect(await page.locator(`a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
+  await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
+  expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
+  await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 
   const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
   const schemaText = schemas.join("\n");
