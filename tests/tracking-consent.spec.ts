@@ -63,9 +63,6 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   await expect.poll(() => analyticsRequests.some((url) => url.includes("googletagmanager.com/gtag/js?id=G-RY26321PVW"))).toBe(true);
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(1);
 
-  // Synchronize the baseline with the initial GA4 hit that is allowed by the
-  // user's explicit consent. Otherwise the first page-view request can start
-  // after the withdrawal count is captured and look like post-withdrawal traffic.
   await expect.poll(() => analyticsRequests.some(isHermesGaCollectRequest)).toBe(true);
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
@@ -90,7 +87,7 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   expect(requestsAfterWithdrawal).toEqual([]);
 });
 
-test("Hermes Connect mobile consent stays compact and does not cover the pilot CTA", async ({ page }) => {
+test("Hermes Connect mobile consent stays compact and does not cover the primary product CTA", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
 
@@ -107,7 +104,7 @@ test("Hermes Connect mobile consent stays compact and does not cover the pilot C
 
   const geometry = await page.evaluate(() => {
     const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
-    const ctaElement = document.querySelector<HTMLElement>(".hc-hub-primary");
+    const ctaElement = document.querySelector<HTMLElement>(".hc-primary");
     const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
     const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
     if (!bannerElement || !ctaElement || !acceptElement || !declineElement) return null;
