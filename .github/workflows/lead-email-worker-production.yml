@@ -12,9 +12,6 @@ on:
 permissions:
   contents: read
 
-environments:
-  production:
-
 concurrency:
   group: hermes-lead-email-production
   cancel-in-progress: false
