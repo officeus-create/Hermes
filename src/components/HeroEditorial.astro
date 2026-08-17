@@ -6,40 +6,54 @@ import { site } from "../data/site";
 ---
 
 <section class="hero" id="top" data-motion-hero>
-  <div class="hero-media">
-    <Picture
-      src={heroImage}
-      formats={["avif", "webp"]}
-      fallbackFormat="jpg"
-      widths={[640, 960, 1280, 1600, 1920]}
-      sizes="100vw"
-      alt={site.hero.imageAlt}
-      priority
-      quality="high"
-      pictureAttributes={{ style: "display:block;width:100%;height:100%;" }}
-    />
-  </div>
-  <div class="hero-shade"></div>
   <div class="hero-content shell">
-    <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
-    <h1 class="hero-title" aria-label={site.hero.title}>
-      <span class="hero-title-office" aria-hidden="true">
-        Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.
-      </span>
-      <em class="hero-title-script" aria-hidden="true">One way forward.</em>
-    </h1>
-    <p class="hero-copy">{site.hero.body}</p>
-    <div class="hero-actions">
-      <a class="button button-primary" href={site.hero.primaryCta.href}>
-        {site.hero.primaryCta.label}
-        <ArrowDown size={18} aria-hidden="true" />
-      </a>
-      <a class="button button-ghost" href={site.hero.secondaryCta.href}>
-        {site.hero.secondaryCta.label}
-        <ArrowUpRight size={18} aria-hidden="true" />
-      </a>
+    <div class="home-hero-copy">
+      <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
+      <h1 class="hero-title" aria-label={site.hero.title}>
+        <span class="hero-title-office" aria-hidden="true">
+          Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.
+        </span>
+        <em class="hero-title-script" aria-hidden="true">One way forward.</em>
+      </h1>
+      <p class="hero-copy">{site.hero.body}</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href={site.hero.primaryCta.href}>
+          {site.hero.primaryCta.label}
+          <ArrowDown size={18} aria-hidden="true" />
+        </a>
+        <a class="button button-ghost" href={site.hero.secondaryCta.href}>
+          {site.hero.secondaryCta.label}
+          <ArrowUpRight size={18} aria-hidden="true" />
+        </a>
+      </div>
+    </div>
+
+    <div class="home-hero-stage" aria-label="Hermes ecosystem visual">
+      <div class="hero-media">
+        <Picture
+          src={heroImage}
+          formats={["avif", "webp"]}
+          fallbackFormat="jpg"
+          widths={[640, 960, 1280, 1600, 1920]}
+          sizes="(max-width: 1040px) 100vw, 55vw"
+          alt={site.hero.imageAlt}
+          priority
+          quality="high"
+          pictureAttributes={{ style: "display:block;width:100%;height:100%;" }}
+        />
+      </div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="home-intelligence-knot" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="home-hero-system-card">
+        <small>One Hermes ecosystem</small>
+        <strong>Four directions. One operating standard.</strong>
+        <p>Logistics · Growth · Education · Technology</p>
+      </div>
     </div>
   </div>
+
   <a class="hero-scroll-cue" href="#paths" aria-label="Scroll to choose a Hermes direction">
     <span>Choose a direction</span>
     <ArrowDown size={18} aria-hidden="true" />
