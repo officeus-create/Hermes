@@ -26,7 +26,7 @@ test("homepage hero uses responsive modern assets without the obsolete JPEG prel
   const image = picture.locator("img");
   await expect(image).toHaveAttribute("loading", "eager");
   await expect(image).toHaveAttribute("fetchpriority", "high");
-  await expect(image).toHaveAttribute("sizes", "100vw");
+  await expect(image).toHaveAttribute("sizes", "(max-width: 1040px) 100vw, 55vw");
   await expect(image).toHaveAttribute("width", "2200");
   await expect(image).toHaveAttribute("height", "1238");
 
