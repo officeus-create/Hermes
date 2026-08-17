@@ -55,6 +55,13 @@ assert(hub.includes("Hermes Connect Labs") && hub.includes("REFERENCE"), "Hub: r
 assert(!hub.includes("connect.hermeslogisticsus.com/workspace"), "Hub: legacy workspace link must not be user-facing.");
 assert(!/\$99|\$299|\$799/.test(hub), "Hub: historical planning prices must not appear as current pricing.");
 
+const foundingPlan = await text("src/pages/services/hermes-connect/repair-shops/plan.astro");
+assert(foundingPlan.includes("var(--hermes-pearl)"), "Founding Plan: public shell must consume canonical Pearl.");
+assert(foundingPlan.includes("var(--hermes-obsidian)"), "Founding Plan: conversion hierarchy must retain an intentional Obsidian anchor.");
+assert(!foundingPlan.includes("#090d16"), "Founding Plan: old full-page dark shell must not return.");
+assert(foundingPlan.includes('fetch("/api/logistics-lead"'), "Founding Plan: real purchase-intent delivery must remain unchanged.");
+assert(foundingPlan.includes("No card is collected on this website"), "Founding Plan: no-charge-before-confirmation boundary must remain explicit.");
+
 const capabilityPages = [
   "ai-command-center.astro",
   "unified-inbox.astro",
@@ -90,4 +97,4 @@ assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Preserved works
 assert(!workspaceHtml.includes("hermes-connect-brand-v1"), "Preserved workspace: Brand V1 path must not return.");
 assert(!workspaceHtml.includes("workspace-v2"), "Preserved workspace: retired workspace-v2 assets must not return.");
 
-console.log("Hermes Connect unified Pearl public shell, adaptive vertical OS, product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
+console.log("Hermes Connect unified Pearl public shell, Repair Shop conversion shell, adaptive vertical OS, product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
