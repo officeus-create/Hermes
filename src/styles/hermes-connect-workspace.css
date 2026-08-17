@@ -1,0 +1,407 @@
+/*
+ * HERMES CONNECT — REPAIR SHOP OWNER WORKSPACE
+ * Shared P2 visual grammar for authenticated operational surfaces.
+ *
+ * Obsidian Inside:
+ * - no auth, API, D1, routing, or data behavior lives here
+ * - Dashboard, Availability, and Customers keep their existing markup/runtime
+ * - this layer replaces three visually divergent dark prototypes with one system
+ */
+
+html.hc-experience .workspace-page,
+html.hc-experience .availability-page,
+html.hc-experience .customers-page {
+  --hc-workspace-bg: var(--hermes-obsidian);
+  --hc-workspace-panel: var(--hermes-graphite-raised);
+  --hc-workspace-panel-soft: rgba(255, 255, 255, 0.035);
+  --hc-workspace-panel-hover: rgba(255, 255, 255, 0.052);
+  --hc-workspace-line: var(--hermes-line-dark);
+  --hc-workspace-text: #f7f8fb;
+  --hc-workspace-muted: var(--hermes-muted-dark);
+  --hc-workspace-violet: var(--hermes-violet);
+  --hc-workspace-ocean: var(--hermes-ocean);
+  min-height: 100vh;
+  padding: 116px 24px 80px;
+  color: var(--hc-workspace-text);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124, 92, 255, 0.11), transparent 31rem),
+    radial-gradient(circle at 88% 14%, rgba(90, 200, 250, 0.065), transparent 29rem),
+    var(--hc-workspace-bg);
+}
+
+html.hc-experience .workspace-page .shell,
+html.hc-experience .availability-page .shell,
+html.hc-experience .customers-page .shell {
+  width: min(1040px, 100%);
+  margin-inline: auto;
+}
+
+/* Navigation and page hierarchy */
+html.hc-experience .workspace-page .back-link,
+html.hc-experience .availability-page .back-link,
+html.hc-experience .customers-page .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-bottom: 24px;
+  color: #a8b0bf;
+  text-decoration: none;
+  font-weight: 700;
+  transition: color var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+html.hc-experience .workspace-page .back-link:hover,
+html.hc-experience .availability-page .back-link:hover,
+html.hc-experience .customers-page .back-link:hover,
+html.hc-experience .workspace-page .back-link:focus-visible,
+html.hc-experience .availability-page .back-link:focus-visible,
+html.hc-experience .customers-page .back-link:focus-visible {
+  color: #fff;
+}
+
+html.hc-experience .workspace-page .eyebrow,
+html.hc-experience .workspace-page .mini-label,
+html.hc-experience .availability-page .eyebrow,
+html.hc-experience .customers-page .eyebrow,
+html.hc-experience .customers-page .mini-label {
+  margin: 0 0 8px;
+  color: #aa9cff;
+  font: 700 11px/1.2 var(--font-mono);
+  letter-spacing: .105em;
+  text-transform: uppercase;
+}
+
+html.hc-experience .workspace-page h1,
+html.hc-experience .availability-page h1,
+html.hc-experience .customers-page h1 {
+  margin: 0 0 8px;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 5vw, 3.6rem);
+  line-height: .98;
+  letter-spacing: -.05em;
+  text-wrap: balance;
+}
+
+html.hc-experience .workspace-page h2,
+html.hc-experience .availability-page h2,
+html.hc-experience .customers-page h2 {
+  color: #f8fafc;
+  font-family: var(--font-display);
+  letter-spacing: -.035em;
+}
+
+html.hc-experience .workspace-page .muted,
+html.hc-experience .availability-page .muted,
+html.hc-experience .customers-page .muted,
+html.hc-experience .workspace-page .privacy-note {
+  color: var(--hc-workspace-muted);
+}
+
+html.hc-experience .workspace-page .workspace-header,
+html.hc-experience .availability-page .page-header,
+html.hc-experience .customers-page .hero {
+  margin-bottom: 30px;
+}
+
+/* Panels: one geometry and one elevation system */
+html.hc-experience .workspace-page .panel,
+html.hc-experience .availability-page .panel,
+html.hc-experience .availability-page .note-panel,
+html.hc-experience .customers-page .panel,
+html.hc-experience .customers-page .customer-card,
+html.hc-experience .customers-page .state-card {
+  border: 1px solid var(--hc-workspace-line);
+  border-radius: var(--hermes-radius-card);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.012)),
+    var(--hc-workspace-panel);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, .20);
+}
+
+html.hc-experience .workspace-page .panel,
+html.hc-experience .availability-page .panel {
+  padding: 26px;
+}
+
+html.hc-experience .availability-page .note-panel,
+html.hc-experience .customers-page .customer-card,
+html.hc-experience .customers-page .state-card {
+  padding: 20px;
+}
+
+html.hc-experience .workspace-page .panel-heading,
+html.hc-experience .availability-page .panel-heading {
+  gap: 24px;
+}
+
+/* Controls: generic work actions are high-contrast, not AI-gradient buttons. */
+html.hc-experience .workspace-page .primary-btn,
+html.hc-experience .availability-page .primary-btn {
+  min-height: 46px;
+  border: 1px solid #fff;
+  border-radius: 12px;
+  padding: 11px 15px;
+  color: var(--hermes-obsidian);
+  background: #fff;
+  box-shadow: 0 9px 24px rgba(0, 0, 0, .16);
+  font-weight: 800;
+  transition: transform var(--hermes-motion-fast) var(--hermes-ease), box-shadow var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+html.hc-experience .workspace-page .primary-btn:hover,
+html.hc-experience .availability-page .primary-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .22);
+}
+
+html.hc-experience .workspace-page .secondary-btn,
+html.hc-experience .availability-page .secondary-btn {
+  min-height: 44px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 12px;
+  color: #eef2f7;
+  background: rgba(255,255,255,.045);
+  font-weight: 750;
+}
+
+html.hc-experience .workspace-page .secondary-btn:hover,
+html.hc-experience .availability-page .secondary-btn:hover {
+  border-color: rgba(169,154,255,.32);
+  background: rgba(255,255,255,.065);
+}
+
+html.hc-experience .workspace-page .danger-btn {
+  min-height: 44px;
+  border: 1px solid rgba(216,75,95,.30);
+  border-radius: 12px;
+  color: #ffc5ce;
+  background: rgba(216,75,95,.10);
+}
+
+html.hc-experience .workspace-page button:focus-visible,
+html.hc-experience .availability-page button:focus-visible,
+html.hc-experience .customers-page a:focus-visible,
+html.hc-experience .customers-page input:focus-visible {
+  outline: 2px solid #b9adff;
+  outline-offset: 3px;
+}
+
+/* Forms and editable operational data */
+html.hc-experience .workspace-page .field,
+html.hc-experience .availability-page .open-toggle {
+  color: #e7ebf2;
+}
+
+html.hc-experience .workspace-page .field input,
+html.hc-experience .workspace-page .field select,
+html.hc-experience .workspace-page .field textarea,
+html.hc-experience .workspace-page .status-select,
+html.hc-experience .availability-page .time-wrap input,
+html.hc-experience .customers-page .search-panel input {
+  color: #f8fafc;
+  border: 1px solid rgba(255,255,255,.105);
+  border-radius: 11px;
+  background: #10141d;
+  outline: none;
+}
+
+html.hc-experience .workspace-page .field input:focus,
+html.hc-experience .workspace-page .field select:focus,
+html.hc-experience .workspace-page .field textarea:focus,
+html.hc-experience .workspace-page .status-select:focus,
+html.hc-experience .availability-page .time-wrap input:focus,
+html.hc-experience .customers-page .search-panel input:focus {
+  border-color: rgba(169,154,255,.72);
+  box-shadow: 0 0 0 3px rgba(124,92,255,.12);
+}
+
+html.hc-experience .customers-page .search-panel {
+  border-radius: 16px;
+  background: rgba(255,255,255,.035);
+  box-shadow: none;
+}
+
+html.hc-experience .customers-page .search-panel svg {
+  color: #aa9cff;
+}
+
+html.hc-experience .customers-page .search-panel input {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Repeated rows and operational records */
+html.hc-experience .workspace-page .row,
+html.hc-experience .workspace-page .booking-card,
+html.hc-experience .workspace-page .feedback-row,
+html.hc-experience .availability-page .day-row,
+html.hc-experience .customers-page .stats > div {
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  background: var(--hc-workspace-panel-soft);
+}
+
+html.hc-experience .workspace-page .row:hover,
+html.hc-experience .workspace-page .booking-card:hover,
+html.hc-experience .customers-page .customer-card:hover {
+  border-color: rgba(169,154,255,.15);
+  background-color: var(--hc-workspace-panel-hover);
+}
+
+html.hc-experience .workspace-page .public-link {
+  border: 1px solid rgba(124,92,255,.18);
+  border-radius: 14px;
+  background: rgba(124,92,255,.075);
+}
+
+html.hc-experience .workspace-page .history {
+  border-top-color: rgba(255,255,255,.075);
+}
+
+html.hc-experience .workspace-page .history li {
+  color: #dce1e9;
+  background: rgba(255,255,255,.045);
+}
+
+/* Semantic state grammar */
+html.hc-experience .workspace-page .pill,
+html.hc-experience .workspace-page .status-pill,
+html.hc-experience .availability-page .timezone-pill,
+html.hc-experience .customers-page .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid rgba(124,92,255,.22);
+  border-radius: var(--hermes-radius-pill);
+  color: #d8d1ff;
+  background: rgba(124,92,255,.10);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+html.hc-experience .workspace-page .status-completed {
+  color: #bff2da;
+  border-color: rgba(40,180,135,.25);
+  background: rgba(40,180,135,.10);
+}
+
+html.hc-experience .workspace-page .status-cancelled {
+  color: #ffc6cf;
+  border-color: rgba(216,75,95,.27);
+  background: rgba(216,75,95,.10);
+}
+
+html.hc-experience .workspace-page .status-in_progress {
+  color: #c8e9fb;
+  border-color: rgba(90,200,250,.25);
+  background: rgba(90,200,250,.09);
+}
+
+html.hc-experience .workspace-page .alert,
+html.hc-experience .availability-page .alert,
+html.hc-experience .customers-page .alert {
+  border-radius: 12px;
+  color: #ffc6cf;
+  border: 1px solid rgba(216,75,95,.25);
+  background: rgba(216,75,95,.10);
+}
+
+html.hc-experience .workspace-page .alert.success,
+html.hc-experience .availability-page .alert.success {
+  color: #bff2da;
+  border-color: rgba(40,180,135,.24);
+  background: rgba(40,180,135,.10);
+}
+
+/* Customer CRM details */
+html.hc-experience .customers-page .contact-link {
+  color: #c9c1ff;
+}
+
+html.hc-experience .customers-page .next-appointment {
+  color: #bff2da;
+  border-color: rgba(40,180,135,.22);
+  background: rgba(40,180,135,.08);
+}
+
+html.hc-experience .customers-page .stats span,
+html.hc-experience .customers-page .vehicle-card span {
+  color: #929baa;
+}
+
+html.hc-experience .customers-page .stats strong {
+  color: #edf1f6;
+}
+
+html.hc-experience .customers-page .vehicle-section {
+  border-top-color: rgba(255,255,255,.075);
+}
+
+html.hc-experience .customers-page .vehicle-card {
+  border: 1px solid rgba(124,92,255,.14);
+  border-radius: 12px;
+  background: rgba(124,92,255,.055);
+}
+
+/* Availability is scheduling work, not a separate visual product. */
+html.hc-experience .availability-page .availability-list {
+  gap: 10px;
+}
+
+html.hc-experience .availability-page .day-row {
+  padding: 15px 17px;
+}
+
+html.hc-experience .availability-page .open-toggle input {
+  accent-color: var(--hermes-violet);
+}
+
+html.hc-experience .availability-page .time-wrap input {
+  color-scheme: dark;
+}
+
+/* Keep interactive density usable on mobile. */
+@media (max-width: 720px) {
+  html.hc-experience .workspace-page,
+  html.hc-experience .availability-page,
+  html.hc-experience .customers-page {
+    padding: 100px 15px 60px;
+  }
+
+  html.hc-experience .workspace-page .panel,
+  html.hc-experience .availability-page .panel {
+    padding: 19px;
+    border-radius: 18px;
+  }
+
+  html.hc-experience .workspace-page .primary-btn,
+  html.hc-experience .availability-page .primary-btn,
+  html.hc-experience .workspace-page .secondary-btn,
+  html.hc-experience .availability-page .secondary-btn {
+    min-height: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.hc-experience .workspace-page .back-link,
+  html.hc-experience .availability-page .back-link,
+  html.hc-experience .customers-page .back-link,
+  html.hc-experience .workspace-page .primary-btn,
+  html.hc-experience .availability-page .primary-btn {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  html.hc-experience .workspace-page,
+  html.hc-experience .availability-page,
+  html.hc-experience .customers-page {
+    background: Canvas;
+    color: CanvasText;
+  }
+}
