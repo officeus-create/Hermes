@@ -1,6 +1,6 @@
 /*
  * HERMES LOGISTICS COMMERCIAL POLISH
- * Compatibility layer for the legacy inline LogisticsCommercialLinks styles.
+ * Canonical visual layer for LogisticsCommercialLinks.
  * All commercial copy, links, SEO paths and conversion behavior remain unchanged.
  */
 
@@ -125,7 +125,7 @@
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .logistics-customer-review {
   border: 1px solid var(--hermes-obsidian);
   color: #fff;
-  background: var(--hermes-obsidian) !important;
+  background: var(--hermes-obsidian);
   box-shadow: none;
 }
 
@@ -134,14 +134,14 @@
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .logistics-customer-review:hover,
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .logistics-customer-review:focus-visible {
   color: #fff;
-  background: var(--hermes-graphite) !important;
+  background: var(--hermes-graphite);
 }
 
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .button-ghost,
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .carrier-footer-proposal {
-  border: 1px solid var(--hermes-line-light) !important;
-  color: var(--hermes-ink) !important;
-  background: var(--hermes-paper) !important;
+  border: 1px solid var(--hermes-line-light);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
   box-shadow: none;
 }
 
@@ -149,9 +149,9 @@
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .button-ghost:focus-visible,
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .carrier-footer-proposal:hover,
 .detail-page.detail-page-logistics .logistics-commercial-links .logistics-commercial-footer .carrier-footer-proposal:focus-visible {
-  border-color: color-mix(in srgb, var(--hermes-violet) 38%, var(--hermes-line-light)) !important;
-  color: var(--hermes-ink) !important;
-  background: var(--hermes-pearl) !important;
+  border-color: color-mix(in srgb, var(--hermes-violet) 38%, var(--hermes-line-light));
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
 }
 
 @media (max-width: 900px) {
