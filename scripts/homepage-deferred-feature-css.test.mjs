@@ -42,12 +42,14 @@ assert.equal(/--hermes-(?:intelligence-)?blue\s*:|--hermes-ocean\s*:/.test(perfo
 assert.ok(performanceCss.includes("var(--hermes-pearl)"), "homepage must consume canonical Pearl from the master system");
 assert.ok(performanceCss.includes("var(--hermes-obsidian)"), "homepage must consume canonical Obsidian from the master system");
 
-// Homepage design convergence: one Pearl public shell, one intelligence object, Obsidian business actions.
+// Homepage design convergence: one Pearl public shell, one intelligence object, one clear situation-first entry.
 assert.ok(homepageSource.includes('class="hermes-home-page"'), "homepage must expose the canonical home-shell root");
 assert.ok(homepageSource.includes('import "../styles/hermes-home-shell.css"'), "homepage must load the dedicated Pearl shell layer");
 assert.ok(heroSource.includes('class="home-hero-stage"'), "homepage hero must use an editorial stage rather than only a full-screen background image");
-assert.ok(heroSource.includes('class="home-intelligence-knot"'), "homepage hero must include the Hermes intelligence object");
-assert.ok(heroSource.includes('class="home-hero-system-card"'), "homepage hero must preserve the one-ecosystem system message");
+assert.ok(heroSource.includes('class="home-intelligence-knot"'), "homepage hero must include one Hermes intelligence object");
+assert.equal(heroSource.includes('class="home-hero-system-card"'), false, "homepage hero must not repeat the ecosystem message in a competing floating card");
+assert.equal(heroSource.includes('class="hero-letter-i"'), false, "homepage headline must avoid decorative letter gimmicks that compete with the commercial message");
+assert.ok(heroSource.includes('href="#start"'), "homepage hero must route the primary journey into the situation-first decision");
 assert.ok(homeShellCss.includes("var(--hermes-pearl)"), "homepage shell must consume master Pearl");
 assert.ok(homeShellCss.includes("var(--hermes-obsidian)"), "homepage shell must consume master Obsidian");
 assert.ok(homeShellCss.includes("var(--hermes-intelligence-gradient)"), "homepage shell must consume the master Intelligence gradient only for the intelligence hierarchy");
@@ -76,4 +78,4 @@ assert.ok(/\.tracking-consent-actions \.button\s*\{[\s\S]*?min-height:\s*44px/i.
 assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
 assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");
 
-console.log("Homepage deferred feature, Pearl public shell, and single-source Hermes brand-token contract passed.");
+console.log("Homepage deferred feature, Pearl public shell, commercial hierarchy, and single-source Hermes brand-token contract passed.");
