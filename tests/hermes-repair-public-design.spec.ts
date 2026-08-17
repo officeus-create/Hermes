@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 
+// Shared across the stacked design branches so Repair public cascade regressions fail browser CI.
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     sessionStorage.setItem("hermes-intro-seen", "true");
