@@ -1,0 +1,18 @@
+/* HERMES CONNECT — REPAIR SHOP PUBLIC SHELL HARDENING. Presentation only. */
+html.hc-experience body .repair-pilot-page{color:var(--hermes-ink)!important;background:radial-gradient(circle at 78% 5%,rgba(124,92,255,.10),transparent 27rem),radial-gradient(circle at 88% 9%,rgba(90,200,250,.10),transparent 22rem),var(--hermes-pearl)!important}
+html.hc-experience body .repair-pilot-page .repair-live-hero,html.hc-experience body .repair-pilot-page .repair-section,html.hc-experience body .repair-pilot-page .repair-faq{color:var(--hermes-ink);background-color:transparent}
+html.hc-experience body .plan-page .hero{min-height:0!important;color:var(--hermes-ink)!important;background:transparent!important;text-shadow:none!important}
+html.hc-experience body .plan-page .hero h1,html.hc-experience body .plan-page .hero .lead,html.hc-experience body .plan-page .hero .lead strong,html.hc-experience body .plan-page .microcopy{color:var(--hermes-ink);text-shadow:none}
+html.hc-experience body .plan-page .hero .lead,html.hc-experience body .plan-page .microcopy{color:var(--hermes-muted)}
+html.hc-experience body .repair-free-launch{color:var(--hermes-ink)!important;border-color:rgba(40,180,135,.22)!important;background:radial-gradient(circle at 92% 10%,rgba(124,92,255,.075),transparent 14rem),linear-gradient(135deg,rgba(40,180,135,.075),rgba(255,255,255,.90))!important;box-shadow:0 16px 42px rgba(31,36,51,.07)!important}
+html.hc-experience body .repair-free-launch .launch-icon{color:#18785b!important;background:rgba(40,180,135,.10)!important}
+html.hc-experience body .repair-free-launch .launch-kicker{color:#18785b!important}
+html.hc-experience body .repair-free-launch .launch-copy h2{color:var(--hermes-ink)!important}
+html.hc-experience body .repair-free-launch .launch-copy>p:not(.launch-kicker),html.hc-experience body .repair-free-launch .launch-policy,html.hc-experience body .repair-free-launch .launch-timer-label,html.hc-experience body .repair-free-launch .launch-status{color:var(--hermes-muted)!important}
+html.hc-experience body .repair-free-launch .launch-timer>div{color:#f8fafc!important;border-color:rgba(255,255,255,.08)!important;background:var(--hermes-obsidian)!important}
+html.hc-experience body .repair-free-launch .launch-timer strong{color:#fff!important}
+html.hc-experience body .repair-free-launch .launch-timer span{color:#aeb7c7!important}
+html.hc-experience body .repair-free-launch .launch-cta{color:#fff!important;border-color:var(--hermes-obsidian)!important;background:var(--hermes-obsidian)!important;box-shadow:none!important}
+html.hc-experience body .repair-free-launch .launch-cta:hover,html.hc-experience body .repair-free-launch .launch-cta:focus-visible{color:#fff!important;background:#151922!important}
+@media(max-width:760px){html.hc-experience body .plan-page .hero{padding-top:2.5rem;padding-bottom:3rem}html.hc-experience body .repair-free-launch{border-radius:16px;box-shadow:0 12px 30px rgba(31,36,51,.06)!important}}
+@media(prefers-reduced-transparency:reduce){html.hc-experience body .repair-free-launch{background:var(--hermes-paper)!important}}
