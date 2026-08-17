@@ -1,0 +1,78 @@
+name: Deploy Hermes lead email Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - workers/lead-email/**
+      - .github/workflows/lead-email-worker-production.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+environments:
+  production:
+
+concurrency:
+  group: hermes-lead-email-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy hermes-lead-email
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Validate Cloudflare credentials
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "Cloudflare API token/account ID required for hermes-lead-email deployment." >&2
+            exit 1
+          fi
+          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate account email contract
+        run: node scripts/repair-shop-password-recovery-contract.test.mjs
+
+      - name: Deploy only hermes-lead-email
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ env.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: deploy --config workers/lead-email/wrangler.production.jsonc --keep-vars
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish release summary
+        if: success()
+        run: |
+          {
+            echo "# Hermes lead email Worker"
+            echo
+            echo "- Worker: \`hermes-lead-email\`"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Config: \`workers/lead-email/wrangler.production.jsonc\`"
+            echo "- Account delivery route: \`/v1/send-account\`"
+          } >> "$GITHUB_STEP_SUMMARY"
