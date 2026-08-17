@@ -1,0 +1,322 @@
+/*
+ * HERMES PUBLIC DIRECTIONS — SHARED PEARL SHELL
+ * One public grammar for Logistics, Marketing, Academy, and Technology.
+ * Department color is a supporting signal only; behavior and content remain untouched.
+ */
+
+body:has(.detail-page) {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.detail-page {
+  --path-signal: var(--hermes-violet);
+  --path-signal-soft: rgba(124, 92, 255, .11);
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.detail-page-logistics {
+  --path-signal: var(--hermes-violet);
+  --path-signal-soft: rgba(124, 92, 255, .11);
+}
+
+.detail-page-marketing {
+  --path-signal: #9b5de5;
+  --path-signal-soft: rgba(155, 93, 229, .10);
+}
+
+.detail-page-academy {
+  --path-signal: #a97828;
+  --path-signal-soft: rgba(169, 120, 40, .10);
+}
+
+.detail-page-technology {
+  --path-signal: var(--hermes-ocean);
+  --path-signal-soft: rgba(90, 200, 250, .10);
+}
+
+/* Shared light public header for all four directions. */
+body:has(.detail-page) .site-header,
+body:has(.detail-page) .site-header-scrolled {
+  color: var(--hermes-ink);
+  border-bottom-color: var(--hermes-line-light);
+  background: color-mix(in srgb, var(--hermes-pearl) 95%, transparent);
+  box-shadow: 0 10px 30px rgba(11, 13, 18, .045);
+  backdrop-filter: blur(18px) saturate(1.04);
+}
+
+body:has(.detail-page) .site-header-scrolled {
+  background: color-mix(in srgb, var(--hermes-pearl) 98%, transparent);
+}
+
+body:has(.detail-page) .site-header .desktop-nav a {
+  color: var(--hermes-muted);
+}
+
+body:has(.detail-page) .site-header .desktop-nav a:hover,
+body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
+  color: var(--hermes-ink);
+}
+
+/* Editorial hero: image is a stage, not a dark full-screen identity. */
+.detail-page .detail-hero {
+  min-height: auto;
+  padding: 138px 0 72px;
+  overflow: clip;
+  color: var(--hermes-ink);
+  background:
+    radial-gradient(circle at 82% 18%, var(--path-signal-soft), transparent 28rem),
+    var(--hermes-pearl);
+}
+
+.detail-page .detail-hero > img.detail-hero-media {
+  position: absolute;
+  inset: 118px max(24px, calc((100vw - var(--content-max-width)) / 2)) auto auto;
+  width: min(46vw, 610px);
+  height: min(520px, 62vw);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-hero);
+  object-fit: cover;
+  transform: none;
+  box-shadow: var(--hermes-shadow-card);
+  will-change: auto;
+}
+
+.detail-page .detail-hero-shade {
+  display: none;
+}
+
+.detail-page .detail-hero-content {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  min-height: 520px;
+  padding: 0;
+}
+
+.detail-page .detail-back {
+  min-height: 44px;
+  margin-bottom: 30px;
+  color: var(--hermes-muted);
+  font-weight: 750;
+}
+
+.detail-page .hero-eyebrow,
+.detail-page > .section .eyebrow {
+  color: var(--path-signal);
+}
+
+.detail-page .detail-hero h1 {
+  max-width: min(720px, 52vw);
+  margin-bottom: 20px;
+  color: var(--hermes-ink);
+  font-size: clamp(3.2rem, 6vw, 5.4rem);
+  line-height: .94;
+  letter-spacing: -.055em;
+}
+
+.detail-page .detail-hero-content > p:not(.eyebrow) {
+  max-width: min(610px, 48vw);
+  margin-bottom: 28px;
+  color: var(--hermes-muted);
+  font-size: 1.12rem;
+}
+
+.detail-page .detail-hero .button-primary {
+  min-height: 48px;
+  border: 1px solid var(--hermes-obsidian);
+  border-radius: var(--hermes-radius-control);
+  color: #fff;
+  background: var(--hermes-obsidian);
+  box-shadow: 0 10px 28px rgba(11, 13, 18, .15);
+}
+
+.detail-page .detail-hero .button-primary:hover,
+.detail-page .detail-hero .button-primary:focus-visible {
+  color: #fff;
+  background: var(--hermes-graphite);
+}
+
+/* Shared section rhythm and typography. */
+.detail-page .section {
+  background: transparent;
+}
+
+.detail-page .detail-overview,
+.detail-page .detail-offerings,
+.detail-page .detail-process,
+.detail-page .logistics-equipment,
+.detail-page .logistics-services,
+.detail-page .logistics-faq,
+.detail-page .logistics-contacts,
+.detail-page .direction-socials {
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page .detail-intro h2,
+.detail-page .section-heading h2,
+.detail-page .offering-grid h3,
+.detail-page .detail-process-grid h3,
+.detail-page .equipment-grid h3,
+.detail-page .service-group-grid h3,
+.detail-page .logistics-contacts h2,
+.detail-page .direction-socials h2 {
+  color: var(--hermes-ink);
+}
+
+.detail-page .detail-intro > p,
+.detail-page .section-heading > p,
+.detail-page .offering-grid p,
+.detail-page .detail-process-grid p,
+.detail-page .equipment-grid p,
+.detail-page .service-group-grid li,
+.detail-page .faq-list p,
+.detail-page .direct-contact-grid span {
+  color: var(--hermes-muted);
+}
+
+.detail-page .detail-service-area {
+  border-top-color: var(--hermes-line-light);
+  color: var(--hermes-ink) !important;
+}
+
+/* One card system for common direction content. */
+.detail-page .offering-grid article,
+.detail-page .equipment-grid article,
+.detail-page .service-group-grid article,
+.detail-page .direct-contact-grid article,
+.detail-page .direction-social-grid a,
+.detail-page .faq-list details {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.detail-page .offering-grid article,
+.detail-page .equipment-grid article,
+.detail-page .service-group-grid article,
+.detail-page .direct-contact-grid article {
+  padding: 24px;
+}
+
+.detail-page .offering-grid article > svg,
+.detail-page .service-group-grid li > svg {
+  color: var(--path-signal);
+}
+
+.detail-page .detail-process-grid li {
+  border-color: var(--hermes-line-light);
+}
+
+.detail-page .detail-process-grid span {
+  color: var(--path-signal);
+}
+
+.detail-page .faq-list details {
+  margin-bottom: 12px;
+  padding: 0 20px;
+}
+
+.detail-page .faq-list summary {
+  min-height: 58px;
+  color: var(--hermes-ink);
+}
+
+.detail-page .direction-social-grid a,
+.detail-page .direct-contact-grid a {
+  color: var(--hermes-ink);
+}
+
+.detail-page .direction-social-grid a:hover,
+.detail-page .direction-social-grid a:focus-visible,
+.detail-page .direct-contact-grid a:hover,
+.detail-page .direct-contact-grid a:focus-visible {
+  border-color: color-mix(in srgb, var(--path-signal) 42%, var(--hermes-line-light));
+}
+
+.detail-page a:focus-visible,
+.detail-page button:focus-visible,
+.detail-page summary:focus-visible {
+  outline: 2px solid var(--path-signal);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1040px) {
+  .detail-page .detail-hero {
+    padding-top: 118px;
+  }
+
+  .detail-page .detail-hero-content {
+    min-height: 0;
+    padding-bottom: 30px;
+  }
+
+  .detail-page .detail-hero h1,
+  .detail-page .detail-hero-content > p:not(.eyebrow) {
+    max-width: 760px;
+  }
+
+  .detail-page .detail-hero > img.detail-hero-media {
+    position: relative;
+    inset: auto;
+    order: 2;
+    width: min(100%, 760px);
+    height: auto;
+    aspect-ratio: 16 / 10;
+    margin: 34px auto 0;
+  }
+
+  .detail-page .detail-hero-content {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .detail-page .detail-hero {
+    padding: 108px 0 48px;
+  }
+
+  .detail-page .detail-hero h1 {
+    font-size: clamp(3rem, 14vw, 4.2rem);
+  }
+
+  .detail-page .detail-hero-content > p:not(.eyebrow) {
+    font-size: 1rem;
+  }
+
+  .detail-page .detail-hero > img.detail-hero-media {
+    border-radius: var(--hermes-radius-card);
+  }
+
+  .detail-page .offering-grid article,
+  .detail-page .equipment-grid article,
+  .detail-page .service-group-grid article,
+  .detail-page .direct-contact-grid article {
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-page .detail-hero > img.detail-hero-media,
+  .detail-page * {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .detail-page .detail-hero .button-primary,
+  .detail-page .offering-grid article,
+  .detail-page .equipment-grid article,
+  .detail-page .service-group-grid article,
+  .detail-page .direct-contact-grid article,
+  .detail-page .direction-social-grid a,
+  .detail-page .faq-list details {
+    border: 1px solid CanvasText;
+  }
+}
