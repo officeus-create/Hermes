@@ -6,6 +6,9 @@ const root = new URL("../", import.meta.url).pathname;
 const html = await readFile(join(root, "dist", "index.html"), "utf8");
 const performanceCss = await readFile(join(root, "src", "styles", "homepage-performance.css"), "utf8");
 const brandCss = await readFile(join(root, "src", "styles", "hermes-brand-system.css"), "utf8");
+const homeShellCss = await readFile(join(root, "src", "styles", "hermes-home-shell.css"), "utf8");
+const homepageSource = await readFile(join(root, "src", "pages", "index.astro"), "utf8");
+const heroSource = await readFile(join(root, "src", "components", "HeroEditorial.astro"), "utf8");
 const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
@@ -39,6 +42,21 @@ assert.equal(/--hermes-(?:intelligence-)?blue\s*:|--hermes-ocean\s*:/.test(perfo
 assert.ok(performanceCss.includes("var(--hermes-pearl)"), "homepage must consume canonical Pearl from the master system");
 assert.ok(performanceCss.includes("var(--hermes-obsidian)"), "homepage must consume canonical Obsidian from the master system");
 
+// Homepage design convergence: one Pearl public shell, one intelligence object, Obsidian business actions.
+assert.ok(homepageSource.includes('class="hermes-home-page"'), "homepage must expose the canonical home-shell root");
+assert.ok(homepageSource.includes('import "../styles/hermes-home-shell.css"'), "homepage must load the dedicated Pearl shell layer");
+assert.ok(heroSource.includes('class="home-hero-stage"'), "homepage hero must use an editorial stage rather than only a full-screen background image");
+assert.ok(heroSource.includes('class="home-intelligence-knot"'), "homepage hero must include the Hermes intelligence object");
+assert.ok(heroSource.includes('class="home-hero-system-card"'), "homepage hero must preserve the one-ecosystem system message");
+assert.ok(homeShellCss.includes("var(--hermes-pearl)"), "homepage shell must consume master Pearl");
+assert.ok(homeShellCss.includes("var(--hermes-obsidian)"), "homepage shell must consume master Obsidian");
+assert.ok(homeShellCss.includes("var(--hermes-intelligence-gradient)"), "homepage shell must consume the master Intelligence gradient only for the intelligence hierarchy");
+assert.ok(homeShellCss.includes(".home-role-card") && homeShellCss.includes("var(--hermes-radius-card)"), "homepage job-to-be-done cards must use the master card geometry");
+assert.ok(homeShellCss.includes(".path-pillar::before") && homeShellCss.includes("--pillar-signal"), "business-direction colors must be reduced to supporting signals instead of separate surface systems");
+assert.ok(/\.hero \.button-primary[\s\S]*?background:\s*var\(--hermes-obsidian\)/.test(homeShellCss), "homepage primary hero action must be Obsidian, not the legacy magenta fill");
+assert.equal(/\.hero \.button-primary[\s\S]*?background:\s*var\(--color-magenta-500\)/.test(homeShellCss), false, "homepage Pearl layer must not revive the legacy magenta primary action");
+assert.ok(homeShellCss.includes("prefers-reduced-motion") && homeShellCss.includes("forced-colors"), "homepage branded motion must preserve accessibility fallbacks");
+
 assert.ok(footerSource.includes('class="footer-primary-nav"'), "footer must preserve one canonical navigation DOM");
 assert.equal(footerSource.includes('class="footer-mobile-groups"'), false, "footer must not duplicate navigation into a second hidden mobile DOM");
 assert.ok(/\.footer-primary-nav\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/i.test(footerSource), "mobile footer navigation must compact into two columns");
@@ -58,4 +76,4 @@ assert.ok(/\.tracking-consent-actions \.button\s*\{[\s\S]*?min-height:\s*44px/i.
 assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
 assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");
 
-console.log("Homepage deferred feature, shell design, and single-source Hermes brand-token contract passed.");
+console.log("Homepage deferred feature, Pearl public shell, and single-source Hermes brand-token contract passed.");
