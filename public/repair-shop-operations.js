@@ -137,7 +137,7 @@
       if (card.querySelector("[data-repair-operation-actions]")) return;
 
       const statusPill = card.querySelector(".status-pill");
-      const statusClass = Array.from(statusPill?.classList || []).find((name) => name.startsWith("status-"));
+      const statusClass = Array.from(statusPill?.classList || []).find((name) => name.startsWith("status-") && name !== "status-pill");
       const status = statusClass ? statusClass.slice("status-".length) : "";
       if (!(status === "confirmed" || status === "completed")) return;
 
