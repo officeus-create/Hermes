@@ -11,7 +11,7 @@ test("localized Repair Shop login exposes forgot password link", async ({ page }
   await expect(forgot).toHaveAttribute("href", "/services/hermes-connect/repair-shops/forgot-password/?lang=ru");
 });
 
-test("forgot password stays neutral and usable at 390px", async ({ page }) => {
+test("forgot password stays neutral, offers support fallback, and is usable at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   let requestBody: any = null;
   await page.route("**/api/auth/forgot-password", async (route) => {
@@ -20,6 +20,11 @@ test("forgot password stays neutral and usable at 390px", async ({ page }) => {
   });
   await page.goto("/services/hermes-connect/repair-shops/forgot-password/?lang=ru", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "Сброс пароля" })).toBeVisible();
+  const support = page.locator("#recovery-support");
+  await expect(support).toContainText("Письмо не пришло?");
+  const supportLink = page.locator("#recovery-support-link");
+  await expect(supportLink).toHaveText("Связаться с поддержкой Hermes");
+  await expect(supportLink).toHaveAttribute("href", /mailto:officeus@hermeslogisticsus\.com\?subject=Hermes%20Connect%20Repair%20Shop%20password%20recovery/);
   await page.locator("#forgot-email").fill("owner@example.com");
   await page.getByRole("button", { name: "Отправить ссылку" }).click();
   await expect(page.locator("#recovery-message")).toContainText("Если для этого email существует");
