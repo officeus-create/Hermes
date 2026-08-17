@@ -4,6 +4,8 @@ import { ensureRepairShopAvailabilitySchema } from "../_lib/repair-shop-availabi
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
 import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-booking-history-schema.mjs";
 import { ensureRepairShopBookingVehicleSchema } from "../_lib/repair-shop-booking-vehicle-schema.mjs";
+import { ensureRepairShopCapabilitiesSchema } from "../_lib/repair-shop-capabilities-schema.mjs";
+import { normalizeRepairShopCapacity, saturatedRepairShopIntervals } from "../_lib/repair-shop-capacity.mjs";
 
 type Env = { DB?: any };
 type BookingInput = {
@@ -80,6 +82,15 @@ async function readBusyIntervals(db: any, shopId: string, date: string) {
   return result?.results ?? [];
 }
 
+async function readBookingCapacity(db: any, shopId: string) {
+  await ensureRepairShopCapabilitiesSchema(db);
+  const row = await db
+    .prepare("SELECT parallel_booking_capacity FROM repair_shop_capabilities WHERE shop_id = ? LIMIT 1")
+    .bind(shopId)
+    .first();
+  return normalizeRepairShopCapacity(row?.parallel_booking_capacity ?? 1);
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const url = new URL(request.url);
@@ -93,11 +104,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return jsonResponse(400, { success: false, error: "invalid_appointment_date" });
   }
 
+  const [activeIntervals, capacity] = await Promise.all([
+    readBusyIntervals(env.DB, shop.id, date),
+    readBookingCapacity(env.DB, shop.id),
+  ]);
+
   return jsonResponse(200, {
     success: true,
     shop: { slug: shop.slug, timezone: shop.timezone },
     date,
-    busy: await readBusyIntervals(env.DB, shop.id, date),
+    capacity,
+    // `busy` means fully saturated intervals, so the existing browser slot UI
+    // stays correct for capacity=1 and for shops with multiple simultaneous bays.
+    busy: saturatedRepairShopIntervals(activeIntervals, capacity),
   });
 }
 
@@ -178,27 +197,32 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
   const endTime = fromMinutes(requestedEnd);
 
-  const busy = await readBusyIntervals(env.DB, shop.id, appointmentDate);
-  const overlaps = busy.some((row: any) => {
-    if (!TIME_RE.test(String(row.start_time)) || !TIME_RE.test(String(row.end_time))) return false;
-    const existingStart = toMinutes(String(row.start_time));
-    const existingEnd = toMinutes(String(row.end_time));
-    return requestedStart < existingEnd && requestedEnd > existingStart;
-  });
-  if (overlaps) return jsonResponse(409, { success: false, error: "slot_unavailable" });
-
   await ensureRepairShopBookingsSchema(env.DB);
   await ensureRepairShopBookingHistorySchema(env.DB);
+  await ensureRepairShopCapabilitiesSchema(env.DB);
   if (hasVehicleInput) await ensureRepairShopBookingVehicleSchema(env.DB);
+  const capacity = await readBookingCapacity(env.DB, shop.id);
   const id = `repair-booking-${crypto.randomUUID()}`;
   const historyId = `repair-booking-history-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
+
+  // The capacity decision lives inside the INSERT statement, not in a separate
+  // preflight COUNT. Together with D1 batch transaction semantics this prevents
+  // two concurrent requests from both passing a stale capacity check.
   const statements = [
     env.DB
       .prepare(
         `INSERT INTO repair_shop_bookings
           (id,shop_id,owner_specialist_id,service_id,service_name,duration_minutes,appointment_date,start_time,end_time,status,client_name,client_email,client_phone,created_at,updated_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+         SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+         WHERE (
+           SELECT COUNT(*) FROM repair_shop_bookings
+           WHERE shop_id = ?
+             AND appointment_date = ?
+             AND lower(status) NOT IN ('cancelled','canceled')
+             AND start_time < ?
+             AND end_time > ?
+         ) < ?`,
       )
       .bind(
         id,
@@ -216,14 +240,21 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         clientPhone,
         now,
         now,
+        shop.id,
+        appointmentDate,
+        endTime,
+        startTime,
+        capacity,
       ),
     env.DB
       .prepare(
         `INSERT INTO repair_shop_booking_history
           (id,booking_id,owner_specialist_id,from_status,to_status,changed_at)
-         VALUES (?,?,?,?,?,?)`,
+         SELECT ?,id,owner_specialist_id,NULL,'confirmed',?
+         FROM repair_shop_bookings
+         WHERE id = ? AND owner_specialist_id = ?`,
       )
-      .bind(historyId, id, shop.owner_specialist_id, null, "confirmed", now),
+      .bind(historyId, now, id, shop.owner_specialist_id),
   ];
   if (hasVehicleInput) {
     statements.push(
@@ -231,19 +262,17 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
         .prepare(
           `INSERT INTO repair_shop_booking_vehicles
             (booking_id,owner_specialist_id,vehicle_year,vehicle_make,vehicle_model,mileage,vin,created_at,updated_at)
-           VALUES (?,?,?,?,?,?,?,?,?)`,
+           SELECT id,owner_specialist_id,?,?,?,?,?,?,?
+           FROM repair_shop_bookings
+           WHERE id = ? AND owner_specialist_id = ?`,
         )
-        .bind(id, shop.owner_specialist_id, vehicleYear, vehicleMake, vehicleModel, mileage, vin || null, now, now),
+        .bind(vehicleYear, vehicleMake, vehicleModel, mileage, vin || null, now, now, id, shop.owner_specialist_id),
     );
   }
 
-  try {
-    await env.DB.batch(statements);
-  } catch (error: any) {
-    const message = String(error?.message ?? error ?? "");
-    if (/unique|constraint/i.test(message)) return jsonResponse(409, { success: false, error: "slot_unavailable" });
-    throw error;
-  }
+  const results = await env.DB.batch(statements);
+  const inserted = Number(results?.[0]?.meta?.changes ?? 0);
+  if (inserted !== 1) return jsonResponse(409, { success: false, error: "slot_unavailable" });
 
   return jsonResponse(201, {
     success: true,

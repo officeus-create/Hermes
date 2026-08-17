@@ -25,12 +25,13 @@ export async function ensureRepairShopBookingsSchema(db) {
     "CREATE INDEX IF NOT EXISTS idx_repair_shop_bookings_shop_date ON repair_shop_bookings(shop_id, appointment_date, start_time)",
   ).run();
 
-  // Cancelled appointments stay in history but must release the slot.
-  // Replace the original all-rows constraint with an active-booking-only constraint.
+  // Earlier releases enforced capacity=1 with a unique exact-start index.
+  // Capacity-aware booking performs an atomic overlap-count gate instead, so
+  // exact-start uniqueness must not reject a valid second service bay/job.
   await db.prepare("DROP INDEX IF EXISTS idx_repair_shop_bookings_exact_slot").run();
+  await db.prepare("DROP INDEX IF EXISTS idx_repair_shop_bookings_active_exact_slot").run();
   await db.prepare(
-    `CREATE UNIQUE INDEX IF NOT EXISTS idx_repair_shop_bookings_active_exact_slot
-     ON repair_shop_bookings(shop_id, appointment_date, start_time)
-     WHERE status != 'cancelled'`,
+    `CREATE INDEX IF NOT EXISTS idx_repair_shop_bookings_active_window
+     ON repair_shop_bookings(shop_id, appointment_date, start_time, end_time, status)`,
   ).run();
 }

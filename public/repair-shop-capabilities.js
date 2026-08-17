@@ -293,9 +293,19 @@
     }
   }
 
+  const loadCapacityControl = () => {
+    if (path !== `${ROOT}/dashboard` || document.querySelector('script[data-repair-capacity-loader]')) return;
+    const script = document.createElement("script");
+    script.src = "/repair-shop-capacity.js";
+    script.defer = true;
+    script.dataset.repairCapacityLoader = "true";
+    document.head.append(script);
+  };
+
   const run = () => {
     initOwnerCapabilities().catch(() => {});
     initPublicCapabilities().catch(() => {});
+    loadCapacityControl();
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true }); else run();
 })();
