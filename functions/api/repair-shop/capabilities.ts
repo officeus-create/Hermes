@@ -13,6 +13,7 @@ type CapabilitiesInput = {
   fleet_service?: unknown;
   mobile_roadside?: unknown;
   emergency_24_7?: unknown;
+  parallel_booking_capacity?: unknown;
 };
 
 async function getOwnerShop(db: any, ownerId: string) {
@@ -44,6 +45,11 @@ function parseVehicleTypes(value: unknown) {
 
 function parseBoolean(value: unknown) {
   return typeof value === "boolean" ? value : null;
+}
+
+function parseCapacity(value: unknown) {
+  const capacity = Number(value);
+  return Number.isInteger(capacity) && capacity >= 1 && capacity <= 10 ? capacity : null;
 }
 
 async function requireShopOwner(request: Request, env: Env) {
@@ -91,9 +97,11 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
 
   await ensureRepairShopCapabilitiesSchema(env.DB);
   const existing = await getStoredCapabilities(env.DB, auth.shop.id);
+  const existingCapacity = existing ? serializeRepairShopCapabilities(existing, auth.shop.id).parallel_booking_capacity : 1;
+  const capacity = body.parallel_booking_capacity === undefined ? existingCapacity : parseCapacity(body.parallel_booking_capacity);
+  if (capacity === null) return jsonResponse(400, { success: false, error: "invalid_parallel_booking_capacity" });
   const now = new Date().toISOString();
   const serializedVehicleTypes = JSON.stringify(vehicleTypes);
-  const capacity = existing ? serializeRepairShopCapabilities(existing, auth.shop.id).parallel_booking_capacity : 1;
 
   if (existing) {
     await env.DB
@@ -111,7 +119,7 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
           (shop_id,vehicle_types,fleet_service,mobile_roadside,emergency_24_7,parallel_booking_capacity,updated_at)
          VALUES (?,?,?,?,?,?,?)`,
       )
-      .bind(auth.shop.id, serializedVehicleTypes, fleetService ? 1 : 0, mobileRoadside ? 1 : 0, emergency247 ? 1 : 0, 1, now)
+      .bind(auth.shop.id, serializedVehicleTypes, fleetService ? 1 : 0, mobileRoadside ? 1 : 0, emergency247 ? 1 : 0, capacity, now)
       .run();
   }
 
