@@ -104,10 +104,10 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     return jsonResponse(400, { success: false, error: "invalid_appointment_date" });
   }
 
-  const [activeIntervals, capacity] = await Promise.all([
-    readBusyIntervals(env.DB, shop.id, date),
-    readBookingCapacity(env.DB, shop.id),
-  ]);
+  // Keep schema initialization/read order deterministic on D1 instead of issuing
+  // two schema-ensuring reads concurrently on the same request.
+  const capacity = await readBookingCapacity(env.DB, shop.id);
+  const activeIntervals = await readBusyIntervals(env.DB, shop.id, date);
 
   return jsonResponse(200, {
     success: true,
@@ -206,9 +206,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const historyId = `repair-booking-history-${crypto.randomUUID()}`;
   const now = new Date().toISOString();
 
-  // The capacity decision lives inside the INSERT statement, not in a separate
-  // preflight COUNT. Together with D1 batch transaction semantics this prevents
-  // two concurrent requests from both passing a stale capacity check.
+  // Keep the capacity decision inside the booking INSERT instead of doing an
+  // application-level COUNT followed by a separate write. This removes the
+  // ordinary preflight race; production concurrency smoke still verifies the
+  // deployed D1 behavior before we call capacity >1 released.
   const statements = [
     env.DB
       .prepare(
