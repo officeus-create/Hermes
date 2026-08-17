@@ -1,5 +1,6 @@
 ---
 import { ArrowRight, Building2, ClipboardCheck, Compass, FileSignature, MapPin, Truck } from "@lucide/astro";
+import "../styles/hermes-logistics-commercial-polish.css";
 
 const carrierPaths = [
   ["Owner-operator support", "/paths/logistics/carriers/owner-operators/"],
@@ -74,7 +75,6 @@ const wisconsinCityPaths = [
           <a class="carrier-proposal-link" href="/carrier/"><FileSignature size={17} aria-hidden="true" />Carrier plans, packet, and agreement</a>
         </div>
       </article>
-
       <article>
         <Building2 size={25} aria-hidden="true" />
         <p class="eyebrow">For dealers and shippers</p>
@@ -82,7 +82,6 @@ const wisconsinCityPaths = [
         <p>Prepare dealership, auction, multi-vehicle, open, enclosed, and specialty transport requirements for a reviewed carrier-capacity process.</p>
         <a href="/logistics/dealer-vehicle-transportation/">Review dealer vehicle transportation <ArrowRight size={17} aria-hidden="true" /></a>
       </article>
-
       <article id="logistics-resources">
         <ClipboardCheck size={25} aria-hidden="true" />
         <p class="eyebrow">Supporting guidance</p>
@@ -98,78 +97,32 @@ const wisconsinCityPaths = [
     <section class="logistics-path-directory" aria-labelledby="logistics-path-directory-title" data-reveal>
       <div class="logistics-path-directory-heading">
         <Compass size={25} aria-hidden="true" />
-        <div>
-          <p class="eyebrow">Crawlable path directory</p>
-          <h3 id="logistics-path-directory-title">Explore the full logistics decision system.</h3>
-          <p>Start with the guided selector or open a relevant carrier, customer, broker, driver, or agency path directly.</p>
-        </div>
+        <div><p class="eyebrow">Crawlable path directory</p><h3 id="logistics-path-directory-title">Explore the full logistics decision system.</h3><p>Start with the guided selector or open a relevant carrier, customer, broker, driver, or agency path directly.</p></div>
         <a class="button button-primary" href="/paths/logistics/find-your-path/">Open the logistics path finder <ArrowRight size={18} aria-hidden="true" /></a>
       </div>
       <div class="logistics-path-columns">
-        <div>
-          <h4>Carrier and equipment paths</h4>
-          <nav aria-label="Carrier and equipment logistics paths">
-            {carrierPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
-          </nav>
-        </div>
-        <div>
-          <h4>Development and audience paths</h4>
-          <nav aria-label="Development and audience logistics paths">
-            {developmentPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
-          </nav>
-        </div>
+        <div><h4>Carrier and equipment paths</h4><nav aria-label="Carrier and equipment logistics paths">{carrierPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}</nav></div>
+        <div><h4>Development and audience paths</h4><nav aria-label="Development and audience logistics paths">{developmentPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}</nav></div>
       </div>
     </section>
 
     <section class="logistics-path-directory wisconsin-transport-directory" aria-labelledby="wisconsin-transport-directory-title" data-reveal>
       <div class="logistics-path-directory-heading logistics-wisconsin-heading">
         <MapPin size={25} aria-hidden="true" />
-        <div>
-          <p class="eyebrow">Wisconsin vehicle transport directory</p>
-          <h3 id="wisconsin-transport-directory-title">Open a statewide service or local city guide.</h3>
-          <p>These public pages explain preparation, service boundaries, equipment considerations, and the reviewed request process for Wisconsin vehicle moves.</p>
-        </div>
+        <div><p class="eyebrow">Wisconsin vehicle transport directory</p><h3 id="wisconsin-transport-directory-title">Open a statewide service or local city guide.</h3><p>These public pages explain preparation, service boundaries, equipment considerations, and the reviewed request process for Wisconsin vehicle moves.</p></div>
       </div>
       <div class="logistics-path-columns">
-        <div>
-          <h4>Statewide service pages</h4>
-          <nav aria-label="Wisconsin vehicle transport services">
-            {wisconsinServicePaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
-          </nav>
-        </div>
-        <div>
-          <h4>Wisconsin city guides</h4>
-          <nav aria-label="Wisconsin city vehicle transport guides">
-            {wisconsinCityPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}
-          </nav>
-        </div>
+        <div><h4>Statewide service pages</h4><nav aria-label="Wisconsin vehicle transport services">{wisconsinServicePaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}</nav></div>
+        <div><h4>Wisconsin city guides</h4><nav aria-label="Wisconsin city vehicle transport guides">{wisconsinCityPaths.map(([label, href]) => <a href={href}>{label}<ArrowRight size={15} aria-hidden="true" /></a>)}</nav></div>
       </div>
     </section>
 
     <div class="logistics-commercial-footer" data-reveal data-logistics-direct-reviews>
       <p>Choose the direct review that matches your role.</p>
-      <a
-        class="button button-primary"
-        href="/logistics/start-car-hauling-dispatch/"
-        data-commercial-primary-cta
-        data-service-group="logistics_hub_carrier_review"
-      >
-        Start carrier review <ArrowRight size={18} aria-hidden="true" />
-      </a>
-      <a
-        class="button button-primary logistics-customer-review"
-        href="/logistics/request-vehicle-transport/#transport-intake"
-        data-commercial-primary-cta
-        data-service-group="logistics_hub_vehicle_transport"
-      >
-        Prepare transport request <ArrowRight size={18} aria-hidden="true" />
-      </a>
+      <a class="button button-primary" href="/logistics/start-car-hauling-dispatch/" data-commercial-primary-cta data-service-group="logistics_hub_carrier_review">Start carrier review <ArrowRight size={18} aria-hidden="true" /></a>
+      <a class="button button-primary logistics-customer-review" href="/logistics/request-vehicle-transport/#transport-intake" data-commercial-primary-cta data-service-group="logistics_hub_vehicle_transport">Prepare transport request <ArrowRight size={18} aria-hidden="true" /></a>
       <a class="button button-ghost carrier-footer-proposal" href="/carrier/"><FileSignature size={17} aria-hidden="true" />Carrier proposal and packet</a>
       <a class="button button-ghost" href="/contacts/">General Logistics contact</a>
     </div>
   </div>
 </section>
-
-<style>
-  .logistics-commercial-links{background:#f4f7fb}.logistics-commercial-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}.logistics-commercial-grid article{display:flex;flex-direction:column;align-items:flex-start;padding:1.45rem;border:1px solid #dce3ee;border-radius:10px;background:#fff}.logistics-commercial-grid h3{font-size:1.25rem}.logistics-commercial-grid article>a,.logistics-commercial-actions a{display:flex;gap:.5rem;align-items:center;margin-top:auto;font-weight:700}.logistics-commercial-actions{display:grid;gap:.7rem;margin-top:auto}.logistics-commercial-actions .carrier-proposal-link{padding:.68rem .75rem;border:1px solid #d8d2ff;border-radius:8px;background:#f7f5ff;color:#4539cc}.logistics-path-directory{margin-top:1.2rem;padding:1.4rem;border:1px solid #d7dfeb;border-radius:10px;background:#fff}.logistics-path-directory-heading{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center}.logistics-wisconsin-heading{grid-template-columns:auto 1fr}.logistics-path-directory-heading h3{margin:.2rem 0}.logistics-path-directory-heading p{margin:0}.logistics-path-columns{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid #e1e7ef}.logistics-path-columns h4{margin:0 0 .7rem}.logistics-path-columns nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.logistics-path-columns a{display:flex;justify-content:space-between;gap:.45rem;align-items:center;padding:.7rem .75rem;border:1px solid #e3e8f0;border-radius:7px;background:#f9fbfd;font-size:.9rem;font-weight:700}.logistics-commercial-footer{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid #d7dfeb}.logistics-commercial-footer p{width:100%;margin:0;font-weight:700}.logistics-customer-review{background:#173e88!important}.carrier-footer-proposal{display:inline-flex;gap:.42rem;align-items:center;border-color:#cfc8ff!important;background:#f7f5ff!important;color:#4337c8!important}@media(max-width:900px){.logistics-commercial-grid,.logistics-path-columns{grid-template-columns:1fr}.logistics-path-directory-heading{grid-template-columns:auto 1fr}.logistics-path-directory-heading .button{grid-column:1/-1}.logistics-path-columns nav{grid-template-columns:1fr 1fr}.logistics-commercial-footer{align-items:stretch}.logistics-commercial-footer .button{justify-content:center}}@media(max-width:620px){.logistics-path-columns nav{grid-template-columns:1fr}}
-</style>
