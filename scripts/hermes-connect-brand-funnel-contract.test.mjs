@@ -42,6 +42,18 @@ assert(safePolish.includes(".hc-experience .booking-page") && safePolish.include
 assert(safePolish.includes(".auth-page .primary-btn") && safePolish.includes("background: var(--hermes-obsidian) !important"), "Connect polish: public auth primary action must use Obsidian rather than a generic gradient.");
 assert(safePolish.includes("Serious work block stays Obsidian"), "Connect polish: operational depth must retain an explicit Obsidian boundary.");
 
+const baseLayout = await text("src/layouts/BaseLayout.astro");
+assert(baseLayout.includes('import "../styles/hermes-connect-workspace.css"'), "Workspace: shared operational design layer must be loaded from BaseLayout.");
+
+const workspaceSystem = await text("src/styles/hermes-connect-workspace.css");
+assert(workspaceSystem.includes(".workspace-page") && workspaceSystem.includes(".availability-page") && workspaceSystem.includes(".customers-page"), "Workspace: Dashboard, Availability, and Customers must share one operational style layer.");
+assert(workspaceSystem.includes("--hc-workspace-bg: var(--hermes-obsidian)"), "Workspace: operational background must consume canonical Obsidian.");
+assert(workspaceSystem.includes("--hc-workspace-panel: var(--hermes-graphite-raised)"), "Workspace: operational panels must consume canonical raised Graphite.");
+assert(workspaceSystem.includes("background: #fff") && workspaceSystem.includes("color: var(--hermes-obsidian)"), "Workspace: generic primary work actions must use high-contrast neutral treatment rather than the old universal AI gradient.");
+assert(workspaceSystem.includes(".status-completed") && workspaceSystem.includes(".status-cancelled") && workspaceSystem.includes(".status-in_progress"), "Workspace: shared semantic status treatments are required.");
+assert(workspaceSystem.includes("prefers-reduced-motion") && workspaceSystem.includes("forced-colors"), "Workspace: accessibility fallbacks are required.");
+assert(!workspaceSystem.includes("fetch(") && !workspaceSystem.includes("/api/"), "Workspace: visual system must not contain runtime/API behavior.");
+
 const hub = await text("src/pages/services/hermes-connect/index.astro");
 assert(hub.includes("Run your business"), "Hub: adaptive operating-system hero is required.");
 assert(hub.includes("with AI."), "Hub: approved AI operating-system headline is required.");
@@ -97,4 +109,4 @@ assert(/demo|simulated|preview|fictional/i.test(workspaceHtml), "Preserved works
 assert(!workspaceHtml.includes("hermes-connect-brand-v1"), "Preserved workspace: Brand V1 path must not return.");
 assert(!workspaceHtml.includes("workspace-v2"), "Preserved workspace: retired workspace-v2 assets must not return.");
 
-console.log("Hermes Connect unified Pearl public shell, Repair Shop conversion shell, adaptive vertical OS, product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
+console.log("Hermes Connect unified Pearl public shell, shared Obsidian owner workspace, Repair Shop conversion shell, adaptive vertical OS, product-family navigation, truthfulness, localization boundary, visual selector, and legacy-routing contract passed.");
