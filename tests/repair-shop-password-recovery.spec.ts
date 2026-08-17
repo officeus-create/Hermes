@@ -43,10 +43,13 @@ test("reset password validates confirmation and posts one-time token at 390px", 
   await expect(page.locator("#reset-message")).toContainText("Пароли не совпадают");
   expect(requestBody).toBeNull();
 
+  // Validate the 390px layout before the successful submit intentionally schedules
+  // a redirect back to login. Measuring after success races that navigation.
+  const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
+  expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+
   await page.locator("#reset-confirm").fill("new-password-123");
   await page.getByRole("button", { name: "Обновить пароль" }).click();
   await expect(page.locator("#reset-message")).toContainText("Пароль обновлён");
   expect(requestBody).toEqual({ token, password: "new-password-123" });
-  const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
-  expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
 });
