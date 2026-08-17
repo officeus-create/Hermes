@@ -15,6 +15,9 @@ test("Hermes homepage uses a commercial hierarchy instead of competing first-scr
   await expect(page.locator(".home-hero-system-card")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Find the right next step" })).toHaveAttribute("href", "#start");
   await expect(page.locator(".hero-scroll-cue")).toHaveAttribute("href", "#start");
+  await expect(page.locator("[data-role-priority='commercial']")).toHaveCount(3);
+  await expect(page.locator("[data-role-priority='opportunity']")).toHaveCount(2);
+  await expect(page.getByRole("heading", { name: "Looking for an opportunity with Hermes?" })).toBeVisible();
   await expect(page.locator(".advantage-signal")).toHaveCount(0);
   await expect(page.locator(".advantage-card")).toHaveCount(4);
 
@@ -26,13 +29,15 @@ test("Hermes homepage uses a commercial hierarchy instead of competing first-scr
     const role = document.querySelector<HTMLElement>(".home-role-router");
     const advantages = document.querySelector<HTMLElement>(".advantage-section");
     const paths = document.querySelector<HTMLElement>(".paths-section");
-    const roleCard = document.querySelector<HTMLElement>(".hermes-home-page .home-role-card");
+    const roleCard = document.querySelector<HTMLElement>(".hermes-home-page [data-role-priority='commercial']");
+    const opportunityCard = document.querySelector<HTMLElement>(".hermes-home-page [data-role-priority='opportunity']");
     const pillars = document.querySelector<HTMLElement>(".hermes-home-page .path-pillars");
-    if (!home || !hero || !stage || !primary || !role || !advantages || !paths || !roleCard || !pillars) return null;
+    if (!home || !hero || !stage || !primary || !role || !advantages || !paths || !roleCard || !opportunityCard || !pillars) return null;
 
     const heroStyle = getComputedStyle(hero);
     const primaryStyle = getComputedStyle(primary);
     const roleStyle = getComputedStyle(roleCard);
+    const opportunityStyle = getComputedStyle(opportunityCard);
     const pillarStyle = getComputedStyle(pillars);
     return {
       heroBackground: heroStyle.backgroundColor,
@@ -40,6 +45,8 @@ test("Hermes homepage uses a commercial hierarchy instead of competing first-scr
       primaryColor: primaryStyle.color,
       primaryRadius: primaryStyle.borderRadius,
       roleRadius: roleStyle.borderRadius,
+      opportunityRadius: opportunityStyle.borderRadius,
+      opportunityShadow: opportunityStyle.boxShadow,
       pillarsRadius: pillarStyle.borderRadius,
       stageHeight: stage.getBoundingClientRect().height,
       roleTop: role.getBoundingClientRect().top,
@@ -58,6 +65,8 @@ test("Hermes homepage uses a commercial hierarchy instead of competing first-scr
   expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
   expect(visual!.primaryRadius).toBe("999px");
   expect(visual!.roleRadius).toBe("22px");
+  expect(visual!.opportunityRadius).toBe("22px");
+  expect(visual!.opportunityShadow).toBe("none");
   expect(visual!.pillarsRadius).toBe(isMobile ? "22px" : "30px");
   expect(visual!.stageHeight).toBeGreaterThanOrEqual(isMobile ? 400 : 500);
   expect(visual!.roleTop).toBeLessThan(visual!.advantagesTop);
@@ -72,6 +81,8 @@ test("Hermes Pearl homepage stays usable without horizontal overflow on mobile",
   await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Find the right next step" })).toBeVisible();
   await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
+  await expect(page.locator("[data-role-priority='commercial']")).toHaveCount(3);
+  await expect(page.locator("[data-role-priority='opportunity']")).toHaveCount(2);
 
   const geometry = await page.evaluate(() => {
     const stage = document.querySelector<HTMLElement>(".home-hero-stage");
