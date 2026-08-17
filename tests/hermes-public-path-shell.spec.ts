@@ -36,13 +36,16 @@ for (const slug of directions) {
       };
     }, slug);
 
+    const viewportWidth = page.viewportSize()?.width ?? 1440;
+    const expectedMediaRadius = viewportWidth <= 1040 ? "22px" : "30px";
+
     expect(visual).not.toBeNull();
     expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
     expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
     expect(visual!.primaryBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
     expect(visual!.primaryRadius).toBe("12px");
-    expect(visual!.mediaRadius).toBe("30px");
+    expect(visual!.mediaRadius).toBe(expectedMediaRadius);
     expect(visual!.headerColor).toBe("rgb(11, 13, 18)");
     expect(visual!.overflow).toBe(false);
   });
