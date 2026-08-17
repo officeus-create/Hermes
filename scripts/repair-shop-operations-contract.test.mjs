@@ -29,7 +29,9 @@ assert.equal(noShowExclusions.length, 2, "no_show must release capacity in both 
 assert.match(operationsSource, /\/api\/repair-shop\/followups/);
 assert.match(operationsSource, /status:\s*"no_show"/);
 assert.match(operationsSource, /data\.history/);
-assert.match(operationsSource, /follow_up_needed/);
+assert.match(operationsSource, /JSON\.stringify\(\{ booking_id: bookingId, needed \}\)/);
+assert.match(operationsSource, /if \(needed\) followups\.add\(bookingId\); else followups\.delete\(bookingId\);/);
+assert.match(operationsSource, /followups\.has\(bookingId\)/);
 for (const locale of ["en", "ru", "uk", "es", "it", "fr"]) assert.match(operationsSource, new RegExp(`\\b${locale}: \\{`));
 assert.doesNotMatch(operationsSource, /client_email|client_phone|vin|dataLayer|gtag/i);
 
