@@ -32,6 +32,7 @@ for (const route of trustRoutes) {
         cardRadius: getComputedStyle(card).borderRadius,
         contactBackground: getComputedStyle(contact).backgroundColor,
         contactColor: getComputedStyle(contact).color,
+        contactRadius: getComputedStyle(contact).borderRadius,
         actionBackground: getComputedStyle(action).backgroundColor,
         actionColor: getComputedStyle(action).color,
         overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -49,17 +50,10 @@ for (const route of trustRoutes) {
     expect(visual!.cardRadius).toBe("22px");
     expect(visual!.contactBackground).toBe("rgb(11, 13, 18)");
     expect(visual!.contactColor).toBe("rgb(255, 255, 255)");
+    expect(visual!.contactRadius).toBe(expectedContactRadius);
     expect(visual!.actionBackground).toBe("rgb(255, 255, 255)");
     expect(visual!.actionColor).toBe("rgb(11, 13, 18)");
-    expect(getComputedStyleValue(contactRadiusSelector())).toBeUndefined;
     expect(visual!.overflow).toBe(false);
-
-    function contactRadiusSelector() {
-      return expectedContactRadius;
-    }
-    function getComputedStyleValue(value: string) {
-      return value === expectedContactRadius ? undefined : value;
-    }
   });
 }
 
