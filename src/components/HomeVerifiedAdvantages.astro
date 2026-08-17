@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight, CheckCircle2 } from "@lucide/astro";
+import { ArrowUpRight, Check } from "@lucide/astro";
 
 type Advantage = {
   id: string;
@@ -9,7 +9,6 @@ type Advantage = {
   points: string[];
   href: string;
   cta: string;
-  tone: "violet" | "magenta" | "gold" | "cyan";
 };
 
 const advantages: Advantage[] = [
@@ -26,7 +25,6 @@ const advantages: Advantage[] = [
     ],
     href: "/paths/logistics/",
     cta: "Review logistics support",
-    tone: "violet",
   },
   {
     id: "marketing",
@@ -41,7 +39,6 @@ const advantages: Advantage[] = [
     ],
     href: "/paths/marketing/",
     cta: "Find the growth bottleneck",
-    tone: "magenta",
   },
   {
     id: "academy",
@@ -56,7 +53,6 @@ const advantages: Advantage[] = [
     ],
     href: "/paths/academy/",
     cta: "Explore practical training",
-    tone: "gold",
   },
   {
     id: "technology",
@@ -71,7 +67,6 @@ const advantages: Advantage[] = [
     ],
     href: "/paths/technology/",
     cta: "Discuss a digital system",
-    tone: "cyan",
   },
 ];
 ---
@@ -79,27 +74,24 @@ const advantages: Advantage[] = [
 <section class="section advantage-section" aria-labelledby="verified-advantages-title">
   <div class="shell">
     <div class="section-heading advantage-heading" data-reveal>
-      <p class="eyebrow">Why teams choose a Hermes path</p>
-      <h2 id="verified-advantages-title">Practical advantages, built into the way we work.</h2>
+      <p class="eyebrow">How Hermes works across four specialist teams</p>
+      <h2 id="verified-advantages-title">Different expertise. The same operating discipline.</h2>
       <p>
-        Each direction solves a different business problem, but the operating principle is the same: clearer ownership,
-        connected workflows, and a next step people can act on.
+        Each team solves a different business problem. What stays consistent is ownership, a defined next step, and work
+        connected to the operating result instead of activity for its own sake.
       </p>
     </div>
 
     <div class="advantage-grid" data-reveal>
-      {advantages.map((advantage, index) => (
-        <article class={`advantage-card advantage-${advantage.tone}`} style={`--pulse-delay: ${index * 1.15}s`}>
-          <div class="advantage-signal" aria-hidden="true">
-            <span></span>
-          </div>
+      {advantages.map((advantage) => (
+        <article class="advantage-card" data-advantage={advantage.id}>
           <p class="advantage-eyebrow">{advantage.eyebrow}</p>
           <h3>{advantage.title}</h3>
           <p class="advantage-summary">{advantage.summary}</p>
           <ul>
             {advantage.points.map((point) => (
               <li>
-                <CheckCircle2 size={17} stroke-width={1.8} aria-hidden="true" />
+                <Check size={17} stroke-width={1.9} aria-hidden="true" />
                 <span>{point}</span>
               </li>
             ))}
@@ -116,89 +108,57 @@ const advantages: Advantage[] = [
 
 <style>
   .advantage-section {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .advantage-section::before {
-    content: "";
-    position: absolute;
-    inset: 8% -18% auto;
-    height: 30rem;
-    background: radial-gradient(circle, rgba(115, 92, 255, 0.11), transparent 68%);
-    pointer-events: none;
+    color: var(--hermes-ink);
+    background: var(--hermes-paper);
   }
 
   .advantage-heading {
-    max-width: 54rem;
+    max-width: 58rem;
   }
 
   .advantage-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-    margin-top: clamp(2rem, 4vw, 3.5rem);
+    margin-top: clamp(2.2rem, 4vw, 3.8rem);
+    border-top: 1px solid var(--hermes-line-light);
   }
 
   .advantage-card {
-    --advantage-accent: 120, 102, 255;
     position: relative;
-    min-height: 100%;
-    padding: clamp(1.35rem, 3vw, 2rem);
-    border: 1px solid rgba(var(--advantage-accent), 0.24);
-    border-radius: 1.45rem;
-    background:
-      linear-gradient(145deg, rgba(var(--advantage-accent), 0.1), transparent 42%),
-      rgba(10, 12, 22, 0.74);
-    box-shadow: 0 1.2rem 3.2rem rgba(0, 0, 0, 0.16);
-    isolation: isolate;
+    min-width: 0;
+    padding: clamp(1.7rem, 3.2vw, 2.7rem) clamp(1rem, 3vw, 2.6rem) clamp(1.9rem, 3.5vw, 3rem) 0;
+    border-bottom: 1px solid var(--hermes-line-light);
+    background: transparent;
   }
 
-  .advantage-violet { --advantage-accent: 129, 105, 255; }
-  .advantage-magenta { --advantage-accent: 227, 82, 176; }
-  .advantage-gold { --advantage-accent: 229, 179, 81; }
-  .advantage-cyan { --advantage-accent: 65, 190, 216; }
-
-  .advantage-signal {
-    position: absolute;
-    top: 1.35rem;
-    right: 1.35rem;
-    width: 0.72rem;
-    height: 0.72rem;
-    border-radius: 999px;
-    background: rgb(var(--advantage-accent));
-    box-shadow: 0 0 1.2rem rgba(var(--advantage-accent), 0.78);
-  }
-
-  .advantage-signal span {
-    position: absolute;
-    inset: -0.42rem;
-    border: 1px solid rgba(var(--advantage-accent), 0.55);
-    border-radius: inherit;
-    animation: advantage-pulse 4.6s ease-out infinite;
-    animation-delay: var(--pulse-delay);
+  .advantage-card:nth-child(even) {
+    padding-right: 0;
+    padding-left: clamp(1rem, 3vw, 2.6rem);
+    border-left: 1px solid var(--hermes-line-light);
   }
 
   .advantage-eyebrow {
-    margin: 0 2rem 0.8rem 0;
-    color: rgb(var(--advantage-accent));
-    font-size: 0.72rem;
-    font-weight: 750;
-    letter-spacing: 0.13em;
+    margin: 0 0 0.8rem;
+    color: var(--hermes-violet);
+    font: 750 0.72rem/1.25 var(--font-mono);
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
 
   .advantage-card h3 {
     max-width: 28rem;
     margin: 0;
+    color: var(--hermes-ink);
     font-size: clamp(1.35rem, 2.4vw, 2rem);
     line-height: 1.08;
+    letter-spacing: -0.035em;
   }
 
   .advantage-summary {
     max-width: 38rem;
     margin: 1rem 0 0;
-    opacity: 0.78;
+    color: var(--hermes-muted);
+    line-height: var(--hermes-copy-leading);
   }
 
   .advantage-card ul {
@@ -214,11 +174,12 @@ const advantages: Advantage[] = [
     grid-template-columns: 1.2rem 1fr;
     gap: 0.6rem;
     align-items: start;
+    color: var(--hermes-graphite);
   }
 
   .advantage-card li :global(svg) {
     margin-top: 0.16rem;
-    color: rgb(var(--advantage-accent));
+    color: var(--hermes-violet);
   }
 
   .advantage-card a {
@@ -226,62 +187,42 @@ const advantages: Advantage[] = [
     gap: 0.45rem;
     align-items: center;
     margin-top: 1.45rem;
-    color: inherit;
+    color: var(--hermes-ink);
     font-weight: 720;
     text-decoration: none;
   }
 
-  .advantage-card a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-  }
-
   .advantage-card a :global(svg) {
-    color: rgb(var(--advantage-accent));
-    transition: transform 180ms ease;
+    color: var(--hermes-violet);
+    transition: transform var(--hermes-motion-fast) var(--hermes-ease);
   }
 
-  .advantage-card:hover a :global(svg),
-  .advantage-card:focus-within a :global(svg) {
-    transform: translate(0.2rem, -0.2rem);
+  .advantage-card a:hover,
+  .advantage-card a:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
   }
 
-  .advantage-card:hover,
-  .advantage-card:focus-within {
-    border-color: rgba(var(--advantage-accent), 0.5);
-    box-shadow: 0 1.4rem 3.8rem rgba(0, 0, 0, 0.22), 0 0 2.4rem rgba(var(--advantage-accent), 0.08);
-  }
-
-  @keyframes advantage-pulse {
-    0%, 58% {
-      opacity: 0;
-      transform: scale(0.72);
-    }
-    68% {
-      opacity: 0.75;
-    }
-    88%, 100% {
-      opacity: 0;
-      transform: scale(1.85);
-    }
+  .advantage-card a:hover :global(svg),
+  .advantage-card a:focus-visible :global(svg) {
+    transform: translate(0.15rem, -0.15rem);
   }
 
   @media (max-width: 760px) {
     .advantage-grid {
       grid-template-columns: 1fr;
     }
+
+    .advantage-card,
+    .advantage-card:nth-child(even) {
+      padding-right: 0;
+      padding-left: 0;
+      border-left: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .advantage-signal span {
-      animation: none;
-      opacity: 0.45;
-      transform: none;
-    }
-
-    .advantage-card,
     .advantage-card a :global(svg) {
       transition: none;
     }

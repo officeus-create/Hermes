@@ -6,22 +6,29 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("Hermes homepage uses the Pearl public shell and Obsidian primary action", async ({ page }) => {
+test("Hermes homepage uses a commercial hierarchy instead of competing first-screen choices", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
   await expect(page.locator(".home-hero-stage")).toBeVisible();
   await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
-  await expect(page.locator(".home-hero-system-card")).toContainText("One Hermes ecosystem");
+  await expect(page.locator(".home-hero-system-card")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Find the right next step" })).toHaveAttribute("href", "#start");
+  await expect(page.locator(".hero-scroll-cue")).toHaveAttribute("href", "#start");
+  await expect(page.locator(".advantage-signal")).toHaveCount(0);
+  await expect(page.locator(".advantage-card")).toHaveCount(4);
 
   const visual = await page.evaluate(() => {
     const home = document.querySelector<HTMLElement>(".hermes-home-page");
     const hero = document.querySelector<HTMLElement>(".hermes-home-page .hero");
     const stage = document.querySelector<HTMLElement>(".home-hero-stage");
     const primary = document.querySelector<HTMLElement>(".hermes-home-page .hero .button-primary");
+    const role = document.querySelector<HTMLElement>(".home-role-router");
+    const advantages = document.querySelector<HTMLElement>(".advantage-section");
+    const paths = document.querySelector<HTMLElement>(".paths-section");
     const roleCard = document.querySelector<HTMLElement>(".hermes-home-page .home-role-card");
     const pillars = document.querySelector<HTMLElement>(".hermes-home-page .path-pillars");
-    if (!home || !hero || !stage || !primary || !roleCard || !pillars) return null;
+    if (!home || !hero || !stage || !primary || !role || !advantages || !paths || !roleCard || !pillars) return null;
 
     const heroStyle = getComputedStyle(hero);
     const primaryStyle = getComputedStyle(primary);
@@ -35,6 +42,10 @@ test("Hermes homepage uses the Pearl public shell and Obsidian primary action", 
       roleRadius: roleStyle.borderRadius,
       pillarsRadius: pillarStyle.borderRadius,
       stageHeight: stage.getBoundingClientRect().height,
+      roleTop: role.getBoundingClientRect().top,
+      advantagesTop: advantages.getBoundingClientRect().top,
+      pathsTop: paths.getBoundingClientRect().top,
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
     };
   });
 
@@ -49,6 +60,9 @@ test("Hermes homepage uses the Pearl public shell and Obsidian primary action", 
   expect(visual!.roleRadius).toBe("22px");
   expect(visual!.pillarsRadius).toBe(isMobile ? "22px" : "30px");
   expect(visual!.stageHeight).toBeGreaterThanOrEqual(isMobile ? 400 : 500);
+  expect(visual!.roleTop).toBeLessThan(visual!.advantagesTop);
+  expect(visual!.advantagesTop).toBeLessThan(visual!.pathsTop);
+  expect(visual!.overflow).toBe(false);
 });
 
 test("Hermes Pearl homepage stays usable without horizontal overflow on mobile", async ({ page }) => {
@@ -56,7 +70,7 @@ test("Hermes Pearl homepage stays usable without horizontal overflow on mobile",
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Explore your path" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Find the right next step" })).toBeVisible();
   await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
 
   const geometry = await page.evaluate(() => {

@@ -4,19 +4,20 @@ import { site } from "../data/site";
 const logistics = site.paths.find((p) => p.id === "logistics")!;
 const phones = logistics.directContacts?.filter((c) => c.href.startsWith("tel:")) ?? [];
 const badges = [
-  { label: "Directions", value: "4", note: "Logistics · Marketing · Academy · IT" },
-  { label: "Service area", value: "USA + International", note: "Logistics phone in the USA; other directions coordinated internationally by email" },
-  { label: "Academy structure", value: "2 programs", note: "U.S. Logistics Operations · Marketing · paid cohort and free practice are separate models" },
-  { label: "IT discovery", value: "Brief-first", note: "Your goals, references, market, and budget shape the roadmap" },
-  { label: "Contact mode", value: "Live", note: "Website inquiries are delivered through the protected Hermes email workflow." },
+  { label: "Specialist teams", value: "4", note: "Logistics · Marketing · Academy · IT, each with a defined public path" },
+  { label: "Coverage", value: "USA + International", note: "U.S. Logistics has a public U.S. phone; other directions are coordinated internationally by email" },
+  { label: "Academy programs", value: "2 programs", note: "U.S. Logistics Operations and Marketing publish separate training paths and participation models" },
+  { label: "Product maturity", value: "Clearly labeled", note: "Live products, prototypes, discovery work, and previews are identified instead of presented as the same thing" },
+  { label: "Inquiry delivery", value: "Protected", note: "Website inquiries use the controlled Hermes email delivery workflow" },
 ];
 ---
 
 <section class="trust-badge section" id="about" data-analytics-scope="home-trust">
   <div class="shell">
     <div class="section-heading" data-reveal>
-      <p class="eyebrow">Trust architecture</p>
-      <h2>Proof you can verify on this site — not slogans.</h2>
+      <p class="eyebrow">Public operating facts</p>
+      <h2>What Hermes makes clear before you contact us.</h2>
+      <p>Scope, maturity, public contact channels, and participation models should be understandable without a sales call.</p>
     </div>
     <ul class="trust-badge-grid" data-reveal>
       {
@@ -30,7 +31,7 @@ const badges = [
       }
     </ul>
     <details class="trust-optional" data-case-id="home-trust-channels">
-      <summary>Optional — approved public Logistics contacts</summary>
+      <summary>Public Logistics contact channels</summary>
       <ul>
         {
           phones.map((c) => (

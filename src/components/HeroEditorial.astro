@@ -10,15 +10,13 @@ import { site } from "../data/site";
     <div class="home-hero-copy">
       <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
       <h1 class="hero-title" aria-label={site.hero.title}>
-        <span class="hero-title-office" aria-hidden="true">
-          Four d<span class="hero-letter-i"><span>ı</span><i></i></span>rections.
-        </span>
-        <em class="hero-title-script" aria-hidden="true">One way forward.</em>
+        <span class="hero-title-office" aria-hidden="true">Four directions.</span>
+        <span class="hero-title-script" aria-hidden="true">One way forward.</span>
       </h1>
       <p class="hero-copy">{site.hero.body}</p>
       <div class="hero-actions">
-        <a class="button button-primary" href={site.hero.primaryCta.href}>
-          {site.hero.primaryCta.label}
+        <a class="button button-primary" href="#start">
+          Find the right next step
           <ArrowDown size={18} aria-hidden="true" />
         </a>
         <a class="button button-ghost" href={site.hero.secondaryCta.href}>
@@ -46,16 +44,11 @@ import { site } from "../data/site";
       <div class="home-intelligence-knot" aria-hidden="true">
         <span></span><span></span><span></span>
       </div>
-      <div class="home-hero-system-card">
-        <small>One Hermes ecosystem</small>
-        <strong>Four directions. One operating standard.</strong>
-        <p>Logistics · Growth · Education · Technology</p>
-      </div>
     </div>
   </div>
 
-  <a class="hero-scroll-cue" href="#paths" aria-label="Scroll to choose a Hermes direction">
-    <span>Choose a direction</span>
+  <a class="hero-scroll-cue" href="#start" aria-label="Scroll to find the right Hermes next step">
+    <span>Start with your situation</span>
     <ArrowDown size={18} aria-hidden="true" />
   </a>
 </section>
