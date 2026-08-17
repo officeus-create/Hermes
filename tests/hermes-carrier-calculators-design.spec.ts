@@ -68,13 +68,14 @@ for (const calculator of calculators) {
     expect(visual!.primaryRadius).toBe("12px");
     expect(visual!.sensitivityRadius).toBe("12px");
     expect(visual!.sensitivityAccent).toBe("rgb(124, 92, 255)");
-    expect(visual!.resultPosition).toBe("sticky");
+    const isNarrow = (page.viewportSize()?.width ?? 1280) <= 860;
+    expect(visual!.resultPosition).toBe(isNarrow ? "static" : "sticky");
     expect(visual!.overflow).toBe(false);
 
     const input = page.locator(calculator.field).first();
     await input.focus();
     await expect(input).toBeFocused();
-    expect(await input.evaluate((node) => getComputedStyle(node).borderColor)).toBe("rgb(124, 92, 255)");
+    await expect(input).toHaveCSS("border-color", "rgb(124, 92, 255)");
   });
 
   test(`${calculator.route} stacks cleanly on mobile`, async ({ page }) => {
