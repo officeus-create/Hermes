@@ -18,12 +18,12 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
         const params = new URLSearchParams(window.location.search);
         const requested = params.get("lang") || document.documentElement.lang || "en";
         const copy = {
-          en: { title:"Repair Shop access", subtitle:"Sign in or create your repair shop account to manage services, booking hours, appointments, and customers.", login:"Login", register:"Register New Shop", create:"Create Shop Account", dashboard:"Go to Shop Dashboard" },
-          ru: { title:"Доступ владельца СТО", subtitle:"Войдите или создайте аккаунт СТО, чтобы управлять услугами, часами записи, заявками и клиентами.", login:"Войти", register:"Зарегистрировать СТО", create:"Создать аккаунт СТО", dashboard:"Перейти в кабинет СТО" },
-          uk: { title:"Доступ власника СТО", subtitle:"Увійдіть або створіть акаунт СТО, щоб керувати послугами, годинами запису, заявками та клієнтами.", login:"Увійти", register:"Зареєструвати СТО", create:"Створити акаунт СТО", dashboard:"Перейти до кабінету СТО" },
-          es: { title:"Acceso del propietario del taller", subtitle:"Inicia sesión o crea la cuenta del taller para gestionar servicios, horarios, citas y clientes.", login:"Iniciar sesión", register:"Registrar taller", create:"Crear cuenta del taller", dashboard:"Ir al panel del taller" },
-          it: { title:"Accesso proprietario officina", subtitle:"Accedi o crea l’account dell’officina per gestire servizi, orari, appuntamenti e clienti.", login:"Accedi", register:"Registra officina", create:"Crea account officina", dashboard:"Vai al pannello officina" },
-          fr: { title:"Accès propriétaire d’atelier", subtitle:"Connectez-vous ou créez le compte de l’atelier pour gérer services, horaires, rendez-vous et clients.", login:"Connexion", register:"Inscrire un atelier", create:"Créer le compte de l’atelier", dashboard:"Accéder au tableau de bord" },
+          en: { title:"Repair Shop access", subtitle:"Sign in or create your repair shop account to manage services, booking hours, appointments, and customers.", login:"Login", register:"Register New Shop", create:"Create Shop Account", dashboard:"Go to Shop Dashboard", forgot:"Forgot password?" },
+          ru: { title:"Доступ владельца СТО", subtitle:"Войдите или создайте аккаунт СТО, чтобы управлять услугами, часами записи, заявками и клиентами.", login:"Войти", register:"Зарегистрировать СТО", create:"Создать аккаунт СТО", dashboard:"Перейти в кабинет СТО", forgot:"Забыли пароль?" },
+          uk: { title:"Доступ власника СТО", subtitle:"Увійдіть або створіть акаунт СТО, щоб керувати послугами, годинами запису, заявками та клієнтами.", login:"Увійти", register:"Зареєструвати СТО", create:"Створити акаунт СТО", dashboard:"Перейти до кабінету СТО", forgot:"Забули пароль?" },
+          es: { title:"Acceso del propietario del taller", subtitle:"Inicia sesión o crea la cuenta del taller para gestionar servicios, horarios, citas y clientes.", login:"Iniciar sesión", register:"Registrar taller", create:"Crear cuenta del taller", dashboard:"Ir al panel del taller", forgot:"¿Olvidaste tu contraseña?" },
+          it: { title:"Accesso proprietario officina", subtitle:"Accedi o crea l’account dell’officina per gestire servizi, orari, appuntamenti e clienti.", login:"Accedi", register:"Registra officina", create:"Crea account officina", dashboard:"Vai al pannello officina", forgot:"Password dimenticata?" },
+          fr: { title:"Accès propriétaire d’atelier", subtitle:"Connectez-vous ou créez le compte de l’atelier pour gérer services, horaires, rendez-vous et clients.", login:"Connexion", register:"Inscrire un atelier", create:"Créer le compte de l’atelier", dashboard:"Accéder au tableau de bord", forgot:"Mot de passe oublié ?" },
         };
         const locale = Object.prototype.hasOwnProperty.call(copy, requested) ? requested : "en";
         const t = copy[locale];
@@ -35,6 +35,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
           const registerTab = document.querySelector('[data-tab="register"]');
           const createButton = document.querySelector("#register-form button[type='submit']");
           const dashboardLink = document.querySelector("#auth-authenticated .auth-actions a[href*='/dashboard/']");
+          const loginForm = document.querySelector("#login-form");
 
           if (title) title.textContent = t.title;
           if (subtitle) subtitle.textContent = t.subtitle;
@@ -47,6 +48,22 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
             if (locale === "en") url.searchParams.delete("lang");
             else url.searchParams.set("lang", locale);
             dashboardLink.setAttribute("href", `${url.pathname}${url.search}${url.hash}`);
+          }
+
+          if (loginForm) {
+            let forgotLink = loginForm.querySelector("[data-repair-forgot-password]");
+            if (!(forgotLink instanceof HTMLAnchorElement)) {
+              forgotLink = document.createElement("a");
+              forgotLink.dataset.repairForgotPassword = "true";
+              forgotLink.className = "repair-auth-forgot";
+              const submitButton = loginForm.querySelector("button[type='submit']");
+              if (submitButton) loginForm.insertBefore(forgotLink, submitButton);
+              else loginForm.appendChild(forgotLink);
+            }
+            forgotLink.textContent = t.forgot;
+            const forgotUrl = new URL(`${root}/forgot-password/`, window.location.origin);
+            if (locale !== "en") forgotUrl.searchParams.set("lang", locale);
+            forgotLink.href = `${forgotUrl.pathname}${forgotUrl.search}`;
           }
 
           if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) {
@@ -62,6 +79,8 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
 )}
 
 <style is:global>
+  .repair-auth-forgot{display:block;margin:-4px 0 16px;text-align:right;color:#a694ff;text-decoration:none;font-size:13px;font-weight:750}
+  .repair-auth-forgot:hover{text-decoration:underline}
   .repair-activation-panel{margin:0 0 24px;padding:20px;border:1px solid rgba(110,231,183,.24);border-radius:18px;background:linear-gradient(135deg,rgba(52,211,153,.07),rgba(90,200,250,.045),rgba(157,136,255,.05));box-shadow:0 18px 55px rgba(0,0,0,.16)}
   .repair-activation-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:16px}
   .repair-activation-eyebrow{margin:0 0 6px;color:#6ee7b7;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:850}

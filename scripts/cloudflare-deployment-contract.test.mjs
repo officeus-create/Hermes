@@ -5,6 +5,7 @@ import path from "node:path";
 const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), "utf8");
 const exists = (relativePath) => fs.existsSync(path.join(root, relativePath));
+const LEAD_EMAIL_DEPLOY_WORKFLOW = path.join(".github", "workflows", "lead-email-worker-production.yml");
 
 function listFiles(directory) {
   const absolute = path.join(root, directory);
@@ -16,8 +17,7 @@ function listFiles(directory) {
 }
 
 // A root Worker configuration would let a dashboard or CLI integration infer a
-// generic Worker deployment for the whole website. The reviewed repository
-// contract keeps only examples until authenticated activation is intentional.
+// generic Worker deployment for the whole website. Keep the website Pages-only.
 assert.equal(exists("wrangler.jsonc"), false, "Active root wrangler.jsonc must not be committed.");
 assert.equal(exists("wrangler.toml"), false, "Active root wrangler.toml must not be committed.");
 
@@ -40,12 +40,23 @@ assert.match(
   "The controlled production workflow must deploy the reviewed dist output to Pages project hermes.",
 );
 
+const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
+assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
+assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
+assert.match(
+  leadEmailWorkflow,
+  /^\s*command:\s*deploy --config workers\/lead-email\/wrangler\.production\.jsonc --keep-vars\s*$/im,
+  "The only repository-controlled Worker deploy must remain pinned to the hermes-lead-email production config.",
+);
+assert.doesNotMatch(leadEmailWorkflow, /\bwrangler\.toml\b|--config\s+wrangler\.jsonc\b/i);
+
 for (const workflowPath of listFiles(".github/workflows").filter((file) => /\.ya?ml$/i.test(file))) {
+  if (workflowPath === LEAD_EMAIL_DEPLOY_WORKFLOW) continue;
   const workflow = read(workflowPath);
   assert.doesNotMatch(
     workflow,
     /\b(?:npx\s+)?wrangler\s+deploy\b/i,
-    `${workflowPath} introduces a generic Worker deployment. Use an explicitly reviewed service-specific workflow instead.`,
+    `${workflowPath} introduces a generic Worker deployment. The reviewed service-specific owner is ${LEAD_EMAIL_DEPLOY_WORKFLOW}.`,
   );
   assert.doesNotMatch(
     workflow,
@@ -62,8 +73,8 @@ for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
   assert.doesNotMatch(
     String(command),
     /\b(?:npx\s+)?wrangler\s+deploy\b/i,
-    `package.json script ${scriptName} introduces a generic Worker deployment. Website production must remain Pages-only.`,
+    `package.json script ${scriptName} introduces a generic root Worker deployment.`,
   );
 }
 
-console.log("Cloudflare deployment ownership contract passed.");
+console.log("Cloudflare deployment ownership contract passed: Pages plus one pinned hermes-lead-email Worker owner.");

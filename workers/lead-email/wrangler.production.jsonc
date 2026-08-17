@@ -18,7 +18,6 @@
   "send_email": [
     {
       "name": "EMAIL",
-      "destination_address": "officeus@hermeslogisticsus.com",
       "allowed_sender_addresses": [
         "website@hermeslogisticsus.com"
       ]
