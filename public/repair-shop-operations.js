@@ -33,7 +33,7 @@
 
   const localizeNoShow = (card) => {
     const pill = card.querySelector(".status-pill.status-no_show");
-    if (pill) pill.textContent = copy.noShow;
+    if (pill && pill.textContent !== copy.noShow) pill.textContent = copy.noShow;
     card.querySelectorAll(".history li strong").forEach((node) => {
       if ((node.textContent || "").trim().toLowerCase() === "no_show") node.textContent = copy.noShow;
     });
