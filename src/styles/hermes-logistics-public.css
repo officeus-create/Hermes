@@ -1,0 +1,254 @@
+/*
+ * HERMES LOGISTICS PUBLIC SYSTEM
+ * Visual convergence for the Logistics hub modules only.
+ * Interaction, routing, storage, analytics, and business rules remain in their components.
+ */
+
+/*
+ * These two section surfaces intentionally outrank the shared
+ * `.detail-page .section { background: transparent; }` rule. Keep the
+ * ownership explicit without `!important` so the Logistics modules remain
+ * Pearl even when the shared shell stylesheet is emitted later in the bundle.
+ */
+.detail-page.detail-page-logistics .logistics-audience-hub,
+.detail-page.detail-page-logistics .hermes-path-engine {
+  background: var(--hermes-pearl);
+}
+
+.detail-page-logistics .logistics-audience-hub {
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page-logistics .logistics-audience-grid {
+  gap: 14px;
+}
+
+.detail-page-logistics .logistics-audience-grid > a {
+  min-height: 270px;
+  padding: 24px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+  transition:
+    transform var(--hermes-motion-fast) var(--hermes-ease),
+    box-shadow var(--hermes-motion-fast) var(--hermes-ease),
+    border-color var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+.detail-page-logistics .logistics-audience-grid > a:hover,
+.detail-page-logistics .logistics-audience-grid > a:focus-visible {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--hermes-violet) 38%, var(--hermes-line-light));
+  box-shadow: var(--hermes-shadow-card-hover);
+}
+
+.detail-page-logistics .logistics-audience-grid span,
+.detail-page-logistics .logistics-resource-library span {
+  color: var(--hermes-violet);
+}
+
+.detail-page-logistics .logistics-audience-grid h3,
+.detail-page-logistics .logistics-resource-library h3 {
+  color: var(--hermes-ink);
+}
+
+.detail-page-logistics .logistics-audience-grid p {
+  color: var(--hermes-muted);
+}
+
+/* The Load Board card remains an intentional operating-product anchor. */
+.detail-page-logistics .logistics-audience-grid .logistics-audience-load-board {
+  border-color: var(--hermes-line-dark);
+  color: #fff;
+  background:
+    radial-gradient(circle at 88% 12%, rgba(124, 92, 255, .16), transparent 18rem),
+    var(--hermes-obsidian);
+  box-shadow: var(--hermes-shadow-workspace);
+}
+
+.detail-page-logistics .logistics-audience-grid .logistics-audience-load-board span {
+  color: #c9c1ff;
+}
+
+.detail-page-logistics .logistics-audience-grid .logistics-audience-load-board p {
+  color: var(--hermes-muted-dark);
+}
+
+.detail-page-logistics .logistics-local-pilot {
+  margin-top: 14px;
+  padding: clamp(24px, 3vw, 34px);
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-panel);
+  color: #fff;
+  background:
+    radial-gradient(circle at 82% 22%, rgba(124, 92, 255, .18), transparent 22rem),
+    var(--hermes-obsidian);
+  box-shadow: var(--hermes-shadow-workspace);
+}
+
+.detail-page-logistics .logistics-local-pilot span {
+  color: #c9c1ff;
+}
+
+.detail-page-logistics .logistics-local-pilot h3 {
+  color: #fff;
+}
+
+.detail-page-logistics .logistics-local-pilot p {
+  color: var(--hermes-muted-dark);
+}
+
+.detail-page-logistics .logistics-local-pilot .button-primary {
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: #fff;
+  box-shadow: none;
+}
+
+.detail-page-logistics .logistics-local-pilot .button-primary:hover,
+.detail-page-logistics .logistics-local-pilot .button-primary:focus-visible {
+  color: var(--hermes-ink);
+  background: #f1f2f5;
+}
+
+.detail-page-logistics .logistics-resource-library {
+  margin-top: 14px;
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.detail-page-logistics .logistics-resource-library a {
+  min-height: 48px;
+  padding: 13px 15px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.detail-page-logistics .logistics-resource-library a:hover,
+.detail-page-logistics .logistics-resource-library a:focus-visible {
+  border-color: color-mix(in srgb, var(--hermes-violet) 42%, var(--hermes-line-light));
+  color: var(--hermes-ink);
+  background: #fff;
+}
+
+/* Path Engine: Pearl outside, one contained white decision panel, Violet intelligence. */
+.detail-page-logistics .hermes-path-engine {
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page-logistics .path-engine-shell {
+  overflow: hidden;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-panel);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card-hover);
+}
+
+.detail-page-logistics .path-engine-toolbar,
+.detail-page-logistics .path-engine-privacy {
+  border-color: var(--hermes-line-light);
+  background: var(--hermes-pearl);
+}
+
+.detail-page-logistics .path-engine-toolbar span,
+.detail-page-logistics .path-engine-toolbar button {
+  color: var(--hermes-muted);
+}
+
+.detail-page-logistics .path-engine-toolbar button:hover,
+.detail-page-logistics .path-engine-toolbar button:focus-visible {
+  color: var(--hermes-violet);
+}
+
+.detail-page-logistics .path-engine-progress {
+  background: rgba(11, 13, 18, .08);
+}
+
+.detail-page-logistics .path-engine-progress i {
+  background: var(--hermes-intelligence-gradient);
+}
+
+.detail-page-logistics .path-engine-question h3 {
+  color: var(--hermes-ink);
+  letter-spacing: -.035em;
+}
+
+.detail-page-logistics .path-engine-question > p:not(.eyebrow):not(.path-engine-error),
+.detail-page-logistics .path-engine-privacy,
+.detail-page-logistics .path-option-card span {
+  color: var(--hermes-muted);
+}
+
+.detail-page-logistics .path-option-card {
+  min-height: 132px;
+  padding: 18px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+  box-shadow: none;
+  transition:
+    transform var(--hermes-motion-fast) var(--hermes-ease),
+    box-shadow var(--hermes-motion-fast) var(--hermes-ease),
+    border-color var(--hermes-motion-fast) var(--hermes-ease),
+    background var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+.detail-page-logistics .path-option-card:hover,
+.detail-page-logistics .path-option-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--hermes-violet) 45%, var(--hermes-line-light));
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.detail-page-logistics .path-option-card[data-selected="true"] {
+  border-color: var(--hermes-violet);
+  background: rgba(124, 92, 255, .07);
+  box-shadow: inset 0 0 0 1px var(--hermes-violet);
+}
+
+.detail-page-logistics .path-engine-actions .button-primary {
+  border: 1px solid var(--hermes-obsidian);
+  border-radius: var(--hermes-radius-control);
+  color: #fff;
+  background: var(--hermes-obsidian);
+  box-shadow: none;
+}
+
+.detail-page-logistics .path-engine-actions .button-primary:hover,
+.detail-page-logistics .path-engine-actions .button-primary:focus-visible {
+  color: #fff;
+  background: var(--hermes-graphite);
+}
+
+@media (max-width: 900px) {
+  .detail-page-logistics .logistics-local-pilot {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
+@media (max-width: 620px) {
+  .detail-page-logistics .logistics-audience-grid > a {
+    min-height: 220px;
+    padding: 20px;
+  }
+
+  .detail-page-logistics .path-engine-shell {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-page-logistics .logistics-audience-grid > a,
+  .detail-page-logistics .path-option-card {
+    transition: none;
+  }
+}
