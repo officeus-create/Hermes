@@ -73,6 +73,8 @@ The route screenshot contract now includes the current Repair Shop public journe
 
 Each controlled route is captured at the standard desktop and mobile viewports when the screenshot-evidence workflow runs. Public booking is not added to the static route list without a real shop identifier; that route remains protected by browser-flow tests instead of fabricating a customer/shop state for screenshots.
 
+The design PR remains **draft** until current-head build/static/browser checks are green and representative visual evidence is reviewed. A successful source-level migration is not called visually verified before that gate.
+
 ## External AI design review: accepted vs rejected
 
 ### Accepted
