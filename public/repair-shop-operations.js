@@ -9,7 +9,7 @@
   const strings = {
     en: { noShow:"No-show", markNoShow:"Mark no-show", noShowDone:"Marked as no-show.", noShowError:"Unable to mark this booking as no-show.", follow:"Plan follow-up", followActive:"Follow-up needed · mark done", followSaved:"Follow-up saved.", followCleared:"Follow-up completed.", followError:"Unable to update follow-up.", history:"Status history" },
     ru: { noShow:"Неявка", markNoShow:"Отметить неявку", noShowDone:"Запись отмечена как неявка.", noShowError:"Не удалось отметить неявку.", follow:"Запланировать follow-up", followActive:"Follow-up нужен · отметить выполненным", followSaved:"Follow-up сохранён.", followCleared:"Follow-up выполнен.", followError:"Не удалось обновить follow-up.", history:"История статусов" },
-    uk: { noShow:"Неявка", markNoShow:"Позначити неявку", noShowDone:"Запис позначено як неявку.", noShowError:"Не вдалося позначити неявку.", follow:"Запланувати follow-up", followActive:"Follow-up потрібен · позначити виконаним", followSaved:"Follow-up збережено.", followCleared:"Follow-up виконано.", followError:"Не вдалося оновити follow-up.", history:"Історія статусів" },
+    uk: { noShow:"Неявка", markNoShow:"Позначити неявку", noShowDone:"Запис позначено як неявку.", noShowError:"Не вдалося позначити неявку.", follow:"Запланувати follow-up", followActive:"Follow-up потрібен · позначити виконаним", followSaved:"Follow-up збережено.", followCleared:"Follow-up виконано.", followError:"Не вдалося оновити follow-up.", history:"Історія статусов" },
     es: { noShow:"No se presentó", markNoShow:"Marcar ausencia", noShowDone:"La cita se marcó como ausencia.", noShowError:"No se pudo marcar la ausencia.", follow:"Planificar seguimiento", followActive:"Seguimiento pendiente · marcar hecho", followSaved:"Seguimiento guardado.", followCleared:"Seguimiento completado.", followError:"No se pudo actualizar el seguimiento.", history:"Historial de estados" },
     it: { noShow:"Assente", markNoShow:"Segna assenza", noShowDone:"Prenotazione segnata come assenza.", noShowError:"Impossibile segnare l’assenza.", follow:"Pianifica follow-up", followActive:"Follow-up richiesto · segna completato", followSaved:"Follow-up salvato.", followCleared:"Follow-up completato.", followError:"Impossibile aggiornare il follow-up.", history:"Cronologia stati" },
     fr: { noShow:"Absent", markNoShow:"Marquer absent", noShowDone:"Le rendez-vous a été marqué absent.", noShowError:"Impossible de marquer l’absence.", follow:"Planifier un suivi", followActive:"Suivi nécessaire · marquer terminé", followSaved:"Suivi enregistré.", followCleared:"Suivi terminé.", followError:"Impossible de mettre à jour le suivi.", history:"Historique des statuts" },
@@ -35,7 +35,8 @@
     const pill = card.querySelector(".status-pill.status-no_show");
     if (pill && pill.textContent !== copy.noShow) pill.textContent = copy.noShow;
     card.querySelectorAll(".history li strong").forEach((node) => {
-      if ((node.textContent || "").trim().toLowerCase() === "no_show") node.textContent = copy.noShow;
+      const historyStatus = (node.textContent || "").trim().toLowerCase().replace(/\s+/g, " ");
+      if ((historyStatus === "no_show" || historyStatus === "no show") && node.textContent !== copy.noShow) node.textContent = copy.noShow;
     });
   };
 
