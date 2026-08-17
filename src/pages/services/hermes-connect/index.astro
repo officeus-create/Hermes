@@ -1,25 +1,72 @@
 ---
-import { ArrowRight, CheckCircle2, ShieldCheck, Wrench } from "@lucide/astro";
+import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Wrench } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
-const modules = [
-  { name: "Repair Shops", href: "/services/hermes-connect/repair-shops/", status: "Current live pilot", body: "Owner registration, shop profile, services, availability, public booking, booking operations, customers, private feedback, and corporate partner intake." },
-  { name: "AI Command Center", href: "/services/hermes-connect/ai-command-center/", status: "Reference capability", body: "Decision-layer concept for request classification, prioritization, and recommended next actions." },
-  { name: "Unified Inbox", href: "/services/hermes-connect/unified-inbox/", status: "Reference capability", body: "Shared intake and lifecycle concept for approved business-request sources." },
-  { name: "Load Analyzer", href: "/services/hermes-connect/load-analyzer/", status: "Reference capability", body: "Freight decision-support concept for RPM, cost, deadhead, driver-pay, and margin estimates." },
-  { name: "Rate Negotiator", href: "/services/hermes-connect/rate-negotiator/", status: "Reference capability", body: "Human-controlled counter-offer drafting concept for freight negotiation." },
-  { name: "Proposal Builder", href: "/services/hermes-connect/proposal-builder/", status: "Reference capability", body: "Structured proposal assembly without publishing historical subscription pricing as current." },
-  { name: "ROI Calculator", href: "/services/hermes-connect/roi-calculator/", status: "Reference capability", body: "Scenario modeling for time savings and potential revenue recovery using explicit assumptions." },
-  { name: "Business Automation", href: "/services/hermes-connect/business-automation/", status: "Reference capability", body: "Reusable workflow patterns for future verified verticals without creating product forks." },
+const verticals = [
+  {
+    name: "Repair Shops",
+    status: "LIVE PRODUCT",
+    body: "Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace.",
+    modules: ["Bookings", "Services", "Customers", "Vehicles"],
+    href: "/services/hermes-connect/repair-shops/",
+  },
+  {
+    name: "Logistics",
+    status: "PREVIEW CONFIGURATION",
+    body: "Loads, carriers, dispatch, documents, freight decisions, and operating visibility around one shared workflow.",
+    modules: ["Loads", "Carriers", "Dispatch", "Documents"],
+  },
+  {
+    name: "Marketing",
+    status: "PREVIEW CONFIGURATION",
+    body: "Leads, clients, campaigns, meetings, sales handoff, and AI-assisted follow-up in one operating view.",
+    modules: ["Leads", "Clients", "Campaigns", "Pipeline"],
+  },
+  {
+    name: "Academy",
+    status: "PREVIEW CONFIGURATION",
+    body: "Students, programs, assignments, practice, progress, and coaching around measurable learning work.",
+    modules: ["Students", "Programs", "Practice", "Progress"],
+  },
+  {
+    name: "Beauty & Wellness",
+    status: "PREVIEW CONFIGURATION",
+    body: "Appointments, clients, services, specialists, repeat visits, reviews, and relationship management.",
+    modules: ["Appointments", "Clients", "Services", "Retention"],
+  },
+  {
+    name: "Professional Services",
+    status: "PREVIEW CONFIGURATION",
+    body: "Requests, clients, proposals, projects, tasks, documents, and follow-up for service businesses.",
+    modules: ["Requests", "Clients", "Projects", "Tasks"],
+  },
+];
+
+const labs = [
+  { name: "AI Command Center", href: "/services/hermes-connect/ai-command-center/" },
+  { name: "Unified Inbox", href: "/services/hermes-connect/unified-inbox/" },
+  { name: "Load Analyzer", href: "/services/hermes-connect/load-analyzer/" },
+  { name: "Rate Negotiator", href: "/services/hermes-connect/rate-negotiator/" },
+  { name: "Proposal Builder", href: "/services/hermes-connect/proposal-builder/" },
+  { name: "ROI Calculator", href: "/services/hermes-connect/roi-calculator/" },
+  { name: "Business Automation", href: "/services/hermes-connect/business-automation/" },
 ];
 
 const faqs = [
-  { question: "What is the current live Hermes Connect product?", answer: "Repair Shops is the current live pilot. Other listed modules are reference capabilities and are not presented as separate production runtimes." },
-  { question: "Does Hermes Connect currently publish Starter, Pro, or Enterprise subscription pricing?", answer: "No current public Hermes Connect subscription pricing is published on this product family. Historical planning prices are not treated as live commercial offers." },
-  { question: "Is there a separate Brand V1 or second workspace users should open?", answer: "No. The website presents one canonical Hermes Connect product family. Preserved legacy surfaces are compatibility or historical assets, not the primary product path." },
-  { question: "Is Hermes Connect available as a public mobile-store release?", answer: "The current product path is browser-first and responsive. No App Store, Google Play, or public APK release is claimed here." },
+  {
+    question: "Which Hermes Connect configuration is live today?",
+    answer: "Repair Shops is the current live product vertical. Other business configurations on this page are previews and are not presented as released production runtimes.",
+  },
+  {
+    question: "Is Hermes Connect one product or many separate apps?",
+    answer: "One product family. Identity, workspace principles, intelligence, and operating patterns stay recognizable while terminology and workflows adapt to the business.",
+  },
+  {
+    question: "Are the dashboard numbers real customer data?",
+    answer: "No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live product surfaces are identified separately.",
+  },
 ];
 
 const schema = [
@@ -30,7 +77,7 @@ const schema = [
     url: "https://hermeslogisticsus.com/services/hermes-connect/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
-    description: "Hermes Connect is one product family. Repair Shops is the current live pilot; other modules are reference capabilities pending production verification.",
+    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current live vertical; other business configurations are product previews.",
   },
   {
     "@context": "https://schema.org",
@@ -49,69 +96,121 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Hermes Connect | Product Family & Repair Shop Live Pilot"
-  description="Hermes Connect is one product family. Repair Shops is the current live pilot; other modules are reference capabilities pending production verification."
+  title="Hermes Connect | AI Operating System for Business"
+  description="Run your business with AI. Hermes Connect adapts one operating system to different business workflows, with Repair Shops as the current live product vertical."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" theme="light" />
 
-  <main id="main-content" class="hc-hub-page">
-    <section class="hc-hub-hero">
-      <div class="hc-hub-shell">
-        <p class="hc-kicker">Hermes Connect · Product family</p>
-        <h1>One product family. One current live pilot.</h1>
-        <p class="hc-hub-lead">Repair Shops is the active Hermes Connect product path today. The rest of the family remains visible as reference capabilities so useful concepts can be evaluated without being confused with released production functionality.</p>
-        <div class="hc-hub-actions">
-          <a class="hc-hub-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
-          <a class="hc-hub-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner Login / Get Started</a>
+  <main id="main-content" class="hc-brand-page">
+    <section class="hc-hero" aria-labelledby="hc-title">
+      <div class="hc-shell hc-hero-grid">
+        <div class="hc-copy">
+          <p class="hc-eyebrow"><Sparkles size={14} aria-hidden="true" />AI operating system for business</p>
+          <h1 id="hc-title">Run your business <span>with AI.</span></h1>
+          <p class="hc-lead">One operating system for leads, bookings, customers, operations, and growth. Hermes adapts the workspace around the way your business actually works.</p>
+          <div class="hc-actions">
+            <a class="hc-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="hc-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner access</a>
+            <a class="hc-secondary" href="#choose-your-business">Choose your business</a>
+          </div>
+          <div class="hc-truth" aria-label="Current Hermes Connect product status">
+            <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops is live</span>
+            <span><ShieldCheck size={15} aria-hidden="true" />Other industries are previews</span>
+            <span><CheckCircle2 size={15} aria-hidden="true" />One shared product family</span>
+          </div>
         </div>
-        <div class="hc-hub-trust">
-          <span><CheckCircle2 size={16} aria-hidden="true" />Canonical browser-based product family</span>
-          <span><CheckCircle2 size={16} aria-hidden="true" />No historical pricing presented as current</span>
-          <span><ShieldCheck size={16} aria-hidden="true" />Live vs reference status is explicit</span>
+
+        <div class="hc-product-stage" aria-label="Hermes Connect product preview">
+          <div class="hc-knot-stage">
+            <p class="hc-stage-label">Hermes Intelligence · signature system object</p>
+            <div class="hc-knot" aria-hidden="true">
+              <span class="hc-knot-loop loop-a"></span>
+              <span class="hc-knot-loop loop-b"></span>
+              <span class="hc-knot-loop loop-c"></span>
+              <span class="hc-knot-core"></span>
+            </div>
+            <div class="hc-signal-list" aria-hidden="true">
+              <div><i></i><p><strong>Signal arrives</strong><small>Request captured</small></p></div>
+              <div><i></i><p><strong>Hermes coordinates</strong><small>Intent + next step</small></p></div>
+              <div><i></i><p><strong>Work moves forward</strong><small>Human-review ready</small></p></div>
+            </div>
+          </div>
+
+          <div class="hc-workspace-preview">
+            <div class="hc-workspace-top"><span>HERMES CONNECT</span><span>WORKSPACE PREVIEW · SAMPLE DATA</span></div>
+            <div class="hc-workspace-body">
+              <aside aria-hidden="true">
+                <b>H</b><span class="active">Home</span><span>Inbox</span><span>Calendar</span><span>Customers</span><span>Operations</span><span>AI</span>
+              </aside>
+              <div class="hc-workspace-main">
+                <div class="hc-workspace-welcome"><strong>Good morning.</strong><span>Here’s what needs attention today.</span></div>
+                <div class="hc-metrics">
+                  <article><small>Bookings</small><strong>32</strong><span>sample</span></article>
+                  <article><small>New leads</small><strong>18</strong><span>sample</span></article>
+                  <article><small>AI reviews</small><strong>43</strong><span>sample</span></article>
+                </div>
+                <div class="hc-work-panels">
+                  <article><small>AI workflows</small><p><i></i>Reception <b>Preview</b></p><p><i></i>Follow-up <b>Preview</b></p><p><i></i>Operations <b>Preview</b></p></article>
+                  <article class="hc-attention"><small>Hermes Intelligence</small><strong>What needs attention next?</strong><p>Illustrative UI — no autonomous action.</p></article>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="hc-hub-section" aria-labelledby="family-title">
-      <div class="hc-hub-shell">
-        <div class="hc-hub-heading">
-          <p class="hc-kicker">Product hierarchy</p>
-          <h2 id="family-title">Every Hermes Connect module has one clear status.</h2>
+    <section class="hc-section" id="choose-your-business" aria-labelledby="business-title">
+      <div class="hc-shell">
+        <div class="hc-heading-row">
+          <div><p class="hc-kicker">Adaptive by business</p><h2 id="business-title">One system. Different business realities.</h2></div>
+          <p>The product identity stays constant. Language and modules adapt to the operating context without creating separate Hermes brands.</p>
         </div>
-        <div class="hc-module-grid">
-          {modules.map((module) => (
-            <article class={module.name === "Repair Shops" ? "is-live" : "is-reference"}>
-              <div class="hc-module-status">{module.status}</div>
-              <h3><a href={module.href}>{module.name} <ArrowRight size={15} aria-hidden="true" /></a></h3>
-              <p>{module.body}</p>
+        <div class="hc-vertical-grid">
+          {verticals.map((vertical, index) => (
+            <article class={vertical.href ? "is-live" : "is-preview"}>
+              <div class="hc-card-top"><span>{vertical.status}</span><small>{String(index + 1).padStart(2, "0")}</small></div>
+              <h3>{vertical.name}</h3>
+              <p>{vertical.body}</p>
+              <div class="hc-chips">{vertical.modules.map((module) => <span>{module}</span>)}</div>
+              {vertical.href ? <a href={vertical.href}>Open live product <ArrowRight size={15} aria-hidden="true" /></a> : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
             </article>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="hc-hub-section" aria-labelledby="rules-title">
-      <div class="hc-hub-shell hc-rules">
+    <section class="hc-obsidian-band" aria-labelledby="workspace-title">
+      <div class="hc-shell hc-obsidian-grid">
         <div>
-          <p class="hc-kicker">Release rules</p>
-          <h2 id="rules-title">What we will not imply before it is verified.</h2>
+          <p class="hc-dark-kicker">One Hermes workspace</p>
+          <h2 id="workspace-title">Pearl outside. Obsidian where work gets serious.</h2>
         </div>
-        <ul>
-          <li>Reference capability does not mean public beta, live integration, or production runtime.</li>
-          <li>No current subscription price is published until commercial terms are explicitly approved.</li>
-          <li>No mocked success state is presented as completed delivery, approval, payment, or external message.</li>
-          <li>No Brand V1, old workspace, or mobile-store path is presented as the primary Hermes Connect product.</li>
-        </ul>
+        <p>Public pages explain the system with clarity and air. Operational tools become darker, denser, and more focused. The visual language stays unmistakably Hermes in both modes.</p>
       </div>
     </section>
 
-    <section class="hc-hub-section hc-faq-section" aria-labelledby="hub-faq-title">
-      <div class="hc-hub-shell">
-        <div class="hc-hub-heading"><p class="hc-kicker">Product clarity</p><h2 id="hub-faq-title">Frequently asked questions</h2></div>
-        <div class="hc-hub-faq-grid">
-          {faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}
+    <section class="hc-section hc-labs" aria-labelledby="labs-title">
+      <div class="hc-shell hc-labs-grid">
+        <div>
+          <p class="hc-kicker">Hermes Connect Labs</p>
+          <h2 id="labs-title">Reference capabilities stay visible without pretending they are separate live products.</h2>
+          <p>These modules support product exploration while remaining subordinate to the current Repair Shops live vertical.</p>
         </div>
+        <div class="hc-lab-links">
+          {labs.map((lab) => <a href={lab.href}><span>REFERENCE</span><strong>{lab.name}</strong><ArrowRight size={15} aria-hidden="true" /></a>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="hc-section hc-faq" aria-labelledby="truth-title">
+      <div class="hc-shell">
+        <div class="hc-heading-row compact">
+          <div><p class="hc-kicker">Product truth</p><h2 id="truth-title">Clear status. No fake live surface.</h2></div>
+          <p>Preview UI is labeled as preview or sample data. Repair Shops remains the only current live vertical on this product hub.</p>
+        </div>
+        <div class="hc-faq-grid">{faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div>
       </div>
     </section>
   </main>
@@ -119,52 +218,58 @@ const schema = [
   <SiteFooter />
 </BaseLayout>
 
+<style is:global>
+  .hc-experience body:has(.hc-brand-page) .hc-intelligence-core{display:none!important}
+</style>
+
 <style>
-  .hc-hub-page{
-    color:#0b0d12;
-    min-height:70vh;
-    background:#f7f6f3;
-  }
-  .hc-hub-shell{width:min(1160px,calc(100% - 2rem));margin:0 auto}
-  .hc-hub-hero{
-    padding:clamp(8.5rem,12vw,11rem) 0 clamp(4.5rem,8vw,7rem);
-    border-bottom:1px solid rgba(11,13,18,.08);
-    background:
-      radial-gradient(circle at 78% 8%,rgba(124,92,255,.10),transparent 29rem),
-      radial-gradient(circle at 90% 16%,rgba(90,200,250,.08),transparent 23rem),
-      #f7f6f3;
-  }
-  .hc-kicker{margin:0 0 .75rem;color:#6550d8;font-size:.72rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
-  .hc-hub-hero h1{max-width:980px;margin:0;font-size:clamp(3rem,7.4vw,6.4rem);line-height:.93;letter-spacing:-.065em;text-wrap:balance}
-  .hc-hub-lead{max-width:790px;margin:1.45rem 0 0;color:#656c78;font-size:clamp(1.03rem,1.8vw,1.22rem);line-height:1.68}
-  .hc-hub-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.8rem}
-  .hc-hub-primary,.hc-hub-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:48px;padding:.76rem 1.05rem;border-radius:999px;text-decoration:none;font-weight:760;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
-  .hc-hub-primary{background:#0b0d12;color:#fff;box-shadow:0 12px 28px rgba(11,13,18,.12)}
-  .hc-hub-secondary{color:#0b0d12;border:1px solid rgba(11,13,18,.12);background:rgba(255,255,255,.64)}
-  .hc-hub-primary:hover,.hc-hub-secondary:hover{transform:translateY(-1px)}
-  .hc-hub-trust{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.45rem;color:#646b77;font-size:.78rem}
-  .hc-hub-trust span{display:inline-flex;align-items:center;gap:.4rem;min-height:34px;padding:.42rem .68rem;border:1px solid rgba(11,13,18,.08);border-radius:999px;background:rgba(255,255,255,.58)}
-  .hc-hub-trust svg{color:#28a97d}
-  .hc-hub-section{padding:clamp(4rem,7vw,6rem) 0}
-  .hc-hub-heading{max-width:760px;margin-bottom:1.7rem}
-  .hc-hub-heading h2,.hc-rules h2{margin:0;font-size:clamp(2rem,4.2vw,3.3rem);line-height:1.02;letter-spacing:-.05em;text-wrap:balance}
-  .hc-module-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}
-  .hc-module-grid article,.hc-hub-faq-grid article{padding:1.35rem;border:1px solid rgba(11,13,18,.09);border-radius:22px;background:rgba(255,255,255,.76);box-shadow:0 18px 50px rgba(42,32,90,.055)}
-  .hc-module-grid article{min-height:190px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
-  .hc-module-grid article:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.18);box-shadow:0 24px 60px rgba(42,32,90,.08)}
-  .hc-module-grid article.is-live{grid-column:span 2;min-height:235px;padding:1.6rem;border-color:rgba(40,180,135,.24);background:linear-gradient(145deg,#0f1419,#0b0d12);box-shadow:0 26px 72px rgba(11,13,18,.15)}
-  .hc-module-status{display:inline-flex;margin-bottom:.8rem;padding:.3rem .52rem;border-radius:999px;background:rgba(171,122,0,.08);color:#876100;font-size:.67rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
-  .is-live .hc-module-status{background:rgba(40,180,135,.12);color:#78e2bd}
-  .hc-module-grid h3{margin:0 0 .58rem;font-size:1.04rem}.hc-module-grid h3 a{display:inline-flex;align-items:center;gap:.3rem;color:#0b0d12;text-decoration:none}
-  .hc-module-grid .is-live h3{font-size:clamp(1.35rem,2.4vw,2rem)}
-  .hc-module-grid .is-live h3 a{color:#fff}
-  .hc-module-grid p,.hc-hub-faq-grid p{margin:0;color:#68707d;line-height:1.6;font-size:.88rem}
-  .hc-module-grid .is-live p{max-width:54ch;color:#aeb7c5;font-size:.94rem}
-  .hc-rules{display:grid;grid-template-columns:.8fr 1.2fr;gap:2rem;padding:clamp(1.5rem,4vw,2.4rem);border:1px solid rgba(255,255,255,.08);border-radius:28px;background:radial-gradient(circle at 88% 12%,rgba(124,92,255,.13),transparent 23rem),#0b0d12;color:#fff;box-shadow:0 28px 80px rgba(11,13,18,.16)}
-  .hc-rules .hc-kicker{color:#a99aff}.hc-rules ul{margin:0;padding-left:1.2rem;color:#adb6c4;line-height:1.75}
-  .hc-faq-section{padding-top:1rem}
-  .hc-hub-faq-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.hc-hub-faq-grid h3{margin:0 0 .5rem;font-size:1rem;line-height:1.3}
-  @media(max-width:900px){.hc-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hc-module-grid article.is-live{grid-column:1/-1}.hc-rules{grid-template-columns:1fr}}
-  @media(max-width:620px){.hc-hub-shell{width:min(100% - 1rem,1160px)}.hc-hub-hero{padding-top:7rem}.hc-module-grid,.hc-hub-faq-grid{grid-template-columns:1fr}.hc-module-grid article.is-live{grid-column:auto;min-height:0}.hc-hub-actions{flex-direction:column}.hc-hub-primary,.hc-hub-secondary{width:100%}.hc-hub-trust{display:grid}.hc-hub-trust span{border-radius:14px}.hc-rules{padding:1.25rem;border-radius:22px}}
-  @media(prefers-reduced-motion:reduce){.hc-hub-primary,.hc-hub-secondary,.hc-module-grid article{transition:none}}
+  :global(html){scroll-behavior:smooth}
+  .hc-brand-page{color:var(--hermes-ink);background:var(--hermes-pearl)}
+  .hc-shell{width:min(1380px,calc(100% - 2.5rem));margin:0 auto}
+  .hc-hero{overflow:hidden;padding:clamp(7.5rem,10vw,9.25rem) 0 clamp(3rem,5vw,4.5rem);background:radial-gradient(circle at 54% 28%,rgba(124,92,255,.09),transparent 25rem),radial-gradient(circle at 68% 18%,rgba(90,200,250,.07),transparent 22rem),var(--hermes-pearl)}
+  .hc-hero-grid{display:grid;grid-template-columns:minmax(340px,.78fr) minmax(620px,1.35fr);gap:clamp(1.8rem,4vw,4.5rem);align-items:center;min-height:650px}
+  .hc-copy{position:relative;z-index:2}
+  .hc-eyebrow,.hc-kicker,.hc-dark-kicker{display:flex;align-items:center;gap:.45rem;margin:0 0 .9rem;color:var(--hermes-violet);font:.8rem/1 var(--font-mono);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+  .hc-copy h1{max-width:660px;margin:0;font-family:var(--font-display);font-size:clamp(4.1rem,7vw,7.5rem);font-weight:750;line-height:.88;letter-spacing:-.065em;text-wrap:balance}
+  .hc-copy h1 span{display:block;background:var(--hermes-intelligence-gradient);background-clip:text;-webkit-background-clip:text;color:transparent}
+  .hc-lead{max-width:610px;margin:1.5rem 0 0;color:var(--hermes-muted);font-size:clamp(1.03rem,1.5vw,1.18rem);line-height:1.68}
+  .hc-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.75rem}
+  .hc-primary,.hc-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:48px;padding:.78rem 1.1rem;border-radius:var(--hermes-radius-pill);font-weight:760;text-decoration:none;transition:transform var(--hermes-motion-fast) ease,box-shadow var(--hermes-motion-fast) ease}
+  .hc-primary{color:#fff;background:var(--hermes-obsidian);box-shadow:0 12px 28px rgba(11,13,18,.12)}
+  .hc-secondary{color:var(--hermes-ink);border:1px solid var(--hermes-line-light);background:rgba(255,255,255,.62)}
+  .hc-primary:hover,.hc-secondary:hover{transform:translateY(-1px)}
+  .hc-truth{display:flex;gap:.8rem 1rem;flex-wrap:wrap;margin-top:1.3rem;color:#6a707c;font-size:.78rem}.hc-truth span{display:inline-flex;align-items:center;gap:.35rem}.hc-truth svg{color:var(--hermes-success)}
+
+  .hc-product-stage{display:grid;grid-template-columns:minmax(300px,.83fr) minmax(390px,1.17fr);min-height:570px;border:1px solid var(--hermes-line-light-soft);border-radius:var(--hermes-radius-panel);overflow:hidden;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-workspace)}
+  .hc-knot-stage{position:relative;min-height:570px;overflow:hidden;background:radial-gradient(circle at 47% 45%,rgba(124,92,255,.11),transparent 15rem),linear-gradient(160deg,#fff 0%,#f8f7f4 68%,#efeff6 100%)}
+  .hc-stage-label{position:absolute;z-index:3;top:1.15rem;left:1.2rem;margin:0;color:#8a909b;font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .hc-knot{position:absolute;left:5%;top:19%;width:300px;height:300px;filter:drop-shadow(0 28px 34px rgba(88,68,155,.15));animation:hc-knot-float 8s ease-in-out infinite}
+  .hc-knot-loop{position:absolute;left:50%;top:50%;width:218px;height:112px;border:23px solid rgba(255,255,255,.52);border-radius:999px;box-shadow:inset 7px 7px 18px rgba(255,255,255,.94),inset -9px -7px 17px rgba(92,113,255,.14),0 0 0 1px rgba(124,92,255,.14),0 14px 28px rgba(91,75,170,.11);backdrop-filter:blur(5px);transform-origin:center}
+  .hc-knot-loop::after{position:absolute;inset:-17px;border-radius:inherit;background:linear-gradient(120deg,rgba(124,92,255,.15),rgba(90,200,250,.13) 52%,rgba(255,222,197,.13));filter:blur(12px);content:"";z-index:-1}
+  .loop-a{transform:translate(-50%,-50%) rotate(34deg)}.loop-b{transform:translate(-50%,-50%) rotate(-38deg);border-color:rgba(239,237,255,.62)}.loop-c{width:184px;height:92px;border-width:20px;opacity:.78;transform:translate(-50%,-50%) rotate(92deg)}
+  .hc-knot-core{position:absolute;left:50%;top:50%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 9%,#d8d1ff 29%,rgba(124,92,255,.58) 63%,rgba(90,200,250,.22));box-shadow:0 0 46px rgba(124,92,255,.22);transform:translate(-50%,-50%)}
+  .hc-signal-list{position:absolute;z-index:4;right:1rem;top:50%;display:grid;gap:.62rem;width:min(220px,49%);transform:translateY(-50%)}
+  .hc-signal-list>div{display:flex;align-items:center;gap:.62rem;padding:.75rem .82rem;border:1px solid var(--hermes-line-light-soft);border-radius:14px;background:rgba(255,255,255,.82);box-shadow:0 10px 26px rgba(42,32,90,.055);backdrop-filter:blur(10px)}
+  .hc-signal-list i{width:9px;height:9px;flex:0 0 auto;border-radius:50%;background:var(--hermes-intelligence-gradient);box-shadow:0 0 0 4px rgba(124,92,255,.08)}.hc-signal-list p{display:grid;gap:.1rem;margin:0}.hc-signal-list strong{font-size:.72rem}.hc-signal-list small{color:#858b97;font-size:.61rem}
+
+  .hc-workspace-preview{min-width:0;color:#eef2f7;background:radial-gradient(circle at 90% 8%,rgba(124,92,255,.12),transparent 18rem),var(--hermes-obsidian)}
+  .hc-workspace-top{display:flex;justify-content:space-between;gap:.8rem;align-items:center;padding:1rem 1.05rem;border-bottom:1px solid var(--hermes-line-dark);font-size:.56rem;font-weight:750;letter-spacing:.07em}.hc-workspace-top span:last-child{color:#8e99aa}
+  .hc-workspace-body{display:grid;grid-template-columns:80px 1fr;min-height:510px}.hc-workspace-body aside{display:grid;align-content:start;gap:.4rem;padding:1rem .55rem;border-right:1px solid rgba(255,255,255,.06)}.hc-workspace-body aside b{display:grid;place-items:center;width:30px;height:30px;margin-bottom:.35rem;border:1px solid rgba(255,255,255,.13);border-radius:10px;color:#c0b7ff}.hc-workspace-body aside span{padding:.42rem .45rem;border-radius:8px;color:#8793a5;font-size:.56rem}.hc-workspace-body aside .active{color:#fff;background:rgba(124,92,255,.13)}
+  .hc-workspace-main{padding:1.2rem}.hc-workspace-welcome{display:grid;gap:.15rem}.hc-workspace-welcome strong{font-size:1.05rem}.hc-workspace-welcome span{color:#8994a5;font-size:.65rem}
+  .hc-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem;margin-top:1rem}.hc-metrics article,.hc-work-panels article{border:1px solid rgba(255,255,255,.07);border-radius:12px;background:rgba(255,255,255,.028)}.hc-metrics article{display:grid;gap:.16rem;padding:.72rem}.hc-metrics small,.hc-work-panels small{color:#8793a5;font-size:.57rem}.hc-metrics strong{font-size:1.15rem}.hc-metrics span{color:#70d8b3;font-size:.52rem}
+  .hc-work-panels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.65rem}.hc-work-panels article{min-height:170px;padding:.8rem}.hc-work-panels p{display:flex;align-items:center;gap:.38rem;margin:.72rem 0;color:#c7d0dc;font-size:.61rem}.hc-work-panels p i{width:7px;height:7px;border-radius:50%;background:var(--hermes-violet)}.hc-work-panels p b{margin-left:auto;color:#70d8b3;font-size:.49rem}.hc-attention{display:grid;align-content:start;gap:.65rem}.hc-attention>strong{max-width:14ch;font-size:1rem;line-height:1.18}.hc-attention>p{color:#778396!important;line-height:1.45!important}
+
+  .hc-section{padding:var(--hermes-section-space) 0}.hc-heading-row{display:grid;grid-template-columns:1fr minmax(280px,.52fr);gap:2.5rem;align-items:end;margin-bottom:2rem}.hc-heading-row>p,.hc-labs-grid>div>p,.hc-obsidian-grid>p{margin:0;color:var(--hermes-muted);line-height:1.7}.hc-heading-row h2,.hc-labs h2,.hc-obsidian-band h2{max-width:900px;margin:0;font-family:var(--font-display);font-size:clamp(2.6rem,5.3vw,5.4rem);font-weight:720;line-height:.94;letter-spacing:-.055em;text-wrap:balance}.hc-heading-row.compact h2{font-size:clamp(2.3rem,4vw,3.8rem)}
+  .hc-vertical-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-vertical-grid article{display:flex;flex-direction:column;min-height:285px;padding:1.45rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.74);box-shadow:var(--hermes-shadow-card);transition:transform var(--hermes-motion-fast) ease,box-shadow var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-vertical-grid article:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.22);box-shadow:var(--hermes-shadow-card-hover)}.hc-vertical-grid article.is-live{color:#fff;border-color:rgba(255,255,255,.08);background:radial-gradient(circle at 92% 10%,rgba(124,92,255,.14),transparent 16rem),var(--hermes-obsidian);box-shadow:var(--hermes-shadow-workspace)}
+  .hc-card-top{display:flex;justify-content:space-between;gap:1rem;align-items:center}.hc-card-top span{color:#7c650e;font-size:.61rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.hc-card-top small{color:#9da2ac;font-family:var(--font-mono);font-size:.62rem}.is-live .hc-card-top span{color:#80dfbe}.hc-vertical-grid h3{margin:1.55rem 0 .65rem;font-size:1.45rem;letter-spacing:-.035em}.hc-vertical-grid p{margin:0;color:var(--hermes-muted);line-height:1.6}.is-live p{color:#aeb7c7}.hc-chips{display:flex;gap:.38rem;flex-wrap:wrap;margin-top:1.1rem}.hc-chips span{padding:.32rem .5rem;border:1px solid var(--hermes-line-light-soft);border-radius:999px;background:rgba(255,255,255,.52);font-size:.61rem}.is-live .hc-chips span{color:#cbd3df;border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.04)}.hc-vertical-grid a{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1.25rem;color:#fff;font-size:.78rem;font-weight:760}.hc-preview-note{margin-top:auto;padding-top:1.25rem;color:#898f9a;font-size:.66rem}
+
+  .hc-obsidian-band{padding:clamp(4rem,7vw,6rem) 0;color:#fff;background:var(--hermes-obsidian)}.hc-obsidian-grid{display:grid;grid-template-columns:1fr minmax(300px,.52fr);gap:3rem;align-items:end}.hc-dark-kicker{color:#a99aff}.hc-obsidian-grid>p{color:#aeb7c7}.hc-obsidian-band h2{max-width:960px}
+  .hc-labs{background:#fbfaf7}.hc-labs-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(360px,.7fr);gap:clamp(2rem,5vw,5rem)}.hc-labs h2{font-size:clamp(2.4rem,4.4vw,4.35rem)}.hc-lab-links{display:grid;gap:.5rem}.hc-lab-links a{display:grid;grid-template-columns:88px 1fr auto;gap:.7rem;align-items:center;min-height:55px;padding:.72rem .85rem;border:1px solid var(--hermes-line-light);border-radius:14px;background:rgba(255,255,255,.72);text-decoration:none;transition:transform var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-lab-links a:hover{transform:translateX(2px);border-color:rgba(124,92,255,.22)}.hc-lab-links span{color:#8a909b;font-size:.57rem;letter-spacing:.07em}.hc-lab-links strong{font-size:.82rem}
+  .hc-faq{padding-top:clamp(3rem,5vw,4rem)}.hc-faq-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-faq-grid article{padding:1.35rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.72)}.hc-faq-grid h3{margin:0 0 .6rem;font-size:1rem;line-height:1.3}.hc-faq-grid p{margin:0;color:var(--hermes-muted);font-size:.88rem;line-height:1.62}
+
+  @keyframes hc-knot-float{0%,100%{transform:translate3d(0,0,0) rotate(-1deg)}50%{transform:translate3d(0,-10px,0) rotate(1deg)}}
+  @media(max-width:1180px){.hc-hero-grid{grid-template-columns:1fr;min-height:0}.hc-copy{max-width:850px}.hc-product-stage{max-width:1000px}.hc-vertical-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:780px){.hc-shell{width:min(100% - 1rem,1380px)}.hc-hero{padding-top:7rem}.hc-copy h1{font-size:clamp(3.4rem,16vw,5.4rem)}.hc-product-stage{grid-template-columns:1fr}.hc-knot-stage{min-height:430px}.hc-workspace-preview{min-height:500px}.hc-heading-row,.hc-obsidian-grid,.hc-labs-grid{grid-template-columns:1fr}.hc-heading-row{gap:1rem}.hc-vertical-grid,.hc-faq-grid{grid-template-columns:1fr}.hc-actions{flex-direction:column}.hc-primary,.hc-secondary{width:100%}.hc-truth{display:grid}.hc-lab-links a{grid-template-columns:75px 1fr auto}}
+  @media(max-width:520px){.hc-knot{left:-7%;top:17%;transform:scale(.85)}.hc-signal-list{right:.7rem;width:55%}.hc-workspace-body{grid-template-columns:64px 1fr}.hc-workspace-body aside{padding-inline:.4rem}.hc-metrics{grid-template-columns:1fr}.hc-work-panels{grid-template-columns:1fr}.hc-workspace-preview{overflow:hidden}.hc-workspace-main{padding:.85rem}.hc-vertical-grid article{min-height:250px}}
+  @media(prefers-reduced-motion:reduce){.hc-knot{animation:none}.hc-primary,.hc-secondary,.hc-vertical-grid article,.hc-lab-links a{transition:none}}
 </style>

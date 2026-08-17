@@ -416,3 +416,258 @@
     transition: none;
   }
 }
+
+/* P1 public-shell convergence: use the master Hermes tokens instead of a second palette. */
+.hc-experience .repair-pilot-page {
+  --hc-pearl: var(--hermes-pearl);
+  --hc-paper: var(--hermes-paper);
+  --hc-ink: var(--hermes-ink);
+  --hc-muted: var(--hermes-muted);
+  --hc-line: var(--hermes-line-light);
+  --hc-violet: var(--hermes-violet);
+  --hc-blue: var(--hermes-ocean);
+  --hc-green: var(--hermes-success);
+}
+
+/* The Connect family context is public navigation, so it stays Pearl rather than becoming a dark product bar. */
+.hc-experience .hc-product-context {
+  color: var(--hermes-ink) !important;
+  border-bottom: 1px solid var(--hermes-line-light) !important;
+  background: color-mix(in srgb, var(--hermes-pearl) 96%, transparent) !important;
+  box-shadow: 0 10px 28px rgba(11,13,18,.045) !important;
+  backdrop-filter: blur(18px) saturate(1.04) !important;
+}
+
+.hc-experience .hc-product-context__summary {
+  color: var(--hermes-muted) !important;
+}
+
+.hc-experience .hc-product-context__summary strong {
+  color: var(--hermes-ink) !important;
+}
+
+.hc-experience .hc-content-language,
+.hc-experience .hc-language-truth {
+  color: var(--hermes-muted) !important;
+}
+
+.hc-experience .hc-product-context__dot {
+  background: var(--hermes-violet) !important;
+  box-shadow: 0 0 0 5px rgba(124,92,255,.09) !important;
+}
+
+.hc-experience .hc-product-context.is-live .hc-product-context__dot {
+  background: var(--hermes-success) !important;
+  box-shadow: 0 0 0 5px rgba(40,180,135,.10) !important;
+}
+
+.hc-experience .hc-product-context.is-reference .hc-product-context__dot {
+  background: var(--hermes-warning) !important;
+  box-shadow: 0 0 0 5px rgba(217,154,37,.10) !important;
+}
+
+.hc-experience .hc-family-nav a {
+  color: var(--hermes-muted) !important;
+  border-color: var(--hermes-line-light-soft) !important;
+  background: rgba(255,255,255,.58) !important;
+}
+
+.hc-experience .hc-family-nav a:hover,
+.hc-experience .hc-family-nav a:focus-visible {
+  color: var(--hermes-ink) !important;
+  border-color: rgba(124,92,255,.22) !important;
+  background: rgba(124,92,255,.065) !important;
+}
+
+.hc-experience .hc-family-nav a[aria-current="page"] {
+  color: #fff !important;
+  border-color: var(--hermes-obsidian) !important;
+  background: var(--hermes-obsidian) !important;
+}
+
+/* Repair public pricing remains a public decision surface, not a second dark dashboard. */
+.hc-experience .repair-pilot-page .repair-plan-card {
+  color: var(--hermes-ink);
+  border-color: var(--hermes-line-light);
+  background:
+    radial-gradient(circle at 90% 10%, rgba(124,92,255,.08), transparent 18rem),
+    rgba(255,255,255,.82);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.hc-experience .repair-pilot-page .repair-plan-card h2,
+.hc-experience .repair-pilot-page .repair-plan-price {
+  color: var(--hermes-ink);
+}
+
+.hc-experience .repair-pilot-page .repair-plan-price small,
+.hc-experience .repair-pilot-page .repair-plan-card > div > p,
+.hc-experience .repair-pilot-page .repair-plan-actions small {
+  color: var(--hermes-muted);
+}
+
+/* Owner authentication is onboarding: Pearl outside, with restrained physical depth. */
+.hc-experience .auth-page {
+  color: var(--hermes-ink) !important;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(90,200,250,.08), transparent 28rem),
+    radial-gradient(circle at 82% 10%, rgba(124,92,255,.09), transparent 30rem),
+    var(--hermes-pearl) !important;
+}
+
+.hc-experience .auth-page .back-link {
+  color: var(--hermes-muted) !important;
+}
+
+.hc-experience .auth-page .back-link:hover,
+.hc-experience .auth-page .text-iris {
+  color: var(--hermes-violet) !important;
+}
+
+.hc-experience .auth-page .glass-panel {
+  color: var(--hermes-ink) !important;
+  border: 1px solid var(--hermes-line-light) !important;
+  background: rgba(255,255,255,.82) !important;
+  box-shadow: var(--hermes-shadow-workspace) !important;
+  backdrop-filter: blur(18px) !important;
+}
+
+.hc-experience .auth-page .auth-subtitle,
+.hc-experience .auth-page .detail-row span {
+  color: var(--hermes-muted) !important;
+}
+
+.hc-experience .auth-page .auth-tabs,
+.hc-experience .auth-page .user-details {
+  background: rgba(11,13,18,.045) !important;
+}
+
+.hc-experience .auth-page .tab-btn {
+  color: var(--hermes-muted) !important;
+}
+
+.hc-experience .auth-page .tab-btn.active {
+  color: #fff !important;
+  background: var(--hermes-obsidian) !important;
+}
+
+.hc-experience .auth-page .form-group label,
+.hc-experience .auth-page .detail-row strong {
+  color: var(--hermes-ink) !important;
+}
+
+.hc-experience .auth-page .form-group input {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light) !important;
+  background: var(--hermes-paper) !important;
+}
+
+.hc-experience .auth-page .form-group input:focus {
+  border-color: var(--hermes-violet) !important;
+  box-shadow: 0 0 0 3px rgba(124,92,255,.10) !important;
+}
+
+.hc-experience .auth-page .primary-btn {
+  color: #fff !important;
+  background: var(--hermes-obsidian) !important;
+  box-shadow: 0 10px 26px rgba(11,13,18,.12) !important;
+}
+
+.hc-experience .auth-page .ghost-btn {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light) !important;
+  background: rgba(255,255,255,.60) !important;
+}
+
+/* Customer booking is also a public Pearl surface; the operational workspace remains independent. */
+.hc-experience .booking-page {
+  color: var(--hermes-ink) !important;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(124,92,255,.08), transparent 30rem),
+    radial-gradient(circle at 88% 14%, rgba(90,200,250,.075), transparent 28rem),
+    var(--hermes-pearl) !important;
+}
+
+.hc-experience .booking-page .back-link,
+.hc-experience .booking-page .muted,
+.hc-experience .booking-page .section-label span,
+.hc-experience .booking-page .optional,
+.hc-experience .booking-page .receipt dt,
+.hc-experience .booking-page .trust-panel > div {
+  color: var(--hermes-muted) !important;
+}
+
+.hc-experience .booking-page .eyebrow,
+.hc-experience .booking-page .trust-panel svg {
+  color: var(--hermes-violet) !important;
+}
+
+.hc-experience .booking-page .panel,
+.hc-experience .booking-page .trust-panel {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light) !important;
+  background: rgba(255,255,255,.84) !important;
+  box-shadow: var(--hermes-shadow-card) !important;
+  backdrop-filter: blur(16px) !important;
+}
+
+.hc-experience .booking-page .field,
+.hc-experience .booking-page .section-label,
+.hc-experience .booking-page .receipt dd {
+  color: var(--hermes-ink) !important;
+}
+
+.hc-experience .booking-page .field input,
+.hc-experience .booking-page .field select {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light) !important;
+  background: var(--hermes-paper) !important;
+}
+
+.hc-experience .booking-page .field input:focus,
+.hc-experience .booking-page .field select:focus {
+  border-color: var(--hermes-violet) !important;
+  box-shadow: 0 0 0 3px rgba(124,92,255,.10) !important;
+}
+
+.hc-experience .booking-page .divider,
+.hc-experience .booking-page .receipt,
+.hc-experience .booking-page .receipt div {
+  border-color: var(--hermes-line-light) !important;
+}
+
+.hc-experience .booking-page .slot-state {
+  color: var(--hermes-muted) !important;
+  background: rgba(11,13,18,.04) !important;
+}
+
+.hc-experience .booking-page .pill {
+  color: #5845c4 !important;
+  border-color: rgba(124,92,255,.18) !important;
+  background: rgba(124,92,255,.075) !important;
+}
+
+.hc-experience .booking-page .primary-btn {
+  color: #fff !important;
+  background: var(--hermes-obsidian) !important;
+}
+
+.hc-experience .booking-page .secondary-btn {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light) !important;
+  background: rgba(255,255,255,.72) !important;
+}
+
+.hc-experience .booking-page .trust-panel > div {
+  background: rgba(255,255,255,.54) !important;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .hc-experience .hc-product-context,
+  .hc-experience .auth-page .glass-panel,
+  .hc-experience .booking-page .panel,
+  .hc-experience .booking-page .trust-panel {
+    backdrop-filter: none !important;
+    background: var(--hermes-paper) !important;
+  }
+}

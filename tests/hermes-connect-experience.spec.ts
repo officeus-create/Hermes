@@ -108,14 +108,17 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
-test("Hermes Connect Hub presents one live product and reference capabilities", async ({ page }) => {
+test("Hermes Connect Hub presents one live product and adaptive preview configurations", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
-  await expect(page.getByRole("heading", { name: "One product family. One current live pilot." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Run your business with AI\./ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
-  await expect(page.getByText("Current live pilot", { exact: true }).first()).toBeVisible();
-  expect(await page.getByText("Reference capability", { exact: true }).count()).toBeGreaterThan(0);
+  await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
+  expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
+  await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 });
 
 test("non-live Hermes Connect modules are reference capabilities without legacy pricing or workspace CTA", async ({ page }) => {

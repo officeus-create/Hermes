@@ -5,6 +5,7 @@ import { join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const html = await readFile(join(root, "dist", "index.html"), "utf8");
 const performanceCss = await readFile(join(root, "src", "styles", "homepage-performance.css"), "utf8");
+const brandCss = await readFile(join(root, "src", "styles", "hermes-brand-system.css"), "utf8");
 const footerSource = await readFile(join(root, "src", "components", "SiteFooter.astro"), "utf8");
 const consentSource = await readFile(join(root, "src", "components", "TrackingConsent.astro"), "utf8");
 const head = html.split("</head>")[0] ?? html;
@@ -25,9 +26,18 @@ assert.ok(showcaseRule.includes("content-visibility: visible"), "homepage produc
 assert.equal(/content-visibility\s*:\s*auto/i.test(showcaseRule), false, "homepage product showcase must not restore offscreen auto-paint suppression");
 assert.equal(/contain-intrinsic-size\s*:\s*auto\s+3200px/i.test(performanceCss), false, "homepage must not reserve the historical 3200px blank product-showcase placeholder");
 
-assert.ok(performanceCss.includes("--hermes-pearl: #f7f6f3"), "homepage must retain the canonical Pearl shell token");
-assert.ok(performanceCss.includes("--hermes-obsidian: #0b0d12"), "homepage must retain the canonical Obsidian shell token");
-assert.ok(performanceCss.includes("--hermes-intelligence-violet: #6f5cff"), "homepage must retain the canonical Intelligence accent token");
+// Hermes brand tokens have one canonical source. Homepage-specific performance CSS may consume
+// semantic tokens but must not redefine a competing palette.
+assert.ok(brandCss.includes("--hermes-pearl: #f7f6f3"), "master brand system must define canonical Pearl");
+assert.ok(brandCss.includes("--hermes-obsidian: #0b0d12"), "master brand system must define canonical Obsidian");
+assert.ok(brandCss.includes("--hermes-violet: #7c5cff"), "master brand system must define canonical Intelligence Violet");
+assert.ok(brandCss.includes("--hermes-ocean: #5ac8fa"), "master brand system must define canonical Ocean support color");
+assert.equal(/--hermes-pearl\s*:/.test(performanceCss), false, "homepage performance CSS must not redefine Pearl");
+assert.equal(/--hermes-obsidian\s*:/.test(performanceCss), false, "homepage performance CSS must not redefine Obsidian");
+assert.equal(/--hermes-(?:intelligence-)?violet\s*:/.test(performanceCss), false, "homepage performance CSS must not redefine Intelligence Violet");
+assert.equal(/--hermes-(?:intelligence-)?blue\s*:|--hermes-ocean\s*:/.test(performanceCss), false, "homepage performance CSS must not redefine the intelligence support blue/ocean token");
+assert.ok(performanceCss.includes("var(--hermes-pearl)"), "homepage must consume canonical Pearl from the master system");
+assert.ok(performanceCss.includes("var(--hermes-obsidian)"), "homepage must consume canonical Obsidian from the master system");
 
 assert.ok(footerSource.includes('class="footer-primary-nav"'), "footer must preserve one canonical navigation DOM");
 assert.equal(footerSource.includes('class="footer-mobile-groups"'), false, "footer must not duplicate navigation into a second hidden mobile DOM");
@@ -48,4 +58,4 @@ assert.ok(/\.tracking-consent-actions \.button\s*\{[\s\S]*?min-height:\s*44px/i.
 assert.ok(consentSource.includes("analytics_storage: 'denied'"), "analytics storage must remain denied before explicit allow");
 assert.ok(consentSource.includes("ad_personalization: 'denied'"), "advertising personalization must remain denied");
 
-console.log("Homepage deferred feature and shell design contract passed.");
+console.log("Homepage deferred feature, shell design, and single-source Hermes brand-token contract passed.");
