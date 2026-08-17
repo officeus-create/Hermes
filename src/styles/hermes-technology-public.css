@@ -1,0 +1,387 @@
+/*
+ * HERMES TECHNOLOGY PUBLIC SYSTEM
+ * Pearl public explanation surfaces with contained Obsidian product/workspace moments.
+ * Product data, metrics, interaction, project-brief logic, and analytics remain unchanged.
+ */
+
+.detail-page.detail-page-technology {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+/* One deliberate dark build-status anchor after the Pearl overview. */
+.detail-page-technology .technology-build-pulse {
+  padding: var(--hermes-section-space) 0;
+  color: #fff;
+  background:
+    radial-gradient(circle at 80% 8%, rgba(124, 92, 255, .17), transparent 28rem),
+    var(--hermes-obsidian);
+}
+
+.detail-page-technology .technology-build-pulse h2 {
+  color: #fff;
+  letter-spacing: var(--hermes-display-tracking);
+}
+
+.detail-page-technology .technology-build-pulse-copy > p:not(.eyebrow),
+.detail-page-technology .technology-build-pulse-copy > small,
+.detail-page-technology .technology-build-track-head strong,
+.detail-page-technology .technology-build-track li > span,
+.detail-page-technology .technology-build-track li > div small {
+  color: var(--hermes-muted-dark);
+}
+
+.detail-page-technology .technology-build-pulse .eyebrow,
+.detail-page-technology .technology-build-pulse-copy > a,
+.detail-page-technology .technology-build-track li[data-state="active"] > span,
+.detail-page-technology .technology-build-track li[data-state="active"] > div small {
+  color: #c9c1ff;
+}
+
+.detail-page-technology .technology-build-status {
+  color: var(--hermes-sage);
+}
+
+.detail-page-technology .technology-build-status > span {
+  background: var(--hermes-sage);
+  box-shadow: none;
+}
+
+.detail-page-technology .technology-build-first-flow,
+.detail-page-technology .technology-build-track {
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-glass-dark);
+  box-shadow: none;
+}
+
+.detail-page-technology .technology-build-first-flow > p {
+  color: #c9c1ff;
+}
+
+.detail-page-technology .technology-build-track li[data-state="active"] {
+  background: linear-gradient(90deg, rgba(124, 92, 255, .14), transparent);
+}
+
+.detail-page-technology .technology-build-track li[data-state="active"] > i {
+  background: var(--hermes-violet);
+  box-shadow: 0 0 0 6px rgba(124, 92, 255, .12);
+}
+
+/* Public capability/catalog/proof surfaces return to Pearl/Paper. */
+.detail-page-technology .technology-capability-catalog,
+.detail-page-technology .technology-proof-library,
+.detail-page-technology .it-flow-screens,
+.detail-page-technology .it-project-brief {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page-technology .technology-capability-heading h2,
+.detail-page-technology .technology-proof-heading h2,
+.detail-page-technology .it-screen h2,
+.detail-page-technology .it-brief-heading h2,
+.detail-page-technology .it-brief-panel legend {
+  color: var(--hermes-ink);
+  letter-spacing: var(--hermes-display-tracking);
+}
+
+.detail-page-technology .technology-capability-heading > p,
+.detail-page-technology .technology-proof-heading > p,
+.detail-page-technology .it-screen > .shell > p:not(.eyebrow):not(.problem-banner),
+.detail-page-technology .it-brief-prompt {
+  color: var(--hermes-muted);
+}
+
+.detail-page-technology .technology-solution-grid {
+  gap: 14px;
+}
+
+.detail-page-technology .technology-solution-grid article,
+.detail-page-technology .technology-solution-grid article:first-child {
+  min-height: 310px;
+  padding: 24px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.detail-page-technology .technology-solution-grid article > svg,
+.detail-page-technology .technology-solution-card-top svg,
+.detail-page-technology .technology-solution-card > a,
+.detail-page-technology .technology-delivery-process li span,
+.detail-page-technology .technology-proof-meta span,
+.detail-page-technology .it-stage-rail button span,
+.detail-page-technology .it-brief-progress span,
+.detail-page-technology .it-brief-panel legend span,
+.detail-page-technology .it-brief-projects label > span,
+.detail-page-technology .it-brief-reference-list label > span {
+  color: var(--hermes-violet);
+}
+
+.detail-page-technology .technology-solution-grid h3,
+.detail-page-technology .technology-industries h3,
+.detail-page-technology .technology-delivery-process .module-heading h3,
+.detail-page-technology .technology-delivery-process li strong,
+.detail-page-technology .technology-proof-item h3 {
+  color: var(--hermes-ink);
+}
+
+.detail-page-technology .technology-solution-grid p,
+.detail-page-technology .technology-solution-grid li,
+.detail-page-technology .technology-industries li,
+.detail-page-technology .technology-delivery-process li p,
+.detail-page-technology .technology-proof-item > p {
+  color: var(--hermes-muted);
+}
+
+.detail-page-technology .technology-industries,
+.detail-page-technology .technology-industries ul,
+.detail-page-technology .technology-delivery-process ol {
+  border-color: var(--hermes-line-light);
+}
+
+.detail-page-technology .technology-industries li,
+.detail-page-technology .technology-delivery-process li {
+  border-color: var(--hermes-line-light);
+}
+
+.detail-page-technology .technology-capability-badges {
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-obsidian);
+}
+
+.detail-page-technology .technology-capability-badges > p {
+  color: #c9c1ff;
+}
+
+/* Real mockup/product sections stay Obsidian instead of inventing new navy tones. */
+.detail-page-technology .technology-solution-mockups,
+.detail-page-technology .technology-flow,
+.detail-page-technology .technology-partnership {
+  color: #fff;
+  background:
+    radial-gradient(circle at 84% 8%, rgba(124, 92, 255, .14), transparent 30rem),
+    var(--hermes-obsidian);
+}
+
+.detail-page-technology .technology-solution-mockups .section-heading h2,
+.detail-page-technology .technology-flow-heading h2,
+.detail-page-technology .technology-partnership-heading h2 {
+  color: #fff;
+  letter-spacing: var(--hermes-display-tracking);
+}
+
+.detail-page-technology .technology-solution-mockups .section-heading > p,
+.detail-page-technology .technology-flow-heading > p,
+.detail-page-technology .technology-partnership-intro p {
+  color: var(--hermes-muted-dark);
+}
+
+.detail-page-technology .technology-partnership-heading .eyebrow {
+  color: #c9c1ff;
+}
+
+/* Proof library: Paper cards with one Obsidian featured proof. */
+.detail-page-technology .technology-proof-grid {
+  gap: 14px;
+}
+
+.detail-page-technology .technology-proof-item {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.detail-page-technology .technology-proof-item-1 {
+  border-color: var(--hermes-line-dark);
+  color: #fff;
+  background:
+    radial-gradient(circle at 86% 8%, rgba(124, 92, 255, .16), transparent 22rem),
+    var(--hermes-obsidian);
+  box-shadow: var(--hermes-shadow-workspace);
+}
+
+.detail-page-technology .technology-proof-item-1 h3,
+.detail-page-technology .technology-proof-item-1 > a {
+  color: #fff;
+}
+
+.detail-page-technology .technology-proof-item-1 > p,
+.detail-page-technology .technology-proof-item-1 .technology-proof-category {
+  color: var(--hermes-muted-dark);
+}
+
+/* Interactive IT flow is a light decision surface, not another dark wall. */
+.detail-page-technology .it-screen {
+  min-height: 0;
+  padding: clamp(42px, 6vw, 72px) 0;
+}
+
+.detail-page-technology .it-screen > .shell {
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-panel);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card-hover);
+}
+
+.detail-page-technology .it-stage-rail {
+  gap: 10px;
+}
+
+.detail-page-technology .it-stage-rail button,
+.detail-page-technology .it-industry-grid details,
+.detail-page-technology .it-package-list details {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.detail-page-technology .it-stage-rail button[aria-selected="true"] {
+  border-color: var(--hermes-violet);
+  background: rgba(124, 92, 255, .06);
+  box-shadow: inset 0 0 0 1px var(--hermes-violet);
+}
+
+.detail-page-technology .it-screen .button-primary {
+  border: 1px solid var(--hermes-obsidian);
+  border-radius: var(--hermes-radius-control);
+  color: #fff;
+  background: var(--hermes-obsidian);
+}
+
+.detail-page-technology .it-screen .button-ghost {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+}
+
+.detail-page-technology .it-screen-nav {
+  background: linear-gradient(transparent, var(--hermes-paper) 32%);
+}
+
+/* Project brief is a premium Paper form with canonical controls. */
+.detail-page-technology .it-brief-tool {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-panel);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card-hover);
+}
+
+.detail-page-technology .it-brief-progress,
+.detail-page-technology .it-brief-nav {
+  border-color: var(--hermes-line-light);
+  background: var(--hermes-pearl);
+}
+
+.detail-page-technology .it-brief-progress li {
+  border-color: var(--hermes-line-light);
+}
+
+.detail-page-technology .it-brief-progress li[aria-current="step"] {
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+}
+
+.detail-page-technology .it-brief-progress li[aria-current="step"]::after {
+  background: var(--hermes-violet);
+}
+
+.detail-page-technology .it-brief-field-grid input,
+.detail-page-technology .it-brief-field-grid select,
+.detail-page-technology .it-brief-field-grid textarea,
+.detail-page-technology .it-brief-projects textarea,
+.detail-page-technology .it-brief-reference-list input,
+.detail-page-technology .it-brief-reference-list textarea {
+  min-height: 48px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+}
+
+.detail-page-technology .it-brief-field-grid input:focus,
+.detail-page-technology .it-brief-field-grid select:focus,
+.detail-page-technology .it-brief-field-grid textarea:focus,
+.detail-page-technology .it-brief-projects textarea:focus,
+.detail-page-technology .it-brief-reference-list input:focus,
+.detail-page-technology .it-brief-reference-list textarea:focus {
+  border-color: var(--hermes-violet);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, .12);
+}
+
+.detail-page-technology .it-brief-review pre {
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-control);
+  color: rgba(255,255,255,.86);
+  background: var(--hermes-obsidian);
+}
+
+@media (max-width: 900px) {
+  .detail-page-technology .technology-build-pulse-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-page-technology .technology-build-track,
+  .detail-page-technology .it-screen > .shell,
+  .detail-page-technology .it-brief-tool {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
+@media (max-width: 720px) {
+  .detail-page-technology .technology-solution-grid,
+  .detail-page-technology .technology-proof-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-page-technology .technology-solution-grid article:first-child,
+  .detail-page-technology .technology-proof-item,
+  .detail-page-technology .technology-proof-item-1,
+  .detail-page-technology .technology-proof-item:nth-child(n+3) {
+    grid-column: auto;
+    min-height: 0;
+  }
+
+  .detail-page-technology .technology-industries,
+  .detail-page-technology .technology-capability-badges {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-page-technology .technology-delivery-process ol {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-page-technology .technology-delivery-process li {
+    min-height: 0;
+    border-right: 0;
+  }
+
+  .detail-page-technology .it-screen > .shell {
+    padding: 22px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-page-technology .technology-build-status > span,
+  .detail-page-technology .technology-build-track li[data-state="active"] > i {
+    animation: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .detail-page-technology .technology-build-track,
+  .detail-page-technology .technology-solution-grid article,
+  .detail-page-technology .technology-proof-item,
+  .detail-page-technology .it-screen > .shell,
+  .detail-page-technology .it-brief-tool {
+    border: 1px solid CanvasText;
+  }
+}
