@@ -24,7 +24,7 @@ Canonical tokens: `src/styles/hermes-brand-system.css`
 | `src/styles/hermes-brand-system.css` | New additive master tokens: Pearl, Paper, Obsidian, Graphite, Violet, Ocean, semantic states, elevation, radii and motion. | MIGRATED IN THIS SLICE | Single source for new/migrated design work. |
 | `src/layouts/BaseLayout.astro` | Shared layout previously loaded only legacy global/shared styles. Theme-color remains legacy navy. | PARTLY MIGRATED | Master tokens are now globally available. Change theme-color only when public shell migration proves safe across dark legacy templates. |
 | `src/styles/homepage-performance.css` | Previously declared a second Hermes token set with different Violet/Blue values and a conflicting control radius. | MIGRATED IN THIS SLICE | Consume master tokens; no second homepage palette. |
-| `src/styles/hermes-connect-safe-polish.css` | Already expresses the correct Pearl-public / Obsidian-workspace direction locally. | VERIFIED | Alias remaining local literals to master tokens in a later Connect/Repair cleanup slice. |
+| `src/styles/hermes-connect-safe-polish.css` | Repair Shops had a useful Pearl override but auth/booking and product-context still exposed older dark styling. | MIGRATED IN THIS SLICE | Public Connect, Repair landing, owner onboarding, and customer booking consume master Pearl/Obsidian semantics. |
 | `src/styles/hermes-connect-knot-core.css` | Shared Knot geometry/motion contract exists. | VERIFIED | Keep one ownable Hermes intelligence geometry; converge materials and usage rather than creating unrelated 3D objects. |
 
 ## Template-family matrix
@@ -32,10 +32,10 @@ Canonical tokens: `src/styles/hermes-brand-system.css`
 | Family | Representative source | Current design risk | Target mode | Priority |
 |---|---|---|---|---|
 | Hermes Connect Product Hub | `src/pages/services/hermes-connect/index.astro` | Prior product-hub presentation drifted between local light and dark shells; stale draft also existed. | Pearl public hero + one Knot + Obsidian workspace preview + explicit product truth. | P0 — MIGRATED IN THIS SLICE |
-| Repair Shops public landing | `src/pages/services/hermes-connect/repair-shops.astro` + Connect safe polish | Closest current public vertical to the target system, but still carries local token/material rules. | Pearl public shell, shared typography/buttons/cards/Knot; product functionality untouched. | P1 |
-| Repair Shops auth/booking/public customer flow | `src/pages/services/hermes-connect/repair-shops/*` | Functional pages can visually fragment from public landing if styled independently. | Same Pearl shell and shared controls; preserve locale/auth/booking behavior. | P1 |
-| Repair Shops dashboard/owner operations | Repair Shop dashboard/availability/customers routes | Must not be forced into light marketing design. | Obsidian Inside: dense operational hierarchy, shared states and controls. | P1/P2 |
-| Main Hermes homepage | `src/pages/index.astro` + homepage components | Hero/editorial language and downstream cards are not yet fully converged; page-specific tokens previously conflicted with master tokens. | Pearl-dominant corporate ecosystem shell, selective Obsidian intelligence/product sections, one Knot language. | P2 |
+| Repair Shops public landing | `src/pages/services/hermes-connect/repair-shops.astro` + Connect safe polish | Previously depended on a local Pearl override above an older dark page stylesheet. | Pearl public shell, shared typography/buttons/cards/Knot; product functionality untouched. | P1 — MIGRATED IN THIS SLICE |
+| Repair Shops auth/booking/public customer flow | `src/pages/services/hermes-connect/repair-shops/auth.astro`, `booking.astro`, `plan.astro` | These routes were still full-dark surfaces with gradient primary actions, visually breaking the public journey. | Pearl onboarding/booking/activation surfaces, Obsidian primary actions, one intentional Obsidian price/conversion anchor; locale/auth/booking/payment-intent behavior preserved. | P1 — MIGRATED IN THIS SLICE |
+| Repair Shops dashboard/owner operations | Repair Shop dashboard/availability/customers routes | Must not be forced into light marketing design. | Obsidian Inside: dense operational hierarchy, shared states and controls. | P2 — NEXT |
+| Main Hermes homepage | `src/pages/index.astro` + homepage components | Hero/editorial language and downstream cards are not yet fully converged; page-specific tokens previously conflicted with master tokens. | Pearl-dominant corporate ecosystem shell, selective Obsidian intelligence/product sections, one Knot language. | P2 — NEXT |
 | Shared business-direction pages | `src/pages/paths/[slug].astro` + `PathDetailPage.astro` | Shared route currently chooses dark header for Logistics/Marketing/Academy and light only for Technology; detail hero is photo/dark-led. | One public Pearl shell and common component grammar; department distinction becomes secondary accent/content, not a separate UI system. | P3 |
 | Logistics family | shared path + logistics-specific components/routes | Largest legacy navy/department-style exposure and many commercial/SEO surfaces. | Pearl public family with restrained logistics imagery; Obsidian only for operational product demonstrations. | P3 |
 | Marketing family | shared path + marketing-specific components | Risk of magenta/gradient identity becoming a second top-level brand system. | Hermes master shell; marketing accent remains subordinate. | P4 |
@@ -62,6 +62,16 @@ Canonical tokens: `src/styles/hermes-brand-system.css`
 10. responsive spacing/container rules
 
 A shared-component change must be visually checked against representative routes before broad rollout.
+
+## Visual QA coverage added in this slice
+
+The route screenshot contract now includes the current Repair Shop public journey in addition to the older generic routes:
+
+- `/services/hermes-connect/repair-shops/`
+- `/services/hermes-connect/repair-shops/auth/`
+- `/services/hermes-connect/repair-shops/plan/`
+
+Each controlled route is captured at the standard desktop and mobile viewports when the screenshot-evidence workflow runs. Public booking is not added to the static route list without a real shop identifier; that route remains protected by browser-flow tests instead of fabricating a customer/shop state for screenshots.
 
 ## External AI design review: accepted vs rejected
 
@@ -95,9 +105,9 @@ If any appears in live output or current source, promote it to VERIFIED and fix 
 
 ## Release sequence
 
-1. **P0 Foundation + Connect Hub** — current PR.
-2. **P1 Repair Shops public/auth/booking shell** — no backend changes.
-3. **P2 Homepage + shared public primitives + Connect Labs**.
+1. **P0 Foundation + Connect Hub** — migrated in current draft PR.
+2. **P1 Repair Shops public/auth/booking/plan shell** — migrated in current draft PR; backend unchanged.
+3. **P2 Repair operational workspace + homepage/shared public primitives + Connect Labs** — next after current-head QA.
 4. **P3 Logistics public family**.
 5. **P4 Marketing + Academy + IT Development**.
 6. **P5 SEO/service/carrier/contract route families** through shared templates.
