@@ -6,6 +6,7 @@ import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-bookin
 import { ensureRepairShopBookingVehicleSchema } from "../_lib/repair-shop-booking-vehicle-schema.mjs";
 import { ensureRepairShopAccessSchema } from "../_lib/repair-shop-access.mjs";
 import { ensureRepairShopCapabilitiesSchema } from "../_lib/repair-shop-capabilities-schema.mjs";
+import { ensureRepairShopFollowupsSchema } from "../_lib/repair-shop-followups-schema.mjs";
 
 type Env = { DB?: any };
 const TARGET_EMAIL = "repair-booking-production-smoke@hermesconnect.app";
@@ -20,11 +21,13 @@ export async function onRequestPost({ env }: { env: Env }) {
   await ensureRepairShopBookingVehicleSchema(env.DB);
   await ensureRepairShopAccessSchema(env.DB);
   await ensureRepairShopCapabilitiesSchema(env.DB);
+  await ensureRepairShopFollowupsSchema(env.DB);
 
   const specialist = await env.DB.prepare("SELECT id FROM specialists WHERE email = ? LIMIT 1").bind(TARGET_EMAIL).first();
   if (!specialist) return jsonResponse(200, { success: true, deleted: false, remaining: 0 });
 
   const id = specialist.id;
+  await env.DB.prepare("DELETE FROM repair_shop_booking_followups WHERE owner_specialist_id = ?").bind(id).run();
   await env.DB.prepare("DELETE FROM repair_shop_booking_vehicles WHERE owner_specialist_id = ?").bind(id).run();
   await env.DB.prepare("DELETE FROM repair_shop_booking_history WHERE owner_specialist_id = ?").bind(id).run();
   await env.DB.prepare("DELETE FROM repair_shop_bookings WHERE owner_specialist_id = ?").bind(id).run();
