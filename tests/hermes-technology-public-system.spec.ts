@@ -11,6 +11,7 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
 
   await expect(page.locator(".technology-build-pulse")).toBeVisible();
   await expect(page.locator(".technology-capability-catalog")).toBeVisible();
+  await expect(page.locator(".technology-solution-mockups")).toBeVisible();
   await expect(page.locator(".it-flow-screens")).toBeVisible();
   await expect(page.locator(".it-project-brief")).toBeVisible();
 
@@ -19,10 +20,11 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
     const track = document.querySelector<HTMLElement>(".detail-page-technology .technology-build-track");
     const catalog = document.querySelector<HTMLElement>(".detail-page-technology .technology-capability-catalog");
     const card = document.querySelector<HTMLElement>(".detail-page-technology .technology-solution-grid article");
+    const mockups = document.querySelector<HTMLElement>(".detail-page-technology .technology-solution-mockups");
     const flow = document.querySelector<HTMLElement>(".detail-page-technology .it-flow-screens");
     const screen = document.querySelector<HTMLElement>(".detail-page-technology .it-screen > .shell");
     const brief = document.querySelector<HTMLElement>(".detail-page-technology .it-brief-tool");
-    if (!build || !track || !catalog || !card || !flow || !screen || !brief) return null;
+    if (!build || !track || !catalog || !card || !mockups || !flow || !screen || !brief) return null;
 
     return {
       buildBackground: getComputedStyle(build).backgroundColor,
@@ -31,6 +33,8 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
       catalogBackground: getComputedStyle(catalog).backgroundColor,
       cardBackground: getComputedStyle(card).backgroundColor,
       cardRadius: getComputedStyle(card).borderRadius,
+      mockupsBackground: getComputedStyle(mockups).backgroundColor,
+      mockupsColor: getComputedStyle(mockups).color,
       flowBackground: getComputedStyle(flow).backgroundColor,
       screenBackground: getComputedStyle(screen).backgroundColor,
       screenRadius: getComputedStyle(screen).borderRadius,
@@ -50,6 +54,8 @@ test("Technology alternates Pearl public explanation with contained Obsidian pro
   expect(visual!.catalogBackground).toBe("rgb(247, 246, 243)");
   expect(visual!.cardBackground).toBe("rgb(255, 255, 255)");
   expect(visual!.cardRadius).toBe("22px");
+  expect(visual!.mockupsBackground).toBe("rgb(11, 13, 18)");
+  expect(visual!.mockupsColor).toBe("rgb(255, 255, 255)");
   expect(visual!.flowBackground).toBe("rgb(247, 246, 243)");
   expect(visual!.screenBackground).toBe("rgb(255, 255, 255)");
   expect(visual!.screenRadius).toBe(expectedPanelRadius);
