@@ -1,0 +1,255 @@
+---
+import { ArrowLeft, ArrowRight, Calendar, Car, Check, DollarSign, MapPin, Ruler, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Wisconsin Car Shipping Cost Guide | Hermes Logistics";
+const description =
+  "See the real factors that drive vehicle transport pricing to and from Wisconsin — route, vehicle size and condition, open vs enclosed equipment, timing, season, and carrier availability — before requesting a quote.";
+const canonicalUrl = new URL("/logistics/resources/wisconsin-car-shipping-cost-guide/", Astro.site).toString();
+const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
+
+const faq = [
+  {
+    question: "How much does it cost to ship a car to or from Wisconsin?",
+    answer:
+      "There is no single number that applies to every move. Pricing depends on the exact pickup and delivery route, vehicle size and condition, open or enclosed equipment, timing and flexibility, season, and current carrier availability on that lane. Submit the complete route and vehicle details for a review instead of relying on a generic per-mile estimate.",
+  },
+  {
+    question: "Is open or enclosed transport more expensive?",
+    answer:
+      "Enclosed transport is generally considered a higher-protection, more limited-capacity option than open transport, which can affect price and availability. The right choice depends on the vehicle's value, condition, and the owner's protection preference, not on cost alone.",
+  },
+  {
+    question: "Does the time of year change the price?",
+    answer:
+      "Yes, timing and season can affect carrier availability and route demand, which in turn can affect price and how quickly a carrier can be matched. Wisconsin's cold-weather months and the surrounding fall/spring relocation windows are both periods where flexibility helps.",
+  },
+  {
+    question: "Can I get an exact price before submitting a request?",
+    answer:
+      "No. Hermes reviews the specific route, vehicle, condition, timing, and equipment need before any price can be discussed. A number quoted without that information is not a reliable estimate.",
+  },
+  {
+    question: "Does a lower price always mean a better deal?",
+    answer:
+      "Not necessarily. Price is one factor among carrier authority and insurance status, equipment fit, realistic timing, and communication reliability. Reviewing all of them together is part of what a transport request review is for.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Car Shipping Cost in Wisconsin: What Affects the Price",
+    description,
+    datePublished: "2026-08-14",
+    dateModified: "2026-08-14",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: {
+      "@type": "Organization",
+      name: "Hermes",
+      url: "https://hermeslogisticsus.com/",
+      logo: { "@type": "ImageObject", url: "https://hermeslogisticsus.com/favicon.svg" },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Wisconsin Vehicle Transport", item: "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/" },
+      { "@type": "ListItem", position: 4, name: "Car Shipping Cost Guide", item: canonicalUrl },
+    ],
+  },
+];
+import "../../../styles/features/resource.css";
+import "../../../styles/features/appleton.css";
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <a href="/logistics/wisconsin-vehicle-transport/">Wisconsin vehicle transport</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Car shipping cost guide</span>
+            </nav>
+            <a class="detail-back" href="/logistics/wisconsin-vehicle-transport/"><ArrowLeft size={18} aria-hidden="true" />Wisconsin vehicle transport</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · Wisconsin</p>
+                <h1>Car shipping cost in Wisconsin: what actually affects the price.</h1>
+                <p>
+                  There is no honest single number for "how much does it cost to ship a car." Route, vehicle, equipment,
+                  timing, and season all move the price in different directions. This guide walks through each factor
+                  so a request can be prepared with realistic expectations before Hermes reviews it.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href={directTransportIntake} data-cost-guide-direct-intake>
+                    Request a route-specific review <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href="/logistics/wisconsin-vehicle-transport/">See Wisconsin service areas</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <DollarSign size={30} aria-hidden="true" />
+                <h2>No generic quote, no guessed price.</h2>
+                <p>This page explains what drives cost. It does not publish rates, and it is not a substitute for a reviewed request against the actual route and vehicle.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Truck size={34} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Before requesting a review</p>
+              <h2>Six factors change the price more than anything else.</h2>
+              <p>Understanding these first makes the request-review conversation faster and the resulting information more useful.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-content">
+          <div class="shell resource-article-grid">
+            <nav class="resource-toc" aria-label="Cost factor sections">
+              <p>Cost factors</p>
+              <a href="#route">1. Route and distance</a>
+              <a href="#vehicle">2. Vehicle size and condition</a>
+              <a href="#equipment">3. Open vs enclosed equipment</a>
+              <a href="#timing">4. Timing and flexibility</a>
+              <a href="#season">5. Season and Wisconsin weather</a>
+              <a href="#availability">6. Current carrier availability</a>
+            </nav>
+            <div class="resource-sections">
+              <section id="route">
+                <p class="resource-step">01</p>
+                <h2>Route and distance.</h2>
+                <p>Distance is the most obvious factor, but it is not the only routing variable. A lane between two well-traveled corridors — for example a Milwaukee-to-Chicago-area move — can be reviewed differently than a shorter route into a less-traveled rural pickup or delivery address, because carrier availability on the exact corridor matters as much as raw mileage.</p>
+                <p>Exact pickup and delivery ZIP codes, not just city names, help the review reflect the real route.</p>
+              </section>
+
+              <section id="vehicle">
+                <p class="resource-step">02</p>
+                <h2>Vehicle size, quantity, and condition.</h2>
+                <ul>
+                  <li><Check size={18} aria-hidden="true" /><span>Standard passenger vehicles are the most common equipment fit</span></li>
+                  <li><Check size={18} aria-hidden="true" /><span>Larger trucks, SUVs, and oversized or modified vehicles can change equipment and space requirements</span></li>
+                  <li><Check size={18} aria-hidden="true" /><span>Multiple vehicles moving together are reviewed by count, dimensions, and delivery sequence</span></li>
+                  <li><Check size={18} aria-hidden="true" /><span>Whether the vehicle starts, rolls, steers, and brakes affects loading equipment and handling</span></li>
+                </ul>
+                <p>An inoperable vehicle is not automatically more expensive, but it does require different equipment and disclosure. State the condition accurately from the start.</p>
+              </section>
+
+              <section id="equipment">
+                <p class="resource-step">03</p>
+                <h2>Open vs enclosed equipment.</h2>
+                <p>Open transport is the standard option for most moves and generally offers broader equipment availability. Enclosed transport adds protection from weather and road debris and is commonly considered for classic, specialty, high-value, or sensitive vehicles.</p>
+                <p>See <a href="/logistics/open-vehicle-transport/">open vehicle transport</a> and <a href="/logistics/enclosed-vehicle-transport/">enclosed vehicle transport</a> (or the <a href="/logistics/wisconsin-enclosed-vehicle-transport/">Wisconsin enclosed transport page</a>) for what each option is generally used for. The right choice depends on the vehicle, route, and the owner's protection preference — Hermes reviews this as part of the request rather than defaulting to one option.</p>
+              </section>
+
+              <section id="timing">
+                <p class="resource-step">04</p>
+                <h2>Timing and flexibility.</h2>
+                <p>A firm, non-negotiable pickup date on a specific day gives a carrier less room to combine the load efficiently with other work. A flexible pickup window, even a few days wide, generally gives more carriers a reason to consider the route.</p>
+                <p>If a hard deadline exists — a storage cutoff, a closing date, a flight — say so clearly, but understand that urgency does not create carrier capacity that isn't already on that route.</p>
+              </section>
+
+              <section id="season">
+                <p class="resource-step">05</p>
+                <h2>Season and Wisconsin weather.</h2>
+                <p>Winter conditions in Wisconsin can affect road access, loading time, and route planning, particularly for rural pickup and delivery addresses. Fall and spring bring their own seasonal demand shifts as students, snowbirds, and relocating households move vehicles in larger numbers on similar timelines.</p>
+                <p>None of this changes what a specific move will cost by itself — it changes how much carrier capacity is competing for that lane at that time, which is what actually moves price and availability.</p>
+              </section>
+
+              <section id="availability">
+                <p class="resource-step">06</p>
+                <h2>Current carrier availability.</h2>
+                <p>Even with an identical route, vehicle, and timing, the number of qualified carriers actively covering that lane on a given week changes what is realistically available. This is reviewed at the time of the request, not estimated in advance on a page like this one.</p>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-submit" aria-labelledby="cost-guide-submit-title">
+          <div class="shell resource-submit-grid">
+            <div>
+              <p class="eyebrow">Information that supports an accurate review</p>
+              <h2 id="cost-guide-submit-title">Prepare these details before requesting a review.</h2>
+              <p>Hermes reviews the request for route, vehicle, condition, timing, and equipment fit before any price is discussed.</p>
+            </div>
+            <ul>
+              <li><Ruler size={18} aria-hidden="true" /><span>Exact pickup and delivery ZIP codes</span></li>
+              <li><Car size={18} aria-hidden="true" /><span>Vehicle year, make, model, quantity, and condition</span></li>
+              <li><ShieldCheck size={18} aria-hidden="true" /><span>Open or enclosed equipment preference</span></li>
+              <li><Calendar size={18} aria-hidden="true" /><span>Earliest pickup date and how much flexibility exists</span></li>
+              <li><MapPin size={18} aria-hidden="true" /><span>Facility access, hours, or delivery-site restrictions</span></li>
+            </ul>
+          </div>
+          <div class="shell resource-warning">
+            <DollarSign size={22} aria-hidden="true" />
+            <p>Submitting a request prepares a review. It does not publish a load, guarantee a price, confirm timing, or guarantee carrier availability.</p>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="cost-guide-related-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Continue planning</p>
+              <h2 id="cost-guide-related-title">Related Hermes Logistics pages.</h2>
+            </div>
+            <div class="resource-related-grid">
+              <a href="/logistics/wisconsin-vehicle-transport/"><MapPin size={22} aria-hidden="true" /><h3>Wisconsin vehicle transport</h3><p>The statewide hub with local city pages for Wisconsin moves.</p><strong>Open hub <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/dealer-vehicle-transportation/"><Truck size={22} aria-hidden="true" /><h3>Dealer vehicle transportation</h3><p>Dealer-to-dealer transfers, auction pickups, and multi-unit moves.</p><strong>Open page <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/auction-vehicle-pickup-checklist/"><Check size={22} aria-hidden="true" /><h3>Auction vehicle pickup checklist</h3><p>What to confirm before requesting transport from an auction facility.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="cost-guide-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="cost-guide-faq-title">Before you request a review.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Request review</p>
+              <h2>Get a route-specific review instead of a generic estimate.</h2>
+              <p>The direct intake sends a structured request for Logistics Sales review. It does not publish a load, notify a carrier, confirm capacity, or create a booking.</p>
+            </div>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={directTransportIntake} data-cost-guide-direct-intake-bottom>
+                Request a route-specific review <ArrowRight size={18} aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

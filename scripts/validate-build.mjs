@@ -120,6 +120,22 @@ const routes = [
       "/carrier/",
     ],
   },
+  {
+    path: "logistics/resources/wisconsin-car-shipping-cost-guide/index.html",
+    required: [
+      "Car shipping cost in Wisconsin",
+      "Route and distance",
+      "Open vs enclosed equipment",
+      "Season and Wisconsin weather",
+      "How much does it cost to ship a car to or from Wisconsin?",
+      "does not publish a load, guarantee a price",
+      "/logistics/wisconsin-vehicle-transport/",
+      "/logistics/open-vehicle-transport/",
+      "/logistics/enclosed-vehicle-transport/",
+      "/logistics/request-vehicle-transport/",
+      "application/ld+json",
+    ],
+  },
   { path: "paths/academy/index.html", required: ["Learn AI automation by building one useful assistant.", "Fitness AI Telegram Assistant", "Learning preview only", "Ask about learning AI automation"] },
 ];
 const emailOnlyRoutes = [
