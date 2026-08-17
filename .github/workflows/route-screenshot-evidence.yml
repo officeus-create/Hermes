@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - qa/hermes-design-screenshots-860ff51
     paths:
       - scripts/capture-route-screenshots.mjs
       - scripts/route-screenshot-contract.mjs
