@@ -38,19 +38,20 @@ test("carrier agreement entry uses the shared Hermes public system", async ({ pa
     };
   });
 
+  const expectedPanelRadius=(page.viewportSize()?.width??1440)<=900?"22px":"30px";
   expect(visual).not.toBeNull();
   expect(visual!.headerColor).toBe("rgb(11, 13, 18)");
   expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
   expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
   expect(visual!.nextBackground).toBe("rgb(11, 13, 18)");
-  expect(visual!.nextRadius).toBe("30px");
+  expect(visual!.nextRadius).toBe(expectedPanelRadius);
   expect(visual!.primaryBackground).toBe("rgb(11, 13, 18)");
   expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
   expect(visual!.primaryRadius).toBe("12px");
   expect(visual!.confidenceBackground).toBe("rgb(255, 255, 255)");
   expect(visual!.confidenceRadius).toBe("22px");
   expect(visual!.finalBackground).toBe("rgb(11, 13, 18)");
-  expect(visual!.finalRadius).toBe("30px");
+  expect(visual!.finalRadius).toBe(expectedPanelRadius);
   expect(visual!.overflow).toBe(false);
 });
 

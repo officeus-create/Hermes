@@ -43,7 +43,7 @@ body:has(.carrier-signing-entry) .carrier-next-card>a:hover,body:has(.carrier-si
 
 body:has(.carrier-signing-entry) .carrier-confidence{background:var(--hermes-pearl)}
 body:has(.carrier-signing-entry) .carrier-heading>p:not(.eyebrow),body:has(.carrier-signing-entry) .confidence-grid p{color:var(--hermes-muted)}
-body:has(.carrier-signing-entry) .confidence-grid article{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.carrier-signing-entry) .carrier-confidence .confidence-grid article{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
 body:has(.carrier-signing-entry) .confidence-grid svg{color:var(--hermes-success)}
 body:has(.carrier-signing-entry) .carrier-share-card{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-panel);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
 body:has(.carrier-signing-entry) .carrier-share-actions .button:not(.carrier-primary){border:1px solid var(--hermes-line-light);background:var(--hermes-pearl);color:var(--hermes-ink)}
