@@ -5,6 +5,45 @@ export const PASSWORD_RESET_SUBJECT = "[HERMES ACCOUNT] [PASSWORD RESET]";
 export const PASSWORD_RESET_EMAIL_PATH = "https://lead-email.internal/v1/send-account";
 export const PASSWORD_RESET_LOCALES = ["en", "ru", "uk", "es", "it", "fr"];
 
+const PASSWORD_RESET_EMAIL_COPY = {
+  en: {
+    title: "Hermes Connect Repair Shop password reset",
+    requested: "A password reset was requested for your Repair Shop owner account.",
+    action: "Use the secure link below within 45 minutes:",
+    ignore: "If you did not request this change, you can ignore this email. Your current password will remain unchanged.",
+  },
+  ru: {
+    title: "Сброс пароля Hermes Connect для СТО",
+    requested: "Для аккаунта владельца СТО был запрошен сброс пароля.",
+    action: "Используйте защищённую ссылку ниже в течение 45 минут:",
+    ignore: "Если вы не запрашивали изменение пароля, просто проигнорируйте это письмо. Текущий пароль останется без изменений.",
+  },
+  uk: {
+    title: "Скидання пароля Hermes Connect для СТО",
+    requested: "Для акаунта власника СТО було запитано скидання пароля.",
+    action: "Скористайтеся захищеним посиланням нижче протягом 45 хвилин:",
+    ignore: "Якщо ви не запитували зміну пароля, просто проігноруйте цей лист. Поточний пароль залишиться без змін.",
+  },
+  es: {
+    title: "Restablecimiento de contraseña de Hermes Connect para talleres",
+    requested: "Se solicitó restablecer la contraseña de tu cuenta de propietario del taller.",
+    action: "Usa el enlace seguro siguiente dentro de los próximos 45 minutos:",
+    ignore: "Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña actual seguirá funcionando.",
+  },
+  it: {
+    title: "Reimpostazione password Hermes Connect per officine",
+    requested: "È stata richiesta la reimpostazione della password per il tuo account proprietario officina.",
+    action: "Usa il link sicuro qui sotto entro 45 minuti:",
+    ignore: "Se non hai richiesto questa modifica, puoi ignorare questa email. La password attuale resterà invariata.",
+  },
+  fr: {
+    title: "Réinitialisation du mot de passe Hermes Connect pour atelier",
+    requested: "Une réinitialisation du mot de passe a été demandée pour votre compte propriétaire d’atelier.",
+    action: "Utilisez le lien sécurisé ci-dessous dans les 45 minutes :",
+    ignore: "Si vous n’avez pas demandé cette modification, ignorez cet e-mail. Votre mot de passe actuel restera inchangé.",
+  },
+};
+
 export function normalizePasswordResetLocale(value) {
   const locale = String(value || "").trim().toLowerCase();
   return PASSWORD_RESET_LOCALES.includes(locale) ? locale : "en";
@@ -50,15 +89,16 @@ export function canonicalPasswordResetUrl(token, locale) {
   return url.toString();
 }
 
-export function passwordResetEmailText(resetUrl) {
+export function passwordResetEmailText(resetUrl, locale = "en") {
+  const copy = PASSWORD_RESET_EMAIL_COPY[normalizePasswordResetLocale(locale)] || PASSWORD_RESET_EMAIL_COPY.en;
   return [
-    "Hermes Connect Repair Shop password reset",
+    copy.title,
     "",
-    "A password reset was requested for your Repair Shop owner account.",
-    "Use the secure link below within 45 minutes:",
+    copy.requested,
+    copy.action,
     resetUrl,
     "",
-    "If you did not request this change, you can ignore this email. Your current password will remain unchanged.",
+    copy.ignore,
     "Hermes Connect",
   ].join("\n");
 }
