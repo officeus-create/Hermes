@@ -1,0 +1,235 @@
+/*
+ * HERMES MARKETING PUBLIC SYSTEM
+ * Pearl public surfaces with one deliberate Obsidian operating-system anchor.
+ * Marketing content, tabs, analytics, forms, and routing remain unchanged.
+ */
+
+.detail-page.detail-page-marketing .marketing-service-system,
+.detail-page.detail-page-marketing .marketing-flow {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.detail-page-marketing .marketing-service-system {
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page-marketing .marketing-service-heading h2,
+.detail-page-marketing .marketing-flow-heading h2 {
+  color: var(--hermes-ink);
+  letter-spacing: var(--hermes-display-tracking);
+}
+
+.detail-page-marketing .marketing-service-heading > p,
+.detail-page-marketing .marketing-flow-heading > p {
+  color: var(--hermes-muted);
+}
+
+/* Four capabilities: one card family, not four competing mini-brands. */
+.detail-page-marketing .marketing-service-rails {
+  gap: 14px;
+  border: 0;
+  background: transparent;
+}
+
+.detail-page-marketing .marketing-service-rails article,
+.detail-page-marketing .marketing-service-rails article:nth-child(2),
+.detail-page-marketing .marketing-service-rails article:nth-child(3),
+.detail-page-marketing .marketing-service-rails article:nth-child(4),
+.detail-page-marketing .marketing-service-rails article:hover {
+  min-height: 490px;
+  padding: clamp(22px, 2.4vw, 30px);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.detail-page-marketing .marketing-service-rails article {
+  transition:
+    transform var(--hermes-motion-fast) var(--hermes-ease),
+    box-shadow var(--hermes-motion-fast) var(--hermes-ease),
+    border-color var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+.detail-page-marketing .marketing-service-rails article:hover,
+.detail-page-marketing .marketing-service-rails article:focus-within {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--path-signal) 36%, var(--hermes-line-light));
+  box-shadow: var(--hermes-shadow-card-hover);
+}
+
+.detail-page-marketing .marketing-service-meta {
+  color: var(--path-signal);
+}
+
+.detail-page-marketing .marketing-service-rails h3,
+.detail-page-marketing .marketing-service-rails > article > strong {
+  color: var(--hermes-ink);
+}
+
+.detail-page-marketing .marketing-service-rails p,
+.detail-page-marketing .marketing-service-rails li,
+.detail-page-marketing .marketing-service-boundary {
+  color: var(--hermes-muted);
+}
+
+.detail-page-marketing .marketing-service-rails ul {
+  border-top-color: var(--hermes-line-light);
+}
+
+.detail-page-marketing .marketing-service-rails a {
+  min-height: 44px;
+  color: var(--hermes-ink);
+  border-top-color: var(--hermes-line-light);
+}
+
+.detail-page-marketing .marketing-service-rails a:hover,
+.detail-page-marketing .marketing-service-rails a:focus-visible {
+  color: var(--path-signal);
+}
+
+.detail-page-marketing .marketing-service-boundary {
+  max-width: 920px;
+}
+
+/*
+ * Growth console is the intentional “Obsidian Inside” moment:
+ * the public page remains Pearl while the operating system itself is dark.
+ */
+.detail-page-marketing .marketing-flow {
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page-marketing .growth-console {
+  overflow: hidden;
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-panel);
+  color: #fff;
+  background:
+    radial-gradient(circle at 82% 10%, rgba(124, 92, 255, .16), transparent 26rem),
+    var(--hermes-obsidian);
+  box-shadow: var(--hermes-shadow-workspace);
+}
+
+.detail-page-marketing .growth-stage-list {
+  background: rgba(255,255,255,.035);
+}
+
+.detail-page-marketing .growth-stage-list::after {
+  right: 8%;
+  left: 8%;
+  background: var(--hermes-intelligence-gradient);
+  opacity: .85;
+}
+
+.detail-page-marketing .growth-stage-list button,
+.detail-page-marketing .growth-stage-list button:nth-child(3) {
+  border-color: var(--hermes-line-dark);
+  color: var(--hermes-muted-dark);
+  background: transparent;
+  transition:
+    color var(--hermes-motion-fast) var(--hermes-ease),
+    background var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+.detail-page-marketing .growth-stage-list button:hover {
+  color: #fff;
+  background: var(--hermes-glass-dark);
+}
+
+.detail-page-marketing .growth-stage-list button[aria-selected="true"] {
+  color: #fff;
+  background: rgba(124, 92, 255, .14);
+  box-shadow: inset 0 -2px 0 var(--hermes-violet);
+}
+
+.detail-page-marketing .growth-stage-list button:focus-visible {
+  outline: 2px solid var(--hermes-violet);
+  outline-offset: -3px;
+}
+
+.detail-page-marketing .growth-stage-list button svg,
+.detail-page-marketing .growth-stage-panels article > div:first-child > p,
+.detail-page-marketing .growth-output span,
+.detail-page-marketing .growth-output svg {
+  color: #c9c1ff;
+}
+
+.detail-page-marketing .growth-stage-panels article {
+  color: #fff;
+  background: transparent;
+}
+
+.detail-page-marketing .growth-stage-panels h3 {
+  color: #fff;
+  letter-spacing: var(--hermes-display-tracking);
+}
+
+.detail-page-marketing .growth-stage-panels article > div:first-child > div {
+  color: var(--hermes-muted-dark);
+}
+
+.detail-page-marketing .growth-output {
+  border-color: var(--hermes-line-dark);
+  background: rgba(255,255,255,.035);
+}
+
+.detail-page-marketing .growth-output strong {
+  color: #fff;
+}
+
+@media (max-width: 900px) {
+  .detail-page-marketing .marketing-service-rails article,
+  .detail-page-marketing .marketing-service-rails article:nth-child(2),
+  .detail-page-marketing .marketing-service-rails article:nth-child(3),
+  .detail-page-marketing .marketing-service-rails article:nth-child(4),
+  .detail-page-marketing .marketing-service-rails article:hover {
+    min-height: 420px;
+  }
+
+  .detail-page-marketing .growth-console {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
+@media (max-width: 620px) {
+  .detail-page-marketing .marketing-service-rails article,
+  .detail-page-marketing .marketing-service-rails article:nth-child(2),
+  .detail-page-marketing .marketing-service-rails article:nth-child(3),
+  .detail-page-marketing .marketing-service-rails article:nth-child(4),
+  .detail-page-marketing .marketing-service-rails article:hover {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .detail-page-marketing .growth-stage-list::after {
+    display: none;
+  }
+
+  .detail-page-marketing .growth-stage-list button,
+  .detail-page-marketing .growth-stage-list button:nth-child(3) {
+    min-height: 64px;
+    border-top-color: var(--hermes-line-dark);
+  }
+
+  .detail-page-marketing .growth-output {
+    min-height: 180px;
+    border-top-color: var(--hermes-line-dark);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-page-marketing .marketing-service-rails article {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .detail-page-marketing .marketing-service-rails article,
+  .detail-page-marketing .growth-console,
+  .detail-page-marketing .growth-stage-list button {
+    border: 1px solid CanvasText;
+  }
+}
