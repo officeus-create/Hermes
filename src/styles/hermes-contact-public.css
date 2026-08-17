@@ -1,0 +1,209 @@
+/*
+ * HERMES SHARED CONTACT SYSTEM
+ * One public contact primitive for homepage/direction/service surfaces.
+ * Submission mode, validation, dynamic fields, endpoint and handoff logic are unchanged.
+ */
+
+.contact-section {
+  border-top: 1px solid var(--hermes-line-light);
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.contact-layout {
+  gap: clamp(2.5rem, 7vw, 6.5rem);
+}
+
+.contact-copy h2 {
+  color: var(--hermes-ink);
+  letter-spacing: var(--hermes-display-tracking);
+}
+
+.contact-copy > h2 + p,
+.contact-direct-routes > p,
+.contact-direction-eyebrow,
+.contact-handoff-copy,
+.contact-handoff-copy-status,
+.contact-handoff-route-label,
+.contact-handoff-unsure,
+.form-status {
+  color: var(--hermes-muted);
+}
+
+.contact-copy .eyebrow,
+.contact-direction-eyebrow,
+.contact-handoff-eyebrow,
+.contact-handoff-route-label {
+  color: var(--hermes-violet);
+}
+
+.contact-direct-routes {
+  overflow: hidden;
+  gap: 0;
+  margin-top: 2rem;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.contact-direct-routes > p {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--hermes-line-light);
+}
+
+.contact-direct-routes a {
+  min-height: 62px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--hermes-line-light);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+}
+
+.contact-direct-routes a:last-child {
+  border-bottom: 0;
+}
+
+.contact-direct-routes a:hover,
+.contact-direct-routes a:focus-visible {
+  color: var(--hermes-violet);
+  background: var(--hermes-pearl);
+}
+
+.contact-form {
+  gap: 1rem;
+  padding: clamp(1.35rem, 3vw, 2rem);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-panel);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card-hover);
+}
+
+.contact-form label,
+.contact-direction-platforms legend {
+  color: var(--hermes-ink);
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+  border-color: var(--hermes-violet);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, .12);
+}
+
+.contact-form input[type="checkbox"],
+.contact-form .contact-direction-checkbox input {
+  accent-color: var(--hermes-violet);
+}
+
+.contact-form .button-primary {
+  min-height: 48px;
+  border: 1px solid var(--hermes-obsidian);
+  border-radius: var(--hermes-radius-control);
+  color: #fff;
+  background: var(--hermes-obsidian);
+  box-shadow: none;
+}
+
+.contact-form .button-primary:hover,
+.contact-form .button-primary:focus-visible {
+  color: #fff;
+  background: var(--hermes-graphite);
+}
+
+.contact-form .button:not(.button-primary) {
+  min-height: 44px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+}
+
+.contact-form .button:not(.button-primary):hover,
+.contact-form .button:not(.button-primary):focus-visible {
+  border-color: color-mix(in srgb, var(--hermes-violet) 38%, var(--hermes-line-light));
+  background: var(--hermes-pearl);
+}
+
+.contact-direction-group,
+.contact-handoff {
+  padding: 16px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  background: var(--hermes-pearl);
+}
+
+.contact-direction-platforms {
+  border: 0;
+}
+
+.contact-handoff-summary {
+  overflow: auto;
+  padding: 14px;
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-control);
+  color: rgba(255,255,255,.86);
+  background: var(--hermes-obsidian);
+}
+
+.contact-handoff-route a {
+  min-height: 48px;
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  color: var(--hermes-ink);
+  background: var(--hermes-paper);
+}
+
+.form-alert {
+  border-radius: var(--hermes-radius-control);
+}
+
+@media (max-width: 900px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-copy {
+    position: static;
+  }
+
+  .contact-form {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
+@media (max-width: 620px) {
+  .contact-form {
+    padding: 20px;
+  }
+
+  .contact-direct-routes a {
+    min-height: 58px;
+  }
+
+  .contact-direction-platforms {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (forced-colors: active) {
+  .contact-direct-routes,
+  .contact-form,
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea,
+  .contact-direction-group,
+  .contact-handoff {
+    border: 1px solid CanvasText;
+  }
+}
