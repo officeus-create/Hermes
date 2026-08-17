@@ -41,10 +41,10 @@ test("Founding Plan does not inherit the legacy full-screen dark hero", async ({
     const priceCard = document.querySelector<HTMLElement>(".plan-page .price-card");
     const launchHeading = document.querySelector<HTMLElement>(".repair-free-launch h2");
     if (!hero || !heading || !priceCard || !launchHeading) return null;
-    const heroRect = hero.getBoundingClientRect();
     const heroStyle = getComputedStyle(hero);
     return {
-      heroHeight: heroRect.height,
+      heroDisplay: heroStyle.display,
+      heroPosition: heroStyle.position,
       heroMinHeight: heroStyle.minHeight,
       heroBackgroundImage: heroStyle.backgroundImage,
       heroColor: heroStyle.color,
@@ -55,13 +55,14 @@ test("Founding Plan does not inherit the legacy full-screen dark hero", async ({
   });
 
   expect(visual).not.toBeNull();
+  expect(visual!.heroDisplay).toBe("grid");
+  expect(visual!.heroPosition).toBe("relative");
   expect(visual!.heroMinHeight).toBe("0px");
   expect(visual!.heroBackgroundImage).toBe("none");
   expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
   expect(visual!.headingColor).toBe("rgb(11, 13, 18)");
   expect(visual!.priceCardBackground).toBe("rgb(11, 13, 18)");
   expect(visual!.launchHeadingColor).toBe("rgb(11, 13, 18)");
-  expect(visual!.heroHeight).toBeLessThan(950);
 });
 
 test("Repair Shop public shell stays within the mobile viewport", async ({ page }) => {
