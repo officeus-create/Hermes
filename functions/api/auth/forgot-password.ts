@@ -24,7 +24,7 @@ const acknowledgement = {
   message: "If an eligible Repair Shop owner account exists for that email, a reset link will be sent shortly.",
 };
 
-async function deliverResetEmail(env: Env, recipient: string, resetUrl: string) {
+async function deliverResetEmail(env: Env, recipient: string, resetUrl: string, locale: string) {
   if (!env.LEAD_EMAIL_SERVICE || !env.LEAD_SERVICE_TOKEN) return false;
   try {
     const response = await env.LEAD_EMAIL_SERVICE.fetch(PASSWORD_RESET_EMAIL_PATH, {
@@ -36,7 +36,7 @@ async function deliverResetEmail(env: Env, recipient: string, resetUrl: string) 
       body: JSON.stringify({
         request_id: `password_reset_${crypto.randomUUID()}`,
         subject: PASSWORD_RESET_SUBJECT,
-        text: passwordResetEmailText(resetUrl),
+        text: passwordResetEmailText(resetUrl, locale),
         recipient_email: recipient,
       }),
     });
@@ -99,7 +99,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     VALUES (?, ?, ?, ?, ?, NULL)
   `).bind(tokenHash, specialist.id, specialist.email, nowIso, expiresAt).run();
 
-  const delivered = await deliverResetEmail(env, specialist.email, canonicalPasswordResetUrl(token, locale));
+  const delivered = await deliverResetEmail(env, specialist.email, canonicalPasswordResetUrl(token, locale), locale);
   if (!delivered) {
     await env.DB.prepare("DELETE FROM password_reset_tokens WHERE token_hash = ?").bind(tokenHash).run();
     console.error("password_reset_delivery_failed", { category: "email_unavailable" });
