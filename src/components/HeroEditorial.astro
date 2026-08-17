@@ -59,3 +59,36 @@ import { site } from "../data/site";
     <ArrowDown size={18} aria-hidden="true" />
   </a>
 </section>
+
+<style>
+  /* The legacy global hero used a viewport-height, bottom-aligned content wrapper and
+     nowrap display lines. The Pearl editorial hero must explicitly release those
+     constraints or the headline collides with the visual stage and clips on mobile. */
+  .hero-content {
+    min-height: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .hero-title,
+  .hero-title-office,
+  .hero-title-script {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .hero-title-office,
+  .hero-title-script {
+    width: auto !important;
+    white-space: normal !important;
+    overflow-wrap: normal;
+  }
+
+  @media (max-width: 720px) {
+    .hero-title {
+      font-size: clamp(3.15rem, 14.5vw, 4.55rem) !important;
+      line-height: .9 !important;
+      letter-spacing: -.06em !important;
+    }
+  }
+</style>
