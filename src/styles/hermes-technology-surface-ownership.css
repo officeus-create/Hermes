@@ -1,0 +1,23 @@
+/*
+ * Technology top-level surface ownership.
+ * Higher specificity intentionally outranks the shared
+ * `.detail-page .section { background: transparent; }` shell rule without !important.
+ */
+
+.detail-page.detail-page-technology .technology-capability-catalog,
+.detail-page.detail-page-technology .technology-proof-library,
+.detail-page.detail-page-technology .it-flow-screens,
+.detail-page.detail-page-technology .it-project-brief {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+  border-top: 1px solid var(--hermes-line-light);
+}
+
+.detail-page.detail-page-technology .technology-solution-mockups,
+.detail-page.detail-page-technology .technology-flow,
+.detail-page.detail-page-technology .technology-partnership {
+  color: #fff;
+  background:
+    radial-gradient(circle at 84% 8%, rgba(124, 92, 255, .14), transparent 30rem),
+    var(--hermes-obsidian);
+}
