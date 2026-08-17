@@ -3,17 +3,19 @@ import { ArrowDown, ArrowUpRight } from "@lucide/astro";
 import { Picture } from "astro:assets";
 import heroImage from "../assets/hermes-ecosystem-hero.jpg";
 import { site } from "../data/site";
+
+const commercialTitle = "Move freight. Grow demand. Build capability. Build systems.";
 ---
 
 <section class="hero" id="top" data-motion-hero>
   <div class="hero-content shell">
     <div class="home-hero-copy">
       <p class="eyebrow hero-eyebrow">{site.hero.eyebrow}</p>
-      <h1 class="hero-title" aria-label={site.hero.title}>
-        <span class="hero-title-office" aria-hidden="true">Four directions.</span>
-        <span class="hero-title-script" aria-hidden="true">One way forward.</span>
+      <h1 class="hero-title" aria-label={commercialTitle}>
+        <span class="hero-title-office" aria-hidden="true">Move freight. Grow demand.</span>
+        <span class="hero-title-script" aria-hidden="true">Build capability. Build systems.</span>
       </h1>
-      <p class="hero-copy">{site.hero.body}</p>
+      <p class="hero-copy">Start with the job in front of you. Hermes routes each request to a specialist team with clear ownership, scope, and next steps.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#start">
           Find the right next step
@@ -79,8 +81,8 @@ import { site } from "../data/site";
 
   @media (max-width: 720px) {
     .hero-title {
-      font-size: clamp(3.15rem, 14.5vw, 4.55rem) !important;
-      line-height: .9 !important;
+      font-size: clamp(3rem, 13.6vw, 4.35rem) !important;
+      line-height: .91 !important;
       letter-spacing: -.06em !important;
     }
   }
