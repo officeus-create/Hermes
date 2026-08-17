@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import "../styles/hermes-digital-services.css";
 import ContactCTA from "./ContactCTA.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
 import SiteFooter from "./SiteFooter.astro";
@@ -295,54 +296,3 @@ const faqSchema = {
   </main>
   <SiteFooter />
 </BaseLayout>
-
-<style>
-  .digital-service-page { background: #f7f9ff; color: #10204e; }
-  .digital-service-hero { padding: 9.5rem 0 5.5rem; background: radial-gradient(circle at 82% 12%, rgba(70, 107, 255, .22), transparent 35%), linear-gradient(145deg, #07143d, #122b72 58%, #1c3e8d); color: white; }
-  .digital-breadcrumb { display: flex; flex-wrap: wrap; gap: .55rem; align-items: center; margin-bottom: 2rem; font-size: .9rem; color: rgba(255,255,255,.72); }
-  .digital-breadcrumb a { color: inherit; }
-  .digital-service-hero h1 { max-width: 900px; margin: .65rem 0 1.25rem; font-size: clamp(2.6rem, 6vw, 5rem); line-height: .98; letter-spacing: -.045em; }
-  .digital-service-intro { max-width: 820px; font-size: clamp(1.08rem, 2vw, 1.3rem); line-height: 1.7; color: rgba(255,255,255,.82); }
-  .digital-service-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2rem; }
-  .digital-project-note { max-width: 760px; margin: 1rem 0 0; color: rgba(255,255,255,.68); font-size: .9rem; line-height: 1.55; }
-  .digital-review-date { margin-top: 1.25rem; font-size: .84rem; color: rgba(255,255,255,.62); }
-  .digital-two-column, .digital-boundary-layout, .digital-faq-layout { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 6rem); align-items: start; }
-  .digital-two-column h2, .digital-boundary-layout h2, .digital-faq-layout h2 { max-width: 620px; }
-  .digital-check-list, .digital-boundary-layout ul { display: grid; gap: .9rem; list-style: none; margin: 0; padding: 0; }
-  .digital-check-list li, .digital-boundary-layout li { display: flex; gap: .8rem; align-items: flex-start; padding: 1rem 1.1rem; border: 1px solid rgba(28,62,141,.13); border-radius: 16px; background: white; line-height: 1.55; }
-  .digital-check-list svg, .digital-boundary-layout svg { flex: none; margin-top: .15rem; color: #315fd7; }
-  .digital-muted-section { background: #eef3ff; }
-  .digital-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1rem; margin-top: 2rem; }
-  .digital-card-grid article { padding: 1.5rem; border: 1px solid rgba(28,62,141,.14); border-radius: 20px; background: white; box-shadow: 0 18px 50px rgba(17,43,103,.06); }
-  .digital-card-grid article > span { display: inline-flex; margin-bottom: 1.5rem; font-size: .78rem; letter-spacing: .1em; color: #315fd7; }
-  .digital-card-grid h3 { margin: 0 0 .7rem; }
-  .digital-card-grid p, .digital-process-list p, .digital-boundary-layout p, .digital-faq-list p { color: #526181; line-height: 1.65; }
-  .digital-process-list { display: grid; gap: .85rem; list-style: none; margin: 2rem 0 0; padding: 0; }
-  .digital-process-list li { display: grid; grid-template-columns: 48px 1fr; gap: 1rem; padding: 1.15rem; border-bottom: 1px solid rgba(28,62,141,.13); }
-  .digital-process-list li > span { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #122b72; color: white; font-weight: 700; }
-  .digital-process-list h3 { margin: 0 0 .35rem; }
-  .digital-process-list p { margin: 0; }
-  .digital-boundary-section { background: #08173f; color: white; }
-  .digital-boundary-layout p { color: rgba(255,255,255,.72); }
-  .digital-boundary-layout li { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: rgba(255,255,255,.86); }
-  .digital-boundary-layout svg { color: #8fb1ff; }
-  .digital-faq-list { display: grid; gap: .7rem; }
-  .digital-faq-list details { border: 1px solid rgba(28,62,141,.14); border-radius: 16px; background: white; padding: 0 1.1rem; }
-  .digital-faq-list summary { cursor: pointer; padding: 1.05rem 0; font-weight: 700; }
-  .digital-faq-list p { margin: 0; padding: 0 0 1.1rem; }
-  .digital-related-section { background: #eef3ff; }
-  .digital-related-links { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .8rem; margin-top: 2rem; }
-  .digital-related-links a { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: 1rem 1.15rem; border: 1px solid rgba(28,62,141,.14); border-radius: 14px; background: white; color: #10204e; font-weight: 700; }
-  .digital-project-cta { background: #07143d; color: white; }
-  .digital-project-cta-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; align-items: center; }
-  .digital-project-cta-card h2 { max-width: 760px; }
-  .digital-project-cta-card p { max-width: 780px; color: rgba(255,255,255,.74); }
-  @media (max-width: 900px) {
-    .digital-card-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .digital-two-column, .digital-boundary-layout, .digital-faq-layout, .digital-project-cta-card { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 640px) {
-    .digital-service-hero { padding: 7.5rem 0 4rem; }
-    .digital-card-grid, .digital-related-links { grid-template-columns: 1fr; }
-  }
-</style>
