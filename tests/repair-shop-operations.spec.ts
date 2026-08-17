@@ -21,6 +21,7 @@ test("owner can mark no-show and manage completed follow-up at 390px", async ({ 
   await page.route("**/api/repair-shop/bookings", (route) => route.fulfill(ok({ success: true, bookings: [
     { id: "booking-confirmed", service_name: "Diagnostics", duration_minutes: 45, appointment_date: "2026-08-18", start_time: "09:00", end_time: "09:45", status: "confirmed", client_name: "Jamie Driver", client_email: "jamie@example.com", client_phone: "+14145550111", vehicle: null, history: [{ id: "h1", booking_id: "booking-confirmed", from_status: null, to_status: "confirmed", changed_at: "2026-08-17T12:00:00Z" }] },
     { id: "booking-completed", service_name: "Oil change", duration_minutes: 30, appointment_date: "2026-08-17", start_time: "10:00", end_time: "10:30", status: "completed", client_name: "Morgan Fleet", client_email: "morgan@example.com", client_phone: "+14145550122", vehicle: null, history: [{ id: "h2", booking_id: "booking-completed", from_status: "in_progress", to_status: "completed", changed_at: "2026-08-17T11:00:00Z" }] },
+    { id: "booking-no-show", service_name: "Brake inspection", duration_minutes: 30, appointment_date: "2026-08-16", start_time: "08:00", end_time: "08:30", status: "no_show", client_name: "Taylor Driver", client_email: "taylor@example.com", client_phone: "+14145550133", vehicle: null, history: [{ id: "h4", booking_id: "booking-no-show", from_status: "confirmed", to_status: "no_show", changed_at: "2026-08-16T08:05:00Z" }] },
   ] })));
   await page.route("**/api/repair-shop/followups", async (route) => {
     if (route.request().method() === "PUT") {
@@ -39,6 +40,11 @@ test("owner can mark no-show and manage completed follow-up at 390px", async ({ 
   });
 
   await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil: "domcontentloaded" });
+
+  const persistedNoShow = page.locator('.booking-card[data-booking-id="booking-no-show"]');
+  await expect(persistedNoShow.locator(".status-pill")).toHaveText("Неявка");
+  await expect(persistedNoShow.locator(".history")).toContainText("Неявка");
+  await expect(persistedNoShow.locator(".history")).not.toContainText("no show");
 
   const confirmed = page.locator('.booking-card[data-booking-id="booking-confirmed"]');
   await expect(confirmed.getByRole("button", { name: "Отметить неявку" })).toBeVisible();
