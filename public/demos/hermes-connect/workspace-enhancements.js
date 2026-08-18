@@ -79,6 +79,44 @@
     setTimeout(() => { item.classList.add('fade-out'); setTimeout(() => item.remove(), 350); }, 2300);
   };
 
+  const verticalModuleEntries = {
+    beauty: { href: './beauty-salon.html', label: 'Beauty Salon OS' }
+  };
+
+  const syncVerticalModuleEntry = id => {
+    const actions = $('.top-actions');
+    if (!actions) return;
+    let link = $('[data-vertical-module-entry]', actions);
+    if (!link) {
+      link = document.createElement('a');
+      link.className = 'primary-small';
+      link.setAttribute('data-vertical-module-entry', '');
+      actions.insertBefore(link, actions.firstChild);
+    }
+    const entry = verticalModuleEntries[id];
+    if (!entry) {
+      link.hidden = true;
+      link.removeAttribute('href');
+      link.textContent = '';
+      return;
+    }
+    link.hidden = false;
+    link.href = entry.href;
+    link.textContent = `Open ${entry.label} →`;
+    link.setAttribute('aria-label', `Open ${entry.label}`);
+  };
+
+  const ensureAcademyHubEntry = () => {
+    const actions = $('[data-view-panel="academy"] .hero-intelligence-actions');
+    if (!actions || $('[data-academy-hub-entry]', actions)) return;
+    const link = document.createElement('a');
+    link.className = 'primary-link';
+    link.href = './academy.html';
+    link.textContent = 'Open Academy Hub →';
+    link.setAttribute('data-academy-hub-entry', '');
+    actions.insertBefore(link, actions.firstChild);
+  };
+
   const render = id => {
     const d = data[id];
     if (!d) return;
@@ -158,9 +196,11 @@
     if (suggested) suggested.innerHTML = `<b>Suggested next action</b><small>Demo: ${nextAction}</small>`;
 
     $$('[data-vertical]').forEach(button => button.classList.toggle('selected', button.dataset.vertical === id));
+    syncVerticalModuleEntry(id);
     toast(`Demo workspace switched to ${d.name}`);
   };
 
+  ensureAcademyHubEntry();
   $$('[data-vertical]').forEach(button => button.addEventListener('click', () => setTimeout(() => render(button.dataset.vertical), 0)));
 
   document.addEventListener('click', event => {
@@ -194,6 +234,7 @@
   const typeParamLaunch = urlParamsLaunch.get('business_type');
   const activeVerticalLaunch = verticalMapLaunch[typeParamLaunch] || verticalMapLaunch[storedTypeLaunch] || 'beauty';
   if (activeVerticalLaunch === 'auto') {
+    syncVerticalModuleEntry(activeVerticalLaunch);
     return;
   }
   render(activeVerticalLaunch);
