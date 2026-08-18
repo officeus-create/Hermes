@@ -1,0 +1,42 @@
+---
+import HermesConnectVerticalPreview from "../../../../components/HermesConnectVerticalPreview.astro";
+
+const modules = [
+  { title: "Appointments", body: "A clear request-to-appointment path with service, specialist, preferred time, status, and follow-up instead of fragmented social-message booking." },
+  { title: "Clients", body: "Client contact history, visit context, preferences that are appropriate to store, consent-aware notes, and the next relationship action." },
+  { title: "Services", body: "A salon-owned service catalog with duration, price state, preparation notes, availability rules, and clear public descriptions." },
+  { title: "Specialists", body: "Team profiles, working hours, service eligibility, availability, and ownership of the appointment without creating a separate staff app." },
+  { title: "Retention", body: "Repeat-visit windows, reminders, follow-up tasks, rebooking opportunities, and review requests with human-controlled outreach rules." },
+  { title: "Operations", body: "One view for today’s schedule, pending requests, client follow-up, service demand, and issues that need a human decision." },
+];
+
+const workflow = [
+  { title: "Client chooses a service", body: "The public flow explains the service and captures only the information needed for the next safe business step." },
+  { title: "Hermes checks the operating context", body: "Service duration, specialist eligibility, working hours, availability, and business rules determine the valid next options." },
+  { title: "Appointment is reviewed or confirmed", body: "The production version should create one canonical appointment state and prevent conflicting or duplicate booking paths." },
+  { title: "The salon sees the client in context", body: "The workspace connects appointment history, service history, permitted notes, and the next follow-up task." },
+  { title: "Aftercare becomes an operating task", body: "Rebooking, review requests, reminders, and relationship follow-up are scheduled through explicit rules rather than uncontrolled messaging." },
+  { title: "Owners see what needs attention", body: "The operating view surfaces pending requests, schedule gaps, repeat-visit opportunities, and exceptions without fabricating revenue or performance data." },
+];
+
+const foundations = [
+  { title: "Beauty & wellness reference category", body: "Hermes Connect already preserves a reference configuration for salons, barbers, nail and spa businesses with sample Nail service, Hair appointment, and Skin consultation workflows.", href: "/demos/hermes-connect/" },
+  { title: "Repair Shop production pattern", body: "Owner authentication, services, availability, bookings, customers, follow-up, mobile web, and production smoke patterns provide the proven architectural reference without copying repair-specific language.", href: "/services/hermes-connect/repair-shops/" },
+];
+---
+
+<HermesConnectVerticalPreview
+  title="Hermes Connect for Beauty Salons | Pilot Preparation"
+  description="Hermes Connect is preparing a beauty-salon vertical for appointments, clients, services, specialists, repeat visits, reviews, and salon operations on desktop and mobile web."
+  eyebrow="Hermes Connect · Beauty Salons"
+  h1="Give the salon one operating flow from interest to the next visit."
+  lead="Beauty businesses often split bookings, client messages, service information, staff schedules, follow-up, and reviews across several tools. This Hermes Connect vertical is being prepared to bring those workflows into one salon-specific workspace while reusing the same product core already proven by Repair Shops."
+  statusLabel="Pilot preparation"
+  statusBody="The Beauty & wellness category exists today as a reference configuration, not a released production booking system. This page defines the product boundary and the first real salon workflow before owner auth, appointment storage, specialist scheduling, and live booking are implemented."
+  modules={modules}
+  workflow={workflow}
+  foundations={foundations}
+  primaryAction={{ label: "Request Beauty pilot review", href: "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Beauty%20Salon%20pilot" }}
+  secondaryAction={{ label: "Open Hermes Connect hub", href: "/services/hermes-connect/" }}
+  boundary="No live salon account, appointment, payment, reminder, review request, specialist calendar, medical record, automated outreach, or revenue metric is claimed here. Any future beauty or wellness workflow that handles sensitive health information, regulated procedures, payments, or marketing consent requires an explicit data/compliance boundary before release."
+/>
