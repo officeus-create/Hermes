@@ -26,14 +26,19 @@ const contextCopy = {
   general: "Repair Shops is the current live pilot",
   logistics: "Repair Shops is live; logistics modules are reference capabilities",
   marketing: "Repair Shops is live; growth modules are reference capabilities",
-  academy: "Repair Shops is live; training modules are reference capabilities",
+  academy: "Academy product flow is in preparation on the existing training foundation",
   technology: "Repair Shops is live; automation modules are reference capabilities",
-  beauty: "Repair Shops is live; beauty modules are reference capabilities",
+  beauty: "Beauty Salons pilot configuration is in preparation",
+};
+
+const contextHref: Partial<Record<Props["context"] & string, string>> = {
+  academy: "/services/hermes-connect/academy/",
+  beauty: "/services/hermes-connect/beauty-salons/",
 };
 
 const displayTitle = label || "Hermes Connect";
 const displaySubtitle = sublabel || contextCopy[context] || contextCopy.general;
-const computedHref = href || "/services/hermes-connect/";
+const computedHref = href || contextHref[context] || "/services/hermes-connect/";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
