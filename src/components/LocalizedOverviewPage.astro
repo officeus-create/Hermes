@@ -31,6 +31,10 @@ const mailSubject = mailCopy.subject;
 const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
 const directionMailto = (brand: string) => `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(`${mailSubject} · ${brand}`)}&body=${encodeURIComponent(mailBody)}`;
+const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand: string) =>
+  content.locale === "uk" && id === "academy"
+    ? "/ua/academy/us-logistics-operations/"
+    : directionMailto(brand);
 const canonicalUrl = `https://hermeslogisticsus.com${content.path}`;
 const schema = {
   "@context": "https://schema.org",
@@ -93,7 +97,7 @@ import "../styles/features/localized.css";
               <h2>{direction.title}</h2>
               <p>{direction.body}</p>
               <ul>{direction.points.map((point) => <li><Check size={17} aria-hidden="true" />{point}</li>)}</ul>
-              <a href={directionMailto(direction.brand)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
+              <a href={directionHref(direction.id, direction.brand)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
             </div>
           </div>
         </section>

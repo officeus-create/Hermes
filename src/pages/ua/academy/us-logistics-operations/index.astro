@@ -1,0 +1,47 @@
+---
+import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
+import { academyUkraineLogistics, academyUkraineUi } from "../../../../data/academy-ukraine";
+
+const alternates = [
+  { lang: "en", href: "/academy/us-logistics-operations/" },
+  { lang: "uk", href: "/ua/academy/us-logistics-operations/" },
+  { lang: "x-default", href: "/academy/us-logistics-operations/" },
+];
+
+const content = {
+  ...academyUkraineLogistics,
+  title: "Логістика США — практичне навчання | Hermes Business Academy",
+  h1: "Логістика США: практична програма для україномовних учасників.",
+  primaryAction: {
+    label: "Подати заявку",
+    href: "/academy/apply/?program=us-logistics-operations&language=uk#contact",
+  },
+  secondaryAction: {
+    label: "Переглянути програму",
+    href: "#academy-modules-title",
+  },
+  related: academyUkraineLogistics.related.map((item) => {
+    if (item.href === "/logistics/resources/dispatch-service-vs-self-dispatch/") {
+      return { ...item, title: "Dispatch чи самостійний dispatch — матеріал англійською" };
+    }
+    if (item.href === "/logistics/resources/broker-setup-packet-checklist/") {
+      return { ...item, title: "Broker setup packet — матеріал англійською" };
+    }
+    if (item.href === "/academy/how-training-works/") {
+      return { ...item, title: "Як працює модель навчання — сторінка англійською" };
+    }
+    if (item.href === "/academy/resources/") {
+      return { ...item, title: "Матеріали Academy — бібліотека англійською" };
+    }
+    return item;
+  }),
+};
+---
+
+<AcademyPublicPage
+  content={content}
+  locale="uk"
+  alternates={alternates}
+  ui={academyUkraineUi}
+  academyHubHref="/ua/#academy"
+/>
