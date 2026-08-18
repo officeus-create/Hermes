@@ -108,7 +108,7 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
-test("Hermes Connect Hub presents one live product and adaptive preview configurations", async ({ page }) => {
+test("Hermes Connect Hub presents one live product, preparation verticals, and adaptive previews", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
@@ -116,7 +116,11 @@ test("Hermes Connect Hub presents one live product and adaptive preview configur
   await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
-  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
+  await expect(page.getByText("PRODUCT PREPARATION", { exact: true })).toBeVisible();
+  await expect(page.getByText("PILOT PREPARATION", { exact: true })).toBeVisible();
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(3);
+  await expect(page.locator('a[href="/services/hermes-connect/academy/"]')).toContainText("Open preparation");
+  await expect(page.locator('a[href="/services/hermes-connect/beauty-salons/"]')).toContainText("Open preparation");
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 });
