@@ -76,3 +76,4 @@ await import("./geo-measurement-adapters.test.mjs");
 await import("./geo-answer-contract.test.mjs");
 await import("./geo-public-entity-adapter.test.mjs");
 await import("./geo-prompt-owner-registry.test.mjs");
+await import("./geo-car-hauling-answer-candidate.test.mjs");
