@@ -74,7 +74,7 @@ const analyticsEvents = new Set<CanonicalCommercialAnalyticsEvent>([
   "seo_intake_preview_ready",
   "seo_handoff_ready",
   "website_project_intake_start",
-  "website_project_intake_preview_ready",
+  "website_project_preview_ready",
   "website_handoff_ready",
 ]);
 const familyEvents: Record<GeoFunnelFamily, Set<CanonicalCommercialAnalyticsEvent>> = {
@@ -101,7 +101,7 @@ const familyEvents: Record<GeoFunnelFamily, Set<CanonicalCommercialAnalyticsEven
   website_project: new Set([
     "commercial_cta_click",
     "website_project_intake_start",
-    "website_project_intake_preview_ready",
+    "website_project_preview_ready",
     "website_handoff_ready",
   ]),
 };
