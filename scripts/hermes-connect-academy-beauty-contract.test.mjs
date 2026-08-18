@@ -106,3 +106,4 @@ test('Shared vertical module stylesheet exists and preserves Hermes brand tokens
 await import('./academy-a1-contract.test.mjs');
 await import('./academy-a2-contract.test.mjs');
 await import('./academy-a3-contract.test.mjs');
+await import('./academy-a4-contract.test.mjs');

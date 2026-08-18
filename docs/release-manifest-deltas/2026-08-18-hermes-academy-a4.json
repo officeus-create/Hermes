@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-18-hermes-academy-a4",
+  "generated_at": "2026-08-18T08:35:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/academy/progression/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/academy/progression/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/academy/progression/index.astro",
+      "status": "COMPLETE",
+      "blocker": "depends_on_green_merged_academy_a3",
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/services/hermes-connect/academy/reviewer/progression/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/academy/reviewer/progression/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/academy/reviewer/progression/index.astro",
+      "status": "COMPLETE",
+      "blocker": "depends_on_green_merged_academy_a3",
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
