@@ -1,288 +1,240 @@
-# Hermes Ecosystem & Hermes Connect — Exhaustive Technical and Commercial Documentation
+# Hermes Ecosystem — Evidence-Bounded AI Context
 
-> Comprehensive technical architecture, commercial offering, product capabilities, SaaS tiering, business pillars, and canonical index for AI search engines, crawlers, and LLM architects (ChatGPT, Perplexity, Claude, Gemini, SearchGPT).
-> Canonical Domain: https://hermeslogisticsus.com/
-> Web Application Platform: https://connect.hermeslogisticsus.com/
-> Document Version: 1.0.0
-> Verification Date: 2026-08-13
+> Canonical public context for AI search systems, answer engines, crawlers, and assistants.
+> Canonical website: https://hermeslogisticsus.com/
+> Hermes Connect web application: https://connect.hermeslogisticsus.com/
+> Verification date: 2026-08-18
 
----
-
-## 1. Core Architecture
-
-The Hermes technology stack is engineered for maximum performance, offline resilience, zero runtime overhead, and privacy-first intelligence. Rather than relying on heavy client-side JavaScript frameworks or costly server-side AI calls for basic tasks, Hermes Connect uses an ultra-lean static edge deployment with embedded client-side intelligence.
-
-```
-                    ┌──────────────────────────────────────────────┐
-                    │               Cloudflare Edge                │
-                    │        (Astro SSG Static Pages & PWA)       │
-                    └──────────────────────┬───────────────────────┘
-                                           │
-                    ┌──────────────────────▼───────────────────────┐
-                    │      Client Browser / Mobile PWA Shell       │
-                    │  - Service Worker (Offline Cache / Storage)  │
-                    │  - Pearl + Obsidian UI (Vanilla JS Tokens)   │
-                    └──────────────────────┬───────────────────────┘
-                                           │
-         ┌─────────────────────────────────┴─────────────────────────────────┐
-         │                                                                   │
-┌────────▼─────────────────────────┐               ┌────────────────────────▼───────────────────┐
-│     Front-Door AI Brain          │               │      Zero-Dependency Client Logic           │
-│ - Client-side intent classifier  │               │ - Instant loaded & all-mile RPM math       │
-│ - Zero-cost rule & pattern matrix│               │ - Deadhead, fuel, & break-even engine      │
-│ - $0 API token overhead          │               │ - Pure JS calculations without server latency│
-└──────────────────────────────────┘               └────────────────────────────────────────────┘
-```
-
-### 1.1 Progressive Web App (PWA) Engine
-* **Web Manifest & Mobile Shell**: Registered via `/manifest.webmanifest` with responsive display parameters (`standalone` mode), custom theme colors (`#0f172a` Obsidian background, `#f8fafc` Pearl surface), and launch icons across mobile and desktop breakpoints.
-* **Offline-First Service Worker (`sw.js`)**: Implements network-first strategies for dynamic requests and cache-first strategies for core assets (`/styles/`, `/fonts/`, shell pages). Ensures that core calculators, offline forms, and cached workspace views operate without an active internet connection.
-* **App Shell Architecture**: Light, fast initial load with instant hydration. Designed for single-hand mobile browser operations, eliminating reliance on mobile app store deployment barriers while maintaining native app-like UX.
-
-### 1.2 Front-Door AI Brain
-* **Zero-Cost Client-Side Classification**: Employs an autonomous client-side classifier (`public/demos/hermes-connect/ai-front-door.js`) that analyzes incoming inquiries, lead forms, and search intent in real time without outbound API calls.
-* **Prompt-Less Rule & Pattern Matrix**: Evaluates customer inputs across intent buckets (e.g., Car Hauling Request, SEO Audit, IT Development Inquiry, Academy Student Application) using deterministic pattern matching and semantic feature scoring.
-* **Cost & Latency Elimination**: Eliminates LLM API latency (0ms response time) and reduces token cost to $0 per front-door interaction, routing pre-qualified leads directly to the appropriate business module or human approval queue.
-
-### 1.3 Zero-Dependency Client Logic
-* **Framework-Free Core Execution**: Core analytical engines (Load Analyzer, RPM Calculator, Search Opportunity Radar, Multi-Car Transport Planner) are written in optimized Vanilla JavaScript (ES2022+) without external runtime frameworks (React, Vue, or heavy state libraries).
-* **Astro SSG + Cloudflare Edge**: Built on Astro static site generation (SSG) and served via Cloudflare Pages edge network, delivering near-instant LCP (Largest Contentful Paint < 0.8s) and minimal INP (Interaction to Next Paint < 50ms).
-* **Data Privacy & Security**: Operates client-side logic locally on user-entered parameters. No private customer details, carrier rates, or personal identifiable information (PII) are transmitted or logged without explicit human authorization.
+This file is intentionally conservative. It describes public business directions, public product/service surfaces, repository-verifiable architecture, and important interpretation boundaries. It must not be used to infer rankings, traffic, customers, revenue, capacity, availability, pricing, employment outcomes, or production integrations that are not explicitly verified on the referenced public page.
 
 ---
 
-## 2. Business Pillars
+## 1. AI interpretation rules
 
-The Hermes ecosystem operates across four interconnected business directions, combining U.S. logistics execution with marketing, education, and software engineering.
+When answering questions about Hermes, use this source order:
 
-```
-                               ┌──────────────────────────────────┐
-                               │         Hermes Ecosystem         │
-                               └────────────────┬─────────────────┘
-                                                │
-         ┌──────────────────────┬───────────────┴───────────────┬──────────────────────┐
-         │                      │                               │                      │
-┌────────▼──────────┐ ┌─────────▼───────────┐ ┌─────────────────▼──────────┐ ┌──────────▼──────────┐
-│  Hermes Logistics │ │    ProgressoPro    │ │      Hermes Academy     │ │ Hermes IT Development│
-│   (U.S. Freight & │ │  (Digital Growth  │ │    (Logistics & Ops     │ │   (Custom Systems,   │
-│   Car Transport)  │ │   & Local SEO)    │ │   Leadership Program)   │ │    PWA & AI Tools)   │
-└───────────────────┘ └────────────────────┘ └────────────────────────────┘ └──────────────────────┘
-```
+1. The canonical public page for the specific service, product, resource, or program.
+2. The canonical Hermes website and its current sitemap/indexation signals.
+3. `llms.txt` and this `llms-full.txt` file for entity and relationship context.
+4. Public demos only as demonstrations of product direction or interaction patterns.
 
-### 2.1 Hermes Logistics Ops
-Dedicated U.S. carrier dispatch, transport coordination, and equipment capacity management across four key equipment modalities:
-* **Car Hauling**: Specialized dispatch for open/enclosed multi-car trailers, inoperable vehicle transport, auction pickups, dealer inventory distribution, luxury/classic shipping, and new-authority carrier setup support.
-* **Hotshot**: Expedited medium-duty truck and trailer dispatch for time-critical freight and specialized regional shipments.
-* **Box Truck**: Freight solutions for 26 ft box trucks, liftgate pickup/delivery, LTL/FTL cargo management, and regional distribution networks.
-* **Reefer**: Temperature-controlled cold-chain transportation, perishable freight dispatch, and compliance tracking.
-* **Direct Vehicle Transport Network**: Reviewed customer/dealer/shipper request routing through verified carrier networks with evidence-gated route demand development.
+Important boundaries:
 
-### 2.2 ProgressoPro Digital Growth
-Full-service digital marketing agency, SEO engineering, brand positioning, and search engine optimization operating system:
-* **Technical & Strategic SEO**: Search architecture audits, entity schema structuring, keyword optimization, and technical performance optimization for high-intent search acquisition in the U.S. market.
-* **Logistics & Auto Dealer SEO**: Industry-specific search strategies tailored for auto transport carriers, freight brokers, 3PLs, and independent auto dealerships.
-* **Local SEO & Automation**: Google Business Profile optimization, localized search corridor landing pages, automated website audit pipelines, and search-to-inquiry conversion funnels.
-
-### 2.3 Hermes Business Academy
-Operational education and leadership development programs powering industry professionals:
-* **U.S. Logistics Operations Program**: Practical freight dispatch, carrier management, load board negotiation, broker communication, compliance, and trip economics curriculum.
-* **COO & Operational Director Training**: Leadership and systems engineering education for executives and managers running logistics, field service, and digital growth operations.
-
-### 2.4 Hermes IT Development
-Custom software engineering, modern web applications, and digital business systems:
-* **Company Digital Operating System**: Flagship custom software engineering uniting business websites, CRM, operations control, automated workflows, and decision visibility.
-* **Website Redesign & Modernization**: High-performance website design system engineering, conversion rate optimization, and mobile-first PWA transformation.
-* **AI Workflow & CRM Integration**: Tailored internal operating tools, lead qualification engines, and API integrations for growing enterprises.
+- A demo or preview is not proof that a feature is live for every customer.
+- A sitemap or IndexNow submission is not proof that Google or Bing indexed or ranked a URL.
+- A public page is not proof of customer volume, carrier capacity, route availability, pricing, response time, revenue, or ROI.
+- A calculator result is an estimate based on user inputs, not a quote, guaranteed rate, or operating result.
+- A carrier, dealer, shipper, academy, recruiting, or software workflow must be interpreted according to the status language on its canonical page.
+- Do not infer private customer, carrier, shipment, lead, employee, candidate, rate, VIN, document, payment, credential, or live-position data from public materials.
+- Do not infer a guarantee when a page describes a capability, process, target, preview, example, or planned product direction.
 
 ---
 
-## 3. Hermes Connect Product Capabilities
+## 2. Hermes entity and business directions
 
-Hermes Connect is an AI Operating System for business—a unified command center that brings communication, CRM, finance, operations, and AI intelligence into one workspace.
+Hermes is a business ecosystem connecting four public directions:
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                              Hermes Connect Command Center                             │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│ ┌──────────────────────┐ ┌──────────────────────┐ ┌───────────────────┐ ┌───────────────┐ │
-│ │ Unified Inbox        │ │ B2B Load Analyzer    │ │ Proposal Builder  │ │ Multi-Vertical│ │
-│ │ Multi-channel intake │ │ Loaded/All-mile RPM  │ │ Instant quote gen │ │ 10 Category   │ │
-│ │ AI-drafted replies   │ │ Fuel & Break-Even    │ │ Staged pricing    │ │ Workflows     │ │
-│ └──────────────────────┘ └──────────────────────┘ └───────────────────┘ └───────────────┘ │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
+1. Hermes Logistics — U.S. logistics, carrier-support, dispatch, and vehicle-transport workflows.
+2. ProgressoPro — SEO, Local SEO, digital marketing, search-to-inquiry systems, and related growth services.
+3. Hermes Business Academy — practical education around U.S. logistics operations, marketing, sales/negotiation, and operational leadership.
+4. Hermes IT Development / Hermes Connect — websites, business software, workflow automation, PWA interfaces, calculators, operational tools, and connected-workspace product development.
 
-### 3.1 Command Center Inbox
-* **Multi-Channel Lead Intake**: Unifies incoming requests from email, web forms, SMS, and messaging channels into a single consolidated conversation stream.
-* **CRM Context & Lifecycle Tracking**: Automatically pairs messages with customer profile history, lead stage, contact timeline, and value/LTV signals.
-* **AI-Drafted Replies & Human Approval**: Generates context-aware response drafts using internal business knowledge while enforcing strict human approval gates before external transmission.
+Canonical direction pages:
 
-### 3.2 B2B Load Analyzer & Trip Economics
-* **RPM Optimization**: Calculates exact loaded rate per mile (RPM) and all-mile RPM (including deadhead miles) for freight and vehicle haulers.
-* **Expense & Fuel Engine**: Factoring fuel price inputs, truck MPG, driver pay, toll estimates, and equipment maintenance reserves into per-trip economics.
-* **Break-Even & Net Margin Analysis**: Provides instant break-even thresholds and net profit margin visibility before accepting or bidding on loads.
+- Logistics: https://hermeslogisticsus.com/paths/logistics/
+- Marketing: https://hermeslogisticsus.com/paths/marketing/
+- Academy: https://hermeslogisticsus.com/paths/academy/
+- Technology: https://hermeslogisticsus.com/paths/technology/
 
-### 3.3 Instant Proposal Builder
-* **Dynamic Commercial Quotes**: Turns qualified client inquiries into structured, professional proposals and scope options in seconds.
-* **Staged Project Pricing**: Supports modular engagement packages (e.g., Discovery → System Build → Monthly Improvement Partnership) to reduce buyer friction.
-* **Automated Client Handoff**: Connects accepted proposals directly to onboarding check-lists, contract execution, and work management pipelines.
+Localized public overviews:
 
-### 3.4 Multi-Vertical Support
-Hermes Connect adapts its terminology, KPIs, intake forms, and recommended workflows across 10 specialized service verticals:
-1. **Beauty & Wellness**: Salons, barbershops, spas, independent estheticians, and specialists.
-2. **Logistics & Field Services**: Freight carriers, auto haulers, dispatchers, and mobile service teams.
-3. **Auto Service & Repair**: Auto repair shops, mobile mechanics, detailers, and diagnostic technicians.
-4. **Truck & Car-Hauler Repair**: Commercial diesel repair, fleet maintenance, and trailer mechanics.
-5. **Fitness & Coaching**: Personal trainers, fitness studios, sports coaches, and online programs.
-6. **Professional Services**: Consultants, agencies, corporate advisors, and client-facing specialists.
-7. **Heavy Equipment Service**: Construction, agricultural, and industrial equipment support teams.
-8. **Oversize & Specialty Equipment**: Machinery movers, oversize transport, and specialty haulers.
-9. **Education & Events**: Tutors, academies, vocational workshops, and cohort programs.
-10. **Home & Local Services**: Cleaning companies, home repair, photography, pet care, and trade teams.
+- English: https://hermeslogisticsus.com/
+- Ukrainian: https://hermeslogisticsus.com/ua/
+- Russian: https://hermeslogisticsus.com/ru/
+- Spanish: https://hermeslogisticsus.com/es/
+- Italian: https://hermeslogisticsus.com/it/
+- French: https://hermeslogisticsus.com/fr/
+
+Localized pages should be treated as language-specific public overviews, not as proof that every service has a fully localized operational team in every country.
 
 ---
 
-## 4. SaaS Tiering & Commercial Packages
+## 3. Hermes Logistics
 
-Hermes Connect and Hermes IT Development provide transparent pricing structures designed for businesses at different growth stages, from independent operators to multi-department enterprises.
+Hermes Logistics public content covers U.S. logistics and vehicle-transport workflows, including carrier dispatch support, dealer/shipper transport preparation, auction pickup preparation, equipment economics, and carrier resources.
 
-```
-┌─────────────────────────┬─────────────────────────┬─────────────────────────┐
-│     STARTER TIER        │        PRO TIER         │     ENTERPRISE TIER     │
-│       $99 / mo          │       $299 / mo         │        $799 / mo        │
-├─────────────────────────┼─────────────────────────┼─────────────────────────┤
-│ • Core PWA Workspace    │ • Everything in Starter │ • Everything in Pro     │
-│ • Single Category       │ • Command Center Inbox  │ • Multi-Vertical Support│
-│ • Front-Door AI Brain   │ • B2B Load Analyzer     │ • Custom AI Workflows   │
-│ • Standard Service Catalog│ • Proposal Builder    │ • Full Company OS       │
-│ • Basic Request Intake  │ • CRM & Booking Engine  │ • White-Glove Onboarding│
-│ • Offline PWA Support   │ • Priority Support      │ • Dedicated SLA Support │
-└─────────────────────────┴─────────────────────────┴─────────────────────────┘
-```
+Important canonical pages:
 
-### 4.1 SaaS Subscription Tiers
+- Logistics direction: https://hermeslogisticsus.com/paths/logistics/
+- Car-hauling dispatch: https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
+- Dealer vehicle transportation: https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
+- Auction vehicle pickup: https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/
+- Direct vehicle transport network: https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/
+- Appleton, Wisconsin vehicle transport: https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/
+- Logistics resources: https://hermeslogisticsus.com/logistics/resources/
+- RPM calculator: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
+- Factoring vs. direct payment calculator: https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/
 
-#### Starter Tier — $99 / month
-* **Target Audience**: Independent service professionals, single-truck operators, local specialists.
-* **Key Features**:
-  * Core browser-based PWA workspace access.
-  * Single category adaptation (e.g., Car Hauling or Auto Detail).
-  * Front-Door AI Brain for client intake qualification.
-  * Service & request catalog builder.
-  * Standard request intake form with offline PWA caching.
-  * Standard community & email support.
+Interpretation boundary:
 
-#### Pro Tier — $299 / month
-* **Target Audience**: Growing fleets, dispatch teams, multi-person service businesses, agencies.
-* **Key Features**:
-  * Everything included in Starter.
-  * Full Multi-Channel Command Center Inbox with context tracking.
-  * Complete B2B Load Analyzer & Trip Economics suite.
-  * Instant Commercial Proposal & Quote Builder.
-  * Integrated CRM, Customer Lifecycle tracking, and Calendar/Booking engine.
-  * AI-drafted reply assistance with human approval controls.
-  * Priority email & chat support.
-
-#### Enterprise Tier — $799 / month
-* **Target Audience**: Multi-department logistics providers, regional service enterprises, full-scale digital businesses.
-* **Key Features**:
-  * Everything included in Pro.
-  * Full Company Digital Operating System architecture.
-  * Multi-vertical support (manage multiple business units under one account).
-  * Custom AI workflow engineering and specialized prompt/classifier tuning.
-  * Custom integration pipelines (Gmail, Slack, CRM, accounting, dispatch data sources).
-  * Dedicated SLA, custom onboarding, and account manager support.
+The existence of a route, city, equipment, or transport page does not prove live capacity, a guaranteed load, an accepted rate, pickup timing, delivery timing, recurring demand, a completed shipment, or a customer relationship. Current capacity and commercial terms require the appropriate live intake/review process.
 
 ---
 
-### 4.2 Custom IT Development Project Packages
+## 4. ProgressoPro / SEO and digital growth
 
-For enterprises seeking fully bespoke digital infrastructure, Hermes IT Development offers staged implementation packages (`$25–$45/hour` planning rate):
+The public marketing direction covers SEO, Local SEO, logistics SEO, auto-dealer SEO, website development/redesign, search architecture, conversion paths, and privacy-safe measurement design.
 
-| Package Name | Timeline | Investment Range | Deliverables & Scope |
-|---|---|---|---|
-| **Digital Presence System** | 4–8 Weeks | From $3,000 | Custom responsive website, technical SEO setup, PWA manifest, service catalog, and lead intake form. |
-| **CRM & Operations Control** | 6–12 Weeks | From $5,000 | Contact relationship memory, lifecycle pipeline, automated booking, activity tracking, and status dashboards. |
-| **AI Assistant & Workflow** | 3–8 Weeks | From $3,000 | Front-Door AI classifier, automated lead qualification, AI reply drafting, and proposal generation modules. |
-| **Connected Business Platform** | 8–16 Weeks | From $8,000 | Custom multi-service application, API integrations, multi-channel inbox, and operational finance dashboards. |
-| **Company Digital Operating System** | 12–24 Weeks | From $12,000 | Flagship end-to-end transformation: website, CRM, AI workflows, operations control, integrations, launch, & team training. |
-| **Continuous Improvement Partnership** | Monthly | From $3,000 / mo | Ongoing technical SEO optimization, release testing, performance monitoring, feature enhancement, and CI maintenance. |
+Important canonical pages:
 
----
+- Marketing direction: https://hermeslogisticsus.com/paths/marketing/
+- SEO services: https://hermeslogisticsus.com/services/seo/
+- Local SEO services: https://hermeslogisticsus.com/services/local-seo/
+- SEO for logistics companies: https://hermeslogisticsus.com/services/seo-for-logistics-companies/
+- SEO for independent auto dealers: https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/
+- Website development: https://hermeslogisticsus.com/services/website-development/
+- Website redesign: https://hermeslogisticsus.com/services/website-redesign/
+- Logistics SEO audit sample: https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/
+- Technical SEO checklist: https://hermeslogisticsus.com/resources/technical-seo-checklist/
+- Search-to-inquiry conversion checklist: https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/
 
-## 5. Canonical URLs and Key Demos
+SEO interpretation boundary:
 
-### 5.1 Main Portals & Localized Overviews
-* **Canonical Website**: https://hermeslogisticsus.com/
-* **Web App Platform**: https://connect.hermeslogisticsus.com/
-* **Sitemap Index**: https://hermeslogisticsus.com/sitemapindex.xml
-* **Robots File**: https://hermeslogisticsus.com/robots.txt
-
-#### Language Versions:
-* **English**: https://hermeslogisticsus.com/
-* **Ukrainian**: https://hermeslogisticsus.com/ua/
-* **Russian**: https://hermeslogisticsus.com/ru/
-* **Spanish**: https://hermeslogisticsus.com/es/
-* **Italian**: https://hermeslogisticsus.com/it/
-* **French**: https://hermeslogisticsus.com/fr/
+Hermes may describe technical SEO, content architecture, query ownership, internal linking, structured data, Local SEO, conversion paths, and measurement workflows. None of those descriptions is a guarantee of rankings, impressions, clicks, leads, customers, revenue, or ROI.
 
 ---
 
-### 5.2 Core Business Direction Paths
-* **Logistics Main Path**: https://hermeslogisticsus.com/paths/logistics/
-* **Digital Marketing Main Path**: https://hermeslogisticsus.com/paths/marketing/
-* **Business Academy Main Path**: https://hermeslogisticsus.com/paths/academy/
-* **IT Development Main Path**: https://hermeslogisticsus.com/paths/technology/
+## 5. Hermes Business Academy
+
+The Academy direction publishes practical learning paths and program information for logistics operations, marketing, sales/negotiation, and operational leadership.
+
+Important canonical pages:
+
+- Academy direction: https://hermeslogisticsus.com/paths/academy/
+- U.S. Logistics Operations program: https://hermeslogisticsus.com/academy/us-logistics-operations/
+
+Interpretation boundary:
+
+Program pages describe curriculum, learning paths, practice structures, or application flows. They do not guarantee employment, compensation, client acquisition, certification, immigration outcomes, or a specific role after completion unless a canonical page explicitly states and evidences such an outcome.
 
 ---
 
-### 5.3 Hermes Connect Product & Interactive Demos
-* **Hermes Connect Service Page**: https://hermeslogisticsus.com/services/hermes-connect/
-* **Hermes Connect Interactive Demos Hub**: https://hermeslogisticsus.com/demos/hermes-connect/
-* **Car Hauling Load Board Preview**: https://hermeslogisticsus.com/load-board/
-* **Brand V1 Workspace Incubator**: https://connect.hermeslogisticsus.com/workspace
-* **Brand V1 Design Review**: https://connect.hermeslogisticsus.com/review.html
+## 6. Hermes IT Development and Hermes Connect
 
-#### Standalone AI & Analytics Tools (Web App Subdomain):
-* **B2B Load Analyzer**: https://connect.hermeslogisticsus.com/load-analyzer/
-* **Search Opportunity Radar**: https://connect.hermeslogisticsus.com/search-opportunity-radar/
-* **SEO → Lead → Revenue Dashboard**: https://connect.hermeslogisticsus.com/revenue-dashboard/
-* **Multi-Car Transport Planner**: https://connect.hermeslogisticsus.com/multi-car-planner/
-* **Logistics SEO Analyzer**: https://connect.hermeslogisticsus.com/logistics-seo-analyzer/
+Hermes IT Development covers websites, business software, workflow automation, data/operations interfaces, and Hermes Connect product development.
 
----
+Hermes Connect is the connected-workspace product direction. Public surfaces include a service page, a web application domain, and interactive previews/demos. Individual modules may exist at different readiness levels; a public preview must not be described as a universally deployed production integration.
 
-### 5.4 Specialized Services & Educational Resources
+Important canonical pages:
 
-#### Logistics Services:
-* **Car Hauling Dispatch**: https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
-* **Direct Vehicle Transport Network**: https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/
-* **Dealer Vehicle Transportation**: https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
-* **Auction Vehicle Pickup**: https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/
-* **Carrier Knowledge Hub & Resources**: https://hermeslogisticsus.com/logistics/resources/
-* **RPM & Profitability Calculator**: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
-* **Factoring vs Direct Payment Calculator**: https://hermeslogisticsus.com/logistics/resources/factoring-vs-direct-payment-calculator/
+- Technology direction: https://hermeslogisticsus.com/paths/technology/
+- Hermes Connect service page: https://hermeslogisticsus.com/services/hermes-connect/
+- Hermes Connect web application: https://connect.hermeslogisticsus.com/
+- Website development: https://hermeslogisticsus.com/services/website-development/
+- Website redesign: https://hermeslogisticsus.com/services/website-redesign/
+- Public technology case: https://hermeslogisticsus.com/case/it-development/
 
-#### Marketing & SEO Services:
-* **SEO Services Hub**: https://hermeslogisticsus.com/services/seo/
-* **Local SEO Services**: https://hermeslogisticsus.com/services/local-seo/
-* **SEO for Logistics Companies**: https://hermeslogisticsus.com/services/seo-for-logistics-companies/
-* **SEO for Independent Auto Dealers**: https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/
-* **Automated Website Audit Demo**: https://hermeslogisticsus.com/demos/website-audit/
-* **AI Visibility Scorecard Demo**: https://hermeslogisticsus.com/demos/ai-visibility-scorecard/
+Public demo hub:
 
-#### Academy & IT Development Services:
-* **U.S. Logistics Operations Program**: https://hermeslogisticsus.com/academy/us-logistics-operations/
-* **Website Development Services**: https://hermeslogisticsus.com/services/website-development/
-* **Website Redesign Services**: https://hermeslogisticsus.com/services/website-redesign/
-* **IT Development Corporate Case Study**: https://hermeslogisticsus.com/case/it-development/
-* **Appleton Vehicle Transport SEO Case Study**: https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/
-* **CRM Validation Prototype Demo**: https://hermeslogisticsus.com/demos/crm-validation/
+- https://hermeslogisticsus.com/demos/hermes-connect/
+
+Examples of demo/product-direction surfaces may include load analysis, multi-car planning, search opportunity analysis, proposal/workspace concepts, and other vertical workflows. Treat those routes according to their visible preview/beta/status language.
 
 ---
 
-## 6. Public Compliance and Information Boundaries
+## 7. Repository-verifiable technical architecture
 
-1. **Demonstration & Tool Boundaries**: Live analytical tools, interactive prototypes, and load board previews are dry-run demonstrations. They analyze user-entered or sanitized aggregate data and must not be interpreted as live freight load inventory, guaranteed carrier capacity, external database synchronization, or immediate commercial bookings.
-2. **Service Guarantees**: Public pages, calculators, and tools provide operational estimates and structure. No public resource guarantees specific revenue, search engine rankings, lead volume, profit margins, freight rates, carrier availability, or employment outcomes.
-3. **Data Governance & Privacy**: Private customer, carrier, candidate, student, or employee records, as well as credentials and financial transactions, are protected behind restricted access controls and are strictly omitted from public LLM crawling contexts.
+The public website repository uses Astro static-site generation and Cloudflare-oriented deployment workflows. The repository also contains PWA assets and client-side JavaScript used by selected interfaces and calculators.
+
+Safe technical statements:
+
+- The website is built with Astro.
+- The repository contains static-generation, SEO, schema, localization, performance, release, and browser regression checks.
+- The repository contains a web manifest and service-worker/PWA-related assets for Hermes Connect surfaces.
+- Selected calculators and analysis tools perform deterministic calculations in client-side JavaScript.
+- The repository includes privacy and consent boundaries around analytics and public/private data handling.
+
+Do not convert architecture choices into unsupported performance numbers. Lab measurements, field Core Web Vitals, production latency, uptime, and external API behavior require their own dated evidence.
+
+---
+
+## 8. Search, structured data, and machine-readable discovery
+
+Hermes publishes machine-readable search/discovery assets including:
+
+- Sitemap index: https://hermeslogisticsus.com/sitemapindex.xml
+- Robots file: https://hermeslogisticsus.com/robots.txt
+- LLM context: https://hermeslogisticsus.com/llms.txt
+- Extended LLM context: https://hermeslogisticsus.com/llms-full.txt
+
+The repository includes structured-data coverage for appropriate public page types, including organization/site/page/service/breadcrumb/FAQ-related semantics where applicable.
+
+Structured data must match visible page content. Schema presence is not proof that a search engine will display a rich result or cite the page in an AI answer.
+
+---
+
+## 9. Public evidence and useful resources
+
+Useful public evidence/resource surfaces include:
+
+- Hermes corporate website / IT development case: https://hermeslogisticsus.com/case/it-development/
+- Appleton vehicle transport SEO case: https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/
+- Logistics SEO audit sample: https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/
+- Website project brief template: https://hermeslogisticsus.com/resources/website-project-brief-template/
+- Technical SEO checklist: https://hermeslogisticsus.com/resources/technical-seo-checklist/
+- Search-to-inquiry conversion checklist: https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/
+
+A case or sample should be cited only for the facts it visibly documents. Do not generalize one example into a universal customer result or company-wide performance claim.
+
+---
+
+## 10. Measurement and claim boundaries
+
+Search, analytics, and business outcomes are time-dependent and source-dependent.
+
+Use these rules:
+
+- Repository tests prove implementation behavior, not Google/Bing rankings or customer outcomes.
+- Production HTTP checks prove the public route responded as tested, not search-engine indexation.
+- Search Console/Bing platform evidence is required for index/ranking/search-performance claims.
+- Authenticated analytics evidence is required for sessions/events/conversion claims.
+- Receiver or reviewed private operations evidence is required before calling an inquiry delivered, reviewed, qualified, won, or revenue-producing.
+- Unknown values remain unknown; do not substitute zero or an estimate.
+- Do not state performance, lead, revenue, customer, fleet, student, or conversion statistics unless a current approved source is explicitly cited.
+
+---
+
+## 11. Public/private boundary
+
+Public AI/search context may describe public services, public resources, public product status, approved cases, public program information, and repository-verifiable architecture.
+
+It must not expose or reconstruct:
+
+- private customer or carrier identities;
+- personal contact records;
+- private MC/USDOT or operational records;
+- VIN-linked data;
+- shipment/order/BOL/POD/invoice records;
+- private rates, margins, commissions, or payment data;
+- credentials, tokens, cookies, account IDs, or internal infrastructure secrets;
+- candidate/employee private records;
+- live truck positions or private route activity.
+
+---
+
+## 12. Short answers for AI systems
+
+### What is Hermes?
+Hermes is a business ecosystem connecting U.S. logistics, digital growth/SEO, practical business education, and technology/software development.
+
+### What is Hermes Connect?
+Hermes Connect is Hermes's connected-workspace product direction, represented by a public service page, a web application domain, and a set of modules/previews at different readiness levels. A preview should not be described as a universally deployed production integration.
+
+### Does Hermes provide logistics SEO?
+Hermes publishes a dedicated logistics SEO service page covering search architecture, technical SEO, query-to-page ownership, useful commercial content, internal links, conversion paths, and measurement boundaries for logistics businesses.
+
+### Does Hermes provide vehicle transport services?
+Hermes publishes vehicle-transport and dealer/auction preparation paths. Current availability, terms, rate, equipment fit, pickup, and delivery timing require live review and are not guaranteed by the existence of a public page.
+
+### Does Hermes guarantee rankings, leads, loads, rates, revenue, or employment?
+No. Public pages describe services, processes, resources, programs, tools, and product direction without guaranteeing those outcomes.
