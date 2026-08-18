@@ -1,320 +1,175 @@
-# Hermes Four-Direction SEO Market Architecture
+# Hermes SEO — Four-Direction Market Architecture
 
-Reviewed: 2026-08-18
-Status: CANONICAL PLANNING BASELINE — RESEARCH/MEASUREMENT GATES APPLY
+Date: 2026-08-18  
+Scope: Google/Bing SEO. GEO / AI visibility is a separate workstream.  
+Owner rule: market expansion follows business truth, demand, conversion and Design OS — never URL volume.
 
-## Purpose
+## Operating model
 
-Hermes SEO is not one global keyword program. Each public direction has a different commercial geography, audience, search intent, funnel, proof requirement, and visual conversion job.
+Hermes SEO is four separate market engines sharing one technical foundation:
 
-The four-direction operating model is:
+1. **Hermes Logistics — United States**
+2. **ProgressoPro / Marketing — high-value global cities**
+3. **Hermes Business Academy — Ukraine, Ukrainian diaspora, then approved Russian-speaking markets outside Russia**
+4. **Hermes IT / Hermes Connect — vertical acquisition for Repair Shops, Beauty, Fitness and Education/Courses**
 
-1. Hermes Logistics — United States commercial logistics demand.
-2. ProgressoPro / Marketing — high-value global cities and business markets.
-3. Hermes Business Academy — Ukraine first, then Ukrainian diaspora markets, then selected Russian-speaking non-Russia markets where competition and compliance allow.
-4. Hermes IT Development / Hermes Connect — vertical SaaS/workspace acquisition, beginning with repair shops, beauty salons, fitness trainers/coaches, and education/course operators.
+The theoretical combination space is a research universe. It is not an automatic publishing queue.
 
-This document defines market ownership and release logic. It does not authorize bulk page generation by itself.
+---
 
-## Global release rules
+## 1. Hermes Logistics — United States
 
-For every direction:
+### Market boundary
 
-- Search demand, buyer intent and service truth must exist before a location/vertical page is published.
-- No mass city × district × service × language permutations simply to increase URL count.
-- A location or niche page must have materially distinct intent, useful local/vertical content, a real conversion path, and an owner.
-- Unknown traffic, ranking, conversion, revenue, customer, staff, office, capacity or results remain unknown.
-- Existing canonical owners must not be cannibalized by near-duplicate variants.
-- Every money page must remain inside the Hermes Design OS and shared navigation system.
-- Every visible SEO/GEO change must be reviewed as a sales-funnel surface, not only as a ranking surface.
-- Any noticeable visual change requires safe preview, desktop + 390px QA, clickable preview URL, and explicit CEO approval before merge/deploy.
-- Technical/non-visual SEO/GEO work may continue without visual approval when it does not change visible composition.
+U.S. first and only unless a separately verified international logistics service is approved later.
 
-## Direction 1 — Hermes Logistics
+### Opportunity dimensions
 
-### Commercial geography
+`national → state → metro/city → audience → equipment/use-case → problem → commercial action`
 
-Primary market: United States.
+Audience and intent layers may include dealer, auction, shipper/customer, carrier/owner-operator and fleet contexts where service truth supports them.
 
-Do not dilute the logistics cluster with generic international logistics pages unless a separately verified service exists.
+### Publication rule
 
-### Core search layers
+A new state/city/equipment page requires:
 
-1. National commercial/service owners.
-2. State-level demand where distinct service intent is proven.
-3. City/metro demand where service truth and search demand exist.
-4. Equipment/use-case demand where the page solves a distinct buyer problem.
-5. Dealer/auction/shipper/carrier operational intent.
-6. Resources/calculators/checklists supporting commercial owners.
+- distinct search demand or authenticated query evidence;
+- actual U.S. service truth;
+- a canonical intent not already owned by another page;
+- useful local/use-case differentiation;
+- a real inquiry path;
+- cannibalization review;
+- internal-link ownership;
+- measurement plan.
 
-### Current priority commercial owners
+No `city × state × equipment × audience` bulk publishing.
 
-- `/logistics/car-hauling-dispatch/`
-- `/logistics/dealer-vehicle-transportation/`
-- `/logistics/auction-vehicle-pickup/`
-- `/logistics/appleton-wi-vehicle-transport/`
+---
 
-### Expansion rule
+## 2. ProgressoPro / Marketing — global commercial cities
 
-A new U.S. location/equipment page requires evidence of at least one of:
+### Market boundary
 
-- authenticated Search Console/Bing demand;
-- validated external keyword demand;
-- real sales/operator demand;
-- meaningful service differentiation;
-- a verified internal commercial reason to own that query.
+Prioritize commercially attractive cities worldwide rather than generic country expansion.
 
-No city/state/equipment combinatoric explosion before the current money-page measurement loop is established.
+### Opportunity dimensions
 
-### Funnel QA
+`city × service × niche × language × buyer value × competition × conversion fit`
 
-Every logistics SEO landing page must answer:
+Services may include SEO, Local SEO, website development/redesign and other current verified marketing services.
 
-- who this is for;
-- what logistics problem is being solved;
-- current scope/boundaries;
-- what happens next;
-- the primary CTA and fallback contact route;
-- why the page deserves to exist separately from another logistics owner.
+### Research ranking factors
 
-Visual QA must preserve the approved Hermes system while making the buyer path obvious on mobile.
-
-## Direction 2 — ProgressoPro / Marketing
-
-### Commercial geography
-
-Primary strategy: high-value/global business cities rather than a generic country-by-country footprint.
-
-The city list must be research-backed and periodically refreshed. Candidate tiers should be built from:
-
-- business density;
-- service-company density;
-- digital marketing/SEO spend potential;
-- English or supported-language sales fit;
-- local competition;
 - search demand;
-- likely contract value;
-- ability to sell remotely;
-- existing Hermes/ProgressoPro language capability.
+- business density/addressable buyers;
+- buyer contract value;
+- language support;
+- SERP competition/difficulty;
+- remote/local delivery fit;
+- existing canonical owner;
+- conversion path quality;
+- ability to add real market-specific value.
 
-No city is automatically approved simply because it is famous.
+Prestige alone is not a reason to create a city page.
 
-### Core search layers
+---
 
-1. Service owners: SEO, Local SEO, website development, redesign, search-to-inquiry systems.
-2. Industry owners: logistics, independent auto dealers, and later evidence-backed niches.
-3. Global-city owners only where city-level intent is commercially distinct.
-4. City × service combinations only when both the city and service have a reason to own a dedicated page.
-5. Case/resource/supporting content that routes into one canonical commercial owner.
+## 3. Hermes Business Academy — Ukraine and diaspora
 
-### Current priority commercial owners
+### Priority markets
 
-- `/services/seo/`
-- `/services/local-seo/`
-- `/services/seo-for-logistics-companies/`
-- `/services/seo-for-independent-auto-dealers/`
-- `/services/website-development/`
-- `/services/website-redesign/`
+1. Ukraine.
+2. Countries/cities with meaningful Ukrainian diaspora and support fit.
+3. Separately researched Russian-speaking markets outside Russia where demand, low competition, compliance and operational support fit.
 
-### Funnel QA
+### Exclusion rule
 
-A marketing landing page must establish within the first mobile screen sequence:
+Russia is excluded.
 
-- target business type / market;
-- business problem;
-- what Hermes/ProgressoPro actually does;
-- evidence/proof boundary;
-- consultation/audit/project CTA;
-- no ranking, traffic, lead or ROI guarantee.
+Any additional jurisdiction exclusion must come from an explicit owner/compliance list. SEO must not invent or infer a geopolitical exclusion list.
 
-City pages must feel like commercial landing pages, not templated geo text.
+### Opportunity dimensions
 
-## Direction 3 — Hermes Business Academy
+`country × city × diaspora/language signal × program intent × competition × schedule/support fit × enrollment path`
 
-### Geographic priority order
+Localization must add real audience value. Translation-only duplicate pages are not approved.
 
-Tier A — Ukraine.
+---
 
-Tier B — countries/cities with significant Ukrainian diaspora and reachable Ukrainian-speaking audiences.
+## 4. Hermes IT / Hermes Connect — vertical acquisition
 
-Tier C — selected countries with meaningful Russian-speaking audiences where:
+### Initial vertical order
 
-- the market is not Russia;
-- the jurisdiction is not excluded by company policy, sanctions/compliance or security constraints;
-- there is a genuine audience for the Academy offer;
-- competition is low enough to justify a dedicated acquisition surface;
-- language and support expectations can be met truthfully.
+1. Repair Shops / auto-service businesses.
+2. Beauty salons / beauty businesses.
+3. Fitness trainers, coaches and studios.
+4. Education / course businesses.
 
-Russia is explicitly excluded from the Academy acquisition plan.
+### Opportunity dimensions
 
-Other excluded jurisdictions must be maintained through an explicit compliance/owner-approved exclusion list rather than inferred ad hoc from political labels.
+`vertical × workflow/problem × Hermes Connect module × country × region/state × city × district × language`
 
-### Core search layers
+### Publication rule
 
-1. Program intent: U.S. logistics operations and future approved programs.
-2. Language intent: Ukrainian first; Russian-language acquisition only in approved non-Russia markets.
-3. Country/city diaspora intent where search demand and audience fit are real.
-4. Career/skills/problem intent: learning logistics operations, sales/negotiation, marketing, operations leadership where supported by an actual program.
-5. Application/selection funnels separated from educational information pages.
+A new vertical/market owner requires:
 
-### Current owner
+- real Hermes Connect workflow/product fit;
+- buyer search intent;
+- current readiness/status truth;
+- distinct page value;
+- conversion path;
+- evidence boundary;
+- internal-link ownership;
+- market demand;
+- no cannibalization.
 
-- `/academy/us-logistics-operations/`
+---
 
-### Expansion rule
+## Funnel + visual SEO contract
 
-Do not clone one course page across countries. A country/city/language page must add something materially useful such as:
+A commercial SEO page is not complete because metadata, schema and copy are correct.
 
-- local language framing;
-- time-zone or study-format clarity;
-- eligibility/application expectations;
-- audience-specific objections;
-- legal/payment/participation boundaries where relevant;
-- a real local acquisition reason.
+Evaluate the full path:
 
-### Funnel QA
+`query → SERP promise → landing comprehension → trust/evidence → CTA → intake/handoff → measurement`
 
-Every Academy search page must clearly separate:
+Required QA:
 
-- learning/program information;
-- application/selection;
-- practice/training structure;
-- employment or income non-guarantee;
-- current availability/status;
-- next action.
+- mobile-first comprehension;
+- one clear buyer path;
+- CTA timing matches intent/readiness;
+- trust/evidence is truthful and visible;
+- preview/demo/status language is accurate;
+- accessibility and performance remain acceptable;
+- page stays inside Hermes Design OS.
 
-Mobile composition must make the path understandable without reading a long article first.
+### CEO approval boundary
 
-## Direction 4 — Hermes IT Development / Hermes Connect
+Any noticeable visual change — layout, hero, card family, imagery, CTA composition, navigation, hierarchy, animation, typography or mobile composition — requires:
 
-### Product strategy
+1. working preview;
+2. desktop QA;
+3. 390px mobile QA;
+4. explicit CEO approval;
+5. merge/deploy only after approval.
 
-SEO should follow vertical product-market fit, not generic “software development” expansion.
+Technical SEO changes without a meaningful visual change may proceed through normal CI/release gates.
 
-Initial verticals:
+---
 
-1. repair shops / auto service businesses;
-2. beauty salons / beauty service operators;
-3. fitness trainers / coaches / studios;
-4. education businesses / courses / training operators.
+## Evidence / scale discipline
 
-Hermes Connect is the reusable product/workspace layer. Each vertical may use the same product core but requires distinct search intent, workflow vocabulary, objections, proof, demos and onboarding path.
+Before scalable expansion, require:
 
-### Geographic model
-
-IT/Hermes Connect can combine vertical + geography only where search/sales evidence justifies it.
-
-Potential dimensions include:
-
-- country;
-- state/region;
-- city/metro;
-- district/neighborhood only when actual local search behavior supports it;
-- vertical;
-- business type/subtype;
-- workflow/problem;
-- language;
-- product module/use case.
-
-These dimensions create a large theoretical combination space. They are a research universe, not an automatic publishing queue.
-
-### Vertical search examples
-
-Repair shops:
-- repair shop management/workspace;
-- booking/capacity/customer workflow;
-- local repair shop operating software needs;
-- mobile/web access and customer intake.
-
-Beauty:
-- salon workflow/client booking/operations;
-- staff/service scheduling;
-- client follow-up and local growth workflows.
-
-Fitness:
-- trainer/client management;
-- scheduling/program/client follow-up;
-- small studio/coach operational workspace.
-
-Education/courses:
-- student/application/cohort workflow;
-- content/training operations;
-- instructor/learner communication and progress workflows.
-
-Exact keyword/page ownership must be researched before publication.
-
-### Funnel QA
-
-Every Hermes Connect vertical page must answer:
-
-- who the product is for;
-- which workflow it replaces or improves;
-- which features are actually live versus preview/demo;
-- what the user can do now;
-- how onboarding/access works;
-- what data/privacy boundary applies;
-- why the vertical-specific page is materially different.
-
-Visual review is mandatory because SaaS conversion depends heavily on product comprehension, CTA placement, screenshots/demos, status language, mobile usability and trust.
-
-## Cross-direction visual + conversion review
-
-SEO QA is incomplete until the page also passes conversion QA.
-
-For every new or materially changed money page review:
-
-1. 390px mobile first impression.
-2. Desktop hierarchy.
-3. One obvious primary buyer/action path.
-4. CTA visible at the right decision moment, not repeated mechanically.
-5. No SEO text wall before the user understands the offer.
-6. No semantic content hidden/truncated for visual convenience.
-7. Proof/evidence only where verified.
-8. Page-specific objection handling.
-9. Trust, identity and contact boundaries consistent with Hermes entity rules.
-10. No competing visual system or duplicate navigation.
-11. Core Web Vitals/performance hygiene.
-12. Accessibility and touch targets.
-
-Noticeable visual changes remain CEO-approval gated.
-
-## Research workstreams to start now
-
-### Logistics
-
-- Finish current authenticated measurement gap before broad expansion.
-- Build U.S. state/city/equipment demand matrix from current search/sales evidence.
-- Protect current canonical owners and identify true gaps only.
-
-### Marketing
-
-- Build ranked global-city opportunity matrix.
-- Cross city demand with service demand and contract-value potential.
-- Select small Tier-1 launch set before any broad geo rollout.
-
-### Academy
-
-- Build Ukrainian diaspora country/city matrix using current external population/language/search evidence.
-- Build separate approved Russian-speaking non-Russia opportunity matrix.
-- Maintain explicit excluded-jurisdiction list.
-- Map program/language/country intent without cloning the same course page.
-
-### IT / Hermes Connect
-
-- Build vertical opportunity matrix for repair shops, beauty, fitness and education.
-- Within each vertical map workflow/problem × geography × language opportunities.
-- Start with verticals that already have real product functionality and conversion paths.
-- Do not publish vertical claims for modules that exist only as concepts/previews.
-
-## Execution order
-
-1. Preserve current technical SEO/GEO baseline and measurement contracts.
-2. Audit current page coverage by the four directions.
-3. Build evidence-backed opportunity matrices for each direction.
-4. Assign one canonical owner per approved intent cluster.
-5. Prioritize by commercial value × demand × competition × proof × implementation readiness.
-6. Build/modify only the first approved clusters.
-7. For visible changes: safe preview → desktop + 390px QA → CEO visual approval.
-8. Publish only after SEO/GEO/design/conversion contracts pass.
-9. Measure indexation, query performance, CTA behavior, delivered inquiries and qualified outcomes separately.
-10. Expand only from evidence, not from theoretical combinatorics.
+- market/query evidence;
+- service/product truth;
+- canonical ownership;
+- useful differentiation;
+- conversion path;
+- contextual internal links;
+- measurement plan;
+- visual/funnel QA when applicable.
+
+Unknown values stay unknown. Sitemap or IndexNow submission is not indexation proof. Repository tests are not ranking, traffic, lead or revenue proof.
+
+The dated current-state audit lives in `docs/SEO_FOUR_DIRECTION_COVERAGE_2026-08-18.md`.
