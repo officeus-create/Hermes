@@ -51,7 +51,7 @@ const pages = [
   },
 ];
 
-const homepagePriorityRoutes = [
+const logisticsPriorityRoutes = [
   "/logistics/appleton-wi-vehicle-transport/",
   "/logistics/resources/auction-vehicle-pickup-checklist/",
   "/logistics/resources/car-hauler-capacity-checklist/",
@@ -125,8 +125,9 @@ for (const page of pages) {
   assert.ok(logisticsHub.includes(`href="${page.route}"`), `${page.route} is not linked from the logistics hub`);
 }
 
-for (const route of homepagePriorityRoutes) {
-  assert.ok(homepage.includes(`href="${route}"`), `${route} is not linked from the homepage discovery block`);
+assert.ok(homepage.includes('href="/paths/logistics/"'), "Focused homepage must link directly into the Logistics hub");
+for (const route of logisticsPriorityRoutes) {
+  assert.ok(logisticsHub.includes(`href="${route}"`), `${route} is not linked from the Logistics discovery layer`);
   assert.ok(sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} is missing from declared sitemap union`);
 }
 
@@ -159,4 +160,4 @@ assert.deepEqual(indexNowDryRun.urlList, [
   "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
 ]);
 
-console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${homepagePriorityRoutes.length} homepage discovery links, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);
+console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${logisticsPriorityRoutes.length} Logistics discovery links behind the focused homepage, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);

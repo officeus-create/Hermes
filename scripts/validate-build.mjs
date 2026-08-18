@@ -160,42 +160,24 @@ function validateStructuredData(pageHtml, pageName) {
   for (const match of matches) JSON.parse(match[1]);
 }
 
+// The homepage is deliberately an entrance, not a catalogue. Rich service/product/contact
+// requirements stay on their own routes above; Home only has to explain the four choices.
 const required = [
-  "Four directions. One way forward.",
-  "Four paths. One ecosystem.",
+  "Four directions.",
+  "Choose yours.",
+  "One Hermes ecosystem.",
   "Move freight",
   "Grow demand",
   "Build capability",
   "Build systems",
   "Hermes Logistics",
-  "ProgressoPro",
-  "Hermes Business Academy",
-  "IT Development",
-  "Car Hauling",
-  "COO / Operational Director Program",
-  "https://www.instagram.com/hermes.logistics/",
-  "https://www.threads.com/@hermes.logistics",
+  "Hermes Marketing",
+  "Hermes Academy",
   "Hermes IT Development",
-  "Human-led, AI-assisted",
-  "Why this matters",
-  "Trust architecture",
-  "Products built by Hermes IT Development",
-  "CRM & Operations Control",
-  "Hermes Connect",
-  "Working prototype",
-  "Product discovery",
-  "No account, booking, calendar, payment, or AI action is connected",
-  "Hermes Load Board",
-  "Box Truck 26 ft",
-  "No load, truck, offer, dispatch, external-board sync, or scheduled update is live",
 ];
 
 for (const text of required) {
-  if (!html.includes(text)) throw new Error(`Missing required content: ${text}`);
-}
-
-if (!html.includes('data-preview-status="Your information was not sent or stored."')) {
-  throw new Error("Preview honesty message is missing from contact form");
+  if (!html.includes(text)) throw new Error(`Missing required homepage direction content: ${text}`);
 }
 
 const socialImageMatch = html.match(/property="og:image" content="(https:\/\/hermeslogisticsus\.com\/_astro\/hermes-ecosystem-hero\.[^"]+\.jpg)"/);
@@ -272,17 +254,6 @@ if (auditReport.averageScore !== 99 || auditReport.needsReview !== 2) {
 }
 if (auditReport.externalCrawlPerformed !== false || auditReport.websiteWritePerformed !== false) {
   throw new Error("Published Website Audit report is missing its read-only boundaries.");
-}
-
-const homepageTechnologySignals = [
-  "Digital systems we build",
-  "AI Assistants",
-  "CRM &amp; Automation",
-  "Logistics Technology",
-  "Hermes Connect",
-];
-for (const text of homepageTechnologySignals) {
-  if (!html.includes(text)) throw new Error(`Homepage technology signal missing: ${text}`);
 }
 
 if (!technologyHtml.includes("Budget approach · optional")) throw new Error("IT brief still appears to require an initial budget.");
@@ -399,13 +370,9 @@ for (const term of publicForbiddenInternalTerms) {
 }
 
 if (/<form[^>]+action=/i.test(html)) throw new Error("Prototype form must not have an action endpoint");
-if (!html.includes('data-contact-mode="preview"')) throw new Error("Safe preview contact mode is not active by default");
-if (!html.includes("data-contact-handoff")) throw new Error("Preview contact handoff panel is missing");
-if (!html.includes("data-copy-request")) throw new Error("Copy request control is missing");
-if (!html.includes('name="consent"')) throw new Error("Contact consent field is missing");
 if (!html.includes('id="main-content"')) throw new Error("Skip-link target is missing");
 validateStructuredData(html, "homepage");
-if (!html.includes("Hermes | Logistics, Marketing, Academy &amp; IT")) throw new Error("Hermes ecosystem homepage title is missing");
+if (!html.includes("Hermes | U.S. Logistics, Marketing, Academy &amp; AI Systems")) throw new Error("Hermes recovery homepage title is missing");
 const cssFiles = (await readdir(join(dist, "_astro"))).filter((file) => file.endsWith(".css"));
 const css = (await Promise.all(cssFiles.map((file) => readFile(join(dist, "_astro", file), "utf8")))).join("\n");
 if (!css.includes("prefers-reduced-motion")) throw new Error("Reduced-motion stylesheet was not emitted");
@@ -471,14 +438,11 @@ for (const [pageName, pageHtml] of generatedPages) {
     const target = new URL(href, pageUrl);
     if (target.hostname !== "hermeslogisticsus.com") continue;
 
-    // Check if it's a direct file that exists in the dist directory (e.g., .apk, .pdf)
     const distFilePath = join(dist, target.pathname);
     let fileExists = false;
     try {
       const stats = await stat(distFilePath);
-      if (stats.isFile()) {
-        fileExists = true;
-      }
+      if (stats.isFile()) fileExists = true;
     } catch {}
 
     if (fileExists) continue;
@@ -495,4 +459,4 @@ if (brokenInternalLinks.length) {
   throw new Error(`Broken internal links:\n${brokenInternalLinks.slice(0, 30).join("\n")}`);
 }
 
-console.log(`Validated static website: ${allHtmlFiles.length} generated pages, ${required.length} homepage checks, ${assets.length} image assets, zero broken internal links, no external form action.`);
+console.log(`Validated static website: ${allHtmlFiles.length} generated pages, ${required.length} focused homepage checks, ${assets.length} image assets, zero broken internal links, no external form action.`);

@@ -13,7 +13,10 @@ const ordinaryE2eStorageState = {
   ],
 };
 
-const globalExcludedTests = /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery/i;
+// These legacy site.spec scenarios described the retired multi-layer homepage (intro, hero,
+// PathPillars, product showroom, and homepage contact form). Recovery-specific tests now cover
+// the four-room entrance, while direction-specific contact tests preserve the business workflows.
+const globalExcludedTests = /academy screen flow selects track and advances layers|Load Board prepares a carrier vehicle for dispatcher review with zero external delivery|direction card opens the matching page and preselects the form|business pillars reveal one direction at a time and support keyboard navigation|desktop business portals expand on hover and keep click navigation|premium opening explains four directions, supports choice, and runs once per session|premium opening honors the visitor's reduced-motion preference|homepage hero combines office and handwritten typography with a restrained living i-dot|premium opening plays a direction cue after consented interaction and keeps sound optional|homepage proves the website product and routes to IT Development|homepage presents four Hermes products with honest maturity labels|preview contact workflow validates and sends no request|copy request places sanitized plain text on the clipboard|clipboard failure shows recoverable manual-copy guidance|changing direction clears a stale preview handoff/i;
 
 export default defineConfig({
   testDir: "./tests",

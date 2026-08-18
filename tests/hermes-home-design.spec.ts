@@ -1,77 +1,68 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    sessionStorage.setItem("hermes-intro-seen", "true");
-  });
-});
+const rooms = [
+  ["Open Hermes Logistics", "/paths/logistics/"],
+  ["Open Hermes Marketing", "/paths/marketing/"],
+  ["Open Hermes Academy", "/paths/academy/"],
+  ["Open Hermes IT Development", "/paths/technology/"],
+] as const;
 
-test("Hermes homepage uses the Pearl public shell and Obsidian primary action", async ({ page }) => {
+test("Hermes homepage is a focused four-direction entrance", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
-  await expect(page.locator(".home-hero-stage")).toBeVisible();
-  await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
-  await expect(page.locator(".home-hero-system-card")).toContainText("One Hermes ecosystem");
+  await expect(page.getByRole("heading", { name: /Four directions\. Choose yours\./ })).toBeVisible();
+  await expect(page.locator(".home-rooms-grid .home-room")).toHaveCount(4);
+  await expect(page.locator(".home-role-router")).toHaveCount(0);
+  await expect(page.locator(".product-showcase")).toHaveCount(0);
+  await expect(page.locator(".home-technology-preview")).toHaveCount(0);
+
+  for (const [label, href] of rooms) {
+    await expect(page.getByRole("link", { name: label })).toHaveAttribute("href", href);
+  }
 
   const visual = await page.evaluate(() => {
-    const home = document.querySelector<HTMLElement>(".hermes-home-page");
-    const hero = document.querySelector<HTMLElement>(".hermes-home-page .hero");
-    const stage = document.querySelector<HTMLElement>(".home-hero-stage");
-    const primary = document.querySelector<HTMLElement>(".hermes-home-page .hero .button-primary");
-    const roleCard = document.querySelector<HTMLElement>(".hermes-home-page .home-role-card");
-    const pillars = document.querySelector<HTMLElement>(".hermes-home-page .path-pillars");
-    if (!home || !hero || !stage || !primary || !roleCard || !pillars) return null;
+    const roomGrid = document.querySelector<HTMLElement>(".home-rooms-grid");
+    const logistics = document.querySelector<HTMLElement>(".home-room-logistics");
+    const marketing = document.querySelector<HTMLElement>(".home-room-marketing");
+    const academy = document.querySelector<HTMLElement>(".home-room-academy");
+    const technology = document.querySelector<HTMLElement>(".home-room-technology");
+    if (!roomGrid || !logistics || !marketing || !academy || !technology) return null;
 
-    const heroStyle = getComputedStyle(hero);
-    const primaryStyle = getComputedStyle(primary);
-    const roleStyle = getComputedStyle(roleCard);
-    const pillarStyle = getComputedStyle(pillars);
     return {
-      heroBackground: heroStyle.backgroundColor,
-      primaryBackground: primaryStyle.backgroundColor,
-      primaryColor: primaryStyle.color,
-      primaryRadius: primaryStyle.borderRadius,
-      roleRadius: roleStyle.borderRadius,
-      pillarsRadius: pillarStyle.borderRadius,
-      stageHeight: stage.getBoundingClientRect().height,
+      radius: getComputedStyle(roomGrid).borderRadius,
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      accents: [logistics, marketing, academy, technology].map((room) => room.style.getPropertyValue("--room-accent")),
     };
   });
 
-  const viewportWidth = page.viewportSize()?.width ?? 1440;
-  const isMobile = viewportWidth <= 720;
-
   expect(visual).not.toBeNull();
-  expect(visual!.heroBackground).toBe("rgb(247, 246, 243)");
-  expect(visual!.primaryBackground).toBe("rgb(11, 13, 18)");
-  expect(visual!.primaryColor).toBe("rgb(255, 255, 255)");
-  expect(visual!.primaryRadius).toBe("999px");
-  expect(visual!.roleRadius).toBe("22px");
-  expect(visual!.pillarsRadius).toBe(isMobile ? "22px" : "30px");
-  expect(visual!.stageHeight).toBeGreaterThanOrEqual(isMobile ? 400 : 500);
+  expect(visual!.overflow).toBe(false);
+  const expectedRadius = (page.viewportSize()?.width ?? 1280) <= 760 ? "24px" : "32px";
+  expect(visual!.radius).toBe(expectedRadius);
+  expect(new Set(visual!.accents).size).toBe(4);
 });
 
-test("Hermes Pearl homepage stays usable without horizontal overflow on mobile", async ({ page }) => {
+test("four-direction homepage keeps its character and usability on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Four directions. One way forward." })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Explore your path" })).toBeVisible();
-  await expect(page.locator(".home-intelligence-knot")).toHaveCount(1);
+  await expect(page.locator(".home-room")).toHaveCount(4);
+  await expect(page.getByRole("link", { name: "Open Hermes Logistics" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open Hermes IT Development" })).toBeVisible();
 
   const geometry = await page.evaluate(() => {
-    const stage = document.querySelector<HTMLElement>(".home-hero-stage");
-    const media = document.querySelector<HTMLElement>(".hero-media");
-    if (!stage || !media) return null;
+    const grid = document.querySelector<HTMLElement>(".home-rooms-grid");
+    const rooms = [...document.querySelectorAll<HTMLElement>(".home-room")];
+    if (!grid || rooms.length !== 4) return null;
     return {
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-      stageHeight: stage.getBoundingClientRect().height,
-      mediaRadius: getComputedStyle(media).borderRadius,
+      radius: getComputedStyle(grid).borderRadius,
+      roomHeights: rooms.map((room) => room.getBoundingClientRect().height),
     };
   });
 
   expect(geometry).not.toBeNull();
   expect(geometry!.overflow).toBe(false);
-  expect(geometry!.stageHeight).toBeGreaterThanOrEqual(400);
-  expect(geometry!.mediaRadius).toBe("22px");
+  expect(geometry!.radius).toBe("24px");
+  expect(Math.min(...geometry!.roomHeights)).toBeGreaterThanOrEqual(170);
 });

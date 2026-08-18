@@ -30,10 +30,28 @@ test("owner configures multilingual shop capabilities without mobile overflow", 
   await expect(panel.getByRole("heading", { name: "Транспорт и возможности СТО" })).toBeVisible();
   await expect(panel.getByText("Коммерческие грузовики")).toBeVisible();
 
-  await panel.locator('[data-capability-vehicle][value="commercial_truck"]').check();
-  await panel.locator('[data-capability-flag="fleet_service"]').check();
-  await panel.locator('[data-capability-flag="mobile_roadside"]').check();
-  await panel.locator('[data-capability-flag="emergency_24_7"]').check();
+  const passenger = panel.locator('[data-capability-vehicle][value="passenger_light"]');
+  const commercialTruck = panel.locator('[data-capability-vehicle][value="commercial_truck"]');
+  const fleet = panel.locator('[data-capability-flag="fleet_service"]');
+  const roadside = panel.locator('[data-capability-flag="mobile_roadside"]');
+  const emergency = panel.locator('[data-capability-flag="emergency_24_7"]');
+
+  // Wait for the initial GET response to hydrate the form before changing it. Without this
+  // guard a slow full-suite run can apply the initial payload after the test has already clicked.
+  await expect(passenger).toBeChecked();
+  await expect(commercialTruck).not.toBeChecked();
+  await expect(fleet).not.toBeChecked();
+  await expect(roadside).not.toBeChecked();
+  await expect(emergency).not.toBeChecked();
+
+  await commercialTruck.check();
+  await fleet.check();
+  await roadside.check();
+  await emergency.check();
+  await expect(commercialTruck).toBeChecked();
+  await expect(fleet).toBeChecked();
+  await expect(roadside).toBeChecked();
+  await expect(emergency).toBeChecked();
   await panel.getByRole("button", { name: "Сохранить возможности" }).click();
 
   await expect.poll(() => savedBody).not.toBeNull();

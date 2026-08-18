@@ -58,12 +58,13 @@ test("the IT Development section routes visitors into the current Hermes Connect
   await expect(connectPrototype.locator('a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
 });
 
-test("the homepage presents Hermes Connect as a first-class Web App product", async ({ page }) => {
+test("the focused homepage routes product discovery through IT Development instead of a product showroom", async ({ page }) => {
   await page.goto("/");
 
-  const card = page.locator(".home-connect-product-card");
-  await expect(card).toBeVisible();
-  await expect(card).toContainText("Hermes Connect");
-  await expect(card).toContainText("category-aware Web App");
-  await expect(card.locator('a[href="/services/hermes-connect/"]')).toContainText("Explore Hermes Connect");
+  await expect(page.locator(".home-connect-product-card")).toHaveCount(0);
+  const technologyRoom = page.getByRole("link", { name: "Open Hermes IT Development" });
+  await expect(technologyRoom).toBeVisible();
+  await expect(technologyRoom).toHaveAttribute("href", "/paths/technology/");
+  await expect(technologyRoom).toContainText("Build systems");
+  await expect(technologyRoom).toContainText("Hermes IT Development");
 });
