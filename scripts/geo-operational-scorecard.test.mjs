@@ -28,7 +28,7 @@ const bundle = {
       factual_error: false,
       competitors: ["Example Carrier Support"],
       corrective_action: "",
-      evidence_reference: "review-batch-2026-08-17",
+      evidence_reference: "ops-review-alpha",
     },
   ],
   search_checkpoints: [
