@@ -11,11 +11,7 @@ assert.equal(new Set(aiVisibilityPrompts.map((item) => item.id)).size, 48, "Prom
 assert.equal(new Set(aiVisibilityPrompts.map((item) => item.prompt)).size, 48, "Prompt text must be distinct");
 
 for (const direction of ["logistics", "marketing", "academy", "technology"]) {
-  assert.equal(
-    aiVisibilityPrompts.filter((item) => item.direction === direction).length,
-    12,
-    `${direction} must own 12 prompts`,
-  );
+  assert.equal(aiVisibilityPrompts.filter((item) => item.direction === direction).length, 12, `${direction} must own 12 prompts`);
 }
 
 assert.ok(aiVisibilityPrompts.some((item) => item.language === "ru"), "Russian prompts are required");
@@ -26,22 +22,8 @@ assert.ok(aiVisibilityPrompts.every((item) => item.prohibitedClaims.length > 0),
 
 assert.deepEqual(aiVisibilityObservations, [], "The real baseline must start empty");
 assert.ok(syntheticAiVisibilityObservations.every((item) => item.synthetic), "QA observations must be marked synthetic");
-
 const emptyMetrics = calculateAiVisibilityMetrics(aiVisibilityObservations);
-assert.deepEqual(emptyMetrics, {
-  total: 0,
-  mentioned: 0,
-  cited: 0,
-  recommended: 0,
-  factualErrors: 0,
-  mentionRate: 0,
-  citationRate: 0,
-  recommendationRate: 0,
-  entityAccuracyRate: 0,
-  descriptionAccuracyRate: 0,
-  factualErrorRate: 0,
-});
-
+assert.deepEqual(emptyMetrics, { total: 0, mentioned: 0, cited: 0, recommended: 0, factualErrors: 0, mentionRate: 0, citationRate: 0, recommendationRate: 0, entityAccuracyRate: 0, descriptionAccuracyRate: 0, factualErrorRate: 0 });
 const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
 assert.equal(syntheticMetrics.total, 4);
 assert.equal(syntheticMetrics.mentionRate, 75);
@@ -50,25 +32,11 @@ assert.equal(syntheticMetrics.recommendationRate, 50);
 assert.equal(syntheticMetrics.entityAccuracyRate, 66.7);
 assert.equal(syntheticMetrics.descriptionAccuracyRate, 66.7);
 assert.equal(syntheticMetrics.factualErrorRate, 25);
-
 const observationKeys = Object.keys(syntheticAiVisibilityObservations[0]).join(" ").toLowerCase();
-for (const prohibitedField of ["password", "token", "cookie", "accountid", "conversation", "email", "phone"]) {
-  assert.ok(!observationKeys.includes(prohibitedField), `Observation contract must not include ${prohibitedField}`);
-}
-
-assert.ok(
-  syntheticAiVisibilityObservations.some((item) => item.brandMentioned && !item.linkedCitation),
-  "Mention and citation must remain separate signals",
-);
-assert.ok(
-  syntheticAiVisibilityObservations.some((item) => item.linkedCitation && item.recommendation === "source_only"),
-  "Citation and recommendation must remain separate signals",
-);
-assert.ok(
-  syntheticAiVisibilityObservations.some((item) => item.factualError),
-  "Factual error handling must be represented",
-);
-
+for (const prohibitedField of ["password", "token", "cookie", "accountid", "conversation", "email", "phone"]) assert.ok(!observationKeys.includes(prohibitedField), `Observation contract must not include ${prohibitedField}`);
+assert.ok(syntheticAiVisibilityObservations.some((item) => item.brandMentioned && !item.linkedCitation), "Mention and citation must remain separate signals");
+assert.ok(syntheticAiVisibilityObservations.some((item) => item.linkedCitation && item.recommendation === "source_only"), "Citation and recommendation must remain separate signals");
+assert.ok(syntheticAiVisibilityObservations.some((item) => item.factualError), "Factual error handling must be represented");
 console.log("AI visibility scorecard contract passed");
 
 await import("./geo-measurement-layer.test.mjs");
@@ -84,6 +52,7 @@ await import("./geo-search-diagnostics.test.mjs");
 await import("./geo-search-diagnostics-import.test.mjs");
 await import("./geo-search-platform-evidence.test.mjs");
 await import("./geo-index-evidence.test.mjs");
+await import("./geo-analytics-receipt-evidence.test.mjs");
 await import("./geo-ai-referral-measurement.test.mjs");
 await import("./geo-answer-contract.test.mjs");
 await import("./geo-evidence-graph.test.mjs");
