@@ -1,0 +1,94 @@
+{
+  "schema_version": "geo_operational_scorecard_v2",
+  "as_of": "2026-08-18T12:00:00Z",
+  "ai_visibility_evidence_class": "unverified",
+  "ai_observations": [],
+  "search_checkpoints": [
+    {
+      "source": "google",
+      "page_path": "/logistics/car-hauling-dispatch/",
+      "discovery_type": "non_branded",
+      "start_date": "2026-08-12",
+      "end_date": "2026-08-18",
+      "impressions": 120,
+      "clicks": 6,
+      "evidence_class": "unverified"
+    },
+    {
+      "source": "bing",
+      "page_path": "/logistics/car-hauling-dispatch/",
+      "discovery_type": "branded",
+      "start_date": "2026-07-22",
+      "end_date": "2026-08-18",
+      "impressions": 80,
+      "clicks": 8,
+      "evidence_class": "unverified"
+    }
+  ],
+  "analytics_events": [
+    {
+      "family": "carrier",
+      "window_days": 7,
+      "journey_path": "/logistics/car-hauling-dispatch/",
+      "event_page_path": "/logistics/car-hauling-dispatch/",
+      "event_name": "commercial_cta_click",
+      "count": 10,
+      "evidence_class": "unverified",
+      "observed_at": "2026-08-18T11:00:00Z"
+    },
+    {
+      "family": "carrier",
+      "window_days": 7,
+      "journey_path": "/logistics/car-hauling-dispatch/",
+      "event_page_path": "/logistics/start-car-hauling-dispatch/",
+      "event_name": "carrier_intake_start",
+      "count": 8,
+      "evidence_class": "unverified",
+      "observed_at": "2026-08-18T11:00:00Z"
+    },
+    {
+      "family": "carrier",
+      "window_days": 7,
+      "journey_path": "/logistics/car-hauling-dispatch/",
+      "event_page_path": "/logistics/start-car-hauling-dispatch/",
+      "event_name": "carrier_intake_preview_ready",
+      "count": 7,
+      "evidence_class": "unverified",
+      "observed_at": "2026-08-18T11:00:00Z"
+    },
+    {
+      "family": "carrier",
+      "window_days": 7,
+      "journey_path": "/logistics/car-hauling-dispatch/",
+      "event_page_path": "/logistics/start-car-hauling-dispatch/",
+      "event_name": "carrier_handoff_ready",
+      "count": 6,
+      "evidence_class": "unverified",
+      "observed_at": "2026-08-18T11:00:00Z"
+    },
+    {
+      "family": "carrier",
+      "window_days": 7,
+      "journey_path": "/logistics/car-hauling-dispatch/",
+      "event_page_path": "/logistics/start-car-hauling-dispatch/",
+      "event_name": "carrier_delivery_confirmed",
+      "count": 5,
+      "evidence_class": "unverified",
+      "observed_at": "2026-08-18T11:00:00Z"
+    }
+  ],
+  "outcomes": [
+    {
+      "window_days": 7,
+      "page_path": "/logistics/car-hauling-dispatch/",
+      "reviewed_inquiries": 5,
+      "qualified_leads": 4,
+      "opportunities": 3,
+      "wins": 1,
+      "losses": 1,
+      "revenue_reconciled_wins": 1,
+      "evidence_class": "unverified",
+      "observed_at": "2026-08-18T11:00:00Z"
+    }
+  ]
+}
