@@ -47,10 +47,18 @@ for (const relativePath of files) {
     for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
       const tag = match[0];
       const src = tag.match(/\bsrc=["']([^"']+)["']/i)?.[1] ?? "unknown";
-      if (!/\bwidth=["'][^"']+["']/i.test(tag) || !/\bheight=["'][^"']+["']/i.test(tag)) {
+      const width = tag.match(/\bwidth=["'](\d+)["']/i)?.[1];
+      const height = tag.match(/\bheight=["'](\d+)["']/i)?.[1];
+      const hasExplicitDimensions = Boolean(width && height);
+      const isSmallDecorativeIcon = hasExplicitDimensions
+        && Number(width) <= 64
+        && Number(height) <= 64
+        && /\baria-hidden=["']true["']/i.test(tag);
+
+      if (!hasExplicitDimensions) {
         warnings.push(`${relativePath}: image ${src} is missing explicit width and height`);
       }
-      if (!/\bloading=["'](?:lazy|eager)["']/i.test(tag)) {
+      if (!/\bloading=["'](?:lazy|eager)["']/i.test(tag) && !isSmallDecorativeIcon) {
         warnings.push(`${relativePath}: image ${src} has no explicit loading policy`);
       }
     }
@@ -67,11 +75,12 @@ for (const relativePath of files) {
 
 if (totalBytes > budgets.total) errors.push(`Generated site is ${totalBytes} bytes; total budget is ${budgets.total}`);
 
-for (const warning of [...new Set(warnings)]) console.warn(`Performance warning — ${warning}`);
+const uniqueWarnings = [...new Set(warnings)];
+for (const warning of uniqueWarnings) console.warn(`Performance warning — ${warning}`);
 if (errors.length) {
   throw new Error(`Performance budget failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
 console.log(
-  `Performance budget passed: ${files.length} files, ${htmlCount} HTML pages, ${imageCount} images, ${totalBytes} total bytes, ${warnings.length} review warning(s).`,
+  `Performance budget passed: ${files.length} files, ${htmlCount} HTML pages, ${imageCount} images, ${totalBytes} total bytes, ${uniqueWarnings.length} unique review warning(s).`,
 );
