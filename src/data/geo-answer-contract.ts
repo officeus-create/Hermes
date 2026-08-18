@@ -54,6 +54,8 @@ export interface GeoEntity {
   whyItMatters: string;
   truthLabel: GeoTruthLabel;
   evidenceIds: string[];
+  /** Existing governed schema identity when one is already approved. */
+  schemaId?: string;
   url?: string;
   sameAs?: string[];
 }
@@ -211,6 +213,7 @@ export const validateGeoAnswerSurface = (surface: GeoAnswerSurface) => {
     assertNonEmpty(`entity.${entity.id}.description`, entity.description);
     assertNonEmpty(`entity.${entity.id}.relationToHermes`, entity.relationToHermes);
     assertNonEmpty(`entity.${entity.id}.whyItMatters`, entity.whyItMatters);
+    assertHttpsIfPresent(`entity.${entity.id}.schemaId`, entity.schemaId);
     assertHttpsIfPresent(`entity.${entity.id}.url`, entity.url);
     for (const sameAs of entity.sameAs ?? []) assertHttpsIfPresent(`entity.${entity.id}.sameAs`, sameAs);
     validateEvidenceLinks(`entity.${entity.id}`, entity.evidenceIds, evidenceById, entity.truthLabel);
@@ -289,7 +292,7 @@ export const buildGeoAnswerSchema = (
 
   const about = surface.entities.map((entity) => ({
     "@type": schemaTypeByEntity[entity.type],
-    "@id": `${pageUrl}#entity-${entity.id}`,
+    "@id": entity.schemaId ?? `${pageUrl}#entity-${entity.id}`,
     name: entity.name,
     description: entity.description,
     ...(entity.url ? { url: entity.url } : {}),
