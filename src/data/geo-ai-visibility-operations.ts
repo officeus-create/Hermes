@@ -298,7 +298,7 @@ export const buildGeoAiVisibilityOperations = ({
   const evidenceReferenceHealth: GeoAiEvidenceReferenceHealth[] = real
     .map((observation) => {
       const prompt = aiVisibilityPrompts.find((item) => item.id === observation.promptId)!;
-      const cadenceDays = prompt.cadence === "weekly" ? 7 : 28;
+      const cadenceDays: 7 | 28 = prompt.cadence === "weekly" ? 7 : 28;
       const observedAtMs = Date.parse(observation.observedAt);
       const ageDays = Math.floor((asOfMs - observedAtMs) / DAY_MS);
       return {
