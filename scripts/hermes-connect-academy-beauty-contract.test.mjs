@@ -15,7 +15,12 @@ test('Academy V1 keeps training evidence and human review boundaries explicit', 
   assert.match(html, /Assessment/);
   assert.match(html, /Supervised Practice/);
   assert.match(html, /Application/);
+  assert.match(html, /DAILY CONTROL LOOP/);
+  assert.match(html, /REVIEWER QUEUE/);
+  assert.match(html, /Cohort boundary:/);
   assert.match(html, /Human review remains the gate/i);
+  assert.match(html, /access to the next risk level is granted by an authorized reviewer/i);
+  assert.match(html, /private candidate data, reviewer notes and employment decisions stay permission-controlled/i);
   assert.match(html, /no automated hiring, firing, job guarantee/i);
   assert.match(html, /sales-roleplay\.html/);
   assert.match(html, /workspace\.html/);
@@ -25,6 +30,7 @@ test('Academy V1 represents established and preparing tracks honestly', async ()
   const html = await load('academy.html');
   assert.match(html, /U\.S\. Logistics Operations/);
   assert.match(html, /Marketing & SMM/);
+  assert.match(html, /Beauty Salon Growth & Front Desk/);
   assert.match(html, /Web Design/);
   assert.match(html, /IT & Automation/);
   assert.match(html, /SEO & Website Promotion/);
