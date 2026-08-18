@@ -1,0 +1,252 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import "../../../../../../styles/hermes-academy-app.css";
+import "../../../../../../styles/hermes-academy-review.css";
+---
+
+<BaseLayout
+  title="Academy Progression Review | Hermes Connect"
+  description="Private human-controlled Academy progression review workspace."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/reviewer/">Reviewer queue</a><span>/</span><span aria-current="page">Progression review</span>
+      </nav>
+
+      <div class="academy-app-alert" data-reviewer-progression-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Academy A4 · Authorized reviewer</p>
+          <h1>Human progression review.</h1>
+          <p>A2 lesson self-tracking and A3 reviewed evidence are summarized here as signals. Only a manually allowlisted reviewer can record the program-level human decision.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/">Evidence reviewer queue</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">No automatic completion</span>
+          <h2 style="margin-top:14px">Completion stays separate from employment and access.</h2>
+          <p>A4 does not change enrollment, lesson progress, A3 evidence state, hiring/candidate state, certification, payments, commercial rights, or live operational access.</p>
+        </aside>
+      </section>
+
+      <section class="academy-review-locked academy-app-hidden" data-progression-locked>
+        <h2>Reviewer access is not authorized.</h2>
+        <p>A valid Hermes identity is not enough. Progression review reuses the separate manually provisioned `academy_reviewer_access` boundary.</p>
+        <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Return to learner dashboard</a>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-reviewer-progression-content>
+        <div class="academy-review-toolbar">
+          <div>
+            <p class="academy-app-eyebrow">Progression queue</p>
+            <h2><span data-progression-reviewer-name>Authorized reviewer</span></h2>
+            <p class="academy-app-kicker" data-progression-reviewer-email></p>
+          </div>
+          <label>
+            <span class="academy-app-kicker">Program filter</span>
+            <select class="academy-review-filter" data-progression-program>
+              <option value="">All authorized programs</option>
+              <option value="us-logistics-operations">U.S. Logistics Operations</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </label>
+        </div>
+        <div class="academy-review-empty" data-progression-empty>No enrolled learners in this authorized progression queue.</div>
+        <div class="academy-app-list" data-progression-list></div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type EvidenceCounts = { submitted: number; changes_requested: number; accepted: number };
+  type ProgressionReview = { decision: string; feedback_text: string; created_at: string };
+  type Progression = {
+    total_lessons: number;
+    completed_lessons: number;
+    evidence: EvidenceCounts;
+    progression_state: string;
+    latest_review: ProgressionReview | null;
+  };
+  type LearnerItem = {
+    id: string;
+    name: string;
+    email: string;
+    program_slug: string;
+    progression: Progression;
+  };
+
+  const alert = document.querySelector<HTMLElement>("[data-reviewer-progression-alert]");
+  const locked = document.querySelector<HTMLElement>("[data-progression-locked]");
+  const content = document.querySelector<HTMLElement>("[data-reviewer-progression-content]");
+  const list = document.querySelector<HTMLElement>("[data-progression-list]");
+  const empty = document.querySelector<HTMLElement>("[data-progression-empty]");
+  const filter = document.querySelector<HTMLSelectElement>("[data-progression-program]");
+  const reviewerName = document.querySelector<HTMLElement>("[data-progression-reviewer-name]");
+  const reviewerEmail = document.querySelector<HTMLElement>("[data-progression-reviewer-email]");
+  const programNames: Record<string, string> = {
+    "us-logistics-operations": "U.S. Logistics Operations",
+    marketing: "Marketing",
+  };
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+  const titleCase = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+  async function submitDecision(item: LearnerItem, decision: "continue" | "changes_requested" | "completed", textarea: HTMLTextAreaElement, buttons: HTMLButtonElement[]) {
+    clearAlert();
+    const feedback = textarea.value.trim();
+    if (feedback.length < 5) {
+      showAlert("Add specific private progression feedback before recording a decision.");
+      textarea.focus();
+      return;
+    }
+    buttons.forEach((button) => button.disabled = true);
+    try {
+      const response = await fetch("/api/academy/reviewer/progression", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          learner_id: item.id,
+          program_slug: item.program_slug,
+          decision,
+          feedback_text: feedback,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not save progression review");
+      await loadQueue();
+      showAlert("Private human progression decision saved. Enrollment, evidence and operational access were not changed.", "success");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not save progression review");
+      buttons.forEach((button) => button.disabled = false);
+    }
+  }
+
+  function renderQueue(learners: LearnerItem[]) {
+    if (!list || !empty) return;
+    list.replaceChildren();
+    empty.classList.toggle("academy-app-hidden", learners.length > 0);
+
+    for (const item of learners) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+
+      const heading = document.createElement("h3");
+      heading.textContent = item.name || "Academy learner";
+      const identity = document.createElement("p");
+      identity.textContent = item.email || "";
+      const meta = document.createElement("div");
+      meta.className = "academy-review-meta";
+      const unresolved = (item.progression.evidence?.submitted || 0) + (item.progression.evidence?.changes_requested || 0);
+      for (const value of [
+        programNames[item.program_slug] || item.program_slug,
+        `${item.progression.completed_lessons}/${item.progression.total_lessons} lessons complete`,
+        `${item.progression.evidence?.accepted || 0} accepted evidence`,
+        `${unresolved} unresolved`,
+      ]) {
+        const chip = document.createElement("span");
+        chip.textContent = value;
+        meta.append(chip);
+      }
+      const state = document.createElement("span");
+      state.className = "academy-review-state";
+      state.textContent = titleCase(item.progression.progression_state || "in_progress");
+      meta.append(state);
+      card.append(heading, identity, meta);
+
+      const latest = document.createElement("div");
+      latest.className = "academy-review-feedback";
+      const latestHeading = document.createElement("strong");
+      latestHeading.textContent = item.progression.latest_review ? `Latest human decision · ${titleCase(item.progression.latest_review.decision)}` : "No human progression decision yet";
+      const latestBody = document.createElement("span");
+      latestBody.textContent = item.progression.latest_review?.feedback_text || "Review the lesson and evidence signals, then record the next human progression decision.";
+      latest.append(latestHeading, latestBody);
+      card.append(latest);
+
+      const feedbackField = document.createElement("div");
+      feedbackField.className = "academy-app-field";
+      const feedbackLabel = document.createElement("label");
+      feedbackLabel.textContent = "Private progression feedback";
+      const textarea = document.createElement("textarea");
+      textarea.setAttribute("aria-label", `Private progression feedback for ${item.name}`);
+      textarea.maxLength = 4000;
+      textarea.placeholder = "Explain the evidence considered and the learner's next concrete action.";
+      feedbackField.append(feedbackLabel, textarea);
+      card.append(feedbackField);
+
+      const actions = document.createElement("div");
+      actions.className = "academy-review-actions";
+      const continueButton = document.createElement("button");
+      continueButton.type = "button";
+      continueButton.className = "academy-app-button";
+      continueButton.textContent = "Continue program";
+      const changesButton = document.createElement("button");
+      changesButton.type = "button";
+      changesButton.className = "academy-app-button";
+      changesButton.textContent = "Request progression changes";
+      const completeButton = document.createElement("button");
+      completeButton.type = "button";
+      completeButton.className = "academy-app-button intelligence";
+      completeButton.textContent = "Mark Academy program completed";
+      const buttons = [continueButton, changesButton, completeButton];
+      continueButton.addEventListener("click", () => submitDecision(item, "continue", textarea, buttons));
+      changesButton.addEventListener("click", () => submitDecision(item, "changes_requested", textarea, buttons));
+      completeButton.addEventListener("click", () => submitDecision(item, "completed", textarea, buttons));
+      actions.append(continueButton, changesButton, completeButton);
+      card.append(actions);
+      list.append(card);
+    }
+  }
+
+  async function loadQueue() {
+    clearAlert();
+    const program = filter?.value || "";
+    const query = program ? `?program=${encodeURIComponent(program)}` : "";
+    try {
+      const response = await fetch(`/api/academy/reviewer/progression${query}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 403) {
+        content?.classList.add("academy-app-hidden");
+        locked?.classList.remove("academy-app-hidden");
+        return;
+      }
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load progression queue");
+      locked?.classList.add("academy-app-hidden");
+      content?.classList.remove("academy-app-hidden");
+      if (reviewerName) reviewerName.textContent = data.reviewer?.name || "Authorized reviewer";
+      if (reviewerEmail) reviewerEmail.textContent = data.reviewer?.email || "";
+      if (filter && data.reviewer?.program_scope) {
+        filter.value = data.reviewer.program_scope;
+        filter.disabled = true;
+      }
+      renderQueue(Array.isArray(data.learners) ? data.learners as LearnerItem[] : []);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load progression queue");
+    }
+  }
+
+  filter?.addEventListener("change", () => loadQueue());
+  loadQueue();
+</script>

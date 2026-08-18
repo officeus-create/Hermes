@@ -1,0 +1,235 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import "../../../../../styles/hermes-academy-app.css";
+import "../../../../../styles/hermes-academy-review.css";
+---
+
+<BaseLayout
+  title="Academy Progression | Hermes Connect"
+  description="Private human-controlled Academy progression evidence summary."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a><span>/</span><span aria-current="page">Progression</span>
+      </nav>
+
+      <div class="academy-app-alert" data-progression-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Academy A4 · Private progression</p>
+          <h1>Your learning evidence, one view.</h1>
+          <p>A4 combines your A2 lesson self-tracking with A3 human-reviewed evidence. Counts help you and your reviewer understand the current state; they never make the progression decision automatically.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/services/hermes-connect/academy/submissions/">Evidence submissions</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">Human completion gate</span>
+          <h2 style="margin-top:14px">Program completion is a human Academy decision.</h2>
+          <p>Even a completed Academy program is not employment, certification, guaranteed income, commercial entitlement, client access, or permission to work with live operations.</p>
+        </aside>
+      </section>
+
+      <section class="academy-app-panel">
+        <p class="academy-app-eyebrow">Program</p>
+        <h2>Select an enrolled program.</h2>
+        <div class="academy-app-field" style="max-width:420px">
+          <label for="academy-progression-program">Enrolled program</label>
+          <select id="academy-progression-program" data-progression-program disabled>
+            <option value="">Loading enrolled programs…</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="academy-app-hidden" data-progression-content style="margin-top:18px">
+        <div class="academy-app-grid">
+          <article class="academy-app-panel">
+            <p class="academy-app-eyebrow">Learning signal</p>
+            <h2><span data-completed-lessons>0</span> / <span data-total-lessons>0</span> lessons self-tracked complete</h2>
+            <p>Lesson completion remains your A2 self-tracking signal. It cannot complete the Academy program by itself.</p>
+          </article>
+          <article class="academy-app-panel">
+            <p class="academy-app-eyebrow">Evidence signal</p>
+            <h2><span data-accepted-evidence>0</span> accepted · <span data-unresolved-evidence>0</span> unresolved</h2>
+            <p>Accepted evidence is reviewer-confirmed A3 work. Submitted or changes-requested items remain visible until reviewed or corrected.</p>
+          </article>
+        </div>
+
+        <section class="academy-app-panel" style="margin-top:18px">
+          <p class="academy-app-eyebrow">Human progression state</p>
+          <h2 data-progression-state>In progress</h2>
+          <p data-progression-feedback>No human progression decision has been recorded yet.</p>
+          <p class="academy-app-kicker" data-progression-date></p>
+        </section>
+
+        <section class="academy-app-panel" style="margin-top:18px">
+          <p class="academy-app-eyebrow">Lesson + evidence map</p>
+          <h2>What is complete and what still needs review.</h2>
+          <div class="academy-app-list" data-progression-lessons></div>
+        </section>
+
+        <section class="academy-app-panel" style="margin-top:18px">
+          <p class="academy-app-eyebrow">Progression history</p>
+          <h2>Private human decisions and feedback.</h2>
+          <div class="academy-review-empty" data-progression-history-empty>No human progression review yet.</div>
+          <div class="academy-app-list" data-progression-history></div>
+        </section>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type Enrollment = { program_slug: string; state: string };
+  type EvidenceCounts = { submitted: number; changes_requested: number; accepted: number };
+  type LessonSummary = { lesson_id: string; lesson_state: string; evidence: EvidenceCounts };
+  type ProgressionReview = { decision: string; feedback_text: string; created_at: string };
+  type Progression = {
+    program_slug: string;
+    enrollment_state: string;
+    total_lessons: number;
+    completed_lessons: number;
+    evidence: EvidenceCounts;
+    lessons: LessonSummary[];
+    progression_state: string;
+    latest_review: ProgressionReview | null;
+    review_history: ProgressionReview[];
+  };
+
+  const alert = document.querySelector<HTMLElement>("[data-progression-alert]");
+  const selector = document.querySelector<HTMLSelectElement>("[data-progression-program]");
+  const content = document.querySelector<HTMLElement>("[data-progression-content]");
+  const programNames: Record<string, string> = {
+    "us-logistics-operations": "U.S. Logistics Operations",
+    marketing: "Marketing",
+  };
+
+  const showAlert = (message: string) => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = "academy-app-alert show error";
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+  const titleCase = (value: string) => value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+  function render(progression: Progression) {
+    const completed = document.querySelector<HTMLElement>("[data-completed-lessons]");
+    const total = document.querySelector<HTMLElement>("[data-total-lessons]");
+    const accepted = document.querySelector<HTMLElement>("[data-accepted-evidence]");
+    const unresolved = document.querySelector<HTMLElement>("[data-unresolved-evidence]");
+    const state = document.querySelector<HTMLElement>("[data-progression-state]");
+    const feedback = document.querySelector<HTMLElement>("[data-progression-feedback]");
+    const date = document.querySelector<HTMLElement>("[data-progression-date]");
+    if (completed) completed.textContent = String(progression.completed_lessons || 0);
+    if (total) total.textContent = String(progression.total_lessons || 0);
+    if (accepted) accepted.textContent = String(progression.evidence?.accepted || 0);
+    if (unresolved) unresolved.textContent = String((progression.evidence?.submitted || 0) + (progression.evidence?.changes_requested || 0));
+    if (state) state.textContent = titleCase(progression.progression_state || "in_progress");
+    if (feedback) feedback.textContent = progression.latest_review?.feedback_text || "No human progression decision has been recorded yet.";
+    if (date) date.textContent = progression.latest_review?.created_at ? `Recorded ${new Date(progression.latest_review.created_at).toLocaleString()}` : "";
+
+    const lessons = document.querySelector<HTMLElement>("[data-progression-lessons]");
+    if (lessons) {
+      lessons.replaceChildren();
+      for (const item of progression.lessons || []) {
+        const row = document.createElement("article");
+        row.className = "academy-enrollment";
+        const detail = document.createElement("div");
+        const heading = document.createElement("strong");
+        heading.textContent = titleCase(item.lesson_id);
+        const meta = document.createElement("small");
+        meta.textContent = `Lesson: ${titleCase(item.lesson_state)} · evidence accepted ${item.evidence?.accepted || 0} · pending ${(item.evidence?.submitted || 0) + (item.evidence?.changes_requested || 0)}`;
+        detail.append(heading, meta);
+        row.append(detail);
+        lessons.append(row);
+      }
+    }
+
+    const history = document.querySelector<HTMLElement>("[data-progression-history]");
+    const historyEmpty = document.querySelector<HTMLElement>("[data-progression-history-empty]");
+    const reviews = Array.isArray(progression.review_history) ? progression.review_history : [];
+    historyEmpty?.classList.toggle("academy-app-hidden", reviews.length > 0);
+    if (history) {
+      history.replaceChildren();
+      for (const review of reviews) {
+        const block = document.createElement("article");
+        block.className = "academy-review-feedback";
+        const heading = document.createElement("strong");
+        heading.textContent = `${titleCase(review.decision)} · ${new Date(review.created_at).toLocaleString()}`;
+        const body = document.createElement("span");
+        body.textContent = review.feedback_text;
+        block.append(heading, body);
+        history.append(block);
+      }
+    }
+    content?.classList.remove("academy-app-hidden");
+  }
+
+  async function loadProgression(program: string) {
+    if (!program) return;
+    clearAlert();
+    try {
+      const response = await fetch(`/api/academy/progression?program=${encodeURIComponent(program)}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load progression evidence");
+      render(data.progression as Progression);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load progression evidence");
+    }
+  }
+
+  async function initialize() {
+    clearAlert();
+    try {
+      const response = await fetch("/api/academy/profile", { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load learner programs");
+      const enrollments = (Array.isArray(data.enrollments) ? data.enrollments : []) as Enrollment[];
+      const eligible = enrollments.filter((item) => item.state === "enrolled" || item.state === "completed");
+      if (!selector) return;
+      selector.replaceChildren();
+      if (!eligible.length) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No enrolled program available";
+        selector.append(option);
+        selector.disabled = true;
+        showAlert("Progression evidence becomes available after a program is enrolled.");
+        return;
+      }
+      for (const item of eligible) {
+        const option = document.createElement("option");
+        option.value = item.program_slug;
+        option.textContent = programNames[item.program_slug] || item.program_slug;
+        selector.append(option);
+      }
+      selector.disabled = false;
+      await loadProgression(selector.value);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load learner programs");
+    }
+  }
+
+  selector?.addEventListener("change", () => loadProgression(selector.value));
+  initialize();
+</script>
