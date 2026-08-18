@@ -1,0 +1,18 @@
+---
+import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
+import { academyUkraineLogistics, academyUkraineUi } from "../../../../data/academy-ukraine";
+
+const alternates = [
+  { lang: "en", href: "/academy/us-logistics-operations/" },
+  { lang: "uk", href: "/ua/academy/us-logistics-operations/" },
+  { lang: "x-default", href: "/academy/us-logistics-operations/" },
+];
+---
+
+<AcademyPublicPage
+  content={academyUkraineLogistics}
+  locale="uk"
+  alternates={alternates}
+  ui={academyUkraineUi}
+  academyHubHref="/ua/#academy"
+/>
