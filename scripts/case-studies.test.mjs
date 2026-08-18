@@ -6,7 +6,7 @@ const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 const readBuilt = (path) => readFile(join(dist, path), "utf8");
 
-const [hub, appletonCase, appletonTransport, sitemap, primarySitemap, robots, homepage] = await Promise.all([
+const [hub, appletonCase, appletonTransport, sitemap, primarySitemap, robots, homepage, logistics] = await Promise.all([
   readBuilt("case/index.html"),
   readBuilt("case/appleton-vehicle-transport-seo/index.html"),
   readBuilt("logistics/appleton-wi-vehicle-transport/index.html"),
@@ -14,6 +14,7 @@ const [hub, appletonCase, appletonTransport, sitemap, primarySitemap, robots, ho
   readBuilt("sitemap.xml"),
   readBuilt("robots.txt"),
   readBuilt("index.html"),
+  readBuilt("paths/logistics/index.html"),
 ]);
 
 const canonicalFrom = (html) =>
@@ -77,11 +78,12 @@ for (const prohibited of ["guaranteed rankings", "guaranteed leads", "ranks #1",
 for (const misleadingIntent of ["appleton warehousing services", "appleton warehouse services", "warehousing in appleton"]) {
   assert.ok(!appletonTransport.toLowerCase().includes(misleadingIntent), `Appleton vehicle-transport owner must not target unrelated intent: ${misleadingIntent}`);
 }
+assert.ok(homepage.includes('href="/paths/logistics/"'), "Focused homepage must keep a direct crawl path into Logistics");
 assert.ok(
-  homepage.includes('href="/logistics/appleton-wi-vehicle-transport/"')
-  && homepage.includes("Appleton vehicle transport")
-  && homepage.includes("Plan Appleton vehicle transport"),
-  "Homepage must reinforce Appleton vehicle-transport intent with descriptive internal anchor copy",
+  logistics.includes('href="/logistics/appleton-wi-vehicle-transport/"')
+  && logistics.includes("Vehicle transport to and from Appleton.")
+  && logistics.includes("Open Appleton guide"),
+  "Logistics must reinforce Appleton vehicle-transport intent with descriptive internal anchor copy",
 );
 
 for (const url of [
@@ -95,4 +97,4 @@ assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-de
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
 
-console.log("Case studies and Appleton intent-boundary checks passed: exact vehicle-transport owner, descriptive crawl path, case schema/claims, unique sitemap ownership, and no warehousing-intent stuffing.");
+console.log("Case studies and Appleton intent-boundary checks passed: Home routes to Logistics, Logistics owns the descriptive Appleton crawl path, case schema/claims remain bounded, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");

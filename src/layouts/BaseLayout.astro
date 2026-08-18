@@ -19,7 +19,6 @@ import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
 import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
-import SiteIntro from "../components/SiteIntro.astro";
 import TrackingConsent from "../components/TrackingConsent.astro";
 import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
@@ -93,9 +92,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
 const alternateOgLocales = alternates
-.filter((alternate) => alternate.lang !== locale && alternate.lang !== "x-default")
-.map((alternate) => localeConfig[alternate.lang as SiteLocale]?.ogLocale)
-.filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
+  .filter((alternate) => alternate.lang !== locale && alternate.lang !== "x-default")
+  .map((alternate) => localeConfig[alternate.lang as SiteLocale]?.ogLocale)
+  .filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
 const safeSchema = schema
   ? replaceRetiredPublicText(schema) as Record<string, unknown> | Record<string, unknown>[]
   : undefined;
@@ -126,7 +125,7 @@ const safeSchema = schema
     <meta property="og:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />
-{alternateOgLocales.map((altLocale) => <meta property="og:locale:alternate" content={altLocale} />)}
+    {alternateOgLocales.map((altLocale) => <meta property="og:locale:alternate" content={altLocale} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
@@ -134,15 +133,6 @@ const safeSchema = schema
     <meta name="twitter:image:alt" content="Hermes ecosystem with four illuminated business portals" />
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <script is:inline>
-      try {
-        const canAnimate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const firstHomeView = window.location.pathname === "/" && !window.location.hash && !window.sessionStorage.getItem("hermes-intro-seen");
-        if (canAnimate && firstHomeView) document.documentElement.classList.add("intro-pending");
-      } catch {
-        // Continue directly to the page when browser storage is unavailable.
-      }
-    </script>
     <script is:inline>
       if (window.location.pathname === "/logistics/carrier-onboarding/") {
         const selectedPlan = new URLSearchParams(window.location.search).get("plan");
@@ -190,7 +180,6 @@ const safeSchema = schema
   </head>
   <body>
     <!--email_off-->
-    <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}

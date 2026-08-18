@@ -25,21 +25,10 @@ const homepageText = extractedText(homepageHtml);
 const academyText = extractedText(academyHtml);
 const applicationText = extractedText(applicationHtml);
 
-for (const text of [
-  "U.S. Logistics Operations",
-  "Marketing for U.S. and international service businesses",
-  "Separate paid cohort and free practice models",
-]) {
-  assert.ok(homepage.includes(text), `Homepage Academy card is missing: ${text}`);
-}
-
-for (const text of [
-  "Academy structure",
-  "2 programs",
-  "paid cohort and free practice are separate models",
-]) {
-  assert.ok(homepageText.includes(text), `Homepage Academy trust signal is missing: ${text}`);
-}
+// Home is deliberately an entrance: it must expose Academy as one of four direct
+// directions, while program structure and participation models live on Academy itself.
+assert.ok(homepage.includes('href="/paths/academy/"'), "Homepage must link directly to the Academy direction");
+assert.ok(homepageText.includes("Hermes Academy"), "Homepage must visibly identify the Academy direction");
 
 const publicTabs = [...academy.matchAll(/\brole=["']tab["']/gi)];
 assert.equal(publicTabs.length, 2, "Academy must expose exactly two public program tabs");
@@ -90,4 +79,4 @@ for (const blockedPrice of ["$999", "$400/month", "$600/month"]) {
   assert.ok(!application.includes(blockedPrice), `Unapproved Academy price is visible on the application page: ${blockedPrice}`);
 }
 
-console.log("Academy public contract checks passed: two programs, separate participation models, human application review clarity, crawler-safe retired-copy boundary, and no blocked prices.");
+console.log("Academy public contract checks passed: Home routes to Academy, Academy owns two-program detail and participation models, application review clarity remains explicit, and no blocked prices are visible.");

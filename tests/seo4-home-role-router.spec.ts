@@ -1,61 +1,30 @@
 import { expect, test } from "@playwright/test";
 
-const expectedRoles = [
-  ["carrier", "/logistics/start-car-hauling-dispatch/", "Review carrier support"],
-  ["transport", "/logistics/request-vehicle-transport/", "Request vehicle transport"],
-  ["business", "/business-growth/", "Choose a growth path"],
-  ["academy", "/paths/academy/", "Explore the Academy"],
-  ["career", "/logistics/careers/", "Review careers"],
+const expectedDirections = [
+  ["Open Hermes Logistics", "/paths/logistics/"],
+  ["Open Hermes Marketing", "/paths/marketing/"],
+  ["Open Hermes Academy", "/paths/academy/"],
+  ["Open Hermes IT Development", "/paths/technology/"],
 ] as const;
 
-test("homepage offers a situation-first route before the four ecosystem pillars", async ({ page }) => {
+test("homepage presents one clear four-direction choice", async ({ page }) => {
   await page.goto("/");
 
-  const router = page.locator("[data-home-role-router]");
-  const pillars = page.locator("#paths");
-  await expect(router).toBeVisible();
-  await expect(router).toHaveAttribute("id", "start");
-  await expect(page.getByRole("heading", { name: "What needs to happen next?" })).toBeVisible();
-  await expect(router.locator("[data-home-role-link]")).toHaveCount(5);
+  const rooms = page.locator("#paths.home-rooms-grid");
+  await expect(rooms).toBeVisible();
+  await expect(rooms.locator(".home-room")).toHaveCount(4);
+  await expect(page.locator("[data-home-role-router]")).toHaveCount(0);
 
-  for (const [role, href, label] of expectedRoles) {
-    const link = router.locator(`[data-role-id="${role}"]`);
-    await expect(link).toHaveAttribute("href", href);
-    await expect(link).toContainText(label);
+  for (const [label, href] of expectedDirections) {
+    await expect(page.getByRole("link", { name: label })).toHaveAttribute("href", href);
   }
-
-  const routerBox = await router.boundingBox();
-  const pillarsBox = await pillars.boundingBox();
-  expect(routerBox).not.toBeNull();
-  expect(pillarsBox).not.toBeNull();
-  expect(routerBox!.y).toBeLessThan(pillarsBox!.y);
 });
 
-test("homepage situation click emits only privacy-safe routing context", async ({ page }) => {
-  await page.addInitScript(() => {
-    window.sessionStorage.setItem("hermes-intro-seen", "1");
-  });
+test("homepage does not expose a second competing routing layer", async ({ page }) => {
   await page.goto("/");
-  await page.evaluate(() => {
-    window.dataLayer = [];
-    document.querySelector('[data-role-id="transport"]')?.addEventListener("click", (event) => event.preventDefault(), {
-      capture: true,
-    });
-  });
 
-  await page.locator('[data-role-id="transport"]').click();
-
-  const event = await page.evaluate(() => {
-    const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
-    return analyticsWindow.dataLayer?.find((item) => item.event === "homepage_role_click");
-  });
-
-  expect(event).toMatchObject({
-    event: "homepage_role_click",
-    page_group: "homepage_role_router",
-    role_id: "transport",
-    page_path: "/",
-    destination_path: "/logistics/request-vehicle-transport/",
-  });
-  expect(JSON.stringify(event)).not.toMatch(/email|phone|name|company|MC\s*\d|USDOT\s*\d|VIN|message/i);
+  await expect(page.getByText("One Hermes ecosystem. Four different worlds", { exact: false })).toBeVisible();
+  await expect(page.locator(".home-role-router")).toHaveCount(0);
+  await expect(page.locator(".path-pillars")).toHaveCount(0);
+  await expect(page.locator(".product-showcase")).toHaveCount(0);
 });

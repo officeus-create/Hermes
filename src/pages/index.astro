@@ -1,23 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ecosystemHeroImage from "../assets/hermes-ecosystem-hero.jpg";
-import ContactCTA from "../components/ContactCTA.astro";
-import HeroEditorial from "../components/HeroEditorial.astro";
-import HomeLogisticsDiscovery from "../components/HomeLogisticsDiscovery.astro";
-import HomeRoleRouter from "../components/HomeRoleRouter.astro";
-import HomeTechnologyPreview from "../components/HomeTechnologyPreview.astro";
-import HomeVerifiedAdvantages from "../components/HomeVerifiedAdvantages.astro";
-import PathPillars from "../components/PathPillars.astro";
+import HomeFourRooms from "../components/HomeFourRooms.astro";
+import HomeRecoveryFinish from "../components/HomeRecoveryFinish.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
-import TrustBadge from "../components/TrustBadge.astro";
-import WebsiteProofBand from "../components/WebsiteProofBand.astro";
-import WhyItMatters from "../components/WhyItMatters.astro";
-import { publicPaths } from "../data/public-paths";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
-import "../styles/homepage-performance.css";
-import "../styles/hermes-home-shell.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
@@ -76,30 +65,11 @@ const websiteSchema = {
   alternates={languageAlternates}
 >
   <SiteHeader />
-  <main id="main-content" class="hermes-home-page">
-    <HeroEditorial />
-    <HomeRoleRouter />
-    <template data-static-validator-compat data-required-copy="COO / Operational Director Program"></template>
-    <template data-static-validator-compat data-previous-homepage-title="Hermes | Logistics, Marketing, Academy &amp; IT"></template>
-
-    <section class="section paths-section" id="paths">
-      <div class="shell">
-        <div class="section-heading paths-heading" data-reveal>
-          <p class="eyebrow">Four paths. One ecosystem.</p>
-          <h2>Choose your direction.</h2>
-          <p>Four pillars support one Hermes ecosystem. Open a direction to see who it serves, what it builds, and the next practical step.</p>
-        </div>
-        <PathPillars paths={publicPaths} />
-      </div>
-    </section>
-
-    <HomeVerifiedAdvantages />
-    <HomeLogisticsDiscovery />
-    <WebsiteProofBand />
-    <HomeTechnologyPreview />
-    <WhyItMatters />
-    <TrustBadge />
-    <ContactCTA />
+  <main id="main-content" class="hermes-home-recovery">
+    <HomeFourRooms />
   </main>
-  <SiteFooter />
+  <div id="contact" class="home-contact-shell">
+    <HomeRecoveryFinish />
+    <SiteFooter />
+  </div>
 </BaseLayout>

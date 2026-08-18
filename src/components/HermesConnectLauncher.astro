@@ -1,5 +1,5 @@
 ---
-import { ArrowUpRight, Sparkles } from "@lucide/astro";
+import { ArrowUpRight } from "@lucide/astro";
 import "../styles/hermes-connect-knot-core.css";
 
 export interface Props {
@@ -34,16 +34,14 @@ const contextCopy = {
 const displayTitle = label || "Hermes Connect";
 const displaySubtitle = sublabel || contextCopy[context] || contextCopy.general;
 const computedHref = href || "/services/hermes-connect/";
+const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
 
 {variant === "header" && (
   <a href={computedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
-    <svg class="hermes-knot-mark" viewBox="0 0 44 44" aria-hidden="true" width="18" height="18">
-      <path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
-      <path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round"/>
-    </svg>
+    <img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="22" height="22" loading="eager" alt="Hermes Connect mark" />
     <span>{displayTitle}</span>
     <ArrowUpRight size={15} aria-hidden="true" />
   </a>
@@ -51,6 +49,7 @@ const computedHref = href || "/services/hermes-connect/";
 
 {variant === "mobile" && (
   <a href={computedHref} class={`hc-launcher-mobile ${className}`} data-hermes-connect-launcher="mobile">
+    <img class="hc-brand-mark hc-brand-mark-mobile hermes-knot-mark" src={connectMark} width="30" height="30" loading="eager" alt="Hermes Connect mark" />
     <div><strong>{displayTitle}</strong><small>{displaySubtitle}</small></div>
     <span>Open product <ArrowUpRight size={16} aria-hidden="true" /></span>
   </a>
@@ -58,36 +57,41 @@ const computedHref = href || "/services/hermes-connect/";
 
 {variant === "footer" && (
   <div class={`hc-launcher-panel ${className}`} data-hermes-connect-launcher="footer">
-    <div class="hc-launcher-panel-head"><strong>Hermes Connect</strong><span>Current product</span></div>
+    <div class="hc-launcher-panel-head">
+      <span class="hc-launcher-panel-brand"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="24" height="24" loading="lazy" alt="Hermes Connect mark" /><strong>Hermes Connect</strong></span>
+      <span>Current product</span>
+    </div>
     <p>One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.</p>
-    <a href={computedHref}>Open Hermes Connect Product Hub <ArrowUpRight size={16} aria-hidden="true" /></a>
+    <a href={computedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />Open Hermes Connect Product Hub <ArrowUpRight size={16} aria-hidden="true" /></a>
   </div>
 )}
 
 {variant === "banner" && (
   <section class={`hc-launcher-banner ${className}`} data-hermes-connect-launcher="banner">
     <div>
-      <span class="hc-launcher-badge"><Sparkles size={13} aria-hidden="true" /> Hermes Connect · Current product family</span>
+      <span class="hc-launcher-badge"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" /> Hermes Connect · Current product family</span>
       <h3>{displayTitle}</h3>
       <p>{displaySubtitle}. No legacy workspace or historical pricing is presented as the current product.</p>
     </div>
-    <a href={computedHref}>Explore Hermes Connect <ArrowUpRight size={17} aria-hidden="true" /></a>
+    <a href={computedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />Explore Hermes Connect <ArrowUpRight size={17} aria-hidden="true" /></a>
   </section>
 )}
 
 {variant === "inline" && (
   <a href={computedHref} class={`hc-launcher-inline ${className}`} data-hermes-connect-launcher="inline">
-    <span>{displayTitle}</span><ArrowUpRight size={14} aria-hidden="true" />
+    <img class="hc-brand-mark hc-brand-mark-inline hermes-knot-mark" src={connectMark} width="18" height="18" loading="lazy" alt="Hermes Connect mark" /><span>{displayTitle}</span><ArrowUpRight size={14} aria-hidden="true" />
   </a>
 )}
 
 <style>
-  .hc-launcher{display:inline-flex;align-items:center;gap:.42rem;text-decoration:none}.hc-launcher-header{padding:.42rem .78rem;border:1px solid rgba(157,136,255,.3);border-radius:999px;background:rgba(109,40,217,.12);color:#f8fafc;font-size:.82rem;font-weight:700}.hc-launcher-header:hover{background:rgba(109,40,217,.24);border-color:rgba(157,136,255,.5)}
-  .hc-launcher-mobile{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem;border:1px solid rgba(157,136,255,.22);border-radius:12px;background:rgba(13,17,27,.9);color:#fff;text-decoration:none}.hc-launcher-mobile div{min-width:0}.hc-launcher-mobile strong,.hc-launcher-mobile small{display:block}.hc-launcher-mobile small{margin-top:.2rem;color:#9ba7ba;font-size:.72rem;line-height:1.35}.hc-launcher-mobile>span{display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;color:#bcaeff;font-size:.8rem;font-weight:700}
-  .hc-launcher-panel{display:grid;gap:.7rem;padding:1.15rem;border:1px solid rgba(255,255,255,.1);border-radius:15px;background:rgba(11,15,24,.7)}.hc-launcher-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.hc-launcher-panel-head span{padding:.2rem .45rem;border-radius:999px;background:rgba(52,211,153,.1);color:#6ee7b7;font-size:.68rem;font-weight:800;text-transform:uppercase}.hc-launcher-panel p{margin:0;color:#9ba7ba;font-size:.8rem;line-height:1.5}.hc-launcher-panel a{display:inline-flex;align-items:center;gap:.35rem;color:#fff;text-decoration:none;font-size:.82rem;font-weight:750}
-  .hc-launcher-banner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;max-width:1160px;margin:2.5rem auto;padding:1.5rem;border:1px solid rgba(157,136,255,.25);border-radius:18px;background:linear-gradient(140deg,rgba(109,40,217,.12),rgba(11,15,24,.9))}.hc-launcher-badge{display:inline-flex;align-items:center;gap:.3rem;color:#9d88ff;font-size:.72rem;font-weight:800;text-transform:uppercase}.hc-launcher-banner h3{margin:.35rem 0}.hc-launcher-banner p{margin:0;color:#9ba7ba;line-height:1.5;font-size:.86rem}.hc-launcher-banner>a{display:inline-flex;align-items:center;gap:.35rem;white-space:nowrap;padding:.68rem .9rem;border-radius:10px;background:#6d28d9;color:#fff;text-decoration:none;font-size:.84rem;font-weight:750}
-  .hc-launcher-inline{display:inline-flex;align-items:center;gap:.3rem;padding:.28rem .58rem;border:1px solid rgba(157,136,255,.25);border-radius:999px;background:rgba(109,40,217,.08);color:#bcaeff;text-decoration:none;font-size:.76rem;font-weight:700}
-  @media(max-width:760px){.hc-launcher-banner{margin-inline:.75rem;flex-direction:column;align-items:flex-start}.hc-launcher-banner>a{width:100%;justify-content:center}.hc-launcher-mobile{align-items:flex-start;flex-direction:column}.hc-launcher-mobile>span{white-space:normal}}
+  .hc-brand-mark{display:block;flex:0 0 auto;border-radius:6px;box-shadow:0 6px 18px rgba(92,78,255,.18)}
+  .hc-brand-mark-mobile{grid-row:1 / span 2}.hc-brand-mark-link{margin-right:.05rem}.hc-brand-mark-inline{border-radius:5px}
+  .hc-launcher{display:inline-flex;align-items:center;gap:.42rem;text-decoration:none}.hc-launcher-header{padding:.35rem .72rem .35rem .38rem;border:1px solid rgba(157,136,255,.3);border-radius:999px;background:rgba(109,40,217,.12);color:#f8fafc;font-size:.82rem;font-weight:700}.hc-launcher-header:hover{background:rgba(109,40,217,.24);border-color:rgba(157,136,255,.5)}
+  .hc-launcher-mobile{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem 1rem;padding:1rem;border:1px solid rgba(157,136,255,.22);border-radius:14px;background:rgba(13,17,27,.9);color:#fff;text-decoration:none}.hc-launcher-mobile div{min-width:0}.hc-launcher-mobile strong,.hc-launcher-mobile small{display:block}.hc-launcher-mobile small{margin-top:.2rem;color:#9ba7ba;font-size:.72rem;line-height:1.35}.hc-launcher-mobile>span{display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;color:#bcaeff;font-size:.8rem;font-weight:700}
+  .hc-launcher-panel{display:grid;gap:.7rem;padding:1.15rem;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(11,15,24,.55);backdrop-filter:blur(18px)}.hc-launcher-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.hc-launcher-panel-brand{display:inline-flex!important;align-items:center;gap:.5rem;padding:0!important;background:transparent!important;color:#fff!important;font-size:inherit!important;text-transform:none!important}.hc-launcher-panel-head>span:last-child{padding:.2rem .45rem;border-radius:999px;background:rgba(52,211,153,.1);color:#6ee7b7;font-size:.68rem;font-weight:800;text-transform:uppercase}.hc-launcher-panel p{margin:0;color:#c0c8d6;font-size:.8rem;line-height:1.5}.hc-launcher-panel a{display:inline-flex;align-items:center;gap:.35rem;color:#fff;text-decoration:none;font-size:.82rem;font-weight:750}
+  .hc-launcher-banner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;max-width:1160px;margin:2.5rem auto;padding:1.5rem;border:1px solid rgba(157,136,255,.25);border-radius:20px;background:linear-gradient(140deg,rgba(109,40,217,.12),rgba(11,15,24,.9))}.hc-launcher-badge{display:inline-flex;align-items:center;gap:.4rem;color:#9d88ff;font-size:.72rem;font-weight:800;text-transform:uppercase}.hc-launcher-banner h3{margin:.35rem 0}.hc-launcher-banner p{margin:0;color:#9ba7ba;line-height:1.5;font-size:.86rem}.hc-launcher-banner>a{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;padding:.58rem .82rem .58rem .58rem;border-radius:12px;background:#6d28d9;color:#fff;text-decoration:none;font-size:.84rem;font-weight:750}
+  .hc-launcher-inline{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .55rem .25rem .3rem;border:1px solid rgba(157,136,255,.25);border-radius:999px;background:rgba(109,40,217,.08);color:#bcaeff;text-decoration:none;font-size:.76rem;font-weight:700}
+  @media(max-width:760px){.hc-launcher-banner{margin-inline:.75rem;flex-direction:column;align-items:flex-start}.hc-launcher-banner>a{width:100%;justify-content:center}.hc-launcher-mobile{grid-template-columns:auto 1fr}.hc-launcher-mobile>span{grid-column:1 / -1;white-space:normal}}
 </style>
 
 <style is:global>

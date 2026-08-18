@@ -1,0 +1,525 @@
+---
+import { ArrowUpRight } from "@lucide/astro";
+import { publicPaths } from "../data/public-paths";
+
+const roomMeta: Record<string, { accent: string; glow: string; label: string }> = {
+  logistics: { accent: "#7c5cff", glow: "rgba(124,92,255,.34)", label: "Move freight" },
+  marketing: { accent: "#ef4f9a", glow: "rgba(239,79,154,.32)", label: "Grow demand" },
+  academy: { accent: "#e4ae42", glow: "rgba(228,174,66,.30)", label: "Build capability" },
+  technology: { accent: "#5ac8fa", glow: "rgba(90,200,250,.30)", label: "Build systems" },
+};
+---
+
+<section class="home-rooms" id="top" aria-labelledby="home-rooms-title">
+  <div class="home-rooms-atmosphere" aria-hidden="true"></div>
+  <div class="home-rooms-shell">
+    <header class="home-rooms-intro" id="about">
+      <p class="home-rooms-kicker"><span>FOUR DIRECTIONS</span><i aria-hidden="true"></i></p>
+      <h1 id="home-rooms-title">
+        <span class="home-rooms-display">Four directions.</span>
+        <span class="home-rooms-script"><em>Choose yours.</em><b aria-hidden="true"></b></span>
+      </h1>
+      <p class="home-rooms-ink-note"><strong>One Hermes ecosystem.</strong> Four different worlds — logistics, growth, education, and technology.</p>
+    </header>
+
+    <span class="home-legacy-anchor" id="journey" aria-hidden="true"></span>
+    <div class="home-rooms-grid" id="paths" aria-label="Hermes business directions">
+      {publicPaths.map((path) => {
+        const meta = roomMeta[path.id] ?? roomMeta.logistics;
+        return (
+          <a
+            class={`home-room home-room-${path.id}`}
+            href={`/paths/${path.id}/`}
+            style={`--room-accent:${meta.accent};--room-glow:${meta.glow};--room-image:url('${path.image}')`}
+            aria-label={`Open ${path.brandLabel}`}
+            data-home-room
+            data-room-id={path.id}
+          >
+            <span class="home-room-image" aria-hidden="true"></span>
+            <span class="home-room-shade" aria-hidden="true"></span>
+            <span class="home-room-orbit" aria-hidden="true"></span>
+            <span class="home-room-content">
+              <span class="home-room-number">{path.number}</span>
+              <span class="home-room-copy">
+                <small>{meta.label}</small>
+                <strong>{path.brandLabel}</strong>
+                <span>{path.programLabel}</span>
+              </span>
+              <span class="home-room-arrow" aria-hidden="true"><ArrowUpRight size={20} /></span>
+            </span>
+          </a>
+        );
+      })}
+    </div>
+
+    <p class="home-rooms-note">One brand. A different character inside every direction.</p>
+  </div>
+</section>
+
+<script>
+  import { trackCtaClicked, trackTrackSelected } from "../lib/analytics.ts";
+
+  document.querySelectorAll<HTMLAnchorElement>("[data-home-room]").forEach((link) => {
+    link.addEventListener("click", () => {
+      const id = link.dataset.roomId;
+      if (!id) return;
+      trackTrackSelected(id);
+      trackCtaClicked(`home_direction_${id}`);
+    });
+  });
+</script>
+
+<style>
+  .home-rooms {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    padding: clamp(7rem, 12vh, 9rem) 0 clamp(2.5rem, 5vh, 4rem);
+    color: #fff;
+    background:
+      radial-gradient(circle at 50% -10%, rgba(111, 101, 255, .20), transparent 34rem),
+      linear-gradient(145deg, #070910 0%, #0b0d14 48%, #080a0f 100%);
+    isolation: isolate;
+  }
+
+  .home-rooms-atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: .46;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: linear-gradient(to bottom, #000 0 65%, transparent 100%);
+  }
+
+  .home-rooms-shell {
+    width: min(1480px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  .home-rooms-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 430px);
+    column-gap: clamp(2rem, 6vw, 7rem);
+    align-items: end;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+    scroll-margin-top: 6rem;
+  }
+
+  .home-legacy-anchor {
+    display: block;
+    width: 0;
+    height: 0;
+    scroll-margin-top: 6rem;
+  }
+
+  .home-rooms-kicker {
+    position: relative;
+    grid-column: 1 / -1;
+    display: inline-flex;
+    width: max-content;
+    align-items: center;
+    gap: .8rem;
+    margin: 0 0 .9rem;
+    color: rgba(255,255,255,.54);
+    font: 700 .68rem/1.2 var(--font-mono);
+    letter-spacing: .24em;
+    overflow: hidden;
+  }
+
+  .home-rooms-kicker span {
+    background: linear-gradient(90deg, rgba(255,255,255,.5), #fff 48%, rgba(124,92,255,.9) 72%, rgba(90,200,250,.78));
+    background-size: 220% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: direction-ink-shimmer 6s ease-in-out infinite;
+  }
+
+  .home-rooms-kicker i {
+    display: block;
+    width: 72px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(124,92,255,.18), rgba(124,92,255,.95), rgba(90,200,250,.75), transparent);
+    transform-origin: left center;
+    animation: direction-line-draw 1.15s cubic-bezier(.22,.75,.2,1) both .15s;
+  }
+
+  .home-rooms-intro h1 {
+    margin: 0;
+    max-width: 850px;
+    color: #fff;
+    font-size: clamp(3.2rem, 7vw, 7.1rem);
+    font-weight: 720;
+    line-height: .88;
+    letter-spacing: -.065em;
+    text-wrap: balance;
+  }
+
+  .home-rooms-display {
+    display: block;
+    animation: direction-title-rise .85s cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  .home-rooms-script {
+    position: relative;
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    margin-top: .08em;
+  }
+
+  .home-rooms-script em {
+    display: inline-block;
+    color: rgba(255,255,255,.68);
+    font-family: "Segoe Print", "Bradley Hand", "Snell Roundhand", var(--font-serif), cursive;
+    font-size: .58em;
+    font-weight: 400;
+    font-style: italic;
+    letter-spacing: -.035em;
+    clip-path: inset(0 100% 0 0);
+    animation: handwritten-reveal 1.3s cubic-bezier(.18,.75,.25,1) forwards .35s;
+  }
+
+  .home-rooms-script b {
+    position: absolute;
+    right: -.04em;
+    bottom: -.08em;
+    left: .08em;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(124,92,255,.12), rgba(124,92,255,.9) 46%, rgba(90,200,250,.82), transparent 96%);
+    transform: scaleX(0) rotate(-1.2deg);
+    transform-origin: left center;
+    animation: handwritten-underline 1.05s cubic-bezier(.22,.75,.2,1) forwards 1.05s;
+  }
+
+  .home-rooms-ink-note {
+    margin: 0 0 .25rem;
+    max-width: 390px;
+    color: rgba(255,255,255,.56);
+    font-size: clamp(.9rem, 1.2vw, 1.06rem);
+    line-height: 1.7;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: ink-note-reveal .75s ease forwards 1.05s;
+  }
+
+  .home-rooms-ink-note strong {
+    color: rgba(255,255,255,.84);
+    font-family: "Segoe Print", "Bradley Hand", var(--font-serif), cursive;
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  .home-rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-height: clamp(390px, 49vh, 620px);
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 32px;
+    background: rgba(255,255,255,.08);
+    box-shadow: 0 40px 120px rgba(0,0,0,.34);
+    transition: grid-template-columns 650ms cubic-bezier(.22,.75,.2,1);
+    scroll-margin-top: 6rem;
+  }
+
+  .home-room {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+    color: #fff;
+    background: #0c0f16;
+    text-decoration: none;
+    outline: none;
+    transition: filter 450ms ease;
+  }
+
+  .home-room-image,
+  .home-room-shade,
+  .home-room-orbit {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .home-room-image {
+    background-image: var(--room-image);
+    background-position: center;
+    background-size: cover;
+    filter: saturate(.82) contrast(1.04) brightness(.72);
+    transform: scale(1.03);
+    transition: transform 900ms cubic-bezier(.22,.75,.2,1), filter 650ms ease;
+  }
+
+  .home-room-shade {
+    background:
+      linear-gradient(to top, rgba(5,7,12,.94) 0%, rgba(5,7,12,.42) 45%, rgba(5,7,12,.12) 78%),
+      linear-gradient(145deg, var(--room-glow), transparent 46%);
+    transition: opacity 500ms ease;
+  }
+
+  .home-room-orbit {
+    inset: auto -18% -18% auto;
+    width: 210px;
+    height: 210px;
+    border: 1px solid color-mix(in srgb, var(--room-accent) 55%, transparent);
+    border-radius: 50%;
+    opacity: .42;
+    box-shadow: 0 0 60px var(--room-glow);
+    transform: translate(12%, 12%);
+    transition: transform 700ms ease, opacity 500ms ease;
+  }
+
+  .home-room-content {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    padding: clamp(1.2rem, 2vw, 2rem);
+  }
+
+  .home-room-number {
+    align-self: start;
+    color: var(--room-accent);
+    font: 700 .65rem/1 var(--font-mono);
+    letter-spacing: .16em;
+  }
+
+  .home-room-copy {
+    display: grid;
+    gap: .35rem;
+  }
+
+  .home-room-copy small {
+    color: color-mix(in srgb, var(--room-accent) 78%, white);
+    font: 700 .66rem/1.2 var(--font-mono);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  .home-room-copy strong {
+    color: #fff;
+    font-size: clamp(1.35rem, 2.2vw, 2.25rem);
+    line-height: .98;
+    letter-spacing: -.04em;
+  }
+
+  .home-room-copy > span {
+    color: rgba(255,255,255,.55);
+    font-size: .78rem;
+  }
+
+  .home-room-arrow {
+    position: relative;
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 50%;
+    background: rgba(7,9,14,.52);
+    backdrop-filter: blur(10px);
+    isolation: isolate;
+    transition: border-color 300ms ease, background 300ms ease, transform 300ms ease, box-shadow 300ms ease;
+  }
+
+  .home-room-arrow::before {
+    position: absolute;
+    z-index: -1;
+    inset: -4px;
+    border-radius: inherit;
+    background: conic-gradient(from 0deg, transparent 0 54%, var(--room-accent) 70%, transparent 86%);
+    opacity: .34;
+    content: "";
+    animation: arrow-orbit 4.5s linear infinite;
+    mask: radial-gradient(circle, transparent 62%, #000 64%);
+  }
+
+  .home-room-arrow::after {
+    position: absolute;
+    z-index: -2;
+    inset: -9px;
+    border: 1px solid color-mix(in srgb, var(--room-accent) 28%, transparent);
+    border-radius: inherit;
+    opacity: .34;
+    content: "";
+    animation: arrow-breathe 2.7s ease-in-out infinite;
+  }
+
+  .home-room-arrow :global(svg) {
+    transition: transform 350ms cubic-bezier(.22,.75,.2,1);
+  }
+
+  .home-room:hover .home-room-image,
+  .home-room:focus-visible .home-room-image {
+    filter: saturate(1.08) contrast(1.02) brightness(.88);
+    transform: scale(1.075);
+  }
+
+  .home-room:hover .home-room-orbit,
+  .home-room:focus-visible .home-room-orbit {
+    opacity: .78;
+    transform: translate(-6%, -6%) scale(1.08);
+  }
+
+  .home-room:hover .home-room-arrow,
+  .home-room:focus-visible .home-room-arrow {
+    border-color: var(--room-accent);
+    background: color-mix(in srgb, var(--room-accent) 24%, rgba(7,9,14,.65));
+    box-shadow: 0 0 28px var(--room-glow);
+    transform: translate(3px, -3px) scale(1.04);
+  }
+
+  .home-room:hover .home-room-arrow :global(svg),
+  .home-room:focus-visible .home-room-arrow :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  .home-room:focus-visible {
+    z-index: 3;
+    box-shadow: inset 0 0 0 2px var(--room-accent);
+  }
+
+  .home-rooms-note {
+    margin: 1.1rem 0 0;
+    color: rgba(255,255,255,.36);
+    font-size: .72rem;
+    text-align: right;
+  }
+
+  @keyframes direction-title-rise {
+    from { opacity: 0; transform: translateY(18px); filter: blur(8px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  @keyframes handwritten-reveal { to { clip-path: inset(0 0 0 0); } }
+  @keyframes handwritten-underline { to { transform: scaleX(1) rotate(-1.2deg); } }
+  @keyframes ink-note-reveal { to { opacity: 1; transform: translateY(0); } }
+  @keyframes direction-line-draw { from { transform: scaleX(0); opacity: 0; } to { transform: scaleX(1); opacity: 1; } }
+  @keyframes direction-ink-shimmer { 0%,100% { background-position: 100% 50%; } 50% { background-position: 0% 50%; } }
+  @keyframes arrow-orbit { to { transform: rotate(360deg); } }
+  @keyframes arrow-breathe { 0%,100% { transform: scale(.92); opacity: .12; } 50% { transform: scale(1.08); opacity: .46; } }
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 981px) {
+    .home-rooms-grid:has(.home-room:nth-child(1):hover),
+    .home-rooms-grid:has(.home-room:nth-child(1):focus-visible) {
+      grid-template-columns: 1.24fr .92fr .92fr .92fr;
+    }
+
+    .home-rooms-grid:has(.home-room:nth-child(2):hover),
+    .home-rooms-grid:has(.home-room:nth-child(2):focus-visible) {
+      grid-template-columns: .92fr 1.24fr .92fr .92fr;
+    }
+
+    .home-rooms-grid:has(.home-room:nth-child(3):hover),
+    .home-rooms-grid:has(.home-room:nth-child(3):focus-visible) {
+      grid-template-columns: .92fr .92fr 1.24fr .92fr;
+    }
+
+    .home-rooms-grid:has(.home-room:nth-child(4):hover),
+    .home-rooms-grid:has(.home-room:nth-child(4):focus-visible) {
+      grid-template-columns: .92fr .92fr .92fr 1.24fr;
+    }
+
+    .home-room:hover,
+    .home-room:focus-visible {
+      filter: brightness(1.06);
+    }
+  }
+
+  @media (max-width: 980px) {
+    .home-rooms {
+      padding-top: 6rem;
+    }
+
+    .home-rooms-intro {
+      grid-template-columns: 1fr;
+      gap: 1.35rem;
+    }
+
+    .home-rooms-grid {
+      grid-template-columns: 1fr 1fr;
+      min-height: 720px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .home-rooms {
+      padding: 5.4rem 0 1.5rem;
+    }
+
+    .home-rooms-shell {
+      width: min(100% - 24px, 1480px);
+    }
+
+    .home-rooms-intro h1 {
+      font-size: clamp(3rem, 16vw, 4.4rem);
+    }
+
+    .home-rooms-script em {
+      font-size: .62em;
+    }
+
+    .home-rooms-ink-note {
+      font-size: .92rem;
+    }
+
+    .home-rooms-grid {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      border-radius: 24px;
+    }
+
+    .home-room {
+      min-height: 175px;
+    }
+
+    .home-room-image {
+      background-position: center 42%;
+    }
+
+    .home-room-content {
+      padding: 1.15rem;
+    }
+
+    .home-room-copy strong {
+      font-size: 1.55rem;
+    }
+
+    .home-rooms-note {
+      text-align: left;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-rooms-kicker span,
+    .home-rooms-kicker i,
+    .home-rooms-display,
+    .home-rooms-script em,
+    .home-rooms-script b,
+    .home-rooms-ink-note,
+    .home-room-arrow::before,
+    .home-room-arrow::after {
+      animation: none;
+    }
+
+    .home-rooms-script em { clip-path: none; }
+    .home-rooms-script b { transform: scaleX(1) rotate(-1.2deg); }
+    .home-rooms-ink-note { opacity: 1; transform: none; }
+    .home-rooms-grid,
+    .home-room,
+    .home-room-image,
+    .home-room-orbit,
+    .home-room-arrow {
+      transition: none;
+    }
+  }
+</style>
