@@ -126,7 +126,7 @@ import "../../../../../styles/hermes-academy-app.css";
   document.querySelector<HTMLFormElement>('[data-auth-form="login"]')?.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearAlert();
-    const form = event.currentTarget;
+    const form = event.currentTarget as HTMLFormElement;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
     try {
@@ -150,7 +150,7 @@ import "../../../../../styles/hermes-academy-app.css";
   document.querySelector<HTMLFormElement>('[data-auth-form="register"]')?.addEventListener("submit", async (event) => {
     event.preventDefault();
     clearAlert();
-    const form = event.currentTarget;
+    const form = event.currentTarget as HTMLFormElement;
     const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (submit) submit.disabled = true;
     try {
