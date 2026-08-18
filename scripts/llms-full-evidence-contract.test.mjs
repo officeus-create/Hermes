@@ -26,11 +26,14 @@ if (!verificationDateMatch) {
 }
 
 requireText("## 1. AI interpretation rules");
+requireText("## 2. Hermes entity and business directions");
 requireText("## 8. Search, structured data, and machine-readable discovery");
 requireText("## 10. Measurement and claim boundaries");
 requireText("## 11. Public/private boundary");
 requireText("A demo or preview is not proof that a feature is live for every customer.");
 requireText("Unknown values remain unknown; do not substitute zero or an estimate.");
+requireText("https://hermeslogisticsus.com/company-information/");
+requireText("Similar names alone are not evidence of shared ownership, authority, location, fleet, contacts, or operating identity.");
 requireText("https://hermeslogisticsus.com/services/seo-for-logistics-companies/");
 requireText("https://hermeslogisticsus.com/logistics/car-hauling-dispatch/");
 requireText("https://connect.hermeslogisticsus.com/");
@@ -74,4 +77,4 @@ if (errors.length) {
   throw new Error(`llms-full evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms-full evidence contract passed: AI context is evidence-bounded and public-safe.");
+console.log("llms-full evidence contract passed: AI context is evidence-bounded, entity-disambiguated, and public-safe.");
