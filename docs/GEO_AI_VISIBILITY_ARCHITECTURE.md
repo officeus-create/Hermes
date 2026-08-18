@@ -8,92 +8,202 @@ Existing AI visibility registry: Issue #150 / `src/data/ai-visibility-scorecard.
 
 ## Objective
 
-Hermes GEO must be understandable to a person and extractable by Google, ChatGPT, Gemini, AI answer engines, and other systems that consume facts, entities, evidence, relationships, and actions.
+Hermes GEO must be useful to a person and extractable by Google, ChatGPT, Gemini, AI answer engines, and other systems that consume facts, entities, evidence, relationships, and actions.
 
-The implementation therefore has three separate layers:
+The implementation is intentionally split into three layers:
 
 1. **Measurement** — what was observed and what commercial outcome followed.
-2. **Answer contract** — how a useful answer, entities, claims, evidence, truth labels, guided questions, and next actions are represented.
-3. **Presentation** — how that contract becomes a premium Hermes page or component.
+2. **Answer / evidence contract** — what may be stated, how it is supported, and how entities relate.
+3. **Presentation** — how the reviewed contract becomes a premium Hermes experience.
 
-Presentation is preview-gated whenever the visual change is material. The approved design baseline is a visual reference; engineering and merge validation always run against the current canonical `main`.
+Presentation is preview-gated whenever a visual change is material. The approved design baseline is a visual reference; engineering validation always runs against the current canonical `main`.
 
-## 1. GEO Measurement Layer
+## 1. Measurement layer
 
 Implementation:
 
 - `src/data/geo-measurement-layer.ts`;
 - `src/data/geo-measurement-adapters.ts`;
+- `src/data/geo-measurement-import.ts`;
 - `src/data/geo-owner-measurement.ts`.
 
-Standard windows:
+Standard operating windows:
 
 - 7 days — early movement and breakage detection;
 - 28 days — primary operating comparison;
 - 90 days — slower authority, citation, and commercial trend.
 
-The scorecard keeps these evidence stages separate:
+The scorecard keeps these stages separate:
 
 `AI visibility → search discovery → CTA/intake → delivery → human qualification → opportunity/win`
 
 It separately records:
 
-- real AI observations only; synthetic observations are excluded;
-- mention rate;
-- linked-citation rate;
-- recommendation rate;
-- entity accuracy;
-- description accuracy;
+- real AI observations only; synthetic QA is excluded;
+- mention, citation, recommendation and accuracy metrics;
 - factual-error rate;
 - Google/Bing branded and non-branded discovery;
 - CTA → intake → preview → handoff → receiver-confirmed delivery;
 - reviewed inquiry → qualified lead → opportunity → won/lost outcome;
-- evidence classes and missing-evidence flags.
+- evidence classes and missing-evidence gaps.
 
-Missing data is labeled as missing evidence. It is never converted into a false zero-market-performance conclusion.
+Unknown evidence is unknown. It is never converted into a false zero-performance conclusion.
 
-### Exact-window adapters
+### Exact-window search evidence
 
-Authenticated or owner-provided search evidence is not forced into a 7/28/90 row. A non-standard interval remains an exact checkpoint with its true number of days. This prevents a 16-day or other partial export from being mislabeled as a 7-day or 28-day baseline.
+Authenticated or owner-provided search evidence is not forced into a 7/28/90 row. A non-standard interval remains an exact checkpoint with its true date range. A 16-day export cannot become a fake 7-day or 28-day baseline.
 
-The analytics adapter uses the existing canonical commercial event registry instead of inventing a second telemetry vocabulary. It distinguishes:
+### Canonical analytics funnel
+
+The analytics adapter reuses the existing production event registry. It does not invent a second GEO event vocabulary.
+
+It distinguishes:
 
 - `journeyPath` — the canonical SEO/GEO owner that started the commercial journey;
-- `eventPagePath` — the route where the actual CTA/intake/preview/handoff/delivery event occurred.
+- `eventPagePath` — the route where the event actually occurred.
 
-This preserves a real multi-page journey without assigning the intent owner to a technical form route.
+This preserves a real multi-page journey such as owner page → intake workspace → handoff/delivery without assigning the intent owner to a technical form route.
 
-SEO and website-project families remain explicitly incomplete where a receiver-confirmed delivery event is not established in the canonical registry. Handoff is never silently treated as delivery.
+SEO and website-project families remain explicitly incomplete while no receiver-confirmed delivery event is established in the canonical registry. Handoff is never treated as delivery.
+
+### Sanitized measurement import
+
+`src/data/geo-measurement-import.ts` is the boundary before calculations.
+
+It accepts only strict aggregate fields for:
+
+- GSC/Bing exact search checkpoints;
+- canonical aggregate analytics events;
+- private-safe aggregate commercial outcomes.
+
+It rejects undeclared fields, query-string owner paths, unsupported windows, negative counts, cross-family analytics events, and inconsistent outcome hierarchies.
+
+The repository measurement contract must not carry raw leads, names, emails, phones, companies, MC/USDOT, VINs, rates, messages, account/property/stream IDs, credentials, tokens, cookies, or revenue amounts.
 
 ### Canonical owner reconciliation
 
-`src/data/geo-owner-measurement.ts` adds the required owner-level view:
+`src/data/geo-owner-measurement.ts` adds the owner-level chain:
 
-`canonical owner → registered AI prompts → real AI observations → search → CTA/intake → delivery → qualified outcome`
+`canonical owner → registered prompts → real AI observations → search → CTA/intake → delivery → qualified outcome`
 
-The owner set is the union of governed prompt owners and page owners found in search, funnel, or outcome evidence. A measurement-only owner remains visible with `promptCount: 0`; the system never invents an AI prompt simply because downstream evidence exists.
+The owner universe is the union of governed prompt owners and owners present in search/funnel/outcome evidence. A measurement-only owner remains visible with `promptCount: 0`; an AI prompt is never invented because downstream evidence exists.
 
 Each owner/window receives:
 
 - prompt coverage;
-- the same 7/28/90 scorecard metrics scoped only to that owner;
+- scoped 7/28/90 metrics;
 - missing-layer flags for AI visibility, search, funnel, and outcomes;
-- cross-layer integrity checks;
+- integrity gaps;
 - reconciliation status: `complete`, `incomplete`, or `inconsistent`.
 
-Examples of integrity gaps include a qualified/reviewed outcome with no receiver-confirmed delivery evidence, or reviewed/qualified counts that exceed the reconciled delivered count. These are surfaced as evidence problems rather than reported as valid conversion rates.
+Examples of integrity gaps include reviewed/qualified outcomes with no receiver-confirmed delivery evidence, or reviewed/qualified counts that exceed the reconciled delivered count.
 
-No analytics property IDs, stream IDs, account IDs, recipient details, raw leads, names, emails, phones, companies, MC/USDOT, VINs, routes, rates, messages, tokens, cookies, or user-level exports belong in the repository scorecard.
+## 2. AI visibility ownership and review
 
-## 2. GEO Answer Contract
+The existing 48-prompt AI Visibility registry remains the source of truth.
+
+`src/data/geo-prompt-owner-registry.ts` groups every prompt under exactly one canonical owner and preserves direction, language, geography, intent, cadence, expected facts, and prohibited claims.
+
+`src/data/geo-ai-observation-evaluation.ts` classifies a real linked citation as:
+
+- `canonical_owner`;
+- `other_hermes_owner`;
+- `unmapped_hermes_path`;
+- `no_linked_citation`.
+
+This means a correct Hermes mention with the wrong cited owner is visible as an owner-alignment problem instead of disappearing inside a generic citation rate.
+
+The built-route audit verifies generated `dist/` output, including dynamic Astro routes. Governed production owners must actually exist and must not accidentally become `noindex`.
+
+### Manual review scheduler
+
+`src/data/geo-ai-review-plan.ts` turns the 48-prompt registry into a repeatable review process without adding provider automation.
+
+Default reviewed provider set:
+
+- ChatGPT;
+- Gemini;
+- Copilot;
+- Perplexity;
+- Google AI Mode.
+
+The caller may supply a different explicit provider set from the existing governed provider enum.
+
+Cadence is operationalized as:
+
+- weekly → 7 days;
+- monthly → 28 days.
+
+Each prompt × provider checkpoint becomes:
+
+- `never_observed`;
+- `overdue`;
+- `due_soon`;
+- `current`.
+
+Synthetic observations never reset a real review due date. Future-dated observations and unknown prompt IDs fail validation.
+
+This is a scheduling and evidence-control layer only. It does not log into providers, scrape conversations, publish content, or call provider APIs.
+
+### Sanitized AI observation import
+
+`src/data/geo-ai-observation-import.ts` is the manual ingestion boundary for real reviewed AI observations.
+
+Allowed information is structured only: prompt ID, provider, timestamp, pseudonymous reviewer label, mention/citation flags, site-relative cited path, recommendation state, accuracy states, factual-error flag, public competitor labels, bounded corrective action, and evidence reference.
+
+The importer rejects:
+
+- raw/full provider responses;
+- transcripts or conversation fields;
+- arbitrary undeclared fields;
+- email and obvious phone data;
+- person-style reviewer strings instead of opaque labels;
+- unknown providers or prompts;
+- external cited URLs where the current observation contract requires a Hermes site-relative citation;
+- duplicate observation IDs;
+- duplicate prompt × provider × timestamp checkpoints.
+
+GitHub remains a structured evidence registry, not a conversation archive.
+
+### Competitive AI visibility
+
+`src/data/geo-ai-competitive-visibility.ts` provides bounded competitive observation metrics:
+
+- Hermes presence rate in the reviewed answer set;
+- competitor-inclusion rate;
+- normalized unique public competitor labels;
+- competitor mention occurrences;
+- owner/provider breakdown;
+- `entityMentionShare` within the reviewed observation set.
+
+`entityMentionShare` is **not** market share, search SOV, ranking share, traffic share, or business-performance evidence.
+
+Synthetic observations are excluded.
+
+## 3. Four-direction alignment
+
+The current SEO market architecture and GEO share four business directions but remain separate publication/measurement workstreams.
+
+`src/data/geo-direction-alignment.ts` maps:
+
+- GEO `logistics` → SEO `logistics` → `/paths/logistics/`;
+- GEO `marketing` → SEO `marketing` → `/paths/marketing/`;
+- GEO `academy` → SEO `academy` → `/paths/academy/`;
+- GEO `technology` → SEO `it_hermes_connect` → `/paths/technology/`.
+
+The SEO registry remains scoped to Google/Bing market research and publication control. An SEO research candidate cannot silently become a GEO prompt, answer surface, or page.
+
+Existing compliance/market exclusions in the SEO registry remain authoritative for SEO acquisition research and are not overridden by GEO.
+
+## 4. Answer contract
 
 Implementation: `src/data/geo-answer-contract.ts`.
 
-Every answer surface can carry the following human + machine structure:
+Every answer surface can carry the same human + machine structure:
 
 `SHORT ANSWER → WHY → EVIDENCE → WHAT IT MEANS FOR YOU → HOW TO APPLY → NEXT ACTION`
 
-The same surface may also contain:
+The surface may also contain:
 
 - claims;
 - entities;
@@ -103,11 +213,9 @@ The same surface may also contain:
 - a short progressive question path;
 - personalized outcomes;
 - contextual next actions;
-- JSON-LD generated from the reviewed contract.
+- JSON-LD derived from the reviewed contract.
 
-### Truth labels
-
-Supported labels:
+Supported truth labels:
 
 - `verified_fact`;
 - `inference`;
@@ -116,141 +224,168 @@ Supported labels:
 - `simulated`;
 - `not_configured`.
 
-The validator requires evidence for verified facts, inferences, and internal Hermes data. Demo and simulated origins must be visibly labeled as Demo or Simulated.
+Verified facts, inferences and internal Hermes data require evidence. Demo and Simulated origins must remain visibly labeled.
 
-### Evidence rules
+## 5. Evidence graph
 
-Evidence has a source name, origin, truth label, summary, optional HTTPS URL, and optional checked timestamp.
+`src/data/geo-evidence-graph.ts` checks that the human answer and machine evidence model remain connected.
+
+It reports:
+
+- which evidence supports visible answer claims;
+- evidence used by entities and relationships;
+- unused evidence;
+- claims that exist in data but are not exposed in the human evidence layer;
+- isolated entities;
+- public sources missing a reviewed URL;
+- public citation URLs supporting visible answer claims.
+
+A release-ready evidence graph rejects unused sources, hidden answer claims, and public-source records without a reviewed URL.
 
 A claim, entity, or relationship cannot reference a missing evidence ID.
 
-Public citations are emitted into JSON-LD only when the evidence item is explicitly marked `public_source` and has a reviewed HTTPS URL. Demo evidence is not emitted as a public citation.
+## 6. Entity-first architecture
 
-### Entity-first rules
+`src/data/geo-public-entity-adapter.ts` reuses the governed `public-entity-registry.ts`. GEO does not create a competing entity registry.
 
-Each entity must answer:
+Each entity should make clear:
 
-- who/what is it;
+- who/what it is;
 - how it relates to Hermes;
-- why it matters to this answer;
+- why it matters to the answer;
 - what evidence supports the relationship.
 
-Relationships are explicit edges between registered entities. Decorative network edges without semantic meaning are not part of the contract.
+Held entity relationships remain held and are not emitted as approved public GEO relationships.
 
-`src/data/geo-public-entity-adapter.ts` reuses the governed public entity registry. Entities on relationship/publication hold are not promoted into GEO as approved schema relationships.
-
-## 3. AI visibility ownership
-
-The existing 48-prompt AI Visibility registry remains the source of truth. `src/data/geo-prompt-owner-registry.ts` groups every prompt under exactly one canonical owner and preserves direction, language, geography, intent, cadence, expected facts, and prohibited claims.
-
-`src/data/geo-ai-observation-evaluation.ts` distinguishes:
-
-- citation to the expected canonical owner;
-- citation to another governed Hermes owner;
-- citation to an unmapped Hermes path;
-- no linked citation.
-
-Synthetic QA observations are excluded from business visibility reporting. A correct Hermes mention with the wrong cited owner is therefore visible as an owner-alignment problem instead of being counted only as a generic citation success.
-
-The built-route audit verifies that governed production owners actually exist in generated `dist/` output and are not accidentally `noindex`. Dynamic Astro routes and physical routes are validated by the same built-site criterion.
-
-## 4. Guided Action Loop
+## 7. Guided Action Loop
 
 The contract supports:
 
 `QUESTION → SELF-RECOGNITION → REALIZATION → UNDERSTANDING → APPLICATION → ACTION → PROGRESS → NEXT STEP`
 
-Guardrails are enforced in code:
+Guardrails:
 
-- maximum seven questions in one guided path;
-- each question offers only 2–5 choices;
-- every choice must produce one realization;
+- maximum seven questions;
+- each question offers 2–5 simple choices;
+- every choice produces one realization;
 - every choice has exactly one next transition;
-- no dead-end question or missing outcome is permitted;
+- no dead-end questions;
 - every personalized outcome has a site-relative next action.
 
-This prevents a GEO answer surface from turning into a 25-question lead form.
+This prevents GEO from turning into a long lead questionnaire.
 
-## 5. Machine-readable output
+## 8. Machine-readable output
 
-`buildGeoAnswerSchema()` produces a WebPage/Question/Answer structure with explicit `about` entities.
+`buildGeoAnswerSchema()` produces WebPage / Question / Answer semantics with explicit `about` entities.
 
-Important boundary:
+Boundaries:
 
 - machine-readable data mirrors reviewed human-readable content;
-- it does not contain hidden claims that the visitor cannot inspect;
-- it does not invent sources, partners, customers, rankings, reviews, metrics, integrations, or live provider state;
-- preview WebPage/Question identity belongs to the preview URL, while governed production entity IDs and reviewed first-party source URLs remain canonical where appropriate.
+- hidden machine-only claims are not allowed;
+- sources, partners, customers, rankings, reviews, metrics, integrations, provider status, and results cannot be invented;
+- preview WebPage/Question identity belongs to the preview URL;
+- governed production entity IDs and reviewed first-party source URLs remain canonical when appropriate.
 
-## 6. Visual previews
+The current canonical `llms-full.txt` remains the higher-level evidence-bounded AI context. GEO does not create a parallel LLM-manifest standard.
+
+## 9. Current visual previews
 
 Current preview routes:
 
 - `/demos/geo-answer-surface/` — generic GEO answer architecture Demo;
-- `/demos/geo-car-hauling-owner/` — car-hauling production candidate built from reviewed first-party Hermes facts.
+- `/demos/geo-car-hauling-owner/` — car-hauling production candidate using reviewed first-party Hermes facts.
 
-Both routes are intentionally:
+Both are intentionally:
 
 - `noindex,nofollow,noarchive`;
-- excluded from the sitemap by the existing noindex build behavior;
-- marked as Demo/Preview and CEO approval required;
-- based on canonical Hermes Design OS tokens;
-- designed for 390px and desktop;
+- excluded from the sitemap;
+- visibly Demo/Preview and CEO-approval gated;
+- based on Hermes Design OS tokens;
+- browser-tested on desktop and 390px;
 - isolated from production publication until explicit approval.
 
-The previews demonstrate direct answers, Connected Thread, layered application, entity/evidence surfaces, progressive guided choices, personalized outcomes, contextual next actions, and machine-readable Question/Answer relationships.
+The generic demo does not assert a real customer, ranking, metric, integration, live AI result, partner, or external source.
 
-The generic demo does not assert a customer, ranking, metric, integration, live AI result, partner, or external source. The car-hauling candidate explicitly identifies its evidence as first-party Hermes service evidence and states that it is not independent third-party proof of performance.
+The car-hauling candidate explicitly identifies first-party Hermes service evidence and states that it is not independent third-party performance proof.
 
-## 7. CEO visual approval gate
+Production `/logistics/car-hauling-dispatch/` is not modified by this preview implementation.
+
+## 10. CEO visual approval gate
 
 Issue #665 is binding.
 
-Any material visual GEO change follows this sequence:
+Any material visual GEO change follows:
 
 1. build only in preview;
 2. run build/tests/browser QA;
-3. provide clickable preview URL;
-4. explain the visual/UX change briefly;
-5. receive explicit CEO approval;
-6. only then merge/publish that visual change.
+3. provide Vladimir a clickable preview URL;
+4. explain the visible/UX change briefly;
+5. receive explicit personal approval;
+6. only then publish that visual change.
 
-CI success is not CEO visual approval.
+CI success is not visual approval.
 
-Purely technical measurement/schema/validation work that does not materially change visible output may proceed through normal engineering gates, but this branch keeps the visual previews unmerged until approval.
+Pure measurement/schema/validation work that does not materially change visible output may continue through normal engineering gates.
 
-## 8. Verification
+## 11. Verification
 
-Contract tests include:
+Core GEO contract tests chained from `scripts/ai-visibility-scorecard.test.mjs` now include:
 
-- `scripts/geo-measurement-layer.test.mjs`;
-- `scripts/geo-measurement-adapters.test.mjs`;
-- `scripts/geo-owner-measurement.test.mjs`;
-- `scripts/geo-answer-contract.test.mjs`;
-- `scripts/geo-public-entity-adapter.test.mjs`;
-- `scripts/geo-prompt-owner-registry.test.mjs`;
-- `scripts/geo-ai-observation-evaluation.test.mjs`;
-- `scripts/geo-canonical-owner-route-audit.test.mjs`;
-- `scripts/geo-car-hauling-answer-candidate.test.mjs`.
-
-These are chained from the existing AI visibility test path used by `npm test`.
+- measurement layer;
+- exact-window and analytics adapters;
+- sanitized measurement imports;
+- owner reconciliation;
+- answer contract;
+- evidence graph;
+- public entity adapter;
+- prompt-owner registry;
+- four-direction SEO/GEO alignment;
+- AI observation evaluation;
+- sanitized AI observation import;
+- competitive visibility;
+- manual AI review scheduler;
+- canonical built-owner route audit;
+- car-hauling production candidate.
 
 Browser QA includes:
 
 - `tests/geo-answer-surface.spec.ts`;
 - `tests/geo-car-hauling-owner.spec.ts`;
 - noindex/sitemap exclusion;
-- truth/evidence labeling;
-- parsed JSON-LD Question/Answer and governed IDs;
+- parsed JSON-LD Question/Answer/entity identity checks;
 - guided routing;
 - 390px horizontal-overflow checks.
 
-Repository acceptance remains the existing `npm run build` → `npm test` → `npm run test:e2e` pipeline plus the current SEO/GEO framework gates on canonical `main`.
+Repository acceptance remains current canonical `main` build/test/e2e plus the Hermes SEO Framework P0, four-direction market registry, long/short GEO evidence, commercial-owner internal-link, privacy and other current CI gates.
 
-## 9. Next implementation slices
+## 12. Current implementation boundary
 
-1. feed real sanitized GSC/Bing/GA4/private-safe evidence into exact checkpoints and 7/28/90 owner reconciliation only when those evidence windows actually exist;
-2. expand owner-level evidence diagnostics before creating more public answer surfaces;
-3. use the car-hauling candidate as the first approved production pattern only after CEO visual approval;
-4. then apply the same governed answer contract to the next highest-value existing owner rather than mass-generating pages;
-5. measure AI visibility, citation-owner accuracy, search discovery, downstream action, delivery, qualification, and outcome as separate evidence stages.
+Implemented now:
+
+- governed prompt ownership;
+- manual review scheduling;
+- sanitized AI observation ingestion;
+- citation-owner evaluation;
+- bounded competitive AI metrics;
+- exact search/analytics/outcome ingestion;
+- 7/28/90 measurement;
+- canonical owner reconciliation;
+- answer/entity/evidence contracts;
+- evidence graph diagnostics;
+- two visual preview patterns.
+
+Still evidence-gated rather than fabricated:
+
+- live current GSC/Bing exports beyond owner-provided/authenticated checkpoints;
+- GA4 exact-once production receipt where still unresolved in #206;
+- receiver/private qualification evidence not supplied to the layer;
+- real provider observation rows not manually reviewed/imported;
+- production publication of visual GEO surfaces without CEO approval.
+
+## 13. Next slices
+
+1. connect real sanitized evidence only when authenticated/owner-reviewed inputs actually exist;
+2. produce the first complete 7/28 owner scorecard rather than manufacturing missing values;
+3. run the AI review queue against real manually reviewed observations;
+4. use the car-hauling candidate as the first production visual pattern only after explicit CEO approval;
+5. then apply the same governed answer contract to the next highest-value existing canonical owner, not to mass-generated robot pages.
