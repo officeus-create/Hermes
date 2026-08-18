@@ -55,7 +55,7 @@ assert.match(learnerApi, /enrollment\.state !== "enrolled"/);
 assert.match(learnerApi, /cleanAcademyEvidenceUrl/);
 assert.match(learnerApi, /WHERE specialist_id = \?/);
 assert.doesNotMatch(learnerApi, /UPDATE academy_enrollments|UPDATE academy_lesson_progress/);
-assert.doesNotMatch(learnerApi, /fetch\([^\n]*evidence/i);
+assert.doesNotMatch(learnerApi, /fetch\s*\([^)]*evidence/i);
 assert.doesNotMatch(learnerApi, /searchParams\.get\(["'](?:learner|specialist|email)/);
 
 assert.match(reviewerApi, /getAcademyReviewerAccess/);
