@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import "../../../../styles/hermes-academy-app.css";
+---
+
+<BaseLayout
+  title="Hermes Connect Academy | Learner Access"
+  description="Hermes Connect Academy learner access foundation for reviewed applications, enrollment state and future course progress."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span><a href="/paths/academy/">Academy</a><span>/</span><span aria-current="page">Hermes Connect learner access</span>
+      </nav>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Hermes Connect · Academy A1</p>
+          <h1>One learner identity. One reviewed enrollment path.</h1>
+          <p>This is the authenticated learner foundation for Hermes Business Academy. Public program pages remain the source of curriculum descriptions. An Academy account stores your learner profile and enrollment state inside the same Hermes identity/session system used by Hermes Connect.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button primary" href="/services/hermes-connect/academy/auth/">Sign in or create learner account</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Open learner dashboard</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">Private A1 foundation</span>
+          <h2 style="margin-top:14px">Application ≠ enrollment.</h2>
+          <p>The public application is still a qualification and human-review handoff. Creating an account or choosing a program does not automatically approve admission, create operational access, guarantee employment, income, certification, clients, or a completion result.</p>
+          <a class="academy-app-button" href="/academy/apply/">Open public application</a>
+        </aside>
+      </section>
+
+      <section class="academy-app-grid" aria-label="Academy programs and method">
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">Current public programs</p>
+          <h2>Start from an approved curriculum source.</h2>
+          <div class="academy-app-programs">
+            <article class="academy-program-card">
+              <span class="academy-app-status">Program 01</span>
+              <h3>U.S. Logistics Operations</h3>
+              <p>Dispatch foundations, carrier/broker communication, equipment and lane logic, documents, negotiation practice and operating rhythm.</p>
+              <a class="academy-app-button" href="/academy/us-logistics-operations/">Review curriculum</a>
+            </article>
+            <article class="academy-program-card">
+              <span class="academy-app-status">Program 02</span>
+              <h3>Marketing</h3>
+              <p>Positioning, website-first content, channel distribution, lead journey, sales follow-up, analytics and improvement.</p>
+              <a class="academy-app-button" href="/academy/marketing/">Review curriculum</a>
+            </article>
+          </div>
+        </article>
+
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">Learning method</p>
+          <h2>Progress remains evidence-led and human-reviewed.</h2>
+          <p>The current Academy method moves through readiness, awareness, understanding, application, feedback/correction and a human progression decision.</p>
+          <div class="academy-app-note">A1 stores learner identity and enrollment state only. Lessons, submissions, reviewer tooling, progress scoring and commercial access belong to later bounded releases.</div>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/academy/how-training-works/">How training works</a>
+            <a class="academy-app-button" href="/academy/resources/">Academy resources</a>
+          </div>
+        </article>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>

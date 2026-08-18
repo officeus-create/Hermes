@@ -1,0 +1,283 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import "../../../../../styles/hermes-academy-app.css";
+---
+
+<BaseLayout
+  title="Academy Learner Dashboard | Hermes Connect"
+  description="Private Hermes Connect Academy learner profile and enrollment state."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/">Academy learner access</a><span>/</span><span aria-current="page">Dashboard</span>
+      </nav>
+
+      <div class="academy-app-alert" data-dashboard-alert role="status"></div>
+
+      <section class="academy-app-hero" data-dashboard-loading>
+        <article class="academy-app-card"><p class="academy-app-eyebrow">Secure learner workspace</p><h1>Loading your Academy state…</h1><p>The dashboard reads only the learner attached to your current Hermes session.</p></article>
+      </section>
+
+      <div class="academy-app-hidden" data-dashboard-content>
+        <section class="academy-app-hero">
+          <article class="academy-app-card">
+            <p class="academy-app-eyebrow">Hermes Connect · Academy learner</p>
+            <h1>Welcome, <span data-learner-name>Learner</span>.</h1>
+            <p>Your Academy profile and enrollment state are attached to the same Hermes identity/session used across Hermes Connect. They persist independently of this browser.</p>
+            <div class="academy-app-actions">
+              <a class="academy-app-button" href="/academy/how-training-works/">How training works</a>
+              <a class="academy-app-button" href="/academy/apply/">Public application / qualification</a>
+              <button class="academy-app-button" type="button" data-dashboard-logout>Log out</button>
+            </div>
+          </article>
+          <aside class="academy-app-card academy-app-dark">
+            <span class="academy-app-status">Human progression gate</span>
+            <h2 style="margin-top:14px">Enrollment state is not a hiring decision.</h2>
+            <p>A learner may request one of the two approved public programs. New requests enter only as <strong>Applied</strong>. Approval, enrollment, completion, employment, operational access and commercial terms require separate authorized decisions.</p>
+          </aside>
+        </section>
+
+        <section class="academy-app-grid">
+          <article class="academy-app-panel">
+            <p class="academy-app-eyebrow">Your learner profile</p>
+            <h2>Preferences, not duplicate identity.</h2>
+            <p class="academy-app-kicker"><strong data-learner-email></strong><br /><span data-learner-role></span></p>
+            <form class="academy-app-form" data-profile-form>
+              <div class="academy-app-field">
+                <label for="academy-language">Preferred learning language</label>
+                <select id="academy-language" name="preferred_language">
+                  <option value="">Not selected</option>
+                  <option value="en">English</option>
+                  <option value="ru">Русский</option>
+                  <option value="uk">Українська</option>
+                  <option value="es">Español</option>
+                  <option value="it">Italiano</option>
+                  <option value="fr">Français</option>
+                </select>
+              </div>
+              <div class="academy-app-field">
+                <label for="academy-timezone">Time zone</label>
+                <input id="academy-timezone" name="timezone" type="text" maxlength="80" placeholder="Europe/Kyiv" />
+              </div>
+              <button class="academy-app-button primary" type="submit">Save learner preferences</button>
+            </form>
+            <div class="academy-app-note" style="margin-top:14px">Email, name and the core Hermes identity stay in the shared identity record; this Academy profile does not copy passwords or create another account store.</div>
+          </article>
+
+          <article class="academy-app-panel">
+            <p class="academy-app-eyebrow">Program request</p>
+            <h2>Choose one approved public program.</h2>
+            <p>Creating a request records <strong>Applied</strong> only. It does not auto-approve you or choose a paid/free cohort.</p>
+            <form class="academy-app-form" data-enrollment-form>
+              <div class="academy-app-field">
+                <label for="academy-program">Program</label>
+                <select id="academy-program" name="program_slug" required>
+                  <option value="">Choose program</option>
+                  <option value="us-logistics-operations">U.S. Logistics Operations</option>
+                  <option value="marketing">Marketing</option>
+                </select>
+              </div>
+              <button class="academy-app-button intelligence" type="submit">Request program review</button>
+            </form>
+            <div class="academy-app-actions">
+              <a class="academy-app-button" href="/academy/us-logistics-operations/">Logistics curriculum</a>
+              <a class="academy-app-button" href="/academy/marketing/">Marketing curriculum</a>
+            </div>
+          </article>
+        </section>
+
+        <section class="academy-app-panel" style="margin-top:18px">
+          <p class="academy-app-eyebrow">Enrollment state</p>
+          <h2>Your program requests</h2>
+          <p data-enrollment-empty>No program request yet. Review the public curriculum first, then submit one program for human review.</p>
+          <div class="academy-app-list" data-enrollment-list></div>
+        </section>
+      </div>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type Enrollment = {
+    id: string;
+    program_slug: string;
+    state: string;
+    participation_model: string;
+    cohort_code: string | null;
+  };
+  type AcademyState = {
+    learner: {
+      id: string;
+      email: string;
+      name: string;
+      identity_role: string;
+      preferred_language: string | null;
+      timezone: string | null;
+    };
+    enrollments: Enrollment[];
+  };
+
+  const loading = document.querySelector<HTMLElement>("[data-dashboard-loading]");
+  const content = document.querySelector<HTMLElement>("[data-dashboard-content]");
+  const alert = document.querySelector<HTMLElement>("[data-dashboard-alert]");
+  const profileForm = document.querySelector<HTMLFormElement>("[data-profile-form]");
+  const enrollmentForm = document.querySelector<HTMLFormElement>("[data-enrollment-form]");
+
+  const programNames: Record<string, string> = {
+    "us-logistics-operations": "U.S. Logistics Operations",
+    marketing: "Marketing",
+  };
+  const stateLabels: Record<string, string> = {
+    applied: "Applied · human review pending",
+    approved: "Approved",
+    enrolled: "Enrolled",
+    paused: "Paused",
+    completed: "Completed",
+    cancelled: "Cancelled",
+  };
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+
+  function render(state: AcademyState) {
+    const name = document.querySelector<HTMLElement>("[data-learner-name]");
+    const email = document.querySelector<HTMLElement>("[data-learner-email]");
+    const role = document.querySelector<HTMLElement>("[data-learner-role]");
+    const language = document.getElementById("academy-language") as HTMLSelectElement | null;
+    const timezone = document.getElementById("academy-timezone") as HTMLInputElement | null;
+    if (name) name.textContent = state.learner.name || "Learner";
+    if (email) email.textContent = state.learner.email || "";
+    if (role) role.textContent = `Shared Hermes identity · ${state.learner.identity_role || "Member"}`;
+    if (language) language.value = state.learner.preferred_language || "";
+    if (timezone) timezone.value = state.learner.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+
+    const list = document.querySelector<HTMLElement>("[data-enrollment-list]");
+    const empty = document.querySelector<HTMLElement>("[data-enrollment-empty]");
+    if (list) {
+      list.replaceChildren();
+      for (const item of state.enrollments) {
+        const article = document.createElement("article");
+        article.className = "academy-enrollment";
+        const detail = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = programNames[item.program_slug] || item.program_slug;
+        const participation = document.createElement("small");
+        const participationLabel = item.participation_model === "unspecified"
+          ? "decided during human review"
+          : item.participation_model.replaceAll("_", " ");
+        participation.textContent = `Participation model: ${participationLabel}`;
+        detail.append(title, participation);
+        const stateBadge = document.createElement("span");
+        stateBadge.className = "academy-enrollment-state";
+        stateBadge.textContent = stateLabels[item.state] || item.state;
+        article.append(detail, stateBadge);
+        list.append(article);
+      }
+    }
+    if (empty) empty.classList.toggle("academy-app-hidden", state.enrollments.length > 0);
+
+    const program = document.getElementById("academy-program") as HTMLSelectElement | null;
+    if (program) {
+      [...program.options].forEach((option) => {
+        if (!option.value) return;
+        option.disabled = state.enrollments.some((item) => item.program_slug === option.value);
+      });
+      if (program.selectedOptions[0]?.disabled) program.value = "";
+    }
+
+    loading?.classList.add("academy-app-hidden");
+    content?.classList.remove("academy-app-hidden");
+  }
+
+  async function loadState() {
+    clearAlert();
+    try {
+      const response = await fetch("/api/academy/profile", { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load learner state");
+      render(data as AcademyState);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load learner state");
+    }
+  }
+
+  profileForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const button = profileForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const values = new FormData(profileForm);
+      const response = await fetch("/api/academy/profile", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          preferred_language: values.get("preferred_language"),
+          timezone: values.get("timezone"),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not save learner preferences");
+      render(data as AcademyState);
+      showAlert("Learner preferences saved.", "success");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not save learner preferences");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  enrollmentForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const button = enrollmentForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const values = new FormData(enrollmentForm);
+      const response = await fetch("/api/academy/enrollments", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ program_slug: values.get("program_slug") }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not create program request");
+      const profileResponse = await fetch("/api/academy/profile", { credentials: "same-origin" });
+      const profileData = await profileResponse.json().catch(() => ({}));
+      if (!profileResponse.ok || !profileData.success) throw new Error(profileData.error || "Could not refresh learner state");
+      render(profileData as AcademyState);
+      enrollmentForm.reset();
+      showAlert(data.existing ? "This program request already exists." : "Program request recorded as Applied. Human review is still required.", "success");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not create program request");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  document.querySelector<HTMLElement>("[data-dashboard-logout]")?.addEventListener("click", async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
+    window.location.assign("/services/hermes-connect/academy/auth/?mode=login");
+  });
+
+  loadState();
+</script>

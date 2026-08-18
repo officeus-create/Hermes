@@ -1,0 +1,190 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import "../../../../../styles/hermes-academy-app.css";
+---
+
+<BaseLayout
+  title="Academy Learner Access | Hermes Connect"
+  description="Sign in with an existing Hermes identity or create a learner identity for Hermes Business Academy."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/">Academy learner access</a><span>/</span><span aria-current="page">Sign in</span>
+      </nav>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Shared Hermes identity</p>
+          <h1>Use one Hermes account across the ecosystem.</h1>
+          <p>If you already have a Hermes Connect session, the Academy uses that same identity. New learners create an identity through the existing Hermes authentication service; no second password store, account database or Academy-only session cookie is created.</p>
+          <div class="academy-app-note">Creating a learner account does not approve an Academy application or enroll you in a cohort. Enrollment state is shown separately in the learner dashboard.</div>
+        </article>
+
+        <article class="academy-app-card academy-app-dark">
+          <div id="academy-auth-loading">
+            <span class="academy-app-status">Secure session</span>
+            <h2 style="margin-top:14px">Checking your Hermes session…</h2>
+            <p>Existing Hermes sessions work here without another login.</p>
+          </div>
+
+          <div id="academy-auth-active" class="academy-app-hidden">
+            <span class="academy-app-status">Session active</span>
+            <h2 style="margin-top:14px">Welcome, <span data-academy-auth-name>Learner</span>.</h2>
+            <p data-academy-auth-email></p>
+            <div class="academy-app-actions">
+              <a class="academy-app-button intelligence" href="/services/hermes-connect/academy/dashboard/">Open learner dashboard</a>
+              <button class="academy-app-button" type="button" data-academy-logout>Log out</button>
+            </div>
+          </div>
+
+          <div id="academy-auth-forms" class="academy-app-hidden">
+            <div class="academy-app-tabs" aria-label="Authentication mode">
+              <button class="academy-app-tab active" type="button" data-auth-tab="login">Login</button>
+              <button class="academy-app-tab" type="button" data-auth-tab="register">Create account</button>
+            </div>
+            <div class="academy-app-alert" data-auth-alert role="status"></div>
+
+            <form class="academy-app-form academy-auth-section active" data-auth-form="login">
+              <div class="academy-app-field"><label for="academy-login-email">Email</label><input id="academy-login-email" name="email" type="email" autocomplete="email" required /></div>
+              <div class="academy-app-field"><label for="academy-login-password">Password</label><input id="academy-login-password" name="password" type="password" autocomplete="current-password" minlength="8" required /></div>
+              <button class="academy-app-button intelligence" type="submit">Secure login</button>
+            </form>
+
+            <form class="academy-app-form academy-auth-section" data-auth-form="register">
+              <div class="academy-app-field"><label for="academy-reg-name">Full name</label><input id="academy-reg-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="100" required /></div>
+              <div class="academy-app-field"><label for="academy-reg-email">Email</label><input id="academy-reg-email" name="email" type="email" autocomplete="email" required /></div>
+              <div class="academy-app-field"><label for="academy-reg-location">Country and city</label><input id="academy-reg-location" name="location" type="text" autocomplete="address-level2" minlength="2" maxlength="120" required placeholder="Kyiv, Ukraine" /></div>
+              <div class="academy-app-field"><label for="academy-reg-password">Password</label><input id="academy-reg-password" name="password" type="password" autocomplete="new-password" minlength="8" required /></div>
+              <button class="academy-app-button intelligence" type="submit">Create learner identity</button>
+            </form>
+          </div>
+        </article>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const loading = document.getElementById("academy-auth-loading");
+  const active = document.getElementById("academy-auth-active");
+  const forms = document.getElementById("academy-auth-forms");
+  const alert = document.querySelector<HTMLElement>("[data-auth-alert]");
+  const requestedMode = new URLSearchParams(window.location.search).get("mode");
+
+  const show = (target: HTMLElement | null) => {
+    [loading, active, forms].forEach((node) => node?.classList.add("academy-app-hidden"));
+    target?.classList.remove("academy-app-hidden");
+  };
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+
+  const selectTab = (mode: "login" | "register") => {
+    document.querySelectorAll<HTMLElement>("[data-auth-tab]").forEach((button) => button.classList.toggle("active", button.dataset.authTab === mode));
+    document.querySelectorAll<HTMLElement>("[data-auth-form]").forEach((form) => form.classList.toggle("active", form.dataset.authForm === mode));
+    clearAlert();
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-auth-tab]").forEach((button) => {
+    button.addEventListener("click", () => selectTab(button.dataset.authTab === "register" ? "register" : "login"));
+  });
+  if (requestedMode === "register") selectTab("register");
+
+  async function checkSession() {
+    show(loading);
+    try {
+      const response = await fetch("/api/auth/me", { credentials: "same-origin" });
+      const data = await response.json().catch(() => ({}));
+      if (response.ok && data.success && data.specialist) {
+        const name = document.querySelector<HTMLElement>("[data-academy-auth-name]");
+        const email = document.querySelector<HTMLElement>("[data-academy-auth-email]");
+        if (name) name.textContent = data.specialist.name || "Learner";
+        if (email) email.textContent = data.specialist.email || "";
+        show(active);
+        return;
+      }
+    } catch {
+      // Fall through to the normal login/register forms.
+    }
+    show(forms);
+  }
+
+  document.querySelector<HTMLFormElement>('[data-auth-form="login"]')?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const form = event.currentTarget as HTMLFormElement;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    try {
+      const values = new FormData(form);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: values.get("email"), password: values.get("password") }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Login failed");
+      window.location.assign("/services/hermes-connect/academy/dashboard/");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Login failed");
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+
+  document.querySelector<HTMLFormElement>('[data-auth-form="register"]')?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const form = event.currentTarget as HTMLFormElement;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    try {
+      const values = new FormData(form);
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: values.get("email"),
+          password: values.get("password"),
+          name: values.get("name"),
+          role: "Academy Learner",
+          location: values.get("location"),
+          bio: "Hermes Academy learner identity for reviewed training access.",
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        const message = data.error || (Array.isArray(data.errors) ? data.errors.join(", ") : "Registration failed");
+        throw new Error(message);
+      }
+      window.location.assign("/services/hermes-connect/academy/dashboard/");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Registration failed");
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+
+  document.querySelector<HTMLElement>("[data-academy-logout]")?.addEventListener("click", async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" }).catch(() => null);
+    await checkSession();
+  });
+
+  checkSession();
+</script>

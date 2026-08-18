@@ -102,3 +102,5 @@ test('Shared vertical module stylesheet exists and preserves Hermes brand tokens
   assert.match(css, /--ocean:#5AC8FA/);
   assert.match(css, /--sage:#7FD1B6/);
 });
+
+await import('./academy-a1-contract.test.mjs');
