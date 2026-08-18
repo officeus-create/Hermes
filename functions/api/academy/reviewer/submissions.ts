@@ -72,14 +72,16 @@ async function reviewerQueue(db: any, access: any, requestedProgram: string | nu
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const auth = await requireReviewer(request, env);
-  if (auth.response) return auth.response;
+  if ("response" in auth) return auth.response;
 
   const requestedProgram = new URL(request.url).searchParams.get("program");
   const queue = await reviewerQueue(env.DB, auth.access, requestedProgram);
-  if (queue.error === "reviewer_program_scope_forbidden") {
-    return jsonResponse(403, { success: false, error: queue.error });
+  if ("error" in queue) {
+    if (queue.error === "reviewer_program_scope_forbidden") {
+      return jsonResponse(403, { success: false, error: queue.error });
+    }
+    return jsonResponse(400, { success: false, error: queue.error });
   }
-  if (queue.error) return jsonResponse(400, { success: false, error: queue.error });
 
   return jsonResponse(200, {
     success: true,
@@ -90,7 +92,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
 export async function onRequestPut({ request, env }: { request: Request; env: Env }) {
   const auth = await requireReviewer(request, env);
-  if (auth.response) return auth.response;
+  if ("response" in auth) return auth.response;
 
   let body: Record<string, unknown>;
   try {
