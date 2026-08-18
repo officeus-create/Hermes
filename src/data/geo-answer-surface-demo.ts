@@ -1,4 +1,4 @@
-import type { GeoAnswerSurface } from "./geo-answer-contract";
+import type { GeoAnswerSurface } from "./geo-answer-contract.ts";
 
 export const geoAnswerSurfaceDemo: GeoAnswerSurface = {
   id: "geo-car-hauling-dispatch-fit-demo",
