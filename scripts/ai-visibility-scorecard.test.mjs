@@ -9,17 +9,14 @@ import {
 assert.equal(aiVisibilityPrompts.length, 48, "Release A must register exactly 48 prompts");
 assert.equal(new Set(aiVisibilityPrompts.map((item) => item.id)).size, 48, "Prompt IDs must be unique");
 assert.equal(new Set(aiVisibilityPrompts.map((item) => item.prompt)).size, 48, "Prompt text must be distinct");
-
 for (const direction of ["logistics", "marketing", "academy", "technology"]) {
   assert.equal(aiVisibilityPrompts.filter((item) => item.direction === direction).length, 12, `${direction} must own 12 prompts`);
 }
-
 assert.ok(aiVisibilityPrompts.some((item) => item.language === "ru"), "Russian prompts are required");
 assert.ok(aiVisibilityPrompts.some((item) => item.language === "uk"), "Ukrainian prompts are required");
 assert.ok(aiVisibilityPrompts.every((item) => item.canonicalOwner.startsWith("/")), "Every prompt needs a site-relative canonical owner");
 assert.ok(aiVisibilityPrompts.every((item) => item.expectedFacts.length > 0), "Every prompt needs expected safe facts");
 assert.ok(aiVisibilityPrompts.every((item) => item.prohibitedClaims.length > 0), "Every prompt needs prohibited claims");
-
 assert.deepEqual(aiVisibilityObservations, [], "The real baseline must start empty");
 assert.ok(syntheticAiVisibilityObservations.every((item) => item.synthetic), "QA observations must be marked synthetic");
 const emptyMetrics = calculateAiVisibilityMetrics(aiVisibilityObservations);
@@ -53,6 +50,7 @@ await import("./geo-search-diagnostics-import.test.mjs");
 await import("./geo-search-platform-evidence.test.mjs");
 await import("./geo-index-evidence.test.mjs");
 await import("./geo-analytics-receipt-evidence.test.mjs");
+await import("./geo-commercial-outcome-evidence.test.mjs");
 await import("./geo-ai-referral-measurement.test.mjs");
 await import("./geo-answer-contract.test.mjs");
 await import("./geo-evidence-graph.test.mjs");
