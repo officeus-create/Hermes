@@ -39,16 +39,15 @@ assert.equal(standard.aggregate.impressions, 70);
 assert.equal(standard.aggregate.clicks, 7);
 
 const carrierRows = [
-  ["commercial_cta_click", 20],
-  ["carrier_intake_start", 12],
-  ["carrier_intake_preview_ready", 9],
-  ["carrier_handoff_ready", 6],
-  ["carrier_delivery_confirmed", 4],
-].map(([eventName, count]) => ({
+  { eventName: "commercial_cta_click", count: 20, eventPagePath: "/logistics/car-hauling-dispatch/" },
+  { eventName: "carrier_intake_start", count: 12, eventPagePath: "/logistics/start-car-hauling-dispatch/" },
+  { eventName: "carrier_intake_preview_ready", count: 9, eventPagePath: "/logistics/start-car-hauling-dispatch/" },
+  { eventName: "carrier_handoff_ready", count: 6, eventPagePath: "/logistics/start-car-hauling-dispatch/" },
+  { eventName: "carrier_delivery_confirmed", count: 4, eventPagePath: "/logistics/start-car-hauling-dispatch/" },
+].map((row) => ({
   windowDays: 7,
-  pagePath: "/logistics/car-hauling-dispatch/",
-  eventName,
-  count,
+  journeyPath: "/logistics/car-hauling-dispatch/",
+  ...row,
   evidenceClass: "platform_verified",
 }));
 
@@ -56,6 +55,7 @@ const carrier = adaptCanonicalAnalyticsFunnel("carrier", carrierRows);
 assert.equal(carrier.status, "ready");
 assert.deepEqual(carrier.missingEvents, []);
 assert.deepEqual(carrier.registryGaps, []);
+assert.equal(carrier.aggregate.pagePath, "/logistics/car-hauling-dispatch/");
 assert.equal(carrier.aggregate.ctaClicks, 20);
 assert.equal(carrier.aggregate.intakeStarts, 12);
 assert.equal(carrier.aggregate.previewReady, 9);
@@ -69,7 +69,8 @@ const seoRows = [
   ["seo_handoff_ready", 3],
 ].map(([eventName, count]) => ({
   windowDays: 7,
-  pagePath: "/services/seo/",
+  journeyPath: "/services/seo/",
+  eventPagePath: "/services/seo/",
   eventName,
   count,
   evidenceClass: "platform_verified",
@@ -89,6 +90,11 @@ assert.equal(incompleteCarrier.aggregate, undefined);
 assert.throws(
   () => adaptCanonicalAnalyticsFunnel("carrier", carrierRows.map((row, index) => index === 1 ? { ...row, count: 21 } : row)),
   /intake starts cannot exceed commercial CTA clicks/,
+);
+
+assert.throws(
+  () => adaptCanonicalAnalyticsFunnel("carrier", carrierRows.map((row, index) => index === 1 ? { ...row, journeyPath: "/different-owner/" } : row)),
+  /one canonical journeyPath/,
 );
 
 assert.throws(
