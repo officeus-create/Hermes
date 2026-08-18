@@ -12,12 +12,18 @@ assert.deepEqual(demoGraph.publicAnswerCitationUrls, [], "Demo evidence must nev
 assert.deepEqual(demoGraph.unusedEvidenceIds, []);
 assert.deepEqual(demoGraph.unexposedClaimIds, []);
 assert.deepEqual(demoGraph.publicSourceWithoutUrlIds, []);
+assert.ok(demoGraph.edges.length > 0);
+assert.deepEqual(demoGraph.orphanNodeIds, []);
+assert.deepEqual(demoGraph.isolatedEntityIds, demoGraph.orphanNodeIds);
 assert.doesNotThrow(() => assertGeoEvidenceGraphReady(geoAnswerSurfaceDemo));
 
 const carGraph = assertGeoEvidenceGraphReady(geoCarHaulingAnswerCandidate);
 assert.deepEqual(carGraph.unusedEvidenceIds, []);
 assert.deepEqual(carGraph.unexposedClaimIds, []);
 assert.deepEqual(carGraph.publicSourceWithoutUrlIds, []);
+assert.deepEqual(carGraph.orphanNodeIds, []);
+assert.ok(carGraph.edges.some((edge) => edge.relationshipId === "hermes-provides-car-hauling-support"));
+assert.ok(carGraph.connectedEntityIds.includes("hermes_ecosystem"));
 assert.deepEqual(carGraph.publicAnswerCitationUrls, [
   "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
 ]);
@@ -66,5 +72,43 @@ const publicSourceWithoutUrl = {
 };
 assert.deepEqual(buildGeoEvidenceGraph(publicSourceWithoutUrl).publicSourceWithoutUrlIds, ["car-hauling-public-owner"]);
 assert.throws(() => assertGeoEvidenceGraphReady(publicSourceWithoutUrl), /missing reviewed URL/);
+
+const withOrphanNode = {
+  ...geoCarHaulingAnswerCandidate,
+  entities: [
+    ...geoCarHaulingAnswerCandidate.entities,
+    {
+      id: "orphan-resource-node",
+      name: "Orphan resource node",
+      type: "resource",
+      description: "Test-only entity that has evidence but no graph relationship edge.",
+      relationToHermes: "Test-only diagnostic node.",
+      whyItMatters: "Validates orphan-node detection without creating an invalid relationship endpoint.",
+      truthLabel: "verified_fact",
+      evidenceIds: ["car-hauling-public-owner"],
+    },
+  ],
+};
+assert.deepEqual(buildGeoEvidenceGraph(withOrphanNode).orphanNodeIds, ["orphan-resource-node"]);
+
+const invalidEdge = {
+  ...geoCarHaulingAnswerCandidate,
+  relationships: [
+    ...geoCarHaulingAnswerCandidate.relationships,
+    {
+      id: "invalid-edge",
+      fromEntityId: "missing-node",
+      toEntityId: "car-hauling-dispatch-service",
+      relationship: "invalid test edge",
+      truthLabel: "verified_fact",
+      evidenceIds: ["car-hauling-public-owner"],
+    },
+  ],
+};
+assert.throws(
+  () => buildGeoEvidenceGraph(invalidEdge),
+  /missing from entity/,
+  "edge validation must fail before emitting a graph with an unknown endpoint",
+);
 
 console.log("GEO answer evidence graph diagnostics passed");

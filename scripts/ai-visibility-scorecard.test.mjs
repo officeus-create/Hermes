@@ -83,6 +83,7 @@ await import("./geo-index-evidence.test.mjs");
 await import("./geo-ai-referral-measurement.test.mjs");
 await import("./geo-answer-contract.test.mjs");
 await import("./geo-evidence-graph.test.mjs");
+await import("./geo-site-graph-audit.test.mjs");
 await import("./geo-public-entity-adapter.test.mjs");
 await import("./geo-prompt-owner-registry.test.mjs");
 await import("./geo-four-direction-alignment.test.mjs");
