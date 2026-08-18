@@ -52,7 +52,10 @@ export type GeoFunnelRegistryGap = "delivery_confirmed_event_not_established";
 
 export interface GeoAnalyticsEventAggregate {
   windowDays: GeoWindowDays;
-  pagePath: string;
+  /** Canonical commercial/GEO owner that started the journey. */
+  journeyPath: string;
+  /** Route where the canonical analytics event actually occurred. */
+  eventPagePath: string;
   eventName: CanonicalCommercialAnalyticsEvent;
   count: number;
   evidenceClass: Extract<
@@ -78,8 +81,8 @@ const assertDateOnly = (label: string, value: string) => {
   }
 };
 
-const assertSitePath = (pagePath: string) => {
-  if (!pagePath.startsWith("/")) throw new Error(`pagePath must be site-relative: ${pagePath}`);
+const assertSitePath = (label: string, pagePath: string) => {
+  if (!pagePath.startsWith("/")) throw new Error(`${label} must be site-relative: ${pagePath}`);
 };
 
 const assertCount = (label: string, value: number) => {
@@ -98,7 +101,7 @@ export const inclusiveWindowDays = (startDate: string, endDate: string) => {
 export const adaptExactSearchCheckpoint = (
   checkpoint: GeoExactSearchCheckpoint,
 ): GeoSearchAdapterResult => {
-  assertSitePath(checkpoint.pagePath);
+  assertSitePath("pagePath", checkpoint.pagePath);
   assertCount("search.impressions", checkpoint.impressions);
   assertCount("search.clicks", checkpoint.clicks);
   if (checkpoint.clicks > checkpoint.impressions) {
@@ -165,7 +168,7 @@ const funnelRequirements: Record<
 const uniqueEvidenceClass = (rows: GeoAnalyticsEventAggregate[]) => {
   const classes = [...new Set(rows.map((row) => row.evidenceClass))];
   if (classes.length !== 1) {
-    throw new Error("A funnel aggregate must use one reconciled evidence class per page/window");
+    throw new Error("A funnel aggregate must use one reconciled evidence class per journey/window");
   }
   return classes[0];
 };
@@ -196,12 +199,13 @@ export const adaptCanonicalAnalyticsFunnel = (
   }
 
   const windowDays = rows[0].windowDays;
-  const pagePath = rows[0].pagePath;
+  const journeyPath = rows[0].journeyPath;
   for (const row of rows) {
-    assertSitePath(row.pagePath);
+    assertSitePath("journeyPath", row.journeyPath);
+    assertSitePath("eventPagePath", row.eventPagePath);
     assertCount(`analytics.${row.eventName}`, row.count);
     if (row.windowDays !== windowDays) throw new Error("Funnel rows must use one exact standard window");
-    if (row.pagePath !== pagePath) throw new Error("Funnel rows must use one pagePath");
+    if (row.journeyPath !== journeyPath) throw new Error("Funnel rows must use one canonical journeyPath");
   }
 
   const requiredEvents: CanonicalCommercialAnalyticsEvent[] = [
@@ -251,7 +255,7 @@ export const adaptCanonicalAnalyticsFunnel = (
     registryGaps: [],
     aggregate: {
       windowDays,
-      pagePath,
+      pagePath: journeyPath,
       ctaClicks,
       intakeStarts,
       previewReady,
