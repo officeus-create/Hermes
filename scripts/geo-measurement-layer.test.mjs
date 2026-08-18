@@ -67,6 +67,7 @@ const aiObservations = [
 const input = {
   asOf,
   aiObservations,
+  aiVisibilityEvidenceClass: "owner_provided_handoff",
   search: [
     {
       windowDays: 7,
@@ -150,6 +151,7 @@ assert.equal(sevenDay.leadQuality.reviewToQualifiedRate, 66.7);
 assert.equal(sevenDay.leadQuality.qualifiedToOpportunityRate, 50);
 assert.equal(sevenDay.leadQuality.opportunityToWinRate, 100);
 assert.equal(sevenDay.leadQuality.deliveryToQualifiedRate, 66.7);
+assert.deepEqual(sevenDay.evidence.aiVisibility, ["owner_provided_handoff"]);
 assert.deepEqual(sevenDay.evidence.search, ["platform_verified"]);
 assert.deepEqual(sevenDay.evidence.outcomes, ["private_operations_verified"]);
 assert.deepEqual(sevenDay.gaps, []);
