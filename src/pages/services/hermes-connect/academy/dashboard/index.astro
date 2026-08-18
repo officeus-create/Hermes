@@ -128,7 +128,6 @@ import "../../../../../styles/hermes-academy-app.css";
   const alert = document.querySelector<HTMLElement>("[data-dashboard-alert]");
   const profileForm = document.querySelector<HTMLFormElement>("[data-profile-form]");
   const enrollmentForm = document.querySelector<HTMLFormElement>("[data-enrollment-form]");
-  let academyState: AcademyState | null = null;
 
   const programNames: Record<string, string> = {
     "us-logistics-operations": "U.S. Logistics Operations",
@@ -155,7 +154,6 @@ import "../../../../../styles/hermes-academy-app.css";
   };
 
   function render(state: AcademyState) {
-    academyState = state;
     const name = document.querySelector<HTMLElement>("[data-learner-name]");
     const email = document.querySelector<HTMLElement>("[data-learner-email]");
     const role = document.querySelector<HTMLElement>("[data-learner-role]");
@@ -170,12 +168,25 @@ import "../../../../../styles/hermes-academy-app.css";
     const list = document.querySelector<HTMLElement>("[data-enrollment-list]");
     const empty = document.querySelector<HTMLElement>("[data-enrollment-empty]");
     if (list) {
-      list.innerHTML = state.enrollments.map((item) => `
-        <article class="academy-enrollment">
-          <div><strong>${programNames[item.program_slug] || item.program_slug}</strong><small>Participation model: ${item.participation_model === "unspecified" ? "decided during human review" : item.participation_model.replaceAll("_", " ")}</small></div>
-          <span class="academy-enrollment-state">${stateLabels[item.state] || item.state}</span>
-        </article>
-      `).join("");
+      list.replaceChildren();
+      for (const item of state.enrollments) {
+        const article = document.createElement("article");
+        article.className = "academy-enrollment";
+        const detail = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = programNames[item.program_slug] || item.program_slug;
+        const participation = document.createElement("small");
+        const participationLabel = item.participation_model === "unspecified"
+          ? "decided during human review"
+          : item.participation_model.replaceAll("_", " ");
+        participation.textContent = `Participation model: ${participationLabel}`;
+        detail.append(title, participation);
+        const stateBadge = document.createElement("span");
+        stateBadge.className = "academy-enrollment-state";
+        stateBadge.textContent = stateLabels[item.state] || item.state;
+        article.append(detail, stateBadge);
+        list.append(article);
+      }
     }
     if (empty) empty.classList.toggle("academy-app-hidden", state.enrollments.length > 0);
 
