@@ -37,6 +37,9 @@ jobs:
       - name: Enforce 100-task SEO production invariants
         run: node scripts/seo-100-task-batch.test.mjs
 
+      - name: Enforce JobPosting lifecycle
+        run: node --experimental-strip-types scripts/job-posting-lifecycle.test.mjs
+
       - name: Enforce Hermes SEO Framework P0 gate
         run: node scripts/hermes-seo-framework-p0-gate.test.mjs
 
