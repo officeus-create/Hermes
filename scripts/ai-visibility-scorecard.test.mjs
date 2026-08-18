@@ -73,6 +73,7 @@ console.log("AI visibility scorecard contract passed");
 
 await import("./geo-measurement-layer.test.mjs");
 await import("./geo-measurement-adapters.test.mjs");
+await import("./geo-measurement-import.test.mjs");
 await import("./geo-answer-contract.test.mjs");
 await import("./geo-evidence-graph.test.mjs");
 await import("./geo-public-entity-adapter.test.mjs");
