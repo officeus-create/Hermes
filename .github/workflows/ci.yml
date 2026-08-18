@@ -70,19 +70,6 @@ jobs:
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
-      - name: Validate Academy Ukraine visual preview
-        if: github.event_name == 'pull_request' && github.event.pull_request.number == 684
-        run: npx playwright test tests/academy-ukraine-preview.spec.ts --project=desktop
-
-      - name: Upload Academy Ukraine visual preview
-        if: always() && github.event_name == 'pull_request' && github.event.pull_request.number == 684
-        uses: actions/upload-artifact@v4
-        with:
-          name: academy-ukraine-visual-preview
-          path: artifacts/academy-ukraine/
-          if-no-files-found: warn
-          retention-days: 7
-
       - name: Validate SEO analytics privacy browser flow
         run: npx playwright test tests/seo-analytics-privacy.spec.ts --project=desktop
 
