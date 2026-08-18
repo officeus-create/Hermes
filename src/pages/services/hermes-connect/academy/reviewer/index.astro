@@ -1,0 +1,294 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import { academySubsitePages } from "../../../../../data/academy-subsite";
+import "../../../../../styles/hermes-academy-app.css";
+import "../../../../../styles/hermes-academy-review.css";
+
+const lessonIds: Record<string, string[]> = {
+  "us-logistics-operations": [
+    "dispatch-foundations",
+    "carrier-broker-communication",
+    "equipment-lane-logic",
+    "documents-setup",
+    "negotiation-practice",
+    "operating-rhythm",
+  ],
+  marketing: [
+    "positioning-offer",
+    "website-first-content",
+    "platform-distribution",
+    "lead-journey",
+    "sales-follow-up",
+    "analytics-improvement",
+  ],
+};
+const courses = Object.values(academySubsitePages).filter((page) => page.schemaType === "Course");
+---
+
+<BaseLayout
+  title="Academy Reviewer Queue | Hermes Connect"
+  description="Private manually authorized Academy reviewer queue for learner evidence and human feedback."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/">Academy</a><span>/</span><span aria-current="page">Reviewer queue</span>
+      </nav>
+
+      <div class="academy-app-alert" data-reviewer-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Academy A3 · Authorized reviewer</p>
+          <h1>Private evidence review queue.</h1>
+          <p>Only Hermes identities manually provisioned in the separate Academy reviewer allowlist can open learner evidence here. Display role text never grants access.</p>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">Human decision boundary</span>
+          <h2 style="margin-top:14px">Review evidence, not employment.</h2>
+          <p>Accepted or changes-requested feedback updates only the submission review state. It does not change enrollment, lesson self-tracking, candidate/employment status, certification, commercial access, or permission to work with live customers.</p>
+        </aside>
+      </section>
+
+      <section class="academy-review-locked academy-app-hidden" data-reviewer-locked>
+        <h2>Reviewer access is not authorized.</h2>
+        <p>Your Hermes identity may be valid, but reviewer power requires a separate active `academy_reviewer_access` record provisioned by an authorized operator. Changing an account role label cannot unlock this queue.</p>
+        <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Return to learner dashboard</a>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-reviewer-content>
+        <div class="academy-review-toolbar">
+          <div>
+            <p class="academy-app-eyebrow">Reviewer queue</p>
+            <h2><span data-reviewer-name>Authorized reviewer</span></h2>
+            <p class="academy-app-kicker" data-reviewer-email></p>
+          </div>
+          <label>
+            <span class="academy-app-kicker">Program filter</span>
+            <select class="academy-review-filter" data-reviewer-program>
+              <option value="">All authorized programs</option>
+              <option value="us-logistics-operations">U.S. Logistics Operations</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </label>
+        </div>
+        <div class="academy-review-empty" data-reviewer-empty>No submissions in this authorized queue.</div>
+        <div class="academy-app-list" data-reviewer-list></div>
+      </section>
+
+      <div class="academy-app-hidden" data-lesson-map aria-hidden="true">
+        {courses.flatMap((course) => course.modules.map((module, index) => (
+          <span data-program={course.slug} data-lesson={lessonIds[course.slug]?.[index]}>{module.title}</span>
+        )))}
+      </div>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type Review = { id: string; decision: string; feedback_text: string; created_at: string };
+  type QueueSubmission = {
+    id: string;
+    program_slug: string;
+    lesson_id: string;
+    submission_type: string;
+    text_content: string | null;
+    evidence_url: string | null;
+    state: string;
+    created_at: string;
+    learner_name: string;
+    learner_email: string;
+    reviews: Review[];
+  };
+
+  const alert = document.querySelector<HTMLElement>("[data-reviewer-alert]");
+  const locked = document.querySelector<HTMLElement>("[data-reviewer-locked]");
+  const content = document.querySelector<HTMLElement>("[data-reviewer-content]");
+  const list = document.querySelector<HTMLElement>("[data-reviewer-list]");
+  const empty = document.querySelector<HTMLElement>("[data-reviewer-empty]");
+  const filter = document.querySelector<HTMLSelectElement>("[data-reviewer-program]");
+  const reviewerName = document.querySelector<HTMLElement>("[data-reviewer-name]");
+  const reviewerEmail = document.querySelector<HTMLElement>("[data-reviewer-email]");
+
+  const lessonNames = new Map<string, string>();
+  document.querySelectorAll<HTMLElement>("[data-lesson-map] [data-program][data-lesson]").forEach((node) => {
+    lessonNames.set(`${node.dataset.program}:${node.dataset.lesson}`, node.textContent || node.dataset.lesson || "Lesson");
+  });
+  const programNames: Record<string, string> = {
+    "us-logistics-operations": "U.S. Logistics Operations",
+    marketing: "Marketing",
+  };
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+  const stateClass = (state: string) => state === "accepted" ? "accepted" : state === "changes_requested" ? "changes_requested" : "";
+
+  function appendEvidence(container: HTMLElement, item: QueueSubmission) {
+    const evidence = document.createElement("div");
+    evidence.className = "academy-review-evidence";
+    if (item.evidence_url) {
+      if (item.text_content) {
+        const note = document.createElement("p");
+        note.textContent = item.text_content;
+        evidence.append(note);
+      }
+      const link = document.createElement("a");
+      link.href = item.evidence_url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.referrerPolicy = "no-referrer";
+      link.textContent = item.evidence_url;
+      evidence.append(link);
+    } else {
+      evidence.textContent = item.text_content || "";
+    }
+    container.append(evidence);
+  }
+
+  function appendReviewHistory(container: HTMLElement, reviews: Review[]) {
+    if (!Array.isArray(reviews) || reviews.length === 0) return;
+    const history = document.createElement("div");
+    history.className = "academy-review-history";
+    for (const review of reviews) {
+      const block = document.createElement("div");
+      block.className = "academy-review-feedback";
+      const heading = document.createElement("strong");
+      heading.textContent = `Prior review · ${review.decision.replaceAll("_", " ")}`;
+      const body = document.createElement("span");
+      body.textContent = review.feedback_text;
+      block.append(heading, body);
+      history.append(block);
+    }
+    container.append(history);
+  }
+
+  async function submitReview(item: QueueSubmission, decision: "changes_requested" | "accepted", textarea: HTMLTextAreaElement, buttons: HTMLButtonElement[]) {
+    clearAlert();
+    const feedback = textarea.value.trim();
+    if (feedback.length < 5) {
+      showAlert("Add specific reviewer feedback before recording a decision.");
+      textarea.focus();
+      return;
+    }
+    buttons.forEach((button) => button.disabled = true);
+    try {
+      const response = await fetch("/api/academy/reviewer/submissions", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ submission_id: item.id, decision, feedback_text: feedback }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not save review");
+      await loadQueue();
+      showAlert("Private human review saved. Enrollment and lesson progress were not changed.", "success");
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not save review");
+      buttons.forEach((button) => button.disabled = false);
+    }
+  }
+
+  function renderQueue(submissions: QueueSubmission[]) {
+    if (!list || !empty) return;
+    list.replaceChildren();
+    empty.classList.toggle("academy-app-hidden", submissions.length > 0);
+
+    for (const item of submissions) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = lessonNames.get(`${item.program_slug}:${item.lesson_id}`) || item.lesson_id;
+      const learner = document.createElement("p");
+      learner.textContent = `${item.learner_name} · ${item.learner_email}`;
+      const meta = document.createElement("div");
+      meta.className = "academy-review-meta";
+      for (const value of [programNames[item.program_slug] || item.program_slug, item.submission_type.replaceAll("_", " "), new Date(item.created_at).toLocaleString()]) {
+        const chip = document.createElement("span");
+        chip.textContent = value;
+        meta.append(chip);
+      }
+      const state = document.createElement("span");
+      state.className = `academy-review-state ${stateClass(item.state)}`;
+      state.textContent = item.state.replaceAll("_", " ");
+      meta.append(state);
+      card.append(heading, learner, meta);
+      appendEvidence(card, item);
+      appendReviewHistory(card, item.reviews || []);
+
+      const feedbackField = document.createElement("div");
+      feedbackField.className = "academy-app-field";
+      const feedbackLabel = document.createElement("label");
+      feedbackLabel.textContent = "Private reviewer feedback";
+      const textarea = document.createElement("textarea");
+      textarea.setAttribute("aria-label", "Private reviewer feedback");
+      textarea.maxLength = 4000;
+      textarea.placeholder = "Explain what is strong, what must change, and the learner's next concrete action.";
+      feedbackField.append(feedbackLabel, textarea);
+      card.append(feedbackField);
+
+      const actions = document.createElement("div");
+      actions.className = "academy-review-actions";
+      const changes = document.createElement("button");
+      changes.type = "button";
+      changes.className = "academy-app-button";
+      changes.textContent = "Request changes";
+      const accept = document.createElement("button");
+      accept.type = "button";
+      accept.className = "academy-app-button intelligence";
+      accept.textContent = "Accept evidence";
+      const buttons = [changes, accept];
+      changes.addEventListener("click", () => submitReview(item, "changes_requested", textarea, buttons));
+      accept.addEventListener("click", () => submitReview(item, "accepted", textarea, buttons));
+      actions.append(changes, accept);
+      card.append(actions);
+      list.append(card);
+    }
+  }
+
+  async function loadQueue() {
+    clearAlert();
+    const program = filter?.value || "";
+    const query = program ? `?program=${encodeURIComponent(program)}` : "";
+    try {
+      const response = await fetch(`/api/academy/reviewer/submissions${query}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 403) {
+        content?.classList.add("academy-app-hidden");
+        locked?.classList.remove("academy-app-hidden");
+        return;
+      }
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load reviewer queue");
+      locked?.classList.add("academy-app-hidden");
+      content?.classList.remove("academy-app-hidden");
+      if (reviewerName) reviewerName.textContent = data.reviewer?.name || "Authorized reviewer";
+      if (reviewerEmail) reviewerEmail.textContent = data.reviewer?.email || "";
+      if (filter && data.reviewer?.program_scope) {
+        filter.value = data.reviewer.program_scope;
+        filter.disabled = true;
+      }
+      renderQueue(Array.isArray(data.submissions) ? data.submissions as QueueSubmission[] : []);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load reviewer queue");
+    }
+  }
+
+  filter?.addEventListener("change", () => loadQueue());
+  loadQueue();
+</script>

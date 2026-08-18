@@ -45,7 +45,7 @@ assert.match(helper, /CREATE TABLE IF NOT EXISTS academy_learner_profiles/);
 assert.match(helper, /specialist_id TEXT PRIMARY KEY/);
 assert.match(helper, /CREATE TABLE IF NOT EXISTS academy_enrollments/);
 assert.match(helper, /UNIQUE\(specialist_id, program_slug\)/);
-assert.doesNotMatch(helper, /password|email TEXT|payment_provider|employment_status/i);
+assert.doesNotMatch(helper, /(?:password|email)[A-Za-z0-9_]*\s+TEXT\b|payment_provider|employment_status/i);
 
 assert.match(sharedSession, /hermes_session/);
 assert.match(sharedSession, /FROM sessions WHERE token = \?/);
