@@ -1,0 +1,260 @@
+---
+import { ArrowRight, CheckCircle2, FileCheck2, Network, Sparkles } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import { buildGeoAnswerSchema } from "../../../data/geo-answer-contract";
+import { geoCarHaulingAnswerCandidate as surface } from "../../../data/geo-car-hauling-answer-candidate";
+
+const schema = buildGeoAnswerSchema({
+  ...surface,
+  slug: "/demos/geo-car-hauling-owner/",
+});
+const claimsById = new Map(surface.claims.map((claim) => [claim.id, claim]));
+const guided = surface.guidedPath;
+---
+
+<BaseLayout
+  title="Car Hauling GEO Owner Preview | Hermes"
+  description="Noindex CEO preview for a GEO answer layer on the existing Hermes car-hauling dispatch owner page."
+  robots="noindex,nofollow,noarchive"
+  schema={schema}
+>
+  <div class="geo-owner-preview hermes-surface-pearl">
+    <SiteHeader />
+    <main id="main-content">
+      <section class="owner-hero">
+        <div class="shell-preview">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a><span>/</span><a href="/logistics/car-hauling-dispatch/">Current owner page</a><span>/</span><span aria-current="page">GEO preview</span>
+          </nav>
+          <div class="hero-grid">
+            <div>
+              <p class="kicker">GEO PRODUCTION CANDIDATE · PREVIEW ONLY · CEO APPROVAL REQUIRED</p>
+              <p class="question-label">Question</p>
+              <h1>{surface.question}</h1>
+              <article class="answer-card hermes-card">
+                <span>Short answer</span>
+                <p>{surface.layers.shortAnswer}</p>
+              </article>
+              <div class="hero-actions">
+                <a class="button button-primary" href="#guided-fit">See what fits me</a>
+                <a class="button" href="#evidence">Review evidence</a>
+              </div>
+            </div>
+            <aside class="intelligence hermes-workspace-panel">
+              <div class="intelligence-mark"><Sparkles size={24} aria-hidden="true" /></div>
+              <p class="kicker">Hermes intelligence</p>
+              <h2>The page answers first, then adapts.</h2>
+              <p>No chatbot sticker. The intelligence appears through progressive reveal, clear evidence and a next action that changes with the carrier's situation.</p>
+              <div class="trust-row"><span>First-party evidence</span><span>No guarantee claims</span><span>Carrier control</span></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="thread-section hermes-surface-obsidian" aria-labelledby="thread-title">
+        <div class="shell-preview">
+          <p class="kicker">Connected Thread</p>
+          <h2 id="thread-title">Question → entity → evidence → interpretation → action.</h2>
+          <div class="thread" aria-label="Connected answer thread">
+            {[
+              ["01", "Owner-operator need"],
+              ["02", "Car-hauling support"],
+              ["03", "Published scope"],
+              ["04", "Carrier-control evidence"],
+              ["05", "Fit interpretation"],
+              ["06", "Contextual next step"],
+            ].map(([number, label], index, rows) => (
+              <div class="thread-node">
+                <span>{number}</span><strong>{label}</strong>
+                {index < rows.length - 1 && <ArrowRight size={17} aria-hidden="true" />}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="layer-section">
+        <div class="shell-preview">
+          <div class="section-heading">
+            <p class="kicker">Layered answer</p>
+            <h2>Keep the first screen clear. Let depth appear only when it helps.</h2>
+          </div>
+          <div class="layer-grid">
+            <article class="hermes-card layer-card">
+              <span class="index">01</span><h3>Why this matters</h3>
+              <ul>{surface.layers.why.map((item) => <li>{item}</li>)}</ul>
+            </article>
+            <article class="hermes-card layer-card" id="evidence">
+              <span class="index">02</span><h3>Evidence behind the answer</h3>
+              <div class="claim-stack">
+                {surface.layers.evidenceClaimIds.map((claimId) => {
+                  const claim = claimsById.get(claimId);
+                  return claim && <div class="claim"><span>Verified fact</span><p>{claim.text}</p></div>;
+                })}
+              </div>
+            </article>
+            <article class="hermes-card layer-card">
+              <span class="index">03</span><h3>What it means for you</h3>
+              <ul>{surface.layers.whatItMeansForYou.map((item) => <li>{item}</li>)}</ul>
+            </article>
+            <article class="hermes-card layer-card">
+              <span class="index">04</span><h3>How to apply it</h3>
+              <ol>{surface.layers.howToApply.map((item) => <li>{item}</li>)}</ol>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="entity-section" aria-labelledby="entity-title">
+        <div class="shell-preview">
+          <div class="section-heading">
+            <p class="kicker">Entity-first</p>
+            <h2 id="entity-title">The relationship is visible to people and machines.</h2>
+          </div>
+          <div class="entity-grid">
+            {surface.entities.map((entity) => (
+              <article class="hermes-card entity-card">
+                <div class="entity-meta"><span>{entity.type}</span><span>verified</span></div>
+                <h3>{entity.name}</h3>
+                <p>{entity.description}</p>
+                <dl><dt>Why it matters</dt><dd>{entity.whyItMatters}</dd></dl>
+              </article>
+            ))}
+          </div>
+          <div class="relationship hermes-workspace-panel">
+            <Network size={25} aria-hidden="true" />
+            <div>
+              <p class="kicker">Relationship map</p>
+              {surface.relationships.map((edge) => {
+                const from = surface.entities.find((item) => item.id === edge.fromEntityId);
+                const to = surface.entities.find((item) => item.id === edge.toEntityId);
+                return <p class="relationship-row"><strong>{from?.name}</strong><span>{edge.relationship}</span><strong>{to?.name}</strong></p>;
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {guided && (
+        <section class="guided-section" id="guided-fit" data-owner-guided>
+          <div class="shell-preview guided-shell">
+            <div class="section-heading">
+              <p class="kicker">Question-led fit</p>
+              <h2>What are you trying to improve first?</h2>
+              <p>One choice creates one realization. Then the next useful step appears.</p>
+            </div>
+            <div class="guided-card hermes-card">
+              <div class="progress"><span data-progress></span></div>
+              <p class="realization" data-realization aria-live="polite">Nothing is submitted or stored in this preview.</p>
+              {guided.questions.map((question) => (
+                <div class="question" data-question={question.id} hidden={question.id !== guided.startQuestionId}>
+                  <p class="question-label">Question</p>
+                  <h3>{question.prompt}</h3>
+                  {question.helpText && <p>{question.helpText}</p>}
+                  <div class="choices">
+                    {question.options.map((option) => (
+                      <button type="button" data-realization-text={option.realization} data-next={option.nextQuestionId} data-outcome={option.outcomeId}>{option.label}</button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {guided.outcomes.map((outcome) => (
+                <div class="outcome" data-outcome-id={outcome.id} hidden>
+                  <p class="question-label">Personalized outcome</p>
+                  <h3>{outcome.title}</h3>
+                  <p>{outcome.diagnosis}</p>
+                  <ul>{outcome.application.map((item) => <li><CheckCircle2 size={17} aria-hidden="true" /><span>{item}</span></li>)}</ul>
+                  <a class="button button-primary" href={outcome.nextAction.href}>{outcome.nextAction.label}</a>
+                  <button class="restart" type="button" data-restart>Start again</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section class="source-section">
+        <div class="shell-preview">
+          <div class="section-heading"><p class="kicker">Evidence / source</p><h2>Say what the source proves—and what it does not.</h2></div>
+          {surface.evidence.map((source) => (
+            <article class="source-card hermes-card">
+              <FileCheck2 size={24} aria-hidden="true" />
+              <div>
+                <div class="source-meta"><span>{source.sourceName}</span><span>verified fact</span></div>
+                <h3>{source.title}</h3><p>{source.summary}</p>
+                <small>Checked {source.verifiedAt ? new Date(source.verifiedAt).toISOString().slice(0, 10) : "Not configured"}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="next-section hermes-surface-obsidian">
+        <div class="shell-preview next-grid">
+          <div><p class="kicker">Next action</p><h2>Continue the answer into the right workflow.</h2><p>{surface.layers.nextAction.rationale}</p></div>
+          <a class="button button-primary" href={surface.layers.nextAction.href}>{surface.layers.nextAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-owner-guided]");
+  if (root) {
+    const questions = [...root.querySelectorAll<HTMLElement>("[data-question]")];
+    const outcomes = [...root.querySelectorAll<HTMLElement>("[data-outcome-id]")];
+    const realization = root.querySelector<HTMLElement>("[data-realization]");
+    const progress = root.querySelector<HTMLElement>("[data-progress]");
+    const hideAll = () => {
+      questions.forEach((item) => { item.hidden = true; });
+      outcomes.forEach((item) => { item.hidden = true; });
+    };
+    root.querySelectorAll<HTMLButtonElement>("[data-realization-text]").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (realization) realization.textContent = button.dataset.realizationText || "Your answer changed the route.";
+        hideAll();
+        if (button.dataset.next) {
+          root.querySelector<HTMLElement>(`[data-question="${button.dataset.next}"]`)?.removeAttribute("hidden");
+          if (progress) progress.style.width = "50%";
+        }
+        if (button.dataset.outcome) {
+          root.querySelector<HTMLElement>(`[data-outcome-id="${button.dataset.outcome}"]`)?.removeAttribute("hidden");
+          if (progress) progress.style.width = "100%";
+        }
+      });
+    });
+    root.querySelectorAll<HTMLButtonElement>("[data-restart]").forEach((button) => {
+      button.addEventListener("click", () => {
+        hideAll(); questions[0]?.removeAttribute("hidden");
+        if (realization) realization.textContent = "Nothing is submitted or stored in this preview.";
+        if (progress) progress.style.width = "0%";
+      });
+    });
+  }
+</script>
+
+<style>
+  .geo-owner-preview{min-height:100vh;background:var(--hermes-pearl);color:var(--hermes-ink)}
+  .shell-preview{width:min(1180px,calc(100% - 40px));margin:0 auto}
+  .owner-hero{padding:clamp(3rem,7vw,6rem) 0 var(--hermes-section-space);background:radial-gradient(circle at 78% 16%,rgba(124,92,255,.11),transparent 28rem),var(--hermes-pearl)}
+  .crumbs{display:flex;gap:.55rem;flex-wrap:wrap;margin-bottom:2.3rem;color:var(--hermes-muted);font-size:.83rem}.crumbs a{color:inherit}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(290px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:end}
+  h1{margin:.4rem 0 1.5rem;max-width:900px;font-size:clamp(2.7rem,5.7vw,5.4rem);line-height:.96;letter-spacing:var(--hermes-display-tracking);text-wrap:balance}
+  .kicker,.question-label{margin:0 0 .7rem;color:var(--hermes-violet);font-size:.71rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.question-label{color:var(--hermes-muted)}
+  .answer-card{display:grid;grid-template-columns:110px minmax(0,1fr);gap:1rem;max-width:820px;padding:1.25rem 1.4rem}.answer-card>span{color:var(--hermes-violet);font-size:.72rem;font-weight:800;text-transform:uppercase}.answer-card p{margin:0;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.55}
+  .hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.35rem}.hero-actions .button,.next-grid .button{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:.5rem}
+  .intelligence{padding:clamp(1.4rem,3vw,2.3rem)}.intelligence-mark{width:52px;height:52px;display:grid;place-items:center;margin-bottom:1.6rem;border-radius:17px;background:var(--hermes-intelligence-gradient);box-shadow:0 16px 48px rgba(124,92,255,.25)}.intelligence h2{margin:.35rem 0 .8rem;font-size:clamp(1.7rem,3vw,2.4rem);letter-spacing:-.04em}.intelligence>p:not(.kicker){color:var(--hermes-muted-dark);line-height:1.65}.trust-row{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:1.2rem}.trust-row span,.entity-meta span,.source-meta span,.claim span{padding:.34rem .6rem;border-radius:999px;font-size:.66rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.trust-row span{border:1px solid var(--hermes-line-dark);color:var(--hermes-muted-dark)}
+  .thread-section,.next-section{padding:var(--hermes-section-space) 0}.thread-section h2,.next-section h2,.section-heading h2{margin:.35rem 0 .9rem;font-size:clamp(2rem,4vw,3.5rem);line-height:1;letter-spacing:-.05em;text-wrap:balance}.thread{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin-top:2rem}.thread-node{position:relative;min-width:0;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;gap:1rem;padding:1rem;border:1px solid var(--hermes-line-dark);border-right:0}.thread-node:first-child{border-radius:20px 0 0 20px}.thread-node:last-child{border-right:1px solid var(--hermes-line-dark);border-radius:0 20px 20px 0}.thread-node>span{color:var(--hermes-violet);font-size:.7rem}.thread-node svg{position:absolute;right:-9px;top:50%;z-index:2;color:var(--hermes-ocean)}
+  .layer-section,.entity-section,.guided-section,.source-section{padding:var(--hermes-section-space) 0}.section-heading{max-width:820px;margin-bottom:2rem}.section-heading>p:not(.kicker){color:var(--hermes-muted);line-height:1.65}.layer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.layer-card{padding:clamp(1.3rem,3vw,2rem)}.index{color:var(--hermes-violet);font-size:.72rem;font-weight:800}.layer-card h3{margin:1rem 0;font-size:1.4rem}.layer-card ul,.layer-card ol{margin:0;padding-left:1.2rem;color:var(--hermes-muted);line-height:1.62}.layer-card li+li{margin-top:.6rem}.claim-stack{display:grid;gap:.7rem}.claim{padding:.9rem;border-radius:15px;border:1px solid rgba(124,92,255,.13);background:rgba(124,92,255,.055)}.claim span{color:#6545ef;background:rgba(124,92,255,.1)}.claim p{margin:.65rem 0 0;line-height:1.55}
+  .entity-section{background:#fff}.entity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.entity-card{padding:1.3rem}.entity-meta,.source-meta{display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap}.entity-meta span:first-child{background:rgba(11,13,18,.05);color:var(--hermes-muted)}.entity-meta span:last-child,.source-meta span:last-child{background:rgba(52,199,89,.1);color:#198a37}.entity-card h3{margin:1rem 0 .65rem}.entity-card>p,.entity-card dd{color:var(--hermes-muted);line-height:1.55}.entity-card dl{margin:1rem 0 0}.entity-card dt{color:var(--hermes-violet);font-size:.7rem;font-weight:800;text-transform:uppercase}.entity-card dd{margin:.25rem 0 0}.relationship{display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;margin-top:1rem;padding:1.3rem}.relationship>svg{color:var(--hermes-ocean)}.relationship-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:.75rem;align-items:center;margin:.6rem 0;padding:.75rem;border:1px solid var(--hermes-line-dark);border-radius:14px}.relationship-row span{color:var(--hermes-ocean);font-size:.72rem;text-transform:uppercase}.relationship-row strong:last-child{text-align:right}
+  .guided-shell{max-width:920px}.guided-card{padding:clamp(1.3rem,4vw,2.5rem)}.progress{height:5px;overflow:hidden;border-radius:99px;background:rgba(11,13,18,.07)}.progress span{display:block;width:0;height:100%;background:var(--hermes-intelligence-gradient);transition:width var(--hermes-motion-standard) var(--hermes-ease)}.realization{min-height:1.5em;margin:1rem 0 1.8rem;color:var(--hermes-muted)}.question h3,.outcome h3{margin:.3rem 0 .6rem;font-size:clamp(1.8rem,4vw,2.7rem);letter-spacing:-.04em}.question>p:not(.question-label),.outcome>p{color:var(--hermes-muted);line-height:1.6}.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem;margin-top:1.2rem}.choices button{min-height:76px;padding:1rem;text-align:left;border:1px solid var(--hermes-line-light);border-radius:17px;background:#fff;color:var(--hermes-ink);font-weight:700;cursor:pointer}.choices button:hover,.choices button:focus-visible{border-color:rgba(124,92,255,.35);box-shadow:var(--hermes-shadow-card-hover);outline:none}.outcome ul{list-style:none;padding:0;display:grid;gap:.6rem}.outcome li{display:flex;gap:.55rem;color:var(--hermes-muted)}.outcome li svg{flex:0 0 auto;color:var(--hermes-success)}.restart{min-height:44px;margin-left:.8rem;border:0;background:transparent;color:var(--hermes-muted);text-decoration:underline;cursor:pointer}
+  .source-card{max-width:920px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:1rem;padding:1.3rem}.source-card>svg{color:var(--hermes-violet)}.source-meta{justify-content:flex-start}.source-meta span:first-child{padding-left:0;color:var(--hermes-muted)}.source-card h3{margin:.6rem 0}.source-card p{color:var(--hermes-muted);line-height:1.6}.source-card small{color:var(--hermes-muted)}
+  .next-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center}.next-grid>div{max-width:730px}.next-grid p:not(.kicker){color:var(--hermes-muted-dark);line-height:1.65}
+  @media(max-width:900px){.hero-grid,.next-grid{grid-template-columns:1fr}.thread{grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem}.thread-node,.thread-node:first-child,.thread-node:last-child{border:1px solid var(--hermes-line-dark);border-radius:17px}.thread-node svg{display:none}.entity-grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.shell-preview{width:min(1180px,calc(100% - 28px))}h1{font-size:clamp(2.35rem,12vw,3.8rem);overflow-wrap:anywhere}.answer-card,.layer-grid,.entity-grid,.choices,.thread{grid-template-columns:1fr}.thread-node{min-height:auto}.relationship-row{grid-template-columns:1fr}.relationship-row strong:last-child{text-align:left}.relationship-row span{text-align:left}.hero-actions .button,.next-grid .button{width:100%}.restart{width:100%;margin:.8rem 0 0}}
+  @media(prefers-reduced-motion:reduce){.progress span{transition:none}}
+</style>
