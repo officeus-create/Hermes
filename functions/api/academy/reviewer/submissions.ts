@@ -10,26 +10,32 @@ import {
 } from "../../_lib/academy.mjs";
 
 type Env = { DB?: any };
+type ReviewerAuth =
+  | { ok: false; response: Response }
+  | { ok: true; specialist: any; access: any };
+type ReviewerQueue =
+  | { ok: false; error: string; status: 400 | 403 }
+  | { ok: true; program_scope: string | null; submissions: any[] };
 
-async function requireReviewer(request: Request, env: Env) {
-  if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
+async function requireReviewer(request: Request, env: Env): Promise<ReviewerAuth> {
+  if (!env.DB) return { ok: false, response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
-  if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
+  if (!specialist) return { ok: false, response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
   await ensureAcademySchema(env.DB);
   const access = await getAcademyReviewerAccess(env.DB, specialist.id);
-  if (!access) return { response: jsonResponse(403, { success: false, error: "academy_reviewer_not_authorized" }) };
-  return { specialist, access };
+  if (!access) return { ok: false, response: jsonResponse(403, { success: false, error: "academy_reviewer_not_authorized" }) };
+  return { ok: true, specialist, access };
 }
 
-async function reviewerQueue(db: any, access: any, requestedProgram: string | null) {
+async function reviewerQueue(db: any, access: any, requestedProgram: string | null): Promise<ReviewerQueue> {
   let programFilter: string | null = null;
   if (access.program_scope) {
     if (requestedProgram && requestedProgram !== access.program_scope) {
-      return { error: "reviewer_program_scope_forbidden" };
+      return { ok: false, error: "reviewer_program_scope_forbidden", status: 403 };
     }
     programFilter = access.program_scope;
   } else if (requestedProgram) {
-    if (!isAcademyProgram(requestedProgram)) return { error: "program_invalid" };
+    if (!isAcademyProgram(requestedProgram)) return { ok: false, error: "program_invalid", status: 400 };
     programFilter = requestedProgram;
   }
 
@@ -65,6 +71,7 @@ async function reviewerQueue(db: any, access: any, requestedProgram: string | nu
   }
 
   return {
+    ok: true,
     program_scope: access.program_scope ?? null,
     submissions: submissions.map((item: any) => ({ ...item, reviews: reviewsBySubmission.get(item.id) || [] })),
   };
@@ -72,16 +79,11 @@ async function reviewerQueue(db: any, access: any, requestedProgram: string | nu
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const auth = await requireReviewer(request, env);
-  if ("response" in auth) return auth.response;
+  if (!auth.ok) return auth.response;
 
   const requestedProgram = new URL(request.url).searchParams.get("program");
   const queue = await reviewerQueue(env.DB, auth.access, requestedProgram);
-  if ("error" in queue) {
-    if (queue.error === "reviewer_program_scope_forbidden") {
-      return jsonResponse(403, { success: false, error: queue.error });
-    }
-    return jsonResponse(400, { success: false, error: queue.error });
-  }
+  if (!queue.ok) return jsonResponse(queue.status, { success: false, error: queue.error });
 
   return jsonResponse(200, {
     success: true,
@@ -92,7 +94,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
 export async function onRequestPut({ request, env }: { request: Request; env: Env }) {
   const auth = await requireReviewer(request, env);
-  if ("response" in auth) return auth.response;
+  if (!auth.ok) return auth.response;
 
   let body: Record<string, unknown>;
   try {
