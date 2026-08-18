@@ -49,7 +49,8 @@ export const adaptPublicEntityForGeo = (
       whyItMatters: context.whyItMatters,
       truthLabel: "verified_fact",
       evidenceIds: context.evidenceIds,
-      url: record.schemaId.split("#")[0],
+      schemaId: record.schemaId,
+      url: new URL(record.websiteOwner, "https://hermeslogisticsus.com").toString(),
       ...(approvedSameAs.length ? { sameAs: approvedSameAs } : {}),
     },
   };
