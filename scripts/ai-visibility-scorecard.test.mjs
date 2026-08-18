@@ -82,6 +82,7 @@ await import("./geo-evidence-health.test.mjs");
 await import("./geo-operational-comparison.test.mjs");
 await import("./geo-search-diagnostics.test.mjs");
 await import("./geo-search-diagnostics-import.test.mjs");
+await import("./geo-search-platform-evidence.test.mjs");
 await import("./geo-index-evidence.test.mjs");
 await import("./geo-ai-referral-measurement.test.mjs");
 await import("./geo-answer-contract.test.mjs");
