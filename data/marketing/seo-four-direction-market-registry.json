@@ -8,7 +8,7 @@
       "market_boundary": "United States",
       "status": "foundation_strong_expansion_research_required",
       "dimensions": ["state", "metro_or_city", "audience", "equipment_or_use_case", "problem", "commercial_action"],
-      "current_focus": ["national_service_owners", "wisconsin_local_cluster"],
+      "current_focus": ["national_service_owners", "wisconsin_local_cluster", "texas_query_validation"],
       "candidates": [
         {
           "id": "logistics-us-state-dealership-density-research",
@@ -27,6 +27,33 @@
           "status": "research",
           "evidence_refs": ["U.S. Census County Business Patterns — establishment counts available by state, county, MSA, ZIP and detailed NAICS"],
           "evidence_boundary": "Business density is a prioritization signal only; query demand and canonical intent still must be validated."
+        },
+        {
+          "id": "logistics-texas-dealer-auction-transport-research",
+          "direction": "logistics",
+          "market": "Texas, United States",
+          "intent_cluster": "dealer_auction_vehicle_transport_query_validation",
+          "status": "research",
+          "evidence_refs": ["SEO_LOGISTICS_MARKET_WAVE_2_2026-08-18.md — Texas first research priority based on auction footprint and dealer/fleet SERP archetype"],
+          "evidence_boundary": "Texas is a query-validation priority only. No Texas state, metro, dealer or auction page is approved until query demand, Hermes service truth, canonical ownership, distinct value, conversion readiness and measurement are recorded."
+        },
+        {
+          "id": "logistics-florida-dealer-auction-transport-research",
+          "direction": "logistics",
+          "market": "Florida, United States",
+          "intent_cluster": "dealer_auction_vehicle_transport_comparison_research",
+          "status": "research",
+          "evidence_refs": ["SEO_LOGISTICS_MARKET_WAVE_2_2026-08-18.md — Florida retained as a comparison market with broad auction footprint"],
+          "evidence_boundary": "Auction density is a prioritization signal only and does not approve a Florida page."
+        },
+        {
+          "id": "logistics-california-dealer-auction-transport-research",
+          "direction": "logistics",
+          "market": "California, United States",
+          "intent_cluster": "dealer_auction_vehicle_transport_comparison_research",
+          "status": "research",
+          "evidence_refs": ["SEO_LOGISTICS_MARKET_WAVE_2_2026-08-18.md — California retained as a comparison market with multiple auction locations"],
+          "evidence_boundary": "Auction footprint does not prove search demand, service economics, or approval to publish a California page."
         }
       ]
     },
