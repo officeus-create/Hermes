@@ -12,11 +12,13 @@ test("car-hauling GEO production candidate stays noindex and evidence-labeled", 
   await expect(page.getByText("Hermes public website · first-party service source")).toBeVisible();
   await expect(page.getByText("It is not independent third-party proof of performance.")).toBeVisible();
 
-  const structuredData = page.locator('script[type="application/ld+json"]');
-  await expect(structuredData).toContainText('"@type":"Question"');
-  await expect(structuredData).toContainText("https://hermeslogisticsus.com/#organization");
-  await expect(structuredData).toContainText('"url":"https://hermeslogisticsus.com/demos/geo-car-hauling-owner/"');
-  await expect(structuredData).toContainText('"@id":"https://hermeslogisticsus.com/demos/geo-car-hauling-owner/#geo-answer"');
+  const structuredDataText = await page.locator('script[type="application/ld+json"]').first().textContent();
+  expect(structuredDataText).toBeTruthy();
+  const structuredData = JSON.stringify(JSON.parse(structuredDataText ?? "{}"));
+  expect(structuredData).toContain('"@type":"Question"');
+  expect(structuredData).toContain("https://hermeslogisticsus.com/#organization");
+  expect(structuredData).toContain('"url":"https://hermeslogisticsus.com/demos/geo-car-hauling-owner/"');
+  expect(structuredData).toContain('"@id":"https://hermeslogisticsus.com/demos/geo-car-hauling-owner/#geo-answer"');
 
   const sitemapResponse = await page.request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBeTruthy();
