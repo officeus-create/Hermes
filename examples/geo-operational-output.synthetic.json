@@ -1,0 +1,67 @@
+{
+  "schema_version": "geo_operational_example_snapshot_v1",
+  "synthetic_example": true,
+  "source": "examples/geo-operational-input.synthetic.json",
+  "as_of": "2026-08-18T12:00:00.000Z",
+  "ingestion": {
+    "ai_observations": 0,
+    "search_checkpoints": 2,
+    "standard_search_aggregates": 2,
+    "held_search_checkpoints": 0,
+    "analytics_event_rows": 5,
+    "ready_funnels": 1,
+    "incomplete_funnels": 0,
+    "outcome_rows": 1
+  },
+  "windows": [
+    {
+      "window_days": 7,
+      "search_impressions": 120,
+      "search_clicks": 6,
+      "search_ctr": 5,
+      "non_branded_impressions": 120,
+      "cta_clicks": 10,
+      "intake_starts": 8,
+      "delivery_confirmed": 5,
+      "qualified_leads": 4,
+      "opportunities": 3,
+      "wins": 1,
+      "revenue_reconciled_wins": 1
+    },
+    {
+      "window_days": 28,
+      "search_impressions": 80,
+      "search_clicks": 8,
+      "search_ctr": 10,
+      "non_branded_impressions": 0,
+      "cta_clicks": 0,
+      "intake_starts": 0,
+      "delivery_confirmed": 0,
+      "qualified_leads": 0,
+      "opportunities": 0,
+      "wins": 0,
+      "revenue_reconciled_wins": 0
+    },
+    {
+      "window_days": 90,
+      "search_impressions": 0,
+      "search_clicks": 0,
+      "search_ctr": 0,
+      "non_branded_impressions": 0,
+      "cta_clicks": 0,
+      "intake_starts": 0,
+      "delivery_confirmed": 0,
+      "qualified_leads": 0,
+      "opportunities": 0,
+      "wins": 0,
+      "revenue_reconciled_wins": 0
+    }
+  ],
+  "car_hauling_owner_readiness": {
+    "window_days": 7,
+    "readiness_percent": 75,
+    "reconciliation_status": "incomplete",
+    "missing_layers": ["ai_visibility"]
+  },
+  "truth_notice": "All example counts are synthetic and unverified; this snapshot demonstrates shape and reconciliation behavior only."
+}
