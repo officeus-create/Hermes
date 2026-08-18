@@ -75,6 +75,34 @@ const analyticsEvents = new Set<CanonicalCommercialAnalyticsEvent>([
   "website_project_preview_ready",
   "website_handoff_ready",
 ]);
+const familyEvents: Record<GeoFunnelFamily, Set<CanonicalCommercialAnalyticsEvent>> = {
+  carrier: new Set([
+    "commercial_cta_click",
+    "carrier_intake_start",
+    "carrier_intake_preview_ready",
+    "carrier_handoff_ready",
+    "carrier_delivery_confirmed",
+  ]),
+  vehicle_transport: new Set([
+    "commercial_cta_click",
+    "vehicle_transport_intake_start",
+    "vehicle_transport_preview_ready",
+    "vehicle_transport_handoff_ready",
+    "vehicle_transport_delivery_confirmed",
+  ]),
+  seo: new Set([
+    "commercial_cta_click",
+    "seo_intake_start",
+    "seo_intake_preview_ready",
+    "seo_handoff_ready",
+  ]),
+  website_project: new Set([
+    "commercial_cta_click",
+    "website_project_intake_start",
+    "website_project_preview_ready",
+    "website_handoff_ready",
+  ]),
+};
 
 export interface GeoImportedAnalyticsEvent {
   family: GeoFunnelFamily;
@@ -159,6 +187,10 @@ export const importGeoAnalyticsEventRow = (input: unknown): GeoImportedAnalytics
 
   const family = enumValue(row, "family", funnelFamilies);
   const eventName = enumValue(row, "event_name", analyticsEvents);
+  if (!familyEvents[family].has(eventName)) {
+    throw new Error(`event_name ${eventName} does not belong to funnel family ${family}`);
+  }
+
   const aggregate: GeoAnalyticsEventAggregate = {
     windowDays: enumValue(row, "window_days", standardWindows) as GeoWindowDays,
     journeyPath: sitePath(row, "journey_path"),
