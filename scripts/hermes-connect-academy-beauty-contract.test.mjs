@@ -53,6 +53,20 @@ test('Beauty V1 preserves approval, consent and prototype safety boundaries', as
   assert.match(html, /noindex,nofollow/i);
 });
 
+test('Canonical workspace keeps Academy and Beauty inside one Hermes Connect shell', async () => {
+  const [html, js] = await Promise.all([load('workspace.html'), load('workspace.js')]);
+
+  assert.match(html, /data-view="academy"/);
+  assert.match(html, /data-view-panel="academy"/);
+  assert.match(html, /data-onboarding-type="beauty"/);
+  assert.match(html, /data-vertical="beauty"/);
+  assert.match(html, /Aurelia Studio/);
+  assert.match(js, /beauty:\s*\{[\s\S]*?name:\s*'Aurelia Studio'/);
+  assert.match(js, /beauty:\s*'beauty'/);
+  assert.match(js, /hermes_business_type/);
+  assert.match(js, /startupTypeParam/);
+});
+
 test('Shared vertical module stylesheet exists and preserves Hermes brand tokens', async () => {
   const css = await load('vertical-modules.css');
   assert.match(css, /--pearl:#F7F6F3/);
