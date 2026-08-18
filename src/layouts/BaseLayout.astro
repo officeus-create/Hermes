@@ -19,7 +19,6 @@ import RouteEstimateEnhancer from "../components/RouteEstimateEnhancer.astro";
 import Seo4ConversionEnhancer from "../components/Seo4ConversionEnhancer.astro";
 import SeoIntakeEnhancer from "../components/SeoIntakeEnhancer.astro";
 import SeoSupportingIntakeEnhancer from "../components/SeoSupportingIntakeEnhancer.astro";
-import SiteIntro from "../components/SiteIntro.astro";
 import TrackingConsent from "../components/TrackingConsent.astro";
 import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
@@ -135,15 +134,6 @@ const safeSchema = schema
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline>
-      try {
-        const canAnimate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const firstHomeView = window.location.pathname === "/" && !window.location.hash && !window.sessionStorage.getItem("hermes-intro-seen");
-        if (canAnimate && firstHomeView) document.documentElement.classList.add("intro-pending");
-      } catch {
-        // Continue directly to the page when browser storage is unavailable.
-      }
-    </script>
-    <script is:inline>
       if (window.location.pathname === "/logistics/carrier-onboarding/") {
         const selectedPlan = new URLSearchParams(window.location.search).get("plan");
         if (["essential", "pro", "custom"].includes(selectedPlan || "")) {
@@ -190,7 +180,6 @@ const safeSchema = schema
   </head>
   <body>
     <!--email_off-->
-    <SiteIntro />
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
     {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}

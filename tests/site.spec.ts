@@ -111,41 +111,10 @@ test("desktop business portals expand on hover and keep click navigation", async
   await expect(marketing.locator("xpath=.." )).toHaveAttribute("data-active", "true");
 });
 
-test("premium opening explains four directions, supports choice, and runs once per session", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  const intro = page.locator("[data-site-intro]");
-  await expect(intro).toBeVisible();
-  await expect(intro.getByText("Move.", { exact: true })).toHaveAttribute("data-active", "true");
-  await expect(page.locator('[data-intro-rail="logistics"]')).toHaveAttribute("data-active", "true");
-  await expect(page.getByRole("link", { name: /Open Logistics/ })).toHaveAttribute("href", "/paths/logistics/");
-  await expect(page.getByRole("link", { name: /Open Marketing/ })).toHaveAttribute("href", "/paths/marketing/");
-  await expect(page.getByRole("link", { name: /Open Academy/ })).toHaveAttribute("href", "/paths/academy/");
-  await expect(page.getByRole("link", { name: /Open IT Development/ })).toHaveAttribute("href", "/paths/technology/");
-
-  await expect.poll(() => page.locator("[data-intro-count]").textContent(), { timeout: 7000 }).not.toBe("01");
-  await expect(page.locator('[data-intro-rail][data-active="true"]')).toHaveCount(1);
-
-  const marketingRail = page.locator('[data-intro-rail="marketing"]');
-  await marketingRail.focus();
-  await expect(marketingRail).toHaveAttribute("data-active", "true");
-  const marketingStory = marketingRail.locator("[data-intro-story-line]");
-  await expect.poll(() => marketingStory.nth(0).getAttribute("data-visible"), { timeout: 1500 }).toBe("true");
-  await expect.poll(() => marketingStory.nth(2).getAttribute("data-visible"), { timeout: 4000 }).toBe("true");
-  await page.waitForTimeout(2500);
-  await expect(page.locator("[data-intro-count]")).toHaveText("02");
-
-  await page.getByRole("button", { name: /Open Home/ }).click();
-  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-intro-seen"))).toBe("true");
-  await expect(intro).toHaveCount(0, { timeout: 1000 });
-  await page.reload();
-  await expect(page.locator("[data-site-intro]")).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Move freight. Grow demand. Build capability. Build systems." })).toBeVisible();
-});
-
-test("premium opening honors the visitor's reduced-motion preference", async ({ page }) => {
+test("homepage remains immediately usable with reduced motion", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator("[data-site-intro]")).toBeHidden();
+  await expect(page.locator("[data-site-intro]")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Move freight. Grow demand. Build capability. Build systems." })).toBeVisible();
 });
 
@@ -231,32 +200,6 @@ test("Academy presents AI automation as a safe practical learning lab", async ({
   await expect(page.getByRole("heading", { name: "Learn AI automation by building one useful assistant." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Fitness AI Telegram Assistant" })).toBeVisible();
   await expect(page.getByText(/no live bot, member data, messages, enrollment, or payment/i)).toBeVisible();
-});
-
-test("premium opening plays a direction cue after consented interaction and keeps sound optional", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  const soundButton = page.getByRole("button", { name: "Turn direction sounds off" });
-  await expect(soundButton).toHaveAttribute("aria-pressed", "true");
-
-  await page.evaluate(() => {
-    window.addEventListener("hermes:intro-sound", (event) => {
-      const direction = (event as CustomEvent<{ direction: string }>).detail.direction;
-      sessionStorage.setItem("hermes-last-intro-sound", direction);
-    });
-  });
-
-  await page.locator('[data-intro-rail="marketing"]').click();
-  await expect(page).toHaveURL(/\/paths\/marketing\/$/, { timeout: 2500 });
-  await expect.poll(() => page.evaluate(() => sessionStorage.getItem("hermes-last-intro-sound"))).toBe("marketing");
-
-  await page.evaluate(() => {
-    sessionStorage.removeItem("hermes-intro-seen");
-    localStorage.setItem("hermes-intro-sound", "off");
-  });
-  await page.goto("/");
-  const mutedButton = page.getByRole("button", { name: "Turn direction sounds on" });
-  await expect(mutedButton).toHaveAttribute("aria-pressed", "false");
-  await expect(mutedButton).toContainText("Sound off");
 });
 
 test("homepage proves the website product and routes to IT Development", async ({ page }) => {
