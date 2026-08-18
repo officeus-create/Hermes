@@ -1,0 +1,331 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import { academySubsitePages } from "../../../../../data/academy-subsite";
+import "../../../../../styles/hermes-academy-app.css";
+import "../../../../../styles/hermes-academy-review.css";
+
+const lessonIds: Record<string, string[]> = {
+  "us-logistics-operations": [
+    "dispatch-foundations",
+    "carrier-broker-communication",
+    "equipment-lane-logic",
+    "documents-setup",
+    "negotiation-practice",
+    "operating-rhythm",
+  ],
+  marketing: [
+    "positioning-offer",
+    "website-first-content",
+    "platform-distribution",
+    "lead-journey",
+    "sales-follow-up",
+    "analytics-improvement",
+  ],
+};
+const courses = Object.values(academySubsitePages).filter((page) => page.schemaType === "Course");
+---
+
+<BaseLayout
+  title="Academy Evidence Submissions | Hermes Connect"
+  description="Private learner evidence submissions and human reviewer feedback for Hermes Business Academy."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a><span>/</span><span aria-current="page">Evidence submissions</span>
+      </nav>
+
+      <div class="academy-app-alert" data-submission-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Academy A3 · Private evidence</p>
+          <h1>Submit evidence for human review.</h1>
+          <p>Enrolled learners can submit a written reflection or an HTTPS evidence link for one allowlisted lesson. Reviewer feedback stays private inside the Academy account.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Back to learner dashboard</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">Human review only</span>
+          <h2 style="margin-top:14px">Accepted evidence is not a final Academy decision.</h2>
+          <p>An accepted submission does not automatically complete the program, issue a certificate, create employment, income, client access, cohort access, or permission to work with live operations.</p>
+        </aside>
+      </section>
+
+      <section class="academy-review-grid">
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">New evidence</p>
+          <h2>Choose an enrolled program and lesson.</h2>
+          <p data-submission-access-note>Checking your enrolled programs…</p>
+          <form class="academy-app-form" data-submission-form>
+            <div class="academy-app-field">
+              <label for="submission-program">Program</label>
+              <select id="submission-program" name="program_slug" required disabled>
+                <option value="">Choose enrolled program</option>
+                {courses.map((course) => <option value={course.slug}>{course.slug === "marketing" ? "Marketing" : "U.S. Logistics Operations"}</option>)}
+              </select>
+            </div>
+            <div class="academy-app-field">
+              <label for="submission-lesson">Lesson</label>
+              <select id="submission-lesson" name="lesson_id" required disabled>
+                <option value="">Choose lesson</option>
+                {courses.flatMap((course) => course.modules.map((module, index) => (
+                  <option value={lessonIds[course.slug]?.[index]} data-program={course.slug}>{module.title}</option>
+                )))}
+              </select>
+            </div>
+            <div class="academy-app-field">
+              <label for="submission-type">Evidence type</label>
+              <select id="submission-type" name="submission_type" required disabled>
+                <option value="written_reflection">Written reflection</option>
+                <option value="evidence_link">HTTPS evidence link</option>
+              </select>
+            </div>
+            <div class="academy-app-field" data-written-field>
+              <label for="submission-text">Written reflection</label>
+              <textarea id="submission-text" name="text_content" maxlength="5000" placeholder="Explain what you learned, how you would apply it, and what still needs clarification."></textarea>
+            </div>
+            <div class="academy-app-field academy-app-hidden" data-link-field>
+              <label for="submission-url">Evidence URL</label>
+              <input id="submission-url" name="evidence_url" type="url" inputmode="url" maxlength="2048" placeholder="https://…" />
+              <label for="submission-note">Optional reviewer note</label>
+              <textarea id="submission-note" name="evidence_note" maxlength="2000" placeholder="Explain what the reviewer should look for in the linked evidence."></textarea>
+            </div>
+            <button class="academy-app-button intelligence" type="submit" disabled>Submit for human review</button>
+          </form>
+          <div class="academy-app-note" style="margin-top:14px">Hermes stores the reference URL but does not automatically crawl, download or execute content from evidence links in A3.</div>
+        </article>
+
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">Your private history</p>
+          <h2>Submissions and reviewer feedback</h2>
+          <div class="academy-review-empty" data-submission-empty>No evidence submitted yet.</div>
+          <div class="academy-app-list" data-submission-list></div>
+        </article>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type Enrollment = { program_slug: string; state: string };
+  type Review = { id: string; decision: string; feedback_text: string; created_at: string };
+  type Submission = {
+    id: string;
+    program_slug: string;
+    lesson_id: string;
+    submission_type: string;
+    text_content: string | null;
+    evidence_url: string | null;
+    state: string;
+    created_at: string;
+    reviews: Review[];
+  };
+
+  const alert = document.querySelector<HTMLElement>("[data-submission-alert]");
+  const form = document.querySelector<HTMLFormElement>("[data-submission-form]");
+  const programSelect = document.getElementById("submission-program") as HTMLSelectElement | null;
+  const lessonSelect = document.getElementById("submission-lesson") as HTMLSelectElement | null;
+  const typeSelect = document.getElementById("submission-type") as HTMLSelectElement | null;
+  const textInput = document.getElementById("submission-text") as HTMLTextAreaElement | null;
+  const urlInput = document.getElementById("submission-url") as HTMLInputElement | null;
+  const noteInput = document.getElementById("submission-note") as HTMLTextAreaElement | null;
+  const writtenField = document.querySelector<HTMLElement>("[data-written-field]");
+  const linkField = document.querySelector<HTMLElement>("[data-link-field]");
+  const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]') || null;
+  const accessNote = document.querySelector<HTMLElement>("[data-submission-access-note]");
+  const submissionList = document.querySelector<HTMLElement>("[data-submission-list]");
+  const submissionEmpty = document.querySelector<HTMLElement>("[data-submission-empty]");
+
+  const programNames: Record<string, string> = {
+    "us-logistics-operations": "U.S. Logistics Operations",
+    marketing: "Marketing",
+  };
+  const lessonNames = new Map<string, string>();
+  lessonSelect?.querySelectorAll<HTMLOptionElement>("option[data-program]").forEach((option) => {
+    lessonNames.set(`${option.dataset.program}:${option.value}`, option.textContent || option.value);
+  });
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+
+  function syncLessonOptions() {
+    if (!programSelect || !lessonSelect) return;
+    const program = programSelect.value;
+    let visible = 0;
+    [...lessonSelect.options].forEach((option) => {
+      if (!option.dataset.program) return;
+      const matches = option.dataset.program === program;
+      option.hidden = !matches;
+      option.disabled = !matches;
+      if (matches) visible += 1;
+    });
+    lessonSelect.disabled = !program || visible === 0;
+    if (lessonSelect.selectedOptions[0]?.disabled || lessonSelect.selectedOptions[0]?.hidden) lessonSelect.value = "";
+  }
+
+  function syncSubmissionType() {
+    const linkMode = typeSelect?.value === "evidence_link";
+    writtenField?.classList.toggle("academy-app-hidden", Boolean(linkMode));
+    linkField?.classList.toggle("academy-app-hidden", !linkMode);
+    if (textInput) textInput.required = !linkMode;
+    if (urlInput) urlInput.required = Boolean(linkMode);
+  }
+
+  function stateClass(state: string) {
+    return state === "accepted" ? "accepted" : state === "changes_requested" ? "changes_requested" : "";
+  }
+
+  function renderSubmissions(submissions: Submission[]) {
+    if (!submissionList || !submissionEmpty) return;
+    submissionList.replaceChildren();
+    submissionEmpty.classList.toggle("academy-app-hidden", submissions.length > 0);
+
+    for (const item of submissions) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = lessonNames.get(`${item.program_slug}:${item.lesson_id}`) || item.lesson_id;
+      const meta = document.createElement("div");
+      meta.className = "academy-review-meta";
+      for (const value of [programNames[item.program_slug] || item.program_slug, item.submission_type.replaceAll("_", " "), new Date(item.created_at).toLocaleString()]) {
+        const chip = document.createElement("span");
+        chip.textContent = value;
+        meta.append(chip);
+      }
+      const state = document.createElement("span");
+      state.className = `academy-review-state ${stateClass(item.state)}`;
+      state.textContent = item.state.replaceAll("_", " ");
+      meta.append(state);
+      card.append(heading, meta);
+
+      const evidence = document.createElement("div");
+      evidence.className = "academy-review-evidence";
+      if (item.evidence_url) {
+        if (item.text_content) {
+          const note = document.createElement("p");
+          note.textContent = item.text_content;
+          evidence.append(note);
+        }
+        const link = document.createElement("a");
+        link.href = item.evidence_url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = item.evidence_url;
+        evidence.append(link);
+      } else {
+        evidence.textContent = item.text_content || "";
+      }
+      card.append(evidence);
+
+      if (Array.isArray(item.reviews) && item.reviews.length > 0) {
+        const history = document.createElement("div");
+        history.className = "academy-review-history";
+        for (const review of item.reviews) {
+          const feedback = document.createElement("div");
+          feedback.className = "academy-review-feedback";
+          const title = document.createElement("strong");
+          title.textContent = `Human review · ${review.decision.replaceAll("_", " ")}`;
+          const body = document.createElement("span");
+          body.textContent = review.feedback_text;
+          feedback.append(title, body);
+          history.append(feedback);
+        }
+        card.append(history);
+      }
+      submissionList.append(card);
+    }
+  }
+
+  async function loadPage() {
+    clearAlert();
+    try {
+      const [profileResponse, submissionsResponse] = await Promise.all([
+        fetch("/api/academy/profile", { credentials: "same-origin" }),
+        fetch("/api/academy/submissions", { credentials: "same-origin" }),
+      ]);
+      if (profileResponse.status === 401 || submissionsResponse.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const profileData = await profileResponse.json().catch(() => ({}));
+      const submissionsData = await submissionsResponse.json().catch(() => ({}));
+      if (!profileResponse.ok || !profileData.success) throw new Error(profileData.error || "Could not load Academy enrollment state");
+      if (!submissionsResponse.ok || !submissionsData.success) throw new Error(submissionsData.error || "Could not load submissions");
+
+      const enrolledPrograms = new Set((profileData.enrollments as Enrollment[] || []).filter((item) => item.state === "enrolled").map((item) => item.program_slug));
+      if (programSelect) {
+        [...programSelect.options].forEach((option) => {
+          if (!option.value) return;
+          option.disabled = !enrolledPrograms.has(option.value);
+        });
+        programSelect.disabled = enrolledPrograms.size === 0;
+      }
+      if (typeSelect) typeSelect.disabled = enrolledPrograms.size === 0;
+      if (submitButton) submitButton.disabled = enrolledPrograms.size === 0;
+      if (accessNote) accessNote.textContent = enrolledPrograms.size > 0
+        ? "Only programs with an existing Enrolled state are selectable."
+        : "No enrolled program is available yet. Existing submission history remains visible, but new evidence is locked.";
+      syncLessonOptions();
+      syncSubmissionType();
+      renderSubmissions(Array.isArray(submissionsData.submissions) ? submissionsData.submissions as Submission[] : []);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load evidence submissions");
+    }
+  }
+
+  programSelect?.addEventListener("change", syncLessonOptions);
+  typeSelect?.addEventListener("change", syncSubmissionType);
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    if (!programSelect || !lessonSelect || !typeSelect || !submitButton) return;
+    submitButton.disabled = true;
+    try {
+      const linkMode = typeSelect.value === "evidence_link";
+      const payload = {
+        program_slug: programSelect.value,
+        lesson_id: lessonSelect.value,
+        submission_type: typeSelect.value,
+        text_content: linkMode ? noteInput?.value || "" : textInput?.value || "",
+        evidence_url: linkMode ? urlInput?.value || "" : "",
+      };
+      const response = await fetch("/api/academy/submissions", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not submit evidence");
+      form.reset();
+      syncSubmissionType();
+      syncLessonOptions();
+      showAlert("Evidence submitted for private human review. No enrollment or employment decision was changed.", "success");
+      const submissionsResponse = await fetch("/api/academy/submissions", { credentials: "same-origin" });
+      const submissionsData = await submissionsResponse.json().catch(() => ({}));
+      if (submissionsResponse.ok && submissionsData.success) renderSubmissions(Array.isArray(submissionsData.submissions) ? submissionsData.submissions as Submission[] : []);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not submit evidence");
+    } finally {
+      const hasProgram = programSelect ? !programSelect.disabled : false;
+      if (submitButton) submitButton.disabled = !hasProgram;
+    }
+  });
+
+  loadPage();
+</script>
