@@ -74,7 +74,7 @@ const analyticsEvents = new Set<CanonicalCommercialAnalyticsEvent>([
   "seo_intake_preview_ready",
   "seo_handoff_ready",
   "website_project_intake_start",
-  "website_project_preview_ready",
+  "website_project_intake_preview_ready",
   "website_handoff_ready",
 ]);
 const familyEvents: Record<GeoFunnelFamily, Set<CanonicalCommercialAnalyticsEvent>> = {
@@ -101,7 +101,7 @@ const familyEvents: Record<GeoFunnelFamily, Set<CanonicalCommercialAnalyticsEven
   website_project: new Set([
     "commercial_cta_click",
     "website_project_intake_start",
-    "website_project_preview_ready",
+    "website_project_intake_preview_ready",
     "website_handoff_ready",
   ]),
 };
@@ -111,6 +111,8 @@ export interface GeoImportedAnalyticsEvent {
   aggregate: GeoAnalyticsEventAggregate;
   observedAt: string;
 }
+
+export type GeoImportedOutcome = GeoOutcomeAggregate & { observedAt: string };
 
 const asRecord = (value: unknown, label: string): Record<string, unknown> => {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -211,11 +213,11 @@ export const importGeoAnalyticsEventRow = (input: unknown): GeoImportedAnalytics
   return { family, aggregate, observedAt: timestamp(row, "observed_at") };
 };
 
-export const importGeoOutcomeRow = (input: unknown): GeoOutcomeAggregate => {
+export const importGeoOutcomeRow = (input: unknown): GeoImportedOutcome => {
   const row = asRecord(input, "GEO outcome row");
   assertExactFields(row, outcomeFields, "GEO outcome row");
 
-  const outcome: GeoOutcomeAggregate = {
+  const outcome: GeoImportedOutcome = {
     windowDays: enumValue(row, "window_days", standardWindows) as GeoWindowDays,
     pagePath: sitePath(row, "page_path"),
     reviewedInquiries: integer(row, "reviewed_inquiries"),
