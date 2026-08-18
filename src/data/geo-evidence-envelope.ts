@@ -216,24 +216,28 @@ const normalizeReceipts = (values: unknown[], asOf: string): GeoEvidenceReceiptR
   }
 
   return parsed
-    .map((receipt) => ({
-      referenceId: receipt.reference_id,
-      layer: receipt.layer,
-      evidenceClass: receipt.evidence_class,
-      canonicalOwner: receipt.canonical_owner,
-      windowDays: receipt.window_days,
-      observedAt: receipt.observed_at,
-      evidenceFingerprint: receipt.evidence_fingerprint,
-      declaredStatus: receipt.status,
-      effectiveStatus:
+    .map((receipt): GeoEvidenceReceiptRecord => {
+      const effectiveStatus: GeoEvidenceReceiptStatus =
         receipt.status === "withdrawn"
           ? "withdrawn"
           : receipt.status === "superseded" || supersededIds.has(receipt.reference_id)
             ? "superseded"
-            : "active",
-      supersedesReferenceId: receipt.supersedes_reference_id,
-      comparableKey: comparableKey(receipt),
-    }))
+            : "active";
+
+      return {
+        referenceId: receipt.reference_id,
+        layer: receipt.layer,
+        evidenceClass: receipt.evidence_class,
+        canonicalOwner: receipt.canonical_owner,
+        windowDays: receipt.window_days,
+        observedAt: receipt.observed_at,
+        evidenceFingerprint: receipt.evidence_fingerprint,
+        declaredStatus: receipt.status,
+        effectiveStatus,
+        supersedesReferenceId: receipt.supersedes_reference_id,
+        comparableKey: comparableKey(receipt),
+      };
+    })
     .sort(
       (left, right) =>
         left.comparableKey.localeCompare(right.comparableKey) ||
@@ -274,8 +278,6 @@ export const buildGeoEvidenceEnvelope = (input: GeoEvidenceEnvelopeInput) => {
   const top = asRecord(input, "GEO evidence envelope input");
   if (!Array.isArray(top.receipts)) throw new Error("receipts must be an array");
 
-  // Run existing recursive privacy/size/path checks before compilation. The wrapper
-  // intentionally does not weaken the secure operational runner.
   assertGeoOperationalBundleSecurity(top.report_input);
   const report = buildSecureGeoOperationalScorecardReport(top.report_input);
   const receipts = normalizeReceipts(top.receipts, report.asOf);
