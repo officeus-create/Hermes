@@ -14,12 +14,13 @@ assert.equal(academyProgressionStateFromDecision("changes_requested"), "changes_
 assert.equal(academyProgressionStateFromDecision("completed"), "completed");
 
 const root = new URL("../", import.meta.url);
-const [helper, learnerApi, reviewerApi, learnerPage, reviewerPage] = await Promise.all([
+const [helper, learnerApi, reviewerApi, learnerPage, reviewerPage, academyHub] = await Promise.all([
   readFile(new URL("functions/api/_lib/academy-progression.mjs", root), "utf8"),
   readFile(new URL("functions/api/academy/progression.ts", root), "utf8"),
   readFile(new URL("functions/api/academy/reviewer/progression.ts", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/progression/index.astro", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/reviewer/progression/index.astro", root), "utf8"),
+  readFile(new URL("src/pages/services/hermes-connect/academy/index.astro", root), "utf8"),
 ]);
 
 assert.match(helper, /CREATE TABLE IF NOT EXISTS academy_progression_reviews/);
@@ -48,7 +49,7 @@ assert.doesNotMatch(reviewerApi, /UPDATE academy_enrollments|UPDATE academy_less
 assert.doesNotMatch(reviewerApi, /specialist\.role.*reviewer|role.*Academy Reviewer/i);
 assert.doesNotMatch(reviewerApi, /INSERT INTO academy_reviewer_access|UPDATE academy_reviewer_access/);
 
-for (const page of [learnerPage, reviewerPage]) {
+for (const page of [learnerPage, reviewerPage, academyHub]) {
   assert.match(page, /robots="noindex,nofollow"/);
   assert.doesNotMatch(page, /dataLayer|gtag\(/);
 }
@@ -60,5 +61,16 @@ assert.match(reviewerPage, /academy_reviewer_access/);
 assert.match(reviewerPage, /No automatic completion/);
 assert.match(reviewerPage, /Mark Academy program completed/);
 assert.match(reviewerPage, /does not change enrollment, lesson progress, A3 evidence state, hiring\/candidate state, certification, payments, commercial rights, or live operational access/i);
+
+assert.match(academyHub, /\/services\/hermes-connect\/academy\/progression\//);
+assert.match(academyHub, /\/services\/hermes-connect\/academy\/submissions\//);
+assert.match(academyHub, /\/services\/hermes-connect\/academy\/reviewer\//);
+assert.match(academyHub, /\/services\/hermes-connect\/academy\/reviewer\/progression\//);
+assert.match(academyHub, /Manually authorized reviewers only/);
+assert.match(academyHub, /academy_reviewer_access/);
+assert.match(academyHub, /A1 provides shared learner identity and enrollment/);
+assert.match(academyHub, /A4 adds program-level human progression/);
+assert.match(academyHub, /Commercial access remains a separate A5 gate/);
+assert.doesNotMatch(academyHub, /A1 stores learner identity and enrollment state only/);
 
 console.log("Academy A4 human-controlled progression contract passed.");
