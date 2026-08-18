@@ -16,41 +16,17 @@ Hermes does not yet have equally mature market SEO across all four directions.
 
 This audit treats the theoretical market/keyword combination space as a research universe, not a bulk publishing queue.
 
----
-
 ## 1. Logistics — United States
 
 ### Current canonical footprint
 
-`public/sitemap-services.xml` contains **17 logistics service/resource URLs**, including:
-
-- car-hauling dispatch;
-- direct vehicle transport network;
-- dealer vehicle transportation;
-- auction vehicle pickup;
-- open/enclosed/inoperable/multi-car transport;
-- owner-operator and fleet-owner dispatch support;
-- new-authority car-hauler support;
-- calculators and carrier resources.
+`public/sitemap-services.xml` contains **17 logistics service/resource URLs**, including car-hauling dispatch, direct vehicle transport network, dealer vehicle transportation, auction vehicle pickup, open/enclosed/inoperable/multi-car transport, owner-operator/fleet support, new-authority support, calculators and resources.
 
 `public/sitemap-local.xml` contains **16 local vehicle-transport URLs**.
 
 ### Geographic reality
 
-The current local cluster is overwhelmingly **Wisconsin**:
-
-- Wisconsin state owners;
-- Green Bay;
-- Milwaukee;
-- Oshkosh;
-- Madison;
-- Waukesha;
-- Kenosha;
-- Racine;
-- Fond du Lac;
-- Sheboygan;
-- Eau Claire;
-- La Crosse.
+The current local cluster is overwhelmingly **Wisconsin**: Wisconsin state owners plus Green Bay, Milwaukee, Oshkosh, Madison, Waukesha, Kenosha, Racine, Fond du Lac, Sheboygan, Eau Claire and La Crosse.
 
 ### Status
 
@@ -58,25 +34,17 @@ The current local cluster is overwhelmingly **Wisconsin**:
 
 ### Next SEO work
 
-1. Preserve the existing canonical service owners.
-2. Use authenticated query/index/conversion evidence before expanding beyond Wisconsin.
-3. Build a ranked U.S. opportunity inventory by:
-   - state/metro demand;
-   - dealer/auction/shipper/carrier intent;
-   - equipment/use case;
-   - commercial action fit;
-   - competition;
-   - current service truth.
-4. Publish only distinct owners where demand + service + conversion path justify a page.
-5. Every proposed location/equipment page must pass cannibalization and thin-page checks.
-
----
+1. Preserve existing canonical service owners.
+2. Use authenticated query/index/conversion evidence before broad expansion beyond Wisconsin.
+3. Build a ranked U.S. opportunity inventory by state/metro, dealer/auction/shipper/carrier intent, equipment/use case, commercial action fit, competition and service truth.
+4. Publish only distinct owners where demand + service + conversion justify a page.
+5. Require cannibalization and thin-page review for every proposed location/equipment owner.
 
 ## 2. ProgressoPro / Marketing — high-value global cities
 
 ### Current canonical footprint
 
-The digital-services sitemap currently includes the principal marketing owners:
+The digital-services sitemap already contains the principal marketing owners:
 
 - `/services/seo/`;
 - `/services/local-seo/`;
@@ -88,7 +56,7 @@ The digital-services sitemap currently includes the principal marketing owners:
 
 ### Geographic reality
 
-There is **no controlled top-global-city SEO layer yet**. The current service owners are primarily geography-neutral.
+There is **no controlled top-global-city SEO layer yet**. Current service owners are geography-neutral.
 
 ### Status
 
@@ -96,24 +64,11 @@ There is **no controlled top-global-city SEO layer yet**. The current service ow
 
 ### Next SEO work
 
-Build a ranked research matrix:
+Build a ranked matrix:
 
 `city × service × niche × language × buyer value × competition × conversion fit`
 
-Candidate cities must be selected from evidence, not prestige alone. Research factors include:
-
-- local commercial search demand;
-- business density / addressable buyers;
-- contract value potential;
-- language support;
-- competition and SERP difficulty;
-- local-intent fit;
-- whether Hermes can genuinely serve the buyer remotely or locally;
-- whether a distinct city page would add useful market-specific value.
-
-No automatic `service × city` page generation.
-
----
+Candidate cities must be selected from evidence, not prestige alone. No automatic `service × city` page generation.
 
 ## 3. Hermes Business Academy — Ukraine and diaspora markets
 
@@ -138,7 +93,7 @@ There is currently **no dedicated indexable market architecture** for:
 ### Hard market boundary
 
 - **Russia is excluded.**
-- Other country/jurisdiction exclusions must come from an explicit owner/compliance list; the SEO system must not invent geopolitical classifications.
+- Additional jurisdiction exclusions must come from an explicit owner/compliance list; SEO must not invent geopolitical classifications.
 
 ### Status
 
@@ -154,15 +109,13 @@ Then separately:
 
 `approved non-Russia country × Russian-language demand × low competition × program fit × compliance`
 
-The Academy must not create duplicate UA/RU pages that only translate keywords. A localized owner must add market-relevant enrollment, schedule, currency/process, eligibility or learning-context value when truthful and supportable.
-
----
+Localized owners must add real audience value; translation-only duplicates are not approved.
 
 ## 4. Hermes IT / Hermes Connect — vertical SaaS/service acquisition
 
 ### Current canonical footprint
 
-The digital-services sitemap contains Hermes Connect and product/module owners, including:
+The digital-services sitemap contains Hermes Connect and product/module owners including:
 
 - Hermes Connect hub;
 - AI Command Center;
@@ -196,15 +149,7 @@ Build a controlled opportunity universe:
 
 `vertical × workflow/problem × Hermes Connect module × country × region/state × city × district × language`
 
-But publish only after the candidate passes:
-
-- actual product/workflow fit;
-- buyer intent;
-- market demand;
-- distinct content requirement;
-- conversion path;
-- evidence/status language;
-- cannibalization review.
+Publish only after product/workflow fit, buyer intent, market demand, distinct content value, conversion path, status/evidence language and cannibalization review are proven.
 
 Initial vertical order:
 
@@ -213,26 +158,24 @@ Initial vertical order:
 3. Fitness.
 4. Education/Courses.
 
----
-
 ## 5. Conversion and visual SEO requirement
 
-SEO completion is not a metadata/content-only definition.
+SEO completion is not metadata/content only.
 
-Every commercial SEO owner must be evaluated as:
+Every commercial owner is evaluated as:
 
 `query → SERP promise → landing comprehension → trust/evidence → CTA → intake/handoff → measurement`
 
-Before a page is considered ready for scale, verify:
+Before scale, verify:
 
-- title/description match actual intent;
+- title/description match intent;
 - first mobile viewport explains who the page is for and why it matters;
 - one dominant next action is understandable;
 - CTA timing matches buyer readiness;
 - trust/evidence is truthful and visible;
-- no preview/demo is represented as production truth;
-- mobile composition is usable at 390px;
-- page remains within Hermes Design OS;
+- previews/demos are not represented as production truth;
+- mobile composition works at 390px;
+- page remains inside Hermes Design OS;
 - performance/accessibility are not degraded.
 
 ### CEO visual approval boundary
@@ -245,32 +188,28 @@ Any noticeable visual change remains preview-gated:
 4. explicit CEO approval;
 5. only then merge/deploy.
 
-Technical SEO changes that do not materially alter visible design may continue through normal CI/release gates.
-
----
+Technical SEO changes without material visible-design changes may proceed through normal CI/release gates.
 
 ## 6. Current priority order
 
-### P0 — finish measurement/control foundation
+### P0 — preserve control/measurement foundation
 
 - preserve current Logistics SEO experiment observation window;
 - authenticated GSC/Bing/GA4 evidence remains external and must not be fabricated;
 - maintain P0, contextual-link, evidence and privacy contracts.
 
-### P1 — market opportunity research
+### P1 — run four separate market inventories
 
-Run four separate inventories:
-
-1. **Logistics:** U.S. states/metros/intents beyond the current Wisconsin concentration.
+1. **Logistics:** U.S. states/metros/intents beyond current Wisconsin concentration.
 2. **Marketing:** top global commercial cities by service/niche opportunity.
 3. **Academy:** Ukraine + Ukrainian diaspora + owner-approved non-Russia Russian-speaking markets.
 4. **IT:** Repair Shops + Beauty + Fitness + Education/Courses markets.
 
 ### P2 — publish only validated owners
 
-No cluster may move from research to publication only because many keyword combinations exist.
+No cluster moves from research to publication only because many keyword combinations exist.
 
-Required evidence classes before scalable expansion:
+Required before scalable expansion:
 
 - market/query evidence;
 - service/product truth;
@@ -279,4 +218,4 @@ Required evidence classes before scalable expansion:
 - contextual internal-link plan;
 - conversion path;
 - measurement plan;
-- visual/funnel QA when the page requires visible design changes.
+- visual/funnel QA when visible page changes are required.
