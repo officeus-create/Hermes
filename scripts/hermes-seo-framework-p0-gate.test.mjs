@@ -7,6 +7,7 @@ const dist = join(root, "dist");
 const canonicalOrigin = "https://hermeslogisticsus.com";
 const errors = [];
 const warnings = [];
+const reviewedExceptions = [];
 
 const commercialPages = [
   "/logistics/appleton-wi-vehicle-transport/",
@@ -26,6 +27,25 @@ const reviewMinimumWords = 140;
 const commercialMinimumWords = 220;
 const routeMinimumWords = new Map([
   ["/", 50], // Approved four-direction homepage is intentionally concise and separately protected by homepage contracts.
+]);
+
+const reviewedThinRoutes = new Map([
+  [
+    "/paths/logistics/find-your-path/",
+    {
+      minimumWords: 100,
+      marker: /data-path-engine/i,
+      reason: "interactive Hermes Path Engine; utility value is interaction-led rather than long-form copy",
+    },
+  ],
+  [
+    "/logistics/apply/",
+    {
+      minimumWords: 120,
+      marker: /<form\b/i,
+      reason: "candidate intake funnel; concise task completion surface rather than a long-form organic landing page",
+    },
+  ],
 ]);
 
 const decode = (value = "") => value
@@ -135,9 +155,18 @@ for (const url of canonicalUrls) {
   const h2s = tagCount(contentHtml, "h2");
   const normalized = normalizeForFingerprint(text);
   const routeHardMinimumWords = routeMinimumWords.get(route) ?? hardMinimumWords;
+  const reviewedThin = reviewedThinRoutes.get(route);
 
   if (words < routeHardMinimumWords) {
     errors.push(`${route}: only ${words} visible main-content words; this route requires at least ${routeHardMinimumWords}`);
+  } else if (reviewedThin) {
+    if (words < reviewedThin.minimumWords) {
+      errors.push(`${route}: reviewed utility exception regressed to ${words} words; approved floor is ${reviewedThin.minimumWords}`);
+    } else if (!reviewedThin.marker.test(html)) {
+      errors.push(`${route}: reviewed utility exception lost its required utility/funnel marker`);
+    } else {
+      reviewedExceptions.push(`${route}: ${words} words — ${reviewedThin.reason}`);
+    }
   } else if (route !== "/" && words < reviewMinimumWords) {
     warnings.push(`${route}: ${words} visible main-content words; review for thin or low-value content before expanding this cluster`);
   }
@@ -158,6 +187,12 @@ for (const url of canonicalUrls) {
   }
 
   pages.push({ route, html, words, h2s });
+}
+
+for (const route of reviewedThinRoutes.keys()) {
+  if (!pages.some((page) => page.route === route)) {
+    errors.push(`${route}: reviewed thin-route exception no longer resolves inside the canonical sitemap set; remove or reclassify the exception`);
+  }
 }
 
 for (const [hash, owners] of fingerprints) {
@@ -192,6 +227,7 @@ for (const route of commercialPages) {
 }
 
 for (const warning of warnings) console.warn(`Hermes SEO Framework warning — ${warning}`);
+for (const exception of reviewedExceptions) console.log(`Hermes SEO Framework reviewed exception — ${exception}`);
 
 if (errors.length) {
   throw new Error(
@@ -200,5 +236,5 @@ if (errors.length) {
 }
 
 console.log(
-  `Hermes SEO Framework P0 gate passed: ${canonicalUrls.length} canonical sitemap URL(s), ${commercialPages.length} priority commercial page(s), ${warnings.length} review warning(s).`,
+  `Hermes SEO Framework P0 gate passed: ${canonicalUrls.length} canonical sitemap URL(s), ${commercialPages.length} priority commercial page(s), ${warnings.length} review warning(s), ${reviewedExceptions.length} reviewed utility exception(s).`,
 );
