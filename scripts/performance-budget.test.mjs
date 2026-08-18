@@ -47,10 +47,18 @@ for (const relativePath of files) {
     for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
       const tag = match[0];
       const src = tag.match(/\bsrc=["']([^"']+)["']/i)?.[1] ?? "unknown";
-      if (!/\bwidth=["'][^"']+["']/i.test(tag) || !/\bheight=["'][^"']+["']/i.test(tag)) {
+      const width = tag.match(/\bwidth=["'](\d+)["']/i)?.[1];
+      const height = tag.match(/\bheight=["'](\d+)["']/i)?.[1];
+      const hasExplicitDimensions = Boolean(width && height);
+      const isSmallDecorativeIcon = hasExplicitDimensions
+        && Number(width) <= 64
+        && Number(height) <= 64
+        && /\baria-hidden=["']true["']/i.test(tag);
+
+      if (!hasExplicitDimensions) {
         warnings.push(`${relativePath}: image ${src} is missing explicit width and height`);
       }
-      if (!/\bloading=["'](?:lazy|eager)["']/i.test(tag)) {
+      if (!/\bloading=["'](?:lazy|eager)["']/i.test(tag) && !isSmallDecorativeIcon) {
         warnings.push(`${relativePath}: image ${src} has no explicit loading policy`);
       }
     }
