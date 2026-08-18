@@ -14,6 +14,7 @@ export type GeoEvidenceClass =
   | "private_operations_verified"
   | "owner_provided_handoff"
   | "unverified";
+export type GeoAiEvidenceClass = Extract<GeoEvidenceClass, "owner_provided_handoff" | "unverified">;
 
 export interface GeoSearchAggregate {
   windowDays: GeoWindowDays;
@@ -54,6 +55,7 @@ export interface GeoOutcomeAggregate {
 export interface GeoMeasurementLayerInput {
   asOf: string;
   aiObservations: AiVisibilityObservation[];
+  aiVisibilityEvidenceClass: GeoAiEvidenceClass;
   search: GeoSearchAggregate[];
   funnel: GeoFunnelAggregate[];
   outcomes: GeoOutcomeAggregate[];
@@ -282,7 +284,7 @@ export const buildGeoMeasurementScorecard = (
       deliveryToQualifiedRate: rate(qualifiedLeads, deliveryConfirmed),
     },
     evidence: {
-      aiVisibility: aiRows.length > 0 ? ["owner_provided_handoff"] : [],
+      aiVisibility: aiRows.length > 0 ? [input.aiVisibilityEvidenceClass] : [],
       search: uniqueEvidence(searchRows.map((row) => row.evidenceClass)),
       funnel: uniqueEvidence(funnelRows.map((row) => row.evidenceClass)),
       outcomes: uniqueEvidence(outcomeRows.map((row) => row.evidenceClass)),
