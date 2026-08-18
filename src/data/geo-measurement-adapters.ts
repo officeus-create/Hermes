@@ -48,6 +48,7 @@ export type CanonicalCommercialAnalyticsEvent =
   | "website_handoff_ready";
 
 export type GeoFunnelFamily = "carrier" | "vehicle_transport" | "seo" | "website_project";
+export type GeoFunnelRegistryGap = "delivery_confirmed_event_not_established";
 
 export interface GeoAnalyticsEventAggregate {
   windowDays: GeoWindowDays;
@@ -64,6 +65,7 @@ export interface GeoFunnelAdapterResult {
   status: "ready" | "incomplete";
   family: GeoFunnelFamily;
   missingEvents: CanonicalCommercialAnalyticsEvent[];
+  registryGaps: GeoFunnelRegistryGap[];
   aggregate?: GeoFunnelAggregate;
 }
 
@@ -168,15 +170,28 @@ const uniqueEvidenceClass = (rows: GeoAnalyticsEventAggregate[]) => {
   return classes[0];
 };
 
+const registryGapsForFamily = (family: GeoFunnelFamily): GeoFunnelRegistryGap[] =>
+  funnelRequirements[family].delivery ? [] : ["delivery_confirmed_event_not_established"];
+
 export const adaptCanonicalAnalyticsFunnel = (
   family: GeoFunnelFamily,
   rows: GeoAnalyticsEventAggregate[],
 ): GeoFunnelAdapterResult => {
+  const requirements = funnelRequirements[family];
+  const registryGaps = registryGapsForFamily(family);
+
   if (rows.length === 0) {
     return {
       status: "incomplete",
       family,
-      missingEvents: ["commercial_cta_click", funnelRequirements[family].intake, funnelRequirements[family].preview, funnelRequirements[family].handoff],
+      missingEvents: [
+        "commercial_cta_click",
+        requirements.intake,
+        requirements.preview,
+        requirements.handoff,
+        ...(requirements.delivery ? [requirements.delivery] : []),
+      ],
+      registryGaps,
     };
   }
 
@@ -189,37 +204,40 @@ export const adaptCanonicalAnalyticsFunnel = (
     if (row.pagePath !== pagePath) throw new Error("Funnel rows must use one pagePath");
   }
 
-  const requirements = funnelRequirements[family];
   const requiredEvents: CanonicalCommercialAnalyticsEvent[] = [
     "commercial_cta_click",
     requirements.intake,
     requirements.preview,
     requirements.handoff,
+    ...(requirements.delivery ? [requirements.delivery] : []),
   ];
-
-  // The production registry explicitly records no family-specific delivery event
-  // for SEO and website-project flows. Those families remain incomplete rather
-  // than treating handoff as delivery.
-  if (requirements.delivery) requiredEvents.push(requirements.delivery);
 
   const counts = new Map<CanonicalCommercialAnalyticsEvent, number>();
   for (const row of rows) counts.set(row.eventName, (counts.get(row.eventName) ?? 0) + row.count);
 
   const missingEvents = requiredEvents.filter((eventName) => !counts.has(eventName));
-  if (!requirements.delivery) {
+
+  // The canonical registry explicitly records no family-specific delivery event
+  // for SEO and website-project flows. Those families remain incomplete even if
+  // CTA/intake/preview/handoff are all present. Handoff is never treated as delivery.
+  if (registryGaps.length > 0) {
     return {
       status: "incomplete",
       family,
       missingEvents,
+      registryGaps,
     };
   }
-  if (missingEvents.length > 0) return { status: "incomplete", family, missingEvents };
+
+  if (missingEvents.length > 0) {
+    return { status: "incomplete", family, missingEvents, registryGaps: [] };
+  }
 
   const ctaClicks = counts.get("commercial_cta_click") ?? 0;
   const intakeStarts = counts.get(requirements.intake) ?? 0;
   const previewReady = counts.get(requirements.preview) ?? 0;
   const handoffReady = counts.get(requirements.handoff) ?? 0;
-  const deliveryConfirmed = counts.get(requirements.delivery) ?? 0;
+  const deliveryConfirmed = requirements.delivery ? counts.get(requirements.delivery) ?? 0 : 0;
 
   if (intakeStarts > ctaClicks) throw new Error("intake starts cannot exceed commercial CTA clicks in one reconciled funnel");
   if (previewReady > intakeStarts) throw new Error("preview ready cannot exceed intake starts in one reconciled funnel");
@@ -230,6 +248,7 @@ export const adaptCanonicalAnalyticsFunnel = (
     status: "ready",
     family,
     missingEvents: [],
+    registryGaps: [],
     aggregate: {
       windowDays,
       pagePath,
