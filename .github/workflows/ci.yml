@@ -40,6 +40,9 @@ jobs:
       - name: Enforce Hermes GEO evidence contract
         run: node scripts/llms-full-evidence-contract.test.mjs
 
+      - name: Enforce commercial owner internal-link paths
+        run: node scripts/commercial-owner-link-gate.test.mjs
+
       - name: Validate repair shop access state
         run: node scripts/repair-shop-access-contract.test.mjs
 
