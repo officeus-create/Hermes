@@ -10,7 +10,21 @@ const requireText = (text) => {
   if (!body.includes(text)) errors.push(`missing required AI-context statement: ${text}`);
 };
 
-requireText("Verification date: 2026-08-18");
+const verificationDateMatch = body.match(/^>\s*Verification date:\s*(\d{4}-\d{2}-\d{2})\s*$/m);
+if (!verificationDateMatch) {
+  errors.push("missing valid `> Verification date: YYYY-MM-DD` line");
+} else {
+  const verificationDate = verificationDateMatch[1];
+  const parsed = new Date(`${verificationDate}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== verificationDate) {
+    errors.push(`invalid verification date: ${verificationDate}`);
+  } else {
+    const tomorrowUtc = new Date();
+    tomorrowUtc.setUTCDate(tomorrowUtc.getUTCDate() + 1);
+    if (parsed.getTime() > tomorrowUtc.getTime()) errors.push(`verification date is unexpectedly in the future: ${verificationDate}`);
+  }
+}
+
 requireText("## 1. AI interpretation rules");
 requireText("## 8. Search, structured data, and machine-readable discovery");
 requireText("## 10. Measurement and claim boundaries");
