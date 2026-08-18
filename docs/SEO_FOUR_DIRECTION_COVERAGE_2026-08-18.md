@@ -2,7 +2,8 @@
 
 Date: 2026-08-18  
 Scope: Google/Bing SEO only. GEO / AI visibility is a separate workstream.  
-Canonical base reviewed: `b03890eea8eb4e28fbc70da34fe04a0be188f521`.
+Canonical base reviewed: `b03890eea8eb4e28fbc70da34fe04a0be188f521`.  
+Operating architecture: `docs/SEO_FOUR_DIRECTION_MARKET_ARCHITECTURE_2026-08-18.md`.
 
 ## Executive conclusion
 
