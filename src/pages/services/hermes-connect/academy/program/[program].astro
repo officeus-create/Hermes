@@ -5,10 +5,9 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 import { academySubsitePages, type AcademySubsitePage } from "../../../../../data/academy-subsite";
 import "../../../../../styles/hermes-academy-app.css";
 
-const courses = Object.values(academySubsitePages).filter((page) => page.schemaType === "Course");
-
 export function getStaticPaths() {
-  return courses.map((course) => ({ params: { program: course.slug }, props: { course } }));
+  const staticCourses = Object.values(academySubsitePages).filter((page) => page.schemaType === "Course");
+  return staticCourses.map((course) => ({ params: { program: course.slug }, props: { course } }));
 }
 
 interface Props { course: AcademySubsitePage; }
