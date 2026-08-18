@@ -11,8 +11,12 @@ test("car-hauling GEO production candidate stays noindex and evidence-labeled", 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("What does Hermes car-hauling dispatch support include");
   await expect(page.getByText("Hermes public website · first-party service source")).toBeVisible();
   await expect(page.getByText("It is not independent third-party proof of performance.")).toBeVisible();
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText('"@type":"Question"');
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText("https://hermeslogisticsus.com/#organization");
+
+  const structuredData = page.locator('script[type="application/ld+json"]');
+  await expect(structuredData).toContainText('"@type":"Question"');
+  await expect(structuredData).toContainText("https://hermeslogisticsus.com/#organization");
+  await expect(structuredData).toContainText('"url":"https://hermeslogisticsus.com/demos/geo-car-hauling-owner/"');
+  await expect(structuredData).toContainText('"@id":"https://hermeslogisticsus.com/demos/geo-car-hauling-owner/#geo-answer"');
 
   const sitemapResponse = await page.request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBeTruthy();
