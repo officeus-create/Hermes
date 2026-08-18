@@ -100,14 +100,19 @@ const publicHref = `/academy/${course.slug}/`;
   </div>
 </BaseLayout>
 
-<script define:vars={{ programSlug: course.slug }}>
-  const alert = document.querySelector("[data-program-alert]");
-  const enrollmentStatus = document.querySelector("[data-enrollment-status]");
-  const progressCount = document.querySelector("[data-progress-count]");
-  const lessonCards = [...document.querySelectorAll("[data-lesson-id]")];
+<script>
+  type ProgressItem = { lesson_id: string; state: string };
+  type EnrollmentView = { state: string };
+
+  const root = document.querySelector<HTMLElement>("[data-academy-program]");
+  const programSlug = root?.dataset.academyProgram || "";
+  const alert = document.querySelector<HTMLElement>("[data-program-alert]");
+  const enrollmentStatus = document.querySelector<HTMLElement>("[data-enrollment-status]");
+  const progressCount = document.querySelector<HTMLElement>("[data-progress-count]");
+  const lessonCards = [...document.querySelectorAll<HTMLElement>("[data-lesson-id]")];
   let enrolled = false;
 
-  const showAlert = (message, kind = "error") => {
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
     if (!alert) return;
     alert.textContent = message;
     alert.className = `academy-app-alert show ${kind}`;
@@ -118,16 +123,16 @@ const publicHref = `/academy/${course.slug}/`;
     alert.className = "academy-app-alert";
   };
 
-  const nextActionLabel = (state) => {
+  const nextActionLabel = (state: string) => {
     if (state === "completed") return "Reopen module";
     if (state === "in_progress") return "Mark module complete";
     return "Start module";
   };
 
-  const renderLesson = (card, state) => {
+  const renderLesson = (card: HTMLElement, state: string) => {
     card.dataset.lessonState = state;
-    const stateLabel = card.querySelector("[data-lesson-state-label]");
-    const button = card.querySelector("[data-progress-action]");
+    const stateLabel = card.querySelector<HTMLElement>("[data-lesson-state-label]");
+    const button = card.querySelector<HTMLButtonElement>("[data-progress-action]");
     if (stateLabel) stateLabel.textContent = state === "completed" ? "Completed · self-tracked" : state === "in_progress" ? "In progress" : "Not started";
     if (button) {
       button.textContent = nextActionLabel(state);
@@ -140,13 +145,13 @@ const publicHref = `/academy/${course.slug}/`;
     progressCount.textContent = String(lessonCards.filter((card) => card.dataset.lessonState === "completed").length);
   };
 
-  const renderAccess = (enrollment, progress = []) => {
+  const renderAccess = (enrollment: EnrollmentView | null, progress: ProgressItem[] = []) => {
     enrolled = enrollment?.state === "enrolled";
     if (enrollmentStatus) {
       enrollmentStatus.textContent = enrollment ? `Enrollment · ${enrollment.state}` : "No program request";
     }
     const progressByLesson = new Map(progress.map((item) => [item.lesson_id, item.state]));
-    lessonCards.forEach((card) => renderLesson(card, progressByLesson.get(card.dataset.lessonId) || "not_started"));
+    lessonCards.forEach((card) => renderLesson(card, progressByLesson.get(card.dataset.lessonId || "") || "not_started"));
     updateCount();
     if (!enrollment) {
       showAlert("No enrollment request exists for this program. Review the curriculum, then request the program from your learner dashboard.");
@@ -169,19 +174,19 @@ const publicHref = `/academy/${course.slug}/`;
         return;
       }
       if (!response.ok || !data.success) throw new Error(data.error || "Could not load curriculum progress");
-      renderAccess(data.enrollment, Array.isArray(data.progress) ? data.progress : []);
+      renderAccess(data.enrollment as EnrollmentView, Array.isArray(data.progress) ? data.progress as ProgressItem[] : []);
     } catch (error) {
       showAlert(error instanceof Error ? error.message : "Could not load curriculum progress");
     }
   }
 
   lessonCards.forEach((card) => {
-    card.querySelector("[data-progress-action]")?.addEventListener("click", async () => {
+    card.querySelector<HTMLButtonElement>("[data-progress-action]")?.addEventListener("click", async () => {
       if (!enrolled) return;
-      const lessonId = card.dataset.lessonId;
+      const lessonId = card.dataset.lessonId || "";
       const currentState = card.dataset.lessonState || "not_started";
       const nextState = currentState === "in_progress" ? "completed" : "in_progress";
-      const button = card.querySelector("[data-progress-action]");
+      const button = card.querySelector<HTMLButtonElement>("[data-progress-action]");
       if (button) button.disabled = true;
       clearAlert();
       try {
