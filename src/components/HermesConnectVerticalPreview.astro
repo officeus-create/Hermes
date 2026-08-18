@@ -47,15 +47,26 @@ const {
 } = Astro.props;
 
 const canonicalUrl = Astro.url.toString();
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: title,
-  url: canonicalUrl,
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Modern web browser",
-  description,
-};
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: title,
+    url: canonicalUrl,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Modern web browser",
+    description,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: new URL("/", Astro.site).toString() },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: new URL("/services/hermes-connect/", Astro.site).toString() },
+      { "@type": "ListItem", position: 3, name: title, item: canonicalUrl },
+    ],
+  },
+];
 ---
 
 <BaseLayout title={title} description={description} schema={schema}>
