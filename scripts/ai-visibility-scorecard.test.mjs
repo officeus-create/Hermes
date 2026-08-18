@@ -93,6 +93,8 @@ await import("./geo-ai-competitive-visibility.test.mjs");
 await import("./geo-ai-review-plan.test.mjs");
 await import("./geo-ai-visibility-operations.test.mjs");
 await import("./geo-answer-owner-audit.test.mjs");
+await import("./geo-funnel-outcome-health.test.mjs");
+await import("./geo-private-outcome-import.test.mjs");
 await import("./geo-canonical-owner-route-audit.test.mjs");
 await import("./geo-car-hauling-answer-candidate.test.mjs");
 await import("./geo-owner-measurement.test.mjs");
