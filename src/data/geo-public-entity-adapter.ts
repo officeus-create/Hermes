@@ -1,8 +1,8 @@
 import {
   publicEntityRegistry,
   type PublicEntityId,
-} from "./public-entity-registry";
-import type { GeoEntity } from "./geo-answer-contract";
+} from "./public-entity-registry.ts";
+import type { GeoEntity } from "./geo-answer-contract.ts";
 
 export interface GeoPublicEntityContext {
   description: string;
