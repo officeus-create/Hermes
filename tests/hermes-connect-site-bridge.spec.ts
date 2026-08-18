@@ -4,7 +4,7 @@ const productRoute = "/services/hermes-connect/";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
 const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
 
-test("Hermes Connect has one indexed adaptive product-family overview and one current live product", async ({ page }) => {
+test("Hermes Connect has one indexed adaptive product-family overview with live, preparation, and preview states", async ({ page }) => {
   await page.goto(productRoute);
 
   await expect(page).toHaveTitle("Hermes Connect | AI Operating System for Business");
@@ -17,7 +17,11 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
   expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
   expect(await page.locator(`a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
-  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
+  await expect(page.getByText("PRODUCT PREPARATION", { exact: true })).toBeVisible();
+  await expect(page.getByText("PILOT PREPARATION", { exact: true })).toBeVisible();
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(3);
+  await expect(page.locator('a[href="/services/hermes-connect/academy/"]')).toContainText("Open preparation");
+  await expect(page.locator('a[href="/services/hermes-connect/beauty-salons/"]')).toContainText("Open preparation");
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 
