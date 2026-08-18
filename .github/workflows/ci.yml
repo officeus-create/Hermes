@@ -67,6 +67,9 @@ jobs:
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
+      - name: Validate SEO analytics privacy browser flow
+        run: npx playwright test tests/seo-analytics-privacy.spec.ts --project=desktop
+
       - name: Validate repair shop Web V1 browser flow
         run: npx playwright test tests/repair-shop-web-v1.spec.ts --project=desktop
 
