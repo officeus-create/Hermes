@@ -1,0 +1,44 @@
+---
+import HermesConnectVerticalPreview from "../../../../components/HermesConnectVerticalPreview.astro";
+
+const modules = [
+  { title: "Learners", body: "One learner identity and profile for program fit, participation state, support, and future account access." },
+  { title: "Programs", body: "A structured catalog beginning with U.S. Logistics Operations and Practical Marketing, without inventing courses before curriculum evidence exists." },
+  { title: "Lessons", body: "Course, module, lesson, text, video, and resource primitives that can be reused across Academy programs." },
+  { title: "Assignments", body: "Reviewable learner submissions for scenarios, recordings, documents, briefs, analysis, and other approved practice work." },
+  { title: "Feedback", body: "Reviewer state, correction loops, support questions, and human progression decisions instead of fake automated certification." },
+  { title: "Progress & access", body: "Enrollment, cohort metadata, completion evidence, paid-access state, and progress visibility across desktop and mobile web." },
+];
+
+const workflow = [
+  { title: "Choose the right program", body: "The learner sees the public program scope, boundaries, participation model, and approved offer before enrollment." },
+  { title: "Apply or enroll", body: "Readiness, language, schedule, experience, goals, and the selected program are captured through the existing Academy application flow." },
+  { title: "Learn and practice", body: "Lessons connect awareness and understanding to approved application work instead of stopping at passive reading." },
+  { title: "Submit evidence", body: "Assignments create reviewable evidence such as scenarios, recordings, written work, documents, or structured exercises." },
+  { title: "Receive feedback", body: "A reviewer can correct recurring errors and record the next improvement target when the program format supports feedback." },
+  { title: "Continue with visible progress", body: "The future product state keeps learning progress, cohort/access state, and the next approved action inside Hermes Connect." },
+];
+
+const foundations = [
+  { title: "U.S. Logistics Operations", body: "Existing public curriculum for dispatch foundations, communication, documents, equipment logic, negotiation, and operating rhythm.", href: "/academy/us-logistics-operations/" },
+  { title: "Practical Marketing", body: "Existing public curriculum connecting positioning, website-first content, distribution, lead journeys, sales follow-up, and analytics.", href: "/academy/marketing/" },
+  { title: "How training works", body: "Existing Academy method for readiness, awareness, understanding, application, feedback, and human progression.", href: "/academy/how-training-works/" },
+  { title: "Academy application", body: "Existing application path remains the canonical learner intake while account, enrollment, and progress primitives are prepared.", href: "/academy/apply/" },
+];
+---
+
+<HermesConnectVerticalPreview
+  title="Hermes Connect Academy | Product Preparation"
+  description="Hermes Connect Academy is preparing one learner product flow around existing U.S. Logistics Operations and Practical Marketing curriculum, assignments, feedback, progress, and access state."
+  eyebrow="Hermes Connect · Academy"
+  h1="Turn practical training into one measurable learner journey."
+  lead="The public Academy already has real curriculum and an application flow. Hermes Connect Academy is the product layer that will connect enrollment, lessons, assignments, reviewer feedback, progress, support, and paid-access state without creating a second Academy website."
+  statusLabel="Product flow preparation"
+  statusBody="The Academy curriculum and application foundation are real and already public. Learner accounts, enrollment, assignment state, progress, and payment are not represented here as live until their production flows are implemented and verified."
+  modules={modules}
+  workflow={workflow}
+  foundations={foundations}
+  primaryAction={{ label: "Start Academy application", href: "/academy/apply/" }}
+  secondaryAction={{ label: "Open public Academy", href: "/paths/academy/" }}
+  boundary="No fixed Academy price, paid enrollment, certificate, employment, income, client access, learner account, or completion state is claimed by this preparation page. Those become product features only after the exact offer, storage model, access rules, payment flow, and production verification are complete."
+/>
