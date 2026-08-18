@@ -75,6 +75,8 @@ await import("./geo-measurement-layer.test.mjs");
 await import("./geo-measurement-adapters.test.mjs");
 await import("./geo-measurement-import.test.mjs");
 await import("./geo-operational-scorecard.test.mjs");
+await import("./geo-evidence-health.test.mjs");
+await import("./geo-operational-comparison.test.mjs");
 await import("./geo-search-diagnostics.test.mjs");
 await import("./geo-search-diagnostics-import.test.mjs");
 await import("./geo-ai-referral-measurement.test.mjs");

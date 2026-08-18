@@ -41,10 +41,12 @@ const analyticsRow = {
   event_name: "carrier_intake_start",
   count: 8,
   evidence_class: "platform_verified",
+  observed_at: "2026-08-18T11:00:00Z",
 };
 const analytics = importGeoAnalyticsEventRow(analyticsRow);
 assert.equal(analytics.family, "carrier");
 assert.equal(analytics.aggregate.eventName, "carrier_intake_start");
+assert.equal(analytics.observedAt, "2026-08-18T11:00:00.000Z");
 assert.equal(importGeoAnalyticsEventBatch([analyticsRow]).length, 1);
 
 const outcomeRow = {
@@ -57,10 +59,12 @@ const outcomeRow = {
   losses: 0,
   revenue_reconciled_wins: 1,
   evidence_class: "private_operations_verified",
+  observed_at: "2026-08-18T10:30:00Z",
 };
 const outcome = importGeoOutcomeRow(outcomeRow);
 assert.equal(outcome.qualifiedLeads, 2);
 assert.equal(outcome.revenueReconciledWins, 1);
+assert.equal(outcome.observedAt, "2026-08-18T10:30:00.000Z");
 assert.equal(importGeoOutcomeBatch([outcomeRow]).length, 1);
 
 for (const [label, importer, row] of [
@@ -97,6 +101,10 @@ assert.throws(
   /non-negative integer/,
 );
 assert.throws(
+  () => importGeoAnalyticsEventRow({ ...analyticsRow, observed_at: "not-a-date" }),
+  /valid ISO date\/time/,
+);
+assert.throws(
   () => importGeoAnalyticsEventRow({ ...analyticsRow, family: "seo", event_name: "carrier_intake_start" }),
   /does not belong to funnel family seo/,
   "analytics events must not be assigned to the wrong funnel family",
@@ -116,6 +124,10 @@ assert.throws(
 assert.throws(
   () => importGeoOutcomeRow({ ...outcomeRow, revenue_reconciled_wins: 2, wins: 1 }),
   /revenue_reconciled_wins cannot exceed wins/,
+);
+assert.throws(
+  () => importGeoOutcomeRow({ ...outcomeRow, observed_at: "not-a-date" }),
+  /valid ISO date\/time/,
 );
 
 const serialized = JSON.stringify({ search, analytics, outcome }).toLowerCase();
