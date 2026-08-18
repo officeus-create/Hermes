@@ -16,7 +16,15 @@ A strong city, large diaspora, dense industry or important vertical is only a re
 
 Current state: national/service owners exist; local acquisition is concentrated in Wisconsin.
 
-Wave 1 research tasks:
+### External market evidence
+
+NADA publishes 2025 state-by-state auto-retail data including local dealership counts and new-vehicle registration share. U.S. Census County Business Patterns provides establishment counts by state, county, metro and ZIP with detailed NAICS industry resolution. These sources can rank buyer-market density before any new location URL is considered.
+
+### SERP archetype sample
+
+A sampled Texas/Dallas dealer-vehicle-transport query returns a dedicated local B2B dealer/fleet transport landing page with dealer-specific quote CTA and local-market framing. This supports treating dealer transport + metro as a potentially distinct commercial archetype, but does not establish enough demand to publish a Hermes Texas/Dallas owner yet.
+
+### Wave 1 tasks
 
 1. Rank additional U.S. states/metros by vehicle-sales/dealership/transport-market relevance.
 2. Cross those markets with existing canonical owners before proposing new pages.
@@ -30,6 +38,14 @@ Initial research cities: New York, London, Paris, San Jose and Seattle.
 
 These are research seeds only. City economic strength does not establish local SEO keyword demand.
 
+### SERP archetype sample — New York
+
+A current sample for New York/NYC SEO and Local SEO is dominated by commercial agency/service landing pages and agency comparison surfaces. Strong landing pages use explicit New York/NYC positioning, industry or borough context, audit/consultation CTAs, service scope and proof/trust material.
+
+Implication: if Hermes later creates a New York owner, it must be a genuinely market-specific commercial page. A generic service page with “New York” swapped into headings is not sufficient.
+
+### Wave 1 tasks
+
 For each city, test only current verified service owners first: SEO, Local SEO, website development, website redesign and existing industry-specific SEO owners where distinct local demand exists.
 
 A city page is justified only if local commercial intent is materially different from the global service owner and the page can offer real city-specific buyer value.
@@ -40,7 +56,13 @@ Initial research markets: Ukraine, Germany, Poland, Czechia and Spain.
 
 The non-Ukraine countries are research seeds because current European statistics show large populations displaced from Ukraine under temporary protection. Population presence is not search or enrollment demand.
 
-Wave 1 tests:
+### SERP archetype sample — Ukrainian U.S. logistics education
+
+A current Ukrainian-language search sample surfaces a dedicated course page for training as a dispatcher/logistics specialist in the U.S. transportation market. The page presents course format, price, curriculum and application/contact action.
+
+Implication: the Ukraine/Ukrainian-language `U.S. logistics education` intent is not merely theoretical. Hermes already has the canonical program `/academy/us-logistics-operations/`; the next decision is whether the existing program owner/localization can satisfy this intent or whether a distinct Ukrainian acquisition owner is justified. No duplicate course page is approved yet.
+
+### Wave 1 tasks
 
 - Ukrainian-language demand for U.S. logistics education/training;
 - Ukrainian-language demand for marketing education/training;
@@ -58,13 +80,36 @@ Vertical order remains Repair Shops, Beauty, Fitness, Education/Courses.
 
 Wave 1 does not create city/district pages. First it maps search and product fit at the vertical/workflow level.
 
-Research questions:
+### SERP archetype sample — Repair Shops
+
+Current `auto repair shop software / booking / CRM` results are strongly product-led. Repeated buyer expectations include:
+
+- online booking;
+- calendar/scheduling;
+- customer/vehicle CRM;
+- repair/job status workflow;
+- reminders/communications;
+- shop operations or capacity visibility;
+- demo/trial/get-started action.
+
+Implication: Hermes Connect Repair Shops should compete as a vertical product/workflow surface, not as a generic “IT development” page. Existing Repair Shops product truth must be mapped against these expectations before any SEO copy or visual expansion. Claims for modules not actually live remain prohibited.
+
+### Wave 1 tasks
 
 - Which buyer problems match functions already live or truthfully available?
 - Which queries describe workflow pain rather than generic software curiosity?
 - Which vertical has the clearest path from search to demo/access/registration?
 - Which current Hermes Connect module can own the query without overstating readiness?
 - Where would a new vertical landing page require visible screenshots/cards/CTA changes and therefore CEO visual approval?
+
+## Query-owner decisions after Wave 1 sample
+
+| Direction | Query/archetype | Current owner | Current decision |
+| --- | --- | --- | --- |
+| Logistics | dealer vehicle transport + metro | `/logistics/dealer-vehicle-transportation/` + existing local owners | `RESEARCH_LOCAL_OWNER_GAP`; no new state/metro page yet |
+| Marketing | SEO / Local SEO + New York | `/services/seo/`, `/services/local-seo/` | `RESEARCH_CITY_OWNER`; market-specific page not yet approved |
+| Academy | Ukrainian U.S. logistics training | `/academy/us-logistics-operations/` | `KEEP_PROGRAM_OWNER / LOCALIZATION_GAP_RESEARCH` |
+| IT | auto repair shop software / CRM / booking | `/services/hermes-connect/repair-shops/` | `KEEP_VERTICAL_OWNER / PRODUCT-SERP_FIT_AUDIT_NEXT` |
 
 ## Publication gate
 
