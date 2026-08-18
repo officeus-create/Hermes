@@ -52,6 +52,8 @@ const getRobots = (html) => {
   return tag.match(/content=["']([^"']*)["']/i)?.[1]?.toLowerCase() ?? "";
 };
 
+const getMainHtml = (html) => html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] ?? "";
+
 const routeFromHtmlPath = (path) => {
   if (path === "index.html") return "/";
   if (path.endsWith("/index.html")) return `/${path.slice(0, -"index.html".length)}`;
@@ -108,31 +110,41 @@ for (const path of await collectHtmlFiles(dist)) {
 const graph = new Map();
 const inbound = new Map();
 const descriptiveInbound = new Map();
+const contextualDescriptiveInbound = new Map();
 
 for (const route of sitemapRoutes) {
   graph.set(route, new Set());
   inbound.set(route, new Set());
   descriptiveInbound.set(route, []);
+  contextualDescriptiveInbound.set(route, []);
 }
 
-for (const sourceRoute of sitemapRoutes) {
-  const source = pages.get(sourceRoute);
-  if (!source?.indexable) continue;
-
-  for (const match of source.html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+const recordAnchors = (sourceRoute, html, { contextual = false } = {}) => {
+  for (const match of html.matchAll(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
     const href = match[1].trim();
     if (!href || href.startsWith("#") || /^(?:mailto:|tel:|sms:|javascript:)/i.test(href)) continue;
     const targetRoute = normalizeRoute(href, sourceRoute);
     if (!targetRoute || targetRoute === sourceRoute || !sitemapRoutes.has(targetRoute)) continue;
 
-    graph.get(sourceRoute)?.add(targetRoute);
-    inbound.get(targetRoute)?.add(sourceRoute);
-
     const text = anchorText(match[2]);
-    if (text && text.length >= 3 && !genericAnchorText.has(text)) {
-      descriptiveInbound.get(targetRoute)?.push({ sourceRoute, text });
+    const descriptive = text && text.length >= 3 && !genericAnchorText.has(text);
+
+    if (!contextual) {
+      graph.get(sourceRoute)?.add(targetRoute);
+      inbound.get(targetRoute)?.add(sourceRoute);
+      if (descriptive) descriptiveInbound.get(targetRoute)?.push({ sourceRoute, text });
+    } else if (descriptive) {
+      contextualDescriptiveInbound.get(targetRoute)?.push({ sourceRoute, text });
     }
   }
+};
+
+for (const sourceRoute of sitemapRoutes) {
+  const source = pages.get(sourceRoute);
+  if (!source?.indexable) continue;
+  recordAnchors(sourceRoute, source.html);
+  const mainHtml = getMainHtml(source.html);
+  if (mainHtml) recordAnchors(sourceRoute, mainHtml, { contextual: true });
 }
 
 const depth = new Map();
@@ -172,6 +184,11 @@ for (const route of commercialOwners) {
     errors.push(`${route}: commercial owner has no descriptive inbound anchor from another indexable sitemap page`);
   }
 
+  const contextual = contextualDescriptiveInbound.get(route) ?? [];
+  if (contextual.length === 0) {
+    errors.push(`${route}: commercial owner has no descriptive contextual inbound link from another indexable page <main>; sitewide header/footer links are not sufficient`);
+  }
+
   const routeDepth = depth.get(route);
   if (routeDepth === undefined) {
     errors.push(`${route}: commercial owner is unreachable from the homepage through indexable sitemap pages`);
@@ -184,4 +201,4 @@ if (errors.length) {
   throw new Error(`Commercial owner internal-link gate failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log(`Commercial owner internal-link gate passed: ${commercialOwners.length} money-page owners have indexable, descriptive inbound paths within four clicks.`);
+console.log(`Commercial owner internal-link gate passed: ${commercialOwners.length} money-page owners have indexable, descriptive, contextual inbound paths within four clicks.`);
