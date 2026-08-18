@@ -15,8 +15,6 @@ Hermes SEO is four separate market engines sharing one technical foundation:
 
 The theoretical combination space is a research universe. It is not an automatic publishing queue.
 
----
-
 ## 1. Hermes Logistics — United States
 
 ### Market boundary
@@ -44,8 +42,6 @@ A new state/city/equipment page requires:
 
 No `city × state × equipment × audience` bulk publishing.
 
----
-
 ## 2. ProgressoPro / Marketing — global commercial cities
 
 ### Market boundary
@@ -72,8 +68,6 @@ Services may include SEO, Local SEO, website development/redesign and other curr
 
 Prestige alone is not a reason to create a city page.
 
----
-
 ## 3. Hermes Business Academy — Ukraine and diaspora
 
 ### Priority markets
@@ -93,8 +87,6 @@ Any additional jurisdiction exclusion must come from an explicit owner/complianc
 `country × city × diaspora/language signal × program intent × competition × schedule/support fit × enrollment path`
 
 Localization must add real audience value. Translation-only duplicate pages are not approved.
-
----
 
 ## 4. Hermes IT / Hermes Connect — vertical acquisition
 
@@ -122,8 +114,6 @@ A new vertical/market owner requires:
 - internal-link ownership;
 - market demand;
 - no cannibalization.
-
----
 
 ## Funnel + visual SEO contract
 
@@ -154,8 +144,6 @@ Any noticeable visual change — layout, hero, card family, imagery, CTA composi
 5. merge/deploy only after approval.
 
 Technical SEO changes without a meaningful visual change may proceed through normal CI/release gates.
-
----
 
 ## Evidence / scale discipline
 
