@@ -37,6 +37,9 @@ jobs:
       - name: Enforce Hermes SEO Framework P0 gate
         run: node scripts/hermes-seo-framework-p0-gate.test.mjs
 
+      - name: Enforce Hermes GEO evidence contract
+        run: node scripts/llms-full-evidence-contract.test.mjs
+
       - name: Validate repair shop access state
         run: node scripts/repair-shop-access-contract.test.mjs
 
