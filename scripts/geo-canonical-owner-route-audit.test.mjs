@@ -4,44 +4,49 @@ import { join } from "node:path";
 import { geoPromptOwnerRegistry } from "../src/data/geo-prompt-owner-registry.ts";
 
 const root = process.cwd();
+const distRoot = join(root, "dist");
 
-const routeCandidates = (route) => {
+const outputCandidates = (route) => {
   const clean = route.split("?")[0].split("#")[0];
-  if (clean === "/") return ["src/pages/index.astro"];
+  if (clean === "/") return [join(distRoot, "index.html")];
   const relative = clean.replace(/^\/+|\/+$/g, "");
   return [
-    `src/pages/${relative}.astro`,
-    `src/pages/${relative}/index.astro`,
+    join(distRoot, relative, "index.html"),
+    join(distRoot, `${relative}.html`),
   ];
 };
 
-const findRouteFile = (route) =>
-  routeCandidates(route).find((candidate) => existsSync(join(root, candidate)));
+const findBuiltRoute = (route) => outputCandidates(route).find((candidate) => existsSync(candidate));
+
+const hasNoindex = (html) =>
+  /<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(html)
+  || /<meta[^>]+content=["'][^"']*noindex[^"']*["'][^>]+name=["']robots["']/i.test(html);
+
+assert.ok(existsSync(distRoot), "GEO canonical owner audit requires the built dist/ output; run after astro build");
 
 const results = geoPromptOwnerRegistry.map((owner) => {
-  const routeFile = findRouteFile(owner.canonicalOwner);
+  const builtRoute = findBuiltRoute(owner.canonicalOwner);
   const previewOnly = owner.canonicalOwner.startsWith("/demos/");
-  const source = routeFile ? readFileSync(join(root, routeFile), "utf8") : "";
-  const explicitNoindex = /robots\s*=\s*["'{][^\n>]*noindex/i.test(source) || /noindex\s*,?\s*nofollow/i.test(source);
+  const html = builtRoute ? readFileSync(builtRoute, "utf8") : "";
 
   return {
     canonicalOwner: owner.canonicalOwner,
     promptIds: owner.promptIds,
-    routeFile,
+    builtRoute,
     previewOnly,
-    explicitNoindex,
+    noindex: builtRoute ? hasNoindex(html) : false,
     weeklyPromptCount: owner.weeklyPromptCount,
   };
 });
 
-const missing = results.filter((item) => !item.routeFile);
+const missing = results.filter((item) => !item.builtRoute);
 assert.deepEqual(
   missing,
   [],
-  `Every AI visibility canonical owner must resolve to a real Astro route. Missing: ${missing.map((item) => item.canonicalOwner).join(", ")}`,
+  `Every AI visibility canonical owner must exist in built output. Missing: ${missing.map((item) => item.canonicalOwner).join(", ")}`,
 );
 
-const accidentalNoindex = results.filter((item) => !item.previewOnly && item.explicitNoindex);
+const accidentalNoindex = results.filter((item) => !item.previewOnly && item.noindex);
 assert.deepEqual(
   accidentalNoindex,
   [],
@@ -62,5 +67,5 @@ assert.equal(
 );
 
 console.log(
-  `GEO canonical owner route audit passed: ${results.length} owners (${results.filter((item) => item.previewOnly).length} preview-only)`,
+  `GEO canonical owner built-route audit passed: ${results.length} owners (${results.filter((item) => item.previewOnly).length} preview-only)`,
 );
