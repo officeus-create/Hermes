@@ -41,7 +41,11 @@ test('Beauty V1 uses the shared operating-system workflow instead of a disconnec
   assert.match(html, /Client profile/);
   assert.match(html, /Appointments/);
   assert.match(html, /Hermes Intelligence/);
-  assert.match(html, /workspace\.html\?business_type=beauty/);
+  assert.match(html, /data-workspace-entry/);
+  assert.match(html, /source_direction=beauty/);
+  assert.match(html, /business_type=beauty/);
+  assert.match(html, /business_subtype=salon/);
+  assert.match(html, /module=home/);
 });
 
 test('Beauty V1 preserves approval, consent and prototype safety boundaries', async () => {
@@ -65,6 +69,7 @@ test('Canonical workspace keeps Academy and Beauty inside one Hermes Connect she
   assert.match(js, /beauty:\s*'beauty'/);
   assert.match(js, /hermes_business_type/);
   assert.match(js, /startupTypeParam/);
+  assert.match(js, /hasControlledContext[\s\S]*source_direction[\s\S]*business_type[\s\S]*business_subtype[\s\S]*module/);
 });
 
 test('Shared vertical module stylesheet exists and preserves Hermes brand tokens', async () => {
