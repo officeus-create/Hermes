@@ -12,14 +12,24 @@ export interface GeoEvidenceUsageRecord {
   supportsVisibleAnswerClaim: boolean;
 }
 
+export interface GeoEvidenceRelationshipEdge {
+  relationshipId: string;
+  fromEntityId: string;
+  toEntityId: string;
+  relationship: string;
+}
+
 export interface GeoEvidenceGraphDiagnostic {
   answerClaimIds: string[];
   answerEvidenceIds: string[];
   publicAnswerCitationUrls: string[];
   usage: GeoEvidenceUsageRecord[];
+  edges: GeoEvidenceRelationshipEdge[];
+  connectedEntityIds: string[];
   unusedEvidenceIds: string[];
   unexposedClaimIds: string[];
   isolatedEntityIds: string[];
+  orphanNodeIds: string[];
   publicSourceWithoutUrlIds: string[];
 }
 
@@ -33,6 +43,8 @@ const publicUrls = (evidence: GeoEvidenceReference[]) =>
   );
 
 export const buildGeoEvidenceGraph = (surface: GeoAnswerSurface): GeoEvidenceGraphDiagnostic => {
+  // Validation is the graph edge integrity gate: every relationship endpoint must
+  // resolve to a governed entity before diagnostic edges are emitted.
   validateGeoAnswerSurface(surface);
 
   const visibleClaimIds = new Set(surface.layers.evidenceClaimIds);
@@ -63,9 +75,21 @@ export const buildGeoEvidenceGraph = (surface: GeoAnswerSurface): GeoEvidenceGra
     };
   });
 
-  const connectedEntityIds = new Set(
-    surface.relationships.flatMap((relationship) => [relationship.fromEntityId, relationship.toEntityId]),
-  );
+  const edges: GeoEvidenceRelationshipEdge[] = surface.relationships
+    .map((relationship) => ({
+      relationshipId: relationship.id,
+      fromEntityId: relationship.fromEntityId,
+      toEntityId: relationship.toEntityId,
+      relationship: relationship.relationship,
+    }))
+    .sort((left, right) => left.relationshipId.localeCompare(right.relationshipId));
+
+  const connectedEntityIds = unique(edges.flatMap((edge) => [edge.fromEntityId, edge.toEntityId])).sort();
+  const connectedEntitySet = new Set(connectedEntityIds);
+  const orphanNodeIds = surface.entities
+    .filter((entity) => !connectedEntitySet.has(entity.id))
+    .map((entity) => entity.id)
+    .sort();
 
   return {
     answerClaimIds: [...visibleClaimIds],
@@ -76,15 +100,16 @@ export const buildGeoEvidenceGraph = (surface: GeoAnswerSurface): GeoEvidenceGra
         .filter((item): item is GeoEvidenceReference => Boolean(item)),
     ),
     usage,
+    edges,
+    connectedEntityIds,
     unusedEvidenceIds: usage
       .filter((item) => item.claimIds.length === 0 && item.entityIds.length === 0 && item.relationshipIds.length === 0)
       .map((item) => item.evidenceId),
     unexposedClaimIds: surface.claims
       .filter((claim) => !visibleClaimIds.has(claim.id))
       .map((claim) => claim.id),
-    isolatedEntityIds: surface.entities
-      .filter((entity) => !connectedEntityIds.has(entity.id))
-      .map((entity) => entity.id),
+    isolatedEntityIds: orphanNodeIds,
+    orphanNodeIds,
     publicSourceWithoutUrlIds: surface.evidence
       .filter((item) => item.origin === "public_source" && !item.url)
       .map((item) => item.id),
