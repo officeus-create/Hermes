@@ -155,7 +155,7 @@ test.describe("Hermes Connect Academy A3", () => {
     });
 
     await page.goto("/services/hermes-connect/academy/reviewer/", { waitUntil: "domcontentloaded" });
-    await expect(page.getByText("Authorized Reviewer")).toBeVisible();
+    await expect(page.locator("[data-reviewer-name]")).toHaveText("Authorized Reviewer");
     await expect(page.locator("[data-reviewer-program]")).toBeDisabled();
     await expect(page.locator("[data-reviewer-program]")).toHaveValue("marketing");
     await expect(page.getByText("Alex Learner · learner@example.com")).toBeVisible();
