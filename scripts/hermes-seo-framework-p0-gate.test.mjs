@@ -24,6 +24,9 @@ const commercialPages = [
 const hardMinimumWords = 70;
 const reviewMinimumWords = 140;
 const commercialMinimumWords = 220;
+const routeMinimumWords = new Map([
+  ["/", 50], // Approved four-direction homepage is intentionally concise and separately protected by homepage contracts.
+]);
 
 const decode = (value = "") => value
   .replaceAll("&amp;", "&")
@@ -131,10 +134,11 @@ for (const url of canonicalUrls) {
   const h1s = tagCount(contentHtml, "h1");
   const h2s = tagCount(contentHtml, "h2");
   const normalized = normalizeForFingerprint(text);
+  const routeHardMinimumWords = routeMinimumWords.get(route) ?? hardMinimumWords;
 
-  if (words < hardMinimumWords) {
-    errors.push(`${route}: only ${words} visible main-content words; indexable sitemap pages require at least ${hardMinimumWords}`);
-  } else if (words < reviewMinimumWords) {
+  if (words < routeHardMinimumWords) {
+    errors.push(`${route}: only ${words} visible main-content words; this route requires at least ${routeHardMinimumWords}`);
+  } else if (route !== "/" && words < reviewMinimumWords) {
     warnings.push(`${route}: ${words} visible main-content words; review for thin or low-value content before expanding this cluster`);
   }
 
