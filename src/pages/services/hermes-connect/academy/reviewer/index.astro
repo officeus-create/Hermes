@@ -233,6 +233,7 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
       const feedbackLabel = document.createElement("label");
       feedbackLabel.textContent = "Private reviewer feedback";
       const textarea = document.createElement("textarea");
+      textarea.setAttribute("aria-label", "Private reviewer feedback");
       textarea.maxLength = 4000;
       textarea.placeholder = "Explain what is strong, what must change, and the learner's next concrete action.";
       feedbackField.append(feedbackLabel, textarea);
