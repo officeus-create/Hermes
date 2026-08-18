@@ -2,9 +2,9 @@
 set -euo pipefail
 
 BASE="https://hermeslogisticsus.com"
-OWNER_EMAIL="officeus+hc-owner-qa-20260818@hermeslogisticsus.com"
+OWNER_EMAIL="officeus+hc-owner-qa-v2-20260818@hermeslogisticsus.com"
 OWNER_NAME="Волкогон В."
-SHOP_NAME="Northstar Auto Care — Hermes QA"
+SHOP_NAME="Northstar Auto Care — Hermes Owner QA"
 COOKIE="${RUNNER_TEMP:-/tmp}/hc-owner-qa.cookies"
 TMP="${RUNNER_TEMP:-/tmp}/hc-owner-qa"
 ARTIFACT_DIR="artifacts/hc-owner-qa"
@@ -27,27 +27,17 @@ REGISTER="$(jq -nc \
   --arg password "$PASSWORD" \
   --arg name "$OWNER_NAME" \
   '{email:$email,password:$password,name:$name,role:"Shop Owner",location:"United States",bio:"Persistent internal QA owner for Hermes Connect Repair Shops. Test data only; no real customer identity."}')"
-
 REGISTER_HTTP="$(curl -sS -o "$TMP/register.json" -w '%{http_code}' -c "$COOKIE" \
   -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
 echo "REGISTER_HTTP=$REGISTER_HTTP"
 if [[ "$REGISTER_HTTP" != "201" ]]; then
   cat "$TMP/register.json"
-  echo "Provisioning requires a fresh dedicated QA alias; refusing to overwrite an existing owner."
+  echo "Fresh QA alias was not created; refusing to overwrite an existing account."
   exit 1
 fi
-
 test "$(jq -r '.success // false' "$TMP/register.json")" = true
 
-PROFILE="$(jq -nc --arg name "$SHOP_NAME" '{
-  name:$name,
-  phone:"+1 414 555 0176",
-  address_line1:"QA profile — not a customer-facing physical location",
-  city:"Milwaukee",
-  state:"WI",
-  postal_code:"53202",
-  timezone:"America/Chicago"
-}')"
+PROFILE="$(jq -nc --arg name "$SHOP_NAME" '{name:$name,phone:"+1 414 555 0176",address_line1:"QA profile — not a customer-facing physical location",city:"Milwaukee",state:"WI",postal_code:"53202",timezone:"America/Chicago"}')"
 PROFILE_HTTP="$(request PUT "$BASE/api/repair-shop/profile" "$TMP/profile.json" "$PROFILE" yes)"
 echo "PROFILE_HTTP=$PROFILE_HTTP"
 test "$PROFILE_HTTP" = 200
@@ -55,12 +45,10 @@ SLUG="$(jq -r '.shop.slug // empty' "$TMP/profile.json")"
 test -n "$SLUG"
 
 create_service() {
-  local name="$1" duration="$2" out="$3"
-  local payload
+  local name="$1" duration="$2" out="$3" payload code
   payload="$(jq -nc --arg name "$name" --argjson duration "$duration" '{name:$name,duration_minutes:$duration}')"
-  local code
   code="$(request POST "$BASE/api/services" "$out" "$payload" yes)"
-  echo "SERVICE_HTTP=$code name=$name"
+  echo "SERVICE_HTTP=$code name=$name" >&2
   test "$code" = 201
   jq -r '.service.id' "$out"
 }
@@ -68,9 +56,9 @@ create_service() {
 SERVICE_OIL="$(create_service "Oil Change & Inspection" 45 "$TMP/service-oil.json")"
 SERVICE_BRAKE="$(create_service "Brake Inspection & Diagnostic" 60 "$TMP/service-brake.json")"
 SERVICE_DIAG="$(create_service "Full Vehicle Diagnostic" 60 "$TMP/service-diagnostic.json")"
-test -n "$SERVICE_OIL"
-test -n "$SERVICE_BRAKE"
-test -n "$SERVICE_DIAG"
+for id in "$SERVICE_OIL" "$SERVICE_BRAKE" "$SERVICE_DIAG"; do
+  [[ "$id" == service-* ]]
+done
 
 AVAILABILITY='{"days":[{"day_of_week":0,"is_open":false,"start_time":"09:00","end_time":"17:00"},{"day_of_week":1,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"14:00"}]}'
 AVAIL_HTTP="$(request PUT "$BASE/api/repair-shop/availability" "$TMP/availability.json" "$AVAILABILITY" yes)"
@@ -82,7 +70,6 @@ PROFILE_GET_HTTP="$(request GET "$BASE/api/repair-shop/profile" "$TMP/profile-ge
 SERVICES_GET_HTTP="$(request GET "$BASE/api/services" "$TMP/services-get.json" "" yes)"
 AVAIL_GET_HTTP="$(request GET "$BASE/api/repair-shop/availability" "$TMP/availability-get.json" "" yes)"
 PUBLIC_HTTP="$(request GET "$BASE/api/public/repair-shop?slug=$SLUG" "$TMP/public.json")"
-
 test "$ME_HTTP" = 200
 test "$PROFILE_GET_HTTP" = 200
 test "$SERVICES_GET_HTTP" = 200
@@ -90,29 +77,35 @@ test "$AVAIL_GET_HTTP" = 200
 test "$PUBLIC_HTTP" = 200
 test "$(jq '.services | length' "$TMP/public.json")" -ge 3
 
-# Two realistic QA bookings for the same fictional customer populate both the
-# owner inbox and booking-derived CRM without involving a real person.
-DATE1="$(TZ=America/Chicago date -d '+1 day' +%F)"
-DATE2="$(TZ=America/Chicago date -d '+2 day' +%F)"
+# Use the next two open weekdays so the test remains valid whenever it is run.
+next_weekday() {
+  local offset="$1" date dow
+  date="$(TZ=America/Chicago date -d "+${offset} day" +%F)"
+  dow="$(TZ=America/Chicago date -d "$date" +%u)"
+  while [[ "$dow" -gt 5 ]]; do
+    offset=$((offset + 1))
+    date="$(TZ=America/Chicago date -d "+${offset} day" +%F)"
+    dow="$(TZ=America/Chicago date -d "$date" +%u)"
+  done
+  printf '%s' "$date"
+}
+DATE1="$(next_weekday 1)"
+DATE2="$(next_weekday 2)"
+if [[ "$DATE2" == "$DATE1" ]]; then DATE2="$(next_weekday 3)"; fi
 CLIENT_EMAIL="hermes-connect-qa-customer@example.com"
 
-BOOK1="$(jq -nc \
-  --arg slug "$SLUG" --arg service "$SERVICE_OIL" --arg date "$DATE1" --arg email "$CLIENT_EMAIL" \
-  '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Alex QA Customer",client_email:$email,client_phone:"+1 414 555 0181",vehicle_year:2022,vehicle_make:"Toyota",vehicle_model:"Camry",mileage:42000,vin:"4T1G11AK0NU000001"}')"
+BOOK1="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_OIL" --arg date "$DATE1" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"10:00",client_name:"Alex QA Customer",client_email:$email,client_phone:"+1 414 555 0181",vehicle_year:2022,vehicle_make:"Toyota",vehicle_model:"Camry",mileage:42000,vin:"4T1G11AK0NU000001"}')"
 BOOK1_HTTP="$(request POST "$BASE/api/public/repair-booking" "$TMP/booking1.json" "$BOOK1")"
 echo "BOOKING1_HTTP=$BOOK1_HTTP"
 test "$BOOK1_HTTP" = 201
 BOOKING1_ID="$(jq -r '.booking.id // empty' "$TMP/booking1.json")"
 test -n "$BOOKING1_ID"
-
 STATUS1_HTTP="$(request PATCH "$BASE/api/repair-shop/bookings/$BOOKING1_ID/status" "$TMP/status-in-progress.json" '{"status":"in_progress"}' yes)"
 STATUS2_HTTP="$(request PATCH "$BASE/api/repair-shop/bookings/$BOOKING1_ID/status" "$TMP/status-completed.json" '{"status":"completed"}' yes)"
 test "$STATUS1_HTTP" = 200
 test "$STATUS2_HTTP" = 200
 
-BOOK2="$(jq -nc \
-  --arg slug "$SLUG" --arg service "$SERVICE_BRAKE" --arg date "$DATE2" --arg email "$CLIENT_EMAIL" \
-  '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"11:00",client_name:"Alex QA Customer",client_email:$email,client_phone:"+1 414 555 0181",vehicle_year:2022,vehicle_make:"Toyota",vehicle_model:"Camry",mileage:42120,vin:"4T1G11AK0NU000001"}')"
+BOOK2="$(jq -nc --arg slug "$SLUG" --arg service "$SERVICE_BRAKE" --arg date "$DATE2" --arg email "$CLIENT_EMAIL" '{shop_slug:$slug,service_id:$service,appointment_date:$date,start_time:"11:00",client_name:"Alex QA Customer",client_email:$email,client_phone:"+1 414 555 0181",vehicle_year:2022,vehicle_make:"Toyota",vehicle_model:"Camry",mileage:42120,vin:"4T1G11AK0NU000001"}')"
 BOOK2_HTTP="$(request POST "$BASE/api/public/repair-booking" "$TMP/booking2.json" "$BOOK2")"
 echo "BOOKING2_HTTP=$BOOK2_HTTP"
 test "$BOOK2_HTTP" = 201
@@ -165,8 +158,14 @@ Dashboard: $DASHBOARD_URL
 Public booking: $BOOKING_URL
 EOF
 
-# Public issue comments remain sanitized. The password exists only in the
-# private Actions artifact.
+# Request a normal password-reset email as the handoff path to the CEO. The
+# public API intentionally returns the same acknowledgement regardless of mail
+# delivery, so Gmail readback remains the delivery proof.
+RESET_PAYLOAD="$(jq -nc --arg email "$OWNER_EMAIL" '{email:$email,lang:"ru"}')"
+RESET_HTTP="$(request POST "$BASE/api/auth/forgot-password" "$TMP/reset.json" "$RESET_PAYLOAD")"
+echo "PASSWORD_RESET_REQUEST_HTTP=$RESET_HTTP"
+test "$RESET_HTTP" = 200
+
 printf '%s\n' \
   "## Hermes Connect CEO QA provisioning — PASS" \
   "" \
@@ -177,10 +176,11 @@ printf '%s\n' \
   "" \
   "Production checks passed: owner session, profile, 3 services, weekly availability, public shop, completed booking, confirmed booking, booking inbox, customer CRM." \
   "" \
+  "Login: $LOGIN_URL" \
   "Dashboard: $DASHBOARD_URL" \
   "Public booking: $BOOKING_URL" \
   "" \
-  "Generated password is intentionally omitted from logs/comments and stored only in the private workflow artifact." \
+  "A password-reset request was also issued to the QA work-email alias for direct CEO handoff." \
   > "$ARTIFACT_DIR/issue-comment.md"
 
 echo "HC_OWNER_QA_PROVISION_PASS"
