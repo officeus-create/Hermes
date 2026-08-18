@@ -67,11 +67,12 @@ for (const relativePath of files) {
 
 if (totalBytes > budgets.total) errors.push(`Generated site is ${totalBytes} bytes; total budget is ${budgets.total}`);
 
-for (const warning of [...new Set(warnings)]) console.warn(`Performance warning — ${warning}`);
+const uniqueWarnings = [...new Set(warnings)];
+for (const warning of uniqueWarnings) console.warn(`Performance warning — ${warning}`);
 if (errors.length) {
   throw new Error(`Performance budget failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
 console.log(
-  `Performance budget passed: ${files.length} files, ${htmlCount} HTML pages, ${imageCount} images, ${totalBytes} total bytes, ${warnings.length} review warning(s).`,
+  `Performance budget passed: ${files.length} files, ${htmlCount} HTML pages, ${imageCount} images, ${totalBytes} total bytes, ${uniqueWarnings.length} unique review warning(s).`,
 );
