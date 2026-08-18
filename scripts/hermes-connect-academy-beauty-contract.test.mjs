@@ -41,6 +41,10 @@ test('Beauty V1 uses the shared operating-system workflow instead of a disconnec
   assert.match(html, /Client profile/);
   assert.match(html, /Appointments/);
   assert.match(html, /Hermes Intelligence/);
+  assert.match(html, /TEAM & CAPACITY/);
+  assert.match(html, /Permission model:/);
+  assert.match(html, /MONEY & SUPPLIES/);
+  assert.match(html, /consumables below demo reorder threshold/i);
   assert.match(html, /data-workspace-entry/);
   assert.match(html, /source_direction=beauty/);
   assert.match(html, /business_type=beauty/);
@@ -52,6 +56,8 @@ test('Beauty V1 preserves approval, consent and prototype safety boundaries', as
   const html = await load('beauty-salon.html');
   assert.match(html, /Human review required before any external send/i);
   assert.match(html, /consent state needs verification/i);
+  assert.match(html, /does not infer professional qualifications/i);
+  assert.match(html, /no purchase is sent automatically/i);
   assert.match(html, /all clients, metrics, services and actions on this page are synthetic/i);
   assert.match(html, /does not replace professional clinical judgment/i);
   assert.match(html, /noindex,nofollow/i);
