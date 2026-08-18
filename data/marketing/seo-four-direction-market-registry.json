@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "reviewed_at": "2026-08-18",
+  "scope": "Google/Bing SEO market research and publication control",
+  "publication_rule": "Research universe is not a publishing queue. A candidate may move to approved_for_build only after market/query evidence, service or product truth, canonical ownership, useful differentiation, conversion path and measurement plan are recorded.",
+  "directions": {
+    "logistics": {
+      "market_boundary": "United States",
+      "status": "foundation_strong_expansion_research_required",
+      "dimensions": ["state", "metro_or_city", "audience", "equipment_or_use_case", "problem", "commercial_action"],
+      "current_focus": ["national_service_owners", "wisconsin_local_cluster"],
+      "candidates": []
+    },
+    "marketing": {
+      "market_boundary": "High-value global commercial cities",
+      "status": "service_owners_exist_city_engine_research_required",
+      "dimensions": ["city", "service", "niche", "language", "buyer_value", "competition", "conversion_fit"],
+      "current_focus": ["seo", "local_seo", "logistics_seo", "auto_dealer_seo", "website_development", "website_redesign"],
+      "candidates": []
+    },
+    "academy": {
+      "market_boundary": "Ukraine, Ukrainian diaspora, then approved Russian-speaking markets outside Russia",
+      "status": "core_funnel_exists_market_research_required",
+      "dimensions": ["country", "city", "audience_or_diaspora_signal", "language", "program_intent", "competition", "support_fit"],
+      "excluded_markets": ["Russia"],
+      "additional_exclusions_source": "owner_or_compliance_approved_list_required",
+      "current_focus": ["ukraine", "ukrainian_diaspora", "approved_non_russia_russian_speaking_markets"],
+      "candidates": []
+    },
+    "it_hermes_connect": {
+      "market_boundary": "Vertical product-market acquisition where Hermes Connect workflow fit is verified",
+      "status": "product_seo_exists_vertical_expansion_research_required",
+      "dimensions": ["vertical", "workflow_or_problem", "module", "country", "region_or_state", "city", "district", "language"],
+      "vertical_priority": [
+        {"vertical": "repair_shops", "state": "existing_first_vertical"},
+        {"vertical": "beauty", "state": "research_required"},
+        {"vertical": "fitness", "state": "research_required"},
+        {"vertical": "education_courses", "state": "research_required"}
+      ],
+      "candidates": []
+    }
+  },
+  "candidate_schema": {
+    "required_for_research": ["id", "direction", "market", "intent_cluster", "status"],
+    "required_for_approved_for_build": ["evidence_refs", "canonical_owner", "service_or_product_truth", "distinct_value", "conversion_path", "measurement_plan", "funnel_qa_status"],
+    "allowed_statuses": ["research", "hold", "rejected", "approved_for_build", "published", "measurement_active"]
+  }
+}
