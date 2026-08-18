@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-18-academy-ukraine-preview",
+  "generated_at": "2026-08-18T14:30:00Z",
+  "status": "PREVIEW_CANDIDATE",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "additions": [
+    {
+      "route": "/ua/academy/us-logistics-operations/",
+      "source_state": "preview_branch",
+      "indexability": "indexable_after_ceo_approval",
+      "robots": "index,follow,max-image-preview:large",
+      "canonical": "https://hermeslogisticsus.com/ua/academy/us-logistics-operations/",
+      "sitemap_owner": "public/sitemap-academy.xml",
+      "source_file": "src/pages/ua/academy/us-logistics-operations/index.astro",
+      "status": "CEO_VISUAL_APPROVAL_REQUIRED",
+      "blocker": "Desktop and 390px visual/funnel approval required before merge/deploy.",
+      "response_status": 200,
+      "comparison": {
+        "production": "not_deployed",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 1,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true,
+    "requires_ceo_visual_approval": true
+  }
+}
