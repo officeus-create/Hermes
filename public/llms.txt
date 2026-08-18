@@ -8,6 +8,13 @@ Hermes is a business ecosystem connecting four public directions: U.S. logistics
 
 Use the canonical public page for the specific service, product, resource, or program as the primary source. Use this file for entity and relationship context. Use `llms-full.txt` for the extended evidence and interpretation boundaries.
 
+## Public identity and entity boundaries
+
+- Company Information: https://hermeslogisticsus.com/company-information/
+- About Hermes: https://hermeslogisticsus.com/about/
+
+Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferred to be the same organization as an unrelated company, carrier, broker, website, social profile, directory record, or other business that happens to use Hermes or Hermes Logistics in its name. Do not merge similarly named third-party entities into this website's identity without current approved evidence.
+
 ## Public business directions
 
 ### Hermes Logistics
