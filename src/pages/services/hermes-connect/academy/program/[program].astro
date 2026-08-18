@@ -1,0 +1,211 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import { academySubsitePages, type AcademySubsitePage } from "../../../../../data/academy-subsite";
+import "../../../../../styles/hermes-academy-app.css";
+
+export function getStaticPaths() {
+  const staticCourses = Object.values(academySubsitePages).filter((page) => page.schemaType === "Course");
+  return staticCourses.map((course) => ({ params: { program: course.slug }, props: { course } }));
+}
+
+interface Props { course: AcademySubsitePage; }
+const { course } = Astro.props;
+const lessonIds: Record<string, string[]> = {
+  "us-logistics-operations": [
+    "dispatch-foundations",
+    "carrier-broker-communication",
+    "equipment-lane-logic",
+    "documents-setup",
+    "negotiation-practice",
+    "operating-rhythm",
+  ],
+  marketing: [
+    "positioning-offer",
+    "website-first-content",
+    "platform-distribution",
+    "lead-journey",
+    "sales-follow-up",
+    "analytics-improvement",
+  ],
+};
+const currentLessonIds = lessonIds[course.slug] || [];
+const publicHref = `/academy/${course.slug}/`;
+---
+
+<BaseLayout
+  title={`${course.h1} | Academy Learner`}
+  description={`Private Academy curriculum view for ${course.title}.`}
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page" data-academy-program={course.slug}>
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a><span>/</span><span aria-current="page">{course.slug === "marketing" ? "Marketing" : "U.S. Logistics Operations"}</span>
+      </nav>
+
+      <div class="academy-app-alert" data-program-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Authenticated curriculum · A2</p>
+          <h1>{course.h1}</h1>
+          <p>{course.intro}</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href={publicHref}>Open canonical public curriculum</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Back to dashboard</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status" data-enrollment-status>Checking enrollment…</span>
+          <h2 style="margin-top:14px"><span data-progress-count>0</span> of {course.modules.length} modules self-tracked complete</h2>
+          <p data-progress-boundary>Lesson progress is personal self-tracking. It is not reviewer evidence, certification, Academy completion, employment, income, client access, or permission to work with live operations.</p>
+        </aside>
+      </section>
+
+      <section class="academy-app-panel">
+        <p class="academy-app-eyebrow">{course.modulesTitle}</p>
+        <h2>Use the existing public curriculum as your learning map.</h2>
+        <p>{course.modulesIntro}</p>
+        <div class="academy-app-programs" style="margin-top:18px">
+          {course.modules.map((module, index) => (
+            <article class="academy-program-card" data-lesson-id={currentLessonIds[index]} data-lesson-state="not_started">
+              <span class="academy-app-status">Module {String(index + 1).padStart(2, "0")}</span>
+              <h3>{module.title}</h3>
+              <p>{module.body}</p>
+              <p class="academy-app-kicker"><strong data-lesson-state-label>Not started</strong></p>
+              <button class="academy-app-button primary" type="button" data-progress-action disabled>Start module</button>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="academy-app-grid" style="margin-top:18px">
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">Progress boundary</p>
+          <h2>Self-tracking does not change enrollment.</h2>
+          <p>Only an existing <strong>Enrolled</strong> state unlocks progress controls. Marking modules complete never changes your enrollment, reviewer decision, participation model, cohort, candidate status, or employment status.</p>
+        </article>
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">What comes next</p>
+          <h2>Assignments and review remain separate.</h2>
+          <p>A later bounded Academy release may add assignments, video evidence and reviewer feedback. A2 intentionally contains no submission upload, reviewer score, automated readiness decision or certificate logic.</p>
+        </article>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type ProgressItem = { lesson_id: string; state: string };
+  type EnrollmentView = { state: string };
+
+  const root = document.querySelector<HTMLElement>("[data-academy-program]");
+  const programSlug = root?.dataset.academyProgram || "";
+  const alert = document.querySelector<HTMLElement>("[data-program-alert]");
+  const enrollmentStatus = document.querySelector<HTMLElement>("[data-enrollment-status]");
+  const progressCount = document.querySelector<HTMLElement>("[data-progress-count]");
+  const lessonCards = [...document.querySelectorAll<HTMLElement>("[data-lesson-id]")];
+  let enrolled = false;
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+
+  const nextActionLabel = (state: string) => {
+    if (state === "completed") return "Reopen module";
+    if (state === "in_progress") return "Mark module complete";
+    return "Start module";
+  };
+
+  const renderLesson = (card: HTMLElement, state: string) => {
+    card.dataset.lessonState = state;
+    const stateLabel = card.querySelector<HTMLElement>("[data-lesson-state-label]");
+    const button = card.querySelector<HTMLButtonElement>("[data-progress-action]");
+    if (stateLabel) stateLabel.textContent = state === "completed" ? "Completed · self-tracked" : state === "in_progress" ? "In progress" : "Not started";
+    if (button) {
+      button.textContent = nextActionLabel(state);
+      button.disabled = !enrolled;
+    }
+  };
+
+  const updateCount = () => {
+    if (!progressCount) return;
+    progressCount.textContent = String(lessonCards.filter((card) => card.dataset.lessonState === "completed").length);
+  };
+
+  const renderAccess = (enrollment: EnrollmentView | null, progress: ProgressItem[] = []) => {
+    enrolled = enrollment?.state === "enrolled";
+    if (enrollmentStatus) {
+      enrollmentStatus.textContent = enrollment ? `Enrollment · ${enrollment.state}` : "No program request";
+    }
+    const progressByLesson = new Map(progress.map((item) => [item.lesson_id, item.state]));
+    lessonCards.forEach((card) => renderLesson(card, progressByLesson.get(card.dataset.lessonId || "") || "not_started"));
+    updateCount();
+    if (!enrollment) {
+      showAlert("No enrollment request exists for this program. Review the curriculum, then request the program from your learner dashboard.");
+    } else if (!enrolled) {
+      showAlert(`Progress controls stay locked while enrollment is ${enrollment.state}. Curriculum remains viewable because the same program description is public.`);
+    }
+  };
+
+  async function loadProgress() {
+    clearAlert();
+    try {
+      const response = await fetch(`/api/academy/progress?program=${encodeURIComponent(programSlug)}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 404 && data.error === "enrollment_not_found") {
+        renderAccess(null, []);
+        return;
+      }
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load curriculum progress");
+      renderAccess(data.enrollment as EnrollmentView, Array.isArray(data.progress) ? data.progress as ProgressItem[] : []);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load curriculum progress");
+    }
+  }
+
+  lessonCards.forEach((card) => {
+    card.querySelector<HTMLButtonElement>("[data-progress-action]")?.addEventListener("click", async () => {
+      if (!enrolled) return;
+      const lessonId = card.dataset.lessonId || "";
+      const currentState = card.dataset.lessonState || "not_started";
+      const nextState = currentState === "in_progress" ? "completed" : "in_progress";
+      const button = card.querySelector<HTMLButtonElement>("[data-progress-action]");
+      if (button) button.disabled = true;
+      clearAlert();
+      try {
+        const response = await fetch("/api/academy/progress", {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ program_slug: programSlug, lesson_id: lessonId, state: nextState }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) throw new Error(data.error || "Could not save lesson progress");
+        renderLesson(card, data.progress?.state || nextState);
+        updateCount();
+        showAlert("Self-tracked lesson progress saved. Enrollment state was not changed.", "success");
+      } catch (error) {
+        showAlert(error instanceof Error ? error.message : "Could not save lesson progress");
+        if (button) button.disabled = false;
+      }
+    });
+  });
+
+  loadProgress();
+</script>
