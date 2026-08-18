@@ -1,7 +1,31 @@
 import { expect, test } from "@playwright/test";
 
 const ok = (body: unknown, status = 200) => ({ status, contentType: "application/json", body: JSON.stringify(body) });
-const learnerState = {
+
+type Enrollment = {
+  id: string;
+  program_slug: string;
+  state: string;
+  participation_model: string;
+  cohort_code: null;
+  created_at: string;
+  updated_at: string;
+};
+
+type LearnerState = {
+  success: boolean;
+  learner: {
+    id: string;
+    email: string;
+    name: string;
+    identity_role: string;
+    preferred_language: string | null;
+    timezone: string | null;
+  };
+  enrollments: Enrollment[];
+};
+
+const learnerState: LearnerState = {
   success: true,
   learner: {
     id: "specialist-learner-1",
@@ -63,7 +87,7 @@ test.describe("Hermes Connect Academy A1", () => {
 
   test("learner can request only an Applied enrollment and sees it after refresh", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    let state = structuredClone(learnerState);
+    let state: LearnerState = structuredClone(learnerState);
     let enrollmentPayload: any = null;
 
     await page.route("**/api/academy/profile", async (route) => {
@@ -75,7 +99,7 @@ test.describe("Hermes Connect Academy A1", () => {
     });
     await page.route("**/api/academy/enrollments", async (route) => {
       enrollmentPayload = route.request().postDataJSON();
-      const enrollment = {
+      const enrollment: Enrollment = {
         id: "academy-enrollment-1",
         program_slug: enrollmentPayload.program_slug,
         state: "applied",
