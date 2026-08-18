@@ -20,6 +20,8 @@ Use the canonical public page for the specific service, product, resource, or pr
 - Logistics resources: https://hermeslogisticsus.com/logistics/resources/
 - RPM calculator: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
 
+The Direct Vehicle Transport Network is a reviewed customer/dealer/shipper request workflow. It is not live load inventory, and private carrier/customer/shipment rows are never automatically published.
+
 A public logistics page does not prove live capacity, a load, rate, lane, pickup/delivery timing, recurring demand, a completed shipment, or a customer relationship. Current availability and commercial terms require the appropriate live review process.
 
 ### ProgressoPro / Digital Growth
@@ -81,6 +83,8 @@ Localized pages are language-specific public overviews; they are not proof that 
 - Structured data is not proof that a rich result or AI citation will be shown.
 - Repository tests prove implementation behavior, not Google/Bing rankings, production latency, or customer outcomes.
 - Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.
+- Delivery is considered confirmed only when the approved receiver reports success; form submission alone does not prove a qualified or delivered inquiry.
+- No public page guarantees loads, rates, lanes, mileage, traffic, rankings, revenue, profit, or employment.
 - Do not infer rankings, traffic, customers, revenue, capacity, availability, pricing, response time, uptime, fleet size, student count, reviews, or conversion statistics without a current approved source.
 - Do not expose or reconstruct private customer, carrier, shipment, lead, employee, candidate, MC/USDOT, VIN, rate, invoice, payment, document, credential, account, or live-position data.
 - Prototype = prototype. Demo = demo. Not configured = not configured.
