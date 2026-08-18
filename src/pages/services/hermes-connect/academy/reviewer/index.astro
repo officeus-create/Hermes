@@ -149,6 +149,7 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
       link.href = item.evidence_url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
+      link.referrerPolicy = "no-referrer";
       link.textContent = item.evidence_url;
       evidence.append(link);
     } else {
@@ -192,8 +193,8 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.success) throw new Error(data.error || "Could not save review");
-      showAlert("Private human review saved. Enrollment and lesson progress were not changed.", "success");
       await loadQueue();
+      showAlert("Private human review saved. Enrollment and lesson progress were not changed.", "success");
     } catch (error) {
       showAlert(error instanceof Error ? error.message : "Could not save review");
       buttons.forEach((button) => button.disabled = false);
