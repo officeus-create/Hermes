@@ -97,6 +97,11 @@ assert.throws(
   /non-negative integer/,
 );
 assert.throws(
+  () => importGeoAnalyticsEventRow({ ...analyticsRow, family: "seo", event_name: "carrier_intake_start" }),
+  /does not belong to funnel family seo/,
+  "analytics events must not be assigned to the wrong funnel family",
+);
+assert.throws(
   () => importGeoOutcomeRow({ ...outcomeRow, qualified_leads: 4 }),
   /qualified_leads cannot exceed reviewed_inquiries/,
 );
