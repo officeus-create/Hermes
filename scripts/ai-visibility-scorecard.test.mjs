@@ -78,6 +78,7 @@ await import("./geo-answer-contract.test.mjs");
 await import("./geo-evidence-graph.test.mjs");
 await import("./geo-public-entity-adapter.test.mjs");
 await import("./geo-prompt-owner-registry.test.mjs");
+await import("./geo-direction-alignment.test.mjs");
 await import("./geo-ai-observation-evaluation.test.mjs");
 await import("./geo-ai-observation-import.test.mjs");
 await import("./geo-ai-competitive-visibility.test.mjs");
