@@ -2,8 +2,8 @@ import {
   aiVisibilityPrompts,
   type AiVisibilityObservation,
   type AiVisibilityProvider,
-} from "./ai-visibility-scorecard";
-import { findGeoOwnerForPrompt, geoPromptOwnerRegistry } from "./geo-prompt-owner-registry";
+} from "./ai-visibility-scorecard.ts";
+import { findGeoOwnerForPrompt, geoPromptOwnerRegistry } from "./geo-prompt-owner-registry.ts";
 
 export type GeoAiCitationAlignment =
   | "canonical_owner"
