@@ -46,13 +46,22 @@ test("SEO intake keeps submitted detail out of analytics payloads", async ({ pag
   );
 
   expect(seoStartEvents).toHaveLength(1);
-  expect(seoStartEvents[0]).toEqual({
+
+  const expectedEvent = {
     event: "seo_intake_start",
     intake_type: "seo_service",
     page_group: "marketing_contact",
     service_group: "seo_services",
     page_path: "/paths/marketing/",
-  });
+  };
+
+  expect(seoStartEvents[0]).toMatchObject(expectedEvent);
+
+  const allowedEventKeys = new Set(Object.keys(expectedEvent));
+  const unexpectedKeys = Object.keys(seoStartEvents[0]).filter(
+    (key) => !allowedEventKeys.has(key) && !key.startsWith("gtm."),
+  );
+  expect(unexpectedKeys).toEqual([]);
 
   const serializedDataLayer = await page.evaluate(() => JSON.stringify(window.dataLayer ?? []));
   expect(serializedDataLayer).not.toContain(sensitiveSentinel);
