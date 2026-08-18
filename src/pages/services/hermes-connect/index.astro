@@ -8,6 +8,7 @@ const verticals = [
   {
     name: "Repair Shops",
     status: "LIVE PRODUCT",
+    stage: "live",
     body: "Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace.",
     modules: ["Bookings", "Services", "Customers", "Vehicles"],
     href: "/services/hermes-connect/repair-shops/",
@@ -15,30 +16,37 @@ const verticals = [
   {
     name: "Logistics",
     status: "PREVIEW CONFIGURATION",
+    stage: "preview",
     body: "Loads, carriers, dispatch, documents, freight decisions, and operating visibility around one shared workflow.",
     modules: ["Loads", "Carriers", "Dispatch", "Documents"],
   },
   {
     name: "Marketing",
     status: "PREVIEW CONFIGURATION",
+    stage: "preview",
     body: "Leads, clients, campaigns, meetings, sales handoff, and AI-assisted follow-up in one operating view.",
     modules: ["Leads", "Clients", "Campaigns", "Pipeline"],
   },
   {
     name: "Academy",
-    status: "PREVIEW CONFIGURATION",
-    body: "Students, programs, assignments, practice, progress, and coaching around measurable learning work.",
-    modules: ["Students", "Programs", "Practice", "Progress"],
+    status: "PRODUCT PREPARATION",
+    stage: "preparation",
+    body: "Students, programs, lessons, assignments, feedback, progress, and access around measurable learning work.",
+    modules: ["Students", "Programs", "Assignments", "Progress"],
+    href: "/services/hermes-connect/academy/",
   },
   {
-    name: "Beauty & Wellness",
-    status: "PREVIEW CONFIGURATION",
+    name: "Beauty Salons",
+    status: "PILOT PREPARATION",
+    stage: "preparation",
     body: "Appointments, clients, services, specialists, repeat visits, reviews, and relationship management.",
-    modules: ["Appointments", "Clients", "Services", "Retention"],
+    modules: ["Appointments", "Clients", "Specialists", "Retention"],
+    href: "/services/hermes-connect/beauty-salons/",
   },
   {
     name: "Professional Services",
     status: "PREVIEW CONFIGURATION",
+    stage: "preview",
     body: "Requests, clients, proposals, projects, tasks, documents, and follow-up for service businesses.",
     modules: ["Requests", "Clients", "Projects", "Tasks"],
   },
@@ -57,7 +65,7 @@ const labs = [
 const faqs = [
   {
     question: "Which Hermes Connect configuration is live today?",
-    answer: "Repair Shops is the current live product vertical. Other business configurations on this page are previews and are not presented as released production runtimes.",
+    answer: "Repair Shops is the current live product vertical. Academy and Beauty Salons have preparation surfaces, while the remaining business configurations are previews. None of those preparation or preview surfaces is presented as a released production runtime.",
   },
   {
     question: "Is Hermes Connect one product or many separate apps?",
@@ -77,7 +85,7 @@ const schema = [
     url: "https://hermeslogisticsus.com/services/hermes-connect/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
-    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current live vertical; other business configurations are product previews.",
+    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current live vertical; Academy and Beauty Salons are in product preparation; other business configurations remain previews.",
   },
   {
     "@context": "https://schema.org",
@@ -116,7 +124,7 @@ const schema = [
           </div>
           <div class="hc-truth" aria-label="Current Hermes Connect product status">
             <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops is live</span>
-            <span><ShieldCheck size={15} aria-hidden="true" />Other industries are previews</span>
+            <span><ShieldCheck size={15} aria-hidden="true" />Academy + Beauty are in preparation</span>
             <span><CheckCircle2 size={15} aria-hidden="true" />One shared product family</span>
           </div>
         </div>
@@ -169,12 +177,14 @@ const schema = [
         </div>
         <div class="hc-vertical-grid">
           {verticals.map((vertical, index) => (
-            <article class={vertical.href ? "is-live" : "is-preview"}>
+            <article class={vertical.stage === "live" ? "is-live" : vertical.stage === "preparation" ? "is-preparation" : "is-preview"}>
               <div class="hc-card-top"><span>{vertical.status}</span><small>{String(index + 1).padStart(2, "0")}</small></div>
               <h3>{vertical.name}</h3>
               <p>{vertical.body}</p>
               <div class="hc-chips">{vertical.modules.map((module) => <span>{module}</span>)}</div>
-              {vertical.href ? <a href={vertical.href}>Open live product <ArrowRight size={15} aria-hidden="true" /></a> : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
+              {vertical.href
+                ? <a href={vertical.href}>{vertical.stage === "live" ? "Open live product" : "Open preparation"} <ArrowRight size={15} aria-hidden="true" /></a>
+                : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
             </article>
           ))}
         </div>
@@ -208,7 +218,7 @@ const schema = [
       <div class="hc-shell">
         <div class="hc-heading-row compact">
           <div><p class="hc-kicker">Product truth</p><h2 id="truth-title">Clear status. No fake live surface.</h2></div>
-          <p>Preview UI is labeled as preview or sample data. Repair Shops remains the only current live vertical on this product hub.</p>
+          <p>Preparation and preview UI is labeled explicitly. Repair Shops remains the only current live vertical on this product hub.</p>
         </div>
         <div class="hc-faq-grid">{faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div>
       </div>
@@ -260,8 +270,8 @@ const schema = [
   .hc-work-panels{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.65rem}.hc-work-panels article{min-height:170px;padding:.8rem}.hc-work-panels p{display:flex;align-items:center;gap:.38rem;margin:.72rem 0;color:#c7d0dc;font-size:.61rem}.hc-work-panels p i{width:7px;height:7px;border-radius:50%;background:var(--hermes-violet)}.hc-work-panels p b{margin-left:auto;color:#70d8b3;font-size:.49rem}.hc-attention{display:grid;align-content:start;gap:.65rem}.hc-attention>strong{max-width:14ch;font-size:1rem;line-height:1.18}.hc-attention>p{color:#778396!important;line-height:1.45!important}
 
   .hc-section{padding:var(--hermes-section-space) 0}.hc-heading-row{display:grid;grid-template-columns:1fr minmax(280px,.52fr);gap:2.5rem;align-items:end;margin-bottom:2rem}.hc-heading-row>p,.hc-labs-grid>div>p,.hc-obsidian-grid>p{margin:0;color:var(--hermes-muted);line-height:1.7}.hc-heading-row h2,.hc-labs h2,.hc-obsidian-band h2{max-width:900px;margin:0;font-family:var(--font-display);font-size:clamp(2.6rem,5.3vw,5.4rem);font-weight:720;line-height:.94;letter-spacing:-.055em;text-wrap:balance}.hc-heading-row.compact h2{font-size:clamp(2.3rem,4vw,3.8rem)}
-  .hc-vertical-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-vertical-grid article{display:flex;flex-direction:column;min-height:285px;padding:1.45rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.74);box-shadow:var(--hermes-shadow-card);transition:transform var(--hermes-motion-fast) ease,box-shadow var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-vertical-grid article:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.22);box-shadow:var(--hermes-shadow-card-hover)}.hc-vertical-grid article.is-live{color:#fff;border-color:rgba(255,255,255,.08);background:radial-gradient(circle at 92% 10%,rgba(124,92,255,.14),transparent 16rem),var(--hermes-obsidian);box-shadow:var(--hermes-shadow-workspace)}
-  .hc-card-top{display:flex;justify-content:space-between;gap:1rem;align-items:center}.hc-card-top span{color:#7c650e;font-size:.61rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.hc-card-top small{color:#9da2ac;font-family:var(--font-mono);font-size:.62rem}.is-live .hc-card-top span{color:#80dfbe}.hc-vertical-grid h3{margin:1.55rem 0 .65rem;font-size:1.45rem;letter-spacing:-.035em}.hc-vertical-grid p{margin:0;color:var(--hermes-muted);line-height:1.6}.is-live p{color:#aeb7c7}.hc-chips{display:flex;gap:.38rem;flex-wrap:wrap;margin-top:1.1rem}.hc-chips span{padding:.32rem .5rem;border:1px solid var(--hermes-line-light-soft);border-radius:999px;background:rgba(255,255,255,.52);font-size:.61rem}.is-live .hc-chips span{color:#cbd3df;border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.04)}.hc-vertical-grid a{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1.25rem;color:#fff;font-size:.78rem;font-weight:760}.hc-preview-note{margin-top:auto;padding-top:1.25rem;color:#898f9a;font-size:.66rem}
+  .hc-vertical-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-vertical-grid article{display:flex;flex-direction:column;min-height:285px;padding:1.45rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.74);box-shadow:var(--hermes-shadow-card);transition:transform var(--hermes-motion-fast) ease,box-shadow var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-vertical-grid article:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.22);box-shadow:var(--hermes-shadow-card-hover)}.hc-vertical-grid article.is-live{color:#fff;border-color:rgba(255,255,255,.08);background:radial-gradient(circle at 92% 10%,rgba(124,92,255,.14),transparent 16rem),var(--hermes-obsidian);box-shadow:var(--hermes-shadow-workspace)}.hc-vertical-grid article.is-preparation{border-color:rgba(124,92,255,.20);background:linear-gradient(145deg,rgba(124,92,255,.055),rgba(255,255,255,.82))}
+  .hc-card-top{display:flex;justify-content:space-between;gap:1rem;align-items:center}.hc-card-top span{color:#7c650e;font-size:.61rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.hc-card-top small{color:#9da2ac;font-family:var(--font-mono);font-size:.62rem}.is-live .hc-card-top span{color:#80dfbe}.is-preparation .hc-card-top span{color:var(--hermes-violet)}.hc-vertical-grid h3{margin:1.55rem 0 .65rem;font-size:1.45rem;letter-spacing:-.035em}.hc-vertical-grid p{margin:0;color:var(--hermes-muted);line-height:1.6}.is-live p{color:#aeb7c7}.hc-chips{display:flex;gap:.38rem;flex-wrap:wrap;margin-top:1.1rem}.hc-chips span{padding:.32rem .5rem;border:1px solid var(--hermes-line-light-soft);border-radius:999px;background:rgba(255,255,255,.52);font-size:.61rem}.is-live .hc-chips span{color:#cbd3df;border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.04)}.hc-vertical-grid a{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1.25rem;color:var(--hermes-violet);font-size:.78rem;font-weight:760}.hc-vertical-grid .is-live a{color:#fff}.hc-preview-note{margin-top:auto;padding-top:1.25rem;color:#898f9a;font-size:.66rem}
 
   .hc-obsidian-band{padding:clamp(4rem,7vw,6rem) 0;color:#fff;background:var(--hermes-obsidian)}.hc-obsidian-grid{display:grid;grid-template-columns:1fr minmax(300px,.52fr);gap:3rem;align-items:end}.hc-dark-kicker{color:#a99aff}.hc-obsidian-grid>p{color:#aeb7c7}.hc-obsidian-band h2{max-width:960px}
   .hc-labs{background:#fbfaf7}.hc-labs-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(360px,.7fr);gap:clamp(2rem,5vw,5rem)}.hc-labs h2{font-size:clamp(2.4rem,4.4vw,4.35rem)}.hc-lab-links{display:grid;gap:.5rem}.hc-lab-links a{display:grid;grid-template-columns:88px 1fr auto;gap:.7rem;align-items:center;min-height:55px;padding:.72rem .85rem;border:1px solid var(--hermes-line-light);border-radius:14px;background:rgba(255,255,255,.72);text-decoration:none;transition:transform var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-lab-links a:hover{transform:translateX(2px);border-color:rgba(124,92,255,.22)}.hc-lab-links span{color:#8a909b;font-size:.57rem;letter-spacing:.07em}.hc-lab-links strong{font-size:.82rem}
