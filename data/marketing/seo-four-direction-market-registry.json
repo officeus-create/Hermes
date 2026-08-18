@@ -9,7 +9,26 @@
       "status": "foundation_strong_expansion_research_required",
       "dimensions": ["state", "metro_or_city", "audience", "equipment_or_use_case", "problem", "commercial_action"],
       "current_focus": ["national_service_owners", "wisconsin_local_cluster"],
-      "candidates": []
+      "candidates": [
+        {
+          "id": "logistics-us-state-dealership-density-research",
+          "direction": "logistics",
+          "market": "United States — state ranking",
+          "intent_cluster": "dealer_vehicle_transport_market_research",
+          "status": "research",
+          "evidence_refs": ["NADA Auto Retailing State by State — 2025 annual economic activity includes number of local dealerships and share of new-vehicle registrations"],
+          "evidence_boundary": "State auto-retail importance is not search demand, transport capacity, or approval to publish state pages."
+        },
+        {
+          "id": "logistics-us-metro-auto-business-density-research",
+          "direction": "logistics",
+          "market": "United States — metro/county ranking",
+          "intent_cluster": "vehicle_transport_buyer_density_research",
+          "status": "research",
+          "evidence_refs": ["U.S. Census County Business Patterns — establishment counts available by state, county, MSA, ZIP and detailed NAICS"],
+          "evidence_boundary": "Business density is a prioritization signal only; query demand and canonical intent still must be validated."
+        }
+      ]
     },
     "marketing": {
       "market_boundary": "High-value global commercial cities",
@@ -87,7 +106,7 @@
           "market": "Germany",
           "intent_cluster": "ukrainian_diaspora_program_demand",
           "status": "research",
-          "evidence_refs": ["Eurostat 2026-07-10: Germany hosted 1,283,270 temporary-protection beneficiaries from Ukraine at 2026-05-31"],
+          "evidence_refs": ["Eurostat 2026: Germany is among the EU countries hosting the largest temporary-protection population from Ukraine"],
           "evidence_boundary": "Population presence is not search demand or enrollment demand."
         },
         {
@@ -96,7 +115,7 @@
           "market": "Poland",
           "intent_cluster": "ukrainian_diaspora_program_demand",
           "status": "research",
-          "evidence_refs": ["Eurostat 2026-07-10: Poland hosted 967,505 temporary-protection beneficiaries from Ukraine at 2026-05-31"],
+          "evidence_refs": ["Eurostat 2026: Poland is among the EU countries hosting the largest temporary-protection population from Ukraine"],
           "evidence_boundary": "Population presence is not search demand or enrollment demand."
         },
         {
@@ -105,7 +124,7 @@
           "market": "Czechia",
           "intent_cluster": "ukrainian_diaspora_program_demand",
           "status": "research",
-          "evidence_refs": ["Eurostat 2026-06-10: Czechia hosted 384,435 temporary-protection beneficiaries from Ukraine at 2026-04-30 and had the highest EU ratio per thousand at that checkpoint"],
+          "evidence_refs": ["Eurostat 2026: Czechia has one of the highest temporary-protection beneficiary concentrations per thousand residents"],
           "evidence_boundary": "Population presence is not search demand or enrollment demand."
         },
         {
@@ -114,7 +133,7 @@
           "market": "Spain",
           "intent_cluster": "ukrainian_diaspora_program_demand",
           "status": "research",
-          "evidence_refs": ["Eurostat 2026-07-10: Spain hosted 267,400 temporary-protection beneficiaries from Ukraine at 2026-05-31"],
+          "evidence_refs": ["Eurostat 2026: Spain hosts a substantial temporary-protection population from Ukraine"],
           "evidence_boundary": "Population presence is not search demand or enrollment demand."
         }
       ]
@@ -129,7 +148,44 @@
         {"vertical": "fitness", "state": "research_required"},
         {"vertical": "education_courses", "state": "research_required"}
       ],
-      "candidates": []
+      "candidates": [
+        {
+          "id": "it-us-repair-shop-market-density-research",
+          "direction": "it_hermes_connect",
+          "market": "United States — repair shops by metro/ZIP",
+          "intent_cluster": "repair_shop_workflow_market_research",
+          "status": "research",
+          "evidence_refs": ["U.S. Census County Business Patterns — detailed establishment counts available by NAICS and small-area geography"],
+          "evidence_boundary": "Business density does not prove software-search demand; Repair Shops remains the first vertical because product acquisition surfaces already exist."
+        },
+        {
+          "id": "it-us-beauty-market-density-research",
+          "direction": "it_hermes_connect",
+          "market": "United States — beauty businesses by metro/ZIP",
+          "intent_cluster": "beauty_workflow_market_research",
+          "status": "research",
+          "evidence_refs": ["U.S. Census County Business Patterns — detailed establishment counts available by NAICS and small-area geography"],
+          "evidence_boundary": "Business density is not proof of Hermes Connect product fit or keyword demand."
+        },
+        {
+          "id": "it-us-fitness-market-density-research",
+          "direction": "it_hermes_connect",
+          "market": "United States — fitness businesses by metro/ZIP",
+          "intent_cluster": "fitness_workflow_market_research",
+          "status": "research",
+          "evidence_refs": ["U.S. Census County Business Patterns — detailed establishment counts available by NAICS and small-area geography"],
+          "evidence_boundary": "Business density is not proof of Hermes Connect product fit or keyword demand."
+        },
+        {
+          "id": "it-us-education-market-density-research",
+          "direction": "it_hermes_connect",
+          "market": "United States — education/course businesses by metro/ZIP",
+          "intent_cluster": "education_course_workflow_market_research",
+          "status": "research",
+          "evidence_refs": ["U.S. Census County Business Patterns — detailed establishment counts available by NAICS and small-area geography"],
+          "evidence_boundary": "Business density is not proof of Hermes Connect product fit or keyword demand."
+        }
+      ]
     }
   },
   "candidate_schema": {
