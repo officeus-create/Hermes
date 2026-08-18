@@ -181,10 +181,20 @@ import "../../../../../styles/hermes-academy-app.css";
           : item.participation_model.replaceAll("_", " ");
         participation.textContent = `Participation model: ${participationLabel}`;
         detail.append(title, participation);
+
+        const controls = document.createElement("div");
+        controls.className = "academy-app-actions";
+        controls.style.marginTop = "0";
         const stateBadge = document.createElement("span");
         stateBadge.className = "academy-enrollment-state";
         stateBadge.textContent = stateLabels[item.state] || item.state;
-        article.append(detail, stateBadge);
+        const programLink = document.createElement("a");
+        programLink.className = "academy-app-button";
+        programLink.href = `/services/hermes-connect/academy/program/${encodeURIComponent(item.program_slug)}/`;
+        programLink.textContent = item.state === "enrolled" ? "Continue learning" : "Review curriculum";
+        controls.append(stateBadge, programLink);
+
+        article.append(detail, controls);
         list.append(article);
       }
     }
