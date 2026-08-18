@@ -4,7 +4,7 @@ import {
   type AiVisibilityIntent,
   type AiVisibilityLanguage,
   type AiVisibilityPrompt,
-} from "./ai-visibility-scorecard";
+} from "./ai-visibility-scorecard.ts";
 
 export interface GeoPromptOwnerRecord {
   canonicalOwner: string;
