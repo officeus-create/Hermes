@@ -17,13 +17,18 @@ test.describe("Hermes Connect Academy A2", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     let putCount = 0;
 
-    await page.route("**/api/academy/progress?program=us-logistics-operations", (route) => route.fulfill(ok({
-      success: true,
-      enrollment: enrollment("us-logistics-operations", "applied"),
-      progress: [],
-    })));
-    await page.route("**/api/academy/progress", async (route) => {
-      if (route.request().method() === "PUT") putCount += 1;
+    await page.route("**/api/academy/progress*", async (route) => {
+      const request = route.request();
+      if (request.method() === "GET") {
+        const url = new URL(request.url());
+        expect(url.searchParams.get("program")).toBe("us-logistics-operations");
+        return route.fulfill(ok({
+          success: true,
+          enrollment: enrollment("us-logistics-operations", "applied"),
+          progress: [],
+        }));
+      }
+      if (request.method() === "PUT") putCount += 1;
       return route.fulfill(ok({ success: false, error: "enrollment_not_active", enrollment_state: "applied" }, 409));
     });
 
@@ -48,14 +53,25 @@ test.describe("Hermes Connect Academy A2", () => {
     const progress = new Map<string, string>();
     const putPayloads: any[] = [];
 
-    await page.route("**/api/academy/progress?program=marketing", (route) => route.fulfill(ok({
-      success: true,
-      enrollment: enrollment("marketing", "enrolled"),
-      progress: [...progress.entries()].map(([lesson_id, state]) => ({ lesson_id, state, started_at: "2026-08-18T03:30:00.000Z", completed_at: state === "completed" ? "2026-08-18T03:35:00.000Z" : null, updated_at: "2026-08-18T03:35:00.000Z" })),
-    })));
-    await page.route("**/api/academy/progress", async (route) => {
-      if (route.request().method() !== "PUT") return route.continue();
-      const payload = route.request().postDataJSON();
+    await page.route("**/api/academy/progress*", async (route) => {
+      const request = route.request();
+      if (request.method() === "GET") {
+        const url = new URL(request.url());
+        expect(url.searchParams.get("program")).toBe("marketing");
+        return route.fulfill(ok({
+          success: true,
+          enrollment: enrollment("marketing", "enrolled"),
+          progress: [...progress.entries()].map(([lesson_id, state]) => ({
+            lesson_id,
+            state,
+            started_at: "2026-08-18T03:30:00.000Z",
+            completed_at: state === "completed" ? "2026-08-18T03:35:00.000Z" : null,
+            updated_at: "2026-08-18T03:35:00.000Z",
+          })),
+        }));
+      }
+
+      const payload = request.postDataJSON();
       putPayloads.push(payload);
       progress.set(payload.lesson_id, payload.state);
       return route.fulfill(ok({
@@ -126,7 +142,7 @@ test.describe("Hermes Connect Academy A2", () => {
   });
 
   test("unauthenticated program route redirects to shared Academy auth", async ({ page }) => {
-    await page.route("**/api/academy/progress?program=marketing", (route) => route.fulfill(ok({ success: false, error: "not_authenticated" }, 401)));
+    await page.route("**/api/academy/progress*", (route) => route.fulfill(ok({ success: false, error: "not_authenticated" }, 401)));
     await page.goto("/services/hermes-connect/academy/program/marketing/", { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/\/services\/hermes-connect\/academy\/auth\/\?mode=login$/);
   });
