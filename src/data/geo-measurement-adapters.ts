@@ -5,7 +5,7 @@ import type {
   GeoSearchAggregate,
   GeoSearchSource,
   GeoWindowDays,
-} from "./geo-measurement-layer";
+} from "./geo-measurement-layer.ts";
 
 export type GeoSearchEvidenceClass = Extract<
   GeoEvidenceClass,
