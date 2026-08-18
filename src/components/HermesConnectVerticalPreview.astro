@@ -1,0 +1,171 @@
+---
+import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import "../styles/hermes-connect-knot-core.css";
+
+export type VerticalCard = {
+  title: string;
+  body: string;
+};
+
+export type VerticalLink = VerticalCard & {
+  href: string;
+};
+
+export interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  h1: string;
+  lead: string;
+  statusLabel: string;
+  statusBody: string;
+  modules: VerticalCard[];
+  workflow: VerticalCard[];
+  foundations?: VerticalLink[];
+  primaryAction: { label: string; href: string };
+  secondaryAction?: { label: string; href: string };
+  boundary: string;
+}
+
+const {
+  title,
+  description,
+  eyebrow,
+  h1,
+  lead,
+  statusLabel,
+  statusBody,
+  modules,
+  workflow,
+  foundations = [],
+  primaryAction,
+  secondaryAction,
+  boundary,
+} = Astro.props;
+
+const canonicalUrl = Astro.url.toString();
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: title,
+  url: canonicalUrl,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Modern web browser",
+  description,
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <SiteHeader activePath="/paths/technology/" theme="light" />
+
+  <main id="main-content" class="hc-vertical-preview" data-hc-vertical-preview data-status="preparation">
+    <section class="hc-v-hero" aria-labelledby="hc-v-title">
+      <div class="hc-v-shell hc-v-hero-grid">
+        <div>
+          <a class="hc-v-back" href="/services/hermes-connect/"><ArrowLeft size={15} aria-hidden="true" />Hermes Connect</a>
+          <p class="hc-v-eyebrow">{eyebrow}</p>
+          <h1 id="hc-v-title">{h1}</h1>
+          <p class="hc-v-lead">{lead}</p>
+          <div class="hc-v-actions">
+            <a class="hc-v-primary" href={primaryAction.href}>{primaryAction.label}<ArrowRight size={16} aria-hidden="true" /></a>
+            {secondaryAction && <a class="hc-v-secondary" href={secondaryAction.href}>{secondaryAction.label}</a>}
+          </div>
+        </div>
+
+        <aside class="hc-v-status" aria-label="Current product status">
+          <span><ShieldCheck size={15} aria-hidden="true" />{statusLabel}</span>
+          <h2>Prepared inside the same Hermes Connect product family.</h2>
+          <p>{statusBody}</p>
+          <small>No separate app, duplicate runtime, or fake live status is created by this page.</small>
+        </aside>
+      </div>
+    </section>
+
+    <section class="hc-v-section" aria-labelledby="modules-title">
+      <div class="hc-v-shell">
+        <div class="hc-v-heading">
+          <div><p>Product configuration</p><h2 id="modules-title">What this vertical is being built to coordinate.</h2></div>
+          <span>Shared Hermes identity and product rules. Business language and workflows adapt to the vertical.</span>
+        </div>
+        <div class="hc-v-grid">
+          {modules.map((module, index) => (
+            <article>
+              <small>{String(index + 1).padStart(2, "0")}</small>
+              <h3>{module.title}</h3>
+              <p>{module.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="hc-v-dark" aria-labelledby="workflow-title">
+      <div class="hc-v-shell">
+        <div class="hc-v-heading dark">
+          <div><p>Operating loop</p><h2 id="workflow-title">From first signal to reviewed next step.</h2></div>
+          <span>Automation remains bounded by permissions, product state, and human review where required.</span>
+        </div>
+        <div class="hc-v-flow">
+          {workflow.map((step, index) => (
+            <article>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <div><h3>{step.title}</h3><p>{step.body}</p></div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {foundations.length > 0 && (
+      <section class="hc-v-section" aria-labelledby="foundation-title">
+        <div class="hc-v-shell">
+          <div class="hc-v-heading compact">
+            <div><p>Existing foundation</p><h2 id="foundation-title">Reuse what already works.</h2></div>
+            <span>This vertical connects to existing Hermes assets instead of rebuilding them under another brand.</span>
+          </div>
+          <div class="hc-v-foundations">
+            {foundations.map((item) => (
+              <a href={item.href}><div><CheckCircle2 size={16} aria-hidden="true" /><h3>{item.title}</h3></div><p>{item.body}</p><span>Open <ArrowRight size={14} aria-hidden="true" /></span></a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="hc-v-boundary" aria-label="Release boundary">
+      <div class="hc-v-shell">
+        <strong>Release boundary</strong>
+        <p>{boundary}</p>
+      </div>
+    </section>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>
+
+<style is:global>
+  .hc-experience body:has(.hc-vertical-preview) .hc-intelligence-core{display:none!important}
+</style>
+
+<style>
+  .hc-vertical-preview{color:var(--hermes-ink);background:var(--hermes-pearl)}
+  .hc-v-shell{width:min(1180px,calc(100% - 2rem));margin:0 auto}
+  .hc-v-hero{padding:clamp(7.5rem,10vw,9rem) 0 clamp(4rem,7vw,6rem);background:radial-gradient(circle at 82% 24%,rgba(124,92,255,.10),transparent 24rem),var(--hermes-pearl)}
+  .hc-v-hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(300px,.62fr);gap:clamp(2rem,6vw,6rem);align-items:center}
+  .hc-v-back{display:inline-flex;align-items:center;gap:.35rem;margin-bottom:2rem;color:#747b87;text-decoration:none;font-size:.78rem;font-weight:750}
+  .hc-v-eyebrow,.hc-v-heading>div>p{margin:0 0 .85rem;color:var(--hermes-violet);font:.72rem/1 var(--font-mono);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+  .hc-v-hero h1{max-width:820px;margin:0;font-family:var(--font-display);font-size:clamp(3.4rem,7vw,6.8rem);font-weight:740;line-height:.9;letter-spacing:-.06em;text-wrap:balance}
+  .hc-v-lead{max-width:720px;margin:1.35rem 0 0;color:var(--hermes-muted);font-size:clamp(1rem,1.7vw,1.18rem);line-height:1.68}
+  .hc-v-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.7rem}.hc-v-primary,.hc-v-secondary{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:48px;padding:.75rem 1rem;border-radius:999px;text-decoration:none;font-size:.82rem;font-weight:780}.hc-v-primary{color:#fff;background:var(--hermes-obsidian)}.hc-v-secondary{color:var(--hermes-ink);border:1px solid var(--hermes-line-light);background:rgba(255,255,255,.7)}
+  .hc-v-status{padding:1.35rem;border:1px solid var(--hermes-line-light);border-radius:22px;background:rgba(255,255,255,.78);box-shadow:var(--hermes-shadow-card)}.hc-v-status>span{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .55rem;border-radius:999px;background:rgba(124,92,255,.08);color:var(--hermes-violet);font-size:.68rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}.hc-v-status h2{margin:1.2rem 0 .65rem;font-size:1.4rem;line-height:1.18;letter-spacing:-.035em}.hc-v-status p{margin:0;color:var(--hermes-muted);line-height:1.6}.hc-v-status small{display:block;margin-top:1rem;color:#858b96;line-height:1.5}
+  .hc-v-section{padding:clamp(4rem,7vw,6rem) 0}.hc-v-heading{display:grid;grid-template-columns:1fr minmax(260px,.45fr);gap:2rem;align-items:end;margin-bottom:2rem}.hc-v-heading h2{max-width:760px;margin:0;font-family:var(--font-display);font-size:clamp(2.5rem,4.6vw,4.6rem);font-weight:720;line-height:.94;letter-spacing:-.05em;text-wrap:balance}.hc-v-heading>span{color:var(--hermes-muted);line-height:1.6}.hc-v-heading.compact h2{font-size:clamp(2.2rem,4vw,3.7rem)}
+  .hc-v-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-v-grid article{min-height:210px;padding:1.25rem;border:1px solid var(--hermes-line-light);border-radius:18px;background:rgba(255,255,255,.76);box-shadow:var(--hermes-shadow-card)}.hc-v-grid small{color:#9a9faa;font-family:var(--font-mono)}.hc-v-grid h3{margin:2.1rem 0 .55rem;font-size:1.15rem;letter-spacing:-.025em}.hc-v-grid p{margin:0;color:var(--hermes-muted);font-size:.88rem;line-height:1.62}
+  .hc-v-dark{padding:clamp(4rem,7vw,6rem) 0;color:#fff;background:var(--hermes-obsidian)}.hc-v-heading.dark>div>p{color:#a99aff}.hc-v-heading.dark>span{color:#aab4c4}.hc-v-flow{display:grid;gap:.65rem}.hc-v-flow article{display:grid;grid-template-columns:60px 1fr;gap:1rem;align-items:start;padding:1rem 1.1rem;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025)}.hc-v-flow>article>span{color:#8f99aa;font-family:var(--font-mono);font-size:.75rem}.hc-v-flow h3{margin:0 0 .35rem;font-size:1rem}.hc-v-flow p{margin:0;color:#aab4c4;font-size:.86rem;line-height:1.6}
+  .hc-v-foundations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.hc-v-foundations a{display:flex;flex-direction:column;min-height:190px;padding:1.2rem;border:1px solid var(--hermes-line-light);border-radius:18px;background:#fff;text-decoration:none;box-shadow:var(--hermes-shadow-card)}.hc-v-foundations a>div{display:flex;align-items:center;gap:.45rem}.hc-v-foundations svg{color:var(--hermes-success)}.hc-v-foundations h3{margin:0;font-size:1rem}.hc-v-foundations p{margin:.7rem 0 0;color:var(--hermes-muted);line-height:1.6}.hc-v-foundations a>span{display:inline-flex;align-items:center;gap:.3rem;margin-top:auto;padding-top:1rem;color:var(--hermes-violet);font-size:.75rem;font-weight:760}
+  .hc-v-boundary{padding:0 0 clamp(4rem,7vw,6rem)}.hc-v-boundary .hc-v-shell{padding:1.1rem 1.25rem;border:1px solid rgba(124,92,255,.18);border-radius:16px;background:rgba(124,92,255,.055)}.hc-v-boundary strong{font-size:.76rem;text-transform:uppercase;letter-spacing:.06em}.hc-v-boundary p{margin:.45rem 0 0;color:var(--hermes-muted);font-size:.86rem;line-height:1.6}
+  @media(max-width:900px){.hc-v-hero-grid,.hc-v-heading{grid-template-columns:1fr}.hc-v-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:620px){.hc-v-shell{width:min(100% - 1rem,1180px)}.hc-v-hero{padding-top:7rem}.hc-v-actions{flex-direction:column}.hc-v-primary,.hc-v-secondary{width:100%}.hc-v-grid,.hc-v-foundations{grid-template-columns:1fr}.hc-v-flow article{grid-template-columns:42px 1fr}.hc-v-grid article{min-height:185px}}
+</style>
