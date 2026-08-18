@@ -2,7 +2,23 @@
 import AcademyPublicPage from "../../../components/AcademyPublicPage.astro";
 import { academySubsitePages } from "../../../data/academy-subsite";
 
-const content = academySubsitePages.logistics;
+const baseContent = academySubsitePages.logistics;
+const content = {
+  ...baseContent,
+  audienceIntro:
+    "Readiness depends on language, schedule, discipline, recent experience, and the exact participation model approved for the cohort or practice group. For tracks involving live U.S.-market calls, carrier or broker communication, or negotiation, working English at B2 level or higher is required.",
+  faq: baseContent.faq.map((item) => item.question === "What English level is required?"
+    ? {
+        ...item,
+        answer: "For tracks involving live U.S.-market calls, carrier or broker communication, or negotiation, working spoken English at B2 level or higher is required. Other learning-only activities may be reviewed separately, but progression into communication-heavy logistics work requires B2+ readiness.",
+      }
+    : item).concat({
+      question: "Are there legal or sanctions-related eligibility restrictions?",
+      answer: "Yes. Participation is subject to applicable sanctions, export-control, payment, and other legal-compliance requirements. Nationality alone is not an automatic exclusion criterion; an application may be declined or limited where applicable law or sanctions prohibit or materially restrict participation, payments, access, or services.",
+    }),
+  boundary:
+    `${baseContent.boundary} Participation is also subject to applicable sanctions, export-control, payment, and legal-compliance requirements; nationality alone is not an automatic exclusion criterion.`,
+};
 ---
 
 <AcademyPublicPage content={content} />
