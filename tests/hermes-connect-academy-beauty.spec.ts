@@ -1,8 +1,8 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const workspace = "/demos/hermes-connect/workspace.html";
 
-async function resetHermesBrowserState(page: Parameters<typeof test>[0] extends never ? never : any) {
+async function resetHermesBrowserState(page: Page) {
   await page.goto("/");
   await page.evaluate(async () => {
     if ("serviceWorker" in navigator) {
