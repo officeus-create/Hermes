@@ -221,8 +221,10 @@ assert.deepEqual(readiness.mixedEvidenceLayers, []);
 const coverage = report.ownerCoverage.find((item) => item.canonicalOwner === owner);
 assert.ok(coverage);
 assert.ok(coverage.windowsWithAnyEvidence.includes(7));
+assert.ok(coverage.windowsWithAnyEvidence.includes(90));
 assert.ok(coverage.completeWindows.includes(7));
-assert.ok(coverage.missingWindows.includes(90));
+assert.ok(coverage.incompleteWindows.includes(90));
+assert.ok(!coverage.missingWindows.includes(90));
 
 const sevenDayProvenance = report.evidenceHealth.provenanceByWindow.find((item) => item.windowDays === 7);
 assert.ok(sevenDayProvenance);
