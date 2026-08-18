@@ -72,7 +72,7 @@ for (const [label, text] of [
   ["Marketing", marketingProgramText],
   ["Ukrainian Logistics", ukrainianLogisticsProgramText],
 ]) {
-  assert.ok(/sanctions/i.test(text), `${label} must visibly disclose sanctions/compliance eligibility`);
+  assert.ok(/sanctions|санкц/i.test(text), `${label} must visibly disclose sanctions/compliance eligibility`);
   assert.ok(/nationality alone is not an automatic exclusion criterion|громадянство не є автоматичною причиною відмови/i.test(text), `${label} must not turn nationality itself into the exclusion rule`);
 }
 
