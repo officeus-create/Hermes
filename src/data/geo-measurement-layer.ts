@@ -1,7 +1,7 @@
 import {
   calculateAiVisibilityMetrics,
   type AiVisibilityObservation,
-} from "./ai-visibility-scorecard";
+} from "./ai-visibility-scorecard.ts";
 
 export type GeoWindowDays = 7 | 28 | 90;
 export type GeoDiscoveryType = "branded" | "non_branded";
