@@ -48,6 +48,7 @@ export interface GeoOwnerCoverageSummary {
   canonicalOwner: string;
   windowsWithAnyEvidence: GeoWindowDays[];
   completeWindows: GeoWindowDays[];
+  incompleteWindows: GeoWindowDays[];
   inconsistentWindows: GeoWindowDays[];
   missingWindows: GeoWindowDays[];
 }
@@ -169,6 +170,10 @@ export const buildGeoOwnerCoverageSummary = (
         completeWindows: windows.filter(
           (windowDays) => byWindow.get(windowDays)?.reconciliationStatus === "complete",
         ),
+        incompleteWindows: windows.filter((windowDays) => {
+          const record = byWindow.get(windowDays);
+          return (record?.presentLayers.length ?? 0) > 0 && record?.reconciliationStatus === "incomplete";
+        }),
         inconsistentWindows: windows.filter(
           (windowDays) => byWindow.get(windowDays)?.reconciliationStatus === "inconsistent",
         ),
