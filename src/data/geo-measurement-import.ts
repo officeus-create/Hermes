@@ -26,6 +26,7 @@ const analyticsFields = new Set([
   "event_name",
   "count",
   "evidence_class",
+  "observed_at",
 ]);
 const outcomeFields = new Set([
   "window_days",
@@ -37,6 +38,7 @@ const outcomeFields = new Set([
   "losses",
   "revenue_reconciled_wins",
   "evidence_class",
+  "observed_at",
 ]);
 
 const searchSources = new Set(["google", "bing"] as const);
@@ -107,6 +109,7 @@ const familyEvents: Record<GeoFunnelFamily, Set<CanonicalCommercialAnalyticsEven
 export interface GeoImportedAnalyticsEvent {
   family: GeoFunnelFamily;
   aggregate: GeoAnalyticsEventAggregate;
+  observedAt: string;
 }
 
 const asRecord = (value: unknown, label: string): Record<string, unknown> => {
@@ -131,6 +134,13 @@ const text = (row: Record<string, unknown>, field: string, maxLength = 300) => {
   if (!value) throw new Error(`${field} must not be empty`);
   if (value.length > maxLength) throw new Error(`${field} exceeds ${maxLength} characters`);
   return value;
+};
+
+const timestamp = (row: Record<string, unknown>, field: string) => {
+  const value = text(row, field, 40);
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) throw new Error(`${field} must be a valid ISO date/time`);
+  return new Date(parsed).toISOString();
 };
 
 const integer = (row: Record<string, unknown>, field: string) => {
@@ -175,8 +185,6 @@ export const importGeoSearchCheckpointRow = (input: unknown): GeoExactSearchChec
     evidenceClass: enumValue(row, "evidence_class", searchEvidenceClasses),
   };
 
-  // Reuse the canonical exact-window validator. Non-standard windows are valid
-  // checkpoints; they simply remain checkpoints rather than becoming 7/28/90 rows.
   adaptExactSearchCheckpoint(checkpoint);
   return checkpoint;
 };
@@ -200,7 +208,7 @@ export const importGeoAnalyticsEventRow = (input: unknown): GeoImportedAnalytics
     evidenceClass: enumValue(row, "evidence_class", searchEvidenceClasses),
   };
 
-  return { family, aggregate };
+  return { family, aggregate, observedAt: timestamp(row, "observed_at") };
 };
 
 export const importGeoOutcomeRow = (input: unknown): GeoOutcomeAggregate => {
@@ -217,6 +225,7 @@ export const importGeoOutcomeRow = (input: unknown): GeoOutcomeAggregate => {
     losses: integer(row, "losses"),
     revenueReconciledWins: integer(row, "revenue_reconciled_wins"),
     evidenceClass: enumValue(row, "evidence_class", outcomeEvidenceClasses),
+    observedAt: timestamp(row, "observed_at"),
   };
 
   if (outcome.qualifiedLeads > outcome.reviewedInquiries) {
