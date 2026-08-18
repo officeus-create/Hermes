@@ -160,4 +160,6 @@ Before scalable expansion, require:
 
 Unknown values stay unknown. Sitemap or IndexNow submission is not indexation proof. Repository tests are not ranking, traffic, lead or revenue proof.
 
-The dated current-state audit lives in `docs/SEO_FOUR_DIRECTION_COVERAGE_2026-08-18.md`.
+## Current-state authority
+
+Use `docs/SEO_FOUR_DIRECTION_COVERAGE_2026-08-18.md` as the dated coverage audit. The architecture defines where each direction is allowed to grow; the coverage audit records what is actually implemented now.
