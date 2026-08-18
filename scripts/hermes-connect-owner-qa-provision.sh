@@ -2,9 +2,9 @@
 set -euo pipefail
 
 BASE="https://hermeslogisticsus.com"
-OWNER_EMAIL="officeus+hc-owner-qa-v2-20260818@hermeslogisticsus.com"
+OWNER_EMAIL="officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com"
 OWNER_NAME="Волкогон В."
-SHOP_NAME="Northstar Auto Care — Hermes Owner QA"
+SHOP_NAME="Northstar Auto Care — Hermes CEO QA"
 COOKIE="${RUNNER_TEMP:-/tmp}/hc-owner-qa.cookies"
 TMP="${RUNNER_TEMP:-/tmp}/hc-owner-qa"
 ARTIFACT_DIR="artifacts/hc-owner-qa"
@@ -22,13 +22,8 @@ request() {
   curl "${args[@]}" "$url"
 }
 
-REGISTER="$(jq -nc \
-  --arg email "$OWNER_EMAIL" \
-  --arg password "$PASSWORD" \
-  --arg name "$OWNER_NAME" \
-  '{email:$email,password:$password,name:$name,role:"Shop Owner",location:"United States",bio:"Persistent internal QA owner for Hermes Connect Repair Shops. Test data only; no real customer identity."}')"
-REGISTER_HTTP="$(curl -sS -o "$TMP/register.json" -w '%{http_code}' -c "$COOKIE" \
-  -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
+REGISTER="$(jq -nc --arg email "$OWNER_EMAIL" --arg password "$PASSWORD" --arg name "$OWNER_NAME" '{email:$email,password:$password,name:$name,role:"Shop Owner",location:"United States",bio:"Persistent internal QA owner for Hermes Connect Repair Shops. Test data only; no real customer identity."}')"
+REGISTER_HTTP="$(curl -sS -o "$TMP/register.json" -w '%{http_code}' -c "$COOKIE" -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
 echo "REGISTER_HTTP=$REGISTER_HTTP"
 if [[ "$REGISTER_HTTP" != "201" ]]; then
   cat "$TMP/register.json"
@@ -56,9 +51,7 @@ create_service() {
 SERVICE_OIL="$(create_service "Oil Change & Inspection" 45 "$TMP/service-oil.json")"
 SERVICE_BRAKE="$(create_service "Brake Inspection & Diagnostic" 60 "$TMP/service-brake.json")"
 SERVICE_DIAG="$(create_service "Full Vehicle Diagnostic" 60 "$TMP/service-diagnostic.json")"
-for id in "$SERVICE_OIL" "$SERVICE_BRAKE" "$SERVICE_DIAG"; do
-  [[ "$id" == service-* ]]
-done
+for id in "$SERVICE_OIL" "$SERVICE_BRAKE" "$SERVICE_DIAG"; do [[ "$id" == service-* ]]; done
 
 AVAILABILITY='{"days":[{"day_of_week":0,"is_open":false,"start_time":"09:00","end_time":"17:00"},{"day_of_week":1,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"14:00"}]}'
 AVAIL_HTTP="$(request PUT "$BASE/api/repair-shop/availability" "$TMP/availability.json" "$AVAILABILITY" yes)"
@@ -77,7 +70,6 @@ test "$AVAIL_GET_HTTP" = 200
 test "$PUBLIC_HTTP" = 200
 test "$(jq '.services | length' "$TMP/public.json")" -ge 3
 
-# Use the next two open weekdays so the test remains valid whenever it is run.
 next_weekday() {
   local offset="$1" date dow
   date="$(TZ=America/Chicago date -d "+${offset} day" +%F)"
@@ -158,16 +150,24 @@ Dashboard: $DASHBOARD_URL
 Public booking: $BOOKING_URL
 EOF
 
-# Request a normal password-reset email as the handoff path to the CEO. The
-# public API intentionally returns the same acknowledgement regardless of mail
-# delivery, so Gmail readback remains the delivery proof.
-RESET_PAYLOAD="$(jq -nc --arg email "$OWNER_EMAIL" '{email:$email,lang:"ru"}')"
-RESET_HTTP="$(request POST "$BASE/api/auth/forgot-password" "$TMP/reset.json" "$RESET_PAYLOAD")"
-echo "PASSWORD_RESET_REQUEST_HTTP=$RESET_HTTP"
-test "$RESET_HTTP" = 200
+# Encrypt the generated password to a one-time public key. Only the assistant's
+# ephemeral private key can decrypt the envelope; plaintext never enters GitHub.
+cat > "$TMP/handoff-public.pem" <<'EOF'
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsMKUNRKh606CmotFB9TA
+0nzLpcXWjjiMeH7DQhkhmchIEVbGSus1SZ029a25CHlDCmRwLzfa9b08Sw+m0JiL
+vwMTC1XF6tyFqwUGElu0gsuzqga0EyPnyPS9hx0vzSVKxa2xW6eyZVonEimaGRZc
+e/yrEjpontJGeibfliG4ZAiCjPL/3lxA0Mo5ndOrcjwiFP2xR3Cip1pNTEUSaVRE
+Sxmbb5/Svua+EvPZYmGs8u5G4+JFRJWk+iMFzVGhDieHFuvS2oE/kJ9+5RbEC8BZ
+SxHu6IjX17DJGfVWA+KXdU67G0PwEKSK/ShqOeFiWX+s/ZBQH5ePiIUAOmu5LDFi
+QQIDAQAB
+-----END PUBLIC KEY-----
+EOF
+printf '%s' "$PASSWORD" | openssl pkeyutl -encrypt -pubin -inkey "$TMP/handoff-public.pem" -pkeyopt rsa_padding_mode:oaep -out "$TMP/password.enc"
+PASSWORD_ENVELOPE="$(base64 -w0 "$TMP/password.enc")"
 
 printf '%s\n' \
-  "## Hermes Connect CEO QA provisioning — PASS" \
+  "## Hermes Connect CEO QA provisioning — PASS / SECURE HANDOFF" \
   "" \
   "Owner: **$OWNER_NAME**" \
   "Shop: **$SHOP_NAME**" \
@@ -180,7 +180,7 @@ printf '%s\n' \
   "Dashboard: $DASHBOARD_URL" \
   "Public booking: $BOOKING_URL" \
   "" \
-  "A password-reset request was also issued to the QA work-email alias for direct CEO handoff." \
+  "Encrypted credential envelope (RSA-OAEP): \`$PASSWORD_ENVELOPE\`" \
   > "$ARTIFACT_DIR/issue-comment.md"
 
 echo "HC_OWNER_QA_PROVISION_PASS"
