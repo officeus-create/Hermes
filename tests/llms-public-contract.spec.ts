@@ -47,7 +47,14 @@ test("llms.txt describes current public owners and evidence boundaries", async (
 
   expect(body).not.toContain("Contact submission is currently preview-only");
   expect(body).toMatch(/No public page guarantees loads, rates, lanes/i);
-  expect(body).not.toMatch(/(?<!No public page )guarantees? (?:loads|rates|lanes|mileage|traffic|rankings|revenue|profit|employment)/i);
+
+  const affirmativeGuaranteeLines = body
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /\bguarantee(?:s|d)?\b/i.test(line))
+    .filter((line) => !/\b(?:no|not|never|without|do not|does not)\b/i.test(line));
+  expect(affirmativeGuaranteeLines).toEqual([]);
+
   expect(body).not.toMatch(/@[a-z0-9.-]+\.[a-z]{2,}/i);
   expect(body).not.toMatch(/\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i);
   expect(body).not.toMatch(/\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/);
