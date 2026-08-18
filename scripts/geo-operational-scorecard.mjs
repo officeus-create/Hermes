@@ -1,7 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { buildGeoOperationalScorecardReport } from "../src/data/geo-operational-scorecard.ts";
+import {
+  serializeSecureGeoOperationalScorecardReport,
+} from "../src/data/geo-operational-secure-runner.ts";
+import { geoOperationalSecurityLimits } from "../src/data/geo-operational-security.ts";
 
 const inputPath = process.argv[2];
 if (!inputPath) {
@@ -14,7 +17,7 @@ const stat = fs.statSync(resolved);
 if (!stat.isFile()) {
   throw new Error("GEO operational input must be a regular file");
 }
-if (stat.size > 5 * 1024 * 1024) {
+if (stat.size > geoOperationalSecurityLimits.maxInputBytes) {
   throw new Error("GEO operational input must be 5 MiB or smaller");
 }
 
@@ -26,5 +29,4 @@ try {
   throw new Error("GEO operational input must be valid JSON");
 }
 
-const report = buildGeoOperationalScorecardReport(input);
-process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+process.stdout.write(serializeSecureGeoOperationalScorecardReport(input));
