@@ -1,0 +1,61 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+const root = new URL('../public/demos/hermes-connect/', import.meta.url);
+
+async function load(name) {
+  return readFile(new URL(name, root), 'utf8');
+}
+
+test('Academy V1 keeps training evidence and human review boundaries explicit', async () => {
+  const html = await load('academy.html');
+  assert.match(html, /Awareness/);
+  assert.match(html, /Understanding/);
+  assert.match(html, /Assessment/);
+  assert.match(html, /Supervised Practice/);
+  assert.match(html, /Application/);
+  assert.match(html, /Human review remains the gate/i);
+  assert.match(html, /no automated hiring, firing, job guarantee/i);
+  assert.match(html, /sales-roleplay\.html/);
+  assert.match(html, /workspace\.html/);
+});
+
+test('Academy V1 represents established and preparing tracks honestly', async () => {
+  const html = await load('academy.html');
+  assert.match(html, /U\.S\. Logistics Operations/);
+  assert.match(html, /Marketing & SMM/);
+  assert.match(html, /Web Design/);
+  assert.match(html, /IT & Automation/);
+  assert.match(html, /SEO & Website Promotion/);
+  assert.match(html, /Preparing tracks are product structure only/i);
+});
+
+test('Beauty V1 uses the shared operating-system workflow instead of a disconnected product', async () => {
+  const html = await load('beauty-salon.html');
+  assert.match(html, /lead→booking→service→rebook/i);
+  assert.match(html, /Client profile/);
+  assert.match(html, /Appointments/);
+  assert.match(html, /Service workflow/);
+  assert.match(html, /Retention & content/);
+  assert.match(html, /Hermes Intelligence/);
+  assert.match(html, /workspace\.html\?business_type=beauty/);
+});
+
+test('Beauty V1 preserves approval, consent and prototype safety boundaries', async () => {
+  const html = await load('beauty-salon.html');
+  assert.match(html, /Human review required before any external send/i);
+  assert.match(html, /consent state needs verification/i);
+  assert.match(html, /all clients, metrics, services and actions on this page are synthetic/i);
+  assert.match(html, /does not replace professional clinical judgment/i);
+  assert.match(html, /noindex,nofollow/i);
+});
+
+test('Shared vertical module stylesheet exists and preserves Hermes brand tokens', async () => {
+  const css = await load('vertical-modules.css');
+  assert.match(css, /--pearl:#F7F6F3/);
+  assert.match(css, /--obsidian:#0B0D12/);
+  assert.match(css, /--iris:#7C5CFF/);
+  assert.match(css, /--ocean:#5AC8FA/);
+  assert.match(css, /--sage:#7FD1B6/);
+});
