@@ -1,5 +1,5 @@
-import type { GeoAnswerSurface, GeoEvidenceReference } from "./geo-answer-contract";
-import { adaptPublicEntityForGeo } from "./geo-public-entity-adapter";
+import type { GeoAnswerSurface, GeoEvidenceReference } from "./geo-answer-contract.ts";
+import { adaptPublicEntityForGeo } from "./geo-public-entity-adapter.ts";
 
 const publicOwnerEvidence: GeoEvidenceReference = {
   id: "car-hauling-public-owner",
