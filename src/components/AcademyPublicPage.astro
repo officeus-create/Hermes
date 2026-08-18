@@ -4,14 +4,77 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { AcademySubsitePage } from "../data/academy-subsite";
+import type { SiteLocale } from "../data/locales";
+
+export type AcademyPublicUi = {
+  home: string;
+  academy: string;
+  academyHub: string;
+  clearScopeTitle: string;
+  audienceEyebrow: string;
+  whoItServesEyebrow: string;
+  whoItServesTitle: string;
+  curriculumEyebrow: string;
+  practicalSequenceEyebrow: string;
+  boundaryEyebrow: string;
+  boundaryTitle: string;
+  boundaryCards: Array<{ title: string; body: string }>;
+  faqEyebrow: string;
+  faqTitle: string;
+  relatedEyebrow: string;
+  relatedTitle: string;
+  openResource: string;
+  applicationEyebrow: string;
+  applicationTitle: string;
+  applicationBody: string;
+};
+
+const defaultUi: AcademyPublicUi = {
+  home: "Home",
+  academy: "Academy",
+  academyHub: "Academy hub",
+  clearScopeTitle: "Clear scope before participation.",
+  audienceEyebrow: "Audience and readiness",
+  whoItServesEyebrow: "Who it serves",
+  whoItServesTitle: "Choose the path that matches your current responsibility.",
+  curriculumEyebrow: "Public curriculum",
+  practicalSequenceEyebrow: "Practical sequence",
+  boundaryEyebrow: "Participation boundary",
+  boundaryTitle: "Learning improves readiness; it does not promise an external outcome.",
+  boundaryCards: [
+    { title: "No automatic admission", body: "Applications, eligibility, available format, schedule, language, and capacity require human review." },
+    { title: "No employment guarantee", body: "Training and practice do not promise a job, client, contract, promotion, income, or future paid work." },
+    { title: "No unapproved live access", body: "Private operations, customer data, accounts, messages, payments, and external integrations require separate authorization." },
+    { title: "No fixed public offer yet", body: "Dates, prices, refunds, seats, mentors, certificates, and exact deliverables are published only for an approved cohort." },
+  ],
+  faqEyebrow: "Frequently asked questions",
+  faqTitle: "Resolve expectations before applying.",
+  relatedEyebrow: "Continue learning",
+  relatedTitle: "Related programs, services, and canonical resources.",
+  openResource: "Open resource",
+  applicationEyebrow: "Academy application",
+  applicationTitle: "Prepare your program, language, experience, schedule, and objective for human review.",
+  applicationBody: "The current workflow creates a preview and explicit contact handoff. It does not accept payment, reserve a seat, enroll a learner, or guarantee a response time.",
+};
 
 interface Props {
   content: AcademySubsitePage;
+  locale?: SiteLocale;
+  alternates?: { lang: string; href: string }[];
+  ui?: AcademyPublicUi;
+  academyHubHref?: string;
 }
 
-const { content } = Astro.props;
-const canonicalUrl = new URL(`/academy/${content.slug}/`, Astro.site).toString();
-const academyUrl = new URL("/paths/academy/", Astro.site).toString();
+const {
+  content,
+  locale = "en",
+  alternates = [],
+  ui = defaultUi,
+  academyHubHref = "/paths/academy/",
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const academyUrl = new URL(academyHubHref, Astro.site).toString();
 const academyEntity = {
   "@type": "Organization",
   "@id": "https://hermeslogisticsus.com/#academy",
@@ -26,6 +89,7 @@ const mainSchema = content.schemaType === "Course"
       name: content.h1,
       description: content.description,
       url: canonicalUrl,
+      inLanguage: locale,
       provider: academyEntity,
       teaches: content.teaches,
       availableLanguage: ["English", "Russian", "Ukrainian"],
@@ -36,6 +100,7 @@ const mainSchema = content.schemaType === "Course"
       name: content.h1,
       description: content.description,
       url: canonicalUrl,
+      inLanguage: locale,
       isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
       about: academyEntity,
     };
@@ -66,26 +131,26 @@ const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
-    { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+    { "@type": "ListItem", position: 1, name: ui.home, item: new URL(locale === "en" ? "/" : `/${locale === "uk" ? "ua" : locale}/`, Astro.site).toString() },
     { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: academyUrl },
     { "@type": "ListItem", position: 3, name: content.h1, item: canonicalUrl },
   ],
 };
 ---
 
-<BaseLayout title={content.title} description={content.description} schema={[mainSchema, serviceSchema, faqSchema, breadcrumbSchema]}>
+<BaseLayout title={content.title} description={content.description} locale={locale} alternates={alternates} schema={[mainSchema, serviceSchema, faqSchema, breadcrumbSchema]}>
   <div class="logistics-resource-page academy-public-page">
-    <SiteHeader theme="dark" activePath="/paths/academy/" />
+    <SiteHeader theme="dark" locale={locale} activePath={academyHubHref} />
     <main id="main-content">
       <article>
         <header class="resource-hero resource-hero-carrier" id="top">
           <div class="shell">
             <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
-              <a href="/">Home</a><span aria-hidden="true">/</span>
-              <a href="/paths/academy/">Academy</a><span aria-hidden="true">/</span>
+              <a href={locale === "en" ? "/" : `/${locale === "uk" ? "ua" : locale}/`}>{ui.home}</a><span aria-hidden="true">/</span>
+              <a href={academyHubHref}>{ui.academy}</a><span aria-hidden="true">/</span>
               <span aria-current="page">{content.slug.replaceAll("-", " ")}</span>
             </nav>
-            <a class="detail-back" href="/paths/academy/"><ArrowLeft size={18} aria-hidden="true" />Academy hub</a>
+            <a class="detail-back" href={academyHubHref}><ArrowLeft size={18} aria-hidden="true" />{ui.academyHub}</a>
             <div class="resource-hero-grid">
               <div>
                 <p class="eyebrow">{content.eyebrow}</p>
@@ -98,7 +163,7 @@ const breadcrumbSchema = {
               </div>
               <aside class="resource-safety-card">
                 <ShieldCheck size={30} aria-hidden="true" />
-                <h2>Clear scope before participation.</h2>
+                <h2>{ui.clearScopeTitle}</h2>
                 <p>{content.boundary}</p>
               </aside>
             </div>
@@ -109,7 +174,7 @@ const breadcrumbSchema = {
           <div class="shell resource-lead">
             <GraduationCap size={36} aria-hidden="true" />
             <div>
-              <p class="eyebrow">Audience and readiness</p>
+              <p class="eyebrow">{ui.audienceEyebrow}</p>
               <h2 id="academy-audience-title">{content.audienceTitle}</h2>
               <p>{content.audienceIntro}</p>
             </div>
@@ -118,7 +183,7 @@ const breadcrumbSchema = {
 
         <section class="section capacity-pillars" aria-labelledby="academy-audience-cards-title">
           <div class="shell">
-            <div class="section-heading"><p class="eyebrow">Who it serves</p><h2 id="academy-audience-cards-title">Choose the path that matches your current responsibility.</h2></div>
+            <div class="section-heading"><p class="eyebrow">{ui.whoItServesEyebrow}</p><h2 id="academy-audience-cards-title">{ui.whoItServesTitle}</h2></div>
             <div class="capacity-pillar-grid">
               {content.audience.map((item, index) => (
                 <article><span>0{index + 1}</span><GraduationCap size={23} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p></article>
@@ -130,7 +195,7 @@ const breadcrumbSchema = {
         <section class="section capacity-pillars" aria-labelledby="academy-modules-title">
           <div class="shell">
             <div class="section-heading split-heading">
-              <div><p class="eyebrow">Public curriculum</p><h2 id="academy-modules-title">{content.modulesTitle}</h2></div>
+              <div><p class="eyebrow">{ui.curriculumEyebrow}</p><h2 id="academy-modules-title">{content.modulesTitle}</h2></div>
               <p>{content.modulesIntro}</p>
             </div>
             <div class="capacity-pillar-grid">
@@ -144,7 +209,7 @@ const breadcrumbSchema = {
         <section class="section capacity-example" aria-labelledby="academy-process-title">
           <div class="shell capacity-example-grid">
             <div>
-              <p class="eyebrow">Practical sequence</p>
+              <p class="eyebrow">{ui.practicalSequenceEyebrow}</p>
               <h2 id="academy-process-title">{content.processTitle}</h2>
               <p>{content.processIntro}</p>
             </div>
@@ -157,22 +222,19 @@ const breadcrumbSchema = {
         <section class="section capacity-review" aria-labelledby="academy-boundary-title">
           <div class="shell">
             <div class="section-heading">
-              <p class="eyebrow">Participation boundary</p>
-              <h2 id="academy-boundary-title">Learning improves readiness; it does not promise an external outcome.</h2>
+              <p class="eyebrow">{ui.boundaryEyebrow}</p>
+              <h2 id="academy-boundary-title">{ui.boundaryTitle}</h2>
               <p>{content.boundary}</p>
             </div>
             <div class="capacity-boundary-grid">
-              <article><strong>No automatic admission</strong><p>Applications, eligibility, available format, schedule, language, and capacity require human review.</p></article>
-              <article><strong>No employment guarantee</strong><p>Training and practice do not promise a job, client, contract, promotion, income, or future paid work.</p></article>
-              <article><strong>No unapproved live access</strong><p>Private operations, customer data, accounts, messages, payments, and external integrations require separate authorization.</p></article>
-              <article><strong>No fixed public offer yet</strong><p>Dates, prices, refunds, seats, mentors, certificates, and exact deliverables are published only for an approved cohort.</p></article>
+              {ui.boundaryCards.map((item) => <article><strong>{item.title}</strong><p>{item.body}</p></article>)}
             </div>
           </div>
         </section>
 
         <section class="section" aria-labelledby="academy-faq-title">
           <div class="shell digital-faq-layout">
-            <div><p class="eyebrow">Frequently asked questions</p><h2 id="academy-faq-title">Resolve expectations before applying.</h2></div>
+            <div><p class="eyebrow">{ui.faqEyebrow}</p><h2 id="academy-faq-title">{ui.faqTitle}</h2></div>
             <div class="digital-faq-list">
               {content.faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
             </div>
@@ -181,10 +243,10 @@ const breadcrumbSchema = {
 
         <section class="section resource-related" aria-labelledby="academy-related-title">
           <div class="shell">
-            <div class="section-heading"><p class="eyebrow">Continue learning</p><h2 id="academy-related-title">Related programs, services, and canonical resources.</h2></div>
+            <div class="section-heading"><p class="eyebrow">{ui.relatedEyebrow}</p><h2 id="academy-related-title">{ui.relatedTitle}</h2></div>
             <div class="resource-related-grid">
               {content.related.map((item) => (
-                <a href={item.href}><Network size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p><strong>Open resource <ArrowRight size={16} aria-hidden="true" /></strong></a>
+                <a href={item.href}><Network size={22} aria-hidden="true" /><h3>{item.title}</h3><p>{item.body}</p><strong>{ui.openResource} <ArrowRight size={16} aria-hidden="true" /></strong></a>
               ))}
             </div>
           </div>
@@ -193,15 +255,15 @@ const breadcrumbSchema = {
         <section class="section resource-final-cta" id="apply">
           <div class="shell resource-final-card">
             <div>
-              <p class="eyebrow">Academy application</p>
-              <h2>Prepare your program, language, experience, schedule, and objective for human review.</h2>
-              <p>The current workflow creates a preview and explicit contact handoff. It does not accept payment, reserve a seat, enroll a learner, or guarantee a response time.</p>
+              <p class="eyebrow">{ui.applicationEyebrow}</p>
+              <h2>{ui.applicationTitle}</h2>
+              <p>{ui.applicationBody}</p>
             </div>
             <a class="button button-primary" href={content.primaryAction.href}>{content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
           </div>
         </section>
       </article>
     </main>
-    <SiteFooter />
+    <SiteFooter locale={locale} />
   </div>
 </BaseLayout>
