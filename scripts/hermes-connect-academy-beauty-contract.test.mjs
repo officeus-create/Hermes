@@ -33,11 +33,13 @@ test('Academy V1 represents established and preparing tracks honestly', async ()
 
 test('Beauty V1 uses the shared operating-system workflow instead of a disconnected product', async () => {
   const html = await load('beauty-salon.html');
-  assert.match(html, /lead→booking→service→rebook/i);
-  assert.match(html, /Client profile/);
-  assert.match(html, /Appointments/);
+  assert.match(html, /LEAD → CLIENT PIPELINE/i);
+  assert.match(html, /New inquiry/);
+  assert.match(html, /Booked/);
   assert.match(html, /Service workflow/);
   assert.match(html, /Retention & content/);
+  assert.match(html, /Client profile/);
+  assert.match(html, /Appointments/);
   assert.match(html, /Hermes Intelligence/);
   assert.match(html, /workspace\.html\?business_type=beauty/);
 });
