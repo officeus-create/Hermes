@@ -15,11 +15,20 @@ import {
   type GeoFunnelAggregate,
   type GeoMeasurementLayerInput,
   type GeoSearchAggregate,
+  type GeoWindowDays,
 } from "./geo-measurement-layer.ts";
 import { buildGeoOwnerMeasurementLayer } from "./geo-owner-measurement.ts";
+import {
+  buildGeoEvidenceFreshnessRecords,
+  buildGeoOwnerCoverageSummary,
+  buildGeoOwnerReadiness,
+  summarizeGeoEvidenceProvenance,
+  type GeoEvidenceHealthInputRecord,
+} from "./geo-evidence-health.ts";
+import { findGeoOwnerForPrompt } from "./geo-prompt-owner-registry.ts";
 
-export const geoOperationalScorecardInputVersion = "geo_operational_scorecard_v1" as const;
-export const geoOperationalScorecardReportVersion = "geo_operational_scorecard_report_v1" as const;
+export const geoOperationalScorecardInputVersion = "geo_operational_scorecard_v2" as const;
+export const geoOperationalScorecardReportVersion = "geo_operational_scorecard_report_v2" as const;
 
 const inputFields = new Set([
   "schema_version",
@@ -32,6 +41,8 @@ const inputFields = new Set([
 ]);
 
 const aiEvidenceClasses = new Set<GeoAiEvidenceClass>(["owner_provided_handoff", "unverified"]);
+const windows: readonly GeoWindowDays[] = [7, 28, 90];
+const DAY_MS = 86_400_000;
 
 export interface GeoOperationalScorecardBundle {
   schema_version: typeof geoOperationalScorecardInputVersion;
@@ -58,11 +69,20 @@ export interface GeoHeldSearchCheckpoint {
 
 export interface GeoIncompleteFunnel {
   family: GeoFunnelFamily;
-  windowDays: 7 | 28 | 90;
+  windowDays: GeoWindowDays;
   journeyPath: string;
   rowCount: number;
   missingEvents: string[];
   registryGaps: string[];
+  observedAt: string;
+}
+
+export interface GeoHeldEvidence {
+  layer: "search" | "funnel";
+  canonicalOwner: string;
+  windowDays: number;
+  reasonCode: "non_standard_search_window" | "incomplete_funnel";
+  reasons: string[];
 }
 
 const asRecord = (value: unknown): Record<string, unknown> => {
@@ -105,7 +125,7 @@ const parseBundle = (input: unknown): GeoOperationalScorecardBundle => {
 
   return {
     schema_version: geoOperationalScorecardInputVersion,
-    as_of: row.as_of,
+    as_of: new Date(Date.parse(row.as_of)).toISOString(),
     ai_visibility_evidence_class: row.ai_visibility_evidence_class as GeoAiEvidenceClass,
     ai_observations: arrayField(row, "ai_observations"),
     search_checkpoints: arrayField(row, "search_checkpoints"),
@@ -114,13 +134,30 @@ const parseBundle = (input: unknown): GeoOperationalScorecardBundle => {
   };
 };
 
+const assertUniqueBy = <T>(rows: T[], keyFor: (row: T) => string, label: string) => {
+  const seen = new Set<string>();
+  for (const row of rows) {
+    const key = keyFor(row);
+    if (seen.has(key)) throw new Error(`Duplicate ${label} aggregate: ${key}`);
+    seen.add(key);
+  }
+};
+
 const analyticsGroupKey = (family: GeoFunnelFamily, windowDays: number, journeyPath: string) =>
   `${family}|${windowDays}|${journeyPath}`;
+
+const withinWindow = (observedAt: string, windowDays: GeoWindowDays, asOfMs: number) => {
+  const observedAtMs = Date.parse(observedAt);
+  return observedAtMs > asOfMs - windowDays * DAY_MS && observedAtMs <= asOfMs;
+};
+
+const searchObservedAt = (endDate: string, asOfDate: string, asOf: string) =>
+  endDate === asOfDate ? asOf : `${endDate}T23:59:59.999Z`;
 
 export const buildGeoOperationalScorecardReport = (input: unknown) => {
   const bundle = parseBundle(input);
   const asOfMs = Date.parse(bundle.as_of);
-  const asOfDate = new Date(asOfMs).toISOString().slice(0, 10);
+  const asOfDate = bundle.as_of.slice(0, 10);
 
   const aiObservations = importGeoAiObservationBatch(bundle.ai_observations);
   for (const observation of aiObservations) {
@@ -130,8 +167,19 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
   }
 
   const searchCheckpoints = importGeoSearchCheckpointBatch(bundle.search_checkpoints);
+  assertUniqueBy(
+    searchCheckpoints,
+    (checkpoint) =>
+      `${checkpoint.source}|${checkpoint.pagePath}|${checkpoint.discoveryType}|${checkpoint.startDate}|${checkpoint.endDate}`,
+    "GEO search",
+  );
+
   const search: GeoSearchAggregate[] = [];
   const heldSearchCheckpoints: GeoHeldSearchCheckpoint[] = [];
+  const standardSearchEvidence: Array<{
+    checkpoint: (typeof searchCheckpoints)[number];
+    aggregate: GeoSearchAggregate;
+  }> = [];
 
   for (const checkpoint of searchCheckpoints) {
     if (checkpoint.endDate > asOfDate) {
@@ -140,6 +188,7 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
     const adapted = adaptExactSearchCheckpoint(checkpoint);
     if (adapted.status === "ready" && adapted.aggregate) {
       search.push(adapted.aggregate);
+      standardSearchEvidence.push({ checkpoint, aggregate: adapted.aggregate });
       continue;
     }
     heldSearchCheckpoints.push({
@@ -157,9 +206,26 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
   }
 
   const analyticsRows = importGeoAnalyticsEventBatch(bundle.analytics_events);
+  for (const row of analyticsRows) {
+    if (Date.parse(row.observedAt) > asOfMs) {
+      throw new Error(`Analytics evidence for ${row.aggregate.journeyPath} occurs after as_of`);
+    }
+  }
+  assertUniqueBy(
+    analyticsRows,
+    (row) =>
+      `${row.family}|${row.aggregate.windowDays}|${row.aggregate.journeyPath}|${row.aggregate.eventPagePath}|${row.aggregate.eventName}`,
+    "GEO analytics",
+  );
+
   const analyticsGroups = new Map<
     string,
-    { family: GeoFunnelFamily; windowDays: 7 | 28 | 90; journeyPath: string; rows: typeof analyticsRows }
+    {
+      family: GeoFunnelFamily;
+      windowDays: GeoWindowDays;
+      journeyPath: string;
+      rows: typeof analyticsRows;
+    }
   >();
 
   for (const row of analyticsRows) {
@@ -179,13 +245,26 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
 
   const funnel: GeoFunnelAggregate[] = [];
   const incompleteFunnels: GeoIncompleteFunnel[] = [];
+  const readyFunnelEvidence: Array<{
+    aggregate: GeoFunnelAggregate;
+    observedAt: string;
+  }> = [];
+
   for (const group of analyticsGroups.values()) {
+    const observedAtValues = [...new Set(group.rows.map((row) => row.observedAt))];
+    if (observedAtValues.length !== 1) {
+      throw new Error(
+        `Analytics group ${group.family}|${group.windowDays}|${group.journeyPath} must use one observed_at snapshot`,
+      );
+    }
+    const observedAt = observedAtValues[0];
     const adapted = adaptCanonicalAnalyticsFunnel(
       group.family,
       group.rows.map((row) => row.aggregate),
     );
     if (adapted.status === "ready" && adapted.aggregate) {
       funnel.push(adapted.aggregate);
+      readyFunnelEvidence.push({ aggregate: adapted.aggregate, observedAt });
     } else {
       incompleteFunnels.push({
         family: group.family,
@@ -194,11 +273,22 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
         rowCount: group.rows.length,
         missingEvents: adapted.missingEvents,
         registryGaps: adapted.registryGaps,
+        observedAt,
       });
     }
   }
 
   const outcomes = importGeoOutcomeBatch(bundle.outcomes);
+  for (const outcome of outcomes) {
+    if (Date.parse(outcome.observedAt) > asOfMs) {
+      throw new Error(`Private outcome evidence for ${outcome.pagePath} occurs after as_of`);
+    }
+  }
+  assertUniqueBy(
+    outcomes,
+    (outcome) => `${outcome.windowDays}|${outcome.pagePath}`,
+    "GEO outcome",
+  );
 
   const measurementInput: GeoMeasurementLayerInput = {
     asOf: bundle.as_of,
@@ -208,6 +298,87 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
     funnel,
     outcomes,
   };
+
+  const scorecards = buildGeoMeasurementLayer(measurementInput);
+  const ownerScorecards = buildGeoOwnerMeasurementLayer(measurementInput);
+
+  const evidenceHealthInput: GeoEvidenceHealthInputRecord[] = [];
+  for (const observation of aiObservations) {
+    for (const windowDays of windows) {
+      if (!withinWindow(observation.observedAt, windowDays, asOfMs)) continue;
+      evidenceHealthInput.push({
+        layer: "ai_visibility",
+        windowDays,
+        canonicalOwner: findGeoOwnerForPrompt(observation.promptId).canonicalOwner,
+        evidenceClass: bundle.ai_visibility_evidence_class,
+        observedAt: observation.observedAt,
+      });
+    }
+  }
+  for (const item of standardSearchEvidence) {
+    evidenceHealthInput.push({
+      layer: "search",
+      windowDays: item.aggregate.windowDays,
+      canonicalOwner: item.aggregate.pagePath,
+      evidenceClass: item.aggregate.evidenceClass,
+      observedAt: searchObservedAt(item.checkpoint.endDate, asOfDate, bundle.as_of),
+    });
+  }
+  for (const item of readyFunnelEvidence) {
+    evidenceHealthInput.push({
+      layer: "funnel",
+      windowDays: item.aggregate.windowDays,
+      canonicalOwner: item.aggregate.pagePath,
+      evidenceClass: item.aggregate.evidenceClass,
+      observedAt: item.observedAt,
+    });
+  }
+  for (const outcome of outcomes) {
+    evidenceHealthInput.push({
+      layer: "outcomes",
+      windowDays: outcome.windowDays,
+      canonicalOwner: outcome.pagePath,
+      evidenceClass: outcome.evidenceClass,
+      observedAt: outcome.observedAt,
+    });
+  }
+
+  const evidenceFreshness = buildGeoEvidenceFreshnessRecords(evidenceHealthInput, bundle.as_of);
+  const ownerReadiness = buildGeoOwnerReadiness(ownerScorecards);
+  const ownerCoverage = buildGeoOwnerCoverageSummary(ownerReadiness);
+  const mixedEvidenceWarnings = ownerReadiness
+    .filter((record) => record.mixedEvidenceLayers.length > 0)
+    .map((record) => ({
+      canonicalOwner: record.canonicalOwner,
+      windowDays: record.windowDays,
+      mixedEvidenceLayers: record.mixedEvidenceLayers,
+      evidenceClasses: record.evidenceClasses,
+    }));
+
+  const heldEvidence: GeoHeldEvidence[] = [
+    ...heldSearchCheckpoints.map((checkpoint) => ({
+      layer: "search" as const,
+      canonicalOwner: checkpoint.pagePath,
+      windowDays: checkpoint.windowDays,
+      reasonCode: "non_standard_search_window" as const,
+      reasons: [checkpoint.reason],
+    })),
+    ...incompleteFunnels.map((record) => ({
+      layer: "funnel" as const,
+      canonicalOwner: record.journeyPath,
+      windowDays: record.windowDays,
+      reasonCode: "incomplete_funnel" as const,
+      reasons: [
+        ...record.missingEvents.map((event) => `missing_event:${event}`),
+        ...record.registryGaps.map((gap) => `registry_gap:${gap}`),
+      ],
+    })),
+  ].sort(
+    (left, right) =>
+      left.canonicalOwner.localeCompare(right.canonicalOwner) ||
+      left.windowDays - right.windowDays ||
+      left.layer.localeCompare(right.layer),
+  );
 
   return {
     schemaVersion: geoOperationalScorecardReportVersion,
@@ -224,7 +395,15 @@ export const buildGeoOperationalScorecardReport = (input: unknown) => {
     },
     heldSearchCheckpoints,
     incompleteFunnels,
-    scorecards: buildGeoMeasurementLayer(measurementInput),
-    ownerScorecards: buildGeoOwnerMeasurementLayer(measurementInput),
+    heldEvidence,
+    scorecards,
+    ownerScorecards,
+    evidenceHealth: {
+      records: evidenceFreshness,
+      provenanceByWindow: summarizeGeoEvidenceProvenance(evidenceFreshness),
+    },
+    ownerReadiness,
+    ownerCoverage,
+    mixedEvidenceWarnings,
   };
 };
