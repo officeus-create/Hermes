@@ -77,6 +77,7 @@ await import("./geo-measurement-import.test.mjs");
 await import("./geo-operational-scorecard.test.mjs");
 await import("./geo-operational-security.test.mjs");
 await import("./geo-operational-examples.test.mjs");
+await import("./geo-evidence-envelope.test.mjs");
 await import("./geo-evidence-health.test.mjs");
 await import("./geo-operational-comparison.test.mjs");
 await import("./geo-search-diagnostics.test.mjs");
