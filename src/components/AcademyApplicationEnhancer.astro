@@ -3,8 +3,55 @@
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
   const fieldsRoot = form?.querySelector<HTMLElement>("[data-direction-fields]");
-  const requestedProgram = new URLSearchParams(window.location.search).get("program");
+  const params = new URLSearchParams(window.location.search);
+  const requestedProgram = params.get("program");
+  const requestedLanguage = params.get("language");
+  const isUkrainian = requestedLanguage === "uk";
   const allowedPrograms = new Set(["us-logistics-operations", "marketing"]);
+
+  const copy = isUkrainian
+    ? {
+        program: "Програма",
+        chooseProgram: "Оберіть публічну програму",
+        countryCity: "Країна та місто",
+        languagesLevels: "Мови та рівні",
+        englishLevel: "Рівень розмовної англійської",
+        chooseEnglishLevel: "Оберіть рівень англійської",
+        notSure: "Не впевнений / не впевнена",
+        recentExperience: "Релевантний досвід за останні 3–6 місяців",
+        objective: "Основна мета",
+        chooseObjective: "Оберіть мету",
+        careerDevelopment: "Кар’єрний розвиток",
+        businessCapability: "Розвиток бізнес-компетенцій",
+        careerAndBusiness: "Кар’єра та бізнес",
+        exploration: "Я ще визначаюся",
+        usAvailability: "Доступність для роботи або практики за часовими поясами США",
+        contactRoute: "Бажаний канал зв’язку",
+        chooseContactRoute: "Оберіть канал зв’язку",
+        privacyNote: "Не додавайте паролі, коди підтвердження, документи, платіжні дані, приватні записи клієнтів або конфіденційну інформацію про перевезення.",
+        qualificationTitle: "Кваліфікація Academy:",
+      }
+    : {
+        program: "Program",
+        chooseProgram: "Choose a public program",
+        countryCity: "Country and city",
+        languagesLevels: "Languages and levels",
+        englishLevel: "Spoken English level",
+        chooseEnglishLevel: "Choose an English level",
+        notSure: "Not sure",
+        recentExperience: "Relevant experience during the last 3-6 months",
+        objective: "Primary objective",
+        chooseObjective: "Choose an objective",
+        careerDevelopment: "Career development",
+        businessCapability: "Business capability",
+        careerAndBusiness: "Career and business",
+        exploration: "I am still exploring",
+        usAvailability: "Availability for U.S. time-zone work or practice",
+        contactRoute: "Preferred contact route",
+        chooseContactRoute: "Choose a contact route",
+        privacyNote: "Do not include passwords, verification codes, identity documents, payment data, private customer records, or confidential shipment information.",
+        qualificationTitle: "Academy qualification:",
+      };
 
   const addField = (
     group: HTMLElement,
@@ -53,35 +100,36 @@
     const group = fieldsRoot.querySelector<HTMLElement>(".contact-direction-group");
     if (!group || group.dataset.academyApplicationExtended === "true") return;
     group.dataset.academyApplicationExtended = "true";
+    group.dataset.academyApplicationLanguage = isUkrainian ? "uk" : "en";
 
-    const program = addField(group, "select", "academy_program", "Program", [
-      { value: "", label: "Choose a public program" },
+    const program = addField(group, "select", "academy_program", copy.program, [
+      { value: "", label: copy.chooseProgram },
       { value: "us-logistics-operations", label: "U.S. Logistics Operations" },
       { value: "marketing", label: "Marketing" },
     ]) as HTMLSelectElement;
     if (requestedProgram && allowedPrograms.has(requestedProgram)) program.value = requestedProgram;
 
-    addField(group, "input", "academy_country_city", "Country and city");
-    addField(group, "textarea", "academy_languages_levels", "Languages and levels");
-    addField(group, "select", "academy_english_level", "Spoken English level", [
-      { value: "", label: "Choose an English level" },
+    addField(group, "input", "academy_country_city", copy.countryCity);
+    addField(group, "textarea", "academy_languages_levels", copy.languagesLevels);
+    addField(group, "select", "academy_english_level", copy.englishLevel, [
+      { value: "", label: copy.chooseEnglishLevel },
       { value: "A1-A2", label: "A1-A2" },
       { value: "B1", label: "B1" },
       { value: "B2", label: "B2" },
       { value: "C1-C2", label: "C1-C2" },
-      { value: "Not sure", label: "Not sure" },
+      { value: "Not sure", label: copy.notSure },
     ]);
-    addField(group, "textarea", "academy_recent_experience", "Relevant experience during the last 3-6 months");
-    addField(group, "select", "academy_objective", "Primary objective", [
-      { value: "", label: "Choose an objective" },
-      { value: "Career development", label: "Career development" },
-      { value: "Business capability", label: "Business capability" },
-      { value: "Career and business", label: "Career and business" },
-      { value: "Exploration", label: "I am still exploring" },
+    addField(group, "textarea", "academy_recent_experience", copy.recentExperience);
+    addField(group, "select", "academy_objective", copy.objective, [
+      { value: "", label: copy.chooseObjective },
+      { value: "Career development", label: copy.careerDevelopment },
+      { value: "Business capability", label: copy.businessCapability },
+      { value: "Career and business", label: copy.careerAndBusiness },
+      { value: "Exploration", label: copy.exploration },
     ]);
-    addField(group, "input", "academy_us_timezone_availability", "Availability for U.S. time-zone work or practice");
-    addField(group, "select", "academy_preferred_contact_route", "Preferred contact route", [
-      { value: "", label: "Choose a contact route" },
+    addField(group, "input", "academy_us_timezone_availability", copy.usAvailability);
+    addField(group, "select", "academy_preferred_contact_route", copy.contactRoute, [
+      { value: "", label: copy.chooseContactRoute },
       { value: "Email", label: "Email" },
       { value: "Telegram", label: "Telegram" },
       { value: "WhatsApp", label: "WhatsApp" },
@@ -89,25 +137,25 @@
 
     const note = document.createElement("p");
     note.className = "form-status";
-    note.textContent = "Do not include passwords, verification codes, identity documents, payment data, private customer records, or confidential shipment information.";
+    note.textContent = copy.privacyNote;
     group.appendChild(note);
   };
 
   const academySummaryFields = [
-    ["Program", "academy_program"],
-    ["Country and city", "academy_country_city"],
-    ["Languages and levels", "academy_languages_levels"],
-    ["Spoken English level", "academy_english_level"],
-    ["Recent relevant experience", "academy_recent_experience"],
-    ["Primary objective", "academy_objective"],
-    ["U.S. time-zone availability", "academy_us_timezone_availability"],
-    ["Preferred contact route", "academy_preferred_contact_route"],
+    [copy.program, "academy_program"],
+    [copy.countryCity, "academy_country_city"],
+    [copy.languagesLevels, "academy_languages_levels"],
+    [copy.englishLevel, "academy_english_level"],
+    [copy.recentExperience, "academy_recent_experience"],
+    [copy.objective, "academy_objective"],
+    [copy.usAvailability, "academy_us_timezone_availability"],
+    [copy.contactRoute, "academy_preferred_contact_route"],
   ] as const;
 
   const appendAcademyPreviewSummary = () => {
     if (!form || !pathSelect || pathSelect.value !== academyInterest) return;
     const summary = form.querySelector<HTMLElement>("[data-handoff-summary]");
-    if (!summary || !summary.textContent || summary.textContent.includes("Academy qualification:")) return;
+    if (!summary || !summary.textContent || summary.textContent.includes(copy.qualificationTitle)) return;
 
     const lines = academySummaryFields.flatMap(([label, name]) => {
       const field = form.elements.namedItem(name);
@@ -117,7 +165,7 @@
     });
 
     if (lines.length > 0) {
-      summary.textContent = `${summary.textContent}\n\nAcademy qualification:\n${lines.join("\n")}`;
+      summary.textContent = `${summary.textContent}\n\n${copy.qualificationTitle}\n${lines.join("\n")}`;
     }
   };
 
