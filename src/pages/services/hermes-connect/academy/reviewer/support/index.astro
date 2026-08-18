@@ -1,0 +1,233 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import "../../../../../../styles/hermes-academy-app.css";
+import "../../../../../../styles/hermes-academy-review.css";
+---
+
+<BaseLayout
+  title="Academy Support Queue | Hermes Connect"
+  description="Private manually authorized Academy learner-support queue."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/">Academy</a><span>/</span><span aria-current="page">Support queue</span>
+      </nav>
+
+      <div class="academy-app-alert" data-support-review-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Academy A3.1 · Authorized support</p>
+          <h1>Private learner-question queue.</h1>
+          <p>This workspace is separate from reviewer power. Only Hermes identities manually provisioned in <code>academy_support_access</code> can answer learner questions here.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/">Evidence review</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/progression/">Progression review</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">Support-state only</span>
+          <h2 style="margin-top:14px">Answer questions without changing learner decisions.</h2>
+          <p>Support responses and closing a support thread cannot change enrollment, lesson progress, evidence review, progression, hiring, certification, payment, commercial rights, or live operational access.</p>
+        </aside>
+      </section>
+
+      <section class="academy-review-locked academy-app-hidden" data-support-review-locked>
+        <h2>Academy support access is not authorized.</h2>
+        <p>A valid Hermes identity is not enough. This queue requires a separate active <code>academy_support_access</code> row provisioned by an authorized operator.</p>
+        <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Return to learner dashboard</a>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-support-review-content>
+        <div class="academy-review-toolbar">
+          <div>
+            <p class="academy-app-eyebrow">Support queue</p>
+            <h2><span data-support-review-name>Authorized support</span></h2>
+            <p class="academy-app-kicker">Minimum-data view: learner email and internal identity are not exposed in this queue.</p>
+          </div>
+          <label>
+            <span class="academy-app-kicker">Program filter</span>
+            <select class="academy-review-filter" data-support-review-program>
+              <option value="">All authorized programs</option>
+              <option value="us-logistics-operations">U.S. Logistics Operations</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </label>
+        </div>
+        <div class="academy-review-empty" data-support-review-empty>No learner questions in this authorized queue.</div>
+        <div class="academy-app-list" data-support-review-list></div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type SupportMessage = { id: string; author_kind: "learner" | "authorized_support"; body_text: string; created_at: string };
+  type SupportThread = {
+    id: string; program_slug: string; lesson_id: string | null; subject: string; state: string;
+    created_at: string; updated_at: string; learner_name: string; messages: SupportMessage[];
+  };
+
+  const alert = document.querySelector<HTMLElement>("[data-support-review-alert]");
+  const locked = document.querySelector<HTMLElement>("[data-support-review-locked]");
+  const content = document.querySelector<HTMLElement>("[data-support-review-content]");
+  const list = document.querySelector<HTMLElement>("[data-support-review-list]");
+  const empty = document.querySelector<HTMLElement>("[data-support-review-empty]");
+  const filter = document.querySelector<HTMLSelectElement>("[data-support-review-program]");
+  const supportName = document.querySelector<HTMLElement>("[data-support-review-name]");
+  const programNames: Record<string, string> = { "us-logistics-operations": "U.S. Logistics Operations", marketing: "Marketing" };
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+  const friendlySupportError = (value: unknown) => {
+    const code = String(value || "").trim();
+    const known: Record<string, string> = {
+      support_rate_limited: "Support response limit reached for this hour. Please try again later.",
+      support_thread_closed: "This support thread is already closed.",
+      support_thread_not_found: "This support thread could not be found.",
+      support_program_scope_forbidden: "This question is outside your authorized program scope.",
+      support_cannot_answer_own_thread: "You cannot answer your own learner support thread.",
+      support_message_invalid: "Add a specific support response before saving.",
+      database_not_configured: "Academy support is temporarily unavailable. Please try again later.",
+    };
+    if (known[code]) return known[code];
+    if (/^[a-z][a-z0-9_]{2,80}$/i.test(code)) return "Could not complete the Academy support action. Please try again.";
+    return code || "Could not complete the Academy support action. Please try again.";
+  };
+
+  async function sendAction(thread: SupportThread, action: "answer" | "close", textarea: HTMLTextAreaElement, buttons: HTMLButtonElement[]) {
+    const bodyText = textarea.value.trim();
+    if (bodyText.length < 2) {
+      showAlert("Add a specific support response or closure note first.");
+      textarea.focus();
+      return;
+    }
+    buttons.forEach((button) => button.disabled = true);
+    try {
+      const response = await fetch("/api/academy/reviewer/support", {
+        method: "PUT", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ thread_id: thread.id, action, body_text: bodyText }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not save Academy support response");
+      await loadQueue();
+      showAlert(action === "close" ? "Support thread closed with an auditable note." : "Private Academy support response saved.", "success");
+    } catch (error) {
+      showAlert(friendlySupportError(error instanceof Error ? error.message : error));
+      buttons.forEach((button) => button.disabled = false);
+    }
+  }
+
+  function renderQueue(threads: SupportThread[]) {
+    if (!list || !empty) return;
+    list.replaceChildren();
+    empty.classList.toggle("academy-app-hidden", threads.length > 0);
+    for (const thread of threads) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = thread.subject;
+      const learner = document.createElement("p");
+      learner.textContent = thread.learner_name || "Academy learner";
+      const meta = document.createElement("div");
+      meta.className = "academy-review-meta";
+      for (const value of [programNames[thread.program_slug] || thread.program_slug, thread.lesson_id || "general program question", thread.state]) {
+        const chip = document.createElement("span");
+        chip.textContent = value;
+        meta.append(chip);
+      }
+      card.append(heading, learner, meta);
+
+      const history = document.createElement("div");
+      history.className = "academy-review-history";
+      for (const message of thread.messages || []) {
+        const block = document.createElement("div");
+        block.className = "academy-review-feedback";
+        const title = document.createElement("strong");
+        title.textContent = `${message.author_kind === "authorized_support" ? "Academy support" : "Learner"} · ${new Date(message.created_at).toLocaleString()}`;
+        const body = document.createElement("span");
+        body.textContent = message.body_text;
+        block.append(title, body);
+        history.append(block);
+      }
+      card.append(history);
+
+      if (thread.state !== "closed") {
+        const field = document.createElement("div");
+        field.className = "academy-app-field";
+        const label = document.createElement("label");
+        label.textContent = "Private support response";
+        const textarea = document.createElement("textarea");
+        textarea.maxLength = 4000;
+        textarea.setAttribute("aria-label", `Private support response for ${thread.learner_name || "Academy learner"}`);
+        textarea.placeholder = "Answer the learner's course question with a concrete next action.";
+        field.append(label, textarea);
+        card.append(field);
+
+        const actions = document.createElement("div");
+        actions.className = "academy-review-actions";
+        const answer = document.createElement("button");
+        answer.type = "button";
+        answer.className = "academy-app-button intelligence";
+        answer.textContent = "Answer question";
+        const close = document.createElement("button");
+        close.type = "button";
+        close.className = "academy-app-button";
+        close.textContent = "Close thread";
+        const buttons = [answer, close];
+        answer.addEventListener("click", () => sendAction(thread, "answer", textarea, buttons));
+        close.addEventListener("click", () => sendAction(thread, "close", textarea, buttons));
+        actions.append(answer, close);
+        card.append(actions);
+      }
+      list.append(card);
+    }
+  }
+
+  async function loadQueue() {
+    clearAlert();
+    const program = filter?.value || "";
+    const query = program ? `?program=${encodeURIComponent(program)}` : "";
+    try {
+      const response = await fetch(`/api/academy/reviewer/support${query}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 403) {
+        content?.classList.add("academy-app-hidden");
+        locked?.classList.remove("academy-app-hidden");
+        return;
+      }
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not load Academy support queue");
+      locked?.classList.add("academy-app-hidden");
+      content?.classList.remove("academy-app-hidden");
+      if (supportName) supportName.textContent = data.support?.name || "Authorized support";
+      if (filter && data.support?.program_scope) {
+        filter.value = data.support.program_scope;
+        filter.disabled = true;
+      }
+      renderQueue(Array.isArray(data.threads) ? data.threads : []);
+    } catch (error) {
+      showAlert(friendlySupportError(error instanceof Error ? error.message : error));
+    }
+  }
+
+  filter?.addEventListener("change", loadQueue);
+  loadQueue();
+</script>

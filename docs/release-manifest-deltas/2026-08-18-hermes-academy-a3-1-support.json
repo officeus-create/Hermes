@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-18-hermes-academy-a3-1-support",
+  "generated_at": "2026-08-18T19:58:00Z",
+  "status": "RELEASE_CANDIDATE_PENDING_CEO_VISUAL_APPROVAL",
+  "production_verified_at": null,
+  "production_verification_run": null,
+  "additions": [
+    {
+      "route": "/services/hermes-connect/academy/support/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/academy/support/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/academy/support/index.astro",
+      "status": "COMPLETE",
+      "blocker": "CEO visual approval is required before this release candidate is merged/deployed.",
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    },
+    {
+      "route": "/services/hermes-connect/academy/reviewer/support/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/academy/reviewer/support/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/academy/reviewer/support/index.astro",
+      "status": "COMPLETE",
+      "blocker": "CEO visual approval is required before this release candidate is merged/deployed.",
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true,
+    "requires_ceo_visual_approval": true
+  }
+}
