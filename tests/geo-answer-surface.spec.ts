@@ -12,8 +12,12 @@ test("GEO answer surface is noindex, layered, and explicitly demo-labeled", asyn
   await expect(page.locator(".geo-entity-card")).toHaveCount(4);
   await expect(page.locator(".geo-relationship-row")).toHaveCount(3);
   await expect(page.locator(".geo-evidence-claim")).toHaveCount(3);
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText('"@type":"Question"');
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText('"@type":"Answer"');
+
+  const structuredDataText = await page.locator('script[type="application/ld+json"]').first().textContent();
+  expect(structuredDataText).toBeTruthy();
+  const structuredData = JSON.stringify(JSON.parse(structuredDataText ?? "{}"));
+  expect(structuredData).toContain('"@type":"Question"');
+  expect(structuredData).toContain('"@type":"Answer"');
 
   const sitemapResponse = await page.request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBeTruthy();
