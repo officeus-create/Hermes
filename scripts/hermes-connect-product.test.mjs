@@ -45,13 +45,26 @@ assert.equal(calculateTripEconomics({ ...canonicalRpmInputs, targetNet: 900 }).r
 assert.equal(calculateTripEconomics({ ...canonicalRpmInputs, grossPay: 400 }).recommendation, "BAD");
 assert.equal(validateTripInputs({ ...canonicalRpmInputs, servicePercent: 70, paymentFeePercent: 30 }).valid, false);
 
-const [appSource, legacyPageSource, hubSource, loadAnalyzerPage, loadAnalyzerApp, capabilityPage] = await Promise.all([
+const [
+  appSource,
+  legacyPageSource,
+  hubSource,
+  loadAnalyzerPage,
+  loadAnalyzerApp,
+  capabilityPage,
+  academyVertical,
+  beautyVertical,
+  verticalPreview,
+] = await Promise.all([
   readFile(new URL("../public/demos/hermes-connect/app.mjs", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/index.html", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/services/hermes-connect/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/load-analyzer/index.html", import.meta.url), "utf8"),
   readFile(new URL("../public/demos/hermes-connect/load-analyzer/app.mjs", import.meta.url), "utf8"),
   readFile(new URL("../src/components/HermesConnectCapabilityPage.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/academy/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/pages/services/hermes-connect/beauty-salons/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/HermesConnectVerticalPreview.astro", import.meta.url), "utf8"),
 ]);
 
 // Preserved demos keep explicit no-side-effect boundaries.
@@ -81,4 +94,25 @@ assert.doesNotMatch(hubSource, /\$99|\$299|\$799/);
 assert.match(capabilityPage, /Reference capability · not current live pilot/);
 assert.match(capabilityPage, /Open current Repair Shop product/);
 
-console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, Load Analyzer demo boundary, and one canonical Repair Shop live product.`);
+// Academy and Beauty are real preparation surfaces, but neither may imply a released runtime.
+assert.match(verticalPreview, /data-hc-vertical-preview/);
+assert.match(verticalPreview, /data-status="preparation"/);
+assert.match(verticalPreview, /No separate app, duplicate runtime, or fake live status/);
+
+assert.match(academyVertical, /Product flow preparation/);
+assert.match(academyVertical, /Start Academy application/);
+assert.match(academyVertical, /\/academy\/apply\//);
+assert.match(academyVertical, /U\.S\. Logistics Operations/);
+assert.match(academyVertical, /Practical Marketing/);
+assert.match(academyVertical, /No fixed Academy price/);
+assert.doesNotMatch(academyVertical, /LIVE PRODUCT/);
+
+assert.match(beautyVertical, /Pilot preparation/);
+assert.match(beautyVertical, /Hermes Connect · Beauty Salons/);
+assert.match(beautyVertical, /Appointments/);
+assert.match(beautyVertical, /Specialists/);
+assert.match(beautyVertical, /Retention/);
+assert.match(beautyVertical, /No live salon account, appointment, payment/);
+assert.doesNotMatch(beautyVertical, /LIVE PRODUCT/);
+
+console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, one canonical Repair Shop live product, and truthful Academy + Beauty preparation surfaces.`);
