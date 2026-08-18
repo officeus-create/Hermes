@@ -6,7 +6,10 @@ import SiteFooter from "../../../components/SiteFooter.astro";
 import { buildGeoAnswerSchema } from "../../../data/geo-answer-contract";
 import { geoCarHaulingAnswerCandidate as surface } from "../../../data/geo-car-hauling-answer-candidate";
 
-const schema = buildGeoAnswerSchema(surface);
+const schema = buildGeoAnswerSchema({
+  ...surface,
+  slug: "/demos/geo-car-hauling-owner/",
+});
 const claimsById = new Map(surface.claims.map((claim) => [claim.id, claim]));
 const guided = surface.guidedPath;
 ---
