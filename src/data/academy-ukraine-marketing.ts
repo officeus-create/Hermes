@@ -66,7 +66,7 @@ export const academyUkraineMarketing: AcademySubsitePage = {
   ],
   primaryAction: {
     label: "Подати заявку",
-    href: "/academy/apply/?program=marketing&language=uk#contact",
+    href: "/ua/academy/apply/?program=marketing&language=uk#contact",
   },
   secondaryAction: {
     label: "Переглянути модулі",
