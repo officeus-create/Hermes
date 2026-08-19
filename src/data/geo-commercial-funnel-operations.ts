@@ -217,48 +217,62 @@ export const adaptVerifiedCommercialOutcomeChain = (chain: GeoCommercialOutcomeC
     chain.evidenceClasses.qualified === "owner_provided_handoff" ? "owner_provided_handoff" : "unverified",
 });
 
-export const buildGeoCommercialNextActionQueue = (rows: GeoOwnerFunnelAggregate[]) => rows.flatMap((row) => {
+export type GeoCommercialNextAction = {
+  canonicalOwner: string;
+  priority: 1 | 2 | 3 | 4;
+  action:
+    | "repair_integrity"
+    | "verify_receiver_delivery"
+    | "collect_private_qualification_aggregate"
+    | "reconcile_opportunity_outcomes"
+    | "reconcile_won_outcomes"
+    | "observe_comparable_window"
+    | "fill_missing_aggregate_evidence";
+  reason: string;
+};
+
+export const buildGeoCommercialNextActionQueue = (rows: GeoOwnerFunnelAggregate[]): GeoCommercialNextAction[] => rows.flatMap<GeoCommercialNextAction>((row) => {
   const chain = buildGeoOwnerCommercialChain(row);
   if (chain.state === "inconsistent") return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 1 as const,
-    action: "repair_integrity" as const,
+    priority: 1,
+    action: "repair_integrity",
     reason: chain.integrityIssues.join(","),
   }];
   if (row.intake !== null && row.intake > 0 && (row.delivery === null || row.funnelEvidenceClass !== "production_receiver_verified")) return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 1 as const,
-    action: "verify_receiver_delivery" as const,
+    priority: 1,
+    action: "verify_receiver_delivery",
     reason: "Intake exists without receiver-confirmed delivery evidence.",
   }];
   if (row.delivery !== null && row.delivery > 0 && (row.reviewed === null || row.qualified === null)) return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 2 as const,
-    action: "collect_private_qualification_aggregate" as const,
+    priority: 2,
+    action: "collect_private_qualification_aggregate",
     reason: "Delivery exists but aggregate human review/qualification evidence is incomplete.",
   }];
   if (row.qualified !== null && row.qualified > 0 && row.opportunity === null) return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 2 as const,
-    action: "reconcile_opportunity_outcomes" as const,
+    priority: 2,
+    action: "reconcile_opportunity_outcomes",
     reason: "Qualified demand exists without opportunity evidence.",
   }];
   if (row.won !== null && row.won > 0 && row.revenueReconciledWin === null) return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 3 as const,
-    action: "reconcile_won_outcomes" as const,
+    priority: 3,
+    action: "reconcile_won_outcomes",
     reason: "Wins are reported without revenue-reconciled win coverage evidence.",
   }];
   if (chain.state === "verified_chain") return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 4 as const,
-    action: "observe_comparable_window" as const,
+    priority: 4,
+    action: "observe_comparable_window",
     reason: "Verified aggregate chain is complete; wait for a comparable next window before changing the funnel.",
   }];
   return [{
     canonicalOwner: row.canonicalOwner,
-    priority: 3 as const,
-    action: "fill_missing_aggregate_evidence" as const,
+    priority: 3,
+    action: "fill_missing_aggregate_evidence",
     reason: `Missing stages: ${chain.missingStages.join(",") || "none"}.`,
   }];
 }).sort((a, b) => a.priority - b.priority || a.canonicalOwner.localeCompare(b.canonicalOwner));
