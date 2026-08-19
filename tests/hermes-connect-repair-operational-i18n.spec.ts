@@ -92,18 +92,27 @@ test.describe("Repair Shop operational dashboard localization", () => {
     await expect(page.locator("#feedback-list .feedback-row > p")).toHaveText("Booking");
   });
 
-  test("Owner OS enhancers do not duplicate core owner GET requests", async ({ page }) => {
-    const reads = { profile:0, services:0, bookings:0 };
+  test("dashboard core GETs are single-flight and mutations invalidate stale cache", async ({ page }) => {
+    const reads = { profile:0, services:0, availability:0, bookings:0 };
+    let status = "confirmed";
     await page.route("**/api/auth/me", (route: any) => route.fulfill(ok({ success:true, specialist:{ id:"owner-i18n", name:"Alex Owner", email:"owner@example.com", role:"Shop Owner" } })));
     await page.route("**/api/repair-shop/profile", (route: any) => { reads.profile += 1; return route.fulfill(ok({ success:true, shop })); });
     await page.route("**/api/services", (route: any) => { if (route.request().method() === "GET") reads.services += 1; return route.fulfill(ok({ success:true, services })); });
-    await page.route("**/api/repair-shop/bookings", (route: any) => { reads.bookings += 1; return route.fulfill(ok({ success:true, bookings })); });
+    await page.route("**/api/repair-shop/availability", (route: any) => { reads.availability += 1; return route.fulfill(ok({ success:true, timezone:"America/Chicago", days:[] })); });
+    await page.route("**/api/repair-shop/bookings", (route: any) => { reads.bookings += 1; return route.fulfill(ok({ success:true, bookings:[{ ...bookings[0], status }] })); });
+    await page.route("**/api/repair-shop/bookings/*/status", (route: any) => { status = "in_progress"; return route.fulfill(ok({ success:true, booking:{ ...bookings[0], status }, history:[] })); });
     await page.route("**/api/repair-shop/access", (route: any) => route.fulfill(ok({ success:true, access:{ state:"trialing", plan_id:"repair_shop_founding", plan_name:"Founding Shop Plan", next_action:"choose_plan" } })));
-    await page.route("**/api/repair-shop/availability", (route: any) => route.fulfill(ok({ success:true, timezone:"America/Chicago", days:[] })));
     await page.route("**/api/repair-shop/feedback", (route: any) => route.fulfill(ok({ success:true, feedback:[] })));
 
     await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil:"networkidle" });
     await expect(page.locator('[data-hc-owner-workspace="live"]')).toBeVisible();
-    expect(reads).toEqual({ profile:1, services:1, bookings:1 });
+    expect(reads).toEqual({ profile:1, services:1, availability:1, bookings:1 });
+
+    await page.locator("#bookings-list .status-select").selectOption("in_progress");
+    await expect(page.locator("#bookings-list .status-pill")).toHaveText("В работе");
+    expect(reads.bookings).toBe(2);
+    expect(reads.profile).toBe(1);
+    expect(reads.services).toBe(1);
+    expect(reads.availability).toBe(1);
   });
 });
