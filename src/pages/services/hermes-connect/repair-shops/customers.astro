@@ -1,38 +1,50 @@
 ---
-import { ArrowLeft, CalendarDays, Car, Mail, Phone, Search, Users } from "@lucide/astro";
+import { ArrowLeft, Search } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
+import type { SiteLocale } from "../../../../data/locales";
+
+const supported = new Set<SiteLocale>(["en", "ru", "uk", "es", "it", "fr"]);
+const requested = (Astro.url.searchParams.get("lang") || "en").toLowerCase() as SiteLocale;
+const locale: SiteLocale = supported.has(requested) ? requested : "en";
+const withLang = (href: string) => locale === "en" ? href : `${href}${href.includes("?") ? "&" : "?"}lang=${encodeURIComponent(locale)}`;
+
+const pageCopy = {
+  en: { title:"Repair Shop Customers | Hermes Connect", description:"Owner-only customer and vehicle history for Hermes Connect Repair Shops.", back:"Shop Owner Workspace", eyebrow:"Hermes Connect · Repair Shops", heading:"Customers", intro:"A private customer view built from your shop’s real Hermes Connect bookings and saved vehicle details.", count:"0 customers", searchLabel:"Customer search", search:"Search name, email, phone, vehicle, VIN, or service", loading:"Loading customer history…", emptyTitle:"No customers yet", emptyBody:"Customers appear automatically after real bookings are created through your public booking link." },
+  ru: { title:"Клиенты СТО | Hermes Connect", description:"Приватная история клиентов и автомобилей для владельца СТО в Hermes Connect.", back:"Кабинет владельца СТО", eyebrow:"Hermes Connect · СТО", heading:"Клиенты", intro:"Приватная CRM-картина, построенная только из реальных записей вашего СТО и сохранённых данных автомобилей.", count:"0 клиентов", searchLabel:"Поиск клиентов", search:"Имя, email, телефон, автомобиль, VIN или услуга", loading:"Загружаем историю клиентов…", emptyTitle:"Клиентов пока нет", emptyBody:"Клиенты появятся автоматически после первых реальных записей через публичную ссылку СТО." },
+  uk: { title:"Клієнти СТО | Hermes Connect", description:"Приватна історія клієнтів і автомобілів для власника СТО в Hermes Connect.", back:"Кабінет власника СТО", eyebrow:"Hermes Connect · СТО", heading:"Клієнти", intro:"Приватна CRM-картина, побудована лише з реальних записів вашого СТО та збережених даних автомобілів.", count:"0 клієнтів", searchLabel:"Пошук клієнтів", search:"Ім’я, email, телефон, автомобіль, VIN або послуга", loading:"Завантажуємо історію клієнтів…", emptyTitle:"Клієнтів поки немає", emptyBody:"Клієнти з’являться автоматично після перших реальних записів через публічне посилання СТО." },
+  es: { title:"Clientes del taller | Hermes Connect", description:"Historial privado de clientes y vehículos para propietarios de talleres en Hermes Connect.", back:"Espacio del propietario", eyebrow:"Hermes Connect · Talleres", heading:"Clientes", intro:"Vista CRM privada creada solo a partir de reservas reales del taller y datos guardados de vehículos.", count:"0 clientes", searchLabel:"Buscar clientes", search:"Nombre, email, teléfono, vehículo, VIN o servicio", loading:"Cargando historial de clientes…", emptyTitle:"Aún no hay clientes", emptyBody:"Los clientes aparecerán automáticamente después de las primeras reservas reales mediante el enlace público del taller." },
+  it: { title:"Clienti officina | Hermes Connect", description:"Storico privato di clienti e veicoli per i proprietari di officine in Hermes Connect.", back:"Spazio del proprietario", eyebrow:"Hermes Connect · Officine", heading:"Clienti", intro:"Vista CRM privata creata solo dalle prenotazioni reali dell’officina e dai dati veicolo salvati.", count:"0 clienti", searchLabel:"Cerca clienti", search:"Nome, email, telefono, veicolo, VIN o servizio", loading:"Caricamento storico clienti…", emptyTitle:"Nessun cliente per ora", emptyBody:"I clienti appariranno automaticamente dopo le prime prenotazioni reali tramite il link pubblico dell’officina." },
+  fr: { title:"Clients de l’atelier | Hermes Connect", description:"Historique privé des clients et véhicules pour les propriétaires d’ateliers dans Hermes Connect.", back:"Espace propriétaire", eyebrow:"Hermes Connect · Ateliers", heading:"Clients", intro:"Vue CRM privée créée uniquement à partir des réservations réelles de l’atelier et des données véhicule enregistrées.", count:"0 clients", searchLabel:"Rechercher des clients", search:"Nom, e-mail, téléphone, véhicule, VIN ou service", loading:"Chargement de l’historique clients…", emptyTitle:"Aucun client pour le moment", emptyBody:"Les clients apparaîtront automatiquement après les premières réservations réelles via le lien public de l’atelier." },
+} as const;
+const p = pageCopy[locale];
 ---
 
-<BaseLayout
-  title="Repair Shop Customers | Hermes Connect"
-  description="Owner-only customer and vehicle history for Hermes Connect Repair Shops."
-  robots="noindex,nofollow"
->
+<BaseLayout title={p.title} description={p.description} robots="noindex,nofollow" locale={locale}>
   <SiteHeader activePath="/paths/technology/" />
-  <main class="customers-page">
+  <main class="customers-page" id="main-content">
     <div class="shell">
-      <a class="back-link" href="/services/hermes-connect/repair-shops/dashboard/"><ArrowLeft size={16} /> Shop Owner Workspace</a>
+      <a class="back-link" href={withLang("/services/hermes-connect/repair-shops/dashboard/")}><ArrowLeft size={16} /> {p.back}</a>
 
       <header class="hero">
         <div>
-          <p class="eyebrow">Hermes Connect · Repair Shops</p>
-          <h1>Customers</h1>
-          <p class="muted">A private customer view built from your shop’s real Hermes Connect bookings and saved vehicle details.</p>
+          <p class="eyebrow">{p.eyebrow}</p>
+          <h1>{p.heading}</h1>
+          <p class="muted">{p.intro}</p>
         </div>
-        <span id="customer-count" class="pill">0 customers</span>
+        <span id="customer-count" class="pill">{p.count}</span>
       </header>
 
-      <div id="page-alert" class="alert hidden" role="status"></div>
+      <div id="page-alert" class="alert hidden" role="status" aria-live="polite"></div>
 
-      <section class="panel search-panel" aria-label="Customer search">
+      <section class="panel search-panel" aria-label={p.searchLabel}>
         <Search size={18} />
-        <input id="customer-search" type="search" placeholder="Search name, email, phone, vehicle, VIN, or service" autocomplete="off" />
+        <input id="customer-search" type="search" placeholder={p.search} autocomplete="off" />
       </section>
 
-      <div id="customers-loading" class="state-card">Loading customer history…</div>
-      <div id="customers-empty" class="state-card hidden"><strong>No customers yet</strong><span>Customers appear automatically after real bookings are created through your public booking link.</span></div>
+      <div id="customers-loading" class="state-card">{p.loading}</div>
+      <div id="customers-empty" class="state-card hidden"><strong>{p.emptyTitle}</strong><span>{p.emptyBody}</span></div>
       <div id="customers-list" class="customer-list hidden"></div>
     </div>
   </main>
@@ -42,131 +54,58 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 <script>
   type Vehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null; last_seen_date: string };
   type NextAppointment = { booking_id: string; appointment_date: string; start_time: string; service_name: string; status: string };
-  type Customer = {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    total_bookings: number;
-    completed_visits: number;
-    cancelled_bookings: number;
-    last_activity_at: string;
-    last_service_date: string | null;
-    next_appointment: NextAppointment | null;
-    services: string[];
-    vehicles: Vehicle[];
-  };
+  type Customer = { id:string; name:string; email:string; phone:string; total_bookings:number; completed_visits:number; cancelled_bookings:number; last_activity_at:string; last_service_date:string|null; next_appointment:NextAppointment|null; services:string[]; vehicles:Vehicle[] };
 
-  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
+  const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+  const requested = (new URLSearchParams(window.location.search).get("lang") || "en").toLowerCase();
+  const locale = supported.has(requested) ? requested : "en";
+  const copy = {
+    en:{ customer:(n:number)=>`${n} ${n===1?"customer":"customers"}`, none:"None yet", mileage:"Mileage not provided", mi:"mi", bookings:(n:number,c:number)=>`${n} ${n===1?"booking":"bookings"} · ${c} completed`, upcoming:"Upcoming", past:"Past customer", lead:"Lead", lastService:"Last completed service", services:"Services", next:"Next", vehicles:"Vehicles", noVehicle:"No vehicle details were captured for earlier bookings.", vin:"VIN", lastSeen:"Last seen", secure:"Unable to verify your secure session.", load:"Unable to load customers.", init:"Unable to initialize customer history."},
+    ru:{ customer:(n:number)=>`${n} ${n===1?"клиент":"клиентов"}`, none:"Пока нет", mileage:"Пробег не указан", mi:"миль", bookings:(n:number,c:number)=>`${n} записей · ${c} завершено`, upcoming:"Предстоящая запись", past:"Клиент посещал СТО", lead:"Новый клиент", lastService:"Последний завершённый сервис", services:"Услуги", next:"Следующая запись", vehicles:"Автомобили", noVehicle:"Для предыдущих записей данные автомобиля не были сохранены.", vin:"VIN", lastSeen:"Последний визит", secure:"Не удалось подтвердить защищённую сессию.", load:"Не удалось загрузить клиентов.", init:"Не удалось загрузить историю клиентов."},
+    uk:{ customer:(n:number)=>`${n} ${n===1?"клієнт":"клієнтів"}`, none:"Поки немає", mileage:"Пробіг не вказано", mi:"миль", bookings:(n:number,c:number)=>`${n} записів · ${c} завершено`, upcoming:"Майбутній запис", past:"Клієнт відвідував СТО", lead:"Новий клієнт", lastService:"Останній завершений сервіс", services:"Послуги", next:"Наступний запис", vehicles:"Автомобілі", noVehicle:"Для попередніх записів дані автомобіля не були збережені.", vin:"VIN", lastSeen:"Останній візит", secure:"Не вдалося підтвердити захищену сесію.", load:"Не вдалося завантажити клієнтів.", init:"Не вдалося завантажити історію клієнтів."},
+    es:{ customer:(n:number)=>`${n} ${n===1?"cliente":"clientes"}`, none:"Aún ninguno", mileage:"Kilometraje no indicado", mi:"mi", bookings:(n:number,c:number)=>`${n} ${n===1?"reserva":"reservas"} · ${c} completadas`, upcoming:"Próxima reserva", past:"Cliente anterior", lead:"Cliente nuevo", lastService:"Último servicio completado", services:"Servicios", next:"Próxima reserva", vehicles:"Vehículos", noVehicle:"No se guardaron datos del vehículo en reservas anteriores.", vin:"VIN", lastSeen:"Última visita", secure:"No se pudo verificar la sesión segura.", load:"No se pudieron cargar los clientes.", init:"No se pudo iniciar el historial de clientes."},
+    it:{ customer:(n:number)=>`${n} ${n===1?"cliente":"clienti"}`, none:"Nessuno", mileage:"Chilometraggio non indicato", mi:"mi", bookings:(n:number,c:number)=>`${n} prenotazion${n===1?"e":"i"} · ${c} completate`, upcoming:"Prossima prenotazione", past:"Cliente precedente", lead:"Nuovo cliente", lastService:"Ultimo servizio completato", services:"Servizi", next:"Prossima prenotazione", vehicles:"Veicoli", noVehicle:"Nelle prenotazioni precedenti non sono stati salvati dati del veicolo.", vin:"VIN", lastSeen:"Ultima visita", secure:"Impossibile verificare la sessione protetta.", load:"Impossibile caricare i clienti.", init:"Impossibile inizializzare lo storico clienti."},
+    fr:{ customer:(n:number)=>`${n} ${n===1?"client":"clients"}`, none:"Aucun pour le moment", mileage:"Kilométrage non indiqué", mi:"mi", bookings:(n:number,c:number)=>`${n} réservation${n===1?"":"s"} · ${c} terminées`, upcoming:"Prochaine réservation", past:"Ancien client", lead:"Nouveau client", lastService:"Dernier service terminé", services:"Services", next:"Prochaine réservation", vehicles:"Véhicules", noVehicle:"Aucune donnée véhicule n’a été enregistrée pour les réservations précédentes.", vin:"VIN", lastSeen:"Dernière visite", secure:"Impossible de vérifier la session sécurisée.", load:"Impossible de charger les clients.", init:"Impossible d’initialiser l’historique clients."},
+  } as const;
+  const t = copy[locale as keyof typeof copy] || copy.en;
+  const intlLocale = ({ en:"en-US", ru:"ru-RU", uk:"uk-UA", es:"es-ES", it:"it-IT", fr:"fr-FR" } as const)[locale as "en"|"ru"|"uk"|"es"|"it"|"fr"] || "en-US";
+  const withLang = (href:string) => locale === "en" ? href : `${href}${href.includes("?")?"&":"?"}lang=${encodeURIComponent(locale)}`;
+  const $ = <T extends HTMLElement = HTMLElement>(id:string) => document.getElementById(id) as T|null;
   const alertBox = $("page-alert");
   const searchInput = $<HTMLInputElement>("customer-search");
-  let customers: Customer[] = [];
+  let customers:Customer[] = [];
 
-  function showAlert(message: string) { if (!alertBox) return; alertBox.textContent = message; alertBox.className = "alert"; }
-  async function readJson(response: Response) { try { return await response.json(); } catch { return { success: false, error: "invalid_server_response" }; } }
-  function redirectToAuth() { window.location.replace("/services/hermes-connect/repair-shops/auth/"); }
-  function formatDate(value: string | null) {
-    if (!value) return "None yet";
-    const date = new Date(`${value}T12:00:00Z`);
-    return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month:"short", day:"numeric", year:"numeric", timeZone:"UTC" }).format(date);
-  }
-  function formatTime(value: string) { const [h,m] = value.split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2,"0")} ${h >= 12 ? "PM" : "AM"}`; }
+  function showAlert(message:string){ if(!alertBox)return; alertBox.textContent=message; alertBox.className="alert"; }
+  async function readJson(response:Response){ try{return await response.json();}catch{return{success:false,error:"invalid_server_response"};} }
+  function redirectToAuth(){ window.location.replace(withLang("/services/hermes-connect/repair-shops/auth/")); }
+  function formatDate(value:string|null){ if(!value)return t.none; const date=new Date(`${value}T12:00:00Z`); return Number.isNaN(date.getTime())?value:new Intl.DateTimeFormat(intlLocale,{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(date); }
+  function formatTime(value:string){ const [h,m]=value.split(":").map(Number); const date=new Date(Date.UTC(2000,0,1,h,m)); return new Intl.DateTimeFormat(intlLocale,{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(date); }
+  function vehicleText(vehicle:Vehicle){ const name=`${vehicle.year??""} ${vehicle.make} ${vehicle.model}`.trim(); const mileage=vehicle.mileage==null?t.mileage:`${vehicle.mileage.toLocaleString(intlLocale)} ${t.mi}`; return `${name} · ${mileage}`; }
+  function matchesSearch(customer:Customer,query:string){ if(!query)return true; const vehicleBlob=customer.vehicles.map(v=>`${v.year??""} ${v.make} ${v.model} ${v.vin??""}`).join(" "); return `${customer.name} ${customer.email} ${customer.phone} ${customer.services.join(" ")} ${vehicleBlob}`.toLowerCase().includes(query.toLowerCase()); }
 
-  function vehicleText(vehicle: Vehicle) {
-    const name = `${vehicle.year ?? ""} ${vehicle.make} ${vehicle.model}`.trim();
-    const mileage = vehicle.mileage == null ? "Mileage not provided" : `${vehicle.mileage.toLocaleString()} mi`;
-    return `${name} · ${mileage}`;
-  }
-
-  function matchesSearch(customer: Customer, query: string) {
-    if (!query) return true;
-    const vehicleTextBlob = customer.vehicles.map((vehicle) => `${vehicle.year ?? ""} ${vehicle.make} ${vehicle.model} ${vehicle.vin ?? ""}`).join(" ");
-    const haystack = `${customer.name} ${customer.email} ${customer.phone} ${customer.services.join(" ")} ${vehicleTextBlob}`.toLowerCase();
-    return haystack.includes(query.toLowerCase());
-  }
-
-  function render(filtered: Customer[]) {
-    const list = $("customers-list")!;
-    const empty = $("customers-empty")!;
-    $("customers-loading")?.classList.add("hidden");
-    $("customer-count")!.textContent = `${filtered.length} ${filtered.length === 1 ? "customer" : "customers"}`;
-    list.innerHTML = "";
-
-    if (!filtered.length) {
-      list.classList.add("hidden");
-      empty.classList.remove("hidden");
-      return;
-    }
-    empty.classList.add("hidden");
-    list.classList.remove("hidden");
-
-    for (const customer of filtered) {
-      const card = document.createElement("article");
-      card.className = "customer-card";
-
-      const header = document.createElement("div");
-      header.className = "customer-header";
-      const heading = document.createElement("div");
-      const name = document.createElement("strong"); name.textContent = customer.name || customer.email;
-      const meta = document.createElement("span"); meta.className = "muted small"; meta.textContent = `${customer.total_bookings} ${customer.total_bookings === 1 ? "booking" : "bookings"} · ${customer.completed_visits} completed`;
-      heading.append(name, meta);
-      const badge = document.createElement("span"); badge.className = "pill"; badge.textContent = customer.next_appointment ? "Upcoming" : customer.completed_visits ? "Past customer" : "Lead";
-      header.append(heading, badge);
-
-      const contact = document.createElement("div"); contact.className = "contact-grid";
-      const email = document.createElement("a"); email.href = `mailto:${customer.email}`; email.textContent = customer.email; email.className = "contact-link";
-      const phone = document.createElement("a"); phone.href = `tel:${customer.phone}`; phone.textContent = customer.phone; phone.className = "contact-link";
-      contact.append(email, phone);
-
-      const stats = document.createElement("div"); stats.className = "stats";
-      const last = document.createElement("div"); last.innerHTML = `<span>Last completed service</span><strong>${formatDate(customer.last_service_date)}</strong>`;
-      const services = document.createElement("div"); services.innerHTML = `<span>Services</span><strong>${customer.services.length ? customer.services.join(", ") : "None yet"}</strong>`;
-      stats.append(last, services);
-
-      if (customer.next_appointment) {
-        const next = document.createElement("div"); next.className = "next-appointment";
-        next.textContent = `Next: ${formatDate(customer.next_appointment.appointment_date)} at ${formatTime(customer.next_appointment.start_time)} · ${customer.next_appointment.service_name}`;
-        card.append(header, contact, next, stats);
-      } else {
-        card.append(header, contact, stats);
-      }
-
-      const vehicleSection = document.createElement("div"); vehicleSection.className = "vehicle-section";
-      const vehicleTitle = document.createElement("span"); vehicleTitle.className = "mini-label"; vehicleTitle.textContent = "Vehicles"; vehicleSection.append(vehicleTitle);
-      if (!customer.vehicles.length) {
-        const none = document.createElement("p"); none.className = "muted small"; none.textContent = "No vehicle details were captured for earlier bookings."; vehicleSection.append(none);
-      } else {
-        const grid = document.createElement("div"); grid.className = "vehicle-grid";
-        for (const vehicle of customer.vehicles) {
-          const item = document.createElement("div"); item.className = "vehicle-card";
-          const title = document.createElement("strong"); title.textContent = vehicleText(vehicle);
-          const sub = document.createElement("span"); sub.textContent = `${vehicle.vin ? `VIN ${vehicle.vin} · ` : ""}Last seen ${formatDate(vehicle.last_seen_date)}`;
-          item.append(title, sub); grid.append(item);
-        }
-        vehicleSection.append(grid);
-      }
-      card.append(vehicleSection);
-      list.append(card);
+  function render(filtered:Customer[]){
+    const list=$("customers-list")!; const empty=$("customers-empty")!; $("customers-loading")?.classList.add("hidden"); $("customer-count")!.textContent=t.customer(filtered.length); list.innerHTML="";
+    if(!filtered.length){ list.classList.add("hidden"); empty.classList.remove("hidden"); return; }
+    empty.classList.add("hidden"); list.classList.remove("hidden");
+    for(const customer of filtered){
+      const card=document.createElement("article"); card.className="customer-card";
+      const header=document.createElement("div"); header.className="customer-header"; const heading=document.createElement("div"); const name=document.createElement("strong"); name.textContent=customer.name||customer.email; const meta=document.createElement("span"); meta.className="muted small"; meta.textContent=t.bookings(customer.total_bookings,customer.completed_visits); heading.append(name,meta); const badge=document.createElement("span"); badge.className="pill"; badge.textContent=customer.next_appointment?t.upcoming:customer.completed_visits?t.past:t.lead; header.append(heading,badge);
+      const contact=document.createElement("div"); contact.className="contact-grid"; const email=document.createElement("a"); email.href=`mailto:${customer.email}`; email.textContent=customer.email; email.className="contact-link"; const phone=document.createElement("a"); phone.href=`tel:${customer.phone}`; phone.textContent=customer.phone; phone.className="contact-link"; contact.append(email,phone);
+      const stats=document.createElement("div"); stats.className="stats"; const last=document.createElement("div"); const lastLabel=document.createElement("span"); lastLabel.textContent=t.lastService; const lastValue=document.createElement("strong"); lastValue.textContent=formatDate(customer.last_service_date); last.append(lastLabel,lastValue); const services=document.createElement("div"); const serviceLabel=document.createElement("span"); serviceLabel.textContent=t.services; const serviceValue=document.createElement("strong"); serviceValue.textContent=customer.services.length?customer.services.join(", "):t.none; services.append(serviceLabel,serviceValue); stats.append(last,services);
+      card.append(header,contact);
+      if(customer.next_appointment){ const next=document.createElement("div"); next.className="next-appointment"; next.textContent=`${t.next}: ${formatDate(customer.next_appointment.appointment_date)} · ${formatTime(customer.next_appointment.start_time)} · ${customer.next_appointment.service_name}`; card.append(next); }
+      card.append(stats);
+      const vehicleSection=document.createElement("div"); vehicleSection.className="vehicle-section"; const vehicleTitle=document.createElement("span"); vehicleTitle.className="mini-label"; vehicleTitle.textContent=t.vehicles; vehicleSection.append(vehicleTitle);
+      if(!customer.vehicles.length){ const none=document.createElement("p"); none.className="muted small"; none.textContent=t.noVehicle; vehicleSection.append(none); } else { const grid=document.createElement("div"); grid.className="vehicle-grid"; for(const vehicle of customer.vehicles){ const item=document.createElement("div"); item.className="vehicle-card"; const title=document.createElement("strong"); title.textContent=vehicleText(vehicle); const sub=document.createElement("span"); sub.textContent=`${vehicle.vin?`${t.vin} ${vehicle.vin} · `:""}${t.lastSeen} ${formatDate(vehicle.last_seen_date)}`; item.append(title,sub); grid.append(item); } vehicleSection.append(grid); }
+      card.append(vehicleSection); list.append(card);
     }
   }
 
-  async function initialize() {
-    const session = await fetch("/api/auth/me", { credentials:"same-origin" });
-    if (session.status === 401) return redirectToAuth();
-    if (!session.ok) return showAlert("Unable to verify your secure session.");
-
-    const response = await fetch("/api/repair-shop/customers", { credentials:"same-origin" });
-    if (response.status === 401) return redirectToAuth();
-    const data = await readJson(response);
-    if (!response.ok || !data.success) return showAlert(data.error || "Unable to load customers.");
-    customers = Array.isArray(data.customers) ? data.customers : [];
-    render(customers);
-  }
-
-  searchInput?.addEventListener("input", () => render(customers.filter((customer) => matchesSearch(customer, searchInput.value.trim()))));
-  initialize().catch(() => showAlert("Unable to initialize customer history."));
+  async function initialize(){ const session=await fetch("/api/auth/me",{credentials:"same-origin"}); if(session.status===401)return redirectToAuth(); if(!session.ok)return showAlert(t.secure); const response=await fetch("/api/repair-shop/customers",{credentials:"same-origin"}); if(response.status===401)return redirectToAuth(); const data=await readJson(response); if(!response.ok||!data.success)return showAlert(t.load); customers=Array.isArray(data.customers)?data.customers:[]; render(customers); }
+  searchInput?.addEventListener("input",()=>render(customers.filter(customer=>matchesSearch(customer,searchInput.value.trim()))));
+  initialize().catch(()=>showAlert(t.init));
 </script>
 
 <style>
-.customers-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 12% 8%,rgba(124,92,255,.16),transparent 32%),radial-gradient(circle at 86% 18%,rgba(78,185,250,.1),transparent 30%),#090a0f}.shell{width:min(1000px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a5aab7;text-decoration:none;font-weight:750;margin-bottom:26px}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px}.eyebrow,.mini-label{margin:0 0 8px;color:#9d88ff;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:850}h1{margin:0 0 8px;font-size:clamp(34px,5vw,52px)}.muted{margin:0;color:#a6acb9;line-height:1.55}.small{font-size:12px}.pill{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(124,92,255,.13);border:1px solid rgba(157,136,255,.24);color:#d6cfff;font-size:12px;font-weight:800}.panel,.customer-card,.state-card{border:1px solid rgba(255,255,255,.09);background:rgba(17,18,26,.88);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.2)}.search-panel{display:flex;align-items:center;gap:10px;padding:14px 16px;margin-bottom:18px}.search-panel svg{color:#9180ec;flex:none}.search-panel input{width:100%;border:0;outline:0;background:transparent;color:#fff;font:inherit}.search-panel input::placeholder{color:#757c8d}.state-card{padding:20px;color:#a8aebb;display:flex;flex-direction:column;gap:5px}.customer-list{display:grid;gap:14px}.customer-card{padding:20px}.customer-header{display:flex;justify-content:space-between;gap:16px}.customer-header>div{display:flex;flex-direction:column;gap:4px}.contact-grid{display:flex;gap:12px;flex-wrap:wrap;margin:13px 0}.contact-link{color:#bfc8ff;text-decoration:none;font-size:13px}.contact-link:hover{text-decoration:underline}.next-appointment{padding:11px 13px;border:1px solid rgba(95,231,164,.17);background:rgba(45,145,100,.09);border-radius:11px;color:#bff3d6;font-size:13px;font-weight:700;margin:10px 0}.stats{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin:12px 0}.stats>div{padding:12px;border-radius:11px;background:rgba(255,255,255,.025);display:flex;flex-direction:column;gap:5px}.stats span{font-size:11px;color:#868d9d;text-transform:uppercase;letter-spacing:.07em}.stats strong{font-size:13px;color:#e9ebf1}.vehicle-section{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}.vehicle-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.vehicle-card{display:flex;flex-direction:column;gap:5px;padding:12px;border-radius:11px;background:rgba(124,92,255,.06);border:1px solid rgba(124,92,255,.12)}.vehicle-card strong{font-size:13px}.vehicle-card span{color:#8f96a7;font-size:11px}.alert{padding:13px 15px;border-radius:12px;margin-bottom:18px;background:rgba(177,47,47,.15);border:1px solid rgba(255,100,100,.2);color:#ffc2c2}.hidden{display:none!important}@media(max-width:720px){.customers-page{padding:100px 15px 60px}.hero{display:block}.hero .pill{margin-top:12px}.stats,.vehicle-grid{grid-template-columns:1fr}.customer-header{display:block}.customer-header .pill{margin-top:10px}}
+.customers-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 12% 8%,rgba(124,92,255,.16),transparent 32%),radial-gradient(circle at 86% 18%,rgba(78,185,250,.1),transparent 30%),#090a0f}.shell{width:min(1000px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a5aab7;text-decoration:none;font-weight:750;margin-bottom:26px}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px}.eyebrow,.mini-label{margin:0 0 8px;color:#9d88ff;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:850}h1{margin:0 0 8px;font-size:clamp(34px,5vw,52px)}.muted{margin:0;color:#a6acb9;line-height:1.55}.small{font-size:12px}.pill{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(124,92,255,.13);border:1px solid rgba(157,136,255,.24);color:#d6cfff;font-size:12px;font-weight:800}.panel,.customer-card,.state-card{border:1px solid rgba(255,255,255,.09);background:rgba(17,18,26,.88);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.2)}.search-panel{display:flex;align-items:center;gap:10px;padding:14px 16px;margin-bottom:18px}.search-panel svg{color:#9180ec;flex:none}.search-panel input{width:100%;border:0;outline:0;background:transparent;color:#fff;font:inherit}.search-panel input::placeholder{color:#757c8d}.state-card{padding:20px;color:#a8aebb;display:flex;flex-direction:column;gap:5px}.customer-list{display:grid;gap:14px}.customer-card{padding:20px}.customer-header{display:flex;justify-content:space-between;gap:16px}.customer-header>div{display:flex;flex-direction:column;gap:4px}.contact-grid{display:flex;gap:12px;flex-wrap:wrap;margin:13px 0}.contact-link{color:#bfc8ff;text-decoration:none;font-size:13px;overflow-wrap:anywhere}.contact-link:hover{text-decoration:underline}.next-appointment{padding:11px 13px;border:1px solid rgba(95,231,164,.17);background:rgba(45,145,100,.09);border-radius:11px;color:#bff3d6;font-size:13px;font-weight:700;margin:10px 0;overflow-wrap:anywhere}.stats{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin:12px 0}.stats>div{padding:12px;border-radius:11px;background:rgba(255,255,255,.025);display:flex;flex-direction:column;gap:5px;min-width:0}.stats span{font-size:11px;color:#868d9d;text-transform:uppercase;letter-spacing:.07em}.stats strong{font-size:13px;color:#e9ebf1;overflow-wrap:anywhere}.vehicle-section{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}.vehicle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.vehicle-card{display:flex;flex-direction:column;gap:5px;padding:12px;border-radius:11px;background:rgba(124,92,255,.06);border:1px solid rgba(124,92,255,.12);min-width:0}.vehicle-card strong,.vehicle-card span{overflow-wrap:anywhere}.vehicle-card strong{font-size:13px}.vehicle-card span{color:#8f96a7;font-size:11px}.alert{padding:13px 15px;border-radius:12px;margin-bottom:18px;background:rgba(177,47,47,.15);border:1px solid rgba(255,100,100,.2);color:#ffc2c2}.hidden{display:none!important}@media(max-width:720px){.customers-page{padding:100px 15px 60px;overflow-x:hidden}.hero{display:block}.hero .pill{margin-top:12px}.stats,.vehicle-grid{grid-template-columns:1fr}.customer-header{display:block}.customer-header .pill{margin-top:10px}}
 </style>
