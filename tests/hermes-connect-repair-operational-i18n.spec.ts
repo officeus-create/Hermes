@@ -20,7 +20,7 @@ async function mockDashboard(page: any) {
 const cases = [
   ["ru", "Профиль СТО", "Услуги", "Входящие записи", "Подтверждено", "Изменить статус…"],
   ["es", "Perfil del taller", "Servicios", "Bandeja de reservas", "Confirmada", "Cambiar estado…"],
-  ["fr", "Profil de l’atelier", "Services", "Réservations", "Confirmée", "Changer le statut…"],
+  ["fr", "Profil de l’atelier", "Services", "Boîte de réservations", "Confirmée", "Changer le statut…"],
 ] as const;
 
 test.describe("Repair Shop operational dashboard localization", () => {
