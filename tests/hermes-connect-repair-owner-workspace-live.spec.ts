@@ -87,6 +87,8 @@ test.describe("approved Repair Shop Owner OS wired to live dashboard", () => {
 
     await expectOperationalPanelsBelowOverview(page);
     await expect(page.locator("[data-web-v1-access]")).toContainText("Бесплатный стартовый доступ");
+    await expect(page.locator("[data-repair-activation]")).toContainText("Подготовьте СТО к приёму клиентов");
+    await expect(page.locator("[data-web-v1-service-presets]")).toBeVisible();
 
     await page.locator("#service-name").fill("Oil change");
     await page.locator("#service-duration").selectOption("60");
@@ -118,6 +120,7 @@ test.describe("approved Repair Shop Owner OS wired to live dashboard", () => {
     await expect(page.locator("#profile-form")).toBeVisible();
     await expect(page.locator("#service-form")).toBeVisible();
     await expect(page.locator("#bookings-list")).toBeVisible();
+    await expect(page.locator("[data-web-v1-service-presets]")).toBeVisible();
     await expectOperationalPanelsBelowOverview(page);
     await expectNoPageOverflow(page);
   });
@@ -132,6 +135,8 @@ test.describe("approved Repair Shop Owner OS wired to live dashboard", () => {
     await expect(page.locator(".hc-owner-live-focus")).toContainText("What needs you next");
     await expect(page.locator("[data-hc-metric-public]")).toHaveText("Ready");
     await expect(page.locator("[data-hc-intelligence-title]")).toContainText("1 real booking");
+    await expect(page.locator("[data-web-v1-access]")).toContainText("Free launch access");
+    await expect(page.locator("[data-repair-activation]")).toContainText("Get your shop ready for customers");
     await expectNoPageOverflow(page);
   });
 });
