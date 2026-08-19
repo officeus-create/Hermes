@@ -70,6 +70,10 @@ export const detectPositiveCarHaulingGuarantees = (texts: string[]) => {
       const start = Math.max(0, match.index - 36);
       const prefix = text.slice(start, match.index).toLowerCase();
       if (/\b(?:no|not|never|without|does not|do not|cannot|can't)\b[^.!?]{0,28}$/.test(prefix)) continue;
+      const nextQuestion = text.indexOf("?", match.index);
+      const nextStatementEndCandidates = [text.indexOf(".", match.index), text.indexOf("!", match.index)].filter((index) => index >= 0);
+      const nextStatementEnd = nextStatementEndCandidates.length ? Math.min(...nextStatementEndCandidates) : -1;
+      if (nextQuestion >= 0 && (nextStatementEnd < 0 || nextQuestion < nextStatementEnd)) continue;
       findings.push({ textIndex, term: match[1].toLowerCase(), excerpt: text.slice(start, Math.min(text.length, target.lastIndex + 36)) });
     }
   });
