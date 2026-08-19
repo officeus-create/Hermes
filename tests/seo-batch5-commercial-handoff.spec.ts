@@ -34,10 +34,16 @@ test("Car Hauler Capacity checklist preserves its carrier handoff", async ({ pag
     "href",
     canonical("/logistics/resources/car-hauler-capacity-checklist/"),
   );
-  await expect(page.locator('a[data-service-group="carrier_capacity_resource"]')).toHaveAttribute(
-    "href",
-    "/logistics/start-car-hauling-dispatch/",
-  );
+  const carrierHandoffs = page.locator('a[data-service-group="carrier_capacity_resource"]');
+  await expect(carrierHandoffs.first()).toBeVisible();
+  const count = await carrierHandoffs.count();
+  expect(count).toBeGreaterThan(0);
+  for (let index = 0; index < count; index += 1) {
+    await expect(carrierHandoffs.nth(index)).toHaveAttribute(
+      "href",
+      "/logistics/start-car-hauling-dispatch/",
+    );
+  }
 });
 
 test("Appleton owner keeps direct transport intake as its primary commercial action", async ({ page }) => {
