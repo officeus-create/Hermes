@@ -74,6 +74,7 @@ await import("./geo-us-opportunity-engine.test.mjs");
 await import("./geo-logistics-seo-owner-optimization.test.mjs");
 await import("./geo-car-hauling-owner-readiness.test.mjs");
 await import("./geo-job-search-readiness.test.mjs");
+await import("./geo-commercial-funnel-operations.test.mjs");
 await import("./geo-funnel-outcome-health.test.mjs");
 await import("./geo-private-outcome-import.test.mjs");
 await import("./geo-canonical-owner-route-audit.test.mjs");
