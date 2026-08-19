@@ -153,10 +153,10 @@ const identityAudit = buildGeoAnswerEvidenceQualityAudit(
 assert.ok(identityAudit.entityIdentityConflicts.includes("https://hermeslogisticsus.com/#organization"));
 
 const variants = auditGeoQuestionVariants([
-  { canonical_owner: "/services/seo/", question_id: "q1", question: "What is SEO?", answer_fingerprint: "answer-same" },
-  { canonical_owner: "/services/seo/", question_id: "q2", question: "What is SEO", answer_fingerprint: "answer-same" },
-  { canonical_owner: "/services/seo/", question_id: "q3", question: "How does SEO work?", answer_fingerprint: "answer-a" },
-  { canonical_owner: "/services/seo/", question_id: "q4", question: "How does SEO work", answer_fingerprint: "answer-b" },
+  { canonical_owner: "/services/seo/", question_id: "question-1", question: "What is SEO?", answer_fingerprint: "answer-same" },
+  { canonical_owner: "/services/seo/", question_id: "question-2", question: "What is SEO", answer_fingerprint: "answer-same" },
+  { canonical_owner: "/services/seo/", question_id: "question-3", question: "How does SEO work?", answer_fingerprint: "answer-a" },
+  { canonical_owner: "/services/seo/", question_id: "question-4", question: "How does SEO work", answer_fingerprint: "answer-b" },
 ]);
 assert.equal(variants.duplicates.length, 1);
 assert.equal(variants.conflicts.length, 1);
