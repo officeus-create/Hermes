@@ -6,6 +6,8 @@ import {
   ensureRepairShopCapabilitiesSchema,
   serializeRepairShopCapabilities,
 } from "../_lib/repair-shop-capabilities-schema.mjs";
+import { listServicesForContext } from "../_lib/service-context.mjs";
+import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
 
 type Env = { DB?: any };
 
@@ -36,12 +38,16 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   if (!shop) return jsonResponse(404, { success: false, error: "shop_not_found" });
 
-  const services = await env.DB
-    .prepare(
-      "SELECT id,name,duration_minutes FROM services WHERE owner_specialist_id = ? ORDER BY name COLLATE NOCASE ASC",
-    )
-    .bind(shop.owner_specialist_id)
-    .all();
+  const repairServiceScope = await resolveDefaultRepairShopServiceContext(
+    env.DB,
+    String(shop.owner_specialist_id),
+    shop,
+  );
+  const services = await listServicesForContext(env.DB, {
+    ownerId: String(shop.owner_specialist_id),
+    contextId: repairServiceScope.context.id,
+    includeLegacyUnmapped: true,
+  });
 
   await ensureRepairShopAvailabilitySchema(env.DB);
   const availabilityResult = await env.DB
@@ -79,7 +85,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   return jsonResponse(200, {
     success: true,
     shop: publicShop,
-    services: services?.results ?? [],
+    services,
     availability,
     capabilities: publicCapabilities,
   });
