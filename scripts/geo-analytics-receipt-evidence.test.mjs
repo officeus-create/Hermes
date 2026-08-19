@@ -71,6 +71,7 @@ assert.equal(duplicate.exactOnceVerified, false);
 
 const unexpected = importGeoAnalyticsReceipt(receipt("commercial_cta_click", {
   reference_id: "receipt-cta-unexpected-key",
+  observed_at: "2026-08-18T19:00:00Z",
   parameter_keys: [...geoAnalyticsRegistryContract.commercial_cta_click.requiredParameterKeys, "email"],
 }));
 assert.deepEqual(unexpected.unexpectedParameterKeys, ["email"]);
