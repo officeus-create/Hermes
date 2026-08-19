@@ -1,0 +1,77 @@
+<script>
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const handoff = form?.querySelector<HTMLElement>("[data-contact-handoff]");
+  const handoffSummary = form?.querySelector<HTMLElement>("[data-handoff-summary]");
+  const handoffLink = form?.querySelector<HTMLAnchorElement>("[data-handoff-route-link]");
+  const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
+  const allowedPrograms = new Set(["us-logistics-operations", "marketing"]);
+  const params = new URLSearchParams(window.location.search);
+  const requestedProgram = params.get("program") || "";
+  const requestedLanguage = params.get("language") === "uk" ? "uk" : "en";
+
+  const pushAcademyEvent = (eventName: string, extras: Record<string, string> = {}) => {
+    if (!form || pathSelect?.value !== "Hermes Business Academy") return;
+    const programField = form.elements.namedItem("academy_program");
+    const selectedProgram = programField instanceof HTMLSelectElement ? programField.value : "";
+    const program = allowedPrograms.has(selectedProgram)
+      ? selectedProgram
+      : allowedPrograms.has(requestedProgram)
+        ? requestedProgram
+        : "not_selected";
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: eventName,
+      page_group: "academy_application",
+      service_group: "academy",
+      academy_program: program,
+      application_language: requestedLanguage,
+      page_path: window.location.pathname,
+      ...extras,
+    });
+  };
+
+  if (form && handoff && handoffSummary && handoffLink) {
+    let started = false;
+    let previewRecorded = false;
+    let handoffRecorded = false;
+
+    const recordStart = (event: Event) => {
+      if (!event.isTrusted || started) return;
+      started = true;
+      pushAcademyEvent("academy_application_start");
+    };
+
+    const resetPreparedState = (event: Event) => {
+      if (!event.isTrusted) return;
+      previewRecorded = false;
+      handoffRecorded = false;
+      recordStart(event);
+    };
+
+    form.addEventListener("focusin", recordStart);
+    form.addEventListener("input", resetPreparedState);
+    form.addEventListener("change", resetPreparedState);
+
+    form.addEventListener("submit", () => {
+      window.requestAnimationFrame(() => {
+        if (form.dataset.contactMode === "live") return;
+        if (previewRecorded || handoff.hidden || !handoffSummary.textContent?.trim()) return;
+        previewRecorded = true;
+        handoffRecorded = false;
+        pushAcademyEvent("academy_application_preview_ready", { preview_status: "prepared" });
+      });
+    });
+
+    handoffLink.addEventListener("click", (event) => {
+      if (!event.isTrusted || !previewRecorded || handoffRecorded || handoff.hidden) return;
+      const href = handoffLink.getAttribute("href") || "";
+      if (!href.startsWith("mailto:")) return;
+      handoffRecorded = true;
+      pushAcademyEvent("academy_application_handoff_ready", {
+        handoff_method: "email",
+        preview_status: "prepared",
+      });
+    });
+  }
+</script>
