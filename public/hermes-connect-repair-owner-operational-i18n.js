@@ -29,34 +29,33 @@
   const t = copy[locale];
   if (!t) return;
 
+  const setText = (element, value) => {
+    if (!(element instanceof HTMLElement) || element.textContent === value) return;
+    element.textContent = value;
+  };
   const ownText = (element, value) => {
     if (!(element instanceof HTMLElement)) return;
     const textNode = Array.from(element.childNodes).find((node) => node.nodeType === Node.TEXT_NODE && (node.nodeValue || "").trim());
-    if (textNode) textNode.nodeValue = ` ${value}`;
-    else if (!element.children.length) element.textContent = value;
+    if (!textNode) { if (!element.children.length) setText(element, value); return; }
+    if ((textNode.nodeValue || "").trim() === value) return;
+    textNode.nodeValue = ` ${value}`;
   };
-  const text = (selector, value) => { const element = document.querySelector(selector); if (element) element.textContent = value; };
-  const leading = (selector, value) => { const element = document.querySelector(selector); if (element) ownText(element, value); };
+  const text = (selector, value) => setText(document.querySelector(selector), value);
+  const leading = (selector, value) => ownText(document.querySelector(selector), value);
+  const setOption = (option, value) => { if (option.textContent !== value) option.textContent = value; };
 
   const translateStatic = () => {
-    leading(".back-link", t.back);
-    leading(".workspace-actions a", t.customers);
-    leading("#logout-btn", t.logout);
-
-    const panels = document.querySelectorAll(".workspace-page .panel");
+    leading(".back-link", t.back); leading(".workspace-actions a", t.customers); leading("#logout-btn", t.logout);
     const profile = document.querySelector('[aria-labelledby="profile-title"]');
     const servicesPanel = document.querySelector('[aria-labelledby="services-title"]');
     const bookingsPanel = document.querySelector('[aria-labelledby="bookings-title"]');
     const feedbackPanel = document.querySelector('[aria-labelledby="feedback-title"]');
     const availabilityPanel = document.querySelector(".availability-panel");
-    void panels;
 
     if (profile) {
       text('[aria-labelledby="profile-title"] .eyebrow', t.profileKicker); text("#profile-title", t.profile); text('[aria-labelledby="profile-title"] .panel-heading .muted', t.profileCopy);
-      leading('label.field[for="shop-name"]', t.shopName);
-      const labels = profile.querySelectorAll("label.field");
-      [t.shopName,t.phone,t.address,t.city,t.state,t.zip,t.timezone].forEach((value,index) => ownText(labels[index], value));
-      text("#profile-state", document.querySelector("#public-link-wrap")?.classList.contains("hidden") ? t.notConfigured : t.saved);
+      const labels = profile.querySelectorAll("label.field"); [t.shopName,t.phone,t.address,t.city,t.state,t.zip,t.timezone].forEach((value,index) => ownText(labels[index], value));
+      const ready = !document.querySelector("#public-link-wrap")?.classList.contains("hidden"); text("#profile-state", ready ? t.saved : t.notConfigured);
       text("#save-profile-btn", t.saveProfile); text("#public-link-wrap .mini-label", t.publicLink); leading("#copy-link-btn", t.copy); leading("#open-link-btn", t.open);
     }
     if (servicesPanel) {
@@ -64,9 +63,7 @@
       const labels = servicesPanel.querySelectorAll("label.field"); ownText(labels[0], t.serviceName); ownText(labels[1], t.duration); leading("#add-service-btn", t.addService);
       text("#services-loading", t.loadingServices); text("#services-empty strong", t.noServices); text("#services-empty span", t.noServicesCopy);
     }
-    if (availabilityPanel) {
-      text(".availability-panel .eyebrow", t.schedule); text(".availability-panel h2", t.availability); text(".availability-panel .muted", t.availabilityCopy); leading(".availability-panel a", t.manageAvailability);
-    }
+    if (availabilityPanel) { text(".availability-panel .eyebrow", t.schedule); text(".availability-panel h2", t.availability); text(".availability-panel .muted", t.availabilityCopy); leading(".availability-panel a", t.manageAvailability); }
     if (bookingsPanel) {
       text('[aria-labelledby="bookings-title"] .eyebrow', t.intake); text("#bookings-title", t.inbox); text('[aria-labelledby="bookings-title"] .panel-heading .muted', t.inboxCopy);
       text("#bookings-loading", t.loadingBookings); text("#bookings-empty strong", t.noBookings); text("#bookings-empty span", t.noBookingsCopy);
@@ -78,56 +75,48 @@
       const category = document.querySelector("#feedback-category");
       if (category instanceof HTMLSelectElement) {
         const values = { setup:t.setup, booking:t.booking, customers:t.customers, mobile:t.mobile, other:t.other };
-        Array.from(category.options).forEach((option) => { if (values[option.value]) option.textContent = values[option.value]; });
+        Array.from(category.options).forEach((option) => { if (values[option.value]) setOption(option, values[option.value]); });
       }
       const rating = document.querySelector("#feedback-rating");
       if (rating instanceof HTMLSelectElement) {
         const values = { "5":t.excellent, "4":t.good, "3":t.okay, "2":t.difficult, "1":t.blocked };
-        Array.from(rating.options).forEach((option) => { if (values[option.value]) option.textContent = values[option.value]; });
+        Array.from(rating.options).forEach((option) => { if (values[option.value]) setOption(option, values[option.value]); });
       }
     }
   };
 
   const statusLabel = (status) => ({ confirmed:t.confirmed, in_progress:t.progress, completed:t.completed, cancelled:t.cancelled })[status] || status;
   const translateDynamic = () => {
-    document.querySelectorAll("#services-list .danger-btn").forEach((button) => { button.textContent = t.delete; });
+    document.querySelectorAll("#services-list .danger-btn").forEach((button) => setText(button, t.delete));
     document.querySelectorAll("#bookings-list .booking-card").forEach((card) => {
       const status = ["confirmed","in_progress","completed","cancelled"].find((value) => card.querySelector(`.status-${value}`));
-      const pill = card.querySelector(".status-pill"); if (pill && status) pill.textContent = statusLabel(status);
-      const select = card.querySelector(".status-select");
-      if (select instanceof HTMLSelectElement) Array.from(select.options).forEach((option) => { option.textContent = option.value ? statusLabel(option.value) : t.changeStatus; });
-      const historyTitle = card.querySelector(".history .mini-label"); if (historyTitle) historyTitle.textContent = t.statusHistory;
-      const noHistory = card.querySelector(".history > .muted.small"); if (noHistory && noHistory.textContent?.trim() === "No history recorded yet.") noHistory.textContent = t.noHistory;
+      const pill = card.querySelector(".status-pill"); if (pill && status) setText(pill, statusLabel(status));
+      const select = card.querySelector(".status-select"); if (select instanceof HTMLSelectElement) Array.from(select.options).forEach((option) => setOption(option, option.value ? statusLabel(option.value) : t.changeStatus));
+      setText(card.querySelector(".history .mini-label"), t.statusHistory);
+      const noHistory = card.querySelector(".history > .muted.small"); if (noHistory?.textContent?.trim() === "No history recorded yet.") setText(noHistory, t.noHistory);
       card.querySelectorAll(".history li").forEach((item) => {
-        const value = item.querySelector("strong");
-        if (!value) return;
-        const english = value.textContent?.trim();
-        const key = ({ Confirmed:"confirmed", "In progress":"in_progress", Completed:"completed", Cancelled:"cancelled" })[english || ""];
-        if (key) value.textContent = statusLabel(key);
+        const value = item.querySelector("strong"); if (!value) return;
+        const english = value.textContent?.trim(); const key = ({ Confirmed:"confirmed", "In progress":"in_progress", Completed:"completed", Cancelled:"cancelled" })[english || ""];
+        if (key) setText(value, statusLabel(key));
       });
-      const vehicle = card.querySelector(".vehicle-line.muted.small");
-      if (vehicle?.textContent?.trim() === "Vehicle details were not captured for this booking.") vehicle.textContent = t.vehicleMissing;
+      const vehicle = card.querySelector(".vehicle-line.muted.small"); if (vehicle?.textContent?.trim() === "Vehicle details were not captured for this booking.") setText(vehicle, t.vehicleMissing);
     });
     document.querySelectorAll("#feedback-list .feedback-row > div > strong").forEach((category) => {
-      const key = category.textContent?.trim().toLowerCase();
-      const values = { setup:t.setup, booking:t.booking, customers:t.customers, mobile:t.mobile, other:t.other };
-      if (key && values[key]) category.textContent = values[key];
+      const key = category.textContent?.trim().toLowerCase(); const values = { setup:t.setup, booking:t.booking, customers:t.customers, mobile:t.mobile, other:t.other };
+      if (key && values[key]) setText(category, values[key]);
     });
   };
 
   const countText = (id, singular, plural) => {
     const element = document.getElementById(id); if (!element) return;
     const match = (element.textContent || "").match(/\d+/); if (!match) return;
-    const n = Number(match[0]); element.textContent = `${n} ${n === 1 ? singular : plural}`;
+    const n = Number(match[0]); setText(element, `${n} ${n === 1 ? singular : plural}`);
   };
-  const translateCounts = () => {
-    countText("service-count", t.service, t.servicesPlural); countText("booking-count", t.bookingCount, t.bookingsPlural); countText("feedback-count", t.note, t.notesPlural);
-  };
+  const translateCounts = () => { countText("service-count", t.service, t.servicesPlural); countText("booking-count", t.bookingCount, t.bookingsPlural); countText("feedback-count", t.note, t.notesPlural); };
 
   const preserveLocaleLinks = () => {
     document.querySelectorAll("a[href]").forEach((link) => {
-      const href = link.getAttribute("href") || "";
-      if (!href.startsWith(ROOT) || href.includes("lang=")) return;
+      const href = link.getAttribute("href") || ""; if (!href.startsWith(ROOT) || href.includes("lang=")) return;
       if (/\/(customers|availability|booking)\//.test(href)) link.setAttribute("href", `${href}${href.includes("?") ? "&" : "?"}lang=${locale}`);
     });
   };
@@ -135,16 +124,12 @@
   const translateServiceAlert = () => {
     const alert = document.getElementById("workspace-alert"); if (!alert || alert.classList.contains("hidden")) return;
     const raw = (alert.textContent || "").trim();
-    let match = raw.match(/^(.+) added\.$/); if (match) { alert.textContent = `${match[1]} ${t.added}.`; return; }
-    match = raw.match(/^(.+) deleted\.$/); if (match) alert.textContent = `${match[1]} ${t.deleted}.`;
+    let match = raw.match(/^(.+) added\.$/); if (match) { setText(alert, `${match[1]} ${t.added}.`); return; }
+    match = raw.match(/^(.+) deleted\.$/); if (match) setText(alert, `${match[1]} ${t.deleted}.`);
   };
 
   let applying = false;
-  const apply = () => {
-    if (applying) return; applying = true;
-    try { translateStatic(); translateDynamic(); translateCounts(); preserveLocaleLinks(); translateServiceAlert(); }
-    finally { applying = false; }
-  };
+  const apply = () => { if (applying) return; applying = true; try { translateStatic(); translateDynamic(); translateCounts(); preserveLocaleLinks(); translateServiceAlert(); } finally { applying = false; } };
   apply();
   new MutationObserver(() => queueMicrotask(apply)).observe(document.body, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:["href","class"] });
 })();
