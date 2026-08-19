@@ -113,7 +113,7 @@ assert.throws(() => validateLogisticsSeoSnippetExperiment({
 
 assert.throws(() => validateLogisticsSeoSnippetExperiment({
   ...experiment,
-  pre: { ...experiment.pre, endDate: "2026-08-19" },
+  pre: { ...experiment.pre, startDate: "2026-08-02", endDate: "2026-08-19" },
 }), /Pre window must end before/);
 
 const isolatedChanges = auditLogisticsSeoChangeAttribution([
