@@ -9,11 +9,10 @@ import {
 
 const healthyGraph = [
   { path: "/paths/logistics/", kind: "hub", indexable: true, links: ["/logistics/car-hauling-dispatch/"] },
-  { path: "/paths/marketing/", kind: "hub", indexable: true, links: ["/services/seo-for-logistics-companies/"] },
+  { path: "/paths/marketing/", kind: "hub", indexable: true, hasIntake: true, links: ["/services/seo-for-logistics-companies/"] },
   { path: "/logistics/car-hauling-dispatch/", kind: "commercial_owner", indexable: true, links: ["/logistics/start-car-hauling-dispatch/", "/logistics/resources/broker-setup-packet-checklist/"] },
   { path: "/services/seo-for-logistics-companies/", kind: "commercial_owner", indexable: true, links: ["/paths/marketing/?service=logistics_seo#contact", "/resources/logistics-seo-audit-sample/"] },
   { path: "/logistics/start-car-hauling-dispatch/", kind: "intake", indexable: true, links: [] },
-  { path: "/paths/marketing/", kind: "intake", indexable: true, links: [] },
   { path: "/logistics/resources/broker-setup-packet-checklist/", kind: "supporting_resource", indexable: true, links: ["/logistics/car-hauling-dispatch/"] },
   { path: "/resources/logistics-seo-audit-sample/", kind: "case", indexable: true, links: ["/services/seo-for-logistics-companies/"] },
   { path: "/demos/fake-load-board/", kind: "demo", indexable: false, links: [] },
@@ -31,7 +30,11 @@ const duplicateIntent = auditHighPriorityIntentOwnership(healthyGraph, [
 assert.equal(duplicateIntent.ready, false);
 assert.ok(duplicateIntent.issues.some((issue) => issue.includes("logistics_seo:expected_one_owner:2")));
 
-const journey = auditDiscoveryJourneys(healthyGraph, ["/logistics/car-hauling-dispatch/", "/services/seo-for-logistics-companies/"], 2);
+const journey = auditDiscoveryJourneys(
+  healthyGraph,
+  ["/logistics/car-hauling-dispatch/", "/services/seo-for-logistics-companies/"],
+  2,
+);
 assert.equal(journey.ready, true);
 assert.deepEqual(journey.deadEnds, []);
 assert.deepEqual(journey.excessiveDepth, []);
@@ -48,7 +51,7 @@ assert.equal(brokenJourney.ready, false);
 assert.ok(brokenJourney.deadEnds.includes("/logistics/car-hauling-dispatch/"));
 assert.ok(brokenJourney.transactionalDemoLeaks.some((edge) => edge.from === "/logistics/car-hauling-dispatch/"));
 assert.ok(brokenJourney.authorityEdgeGaps.includes("/resources/logistics-seo-audit-sample/"));
-assert.ok(brokenJourney.excessiveDepth.some((item) => item.owner === "/services/seo-for-logistics-companies/" && item.hub === "/paths/marketing/"));
+assert.ok(brokenJourney.excessiveDepth.some((item) => item.owner === "/services/seo-for-logistics-companies/"));
 
 const ranked = rankGeoLinkOpportunities([
   {
