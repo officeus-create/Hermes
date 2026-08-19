@@ -1,0 +1,191 @@
+/* Shared visual contract for the public carrier calculators.
+ * Presentation only: calculator formulas, events, schemas, and page markup stay page-owned.
+ * The route prefix intentionally carries enough specificity to override the legacy page-local
+ * style blocks until those blocks are removed in a separately reviewable cleanup.
+ */
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-tool-grid, .factoring-tool-grid) {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel, .factoring-panel) {
+  padding: clamp(1.25rem, 2vw, 2rem);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-result-panel, .factoring-result-panel) {
+  position: sticky;
+  top: 1rem;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel-heading, .factoring-panel-heading) {
+  display: flex;
+  gap: .9rem;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel-heading, .factoring-panel-heading) > svg {
+  flex: 0 0 auto;
+  color: var(--hermes-violet);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel-heading, .factoring-panel-heading) :is(h2, p) {
+  margin: 0;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel-heading, .factoring-panel-heading) h2 {
+  color: var(--hermes-ink);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .9rem;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) label {
+  display: grid;
+  gap: .4rem;
+  color: var(--hermes-ink);
+  font-weight: 700;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) label span {
+  font-size: .9rem;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) label input {
+  width: 100%;
+  min-height: 46px;
+  padding: .72rem .8rem;
+  color: var(--hermes-ink);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-control);
+  background: var(--hermes-paper);
+  font: inherit;
+  transition: border-color var(--hermes-motion-fast) var(--hermes-ease), box-shadow var(--hermes-motion-fast) var(--hermes-ease);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) label input:focus,
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) label input:focus-visible {
+  border-color: var(--hermes-violet);
+  outline: 3px solid color-mix(in srgb, var(--hermes-violet) 18%, transparent);
+  outline-offset: 1px;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-form-note, .rpm-disclaimer, .factoring-form-note, .factoring-disclaimer) {
+  color: var(--hermes-muted);
+  font-size: .88rem;
+  line-height: 1.55;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-form-note, .factoring-form-note) {
+  margin: 1rem 0;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-calculate, .factoring-calculate) {
+  width: 100%;
+  justify-content: center;
+  border-radius: var(--hermes-radius-control);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-error, .factoring-error) {
+  margin: .8rem 0 0;
+  color: var(--hermes-danger);
+  font-weight: 700;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-primary-results, .factoring-primary-results) {
+  display: grid;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-primary-results, .factoring-primary-results) > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+  padding: .9rem 1rem;
+  border: 1px solid var(--hermes-line-light-soft);
+  border-radius: var(--hermes-radius-control);
+  background: color-mix(in srgb, var(--hermes-violet) 6%, var(--hermes-pearl));
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-primary-results, .factoring-primary-results) span {
+  color: var(--hermes-muted);
+  font-size: .88rem;
+  font-weight: 700;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-primary-results, .factoring-primary-results) strong {
+  color: var(--hermes-ink);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  text-align: right;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-result-list, .factoring-result-list) {
+  display: grid;
+  margin: 0;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-result-list, .factoring-result-list) > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .62rem 0;
+  border-bottom: 1px solid var(--hermes-line-light-soft);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-result-list, .factoring-result-list) dt {
+  color: var(--hermes-muted);
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-result-list, .factoring-result-list) dd {
+  margin: 0;
+  color: var(--hermes-ink);
+  font-weight: 800;
+  text-align: right;
+}
+
+.logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-sensitivity, .factoring-sensitivity) {
+  margin-top: 1rem;
+  padding: .9rem 1rem;
+  color: var(--hermes-graphite);
+  border-left: 4px solid var(--hermes-violet);
+  border-radius: var(--hermes-radius-control);
+  background: color-mix(in srgb, var(--hermes-violet) 8%, var(--hermes-pearl));
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-tool-grid, .factoring-tool-grid),
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) {
+    grid-template-columns: 1fr;
+  }
+
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-result-panel, .factoring-result-panel) {
+    position: static;
+  }
+}
+
+@media (forced-colors: active) {
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-panel, .factoring-panel),
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-field-grid, .factoring-field-grid) label input,
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-primary-results, .factoring-primary-results) > div,
+  .logistics-resource-page.logistics-resource-carrier :is(.rpm-tool-section, .factoring-tool-section) :is(.rpm-sensitivity, .factoring-sensitivity) {
+    border-color: CanvasText;
+  }
+}
