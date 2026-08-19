@@ -1,0 +1,89 @@
+---
+import { ArrowRight, ClipboardCheck, Languages, ShieldCheck, TimerReset } from "@lucide/astro";
+import AcademyApplicationEnhancer from "../../../../components/AcademyApplicationEnhancer.astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import ContactCTA from "../../../../components/ContactCTA.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+
+const title = "Заявка до Hermes Business Academy | Перевірка програми";
+const description = "Підготуйте вибір програми, країну та місто, мови, рівень англійської, актуальний досвід, мету, графік, доступність за часовими поясами США та бажаний канал зв’язку для перевірки людиною.";
+const canonicalUrl = new URL("/ua/academy/apply/", Astro.site).toString();
+const alternates = [
+  { lang: "en", href: "/academy/apply/" },
+  { lang: "uk", href: "/ua/academy/apply/" },
+  { lang: "x-default", href: "/academy/apply/" },
+];
+const academyEntity = {
+  "@type": "Organization",
+  "@id": "https://hermeslogisticsus.com/#academy",
+  name: "Hermes Business Academy",
+  url: "https://hermeslogisticsus.com/paths/academy/",
+  parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
+};
+const faq = [
+  { question: "Чи зараховує мене подання заявки до Academy?", answer: "Ні. Поточний процес готує заявку та явну передачу контакту для перевірки людиною. Він не приймає оплату, не резервує місце, не створює обліковий запис і не підтверджує вступ." },
+  { question: "Що відбувається після вибору каналу зв’язку?", answer: "Людина перевіряє обрану програму, країну та місто, мови, рівень розмовної англійської, актуальний досвід, мету, тижневу доступність, відповідність часовим поясам США та бажаний канал зв’язку. Якщо інформації бракує, може знадобитися уточнення. Якщо підходить актуальний затверджений формат, його обсяг, дати, графік, мова, місткість, ціна, умови оплати або повернення та правила участі повідомляються окремо до зарахування. Строк відповіді, вступ, місце, ментор, доступ до операцій, робота, дохід або майбутня оплачувана робота не гарантуються." },
+  { question: "Яку програму можна обрати?", answer: "Поточні публічні програми — U.S. Logistics Operations і Marketing. Теми лідерства, технологій та AI можуть використовуватися у вправах, але не є окремими публічними програмами цього релізу." },
+  { question: "Навіщо в заявці запитують мови та графік?", answer: "Відповідність програмі може залежати від розмовної англійської, інших робочих мов, тижневої доступності та можливості брати участь у відповідному графіку ринку США." },
+  { question: "Чи гарантується робота або дохід після вступу?", answer: "Ні. Вступ, навчання, практика, зворотний зв’язок і завершення програми не гарантують роботу, дохід, клієнтів, сертифікацію, підвищення, операційний доступ або майбутню оплачувану роботу." },
+];
+const schema = [
+  { "@context": "https://schema.org", "@type": "WebPage", name: "Заявка до Hermes Business Academy", description, url: canonicalUrl, inLanguage: "uk", about: academyEntity },
+  { "@context": "https://schema.org", "@type": "Service", name: "Перевірка заявки Hermes Business Academy", description, url: canonicalUrl, provider: academyEntity, serviceType: "Education program qualification and application review", availableLanguage: ["English", "Russian", "Ukrainian"] },
+  { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
+  { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Головна", item: "https://hermeslogisticsus.com/ua/" },
+    { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: "https://hermeslogisticsus.com/ua/#academy" },
+    { "@type": "ListItem", position: 3, name: "Заявка", item: canonicalUrl },
+  ] },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema} locale="uk" alternates={alternates}>
+  <div class="logistics-resource-page academy-apply-page">
+    <SiteHeader theme="dark" locale="uk" activePath="/ua/#academy" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier" id="top">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Навігація"><a href="/ua/">Головна</a><span aria-hidden="true">/</span><a href="/ua/#academy">Academy</a><span aria-hidden="true">/</span><span aria-current="page">Заявка</span></nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Business Academy · Заявка</p>
+              <h1>Підготуйте заявку, яку можна перевірити.</h1>
+              <p>Оберіть одну публічну програму та надайте мінімальну інформацію, потрібну для перевірки мов, актуального досвіду, мети, тижневої доступності, відповідності часовим поясам США та бажаного каналу зв’язку.</p>
+              <div class="logistics-audience-actions"><a class="button button-primary" href="#contact">Відкрити заявку <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href="/academy/how-training-works/">Як працює навчання — англійською</a></div>
+            </div>
+            <aside class="resource-safety-card"><ShieldCheck size={30} aria-hidden="true" /><h2>Заявка — це не зарахування.</h2><p>Заявка не приймає оплату, не резервує місце, не створює обліковий запис, не призначає ментора та не гарантує вступ або строк відповіді.</p></aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section capacity-pillars" aria-labelledby="application-prep-title"><div class="shell">
+        <div class="section-heading split-heading"><div><p class="eyebrow">Перед початком</p><h2 id="application-prep-title">Підготуйте чотири групи інформації.</h2></div><p>Не додавайте паролі, коди підтвердження, документи, платіжні дані, приватні записи клієнтів або інші нерелевантні конфіденційні дані.</p></div>
+        <div class="capacity-pillar-grid">
+          <article><span>01</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Програма та мета</h3><p>Оберіть U.S. Logistics Operations або Marketing і поясніть, чи ваша поточна мета — кар’єрний розвиток, розвиток бізнес-компетенцій або обидва напрями.</p></article>
+          <article><span>02</span><Languages size={23} aria-hidden="true" /><h3>Локація та мови</h3><p>Підготуйте країну, місто, мови та рівні, рівень розмовної англійської та бажану мову навчання.</p></article>
+          <article><span>03</span><TimerReset size={23} aria-hidden="true" /><h3>Досвід і графік</h3><p>Коротко опишіть актуальний релевантний досвід, тижневу доступність, бажаний період старту та доступність за часовими поясами США, де це потрібно.</p></article>
+          <article><span>04</span><ShieldCheck size={23} aria-hidden="true" /><h3>Згода та контакт</h3><p>Оберіть бажаний канал зв’язку, перегляньте політику конфіденційності та підтвердьте згоду на використання інформації для відповіді на заявку.</p></article>
+        </div>
+      </div></section>
+
+      <section class="section capacity-pillars" aria-labelledby="application-review-title"><div class="shell">
+        <div class="section-heading split-heading"><div><p class="eyebrow">Після передачі заявки</p><h2 id="application-review-title">Заявку перевіряє людина.</h2></div><p>Перевірка визначає відповідність і наступний доступний крок. Вона не створює зарахування, доступ, призначення ментора, роботу або гарантований строк відповіді.</p></div>
+        <div class="capacity-pillar-grid">
+          <article><span>01</span><ClipboardCheck size={23} aria-hidden="true" /><h3>Контекст заявки</h3><p>Перевіряються програма, локація, мови, розмовна англійська, досвід, мета, графік, відповідність часовим поясам та канал зв’язку.</p></article>
+          <article><span>02</span><Languages size={23} aria-hidden="true" /><h3>Уточнення за потреби</h3><p>Якщо обов’язкової інформації бракує або вона не відповідає обраній програмі, перед рішенням може знадобитися уточнення.</p></article>
+          <article><span>03</span><TimerReset size={23} aria-hidden="true" /><h3>Перевірка актуального формату</h3><p>Якщо актуальний затверджений формат може підійти, його обсяг, дати, графік, мова, місткість, ціна, умови оплати або повернення та правила участі повідомляються окремо.</p></article>
+          <article><span>04</span><ShieldCheck size={23} aria-hidden="true" /><h3>Окреме рішення</h3><p>Заявка може продовжитися, змінити напрям, чекати відповідного формату або не продовжуватися. Зарахування існує лише після окремого прийняття відповідної пропозиції та умов.</p></article>
+        </div>
+      </div></section>
+
+      <ContactCTA selectedPath="Hermes Business Academy" />
+      <AcademyApplicationEnhancer />
+
+      <section class="section" aria-labelledby="academy-application-faq-title"><div class="shell digital-faq-layout"><div><p class="eyebrow">Питання про заявку</p><h2 id="academy-application-faq-title">Зрозумійте, що заявка робить і чого не робить.</h2></div><div class="digital-faq-list">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></div></section>
+    </main>
+    <SiteFooter locale="uk" />
+  </div>
+</BaseLayout>
