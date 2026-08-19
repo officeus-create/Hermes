@@ -79,6 +79,8 @@
 
   const installWorkspaceVnext = () => {
     if (path !== `${ROOT}/dashboard` || document.querySelector('script[data-hc-owner-workspace-live]')) return;
+    const main = document.querySelector(".workspace-page");
+    if (main instanceof HTMLElement && !main.id) main.id = "main-content";
     addStylesheet("/hermes-connect-repair-owner-workspace-live.css", "data-hc-owner-workspace-live");
     addStylesheet("/hermes-connect-repair-owner-workspace-operational.css", "data-hc-owner-workspace-operational");
 
