@@ -77,24 +77,24 @@
     document.head.append(stylesheet);
   };
 
+  const addScript = (src, dataKey) => {
+    if (document.querySelector(`script[${dataKey}]`)) return;
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    script.setAttribute(dataKey, "true");
+    document.head.append(script);
+  };
+
   const installWorkspaceVnext = () => {
     if (path !== `${ROOT}/dashboard` || document.querySelector('script[data-hc-owner-workspace-live]')) return;
     const main = document.querySelector(".workspace-page");
     if (main instanceof HTMLElement && !main.id) main.id = "main-content";
     addStylesheet("/hermes-connect-repair-owner-workspace-live.css", "data-hc-owner-workspace-live");
     addStylesheet("/hermes-connect-repair-owner-workspace-operational.css", "data-hc-owner-workspace-operational");
-
-    const liveScript = document.createElement("script");
-    liveScript.src = "/hermes-connect-repair-owner-workspace-live.js";
-    liveScript.async = false;
-    liveScript.dataset.hcOwnerWorkspaceLive = "true";
-    document.head.append(liveScript);
-
-    const bridgeScript = document.createElement("script");
-    bridgeScript.src = "/hermes-connect-repair-owner-workspace-bridge.js";
-    bridgeScript.async = false;
-    bridgeScript.dataset.hcOwnerWorkspaceBridge = "true";
-    document.head.append(bridgeScript);
+    addScript("/hermes-connect-repair-owner-workspace-live.js", "data-hc-owner-workspace-live");
+    addScript("/hermes-connect-repair-owner-workspace-bridge.js", "data-hc-owner-workspace-bridge");
+    addScript("/hermes-connect-repair-owner-workspace-insights.js", "data-hc-owner-workspace-insights");
   };
 
   const install = () => {
