@@ -3,7 +3,7 @@
   "base_manifest": "docs/release-manifest-2026-08-01.json",
   "release_delta": "2026-08-19-repair-owner-workspace-ceo-preview",
   "generated_at": "2026-08-19T07:56:00Z",
-  "status": "RELEASE_CANDIDATE_PENDING_CEO_VISUAL_APPROVAL",
+  "status": "CEO_VISUAL_APPROVED_PHASE2_VALIDATION_PENDING",
   "production_verified_at": null,
   "production_verification_run": null,
   "additions": [
@@ -16,11 +16,11 @@
       "sitemap_owner": null,
       "source_file": "src/pages/services/hermes-connect/repair-shops/workspace-preview.astro",
       "status": "COMPLETE",
-      "blocker": "CEO visual approval is required before the approved shell may replace or materially change the canonical owner dashboard.",
+      "blocker": "CEO visual direction approved on 2026-08-19. Merge remains blocked by Phase 2 live-workspace validation, upstream Repair P0 gates, and current-head CI.",
       "response_status": 200,
       "comparison": {
         "production": "pending_deployment",
-        "immutable_release": "missing"
+        "immutable_release": "preview_verified_visual_direction"
       }
     }
   ],
@@ -29,6 +29,8 @@
     "indexable_route_count_added": 0,
     "requires_green_current_head_ci": true,
     "requires_production_snapshot_reconciliation_after_deploy": true,
-    "requires_ceo_visual_approval": true
+    "requires_ceo_visual_approval": true,
+    "ceo_visual_approval_received": true,
+    "phase2_live_workspace_validation_required": true
   }
 }
