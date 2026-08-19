@@ -1,0 +1,45 @@
+---
+import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
+import { academyUkraineMarketing } from "../../../../data/academy-ukraine-marketing";
+import { academyUkraineUi } from "../../../../data/academy-ukraine";
+
+const alternates = [
+  { lang: "en", href: "/academy/marketing/" },
+  { lang: "uk", href: "/ua/academy/marketing/" },
+  { lang: "x-default", href: "/academy/marketing/" },
+];
+---
+
+<AcademyPublicPage
+  content={academyUkraineMarketing}
+  locale="uk"
+  alternates={alternates}
+  ui={academyUkraineUi}
+  academyHubHref="/ua/#academy"
+/>
+
+<style is:global>
+  @media (max-width: 560px) {
+    .academy-public-page .resource-hero-grid > *,
+    .academy-public-page .resource-final-card > *,
+    .academy-public-page .logistics-audience-actions,
+    .academy-public-page .logistics-audience-actions > *,
+    .academy-public-page .resource-related-grid > *,
+    .academy-public-page .digital-faq-layout > *,
+    .academy-public-page .digital-faq-list,
+    .academy-public-page .digital-faq-list > * {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .academy-public-page h1,
+    .academy-public-page h2,
+    .academy-public-page h3,
+    .academy-public-page p,
+    .academy-public-page summary,
+    .academy-public-page a,
+    .academy-public-page strong {
+      overflow-wrap: anywhere;
+    }
+  }
+</style>
