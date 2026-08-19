@@ -10,11 +10,15 @@ const bookings = [{
   history:[{ id:"h-1", booking_id:"booking-i18n", from_status:null, to_status:"confirmed", changed_at:"2026-08-19T12:00:00Z" }]
 }];
 
-async function mockDashboard(page: any) {
+async function baseRoutes(page: any) {
   await page.route("**/api/auth/me", (route: any) => route.fulfill(ok({ success:true, specialist:{ id:"owner-i18n", name:"Alex Owner", email:"owner@example.com", role:"Shop Owner" } })));
   await page.route("**/api/repair-shop/profile", (route: any) => route.fulfill(ok({ success:true, shop })));
   await page.route("**/api/repair-shop/access", (route: any) => route.fulfill(ok({ success:true, access:{ state:"trialing", plan_id:"repair_shop_founding", plan_name:"Founding Shop Plan", next_action:"choose_plan" } })));
   await page.route("**/api/repair-shop/availability", (route: any) => route.fulfill(ok({ success:true, timezone:"America/Chicago", days:[] })));
+}
+
+async function mockDashboard(page: any) {
+  await baseRoutes(page);
   await page.route("**/api/services", (route: any) => route.fulfill(ok({ success:true, services })));
   await page.route("**/api/repair-shop/bookings", (route: any) => route.fulfill(ok({ success:true, bookings })));
   await page.route("**/api/repair-shop/feedback", (route: any) => route.fulfill(ok({ success:true, feedback:[] })));
@@ -69,6 +73,23 @@ test.describe("Repair Shop operational dashboard localization", () => {
     await select.selectOption("in_progress");
     await expect(page.locator("#workspace-alert")).toHaveText("Estado de la reserva cambiado a En curso.");
     await expect(page.locator("#workspace-alert")).not.toContainText("Booking moved to");
+  });
+
+  test("localization never rewrites persisted business or customer strings", async ({ page }) => {
+    await baseRoutes(page);
+    await page.route("**/api/services", (route: any) => route.fulfill(ok({ success:true, services:[{ id:"svc-user-data", name:"Services", duration_minutes:30, owner_specialist_id:"owner-i18n" }] })));
+    await page.route("**/api/repair-shop/bookings", (route: any) => route.fulfill(ok({ success:true, bookings:[{
+      ...bookings[0], id:"booking-user-data", service_name:"Services", client_name:"Customers", client_email:"booking@example.com", vehicle:{ year:2024, make:"Booking", model:"Services", mileage:1000, vin:"CUSTOMERS123" }
+    }] })));
+    await page.route("**/api/repair-shop/feedback", (route: any) => route.fulfill(ok({ success:true, feedback:[{ id:"feedback-user-data", category:"other", rating:5, message:"Booking", created_at:"2026-08-19T12:00:00Z", retention_until:"2027-02-15T12:00:00Z" }] })));
+
+    await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil:"domcontentloaded" });
+    await expect(page.locator("#services-list .row strong")).toHaveText("Services");
+    await expect(page.locator("#bookings-list .booking-top > strong")).toHaveText("Services");
+    await expect(page.locator("#bookings-list p.muted.small")).toContainText("Customers");
+    await expect(page.locator("#bookings-list .vehicle-line")).toContainText("Booking Services");
+    await expect(page.locator("#bookings-list .vehicle-line")).toContainText("CUSTOMERS123");
+    await expect(page.locator("#feedback-list .feedback-row > p")).toHaveText("Booking");
   });
 
   test("Owner OS enhancers do not duplicate core owner GET requests", async ({ page }) => {
