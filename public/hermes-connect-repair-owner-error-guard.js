@@ -41,7 +41,7 @@
       dashboard: "Non è stato possibile completare questa azione dell’officina. Riprova tra poco.",
       availability: "Non è stato possibile caricare o salvare l’orario. Riprova tra poco.",
       customers: "Non è stato possibile caricare lo storico clienti. Riprova tra poco.",
-      generic: "Questa azione di Hermes Connect è temporaneamente non disponibile. Riprova tra poco.",
+      generic: "Questa azione Hermes Connect è temporaneamente non disponibile. Riprova tra poco.",
     },
     fr: {
       auth: "Impossible de terminer la connexion ou l’inscription pour le moment. Réessayez bientôt.",
@@ -68,7 +68,24 @@
     if (raw && technicalCode.test(raw)) node.textContent = message;
   };
 
+  const installWorkspaceVnext = () => {
+    if (path !== `${ROOT}/dashboard` || document.querySelector('script[data-hc-owner-workspace-live]')) return;
+    if (!document.querySelector('link[data-hc-owner-workspace-live]')) {
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "/hermes-connect-repair-owner-workspace-live.css";
+      stylesheet.dataset.hcOwnerWorkspaceLive = "true";
+      document.head.append(stylesheet);
+    }
+    const script = document.createElement("script");
+    script.src = "/hermes-connect-repair-owner-workspace-live.js";
+    script.defer = true;
+    script.dataset.hcOwnerWorkspaceLive = "true";
+    document.head.append(script);
+  };
+
   const install = () => {
+    installWorkspaceVnext();
     for (const selector of selectors) {
       const node = document.querySelector(selector);
       if (!(node instanceof HTMLElement)) continue;
