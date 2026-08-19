@@ -134,24 +134,29 @@
       return match ? Number(match[0]) : null;
     };
 
+    const hasProfileValues = () => {
+      const ids = ["shop-name", "shop-city", "shop-state", "shop-timezone"];
+      return ids.every((id) => {
+        const field = document.getElementById(id);
+        return (field instanceof HTMLInputElement || field instanceof HTMLSelectElement) && field.value.trim().length > 0;
+      });
+    };
+
     const state = () => {
       const bookingCount = numberFrom("booking-count");
       const serviceCount = numberFrom("service-count");
       const feedbackCount = numberFrom("feedback-count");
-      const profileSaved = (document.getElementById("profile-state")?.textContent || "").trim().toLowerCase() === "saved";
       const publicReady = !document.getElementById("public-link-wrap")?.classList.contains("hidden");
-      const statusTexts = Array.from(document.querySelectorAll("#bookings-list .status-pill")).map((node) => (node.textContent || "").trim().toLowerCase());
-      const countStatus = (label) => statusTexts.filter((value) => value === label).length;
       return {
         bookingCount,
         serviceCount,
         feedbackCount,
-        profileSaved,
+        profileSaved: publicReady || hasProfileValues(),
         publicReady,
-        confirmed: countStatus("confirmed"),
-        inProgress: countStatus("in progress"),
-        completed: countStatus("completed"),
-        cancelled: countStatus("cancelled"),
+        confirmed: document.querySelectorAll("#bookings-list .status-confirmed").length,
+        inProgress: document.querySelectorAll("#bookings-list .status-in_progress").length,
+        completed: document.querySelectorAll("#bookings-list .status-completed").length,
+        cancelled: document.querySelectorAll("#bookings-list .status-cancelled").length,
       };
     };
 
@@ -222,7 +227,7 @@
     const watched = ["owner-summary","profile-state","service-count","booking-count","feedback-count","public-link-wrap","bookings-list"]
       .map((id) => document.getElementById(id)).filter(Boolean);
     for (const node of watched) new MutationObserver(update).observe(node, { childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:["class"] });
-    for (const id of ["shop-name","shop-city","shop-state"]) document.getElementById(id)?.addEventListener("input", updateOwnerIdentity);
+    for (const id of ["shop-name","shop-city","shop-state","shop-timezone"]) document.getElementById(id)?.addEventListener("input", updateOwnerIdentity);
 
     update();
     window.setTimeout(update, 80);
