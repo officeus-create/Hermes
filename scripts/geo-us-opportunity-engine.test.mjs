@@ -186,8 +186,8 @@ const ordered = rankGeoUsOwnerOpportunities([
 assert.equal(ordered[0].canonicalOwner, "/us-high-volume/", "US high-volume commercial owner must outrank global vanity traffic and low-volume noise");
 assert.equal(ordered.at(-1).canonicalOwner, "/global-vanity/", "global/unspecified evidence must remain gated behind US-scoped evidence");
 
-assert.throws(() => buildGeoUsOwnerOpportunity({
-  canonicalOwner: "/bad/",
+const incompleteCtr = buildGeoUsOwnerOpportunity({
+  canonicalOwner: "/partial-export/",
   evidenceClass: "platform_verified",
   scope: "us",
   impressions: 100,
@@ -195,7 +195,20 @@ assert.throws(() => buildGeoUsOwnerOpportunity({
   ctr: null,
   averagePosition: 8,
   commercialIntent: "high",
-}), /CTR requires known clicks and impressions|/);
+});
+assert.equal(incompleteCtr.clickState, "unknown");
+assert.equal(incompleteCtr.ctrUnderperformance, false);
+
+assert.throws(() => buildGeoUsOwnerOpportunity({
+  canonicalOwner: "/bad-missing-counts/",
+  evidenceClass: "platform_verified",
+  scope: "us",
+  impressions: null,
+  clicks: null,
+  ctr: 2,
+  averagePosition: 8,
+  commercialIntent: "high",
+}), /CTR requires known clicks and impressions/);
 
 assert.throws(() => buildGeoUsOwnerOpportunity({
   canonicalOwner: "/bad-ctr/",
