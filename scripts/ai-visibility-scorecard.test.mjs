@@ -70,3 +70,37 @@ assert.ok(
 );
 
 console.log("AI visibility scorecard contract passed");
+
+await import("./geo-measurement-layer.test.mjs");
+await import("./geo-measurement-adapters.test.mjs");
+await import("./geo-measurement-import.test.mjs");
+await import("./geo-operational-scorecard.test.mjs");
+await import("./geo-operational-security.test.mjs");
+await import("./geo-operational-examples.test.mjs");
+await import("./geo-evidence-envelope.test.mjs");
+await import("./geo-evidence-health.test.mjs");
+await import("./geo-operational-comparison.test.mjs");
+await import("./geo-search-diagnostics.test.mjs");
+await import("./geo-search-diagnostics-import.test.mjs");
+await import("./geo-search-platform-evidence.test.mjs");
+await import("./geo-index-evidence.test.mjs");
+await import("./geo-analytics-receipt-evidence.test.mjs");
+await import("./geo-commercial-outcome-evidence.test.mjs");
+await import("./geo-ai-referral-measurement.test.mjs");
+await import("./geo-answer-contract.test.mjs");
+await import("./geo-evidence-graph.test.mjs");
+await import("./geo-site-graph-audit.test.mjs");
+await import("./geo-public-entity-adapter.test.mjs");
+await import("./geo-prompt-owner-registry.test.mjs");
+await import("./geo-four-direction-alignment.test.mjs");
+await import("./geo-ai-observation-evaluation.test.mjs");
+await import("./geo-ai-observation-import.test.mjs");
+await import("./geo-ai-competitive-visibility.test.mjs");
+await import("./geo-ai-review-plan.test.mjs");
+await import("./geo-ai-visibility-operations.test.mjs");
+await import("./geo-answer-owner-audit.test.mjs");
+await import("./geo-funnel-outcome-health.test.mjs");
+await import("./geo-private-outcome-import.test.mjs");
+await import("./geo-canonical-owner-route-audit.test.mjs");
+await import("./geo-car-hauling-answer-candidate.test.mjs");
+await import("./geo-owner-measurement.test.mjs");
