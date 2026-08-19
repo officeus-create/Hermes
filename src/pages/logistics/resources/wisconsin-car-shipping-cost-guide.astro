@@ -1,0 +1,252 @@
+---
+import { ArrowLeft, ArrowRight, Calendar, Car, Check, DollarSign, MapPin, Ruler, ShieldCheck, Truck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Wisconsin Car Shipping Cost Guide | Hermes Logistics";
+const description =
+  "Learn the factors that can affect vehicle transport pricing to and from Wisconsin — route, vehicle size and condition, equipment, timing, season, and carrier availability — before requesting a route review.";
+const canonicalUrl = new URL("/logistics/resources/wisconsin-car-shipping-cost-guide/", Astro.site).toString();
+const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
+
+const faq = [
+  {
+    question: "How much does it cost to ship a car to or from Wisconsin?",
+    answer:
+      "There is no single number that applies to every move. Pricing depends on the exact pickup and delivery route, vehicle size and condition, open or enclosed equipment, timing and flexibility, season, and current carrier availability on that lane. Submit complete route and vehicle details for review instead of relying on a generic per-mile estimate.",
+  },
+  {
+    question: "Is enclosed transport more expensive than open transport?",
+    answer:
+      "Enclosed transport uses different equipment and generally has less available capacity than open transport, which can affect price and availability. The right choice depends on the vehicle, route, protection preference, timing, and available equipment.",
+  },
+  {
+    question: "Can the time of year affect vehicle transport pricing?",
+    answer:
+      "Yes. Weather, route conditions, timing, and changes in available carrier capacity can affect how a specific move is reviewed. The effect must be evaluated for the actual route and requested pickup window rather than assumed from a generic seasonal rate.",
+  },
+  {
+    question: "Can I get an exact price before submitting a request?",
+    answer:
+      "No. Hermes reviews the specific route, vehicle, condition, timing, equipment need, and available capacity before any route-specific price can be discussed.",
+  },
+  {
+    question: "Does a lower price always mean a better transport option?",
+    answer:
+      "Not necessarily. Price should be reviewed together with carrier authority and insurance information, equipment fit, realistic timing, pickup requirements, and communication reliability.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "Car Shipping Cost in Wisconsin: What Affects the Price",
+    description,
+    datePublished: "2026-08-19",
+    dateModified: "2026-08-19",
+    mainEntityOfPage: canonicalUrl,
+    author: { "@type": "Organization", name: "Hermes Logistics" },
+    publisher: { "@type": "Organization", name: "Hermes Logistics" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Wisconsin Vehicle Transport", item: "https://hermeslogisticsus.com/logistics/wisconsin-vehicle-transport/" },
+      { "@type": "ListItem", position: 4, name: "Car Shipping Cost Guide", item: canonicalUrl },
+    ],
+  },
+];
+
+import "../../../styles/features/resource.css";
+import "../../../styles/features/appleton.css";
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="logistics-resource-page">
+    <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <main id="main-content">
+      <article>
+        <header class="resource-hero" id="top">
+          <div class="shell">
+            <nav class="appleton-breadcrumbs" aria-label="Breadcrumb">
+              <a href="/">Home</a><span aria-hidden="true">/</span>
+              <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+              <a href="/logistics/wisconsin-vehicle-transport/">Wisconsin vehicle transport</a><span aria-hidden="true">/</span>
+              <span aria-current="page">Car shipping cost guide</span>
+            </nav>
+            <a class="detail-back" href="/logistics/wisconsin-vehicle-transport/"><ArrowLeft size={18} aria-hidden="true" />Wisconsin vehicle transport</a>
+            <div class="resource-hero-grid">
+              <div>
+                <p class="eyebrow">Hermes Logistics Resource · Wisconsin</p>
+                <h1>Car shipping cost in Wisconsin: what affects the price.</h1>
+                <p>
+                  Vehicle transport pricing is route-specific. Distance matters, but so do vehicle dimensions and condition,
+                  equipment type, pickup flexibility, facility access, weather, and the carrier capacity available for the lane.
+                  Use this guide to prepare the information needed for a useful route review.
+                </p>
+                <div class="logistics-audience-actions">
+                  <a class="button button-primary" href={directTransportIntake} data-cost-guide-direct-intake>
+                    Request a route-specific review <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                  <a class="button" href="/logistics/wisconsin-vehicle-transport/">See Wisconsin service areas</a>
+                </div>
+              </div>
+              <aside class="resource-safety-card">
+                <DollarSign size={30} aria-hidden="true" />
+                <h2>No generic quote and no guessed price.</h2>
+                <p>This page explains pricing inputs. It does not publish a rate or guarantee a price, pickup date, equipment, or carrier availability.</p>
+              </aside>
+            </div>
+          </div>
+        </header>
+
+        <section class="section resource-intro">
+          <div class="shell resource-lead">
+            <Truck size={34} aria-hidden="true" />
+            <div>
+              <p class="eyebrow">Before requesting a review</p>
+              <h2>Six common factors that can affect vehicle transport pricing.</h2>
+              <p>Providing these details first makes route and capacity review more specific.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-content">
+          <div class="shell resource-article-grid">
+            <nav class="resource-toc" aria-label="Cost factor sections">
+              <p>Cost factors</p>
+              <a href="#route">1. Route and distance</a>
+              <a href="#vehicle">2. Vehicle size and condition</a>
+              <a href="#equipment">3. Open vs enclosed equipment</a>
+              <a href="#timing">4. Timing and flexibility</a>
+              <a href="#season">5. Weather and seasonal conditions</a>
+              <a href="#availability">6. Current carrier availability</a>
+            </nav>
+
+            <div class="resource-sections">
+              <section id="route">
+                <p class="resource-step">01</p>
+                <h2>Route and distance.</h2>
+                <p>Distance is one pricing input, but mileage alone does not describe the move. Exact pickup and delivery ZIP codes, facility access, route geography, and the capacity available around those locations can all affect the review.</p>
+                <p>Provide exact locations rather than only a general origin and destination state whenever possible.</p>
+              </section>
+
+              <section id="vehicle">
+                <p class="resource-step">02</p>
+                <h2>Vehicle size, quantity, and condition.</h2>
+                <ul>
+                  <li><Check size={18} aria-hidden="true" /><span>Year, make, and model help determine approximate dimensions and equipment fit</span></li>
+                  <li><Check size={18} aria-hidden="true" /><span>Larger, modified, or specialty vehicles can change space and loading requirements</span></li>
+                  <li><Check size={18} aria-hidden="true" /><span>Multiple vehicles require unit count, pickup readiness, and delivery-sequence review</span></li>
+                  <li><Check size={18} aria-hidden="true" /><span>Whether each vehicle starts, rolls, steers, and brakes affects loading requirements</span></li>
+                </ul>
+                <p>Describe vehicle condition accurately before pickup planning so the requested equipment matches the actual unit.</p>
+              </section>
+
+              <section id="equipment">
+                <p class="resource-step">03</p>
+                <h2>Open vs enclosed equipment.</h2>
+                <p>Open and enclosed transport use different equipment and capacity pools. The appropriate choice depends on the vehicle, route, requested protection level, access, timing, and available carrier capacity.</p>
+                <p>Compare <a href="/logistics/open-vehicle-transport/">open vehicle transport</a>, <a href="/logistics/enclosed-vehicle-transport/">enclosed vehicle transport</a>, and the <a href="/logistics/wisconsin-enclosed-vehicle-transport/">Wisconsin enclosed transport page</a> before requesting a specific equipment type.</p>
+              </section>
+
+              <section id="timing">
+                <p class="resource-step">04</p>
+                <h2>Timing and flexibility.</h2>
+                <p>A narrow pickup window can reduce the number of carriers whose schedules fit the request. A wider window can create more scheduling options, although it never guarantees capacity or a particular price.</p>
+                <p>If a storage cutoff, facility appointment, closing date, or other deadline exists, include it in the initial request.</p>
+              </section>
+
+              <section id="season">
+                <p class="resource-step">05</p>
+                <h2>Weather and seasonal conditions.</h2>
+                <p>Wisconsin weather can affect road access, loading conditions, facility operations, route planning, and available schedules. Seasonal changes can also affect how much carrier capacity is available for a particular lane.</p>
+                <p>These conditions are inputs to a route review, not a fixed seasonal surcharge published by Hermes.</p>
+              </section>
+
+              <section id="availability">
+                <p class="resource-step">06</p>
+                <h2>Current carrier availability.</h2>
+                <p>Two requests with the same mileage can have different capacity conditions at different times. Hermes reviews available qualified capacity against the specific route, equipment requirement, vehicle condition, and pickup window rather than assuming a static rate.</p>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-submit" aria-labelledby="cost-guide-submit-title">
+          <div class="shell resource-submit-grid">
+            <div>
+              <p class="eyebrow">Prepare the request</p>
+              <h2 id="cost-guide-submit-title">Information that supports a route-specific review.</h2>
+              <p>Hermes reviews route, vehicle, condition, timing, access, equipment fit, and available capacity before discussing a route-specific price.</p>
+            </div>
+            <ul>
+              <li><Ruler size={18} aria-hidden="true" /><span>Exact pickup and delivery ZIP codes or facility addresses</span></li>
+              <li><Car size={18} aria-hidden="true" /><span>Vehicle year, make, model, quantity, and condition</span></li>
+              <li><ShieldCheck size={18} aria-hidden="true" /><span>Open or enclosed equipment preference</span></li>
+              <li><Calendar size={18} aria-hidden="true" /><span>Earliest pickup date, deadline, and available flexibility</span></li>
+              <li><MapPin size={18} aria-hidden="true" /><span>Facility access, release status, hours, or delivery restrictions</span></li>
+            </ul>
+          </div>
+          <div class="shell resource-warning">
+            <DollarSign size={22} aria-hidden="true" />
+            <p>Submitting a request begins a review. It does not publish a load, guarantee a price, confirm timing, or guarantee carrier availability.</p>
+          </div>
+        </section>
+
+        <section class="section resource-related" aria-labelledby="cost-guide-related-title">
+          <div class="shell">
+            <div class="section-heading">
+              <p class="eyebrow">Continue planning</p>
+              <h2 id="cost-guide-related-title">Related vehicle transport resources.</h2>
+            </div>
+            <div class="resource-related-grid">
+              <a href="/logistics/wisconsin-vehicle-transport/"><MapPin size={22} aria-hidden="true" /><h3>Wisconsin vehicle transport</h3><p>Statewide request hub and Wisconsin service-area pages.</p><strong>Open hub <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/dealer-vehicle-transportation/"><Truck size={22} aria-hidden="true" /><h3>Dealer vehicle transportation</h3><p>Dealer transfers, auction pickups, and multi-unit vehicle moves.</p><strong>Open page <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/resources/auction-vehicle-pickup-checklist/"><Check size={22} aria-hidden="true" /><h3>Auction vehicle pickup checklist</h3><p>Information to confirm before requesting transport from an auction facility.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="cost-guide-faq-title">
+          <div class="shell digital-faq-layout">
+            <div><p class="eyebrow">Frequently asked questions</p><h2 id="cost-guide-faq-title">Wisconsin car shipping cost questions.</h2></div>
+            <div class="digital-faq-list">
+              {faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}
+            </div>
+          </div>
+        </section>
+
+        <section class="section resource-final-cta" id="contact">
+          <div class="shell resource-final-card">
+            <div>
+              <p class="eyebrow">Request review</p>
+              <h2>Prepare the actual route instead of relying on a generic estimate.</h2>
+              <p>The direct intake sends a structured request for Logistics Sales review. It does not publish a load, notify a carrier, confirm capacity, or create a booking.</p>
+            </div>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={directTransportIntake} data-cost-guide-direct-intake-bottom>
+                Request a route-specific review <ArrowRight size={18} aria-hidden="true" />
+              </a>
+            </div>
+          </div>
+        </section>
+      </article>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
