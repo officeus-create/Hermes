@@ -52,6 +52,127 @@
     },
   };
 
+  const humanCopy = {
+    ru: {
+      "Unable to save shop profile.": "Не удалось сохранить профиль СТО.",
+      "Network error while saving shop profile.": "Ошибка сети при сохранении профиля СТО.",
+      "Public booking link copied.": "Публичная ссылка записи скопирована.",
+      "Could not copy the link. Select it manually.": "Не удалось скопировать ссылку. Выберите её вручную.",
+      "This service has bookings and cannot be deleted.": "У этой услуги есть записи, поэтому удалить её нельзя.",
+      "Unable to delete service.": "Не удалось удалить услугу.",
+      "Network error while deleting service.": "Ошибка сети при удалении услуги.",
+      "A service with this name already exists.": "Услуга с таким названием уже существует.",
+      "Unable to add service.": "Не удалось добавить услугу.",
+      "Network error while adding service.": "Ошибка сети при добавлении услуги.",
+      "That booking status transition is no longer allowed. Refreshing current state.": "Этот переход статуса больше недоступен. Обновляем текущее состояние.",
+      "Unable to change booking status.": "Не удалось изменить статус записи.",
+      "Network error while changing booking status.": "Ошибка сети при изменении статуса записи.",
+      "Unable to load booking inbox.": "Не удалось загрузить входящие записи.",
+      "Unable to load private feedback.": "Не удалось загрузить приватные отзывы.",
+      "Unable to save private feedback.": "Не удалось сохранить приватный отзыв.",
+      "Private feedback saved. Thank you.": "Приватный отзыв сохранён. Спасибо.",
+      "Network error while saving private feedback.": "Ошибка сети при сохранении приватного отзыва.",
+      "Logout failed.": "Не удалось выйти из аккаунта.",
+      "Unable to initialize the shop workspace.": "Не удалось инициализировать кабинет СТО.",
+    },
+    uk: {
+      "Unable to save shop profile.": "Не вдалося зберегти профіль СТО.",
+      "Network error while saving shop profile.": "Помилка мережі під час збереження профілю СТО.",
+      "Public booking link copied.": "Публічне посилання запису скопійовано.",
+      "Could not copy the link. Select it manually.": "Не вдалося скопіювати посилання. Виберіть його вручну.",
+      "This service has bookings and cannot be deleted.": "Для цієї послуги є записи, тому її не можна видалити.",
+      "Unable to delete service.": "Не вдалося видалити послугу.",
+      "Network error while deleting service.": "Помилка мережі під час видалення послуги.",
+      "A service with this name already exists.": "Послуга з такою назвою вже існує.",
+      "Unable to add service.": "Не вдалося додати послугу.",
+      "Network error while adding service.": "Помилка мережі під час додавання послуги.",
+      "That booking status transition is no longer allowed. Refreshing current state.": "Цей перехід статусу більше недоступний. Оновлюємо поточний стан.",
+      "Unable to change booking status.": "Не вдалося змінити статус запису.",
+      "Network error while changing booking status.": "Помилка мережі під час зміни статусу запису.",
+      "Unable to load booking inbox.": "Не вдалося завантажити вхідні записи.",
+      "Unable to load private feedback.": "Не вдалося завантажити приватні відгуки.",
+      "Unable to save private feedback.": "Не вдалося зберегти приватний відгук.",
+      "Private feedback saved. Thank you.": "Приватний відгук збережено. Дякуємо.",
+      "Network error while saving private feedback.": "Помилка мережі під час збереження приватного відгуку.",
+      "Logout failed.": "Не вдалося вийти з акаунта.",
+      "Unable to initialize the shop workspace.": "Не вдалося ініціалізувати кабінет СТО.",
+    },
+    es: {
+      "Unable to save shop profile.": "No se pudo guardar el perfil del taller.",
+      "Network error while saving shop profile.": "Error de red al guardar el perfil del taller.",
+      "Public booking link copied.": "Enlace público de reservas copiado.",
+      "Could not copy the link. Select it manually.": "No se pudo copiar el enlace. Selecciónalo manualmente.",
+      "This service has bookings and cannot be deleted.": "Este servicio tiene reservas y no puede eliminarse.",
+      "Unable to delete service.": "No se pudo eliminar el servicio.",
+      "Network error while deleting service.": "Error de red al eliminar el servicio.",
+      "A service with this name already exists.": "Ya existe un servicio con este nombre.",
+      "Unable to add service.": "No se pudo añadir el servicio.",
+      "Network error while adding service.": "Error de red al añadir el servicio.",
+      "That booking status transition is no longer allowed. Refreshing current state.": "Ese cambio de estado ya no está permitido. Actualizando el estado actual.",
+      "Unable to change booking status.": "No se pudo cambiar el estado de la reserva.",
+      "Network error while changing booking status.": "Error de red al cambiar el estado de la reserva.",
+      "Unable to load booking inbox.": "No se pudo cargar la bandeja de reservas.",
+      "Unable to load private feedback.": "No se pudieron cargar los comentarios privados.",
+      "Unable to save private feedback.": "No se pudo guardar el comentario privado.",
+      "Private feedback saved. Thank you.": "Comentario privado guardado. Gracias.",
+      "Network error while saving private feedback.": "Error de red al guardar el comentario privado.",
+      "Logout failed.": "No se pudo cerrar la sesión.",
+      "Unable to initialize the shop workspace.": "No se pudo iniciar el espacio del taller.",
+    },
+    it: {
+      "Unable to save shop profile.": "Impossibile salvare il profilo dell’officina.",
+      "Network error while saving shop profile.": "Errore di rete durante il salvataggio del profilo.",
+      "Public booking link copied.": "Link pubblico di prenotazione copiato.",
+      "Could not copy the link. Select it manually.": "Impossibile copiare il link. Selezionalo manualmente.",
+      "This service has bookings and cannot be deleted.": "Questo servizio ha prenotazioni e non può essere eliminato.",
+      "Unable to delete service.": "Impossibile eliminare il servizio.",
+      "Network error while deleting service.": "Errore di rete durante l’eliminazione del servizio.",
+      "A service with this name already exists.": "Esiste già un servizio con questo nome.",
+      "Unable to add service.": "Impossibile aggiungere il servizio.",
+      "Network error while adding service.": "Errore di rete durante l’aggiunta del servizio.",
+      "That booking status transition is no longer allowed. Refreshing current state.": "Questo cambio di stato non è più consentito. Aggiornamento dello stato corrente.",
+      "Unable to change booking status.": "Impossibile cambiare lo stato della prenotazione.",
+      "Network error while changing booking status.": "Errore di rete durante il cambio di stato.",
+      "Unable to load booking inbox.": "Impossibile caricare le prenotazioni.",
+      "Unable to load private feedback.": "Impossibile caricare i feedback privati.",
+      "Unable to save private feedback.": "Impossibile salvare il feedback privato.",
+      "Private feedback saved. Thank you.": "Feedback privato salvato. Grazie.",
+      "Network error while saving private feedback.": "Errore di rete durante il salvataggio del feedback.",
+      "Logout failed.": "Disconnessione non riuscita.",
+      "Unable to initialize the shop workspace.": "Impossibile inizializzare lo spazio dell’officina.",
+    },
+    fr: {
+      "Unable to save shop profile.": "Impossible d’enregistrer le profil de l’atelier.",
+      "Network error while saving shop profile.": "Erreur réseau lors de l’enregistrement du profil.",
+      "Public booking link copied.": "Lien public de réservation copié.",
+      "Could not copy the link. Select it manually.": "Impossible de copier le lien. Sélectionnez-le manuellement.",
+      "This service has bookings and cannot be deleted.": "Ce service a des réservations et ne peut pas être supprimé.",
+      "Unable to delete service.": "Impossible de supprimer le service.",
+      "Network error while deleting service.": "Erreur réseau lors de la suppression du service.",
+      "A service with this name already exists.": "Un service portant ce nom existe déjà.",
+      "Unable to add service.": "Impossible d’ajouter le service.",
+      "Network error while adding service.": "Erreur réseau lors de l’ajout du service.",
+      "That booking status transition is no longer allowed. Refreshing current state.": "Ce changement de statut n’est plus autorisé. Actualisation de l’état courant.",
+      "Unable to change booking status.": "Impossible de modifier le statut de la réservation.",
+      "Network error while changing booking status.": "Erreur réseau lors du changement de statut.",
+      "Unable to load booking inbox.": "Impossible de charger les réservations.",
+      "Unable to load private feedback.": "Impossible de charger les retours privés.",
+      "Unable to save private feedback.": "Impossible d’enregistrer le retour privé.",
+      "Private feedback saved. Thank you.": "Retour privé enregistré. Merci.",
+      "Network error while saving private feedback.": "Erreur réseau lors de l’enregistrement du retour.",
+      "Logout failed.": "Échec de la déconnexion.",
+      "Unable to initialize the shop workspace.": "Impossible d’initialiser l’espace atelier.",
+    },
+  };
+
+  const statusCopy = {
+    ru: { Confirmed:"Подтверждено", "In progress":"В работе", Completed:"Завершено", Cancelled:"Отменено" },
+    uk: { Confirmed:"Підтверджено", "In progress":"У роботі", Completed:"Завершено", Cancelled:"Скасовано" },
+    es: { Confirmed:"Confirmada", "In progress":"En curso", Completed:"Completada", Cancelled:"Cancelada" },
+    it: { Confirmed:"Confermata", "In progress":"In corso", Completed:"Completata", Cancelled:"Annullata" },
+    fr: { Confirmed:"Confirmée", "In progress":"En cours", Completed:"Terminée", Cancelled:"Annulée" },
+  };
+
   const context = path === `${ROOT}/auth` ? "auth"
     : path === `${ROOT}/dashboard` ? "dashboard"
     : path === `${ROOT}/availability` ? "availability"
@@ -60,12 +181,33 @@
   const message = (copy[locale] || copy.en)[context] || (copy[locale] || copy.en).generic;
   const technicalCode = /^[a-z][a-z0-9_]{2,80}(?:,\s*[a-z][a-z0-9_]{2,80})*$/i;
 
+  const localizeHumanMessage = (raw) => {
+    if (locale === "en") return raw;
+    const exact = humanCopy[locale]?.[raw];
+    if (exact) return exact;
+    const moved = raw.match(/^Booking moved to (Confirmed|In progress|Completed|Cancelled)\.$/);
+    if (moved) {
+      const status = statusCopy[locale]?.[moved[1]] || moved[1];
+      return locale === "ru" ? `Статус записи изменён: ${status}.`
+        : locale === "uk" ? `Статус запису змінено: ${status}.`
+        : locale === "es" ? `Estado de la reserva cambiado a ${status}.`
+        : locale === "it" ? `Stato della prenotazione cambiato in ${status}.`
+        : `Statut de la réservation changé : ${status}.`;
+    }
+    return raw;
+  };
+
   const selectors = ["#alert-box", "#workspace-alert", "#availability-alert", "#page-alert"];
   const normalize = (node) => {
     if (!(node instanceof HTMLElement)) return;
     if (node.classList.contains("hidden")) return;
     const raw = (node.textContent || "").trim();
-    if (raw && technicalCode.test(raw)) node.textContent = message;
+    if (!raw) return;
+    if (technicalCode.test(raw)) node.textContent = message;
+    else {
+      const localized = localizeHumanMessage(raw);
+      if (localized !== raw) node.textContent = localized;
+    }
   };
 
   const addStylesheet = (href, dataKey) => {
@@ -114,6 +256,6 @@
     }
   };
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", install, { once: true });
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", install, { once:true });
   else install();
 })();
