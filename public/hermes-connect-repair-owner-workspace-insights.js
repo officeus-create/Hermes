@@ -18,6 +18,7 @@
 
   const withLang = (href) => locale === "en" ? href : `${href}${href.includes("?") ? "&" : "?"}lang=${encodeURIComponent(locale)}`;
   const safeText = (value) => String(value || "").replace(/\s+/g, " ").trim();
+  const escapeHtml = (value) => String(value || "").replace(/[&<>\"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" })[char]);
 
   const ensureSurface = () => {
     const growth = document.querySelector(".hc-owner-live-growth");
@@ -66,7 +67,7 @@
     const rows = bookingRows();
     const schedule = document.querySelector("[data-hc-live-schedule-list]");
     if (schedule) {
-      schedule.innerHTML = rows.length ? rows.slice(0,4).map((row) => `<div><span>${row.when}</span><p><strong>${row.service}</strong><small>${row.customer}${row.vehicle ? ` · ${row.vehicle}` : ""}</small></p></div>`).join("") : `<p>${t.scheduleEmpty}</p>`;
+      schedule.innerHTML = rows.length ? rows.slice(0,4).map((row) => `<div><span>${escapeHtml(row.when)}</span><p><strong>${escapeHtml(row.service)}</strong><small>${escapeHtml(row.customer)}${row.vehicle ? ` · ${escapeHtml(row.vehicle)}` : ""}</small></p></div>`).join("") : `<p>${t.scheduleEmpty}</p>`;
     }
 
     const unique = [];
@@ -79,7 +80,7 @@
       if (unique.length === 3) break;
     }
     const customers = document.querySelector("[data-hc-live-customer-list]");
-    if (customers) customers.innerHTML = unique.length ? unique.map((row) => `<div><span>${row.customer.slice(0,2).toUpperCase()}</span><p><strong>${row.customer}</strong><small>${row.vehicle || row.service}</small></p></div>`).join("") : `<p>${t.customersEmpty}</p>`;
+    if (customers) customers.innerHTML = unique.length ? unique.map((row) => `<div><span>${escapeHtml(row.customer.slice(0,2).toUpperCase())}</span><p><strong>${escapeHtml(row.customer)}</strong><small>${escapeHtml(row.vehicle || row.service)}</small></p></div>`).join("") : `<p>${t.customersEmpty}</p>`;
 
     const cancelled = rows.filter((row) => row.status === "cancelled").length;
     const completed = rows.filter((row) => row.status === "completed").length;
