@@ -65,7 +65,7 @@ body:has(.digital-service-page) .digital-boundary-layout p{color:var(--hermes-mu
 body:has(.digital-service-page) .digital-boundary-layout li{display:flex;gap:.8rem;align-items:flex-start;padding:1rem 1.1rem;border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-control);background:var(--hermes-glass-dark);color:rgba(255,255,255,.88);line-height:1.55}
 body:has(.digital-service-page) .digital-boundary-layout svg{flex:none;margin-top:.15rem;color:#c8bdff}
 body:has(.digital-service-page) .digital-faq-list{display:grid;gap:.7rem}
-body:has(.digital-service-page) .digital-faq-list details{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card);padding:0 1.1rem}
+body:has(.digital-service-page) .digital-faq-list details{border:1px solid var(--hermes-line-light);border-radius:22px!important;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card);padding:0 1.1rem}
 body:has(.digital-service-page) .digital-faq-list summary{cursor:pointer;padding:1.05rem 0;color:var(--hermes-ink);font-weight:700}
 body:has(.digital-service-page) .digital-faq-list p{margin:0;padding:0 0 1.1rem}
 body:has(.digital-service-page) .digital-related-section{background:var(--hermes-paper)}
