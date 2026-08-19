@@ -22,7 +22,9 @@ async function mockDashboard(page: any) {
 
 const cases = [
   ["ru", "Профиль СТО", "Услуги", "Входящие записи", "Подтверждено", "Изменить статус…"],
+  ["uk", "Профіль СТО", "Послуги", "Вхідні записи", "Підтверджено", "Змінити статус…"],
   ["es", "Perfil del taller", "Servicios", "Bandeja de reservas", "Confirmada", "Cambiar estado…"],
+  ["it", "Profilo officina", "Servizi", "Prenotazioni", "Confermata", "Cambia stato…"],
   ["fr", "Profil de l’atelier", "Services", "Boîte de réservations", "Confirmée", "Changer le statut…"],
 ] as const;
 
