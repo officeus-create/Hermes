@@ -7,7 +7,7 @@ Use one numbered slot per real shop. Keep shop names, contact details, customer 
 
 ## Release gates before a real first-5 cohort
 
-Do not mark a real shop as `PILOT_STARTED` until the current Repair Shop release path has cleared the applicable launch gates:
+Do not move a real shop from `INVITED` into `REGISTERED` or later cohort tracking until the current Repair Shop release path has cleared the applicable launch gates:
 
 - canonical Repair Shop P0 release candidate is merged and production-smoked;
 - Cloudflare Preview D1 evidence gate #687 is cleared for the release candidate/re-review path;
