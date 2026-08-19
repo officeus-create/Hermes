@@ -112,7 +112,7 @@
       logoutSlot.replaceWith(logoutButton);
       logoutButton.classList.add("hc-owner-live-logout");
     }
-    oldHeader?.remove();
+    if (oldHeader instanceof HTMLElement) oldHeader.hidden = true;
 
     const profile = shell.querySelector('[aria-labelledby="profile-title"]');
     const services = shell.querySelector('[aria-labelledby="services-title"]');
@@ -191,7 +191,7 @@
       if ((s.serviceCount ?? 0) === 0) focus.push(["Add your first service", "Customers cannot choose a service until the catalog is configured.", "#services"]);
       else focus.push([`${s.serviceCount} service${s.serviceCount === 1 ? "" : "s"} live`, "This is the catalog customers can book.", "#services"]);
       if ((s.bookingCount ?? 0) > 0) focus.push([`Review ${s.bookingCount} booking${s.bookingCount === 1 ? "" : "s"}`, `${s.confirmed} confirmed · ${s.inProgress} in progress · ${s.completed} completed.`, "#bookings"]);
-      else focus.push([s.publicReady ? "Share your booking link" : "Finish setup before sharing", s.publicReady ? "The next real signal is the first customer booking." : "Profile and services come before customer acquisition.", s.publicReady ? "#settings" : "#settings"]);
+      else focus.push([s.publicReady ? "Share your booking link" : "Finish setup before sharing", s.publicReady ? "The next real signal is the first customer booking." : "Profile and services come before customer acquisition.", "#settings"]);
 
       const focusList = document.querySelector("[data-hc-focus-list]");
       if (focusList) focusList.innerHTML = focus.slice(0,3).map((item, index) => `<a href="${item[2]}"><span>0${index + 1}</span><p><strong>${esc(item[0])}</strong><small>${esc(item[1])}</small></p><b>↗</b></a>`).join("");
@@ -206,7 +206,7 @@
       } else if (s.profileSaved && (s.serviceCount ?? 0) > 0 && (s.bookingCount ?? 0) === 0) {
         title = s.publicReady ? "Your booking setup is ready. The next proof is a real customer booking." : "Services are live. Finish the public booking-link setup next.";
         copy = s.publicReady ? "Share the real booking link and measure time to first completed appointment." : "Hermes will not claim activation until the public intake path is ready.";
-        href = s.publicReady ? "#settings" : "#settings";
+        href = "#settings";
       } else if ((s.bookingCount ?? 0) > 0) {
         title = `${s.bookingCount} real booking${s.bookingCount === 1 ? " is" : "s are"} in the workspace.`;
         copy = `${s.confirmed} confirmed, ${s.inProgress} in progress, ${s.completed} completed, ${s.cancelled} cancelled. Review status and customer follow-up before adding new features.`;
