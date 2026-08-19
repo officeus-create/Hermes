@@ -48,7 +48,7 @@ body:has(.digital-service-page) .digital-check-list li{display:flex;gap:.8rem;al
 body:has(.digital-service-page) .digital-check-list svg{flex:none;margin-top:.15rem;color:var(--hermes-violet)}
 body:has(.digital-service-page) .digital-muted-section{background:var(--hermes-paper)}
 body:has(.digital-service-page) .digital-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
-body:has(.digital-service-page) .digital-card-grid article{min-width:0;padding:1.5rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card)!important;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.digital-service-page) .digital-card-grid article{min-width:0;padding:1.5rem;border:1px solid var(--hermes-line-light);border-radius:22px!important;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
 body:has(.digital-service-page) .digital-card-grid article>span{display:inline-flex;margin-bottom:1.5rem;font-size:.78rem;letter-spacing:.1em;color:var(--hermes-violet)}
 body:has(.digital-service-page) .digital-card-grid h3{margin:0 0 .7rem;color:var(--hermes-ink)}
 body:has(.digital-service-page) .digital-card-grid p,
