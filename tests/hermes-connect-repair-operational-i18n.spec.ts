@@ -59,6 +59,18 @@ test.describe("Repair Shop operational dashboard localization", () => {
     await expect(page.locator("#open-link-btn")).not.toHaveAttribute("href", /lang=/);
   });
 
+  test("Spanish status change produces a localized success alert", async ({ page }) => {
+    await mockDashboard(page);
+    await page.route("**/api/repair-shop/bookings/*/status", (route: any) => route.fulfill(ok({ success:true, booking:{ ...bookings[0], status:"in_progress" }, history:[] })));
+    await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=es", { waitUntil:"domcontentloaded" });
+
+    const select = page.locator("#bookings-list .status-select");
+    await expect(select).toBeVisible();
+    await select.selectOption("in_progress");
+    await expect(page.locator("#workspace-alert")).toHaveText("Estado de la reserva cambiado a En curso.");
+    await expect(page.locator("#workspace-alert")).not.toContainText("Booking moved to");
+  });
+
   test("Owner OS enhancers do not duplicate core owner GET requests", async ({ page }) => {
     const reads = { profile:0, services:0, bookings:0 };
     await page.route("**/api/auth/me", (route: any) => route.fulfill(ok({ success:true, specialist:{ id:"owner-i18n", name:"Alex Owner", email:"owner@example.com", role:"Shop Owner" } })));
