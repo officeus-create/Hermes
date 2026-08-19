@@ -10,12 +10,13 @@ Scope: Google/Bing organic acquisition research for Hermes Business Academy. Thi
    - Public search results include Ukrainian-language commercial training for U.S.-market dispatcher/logistics work.
    - Existing Hermes page has distinct curriculum, B2+ readiness boundary for live U.S.-market communication, one application backend, and explicit no-employment/no-income guarantees.
 
-2. **Ukraine / Marketing — BUILD CANDIDATE, but only after the shared Ukrainian application shell is merged and measurement ownership is recorded.**
+2. **Ukraine / Marketing — BUILD CANDIDATE after the measurement baseline is operational.**
    - English canonical program truth already exists at `/academy/marketing/`.
    - Current curriculum is broader than a thin SMM page: positioning and offer, website-first content, platform distribution, lead journey, sales follow-up, analytics and controlled AI assistance.
    - Ukrainian search results show active commercial demand around SMM and digital-marketing education in Ukrainian.
    - A future Ukrainian owner should be one program owner such as `/ua/academy/marketing/`, not a set of city/country permutations.
    - It must reuse the shared Academy application with `program=marketing&language=uk`; no second form or receiver.
+   - The shared Ukrainian application shell is now merged on canonical main (`c21cc6019ee5fa632fac9d2cbcf0bd9ad9e3e0d1`).
 
 3. **Germany / Ukrainian Marketing — DEEPER RESEARCH, no country page yet.**
    - Sampled SERP includes a Digital Marketing offer explicitly framed for Ukrainians in Germany.
@@ -64,6 +65,48 @@ Scope: Google/Bing organic acquisition research for Hermes Business Academy. Thi
 - The separate business-service direction `Hermes Marketing · ProgressoPro` must not be replaced by an Academy course URL.
 - Academy Marketing and Marketing services have different intent and must remain separate canonical owners.
 
+## Academy 7/28-day measurement owner
+
+The Academy growth measurement owner is the SEO operating review, using authenticated Search Console/Bing evidence plus the existing shared application/handoff evidence. Missing evidence remains missing rather than becoming zero.
+
+### Per-program query × page owners
+Track separately:
+- `/academy/us-logistics-operations/`
+- `/ua/academy/us-logistics-operations/`
+- `/academy/marketing/`
+- future `/ua/academy/marketing/` only after publication.
+
+### 7-day operational view
+For each indexable program owner record when authenticated data is available:
+- indexed / excluded / unknown state;
+- impressions;
+- clicks;
+- CTR;
+- average position;
+- branded vs non-branded classification where the reviewed evidence supports it;
+- top reviewed query families mapped to the canonical owner;
+- evidence of a second Hermes page receiving the same query family, flagged for review rather than automatically called cannibalization;
+- application CTA / shared handoff evidence available for the owner.
+
+Use the 7-day view for defects, query-owner mismatch and obvious acquisition friction, not for declaring a market winner.
+
+### 28-day decision view
+For each owner compare the same search fields plus:
+- whether non-branded discovery is sustained;
+- whether the page is earning queries that match its curriculum and language;
+- whether localized owner and English owner remain distinct rather than competing for the same language intent;
+- available shared application preview/handoff/delivery evidence;
+- reviewed application quality / program fit when private-safe aggregate evidence is available.
+
+### Decision states
+- `EXPAND`: sustained relevant discovery + working conversion evidence + distinct next-market value.
+- `IMPROVE_OWNER`: impressions/query fit exist but CTR, copy fit, internal links or conversion path need work.
+- `CONSOLIDATE`: multiple Hermes owners repeatedly compete for the same intent without distinct user value.
+- `HOLD`: evidence is missing, too weak, non-comparable, or conversion/measurement is not ready.
+
+### Current measurement limitation
+The shared `ContactCTA` provides the real form/preview/live-delivery workflow, but this research does **not** claim a complete Academy-specific analytics event taxonomy or authenticated GA4 receipt baseline. Academy-specific event instrumentation/receipt proof is a separate technical measurement task. Until it exists, do not infer conversion counts from page publication or from a prepared handoff alone.
+
 ## Diaspora publication gate
 
 Population or temporary-protection presence is a **market-prioritization signal only**. A country-specific Academy page can move from `research` to `approved_for_build` only when all of the following are recorded:
@@ -83,9 +126,9 @@ If any item is missing, status stays `research` or `hold`.
 
 The next Academy growth URL should be evaluated in this order:
 
-1. Merge reciprocal Academy hreflang and Ukrainian shared application-shell work.
-2. Record the 7/28-day measurement owner for Academy.
-3. Build one Ukrainian Marketing program owner if the final owner map confirms no duplicate route and the shared application supports `program=marketing&language=uk`.
+1. Reciprocal Academy hreflang and Ukrainian shared application-shell work are merged.
+2. The Academy 7/28-day measurement owner is defined above; authenticated current evidence remains an external prerequisite for market-performance claims.
+3. Build one Ukrainian Marketing program owner if final route QA confirms no duplicate owner and the shared application preserves `program=marketing&language=uk`.
 4. Measure Ukraine program owners before any Germany/Poland country expansion.
 5. Keep Czechia/Spain country hypotheses on HOLD until new query evidence changes the decision.
 
