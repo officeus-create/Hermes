@@ -1,12 +1,20 @@
 type PagesContext = {
   request: Request;
-  next(): Promise<Response>;
+  next(input?: Request | string, init?: RequestInit): Promise<Response>;
 };
 
 type CarrierContractPayload = {
   selected_plan?: unknown;
   service_percentage?: unknown;
 };
+
+type GeneralLeadPayload = {
+  source_path?: unknown;
+  interest?: unknown;
+  direction_fields?: unknown;
+};
+
+const REPAIR_SHOP_PLAN_PATH = "/services/hermes-connect/repair-shops/plan/";
 
 const normalizePercentage = (value: unknown) => {
   if (typeof value !== "string" && typeof value !== "number") return null;
@@ -25,8 +33,48 @@ const mismatchResponse = () => new Response(
   },
 );
 
+const normalizeRepairShopPlanLead = async (context: PagesContext, url: URL) => {
+  if (url.pathname !== "/api/logistics-lead" || context.request.method !== "POST") return null;
+  if (!context.request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) return null;
+
+  let payload: GeneralLeadPayload;
+  try {
+    payload = await context.request.clone().json() as GeneralLeadPayload;
+  } catch {
+    return null;
+  }
+
+  if (payload.source_path !== REPAIR_SHOP_PLAN_PATH) return null;
+
+  const normalized = {
+    ...payload,
+    interest: "IT Development",
+    direction_fields: {
+      direction: "IT Development",
+      fields: {
+        system_or_workflow_needed: "Hermes Connect Repair Shops — Founding Shop Plan paid activation",
+        number_of_users: "One repair shop location",
+        budget_range: "$99/month Founding Shop Plan",
+      },
+    },
+  };
+
+  const headers = new Headers(context.request.headers);
+  headers.delete("Content-Length");
+  const request = new Request(context.request.url, {
+    method: context.request.method,
+    headers,
+    body: JSON.stringify(normalized),
+  });
+  return context.next(request);
+};
+
 export async function onRequest(context: PagesContext) {
   const url = new URL(context.request.url);
+
+  const repairShopPlanResponse = await normalizeRepairShopPlanLead(context, url);
+  if (repairShopPlanResponse) return repairShopPlanResponse;
+
   if (url.pathname !== "/api/carrier-contract" || context.request.method !== "POST") return context.next();
   if (!context.request.headers.get("Content-Type")?.toLowerCase().startsWith("application/json")) return context.next();
 
