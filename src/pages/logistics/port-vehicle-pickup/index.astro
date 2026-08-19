@@ -1,0 +1,104 @@
+---
+import LogisticsCommercialPage from "../../../components/LogisticsCommercialPage.astro";
+
+const content = {
+  title: "Port Vehicle Pickup & Inland Transport | Hermes Logistics",
+  description: "Port vehicle pickup and inland transport coordination for released vehicles moving from U.S. ports, terminals, airports, or approved facilities to dealers, businesses, or customers.",
+  eyebrow: "Hermes Logistics · Port Vehicle Pickup",
+  h1: "Port Vehicle Pickup & Inland Transport",
+  intro: "Hermes reviews inland vehicle transport requests after the customer or authorized party provides the port or terminal, release status, ready date, storage deadline, vehicle condition, access context, and delivery destination. Hermes coordinates transportation review; it does not represent itself as a customs broker, port, terminal, warehouse, or customs-clearance provider.",
+  image: "/images/path-logistics-system.jpg",
+  imageAlt: "Vehicle transport coordination from a port or terminal to an inland destination",
+  audience: [
+    "Importers or vehicle owners arranging inland movement after release",
+    "Dealers receiving vehicles from a port, terminal, airport, or approved facility",
+    "Businesses coordinating port-to-warehouse, port-to-dealer, or port-to-customer vehicle movement",
+    "Customers who need access, timing, condition, equipment, and carrier-fit review before pickup",
+  ],
+  benefits: [
+    {
+      title: "Release-readiness review",
+      body: "Confirm whether the vehicle is released and ready for pickup before carrier matching. Sensitive release documents, VINs, credentials, and gate codes stay out of public URLs and ordinary analytics.",
+    },
+    {
+      title: "Facility and access context",
+      body: "Review the known port, terminal, airport, warehouse, or other facility, plus pickup hours, appointment rules, escort or TWIC context when applicable, and any non-sensitive access notes supplied by the customer or facility.",
+    },
+    {
+      title: "Storage and timing awareness",
+      body: "Record the ready date, storage deadline, requested delivery timing, and scheduling constraints so Logistics Sales can assess urgency without promising pickup, release, or delivery timing.",
+    },
+    {
+      title: "Vehicle and equipment fit",
+      body: "Review year, make, model, quantity, operability, loading requirements, and open, enclosed, winch, multi-car, or special-equipment needs before an option is represented as available.",
+    },
+    {
+      title: "Carrier qualification",
+      body: "Carrier authority, insurance, equipment, route, availability, and operating fit are reviewed before coordination is confirmed. Submission does not guarantee a carrier or capacity.",
+    },
+    {
+      title: "One inland transport handoff",
+      body: "Use the same Hermes vehicle-transport intake and Logistics Sales receiver already used for dealer, auction, business, and private vehicle requests. No second booking system or duplicate backend is created.",
+    },
+  ],
+  process: [
+    {
+      title: "Prepare the non-sensitive pickup context",
+      body: "Provide the known facility, delivery location, ready date, release status, storage deadline, vehicle condition, quantity, and equipment preference. Keep private release numbers and documents out of the public form.",
+    },
+    {
+      title: "Review release, access, and timing",
+      body: "Logistics Sales checks whether release/access information is sufficient for transport review and identifies missing facility, appointment, escort, storage, operability, or loading details that require direct clarification.",
+    },
+    {
+      title: "Review inland carrier and equipment fit",
+      body: "After the request is complete, available carrier options may be evaluated against authority, insurance, equipment, route, timing, and facility-access requirements. Availability is not guaranteed before confirmation.",
+    },
+    {
+      title: "Confirm transportation separately",
+      body: "The customer reviews the applicable carrier information and transportation terms before any inland move is confirmed. Customs entry, customs clearance, ocean freight, terminal release, and port operations remain outside this page's represented scope.",
+    },
+  ],
+  faq: [
+    {
+      question: "Does Hermes clear vehicles through U.S. Customs?",
+      answer: "No customs-brokerage or customs-clearance service is represented on this page. Hermes may ask for the current release or customs-status context as an input to inland transport review, but the importer or authorized party remains responsible for satisfying the applicable customs and release requirements through the appropriate parties.",
+    },
+    {
+      question: "What information should be ready before requesting port vehicle pickup?",
+      answer: "Prepare the port, terminal, airport, warehouse, or other known facility; delivery location; ready date; release status; storage deadline; vehicle year, make, model, quantity, condition; equipment preference; and non-sensitive access or appointment notes. Do not place VINs, gate-pass codes, passwords, payment credentials, identity documents, or private release documents in the public form.",
+    },
+    {
+      question: "Can Hermes guarantee pickup before a storage deadline?",
+      answer: "No. A storage deadline is an important planning input, not a guarantee. Pickup depends on release readiness, facility access, carrier acceptance, equipment, route, timing, weather, and current availability.",
+    },
+    {
+      question: "Can Hermes arrange TWIC access or an escort?",
+      answer: "Hermes can review whether TWIC, escort, appointment, or another access requirement applies based on information supplied for the facility. This page does not guarantee access credentials, escort availability, terminal admission, or pickup authorization.",
+    },
+    {
+      question: "Can a dealer use this page for port-to-dealer inventory movement?",
+      answer: "Yes, when the vehicle is being moved inland from a port or terminal. Dealer inventory and repeat dealer workflows may also be reviewed through the Dealer Vehicle Transportation page. The same direct vehicle-transport intake is used for the operating handoff.",
+    },
+    {
+      question: "Does submitting the request book transportation?",
+      answer: "No. Submission starts a Logistics Sales review. It does not create a booking, publish a load, confirm capacity, guarantee a rate, assign a carrier, or confirm pickup or delivery timing.",
+    },
+  ],
+  primaryAction: {
+    label: "Prepare a port pickup transport request",
+    href: "/logistics/request-vehicle-transport/?role=business&request=other#transport-intake",
+  },
+  handoffNote: "Use the existing direct vehicle-transport intake for the facility, route, ready date, release status, storage deadline, vehicle condition, equipment preference, and non-sensitive access context. Private release documents and credentials should be exchanged only through an approved secure channel after review.",
+  related: [
+    { label: "Port Pickup Qualification", href: "/paths/logistics/customers/port-pickup/" },
+    { label: "Request Vehicle Transportation", href: "/logistics/request-vehicle-transport/?role=business&request=other#transport-intake" },
+    { label: "Dealer Vehicle Transportation", href: "/logistics/dealer-vehicle-transportation/" },
+    { label: "Auction Vehicle Pickup", href: "/logistics/auction-vehicle-pickup/" },
+    { label: "Open Vehicle Transport", href: "/logistics/open-vehicle-transport/" },
+    { label: "Enclosed Vehicle Transport", href: "/logistics/enclosed-vehicle-transport/" },
+  ],
+};
+---
+
+<LogisticsCommercialPage content={content} />
