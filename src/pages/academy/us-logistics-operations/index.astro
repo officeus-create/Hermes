@@ -19,6 +19,12 @@ const content = {
   boundary:
     `${baseContent.boundary} Participation is also subject to applicable sanctions, export-control, payment, and legal-compliance requirements; nationality alone is not an automatic exclusion criterion.`,
 };
+
+const alternates = [
+  { lang: "en", href: "/academy/us-logistics-operations/" },
+  { lang: "uk", href: "/ua/academy/us-logistics-operations/" },
+  { lang: "x-default", href: "/academy/us-logistics-operations/" },
+];
 ---
 
-<AcademyPublicPage content={content} />
+<AcademyPublicPage content={content} alternates={alternates} />

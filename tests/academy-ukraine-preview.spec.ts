@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test";
 
 const route = "/ua/academy/us-logistics-operations/";
+const englishRoute = "/academy/us-logistics-operations/";
 
 const assertCoreSeo = async (page: import("@playwright/test").Page) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "uk");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${route}`);
-  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/academy/us-logistics-operations/");
+  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${englishRoute}`);
   await expect(page.locator('link[rel="alternate"][hreflang="uk"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${route}`);
+  await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${englishRoute}`);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/логістика США/i);
   await expect(page.getByRole("link", { name: /^Подати заявку$/ }).first()).toBeVisible();
 };
@@ -38,4 +40,14 @@ test("Academy Ukraine 390px preview keeps the primary funnel usable", async ({ p
   expect(overflow).toBeLessThanOrEqual(1);
 
   await page.screenshot({ path: "artifacts/academy-ukraine/mobile-390.png", fullPage: true });
+});
+
+test("English Academy logistics owner reciprocates Ukrainian hreflang", async ({ page }) => {
+  await page.goto(englishRoute, { waitUntil: "networkidle" });
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${englishRoute}`);
+  await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${englishRoute}`);
+  await expect(page.locator('link[rel="alternate"][hreflang="uk"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${route}`);
+  await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${englishRoute}`);
 });
