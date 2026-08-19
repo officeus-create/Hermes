@@ -20,6 +20,7 @@
   box-shadow:0 18px 44px rgba(0,0,0,.2);
   overflow:hidden;
   box-sizing:border-box;
+  position:relative;
 }
 .hc-experience .booking-page .hero[data-hc-booking-loading="true"]::before,
 .hc-experience .booking-page .hero[data-hc-booking-error="true"]::before{
@@ -37,9 +38,24 @@
 .hc-experience .booking-page .hero[data-hc-booking-error="true"]::before{
   opacity:.72;
 }
+.hc-experience .booking-page .hero[data-hc-booking-loading="true"] > .eyebrow,
+.hc-experience .booking-page .hero[data-hc-booking-error="true"] > .eyebrow{
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  display:block;
+  max-width:100%;
+  margin:0 0 8px!important;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
 .hc-experience .booking-page .hero[data-hc-booking-loading="true"] h1,
 .hc-experience .booking-page .hero[data-hc-booking-error="true"] h1{
+  position:static!important;
+  transform:none!important;
   max-width:100%;
+  margin-top:0!important;
   margin-bottom:10px;
   font-size:clamp(28px,5vw,44px);
   line-height:1.08;
