@@ -11,7 +11,7 @@ const assertUkrainianOwner = async (page: import("@playwright/test").Page) => {
   await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute("href", `https://hermeslogisticsus.com${enRoute}`);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/маркетинг/i);
   const primary = page.getByRole("link", { name: /^Подати заявку$/ }).first();
-  await expect(primary).toHaveAttribute("href", "/academy/apply/?program=marketing&language=uk#contact");
+  await expect(primary).toHaveAttribute("href", "/ua/academy/apply/?program=marketing&language=uk#contact");
 };
 
 test("Ukrainian Marketing owner is indexable, reciprocal and usable on desktop", async ({ page }) => {
