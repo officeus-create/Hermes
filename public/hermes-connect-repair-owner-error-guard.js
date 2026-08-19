@@ -68,15 +68,19 @@
     if (raw && technicalCode.test(raw)) node.textContent = message;
   };
 
+  const addStylesheet = (href, dataKey) => {
+    if (document.querySelector(`link[${dataKey}]`)) return;
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = href;
+    stylesheet.setAttribute(dataKey, "true");
+    document.head.append(stylesheet);
+  };
+
   const installWorkspaceVnext = () => {
     if (path !== `${ROOT}/dashboard` || document.querySelector('script[data-hc-owner-workspace-live]')) return;
-    if (!document.querySelector('link[data-hc-owner-workspace-live]')) {
-      const stylesheet = document.createElement("link");
-      stylesheet.rel = "stylesheet";
-      stylesheet.href = "/hermes-connect-repair-owner-workspace-live.css";
-      stylesheet.dataset.hcOwnerWorkspaceLive = "true";
-      document.head.append(stylesheet);
-    }
+    addStylesheet("/hermes-connect-repair-owner-workspace-live.css", "data-hc-owner-workspace-live");
+    addStylesheet("/hermes-connect-repair-owner-workspace-operational.css", "data-hc-owner-workspace-operational");
 
     const liveScript = document.createElement("script");
     liveScript.src = "/hermes-connect-repair-owner-workspace-live.js";
