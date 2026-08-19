@@ -6,6 +6,8 @@ import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-bookin
 import { ensureRepairShopBookingVehicleSchema } from "../_lib/repair-shop-booking-vehicle-schema.mjs";
 import { ensureRepairShopCapabilitiesSchema } from "../_lib/repair-shop-capabilities-schema.mjs";
 import { normalizeRepairShopCapacity, saturatedRepairShopIntervals } from "../_lib/repair-shop-capacity.mjs";
+import { findServiceForContext } from "../_lib/service-context.mjs";
+import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
 
 type Env = { DB?: any };
 type BookingInput = {
@@ -162,10 +164,17 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(400, { success: false, error: "invalid_appointment_date" });
   }
 
-  const service = await env.DB
-    .prepare("SELECT id,name,duration_minutes FROM services WHERE id = ? AND owner_specialist_id = ? LIMIT 1")
-    .bind(serviceId, shop.owner_specialist_id)
-    .first();
+  const repairServiceScope = await resolveDefaultRepairShopServiceContext(
+    env.DB,
+    String(shop.owner_specialist_id),
+    shop,
+  );
+  const service = await findServiceForContext(env.DB, {
+    ownerId: String(shop.owner_specialist_id),
+    contextId: repairServiceScope.context.id,
+    serviceId,
+    includeLegacyUnmapped: true,
+  });
   if (!service) return jsonResponse(404, { success: false, error: "service_not_found" });
 
   const durationMinutes = Number(service.duration_minutes);
