@@ -1,0 +1,32 @@
+name: Repair Shop owner auth production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/_lib/session.mjs
+      - functions/api/auth/register.ts
+      - functions/api/auth/login.ts
+      - functions/api/auth/logout.ts
+      - functions/api/auth/me.ts
+      - functions/api/repair-shop/cleanup-owner-auth-smoke.ts
+      - scripts/repair-owner-auth-production-smoke.sh
+      - .github/workflows/repair-owner-auth-production-smoke.yml
+
+permissions:
+  contents: read
+  checks: read
+
+jobs:
+  smoke:
+    name: Verify production owner auth lifecycle
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+      - name: Wait for exact Cloudflare Pages deploy and run owner auth smoke
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/repair-owner-auth-production-smoke.sh
