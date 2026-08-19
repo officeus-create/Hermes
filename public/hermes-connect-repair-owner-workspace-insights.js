@@ -12,15 +12,24 @@
     uk: { scheduleKicker:"ГРАФІК ЗАПИСІВ · LIVE", scheduleTitle:"Найближчий сервіс", scheduleEmpty:"Зараз немає активних записів зі статусом «підтверджено» або «в роботі».", customersKicker:"ОСТАННІ КЛІЄНТИ · LIVE", customersTitle:"Активність клієнтів", customersEmpty:"Активність з’явиться після першого реального запису.", crm:"Відкрити CRM клієнтів ↗", opportunityKicker:"МОЖЛИВІСТЬ ПОВЕРНЕННЯ · LIVE", opportunityTitle:"Що можна покращити далі", cancelled:(n)=>`Скасованих записів: ${n}. Їх можна перевірити для follow-up клієнта.`, completed:(n)=>`Завершених візитів: ${n}. Наступний реальний крок — follow-up і наступний запис клієнта.`, active:(n)=>`Активних записів: ${n}. Спочатку завершіть обслуговування, потім Hermes покаже наступний follow-up сигнал.`, first:"Публічне посилання готове. Наступний доказ — перший реальний запис клієнта.", setup:"Спочатку завершіть профіль, послуги та публічний запис — до цього Hermes не вигадує можливість зростання.", capacity:"Рекомендації щодо вільної потужності приховані, доки їх не підтверджують реальні availability та appointments.", booking:"Перевірити записи", customer:"Клієнт" },
     es: { scheduleKicker:"AGENDA · LIVE", scheduleTitle:"Próximo servicio", scheduleEmpty:"No hay reservas confirmadas o en curso activas ahora.", customersKicker:"CLIENTES RECIENTES · LIVE", customersTitle:"Actividad de clientes", customersEmpty:"La actividad aparecerá tras la primera reserva real.", crm:"Abrir CRM de clientes ↗", opportunityKicker:"OPORTUNIDAD RECUPERABLE · LIVE", opportunityTitle:"Qué puede avanzar ahora", cancelled:(n)=>`${n} reserva${n===1?" cancelada":"s canceladas"} puede revisarse para seguimiento.`, completed:(n)=>`${n} visita${n===1?" completada":"s completadas"} puede alimentar el próximo seguimiento.`, active:(n)=>`${n} reserva${n===1?" activa necesita":"s activas necesitan"} completar el servicio antes del siguiente seguimiento.`, first:"El enlace público está listo. La siguiente prueba es la primera reserva real.", setup:"Termina perfil, servicios y reserva pública antes de que Hermes muestre una oportunidad de crecimiento.", capacity:"Las recomendaciones de capacidad quedan ocultas hasta estar respaldadas por disponibilidad y citas reales.", booking:"Revisar reservas", customer:"Cliente" },
     it: { scheduleKicker:"AGENDA · LIVE", scheduleTitle:"Prossimo servizio", scheduleEmpty:"Non ci sono prenotazioni confermate o in corso attive in questo momento.", customersKicker:"CLIENTI RECENTI · LIVE", customersTitle:"Attività clienti", customersEmpty:"L’attività apparirà dopo la prima prenotazione reale.", crm:"Apri CRM clienti ↗", opportunityKicker:"OPPORTUNITÀ RECUPERABILE · LIVE", opportunityTitle:"Cosa può avanzare ora", cancelled:(n)=>`${n} prenotazion${n===1?"e annullata":"i annullate"} può essere rivista per follow-up.`, completed:(n)=>`${n} visit${n===1?"a completata":"e completate"} può alimentare il prossimo follow-up.`, active:(n)=>`${n} prenotazion${n===1?"e attiva deve":"i attive devono"} completare il servizio prima del prossimo follow-up.`, first:"Il link pubblico è pronto. La prossima prova è la prima prenotazione reale.", setup:"Completa profilo, servizi e prenotazione pubblica prima che Hermes mostri opportunità di crescita.", capacity:"Le raccomandazioni di capacità restano nascoste finché non sono supportate da disponibilità e appuntamenti reali.", booking:"Controlla prenotazioni", customer:"Cliente" },
-    fr: { scheduleKicker:"PLANNING · LIVE", scheduleTitle:"Prochain service", scheduleEmpty:"Aucune réservation confirmée ou en cours n’est active pour le moment.", customersKicker:"CLIENTS RÉCENTS · LIVE", customersTitle:"Activité clients", customersEmpty:"L’activité apparaîtra après la première réservation réelle.", crm:"Ouvrir le CRM clients ↗", opportunityKicker:"OPPORTUNITÉ RÉCUPÉRABLE · LIVE", opportunityTitle:"Ce qui peut avancer maintenant", cancelled:(n)=>`${n} réservation${n===1?" annulée":"s annulées"} peut être revue pour un suivi client.`, completed:(n)=>`${n} visite${n===1?" terminée":"s terminées"} peut alimenter le prochain suivi.`, active:(n)=>`${n} réservation${n===1?" active doit":"s actives doivent"} terminer le service avant le prochain signal de suivi.`, first:"Le lien public est prêt. La prochaine preuve est la première réservation réelle.", setup:"Terminez le profil, les services et la réservation publique avant que Hermes n’affiche une opportunité de croissance.", capacity:"Les recommandations de capacité restent masquées tant que disponibilité et rendez-vous réels ne les justifient pas.", booking:"Voir les réservations", customer:"Client" },
+    fr: { scheduleKicker:"PLANNING · LIVE", scheduleTitle:"Prochain service", scheduleEmpty:"Aucune réservation confirmée ou en cours n’est active pour le moment.", customersKicker:"CLIENTS RÉCENTS · LIVE", customersTitle:"Activité clients", customersEmpty:"L’activité apparaîtra après la première réservation réelle.", crm:"Ouvrir le CRM clients ↗", opportunityKicker:"OPPORTUNITÉ RÉCUPÉRABLE · LIVE", opportunityTitle:"Ce qui peut avancer maintenant", cancelled:(n)=>`${n} réservation${n===1?" annulée":"s annulées"} peut être revue pour un suivi client.`, completed:(n)=>`${n} visite${n===1?" terminée":"s terminées"} peut alimenter le prochain suivi.`, active:(n)=>`${n} réservation${n===1?" active doit":"s actives doivent"} terminer le service avant le prochain signal de suivi.`, first:"Le lien public est prêt. La prochaine preuve est une réservation réelle.", setup:"Terminez le profil, les services et la réservation publique avant que Hermes n’affiche une opportunité de croissance.", capacity:"Les recommandations de capacité restent masquées tant que disponibilité et rendez-vous réels ne les justifient pas.", booking:"Voir les réservations", customer:"Client" },
   };
   const t = strings[locale] || strings.en;
 
   const withLang = (href) => locale === "en" ? href : `${href}${href.includes("?") ? "&" : "?"}lang=${encodeURIComponent(locale)}`;
   const safeText = (value) => String(value || "").replace(/\s+/g, " ").trim();
   const escapeHtml = (value) => String(value || "").replace(/[&<>\"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" })[char]);
+  const growthHooks = ["data-hc-growth-confirmed", "data-hc-growth-progress", "data-hc-growth-completed", "data-hc-growth-cancelled"];
+  const restoreGrowthHooks = () => {
+    Array.from(document.querySelectorAll(".hc-owner-live-growth-stats span")).forEach((node, index) => {
+      const value = node.querySelector("b");
+      const hook = growthHooks[index];
+      if (value && hook && !value.hasAttribute(hook)) value.setAttribute(hook, "");
+    });
+  };
 
   const ensureSurface = () => {
+    restoreGrowthHooks();
     const growth = document.querySelector(".hc-owner-live-growth");
     if (!(growth instanceof HTMLElement)) return null;
     let surface = document.querySelector("[data-hc-owner-live-activity]");
@@ -64,6 +73,7 @@
 
   const render = () => {
     if (!ensureSurface()) return;
+    restoreGrowthHooks();
     const rows = bookingRows();
     const activeRows = rows.filter((row) => row.status === "confirmed" || row.status === "in_progress");
     const schedule = document.querySelector("[data-hc-live-schedule-list]");
@@ -98,7 +108,10 @@
 
   const install = () => {
     if (!document.querySelector('[data-hc-owner-workspace="live"]')) return false;
+    restoreGrowthHooks();
     render();
+    const growthStats = document.querySelector(".hc-owner-live-growth-stats");
+    if (growthStats) new MutationObserver(() => queueMicrotask(restoreGrowthHooks)).observe(growthStats, { childList:true, subtree:true });
     const bookings = document.getElementById("bookings-list");
     if (bookings) new MutationObserver(() => queueMicrotask(render)).observe(bookings, { childList:true, subtree:true });
     const publicLink = document.getElementById("public-link-wrap");
