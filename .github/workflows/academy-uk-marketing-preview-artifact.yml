@@ -33,3 +33,5 @@ jobs:
           path: artifacts/academy-ukrainian-marketing/*.png
           if-no-files-found: error
           retention-days: 3
+
+# Temporary visual-QA workflow. Remove before production merge.
