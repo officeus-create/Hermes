@@ -69,6 +69,7 @@ await import("./geo-operating-handoff.test.mjs");
 await import("./geo-gsc-fresh-checkpoint.test.mjs");
 await import("./geo-us-opportunity-engine.test.mjs");
 await import("./geo-logistics-seo-owner-optimization.test.mjs");
+await import("./geo-car-hauling-owner-readiness.test.mjs");
 await import("./geo-funnel-outcome-health.test.mjs");
 await import("./geo-private-outcome-import.test.mjs");
 await import("./geo-canonical-owner-route-audit.test.mjs");
