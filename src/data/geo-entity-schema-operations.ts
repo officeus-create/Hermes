@@ -29,13 +29,17 @@ export const auditGeoPublicEntityPublicationState = () => {
 
 export const auditGeoSameAsLeakage = (surfaces: GeoAnswerSurface[]) => {
   const heldProfileUrls = new Set(heldCrossEntityProfiles.map((profile) => profile.url));
+  const approvedRootUrls = new Set(approvedHermesSameAs);
   const issues: string[] = [];
   for (const surface of surfaces) {
     validateGeoAnswerSurface(surface);
     for (const entity of surface.entities) {
       for (const sameAs of entity.sameAs ?? []) {
-        if (heldProfileUrls.has(sameAs)) issues.push(`${surface.slug}:${entity.id}:held_profile_sameAs:${sameAs}`);
-        if (entity.id === "hermes_ecosystem" && !approvedHermesSameAs.includes(sameAs)) {
+        const isApprovedRootSameAs = entity.id === "hermes_ecosystem" && approvedRootUrls.has(sameAs);
+        if (heldProfileUrls.has(sameAs) && !isApprovedRootSameAs) {
+          issues.push(`${surface.slug}:${entity.id}:held_profile_sameAs:${sameAs}`);
+        }
+        if (entity.id === "hermes_ecosystem" && !approvedRootUrls.has(sameAs)) {
           issues.push(`${surface.slug}:${entity.id}:unapproved_root_sameAs:${sameAs}`);
         }
       }
