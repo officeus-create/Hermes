@@ -1,5 +1,6 @@
 /* Shared resource patterns used across public Logistics, Academy, Marketing/IT resources and internal review workspaces. */
 @import "./features/resource.css";
+@import "./features/carrier-calculators.css";
 
 .appleton-breadcrumbs {
   display: flex;
