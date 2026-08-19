@@ -6,6 +6,44 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
 
 {isRepairShopSurface && (
   <>
+    <script is:inline>
+      (() => {
+        const root = "/services/hermes-connect/repair-shops";
+        const path = window.location.pathname.replace(/\/+$/, "");
+        if (path !== `${root}/dashboard` || window.__hcRepairCoreFetchInstalled) return;
+        window.__hcRepairCoreFetchInstalled = true;
+        const originalFetch = window.fetch.bind(window);
+        const corePaths = new Set([
+          "/api/repair-shop/profile",
+          "/api/services",
+          "/api/repair-shop/availability",
+          "/api/repair-shop/bookings",
+        ]);
+        const pending = new Map();
+        const clear = () => pending.clear();
+        window.fetch = async (input, init = {}) => {
+          const request = input instanceof Request ? input : null;
+          const method = String(init.method || request?.method || "GET").toUpperCase();
+          const url = new URL(request?.url || String(input), window.location.origin);
+          const sameOrigin = url.origin === window.location.origin;
+          const key = `${method}:${url.pathname}${url.search}`;
+          if (method === "GET" && sameOrigin && corePaths.has(url.pathname)) {
+            if (!pending.has(key)) {
+              pending.set(key, originalFetch(input, init).then((response) => {
+                if (!response.ok) pending.delete(key);
+                return response;
+              }).catch((error) => { pending.delete(key); throw error; }));
+            }
+            const response = await pending.get(key);
+            return response.clone();
+          }
+          if (method !== "GET" && sameOrigin) clear();
+          const response = await originalFetch(input, init);
+          if (method !== "GET" && sameOrigin) clear();
+          return response;
+        };
+      })();
+    </script>
     <script is:inline src="/repair-shop-activation.js"></script>
     <script is:inline src="/repair-shop-web-v1.js"></script>
     <script is:inline src="/repair-shop-qr.js"></script>
