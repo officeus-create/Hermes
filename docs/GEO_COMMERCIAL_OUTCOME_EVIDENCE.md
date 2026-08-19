@@ -99,6 +99,8 @@ Only the **count of wins whose commercial outcome was reconciled** is represente
 
 ## Verification
 
+Stack verification is refreshed against the current green #708 GA4 evidence head `b22d387fa997f188a2703621af3108b40fed8473` before tasks 146–160 are credited.
+
 Tests cover:
 
 - a complete verified 7-day chain;
