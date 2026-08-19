@@ -3,233 +3,69 @@ import { ArrowLeft, Clock3, LogOut } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
+import type { SiteLocale } from "../../../../data/locales";
+
+const supported = new Set<SiteLocale>(["en", "ru", "uk", "es", "it", "fr"]);
+const requested = (Astro.url.searchParams.get("lang") || "en").toLowerCase() as SiteLocale;
+const locale: SiteLocale = supported.has(requested) ? requested : "en";
+const withLang = (href:string) => locale === "en" ? href : `${href}${href.includes("?")?"&":"?"}lang=${encodeURIComponent(locale)}`;
+const pageCopy = {
+  en:{title:"Repair Shop Availability | Hermes Connect",description:"Set the real weekly availability for your repair shop in Hermes Connect.",back:"Owner workspace",eyebrow:"Hermes Connect · Repair Shops",heading:"Weekly availability",loading:"Loading your secure schedule...",logout:"Logout",production:"Production D1 schedule",hours:"Shop hours",intro:"One continuous booking window per day for this beta. Times are interpreted in your saved shop timezone.",timezone:"Timezone",save:"Save weekly availability",controls:"What this controls",controlsBody:"This schedule is stored for your shop only and is exposed through your public shop profile. Customer bookable time slots are generated from these hours and each service duration."},
+  ru:{title:"Расписание СТО | Hermes Connect",description:"Настройте реальное недельное расписание СТО в Hermes Connect.",back:"Кабинет владельца",eyebrow:"Hermes Connect · СТО",heading:"Недельное расписание",loading:"Загружаем защищённое расписание...",logout:"Выйти",production:"Расписание Production D1",hours:"Часы работы СТО",intro:"Для каждого дня используется одно непрерывное окно записи. Время рассчитывается в сохранённом часовом поясе СТО.",timezone:"Часовой пояс",save:"Сохранить недельное расписание",controls:"Что определяет это расписание",controlsBody:"Расписание хранится только для вашего СТО и используется в публичном профиле. Доступные клиенту слоты формируются из этих часов и длительности каждой услуги."},
+  uk:{title:"Розклад СТО | Hermes Connect",description:"Налаштуйте реальний тижневий розклад СТО в Hermes Connect.",back:"Кабінет власника",eyebrow:"Hermes Connect · СТО",heading:"Тижневий розклад",loading:"Завантажуємо захищений розклад...",logout:"Вийти",production:"Розклад Production D1",hours:"Години роботи СТО",intro:"Для кожного дня використовується одне безперервне вікно запису. Час розраховується у збереженому часовому поясі СТО.",timezone:"Часовий пояс",save:"Зберегти тижневий розклад",controls:"Що визначає цей розклад",controlsBody:"Розклад зберігається лише для вашого СТО та використовується у публічному профілі. Доступні клієнту слоти формуються з цих годин і тривалості кожної послуги."},
+  es:{title:"Disponibilidad del taller | Hermes Connect",description:"Configura la disponibilidad semanal real de tu taller en Hermes Connect.",back:"Espacio del propietario",eyebrow:"Hermes Connect · Talleres",heading:"Disponibilidad semanal",loading:"Cargando tu horario seguro...",logout:"Salir",production:"Horario Production D1",hours:"Horario del taller",intro:"Se usa una ventana continua de reservas por día. Las horas se interpretan en la zona horaria guardada del taller.",timezone:"Zona horaria",save:"Guardar disponibilidad semanal",controls:"Qué controla este horario",controlsBody:"El horario se guarda solo para tu taller y se usa en el perfil público. Los turnos reservables se generan con estas horas y la duración de cada servicio."},
+  it:{title:"Disponibilità officina | Hermes Connect",description:"Configura la disponibilità settimanale reale della tua officina in Hermes Connect.",back:"Spazio del proprietario",eyebrow:"Hermes Connect · Officine",heading:"Disponibilità settimanale",loading:"Caricamento dell’orario protetto...",logout:"Esci",production:"Orario Production D1",hours:"Orari officina",intro:"Per ogni giorno viene usata una finestra continua di prenotazione. Gli orari seguono il fuso orario salvato dell’officina.",timezone:"Fuso orario",save:"Salva disponibilità settimanale",controls:"Cosa controlla questo orario",controlsBody:"L’orario viene salvato solo per la tua officina e usato nel profilo pubblico. Gli slot prenotabili derivano da questi orari e dalla durata di ogni servizio."},
+  fr:{title:"Disponibilités de l’atelier | Hermes Connect",description:"Configurez les disponibilités hebdomadaires réelles de votre atelier dans Hermes Connect.",back:"Espace propriétaire",eyebrow:"Hermes Connect · Ateliers",heading:"Disponibilités hebdomadaires",loading:"Chargement de votre planning sécurisé...",logout:"Déconnexion",production:"Planning Production D1",hours:"Horaires de l’atelier",intro:"Une seule plage continue de réservation est utilisée par jour. Les heures suivent le fuseau horaire enregistré de l’atelier.",timezone:"Fuseau horaire",save:"Enregistrer les disponibilités",controls:"Ce que contrôle ce planning",controlsBody:"Le planning est enregistré uniquement pour votre atelier et utilisé dans le profil public. Les créneaux réservables sont générés à partir de ces horaires et de la durée de chaque service."},
+} as const;
+const p = pageCopy[locale];
 ---
 
-<BaseLayout
-  title="Repair Shop Availability | Hermes Connect"
-  description="Set the real weekly availability for your repair shop in Hermes Connect."
-  robots="noindex,nofollow"
->
+<BaseLayout title={p.title} description={p.description} robots="noindex,nofollow" locale={locale}>
   <SiteHeader activePath="/paths/technology/" />
-  <main class="availability-page">
+  <main class="availability-page" id="main-content">
     <div class="shell">
-      <a class="back-link" href="/services/hermes-connect/repair-shops/dashboard/"><ArrowLeft size={16} /> Owner workspace</a>
-
+      <a class="back-link" href={withLang("/services/hermes-connect/repair-shops/dashboard/")}><ArrowLeft size={16} /> {p.back}</a>
       <header class="page-header">
-        <div>
-          <p class="eyebrow">Hermes Connect · Repair Shops</p>
-          <h1>Weekly availability</h1>
-          <p id="owner-summary" class="muted">Loading your secure schedule...</p>
-        </div>
-        <button id="logout-btn" class="secondary-btn" type="button"><LogOut size={16} /> Logout</button>
+        <div><p class="eyebrow">{p.eyebrow}</p><h1>{p.heading}</h1><p id="owner-summary" class="muted">{p.loading}</p></div>
+        <button id="logout-btn" class="secondary-btn" type="button"><LogOut size={16} /> {p.logout}</button>
       </header>
-
-      <div id="availability-alert" class="alert hidden" role="status"></div>
-
+      <div id="availability-alert" class="alert hidden" role="status" aria-live="polite"></div>
       <section class="panel">
         <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Production D1 schedule</p>
-            <h2>Shop hours</h2>
-            <p class="muted">One continuous booking window per day for this beta. Times are interpreted in your saved shop timezone.</p>
-          </div>
-          <span id="timezone-pill" class="timezone-pill"><Clock3 size={14} /> Timezone</span>
+          <div><p class="eyebrow">{p.production}</p><h2>{p.hours}</h2><p class="muted">{p.intro}</p></div>
+          <span id="timezone-pill" class="timezone-pill"><Clock3 size={14} /> {p.timezone}</span>
         </div>
-
         <form id="availability-form">
           <div id="availability-list" class="availability-list" aria-live="polite"></div>
-          <button id="save-availability-btn" class="primary-btn" type="submit">Save weekly availability</button>
+          <button id="save-availability-btn" class="primary-btn" type="submit">{p.save}</button>
         </form>
       </section>
-
-      <section class="note-panel">
-        <strong>What this controls</strong>
-        <p class="muted">This schedule is stored for your shop only and is also exposed through your public shop profile. Customer bookable time slots will be generated from these hours and each service duration in the next production slice.</p>
-      </section>
+      <section class="note-panel"><strong>{p.controls}</strong><p class="muted">{p.controlsBody}</p></section>
     </div>
   </main>
   <SiteFooter />
 </BaseLayout>
 
 <script>
-  type AvailabilityDay = {
-    day_of_week: number;
-    is_open: boolean;
-    start_time: string | null;
-    end_time: string | null;
-  };
-
-  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const displayOrder = [1, 2, 3, 4, 5, 6, 0];
-  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
-  const alertBox = $("availability-alert");
-  const form = $<HTMLFormElement>("availability-form");
-  const saveButton = $<HTMLButtonElement>("save-availability-btn");
-  let days: AvailabilityDay[] = Array.from({ length: 7 }, (_, day) => ({
-    day_of_week: day,
-    is_open: false,
-    start_time: null,
-    end_time: null,
-  }));
-
-  function showAlert(message: string, kind: "error" | "success" = "error") {
-    if (!alertBox) return;
-    alertBox.textContent = message;
-    alertBox.className = `alert ${kind}`;
-  }
-  function clearAlert() {
-    if (!alertBox) return;
-    alertBox.textContent = "";
-    alertBox.className = "alert hidden";
-  }
-  async function readJson(response: Response) {
-    try { return await response.json(); }
-    catch { return { success: false, error: "invalid_server_response" }; }
-  }
-  function redirectToAuth() {
-    window.location.replace("/services/hermes-connect/repair-shops/auth/");
-  }
-
-  async function requireOwnerSession() {
-    const response = await fetch("/api/auth/me", { credentials: "same-origin" });
-    if (response.status === 401) { redirectToAuth(); return false; }
-    const data = await readJson(response);
-    if (!response.ok || !data.success || !data.specialist) {
-      showAlert(data.error || "Unable to load your secure session.");
-      return false;
-    }
-    const summary = $("owner-summary");
-    if (summary) summary.textContent = `${data.specialist.name} · ${data.specialist.email}`;
-    return true;
-  }
-
-  function renderDays() {
-    const list = $("availability-list");
-    if (!list) return;
-    list.innerHTML = "";
-
-    for (const dayNumber of displayOrder) {
-      const day = days.find((item) => item.day_of_week === dayNumber) ?? {
-        day_of_week: dayNumber, is_open: false, start_time: null, end_time: null,
-      };
-      const row = document.createElement("div");
-      row.className = "day-row";
-      row.dataset.day = String(dayNumber);
-
-      const openLabel = document.createElement("label");
-      openLabel.className = "open-toggle";
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = day.is_open;
-      checkbox.setAttribute("aria-label", `${dayNames[dayNumber]} open`);
-      const dayName = document.createElement("strong");
-      dayName.textContent = dayNames[dayNumber];
-      openLabel.append(checkbox, dayName);
-
-      const timeWrap = document.createElement("div");
-      timeWrap.className = "time-wrap";
-      const start = document.createElement("input");
-      start.type = "time";
-      start.value = day.start_time || "08:00";
-      start.disabled = !day.is_open;
-      start.setAttribute("aria-label", `${dayNames[dayNumber]} start time`);
-      const separator = document.createElement("span");
-      separator.textContent = "to";
-      separator.className = "muted";
-      const end = document.createElement("input");
-      end.type = "time";
-      end.value = day.end_time || "17:00";
-      end.disabled = !day.is_open;
-      end.setAttribute("aria-label", `${dayNames[dayNumber]} end time`);
-      timeWrap.append(start, separator, end);
-
-      checkbox.addEventListener("change", () => {
-        start.disabled = !checkbox.checked;
-        end.disabled = !checkbox.checked;
-      });
-      row.append(openLabel, timeWrap);
-      list.append(row);
-    }
-  }
-
-  async function loadAvailability() {
-    const response = await fetch("/api/repair-shop/availability", { credentials: "same-origin" });
-    if (response.status === 401) return redirectToAuth();
-    const data = await readJson(response);
-    if (response.status === 409 && data.error === "shop_profile_required") {
-      showAlert("Save your shop profile in the owner workspace before setting availability.");
-      if (saveButton) saveButton.disabled = true;
-      return;
-    }
-    if (!response.ok || !data.success) {
-      showAlert(data.error || "Unable to load weekly availability.");
-      return;
-    }
-    days = Array.isArray(data.days) ? data.days : days;
-    renderDays();
-    const pill = $("timezone-pill");
-    if (pill) pill.textContent = data.timezone || "Shop timezone";
-  }
-
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    clearAlert();
-    if (saveButton) saveButton.disabled = true;
-    try {
-      const payload = displayOrder.map((dayNumber) => {
-        const row = document.querySelector<HTMLElement>(`.day-row[data-day="${dayNumber}"]`)!;
-        const checkbox = row.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
-        const times = row.querySelectorAll<HTMLInputElement>('input[type="time"]');
-        return {
-          day_of_week: dayNumber,
-          is_open: checkbox.checked,
-          start_time: checkbox.checked ? times[0].value : null,
-          end_time: checkbox.checked ? times[1].value : null,
-        };
-      });
-      const response = await fetch("/api/repair-shop/availability", {
-        method: "PUT",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ days: payload }),
-      });
-      const data = await readJson(response);
-      if (!response.ok || !data.success) {
-        const messages: Record<string, string> = {
-          invalid_time_range: "Every open day must end after it starts.",
-          invalid_time: "Enter a valid start and end time for every open day.",
-          seven_days_required: "The full seven-day schedule is required.",
-        };
-        showAlert(messages[data.error] || data.error || "Unable to save weekly availability.");
-        return;
-      }
-      days = data.days;
-      renderDays();
-      showAlert("Weekly availability saved to production.", "success");
-    } catch {
-      showAlert("Network error while saving weekly availability.");
-    } finally {
-      if (saveButton) saveButton.disabled = false;
-    }
-  });
-
-  $("logout-btn")?.addEventListener("click", async () => {
-    const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
-    if (response.ok) redirectToAuth(); else showAlert("Logout failed.");
-  });
-
-  async function initialize() {
-    try {
-      if (!(await requireOwnerSession())) return;
-      renderDays();
-      await loadAvailability();
-    } catch {
-      showAlert("Unable to initialize availability settings.");
-    }
-  }
-  initialize();
+  type AvailabilityDay={day_of_week:number;is_open:boolean;start_time:string|null;end_time:string|null};
+  const supported=new Set(["en","ru","uk","es","it","fr"]); const requested=(new URLSearchParams(window.location.search).get("lang")||"en").toLowerCase(); const locale=supported.has(requested)?requested:"en";
+  const copy={
+    en:{days:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],open:"open",start:"start time",end:"end time",to:"to",session:"Unable to load your secure session.",profile:"Save your shop profile in the owner workspace before setting availability.",load:"Unable to load weekly availability.",timezone:"Shop timezone",invalidRange:"Every open day must end after it starts.",invalidTime:"Enter a valid start and end time for every open day.",seven:"The full seven-day schedule is required.",save:"Unable to save weekly availability.",saved:"Weekly availability saved to production.",network:"Network error while saving weekly availability.",logout:"Logout failed.",init:"Unable to initialize availability settings."},
+    ru:{days:["Воскресенье","Понедельник","Вторник","Среда","Четверг","Пятница","Суббота"],open:"открыто",start:"начало",end:"окончание",to:"до",session:"Не удалось загрузить защищённую сессию.",profile:"Сначала сохраните профиль СТО в кабинете владельца.",load:"Не удалось загрузить недельное расписание.",timezone:"Часовой пояс СТО",invalidRange:"Для каждого открытого дня время окончания должно быть позже начала.",invalidTime:"Укажите корректное время начала и окончания для каждого открытого дня.",seven:"Нужно передать расписание на все семь дней.",save:"Не удалось сохранить недельное расписание.",saved:"Недельное расписание сохранено в production.",network:"Ошибка сети при сохранении расписания.",logout:"Не удалось выйти.",init:"Не удалось инициализировать настройки расписания."},
+    uk:{days:["Неділя","Понеділок","Вівторок","Середа","Четвер","П’ятниця","Субота"],open:"відкрито",start:"початок",end:"закінчення",to:"до",session:"Не вдалося завантажити захищену сесію.",profile:"Спочатку збережіть профіль СТО в кабінеті власника.",load:"Не вдалося завантажити тижневий розклад.",timezone:"Часовий пояс СТО",invalidRange:"Для кожного відкритого дня час завершення має бути пізніше початку.",invalidTime:"Вкажіть коректний час початку й завершення для кожного відкритого дня.",seven:"Потрібен розклад на всі сім днів.",save:"Не вдалося зберегти тижневий розклад.",saved:"Тижневий розклад збережено в production.",network:"Помилка мережі під час збереження розкладу.",logout:"Не вдалося вийти.",init:"Не вдалося ініціалізувати налаштування розкладу."},
+    es:{days:["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],open:"abierto",start:"inicio",end:"fin",to:"a",session:"No se pudo cargar la sesión segura.",profile:"Guarda primero el perfil del taller en el espacio del propietario.",load:"No se pudo cargar la disponibilidad semanal.",timezone:"Zona horaria del taller",invalidRange:"Cada día abierto debe terminar después de la hora de inicio.",invalidTime:"Introduce horas válidas de inicio y fin para cada día abierto.",seven:"Se requiere el horario completo de siete días.",save:"No se pudo guardar la disponibilidad semanal.",saved:"Disponibilidad semanal guardada en production.",network:"Error de red al guardar la disponibilidad.",logout:"No se pudo cerrar sesión.",init:"No se pudo iniciar la configuración de disponibilidad."},
+    it:{days:["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"],open:"aperto",start:"inizio",end:"fine",to:"a",session:"Impossibile caricare la sessione protetta.",profile:"Salva prima il profilo dell’officina nello spazio del proprietario.",load:"Impossibile caricare la disponibilità settimanale.",timezone:"Fuso orario officina",invalidRange:"Ogni giorno aperto deve terminare dopo l’orario di inizio.",invalidTime:"Inserisci orari validi di inizio e fine per ogni giorno aperto.",seven:"È richiesto l’orario completo di sette giorni.",save:"Impossibile salvare la disponibilità settimanale.",saved:"Disponibilità settimanale salvata in production.",network:"Errore di rete durante il salvataggio.",logout:"Disconnessione non riuscita.",init:"Impossibile inizializzare le impostazioni di disponibilità."},
+    fr:{days:["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"],open:"ouvert",start:"début",end:"fin",to:"à",session:"Impossible de charger la session sécurisée.",profile:"Enregistrez d’abord le profil de l’atelier dans l’espace propriétaire.",load:"Impossible de charger les disponibilités hebdomadaires.",timezone:"Fuseau horaire de l’atelier",invalidRange:"Chaque jour ouvert doit se terminer après l’heure de début.",invalidTime:"Saisissez des heures de début et de fin valides pour chaque jour ouvert.",seven:"Le planning complet des sept jours est requis.",save:"Impossible d’enregistrer les disponibilités.",saved:"Disponibilités hebdomadaires enregistrées en production.",network:"Erreur réseau lors de l’enregistrement.",logout:"Échec de la déconnexion.",init:"Impossible d’initialiser les paramètres de disponibilité."},
+  } as const; const t=copy[locale as keyof typeof copy]||copy.en; const displayOrder=[1,2,3,4,5,6,0];
+  const withLang=(href:string)=>locale==="en"?href:`${href}${href.includes("?")?"&":"?"}lang=${encodeURIComponent(locale)}`; const $=<T extends HTMLElement=HTMLElement>(id:string)=>document.getElementById(id) as T|null; const alertBox=$("availability-alert"); const form=$<HTMLFormElement>("availability-form"); const saveButton=$<HTMLButtonElement>("save-availability-btn"); let days:AvailabilityDay[]=Array.from({length:7},(_,day)=>({day_of_week:day,is_open:false,start_time:null,end_time:null}));
+  function showAlert(message:string,kind:"error"|"success"="error"){if(!alertBox)return;alertBox.textContent=message;alertBox.className=`alert ${kind}`;} function clearAlert(){if(!alertBox)return;alertBox.textContent="";alertBox.className="alert hidden";} async function readJson(response:Response){try{return await response.json();}catch{return{success:false,error:"invalid_server_response"};}} function redirectToAuth(){window.location.replace(withLang("/services/hermes-connect/repair-shops/auth/"));}
+  async function requireOwnerSession(){const response=await fetch("/api/auth/me",{credentials:"same-origin"});if(response.status===401){redirectToAuth();return false;}const data=await readJson(response);if(!response.ok||!data.success||!data.specialist){showAlert(t.session);return false;}const summary=$("owner-summary");if(summary)summary.textContent=`${data.specialist.name} · ${data.specialist.email}`;return true;}
+  function renderDays(){const list=$("availability-list");if(!list)return;list.innerHTML="";for(const dayNumber of displayOrder){const day=days.find(item=>item.day_of_week===dayNumber)??{day_of_week:dayNumber,is_open:false,start_time:null,end_time:null};const row=document.createElement("div");row.className="day-row";row.dataset.day=String(dayNumber);const openLabel=document.createElement("label");openLabel.className="open-toggle";const checkbox=document.createElement("input");checkbox.type="checkbox";checkbox.checked=day.is_open;checkbox.setAttribute("aria-label",`${t.days[dayNumber]} ${t.open}`);const dayName=document.createElement("strong");dayName.textContent=t.days[dayNumber];openLabel.append(checkbox,dayName);const timeWrap=document.createElement("div");timeWrap.className="time-wrap";const start=document.createElement("input");start.type="time";start.value=day.start_time||"08:00";start.disabled=!day.is_open;start.setAttribute("aria-label",`${t.days[dayNumber]} ${t.start}`);const separator=document.createElement("span");separator.textContent=t.to;separator.className="muted";const end=document.createElement("input");end.type="time";end.value=day.end_time||"17:00";end.disabled=!day.is_open;end.setAttribute("aria-label",`${t.days[dayNumber]} ${t.end}`);timeWrap.append(start,separator,end);checkbox.addEventListener("change",()=>{start.disabled=!checkbox.checked;end.disabled=!checkbox.checked;});row.append(openLabel,timeWrap);list.append(row);}}
+  async function loadAvailability(){const response=await fetch("/api/repair-shop/availability",{credentials:"same-origin"});if(response.status===401)return redirectToAuth();const data=await readJson(response);if(response.status===409&&data.error==="shop_profile_required"){showAlert(t.profile);if(saveButton)saveButton.disabled=true;return;}if(!response.ok||!data.success){showAlert(t.load);return;}days=Array.isArray(data.days)?data.days:days;renderDays();const pill=$("timezone-pill");if(pill)pill.textContent=data.timezone||t.timezone;}
+  form?.addEventListener("submit",async(event)=>{event.preventDefault();clearAlert();if(saveButton)saveButton.disabled=true;try{const payload=displayOrder.map(dayNumber=>{const row=document.querySelector<HTMLElement>(`.day-row[data-day="${dayNumber}"]`)!;const checkbox=row.querySelector<HTMLInputElement>('input[type="checkbox"]')!;const times=row.querySelectorAll<HTMLInputElement>('input[type="time"]');return{day_of_week:dayNumber,is_open:checkbox.checked,start_time:checkbox.checked?times[0].value:null,end_time:checkbox.checked?times[1].value:null};});const response=await fetch("/api/repair-shop/availability",{method:"PUT",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({days:payload})});const data=await readJson(response);if(!response.ok||!data.success){const messages:Record<string,string>={invalid_time_range:t.invalidRange,invalid_time:t.invalidTime,seven_days_required:t.seven};showAlert(messages[data.error]||t.save);return;}days=data.days;renderDays();showAlert(t.saved,"success");}catch{showAlert(t.network);}finally{if(saveButton)saveButton.disabled=false;}});
+  $("logout-btn")?.addEventListener("click",async()=>{const response=await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"});if(response.ok)redirectToAuth();else showAlert(t.logout);}); async function initialize(){try{if(!(await requireOwnerSession()))return;renderDays();await loadAvailability();}catch{showAlert(t.init);}} initialize();
 </script>
 
 <style>
-  .availability-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 15% 10%,rgba(124,92,255,.17),transparent 32%),radial-gradient(circle at 85% 20%,rgba(90,200,250,.11),transparent 30%),#090a0f}.shell{width:min(900px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a4a9b6;text-decoration:none;font-weight:650;margin-bottom:26px}.page-header,.panel-heading{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.page-header{margin-bottom:28px}.eyebrow{margin:0 0 8px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:800;color:#9d88ff}h1{margin:0 0 8px;font-size:clamp(30px,5vw,48px);line-height:1.05}h2{margin:0 0 8px;font-size:25px}.muted{margin:0;color:#a5aab8;line-height:1.6}.panel,.note-panel{border:1px solid rgba(255,255,255,.08);background:rgba(20,22,30,.76);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.panel{padding:28px;margin-bottom:22px}.note-panel{padding:22px 26px}.timezone-pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border-radius:999px;padding:8px 12px;background:rgba(124,92,255,.14);color:#c9bfff;font-size:13px;font-weight:750}.availability-list{display:grid;gap:10px;margin:28px 0 22px}.day-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 17px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(7,8,12,.36)}.open-toggle{display:flex;align-items:center;gap:11px;min-width:150px;cursor:pointer}.open-toggle input{width:18px;height:18px;accent-color:#7c5cff}.time-wrap{display:flex;align-items:center;gap:10px}.time-wrap input{min-height:42px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#11131a;color:#fff;padding:0 11px;font:inherit;outline:none;color-scheme:dark}.time-wrap input:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.13)}.time-wrap input:disabled{opacity:.4}.primary-btn,.secondary-btn{cursor:pointer;font:inherit;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px}.primary-btn{min-height:46px;border:0;border-radius:11px;padding:0 18px;color:#fff;background:linear-gradient(135deg,#7c5cff,#4ba9dc)}.secondary-btn{border-radius:11px;padding:11px 15px;color:#e8e9ee;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}button:disabled{opacity:.55;cursor:not-allowed}.alert{margin:0 0 18px;padding:13px 15px;border-radius:12px;font-weight:650}.alert.error{color:#ffc1c1;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.17)}.alert.success{color:#a7f3d0;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.17)}.hidden{display:none!important}@media(max-width:680px){.availability-page{padding:100px 16px 64px}.page-header,.panel-heading,.day-row{flex-direction:column;align-items:stretch}.page-header .secondary-btn{width:100%}.panel{padding:20px}.open-toggle{min-width:0}.time-wrap{display:grid;grid-template-columns:1fr auto 1fr}.primary-btn{width:100%}}
+.availability-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 15% 10%,rgba(124,92,255,.17),transparent 32%),radial-gradient(circle at 85% 20%,rgba(90,200,250,.11),transparent 30%),#090a0f}.shell{width:min(900px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a4a9b6;text-decoration:none;font-weight:650;margin-bottom:26px}.page-header,.panel-heading{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.page-header{margin-bottom:28px}.eyebrow{margin:0 0 8px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:800;color:#9d88ff}h1{margin:0 0 8px;font-size:clamp(30px,5vw,48px);line-height:1.05}h2{margin:0 0 8px;font-size:25px}.muted{margin:0;color:#a5aab8;line-height:1.6}.panel,.note-panel{border:1px solid rgba(255,255,255,.08);background:rgba(20,22,30,.76);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.25)}.panel{padding:28px;margin-bottom:22px}.note-panel{padding:22px 26px}.timezone-pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;border-radius:999px;padding:8px 12px;background:rgba(124,92,255,.14);color:#c9bfff;font-size:13px;font-weight:750}.availability-list{display:grid;gap:10px;margin:28px 0 22px}.day-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 17px;border:1px solid rgba(255,255,255,.07);border-radius:14px;background:rgba(7,8,12,.36)}.open-toggle{display:flex;align-items:center;gap:11px;min-width:150px;cursor:pointer}.open-toggle input{width:18px;height:18px;accent-color:#7c5cff}.time-wrap{display:flex;align-items:center;gap:10px}.time-wrap input{min-height:44px;border:1px solid rgba(255,255,255,.12);border-radius:10px;background:#11131a;color:#fff;padding:0 11px;font:inherit;outline:none;color-scheme:dark}.time-wrap input:focus-visible,.primary-btn:focus-visible,.secondary-btn:focus-visible,.back-link:focus-visible{outline:3px solid #5ac8fa;outline-offset:3px}.time-wrap input:disabled{opacity:.4}.primary-btn,.secondary-btn{cursor:pointer;font:inherit;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}.primary-btn{border:0;border-radius:11px;padding:0 18px;color:#fff;background:linear-gradient(135deg,#7c5cff,#4ba9dc)}.secondary-btn{border-radius:11px;padding:11px 15px;color:#e8e9ee;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}button:disabled{opacity:.55;cursor:not-allowed}.alert{margin:0 0 18px;padding:13px 15px;border-radius:12px;font-weight:650}.alert.error{color:#ffc1c1;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.17)}.alert.success{color:#a7f3d0;background:rgba(16,185,129,.09);border:1px solid rgba(16,185,129,.17)}.hidden{display:none!important}@media(max-width:680px){.availability-page{padding:100px 16px 64px;overflow-x:hidden}.page-header,.panel-heading,.day-row{flex-direction:column;align-items:stretch}.page-header .secondary-btn{width:100%}.panel{padding:20px}.open-toggle{min-width:0;min-height:44px}.time-wrap{display:grid;grid-template-columns:1fr auto 1fr}.primary-btn{width:100%}}@media(prefers-reduced-motion:reduce){.availability-page,.availability-page *{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
