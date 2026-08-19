@@ -60,21 +60,53 @@ const expectErrorHeroFlow = async (page: any) => {
   const geometry = await page.locator(".booking-page .hero").evaluate((hero: HTMLElement) => {
     const eyebrow = hero.querySelector<HTMLElement>(".eyebrow");
     const title = hero.querySelector<HTMLElement>("#shop-title");
-    if (!eyebrow || !title) return null;
+    const meta = hero.querySelector<HTMLElement>("#shop-meta");
+    if (!eyebrow || !title || !meta) return null;
+
+    const heroStyle = getComputedStyle(hero);
+    const eyebrowStyle = getComputedStyle(eyebrow);
+    const titleStyle = getComputedStyle(title);
+    const metaStyle = getComputedStyle(meta);
     const eyebrowRect = eyebrow.getBoundingClientRect();
     const titleRect = title.getBoundingClientRect();
+    const metaRect = meta.getBoundingClientRect();
+
     return {
+      heroDisplay: heroStyle.display,
+      eyebrowTop: eyebrowRect.top,
       eyebrowBottom: eyebrowRect.bottom,
+      eyebrowHeight: eyebrowRect.height,
+      eyebrowDisplay: eyebrowStyle.display,
+      eyebrowPosition: eyebrowStyle.position,
+      eyebrowMinHeight: eyebrowStyle.minHeight,
+      eyebrowPaddingTop: eyebrowStyle.paddingTop,
+      eyebrowPaddingBottom: eyebrowStyle.paddingBottom,
       titleTop: titleRect.top,
-      eyebrowPosition: getComputedStyle(eyebrow).position,
-      titlePosition: getComputedStyle(title).position,
+      titleBottom: titleRect.bottom,
+      titleHeight: titleRect.height,
+      titleDisplay: titleStyle.display,
+      titlePosition: titleStyle.position,
+      metaTop: metaRect.top,
+      metaBottom: metaRect.bottom,
+      metaHeight: metaRect.height,
+      metaDisplay: metaStyle.display,
+      metaPosition: metaStyle.position,
     };
   });
 
   expect(geometry).not.toBeNull();
+  expect(geometry!.heroDisplay).toBe("block");
+  expect(geometry!.eyebrowDisplay).toBe("block");
+  expect(geometry!.titleDisplay).toBe("block");
+  expect(geometry!.metaDisplay).toBe("block");
   expect(geometry!.eyebrowPosition).toBe("static");
   expect(geometry!.titlePosition).toBe("static");
+  expect(geometry!.metaPosition).toBe("static");
+  expect(geometry!.eyebrowMinHeight).toBe("0px");
+  expect(geometry!.eyebrowPaddingTop).toBe("0px");
+  expect(geometry!.eyebrowPaddingBottom).toBe("0px");
   expect(geometry!.titleTop).toBeGreaterThanOrEqual(geometry!.eyebrowBottom + 4);
+  expect(geometry!.metaTop).toBeGreaterThanOrEqual(geometry!.titleBottom + 4);
 };
 
 test.describe("Hermes Connect Repair Shop P0 production-flow regressions", () => {
@@ -124,14 +156,15 @@ test.describe("Hermes Connect Repair Shop P0 production-flow regressions", () =>
     expect(hasHorizontalOverflow).toBe(false);
   });
 
-  test("booking 503 keeps the eyebrow above the error title on 1440px desktop", async ({ page }) => {
+  test("booking 503 keeps eyebrow, title, and supporting copy separated on 1440px desktop", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await stubPreviewDbFailure(page, "preview-db-missing-desktop");
 
     await page.goto("/services/hermes-connect/repair-shops/booking/?shop=preview-db-missing-desktop&lang=ru");
 
     await expect(page.locator("#shop-title")).toHaveText("Онлайн-запись временно недоступна.");
-    await expect(page.locator(".booking-page .hero .eyebrow")).toContainText("HERMES CONNECT");
+    await expect(page.locator(".booking-page .hero .eyebrow")).toContainText(/Hermes Connect/i);
+    await expect(page.locator("#shop-meta")).toContainText("Попробуйте ещё раз через несколько минут");
     await expect(page.locator(".booking-page .hero")).toHaveAttribute("data-hc-booking-error", "true");
     await expectErrorHeroFlow(page);
   });
