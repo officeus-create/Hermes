@@ -6,6 +6,9 @@ const root = new URL("../", import.meta.url).pathname;
 const homepageHtml = await readFile(join(root, "dist", "index.html"), "utf8");
 const academyHtml = await readFile(join(root, "dist", "paths", "academy", "index.html"), "utf8");
 const applicationHtml = await readFile(join(root, "dist", "academy", "apply", "index.html"), "utf8");
+const logisticsProgramHtml = await readFile(join(root, "dist", "academy", "us-logistics-operations", "index.html"), "utf8");
+const marketingProgramHtml = await readFile(join(root, "dist", "academy", "marketing", "index.html"), "utf8");
+const ukrainianLogisticsProgramHtml = await readFile(join(root, "dist", "ua", "academy", "us-logistics-operations", "index.html"), "utf8");
 
 const visibleHtml = (html) => html
   .replace(/<!--[\s\S]*?-->/g, "")
@@ -24,6 +27,9 @@ const application = visibleHtml(applicationHtml);
 const homepageText = extractedText(homepageHtml);
 const academyText = extractedText(academyHtml);
 const applicationText = extractedText(applicationHtml);
+const logisticsProgramText = extractedText(logisticsProgramHtml);
+const marketingProgramText = extractedText(marketingProgramHtml);
+const ukrainianLogisticsProgramText = extractedText(ukrainianLogisticsProgramHtml);
 
 // Home is deliberately an entrance: it must expose Academy as one of four direct
 // directions, while program structure and participation models live on Academy itself.
@@ -55,6 +61,21 @@ for (const text of [
   assert.ok(application.includes(text), `Academy application page is missing review clarity: ${text}`);
 }
 
+// Program-specific eligibility must remain explicit and job-relevant.
+assert.ok(logisticsProgramText.includes("B2 level or higher"), "U.S. Logistics program must state the B2+ English requirement for communication-heavy tracks");
+assert.ok(ukrainianLogisticsProgramText.includes("B2 або вище"), "Ukrainian Logistics program must state the B2+ English requirement");
+for (const text of ["Russian or Ukrainian", "Italian", "Spanish", "French", "German", "B2 level or higher"]) {
+  assert.ok(marketingProgramText.includes(text), `Marketing program is missing language-profile guidance: ${text}`);
+}
+for (const [label, text] of [
+  ["English Logistics", logisticsProgramText],
+  ["Marketing", marketingProgramText],
+  ["Ukrainian Logistics", ukrainianLogisticsProgramText],
+]) {
+  assert.ok(/sanctions|санкц/i.test(text), `${label} must visibly disclose sanctions/compliance eligibility`);
+  assert.ok(/nationality alone is not an automatic exclusion criterion|громадянство не є автоматичною причиною відмови/i.test(text), `${label} must not turn nationality itself into the exclusion rule`);
+}
+
 for (const retiredText of [
   "COO / Operational Director",
   "Three programs. Different responsibilities.",
@@ -79,4 +100,4 @@ for (const blockedPrice of ["$999", "$400/month", "$600/month"]) {
   assert.ok(!application.includes(blockedPrice), `Unapproved Academy price is visible on the application page: ${blockedPrice}`);
 }
 
-console.log("Academy public contract checks passed: Home routes to Academy, Academy owns two-program detail and participation models, application review clarity remains explicit, and no blocked prices are visible.");
+console.log("Academy public contract checks passed: Home routes to Academy, Academy owns two-program detail and participation models, language/compliance eligibility remains explicit, application review clarity remains explicit, and no blocked prices are visible.");

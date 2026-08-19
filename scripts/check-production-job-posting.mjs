@@ -29,7 +29,7 @@ async function fetchPublic(pathname, accept = "text/html,*/*;q=0.8") {
     const response = await fetch(`${expectedUrl}${expectedUrl.includes("?") ? "&" : "?"}seo-job-smoke=${Date.now()}`, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesJobPostingProductionVerifier/1.1 (+public read-only SEO check)",
+        "user-agent": "HermesJobPostingProductionVerifier/1.2 (+public read-only SEO check)",
         accept,
         "cache-control": "no-cache",
         pragma: "no-cache",
@@ -76,6 +76,7 @@ function parseJsonLdEntities(html) {
 
 await fs.mkdir(outputDir, { recursive: true });
 
+const checkedAt = new Date();
 const job = await fetchPublic(jobPath);
 const careers = await fetchPublic(careersPath);
 const sitemap = await fetchPublic(sitemapPath, "application/xml,text/xml,text/plain;q=0.9,*/*;q=0.8");
@@ -93,6 +94,8 @@ const applicantCountries = Array.isArray(jobPosting?.applicantLocationRequiremen
       .map((item) => item.name)
   : [];
 const description = typeof jobPosting?.description === "string" ? jobPosting.description : "";
+const validThrough = typeof jobPosting?.validThrough === "string" ? jobPosting.validThrough : "";
+const validThroughMs = Date.parse(validThrough);
 
 const checks = {
   jobStatus200: job.status === 200,
@@ -107,7 +110,8 @@ const checks = {
   jobPostingApplicantCountriesPresent: applicantCountries.includes("United States") && applicantCountries.includes("Ukraine"),
   jobPostingDirectApplyTruthful: jobPosting?.directApply === false,
   jobPostingDatePostedPresent: /^\d{4}-\d{2}-\d{2}$/.test(String(jobPosting?.datePosted ?? "")),
-  jobPostingValidThroughPresent: /^\d{4}-\d{2}-\d{2}T/.test(String(jobPosting?.validThrough ?? "")),
+  jobPostingValidThroughPresent: /^\d{4}-\d{2}-\d{2}T/.test(validThrough),
+  jobPostingValidThroughActive: Number.isFinite(validThroughMs) && validThroughMs >= checkedAt.getTime(),
   jobPostingDescriptionComplete: description.includes("Support car-hauling dispatch work for U.S.-market carrier operations.")
     && description.includes("Ability to work the applicable U.S. Central Time schedule.")
     && description.includes("The Hermes application page is a preparation preview only"),
@@ -126,14 +130,14 @@ const passed = Object.values(checks).every(Boolean) && !job.error && !careers.er
 const classification = passed ? "PRODUCTION_JOB_POSTING_PASS" : "PRODUCTION_JOB_POSTING_REVIEW_REQUIRED";
 
 const result = {
-  checkedAt: new Date().toISOString(),
+  checkedAt: checkedAt.toISOString(),
   classification,
   boundaries: {
     publicReadOnly: true,
     noFormsSubmitted: true,
     noCredentialsUsed: true,
     noCandidateDataCollected: true,
-    note: "This verifies public production route/schema/application/discovery contracts only. Google/Bing indexing, rich-result eligibility and ranking remain separate authenticated/platform evidence.",
+    note: "This verifies public production route/schema/application/lifecycle/discovery contracts only. Google/Bing indexing, rich-result eligibility and ranking remain separate authenticated/platform evidence.",
   },
   job: {
     path: jobPath,
@@ -147,6 +151,8 @@ const result = {
     title: jobPosting?.title ?? null,
     directApply: jobPosting?.directApply ?? null,
     applicantCountries,
+    validThrough: validThrough || null,
+    validThroughActive: checks.jobPostingValidThroughActive,
     workUaSubmissionLinkPresent: checks.visibleWorkUaSubmissionLinkPresent,
     hermesPreviewBoundaryPresent: checks.visibleHermesPreviewBoundaryPresent,
     error: job.error,
@@ -182,6 +188,7 @@ const markdown = [
   `- Clean schema title: **${checks.jobPostingTitleClean ? "yes" : "no"}**`,
   `- Remote/full-time/applicant-country fields: **${checks.jobPostingTelecommutePresent && checks.jobPostingEmploymentTypePresent && checks.jobPostingApplicantCountriesPresent ? "yes" : "no"}**`,
   `- directApply matches current flow: **${checks.jobPostingDirectApplyTruthful ? "yes" : "no"}**`,
+  `- validThrough is still active: **${checks.jobPostingValidThroughActive ? "yes" : "no"}** (${validThrough || "missing"})`,
   `- Complete visible-details description: **${checks.jobPostingDescriptionComplete ? "yes" : "no"}**`,
   `- Real Work.ua submission link visible: **${checks.visibleWorkUaSubmissionLinkPresent ? "yes" : "no"}**`,
   `- Hermes preview boundary visible: **${checks.visibleHermesPreviewBoundaryPresent ? "yes" : "no"}**`,
