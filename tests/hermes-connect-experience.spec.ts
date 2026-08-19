@@ -108,7 +108,8 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(activation).toContainText("6/6 готово");
   await expect(activation.getByRole("link", { name: "Запросить платную активацию" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/plan/?lang=ru");
   await expect(activation).toContainText("Первый полный цикл завершён");
-  await expect(page.getByRole("heading", { name: "Рабочее пространство СТО" })).toBeVisible();
+  await expect(page.locator('[data-hc-owner-workspace="live"]')).toBeVisible();
+  await expect(page.locator("[data-hc-owner-greeting]")).toContainText("Owner");
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
