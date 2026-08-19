@@ -5,6 +5,8 @@ export interface GeoDiscoveryNode {
   kind: GeoDiscoveryNodeKind;
   indexable: boolean;
   links: string[];
+  /** A page such as /paths/marketing/ can be a direction hub and also own the real intake section. */
+  hasIntake?: boolean;
 }
 
 export interface GeoIntentOwnerRecord {
@@ -24,6 +26,7 @@ const normalizeGraph = (nodes: GeoDiscoveryNode[]) => {
     ...node,
     path: clean(node.path),
     links: [...new Set(node.links.map(clean))].sort(),
+    hasIntake: Boolean(node.hasIntake || node.kind === "intake"),
   }));
   if (new Set(normalized.map((node) => node.path)).size !== normalized.length) throw new Error("Discovery graph paths must be unique");
   return normalized;
@@ -44,6 +47,8 @@ const shortestPath = (nodes: GeoDiscoveryNode[], start: string, predicate: (node
   }
   return null;
 };
+
+const isIntakeNode = (node: GeoDiscoveryNode) => node.kind === "intake" || node.hasIntake === true;
 
 export const auditHighPriorityIntentOwnership = (nodes: GeoDiscoveryNode[], owners: GeoIntentOwnerRecord[]) => {
   const graph = normalizeGraph(nodes);
@@ -77,15 +82,16 @@ export const auditDiscoveryJourneys = (nodes: GeoDiscoveryNode[], priorityOwners
   for (const ownerPath of commercialOwners) {
     const owner = byPath.get(ownerPath);
     if (!owner || owner.kind !== "commercial_owner") continue;
-    const intake = shortestPath(graph, ownerPath, (node) => node.kind === "intake");
+    const intake = shortestPath(graph, ownerPath, isIntakeNode);
     if (!intake) deadEnds.push(ownerPath);
     for (const hub of hubs) {
+      if (hub.path === ownerPath) continue;
       const route = shortestPath(graph, hub.path, (node) => node.path === ownerPath);
       if (!route || route.depth > maxCommercialDepth) excessiveDepth.push({ hub: hub.path, owner: ownerPath, depth: route?.depth ?? null });
     }
   }
 
-  for (const node of graph.filter((item) => item.kind === "commercial_owner" || item.kind === "intake")) {
+  for (const node of graph.filter((item) => item.kind === "commercial_owner" || isIntakeNode(item))) {
     for (const link of node.links) {
       const target = byPath.get(link);
       if (target && (target.kind === "demo" || !target.indexable) && node.kind === "commercial_owner") {
@@ -114,7 +120,7 @@ export const auditDiscoveryHierarchy = (nodes: GeoDiscoveryNode[]) => {
   for (const owner of graph.filter((node) => node.kind === "commercial_owner")) {
     const hasHubInbound = graph.some((node) => node.kind === "hub" && node.links.includes(owner.path));
     const hasSupportInbound = graph.some((node) => (node.kind === "supporting_resource" || node.kind === "case") && node.links.includes(owner.path));
-    const hasIntakePath = Boolean(shortestPath(graph, owner.path, (node) => node.kind === "intake"));
+    const hasIntakePath = Boolean(shortestPath(graph, owner.path, isIntakeNode));
     if (!hasHubInbound) issues.push(`${owner.path}:missing_hub_inbound`);
     if (!hasSupportInbound) issues.push(`${owner.path}:missing_supporting_authority_inbound`);
     if (!hasIntakePath) issues.push(`${owner.path}:missing_intake_path`);
