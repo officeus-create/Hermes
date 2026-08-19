@@ -20,6 +20,11 @@ const content = {
   boundary:
     `${baseContent.boundary} Participation is also subject to applicable sanctions, export-control, payment, and legal-compliance requirements; nationality alone is not an automatic exclusion criterion.`,
 };
+const alternates = [
+  { lang: "en", href: "/academy/marketing/" },
+  { lang: "uk", href: "/ua/academy/marketing/" },
+  { lang: "x-default", href: "/academy/marketing/" },
+];
 ---
 
-<AcademyPublicPage content={content} />
+<AcademyPublicPage content={content} alternates={alternates} />
