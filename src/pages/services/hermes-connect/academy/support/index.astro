@@ -1,0 +1,281 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import { academySubsitePages } from "../../../../../data/academy-subsite";
+import "../../../../../styles/hermes-academy-app.css";
+import "../../../../../styles/hermes-academy-review.css";
+
+const lessonIds: Record<string, string[]> = {
+  "us-logistics-operations": ["dispatch-foundations","carrier-broker-communication","equipment-lane-logic","documents-setup","negotiation-practice","operating-rhythm"],
+  marketing: ["positioning-offer","website-first-content","platform-distribution","lead-journey","sales-follow-up","analytics-improvement"],
+};
+const courses = Object.values(academySubsitePages).filter((page) => page.schemaType === "Course");
+---
+
+<BaseLayout
+  title="Academy Learner Support | Hermes Connect"
+  description="Private learner questions and human Academy support responses."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a><span>/</span><span aria-current="page">Questions & support</span>
+      </nav>
+
+      <div class="academy-app-alert" data-support-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Academy A3.1 · Private support</p>
+          <h1>Ask a course question. Keep the answer with your learning history.</h1>
+          <p>Enrolled learners can open a private Academy question for one current program or lesson. Replies come only from a separately authorized human support account.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" href="/services/hermes-connect/academy/progression/">Progression</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/submissions/">Evidence submissions</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status">Support-state only</span>
+          <h2 style="margin-top:14px">A support answer does not change Academy decisions.</h2>
+          <p>Questions and answers cannot change enrollment, lesson progress, evidence review, progression, employment, certification, payment, commercial rights, or live operational access.</p>
+        </aside>
+      </section>
+
+      <section class="academy-review-grid">
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">New question</p>
+          <h2>Ask within an enrolled program.</h2>
+          <p data-support-access-note>Checking your enrolled programs…</p>
+          <form class="academy-app-form" data-support-form>
+            <div class="academy-app-field">
+              <label for="support-program">Program</label>
+              <select id="support-program" name="program_slug" required disabled>
+                <option value="">Choose enrolled program</option>
+                {courses.map((course) => <option value={course.slug}>{course.slug === "marketing" ? "Marketing" : "U.S. Logistics Operations"}</option>)}
+              </select>
+            </div>
+            <div class="academy-app-field">
+              <label for="support-lesson">Lesson (optional)</label>
+              <select id="support-lesson" name="lesson_id" disabled>
+                <option value="">General program question</option>
+                {courses.flatMap((course) => course.modules.map((module, index) => (
+                  <option value={lessonIds[course.slug]?.[index]} data-program={course.slug}>{module.title}</option>
+                )))}
+              </select>
+            </div>
+            <div class="academy-app-field">
+              <label for="support-subject">Subject</label>
+              <input id="support-subject" name="subject" type="text" maxlength="160" required placeholder="What do you need help understanding?" />
+            </div>
+            <div class="academy-app-field">
+              <label for="support-body">Question</label>
+              <textarea id="support-body" name="body_text" maxlength="4000" required placeholder="Give the context, what you already tried, and the exact point that is unclear."></textarea>
+            </div>
+            <button class="academy-app-button intelligence" type="submit" disabled>Send private question</button>
+          </form>
+        </article>
+
+        <article class="academy-app-panel">
+          <p class="academy-app-eyebrow">Your support history</p>
+          <h2>Questions and human responses</h2>
+          <div class="academy-review-empty" data-support-empty>No support questions yet.</div>
+          <div class="academy-app-list" data-support-list></div>
+        </article>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type Enrollment = { program_slug: string; state: string };
+  type SupportMessage = { id: string; author_kind: "learner" | "authorized_support"; body_text: string; created_at: string };
+  type SupportThread = { id: string; program_slug: string; lesson_id: string | null; subject: string; state: string; created_at: string; updated_at: string; messages: SupportMessage[] };
+
+  const alert = document.querySelector<HTMLElement>("[data-support-alert]");
+  const form = document.querySelector<HTMLFormElement>("[data-support-form]");
+  const programSelect = document.getElementById("support-program") as HTMLSelectElement | null;
+  const lessonSelect = document.getElementById("support-lesson") as HTMLSelectElement | null;
+  const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]') || null;
+  const accessNote = document.querySelector<HTMLElement>("[data-support-access-note]");
+  const list = document.querySelector<HTMLElement>("[data-support-list]");
+  const empty = document.querySelector<HTMLElement>("[data-support-empty]");
+
+  const programNames: Record<string, string> = { "us-logistics-operations": "U.S. Logistics Operations", marketing: "Marketing" };
+  const lessonNames = new Map<string, string>();
+  lessonSelect?.querySelectorAll<HTMLOptionElement>("option[data-program]").forEach((option) => lessonNames.set(`${option.dataset.program}:${option.value}`, option.textContent || option.value));
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "academy-app-alert";
+  };
+  const friendlySupportError = (value: unknown) => {
+    const code = String(value || "").trim();
+    const known: Record<string, string> = {
+      support_rate_limited: "Too many support messages were sent recently. Please try again later.",
+      support_requires_enrolled_program: "Questions are available only for a program that is currently enrolled.",
+      support_thread_closed: "This support thread is closed. Start a new question if you still need help.",
+      support_thread_not_found: "This support thread could not be found.",
+      support_message_invalid: "Add a specific question before sending.",
+      support_subject_invalid: "Add a clear subject before sending.",
+      program_invalid: "Choose an available Academy program.",
+      lesson_invalid: "Choose a lesson that belongs to this program.",
+      database_not_configured: "Academy support is temporarily unavailable. Please try again later.",
+    };
+    if (known[code]) return known[code];
+    if (/^[a-z][a-z0-9_]{2,80}$/i.test(code)) return "Academy support is temporarily unavailable. Please try again.";
+    return code || "Academy support is temporarily unavailable. Please try again.";
+  };
+
+  function syncLessons() {
+    if (!programSelect || !lessonSelect) return;
+    const program = programSelect.value;
+    [...lessonSelect.options].forEach((option) => {
+      if (!option.dataset.program) return;
+      const matches = option.dataset.program === program;
+      option.hidden = !matches;
+      option.disabled = !matches;
+    });
+    lessonSelect.disabled = !program;
+    if (lessonSelect.selectedOptions[0]?.disabled || lessonSelect.selectedOptions[0]?.hidden) lessonSelect.value = "";
+  }
+
+  function renderThreads(threads: SupportThread[]) {
+    if (!list || !empty) return;
+    list.replaceChildren();
+    empty.classList.toggle("academy-app-hidden", threads.length > 0);
+    for (const thread of threads) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = thread.subject;
+      const meta = document.createElement("div");
+      meta.className = "academy-review-meta";
+      for (const value of [programNames[thread.program_slug] || thread.program_slug, thread.lesson_id ? (lessonNames.get(`${thread.program_slug}:${thread.lesson_id}`) || thread.lesson_id) : "General program question", thread.state.replaceAll("_", " ")]) {
+        const chip = document.createElement("span");
+        chip.textContent = value;
+        meta.append(chip);
+      }
+      card.append(heading, meta);
+
+      const history = document.createElement("div");
+      history.className = "academy-review-history";
+      for (const message of thread.messages || []) {
+        const block = document.createElement("div");
+        block.className = "academy-review-feedback";
+        const title = document.createElement("strong");
+        title.textContent = `${message.author_kind === "authorized_support" ? "Academy support" : "You"} · ${new Date(message.created_at).toLocaleString()}`;
+        const body = document.createElement("span");
+        body.textContent = message.body_text;
+        block.append(title, body);
+        history.append(block);
+      }
+      card.append(history);
+
+      if (thread.state !== "closed") {
+        const replyField = document.createElement("div");
+        replyField.className = "academy-app-field";
+        const label = document.createElement("label");
+        label.textContent = "Follow-up question";
+        const textarea = document.createElement("textarea");
+        textarea.maxLength = 4000;
+        textarea.setAttribute("aria-label", `Follow-up question for ${thread.subject}`);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "academy-app-button";
+        button.textContent = "Send follow-up";
+        button.addEventListener("click", async () => {
+          const bodyText = textarea.value.trim();
+          if (bodyText.length < 2) return showAlert("Add a specific follow-up question first.");
+          button.disabled = true;
+          try {
+            const response = await fetch("/api/academy/support", {
+              method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ thread_id: thread.id, body_text: bodyText }),
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || !data.success) throw new Error(data.error || "Could not send follow-up");
+            renderThreads(Array.isArray(data.threads) ? data.threads : []);
+            showAlert("Private follow-up sent to Academy support.", "success");
+          } catch (error) {
+            showAlert(friendlySupportError(error instanceof Error ? error.message : error));
+            button.disabled = false;
+          }
+        });
+        replyField.append(label, textarea, button);
+        card.append(replyField);
+      }
+      list.append(card);
+    }
+  }
+
+  async function loadPage() {
+    clearAlert();
+    try {
+      const [profileResponse, supportResponse] = await Promise.all([
+        fetch("/api/academy/profile", { credentials: "same-origin" }),
+        fetch("/api/academy/support", { credentials: "same-origin" }),
+      ]);
+      if (profileResponse.status === 401 || supportResponse.status === 401) {
+        window.location.replace("/services/hermes-connect/academy/auth/?mode=login");
+        return;
+      }
+      const profile = await profileResponse.json().catch(() => ({}));
+      const support = await supportResponse.json().catch(() => ({}));
+      if (!profileResponse.ok || !profile.success) throw new Error(profile.error || "Could not load learner state");
+      if (!supportResponse.ok || !support.success) throw new Error(support.error || "Could not load support history");
+      const enrolled = (Array.isArray(profile.enrollments) ? profile.enrollments : []).filter((item: Enrollment) => item.state === "enrolled");
+      if (programSelect) {
+        [...programSelect.options].forEach((option) => { if (option.value) option.disabled = !enrolled.some((item: Enrollment) => item.program_slug === option.value); });
+        programSelect.disabled = enrolled.length === 0;
+      }
+      if (submitButton) submitButton.disabled = enrolled.length === 0;
+      if (accessNote) accessNote.textContent = enrolled.length ? "Choose one of your enrolled programs. Support state is separate from course progression." : "Support questions become available after a program is enrolled.";
+      syncLessons();
+      renderThreads(Array.isArray(support.threads) ? support.threads : []);
+    } catch (error) {
+      showAlert(friendlySupportError(error instanceof Error ? error.message : error));
+    }
+  }
+
+  programSelect?.addEventListener("change", syncLessons);
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    if (submitButton) submitButton.disabled = true;
+    try {
+      const values = new FormData(form);
+      const response = await fetch("/api/academy/support", {
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          program_slug: values.get("program_slug"),
+          lesson_id: values.get("lesson_id"),
+          subject: values.get("subject"),
+          body_text: values.get("body_text"),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || "Could not create support question");
+      form.reset();
+      syncLessons();
+      renderThreads(Array.isArray(data.threads) ? data.threads : []);
+      showAlert("Private Academy support question created.", "success");
+    } catch (error) {
+      showAlert(friendlySupportError(error instanceof Error ? error.message : error));
+    } finally {
+      if (submitButton) submitButton.disabled = false;
+    }
+  });
+
+  loadPage();
+</script>
