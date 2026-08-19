@@ -69,6 +69,7 @@ await import("./geo-entity-schema-operations.test.mjs");
 await import("./geo-discovery-graph-operations.test.mjs");
 await import("./geo-live-discovery-snapshot.test.mjs");
 await import("./geo-external-evidence-acquisition.test.mjs");
+await import("./geo-operating-cadence.test.mjs");
 await import("./geo-multilingual-consistency.test.mjs");
 await import("./geo-operating-handoff.test.mjs");
 await import("./geo-gsc-fresh-checkpoint.test.mjs");
