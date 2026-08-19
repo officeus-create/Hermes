@@ -60,24 +60,28 @@ test("Repair Shop owner registration is localized without creating duplicate aut
   }
 });
 
-test("Repair Shop owner language is preserved into workspace links", async ({ page }) => {
+test("Repair Shop authenticated owner enters the localized workspace directly", async ({ page }) => {
   await page.route("**/api/auth/me", async (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
     body: JSON.stringify({ success: true, specialist: { name: "Pilot Owner", email: "owner@example.com", role: "Shop Owner" } }),
   }));
   await page.goto("/services/hermes-connect/repair-shops/auth/?lang=es");
-  await expect(page.getByRole("link", { name: "Ir al panel del taller" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/?lang=es");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/dashboard\/\?lang=es$/);
 });
 
-test("Hermes Connect product family navigation presents Repair Shops as the current product", async ({ page }) => {
+test("Repair Shop navigation stays task-focused while the Product Hub remains reachable", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
 
   const context = page.locator("[data-hc-product-context]");
   await expect(context).toContainText("CURRENT PRODUCT");
   await expect(context).not.toContainText("CURRENT LIVE PILOT");
   await expect(context.getByRole("link", { name: "Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
-  await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveAttribute("href", "/services/hermes-connect/ai-command-center/");
+  await expect(context.getByRole("link", { name: "Product Hub" })).toHaveAttribute("href", "/services/hermes-connect/");
+  await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveCount(0);
+  await expect(context.getByRole("link", { name: "Load Analyzer" })).toHaveCount(0);
+  await expect(context.getByRole("link", { name: "Rate Negotiator" })).toHaveCount(0);
+  await expect(context.getByRole("link", { name: "Proposal Builder" })).toHaveCount(0);
   await expect(page.locator(".repair-pilot-page .hero-header-nav")).toHaveCount(0);
 });
 
