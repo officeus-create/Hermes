@@ -1,6 +1,6 @@
 # Hermes AI Start Here
 
-Reviewed: 2026-08-14
+Reviewed: 2026-08-19
 
 This is the vendor-neutral entry point for every AI agent working on the Hermes repository: ChatGPT, Codex, Claude, Cursor, Gemini, Antigravity, Kimi, or another approved tool.
 
@@ -56,6 +56,8 @@ The primary commercial chain is:
 Canonical commercial owners are defined in `docs/ai-project-state.json`. Supporting pages must strengthen an existing owner through a distinct search intent and a natural internal link. Do not create a competing thin conversion page or wording-variant doorway page.
 
 For SEO work, also read `ai-collaboration/02_SEO/CURRENT_STATE.md` and, while current, `ai-collaboration/02_SEO/SEO_AGENT_ROUTING_2026-08-14.md` before opening parallel implementation or measurement work.
+
+For GEO / AI visibility work, also read `docs/GEO_CURRENT_STATE.md` before older GEO architecture, measurement, answer, evidence, search, analytics, or operations documents. It is the current GEO entrypoint and preserves the implementation-versus-verification boundary.
 
 ## 5. Required safety boundaries
 
