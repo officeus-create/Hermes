@@ -53,6 +53,63 @@
         qualificationTitle: "Academy qualification:",
       };
 
+  const setFieldLabel = (name: string, labelText: string) => {
+    if (!form) return;
+    const field = form.elements.namedItem(name);
+    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) return;
+    const label = field.closest("label");
+    if (!label) return;
+    const textNode = [...label.childNodes].find((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim());
+    if (textNode) textNode.textContent = `\n          ${labelText}\n          `;
+  };
+
+  const localizeBaseApplicationShell = () => {
+    if (!isUkrainian || !form) return;
+    form.dataset.academyApplicationLanguage = "uk";
+
+    setFieldLabel("name", "Ваше ім’я");
+    setFieldLabel("email", "Email");
+    setFieldLabel("path", "Напрям");
+    setFieldLabel("message", "Коротко опишіть вашу мету");
+
+    const consent = form.querySelector<HTMLElement>(".consent-field span");
+    if (consent) {
+      const privacy = consent.querySelector<HTMLAnchorElement>('a[href="/privacy/"]');
+      consent.replaceChildren(
+        document.createTextNode("Я погоджуюся, що Hermes може використати ці дані, щоб відповісти на заявку. "),
+        privacy ?? Object.assign(document.createElement("a"), { href: "/privacy/", textContent: "Політика конфіденційності" }),
+        document.createTextNode("."),
+      );
+      if (privacy) privacy.textContent = "Політика конфіденційності";
+    }
+
+    const directRoutes = document.querySelector<HTMLElement>(".contact-direct-routes");
+    if (directRoutes) {
+      directRoutes.setAttribute("aria-label", "Доступні канали зв’язку");
+      const heading = directRoutes.querySelector<HTMLElement>(":scope > p");
+      if (heading) heading.textContent = "Доступні канали зв’язку";
+    }
+
+    const summary = form.querySelector<HTMLElement>("[data-handoff-summary]");
+    if (summary) summary.setAttribute("aria-label", "Підсумок заявки");
+    const routeHeading = form.querySelector<HTMLElement>(".contact-handoff-route > p");
+    if (routeHeading) routeHeading.textContent = "Погоджений канал зв’язку";
+
+    const submitLabel = form.querySelector<HTMLElement>("[data-submit-label]");
+    const translateSubmitLabel = () => {
+      if (!submitLabel) return;
+      const current = submitLabel.textContent?.trim() ?? "";
+      if (current === "Sending...") submitLabel.textContent = "Надсилання…";
+      else if (current === "Send request") submitLabel.textContent = "Надіслати заявку";
+      else if (current === "Preview request") submitLabel.textContent = "Переглянути заявку";
+    };
+    translateSubmitLabel();
+    if (submitLabel) {
+      const submitObserver = new MutationObserver(translateSubmitLabel);
+      submitObserver.observe(submitLabel, { childList: true, characterData: true, subtree: true });
+    }
+  };
+
   const addField = (
     group: HTMLElement,
     type: "input" | "textarea" | "select",
@@ -101,6 +158,9 @@
     if (!group || group.dataset.academyApplicationExtended === "true") return;
     group.dataset.academyApplicationExtended = "true";
     group.dataset.academyApplicationLanguage = isUkrainian ? "uk" : "en";
+
+    const groupEyebrow = group.querySelector<HTMLElement>(".contact-direction-eyebrow");
+    if (isUkrainian && groupEyebrow) groupEyebrow.textContent = "Дані Academy";
 
     const program = addField(group, "select", "academy_program", copy.program, [
       { value: "", label: copy.chooseProgram },
@@ -178,6 +238,8 @@
     pathSelect.value = academyInterest;
     pathSelect.dispatchEvent(new Event("change", { bubbles: true }));
   }
+
+  localizeBaseApplicationShell();
 
   form?.addEventListener("submit", () => {
     window.setTimeout(appendAcademyPreviewSummary, 0);
