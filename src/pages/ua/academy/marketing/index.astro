@@ -1,0 +1,19 @@
+---
+import AcademyPublicPage from "../../../../components/AcademyPublicPage.astro";
+import { academyUkraineMarketing } from "../../../../data/academy-ukraine-marketing";
+import { academyUkraineUi } from "../../../../data/academy-ukraine";
+
+const alternates = [
+  { lang: "en", href: "/academy/marketing/" },
+  { lang: "uk", href: "/ua/academy/marketing/" },
+  { lang: "x-default", href: "/academy/marketing/" },
+];
+---
+
+<AcademyPublicPage
+  content={academyUkraineMarketing}
+  locale="uk"
+  alternates={alternates}
+  ui={academyUkraineUi}
+  academyHubHref="/ua/#academy"
+/>
