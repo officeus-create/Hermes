@@ -41,7 +41,7 @@
       dashboard: "Non è stato possibile completare questa azione dell’officina. Riprova tra poco.",
       availability: "Non è stato possibile caricare o salvare l’orario. Riprova tra poco.",
       customers: "Non è stato possibile caricare lo storico clienti. Riprova tra poco.",
-      generic: "Questa azione di Hermes Connect è temporaneamente non disponibile. Riprova tra poco.",
+      generic: "Questa azione Hermes Connect è temporaneamente non disponibile. Riprova tra poco.",
     },
     fr: {
       auth: "Impossible de terminer la connexion ou l’inscription pour le moment. Réessayez bientôt.",
@@ -68,7 +68,37 @@
     if (raw && technicalCode.test(raw)) node.textContent = message;
   };
 
+  const addStylesheet = (href, dataKey) => {
+    if (document.querySelector(`link[${dataKey}]`)) return;
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = href;
+    stylesheet.setAttribute(dataKey, "true");
+    document.head.append(stylesheet);
+  };
+
+  const addScript = (src, dataKey) => {
+    if (document.querySelector(`script[${dataKey}]`)) return;
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    script.setAttribute(dataKey, "true");
+    document.head.append(script);
+  };
+
+  const installWorkspaceVnext = () => {
+    if (path !== `${ROOT}/dashboard` || document.querySelector('script[data-hc-owner-workspace-live]')) return;
+    const main = document.querySelector(".workspace-page");
+    if (main instanceof HTMLElement && !main.id) main.id = "main-content";
+    addStylesheet("/hermes-connect-repair-owner-workspace-live.css", "data-hc-owner-workspace-live");
+    addStylesheet("/hermes-connect-repair-owner-workspace-operational.css", "data-hc-owner-workspace-operational");
+    addScript("/hermes-connect-repair-owner-workspace-live.js", "data-hc-owner-workspace-live");
+    addScript("/hermes-connect-repair-owner-workspace-bridge.js", "data-hc-owner-workspace-bridge");
+    addScript("/hermes-connect-repair-owner-workspace-insights.js", "data-hc-owner-workspace-insights");
+  };
+
   const install = () => {
+    installWorkspaceVnext();
     for (const selector of selectors) {
       const node = document.querySelector(selector);
       if (!(node instanceof HTMLElement)) continue;
