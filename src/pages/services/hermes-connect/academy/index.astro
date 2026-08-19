@@ -7,7 +7,7 @@ import "../../../../styles/hermes-academy-app.css";
 
 <BaseLayout
   title="Hermes Connect Academy | Learner Access"
-  description="Private Hermes Connect Academy access for enrollment, curriculum progress, evidence submissions and human-reviewed progression."
+  description="Private Hermes Connect Academy access for enrollment, curriculum progress, evidence submissions, learner support and human-reviewed progression."
   robots="noindex,nofollow"
 >
   <div class="academy-app-page">
@@ -21,18 +21,19 @@ import "../../../../styles/hermes-academy-app.css";
         <article class="academy-app-card">
           <p class="academy-app-eyebrow">Hermes Connect · Academy workspace</p>
           <h1>One learner identity. One reviewed progression path.</h1>
-          <p>Hermes Business Academy keeps enrollment, authenticated curriculum progress, learner evidence and human progression review inside the same Hermes identity/session system. Public program pages remain the source of curriculum descriptions.</p>
+          <p>Hermes Business Academy keeps enrollment, authenticated curriculum progress, learner evidence, private course questions and human progression review inside the same Hermes identity/session system. Public program pages remain the source of curriculum descriptions.</p>
           <div class="academy-app-actions">
             <a class="academy-app-button primary" href="/services/hermes-connect/academy/auth/">Sign in or create learner account</a>
             <a class="academy-app-button" href="/services/hermes-connect/academy/dashboard/">Open learner dashboard</a>
             <a class="academy-app-button" href="/services/hermes-connect/academy/progression/">Open progression</a>
             <a class="academy-app-button" href="/services/hermes-connect/academy/submissions/">Evidence submissions</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/support/">Questions & support</a>
           </div>
         </article>
         <aside class="academy-app-card academy-app-dark">
           <span class="academy-app-status">Private learner workspace</span>
           <h2 style="margin-top:14px">Application ≠ enrollment ≠ completion.</h2>
-          <p>Creating an account or choosing a program does not automatically approve admission. Lesson counts and accepted evidence do not automatically complete a program. Academy completion remains a separate human decision and does not guarantee employment, income, certification, clients, commercial entitlement, or live operational access.</p>
+          <p>Creating an account or choosing a program does not automatically approve admission. Lesson counts, accepted evidence and support responses do not automatically complete a program. Academy completion remains a separate human decision and does not guarantee employment, income, certification, clients, commercial entitlement, or live operational access.</p>
           <a class="academy-app-button" href="/academy/apply/">Open public application</a>
         </aside>
       </section>
@@ -60,8 +61,8 @@ import "../../../../styles/hermes-academy-app.css";
         <article class="academy-app-panel">
           <p class="academy-app-eyebrow">Learning method</p>
           <h2>Progress remains evidence-led and human-reviewed.</h2>
-          <p>The current Academy workflow moves through readiness, authenticated lessons, self-tracked lesson progress, evidence submission, reviewer feedback/correction and a separate human progression decision.</p>
-          <div class="academy-app-note">A1 provides shared learner identity and enrollment. A2 provides authenticated curriculum and self-tracked lesson progress. A3 adds private evidence plus manually authorized review. A4 adds program-level human progression. Commercial access remains a separate A5 gate and is not inferred from any learner or reviewer state.</div>
+          <p>The current Academy workflow moves through readiness, authenticated lessons, self-tracked lesson progress, evidence submission, private learner questions, reviewer feedback/correction and a separate human progression decision.</p>
+          <div class="academy-app-note">A1 provides shared learner identity and enrollment. A2 provides authenticated curriculum and self-tracked lesson progress. A3 adds private evidence plus manually authorized review. A3.1 adds a separate private learner-question/support loop. A4 adds program-level human progression. Commercial access remains a separate A5 gate and is not inferred from any learner, reviewer or support state.</div>
           <div class="academy-app-actions">
             <a class="academy-app-button" href="/academy/how-training-works/">How training works</a>
             <a class="academy-app-button" href="/academy/resources/">Academy resources</a>
@@ -71,11 +72,20 @@ import "../../../../styles/hermes-academy-app.css";
 
       <section class="academy-app-panel" style="margin-top:18px" aria-label="Authorized reviewer workspaces">
         <p class="academy-app-eyebrow">Manually authorized reviewers only</p>
-        <h2>Reviewer workspaces stay behind the separate Academy allowlist.</h2>
+        <h2>Reviewer workspaces stay behind the separate Academy reviewer allowlist.</h2>
         <p>A valid Hermes account alone does not grant reviewer power. These routes require an active <code>academy_reviewer_access</code> authorization and continue to enforce program scope and self-review restrictions.</p>
         <div class="academy-app-actions">
           <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/">Evidence review queue</a>
           <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/progression/">Progression review queue</a>
+        </div>
+      </section>
+
+      <section class="academy-app-panel" style="margin-top:18px" aria-label="Authorized Academy support workspace">
+        <p class="academy-app-eyebrow">Manually authorized support only</p>
+        <h2>Learner support uses a different permission boundary.</h2>
+        <p>Answering learner questions requires a separate active <code>academy_support_access</code> authorization. Reviewer permission does not automatically grant support permission, and support permission does not grant evidence/progression reviewer power.</p>
+        <div class="academy-app-actions">
+          <a class="academy-app-button" href="/services/hermes-connect/academy/reviewer/support/">Learner support queue</a>
         </div>
       </section>
     </main>
