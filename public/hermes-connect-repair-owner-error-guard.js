@@ -77,11 +77,18 @@
       stylesheet.dataset.hcOwnerWorkspaceLive = "true";
       document.head.append(stylesheet);
     }
-    const script = document.createElement("script");
-    script.src = "/hermes-connect-repair-owner-workspace-live.js";
-    script.defer = true;
-    script.dataset.hcOwnerWorkspaceLive = "true";
-    document.head.append(script);
+
+    const liveScript = document.createElement("script");
+    liveScript.src = "/hermes-connect-repair-owner-workspace-live.js";
+    liveScript.async = false;
+    liveScript.dataset.hcOwnerWorkspaceLive = "true";
+    document.head.append(liveScript);
+
+    const bridgeScript = document.createElement("script");
+    bridgeScript.src = "/hermes-connect-repair-owner-workspace-bridge.js";
+    bridgeScript.async = false;
+    bridgeScript.dataset.hcOwnerWorkspaceBridge = "true";
+    document.head.append(bridgeScript);
   };
 
   const install = () => {
