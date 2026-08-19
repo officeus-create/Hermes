@@ -21,6 +21,7 @@ test("Ukrainian Marketing owner is indexable, reciprocal and usable on desktop",
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
+  await page.screenshot({ path: "artifacts/academy-ukrainian-marketing/desktop-1440.png", fullPage: true });
 });
 
 test("Ukrainian Marketing owner keeps its primary funnel usable at 390px", async ({ page }) => {
@@ -36,6 +37,7 @@ test("Ukrainian Marketing owner keeps its primary funnel usable at 390px", async
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
+  await page.screenshot({ path: "artifacts/academy-ukrainian-marketing/mobile-390.png", fullPage: true });
 });
 
 test("English Marketing owner reciprocates Ukrainian hreflang", async ({ page }) => {
