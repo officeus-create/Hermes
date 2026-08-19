@@ -1,5 +1,9 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
-import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
+import { deleteServiceForContext, findServiceForContext } from "../_lib/service-context.mjs";
+import {
+  resolveServiceRequestContext,
+  serviceHasUsageForContext,
+} from "../_lib/service-request-context.mjs";
 
 type Env = { DB?: any };
 
@@ -12,30 +16,24 @@ export async function onRequestDelete({ request, env, params }: { request: Reque
   const id = String(params.id ?? "").trim();
   if (!id) return jsonResponse(400, { success: false, error: "service_id_required" });
 
-  const service = await env.DB
-    .prepare("SELECT id FROM services WHERE id = ? AND owner_specialist_id = ? LIMIT 1")
-    .bind(id, specialist.id)
-    .first();
+  const resolved = await resolveServiceRequestContext(request, env.DB, specialist.id);
+  if (!resolved.ok) return jsonResponse(resolved.status, { success: false, error: resolved.error });
 
+  const service = await findServiceForContext(env.DB, {
+    ownerId: specialist.id,
+    contextId: resolved.context.id,
+    serviceId: id,
+    includeLegacyUnmapped: resolved.includeLegacyUnmapped,
+  });
   if (!service) return jsonResponse(404, { success: false, error: "service_not_found" });
 
-  const legacyBooking = await env.DB
-    .prepare("SELECT id FROM bookings WHERE service_id = ? LIMIT 1")
-    .bind(id)
-    .first();
+  const hasUsage = await serviceHasUsageForContext(env.DB, {
+    context: resolved.context,
+    ownerId: specialist.id,
+    serviceId: id,
+  });
+  if (hasUsage) return jsonResponse(409, { success: false, error: "service_has_bookings" });
 
-  await ensureRepairShopBookingsSchema(env.DB);
-  const repairBooking = await env.DB
-    .prepare("SELECT id FROM repair_shop_bookings WHERE service_id = ? AND owner_specialist_id = ? LIMIT 1")
-    .bind(id, specialist.id)
-    .first();
-
-  if (legacyBooking || repairBooking) return jsonResponse(409, { success: false, error: "service_has_bookings" });
-
-  await env.DB
-    .prepare("DELETE FROM services WHERE id = ? AND owner_specialist_id = ?")
-    .bind(id, specialist.id)
-    .run();
-
+  await deleteServiceForContext(env.DB, { ownerId: specialist.id, serviceId: id });
   return jsonResponse(200, { success: true, deleted: id });
 }
