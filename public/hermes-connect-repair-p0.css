@@ -11,6 +11,10 @@
 }
 .hc-experience .booking-page .hero[data-hc-booking-loading="true"],
 .hc-experience .booking-page .hero[data-hc-booking-error="true"]{
+  display:block!important;
+  align-items:initial!important;
+  grid-template-columns:none!important;
+  gap:0!important;
   max-width:760px;
   margin-bottom:22px;
   padding:20px 22px;
@@ -40,30 +44,66 @@
 }
 .hc-experience .booking-page .hero[data-hc-booking-loading="true"] > .eyebrow,
 .hc-experience .booking-page .hero[data-hc-booking-error="true"] > .eyebrow{
+  display:block!important;
   position:static!important;
   inset:auto!important;
+  float:none!important;
+  clear:none!important;
   transform:none!important;
-  display:block;
-  max-width:100%;
-  margin:0 0 8px!important;
-  line-height:1.35;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0 0 10px!important;
+  line-height:1.35!important;
+  align-self:auto!important;
+  justify-self:auto!important;
+  flex:0 0 auto!important;
+  box-sizing:border-box;
   overflow-wrap:anywhere;
   word-break:normal;
 }
-.hc-experience .booking-page .hero[data-hc-booking-loading="true"] h1,
-.hc-experience .booking-page .hero[data-hc-booking-error="true"] h1{
+.hc-experience .booking-page .hero[data-hc-booking-loading="true"] > h1,
+.hc-experience .booking-page .hero[data-hc-booking-error="true"] > h1{
+  display:block!important;
   position:static!important;
+  inset:auto!important;
+  float:none!important;
+  clear:none!important;
   transform:none!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:0!important;
   max-width:100%;
-  margin-top:0!important;
-  margin-bottom:10px;
+  margin:0 0 10px!important;
   font-size:clamp(28px,5vw,44px);
-  line-height:1.08;
+  line-height:1.08!important;
+  box-sizing:border-box;
   overflow-wrap:anywhere;
   word-break:normal;
 }
-.hc-experience .booking-page .hero[data-hc-booking-loading="true"] .muted,
-.hc-experience .booking-page .hero[data-hc-booking-error="true"] .muted,
+.hc-experience .booking-page .hero[data-hc-booking-loading="true"] > .muted,
+.hc-experience .booking-page .hero[data-hc-booking-error="true"] > .muted{
+  display:block!important;
+  position:static!important;
+  inset:auto!important;
+  float:none!important;
+  clear:none!important;
+  transform:none!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:0!important;
+  margin:0!important;
+  max-width:100%;
+  box-sizing:border-box;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
 .hc-experience .booking-page .alert{
   max-width:100%;
   box-sizing:border-box;
