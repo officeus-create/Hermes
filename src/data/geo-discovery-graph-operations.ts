@@ -84,10 +84,18 @@ export const auditDiscoveryJourneys = (nodes: GeoDiscoveryNode[], priorityOwners
     if (!owner || owner.kind !== "commercial_owner") continue;
     const intake = shortestPath(graph, ownerPath, isIntakeNode);
     if (!intake) deadEnds.push(ownerPath);
-    for (const hub of hubs) {
-      if (hub.path === ownerPath) continue;
-      const route = shortestPath(graph, hub.path, (node) => node.path === ownerPath);
-      if (!route || route.depth > maxCommercialDepth) excessiveDepth.push({ hub: hub.path, owner: ownerPath, depth: route?.depth ?? null });
+
+    const hubRoutes = hubs
+      .map((hub) => ({ hub: hub.path, route: shortestPath(graph, hub.path, (node) => node.path === ownerPath) }))
+      .filter((item): item is { hub: string; route: { path: string; depth: number; route: string[] } } => Boolean(item.route))
+      .sort((a, b) => a.route.depth - b.route.depth || a.hub.localeCompare(b.hub));
+    const nearestHubRoute = hubRoutes[0];
+    if (!nearestHubRoute || nearestHubRoute.route.depth > maxCommercialDepth) {
+      excessiveDepth.push({
+        hub: nearestHubRoute?.hub ?? "(no_reachable_hub)",
+        owner: ownerPath,
+        depth: nearestHubRoute?.route.depth ?? null,
+      });
     }
   }
 
