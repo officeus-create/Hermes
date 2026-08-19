@@ -1,0 +1,16 @@
+.hc-owner-live-page .hc-owner-live-operational-panel{margin:0 0 16px!important;border:1px solid rgba(11,13,18,.09)!important;border-radius:18px!important;background:rgba(255,255,255,.88)!important;box-shadow:0 14px 38px rgba(18,22,31,.06)!important;color:#0b0d12!important}
+.hc-owner-live-page .hc-owner-live-operational-panel h2{color:#0b0d12!important}
+.hc-owner-live-page .hc-owner-live-operational-panel .muted,.hc-owner-live-page .hc-owner-live-operational-panel [data-web-v1-access-copy]{color:#777f8b!important}
+.hc-owner-live-page .hc-owner-live-operational-panel .eyebrow,.hc-owner-live-page .hc-owner-live-operational-panel .repair-activation-eyebrow{color:#7c5cff!important}
+.hc-owner-live-page .hc-owner-live-activation-panel{padding:20px!important;background:linear-gradient(135deg,rgba(52,199,89,.055),rgba(90,200,250,.045),rgba(124,92,255,.055)),#fff!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-copy,.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-next{color:#777f8b!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-progress{color:#252931!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-track{background:rgba(11,13,18,.07)!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-step{border-color:rgba(11,13,18,.08)!important;background:rgba(11,13,18,.025)!important;color:#69707d!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-step strong{background:rgba(11,13,18,.055)!important;color:#59606d!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-step[data-complete="true"]{border-color:rgba(52,199,89,.18)!important;background:rgba(52,199,89,.055)!important;color:#287440!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-step[data-complete="true"] strong{background:rgba(52,199,89,.12)!important;color:#21833b!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-primary{color:#fff!important;background:linear-gradient(135deg,#7c5cff,#5f87ff)!important}
+.hc-owner-live-page .hc-owner-live-activation-panel .repair-activation-secondary{border-color:rgba(11,13,18,.1)!important;background:#fff!important;color:#0b0d12!important}
+.hc-owner-live-page .hc-web-v1-access-cta{box-shadow:none!important}
+@media(max-width:760px){.hc-owner-live-page .hc-owner-live-operational-panel{margin-bottom:12px!important}.hc-owner-live-page .hc-owner-live-activation-panel{padding:17px!important}}
