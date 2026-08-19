@@ -7,8 +7,8 @@ const expectNoHorizontalOverflow = async (page: any) => {
   expect(overflow).toBe(false);
 };
 
-test.describe("Hermes Connect Repair Shop owner workspace CEO preview", () => {
-  test("desktop keeps the canonical Repair Shop information architecture", async ({ page }) => {
+test.describe("Hermes Connect Repair Shop owner workspace approved visual reference", () => {
+  test("desktop keeps the CEO-approved Repair Shop information architecture", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(route);
 
@@ -36,7 +36,7 @@ test.describe("Hermes Connect Repair Shop owner workspace CEO preview", () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test("mobile uses a dedicated task navigation without squeezing the desktop sidebar", async ({ page }) => {
+  test("mobile uses the approved dedicated task navigation without squeezing the desktop sidebar", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(route);
 
