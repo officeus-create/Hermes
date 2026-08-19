@@ -52,6 +52,20 @@ const schema = [
   },
   {
     "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Wisconsin vehicle transport route review and coordination",
+    description:
+      "Review of Wisconsin vehicle transport route, vehicle condition, timing, access, equipment fit, and current carrier availability before route-specific transportation coordination is discussed.",
+    url: canonicalUrl,
+    serviceType: "Vehicle transport request review and carrier coordination",
+    areaServed: [
+      { "@type": "State", name: "Wisconsin" },
+      { "@type": "Country", name: "United States" },
+    ],
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faq.map((item) => ({
       "@type": "Question",
