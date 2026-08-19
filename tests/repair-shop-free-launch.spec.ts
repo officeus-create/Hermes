@@ -51,6 +51,15 @@ test("Repair Shop landing shows localized day-hour-minute-second countdown on mo
   expect(overflow).toBe(false);
 });
 
+test("owner login stays operational and does not show launch countdown pressure", async ({ page }) => {
+  await page.route("**/api/auth/me", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
+  await page.goto("/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("#login-form")).toHaveClass(/active/);
+  await expect(page.locator(visibleOffer)).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Доступ владельца СТО" })).toBeVisible();
+});
+
 test("direct free-registration CTA opens the Repair Shop registration form", async ({ page }) => {
   await page.route("**/api/auth/me", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
   await page.goto("/services/hermes-connect/repair-shops/auth/?mode=register&lang=es", { waitUntil: "domcontentloaded" });

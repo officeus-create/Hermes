@@ -154,6 +154,10 @@ const { compact = false, showCta = true } = Astro.props;
     let anchor: Element | null = null;
     if (route === repairRoot) anchor = document.querySelector(".repair-live-hero .repair-lead");
     else if (route === `${repairRoot}/auth`) {
+      // Login is an operational task, not a conversion surface. Keep the launch
+      // offer only on the explicitly requested registration mode so returning
+      // owners can enter the workspace without urgency/countdown pressure.
+      if (params.get("mode") !== "register") return false;
       anchor = document.querySelector("#auth-forms .auth-header");
       root.classList.add("is-compact");
     } else if (route === `${repairRoot}/plan`) anchor = document.querySelector(".plan-page .hero-copy .lead");

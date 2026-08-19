@@ -38,6 +38,9 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
+{isHermesConnectRoute && variant === "header" && <link rel="stylesheet" href="/hermes-connect-repair-p0.css" />}
+{isHermesConnectRoute && variant === "header" && <script is:inline src="/hermes-connect-repair-p0.js"></script>}
+{isHermesConnectRoute && variant === "header" && <script is:inline src="/hermes-connect-repair-owner-error-guard.js"></script>}
 
 {variant === "header" && (
   <a href={computedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
@@ -122,9 +125,9 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
   .site-header:has([data-hc-server-route="connect"]) .language-menu nav {
     border-color: rgba(11,13,18,.10) !important;
     background: #fff !important;
-    box-shadow: 0 14px 34px rgba(11,13,18,.10) !important;
+    box-shadow:0 14px 34px rgba(11,13,18,.10)!important;
   }
   .site-header:has([data-hc-server-route="connect"]) .language-menu nav a {
-    color: #0b0d12 !important;
+    color:#0b0d12!important;
   }
 </style>
