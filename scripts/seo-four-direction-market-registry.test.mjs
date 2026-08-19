@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
@@ -66,8 +66,25 @@ for (const [directionName, direction] of Object.entries(registry?.directions ?? 
   }
 }
 
+const guardedResearchRoutes = [
+  ["Texas state owner", "logistics", "texas-vehicle-transport", "index.html"],
+  ["Dallas / DFW owner", "logistics", "dallas-tx-vehicle-transport", "index.html"],
+  ["Houston owner", "logistics", "houston-tx-vehicle-transport", "index.html"],
+  ["Florida state owner", "logistics", "florida-vehicle-transport", "index.html"],
+  ["California state owner", "logistics", "california-vehicle-transport", "index.html"],
+];
+
+for (const [label, ...segments] of guardedResearchRoutes) {
+  try {
+    await access(join(root, "dist", ...segments));
+    errors.push(`${label} is research-only but a built public route exists; move the candidate through approved_for_build before publication`);
+  } catch {
+    // Expected while the candidate remains research-only.
+  }
+}
+
 if (errors.length) {
   throw new Error(`Four-direction SEO market registry failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("Four-direction SEO market registry passed: research candidates cannot silently become publishable combinatoric pages.");
+console.log("Four-direction SEO market registry passed: research candidates cannot silently become publishable combinatoric pages, and held Texas/Florida/California routes remain absent.");
