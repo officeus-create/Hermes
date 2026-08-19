@@ -66,6 +66,7 @@ await import("./geo-ai-wave-operations.test.mjs");
 await import("./geo-answer-owner-audit.test.mjs");
 await import("./geo-answer-evidence-quality.test.mjs");
 await import("./geo-entity-schema-operations.test.mjs");
+await import("./geo-discovery-graph-operations.test.mjs");
 await import("./geo-multilingual-consistency.test.mjs");
 await import("./geo-operating-handoff.test.mjs");
 await import("./geo-gsc-fresh-checkpoint.test.mjs");
