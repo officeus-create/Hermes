@@ -46,6 +46,37 @@ const stubOwnerWorkspaceApis = async (page: any) => {
   });
 };
 
+const stubPreviewDbFailure = async (page: any, slug: string) => {
+  await page.route(`**/api/public/repair-shop?slug=${slug}`, async (route: any) => {
+    await route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ success:false, error:"database_not_configured" }),
+    });
+  });
+};
+
+const expectErrorHeroFlow = async (page: any) => {
+  const geometry = await page.locator(".booking-page .hero").evaluate((hero: HTMLElement) => {
+    const eyebrow = hero.querySelector<HTMLElement>(".eyebrow");
+    const title = hero.querySelector<HTMLElement>("#shop-title");
+    if (!eyebrow || !title) return null;
+    const eyebrowRect = eyebrow.getBoundingClientRect();
+    const titleRect = title.getBoundingClientRect();
+    return {
+      eyebrowBottom: eyebrowRect.bottom,
+      titleTop: titleRect.top,
+      eyebrowPosition: getComputedStyle(eyebrow).position,
+      titlePosition: getComputedStyle(title).position,
+    };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry!.eyebrowPosition).toBe("static");
+  expect(geometry!.titlePosition).toBe("static");
+  expect(geometry!.titleTop).toBeGreaterThanOrEqual(geometry!.eyebrowBottom + 4);
+};
+
 test.describe("Hermes Connect Repair Shop P0 production-flow regressions", () => {
   test("booking uses one public shop read, localizes Russian content, and keeps 390px usable", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
@@ -78,13 +109,7 @@ test.describe("Hermes Connect Repair Shop P0 production-flow regressions", () =>
 
   test("booking 503 never exposes raw backend codes and keeps the error card inside 390px", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.route("**/api/public/repair-shop?slug=preview-db-missing", async (route) => {
-      await route.fulfill({
-        status: 503,
-        contentType: "application/json",
-        body: JSON.stringify({ success:false, error:"database_not_configured" }),
-      });
-    });
+    await stubPreviewDbFailure(page, "preview-db-missing");
 
     await page.goto("/services/hermes-connect/repair-shops/booking/?shop=preview-db-missing&lang=ru");
 
@@ -93,9 +118,22 @@ test.describe("Hermes Connect Repair Shop P0 production-flow regressions", () =>
     await expect(page.locator("#page-alert")).not.toContainText("database_not_configured");
     await expect(page.locator(".booking-page .hero")).toHaveAttribute("data-hc-booking-error", "true");
     await expect(page.locator("body")).not.toContainText("database_not_configured");
+    await expectErrorHeroFlow(page);
 
     const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(hasHorizontalOverflow).toBe(false);
+  });
+
+  test("booking 503 keeps the eyebrow above the error title on 1440px desktop", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await stubPreviewDbFailure(page, "preview-db-missing-desktop");
+
+    await page.goto("/services/hermes-connect/repair-shops/booking/?shop=preview-db-missing-desktop&lang=ru");
+
+    await expect(page.locator("#shop-title")).toHaveText("Онлайн-запись временно недоступна.");
+    await expect(page.locator(".booking-page .hero .eyebrow")).toContainText("HERMES CONNECT");
+    await expect(page.locator(".booking-page .hero")).toHaveAttribute("data-hc-booking-error", "true");
+    await expectErrorHeroFlow(page);
   });
 
   test("successful owner login enters the dashboard and preserves locale", async ({ page }) => {
