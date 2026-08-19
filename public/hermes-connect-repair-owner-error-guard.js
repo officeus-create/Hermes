@@ -95,6 +95,7 @@
     addScript("/hermes-connect-repair-owner-workspace-live.js", "data-hc-owner-workspace-live");
     addScript("/hermes-connect-repair-owner-workspace-bridge.js", "data-hc-owner-workspace-bridge");
     addScript("/hermes-connect-repair-owner-workspace-insights.js", "data-hc-owner-workspace-insights");
+    addScript("/hermes-connect-repair-owner-operational-i18n.js", "data-hc-owner-operational-i18n");
   };
 
   const install = () => {
