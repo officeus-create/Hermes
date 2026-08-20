@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-20-hermes-connect-beauty-b1-owner-preview",
+  "generated_at": "2026-08-20T00:00:00+03:00",
+  "status": "CEO_PREVIEW_ONLY",
+  "additions": [
+    {
+      "route": "/services/hermes-connect/beauty/workspace-preview/",
+      "source_state": "preview_branch",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/services/hermes-connect/beauty/workspace-preview/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/services/hermes-connect/beauty/workspace-preview.astro",
+      "status": "CEO_PREVIEW_ONLY",
+      "blocker": "CEO_VISUAL_APPROVAL_REQUIRED",
+      "response_status": 200,
+      "comparison": {
+        "production": "not_published",
+        "immutable_release": "pending_preview_deploy"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_ceo_visual_approval": true,
+    "requires_desktop_and_390px_review": true,
+    "requires_production_snapshot_reconciliation_after_deploy": false
+  }
+}
