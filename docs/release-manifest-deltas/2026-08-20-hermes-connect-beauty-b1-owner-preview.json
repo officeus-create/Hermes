@@ -28,6 +28,6 @@
     "requires_green_current_head_ci": true,
     "requires_ceo_visual_approval": true,
     "requires_desktop_and_390px_review": true,
-    "requires_production_snapshot_reconciliation_after_deploy": false
+    "requires_production_snapshot_reconciliation_after_deploy": true
   }
 }
