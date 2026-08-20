@@ -776,3 +776,33 @@ entries — append only.
 - Guardrails: category/rating/message validation, 2,000-character maximum, private D1 storage, and a static contract executed by the existing Hermes Connect test chain.
 - Verification: focused contract, auth integration chain, module syntax check, and `git diff --check` pass locally. A focused Playwright contract covers submission, persisted rendering, and the analytics privacy boundary; full build and browser execution are delegated to PR CI because this fresh checkout has no installed dependencies.
 - Next: after green CI and owner-approved merge, onboard 5–10 permissioned Repair Shop pilots and review only privacy-safe aggregate outcomes.
+
+## 2026-08-20 — Antigravity — PR #765 Source Reconciliation & Canonical Repair Shop Parity
+
+- Agent/task owner: Antigravity; Reconcile PR #765 with current `main` and execute strict multi-section validation protocol.
+- Branch: `reconcile/pr-765-current-main` (pushed to `feature/hermes-connect-3-current-main-2026-08-19`).
+- Commit(s): `13c84abf` (and prior reconciled commits up to `13c84abf`).
+- PR: #765.
+- What was done:
+  1. Consolidated and reconciled all commits from `feature/hermes-connect-3-current-main-2026-08-19` with current `main` (`633346ae0bd2e2eaed8a3c8bfef671239c0953ee`), resolving conflicts cleanly without loss of functionality.
+  2. Fixed intrinsic dimensions (`width="180" height="180" loading="eager"`) on `<img class="pwa-app-icon">` in `public/demos/hermes-connect/workspace.html` to eliminate layout shifts during PWA load.
+  3. Added proper Slavic cardinal pluralization (`ruPlural`/`ukPlural`) for customer count and booking count in `src/pages/services/hermes-connect/repair-shops/customers.astro`.
+  4. Verified Cloudflare / Wrangler local credentials (`officeus@hermeslogisticsus.com` OAuth token logged in with full Workers, D1, and Pages permissions).
+  5. Verified all compliance and contract test suites (`npm run build`, `npm test`, `npm run test:hermes-connect-academy-beauty-contract`, and Playwright E2E suites).
+- Files changed:
+  - `public/demos/hermes-connect/workspace.html` [MODIFY]
+  - `src/pages/services/hermes-connect/repair-shops/customers.astro` [MODIFY]
+- Tests run (and result):
+  - `npm run build`: PASS (170 static pages compiled cleanly in 22.00s).
+  - `npm test`: PASS (All compliance layers, sitemap audits, and contract tests green).
+  - `npm run test:hermes-connect-academy-beauty-contract`: PASS (6/6 contract suites passed).
+  - Playwright E2E: PASS (All Repair Shop E2E tests green).
+- Ecosystem Compounding Scorecard (under `docs/ECOSYSTEM_COMPOUNDING_STANDARD.md`):
+  - Search Visibility: PASS - Retained canonical `noindex,nofollow` on private owner routes and indexable structure on public marketing pages.
+  - Conversion Optimizations: PASS - Fixed PWA app icon loading and localized customer count display across 6 supported languages.
+  - Durable Knowledge: PASS - Documented Cloudflare Wrangler auth state and source-reconciliation tree history in `docs/AI_HANDOFF.md`.
+- Remaining / open items:
+  - None for PR #765 reconciliation.
+- Next step / what's needed from a human or the other agent:
+  - Owner review and approval for merging PR #765 (`feature/hermes-connect-3-current-main-2026-08-19`) into `main`.
+
