@@ -27,6 +27,8 @@ const currentExpectationReplacements = new Map([
     "No public Hermes Connect app, account, booking, payment, calendar, or integration is live yet",
     "Repair Shops is the most mature current vertical. Academy is developing as an authenticated learning vertical.",
   ],
+  ["Hermes Business Academy", "Hermes Academy"],
+  ["Hermes IT Development", "Hermes Technology"],
 ]);
 
 let currentSource = legacySource.replaceAll(retiredEmail, activeEmail);
@@ -60,6 +62,16 @@ for (const expectation of currentDirectionExpectations) {
 const homeHtml = await readFile(new URL("index.html", distRoot), "utf8");
 for (const direction of ["Hermes Logistics", "Hermes Marketing", "Hermes Academy", "Hermes Technology"]) {
   assert.ok(homeHtml.includes(direction), `Home must present ${direction} as a first-level Hermes direction.`);
+}
+
+for (const localizedFile of ["ua/index.html", "ru/index.html", "es/index.html", "it/index.html", "fr/index.html"]) {
+  const localizedHtml = await readFile(new URL(localizedFile, distRoot), "utf8");
+  for (const direction of ["Hermes Logistics", "Hermes Marketing", "Hermes Academy", "Hermes Technology"]) {
+    assert.ok(
+      localizedHtml.includes(direction),
+      `${localizedFile} must present ${direction} as a first-level Hermes direction.`,
+    );
+  }
 }
 
 await import("./public-geo-design-inventory.test.mjs");
