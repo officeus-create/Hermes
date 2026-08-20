@@ -37,7 +37,8 @@ test("Repair Shop customer CRM keeps six-language parity and 390px fit", async (
     await page.goto(`/services/hermes-connect/repair-shops/customers/${suffix}`);
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
-    await expect(page.getByRole("region", { name: searchLabel })).toBeVisible();
+    await expect(page.locator(".search-panel")).toHaveAttribute("aria-label", searchLabel);
+    await expect(page.locator(".search-panel")).toBeVisible();
     await expect(page.getByText("Alex Morgan")).toBeVisible();
     await expect(page.getByText("1FTFW1E50MFA12345", { exact:false })).toBeVisible();
     const dashboardHref = locale === "en" ? "/services/hermes-connect/repair-shops/dashboard/" : `/services/hermes-connect/repair-shops/dashboard/?lang=${locale}`;

@@ -18,7 +18,7 @@ test.describe("Hermes Connect canonical responsive workspace", () => {
       await expect(page.locator(".sidebar").getByText("Hermes Connect").first()).toBeVisible();
     }
 
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
   });
 

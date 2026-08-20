@@ -223,6 +223,7 @@
       const primary = document.querySelector("[data-hc-intelligence-primary]");
       if (primary instanceof HTMLAnchorElement) primary.href = href;
       updateOwnerIdentity();
+      if (typeof window.HermesOwnerBridge?.refresh === "function") window.HermesOwnerBridge.refresh();
     };
 
     const watched = ["owner-summary","profile-state","service-count","booking-count","feedback-count","public-link-wrap","bookings-list"]

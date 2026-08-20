@@ -116,7 +116,7 @@
 
   const preserveLocaleLinks = () => {
     document.querySelectorAll("a[href]").forEach((link) => {
-      const href = link.getAttribute("href") || ""; if (!href.startsWith(ROOT) || href.includes("lang=")) return;
+      const href = link.getAttribute("href") || ""; if (!href.includes(ROOT) || href.includes("lang=")) return;
       if (/\/(customers|availability|booking)\//.test(href)) link.setAttribute("href", `${href}${href.includes("?") ? "&" : "?"}lang=${locale}`);
     });
   };

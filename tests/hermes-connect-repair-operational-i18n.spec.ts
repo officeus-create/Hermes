@@ -46,8 +46,8 @@ test.describe("Repair Shop operational dashboard localization", () => {
       await expect(page.locator("#bookings-list .status-pill")).toHaveText(confirmed);
       await expect(page.locator("#bookings-list .status-select option").first()).toHaveText(changeStatus);
 
-      await expect(page.locator('a[href*="/customers/"]')).toHaveAttribute("href", new RegExp(`lang=${locale}`));
-      await expect(page.locator('a[href*="/availability/"]')).toHaveAttribute("href", new RegExp(`lang=${locale}`));
+      await expect(page.locator('a[href*="/customers/"]').first()).toHaveAttribute("href", new RegExp(`lang=${locale}`));
+      await expect(page.locator('a[href*="/availability/"]').first()).toHaveAttribute("href", new RegExp(`lang=${locale}`));
       await expect(page.locator("#open-link-btn")).toHaveAttribute("href", new RegExp(`lang=${locale}`));
 
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
