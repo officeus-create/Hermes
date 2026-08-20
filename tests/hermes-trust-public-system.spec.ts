@@ -47,6 +47,33 @@ for (const route of trustRoutes) {
   });
 }
 
+test("Legal & Compliance converges on the Pearl public trust grammar", async ({ page }) => {
+  await page.goto("/legal-compliance/");
+  await expect(page.locator(".legal-page")).toBeVisible();
+  const visual = await page.evaluate(() => {
+    const pageRoot=document.querySelector<HTMLElement>(".legal-page");
+    const hero=document.querySelector<HTMLElement>(".legal-hero");
+    const card=document.querySelector<HTMLElement>(".legal-card");
+    const tracking=document.querySelector<HTMLElement>(".legal-tracking-grid");
+    if(!pageRoot||!hero||!card||!tracking)return null;
+    return {
+      pageBackground:getComputedStyle(pageRoot).backgroundColor,
+      heroColor:getComputedStyle(hero).color,
+      cardBackground:getComputedStyle(card).backgroundColor,
+      cardRadius:getComputedStyle(card).borderRadius,
+      trackingBackground:getComputedStyle(tracking).backgroundColor,
+      overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,
+    };
+  });
+  expect(visual).not.toBeNull();
+  expect(visual!.pageBackground).toBe("rgb(247, 246, 243)");
+  expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
+  expect(visual!.cardBackground).toBe("rgb(255, 255, 255)");
+  expect(visual!.cardRadius).toBe("22px");
+  expect(visual!.trackingBackground).toBe("rgb(11, 13, 18)");
+  expect(visual!.overflow).toBe(false);
+});
+
 test("Trust family remains usable at 390px", async ({ page }) => {
   await page.setViewportSize({ width:390, height:844 });
   await page.goto("/accessibility/");
@@ -61,4 +88,17 @@ test("Trust family remains usable at 390px", async ({ page }) => {
   expect(mobile!.overflow).toBe(false);
   expect(mobile!.contactRadius).toBe("22px");
   expect(mobile!.actionWidth).toBeLessThanOrEqual(mobile!.contactWidth);
+});
+
+test("Legal & Compliance remains usable at 390px", async ({ page }) => {
+  await page.setViewportSize({ width:390, height:844 });
+  await page.goto("/legal-compliance/");
+  await expect(page.locator(".legal-hero")).toBeVisible();
+  const mobile=await page.evaluate(() => ({
+    overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,
+    heroWidth:document.querySelector<HTMLElement>(".legal-hero")?.getBoundingClientRect().width ?? 0,
+    viewport:document.documentElement.clientWidth,
+  }));
+  expect(mobile.overflow).toBe(false);
+  expect(mobile.heroWidth).toBeLessThanOrEqual(mobile.viewport);
 });
