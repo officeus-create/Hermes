@@ -74,3 +74,65 @@ test("Marketing public system remains usable at 390px", async ({ page }) => {
   expect(mobile!.cardRadius).toBe("22px");
   expect(mobile!.consoleRadius).toBe("22px");
 });
+
+const growthRoutes = ["/business-growth/", "/ru/business-growth/", "/ua/business-growth/"] as const;
+
+for (const route of growthRoutes) {
+  test(`${route} uses the Hermes public Marketing inquiry system`, async ({ page }) => {
+    await page.goto(route);
+    await expect(page.locator("#business-growth-title")).toBeVisible();
+    await expect(page.locator("#business-lead .contact-form")).toBeVisible();
+
+    const visual = await page.evaluate(() => {
+      const header = document.querySelector<HTMLElement>(".site-header");
+      const hero = document.querySelector<HTMLElement>(".detail-overview");
+      const form = document.querySelector<HTMLElement>("#business-lead .contact-form");
+      const interest = document.querySelector<HTMLInputElement>('#business-lead input[name="interest"]');
+      if (!header || !hero || !form || !interest) return null;
+      return {
+        headerColor: getComputedStyle(header).color,
+        heroColor: getComputedStyle(hero).color,
+        formBackground: getComputedStyle(form).backgroundColor,
+        formRadius: getComputedStyle(form).borderRadius,
+        interest: interest.value,
+        overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      };
+    });
+
+    expect(visual).not.toBeNull();
+    expect(visual!.headerColor).toBe("rgb(11, 13, 18)");
+    expect(visual!.heroColor).toBe("rgb(11, 13, 18)");
+    expect(visual!.formBackground).toBe("rgb(255, 255, 255)");
+    expect(visual!.formRadius).toBe("22px");
+    expect(visual!.interest).toBe("ProgressoPro");
+    expect(visual!.overflow).toBe(false);
+  });
+}
+
+test("English growth roadmap uses canonical Paper cards", async ({ page }) => {
+  await page.goto("/business-growth/");
+  const card = page.locator(".business-growth-roadmap-grid li").first();
+  await expect(card).toBeVisible();
+  const visual = await card.evaluate((node) => ({
+    background: getComputedStyle(node).backgroundColor,
+    radius: getComputedStyle(node).borderRadius,
+  }));
+  expect(visual.background).toBe("rgb(255, 255, 255)");
+  expect(visual.radius).toBe("22px");
+});
+
+test("Marketing inquiry remains usable at 390px", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/business-growth/");
+  await expect(page.locator("#business-lead .contact-form")).toBeVisible();
+  const mobile = await page.evaluate(() => {
+    const form = document.querySelector<HTMLElement>("#business-lead .contact-form");
+    return {
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      formWidth: form?.getBoundingClientRect().width ?? 0,
+      viewport: document.documentElement.clientWidth,
+    };
+  });
+  expect(mobile.overflow).toBe(false);
+  expect(mobile.formWidth).toBeLessThanOrEqual(mobile.viewport);
+});
