@@ -118,6 +118,113 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
+/*
+ * Public Legal & Compliance convergence.
+ * The page keeps its existing copy, schema and controls; these selectors only replace
+ * the legacy navy-first visual generation with the shared Pearl / Paper / Obsidian grammar.
+ * Selector specificity is intentionally higher than the page-local legacy rules.
+ */
+.legal-page.legal-page {
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.legal-page.legal-page .legal-hero.legal-hero {
+  color: var(--hermes-ink);
+  background:
+    radial-gradient(circle at 84% 12%, rgba(124, 92, 255, .12), transparent 30rem),
+    radial-gradient(circle at 16% 18%, rgba(90, 200, 250, .08), transparent 26rem),
+    var(--hermes-pearl);
+  border-bottom: 1px solid var(--hermes-line-light);
+}
+
+.legal-page.legal-page .legal-breadcrumb.legal-breadcrumb,
+.legal-page.legal-page .legal-reviewed.legal-reviewed {
+  color: var(--hermes-muted);
+}
+
+.legal-page.legal-page .legal-hero.legal-hero .eyebrow,
+.legal-page.legal-page .legal-section-heading.legal-section-heading .eyebrow,
+.legal-page.legal-page .legal-tracking.legal-tracking .eyebrow,
+.legal-page.legal-page .legal-before-pay.legal-before-pay .eyebrow {
+  color: var(--hermes-violet);
+}
+
+.legal-page.legal-page .legal-intro.legal-intro,
+.legal-page.legal-page .legal-section-heading.legal-section-heading > p,
+.legal-page.legal-page .legal-card.legal-card > p,
+.legal-page.legal-page .legal-before-pay.legal-before-pay li {
+  color: var(--hermes-muted);
+}
+
+.legal-page.legal-page .legal-hero.legal-hero .button-primary {
+  color: #fff;
+  border: 1px solid var(--hermes-obsidian);
+  background: var(--hermes-obsidian);
+  box-shadow: 0 12px 30px rgba(11, 13, 18, .12);
+}
+
+.legal-page.legal-page .legal-secondary.legal-secondary,
+.legal-page.legal-page .legal-request-button.legal-request-button {
+  color: var(--hermes-ink);
+  border: 1px solid var(--hermes-line-light);
+  background: var(--hermes-paper);
+}
+
+.legal-page.legal-page .legal-card.legal-card,
+.legal-page.legal-page .legal-before-pay-inner.legal-before-pay-inner {
+  color: var(--hermes-ink);
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.legal-page.legal-page .legal-card-status.legal-card-status {
+  color: #17674e;
+  background: rgba(127, 209, 182, .16);
+}
+
+.legal-page.legal-page .legal-card-link.legal-card-link {
+  color: var(--hermes-violet);
+}
+
+.legal-page.legal-page .legal-icon.legal-icon {
+  color: var(--hermes-violet);
+  background: rgba(124, 92, 255, .10);
+}
+
+.legal-page.legal-page .legal-tracking-grid.legal-tracking-grid {
+  color: #fff;
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-panel);
+  background:
+    radial-gradient(circle at 86% 10%, rgba(124, 92, 255, .16), transparent 24rem),
+    var(--hermes-obsidian);
+  box-shadow: var(--hermes-shadow-workspace);
+}
+
+.legal-page.legal-page .legal-tracking-grid.legal-tracking-grid p {
+  color: var(--hermes-muted-dark);
+}
+
+.legal-page.legal-page a:focus-visible,
+.legal-page.legal-page button:focus-visible {
+  outline: 2px solid var(--hermes-violet);
+  outline-offset: 3px;
+}
+
+@media (max-width: 650px) {
+  .legal-page.legal-page .legal-card.legal-card,
+  .legal-page.legal-page .legal-before-pay-inner.legal-before-pay-inner {
+    border-radius: var(--hermes-radius-card);
+  }
+
+  .legal-page.legal-page .legal-tracking-grid.legal-tracking-grid {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .hermes-glass {
     background: var(--hermes-paper);
