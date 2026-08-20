@@ -6,8 +6,10 @@
   flex-wrap: wrap;
   gap: .5rem;
   margin-bottom: 1.2rem;
-  color: #bbc7ea;
+  color: var(--hermes-muted-dark);
   font-size: .78rem;
 }
 
 .appleton-breadcrumbs a { color: #fff; }
+.appleton-breadcrumbs a:hover,
+.appleton-breadcrumbs a:focus-visible { color: var(--hermes-paper); text-decoration: underline; text-underline-offset: .2em; }
