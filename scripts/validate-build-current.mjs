@@ -23,3 +23,5 @@ try {
 } finally {
   await unlink(temporaryValidatorUrl).catch(() => {});
 }
+
+await import("./public-geo-design-inventory.test.mjs");
