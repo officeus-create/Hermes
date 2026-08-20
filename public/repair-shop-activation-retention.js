@@ -16,6 +16,13 @@
   };
   const t = copy[locale] || copy.en;
 
+  const setText = (node, value) => {
+    if (node instanceof HTMLElement && node.textContent !== value) node.textContent = value;
+  };
+  const setAttr = (node, name, value) => {
+    if (node instanceof HTMLElement && node.getAttribute(name) !== value) node.setAttribute(name, value);
+  };
+
   const customerKeys = () => {
     const keys = [];
     document.querySelectorAll("#bookings-list .booking-card p.muted.small").forEach((node) => {
@@ -58,17 +65,16 @@
     }
 
     const repeat = hasRepeatBooking();
-    repeatStep.dataset.complete = String(repeat);
-    const mark = repeatStep.querySelector("strong");
-    const label = repeatStep.querySelector("span");
-    if (mark) mark.textContent = repeat ? "✓" : "7";
-    if (label) label.textContent = t.label;
+    setAttr(repeatStep, "data-complete", String(repeat));
+    setText(repeatStep.querySelector("strong"), repeat ? "✓" : "7");
+    setText(repeatStep.querySelector("span"), t.label);
 
     const originalSteps = Array.from(list.querySelectorAll(".repair-activation-step:not([data-repair-repeat-step])"));
     const firstValueCompleted = originalSteps.filter((step) => step.getAttribute("data-complete") === "true").length;
     const completed = firstValueCompleted + (repeat ? 1 : 0);
-    progress.textContent = `${completed}/7 ${t.milestones}`;
-    fill.style.width = `${Math.round((completed / 7) * 100)}%`;
+    setText(progress, `${completed}/7 ${t.milestones}`);
+    const desiredWidth = `${Math.round((completed / 7) * 100)}%`;
+    if (fill.style.width !== desiredWidth) fill.style.width = desiredWidth;
 
     let repeatAction = actions.querySelector("[data-repair-repeat-action]");
     if (firstValueCompleted === 6 && !repeat) {
@@ -80,10 +86,10 @@
         repeatAction.rel = "noopener";
         actions.insertBefore(repeatAction, actions.querySelector(".repair-activation-next"));
       }
-      repeatAction.href = bookingHref();
-      repeatAction.textContent = t.invite;
-      const next = actions.querySelector(".repair-activation-next");
-      if (next) next.textContent = t.hint;
+      const href = bookingHref();
+      if (repeatAction.href !== href) repeatAction.href = href;
+      setText(repeatAction, t.invite);
+      setText(actions.querySelector(".repair-activation-next"), t.hint);
     } else if (repeatAction instanceof HTMLElement) {
       repeatAction.remove();
     }
