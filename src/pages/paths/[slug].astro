@@ -19,6 +19,7 @@ export function getStaticPaths() {
 
 const { path } = Astro.props;
 const canonicalUrl = new URL(`/paths/${path.id}/`, Astro.site).toString();
+const contactCategory = site.paths.find((item) => item.id === path.id)?.category ?? path.category;
 const areaServed = path.id === "logistics"
   ? [{ "@type": "Country", name: "United States" }]
   : [
@@ -38,7 +39,7 @@ const serviceSchema = {
   provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
 };
-const breadcrumbName = site.navigation.find((item) => item.href === `paths/${path.id}/`)?.label ?? path.category;
+const breadcrumbName = path.brandLabel;
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -79,6 +80,6 @@ const schema = faqSchema
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <HermesConnectLauncher variant="banner" context={path.id as any} />
-  <ContactCTA selectedPath={path.category} />
+  <ContactCTA selectedPath={contactCategory} />
   <SiteFooter />
 </BaseLayout>
