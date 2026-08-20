@@ -122,9 +122,9 @@
  * Public Legal & Compliance convergence.
  * The page keeps its existing copy, schema and controls; these selectors only replace
  * the legacy navy-first visual generation with the shared Pearl / Paper / Obsidian grammar.
- * Selector specificity is intentionally higher than the page-local legacy rules.
+ * Selector specificity is intentionally higher than the page-local Astro-scoped rules.
  */
-.legal-page.legal-page {
+.legal-page.legal-page.legal-page {
   color: var(--hermes-ink);
   background: var(--hermes-pearl);
 }
