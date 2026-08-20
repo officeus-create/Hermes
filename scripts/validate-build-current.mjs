@@ -15,7 +15,24 @@ assert.equal(
   `Expected exactly two historical retired-email assertions in validate-build.mjs, found ${retiredExpectationCount}. Update the compatibility runner intentionally if the legacy validator changes.`,
 );
 
-const currentSource = legacySource.replaceAll(retiredEmail, activeEmail);
+const currentExpectationReplacements = new Map([
+  ["Hermes Connect · Prototype work started", "Hermes Connect · Staged rollout"],
+  ["Product architecture", "Repair Shops"],
+  ["Prototype brief", "Academy"],
+  ["Specialist booking flow", "Beauty"],
+  ["First prototype target · Mobile-first PWA", "Current public maturity map"],
+  ["Personal booking link", "Academy · developing"],
+  ["Defined prototype scope · Simulated data and test booking only", "Status labels describe current public maturity, not universal availability."],
+  [
+    "No public Hermes Connect app, account, booking, payment, calendar, or integration is live yet",
+    "Repair Shops is the most mature current vertical. Academy is developing as an authenticated learning vertical.",
+  ],
+]);
+
+let currentSource = legacySource.replaceAll(retiredEmail, activeEmail);
+for (const [historicalExpectation, currentExpectation] of currentExpectationReplacements) {
+  currentSource = currentSource.replaceAll(historicalExpectation, currentExpectation);
+}
 await writeFile(temporaryValidatorUrl, currentSource, "utf8");
 
 try {
