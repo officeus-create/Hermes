@@ -118,11 +118,171 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
+/*
+ * Public Logistics audience convergence.
+ * This route-scoped layer intentionally overrides the retired navy/blue audience generation
+ * while preserving audience data, FAQ/schema, CTA routes and qualification behavior.
+ */
+.logistics-audience-page.logistics-audience-page {
+  min-height: 100vh;
+  color: var(--hermes-ink);
+  background: var(--hermes-pearl);
+}
+
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark {
+  color: var(--hermes-ink);
+  border-bottom-color: var(--hermes-line-light);
+  background: rgba(247, 246, 243, .88);
+  backdrop-filter: blur(20px) saturate(1.05);
+}
+
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark.site-header-scrolled {
+  color: var(--hermes-ink);
+  border-bottom-color: var(--hermes-line-light);
+  background: rgba(247, 246, 243, .96);
+}
+
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark .wordmark-mark,
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark .language-menu summary,
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark .header-cta {
+  color: var(--hermes-ink);
+  border-color: var(--hermes-line-light);
+}
+
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark .language-menu summary,
+.logistics-audience-page.logistics-audience-page .site-header.site-header-dark .header-cta {
+  background: rgba(255, 255, 255, .66);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-hero.logistics-audience-hero {
+  color: var(--hermes-ink);
+  border-bottom: 1px solid var(--hermes-line-light);
+  background:
+    radial-gradient(circle at 84% 10%, rgba(124, 92, 255, .12), transparent 31rem),
+    radial-gradient(circle at 15% 22%, rgba(90, 200, 250, .08), transparent 26rem),
+    var(--hermes-pearl);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-hero h1 {
+  color: var(--hermes-ink);
+  line-height: var(--hermes-display-leading);
+  letter-spacing: var(--hermes-display-tracking);
+  text-wrap: balance;
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-hero > .shell > p:not(.eyebrow),
+.logistics-audience-page.logistics-audience-page .logistics-audience-faq-list p,
+.logistics-audience-page.logistics-audience-page .shipper-service-mode-grid p {
+  color: var(--hermes-muted);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-hero .eyebrow,
+.logistics-audience-page.logistics-audience-page .shipper-service-modes .eyebrow,
+.logistics-audience-page.logistics-audience-page .logistics-audience-faq .eyebrow,
+.logistics-audience-page.logistics-audience-page .logistics-audience-final .eyebrow,
+.logistics-audience-page.logistics-audience-page .shipper-service-mode-grid article > span {
+  color: var(--hermes-violet);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-actions .button-primary {
+  color: #fff;
+  border-color: var(--hermes-obsidian);
+  background: var(--hermes-obsidian);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-actions .button:not(.button-primary) {
+  color: var(--hermes-ink);
+  border-color: var(--hermes-line-light);
+  background: var(--hermes-paper);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-local-guide-link {
+  color: var(--hermes-violet);
+}
+
+.logistics-audience-page.logistics-audience-page .shipper-service-modes.shipper-service-modes,
+.logistics-audience-page.logistics-audience-page .logistics-audience-faq.logistics-audience-faq,
+.logistics-audience-page.logistics-audience-page .logistics-audience-final.logistics-audience-final {
+  background: var(--hermes-pearl);
+}
+
+.logistics-audience-page.logistics-audience-page .shipper-service-mode-grid article,
+.logistics-audience-page.logistics-audience-page .logistics-audience-faq-list details {
+  border: 1px solid var(--hermes-line-light);
+  border-radius: var(--hermes-radius-card);
+  background: var(--hermes-paper);
+  box-shadow: var(--hermes-shadow-card);
+}
+
+.logistics-audience-page.logistics-audience-page .shipper-service-mode-grid h3,
+.logistics-audience-page.logistics-audience-page .shipper-service-mode-grid strong,
+.logistics-audience-page.logistics-audience-page .logistics-audience-faq-list summary {
+  color: var(--hermes-ink);
+}
+
+.logistics-audience-page.logistics-audience-page .shipper-service-boundary {
+  color: var(--hermes-muted);
+  border-left-color: var(--hermes-violet);
+  border-radius: var(--hermes-radius-control);
+  background: rgba(124, 92, 255, .06);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-final-card.logistics-audience-final-card {
+  border: 1px solid var(--hermes-line-dark);
+  border-radius: var(--hermes-radius-panel);
+  color: #fff;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(124, 92, 255, .16), transparent 24rem),
+    var(--hermes-obsidian);
+  box-shadow: var(--hermes-shadow-workspace);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-final-card h2 {
+  color: #fff;
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-final-card p:not(.eyebrow) {
+  color: var(--hermes-muted-dark);
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-final-actions .button-primary {
+  color: var(--hermes-ink);
+  border-color: #fff;
+  background: #fff;
+}
+
+.logistics-audience-page.logistics-audience-page .logistics-audience-final-actions .button:not(.button-primary) {
+  color: #fff;
+  border-color: var(--hermes-line-dark);
+  background: transparent;
+}
+
+.logistics-audience-page.logistics-audience-page a:focus-visible,
+.logistics-audience-page.logistics-audience-page button:focus-visible,
+.logistics-audience-page.logistics-audience-page summary:focus-visible {
+  outline: 2px solid var(--hermes-violet);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .logistics-audience-page.logistics-audience-page .shipper-service-mode-grid article,
+  .logistics-audience-page.logistics-audience-page .logistics-audience-faq-list details,
+  .logistics-audience-page.logistics-audience-page .logistics-audience-final-card.logistics-audience-final-card {
+    border-radius: var(--hermes-radius-card);
+  }
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .hermes-glass {
     background: var(--hermes-paper);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  .logistics-audience-page.logistics-audience-page .site-header.site-header-dark,
+  .logistics-audience-page.logistics-audience-page .site-header.site-header-dark.site-header-scrolled {
+    background: var(--hermes-pearl);
+    backdrop-filter: none;
   }
 }
 
