@@ -7,17 +7,17 @@
   "additions": [
     {
       "route": "/services/hermes-connect/beauty/workspace-preview/",
-      "source_state": "preview_branch",
+      "source_state": "current_main",
       "indexability": "noindex",
       "robots": "noindex,nofollow,noarchive",
       "canonical": "https://hermeslogisticsus.com/services/hermes-connect/beauty/workspace-preview/",
       "sitemap_owner": null,
       "source_file": "src/pages/services/hermes-connect/beauty/workspace-preview.astro",
-      "status": "CEO_PREVIEW_ONLY",
+      "status": "COMPLETE",
       "blocker": "CEO_VISUAL_APPROVAL_REQUIRED",
       "response_status": 200,
       "comparison": {
-        "production": "not_published",
+        "production": "pending_deployment",
         "immutable_release": "pending_preview_deploy"
       }
     }
