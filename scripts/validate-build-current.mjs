@@ -41,4 +41,25 @@ try {
   await unlink(temporaryValidatorUrl).catch(() => {});
 }
 
+const distRoot = new URL("../dist/", import.meta.url);
+const currentDirectionExpectations = [
+  { file: "paths/logistics/index.html", hero: "01 · Hermes Logistics" },
+  { file: "paths/marketing/index.html", hero: "02 · Hermes Marketing" },
+  { file: "paths/academy/index.html", hero: "03 · Hermes Academy" },
+  { file: "paths/technology/index.html", hero: "04 · Hermes Technology" },
+];
+
+for (const expectation of currentDirectionExpectations) {
+  const html = await readFile(new URL(expectation.file, distRoot), "utf8");
+  assert.ok(
+    html.includes(expectation.hero),
+    `Current public direction hierarchy missing from ${expectation.file}: ${expectation.hero}`,
+  );
+}
+
+const homeHtml = await readFile(new URL("index.html", distRoot), "utf8");
+for (const direction of ["Hermes Logistics", "Hermes Marketing", "Hermes Academy", "Hermes Technology"]) {
+  assert.ok(homeHtml.includes(direction), `Home must present ${direction} as a first-level Hermes direction.`);
+}
+
 await import("./public-geo-design-inventory.test.mjs");
