@@ -109,7 +109,7 @@ const p = pageCopy[locale];
     }
   }
 
-  async function initialize(){ const session=await fetch("/api/auth/me",{credentials:"same-origin"}); if(session.status===401)return redirectToAuth(); if(!session.ok)return showAlert(t.secure); const response=await fetch("/api/repair-shop/customers",{credentials:"same-origin"}); if(response.status===401)return redirectToAuth(); const data=await readJson(response); if(!response.ok||!data.success)return showAlert(t.load); customers=Array.isArray(data.customers)?data.customers:[]; render(customers); }
+  async function initialize(){ const session=await fetch("/api/auth/me",{credentials:"same-origin"}); if(session.status===401)return redirectToAuth(); if(!session.ok)return showAlert(t.secure); const response=await fetch("/api/repair-shop/customers",{credentials:"same-origin"}); if(response.status===401)return redirectToAuth(); const data=await readJson(response); if(!response.ok||!data.success)return showAlert(t.init); customers=Array.isArray(data.customers)?data.customers:[]; render(customers); }
   searchInput?.addEventListener("input",()=>render(customers.filter(customer=>matchesSearch(customer,searchInput.value.trim()))));
   initialize().catch(()=>showAlert(t.init));
 </script>

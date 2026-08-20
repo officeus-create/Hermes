@@ -178,7 +178,8 @@
       const s = state();
       setText("[data-hc-metric-bookings]", s.bookingCount == null ? "—" : String(s.bookingCount));
       setText("[data-hc-metric-services]", s.serviceCount == null ? "—" : String(s.serviceCount));
-      setText("[data-hc-metric-public]", s.publicReady ? "Ready" : s.profileSaved ? "Setup" : "Not ready");
+      const publicStatusText = s.publicReady ? (lang === "ru" || lang === "uk" ? "Готово" : lang === "es" ? "Listo" : lang === "it" ? "Pronto" : lang === "fr" ? "Prêt" : "Ready") : s.profileSaved ? (lang === "ru" ? "Настройка" : lang === "uk" ? "Налаштування" : lang === "es" ? "Configuración" : "Setup") : (lang === "ru" ? "Не настроено" : lang === "uk" ? "Не налаштовано" : "Not ready");
+      setText("[data-hc-metric-public]", publicStatusText);
       setText("[data-hc-metric-completed]", s.bookingCount == null ? "—" : String(s.completed));
       setText("[data-hc-nav-bookings]", s.bookingCount == null ? "—" : String(s.bookingCount));
       setText("[data-hc-nav-services]", s.serviceCount == null ? "—" : String(s.serviceCount));

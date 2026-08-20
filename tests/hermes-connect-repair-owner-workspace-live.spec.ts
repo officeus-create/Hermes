@@ -93,7 +93,7 @@ test.describe("approved Repair Shop Owner OS wired to live dashboard", () => {
     await page.locator("#service-name").fill("Oil change");
     await page.locator("#service-duration").selectOption("60");
     await page.locator("#add-service-btn").click();
-    await expect(page.locator("#service-count")).toContainText("2 services");
+    await expect(page.locator("#service-count")).toContainText(/2 (services|услуг)/);
     await expect(page.locator("[data-hc-metric-services]")).toHaveText("2");
     await expect(page.locator("[data-hc-nav-services]")).toHaveText("2");
     await expect(page.locator("[data-hc-focus-list]")).toContainText("Активных услуг: 2");
