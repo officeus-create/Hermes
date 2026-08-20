@@ -3,7 +3,7 @@ import { ArrowUpRight, Mail, Phone } from "@lucide/astro";
 import { site } from "../data/site";
 
 const logisticsPhone = site.publicPhones[0];
-const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
+const hermesConnectMark = "/images/hermes-connect-mark.svg";
 ---
 
 <section class="home-final-contact" aria-labelledby="home-final-contact-title">
@@ -236,7 +236,7 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
     inset: 8px;
     z-index: 2;
     border-radius: 9px;
-    background: url('/demos/hermes-connect/icon-192.svg') center / contain no-repeat;
+    background: url('/images/hermes-connect-mark.svg') center / contain no-repeat;
     opacity: .92;
     transition: opacity 280ms ease, transform 360ms cubic-bezier(.22,.75,.2,1);
   }
@@ -290,7 +290,6 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
   }
 
   #contact.home-contact-shell::before {
-    content: "";
     position: absolute;
     z-index: -1;
     inset: -20% -10%;
@@ -298,6 +297,7 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
     transform: translateX(-24%);
     animation: home-footer-sheen 12s ease-in-out infinite;
     pointer-events: none;
+    content: "";
   }
 
   #contact.home-contact-shell > .site-footer {
@@ -318,13 +318,13 @@ const hermesConnectMark = "/demos/hermes-connect/icon-192.svg";
   }
 
   #contact.home-contact-shell .hc-launcher-panel a::before {
-    content: "";
     width: 18px;
     height: 18px;
     flex: 0 0 18px;
     border-radius: 6px;
-    background: url('/demos/hermes-connect/icon-192.svg') center / contain no-repeat;
+    background: url('/images/hermes-connect-mark.svg') center / contain no-repeat;
     box-shadow: 0 0 18px rgba(124,92,255,.18);
+    content: "";
   }
 
   @keyframes home-direction-spectrum {
