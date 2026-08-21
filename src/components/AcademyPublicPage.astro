@@ -66,19 +66,25 @@ interface Props {
 }
 
 const {
-  content,
+  content: rawContent,
   locale = "en",
   alternates = [],
   ui = defaultUi,
   academyHubHref = "/paths/academy/",
 } = Astro.props;
 
+// Public brand normalization only. Historical source-data wording is preserved for compatibility,
+// but every public render emits the canonical first-level direction name: Hermes Academy.
+const content = JSON.parse(
+  JSON.stringify(rawContent).replaceAll("Hermes Business Academy", "Hermes Academy"),
+) as AcademySubsitePage;
+
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const academyUrl = new URL(academyHubHref, Astro.site).toString();
 const academyEntity = {
   "@type": "Organization",
   "@id": "https://hermeslogisticsus.com/#academy",
-  name: "Hermes Business Academy",
+  name: "Hermes Academy",
   url: academyUrl,
   parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
 };
@@ -107,7 +113,7 @@ const mainSchema = content.schemaType === "Course"
 const serviceSchema = {
   "@context": "https://schema.org",
   "@type": "Service",
-  name: `${content.h1} — Hermes Business Academy`,
+  name: `${content.h1} — Hermes Academy`,
   description: content.description,
   url: canonicalUrl,
   provider: academyEntity,
@@ -132,7 +138,7 @@ const breadcrumbSchema = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: ui.home, item: new URL(locale === "en" ? "/" : `/${locale === "uk" ? "ua" : locale}/`, Astro.site).toString() },
-    { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: academyUrl },
+    { "@type": "ListItem", position: 2, name: "Hermes Academy", item: academyUrl },
     { "@type": "ListItem", position: 3, name: content.h1, item: canonicalUrl },
   ],
 };
