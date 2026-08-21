@@ -1,0 +1,61 @@
+/*
+ * HERMES CARRIER ENTRY SYSTEM
+ * Visual-only convergence for the private carrier agreement entry route.
+ * Existing signing, sharing, legal copy, routes and JavaScript remain untouched.
+ *
+ * `body:has(.carrier-signing-entry)` intentionally raises specificity above the
+ * route-local Astro scoped fallback styles while keeping every override route-bound.
+ */
+
+body:has(.carrier-signing-entry){overflow-x:clip;background:var(--hermes-pearl)}
+body:has(.carrier-signing-entry) .site-header{color:var(--hermes-ink);border-bottom-color:var(--hermes-line-light)}
+body:has(.carrier-signing-entry) .site-header-scrolled{background:rgba(247,246,243,.92);border-bottom-color:var(--hermes-line-light);box-shadow:0 12px 34px rgba(11,13,18,.08)}
+body:has(.carrier-signing-entry) .wordmark-mark{border-color:rgba(11,13,18,.28)}
+body:has(.carrier-signing-entry) .language-menu nav{border-color:var(--hermes-line-light);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.carrier-signing-entry) .language-menu nav a{color:var(--hermes-ink)}
+body:has(.carrier-signing-entry) .language-menu nav a:hover,body:has(.carrier-signing-entry) .language-menu nav a:focus-visible,body:has(.carrier-signing-entry) .language-menu nav a[aria-current="page"]{color:#fff;background:var(--hermes-obsidian)}
+body:has(.carrier-signing-entry) .mobile-nav{color:var(--hermes-ink);background:var(--hermes-paper)}
+
+body:has(.carrier-signing-entry) .carrier-signing-entry{overflow-x:clip;color:var(--hermes-ink);background:var(--hermes-pearl)}
+body:has(.carrier-signing-entry) .carrier-entry-grid>* ,body:has(.carrier-signing-entry) .carrier-share-card>* ,body:has(.carrier-signing-entry) .carrier-final-card>*{min-width:0}
+body:has(.carrier-signing-entry) .carrier-signing-entry :is(a,button,h1,h2,h3,p,small,b){overflow-wrap:anywhere}
+body:has(.carrier-signing-entry) .carrier-signing-entry .eyebrow{color:var(--hermes-violet)}
+body:has(.carrier-signing-entry) .carrier-entry-hero{padding:8.5rem 0 5rem;color:var(--hermes-ink);background:var(--hermes-pearl)}
+body:has(.carrier-signing-entry) .carrier-rails{top:5.2rem;height:2px;background:var(--hermes-intelligence-gradient)}
+body:has(.carrier-signing-entry) .carrier-rails span{display:none}
+body:has(.carrier-signing-entry) .carrier-entry-hero h1{max-width:11ch;color:var(--hermes-ink);line-height:var(--hermes-display-leading);letter-spacing:var(--hermes-display-tracking)}
+body:has(.carrier-signing-entry) .carrier-entry-lead{color:var(--hermes-muted);line-height:var(--hermes-copy-leading)}
+body:has(.carrier-signing-entry) .carrier-trust-strip span{border:1px solid color-mix(in srgb,var(--hermes-success) 28%,var(--hermes-line-light));background:var(--hermes-paper);color:var(--hermes-ink);box-shadow:0 8px 26px rgba(20,20,31,.035)}
+body:has(.carrier-signing-entry) .carrier-trust-strip svg{color:var(--hermes-success)}
+body:has(.carrier-signing-entry) .carrier-entry-actions .button,body:has(.carrier-signing-entry) .carrier-share-actions .button,body:has(.carrier-signing-entry) .carrier-final-actions .button{max-width:100%;border-radius:var(--hermes-radius-control)}
+body:has(.carrier-signing-entry) .carrier-primary{border:1px solid var(--hermes-obsidian)!important;background:var(--hermes-obsidian)!important;color:#fff!important;box-shadow:none}
+body:has(.carrier-signing-entry) .carrier-primary:hover,body:has(.carrier-signing-entry) .carrier-primary:focus-visible{background:var(--hermes-graphite)!important}
+body:has(.carrier-signing-entry) .carrier-secondary{border:1px solid var(--hermes-line-light)!important;background:var(--hermes-paper)!important;color:var(--hermes-ink)!important}
+body:has(.carrier-signing-entry) .carrier-call{border:1px solid color-mix(in srgb,var(--hermes-success) 38%,var(--hermes-line-light))!important;background:var(--hermes-paper)!important;color:var(--hermes-ink)!important}
+body:has(.carrier-signing-entry) .carrier-guidance{color:var(--hermes-violet)}
+body:has(.carrier-signing-entry) .carrier-boundary{color:var(--hermes-muted)}
+body:has(.carrier-signing-entry) .carrier-next-card{padding:clamp(1.35rem,3vw,1.85rem);border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-panel);color:#fff;background:radial-gradient(circle at 88% 8%,rgba(124,92,255,.13),transparent 22rem),var(--hermes-obsidian);box-shadow:var(--hermes-shadow-workspace);backdrop-filter:none}
+body:has(.carrier-signing-entry) .carrier-next-card .eyebrow{color:#c8bdff}
+body:has(.carrier-signing-entry) .carrier-next-card li>span{border-radius:var(--hermes-radius-pill);background:var(--hermes-violet);color:#fff}
+body:has(.carrier-signing-entry) .carrier-next-card small{color:var(--hermes-muted-dark)}
+body:has(.carrier-signing-entry) .carrier-next-card>a{color:#fff}
+body:has(.carrier-signing-entry) .carrier-next-card>a:hover,body:has(.carrier-signing-entry) .carrier-next-card>a:focus-visible{color:#d8d0ff}
+
+body:has(.carrier-signing-entry) .carrier-confidence{background:var(--hermes-pearl)}
+body:has(.carrier-signing-entry) .carrier-heading>p:not(.eyebrow),body:has(.carrier-signing-entry) .confidence-grid p{color:var(--hermes-muted)}
+body:has(.carrier-signing-entry) .carrier-confidence .confidence-grid article{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.carrier-signing-entry) .confidence-grid svg{color:var(--hermes-success)}
+body:has(.carrier-signing-entry) .carrier-share-card{border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-panel);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.carrier-signing-entry) .carrier-share-actions .button:not(.carrier-primary){border:1px solid var(--hermes-line-light);background:var(--hermes-pearl);color:var(--hermes-ink)}
+body:has(.carrier-signing-entry) .share-status{color:var(--hermes-success)}
+body:has(.carrier-signing-entry) .carrier-final-card{border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-panel);background:radial-gradient(circle at 86% 14%,rgba(124,92,255,.12),transparent 24rem),var(--hermes-obsidian);color:#fff;box-shadow:var(--hermes-shadow-workspace)}
+body:has(.carrier-signing-entry) .carrier-final-card .eyebrow{color:#c8bdff}
+body:has(.carrier-signing-entry) .carrier-final-card p:not(.eyebrow){color:var(--hermes-muted-dark)}
+body:has(.carrier-signing-entry) .carrier-final-card .carrier-primary{border-color:#fff!important;background:#fff!important;color:var(--hermes-obsidian)!important}
+body:has(.carrier-signing-entry) .carrier-final-card .carrier-primary:hover,body:has(.carrier-signing-entry) .carrier-final-card .carrier-primary:focus-visible{background:#f1f1f1!important}
+body:has(.carrier-signing-entry) .carrier-final-card .carrier-call{border-color:var(--hermes-line-dark)!important;background:var(--hermes-glass-dark)!important;color:#fff!important}
+body:has(.carrier-signing-entry) .carrier-signing-entry :is(a,button):focus-visible{outline:3px solid var(--hermes-violet);outline-offset:3px}
+
+@media(max-width:900px){body:has(.carrier-signing-entry) .site-header{color:var(--hermes-ink)}body:has(.carrier-signing-entry) .carrier-next-card,body:has(.carrier-signing-entry) .carrier-share-card,body:has(.carrier-signing-entry) .carrier-final-card{border-radius:var(--hermes-radius-card)}}
+@media(max-width:620px){body:has(.carrier-signing-entry) .carrier-entry-hero{padding-top:7.5rem}body:has(.carrier-signing-entry) .carrier-entry-hero h1{font-size:clamp(3rem,15vw,4.45rem)}body:has(.carrier-signing-entry) .carrier-trust-strip span{width:100%;border-radius:var(--hermes-radius-control)}body:has(.carrier-signing-entry) .carrier-share-card,body:has(.carrier-signing-entry) .carrier-final-card{padding:1.35rem}}
+@media(forced-colors:active){body:has(.carrier-signing-entry) .carrier-next-card,body:has(.carrier-signing-entry) .confidence-grid article,body:has(.carrier-signing-entry) .carrier-share-card,body:has(.carrier-signing-entry) .carrier-final-card{border:1px solid CanvasText}body:has(.carrier-signing-entry) .carrier-rails{background:CanvasText}}
