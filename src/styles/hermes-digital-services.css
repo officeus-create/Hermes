@@ -1,0 +1,88 @@
+/*
+ * HERMES DIGITAL SERVICES SYSTEM
+ * Shared presentation layer for the six commercial DigitalServicePage routes.
+ * Schema, funnel mapping, CTA destinations, contact handoff and page content remain unchanged.
+ */
+
+body:has(.digital-service-page){overflow-x:clip;background:var(--hermes-pearl)}
+body:has(.digital-service-page) .site-header{color:var(--hermes-ink);border-bottom-color:var(--hermes-line-light)}
+body:has(.digital-service-page) .site-header .wordmark,
+body:has(.digital-service-page) .site-header .desktop-nav a,
+body:has(.digital-service-page) .site-header .menu-button{color:var(--hermes-ink)}
+body:has(.digital-service-page) .site-header .wordmark-mark{border-color:rgba(11,13,18,.28)}
+body:has(.digital-service-page) .site-header .language-menu summary,
+body:has(.digital-service-page) .site-header .header-cta{border-color:var(--hermes-line-light);color:var(--hermes-ink);background:var(--hermes-paper)}
+body:has(.digital-service-page) .site-header-scrolled{background:rgba(247,246,243,.92);border-bottom-color:var(--hermes-line-light);box-shadow:0 12px 34px rgba(11,13,18,.08)}
+body:has(.digital-service-page) .language-menu nav{border-color:var(--hermes-line-light);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.digital-service-page) .language-menu nav a{color:var(--hermes-ink)}
+body:has(.digital-service-page) .language-menu nav a:hover,
+body:has(.digital-service-page) .language-menu nav a:focus-visible,
+body:has(.digital-service-page) .language-menu nav a[aria-current="page"]{color:#fff;background:var(--hermes-obsidian)}
+body:has(.digital-service-page) .mobile-nav{color:var(--hermes-ink);background:var(--hermes-paper)}
+body:has(.digital-service-page) .digital-service-page{overflow-x:clip;background:var(--hermes-pearl);color:var(--hermes-ink)}
+body:has(.digital-service-page) .digital-service-page .eyebrow{color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-service-hero{padding:9.5rem 0 5.5rem;border-bottom:1px solid var(--hermes-line-light);background:var(--hermes-pearl);color:var(--hermes-ink)}
+body:has(.digital-service-page) .digital-breadcrumb{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-bottom:2rem;font-size:.9rem;color:var(--hermes-muted)}
+body:has(.digital-service-page) .digital-breadcrumb a{color:var(--hermes-ink)}
+body:has(.digital-service-page) .digital-breadcrumb a:hover,
+body:has(.digital-service-page) .digital-breadcrumb a:focus-visible{color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-service-hero h1{max-width:900px;margin:.65rem 0 1.25rem;color:var(--hermes-ink);font-size:clamp(2.6rem,6vw,5rem);line-height:var(--hermes-display-leading);letter-spacing:var(--hermes-display-tracking)}
+body:has(.digital-service-page) .digital-service-intro{max-width:820px;font-size:clamp(1.08rem,2vw,1.3rem);line-height:var(--hermes-copy-leading);color:var(--hermes-muted)}
+body:has(.digital-service-page) .digital-service-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
+body:has(.digital-service-page) .digital-service-actions .button,
+body:has(.digital-service-page) .digital-project-cta .button{min-height:48px;border-radius:var(--hermes-radius-control)}
+body:has(.digital-service-page) .digital-service-actions .button-primary{border:1px solid var(--hermes-obsidian);color:#fff;background:var(--hermes-obsidian);box-shadow:none}
+body:has(.digital-service-page) .digital-service-actions .button-primary:hover,
+body:has(.digital-service-page) .digital-service-actions .button-primary:focus-visible{color:#fff;background:var(--hermes-graphite)}
+body:has(.digital-service-page) .digital-service-actions .button-ghost{border:1px solid var(--hermes-line-light);color:var(--hermes-ink);background:var(--hermes-paper);box-shadow:none}
+body:has(.digital-service-page) .digital-service-actions .button-ghost:hover,
+body:has(.digital-service-page) .digital-service-actions .button-ghost:focus-visible{border-color:color-mix(in srgb,var(--hermes-violet) 38%,var(--hermes-line-light));color:var(--hermes-ink);background:var(--hermes-paper)}
+body:has(.digital-service-page) .digital-project-note{max-width:760px;margin:1rem 0 0;color:var(--hermes-muted);font-size:.9rem;line-height:1.55}
+body:has(.digital-service-page) .digital-review-date{margin-top:1.25rem;font-size:.84rem;color:var(--hermes-muted)}
+body:has(.digital-service-page) .digital-two-column,
+body:has(.digital-service-page) .digital-boundary-layout,
+body:has(.digital-service-page) .digital-faq-layout{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(2rem,6vw,6rem);align-items:start}
+body:has(.digital-service-page) .digital-check-list,
+body:has(.digital-service-page) .digital-boundary-layout ul{display:grid;gap:.9rem;list-style:none;margin:0;padding:0}
+body:has(.digital-service-page) .digital-check-list li{display:flex;gap:.8rem;align-items:flex-start;padding:1rem 1.1rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card);line-height:1.55}
+body:has(.digital-service-page) .digital-check-list svg{flex:none;margin-top:.15rem;color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-muted-section{background:var(--hermes-paper)}
+body:has(.digital-service-page) .digital-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin-top:2rem}
+body:has(.digital-service-page) .digital-card-grid article{min-width:0;padding:1.5rem;border:1px solid var(--hermes-line-light);border-radius:22px!important;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card)}
+body:has(.digital-service-page) .digital-card-grid article>span{display:inline-flex;margin-bottom:1.5rem;font-size:.78rem;letter-spacing:.1em;color:var(--hermes-violet)}
+body:has(.digital-service-page) .digital-card-grid h3{margin:0 0 .7rem;color:var(--hermes-ink)}
+body:has(.digital-service-page) .digital-card-grid p,
+body:has(.digital-service-page) .digital-process-list p,
+body:has(.digital-service-page) .digital-faq-list p{color:var(--hermes-muted);line-height:var(--hermes-copy-leading)}
+body:has(.digital-service-page) .digital-process-list{display:grid;gap:.85rem;list-style:none;margin:2rem 0 0;padding:0}
+body:has(.digital-service-page) .digital-process-list li{display:grid;grid-template-columns:48px 1fr;gap:1rem;padding:1.15rem;border-bottom:1px solid var(--hermes-line-light)}
+body:has(.digital-service-page) .digital-process-list li>span{display:grid;place-items:center;width:40px;height:40px;border-radius:var(--hermes-radius-pill);background:var(--hermes-obsidian);color:#fff;font-weight:700}
+body:has(.digital-service-page) .digital-process-list h3{margin:0 0 .35rem;color:var(--hermes-ink)}
+body:has(.digital-service-page) .digital-process-list p{margin:0}
+body:has(.digital-service-page) .digital-boundary-section{background:var(--hermes-obsidian);color:#fff}
+body:has(.digital-service-page) .digital-boundary-section .eyebrow{color:#c8bdff}
+body:has(.digital-service-page) .digital-boundary-layout p{color:var(--hermes-muted-dark);line-height:var(--hermes-copy-leading)}
+body:has(.digital-service-page) .digital-boundary-layout li{display:flex;gap:.8rem;align-items:flex-start;padding:1rem 1.1rem;border:1px solid var(--hermes-line-dark);border-radius:var(--hermes-radius-control);background:var(--hermes-glass-dark);color:rgba(255,255,255,.88);line-height:1.55}
+body:has(.digital-service-page) .digital-boundary-layout svg{flex:none;margin-top:.15rem;color:#c8bdff}
+body:has(.digital-service-page) .digital-faq-list{display:grid;gap:.7rem}
+body:has(.digital-service-page) .digital-faq-list details{border:1px solid var(--hermes-line-light);border-radius:22px!important;background:var(--hermes-paper);box-shadow:var(--hermes-shadow-card);padding:0 1.1rem}
+body:has(.digital-service-page) .digital-faq-list summary{cursor:pointer;padding:1.05rem 0;color:var(--hermes-ink);font-weight:700}
+body:has(.digital-service-page) .digital-faq-list p{margin:0;padding:0 0 1.1rem}
+body:has(.digital-service-page) .digital-related-section{background:var(--hermes-paper)}
+body:has(.digital-service-page) .digital-related-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:2rem}
+body:has(.digital-service-page) .digital-related-links a{display:flex;justify-content:space-between;gap:1rem;align-items:center;min-width:0;padding:1rem 1.15rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-control);background:var(--hermes-pearl);color:var(--hermes-ink);font-weight:700}
+body:has(.digital-service-page) .digital-related-links a:hover,
+body:has(.digital-service-page) .digital-related-links a:focus-visible{border-color:color-mix(in srgb,var(--hermes-violet) 38%,var(--hermes-line-light));background:var(--hermes-paper)}
+body:has(.digital-service-page) .digital-project-cta{background:var(--hermes-obsidian);color:#fff}
+body:has(.digital-service-page) .digital-project-cta .eyebrow{color:#c8bdff}
+body:has(.digital-service-page) .digital-project-cta-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center}
+body:has(.digital-service-page) .digital-project-cta-card h2{max-width:760px;color:#fff}
+body:has(.digital-service-page) .digital-project-cta-card p{max-width:780px;color:var(--hermes-muted-dark);line-height:var(--hermes-copy-leading)}
+body:has(.digital-service-page) .digital-project-cta .button-primary{border:1px solid #fff;color:var(--hermes-obsidian);background:#fff;box-shadow:none}
+body:has(.digital-service-page) .digital-project-cta .button-primary:hover,
+body:has(.digital-service-page) .digital-project-cta .button-primary:focus-visible{color:var(--hermes-obsidian);background:#f1f1f1}
+body:has(.digital-service-page) .digital-service-page :is(a,button,summary):focus-visible{outline:3px solid var(--hermes-violet);outline-offset:3px}
+body:has(.digital-service-page) .digital-service-page :is(h1,h2,h3,p,a,summary,li){overflow-wrap:anywhere}
+@media(max-width:900px){body:has(.digital-service-page) .digital-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}body:has(.digital-service-page) .digital-two-column,body:has(.digital-service-page) .digital-boundary-layout,body:has(.digital-service-page) .digital-faq-layout,body:has(.digital-service-page) .digital-project-cta-card{grid-template-columns:1fr}}
+@media(max-width:640px){body:has(.digital-service-page) .digital-service-hero{padding:7.5rem 0 4rem}body:has(.digital-service-page) .digital-card-grid,body:has(.digital-service-page) .digital-related-links{grid-template-columns:1fr}body:has(.digital-service-page) .digital-service-actions .button,body:has(.digital-service-page) .digital-project-cta .button{width:100%;justify-content:center}}
+@media(forced-colors:active){body:has(.digital-service-page) .digital-check-list li,body:has(.digital-service-page) .digital-card-grid article,body:has(.digital-service-page) .digital-boundary-layout li,body:has(.digital-service-page) .digital-faq-list details,body:has(.digital-service-page) .digital-related-links a{border:1px solid CanvasText}}
