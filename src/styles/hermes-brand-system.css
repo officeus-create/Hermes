@@ -10,6 +10,8 @@
  * convergence does not change product logic, routes, auth, D1, APIs, or SEO behavior.
  */
 
+@import "./hermes-digital-services.css";
+
 :root {
   /* Core surfaces */
   --hermes-pearl: #f7f6f3;
