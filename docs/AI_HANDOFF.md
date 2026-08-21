@@ -776,3 +776,15 @@ entries — append only.
 - Guardrails: category/rating/message validation, 2,000-character maximum, private D1 storage, and a static contract executed by the existing Hermes Connect test chain.
 - Verification: focused contract, auth integration chain, module syntax check, and `git diff --check` pass locally. A focused Playwright contract covers submission, persisted rendering, and the analytics privacy boundary; full build and browser execution are delegated to PR CI because this fresh checkout has no installed dependencies.
 - Next: after green CI and owner-approved merge, onboard 5–10 permissioned Repair Shop pilots and review only privacy-safe aggregate outcomes.
+
+## 2026-08-21 — Codex — Bing Webmaster crawl hygiene
+
+- Agent/task owner: Codex; authenticated Bing Webmaster audit and bounded current-main remediation.
+- Branch / commit / PR: `fix/bing-webmaster-cleanup-2026-08-21`; `c4461a31`; PR #784.
+- Files changed: `public/robots.txt`, `public/_headers`, the Car Hauling Dispatch commercial owner, the noindex carrier agreement review draft, `scripts/bing-webmaster-hygiene.test.mjs`, `package.json`, and `docs/ERROR_REGISTER.md`.
+- Behavior delivered: origin robots no longer duplicates the Cloudflare edge-managed block; the dispatch description is 152 characters; contract drafts have bounded metadata and an HTTP noindex header; a static regression contract protects these rules.
+- Evidence: authenticated Bing read-only review found 5 impressions/0 clicks over three months, 4 AI citations all pointing to the auction pickup checklist, 22 indexed of 27 known URLs, a successful 107-URL sitemap index, two commercial pages discovered but not crawled, 277 noisy IndexNow submissions with only one indexed/crawled URL, one moderate backlink recommendation, and a Site Scan with 183 pages plus one error/one warning on the noindex review draft.
+- Ecosystem compounding: strengthens crawl quality, commercial snippets, contract privacy, durable Bing evidence, and the existing canonical owners; creates no new page, integration, tracking vendor, claim, location or doorway family.
+- Verification: `npm run build` passed (169 Astro pages; 0 errors/0 warnings/68 existing hints); `npm test` passed (124 indexable URLs, 0 SEO warnings, zero broken internal links); new Bing contract passed. Full Playwright: 934 passed, 11 expected skips, 1 existing unrelated 8px desktop overflow failure in canonical Connect workspace; three bounded reruns reproduced it. Active PR #765 already owns the affected workspace files and test, so this PR deliberately does not collide.
+- External actions not performed: no merge/deploy, Bing URL submission, new Site Scan, Clarity connection, Cloudflare settings change, backlink outreach or paid service.
+- Next smallest step: review PR #784; after an owner-approved production release, verify live robots/metadata/headers, then request indexing once for `/logistics/car-hauling-dispatch/` and `/services/seo-for-logistics-companies/` and run one bounded Bing Site Scan. PR #765 remains the owner for the unrelated Connect overflow.
