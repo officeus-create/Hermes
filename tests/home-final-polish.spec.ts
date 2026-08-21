@@ -32,7 +32,8 @@ test("final homepage polish keeps the focused entrance and adds living Hermes ef
   expect(polish!.titleBackground).toContain("linear-gradient");
   expect(polish!.handwrittenAnimation).toContain("handwritten-reveal");
   expect(polish!.noteAnimation).toContain("home-ink-write");
-  expect(polish!.actionMark).toContain("icon-192.svg");
+  expect(polish!.actionMark).toContain("hermes-connect-mark.svg");
+  expect(polish!.actionMark).not.toContain("/demos/");
   expect(polish!.footerBackground).toContain("gradient");
   expect(polish!.overflow).toBe(false);
 });
