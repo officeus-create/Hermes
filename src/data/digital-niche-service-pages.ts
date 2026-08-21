@@ -4,7 +4,7 @@ export const digitalNicheServicePages: Record<string, DigitalServicePageContent>
   logisticsSeo: {
     slug: "/services/seo-for-logistics-companies/",
     title: "Logistics & Trucking SEO Services | Hermes",
-    description: "Logistics & Trucking SEO: Technical Audits, Fleet Query Ownership, Service Architecture & Proven Growth System. Get Your Free Audit Scope.",
+    description: "Logistics SEO for trucking and freight companies: technical audits, query ownership, service architecture, internal links, and a scoped review request.",
     eyebrow: "ProgressoPro · Logistics SEO",
     h1: "SEO for Logistics, Trucking and Dispatch Companies",
     intro: "Logistics SEO must separate carrier, customer, equipment, service, location and problem-solving intent without turning private operational data into public claims. Hermes applies first-party experience from building and testing its own logistics website architecture, dispatch and carrier paths, vehicle-transport pages, checklists, qualification flows and measurement controls.",

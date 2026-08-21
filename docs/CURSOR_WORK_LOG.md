@@ -711,3 +711,44 @@ npm run test:e2e
 - Search Console opened under the browser's active Google account with no
   existing Hermes website property. No property, DNS record, or verification
   method was created.
+## 2026-08-21 — Search visibility review and truthful Logistics SEO snippet
+
+### Verified search evidence
+
+- Google Search Console for August 13–19 reported 6 clicks, 586 impressions,
+  1.0% CTR, and average position 40.7. The prior verified seven-day window
+  reported 9 clicks, 297 impressions, 3.0% CTR, and average position 45.8.
+- `/services/seo-for-logistics-companies/` received 218 impressions and no
+  clicks in the latest seven-day window. Its production description included
+  the unsupported phrase `Proven Growth System` and a CTA that did not match
+  the page's actual scoped-review flow.
+- Bing Webmaster Tools reported 5 impressions and no clicks for the latest
+  three-month view. GA4 has no Hermes property in the authenticated account,
+  and the connected PostHog project has not ingested events, so actual website
+  visits and conversions are not yet evidenced.
+- Google indexing showed 84 indexed and 89 non-indexed URLs. The two reported
+  403 examples were the HTTP and HTTPS `www` homepage variants; live checks
+  returned HTTP 520 while the apex domain remained healthy.
+
+### Local change
+
+- Replaced only the Logistics SEO meta description with truthful copy aligned
+  to the visible scoped-review request.
+- Updated the page review date and added a generated-HTML contract that rejects
+  the two retired claims.
+- No new city page, schema claim, analytics integration, DNS change, sitemap
+  submission, deployment, or search-engine write was made.
+
+### Verification
+
+- `npm run build`: 169 routes built; 0 errors, 0 warnings, 68 pre-existing
+  hints.
+- `npm test`: passed; 185 generated HTML pages, 124 indexable URLs in seven
+  sitemap files, zero broken internal links, and two pre-existing workspace
+  image-policy warnings.
+- Focused desktop/mobile browser QA: 12 passed for the two niche SEO pages and
+  the Logistics SEO demand contract.
+- Full `npm run test:e2e`: 904 passed, 11 skipped, and 5 failed outside this
+  change. The failures were existing workspace overflow and unrelated unstable
+  click/consent interactions in carrier, Academy, Repair Shop, and social-demo
+  tests. The affected Logistics SEO scenarios passed in both projects.

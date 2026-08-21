@@ -14,7 +14,12 @@ const pages = [
     route: "/services/seo-for-logistics-companies/",
     file: "services/seo-for-logistics-companies/index.html",
     title: "Logistics & Trucking SEO Services | Hermes",
+    description: "Logistics SEO for trucking and freight companies: technical audits, query ownership, service architecture, internal links, and a scoped review request.",
     h1: "Logistics SEO for Trucking, Transportation and Freight Companies",
+    forbidden: [
+      "Proven Growth System",
+      "Get Your Free Audit Scope",
+    ],
     required: [
       "Commercial query-to-page ownership",
       "Trucking, transportation and warehousing content architecture",
@@ -63,6 +68,10 @@ const decode = (value = "") => value
   .replace(/\s+/g, " ")
   .trim();
 const tagText = (html, tag) => decode(html.match(new RegExp(`<${tag}\\b[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i"))?.[1] ?? "");
+const metaDescription = (html) => [...html.matchAll(/<meta\b[^>]*>/gi)]
+  .map((match) => match[0])
+  .find((tag) => /\bname=["']description["']/i.test(tag))
+  ?.match(/\bcontent=["']([^"']*)["']/i)?.[1] ?? "";
 const canonical = (html) => [...html.matchAll(/<link\b[^>]*>/gi)]
   .map((match) => match[0])
   .find((tag) => /\brel=["'][^"']*\bcanonical\b[^"']*["']/i.test(tag))
@@ -79,6 +88,7 @@ const seoHub = await readFile(join(dist, "services/seo/index.html"), "utf8");
 for (const page of pages) {
   const html = await readFile(join(dist, page.file), "utf8");
   assert.equal(tagText(html, "title"), page.title, `${page.route} title mismatch`);
+  if (page.description) assert.equal(decode(metaDescription(html)), page.description, `${page.route} description mismatch`);
   assert.equal(tagText(html, "h1"), page.h1, `${page.route} H1 mismatch`);
   assert.equal(canonical(html), `https://hermeslogisticsus.com${page.route}`, `${page.route} canonical mismatch`);
   assert.equal((html.match(/<h1\b/gi) ?? []).length, 1, `${page.route} must have one H1`);
@@ -90,6 +100,7 @@ for (const page of pages) {
   assert.ok(html.includes("View the SEO case"), `${page.route} must label the proof as an SEO case`);
   assert.ok(!html.includes('href="/case/it-development/">View the website case'), `${page.route} must not use the IT case as its hero proof`);
   for (const required of page.required) assert.ok(html.includes(required), `${page.route} missing ${required}`);
+  for (const forbidden of page.forbidden ?? []) assert.ok(!html.includes(forbidden), `${page.route} still contains ${forbidden}`);
   const schemaTypes = parseSchema(html).map((entity) => entity?.["@type"]);
   for (const requiredType of ["Service", "BreadcrumbList", "FAQPage"]) assert.ok(schemaTypes.includes(requiredType), `${page.route} missing ${requiredType}`);
   assert.ok(sitemap.includes(`<loc>https://hermeslogisticsus.com${page.route}</loc>`), `${page.route} missing from sitemap`);
