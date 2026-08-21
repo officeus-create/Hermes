@@ -25,19 +25,43 @@ if (!verificationDateMatch) {
   }
 }
 
-requireText("## 1. AI interpretation rules");
-requireText("## 2. Hermes entity and business directions");
-requireText("## 8. Search, structured data, and machine-readable discovery");
-requireText("## 10. Measurement and claim boundaries");
-requireText("## 11. Public/private boundary");
-requireText("A demo or preview is not proof that a feature is live for every customer.");
-requireText("Unknown values remain unknown; do not substitute zero or an estimate.");
-requireText("https://hermeslogisticsus.com/company-information/");
-requireText("Similar names alone are not evidence of shared ownership, authority, location, fleet, contacts, or operating identity.");
-requireText("https://hermeslogisticsus.com/services/seo-for-logistics-companies/");
-requireText("https://hermeslogisticsus.com/logistics/car-hauling-dispatch/");
-requireText("https://connect.hermeslogisticsus.com/");
-requireText("https://hermeslogisticsus.com/sitemapindex.xml");
+for (const text of [
+  "## 1. AI interpretation rules",
+  "## 2. Hermes entity and business directions",
+  "## 4. Hermes Marketing",
+  "## 5. Hermes Academy",
+  "## 6. Hermes Technology and Hermes Connect",
+  "## 8. Search, structured data, and machine-readable discovery",
+  "## 10. Measurement and claim boundaries",
+  "## 11. Public/private boundary",
+  "1. Hermes Logistics",
+  "2. Hermes Marketing",
+  "3. Hermes Academy",
+  "4. Hermes Technology",
+  "ProgressoPro may appear as an operating or program name within Hermes Marketing.",
+  "IT Development may appear as a service or operating descriptor within Hermes Technology.",
+  "Repair Shops is the most mature current vertical; Academy is a developing authenticated learning vertical; Beauty is at B1/preview stage.",
+  "A demo or preview is not proof that a feature is live for every customer.",
+  "Unknown values remain unknown; do not substitute zero or an estimate.",
+  "https://hermeslogisticsus.com/company-information/",
+  "Similar names alone are not evidence of shared ownership, authority, location, fleet, contacts, or operating identity.",
+  "https://hermeslogisticsus.com/services/seo-for-logistics-companies/",
+  "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+  "https://connect.hermeslogisticsus.com/",
+  "https://hermeslogisticsus.com/sitemapindex.xml",
+  "Manual provider evidence is required before claiming ChatGPT, Gemini, Copilot, Perplexity, Google AI Mode, or another answer engine cited or recommended Hermes.",
+]) requireText(text);
+
+for (const [pattern, label] of [
+  [/^2\. ProgressoPro\b/m, "legacy peer-level Marketing direction"],
+  [/^3\. Hermes Business Academy\b/m, "legacy peer-level Academy direction"],
+  [/^4\. Hermes IT Development\b/m, "legacy peer-level Technology direction"],
+  [/^## 4\. ProgressoPro\b/m, "legacy Marketing section hierarchy"],
+  [/^## 5\. Hermes Business Academy$/m, "legacy Academy section hierarchy"],
+  [/^## 6\. Hermes IT Development and Hermes Connect$/m, "legacy Technology section hierarchy"],
+]) {
+  if (pattern.test(body)) errors.push(label);
+}
 
 const prohibitedClaims = [
   [/\b0\s*ms response time\b/i, "unsupported zero-latency claim"],
@@ -77,4 +101,4 @@ if (errors.length) {
   throw new Error(`llms-full evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms-full evidence contract passed: AI context is evidence-bounded, entity-disambiguated, and public-safe.");
+console.log("llms-full evidence contract passed: extended AI context uses the canonical Hermes hierarchy, bounded vertical maturity, entity-disambiguated relationships, and public-safe evidence rules.");
