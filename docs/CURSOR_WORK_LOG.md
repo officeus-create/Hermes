@@ -711,3 +711,40 @@ npm run test:e2e
 - Search Console opened under the browser's active Google account with no
   existing Hermes website property. No property, DNS record, or verification
   method was created.
+
+## 2026-08-22 — Repair Shop password-reset timing boundary (#787)
+
+- Preserved the existing generic acknowledgement, hashed 45-minute token,
+  single-use invalidation, hourly bound, dedicated email service, and session
+  invalidation contracts.
+- Moved account lookup, token persistence, and email delivery into the
+  Cloudflare Pages `waitUntil` lifecycle for every syntactically valid email.
+  The public response no longer waits for account-dependent D1 or email work.
+- Kept persistence before delivery inside the background task and retained
+  token deletion when delivery is unavailable.
+- Added a behavior test with an intentionally unresolved email fetch to prove
+  that the eligible-account response completes before outbound delivery, while
+  both eligible and unknown valid emails use the same scheduled response path.
+
+### Verification
+
+```text
+npm run test:repair-shop-password-recovery
+# passed
+
+npm test
+# passed; 124 indexable URLs and zero review warnings
+
+npm run build
+# passed; 169 pages, 0 errors, 0 warnings, 68 existing hints
+
+npm run test:e2e
+# 938 passed, 11 expected skips, 1 existing unrelated failure:
+# canonical Hermes Connect desktop workspace overflow is 8 px in the file set
+# owned by draft PR #765.
+```
+
+### Boundary
+
+- No auth/session/database/email-provider fork, UI change, deployment, D1
+  migration, or production-data access was introduced.
