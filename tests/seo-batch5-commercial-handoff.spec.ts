@@ -16,6 +16,20 @@ test("Logistics SEO niche owner remains canonical and linked from general SEO", 
   await expect(nicheLink).not.toHaveText(/^(learn more|read more|more)$/i);
 });
 
+test("Marketing hub provides a contextual path to the Logistics SEO canonical owner", async ({ page }) => {
+  await page.goto("/paths/marketing/", { waitUntil: "domcontentloaded" });
+  const ownerLink = page.locator('a[data-logistics-seo-owner-link]');
+  await expect(ownerLink).toBeVisible();
+  await expect(ownerLink).toHaveAttribute("href", "/services/seo-for-logistics-companies/");
+  await expect(ownerLink).toContainText(/Logistics SEO/i);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator('a[data-logistics-seo-owner-link]')).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+});
+
 test("Auction checklist preserves its direct vehicle-transport handoff", async ({ page }) => {
   await page.goto("/logistics/resources/auction-vehicle-pickup-checklist/", { waitUntil: "domcontentloaded" });
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
