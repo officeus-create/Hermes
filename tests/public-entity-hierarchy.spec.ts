@@ -21,3 +21,12 @@ test("Academy is a direction, not an asserted separate legal company", () => {
   expect(publicEntityRegistry.hermes_academy.relationshipStatus).toBe("approved_direction");
   expect(publicEntityRegistry.hermes_academy.notes).toMatch(/does not by itself assert a separate legal company/i);
 });
+
+test("root Organization schema does not publish unresolved Logistics-specific social profiles as sameAs", async ({ page }) => {
+  await page.goto("/");
+  const schemaText = (await page.locator('script[type="application/ld+json"]').allTextContents()).join("\n");
+  expect(schemaText).toContain('"@id":"https://hermeslogisticsus.com/#organization"');
+  expect(schemaText).not.toContain('"sameAs"');
+  expect(schemaText).not.toContain("https://www.instagram.com/hermes.logistics/");
+  expect(schemaText).not.toContain("https://www.threads.com/@hermes.logistics");
+});
