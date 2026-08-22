@@ -23,6 +23,30 @@ const ownerRules = [
     label: "Appleton vehicle transport",
   },
   {
+    id: "hermes_connect",
+    test: (query) => /\bhermes\s+connect\b/i.test(query),
+    owner: "/services/hermes-connect/",
+    commercialWeight: 3,
+    supported: true,
+    label: "Hermes Connect",
+  },
+  {
+    id: "auction_vehicle_pickup_checklist",
+    test: (query) => /\bauction\b.*\b(vehicle|auto|car)\b.*\bpickup\b.*\bchecklist\b|\bchecklist\b.*\bauction\b.*\b(vehicle|auto|car)\b.*\bpickup\b/i.test(query),
+    owner: "/logistics/resources/auction-vehicle-pickup-checklist/",
+    commercialWeight: 2,
+    supported: true,
+    label: "Auction vehicle pickup checklist",
+  },
+  {
+    id: "car_hauler_capacity_checklist",
+    test: (query) => /\bcar\s+hauler\b.*\bcapacity\b.*\bchecklist\b|\bchecklist\b.*\bcar\s+hauler\b.*\bcapacity\b/i.test(query),
+    owner: "/logistics/resources/car-hauler-capacity-checklist/",
+    commercialWeight: 2,
+    supported: true,
+    label: "Car hauler capacity checklist",
+  },
+  {
     id: "load_board",
     test: (query) => /\b(load boards?|car hauler loads?|car hauling loads?|auto transport load boards?|car transport load boards?|car carrier load boards?)\b/i.test(query),
     owner: "/load-board/",
@@ -218,6 +242,19 @@ export function classifySearchOpportunity(row) {
       score: Math.min(100, Math.round(baseScore + 10)),
       reason: "The approved owner is already near page one, but CTR is below the visible 2% review threshold.",
       nextAction: "Review title/snippet fit and buyer clarity; preserve the canonical owner.",
+    };
+  }
+
+  if (position <= 10 && impressions >= 5) {
+    return {
+      primaryClass: "KEEP_OWNER",
+      secondaryClasses: [],
+      expectedOwner: rule.owner,
+      intentLabel: rule.label,
+      supported: true,
+      score: Math.min(100, Math.round(baseScore)),
+      reason: "The approved owner is already on page one and CTR is not below the review threshold, so ownership should remain stable.",
+      nextAction: "Keep the owner stable and collect comparable 7d/28d evidence before making another change.",
     };
   }
 
