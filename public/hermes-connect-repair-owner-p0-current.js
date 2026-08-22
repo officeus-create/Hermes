@@ -42,15 +42,17 @@
 
   function preserveOwnerLocale() {
     for (const anchor of document.querySelectorAll(`a[href^="${ROOT}"]`)) {
-      const next = localizeRepairHref(anchor.getAttribute("href"));
-      if (next) anchor.setAttribute("href", next);
+      const current = anchor.getAttribute("href");
+      const next = localizeRepairHref(current);
+      if (next && next !== current) anchor.setAttribute("href", next);
     }
 
     if (path === `${ROOT}/dashboard`) {
       const openLink = document.getElementById("open-link-btn");
       if (openLink instanceof HTMLAnchorElement) {
-        const next = localizeRepairHref(openLink.getAttribute("href"));
-        if (next) openLink.setAttribute("href", next);
+        const current = openLink.getAttribute("href");
+        const next = localizeRepairHref(current);
+        if (next && next !== current) openLink.setAttribute("href", next);
       }
     }
   }
