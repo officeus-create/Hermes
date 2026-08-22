@@ -130,7 +130,7 @@ test("non-live Hermes Connect modules are reference capabilities without legacy 
   await expect(page.getByText("$99", { exact: false })).toHaveCount(0);
   await expect(page.getByText("$299", { exact: false })).toHaveCount(0);
   await expect(page.getByText("$799", { exact: false })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: /Open current Repair Shop product/ })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
+  await expect(page.getByRole("link", { name: "Open Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
 });
 
 test("live Corporate Offer runtime removes the legacy browser-only form handler surface", async ({ page }) => {
