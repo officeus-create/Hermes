@@ -1,0 +1,35 @@
+name: Repair Shop private feedback production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/_lib/repair-shop-feedback-schema.mjs
+      - functions/api/repair-shop/feedback.ts
+      - functions/api/repair-shop/cleanup-feedback-smoke.ts
+      - functions/api/auth/register.ts
+      - functions/api/auth/login.ts
+      - functions/api/auth/logout.ts
+      - scripts/repair-feedback-production-smoke.sh
+      - scripts/repair-shop-feedback-contract.test.mjs
+      - src/pages/services/hermes-connect/repair-shops/dashboard.astro
+      - .github/workflows/repair-feedback-production-smoke.yml
+
+permissions:
+  contents: read
+  checks: read
+
+jobs:
+  smoke:
+    name: Verify production private owner feedback loop
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+
+      - name: Wait for exact Cloudflare Pages deploy and run feedback smoke
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/repair-feedback-production-smoke.sh

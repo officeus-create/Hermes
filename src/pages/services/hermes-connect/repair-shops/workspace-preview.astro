@@ -1,0 +1,223 @@
+---
+import {
+  ArrowUpRight,
+  CalendarDays,
+  CalendarClock,
+  Car,
+  ExternalLink,
+  Gauge,
+  Inbox,
+  LayoutDashboard,
+  MapPin,
+  MessageSquareText,
+  Settings,
+  SlidersHorizontal,
+  Sparkles,
+  TrendingUp,
+  Users,
+  Wrench,
+} from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import "../../../../styles/hermes-repair-owner-workspace-preview.css";
+---
+
+<BaseLayout
+  title="CEO Preview · Repair Shop Owner Workspace | Hermes Connect"
+  description="CEO visual preview of the next Hermes Connect Repair Shop owner workspace. Representative data only."
+  robots="noindex,nofollow"
+>
+  <main class="hc-owner-preview">
+    <div class="hc-owner-preview__truth">
+      <span aria-hidden="true"></span>
+      CEO PREVIEW · REPRESENTATIVE DATA · НЕ PRODUCTION KPI · US DEFAULT ОСТАНЕТСЯ ENGLISH
+    </div>
+
+    <div class="hc-owner-app">
+      <aside class="hc-owner-sidebar" aria-label="Навигация кабинета владельца СТО">
+        <a class="hc-owner-brand" href="#overview" aria-label="Hermes Connect Owner Workspace">
+          <svg viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" fill="none" stroke="#9D88FF" stroke-width="5" stroke-linecap="round" />
+            <path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round" />
+          </svg>
+          <span><strong>Hermes Connect</strong><small>Repair Shop Owner OS</small></span>
+        </a>
+
+        <div class="hc-owner-workspace-switcher">
+          <span>Workspace</span>
+          <div class="hc-owner-workspace-switcher__button" aria-label="Будущий переключатель локаций">
+            <div><strong>Northstar Auto Care</strong><small>Milwaukee, WI · Owner</small></div><i>⌄</i>
+          </div>
+        </div>
+
+        <nav class="hc-owner-nav">
+          <a href="#overview" aria-current="page"><LayoutDashboard /><span>Обзор</span></a>
+          <a href="#bookings"><Inbox /><span>Записи</span><em>6</em></a>
+          <a href="#calendar"><CalendarDays /><span>Календарь</span></a>
+          <a href="#customers"><Users /><span>Клиенты</span><em>2</em></a>
+          <a href="#services"><Wrench /><span>Услуги</span></a>
+          <a href="#growth"><TrendingUp /><span>Рост</span></a>
+          <a href="#intelligence"><Sparkles /><span>Hermes Intelligence</span></a>
+          <a href="#settings"><Settings /><span>Настройки</span></a>
+        </nav>
+
+        <div class="hc-owner-sidebar__spacer"></div>
+
+        <a class="hc-owner-intelligence-launch" href="#intelligence">
+          <span class="hc-owner-intelligence-launch__mark"><Sparkles size={16} /></span>
+          <span><strong>Hermes Intelligence</strong><small>Понять → решить → действовать</small></span>
+          <i>↗</i>
+        </a>
+        <div class="hc-owner-sidebar__bottom"><span>CEO Preview</span><span>vNext</span></div>
+      </aside>
+
+      <div class="hc-owner-mobilebar">
+        <div class="hc-owner-mobilebar__brand">
+          <svg viewBox="0 0 44 44" aria-hidden="true">
+            <path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#9D88FF" stroke-width="5" stroke-linecap="round" />
+          </svg>
+          <span><strong>Hermes Connect</strong><small>Northstar Auto Care</small></span>
+        </div>
+        <a href="#intelligence">✦ Спросить Hermes</a>
+      </div>
+
+      <nav class="hc-owner-mobile-nav" aria-label="Мобильные задачи">
+        <a href="#overview"><LayoutDashboard />Обзор</a>
+        <a href="#bookings"><Inbox />Записи</a>
+        <a href="#calendar"><CalendarDays />Календарь</a>
+        <a href="#customers"><Users />Клиенты</a>
+        <a href="#services"><Wrench />Услуги</a>
+      </nav>
+
+      <section class="hc-owner-main">
+        <header class="hc-owner-topbar" id="overview">
+          <div>
+            <p class="hc-owner-kicker">REPAIR SHOP OWNER OS · CEO PREVIEW</p>
+            <h1>Доброе утро, Владимир.</h1>
+          </div>
+          <div class="hc-owner-topbar__actions">
+            <span class="hc-owner-chip"><span></span>Representative data</span>
+            <a class="hc-owner-btn is-secondary" href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/dashboard/?lang=ru" target="_blank" rel="noopener"><ExternalLink />Текущий рабочий кабинет</a>
+            <a class="hc-owner-btn" href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/" target="_blank" rel="noopener"><ArrowUpRight />Repair Shops</a>
+          </div>
+        </header>
+
+        <div class="hc-owner-hero-grid">
+          <article class="hc-owner-intelligence-card" id="intelligence">
+            <div class="hc-owner-intelligence-card__top">
+              <div>
+                <small>Hermes Intelligence · Recommended next action</small>
+                <h2>Ваш сервис движется. Завтра с 13:00 до 16:00 есть свободная мощность.</h2>
+                <p>После подключения реальных данных Hermes будет собирать bookings, capacity, customer history и follow-up signals в одну очередь решений для владельца.</p>
+              </div>
+              <span class="hc-owner-ai-chip">● PREVIEW</span>
+            </div>
+            <div class="hc-owner-intelligence-actions">
+              <a href="#growth"><Sparkles size={14} />Показать возможности роста</a>
+              <a class="is-dark" href="#calendar"><CalendarClock size={14} />Проверить свободные окна</a>
+            </div>
+          </article>
+
+          <article class="hc-owner-focus">
+            <small>OWNER FOCUS · REPRESENTATIVE</small>
+            <h3>3 вещи требуют внимания</h3>
+            <div class="hc-owner-focus-row"><span>01</span><div><strong>1 запись ждёт подтверждения</strong><small>Toyota Camry · Brake inspection · 10:30</small></div><a href="#bookings">Открыть</a></div>
+            <div class="hc-owner-focus-row"><span>02</span><div><strong>2 клиента без следующего шага</strong><small>Можно вернуть в сервис follow-up сообщением</small></div><a href="#customers">Клиенты</a></div>
+            <div class="hc-owner-focus-row"><span>03</span><div><strong>3 свободных окна завтра</strong><small>13:00–16:00 · capacity opportunity</small></div><a href="#growth">Рост</a></div>
+          </article>
+        </div>
+
+        <div class="hc-owner-metrics" aria-label="Representative owner metrics">
+          <article class="hc-owner-metric"><span>Записи сегодня</span><strong>6</strong><small><b>4 confirmed</b> · 1 in progress · 1 pending</small></article>
+          <article class="hc-owner-metric"><span>Новые клиенты</span><strong>3</strong><small>Representative customer activity</small></article>
+          <article class="hc-owner-metric"><span>Свободная мощность</span><strong>3 окна</strong><small>Завтра · 13:00–16:00</small></article>
+          <article class="hc-owner-metric"><span>Follow-up</span><strong>2</strong><small>Клиенты без следующей записи</small></article>
+        </div>
+
+        <div class="hc-owner-grid">
+          <article class="hc-owner-panel" id="bookings">
+            <div class="hc-owner-panel__head">
+              <div><span class="hc-owner-panel-kicker">TODAY · REPRESENTATIVE</span><h3>Сегодняшний сервис</h3><p>В production здесь будут реальные bookings и текущие статусы из существующего Repair Shop API.</p></div>
+              <a href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/dashboard/?lang=ru" target="_blank" rel="noopener">Открыть реальные записи ↗</a>
+            </div>
+            <div class="hc-owner-schedule">
+              <div class="hc-owner-appointment"><span class="hc-owner-appointment__time">09:00</span><i class="hc-owner-appointment__dot is-done"></i><div class="hc-owner-appointment__main"><strong>Honda CR-V · Oil service</strong><small>Alex M. · 2022 · 31,400 mi</small></div><span class="hc-owner-status is-done">Completed</span></div>
+              <div class="hc-owner-appointment"><span class="hc-owner-appointment__time">10:30</span><i class="hc-owner-appointment__dot"></i><div class="hc-owner-appointment__main"><strong>Toyota Camry · Brake inspection</strong><small>Maria K. · 2020 · 48,100 mi</small></div><span class="hc-owner-status">Confirmed</span></div>
+              <div class="hc-owner-appointment"><span class="hc-owner-appointment__time">12:00</span><i class="hc-owner-appointment__dot is-progress"></i><div class="hc-owner-appointment__main"><strong>Ford F-150 · Diagnostic</strong><small>Chris T. · 2021 · 62,900 mi</small></div><span class="hc-owner-status is-progress">In progress</span></div>
+              <div class="hc-owner-appointment"><span class="hc-owner-appointment__time">15:30</span><i class="hc-owner-appointment__dot"></i><div class="hc-owner-appointment__main"><strong>BMW X5 · Tire service</strong><small>Daniel R. · 2019 · 55,200 mi</small></div><span class="hc-owner-status">Confirmed</span></div>
+            </div>
+          </article>
+
+          <article class="hc-owner-panel" id="growth">
+            <div class="hc-owner-panel__head"><div><span class="hc-owner-panel-kicker">SERVICE FLOW · REPRESENTATIVE</span><h3>Клиент → сервис → возврат</h3><p>Будущий operating funnel, построенный только на реальных событиях.</p></div></div>
+            <div class="hc-owner-funnel">
+              <div><strong>22</strong><span>Visitors</span></div>
+              <div><strong>9</strong><span>Booking requests</span></div>
+              <div><strong>6</strong><span>Confirmed</span></div>
+              <div><strong>4</strong><span>Completed</span></div>
+              <div><strong>2</strong><span>Return</span></div>
+            </div>
+            <div class="hc-owner-opportunity">
+              <div class="hc-owner-opportunity__top">
+                <span class="hc-owner-opportunity__icon"><TrendingUp size={16} /></span>
+                <div><strong>Hermes видит recoverable opportunity</strong><small>3 свободных окна + 2 клиента без следующей записи. После реального подключения значение будет рассчитываться только по фактам.</small></div>
+                <a href="#intelligence">Разобрать</a>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="hc-owner-grid">
+          <article class="hc-owner-panel" id="calendar">
+            <div class="hc-owner-panel__head">
+              <div><span class="hc-owner-panel-kicker">CALENDAR & CAPACITY</span><h3>Календарь владельца</h3><p>Рабочий календарь будет объединять реальные bookings и уже существующую weekly availability.</p></div>
+              <a href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/availability/?lang=ru" target="_blank" rel="noopener">Настроить реальные часы ↗</a>
+            </div>
+            <div class="hc-owner-settings-note">
+              <div><strong>Среда · 6 bookings · 3 свободных окна завтра</strong><p>В следующем production-шаге этот блок станет day/week calendar поверх текущих booking + availability endpoints, без новой модели расписания.</p></div>
+              <span>Reuse current APIs</span>
+            </div>
+          </article>
+
+          <article class="hc-owner-panel" id="customers">
+            <div class="hc-owner-panel__head">
+              <div><span class="hc-owner-panel-kicker">RECENT CUSTOMERS · REPRESENTATIVE</span><h3>Клиенты</h3></div>
+              <a href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/customers/?lang=ru" target="_blank" rel="noopener">Открыть CRM ↗</a>
+            </div>
+            <div class="hc-owner-customer-list">
+              <div class="hc-owner-customer"><span class="hc-owner-customer__avatar">AM</span><div><strong>Alex Morgan</strong><small>Honda CR-V · last seen today</small></div><em>2 vehicles</em></div>
+              <div class="hc-owner-customer"><span class="hc-owner-customer__avatar">MK</span><div><strong>Maria Kim</strong><small>Toyota Camry · brake inspection</small></div><em>New</em></div>
+              <div class="hc-owner-customer"><span class="hc-owner-customer__avatar">CT</span><div><strong>Chris Taylor</strong><small>Ford F-150 · diagnostic</small></div><em>Follow-up</em></div>
+            </div>
+          </article>
+        </div>
+
+        <section class="hc-owner-section" id="services">
+          <div class="hc-owner-section__title"><div><h2>Управление реальным СТО</h2><p>Эти карточки не создают новые функции — они собирают уже существующие production-возможности в понятную owner navigation.</p></div></div>
+          <div class="hc-owner-real-actions">
+            <a class="hc-owner-real-action" href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/dashboard/?lang=ru" target="_blank" rel="noopener"><span class="hc-owner-real-action__icon"><SlidersHorizontal size={16} /></span><span><span><strong>Профиль и услуги</strong><small>Shop profile, public link и service catalog.</small></span><b>LIVE ↗</b></span></a>
+            <a class="hc-owner-real-action" href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/availability/?lang=ru" target="_blank" rel="noopener"><span class="hc-owner-real-action__icon"><CalendarClock size={16} /></span><span><span><strong>Availability</strong><small>Weekly hours и реальная capacity.</small></span><b>LIVE ↗</b></span></a>
+            <a class="hc-owner-real-action" href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/customers/?lang=ru" target="_blank" rel="noopener"><span class="hc-owner-real-action__icon"><Users size={16} /></span><span><span><strong>Customer CRM</strong><small>История клиентов и нескольких автомобилей.</small></span><b>LIVE ↗</b></span></a>
+            <a class="hc-owner-real-action" href="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/" target="_blank" rel="noopener"><span class="hc-owner-real-action__icon"><Car size={16} /></span><span><span><strong>Repair Shops hub</strong><small>Текущий public product entry.</small></span><b>LIVE ↗</b></span></a>
+          </div>
+        </section>
+
+        <section class="hc-owner-section" id="intelligence-detail">
+          <div class="hc-owner-section__title"><div><h2>Что Hermes Intelligence должен делать первым</h2><p>Не «магический AI», а конкретные подсказки из существующих bookings, availability и customer history. Автоматические действия — только после доказанных данных и отдельного approval.</p></div></div>
+          <div class="hc-owner-intelligence-list">
+            <article class="hc-owner-insight"><span><Gauge size={15} /></span><strong>Найти пустую мощность</strong><p>Показать владельцу периоды, когда часы открыты, но bookings отсутствуют.</p><small>Recommendation only</small></article>
+            <article class="hc-owner-insight"><span><MessageSquareText size={15} /></span><strong>Найти follow-up</strong><p>Клиенты без следующего шага, отменённые записи и завершённые визиты без возврата.</p><small>Recommendation only</small></article>
+            <article class="hc-owner-insight"><span><MapPin size={15} /></span><strong>Показать owner priority</strong><p>Свести сегодняшние booking, capacity и customer signals в 3 понятных действия.</p><small>Recommendation only</small></article>
+          </div>
+        </section>
+
+        <section class="hc-owner-section" id="settings">
+          <div class="hc-owner-section__title"><div><h2>Роли и локации — готовим архитектуру, не придумываем доступы</h2></div></div>
+          <div class="hc-owner-settings-note">
+            <div><strong>Owner сейчас. Manager / Service Advisor / Technician — только после pilot evidence.</strong><p>Switcher Northstar Auto Care в sidebar показывает будущую multi-location модель визуально. Backend multi-location и staff credentials в этот preview не добавляются.</p></div>
+            <span>PLANNED · NOT ACTIVE</span>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+</BaseLayout>
