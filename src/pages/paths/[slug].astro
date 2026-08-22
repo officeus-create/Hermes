@@ -38,7 +38,7 @@ const serviceSchema = {
   provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
 };
-const breadcrumbName = site.navigation.find((item) => item.href === `paths/${path.id}/`)?.label ?? path.category;
+const breadcrumbName = site.navigation.find((item) => item.href === `paths/${path.id}/`)?.label ?? path.brandLabel;
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -79,6 +79,6 @@ const schema = faqSchema
   )}
   {path.id === "logistics" && <LogisticsCommercialLinks />}
   <HermesConnectLauncher variant="banner" context={path.id as any} />
-  <ContactCTA selectedPath={path.category} />
+  <ContactCTA selectedPath={path.brandLabel} />
   <SiteFooter />
 </BaseLayout>
