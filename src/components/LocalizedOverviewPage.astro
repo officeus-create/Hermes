@@ -27,6 +27,16 @@ const partnershipLabels = {
   it: ["Tecnologia", "Marketing", "Accademia", "Logistica"],
   fr: ["Technologie", "Marketing", "Académie", "Logistique"],
 }[content.locale];
+const canonicalDirectionBrand: Record<LocalizedOverview["directions"][number]["id"], string> = {
+  logistics: "Hermes Logistics",
+  marketing: "Hermes Marketing",
+  academy: "Hermes Academy",
+  technology: "Hermes Technology",
+};
+const normalizePublicEntityText = (value: string) => value
+  .replaceAll("Hermes Marketing · ProgressoPro", "Hermes Marketing")
+  .replaceAll("Hermes Business Academy", "Hermes Academy")
+  .replaceAll("Hermes IT Development", "Hermes Technology");
 const mailSubject = mailCopy.subject;
 const mailBody = mailCopy.body;
 const mailto = `mailto:officeus@hermeslogisticsus.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
@@ -85,23 +95,26 @@ import "../styles/features/localized.css";
     </section>
 
     <div class="localized-direction-list">
-      {content.directions.map((direction, index) => (
-        <section class:list={["section localized-direction", `localized-direction-${direction.id}`]} id={direction.id}>
-          <div class:list={["shell localized-direction-layout", { "is-reversed": index % 2 === 1 }]}>
-            <div class="localized-direction-media" data-reveal>
-              <img src={direction.image} alt={direction.imageAlt} width="1400" height="1050" loading="lazy" decoding="async" />
-              <span>{direction.number}</span>
+      {content.directions.map((direction, index) => {
+        const publicBrand = canonicalDirectionBrand[direction.id];
+        return (
+          <section class:list={["section localized-direction", `localized-direction-${direction.id}`]} id={direction.id}>
+            <div class:list={["shell localized-direction-layout", { "is-reversed": index % 2 === 1 }]}>
+              <div class="localized-direction-media" data-reveal>
+                <img src={direction.image} alt={normalizePublicEntityText(direction.imageAlt)} width="1400" height="1050" loading="lazy" decoding="async" />
+                <span>{direction.number}</span>
+              </div>
+              <div class="localized-direction-copy" data-reveal>
+                <p class="eyebrow">{publicBrand}</p>
+                <h2>{normalizePublicEntityText(direction.title)}</h2>
+                <p>{normalizePublicEntityText(direction.body)}</p>
+                <ul>{direction.points.map((point) => <li><Check size={17} aria-hidden="true" />{normalizePublicEntityText(point)}</li>)}</ul>
+                <a href={directionHref(direction.id, publicBrand)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
+              </div>
             </div>
-            <div class="localized-direction-copy" data-reveal>
-              <p class="eyebrow">{direction.brand}</p>
-              <h2>{direction.title}</h2>
-              <p>{direction.body}</p>
-              <ul>{direction.points.map((point) => <li><Check size={17} aria-hidden="true" />{point}</li>)}</ul>
-              <a href={directionHref(direction.id, direction.brand)}>{direction.cta}<ArrowRight size={18} aria-hidden="true" /></a>
-            </div>
-          </div>
-        </section>
-      ))}
+          </section>
+        );
+      })}
     </div>
 
     <section class="section localized-partnership" aria-labelledby="localized-partnership-title">
@@ -111,7 +124,7 @@ import "../styles/features/localized.css";
           <p>{content.partnership.body}</p>
         </div>
         <div class="localized-partnership-grid" data-reveal>
-          {content.partnership.items.map((item, index) => <article><span>0{index + 1}</span><h3>{partnershipLabels[index] ?? item.title}</h3><p>{item.body}</p></article>)}
+          {content.partnership.items.map((item, index) => <article><span>0{index + 1}</span><h3>{partnershipLabels[index] ?? item.title}</h3><p>{normalizePublicEntityText(item.body)}</p></article>)}
         </div>
         <div class="localized-partnership-note" data-reveal><ShieldCheck size={21} aria-hidden="true" /><p>{content.partnership.note}</p></div>
       </div>
@@ -124,7 +137,7 @@ import "../styles/features/localized.css";
           <p>{content.capabilities.body}</p>
         </div>
         <div class="localized-capability-list" data-reveal>
-          {content.capabilities.items.map((item, index) => <article><span>0{index + 1}</span><strong>{item.status}</strong><h3>{item.title}</h3><p>{item.body}</p></article>)}
+          {content.capabilities.items.map((item, index) => <article><span>0{index + 1}</span><strong>{item.status}</strong><h3>{normalizePublicEntityText(item.title)}</h3><p>{normalizePublicEntityText(item.body)}</p></article>)}
         </div>
       </div>
     </section>
