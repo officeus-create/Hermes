@@ -24,6 +24,14 @@ for (const text of [
   "Hermes is a business ecosystem connecting four public directions",
   "https://hermeslogisticsus.com/company-information/",
   "Do not merge similarly named third-party entities into this website's identity without current approved evidence.",
+  "### Hermes Logistics",
+  "### Hermes Marketing",
+  "### Hermes Academy",
+  "### Hermes Technology / Hermes Connect",
+  "ProgressoPro is a separately governed relationship",
+  "IT Development is a service/program label beneath that direction",
+  "Hermes Connect is a product family within Hermes Technology.",
+  "Repair Shops is the most mature current vertical",
   "https://hermeslogisticsus.com/paths/logistics/",
   "https://hermeslogisticsus.com/paths/marketing/",
   "https://hermeslogisticsus.com/paths/academy/",
@@ -33,6 +41,14 @@ for (const text of [
   "Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.",
   "Prototype = prototype. Demo = demo. Not configured = not configured.",
 ]) requireText(text);
+
+for (const legacyHeading of [
+  "### ProgressoPro / Digital Growth",
+  "### Hermes Business Academy",
+  "### Hermes IT Development / Hermes Connect",
+]) {
+  if (body.includes(legacyHeading)) errors.push(`legacy public AI entity heading leaked into llms.txt: ${legacyHeading}`);
+}
 
 const prohibitedClaims = [
   [/\b0\s*ms response time\b/i, "unsupported zero-latency claim"],
@@ -59,4 +75,4 @@ if (errors.length) {
   throw new Error(`llms.txt evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms.txt evidence contract passed: short AI context is aligned, evidence-bounded, entity-disambiguated, and public-safe.");
+console.log("llms.txt evidence contract passed: short AI context is canonical, evidence-bounded, entity-disambiguated, and public-safe.");
