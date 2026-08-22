@@ -10,7 +10,6 @@ import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astr
 import SiteFooter from "../../components/SiteFooter.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import { publicPaths } from "../../data/public-paths";
-import { site } from "../../data/site";
 import "../../styles/hermes-public-path-shell.css";
 
 export function getStaticPaths() {
@@ -38,7 +37,7 @@ const serviceSchema = {
   provider: { "@id": "https://hermeslogisticsus.com/#organization" },
   serviceType: path.offerings.map((item) => item.title),
 };
-const breadcrumbName = site.navigation.find((item) => item.href === `paths/${path.id}/`)?.label ?? path.brandLabel;
+const breadcrumbName = path.brandLabel;
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
