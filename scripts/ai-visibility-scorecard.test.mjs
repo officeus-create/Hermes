@@ -9,39 +9,16 @@ import {
 assert.equal(aiVisibilityPrompts.length, 48, "Release A must register exactly 48 prompts");
 assert.equal(new Set(aiVisibilityPrompts.map((item) => item.id)).size, 48, "Prompt IDs must be unique");
 assert.equal(new Set(aiVisibilityPrompts.map((item) => item.prompt)).size, 48, "Prompt text must be distinct");
-
-for (const direction of ["logistics", "marketing", "academy", "technology"]) {
-  assert.equal(
-    aiVisibilityPrompts.filter((item) => item.direction === direction).length,
-    12,
-    `${direction} must own 12 prompts`,
-  );
-}
-
+for (const direction of ["logistics", "marketing", "academy", "technology"]) assert.equal(aiVisibilityPrompts.filter((item) => item.direction === direction).length, 12, `${direction} must own 12 prompts`);
 assert.ok(aiVisibilityPrompts.some((item) => item.language === "ru"), "Russian prompts are required");
 assert.ok(aiVisibilityPrompts.some((item) => item.language === "uk"), "Ukrainian prompts are required");
 assert.ok(aiVisibilityPrompts.every((item) => item.canonicalOwner.startsWith("/")), "Every prompt needs a site-relative canonical owner");
 assert.ok(aiVisibilityPrompts.every((item) => item.expectedFacts.length > 0), "Every prompt needs expected safe facts");
 assert.ok(aiVisibilityPrompts.every((item) => item.prohibitedClaims.length > 0), "Every prompt needs prohibited claims");
-
 assert.deepEqual(aiVisibilityObservations, [], "The real baseline must start empty");
 assert.ok(syntheticAiVisibilityObservations.every((item) => item.synthetic), "QA observations must be marked synthetic");
-
 const emptyMetrics = calculateAiVisibilityMetrics(aiVisibilityObservations);
-assert.deepEqual(emptyMetrics, {
-  total: 0,
-  mentioned: 0,
-  cited: 0,
-  recommended: 0,
-  factualErrors: 0,
-  mentionRate: 0,
-  citationRate: 0,
-  recommendationRate: 0,
-  entityAccuracyRate: 0,
-  descriptionAccuracyRate: 0,
-  factualErrorRate: 0,
-});
-
+assert.deepEqual(emptyMetrics, { total: 0, mentioned: 0, cited: 0, recommended: 0, factualErrors: 0, mentionRate: 0, citationRate: 0, recommendationRate: 0, entityAccuracyRate: 0, descriptionAccuracyRate: 0, factualErrorRate: 0 });
 const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
 assert.equal(syntheticMetrics.total, 4);
 assert.equal(syntheticMetrics.mentionRate, 75);
@@ -50,23 +27,60 @@ assert.equal(syntheticMetrics.recommendationRate, 50);
 assert.equal(syntheticMetrics.entityAccuracyRate, 66.7);
 assert.equal(syntheticMetrics.descriptionAccuracyRate, 66.7);
 assert.equal(syntheticMetrics.factualErrorRate, 25);
-
 const observationKeys = Object.keys(syntheticAiVisibilityObservations[0]).join(" ").toLowerCase();
-for (const prohibitedField of ["password", "token", "cookie", "accountid", "conversation", "email", "phone"]) {
-  assert.ok(!observationKeys.includes(prohibitedField), `Observation contract must not include ${prohibitedField}`);
-}
-
-assert.ok(
-  syntheticAiVisibilityObservations.some((item) => item.brandMentioned && !item.linkedCitation),
-  "Mention and citation must remain separate signals",
-);
-assert.ok(
-  syntheticAiVisibilityObservations.some((item) => item.linkedCitation && item.recommendation === "source_only"),
-  "Citation and recommendation must remain separate signals",
-);
-assert.ok(
-  syntheticAiVisibilityObservations.some((item) => item.factualError),
-  "Factual error handling must be represented",
-);
-
+for (const prohibitedField of ["password", "token", "cookie", "accountid", "conversation", "email", "phone"]) assert.ok(!observationKeys.includes(prohibitedField), `Observation contract must not include ${prohibitedField}`);
+assert.ok(syntheticAiVisibilityObservations.some((item) => item.brandMentioned && !item.linkedCitation), "Mention and citation must remain separate signals");
+assert.ok(syntheticAiVisibilityObservations.some((item) => item.linkedCitation && item.recommendation === "source_only"), "Citation and recommendation must remain separate signals");
+assert.ok(syntheticAiVisibilityObservations.some((item) => item.factualError), "Factual error handling must be represented");
 console.log("AI visibility scorecard contract passed");
+
+await import("./geo-measurement-layer.test.mjs");
+await import("./geo-measurement-adapters.test.mjs");
+await import("./geo-measurement-import.test.mjs");
+await import("./geo-operational-scorecard.test.mjs");
+await import("./geo-operational-security.test.mjs");
+await import("./geo-operational-examples.test.mjs");
+await import("./geo-evidence-envelope.test.mjs");
+await import("./geo-evidence-health.test.mjs");
+await import("./geo-operational-comparison.test.mjs");
+await import("./geo-search-diagnostics.test.mjs");
+await import("./geo-search-diagnostics-import.test.mjs");
+await import("./geo-search-platform-evidence.test.mjs");
+await import("./geo-index-evidence.test.mjs");
+await import("./geo-analytics-receipt-evidence.test.mjs");
+await import("./geo-commercial-outcome-evidence.test.mjs");
+await import("./geo-ai-referral-measurement.test.mjs");
+await import("./geo-answer-contract.test.mjs");
+await import("./geo-evidence-graph.test.mjs");
+await import("./geo-site-graph-audit.test.mjs");
+await import("./geo-public-entity-adapter.test.mjs");
+await import("./geo-prompt-owner-registry.test.mjs");
+await import("./geo-four-direction-alignment.test.mjs");
+await import("./geo-ai-observation-evaluation.test.mjs");
+await import("./geo-ai-observation-import.test.mjs");
+await import("./geo-ai-competitive-visibility.test.mjs");
+await import("./geo-ai-review-plan.test.mjs");
+await import("./geo-ai-visibility-operations.test.mjs");
+await import("./geo-ai-review-wave-quality.test.mjs");
+await import("./geo-ai-wave-operations.test.mjs");
+await import("./geo-answer-owner-audit.test.mjs");
+await import("./geo-answer-evidence-quality.test.mjs");
+await import("./geo-entity-schema-operations.test.mjs");
+await import("./geo-discovery-graph-operations.test.mjs");
+await import("./geo-live-discovery-snapshot.test.mjs");
+await import("./geo-external-evidence-acquisition.test.mjs");
+await import("./geo-operating-cadence.test.mjs");
+await import("./geo-multilingual-consistency.test.mjs");
+await import("./geo-operating-handoff.test.mjs");
+await import("./geo-gsc-fresh-checkpoint.test.mjs");
+await import("./geo-us-opportunity-engine.test.mjs");
+await import("./geo-logistics-seo-owner-optimization.test.mjs");
+await import("./geo-car-hauling-owner-readiness.test.mjs");
+await import("./geo-job-search-readiness.test.mjs");
+await import("./geo-commercial-funnel-operations.test.mjs");
+await import("./geo-300-current-state.test.mjs");
+await import("./geo-funnel-outcome-health.test.mjs");
+await import("./geo-private-outcome-import.test.mjs");
+await import("./geo-canonical-owner-route-audit.test.mjs");
+await import("./geo-car-hauling-answer-candidate.test.mjs");
+await import("./geo-owner-measurement.test.mjs");

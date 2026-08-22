@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-18-geo-ai-visibility-previews",
+  "generated_at": "2026-08-18T11:00:00Z",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/demos/geo-answer-surface/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/geo-answer-surface/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/demos/geo-answer-surface/index.astro",
+      "status": "COMPLETE",
+      "blocker": "CEO visual approval is required before this preview-only GEO surface may be merged or published to production.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    },
+    {
+      "route": "/demos/geo-car-hauling-owner/",
+      "source_state": "current_main",
+      "indexability": "noindex",
+      "robots": "noindex,nofollow,noarchive",
+      "canonical": "https://hermeslogisticsus.com/demos/geo-car-hauling-owner/",
+      "sitemap_owner": null,
+      "source_file": "src/pages/demos/geo-car-hauling-owner/index.astro",
+      "status": "COMPLETE",
+      "blocker": "CEO visual approval is required before this car-hauling GEO production-candidate preview may be merged or published to production.",
+      "response_status": 200,
+      "comparison": {
+        "production": "pending_deployment",
+        "immutable_release": "missing"
+      }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 2,
+    "indexable_route_count_added": 0,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}
