@@ -95,7 +95,7 @@ for (const locale of ["es", "it", "fr"] as const) {
     for (let index = 0; index < englishAlerts.length; index += 1) {
       await alert.evaluate((node, message) => {
         node.textContent = message;
-        node.className = "alert error";
+        node.setAttribute("class", "alert error");
       }, englishAlerts[index]);
       await expect(alert).toHaveText(expected[locale][index]);
     }
@@ -112,7 +112,7 @@ for (const [locale, translation] of [
     const alert = page.locator("#availability-alert");
     await alert.evaluate((node, message) => {
       node.textContent = message;
-      node.className = "alert error";
+      node.setAttribute("class", "alert error");
     }, "Unable to load your secure session.");
     await expect(alert).toHaveText(translation);
   });
