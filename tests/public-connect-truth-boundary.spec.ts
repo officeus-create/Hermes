@@ -30,3 +30,17 @@ test("the public truth language identifies maturity without universal availabili
   expect(source).toContain("availability");
   expect(source).toContain("verified");
 });
+
+test("the Hermes Connect hub uses evidence-safe maturity status outside the frozen SEO metadata", async () => {
+  const source = await readFile(
+    resolve(process.cwd(), "src/pages/services/hermes-connect/index.astro"),
+    "utf8",
+  );
+
+  expect(source).toContain('status: "MOST MATURE CURRENT VERTICAL"');
+  expect(source).not.toContain('status: "LIVE PRODUCT"');
+  expect(source).toContain("Repair Shops · most mature current vertical");
+  expect(source).toContain("Availability must be verified");
+  expect(source).toContain("availability and production state must be verified");
+  expect(source).toContain("No inflated availability claims.");
+});
