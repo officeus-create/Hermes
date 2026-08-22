@@ -794,3 +794,15 @@ entries — append only.
 - Architecture: existing shared components were strengthened and focused browser contracts now guard viewport/CTA behavior.
 - Deferred opportunities: no wholesale image removal or return to a columns-only site without measured LCP/CTR evidence; no prices, offices, testimonials, brand rename, redirect family, or large redesign from unverified AI suggestions. Image rights/provenance must be resolved separately under #320 before treating affected media as fully cleared.
 - Verification: `npm run build` passed (169 Astro pages); `npm test` passed (185 generated public HTML pages validated, zero broken internal links); focused UX suite passed 44/44; canonical workspace desktop contract passed 2/2 after the overflow fix; desktop and 390px visual evidence reviewed locally. Full Playwright completed with 944 passed, 11 expected skips, and one unrelated desktop checkbox click flake; the exact failed scenario passed immediately in a bounded single-test rerun.
+
+## 2026-08-22 — Codex — Public-media provenance gate
+
+- Registered 14 in-scope material visuals and first-party Hermes brand icons
+  with exact SHA-256 identities and first-tracked commits.
+- Six material JPEG visuals remain explicitly `NEEDS_OWNER_PROVENANCE` because
+  no original creator, generator/vendor, source URL, or publication-permission
+  record was recovered. Existing use is preserved without asserting a legal
+  defect; expanded reuse is blocked pending evidence or documented replacement.
+- The existing font provenance test chain now enforces the media registry too,
+  so unregistered assets and unreviewed byte changes fail CI.
+- No public image bytes, routes, copy, metadata, forms, analytics, or APIs changed.
