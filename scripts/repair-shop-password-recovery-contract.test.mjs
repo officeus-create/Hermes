@@ -12,6 +12,7 @@ import {
   normalizePasswordResetLocale,
   passwordResetExpiry,
 } from "../functions/api/_lib/password-reset.mjs";
+import { onRequestPost as forgotPassword } from "../functions/api/auth/forgot-password.ts";
 
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -48,9 +49,89 @@ assert.match(forgotEndpoint, /if \(Number\(recent\?\.count \?\? 0\) >= 3\)/);
 assert.match(forgotEndpoint, /UPDATE password_reset_tokens SET used_at = \? WHERE specialist_id = \? AND used_at IS NULL/);
 assert.match(forgotEndpoint, /created_at < \? AND \(expires_at <= \? OR used_at IS NOT NULL\)/);
 assert.match(forgotEndpoint, /PASSWORD_RESET_EMAIL_PATH/);
+assert.match(forgotEndpoint, /context\.waitUntil\(processPasswordResetRequest\(env, email, locale\)\.catch/);
+assert.doesNotMatch(forgotEndpoint, /await processPasswordResetRequest\(env, email, locale\)/);
+assert.match(forgotEndpoint, /async function processPasswordResetRequest/);
+assert.match(forgotEndpoint, /INSERT INTO password_reset_tokens[\s\S]*await deliverResetEmail/);
+assert.match(forgotEndpoint, /await deliverResetEmail[\s\S]*DELETE FROM password_reset_tokens WHERE token_hash = \?/);
 assert.match(resetEndpoint, /DELETE FROM sessions WHERE specialist_id = \?/);
 assert.match(resetEndpoint, /UPDATE password_reset_tokens SET used_at/);
 assert.match(resetEndpoint, /sessionCookieHeader\("", \{ clear: true \}\)/);
+
+function createPasswordResetDb(specialist) {
+  return {
+    prepare(sql) {
+      const statement = {
+        async run() { return { success: true }; },
+        bind() {
+          return {
+            async run() { return { success: true }; },
+            async first() {
+              if (sql.includes("SELECT id, email, role FROM specialists")) return specialist;
+              if (sql.includes("SELECT COUNT(*) AS count")) return { count: 0 };
+              return null;
+            },
+          };
+        },
+      };
+      return statement;
+    },
+  };
+}
+
+let releaseDelivery;
+let deliveryStarted = false;
+const backgroundTasks = [];
+const eligibleContext = {
+  request: new Request("https://hermeslogisticsus.com/api/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "eligible@example.com", lang: "en" }),
+  }),
+  env: {
+    DB: createPasswordResetDb({ id: "owner-1", email: "eligible@example.com", role: "Shop Owner" }),
+    LEAD_SERVICE_TOKEN: "unit-secret-token",
+    LEAD_EMAIL_SERVICE: {
+      fetch() {
+        deliveryStarted = true;
+        return new Promise((resolve) => { releaseDelivery = resolve; });
+      },
+    },
+  },
+  waitUntil(promise) { backgroundTasks.push(promise); },
+};
+
+const eligibleResponse = await Promise.race([
+  forgotPassword(eligibleContext),
+  new Promise((resolve) => setTimeout(() => resolve("response_waited_for_delivery"), 100)),
+]);
+assert.ok(eligibleResponse instanceof Response, "eligible response must not await outbound delivery");
+assert.equal(eligibleResponse.status, 200);
+assert.deepEqual(await eligibleResponse.json(), {
+  success: true,
+  message: "If an eligible Repair Shop owner account exists for that email, a reset link will be sent shortly.",
+});
+assert.equal(backgroundTasks.length, 1, "eligible processing must be scheduled through waitUntil");
+for (let attempt = 0; attempt < 20 && !deliveryStarted; attempt += 1) {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+}
+assert.equal(deliveryStarted, true, "background task must still reach bounded email delivery");
+releaseDelivery(new Response(null, { status: 202 }));
+await backgroundTasks[0];
+
+const unknownBackground = [];
+const unknownResponse = await forgotPassword({
+  request: new Request("https://hermeslogisticsus.com/api/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "unknown@example.com", lang: "en" }),
+  }),
+  env: { DB: createPasswordResetDb(null) },
+  waitUntil(promise) { unknownBackground.push(promise); },
+});
+assert.equal(unknownResponse.status, eligibleResponse.status);
+assert.equal(unknownBackground.length, 1, "unknown valid email must use the same scheduled response path");
+await unknownBackground[0];
 
 for (const marker of ["Forgot password?", "Забыли пароль?", "Забули пароль?", "¿Olvidaste tu contraseña?", "Password dimenticata?", "Mot de passe oublié ?"]) {
   assert.ok(enhancer.includes(marker), `missing localized auth recovery entry: ${marker}`);
