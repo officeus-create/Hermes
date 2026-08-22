@@ -4,7 +4,7 @@ const rooms = [
   ["Open Hermes Logistics", "/paths/logistics/"],
   ["Open Hermes Marketing", "/paths/marketing/"],
   ["Open Hermes Academy", "/paths/academy/"],
-  ["Open Hermes IT Development", "/paths/technology/"],
+  ["Open Hermes Technology", "/paths/technology/"],
 ] as const;
 
 test("Hermes homepage is a focused four-direction entrance", async ({ page }) => {
@@ -48,7 +48,7 @@ test("four-direction homepage keeps its character and usability on mobile", asyn
 
   await expect(page.locator(".home-room")).toHaveCount(4);
   await expect(page.getByRole("link", { name: "Open Hermes Logistics" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Open Hermes IT Development" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open Hermes Technology" })).toBeVisible();
 
   const geometry = await page.evaluate(() => {
     const grid = document.querySelector<HTMLElement>(".home-rooms-grid");
