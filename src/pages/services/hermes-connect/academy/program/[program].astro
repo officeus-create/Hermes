@@ -88,10 +88,14 @@ const publicHref = `/academy/${course.slug}/`;
           <h2>Self-tracking does not change enrollment.</h2>
           <p>Only an existing <strong>Enrolled</strong> state unlocks progress controls. Marking modules complete never changes your enrollment, reviewer decision, participation model, cohort, candidate status, or employment status.</p>
         </article>
-        <article class="academy-app-panel">
-          <p class="academy-app-eyebrow">What comes next</p>
-          <h2>Assignments and review remain separate.</h2>
-          <p>A later bounded Academy release may add assignments, video evidence and reviewer feedback. A2 intentionally contains no submission upload, reviewer score, automated readiness decision or certificate logic.</p>
+        <article class="academy-app-panel" data-academy-evidence-journey>
+          <p class="academy-app-eyebrow">Evidence → human review → progression</p>
+          <h2>The next Academy stages are already connected.</h2>
+          <p>Use the private Evidence workspace to submit lesson work for an authorized human reviewer. Accepted evidence and requested changes then roll into your separate Progression view; self-tracked module completion never substitutes for that human decision.</p>
+          <div class="academy-app-actions" style="margin-top:16px">
+            <a class="academy-app-button primary" href="/services/hermes-connect/academy/submissions/">Open Evidence workspace</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/progression/">View Progression</a>
+          </div>
         </article>
       </section>
     </main>
