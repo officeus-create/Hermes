@@ -116,6 +116,11 @@ body:has(.detail-page) .site-header .desktop-nav a:focus-visible {
   letter-spacing: -.055em;
 }
 
+/* Keep the longer Logistics title in the editorial text column, clear of the hero image. */
+.detail-page-logistics .detail-hero h1 {
+  max-width: min(600px, 42vw);
+}
+
 .detail-page .detail-hero-content > p:not(.eyebrow) {
   max-width: min(610px, 48vw);
   margin-bottom: 28px;

@@ -145,6 +145,16 @@
       nav.append(link);
     });
 
+    const updateFamilyNavCue = () => {
+      const maxScroll = Math.max(0, nav.scrollWidth - nav.clientWidth);
+      nav.dataset.scrollable = String(maxScroll > 4);
+      nav.dataset.scrollStart = String(nav.scrollLeft <= 4);
+      nav.dataset.scrollEnd = String(nav.scrollLeft >= maxScroll - 4);
+    };
+    nav.addEventListener("scroll", updateFamilyNavCue, { passive: true });
+    window.addEventListener("resize", updateFamilyNavCue, { passive: true });
+    window.requestAnimationFrame(updateFamilyNavCue);
+
     inner.append(summary, nav);
     context.append(inner);
 
@@ -250,8 +260,11 @@
     .hc-product-context__dot{grid-row:1 / span 3;align-self:start;margin-top:.48rem}
     .hc-product-context__summary strong{font-size:.66rem;line-height:1.25;letter-spacing:.025em}
     .hc-content-language{grid-column:2;width:auto;margin-left:0;color:#8f9db1;font-size:.68rem}
-    .hc-family-nav{gap:.28rem;margin-inline:-.5rem;padding:.08rem .5rem .16rem;scroll-padding-inline:.5rem}
-    .hc-family-nav a{display:inline-flex;align-items:center;min-height:40px;padding:.42rem .62rem;font-size:.72rem}
+    .hc-family-nav{gap:.28rem;margin-inline:-.5rem;padding:.08rem 2rem .16rem .5rem;scroll-padding-inline:.5rem;scroll-snap-type:x proximity;overscroll-behavior-inline:contain}
+    .hc-family-nav[data-scrollable="true"]{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 2rem),transparent 100%);mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 2rem),transparent 100%)}
+    .hc-family-nav[data-scrollable="true"][data-scroll-start="false"]{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 2rem,#000 calc(100% - 2rem),transparent 100%);mask-image:linear-gradient(to right,transparent 0,#000 2rem,#000 calc(100% - 2rem),transparent 100%)}
+    .hc-family-nav[data-scrollable="true"][data-scroll-end="true"]{-webkit-mask-image:linear-gradient(to right,transparent 0,#000 2rem,#000 100%);mask-image:linear-gradient(to right,transparent 0,#000 2rem,#000 100%)}
+    .hc-family-nav a{display:inline-flex;align-items:center;min-height:40px;padding:.42rem .62rem;font-size:.72rem;scroll-snap-align:start}
     .hc-language-truth{padding-bottom:.55rem;font-size:.72rem;line-height:1.42}
     .hc-experience .repair-pilot-page .hero-section{padding-top:1rem!important}
     .hc-experience .repair-pilot-page .repair-shell,
@@ -270,7 +283,7 @@
     .hc-product-context__inner,.hc-language-truth{width:calc(100% - .75rem)}
     .hc-product-context__summary{gap:.14rem .5rem}
     .hc-product-context__summary strong{font-size:.63rem}
-    .hc-family-nav{margin-inline:-.375rem;padding-inline:.375rem}
+    .hc-family-nav{margin-inline:-.375rem;padding-inline:.375rem 2rem}
     .hc-family-nav a{min-height:42px;padding:.44rem .58rem;font-size:.7rem}
     .hc-experience .repair-pilot-page .repair-shell,
     .hc-experience .hc-hub-page .hc-hub-shell,

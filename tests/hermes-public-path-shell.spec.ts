@@ -76,3 +76,20 @@ test("shared direction shell remains usable on a 390px mobile viewport", async (
   expect(mobile!.mediaRadius).toBe("22px");
   expect(mobile!.mediaWidth).toBeLessThanOrEqual(mobile!.heroWidth);
 });
+
+test("Logistics desktop title stays clear of the hero image", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/paths/logistics/");
+
+  const geometry = await page.evaluate(() => {
+    const heading = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero h1");
+    const media = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero-media");
+    if (!heading || !media) return null;
+    const headingRect = heading.getBoundingClientRect();
+    const mediaRect = media.getBoundingClientRect();
+    return { headingRight: headingRect.right, mediaLeft: mediaRect.left };
+  });
+
+  expect(geometry).not.toBeNull();
+  expect(geometry!.headingRight).toBeLessThanOrEqual(geometry!.mediaLeft);
+});
