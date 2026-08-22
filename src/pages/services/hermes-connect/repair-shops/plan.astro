@@ -161,9 +161,14 @@ const schema = [
 </BaseLayout>
 
 <script>
+  type LinkedShop = { id: string; slug: string };
+  type OwnerSession = { success?: boolean; specialist?: { name?: string; email?: string } };
+  type ShopProfile = { success?: boolean; shop?: { id?: string; name?: string; slug?: string; phone?: string | null; city?: string; state?: string } | null };
+
   const form = document.getElementById("paid-plan-form");
   const submit = document.getElementById("paid-plan-submit");
   const status = document.getElementById("paid-plan-status");
+  let linkedShop: LinkedShop | null = null;
 
   const value = (id: string) => (document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null)?.value.trim() || "";
   const setStatus = (message: string, state: "success" | "error" | "sending" = "error") => {
@@ -171,9 +176,43 @@ const schema = [
     status.textContent = message;
     status.dataset.state = state;
   };
+  const setIfBlank = (id: string, next: string | null | undefined) => {
+    if (!next) return;
+    const field = document.getElementById(id);
+    if (!(field instanceof HTMLInputElement) || field.value.trim()) return;
+    field.value = next;
+  };
+
+  async function prefillAuthenticatedShop() {
+    try {
+      const sessionResponse = await fetch("/api/auth/me", { credentials: "same-origin" });
+      if (!sessionResponse.ok) return;
+      const session = await sessionResponse.json().catch(() => null) as OwnerSession | null;
+      if (!session?.success || !session.specialist) return;
+
+      const profileResponse = await fetch("/api/repair-shop/profile", { credentials: "same-origin" });
+      if (!profileResponse.ok) return;
+      const profile = await profileResponse.json().catch(() => null) as ShopProfile | null;
+      const shop = profile?.success ? profile.shop : null;
+      if (!shop?.id || !shop.slug) return;
+
+      linkedShop = { id: String(shop.id), slug: String(shop.slug) };
+      setIfBlank("plan-shop-name", shop.name);
+      setIfBlank("plan-contact-name", session.specialist.name);
+      setIfBlank("plan-phone", shop.phone);
+      setIfBlank("plan-email", session.specialist.email);
+      setIfBlank("plan-city-state", [shop.city, shop.state].filter(Boolean).join(", "));
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: "connect_paid_plan_prefilled", product: "repair_shop_founding_plan", linked_shop: true });
+    } catch {
+      // Guest/manual activation stays available if account lookup is unavailable.
+    }
+  }
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: "connect_paid_plan_view", product: "repair_shop_founding_plan", price_usd: 99 });
+  void prefillAuthenticatedShop();
 
   form?.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -186,6 +225,9 @@ const schema = [
     const email = value("plan-email");
     const cityState = value("plan-city-state");
     const goal = value("plan-goal");
+    const accountLinkage = linkedShop
+      ? `Hermes Connect shop identity: ${linkedShop.id} · ${linkedShop.slug}`
+      : "Hermes Connect shop identity: manual request without authenticated shop linkage";
 
     const payload = {
       request_id: requestId,
@@ -199,6 +241,7 @@ const schema = [
         "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan",
         "Launch price: $99/month per repair shop location",
         `Shop: ${shopName}`,
+        accountLinkage,
         `City / state: ${cityState}`,
         `Phone: ${phone}`,
         `Purchase reason / desired value: ${goal}`,
@@ -231,7 +274,7 @@ const schema = [
 
       setStatus("Request received. Hermes will contact you to confirm the plan and invoice before activation.", "success");
       submit.textContent = "Paid activation requested";
-      window.dataLayer?.push({ event: "connect_paid_plan_requested", product: "repair_shop_founding_plan", price_usd: 99, request_state: "received" });
+      window.dataLayer?.push({ event: "connect_paid_plan_requested", product: "repair_shop_founding_plan", price_usd: 99, request_state: "received", linked_shop: Boolean(linkedShop) });
     } catch {
       submit.disabled = false;
       setStatus("We could not deliver the request. Nothing was charged. Please try again.", "error");
