@@ -4,14 +4,14 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 
-const pdfAssetPath = "/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf";
-const version = "HERMES-CARRIER-EXECUTION-V2026-08-06";
-const pdfSha256 = "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8";
+const pdfAssetPath = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
+const version = "ATTORNEY-REVIEW-V3-2026-08-06";
+const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb";
 ---
 
 <BaseLayout
-  title="Carrier Agreement Execution PDF | Hermes Logistics"
-  description="Review the approved seven-page Hermes carrier administrative and dispatch support agreement execution PDF from a phone or computer."
+  title="Carrier Agreement Review PDF | Hermes Logistics"
+  description="Review the seven-page Hermes carrier administrative and dispatch support attorney-review PDF from a phone or computer."
   robots="noindex,nofollow"
 >
   <SiteHeader activePath="/paths/logistics/" />
@@ -20,13 +20,13 @@ const pdfSha256 = "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e090
       <div class="pdf-review-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
       <div class="shell pdf-review-heading">
         <a class="back-link" href="/logistics/carrier-agreement/"><ArrowLeft size={17} aria-hidden="true" />Back to the 60-second summary</a>
-        <p class="eyebrow">Hermes Logistics · Approved execution PDF</p>
+        <p class="eyebrow">Hermes Logistics · Attorney-review PDF</p>
         <h1>Read the full seven-page agreement.</h1>
-        <p>This immutable execution master is verified by version and SHA-256 before a standard 6% or 8% packet is created. The carrier-specific percentage belongs in the signed Appendix A, not in the reusable master.</p>
+        <p>This review master is verified by version and SHA-256 before a signed review/onboarding packet is created. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel and the approval gates tracked by #280.</p>
         <div class="pdf-review-actions">
           <button class="button pdf-primary" type="button" data-download-pdf><Download size={18} aria-hidden="true" />Download PDF</button>
           <button class="button" type="button" data-print-pdf><Printer size={18} aria-hidden="true" />Print or save</button>
-          <a class="button" href="/logistics/carrier-onboarding/">Confirm terms and sign</a>
+          <a class="button" href="/logistics/carrier-onboarding/">Complete review packet</a>
         </div>
         <p class="document-control"><ShieldCheck size={16} aria-hidden="true" />Version {version} · SHA-256 <code>{pdfSha256}</code></p>
       </div>
@@ -34,7 +34,7 @@ const pdfSha256 = "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e090
 
     <section class="section pdf-review-section">
       <div class="shell pdf-review-frame">
-        <object data={pdfAssetPath} type="application/pdf" aria-label="Hermes carrier agreement approved execution PDF">
+        <object data={pdfAssetPath} type="application/pdf" aria-label="Hermes carrier agreement attorney-review PDF">
           <div class="pdf-fallback"><FileText size={32} aria-hidden="true" /><h2>Your browser did not open the embedded PDF.</h2><p>Use the Download PDF button above, or return to the agreement summary.</p></div>
         </object>
       </div>
@@ -47,7 +47,7 @@ const pdfSha256 = "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e090
   document.querySelector("[data-download-pdf]")?.addEventListener("click", () => {
     const link = document.createElement("a");
     link.href = pdfAssetPath;
-    link.download = "Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf";
+    link.download = "Hermes_Carrier_Agreement_v3_ATTORNEY_REVIEW.pdf";
     document.body.append(link);
     link.click();
     link.remove();

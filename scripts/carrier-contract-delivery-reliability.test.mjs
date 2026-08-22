@@ -9,17 +9,17 @@ class MemoryKv {
   async put(key, value) { this.values.set(key, value); }
 }
 
-const executionPath = "/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf";
-const executionVersion = "HERMES-CARRIER-EXECUTION-V2026-08-06";
-const executionBytes = await readFile(new URL(`../public${executionPath}`, import.meta.url));
-const executionSha = createHash("sha256").update(executionBytes).digest("hex");
+const reviewPath = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
+const reviewBytes = await readFile(new URL(`../public${reviewPath}`, import.meta.url));
+const reviewSha = createHash("sha256").update(reviewBytes).digest("hex");
+assert.equal(reviewSha, "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb");
 const limits = new MemoryKv();
 let serviceCalls = 0;
 const env = {
   ALLOWED_ORIGIN: "https://hermeslogisticsus.com",
   ASSETS: {
     async fetch() {
-      return new Response(executionBytes, { status: 200, headers: { "Content-Type": "application/pdf" } });
+      return new Response(reviewBytes, { status: 200, headers: { "Content-Type": "application/pdf" } });
     },
   },
   LEAD_DELIVERY_MODE: "live",
@@ -42,11 +42,7 @@ const env = {
       }, { status: 202 });
     },
   },
-  CARRIER_CONTRACT_MODE: "live",
-  CARRIER_CONTRACT_APPROVED_VERSION: executionVersion,
-  CARRIER_CONTRACT_APPROVED_PDF_PATH: executionPath,
-  CARRIER_CONTRACT_APPROVED_PDF_SHA256: executionSha,
-  CARRIER_CONTRACT_ALLOWED_PERCENTAGES: "6,8",
+  CARRIER_CONTRACT_MODE: "review",
 };
 
 const payload = {
@@ -93,6 +89,7 @@ assert.equal(first.status, 202);
 assert.equal(first.headers.get("X-Hermes-Delivery"), "pending");
 assert.equal(first.headers.get("X-Hermes-Internal-Delivery"), "pending");
 assert.equal(first.headers.get("X-Hermes-Carrier-Copy"), "pending");
+assert.equal(first.headers.get("X-Hermes-Document-Mode"), "review");
 assert.equal(serviceCalls, 1);
 
 const retry = await contractHandler({ request: request(), env });
@@ -100,6 +97,7 @@ assert.equal(retry.status, 200);
 assert.equal(retry.headers.get("X-Hermes-Delivery"), "delivered");
 assert.equal(retry.headers.get("X-Hermes-Internal-Delivery"), "delivered");
 assert.equal(retry.headers.get("X-Hermes-Carrier-Copy"), "download_only");
+assert.equal(retry.headers.get("X-Hermes-Document-Mode"), "review");
 assert.equal(serviceCalls, 2);
 
 const duplicate = await contractHandler({ request: request(), env });
@@ -122,4 +120,4 @@ assert.equal(storedRecord.delivery_attempts, 2);
 assert.match(storedRecord.request_payload_sha256, /^[a-f0-9]{64}$/);
 assert.ok(storedRecord.last_delivery_attempt_at);
 
-console.log("Carrier contract reliability passed: pending deliveries retry, completed deliveries dedupe, carrier-copy status stays explicit, and idempotency payload reuse is rejected.");
+console.log("Carrier review-packet reliability passed: pending deliveries retry, completed deliveries dedupe, carrier-copy status stays explicit, and idempotency payload reuse is rejected.");

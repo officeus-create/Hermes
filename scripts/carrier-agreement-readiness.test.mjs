@@ -14,15 +14,15 @@ const [pageSource, readiness, offerSource, activation, backend, protectionAddend
 
 for (const required of [
   'robots="noindex,nofollow"',
-  "HERMES-CARRIER-EXECUTION-V2026-08-06",
+  "ATTORNEY-REVIEW-V3-2026-08-06",
   "data-agreement-version",
-  "Execution PDF SHA-256",
+  "Review PDF SHA-256",
   "60-second version",
   "Percentage only in Appendix A",
   "No personal guaranty or UCC lien",
   "Do not submit passwords, PINs, W-9s",
-  "Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf",
-  "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8",
+  "Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf",
+  "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb",
 ]) assert.ok(pageSource.includes(required), `Carrier agreement v3 review page is missing: ${required}`);
 
 assert.doesNotMatch(pageSource, /<strong>\s*(?:5|6|8)(?:\.00)?% service fee/i, "The v3 public review page must not publish one fixed carrier fee.");
@@ -72,6 +72,9 @@ for (const required of [
 
 for (const required of [
   "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
+  "LEGAL_EXECUTION_APPROVED",
+  "Issue #280 is the governing activation boundary",
+  "execution_record_quarantined_pending_legal_review",
   "allowedPercentages.has(contract.percentageKey)",
   'contract.plan!=="custom"',
   "unnecessaryPreSignatureFieldPattern",
@@ -133,4 +136,6 @@ assert.match(protectionAddendum, /lawful hiring without such misuse are allowed/
 for (const secretLike of ["sk_live_", "api_key=", "access_token=", "private_key="])
   assert.ok(!readiness.toLowerCase().includes(secretLike));
 
-console.log("Carrier agreement v3 offer, Wisconsin-aligned protection addendum, minimized signing, and production execution-readiness contracts passed.");
+console.log("Carrier agreement v3 offer, Wisconsin-aligned protection addendum, minimized review/onboarding signing, and Issue #280 containment contracts passed.");
+
+await import("./carrier-contract-review-containment.test.mjs");

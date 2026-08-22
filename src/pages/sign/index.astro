@@ -14,7 +14,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   name: "Hermes Carrier Agreement and Signature",
-  description: "A private, phone-friendly carrier handoff for reviewing the working model and completing an approved carrier agreement execution packet.",
+  description: "A private, phone-friendly carrier handoff for reviewing the working model and completing a signed carrier review/onboarding packet.",
   url: shortUrl,
   isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
 };
@@ -48,7 +48,7 @@ const schema = {
             <a class="button sign-secondary" href={agreementPath}>Review the agreement first</a>
             <a class="button sign-call" href={phoneHref}><Phone size={18} aria-hidden="true" />Ask a question</a>
           </div>
-          <p class="sign-reassurance">This route contains no carrier identity, percentage, plan, or tracking identifier. Standard 6% and 8% packets execute only when the approved master agreement, version, percentage, and SHA-256 file fingerprint all match. Custom terms remain subject to separate written approval.</p>
+          <p class="sign-reassurance">This route contains no carrier identity, percentage, plan, or tracking identifier. Standard 6% and 8% selections create signed review/onboarding packets only; custom terms remain review-only. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel and the approval gates tracked by #280.</p>
         </div>
 
         <aside class="sign-decision-card" aria-label="Choose the next step">
@@ -56,7 +56,7 @@ const schema = {
           <h2>Ready now, or reviewing first?</h2>
           <a class="decision decision-ready" href={onboardingPath}>
             <FileSignature size={23} aria-hidden="true" />
-            <span><strong>I’m ready to continue</strong><small>Choose the standard service model, confirm the company, and create the signed execution packet.</small></span>
+            <span><strong>I’m ready to continue</strong><small>Choose the service model, confirm the company, and create the signed review/onboarding packet.</small></span>
             <ArrowRight size={18} aria-hidden="true" />
           </a>
           <a class="decision" href={agreementPath}>
@@ -84,7 +84,7 @@ const schema = {
           <article><Check size={20} aria-hidden="true" /><h3>You decide</h3><p>You may accept or reject each opportunity and remain responsible for drivers, equipment, safety, routes, and compliance.</p></article>
           <article><Check size={20} aria-hidden="true" /><h3>Your money stays yours</h3><p>Brokers, shippers, or factoring companies pay the carrier directly. Hermes receives only the agreed service fee.</p></article>
           <article><Check size={20} aria-hidden="true" /><h3>No hidden guarantee</h3><p>No load, rate, mileage, lane, customer, booking, payment, or revenue is promised.</p></article>
-          <article><Check size={20} aria-hidden="true" /><h3>Exact commercial terms</h3><p>The percentage and selected scope must appear in Appendix A and match the approved execution version before final activation.</p></article>
+          <article><Check size={20} aria-hidden="true" /><h3>Exact proposed terms</h3><p>The percentage and selected scope appear in the review Appendix A. Final activation remains disabled while #280 is open.</p></article>
         </div>
       </div>
     </section>
@@ -99,7 +99,7 @@ const schema = {
         <ol>
           <li><span>01</span><div><strong>Confirm the offer</strong><small>Select the service model and enter the exact percentage discussed with Hermes.</small></div></li>
           <li><span>02</span><div><strong>Confirm company and signer</strong><small>Legal carrier name, MC or USDOT, authorized signer, business email, and phone.</small></div></li>
-          <li><span>03</span><div><strong>Review and sign</strong><small>Verify Appendix A, consent to electronic records, sign, and keep the downloaded execution packet.</small></div></li>
+          <li><span>03</span><div><strong>Review and sign</strong><small>Verify Appendix A, consent to electronic records, sign, and keep the downloaded review/onboarding packet.</small></div></li>
         </ol>
       </div>
     </section>

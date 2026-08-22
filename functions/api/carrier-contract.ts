@@ -70,6 +70,10 @@ const EMAIL_SERVICE_URL = "https://lead-email.internal/v1/send-contract";
 const REVIEW_DOCUMENT_VERSION = "ATTORNEY-REVIEW-V3-2026-08-06";
 const REVIEW_DOCUMENT_PATH = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
 const REVIEW_DOCUMENT_SHA256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb";
+// Issue #280 is the governing activation boundary. Keep the technically useful
+// execution engine fail-closed until qualified Wisconsin transportation counsel
+// approval and the remaining production gates are recorded in code review.
+const LEGAL_EXECUTION_APPROVED = false;
 const CONSENT_VERSION = "carrier-electronic-records-v2-2026-08-06";
 const MAX_REQUEST_BYTES = 420_000;
 const MAX_SIGNATURE_BYTES = 220_000;
@@ -261,6 +265,9 @@ export async function onRequestPost({request,env}:Context){
       if(existingRecord.request_payload_sha256&&existingRecord.request_payload_sha256!==requestPayloadSha){
         return json(allowedOrigin,409,{success:false,error:"idempotency_key_payload_mismatch"});
       }
+      if(existingRecord.mode==="live"&&!LEGAL_EXECUTION_APPROVED){
+        return json(allowedOrigin,409,{success:false,error:"execution_record_quarantined_pending_legal_review"});
+      }
       const internalDelivery=normalizeDeliveryStatus(existingRecord.internal_delivery||existingRecord.delivery,["delivered","pending"],"pending");
       if(internalDelivery==="delivered"){
         const carrierCopy=normalizeDeliveryStatus(existingRecord.carrier_copy,["delivered","download_only","pending"],"pending");
@@ -282,7 +289,7 @@ export async function onRequestPost({request,env}:Context){
   const currentRate=Number(await env.LEAD_LIMITS.get(rateKey)||"0");
   if(!existingRecord&&currentRate>=RATE_LIMIT)return json(allowedOrigin,429,{success:false,error:"rate_limit_exceeded"});
   const requestedMode=clean(env.CARRIER_CONTRACT_MODE,20).toLowerCase();const approvedVersion=clean(env.CARRIER_CONTRACT_APPROVED_VERSION,80);const approvedPath=clean(env.CARRIER_CONTRACT_APPROVED_PDF_PATH,220);const approvedSha=clean(env.CARRIER_CONTRACT_APPROVED_PDF_SHA256,80).toLowerCase();const allowedPercentages=parseAllowedPercentages(env.CARRIER_CONTRACT_ALLOWED_PERCENTAGES);
-  const liveApproved=requestedMode==="live"&&Boolean(approvedVersion)&&!/draft|review/i.test(approvedVersion)&&approvedPath.startsWith("/contracts/")&&/^[a-f0-9]{64}$/.test(approvedSha)&&contract.plan!=="custom"&&allowedPercentages.has(contract.percentageKey);
+  const liveApproved=LEGAL_EXECUTION_APPROVED&&requestedMode==="live"&&Boolean(approvedVersion)&&!/draft|review/i.test(approvedVersion)&&approvedPath.startsWith("/contracts/")&&/^[a-f0-9]{64}$/.test(approvedSha)&&contract.plan!=="custom"&&allowedPercentages.has(contract.percentageKey);
   const mode:"review"|"live"=liveApproved?"live":"review";const documentVersion=liveApproved?approvedVersion:REVIEW_DOCUMENT_VERSION;const documentPath=liveApproved?approvedPath:REVIEW_DOCUMENT_PATH;const documentSha=liveApproved?approvedSha:REVIEW_DOCUMENT_SHA256;
   const canonical=JSON.stringify({...contract,signatureBytes:undefined,signature_jpeg_sha256:await sha256(contract.signatureBytes),documentVersion,documentSha,mode});const inputHash=await sha256(canonical);const userAgentHash=await sha256(request.headers.get("User-Agent")||"unknown");const appendixPdf=createSignedAppendixPdf(contract,mode,documentVersion,documentSha,{inputHash,ipHash,userAgentHash});const appendixSha=await sha256(appendixPdf);const filename=safeFilename(contract.legalCompanyName,mode==="live"?"Signed_Appendix_A":"Signed_Review_Packet");
   const assetResponse=await env.ASSETS.fetch(new URL(documentPath,request.url));if(!assetResponse.ok||!assetResponse.headers.get("Content-Type")?.toLowerCase().includes("pdf"))return json(allowedOrigin,503,{success:false,error:"master_document_unavailable"});const masterBytes=new Uint8Array(await assetResponse.arrayBuffer());if(await sha256(masterBytes)!==documentSha)return json(allowedOrigin,503,{success:false,error:"master_document_hash_mismatch"});
