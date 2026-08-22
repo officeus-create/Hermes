@@ -2,13 +2,13 @@
 import { ArrowRight, Braces, Check } from "@lucide/astro";
 
 const stages = [
-  { number: "01", label: "Product architecture", status: "Defined", state: "done" },
-  { number: "02", label: "Prototype brief", status: "Activated", state: "active" },
-  { number: "03", label: "Specialist booking flow", status: "Next", state: "next" },
-  { number: "04", label: "Pilot preview", status: "Planned", state: "planned" },
+  { number: "01", label: "Repair Shops", status: "Most mature pilot", state: "done" },
+  { number: "02", label: "Academy", status: "Authenticated · developing", state: "active" },
+  { number: "03", label: "Beauty", status: "B1 · preview", state: "next" },
+  { number: "04", label: "Additional verticals", status: "Not represented as live", state: "planned" },
 ];
 
-const firstFlow = ["Specialist profile", "Service & availability", "Personal booking link", "Test booking"];
+const maturityFlow = ["Repair Shops · current", "Academy · developing", "Beauty · B1 / preview"];
 import "../styles/features/technology.css";
 import "../styles/hermes-technology-public.css";
 import "../styles/hermes-technology-surface-ownership.css";
@@ -17,33 +17,38 @@ import "../styles/hermes-technology-surface-ownership.css";
 <section class="technology-build-pulse" id="build-progress" aria-labelledby="technology-build-title">
   <div class="shell technology-build-pulse-layout">
     <div class="technology-build-pulse-copy" data-reveal>
-      <p class="eyebrow">Inside Hermes IT · Build progress</p>
+      <p class="eyebrow">Hermes Technology · Product status</p>
       <div class="technology-build-status">
         <span aria-hidden="true"></span>
-        Hermes Connect · Prototype work started
+        Hermes Connect · Staged rollout
       </div>
-      <h2 id="technology-build-title">A new product is moving from concept into its first working foundation.</h2>
+      <h2 id="technology-build-title">One operating platform, with verticals at different maturity levels.</h2>
       <p>
-        Hermes Connect is being shaped as an operating workspace for appointments, clients, services, teams, and
-        controlled AI assistance. The product architecture is defined and a separate prototype workspace is now open.
+        Hermes Connect is the shared operating-platform direction. Repair Shops is the current most mature pilot,
+        Academy is developing as an authenticated learning vertical, and Beauty remains at B1 / preview stage.
+        Availability and production readiness are described per vertical rather than as one universal status.
       </p>
-      <div class="technology-build-first-flow" aria-label="First Hermes Connect prototype flow">
-        <p>First prototype target · Mobile-first PWA</p>
+      <div class="technology-build-first-flow" aria-label="Current public Hermes Connect maturity map">
+        <p>Current public maturity map</p>
         <div>
-          {firstFlow.map((step, index) => (
-            <span>{step}{index < firstFlow.length - 1 && <i aria-hidden="true">→</i>}</span>
+          {maturityFlow.map((step, index) => (
+            <span>{step}{index < maturityFlow.length - 1 && <i aria-hidden="true">→</i>}</span>
           ))}
         </div>
-        <small>Defined prototype scope · Simulated data and test booking only</small>
+        <small>Status labels describe current public maturity, not universal availability.</small>
       </div>
-      <a href="/#product-portfolio">See the Hermes product portfolio <ArrowRight size={17} aria-hidden="true" /></a>
-      <small>No public Hermes Connect app, account, booking, payment, calendar, or integration is live yet.</small>
+      <a href="/services/hermes-connect/">Explore the public Hermes Connect overview <ArrowRight size={17} aria-hidden="true" /></a>
+      <small>
+        Repair Shops is the most mature current vertical. Academy is developing as an authenticated learning vertical.
+        Beauty remains B1 / preview. This does not claim that every vertical, booking flow, payment, calendar, AI action,
+        or integration is fully live.
+      </small>
     </div>
 
     <div class="technology-build-track" data-reveal style="--reveal-delay: 100ms">
       <div class="technology-build-track-head">
-        <span><Braces size={17} aria-hidden="true" />Current build track</span>
-        <strong>Updated as work becomes verifiable</strong>
+        <span><Braces size={17} aria-hidden="true" />Current public maturity</span>
+        <strong>Updated only when status is verifiable</strong>
       </div>
       <ol>
         {stages.map((stage) => (

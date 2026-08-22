@@ -21,9 +21,16 @@ if (!verificationDateMatch) {
 }
 
 for (const text of [
-  "Hermes is a business ecosystem connecting four public directions",
+  "Hermes is one business ecosystem with four first-level public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.",
   "https://hermeslogisticsus.com/company-information/",
   "Do not merge similarly named third-party entities into this website's identity without current approved evidence.",
+  "### Hermes Logistics",
+  "### Hermes Marketing",
+  "### Hermes Academy",
+  "### Hermes Technology / Hermes Connect",
+  "ProgressoPro may appear as a second-level operating or program name within the marketing direction.",
+  "`IT Development` may appear as a second-level service or operating descriptor",
+  "Repair Shops is the most mature current vertical; Academy is a developing authenticated learning vertical; Beauty is at B1/preview stage.",
   "https://hermeslogisticsus.com/paths/logistics/",
   "https://hermeslogisticsus.com/paths/marketing/",
   "https://hermeslogisticsus.com/paths/academy/",
@@ -33,6 +40,14 @@ for (const text of [
   "Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.",
   "Prototype = prototype. Demo = demo. Not configured = not configured.",
 ]) requireText(text);
+
+for (const [pattern, label] of [
+  [/^### ProgressoPro \/ Digital Growth$/m, "legacy peer-level Marketing heading"],
+  [/^### Hermes Business Academy$/m, "legacy peer-level Academy heading"],
+  [/^### Hermes IT Development \/ Hermes Connect$/m, "legacy peer-level Technology heading"],
+]) {
+  if (pattern.test(body)) errors.push(label);
+}
 
 const prohibitedClaims = [
   [/\b0\s*ms response time\b/i, "unsupported zero-latency claim"],
@@ -59,4 +74,4 @@ if (errors.length) {
   throw new Error(`llms.txt evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms.txt evidence contract passed: short AI context is aligned, evidence-bounded, entity-disambiguated, and public-safe.");
+console.log("llms.txt evidence contract passed: short AI context uses the canonical Hermes hierarchy, bounded product maturity, entity disambiguation, and public-safe evidence rules.");

@@ -186,30 +186,30 @@ const schema = [breadcrumbSchema, faqSchema];
 
 <style>
   .logistics-demo-action { border-style: dashed; }
-  .shipper-service-modes { background: #fff; }
+  .shipper-service-modes { background: var(--hermes-pearl); }
   .shipper-service-mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-  .shipper-service-mode-grid article { display: flex; min-height: 100%; flex-direction: column; padding: 1.35rem; border: 1px solid #d6dce8; border-radius: 12px; background: #f8faff; }
-  .shipper-service-mode-grid article > span { color: var(--color-blue-700); font-weight: 800; }
-  .shipper-service-mode-grid h3 { margin: .8rem 0 .55rem; color: var(--color-navy-900); }
-  .shipper-service-mode-grid p { color: var(--color-muted); line-height: 1.65; }
-  .shipper-service-mode-grid strong { margin-top: auto; padding-top: 1rem; color: var(--color-navy-900); }
-  .shipper-service-boundary { margin: 1.25rem 0 0; padding: 1rem 1.15rem; border-left: 4px solid var(--color-blue-700); background: #f5f7fb; color: var(--color-muted); }
-  .logistics-audience-faq { background: #f5f7fb; }
+  .shipper-service-mode-grid article { display: flex; min-height: 100%; flex-direction: column; padding: 1.35rem; border: 1px solid var(--hermes-line-light); border-radius: var(--hermes-radius-card); background: var(--hermes-paper); box-shadow: var(--hermes-shadow-card); }
+  .shipper-service-mode-grid article > span { color: var(--hermes-violet); font-weight: 800; }
+  .shipper-service-mode-grid h3 { margin: .8rem 0 .55rem; color: var(--hermes-ink); }
+  .shipper-service-mode-grid p { color: var(--hermes-muted); line-height: var(--hermes-copy-leading); }
+  .shipper-service-mode-grid strong { margin-top: auto; padding-top: 1rem; color: var(--hermes-ink); }
+  .shipper-service-boundary { margin: 1.25rem 0 0; padding: 1rem 1.15rem; border-left: 4px solid var(--hermes-violet); border-radius: var(--hermes-radius-control); background: rgba(124,92,255,.06); color: var(--hermes-muted); }
+  .logistics-audience-faq { background: var(--hermes-pearl); }
   .logistics-audience-faq-list { display: grid; gap: 1rem; margin-top: 1.5rem; }
-  .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid #d6dce8; border-radius: 10px; background: #fff; }
-  .logistics-audience-faq-list summary { cursor: pointer; font-weight: 750; color: var(--color-navy-900); }
-  .logistics-audience-faq-list p { margin: .75rem 0 0; max-width: 78ch; color: var(--color-muted); }
-  .logistics-audience-final { padding-top: 1rem; background: #fff; }
-  .logistics-audience-final-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); border-radius: 14px; background: #071038; color: #fff; }
+  .logistics-audience-faq-list details { padding: 1.2rem 1.3rem; border: 1px solid var(--hermes-line-light); border-radius: var(--hermes-radius-card); background: var(--hermes-paper); box-shadow: var(--hermes-shadow-card); }
+  .logistics-audience-faq-list summary { cursor: pointer; font-weight: 750; color: var(--hermes-ink); }
+  .logistics-audience-faq-list p { margin: .75rem 0 0; max-width: 78ch; color: var(--hermes-muted); }
+  .logistics-audience-final { padding-top: 1rem; background: var(--hermes-pearl); }
+  .logistics-audience-final-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid var(--hermes-line-dark); border-radius: var(--hermes-radius-panel); background: radial-gradient(circle at 88% 10%, rgba(124,92,255,.16), transparent 24rem), var(--hermes-obsidian); color: #fff; box-shadow: var(--hermes-shadow-workspace); }
   .logistics-audience-final-card h2 { max-width: 16ch; }
-  .logistics-audience-final-card p:not(.eyebrow) { max-width: 70ch; color: rgba(255,255,255,.72); line-height: 1.65; }
+  .logistics-audience-final-card p:not(.eyebrow) { max-width: 70ch; color: var(--hermes-muted-dark); line-height: var(--hermes-copy-leading); }
   .logistics-audience-final-actions { display: grid; gap: .7rem; min-width: min(100%, 270px); }
-  .logistics-audience-final-actions .button:not(.button-primary) { border-color: rgba(255,255,255,.42); color: #fff; }
+  .logistics-audience-final-actions .button:not(.button-primary) { border-color: var(--hermes-line-dark); color: #fff; }
   @media (max-width: 900px) {
     .shipper-service-mode-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 760px) {
-    .logistics-audience-final-card { grid-template-columns: 1fr; }
+    .logistics-audience-final-card { grid-template-columns: 1fr; border-radius: var(--hermes-radius-card); }
     .logistics-audience-final-actions { width: 100%; }
     .logistics-audience-final-actions .button { width: 100%; justify-content: center; }
   }

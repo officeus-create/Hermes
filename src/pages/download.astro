@@ -5,7 +5,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 
 const faqs = [
-  { question: "What Hermes Connect access is available now?", answer: "The current supported product path is the responsive Repair Shop Web App in a modern browser. Shop owners can register or sign in from the canonical Hermes Connect Repair Shops flow." },
+  { question: "What Hermes Connect access is available now?", answer: "The most mature current public product path is the responsive Repair Shop Web App in a modern browser. Use the canonical Hermes Connect Repair Shops flow for the access options that are available in the current environment." },
   { question: "Is there a public Android APK or app-store release?", answer: "No public mobile-store or direct APK release is currently presented as available. Mobile users should use the responsive browser experience while release verification remains separate." },
   { question: "Can I add Hermes Connect to my home screen?", answer: "Where the browser supports standard Add to Home Screen behavior, you may use that browser feature. The website does not simulate a successful native installation." },
 ];
@@ -16,16 +16,16 @@ const schema = [
     "@type": "WebPage",
     name: "Hermes Connect Access Center",
     url: "https://hermeslogisticsus.com/download/",
-    description: "Current browser-first access to the Hermes Connect Repair Shop live pilot, with clear mobile distribution boundaries.",
+    description: "Current browser-first access guidance for the most mature Hermes Connect Repair Shops vertical, with clear mobile distribution boundaries.",
   },
   {
     "@context": "https://schema.org",
     "@type": "Service",
     name: "Hermes Connect Repair Shop Web App Access",
     serviceType: "Browser-based repair shop operations software access",
-    provider: { "@type": "Organization", name: "Hermes Logistics LLC", url: "https://hermeslogisticsus.com/" },
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
     url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
-    description: "Browser-first access to the current Hermes Connect Repair Shop live pilot. No native mobile-store release or subscription offer is claimed here.",
+    description: "Browser-first access guidance for the most mature current Hermes Connect Repair Shops vertical. No native mobile-store release, universal availability, or subscription offer is claimed here.",
   },
   {
     "@context": "https://schema.org",
@@ -56,7 +56,7 @@ const schema = [
       <div class="hc-access-shell">
         <p class="hc-access-kicker">Hermes Connect · Access Center</p>
         <h1>Use the current product in your browser.</h1>
-        <p class="hc-access-lead">Repair Shops is the current Hermes Connect live pilot. Desktop, tablet, and mobile users use the same responsive product family—without a separate legacy workspace or an unverified native-app promise.</p>
+        <p class="hc-access-lead">Repair Shops is the most mature current Hermes Connect vertical. Desktop, tablet, and mobile users use the same responsive product family—without a separate legacy workspace or an unverified native-app promise.</p>
         <div class="hc-access-actions">
           <a class="hc-access-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
           <a class="hc-access-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner Login / Get Started</a>
