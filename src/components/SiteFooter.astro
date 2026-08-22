@@ -21,7 +21,10 @@ const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
     nav: [
-      ...site.navigation.map((item) => ({ label: item.label, href: `/${item.href}` })),
+      ...site.navigation.map((item) => ({
+        label: item.href === "paths/technology/" ? "Technology" : item.label,
+        href: `/${item.href}`,
+      })),
       { label: "Case Studies", href: "/case/" },
       { label: "Website Development", href: "/services/website-development/" },
       { label: "SEO Services", href: "/services/seo/" },
@@ -41,7 +44,7 @@ const localized = {
     statement: "Логістика, розвиток, освіта й технології за одним практичним стандартом.",
     nav: [
       { label: "Логістика", href: "/ua/#logistics" }, { label: "Маркетинг", href: "/ua/#marketing" },
-      { label: "Академія", href: "/ua/#academy" }, { label: "IT-розробка", href: "/ua/#technology" },
+      { label: "Академія", href: "/ua/#academy" }, { label: "Технології", href: "/ua/#technology" },
     ],
     privacy: "Конфіденційність",
     contact: "Контакт",
@@ -55,7 +58,7 @@ const localized = {
     statement: "Логистика, развитие, образование и технологии по единому практическому стандарту.",
     nav: [
       { label: "Логистика", href: "/ru/#logistics" }, { label: "Маркетинг", href: "/ru/#marketing" },
-      { label: "Академия", href: "/ru/#academy" }, { label: "IT-разработка", href: "/ru/#technology" },
+      { label: "Академия", href: "/ru/#academy" }, { label: "Технологии", href: "/ru/#technology" },
     ],
     privacy: "Конфиденциальность",
     contact: "Контакт",
@@ -69,7 +72,7 @@ const localized = {
     statement: "Logística, crecimiento, formación y tecnología con un mismo estándar práctico.",
     nav: [
       { label: "Logística", href: "/es/#logistics" }, { label: "Marketing", href: "/es/#marketing" },
-      { label: "Academia", href: "/es/#academy" }, { label: "Desarrollo IT", href: "/es/#technology" },
+      { label: "Academia", href: "/es/#academy" }, { label: "Tecnología", href: "/es/#technology" },
     ],
     privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto", phone: "Ventas de logística en EE. UU.",
     designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
@@ -78,7 +81,7 @@ const localized = {
     statement: "Logistica, crescita, formazione e tecnologia con un unico standard pratico.",
     nav: [
       { label: "Logistica", href: "/it/#logistics" }, { label: "Marketing", href: "/it/#marketing" },
-      { label: "Academy", href: "/it/#academy" }, { label: "Sviluppo IT", href: "/it/#technology" },
+      { label: "Academy", href: "/it/#academy" }, { label: "Tecnologia", href: "/it/#technology" },
     ],
     privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto", phone: "Vendite logistica USA",
     designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
@@ -87,7 +90,7 @@ const localized = {
     statement: "Logistique, croissance, formation et technologie selon un même standard pratique.",
     nav: [
       { label: "Logistique", href: "/fr/#logistics" }, { label: "Marketing", href: "/fr/#marketing" },
-      { label: "Académie", href: "/fr/#academy" }, { label: "Développement IT", href: "/fr/#technology" },
+      { label: "Académie", href: "/fr/#academy" }, { label: "Technologie", href: "/fr/#technology" },
     ],
     privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact", phone: "Ventes logistiques aux États-Unis",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
@@ -177,9 +180,7 @@ const localePath = localeConfig[locale].path;
     </div>
     <nav class="footer-social" aria-label="Social media">
       {site.social.map((item) => (
-        <a href={item.href} target="_blank" rel="noopener noreferrer">
-          {item.label}
-        </a>
+        <a href={item.href} target="_blank" rel="noopener noreferrer">{item.label}</a>
       ))}
     </nav>
     <a class="back-to-top" href="#top" aria-label="Back to top">
@@ -188,7 +189,7 @@ const localePath = localeConfig[locale].path;
   </div>
   <div class="shell footer-meta">
     <span>
-      {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `${localePath}#technology`}>Hermes IT Development</a> · {localized.method}
+      {localized.designed} <a href={locale === "en" ? "/paths/technology/" : `${localePath}#technology`}>Hermes Technology</a> · {localized.method}
     </span>
     <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
@@ -199,52 +200,11 @@ const localePath = localeConfig[locale].path;
     .site-footer { padding-top: 2.6rem; }
     .footer-main { grid-template-columns: 1fr; gap: .9rem; }
     .footer-intro { max-width: 36rem; }
-
-    .footer-primary-nav {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0 .85rem;
-      padding-top: .45rem;
-      border-top: 1px solid rgba(255,255,255,.16);
-    }
-
-    .footer-primary-nav a {
-      display: flex;
-      min-height: 44px;
-      align-items: center;
-      padding: .35rem 0;
-      color: rgba(255,255,255,.76);
-      font-size: .82rem;
-      line-height: 1.22;
-    }
-
-    .footer-contacts {
-      gap: .08rem;
-      margin-top: .15rem;
-      padding-top: .55rem;
-      border-top: 1px solid rgba(255,255,255,.16);
-    }
-
-    .footer-contacts a,
-    .footer-social a {
-      display: inline-flex;
-      min-height: 44px;
-      align-items: center;
-    }
-
-    .footer-social {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0 1rem;
-      padding-top: .15rem;
-    }
-
-    .footer-primary-nav a:focus-visible,
-    .footer-contacts a:focus-visible,
-    .footer-social a:focus-visible {
-      color: #fff;
-      outline: 2px solid currentColor;
-      outline-offset: 3px;
-    }
+    .footer-primary-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 .85rem; padding-top: .45rem; border-top: 1px solid rgba(255,255,255,.16); }
+    .footer-primary-nav a { display: flex; min-height: 44px; align-items: center; padding: .35rem 0; color: rgba(255,255,255,.76); font-size: .82rem; line-height: 1.22; }
+    .footer-contacts { gap: .08rem; margin-top: .15rem; padding-top: .55rem; border-top: 1px solid rgba(255,255,255,.16); }
+    .footer-contacts a, .footer-social a { display: inline-flex; min-height: 44px; align-items: center; }
+    .footer-social { display: flex; flex-wrap: wrap; gap: 0 1rem; padding-top: .15rem; }
+    .footer-primary-nav a:focus-visible, .footer-contacts a:focus-visible, .footer-social a:focus-visible { color: #fff; outline: 2px solid currentColor; outline-offset: 3px; }
   }
 </style>
