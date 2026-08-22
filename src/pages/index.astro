@@ -43,7 +43,7 @@ const organizationSchema = {
     { "@type": "Country", name: "France" },
     { "@type": "Country", name: "United Kingdom" },
   ],
-  sameAs: approvedHermesSameAs,
+  ...(approvedHermesSameAs.length ? { sameAs: approvedHermesSameAs } : {}),
 };
 
 const websiteSchema = {
