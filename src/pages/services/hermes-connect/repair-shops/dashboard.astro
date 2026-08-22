@@ -124,7 +124,9 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     $("profile-state")!.textContent = "Saved";
     $<HTMLInputElement>("shop-name")!.value = shop.name || ""; $<HTMLInputElement>("shop-phone")!.value = shop.phone || ""; $<HTMLInputElement>("shop-address")!.value = shop.address_line1 || ""; $<HTMLInputElement>("shop-city")!.value = shop.city || ""; $<HTMLInputElement>("shop-state")!.value = shop.state || ""; $<HTMLInputElement>("shop-zip")!.value = shop.postal_code || ""; $<HTMLSelectElement>("shop-timezone")!.value = shop.timezone || "America/Chicago";
     publicBookingUrl = `${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
-    $("public-link-text")!.textContent = publicBookingUrl; $<HTMLAnchorElement>("open-link-btn")!.href = publicBookingUrl; linkWrap?.classList.remove("hidden");
+    const langParam = (new URLSearchParams(window.location.search).get("lang") || "").toLowerCase();
+    const openUrl = langParam ? `${publicBookingUrl}&lang=${encodeURIComponent(langParam)}` : publicBookingUrl;
+    $("public-link-text")!.textContent = publicBookingUrl; $<HTMLAnchorElement>("open-link-btn")!.setAttribute("href", openUrl); linkWrap?.classList.remove("hidden");
   }
 
   async function loadProfile() { const response = await fetch("/api/repair-shop/profile", { credentials: "same-origin" }); if (response.status === 401) return redirectToAuth(); const data = await readJson(response); if (!response.ok || !data.success) return showAlert(data.error || "Unable to load shop profile."); fillProfile(data.shop || null); }
