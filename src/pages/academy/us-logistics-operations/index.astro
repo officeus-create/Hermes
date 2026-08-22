@@ -1,8 +1,9 @@
 ---
 import AcademyPublicPage from "../../../components/AcademyPublicPage.astro";
+import { normalizeAcademyPublicContent } from "../../../data/academy-public-brand";
 import { academySubsitePages } from "../../../data/academy-subsite";
 
-const baseContent = academySubsitePages.logistics;
+const baseContent = normalizeAcademyPublicContent(academySubsitePages.logistics);
 const content = {
   ...baseContent,
   audienceIntro:
