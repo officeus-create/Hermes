@@ -23,16 +23,17 @@ const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.incl
   : locale;
 const localeBase = localeConfig[activeLocale].path;
 const localizedLabels = {
-  uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
-  ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
-  es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Desarrollo IT", contact: "Iniciar una conversación", home: "Inicio" },
-  it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home" },
-  fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil" },
+  uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "Технології", contact: "Почати розмову", home: "Головна" },
+  ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "Технологии", contact: "Начать разговор", home: "Главная" },
+  es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Tecnología", contact: "Iniciar una conversación", home: "Inicio" },
+  it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Tecnologia", contact: "Inizia una conversazione", home: "Home" },
+  fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Technologie", contact: "Démarrer une conversation", home: "Accueil" },
 };
 const navigation = activeLocale === "en"
   ? site.navigation.map((item) => {
       const url = `/${item.href}`;
-      return { ...item, url, active: (activePath ?? currentPath) === url };
+      const label = item.href === "paths/technology/" ? "Technology" : item.label;
+      return { ...item, label, url, active: (activePath ?? currentPath) === url };
     })
   : site.paths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
@@ -74,7 +75,7 @@ const languageLinks = siteLocales.map((language) => {
       variant="header"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
+      sublabel="Repair Shops · most mature current vertical"
     />
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[activeLocale].name}`}>
@@ -105,7 +106,7 @@ const languageLinks = siteLocales.map((language) => {
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
+      sublabel="Repair Shops · most mature current vertical"
     />
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">{contactLabel}</a>
@@ -258,44 +259,17 @@ const languageLinks = siteLocales.map((language) => {
     width: 7px;
     height: 7px;
   }
-  .hc-experience .hc-family-nav {
-    gap: .18rem;
+  .hc-experience .hc-product-context__copy {
+    color: rgba(225,231,239,.75);
+    font-size: .68rem;
   }
-  .hc-experience .hc-family-nav a {
-    padding: .36rem .52rem;
-    border-color: transparent;
-    background: transparent;
-    color: #9eaabd;
-    font-size: .7rem;
-  }
-  .hc-experience .hc-family-nav a:hover,
-  .hc-experience .hc-family-nav a:focus-visible,
-  .hc-experience .hc-family-nav a[aria-current="page"] {
-    border-color: rgba(157,136,255,.22);
-    background: rgba(157,136,255,.085);
+  .hc-experience .hc-product-context__copy a {
     color: #fff;
   }
-  .hc-experience .hc-language-truth {
-    width: min(calc(100% - 2rem),1180px);
-    padding-bottom: .52rem;
-    color: #9eaabd;
-    font-size: .72rem;
+  .hc-experience .mobile-nav {
+    background: rgba(8,12,21,.98);
   }
-  @media (max-width: 980px) {
-    .hc-experience .site-header { min-height: 70px; }
-    .hc-experience .site-header + .hc-product-context { margin-top: 70px; }
-    .hc-experience .desktop-nav { gap: .75rem; margin-left: 1rem; font-size: .76rem; }
-    .hc-experience .header-cta { display: none; }
-  }
-  @media (max-width: 760px) {
-    .hc-experience .site-header { width: min(calc(100% - 1rem),1180px); min-height: 64px; }
-    .hc-experience .site-header + .hc-product-context { margin-top: 64px; }
-    .hc-experience .hc-product-context__inner,
-    .hc-experience .hc-language-truth { width: min(calc(100% - 1rem),1180px); }
-    .hc-experience .hc-product-context__summary strong { padding: .26rem .46rem; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hc-experience .site-header,
-    .hc-experience .site-header-scrolled { transition: none; }
+  @media (max-width: 1120px) {
+    .hc-experience .desktop-nav { display: none; }
   }
 </style>
