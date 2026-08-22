@@ -9,7 +9,7 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
       <p class="tracking-consent-eyebrow">Privacy settings</p>
       <h2 id="tracking-consent-title">Choose whether to allow website analytics.</h2>
       <p class="tracking-consent-detail">Hermes uses Google Analytics 4 to understand visits and limited website interactions. Analytics stays off until you choose “Allow analytics.” Advertising storage, ad personalization, and advertising user data remain disabled.</p>
-      {isHermesConnectRoute && <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>}
+      <p class="tracking-consent-compact-copy">Analytics is off until you choose. Advertising storage and personalization stay disabled. <a href="/privacy/">Privacy Policy</a></p>
     </div>
     <div class="tracking-consent-actions">
       <button type="button" class="button button-primary" data-consent-accept>Allow analytics</button>
@@ -17,7 +17,7 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
       <a class="tracking-consent-policy-link" href="/privacy/">Privacy Policy</a>
     </div>
   </div>
-  <button type="button" class="tracking-consent-settings" data-consent-settings aria-haspopup="dialog">Privacy settings</button>
+  <button type="button" class="tracking-consent-settings" data-consent-settings aria-haspopup="dialog" hidden>Privacy settings</button>
 </div>
 
 <script is:inline define:vars={{ measurementId }}>
@@ -28,11 +28,6 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     const accept = root?.querySelector("[data-consent-accept]");
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
-    const main = document.querySelector("main");
-
-    // Keep the desktop consent surface in normal document flow so it cannot cover primary content.
-    // Moving the root (not only the banner) preserves all route-specific descendant styling on resize.
-    if (root && main) main.before(root);
 
     const readChoice = () => {
       try {
@@ -107,6 +102,7 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     const applyChoice = (choice) => {
       if (choice === "granted") loadAnalytics();
       if (banner) banner.hidden = choice !== null;
+      if (settings) settings.hidden = choice === null;
       if (choice) document.documentElement.dataset.analyticsConsent = choice;
     };
 
@@ -117,6 +113,7 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
       saveChoice("granted");
       loadAnalytics();
       if (banner) banner.hidden = true;
+      if (settings) settings.hidden = false;
     });
 
     decline?.addEventListener("click", () => {
@@ -125,13 +122,14 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
       clearGaCookies();
       saveChoice("denied");
       if (banner) banner.hidden = true;
+      if (settings) settings.hidden = false;
       if (wasGranted) window.location.reload();
     });
 
     settings?.addEventListener("click", () => {
       if (!banner) return;
       banner.hidden = false;
-      if (window.matchMedia("(min-width: 701px)").matches) banner.scrollIntoView({ block: "nearest" });
+      settings.hidden = true;
       banner.querySelector("button")?.focus();
     });
   })();
@@ -227,6 +225,7 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     cursor: pointer;
     box-shadow: 0 8px 24px rgba(11,13,18,.07);
   }
+  .tracking-consent-settings[hidden] { display: none; }
   .tracking-consent-actions .button:focus-visible,
   .tracking-consent-policy-link:focus-visible,
   .tracking-consent-settings:focus-visible {
@@ -235,20 +234,14 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
   }
 
   @media (min-width: 701px) {
-    .tracking-consent {
-      position: relative;
-      z-index: 65;
-      width: 100%;
-      padding: .55rem .8rem 0;
-    }
     .tracking-consent-banner {
-      position: static;
-      width: min(960px, 100%);
+      position: fixed;
+      width: min(960px, calc(100vw - 2rem));
       display: grid;
       grid-template-columns: minmax(280px, 1fr) auto;
       gap: .8rem 1rem;
       align-items: center;
-      margin: 0 auto;
+      margin: 0;
       padding: .62rem .72rem;
       border-radius: 14px;
       box-shadow: 0 12px 34px rgba(11,13,18,.11);
@@ -285,32 +278,18 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
   @media (max-width: 700px) {
     .tracking-consent-banner {
       right: .5rem;
-      bottom: .5rem;
+      bottom: 0;
       width: calc(100vw - 1rem);
-      padding: .74rem;
-      border-radius: 14px;
-      max-height: 42vh;
-      overflow-y: auto;
-    }
-    .tracking-consent-banner h2 { font-size: .96rem; margin-bottom: .28rem; }
-    .tracking-consent-eyebrow { font-size: .62rem; margin-bottom: .16rem; }
-    .tracking-consent-banner p { font-size: .8rem; line-height: 1.36; }
-    .tracking-consent-actions { display: grid; gap: .4rem; margin-top: .58rem; }
-    .tracking-consent-actions .button,
-    .tracking-consent-policy-link { min-height: 44px; }
-
-    /* Connect is an action-first mobile product. Keep consent explicit without covering the primary pilot CTA. */
-    .tracking-consent-connect .tracking-consent-banner {
       padding: .58rem .68rem .6rem;
+      border-radius: 14px;
       max-height: none;
       overflow: visible;
-      border-radius: 14px;
     }
-    .tracking-consent-connect .tracking-consent-eyebrow,
-    .tracking-consent-connect .tracking-consent-detail {
+    .tracking-consent-eyebrow,
+    .tracking-consent-detail {
       display: none;
     }
-    .tracking-consent-connect .tracking-consent-banner h2 {
+    .tracking-consent-banner h2 {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -321,25 +300,34 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
       white-space: nowrap;
       border: 0;
     }
-    .tracking-consent-connect .tracking-consent-compact-copy {
+    .tracking-consent-compact-copy {
       display: block;
       margin: 0;
       font-size: .76rem;
       line-height: 1.3;
     }
-    .tracking-consent-connect .tracking-consent-actions {
+    .tracking-consent-actions {
+      display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: .4rem;
       margin-top: .48rem;
     }
-    .tracking-consent-connect .tracking-consent-actions .button {
+    .tracking-consent-actions .button {
       min-height: 44px;
       padding: .44rem .48rem;
       font-size: .74rem;
       line-height: 1.12;
     }
-    .tracking-consent-connect .tracking-consent-policy-link {
+    .tracking-consent-policy-link {
       display: none;
     }
+    .tracking-consent-settings {
+      position: static;
+      display: block;
+      width: max-content;
+      margin: .75rem .75rem .75rem auto;
+      box-shadow: none;
+    }
+    .tracking-consent-settings[hidden] { display: none; }
   }
 </style>

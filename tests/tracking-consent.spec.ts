@@ -128,3 +128,30 @@ test("Hermes Connect mobile consent stays compact and does not cover the primary
   expect(geometry!.acceptHeight).toBeGreaterThanOrEqual(44);
   expect(geometry!.declineHeight).toBeGreaterThanOrEqual(44);
 });
+
+test("mobile consent is compact on every public direction and privacy settings no longer float over CTAs", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/paths/logistics/", { waitUntil: "domcontentloaded" });
+
+  const banner = page.locator("[data-consent-banner]");
+  await expect(banner).toBeVisible();
+  await expect(page.locator(".tracking-consent-detail")).toBeHidden();
+
+  const bannerHeight = await banner.evaluate((element) => element.getBoundingClientRect().height);
+  expect(bannerHeight).toBeLessThanOrEqual(120);
+
+  await page.getByRole("button", { name: "Continue without analytics" }).click();
+  const settings = page.getByRole("button", { name: "Privacy settings" });
+  await expect(settings).toBeVisible();
+  await expect(settings).toHaveCSS("position", "static");
+
+  const overlap = await page.evaluate(() => {
+    const settingsButton = document.querySelector<HTMLElement>("[data-consent-settings]");
+    const primary = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero .button-primary");
+    if (!settingsButton || !primary) return null;
+    const a = settingsButton.getBoundingClientRect();
+    const b = primary.getBoundingClientRect();
+    return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  });
+  expect(overlap).toBe(false);
+});

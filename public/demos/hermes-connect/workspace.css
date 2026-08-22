@@ -1392,3 +1392,13 @@ body.theme-pearl .close-pwa-drawer {
 body.theme-pearl .close-pwa-drawer:hover {
   color: #000;
 }
+
+/* Keep the canonical desktop toolbar inside the workspace viewport as
+   product controls are added. The items wrap before the document does. */
+@media (min-width: 851px) {
+  .top-actions {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
