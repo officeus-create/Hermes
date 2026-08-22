@@ -7,7 +7,7 @@ const json = (body: unknown, status = 200) => ({
 });
 
 test("authenticated Founding Plan request is prefilled and linked to the canonical shop", async ({ page }) => {
-  let submitted: Record<string, unknown> | null = null;
+  let submitted: unknown = null;
 
   await page.route("**/api/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
@@ -31,7 +31,7 @@ test("authenticated Founding Plan request is prefilled and linked to the canonic
       }));
     }
     if (path === "/api/logistics-lead" && route.request().method() === "POST") {
-      submitted = route.request().postDataJSON() as Record<string, unknown>;
+      submitted = route.request().postDataJSON();
       return route.fulfill(json({ success: true, request_id: "first5-paid-request" }));
     }
     return route.fulfill(json({ success: true }));
@@ -51,7 +51,8 @@ test("authenticated Founding Plan request is prefilled and linked to the canonic
 
   await expect(page.locator("#paid-plan-status")).toContainText("Request received");
   expect(submitted).not.toBeNull();
-  const message = String(submitted?.message || "");
+  const submittedPayload = submitted as Record<string, unknown>;
+  const message = String(submittedPayload["message"] ?? "");
   expect(message).toContain("Shop: Apex Auto Care");
   expect(message).toContain("Hermes Connect shop identity: shop-first5 · apex-auto-care");
 
@@ -62,13 +63,13 @@ test("authenticated Founding Plan request is prefilled and linked to the canonic
 });
 
 test("guest Founding Plan request remains usable without authenticated shop linkage", async ({ page }) => {
-  let submitted: Record<string, unknown> | null = null;
+  let submitted: unknown = null;
 
   await page.route("**/api/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === "/api/auth/me") return route.fulfill(json({ success: false, error: "unauthorized" }, 401));
     if (path === "/api/logistics-lead" && route.request().method() === "POST") {
-      submitted = route.request().postDataJSON() as Record<string, unknown>;
+      submitted = route.request().postDataJSON();
       return route.fulfill(json({ success: true, request_id: "manual-paid-request" }));
     }
     return route.fulfill(json({ success: true }));
@@ -88,5 +89,6 @@ test("guest Founding Plan request remains usable without authenticated shop link
 
   await expect(page.locator("#paid-plan-status")).toContainText("Request received");
   expect(submitted).not.toBeNull();
-  expect(String(submitted?.message || "")).toContain("Hermes Connect shop identity: manual request without authenticated shop linkage");
+  const submittedPayload = submitted as Record<string, unknown>;
+  expect(String(submittedPayload["message"] ?? "")).toContain("Hermes Connect shop identity: manual request without authenticated shop linkage");
 });
