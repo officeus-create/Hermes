@@ -1,9 +1,9 @@
 # Carrier Sales Handoff - Agreement v3
 
-Status: COUNSEL-CONFIRMED STANDARD EXECUTION LIVE / CUSTOM TERMS REVIEW ONLY
+Status: REVIEW/ONBOARDING ONLY / PRODUCTION EXECUTION NOT ACTIVATED
 Primary SMS URL: `https://hermeslogisticsus.com/sign/`  
 Detailed proposal URL: `https://hermeslogisticsus.com/carrier/`  
-Current execution master: `HERMES-CARRIER-EXECUTION-V2026-08-06`
+Current review master: `ATTORNEY-REVIEW-V3-2026-08-06`
 
 ## Purpose
 
@@ -13,7 +13,7 @@ Give Logistics Sales one consistent phone-friendly path:
 2. carrier chooses Dispatch Support, Full Partnership, or Carrier Proposal;
 3. carrier confirms the company, authorized signer, and agreed percentage;
 4. carrier reviews the exact Appendix A summary;
-5. carrier signs and keeps a downloaded PDF execution packet for a standard 6% or 8% selection;
+5. carrier signs and keeps a downloaded PDF review/onboarding packet for a standard 6% or 8% selection;
 6. equipment, lanes, load boards, credentials, and operating details are collected later through the appropriate secure onboarding process.
 
 The signing form must remain short. Do not turn the agreement into an operational questionnaire.
@@ -115,7 +115,7 @@ Optional:
 - DBA;
 - company website.
 
-Do not request a full street address before signature. The company is identified by legal name and authority number; counsel may later require a notice address in the approved execution package or private records system.
+Do not request a full street address before signature. The company is identified by legal name and authority number; counsel may later require a notice address in a future approved execution package or private records system.
 
 ### Step 3 - Review and sign
 
@@ -132,23 +132,24 @@ Show before signature:
 
 Require affirmative electronic-record consent, signer-authority confirmation, document review, selected-scope confirmation, typed name, and drawn signature.
 
-## Current execution boundary
+## Current legal-approval boundary
 
-The counsel-confirmed repository execution master is:
+Issue #280 is the governing activation boundary. Qualified Wisconsin transportation counsel approval has not been recorded, so final production execution is disabled. The current repository master is for review/onboarding only:
 
-- version: `HERMES-CARRIER-EXECUTION-V2026-08-06`;
-- PDF: `/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf`;
-- PDF SHA-256: `ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8`;
+- version: `ATTORNEY-REVIEW-V3-2026-08-06`;
+- PDF: `/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf`;
+- PDF SHA-256: `9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb`;
 - master percentage: blank;
-- carrier-specific percentage: signed Appendix A.
+- carrier-specific percentage: signed review Appendix A.
 
-Standard execution remains live only while production has all of the following:
+Standard 6% and 8% selections create signed review/onboarding packets only. Custom selections also remain review-only. Future activation requires all of the following:
 
-- the counsel-confirmed non-review master version;
+- qualified Wisconsin transportation counsel approval recorded through #280;
+- a counsel-approved non-review master version;
 - immutable approved PDF path and SHA-256;
 - `CARRIER_CONTRACT_ALLOWED_PERCENTAGES` containing exactly the supported standard rates `6,8`;
 - preview/production binding isolation;
 - approved internal recipients and records retention;
 - passing automated execution, delivery, retry, and idempotency tests.
 
-A custom proposal never becomes live automatically. The clean `/sign/` URL remains intentionally free of personal or commercial data; the exact terms are entered and confirmed inside the protected form.
+A custom proposal remains review-only. The clean `/sign/` URL remains intentionally free of personal or commercial data; the exact proposed terms are entered and confirmed inside the protected form.

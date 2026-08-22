@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-const pdfAssetPath = "/contracts/Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf";
+const pdfAssetPath = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.pdf";
 const pdfReviewPath = "/contracts/carrier-agreement-v3/";
-const pdfSha256 = "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8";
-const version = "HERMES-CARRIER-EXECUTION-V2026-08-06";
+const pdfSha256 = "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb";
+const version = "ATTORNEY-REVIEW-V3-2026-08-06";
 
-test("carrier agreement execution summary is private, links to the PDF viewer, and routes to signing", async ({ page, request }) => {
+test("carrier agreement review summary is private, links to the review PDF, and routes to onboarding", async ({ page, request }) => {
   await page.goto("/logistics/carrier-agreement/");
 
   await expect(page).toHaveTitle("Carrier Agreement Terms | Hermes Logistics");
@@ -31,14 +31,17 @@ test("carrier agreement execution summary is private, links to the PDF viewer, a
   expect(publicCopy).toContain("Percentage only in Appendix A");
   expect(publicCopy).toContain("No personal guaranty or UCC lien");
   expect(publicCopy).toContain(pdfSha256);
+  expect(publicCopy).toContain("Review/onboarding only");
+  expect(publicCopy).toContain("approval gates tracked by #280");
+  expect(publicCopy).not.toMatch(/approved production execution master|live execution packet/i);
   expect(publicCopy).not.toMatch(/<strong>\s*(?:5|6|8)(?:\.00)?%\s*service fee/i);
   await expect(page.locator('input[type="password"], input[name*="password" i], input[name*="pin" i]')).toHaveCount(0);
 });
 
-test("PDF viewer page embeds the same execution master and offers a real download", async ({ page, request }) => {
+test("PDF viewer page embeds the same attorney-review master and offers a real download", async ({ page, request }) => {
   await page.goto(pdfReviewPath);
 
-  await expect(page).toHaveTitle("Carrier Agreement Execution PDF | Hermes Logistics");
+  await expect(page).toHaveTitle("Carrier Agreement Review PDF | Hermes Logistics");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
   await expect(page.locator("main[data-agreement-version]")).toHaveAttribute("data-agreement-version", version);
   await expect(page.locator("main[data-pdf-asset]")).toHaveAttribute("data-pdf-asset", pdfAssetPath);
@@ -47,7 +50,7 @@ test("PDF viewer page embeds the same execution master and offers a real downloa
   const downloadPromise = page.waitForEvent("download");
   await page.locator("[data-download-pdf]").click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe("Hermes_Carrier_Agreement_EXECUTION_v2026-08-06.pdf");
+  expect(download.suggestedFilename()).toBe("Hermes_Carrier_Agreement_v3_ATTORNEY_REVIEW.pdf");
 
   const pdfResponse = await request.get(pdfAssetPath);
   expect(pdfResponse.ok()).toBe(true);
