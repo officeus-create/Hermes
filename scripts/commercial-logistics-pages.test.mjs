@@ -12,6 +12,8 @@ const sitemapFiles = (await readdir(dist, { withFileTypes: true }))
 const sitemap = (await Promise.all(sitemapFiles.map((file) => readFile(join(dist, file), "utf8")))).join("\n");
 const homepage = await readFile(join(dist, "index.html"), "utf8");
 const logisticsHub = await readFile(join(dist, "paths", "logistics", "index.html"), "utf8");
+const auctionChecklist = await readFile(join(dist, "logistics", "resources", "auction-vehicle-pickup-checklist", "index.html"), "utf8");
+const capacityChecklist = await readFile(join(dist, "logistics", "resources", "car-hauler-capacity-checklist", "index.html"), "utf8");
 
 const pages = [
   {
@@ -131,6 +133,52 @@ for (const route of logisticsPriorityRoutes) {
   assert.ok(sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} is missing from declared sitemap union`);
 }
 
+assert.equal(
+  getLinkHref(auctionChecklist, "canonical"),
+  "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/",
+  "Auction Vehicle Pickup Checklist must remain self-canonical",
+);
+assert.ok(
+  /<meta\b[^>]*name=["']robots["'][^>]*content=["']index,follow,max-image-preview:large["'][^>]*>/i.test(auctionChecklist),
+  "Auction Vehicle Pickup Checklist must remain indexable",
+);
+assert.ok(
+  auctionChecklist.includes('href="/logistics/request-vehicle-transport/?request=auction_pickup#transport-intake"'),
+  "Auction Vehicle Pickup Checklist must retain its direct vehicle-transport intake handoff",
+);
+assert.ok(auctionChecklist.includes("data-auction-direct-intake"), "Auction Vehicle Pickup Checklist direct intake CTA marker is missing");
+assert.ok(
+  auctionChecklist.includes('href="/logistics/resources/car-hauler-capacity-checklist/"'),
+  "Auction Vehicle Pickup Checklist must retain the carrier-capacity supporting path",
+);
+assert.ok(
+  auctionChecklist.includes("Submission does not guarantee a price, pickup date, delivery date, successful pickup, or carrier assignment."),
+  "Auction Vehicle Pickup Checklist must retain its no-guarantee boundary",
+);
+
+assert.equal(
+  getLinkHref(capacityChecklist, "canonical"),
+  "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
+  "Car Hauler Capacity Checklist must remain self-canonical",
+);
+assert.ok(
+  /<meta\b[^>]*name=["']robots["'][^>]*content=["']index,follow,max-image-preview:large["'][^>]*>/i.test(capacityChecklist),
+  "Car Hauler Capacity Checklist must remain indexable",
+);
+assert.ok(
+  capacityChecklist.includes('href="/logistics/start-car-hauling-dispatch/"'),
+  "Car Hauler Capacity Checklist must retain its direct carrier intake handoff",
+);
+assert.ok(capacityChecklist.includes("data-commercial-primary-cta"), "Car Hauler Capacity Checklist commercial CTA marker is missing");
+assert.ok(
+  capacityChecklist.includes('href="/logistics/car-hauling-dispatch/"'),
+  "Car Hauler Capacity Checklist must retain its commercial dispatch-owner handoff",
+);
+assert.ok(
+  capacityChecklist.includes("Sharing capacity does not establish approval, onboarding, a load assignment, a rate, revenue, or a booking."),
+  "Car Hauler Capacity Checklist must retain its no-guarantee boundary",
+);
+
 for (const route of wisconsinHubRoutes) {
   assert.ok(logisticsHub.includes(`href="${route}"`), `${route} is not linked from the Wisconsin logistics directory`);
   assert.ok(sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} is missing from declared sitemap union`);
@@ -160,4 +208,4 @@ assert.deepEqual(indexNowDryRun.urlList, [
   "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
 ]);
 
-console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${logisticsPriorityRoutes.length} Logistics discovery links behind the focused homepage, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);
+console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${logisticsPriorityRoutes.length} Logistics discovery links behind the focused homepage, 2 protected resource-winner handoffs, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);
