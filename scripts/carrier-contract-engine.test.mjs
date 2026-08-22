@@ -216,6 +216,9 @@ assert.equal(
 
 const source = await readFile(new URL("../functions/api/carrier-contract.ts", import.meta.url), "utf8");
 assert.match(source, /requestedMode===\"live\"/);
+assert.match(source, /const LEGAL_EXECUTION_APPROVED = false/);
+assert.match(source, /LEGAL_EXECUTION_APPROVED&&requestedMode===\"live\"/);
+assert.match(source, /execution_record_quarantined_pending_legal_review/);
 assert.match(source, /contract\.plan!==\"custom\"/);
 assert.match(source, /allowedPercentages\.has\(contract\.percentageKey\)/);
 assert.match(source, /approvedPath\.startsWith\(\"\/contracts\/\"\)/);
@@ -227,4 +230,4 @@ for (const key of limits.values.keys()) {
   assert.doesNotMatch(key, /192\.0\.2\.55|contract_test_12345678|carrier-test@example\.com/);
 }
 
-console.log("Carrier contract v3 signed-review generation, future live gates, minimized pre-signature data, retired-recipient filtering, delivery, idempotency, and privacy tests passed.");
+console.log("Carrier contract v3 signed-review generation, Issue #280 fail-closed gate, minimized pre-signature data, retired-recipient filtering, delivery, idempotency, and privacy tests passed.");
