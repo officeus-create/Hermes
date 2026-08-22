@@ -5,6 +5,8 @@ const legacyValidatorUrl = new URL("./validate-build.mjs", import.meta.url);
 const temporaryValidatorUrl = new URL("./.validate-build-current.generated.mjs", import.meta.url);
 const retiredEmail = "freight_301@hermeslogisticsus.com";
 const activeEmail = "officeus@hermeslogisticsus.com";
+const legacyHomepageDirection = '  "Hermes IT Development",\n];';
+const currentHomepageDirection = '  "Hermes Technology",\n];';
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
 const retiredExpectationCount = legacySource.split(retiredEmail).length - 1;
@@ -14,8 +16,15 @@ assert.equal(
   2,
   `Expected exactly two historical retired-email assertions in validate-build.mjs, found ${retiredExpectationCount}. Update the compatibility runner intentionally if the legacy validator changes.`,
 );
+assert.equal(
+  legacySource.split(legacyHomepageDirection).length - 1,
+  1,
+  "Expected exactly one legacy homepage four-direction assertion before applying the current public-brand compatibility override.",
+);
 
-const currentSource = legacySource.replaceAll(retiredEmail, activeEmail);
+const currentSource = legacySource
+  .replaceAll(retiredEmail, activeEmail)
+  .replace(legacyHomepageDirection, currentHomepageDirection);
 await writeFile(temporaryValidatorUrl, currentSource, "utf8");
 
 try {
