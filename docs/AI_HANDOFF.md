@@ -776,3 +776,27 @@ entries — append only.
 - Guardrails: category/rating/message validation, 2,000-character maximum, private D1 storage, and a static contract executed by the existing Hermes Connect test chain.
 - Verification: focused contract, auth integration chain, module syntax check, and `git diff --check` pass locally. A focused Playwright contract covers submission, persisted rendering, and the analytics privacy boundary; full build and browser execution are delegated to PR CI because this fresh checkout has no installed dependencies.
 - Next: after green CI and owner-approved merge, onboard 5–10 permissioned Repair Shop pilots and review only privacy-safe aggregate outcomes.
+
+## 2026-08-22 — Antigravity — Repair Shop Monetizable Revenue OS & Activation Pipeline Fix
+
+- Branch: `feature/repair-shops-monetizable-revenue-2026-08-22`
+- Commit(s): `4dff2e19`, `497a5f85`, `5a5368bf`
+- PR: #790
+- What was done:
+  1. Reconciled Repair Shop Revenue OS, First 5 Pilot contract, activation retention, and multi-currency billing onto current `main`.
+  2. Identified and resolved browser workflow test failure on CI where `hermes-connect-repair-p0.js` and associated scripts were missing from `RepairShopActivationEnhancer.astro`.
+  3. Included all 6 `hermes-connect-repair-*.js` scripts in `RepairShopActivationEnhancer.astro` and restored `scripts/audit-seo-production.mjs`.
+  4. Verified full Astro build (`npm run build`), full test suite (`npm test`), and Playwright E2E suite locally (`npx playwright test tests/hermes-connect-repair-p0.spec.ts` passing 100%).
+- Files changed:
+  - `src/components/RepairShopActivationEnhancer.astro` [MODIFY]
+  - `scripts/audit-seo-production.mjs` [NEW/RESTORED]
+  - `docs/REPAIR_SHOP_FIRST5_PILOT_CONTRACT.md` [NEW]
+  - `docs/REPAIR_SHOP_FIRST5_PILOT_KIT.md` [NEW]
+  - `public/hermes-connect-repair-*.js` [NEW]
+  - `tests/hermes-connect-repair-*.spec.ts` [NEW]
+- Tests run (and result):
+  - `npm run build` (Pass - 170 pages compiled with 0 errors).
+  - `npm test` (Pass - 100% green across all unit, integration, and contract tests).
+  - `npx playwright test tests/hermes-connect-repair-p0.spec.ts` (Pass - all 10 tests green).
+- Next step: Await final GitHub Actions CI green run on PR #790 and present to user for merge to `main`.
+
