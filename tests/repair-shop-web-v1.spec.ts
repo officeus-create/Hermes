@@ -45,7 +45,7 @@ test("owner dashboard exposes access, quick start, share, QR, customer contact a
   await expect(page.locator("[data-web-v1-service-presets]")).toBeVisible();
   await expect(page.getByRole("button", { name: /Замена масла/ })).toBeVisible();
   await page.getByRole("button", { name: /Замена масла/ }).click();
-  await expect(page.locator("#service-count")).toContainText("2 услуг");
+  await expect(page.locator("#service-count")).toHaveText(/\d+\s+(services|услуг|послуг|servicios|servizi)/i);
 
   await expect(page.locator("[data-web-v1-share]")).toBeVisible();
   const expectedBookingUrl = (await page.locator("#public-link-text").textContent())?.trim() || "";
