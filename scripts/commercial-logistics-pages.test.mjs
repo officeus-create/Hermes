@@ -175,7 +175,7 @@ assert.ok(
   "Car Hauler Capacity Checklist must retain its commercial dispatch-owner handoff",
 );
 assert.ok(
-  capacityChecklist.includes("Sharing availability does not establish approval, onboarding, a load assignment, a rate, revenue, or a booking."),
+  capacityChecklist.includes("Sharing capacity does not establish approval, onboarding, a load assignment, a rate, revenue, or a booking."),
   "Car Hauler Capacity Checklist must retain its no-guarantee boundary",
 );
 
