@@ -80,7 +80,8 @@ assert.match(hubSource, /Configuration preview · not a released vertical/);
 assert.match(hubSource, /One shared product family/);
 assert.doesNotMatch(hubSource, /connect\.hermeslogisticsus\.com\/workspace/);
 assert.doesNotMatch(hubSource, /\$99|\$299|\$799/);
-assert.match(capabilityPage, /Reference capability · not current live pilot/);
-assert.match(capabilityPage, /Open current Repair Shop product/);
+assert.match(capabilityPage, /Reference capability · availability not asserted/);
+assert.match(capabilityPage, /Open Repair Shops/);
+assert.doesNotMatch(capabilityPage, /current live pilot/i);
 
 console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, Load Analyzer demo boundary, and Repair Shops maturity evidence without universal-live claims.`);
