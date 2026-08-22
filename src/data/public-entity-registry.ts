@@ -45,18 +45,18 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
       {
         platform: "instagram",
         url: "https://www.instagram.com/hermes.logistics/",
-        status: "approved_same_entity",
-        evidence: "Existing owner-controlled homepage schema and public website link.",
+        status: "website_linked_signal",
+        evidence: "Linked from the owner-controlled Hermes website, but the handle itself is Logistics-specific and does not resolve root Hermes versus Hermes Logistics entity ownership.",
       },
       {
         platform: "threads",
         url: "https://www.threads.com/@hermes.logistics",
-        status: "approved_same_entity",
-        evidence: "Existing owner-controlled homepage schema and public website link.",
+        status: "website_linked_signal",
+        evidence: "Linked from the owner-controlled Hermes website, but the handle itself is Logistics-specific and does not resolve root Hermes versus Hermes Logistics entity ownership.",
       },
     ],
     notes:
-      "The root Organization represents the Hermes website ecosystem. Only profiles approved as the same public entity may appear in its sameAs array.",
+      "Hermes is the approved root Organization. The current @hermes.logistics social URLs remain website-linked signals only until the owner explicitly resolves whether they represent root Hermes or the Hermes Logistics direction. Do not publish them in root sameAs while that classification is unresolved.",
   },
   hermes_logistics: {
     id: "hermes_logistics",
