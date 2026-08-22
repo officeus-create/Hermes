@@ -4,7 +4,7 @@ const expectedDirections = [
   ["Open Hermes Logistics", "/paths/logistics/"],
   ["Open Hermes Marketing", "/paths/marketing/"],
   ["Open Hermes Academy", "/paths/academy/"],
-  ["Open Hermes IT Development", "/paths/technology/"],
+  ["Open Hermes Technology", "/paths/technology/"],
 ] as const;
 
 test("homepage presents one clear four-direction choice", async ({ page }) => {
