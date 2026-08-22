@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "wave_id": "2026-08-22-wave-01",
+  "status": "ready_for_real_provider_observations",
+  "prompt_registry": "src/data/ai-visibility-scorecard.ts",
+  "prompt_count": 48,
+  "providers": [
+    "chatgpt",
+    "gemini",
+    "copilot",
+    "perplexity",
+    "google_ai_mode"
+  ],
+  "expected_observation_count": 240,
+  "privacy_rule": "Do not store full AI conversations, credentials, account identifiers, user-level analytics, lead PII, deal amounts, or revenue amounts.",
+  "missing_evidence_rule": "Unknown values remain null. An unobserved provider/prompt pair is not a negative result and is never converted to zero visibility.",
+  "observation_schema": {
+    "wave_id": "string",
+    "observed_at": "ISO-8601 string",
+    "provider": "chatgpt | gemini | copilot | perplexity | google_ai_mode",
+    "prompt_id": "LOG-01..12 | MKT-01..12 | ACA-01..12 | TEC-01..12",
+    "prompt_family": "logistics | marketing | academy | technology",
+    "prompt_text_hash": "string",
+    "hermes_mentioned": "boolean | null",
+    "hermes_recommended": "boolean | null",
+    "citation_present": "boolean | null",
+    "citation_url": "string | null",
+    "citation_owner": "string | null",
+    "entity_name_returned": "string | null",
+    "entity_correct": "boolean | null",
+    "canonical_url_returned": "string | null",
+    "canonical_correct": "boolean | null",
+    "factual_error": "boolean | null",
+    "factual_error_class": "identity | service | geography | availability | affiliation | maturity | pricing | guarantee | legal | other | null",
+    "competitors_returned": "string[]",
+    "source_domains": "string[]",
+    "notes_redacted": "string | null"
+  },
+  "observations": []
+}
