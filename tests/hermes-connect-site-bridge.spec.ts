@@ -4,7 +4,7 @@ const productRoute = "/services/hermes-connect/";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
 const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
 
-test("Hermes Connect has one indexed adaptive product-family overview and one current live product", async ({ page }) => {
+test("Hermes Connect has one indexed adaptive product-family overview and one most mature current vertical", async ({ page }) => {
   await page.goto(productRoute);
 
   await expect(page).toHaveTitle("Hermes Connect | AI Operating System for Business");
@@ -16,15 +16,18 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
   expect(await page.locator(`a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
-  await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("MOST MATURE CURRENT VERTICAL", { exact: true }).first()).toBeVisible();
   expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
+  await expect(page.getByText("Availability must be verified", { exact: true })).toBeVisible();
 
   const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
   const schemaText = schemas.join("\n");
   expect(schemaText).toContain('"@type":"WebApplication"');
   expect(schemaText).toContain("https://hermeslogisticsus.com/services/hermes-connect/");
+  expect(schemaText).toContain("most mature current vertical");
+  expect(schemaText).toContain("availability and production state must be verified");
   expect(schemaText).not.toContain("connect.hermeslogisticsus.com/workspace");
   expect(schemaText).not.toMatch(/\"price\":(99|299|799)/);
 });
@@ -35,6 +38,7 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   const desktopEntry = page.locator(`.header-actions a[href="${pilotRoute}"]`);
   await expect(desktopEntry).toHaveCount(1);
   await expect(desktopEntry).toContainText("Hermes Connect");
+  await expect(desktopEntry).toContainText("most mature current vertical");
   await expect(desktopEntry).not.toContainText(/Realtime/i);
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -44,6 +48,7 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   const mobileEntry = page.locator(`#mobile-menu a[href="${pilotRoute}"]`);
   await expect(mobileEntry).toHaveCount(1);
   await expect(mobileEntry).toContainText("Hermes Connect");
+  await expect(mobileEntry).toContainText("most mature current vertical");
 });
 
 test("the Hermes Technology section routes visitors into the current Hermes Connect product family", async ({ page }) => {
