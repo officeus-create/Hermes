@@ -94,6 +94,7 @@ Localized pages are language-specific public overviews; they are not proof that 
 
 - Sitemap presence, crawl discovery, or submission is not proof of search-engine indexation or ranking.
 - Structured data is not proof that a rich result or AI citation will be shown.
+- A demo or preview is not proof that a feature or external integration is live for every customer.
 - Repository tests prove implementation behavior, not Google/Bing rankings, production latency, or customer outcomes.
 - Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.
 - Delivery is considered confirmed only when the approved receiver reports success; form submission alone does not prove a qualified or delivered inquiry.
