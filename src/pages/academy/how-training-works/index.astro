@@ -1,9 +1,10 @@
 ---
 import AcademyPublicPage from "../../../components/AcademyPublicPage.astro";
 import AcademyLearningMethod from "../../../components/AcademyLearningMethod.astro";
+import { normalizeAcademyPublicContent } from "../../../data/academy-public-brand";
 import { academySubsitePages } from "../../../data/academy-subsite";
 
-const content = academySubsitePages.method;
+const content = normalizeAcademyPublicContent(academySubsitePages.method);
 ---
 
 <AcademyPublicPage content={content} />
