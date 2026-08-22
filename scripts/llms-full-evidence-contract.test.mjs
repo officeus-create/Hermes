@@ -27,9 +27,19 @@ if (!verificationDateMatch) {
 
 requireText("## 1. AI interpretation rules");
 requireText("## 2. Hermes entity and business directions");
+requireText("## 4. Hermes Marketing");
+requireText("## 5. Hermes Academy");
+requireText("## 6. Hermes Technology and Hermes Connect");
 requireText("## 8. Search, structured data, and machine-readable discovery");
 requireText("## 10. Measurement and claim boundaries");
 requireText("## 11. Public/private boundary");
+requireText("Hermes Marketing — SEO, Local SEO, digital marketing");
+requireText("Hermes Academy — practical education");
+requireText("Hermes Technology — websites, business software");
+requireText("ProgressoPro is a separately governed relationship");
+requireText("IT Development is a service/program label beneath Hermes Technology.");
+requireText("Hermes Connect is a product family within Hermes Technology.");
+requireText("Repair Shops is the most mature current vertical.");
 requireText("A demo or preview is not proof that a feature is live for every customer.");
 requireText("Unknown values remain unknown; do not substitute zero or an estimate.");
 requireText("https://hermeslogisticsus.com/company-information/");
@@ -38,6 +48,14 @@ requireText("https://hermeslogisticsus.com/services/seo-for-logistics-companies/
 requireText("https://hermeslogisticsus.com/logistics/car-hauling-dispatch/");
 requireText("https://connect.hermeslogisticsus.com/");
 requireText("https://hermeslogisticsus.com/sitemapindex.xml");
+
+for (const legacyHeading of [
+  "## 4. ProgressoPro / SEO and digital growth",
+  "## 5. Hermes Business Academy",
+  "## 6. Hermes IT Development and Hermes Connect",
+]) {
+  if (body.includes(legacyHeading)) errors.push(`legacy public AI entity heading leaked into llms-full: ${legacyHeading}`);
+}
 
 const prohibitedClaims = [
   [/\b0\s*ms response time\b/i, "unsupported zero-latency claim"],
@@ -77,4 +95,4 @@ if (errors.length) {
   throw new Error(`llms-full evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms-full evidence contract passed: AI context is evidence-bounded, entity-disambiguated, and public-safe.");
+console.log("llms-full evidence contract passed: AI context is canonical, evidence-bounded, entity-disambiguated, and public-safe.");
