@@ -48,7 +48,7 @@ test("availability renders operational copy in Spanish", async ({ page }) => {
   await mockSecondaryOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/availability/?lang=es", { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator("h1")).toHaveText("Disponibilidad semanal");
+  await expect(page.locator(".availability-page h1")).toHaveText("Disponibilidad semanal");
   await expect(page.locator('.day-row[data-day="1"] strong')).toHaveText("Lunes");
   await expect(page.locator("#save-availability-btn")).toHaveText("Guardar disponibilidad");
 });
@@ -57,7 +57,7 @@ test("customers renders static and dynamic owner copy in French", async ({ page 
   await mockSecondaryOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/customers/?lang=fr", { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator("h1")).toHaveText("Clients");
+  await expect(page.locator(".customers-page h1")).toHaveText("Clients");
   await expect(page.locator("#customer-search")).toHaveAttribute("placeholder", /Rechercher par nom/);
   await expect(page.locator("#customer-count")).toContainText("1 client");
   await expect(page.locator(".customer-header .muted.small")).toContainText("2 réservations · 1 terminées");
