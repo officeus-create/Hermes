@@ -7,19 +7,25 @@ import {
 import { contentEntityRegistry } from "../src/lib/content-pipeline.ts";
 
 const progressoproUrl = "https://www.instagram.com/progressopro/";
-const expectedHermesSameAs = [
-  "https://www.instagram.com/hermes.logistics/",
-  "https://www.threads.com/@hermes.logistics",
-];
 
-assert.deepEqual(approvedHermesSameAs, expectedHermesSameAs);
-assert.equal(new Set(approvedHermesSameAs).size, approvedHermesSameAs.length);
+assert.deepEqual(approvedHermesSameAs, [], "Root sameAs must remain empty while @hermes.logistics ownership is unresolved.");
 assert.ok(!approvedHermesSameAs.includes(progressoproUrl));
 
 const root = publicEntityRegistry.hermes_ecosystem;
 assert.equal(root.relationshipStatus, "approved_root");
 assert.equal(root.schemaPublication, "approved");
-assert.ok(root.socialProfiles.every((profile) => profile.status === "approved_same_entity"));
+assert.ok(root.socialProfiles.every((profile) => profile.status === "website_linked_signal"));
+assert.ok(root.notes.includes("Do not publish them in root sameAs"));
+
+const logistics = publicEntityRegistry.hermes_logistics;
+assert.equal(logistics.relationshipStatus, "owner_verification_required");
+assert.equal(logistics.schemaPublication, "hold");
+assert.deepEqual(
+  root.socialProfiles.map((profile) => profile.url),
+  logistics.socialProfiles.map((profile) => profile.url),
+  "The same Logistics-specific handles must not be assigned to root Hermes until the canonical owner is resolved.",
+);
+assert.ok(logistics.socialProfiles.every((profile) => profile.status === "website_linked_signal"));
 
 const progressopro = publicEntityRegistry.progressopro_marketing;
 assert.equal(progressopro.relationshipStatus, "relationship_resolution_required");
@@ -62,4 +68,4 @@ assert.ok(pipelineAcademy);
 assert.equal(pipelineAcademy.relationshipStatus, "approved_parent");
 assert.equal(pipelineAcademy.socialProfiles.length, 0);
 
-console.log("Public entity registry checks passed: Hermes sameAs is exact, ProgressoPro remains on relationship hold, and downstream content channels stay blocked.");
+console.log("Public entity registry checks passed: ambiguous Hermes social profiles stay out of sameAs, ProgressoPro remains on relationship hold, and downstream content channels stay blocked.");

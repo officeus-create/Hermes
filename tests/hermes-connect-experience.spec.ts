@@ -70,11 +70,11 @@ test("Repair Shop owner language is preserved into workspace links", async ({ pa
   await expect(page.getByRole("link", { name: "Ir al panel del taller" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/?lang=es");
 });
 
-test("Hermes Connect product family navigation presents Repair Shops as the current product", async ({ page }) => {
+test("Hermes Connect product family navigation presents Repair Shops as the most mature current vertical", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
 
   const context = page.locator("[data-hc-product-context]");
-  await expect(context).toContainText("CURRENT PRODUCT");
+  await expect(context).toContainText("MOST MATURE CURRENT VERTICAL");
   await expect(context).not.toContainText("CURRENT LIVE PILOT");
   await expect(context.getByRole("link", { name: "Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
   await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveAttribute("href", "/services/hermes-connect/ai-command-center/");
@@ -108,14 +108,14 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
-test("Hermes Connect Hub presents one live product and adaptive preview configurations", async ({ page }) => {
+test("Hermes Connect Hub presents one most mature current vertical and adaptive preview configurations", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
   await expect(page.getByRole("heading", { name: /Run your business with AI\./ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
-  await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("MOST MATURE CURRENT VERTICAL", { exact: true }).first()).toBeVisible();
   expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
@@ -125,12 +125,12 @@ test("non-live Hermes Connect modules are reference capabilities without legacy 
   await page.goto("/services/hermes-connect/proposal-builder/");
 
   const context = page.locator("[data-hc-product-context]");
-  await expect(context).toContainText("REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT");
+  await expect(context).toContainText("REFERENCE CAPABILITY · AVAILABILITY NOT ASSERTED");
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   await expect(page.getByText("$99", { exact: false })).toHaveCount(0);
   await expect(page.getByText("$299", { exact: false })).toHaveCount(0);
   await expect(page.getByText("$799", { exact: false })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: /Open current Repair Shop product/ })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
+  await expect(page.getByRole("link", { name: "Open Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
 });
 
 test("live Corporate Offer runtime removes the legacy browser-only form handler surface", async ({ page }) => {
@@ -145,7 +145,7 @@ test("Hermes Connect family navigation remains usable on mobile without horizont
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/?lang=uk");
 
-  await expect(page.locator("[data-hc-product-context]")).toContainText("ПОТОЧНИЙ ПРОДУКТ");
+  await expect(page.locator("[data-hc-product-context]")).toContainText("НАЙБІЛЬШ ЗРІЛА ПОТОЧНА ВЕРТИКАЛЬ");
   await expect(page.locator("[data-hc-english-only]")).toBeVisible();
   await expect(page.locator(".hc-family-nav")).toBeVisible();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);

@@ -7,8 +7,8 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 const verticals = [
   {
     name: "Repair Shops",
-    status: "LIVE PRODUCT",
-    body: "Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace.",
+    status: "MOST MATURE CURRENT VERTICAL",
+    body: "Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace. Availability and production state must be verified for the intended use.",
     modules: ["Bookings", "Services", "Customers", "Vehicles"],
     href: "/services/hermes-connect/repair-shops/",
   },
@@ -56,8 +56,8 @@ const labs = [
 
 const faqs = [
   {
-    question: "Which Hermes Connect configuration is live today?",
-    answer: "Repair Shops is the current live product vertical. Other business configurations on this page are previews and are not presented as released production runtimes.",
+    question: "Which Hermes Connect configuration is most mature today?",
+    answer: "Repair Shops is the most mature current vertical. Availability and production state must still be verified for the intended use. Other business configurations on this page are previews and are not presented as released production runtimes.",
   },
   {
     question: "Is Hermes Connect one product or many separate apps?",
@@ -65,7 +65,7 @@ const faqs = [
   },
   {
     question: "Are the dashboard numbers real customer data?",
-    answer: "No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live product surfaces are identified separately.",
+    answer: "No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Public product surfaces are identified separately and do not by themselves prove availability for every customer.",
   },
 ];
 
@@ -77,7 +77,7 @@ const schema = [
     url: "https://hermeslogisticsus.com/services/hermes-connect/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
-    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current live vertical; other business configurations are product previews.",
+    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the most mature current vertical; availability and production state must be verified for the intended use. Other business configurations are product previews.",
   },
   {
     "@context": "https://schema.org",
@@ -115,8 +115,8 @@ const schema = [
             <a class="hc-secondary" href="#choose-your-business">Choose your business</a>
           </div>
           <div class="hc-truth" aria-label="Current Hermes Connect product status">
-            <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops is live</span>
-            <span><ShieldCheck size={15} aria-hidden="true" />Other industries are previews</span>
+            <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops · most mature current vertical</span>
+            <span><ShieldCheck size={15} aria-hidden="true" />Availability must be verified</span>
             <span><CheckCircle2 size={15} aria-hidden="true" />One shared product family</span>
           </div>
         </div>
@@ -174,7 +174,7 @@ const schema = [
               <h3>{vertical.name}</h3>
               <p>{vertical.body}</p>
               <div class="hc-chips">{vertical.modules.map((module) => <span>{module}</span>)}</div>
-              {vertical.href ? <a href={vertical.href}>Open live product <ArrowRight size={15} aria-hidden="true" /></a> : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
+              {vertical.href ? <a href={vertical.href}>Open Repair Shops <ArrowRight size={15} aria-hidden="true" /></a> : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
             </article>
           ))}
         </div>
@@ -196,7 +196,7 @@ const schema = [
         <div>
           <p class="hc-kicker">Hermes Connect Labs</p>
           <h2 id="labs-title">Reference capabilities stay visible without pretending they are separate live products.</h2>
-          <p>These modules support product exploration while remaining subordinate to the current Repair Shops live vertical.</p>
+          <p>These modules support product exploration while remaining subordinate to the most mature current Repair Shops vertical.</p>
         </div>
         <div class="hc-lab-links">
           {labs.map((lab) => <a href={lab.href}><span>REFERENCE</span><strong>{lab.name}</strong><ArrowRight size={15} aria-hidden="true" /></a>)}
@@ -207,8 +207,8 @@ const schema = [
     <section class="hc-section hc-faq" aria-labelledby="truth-title">
       <div class="hc-shell">
         <div class="hc-heading-row compact">
-          <div><p class="hc-kicker">Product truth</p><h2 id="truth-title">Clear status. No fake live surface.</h2></div>
-          <p>Preview UI is labeled as preview or sample data. Repair Shops remains the only current live vertical on this product hub.</p>
+          <div><p class="hc-kicker">Product truth</p><h2 id="truth-title">Clear status. No inflated availability claims.</h2></div>
+          <p>Preview UI is labeled as preview or sample data. Repair Shops is the most mature current vertical, while availability and production state still require verification for the intended use.</p>
         </div>
         <div class="hc-faq-grid">{faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div>
       </div>

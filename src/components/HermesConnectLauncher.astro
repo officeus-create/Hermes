@@ -23,18 +23,18 @@ const {
 const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-connect");
 
 const contextCopy = {
-  general: "Repair Shops is the current live pilot",
-  logistics: "Repair Shops is live; logistics modules are reference capabilities",
-  marketing: "Repair Shops is live; growth modules are reference capabilities",
-  academy: "Repair Shops is live; training modules are reference capabilities",
-  technology: "Repair Shops is live; automation modules are reference capabilities",
-  beauty: "Repair Shops is live; beauty modules are reference capabilities",
+  general: "Repair Shops is the most mature current vertical",
+  logistics: "Repair Shops is the most mature current vertical; logistics modules are reference capabilities",
+  marketing: "Repair Shops is the most mature current vertical; growth modules are reference capabilities",
+  academy: "Academy is developing as an authenticated learning vertical; availability must be verified",
+  technology: "Repair Shops is the most mature current vertical; automation modules are reference capabilities",
+  beauty: "Beauty is a B1 / preview-stage vertical; availability must be verified",
 };
 
 const displayTitle = label || "Hermes Connect";
 const displaySubtitle = sublabel || contextCopy[context] || contextCopy.general;
 const computedHref = href || "/services/hermes-connect/";
-const connectMark = "/demos/hermes-connect/icon-192.svg";
+const connectMark = "/images/hermes-connect-mark.svg";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
@@ -59,9 +59,9 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
   <div class={`hc-launcher-panel ${className}`} data-hermes-connect-launcher="footer">
     <div class="hc-launcher-panel-head">
       <span class="hc-launcher-panel-brand"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="24" height="24" loading="lazy" alt="Hermes Connect mark" /><strong>Hermes Connect</strong></span>
-      <span>Current product</span>
+      <span>Product family</span>
     </div>
-    <p>One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.</p>
+    <p>One product family with different maturity by vertical. Repair Shops is the most mature current vertical; other capabilities require separate availability and production verification.</p>
     <a href={computedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />Open Hermes Connect Product Hub <ArrowUpRight size={16} aria-hidden="true" /></a>
   </div>
 )}
@@ -69,9 +69,9 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 {variant === "banner" && (
   <section class={`hc-launcher-banner ${className}`} data-hermes-connect-launcher="banner">
     <div>
-      <span class="hc-launcher-badge"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" /> Hermes Connect · Current product family</span>
+      <span class="hc-launcher-badge"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" /> Hermes Connect · Product family</span>
       <h3>{displayTitle}</h3>
-      <p>{displaySubtitle}. No legacy workspace or historical pricing is presented as the current product.</p>
+      <p>{displaySubtitle}. Availability and production state are verified per vertical; legacy workspace or historical pricing is not presented as current by default.</p>
     </div>
     <a href={computedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />Explore Hermes Connect <ArrowUpRight size={17} aria-hidden="true" /></a>
   </section>

@@ -24,6 +24,17 @@ assert.ok(aiVisibilityPrompts.every((item) => item.canonicalOwner.startsWith("/"
 assert.ok(aiVisibilityPrompts.every((item) => item.expectedFacts.length > 0), "Every prompt needs expected safe facts");
 assert.ok(aiVisibilityPrompts.every((item) => item.prohibitedClaims.length > 0), "Every prompt needs prohibited claims");
 
+const promptContractText = aiVisibilityPrompts
+  .flatMap((item) => [item.prompt, item.canonicalOwner, ...item.expectedFacts])
+  .join("\n");
+assert.ok(!promptContractText.includes("Hermes Business Academy"), "48-prompt contract must use Hermes Academy");
+assert.ok(!promptContractText.includes("Hermes IT Development"), "48-prompt contract must use Hermes Technology");
+assert.equal(
+  aiVisibilityPrompts.find((item) => item.id === "TEC-07")?.canonicalOwner,
+  "/services/hermes-connect/",
+  "Hermes Connect brand discovery must measure the product-family canonical owner",
+);
+
 assert.deepEqual(aiVisibilityObservations, [], "The real baseline must start empty");
 assert.ok(syntheticAiVisibilityObservations.every((item) => item.synthetic), "QA observations must be marked synthetic");
 

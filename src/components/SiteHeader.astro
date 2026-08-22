@@ -23,16 +23,17 @@ const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.incl
   : locale;
 const localeBase = localeConfig[activeLocale].path;
 const localizedLabels = {
-  uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "IT-розробка", contact: "Почати розмову", home: "Головна" },
-  ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "IT-разработка", contact: "Начать разговор", home: "Главная" },
-  es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Desarrollo IT", contact: "Iniciar una conversación", home: "Inicio" },
-  it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home" },
-  fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil" },
+  uk: { logistics: "Логістика", marketing: "Маркетинг", academy: "Академія", technology: "Технології", contact: "Почати розмову", home: "Головна" },
+  ru: { logistics: "Логистика", marketing: "Маркетинг", academy: "Академия", technology: "Технологии", contact: "Начать разговор", home: "Главная" },
+  es: { logistics: "Logística", marketing: "Marketing", academy: "Academia", technology: "Tecnología", contact: "Iniciar una conversación", home: "Inicio" },
+  it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Tecnologia", contact: "Inizia una conversazione", home: "Home" },
+  fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Technologie", contact: "Démarrer une conversation", home: "Accueil" },
 };
 const navigation = activeLocale === "en"
   ? site.navigation.map((item) => {
       const url = `/${item.href}`;
-      return { ...item, url, active: (activePath ?? currentPath) === url };
+      const label = item.href === "paths/technology/" ? "Technology" : item.label;
+      return { ...item, label, url, active: (activePath ?? currentPath) === url };
     })
   : site.paths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
@@ -74,7 +75,7 @@ const languageLinks = siteLocales.map((language) => {
       variant="header"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
+      sublabel="Repair Shops · most mature current vertical"
     />
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[activeLocale].name}`}>
@@ -105,7 +106,7 @@ const languageLinks = siteLocales.map((language) => {
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
       label="Hermes Connect"
-      sublabel="Repair Shops · current live pilot"
+      sublabel="Repair Shops · most mature current vertical"
     />
     {navigation.map((item) => <a href={item.url} aria-current={item.active ? "page" : undefined}>{item.label}</a>)}
     <a href="#contact">{contactLabel}</a>

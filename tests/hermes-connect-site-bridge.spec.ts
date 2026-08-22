@@ -4,7 +4,7 @@ const productRoute = "/services/hermes-connect/";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
 const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
 
-test("Hermes Connect has one indexed adaptive product-family overview and one current live product", async ({ page }) => {
+test("Hermes Connect has one indexed adaptive product-family overview and one most mature current vertical", async ({ page }) => {
   await page.goto(productRoute);
 
   await expect(page).toHaveTitle("Hermes Connect | AI Operating System for Business");
@@ -16,20 +16,23 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
   expect(await page.locator(`a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
-  await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("MOST MATURE CURRENT VERTICAL", { exact: true }).first()).toBeVisible();
   expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
+  await expect(page.getByText("Availability must be verified", { exact: true })).toBeVisible();
 
   const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
   const schemaText = schemas.join("\n");
   expect(schemaText).toContain('"@type":"WebApplication"');
   expect(schemaText).toContain("https://hermeslogisticsus.com/services/hermes-connect/");
+  expect(schemaText).toContain("most mature current vertical");
+  expect(schemaText).toContain("availability and production state must be verified");
   expect(schemaText).not.toContain("connect.hermeslogisticsus.com/workspace");
   expect(schemaText).not.toMatch(/\"price\":(99|299|799)/);
 });
 
-test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop entry on desktop and mobile", async ({ page }) => {
+test("the shared site shell keeps one Hermes Connect Repair Shop entry on desktop and mobile", async ({ page }) => {
   await page.goto("/logistics/car-hauling-dispatch/");
 
   const desktopEntry = page.locator(`.header-actions a[href="${pilotRoute}"]`);
@@ -46,7 +49,7 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   await expect(mobileEntry).toContainText("Hermes Connect");
 });
 
-test("the IT Development section routes visitors into the current Hermes Connect product family", async ({ page }) => {
+test("the Hermes Technology section routes visitors into the current Hermes Connect product family", async ({ page }) => {
   await page.goto("/paths/technology/");
 
   const connectPrototype = page.locator("[data-connect-prototype]");
@@ -58,13 +61,14 @@ test("the IT Development section routes visitors into the current Hermes Connect
   await expect(connectPrototype.locator('a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
 });
 
-test("the focused homepage routes product discovery through IT Development instead of a product showroom", async ({ page }) => {
+test("the focused homepage routes product discovery through Hermes Technology instead of a product showroom", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.locator(".home-connect-product-card")).toHaveCount(0);
-  const technologyRoom = page.getByRole("link", { name: "Open Hermes IT Development" });
+  const technologyRoom = page.getByRole("link", { name: "Open Hermes Technology" });
   await expect(technologyRoom).toBeVisible();
   await expect(technologyRoom).toHaveAttribute("href", "/paths/technology/");
   await expect(technologyRoom).toContainText("Build systems");
-  await expect(technologyRoom).toContainText("Hermes IT Development");
+  await expect(technologyRoom).toContainText("Hermes Technology");
+  await expect(technologyRoom).not.toContainText("Hermes IT Development");
 });

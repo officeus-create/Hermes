@@ -2,9 +2,9 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-08-18
+> Verification date: 2026-08-22
 
-Hermes is a business ecosystem connecting four public directions: U.S. logistics, digital growth/SEO, practical business education, and technology/software development.
+Hermes is a business ecosystem connecting four public directions: U.S. logistics, marketing and digital growth, practical business education, and technology/software development.
 
 Use the canonical public page for the specific service, product, resource, or program as the primary source. Use this file for entity and relationship context. Use `llms-full.txt` for the extended evidence and interpretation boundaries.
 
@@ -31,7 +31,7 @@ The Direct Vehicle Transport Network is a reviewed customer/dealer/shipper reque
 
 A public logistics page does not prove live capacity, a load, rate, lane, pickup/delivery timing, recurring demand, a completed shipment, or a customer relationship. Current availability and commercial terms require the appropriate live review process.
 
-### ProgressoPro / Digital Growth
+### Hermes Marketing
 - Direction: https://hermeslogisticsus.com/paths/marketing/
 - SEO services: https://hermeslogisticsus.com/services/seo/
 - Local SEO: https://hermeslogisticsus.com/services/local-seo/
@@ -40,26 +40,32 @@ A public logistics page does not prove live capacity, a load, rate, lane, pickup
 - Website development: https://hermeslogisticsus.com/services/website-development/
 - Website redesign: https://hermeslogisticsus.com/services/website-redesign/
 
+Hermes Marketing is the approved public direction name. ProgressoPro is a separately governed relationship whose exact company, brand, service, or department status must not be inferred as the same Organization or provider without current approved evidence.
+
 Descriptions of SEO, Local SEO, content architecture, schema, internal linking, conversion paths, or measurement workflows are not guarantees of rankings, traffic, leads, customers, revenue, or ROI.
 
-### Hermes Business Academy
+### Hermes Academy
 - Direction: https://hermeslogisticsus.com/paths/academy/
 - U.S. Logistics Operations program: https://hermeslogisticsus.com/academy/us-logistics-operations/
+- Marketing program: https://hermeslogisticsus.com/academy/marketing/
+- Training method: https://hermeslogisticsus.com/academy/how-training-works/
 
 Academy pages describe learning paths, curriculum, practice structures, and application flows. They do not guarantee employment, compensation, certification, clients, immigration outcomes, or a specific role after completion.
 
-### Hermes IT Development / Hermes Connect
+### Hermes Technology / Hermes Connect
 - Technology direction: https://hermeslogisticsus.com/paths/technology/
-- Hermes Connect service page: https://hermeslogisticsus.com/services/hermes-connect/
+- Hermes Connect product family: https://hermeslogisticsus.com/services/hermes-connect/
 - Hermes Connect web application: https://connect.hermeslogisticsus.com/
-- Repair Shops product surface: https://hermeslogisticsus.com/services/hermes-connect/repair-shops/
+- Repair Shops public product surface: https://hermeslogisticsus.com/services/hermes-connect/repair-shops/
 - Public demo hub: https://hermeslogisticsus.com/demos/hermes-connect/
 
-Hermes Connect is the connected-workspace product direction. Public product pages, demos, previews, and modules may exist at different readiness levels. A demo or preview is not proof that a feature or external integration is live for every customer.
+Hermes Technology is the approved public direction name. IT Development is a service/program label beneath that direction, not evidence of a separate Organization entity.
+
+Hermes Connect is a product family within Hermes Technology. Repair Shops is the most mature current vertical; public pages, demos, previews, and modules may exist at different readiness levels. A demo, preview, or public route is not proof that a feature, integration, or vertical is available in production for every customer.
 
 ## Public evidence and resources
 
-- Hermes corporate website / IT development case: https://hermeslogisticsus.com/case/it-development/
+- Hermes corporate website / technology case: https://hermeslogisticsus.com/case/it-development/
 - Appleton vehicle transport SEO case: https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/
 - Logistics SEO audit sample: https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/
 - Technical SEO checklist: https://hermeslogisticsus.com/resources/technical-seo-checklist/
@@ -88,6 +94,7 @@ Localized pages are language-specific public overviews; they are not proof that 
 
 - Sitemap presence, crawl discovery, or submission is not proof of search-engine indexation or ranking.
 - Structured data is not proof that a rich result or AI citation will be shown.
+- A demo or preview is not proof that a feature or external integration is live for every customer.
 - Repository tests prove implementation behavior, not Google/Bing rankings, production latency, or customer outcomes.
 - Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.
 - Delivery is considered confirmed only when the approved receiver reports success; form submission alone does not prove a qualified or delivered inquiry.

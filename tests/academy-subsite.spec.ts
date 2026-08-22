@@ -35,7 +35,8 @@ test("Academy program pages own distinct curriculum intent and structured data",
   expect(schemaText).toContain('"Course"');
   expect(schemaText).toContain('"FAQPage"');
   expect(schemaText).toContain('"BreadcrumbList"');
-  expect(schemaText).toContain("Hermes Business Academy");
+  expect(schemaText).toContain("Hermes Academy");
+  expect(schemaText).not.toContain("Hermes Business Academy");
 
   await page.goto("/academy/marketing/");
   await expect(page).toHaveTitle(/Practical Marketing Training/);

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { publicEntityRegistry } from "../src/data/public-entity-registry";
 
 const progressoproProfile = "https://www.instagram.com/progressopro/";
-const expectedHermesProfiles = [
+const logisticsDirectionProfiles = [
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
 ];
@@ -34,7 +34,7 @@ test("public entity registry excludes unrelated and personal-profile Hermes sign
   }
 });
 
-test("homepage Organization uses exact Hermes same-entity profiles only", async ({ page }) => {
+test("homepage Organization omits direction-specific and unverified sameAs profiles", async ({ page }) => {
   const response = await page.goto("/");
   expect(response?.ok()).toBeTruthy();
   const entities = await readJsonLd(page);
@@ -42,8 +42,12 @@ test("homepage Organization uses exact Hermes same-entity profiles only", async 
     (entity) => entity?.["@type"] === "Organization" && entity?.["@id"] === "https://hermeslogisticsus.com/#organization",
   );
   expect(organization).toBeTruthy();
-  expect(organization.sameAs).toEqual(expectedHermesProfiles);
-  expect(organization.sameAs).not.toContain(progressoproProfile);
+  expect(organization.sameAs).toBeUndefined();
+
+  const serializedOrganization = JSON.stringify(organization);
+  for (const profile of [...logisticsDirectionProfiles, progressoproProfile]) {
+    expect(serializedOrganization).not.toContain(profile);
+  }
 });
 
 test("homepage schema excludes unrelated and owner-unverified Hermes entity signals", async ({ page }) => {
@@ -57,10 +61,9 @@ test("homepage schema excludes unrelated and owner-unverified Hermes entity sign
   }
 });
 
-test("marketing page keeps visible ProgressoPro positioning without premature sameAs", async ({ page }) => {
+test("marketing page does not promote ProgressoPro into public entity schema", async ({ page }) => {
   const response = await page.goto("/paths/marketing/");
   expect(response?.ok()).toBeTruthy();
-  await expect(page.getByText(/ProgressoPro/).first()).toBeVisible();
 
   const entities = await readJsonLd(page);
   const serialized = JSON.stringify(entities);

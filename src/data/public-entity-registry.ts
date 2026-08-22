@@ -45,18 +45,18 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
       {
         platform: "instagram",
         url: "https://www.instagram.com/hermes.logistics/",
-        status: "approved_same_entity",
-        evidence: "Existing owner-controlled homepage schema and public website link.",
+        status: "website_linked_signal",
+        evidence: "Linked from the owner-controlled Hermes website, but the handle itself is Logistics-specific and does not resolve root Hermes versus Hermes Logistics entity ownership.",
       },
       {
         platform: "threads",
         url: "https://www.threads.com/@hermes.logistics",
-        status: "approved_same_entity",
-        evidence: "Existing owner-controlled homepage schema and public website link.",
+        status: "website_linked_signal",
+        evidence: "Linked from the owner-controlled Hermes website, but the handle itself is Logistics-specific and does not resolve root Hermes versus Hermes Logistics entity ownership.",
       },
     ],
     notes:
-      "The root Organization represents the Hermes website ecosystem. Only profiles approved as the same public entity may appear in its sameAs array.",
+      "Hermes is the approved root Organization. The current @hermes.logistics social URLs remain website-linked signals only until the owner explicitly resolves whether they represent root Hermes or the Hermes Logistics direction. Do not publish them in root sameAs while that classification is unresolved.",
   },
   hermes_logistics: {
     id: "hermes_logistics",
@@ -102,25 +102,25 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
   },
   hermes_academy: {
     id: "hermes_academy",
-    publicName: "Hermes Business Academy",
+    publicName: "Hermes Academy",
     schemaId: "https://hermeslogisticsus.com/#academy",
     websiteOwner: "/paths/academy/",
     relationshipStatus: "approved_direction",
     schemaPublication: "approved",
     socialProfiles: [],
     notes:
-      "The website relationship to the Hermes ecosystem is approved. Social and community profiles require exact owner-controlled URLs before sameAs publication.",
+      "Hermes Academy is the approved public direction name. The website relationship to the Hermes ecosystem is approved; this does not by itself assert a separate legal company. Social and community profiles require exact owner-controlled URLs before sameAs publication.",
   },
   hermes_it: {
     id: "hermes_it",
-    publicName: "Hermes IT Development",
+    publicName: "Hermes Technology",
     schemaId: "https://hermeslogisticsus.com/#technology",
     websiteOwner: "/paths/technology/",
     relationshipStatus: "owner_verification_required",
     schemaPublication: "hold",
     socialProfiles: [],
     notes:
-      "The service direction is public, but a separate organization/brand identity and social account map have not been approved.",
+      "Hermes Technology is the public direction name; IT Development is a service/program label beneath it. A separate organization/brand identity and social account map have not been approved.",
   },
 };
 

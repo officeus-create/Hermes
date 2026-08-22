@@ -9,7 +9,7 @@ export const academyPublicPathOverrides: Partial<PathDetail> = {
     "Separate paid cohort and free practice models",
   ],
   audience: "For learners and working professionals building practical capability for U.S. logistics or marketing work.",
-  overview: "Hermes Business Academy currently presents two public program paths: U.S. Logistics Operations and Marketing. Leadership, systems thinking, and technology may support exercises inside those paths, but they are not separate public programs. Paid cohorts and free practice opportunities use different eligibility, scope, and participation rules. Program dates, scope, and prices are published only after the exact offer is approved. Training and practice do not guarantee employment, income, clients, certification, promotion, or future paid work.",
+  overview: "Hermes Academy currently presents two public program paths: U.S. Logistics Operations and Marketing. Leadership, systems thinking, and technology may support exercises inside those paths, but they are not separate public programs. Paid cohorts and free practice opportunities use different eligibility, scope, and participation rules. Program dates, scope, and prices are published only after the exact offer is approved. Training and practice do not guarantee employment, income, clients, certification, promotion, or future paid work.",
   seoTitle: "U.S. Logistics and Marketing Training | Hermes Academy",
   seoDescription: "Practical U.S. logistics and marketing education with separate paid cohort and free practice models, email coordination, and no employment or income guarantee.",
   seoServiceName: "Practical U.S. logistics and marketing education",

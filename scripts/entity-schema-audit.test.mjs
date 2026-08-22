@@ -7,10 +7,11 @@ const homepage = await readFile(join(dist, "index.html"), "utf8");
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
 const progressoproProfile = "https://www.instagram.com/progressopro/";
-const expectedSameAs = new Set([
+const heldHermesLogisticsProfiles = new Set([
   "https://www.instagram.com/hermes.logistics/",
   "https://www.threads.com/@hermes.logistics",
 ]);
+const expectedSameAs = new Set();
 const parseEntities = (html) => [...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)]
   .map((match) => JSON.parse(match[1]))
   .flatMap((block) => Array.isArray(block) ? block : [block]);
@@ -30,9 +31,13 @@ if (organization) {
   if (organization.logo?.url !== "https://hermeslogisticsus.com/favicon.svg") errors.push("Organization logo URL is missing or not canonical");
   if (organization.contactPoint?.telephone !== "+1-262-302-3626") errors.push("Organization Logistics Sales phone is missing or unapproved");
   if (organization.contactPoint?.email !== "officeus@hermeslogisticsus.com") errors.push("Organization Logistics Sales email is missing or unapproved");
+
   const sameAs = new Set(Array.isArray(organization.sameAs) ? organization.sameAs : []);
-  for (const url of expectedSameAs) if (!sameAs.has(url)) errors.push(`Organization sameAs is missing ${url}`);
-  for (const url of sameAs) if (!expectedSameAs.has(url)) errors.push(`Organization sameAs contains an unapproved cross-entity profile: ${url}`);
+  for (const url of expectedSameAs) if (!sameAs.has(url)) errors.push(`Organization sameAs is missing approved same-entity profile ${url}`);
+  for (const url of sameAs) if (!expectedSameAs.has(url)) errors.push(`Organization sameAs contains an unapproved or unresolved profile: ${url}`);
+  for (const url of heldHermesLogisticsProfiles) {
+    if (sameAs.has(url)) errors.push(`Organization sameAs must not publish unresolved root-vs-Logistics profile ${url}`);
+  }
   if (sameAs.has(progressoproProfile)) errors.push("ProgressoPro must not be represented as the same Organization entity as Hermes");
 }
 
@@ -89,4 +94,4 @@ if (errors.length) {
   throw new Error(`Entity schema audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log("Entity schema audit passed: stable Hermes Organization and WebSite references, exact same-entity profiles only, and no premature ProgressoPro sameAs.");
+console.log("Entity schema audit passed: stable Hermes Organization and WebSite references, unresolved social profiles held out of root sameAs, and no premature ProgressoPro relationship.");

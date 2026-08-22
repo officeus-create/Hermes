@@ -92,7 +92,7 @@ test("Hermes Connect mobile consent stays compact and does not cover the primary
   await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
 
   const banner = page.locator("[data-consent-banner]");
-  const primaryCta = page.getByRole("link", { name: /Open Repair Shops/ });
+  const primaryCta = page.locator('a.hc-primary[href="/services/hermes-connect/repair-shops/"]');
 
   await expect(banner).toBeVisible();
   await expect(primaryCta).toBeVisible();

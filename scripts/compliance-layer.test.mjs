@@ -27,7 +27,8 @@ assert.match(choices, /Opt-out requests/);
 const company = await read("dist/company-information/index.html");
 assert.match(company, /Company Information/);
 assert.match(company, /Hermes Logistics LLC/);
-assert.match(company, /Other Hermes directions/);
+assert.match(company, /One Hermes website, multiple directions/);
+assert.match(company, /Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology/);
 assert.match(company, /Before payment or signing/);
 
 const payments = await read("dist/payments-cancellations/index.html");

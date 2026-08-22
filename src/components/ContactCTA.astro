@@ -1,6 +1,7 @@
 ---
 import { ArrowRight } from "@lucide/astro";
 import { contactHandoffRoutes } from "../lib/contact";
+import { publicPathById } from "../data/public-paths";
 import { site } from "../data/site";
 
 interface Props {
@@ -10,8 +11,15 @@ interface Props {
 const { selectedPath = "" } = Astro.props;
 const contactMode = import.meta.env.PUBLIC_CONTACT_MODE === "live" ? "live" : "preview";
 const contactEndpoint = import.meta.env.PUBLIC_CONTACT_ENDPOINT ?? "";
-const visibleRoutes = selectedPath
-  ? contactHandoffRoutes.filter((route) => route.category === selectedPath)
+const contactPathOptions = site.paths.map((path) => ({
+  value: path.category,
+  label: publicPathById(path.id)?.category ?? path.category,
+}));
+const selectedLegacyCategory = selectedPath
+  ? contactPathOptions.find((option) => option.label === selectedPath || option.value === selectedPath)?.value ?? selectedPath
+  : "";
+const visibleRoutes = selectedLegacyCategory
+  ? contactHandoffRoutes.filter((route) => route.category === selectedLegacyCategory)
   : contactHandoffRoutes;
 ---
 
@@ -55,7 +63,7 @@ const visibleRoutes = selectedPath
         I am interested in
         <select name="path" required>
           <option value="">Choose a path</option>
-          {site.paths.map((path) => <option selected={selectedPath === path.category}>{path.category}</option>)}
+          {contactPathOptions.map((path) => <option value={path.value} selected={selectedLegacyCategory === path.value}>{path.label}</option>)}
           <option>I am not sure yet</option>
         </select>
       </label>
@@ -114,11 +122,11 @@ const visibleRoutes = selectedPath
   const handoffSummary = document.querySelector<HTMLElement>("[data-handoff-summary]");
   const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-request]");
   const copyStatus = document.querySelector<HTMLElement>("[data-copy-status]");
-  const handoffRoute = document.querySelector<HTMLElement>("[data-handoff-route]");
-  const handoffRouteLink = document.querySelector<HTMLAnchorElement>("[data-handoff-route-link]");
-  const handoffRouteLabel = document.querySelector<HTMLElement>("[data-handoff-route-label]");
-  const handoffRouteDetail = document.querySelector<HTMLElement>("[data-handoff-route-detail]");
-  const handoffUnsure = document.querySelector<HTMLElement>("[data-handoff-unsure]");
+  const handoffRoute = document.querySelector<HTMLElement>("[data-contact-handoff] [data-handoff-route]");
+  const handoffRouteLink = document.querySelector<HTMLAnchorElement>("[data-contact-handoff] [data-handoff-route-link]");
+  const handoffRouteLabel = document.querySelector<HTMLElement>("[data-contact-handoff] [data-handoff-route-label]");
+  const handoffRouteDetail = document.querySelector<HTMLElement>("[data-contact-handoff] [data-handoff-route-detail]");
+  const handoffUnsure = document.querySelector<HTMLElement>("[data-contact-handoff] [data-handoff-unsure]");
   const directionFieldsRoot = document.querySelector<HTMLElement>("[data-direction-fields]");
   const pathSelect = form?.querySelector<HTMLSelectElement>('select[name="path"]');
   const submitButton = form?.querySelector<HTMLButtonElement>('button[type="submit"]');

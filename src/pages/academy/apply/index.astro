@@ -7,14 +7,14 @@ import ContactCTA from "../../../components/ContactCTA.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 
-const title = "Apply to Hermes Business Academy | Program Review";
+const title = "Apply to Hermes Academy | Program Review";
 const description =
   "Prepare your program choice, country and city, languages, English level, recent experience, objective, schedule, U.S. time-zone availability, and preferred contact route for human review.";
 const canonicalUrl = new URL("/academy/apply/", Astro.site).toString();
 const academyEntity = {
   "@type": "Organization",
   "@id": "https://hermeslogisticsus.com/#academy",
-  name: "Hermes Business Academy",
+  name: "Hermes Academy",
   url: "https://hermeslogisticsus.com/paths/academy/",
   parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
 };
@@ -44,7 +44,7 @@ const schema = [
   {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    name: "Hermes Business Academy Application",
+    name: "Hermes Academy Application",
     description,
     url: canonicalUrl,
     about: academyEntity,
@@ -52,7 +52,7 @@ const schema = [
   {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Hermes Business Academy Application Review",
+    name: "Hermes Academy Application Review",
     description,
     url: canonicalUrl,
     provider: academyEntity,
@@ -73,7 +73,7 @@ const schema = [
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: "https://hermeslogisticsus.com/paths/academy/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Academy", item: "https://hermeslogisticsus.com/paths/academy/" },
       { "@type": "ListItem", position: 3, name: "Apply", item: canonicalUrl },
     ],
   },
@@ -93,7 +93,7 @@ const schema = [
           </nav>
           <div class="resource-hero-grid">
             <div>
-              <p class="eyebrow">Hermes Business Academy · Application</p>
+              <p class="eyebrow">Hermes Academy · Application</p>
               <h1>Prepare a reviewable Academy application.</h1>
               <p>Choose one public program and provide the minimum information needed to review language, recent experience, objective, weekly availability, U.S. time-zone fit, and the preferred contact route.</p>
               <div class="logistics-audience-actions">
@@ -140,7 +140,7 @@ const schema = [
         </div>
       </section>
 
-      <ContactCTA selectedPath="Hermes Business Academy" />
+      <ContactCTA selectedPath="Hermes Academy" />
       <AcademyApplicationEnhancer />
       <AcademyApplicationAnalytics />
 
