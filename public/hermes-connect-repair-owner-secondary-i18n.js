@@ -82,7 +82,10 @@
       const raw = node.nodeValue || "";
       const normalized = raw.replace(/\s+/g, " ").trim();
       const translated = !skipExact(node) ? (copy.exact[normalized] || commonAlerts[normalized]) : null;
-      if (translated) node.nodeValue = raw.replace(normalized, translated);
+      if (translated && translated !== normalized) {
+        const next = raw.replace(normalized, translated);
+        if (next !== raw) node.nodeValue = next;
+      }
       node = walker.nextNode();
     }
   }
@@ -90,7 +93,7 @@
   function translateDynamicCustomers() {
     if (path !== `${ROOT}/customers`) return;
     const search = document.getElementById("customer-search");
-    if (search instanceof HTMLInputElement) search.placeholder = copy.placeholder;
+    if (search instanceof HTMLInputElement && search.placeholder !== copy.placeholder) search.placeholder = copy.placeholder;
 
     const count = document.getElementById("customer-count");
     if (count) {
@@ -110,10 +113,12 @@
     });
 
     document.querySelectorAll(".vehicle-card strong").forEach((node) => {
-      if ((node.textContent || "").includes("Mileage not provided")) node.textContent = (node.textContent || "").replace("Mileage not provided", copy.exact["Mileage not provided"]);
+      const text = node.textContent || "";
+      if (text.includes("Mileage not provided")) node.textContent = text.replace("Mileage not provided", copy.exact["Mileage not provided"]);
     });
     document.querySelectorAll(".vehicle-card span").forEach((node) => {
-      if ((node.textContent || "").includes("Last seen ")) node.textContent = (node.textContent || "").replace("Last seen ", `${copy.lastSeen} `);
+      const text = node.textContent || "";
+      if (text.includes("Last seen ")) node.textContent = text.replace("Last seen ", `${copy.lastSeen} `);
     });
   }
 
@@ -131,5 +136,10 @@
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply, { once: true });
   else apply();
-  new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true, characterData: true });
+
+  // Dynamic customer cards are inserted as child nodes. We deliberately do not observe
+  // characterData: the translator itself changes text nodes, and observing those writes can
+  // create a self-triggering microtask loop when a valid translation equals the source text
+  // (for example French "Services" → "Services").
+  new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
 })();
