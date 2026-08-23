@@ -1,4 +1,4 @@
-# Release trigger: Hermes Connect Wave 1 — 2026-08-13
+# Release trigger: homepage + Hermes Connect locale fixes — 2026-08-23
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
