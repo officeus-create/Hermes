@@ -1,6 +1,7 @@
 /* CEO-approved homepage mobile visual fixes — 2026-08-23.
  * Scope: homepage only. Keep the main Four directions heading permanently readable,
- * remove white corner leaks around the final contact surface, and soften section handoffs.
+ * remove white corner leaks around the final contact surface, soften section handoffs,
+ * and force the homepage header into the correct mobile presentation on narrow screens.
  */
 
 .hermes-home-recovery .home-rooms-display {
@@ -50,18 +51,26 @@
   mix-blend-mode: screen;
 }
 
-/* Make the contact section itself the corner backdrop. This prevents the pearl
- * page background from showing through as white wedges outside rounded corners. */
-.home-contact-shell {
+/* The full-width shell must stay square. The previous global HomeRecoveryFinish
+ * rule rounded this parent, which exposed the light page background at the outer
+ * top corners on Android Chrome. Only the inner contact surface is rounded. */
+body:has(.hermes-home-recovery) {
+  background-color: #070912;
+}
+
+body:has(.hermes-home-recovery) #contact.home-contact-shell {
   position: relative;
-  overflow: clip;
+  overflow: hidden !important;
+  margin-top: -1px;
+  border-radius: 0 !important;
+  background-color: #070912 !important;
   background:
     radial-gradient(circle at 12% 0%, rgba(124,92,255,.14), transparent 34rem),
     linear-gradient(180deg, #0a0c17 0%, #080a12 38%, #070912 100%) !important;
   isolation: isolate;
 }
 
-.home-contact-shell::before {
+body:has(.hermes-home-recovery) #contact.home-contact-shell::before {
   position: absolute;
   z-index: 0;
   inset: 0 0 auto;
@@ -71,7 +80,7 @@
   background: linear-gradient(180deg, #080a12 0%, rgba(28,25,69,.92) 34%, rgba(17,22,47,.55) 68%, transparent 100%);
 }
 
-.home-contact-shell .home-final-contact {
+body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
   position: relative;
   z-index: 1;
   overflow: hidden;
@@ -83,7 +92,7 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
 }
 
-.home-contact-shell .home-final-contact::after {
+body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact::after {
   position: absolute;
   z-index: -1;
   right: 0;
@@ -93,6 +102,27 @@
   pointer-events: none;
   content: "";
   background: linear-gradient(180deg, transparent 0%, rgba(8,10,18,.55) 48%, #070912 100%);
+}
+
+/* The screenshot exposed a desktop-header fallback at phone width. Lock the
+ * homepage header to the mobile contract through tablet widths; the existing
+ * SiteHeader script continues to own panel open/close behavior. */
+@media (max-width: 900px) {
+  body:has(.hermes-home-recovery) .site-header {
+    width: calc(100% - 16px);
+    min-height: 60px;
+    padding-inline: .75rem;
+  }
+
+  body:has(.hermes-home-recovery) .site-header .desktop-nav,
+  body:has(.hermes-home-recovery) .site-header .header-actions {
+    display: none !important;
+  }
+
+  body:has(.hermes-home-recovery) .site-header .menu-button {
+    display: inline-flex !important;
+    margin-left: auto;
+  }
 }
 
 @media (max-width: 800px) {
@@ -112,7 +142,7 @@
       0 30px 84px rgba(0,0,0,.36);
   }
 
-  .home-contact-shell .home-final-contact {
+  body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
     border-radius: 38px 38px 0 0;
   }
 }
