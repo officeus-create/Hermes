@@ -4,6 +4,7 @@ import {
   ensureAcademyLearnerProfile,
   ensureAcademySchema,
   getAcademyLearnerProfile,
+  getAcademyReviewerAccess,
   isAcademyLanguage,
   listAcademyEnrollments,
 } from "../_lib/academy.mjs";
@@ -13,9 +14,10 @@ type Env = { DB?: any };
 async function loadOwnAcademyState(env: Env, specialist: any) {
   await ensureAcademySchema(env.DB);
   await ensureAcademyLearnerProfile(env.DB, specialist.id);
-  const [profile, enrollments] = await Promise.all([
+  const [profile, enrollments, reviewerAccess] = await Promise.all([
     getAcademyLearnerProfile(env.DB, specialist.id),
     listAcademyEnrollments(env.DB, specialist.id),
+    getAcademyReviewerAccess(env.DB, specialist.id),
   ]);
   return {
     success: true,
@@ -24,10 +26,14 @@ async function loadOwnAcademyState(env: Env, specialist: any) {
       email: specialist.email,
       name: specialist.name,
       identity_role: specialist.role,
+      location: specialist.location ?? null,
       preferred_language: profile?.preferred_language ?? null,
       timezone: profile?.timezone ?? null,
     },
     enrollments,
+    reviewer_access: reviewerAccess
+      ? { active: true, program_scope: reviewerAccess.program_scope ?? null }
+      : { active: false, program_scope: null },
   };
 }
 
@@ -51,7 +57,7 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
     return jsonResponse(400, { success: false, error: "invalid_json" });
   }
 
-  const forbidden = ["specialist_id", "email", "name", "role", "identity_role", "state", "cohort_code"];
+  const forbidden = ["specialist_id", "email", "name", "role", "identity_role", "location", "state", "cohort_code", "reviewer_access"];
   if (forbidden.some((key) => Object.prototype.hasOwnProperty.call(body, key))) {
     return jsonResponse(400, { success: false, error: "identity_or_progress_fields_not_editable_here" });
   }

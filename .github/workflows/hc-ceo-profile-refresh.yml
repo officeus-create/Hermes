@@ -1,0 +1,285 @@
+name: Refresh Hermes Connect CEO QA profile
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  refresh:
+    if: >-
+      github.event.issue.number == 671 &&
+      github.event.comment.body == '/refresh-hc-ceo-profile' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN || secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      CEO_QA_EMAIL: officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com
+
+    steps:
+      - name: Refresh exact existing CEO QA profile in canonical D1
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "Missing scoped Cloudflare production credentials." >&2
+            exit 1
+          fi
+          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+
+          node <<'NODE'
+          import fs from 'node:fs';
+
+          const token = process.env.CLOUDFLARE_API_TOKEN;
+          const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+          const email = process.env.CEO_QA_EMAIL;
+          const base = 'https://api.cloudflare.com/client/v4';
+          const resultPath = '/tmp/hc-ceo-profile-result.md';
+
+          async function cf(path, options = {}) {
+            const response = await fetch(`${base}${path}`, {
+              ...options,
+              headers: {
+                authorization: `Bearer ${token}`,
+                'content-type': 'application/json',
+                ...(options.headers || {}),
+              },
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || data.success === false) {
+              const message = data?.errors?.[0]?.message || `Cloudflare request failed (${response.status})`;
+              throw new Error(message);
+            }
+            return data.result;
+          }
+
+          const project = await cf(`/accounts/${accountId}/pages/projects/hermes`);
+          const binding = project?.deployment_configs?.production?.d1_databases?.DB;
+          const dbId = typeof binding === 'string' ? binding : (binding?.id || binding?.database_id || '');
+          if (!dbId) throw new Error('Canonical Pages production DB binding is missing; refusing to guess a D1 database.');
+          console.log(`::add-mask::${dbId}`);
+
+          async function query(sql, params = []) {
+            const result = await cf(`/accounts/${accountId}/d1/database/${dbId}/query`, {
+              method: 'POST',
+              body: JSON.stringify({ sql, params }),
+            });
+            const batch = Array.isArray(result) ? result[0] : result;
+            if (!batch || batch.success === false) throw new Error('D1 query did not complete successfully.');
+            return Array.isArray(batch.results) ? batch.results : [];
+          }
+
+          const identities = await query(
+            'SELECT id,email,name,role,location FROM specialists WHERE email = ? LIMIT 1',
+            [email],
+          );
+          const identity = identities[0];
+          if (!identity?.id) throw new Error('Existing v3 CEO QA identity was not found; refusing to create a duplicate account.');
+          const specialistId = identity.id;
+
+          const shops = await query(
+            'SELECT id,slug FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1',
+            [specialistId],
+          );
+          const shop = shops[0];
+          if (!shop?.id || !shop?.slug) throw new Error('Existing CEO QA Repair Shop profile was not found; refusing to create a new shop or slug.');
+
+          const now = new Date().toISOString();
+          await query(
+            `UPDATE repair_shops
+             SET name = ?, phone = ?, address_line1 = ?, city = ?, state = ?, postal_code = ?, timezone = ?, updated_at = ?
+             WHERE owner_specialist_id = ?`,
+            [
+              'Northstar Auto Care — Hermes CEO QA',
+              '+1 414 555 0197',
+              '102 Access Test Way',
+              'Milwaukee',
+              'WI',
+              '53202',
+              'America/Chicago',
+              now,
+              specialistId,
+            ],
+          );
+
+          await query(
+            `UPDATE specialists SET location = ?, bio = ? WHERE id = ?`,
+            ['Kyiv, Ukraine', 'Hermes CEO QA identity for Repair Shops and Academy product verification.', specialistId],
+          );
+
+          await query(`
+            CREATE TABLE IF NOT EXISTS repair_shop_capabilities (
+              shop_id TEXT PRIMARY KEY,
+              vehicle_types TEXT NOT NULL DEFAULT '[]',
+              fleet_service INTEGER NOT NULL DEFAULT 0,
+              mobile_roadside INTEGER NOT NULL DEFAULT 0,
+              emergency_24_7 INTEGER NOT NULL DEFAULT 0,
+              parallel_booking_capacity INTEGER NOT NULL DEFAULT 1,
+              updated_at TEXT NOT NULL
+            )
+          `);
+          await query(
+            `INSERT OR IGNORE INTO repair_shop_capabilities
+             (shop_id, vehicle_types, fleet_service, mobile_roadside, emergency_24_7, parallel_booking_capacity, updated_at)
+             VALUES (?, ?, 1, 1, 0, 2, ?)`,
+            [shop.id, JSON.stringify(['passenger_light','commercial_truck','trailer']), now],
+          );
+          await query(
+            `UPDATE repair_shop_capabilities
+             SET vehicle_types = ?, fleet_service = 1, mobile_roadside = 1, emergency_24_7 = 0,
+                 parallel_booking_capacity = 2, updated_at = ?
+             WHERE shop_id = ?`,
+            [JSON.stringify(['passenger_light','commercial_truck','trailer']), now, shop.id],
+          );
+
+          await query(`
+            CREATE TABLE IF NOT EXISTS academy_learner_profiles (
+              specialist_id TEXT PRIMARY KEY,
+              preferred_language TEXT CHECK (preferred_language IS NULL OR preferred_language IN ('en','ru','uk','es','it','fr')),
+              timezone TEXT,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            )
+          `);
+          await query(`
+            CREATE TABLE IF NOT EXISTS academy_enrollments (
+              id TEXT PRIMARY KEY,
+              specialist_id TEXT NOT NULL,
+              program_slug TEXT NOT NULL CHECK (program_slug IN ('us-logistics-operations','marketing')),
+              state TEXT NOT NULL CHECK (state IN ('applied','approved','enrolled','paused','completed','cancelled')),
+              participation_model TEXT NOT NULL CHECK (participation_model IN ('free_practice','paid_cohort','unspecified')),
+              cohort_code TEXT,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL,
+              UNIQUE(specialist_id, program_slug)
+            )
+          `);
+          await query(`
+            CREATE TABLE IF NOT EXISTS academy_reviewer_access (
+              specialist_id TEXT PRIMARY KEY,
+              active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),
+              program_scope TEXT CHECK (program_scope IS NULL OR program_scope IN ('us-logistics-operations','marketing')),
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            )
+          `);
+
+          await query(
+            `INSERT OR IGNORE INTO academy_learner_profiles
+             (specialist_id, preferred_language, timezone, created_at, updated_at)
+             VALUES (?, 'ru', 'Europe/Kyiv', ?, ?)`,
+            [specialistId, now, now],
+          );
+          await query(
+            `UPDATE academy_learner_profiles
+             SET preferred_language = 'ru', timezone = 'Europe/Kyiv', updated_at = ?
+             WHERE specialist_id = ?`,
+            [now, specialistId],
+          );
+
+          for (const program of ['us-logistics-operations', 'marketing']) {
+            await query(
+              `INSERT INTO academy_enrollments
+               (id, specialist_id, program_slug, state, participation_model, cohort_code, created_at, updated_at)
+               VALUES (?, ?, ?, 'enrolled', 'free_practice', 'CEO-QA', ?, ?)
+               ON CONFLICT(specialist_id, program_slug) DO UPDATE SET
+                 state = 'enrolled', participation_model = 'free_practice', cohort_code = 'CEO-QA', updated_at = excluded.updated_at`,
+              [`academy-${crypto.randomUUID()}`, specialistId, program, now, now],
+            );
+          }
+
+          await query(
+            `INSERT INTO academy_reviewer_access
+             (specialist_id, active, program_scope, created_at, updated_at)
+             VALUES (?, 1, NULL, ?, ?)
+             ON CONFLICT(specialist_id) DO UPDATE SET active = 1, program_scope = NULL, updated_at = excluded.updated_at`,
+            [specialistId, now, now],
+          );
+
+          const repaired = (await query(
+            `SELECT name,phone,address_line1,city,state,postal_code,timezone,slug
+             FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1`,
+            [specialistId],
+          ))[0];
+          const capabilities = (await query(
+            `SELECT vehicle_types,fleet_service,mobile_roadside,emergency_24_7,parallel_booking_capacity
+             FROM repair_shop_capabilities WHERE shop_id = ? LIMIT 1`,
+            [shop.id],
+          ))[0];
+          const academy = (await query(
+            `SELECT preferred_language,timezone FROM academy_learner_profiles
+             WHERE specialist_id = ? LIMIT 1`,
+            [specialistId],
+          ))[0];
+          const enrollments = await query(
+            `SELECT program_slug,state,participation_model,cohort_code FROM academy_enrollments
+             WHERE specialist_id = ? ORDER BY program_slug`,
+            [specialistId],
+          );
+          const reviewer = (await query(
+            `SELECT active,program_scope FROM academy_reviewer_access WHERE specialist_id = ? LIMIT 1`,
+            [specialistId],
+          ))[0];
+
+          if (
+            repaired?.name !== 'Northstar Auto Care — Hermes CEO QA' ||
+            repaired?.city !== 'Milwaukee' ||
+            repaired?.state !== 'WI' ||
+            repaired?.timezone !== 'America/Chicago' ||
+            capabilities?.fleet_service !== 1 ||
+            capabilities?.mobile_roadside !== 1 ||
+            capabilities?.parallel_booking_capacity !== 2 ||
+            academy?.preferred_language !== 'ru' ||
+            academy?.timezone !== 'Europe/Kyiv' ||
+            enrollments.length !== 2 ||
+            enrollments.some((row) => row?.state !== 'enrolled' || row?.participation_model !== 'free_practice' || row?.cohort_code !== 'CEO-QA') ||
+            reviewer?.active !== 1
+          ) throw new Error('Profile verification mismatch after D1 update.');
+
+          let servicesCount = null;
+          let availabilityCount = null;
+          try {
+            const publicResponse = await fetch(`https://hermeslogisticsus.com/api/public/repair-shop?slug=${encodeURIComponent(repaired.slug)}`, {
+              headers: { 'cache-control': 'no-cache', 'user-agent': 'HermesCEOProfileVerifier/1.0' },
+            });
+            const publicData = await publicResponse.json().catch(() => ({}));
+            if (publicResponse.ok && publicData?.success) {
+              servicesCount = Array.isArray(publicData.services) ? publicData.services.length : null;
+              const availability = publicData.availability ?? publicData.days;
+              availabilityCount = Array.isArray(availability) ? availability.filter((day) => day?.is_open).length : null;
+            }
+          } catch {}
+
+          const lines = [
+            '## Hermes Connect CEO QA profile refresh — PASS',
+            '',
+            `- Existing account updated in place: \`${email}\``,
+            '- ✅ Repair Shop: Northstar Auto Care — Hermes CEO QA · Milwaukee, WI · America/Chicago',
+            '- ✅ Capabilities: cars/light vehicles + commercial trucks + trailers · fleet service · mobile roadside · capacity 2; 24/7 emergency remains off.',
+            '- ✅ Academy profile: preferred language `ru` · timezone `Europe/Kyiv`',
+            '- ✅ Academy QA access: U.S. Logistics Operations + Marketing = `enrolled / free_practice / CEO-QA`',
+            '- ✅ Academy reviewer access enabled for the same CEO QA identity, without changing normal learner enrollment rules.',
+            '- ✅ Shared Hermes identity preserved; no second account, password store, shop, slug, auth runtime, or D1 was created.',
+          ];
+          if (servicesCount !== null) lines.push(`- Existing public services observed: **${servicesCount}**`);
+          if (availabilityCount !== null) lines.push(`- Existing open availability days observed: **${availabilityCount}**`);
+          lines.push('', '> All shop/course state above is synthetic CEO QA data. No password, token, account ID, D1 ID, or private credential is published by this workflow.');
+          fs.writeFileSync(resultPath, `${lines.join('\n')}\n`);
+          NODE
+
+      - name: Publish sanitized refresh result
+        if: success()
+        run: gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file /tmp/hc-ceo-profile-result.md
+
+      - name: Publish sanitized failure
+        if: failure()
+        run: |
+          gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body "## Hermes Connect CEO QA profile refresh — FAILED\n\nThe existing v3 account was **not** replaced or duplicated. The controlled refresh could not complete using the canonical production D1 path. Review this Actions run for the sanitized error: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID.\n\nNo password, token, account ID, or D1 identifier is included in this comment."
