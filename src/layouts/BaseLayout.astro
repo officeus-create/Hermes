@@ -134,6 +134,57 @@ const safeSchema = schema
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script is:inline>
+      (() => {
+        if (!window.location.pathname.startsWith("/services/hermes-connect")) return;
+
+        const supported = new Set(["en", "uk", "ru", "es", "it", "fr"]);
+        const params = new URLSearchParams(window.location.search);
+        const requested = params.get("lang");
+        let stored = "";
+        try { stored = window.localStorage.getItem("hermes-connect-language") || ""; } catch {}
+
+        if (!requested && supported.has(stored) && stored !== "en") {
+          params.set("lang", stored);
+          const query = params.toString();
+          window.location.replace(`${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
+          return;
+        }
+
+        const active = requested && supported.has(requested) ? requested : "en";
+        document.documentElement.lang = active;
+        try { window.localStorage.setItem("hermes-connect-language", active); } catch {}
+
+        document.addEventListener("DOMContentLoaded", () => {
+          const current = new URL(window.location.href);
+
+          document.querySelectorAll("[data-language-menu] a[lang], .mobile-language-switcher a[lang]").forEach((node) => {
+            if (!(node instanceof HTMLAnchorElement)) return;
+            const target = node.getAttribute("lang") || "en";
+            if (!supported.has(target)) return;
+
+            const next = new URL(current.href);
+            if (target === "en") next.searchParams.delete("lang");
+            else next.searchParams.set("lang", target);
+            node.href = `${next.pathname}${next.search}${next.hash}`;
+
+            node.addEventListener("click", (event) => {
+              event.preventDefault();
+              try { window.localStorage.setItem("hermes-connect-language", target); } catch {}
+              window.location.assign(node.href);
+            });
+          });
+
+          document.querySelectorAll('a[href^="/services/hermes-connect/"]:not([lang])').forEach((node) => {
+            if (!(node instanceof HTMLAnchorElement)) return;
+            const next = new URL(node.getAttribute("href") || "", window.location.origin);
+            if (active === "en") next.searchParams.delete("lang");
+            else next.searchParams.set("lang", active);
+            node.href = `${next.pathname}${next.search}${next.hash}`;
+          });
+        }, { once: true });
+      })();
+    </script>
+    <script is:inline>
       if (window.location.pathname === "/logistics/carrier-onboarding/") {
         const selectedPlan = new URLSearchParams(window.location.search).get("plan");
         if (["essential", "pro", "custom"].includes(selectedPlan || "")) {
