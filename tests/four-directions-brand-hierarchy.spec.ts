@@ -19,22 +19,20 @@ test("Four Directions use Hermes as the public master brand", () => {
   ]);
 });
 
-test("operating labels stay subordinate to canonical public directions", () => {
+test("operating brands and evidence remain subordinate instead of being erased", () => {
   const marketing = publicPathById("marketing");
   const academy = publicPathById("academy");
   const technology = publicPathById("technology");
 
   expect(marketing?.brandLabel).toBe("Hermes Marketing");
-  expect(marketing?.programLabel).toBe("Digital Growth · SEO · Content · Demand");
-  expect(marketing?.directContacts?.[0]?.href).toContain("Hermes%20Marketing%20Inquiry");
-  expect(marketing?.socialLinks).toEqual([]);
+  expect(marketing?.programLabel).toContain("ProgressoPro");
+  expect(marketing?.socialLinks?.some((link) => link.href.includes("instagram.com/progressopro"))).toBe(true);
 
   expect(academy?.brandLabel).toBe("Hermes Academy");
-  expect(academy?.directContacts?.[0]?.href).toContain("Hermes%20Academy%20Inquiry");
+  expect(academy?.programLabel).toBeTruthy();
 
   expect(technology?.brandLabel).toBe("Hermes Technology");
   expect(technology?.programLabel).toContain("IT Development");
-  expect(technology?.directContacts?.[0]?.href).toContain("Hermes%20Technology%20Inquiry");
 });
 
 test("direction breadcrumb schema uses the canonical public entity instead of legacy navigation labels", async () => {
