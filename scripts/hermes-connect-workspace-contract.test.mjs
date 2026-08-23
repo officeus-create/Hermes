@@ -66,8 +66,8 @@ assert(js.includes("function setView") && js.includes("function setVertical") &&
 assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
 // The live private workspaces intentionally inherit the previously approved Pearl-room direction.
-assert(privateWorkspaceCss.includes("--hc-workspace-bg: #f4f2ed"), "Repair Shop owner workspace must be Pearl-first, not a full Obsidian room.");
-assert(privateWorkspaceCss.includes("background: #171a24"), "Repair Shop owner workspace must retain Obsidian only for decisive actions.");
+assert(privateWorkspaceCss.includes("--hc-workspace-bg: var(--hermes-pearl)"), "Repair Shop owner workspace must consume canonical Pearl, not a full Obsidian room or a third palette.");
+assert(privateWorkspaceCss.includes("background: var(--hermes-obsidian)"), "Repair Shop owner workspace must retain canonical Obsidian for decisive actions.");
 assert(privateWorkspaceCss.includes("Northstar") === false, "Visual CSS must not contain account-specific profile data.");
 assert(academyCss.includes("linear-gradient(145deg,#fff,#f4f1ff"), "Academy emphasis card must use the light intelligence surface.");
 assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-line-dark)"), "Academy must not restore the previous full Obsidian emphasis card.");
@@ -95,4 +95,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first, and CEO QA data is provisioned in-place through existing controlled tables.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, and CEO QA data is provisioned in-place through existing controlled tables.");
