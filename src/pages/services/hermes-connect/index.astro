@@ -215,6 +215,142 @@ const schema = [
     </section>
   </main>
 
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      let locale = params.get("lang");
+      if (!locale) {
+        try { locale = window.localStorage.getItem("hermes-connect-language"); } catch {}
+      }
+      if (locale !== "ru") return;
+
+      const translations = new Map([
+        ["AI operating system for business", "AI-операционная система для бизнеса"],
+        ["Run your business", "Управляйте бизнесом"],
+        ["with AI.", "с AI."],
+        ["One operating system for leads, bookings, customers, operations, and growth. Hermes adapts the workspace around the way your business actually works.", "Одна операционная система для лидов, записей, клиентов, операций и роста. Hermes адаптирует рабочее пространство под реальные процессы вашего бизнеса."],
+        ["Open Repair Shops", "Открыть СТО"],
+        ["Owner access", "Вход владельца"],
+        ["Choose your business", "Выбрать направление"],
+        ["Repair Shops is live", "СТО уже работает"],
+        ["Other industries are previews", "Другие направления — превью"],
+        ["One shared product family", "Единая экосистема продукта"],
+        ["Hermes Intelligence · signature system object", "Hermes Intelligence · ключевой объект системы"],
+        ["Signal arrives", "Поступает сигнал"],
+        ["Request captured", "Запрос зафиксирован"],
+        ["Hermes coordinates", "Hermes координирует"],
+        ["Intent + next step", "Намерение + следующий шаг"],
+        ["Work moves forward", "Работа движется дальше"],
+        ["Human-review ready", "Готово к проверке человеком"],
+        ["WORKSPACE PREVIEW · SAMPLE DATA", "ПРЕВЬЮ РАБОЧЕГО ПРОСТРАНСТВА · ПРИМЕР ДАННЫХ"],
+        ["Home", "Главная"],
+        ["Inbox", "Входящие"],
+        ["Calendar", "Календарь"],
+        ["Customers", "Клиенты"],
+        ["Operations", "Операции"],
+        ["Good morning.", "Доброе утро."],
+        ["Here’s what needs attention today.", "Вот что требует внимания сегодня."],
+        ["Bookings", "Записи"],
+        ["New leads", "Новые лиды"],
+        ["AI reviews", "AI-проверки"],
+        ["sample", "пример"],
+        ["AI workflows", "AI-процессы"],
+        ["Reception", "Приём"],
+        ["Preview", "Превью"],
+        ["Follow-up", "Сопровождение"],
+        ["What needs attention next?", "Что требует внимания дальше?"],
+        ["Illustrative UI — no autonomous action.", "Демонстрационный интерфейс — без автономных действий."],
+        ["Adaptive by business", "Адаптация под бизнес"],
+        ["One system. Different business realities.", "Одна система. Разные бизнес-процессы."],
+        ["The product identity stays constant. Language and modules adapt to the operating context without creating separate Hermes brands.", "Идентичность продукта остаётся единой. Язык и модули адаптируются под рабочий контекст без создания отдельных брендов Hermes."],
+        ["Repair Shops", "СТО"],
+        ["LIVE PRODUCT", "РАБОЧИЙ ПРОДУКТ"],
+        ["Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace.", "Записи, услуги, доступность, клиенты, автомобили, сопровождение и операции владельца в одном рабочем пространстве."],
+        ["Services", "Услуги"],
+        ["Vehicles", "Автомобили"],
+        ["Open live product", "Открыть рабочий продукт"],
+        ["Logistics", "Логистика"],
+        ["PREVIEW CONFIGURATION", "КОНФИГУРАЦИЯ-ПРЕВЬЮ"],
+        ["Loads, carriers, dispatch, documents, freight decisions, and operating visibility around one shared workflow.", "Грузы, перевозчики, диспетчинг, документы, решения по перевозкам и операционная прозрачность в едином процессе."],
+        ["Loads", "Грузы"],
+        ["Carriers", "Перевозчики"],
+        ["Dispatch", "Диспетчинг"],
+        ["Documents", "Документы"],
+        ["Marketing", "Маркетинг"],
+        ["Leads, clients, campaigns, meetings, sales handoff, and AI-assisted follow-up in one operating view.", "Лиды, клиенты, кампании, встречи, передача в продажи и AI-сопровождение в одном операционном представлении."],
+        ["Leads", "Лиды"],
+        ["Clients", "Клиенты"],
+        ["Campaigns", "Кампании"],
+        ["Pipeline", "Воронка"],
+        ["Academy", "Академия"],
+        ["Students, programs, assignments, practice, progress, and coaching around measurable learning work.", "Студенты, программы, задания, практика, прогресс и сопровождение вокруг измеримого обучения."],
+        ["Students", "Студенты"],
+        ["Programs", "Программы"],
+        ["Practice", "Практика"],
+        ["Progress", "Прогресс"],
+        ["Beauty & Wellness", "Красота и wellness"],
+        ["Appointments, clients, services, specialists, repeat visits, reviews, and relationship management.", "Записи, клиенты, услуги, специалисты, повторные визиты, отзывы и управление отношениями."],
+        ["Appointments", "Записи"],
+        ["Retention", "Удержание"],
+        ["Professional Services", "Профессиональные услуги"],
+        ["Requests, clients, proposals, projects, tasks, documents, and follow-up for service businesses.", "Запросы, клиенты, предложения, проекты, задачи, документы и сопровождение для сервисного бизнеса."],
+        ["Requests", "Запросы"],
+        ["Projects", "Проекты"],
+        ["Tasks", "Задачи"],
+        ["Configuration preview · not a released vertical", "Превью конфигурации · направление ещё не выпущено"],
+        ["One Hermes workspace", "Единое рабочее пространство Hermes"],
+        ["Pearl outside. Obsidian where work gets serious.", "Pearl снаружи. Obsidian там, где начинается серьёзная работа."],
+        ["Public pages explain the system with clarity and air. Operational tools become darker, denser, and more focused. The visual language stays unmistakably Hermes in both modes.", "Публичные страницы объясняют систему ясно и свободно. Операционные инструменты становятся темнее, плотнее и сфокусированнее. В обоих режимах визуальный язык остаётся узнаваемо Hermes."],
+        ["Reference capabilities stay visible without pretending they are separate live products.", "Референсные возможности остаются видимыми, но не выдаются за отдельные рабочие продукты."],
+        ["These modules support product exploration while remaining subordinate to the current Repair Shops live vertical.", "Эти модули помогают исследовать продукт, оставаясь вспомогательными по отношению к текущему рабочему направлению СТО."],
+        ["REFERENCE", "РЕФЕРЕНС"],
+        ["Product truth", "Статус продукта"],
+        ["Clear status. No fake live surface.", "Чёткий статус. Никакой имитации рабочего продукта."],
+        ["Preview UI is labeled as preview or sample data. Repair Shops remains the only current live vertical on this product hub.", "Превью-интерфейсы отмечены как превью или пример данных. СТО остаётся единственным текущим рабочим направлением на этом Product Hub."],
+        ["Which Hermes Connect configuration is live today?", "Какая конфигурация Hermes Connect работает сейчас?"],
+        ["Repair Shops is the current live product vertical. Other business configurations on this page are previews and are not presented as released production runtimes.", "СТО — текущее рабочее направление продукта. Остальные бизнес-конфигурации на этой странице являются превью и не выдаются за выпущенные production-системы."],
+        ["Is Hermes Connect one product or many separate apps?", "Hermes Connect — это один продукт или несколько отдельных приложений?"],
+        ["One product family. Identity, workspace principles, intelligence, and operating patterns stay recognizable while terminology and workflows adapt to the business.", "Это единая продуктовая экосистема. Идентичность, принципы рабочего пространства, intelligence и операционные паттерны остаются узнаваемыми, а терминология и процессы адаптируются под бизнес."],
+        ["Are the dashboard numbers real customer data?", "Цифры на демонстрационной панели — реальные данные клиентов?"],
+        ["No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live product surfaces are identified separately.", "Нет. Демонстрационная панель на этой странице прямо отмечена как пример данных. Рабочие поверхности продукта обозначаются отдельно."],
+      ]);
+
+      const root = document.querySelector(".hc-brand-page");
+      if (!root) return;
+
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        const parent = node.parentElement;
+        if (!parent || ["SCRIPT", "STYLE"].includes(parent.tagName)) return;
+        const value = node.nodeValue || "";
+        const key = value.trim();
+        const translated = translations.get(key);
+        if (!translated) return;
+        node.nodeValue = value.replace(key, translated);
+      });
+
+      root.setAttribute("data-hc-hub-locale", "ru");
+      root.querySelector('[aria-label="Current Hermes Connect product status"]')?.setAttribute("aria-label", "Текущий статус продукта Hermes Connect");
+      root.querySelector('[aria-label="Hermes Connect product preview"]')?.setAttribute("aria-label", "Превью продукта Hermes Connect");
+
+      const productContext = document.querySelector("[data-hc-product-context]");
+      productContext?.querySelector("[data-hc-english-only]")?.remove();
+      const contentLanguage = productContext?.querySelector(".hc-content-language");
+      if (contentLanguage) contentLanguage.textContent = "Язык контента: русский";
+      productContext?.querySelectorAll(".hc-family-nav a").forEach((link) => {
+        const label = link.textContent?.trim();
+        if (label === "Product Hub") link.textContent = "Product Hub";
+        if (label === "Repair Shops") link.textContent = "СТО";
+      });
+
+      document.title = "Hermes Connect | AI-операционная система для бизнеса";
+      const description = document.querySelector('meta[name="description"]');
+      if (description) description.setAttribute("content", "Управляйте бизнесом с AI. Hermes Connect адаптирует единую операционную систему под разные бизнес-процессы; СТО — текущее рабочее направление.");
+    })();
+  </script>
+
   <SiteFooter />
 </BaseLayout>
 
