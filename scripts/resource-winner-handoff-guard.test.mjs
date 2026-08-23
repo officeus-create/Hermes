@@ -6,6 +6,7 @@ const root = process.cwd();
 const dist = join(root, "dist");
 const auctionChecklist = await readFile(join(dist, "logistics", "resources", "auction-vehicle-pickup-checklist", "index.html"), "utf8");
 const capacityChecklist = await readFile(join(dist, "logistics", "resources", "car-hauler-capacity-checklist", "index.html"), "utf8");
+const carHaulingOwner = await readFile(join(dist, "logistics", "car-hauling-dispatch", "index.html"), "utf8");
 
 const getLinkHref = (html, rel) => [...html.matchAll(/<link\b[^>]*>/gi)]
   .map((match) => match[0])
@@ -56,6 +57,15 @@ assert.ok(
 assert.ok(
   capacityChecklist.includes("Sharing capacity does not establish approval, onboarding, a load assignment, a rate, revenue, or a booking."),
   "Car Hauler Capacity Checklist must retain its no-guarantee boundary",
+);
+
+assert.ok(
+  carHaulingOwner.includes('href="/logistics/resources/broker-setup-packet-checklist/"'),
+  "Car-hauling owner must retain the broker-setup checklist semantic edge",
+);
+assert.ok(
+  carHaulingOwner.includes('href="/logistics/resources/new-authority-car-hauler-readiness-checklist/"'),
+  "Car-hauling owner must retain the new-authority readiness semantic edge",
 );
 
 console.log("Protected resource-winner commercial handoffs passed.");
