@@ -73,14 +73,13 @@ Current priority is to strengthen discoverability, relevant internal support, me
 
 The bridge remains document/GitHub based rather than a live credential-sharing AI-to-AI bus.
 
-Routing principle for SEO:
+Routing principle (superseded 2026-08-23 by DEC-007 — see `DECISIONS.md`):
 
-- ChatGPT — strategy, commercial intent, prioritization, orchestration and contradiction resolution;
-- Codex — repository implementation, tests, technical verification and authenticated measurement coordination when its environment has the required access;
+- Codex and Claude — co-primary peer execution agents with equal baseline authority (analysis, implementation, tests, branches/PRs, documentation, bounded technical decisions); per-slice task assignment names one primary executor and one reviewer, and the roles rotate by task rather than by fixed identity;
+- ChatGPT — strategy, commercial intent, prioritization, cross-agent coordination and disagreement resolution when Codex and Claude do not converge;
 - Antigravity — crawl/UI/browser verification and bounded draft metadata or visual inspection;
-- Claude — independent SEO/QA review, challenge and evidence-gap analysis;
 - Gemini — read-only Google/search evidence when authenticated Google access is available;
-- human owner — final authority for destructive account changes, ownership, billing, secret rotation and decisions not already delegated.
+- human owner — final authority for destructive account changes, ownership, billing, secret rotation, material business/pricing decisions and decisions not already delegated.
 
 The collaboration protocol now requires an evidence receipt, explicit task owner, source of truth, write scope and handoff target. A passing bridge/self-test is not enough if the transported context is stale.
 
