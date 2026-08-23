@@ -29,7 +29,7 @@ async function mockAvailabilityWorkspace(page: import("@playwright/test").Page) 
   }));
 }
 
-test("Repair Shop owner availability uses the shared Obsidian workspace grammar", async ({ page }) => {
+test("Repair Shop owner availability uses the shared Pearl-first workspace grammar", async ({ page }) => {
   await mockAvailabilityWorkspace(page);
   await page.goto("/services/hermes-connect/repair-shops/availability/");
 
@@ -43,11 +43,19 @@ test("Repair Shop owner availability uses the shared Obsidian workspace grammar"
     const button = document.querySelector<HTMLElement>("#save-availability-btn");
     if (!root || !panel || !button) return null;
 
+    const pearlProbe = document.createElement("div");
+    pearlProbe.style.backgroundColor = "var(--hermes-pearl)";
+    document.body.appendChild(pearlProbe);
+
     const rootStyle = getComputedStyle(root);
     const panelStyle = getComputedStyle(panel);
     const buttonStyle = getComputedStyle(button);
+    const canonicalPearl = getComputedStyle(pearlProbe).backgroundColor;
+    pearlProbe.remove();
+
     return {
-      rootBackground: rootStyle.backgroundColor,
+      rootBackgroundImage: rootStyle.backgroundImage,
+      rootUsesCanonicalPearl: rootStyle.backgroundImage.includes(canonicalPearl),
       panelRadius: panelStyle.borderRadius,
       buttonBackground: buttonStyle.backgroundColor,
       buttonBackgroundImage: buttonStyle.backgroundImage,
@@ -60,11 +68,12 @@ test("Repair Shop owner availability uses the shared Obsidian workspace grammar"
   const expectedPanelRadius = viewportWidth <= 720 ? "18px" : "22px";
 
   expect(visual).not.toBeNull();
-  expect(visual!.rootBackground).toBe("rgb(11, 13, 18)");
+  expect(visual!.rootBackgroundImage).toContain("linear-gradient");
+  expect(visual!.rootUsesCanonicalPearl).toBe(true);
   expect(visual!.panelRadius).toBe(expectedPanelRadius);
-  expect(visual!.buttonBackground).toBe("rgb(255, 255, 255)");
+  expect(visual!.buttonBackground).toBe("rgb(11, 13, 18)");
   expect(visual!.buttonBackgroundImage).toBe("none");
-  expect(visual!.buttonColor).toBe("rgb(11, 13, 18)");
+  expect(visual!.buttonColor).toBe("rgb(255, 255, 255)");
   expect(visual!.buttonRadius).toBe("12px");
 });
 
