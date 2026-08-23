@@ -27,6 +27,42 @@ function isVisibleStyle(style) {
   return style.display !== "none" && style.visibility !== "hidden" && style.opacity !== "0";
 }
 
+async function readConnectRussianState(page) {
+  return page.evaluate(() => {
+    const root = document.querySelector(".hc-brand-page");
+    const rootText = root?.textContent?.replace(/\s+/g, " ").trim() ?? "";
+    const academyLinks = Array.from(root?.querySelectorAll('a[href*="/services/hermes-connect/academy/"]') ?? []).map((link) => {
+      const url = new URL(link.href);
+      return {
+        pathname: url.pathname,
+        locale: url.searchParams.get("lang"),
+        text: link.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      };
+    });
+
+    return {
+      lang: document.documentElement.lang,
+      label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
+      stored: localStorage.getItem("hermes-connect-language"),
+      hubLocale: root?.getAttribute("data-hc-hub-locale") ?? "",
+      contentLanguage: document.querySelector("[data-hc-product-context] .hc-content-language")?.textContent?.trim() ?? "",
+      englishOnlyNoticePresent: Boolean(document.querySelector("[data-hc-product-context] [data-hc-english-only]")),
+      title: document.title,
+      heroRussian: rootText.includes("Управляйте бизнесом") && rootText.includes("с AI."),
+      leadRussian: rootText.includes("Одна операционная система для лидов, записей, клиентов, операций и роста."),
+      repairShopRussian: rootText.includes("СТО уже работает") && rootText.includes("Открыть СТО"),
+      academyRussian:
+        rootText.includes("ПРИВАТНОЕ ПРОСТРАНСТВО ОБУЧЕНИЯ") &&
+        rootText.includes("Открыть Академию") &&
+        rootText.includes("Открыть обучение"),
+      academyLinkPreservesRussian: academyLinks.some(
+        (link) => link.pathname === "/services/hermes-connect/academy/" && link.locale === "ru",
+      ),
+      academyLinks,
+    };
+  });
+}
+
 try {
   for (const width of mobileWidths) {
     const { page, response } = await openHome(width);
@@ -154,11 +190,8 @@ try {
       timeout: 30_000,
     });
     await page.waitForSelector("[data-language-menu]", { state: "attached", timeout: 15_000 });
-    const initial = await page.evaluate(() => ({
-      lang: document.documentElement.lang,
-      label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
-      stored: localStorage.getItem("hermes-connect-language"),
-    }));
+    await page.waitForSelector('.hc-brand-page[data-hc-hub-locale="ru"]', { timeout: 15_000 });
+    const initial = await readConnectRussianState(page);
 
     await page.goto(`${baseUrl}/services/hermes-connect/`, {
       waitUntil: "domcontentloaded",
@@ -166,17 +199,31 @@ try {
     });
     await page.waitForURL(/\/services\/hermes-connect\/\?lang=ru$/, { timeout: 15_000 });
     await page.waitForSelector("[data-language-menu]", { state: "attached", timeout: 15_000 });
-    const restored = await page.evaluate(() => ({
-      lang: document.documentElement.lang,
-      label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
-      stored: localStorage.getItem("hermes-connect-language"),
-    }));
+    await page.waitForSelector('.hc-brand-page[data-hc-hub-locale="ru"]', { timeout: 15_000 });
+    const restored = await readConnectRussianState(page);
+
+    const languageState = (state) => state.lang === "ru" && state.label === "Русский" && state.stored === "ru";
+    const translatedState = (state) =>
+      state.hubLocale === "ru" &&
+      state.contentLanguage === "Язык контента: русский" &&
+      !state.englishOnlyNoticePresent &&
+      state.title === "Hermes Connect | AI-операционная система для бизнеса" &&
+      state.heroRussian &&
+      state.leadRussian &&
+      state.repairShopRussian;
+    const academyState = (state) => state.academyRussian && state.academyLinkPreservesRussian;
 
     connectRussian = {
       status200: response?.status() === 200,
       queryPreserved: page.url().endsWith("/services/hermes-connect/?lang=ru"),
-      initialRussian: initial.lang === "ru" && initial.label === "Русский" && initial.stored === "ru",
-      restoredRussian: restored.lang === "ru" && restored.label === "Русский" && restored.stored === "ru",
+      initialRussian: languageState(initial),
+      restoredRussian: languageState(restored),
+      initialContentRussian: translatedState(initial),
+      restoredContentRussian: translatedState(restored),
+      initialAcademyEntry: academyState(initial),
+      restoredAcademyEntry: academyState(restored),
+      initial,
+      restored,
     };
     await page.close();
   }
@@ -194,12 +241,15 @@ const desktopPass = browserChecks
   .every((item) => item.status200 && item.desktopNavVisible && item.headerActionsVisible && item.menuButtonHidden);
 const headingPass = Boolean(fourDirections?.status200 && fourDirections?.visible);
 const contactPass = Boolean(contact?.noWhiteCornerLeakContract);
-const russianPass = Boolean(
+const russianLocalePass = Boolean(
   connectRussian?.status200 &&
   connectRussian?.queryPreserved &&
   connectRussian?.initialRussian &&
   connectRussian?.restoredRussian,
 );
+const russianContentPass = Boolean(connectRussian?.initialContentRussian && connectRussian?.restoredContentRussian);
+const academyEntryPass = Boolean(connectRussian?.initialAcademyEntry && connectRussian?.restoredAcademyEntry);
+const russianPass = russianLocalePass && russianContentPass && academyEntryPass;
 
 const live = !fatalError && mobilePass && desktopPass && headingPass && contactPass && russianPass;
 const classification = live ? "LIVE_HOME_CONNECT_HOTFIX" : "HOME_CONNECT_HOTFIX_NOT_CONFIRMED";
@@ -244,9 +294,11 @@ const lines = [
   `- ${headingPass ? "✅" : "❌"} Four directions remains visible and opaque at 390 px`,
   `- ${contactPass ? "✅" : "❌"} Contact outer shell is square/full-bleed, inner surface remains rounded, page backdrop is non-white`,
   "",
-  "## Hermes Connect Russian locale",
+  "## Hermes Connect Russian locale and Hub",
   "",
-  `- ${russianPass ? "✅" : "❌"} Russian selection and saved-locale restoration work in-browser`,
+  `- ${russianLocalePass ? "✅" : "❌"} Russian selection and saved-locale restoration work in-browser`,
+  `- ${russianContentPass ? "✅" : "❌"} Russian Hub hero, lead, product-language truth, title, and Repair Shop copy render after selection and restoration`,
+  `- ${academyEntryPass ? "✅" : "❌"} Existing Academy private learner entry renders in Russian and preserves ?lang=ru`,
   "",
 ];
 
