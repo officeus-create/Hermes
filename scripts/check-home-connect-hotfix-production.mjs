@@ -153,7 +153,7 @@ try {
       waitUntil: "domcontentloaded",
       timeout: 30_000,
     });
-    await page.waitForSelector("[data-language-menu]", { timeout: 15_000 });
+    await page.waitForSelector("[data-language-menu]", { state: "attached", timeout: 15_000 });
     await page.waitForSelector('[data-hc-hub-locale="ru"]', { timeout: 15_000 });
     const initial = await page.evaluate(() => ({
       lang: document.documentElement.lang,
@@ -164,6 +164,8 @@ try {
       lead: document.querySelector(".hc-lead")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
       contentLanguage: document.querySelector(".hc-content-language")?.textContent?.trim() ?? "",
       englishOnlyNotice: document.querySelector("[data-hc-english-only]")?.textContent?.trim() ?? "",
+      academyHref: document.querySelector('.hc-brand-page a[href^="/services/hermes-connect/academy/"]')?.getAttribute("href") ?? "",
+      academyLabel: document.querySelector('.hc-brand-page a[href^="/services/hermes-connect/academy/"]')?.textContent?.replace(/\s+/g, " ").trim() ?? "",
       title: document.title,
     }));
 
@@ -172,6 +174,7 @@ try {
       timeout: 30_000,
     });
     await page.waitForURL(/\/services\/hermes-connect\/\?lang=ru$/, { timeout: 15_000 });
+    await page.waitForSelector("[data-language-menu]", { state: "attached", timeout: 15_000 });
     await page.waitForSelector('[data-hc-hub-locale="ru"]', { timeout: 15_000 });
     const restored = await page.evaluate(() => ({
       lang: document.documentElement.lang,
@@ -181,6 +184,8 @@ try {
       hero: document.querySelector("#hc-title")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
       contentLanguage: document.querySelector(".hc-content-language")?.textContent?.trim() ?? "",
       englishOnlyNotice: document.querySelector("[data-hc-english-only]")?.textContent?.trim() ?? "",
+      academyHref: document.querySelector('.hc-brand-page a[href^="/services/hermes-connect/academy/"]')?.getAttribute("href") ?? "",
+      academyLabel: document.querySelector('.hc-brand-page a[href^="/services/hermes-connect/academy/"]')?.textContent?.replace(/\s+/g, " ").trim() ?? "",
     }));
 
     connectRussian = {
@@ -188,6 +193,11 @@ try {
       queryPreserved: page.url().endsWith("/services/hermes-connect/?lang=ru"),
       initialRussian: initial.lang === "ru" && initial.label === "Русский" && initial.stored === "ru",
       restoredRussian: restored.lang === "ru" && restored.label === "Русский" && restored.stored === "ru",
+      academyEntry:
+        initial.academyHref.startsWith("/services/hermes-connect/academy/") &&
+        restored.academyHref.startsWith("/services/hermes-connect/academy/") &&
+        initial.academyLabel === "Открыть Академию" &&
+        restored.academyLabel === "Открыть Академию",
       contentRussian:
         initial.hubLocale === "ru" &&
         restored.hubLocale === "ru" &&
@@ -223,6 +233,7 @@ const russianPass = Boolean(
   connectRussian?.queryPreserved &&
   connectRussian?.initialRussian &&
   connectRussian?.restoredRussian &&
+  connectRussian?.academyEntry &&
   connectRussian?.contentRussian,
 );
 
@@ -271,7 +282,7 @@ const lines = [
   "",
   "## Hermes Connect Russian locale",
   "",
-  `- ${russianPass ? "✅" : "❌"} Russian selection, saved-locale restoration, and real Product Hub content work in-browser`,
+  `- ${russianPass ? "✅" : "❌"} Russian selection, saved-locale restoration, real Product Hub content, and the existing Academy learner entry work in-browser`,
   "",
 ];
 
