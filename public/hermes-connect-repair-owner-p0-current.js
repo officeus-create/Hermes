@@ -97,6 +97,15 @@
     }
   }
 
+  function bookingStatus(card) {
+    const pill = card.querySelector(".status-pill");
+    if (!(pill instanceof HTMLElement)) return "";
+    for (const status of ["confirmed", "in_progress", "completed", "cancelled"]) {
+      if (pill.classList.contains(`status-${status}`)) return status;
+    }
+    return "";
+  }
+
   function ensureTodayOverview() {
     if (path !== `${ROOT}/dashboard`) return null;
     const header = document.querySelector(".workspace-page .workspace-header");
@@ -133,14 +142,12 @@
     const cards = [...document.querySelectorAll("#bookings-list .booking-card")].filter((node) => node instanceof HTMLElement);
     const todayCards = cards.filter((card) => (card.querySelector(".booking-when")?.textContent || "").trim().startsWith(today));
     const activeCards = cards.filter((card) => {
-      const select = card.querySelector(".status-select");
-      const value = select instanceof HTMLSelectElement ? select.value : "";
-      return value === "confirmed" || value === "in_progress";
+      const status = bookingStatus(card);
+      return status === "confirmed" || status === "in_progress";
     });
     const upcoming = cards.find((card) => {
-      const select = card.querySelector(".status-select");
-      const value = select instanceof HTMLSelectElement ? select.value : "";
-      return value === "confirmed" || value === "in_progress";
+      const status = bookingStatus(card);
+      return status === "confirmed" || status === "in_progress";
     });
     const nextText = (upcoming?.querySelector(".booking-when")?.textContent || "").trim() || copy.none;
     const serviceCount = (document.getElementById("service-count")?.textContent || "").match(/^\d+/)?.[0] || "—";
