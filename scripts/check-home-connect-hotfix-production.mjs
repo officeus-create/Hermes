@@ -13,7 +13,7 @@ async function fetchPublic(input) {
     const response = await fetch(url, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesHotfixProductionVerifier/1.2 (+public read-only release check)",
+        "user-agent": "HermesHotfixProductionVerifier/1.3 (+public read-only release check)",
         accept: "text/html,text/css,*/*;q=0.8",
         "cache-control": "no-cache",
         pragma: "no-cache",
@@ -73,10 +73,24 @@ const homepageChecks = {
     css.includes("visibility:visible!important") &&
     css.includes("color:#fff!important"),
   safariPaintGuard: css.includes("@supports(-webkit-touch-callout:none)"),
+  contactOuterRadiusReset:
+    css.includes("#contact.home-contact-shell") &&
+    css.includes("border-radius:0!important") &&
+    css.includes("background-color:#070912!important"),
+  contactInnerRounded:
+    css.includes("#contact.home-contact-shell.home-final-contact") ||
+    (css.includes("#contact.home-contact-shell") && css.includes(".home-final-contact") && css.includes("border-radius:clamp(34px,5vw,72px)")),
   contactTransitionGuard:
-    css.includes(".home-contact-shell") &&
-    css.includes("overflow:clip") &&
-    css.includes(".home-final-contact"),
+    css.includes(".home-final-contact::after") &&
+    css.includes("clamp(80px,12vw,170px)"),
+  responsiveHeaderMobileContract:
+    css.includes("@media(max-width:900px)") &&
+    css.includes(".site-header.desktop-nav") === false &&
+    css.includes(".site-header .desktop-nav") &&
+    css.includes(".site-header .header-actions") &&
+    css.includes("display:none!important") &&
+    css.includes(".site-header .menu-button") &&
+    css.includes("display:inline-flex!important"),
 };
 
 const connect = await fetchPublic("/services/hermes-connect/?lang=ru");
