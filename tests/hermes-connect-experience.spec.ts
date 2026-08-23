@@ -123,6 +123,28 @@ test("Hermes Connect Hub presents one live product, private Academy, and adaptiv
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 });
 
+test("Hermes Connect Hub renders real Russian content and keeps Academy private entry", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/services/hermes-connect/?lang=ru");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator(".hc-brand-page")).toHaveAttribute("data-hc-hub-locale", "ru");
+  await expect(page.getByRole("heading", { name: "Управляйте бизнесом с AI." })).toBeVisible();
+  await expect(page.locator(".hc-lead")).toContainText("Одна операционная система");
+  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
+  await expect(page.locator("[data-hc-product-context] [data-hc-english-only]")).toHaveCount(0);
+  await expect(page.getByText("ПРИВАТНОЕ ПРОСТРАНСТВО ОБУЧЕНИЯ", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Открыть Академию" })).toHaveAttribute("href", "/services/hermes-connect/academy/");
+
+  await page.goto("/services/hermes-connect/");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
+  await expect(page.getByRole("heading", { name: "Управляйте бизнесом с AI." })).toBeVisible();
+  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
+});
+
 test("non-live Hermes Connect modules are reference capabilities without legacy pricing or workspace CTA", async ({ page }) => {
   await page.goto("/services/hermes-connect/proposal-builder/");
 
