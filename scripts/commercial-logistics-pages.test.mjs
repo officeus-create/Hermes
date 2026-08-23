@@ -46,6 +46,7 @@ const pages = [
       "What should we do if vehicle condition changes or damage is reported?",
       "bill of lading or condition report",
       "Does Hermes own the transporting fleet?",
+      "/logistics/resources/auction-vehicle-pickup-checklist/",
       "/logistics/car-hauling-dispatch/",
       "/contacts/",
     ],
