@@ -69,9 +69,6 @@ jobs:
             printf '%s' "$code"
           }
 
-          # Recover only an unexpired private Actions artifact whose credential file
-          # explicitly names the canonical v3 account. Never guess a credential,
-          # never create another account, and never print the password.
           ARTIFACTS_JSON="${TMP}/artifacts.json"
           ARTIFACTS_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts?name=hermes-connect-ceo-owner-qa&per_page=100"
           if ! github_get "$ARTIFACTS_URL" "$ARTIFACTS_JSON"; then
@@ -167,7 +164,6 @@ jobs:
             fi
           done
 
-          # Read everything back through the same public/private product APIs.
           PROFILE_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/profile" "$TMP/profile-get.json")"
           CAP_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-get.json")"
           AVAIL_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability-get.json")"
@@ -184,8 +180,8 @@ jobs:
           [ "$(jq -r '.capabilities.fleet_service // false' "$TMP/capabilities-get.json")" = true ] || fail 'Fleet-service capability readback mismatch.'
           [ "$(jq -r '.capabilities.mobile_roadside // false' "$TMP/capabilities-get.json")" = true ] || fail 'Mobile-roadside capability readback mismatch.'
           [ "$(jq -r '.capabilities.parallel_booking_capacity // 0' "$TMP/capabilities-get.json")" = 2 ] || fail 'Parallel booking capacity readback mismatch.'
-          [ "$(jq -r '.profile.preferred_language // empty' "$TMP/academy-profile-get.json")" = ru ] || fail 'Academy preferred-language readback mismatch.'
-          [ "$(jq -r '.profile.timezone // empty' "$TMP/academy-profile-get.json")" = Europe/Kyiv ] || fail 'Academy timezone readback mismatch.'
+          [ "$(jq -r '.learner.preferred_language // empty' "$TMP/academy-profile-get.json")" = ru ] || fail 'Academy preferred-language readback mismatch.'
+          [ "$(jq -r '.learner.timezone // empty' "$TMP/academy-profile-get.json")" = Europe/Kyiv ] || fail 'Academy timezone readback mismatch.'
 
           OPEN_DAYS="$(jq '[.days[]? | select(.is_open == true)] | length' "$TMP/availability-get.json")"
           LOGISTICS_STATE="$(jq -r '[.enrollments[]? | select(.program_slug=="us-logistics-operations")][0].state // "missing"' "$TMP/enrollments-get.json")"
