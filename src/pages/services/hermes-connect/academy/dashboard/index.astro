@@ -33,6 +33,7 @@ import "../../../../../styles/hermes-academy-app.css";
               <a class="academy-app-button" href="/academy/how-training-works/">How training works</a>
               <a class="academy-app-button" href="/academy/apply/">Public application / qualification</a>
               <a class="academy-app-button" href="/services/hermes-connect/academy/submissions/">Evidence submissions</a>
+              <a class="academy-app-button intelligence academy-app-hidden" data-reviewer-link href="/services/hermes-connect/academy/reviewer/">Reviewer workspace</a>
               <button class="academy-app-button" type="button" data-dashboard-logout>Log out</button>
             </div>
           </article>
@@ -46,8 +47,12 @@ import "../../../../../styles/hermes-academy-app.css";
         <section class="academy-app-grid">
           <article class="academy-app-panel">
             <p class="academy-app-eyebrow">Your learner profile</p>
-            <h2>Preferences, not duplicate identity.</h2>
-            <p class="academy-app-kicker"><strong data-learner-email></strong><br /><span data-learner-role></span></p>
+            <h2>One identity, learner preferences.</h2>
+            <p class="academy-app-kicker">
+              <strong data-learner-email></strong><br />
+              <span data-learner-role></span><br />
+              <span data-learner-location></span>
+            </p>
             <form class="academy-app-form" data-profile-form>
               <div class="academy-app-field">
                 <label for="academy-language">Preferred learning language</label>
@@ -67,13 +72,13 @@ import "../../../../../styles/hermes-academy-app.css";
               </div>
               <button class="academy-app-button primary" type="submit">Save learner preferences</button>
             </form>
-            <div class="academy-app-note" style="margin-top:14px">Email, name and the core Hermes identity stay in the shared identity record; this Academy profile does not copy passwords or create another account store.</div>
+            <div class="academy-app-note" style="margin-top:14px">Email, name and location stay in the shared Hermes identity; Academy stores only learning preferences and controlled program state. Passwords are never copied into a second account store.</div>
           </article>
 
           <article class="academy-app-panel">
-            <p class="academy-app-eyebrow">Program request</p>
-            <h2>Choose one approved public program.</h2>
-            <p>Creating a request records <strong>Applied</strong> only. It does not auto-approve you or choose a paid/free cohort.</p>
+            <p class="academy-app-eyebrow">Program access</p>
+            <h2 data-program-access-title>Choose an approved public program.</h2>
+            <p data-program-access-copy>Creating a request records <strong>Applied</strong> only. It does not auto-approve you or choose a paid/free cohort.</p>
             <form class="academy-app-form" data-enrollment-form>
               <div class="academy-app-field">
                 <label for="academy-program">Program</label>
@@ -94,7 +99,7 @@ import "../../../../../styles/hermes-academy-app.css";
 
         <section class="academy-app-panel" style="margin-top:18px">
           <p class="academy-app-eyebrow">Enrollment state</p>
-          <h2>Your program requests</h2>
+          <h2>Your programs</h2>
           <p data-enrollment-empty>No program request yet. Review the public curriculum first, then submit one program for human review.</p>
           <div class="academy-app-list" data-enrollment-list></div>
         </section>
@@ -118,10 +123,15 @@ import "../../../../../styles/hermes-academy-app.css";
       email: string;
       name: string;
       identity_role: string;
+      location: string | null;
       preferred_language: string | null;
       timezone: string | null;
     };
     enrollments: Enrollment[];
+    reviewer_access: {
+      active: boolean;
+      program_scope: string | null;
+    };
   };
 
   const loading = document.querySelector<HTMLElement>("[data-dashboard-loading]");
@@ -158,11 +168,15 @@ import "../../../../../styles/hermes-academy-app.css";
     const name = document.querySelector<HTMLElement>("[data-learner-name]");
     const email = document.querySelector<HTMLElement>("[data-learner-email]");
     const role = document.querySelector<HTMLElement>("[data-learner-role]");
+    const location = document.querySelector<HTMLElement>("[data-learner-location]");
+    const reviewerLink = document.querySelector<HTMLElement>("[data-reviewer-link]");
     const language = document.getElementById("academy-language") as HTMLSelectElement | null;
     const timezone = document.getElementById("academy-timezone") as HTMLInputElement | null;
     if (name) name.textContent = state.learner.name || "Learner";
     if (email) email.textContent = state.learner.email || "";
     if (role) role.textContent = `Shared Hermes identity · ${state.learner.identity_role || "Member"}`;
+    if (location) location.textContent = state.learner.location ? `Location · ${state.learner.location}` : "Location · not set";
+    if (reviewerLink) reviewerLink.classList.toggle("academy-app-hidden", !state.reviewer_access?.active);
     if (language) language.value = state.learner.preferred_language || "";
     if (timezone) timezone.value = state.learner.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "";
 
@@ -180,7 +194,8 @@ import "../../../../../styles/hermes-academy-app.css";
         const participationLabel = item.participation_model === "unspecified"
           ? "decided during human review"
           : item.participation_model.replaceAll("_", " ");
-        participation.textContent = `Participation model: ${participationLabel}`;
+        const cohortLabel = item.cohort_code ? ` · Cohort: ${item.cohort_code}` : "";
+        participation.textContent = `Participation model: ${participationLabel}${cohortLabel}`;
         detail.append(title, participation);
 
         const controls = document.createElement("div");
@@ -209,6 +224,15 @@ import "../../../../../styles/hermes-academy-app.css";
       });
       if (program.selectedOptions[0]?.disabled) program.value = "";
     }
+
+    const hasAllPrograms = ["us-logistics-operations", "marketing"].every((programSlug) =>
+      state.enrollments.some((item) => item.program_slug === programSlug),
+    );
+    const accessTitle = document.querySelector<HTMLElement>("[data-program-access-title]");
+    const accessCopy = document.querySelector<HTMLElement>("[data-program-access-copy]");
+    if (enrollmentForm) enrollmentForm.classList.toggle("academy-app-hidden", hasAllPrograms);
+    if (accessTitle && hasAllPrograms) accessTitle.textContent = "Your current program access is configured.";
+    if (accessCopy && hasAllPrograms) accessCopy.textContent = "Open either program below to continue the real learner journey. Enrollment and progression remain human-controlled for normal learners.";
 
     loading?.classList.add("academy-app-hidden");
     content?.classList.remove("academy-app-hidden");
