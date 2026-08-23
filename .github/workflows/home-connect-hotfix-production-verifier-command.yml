@@ -1,0 +1,77 @@
+name: Verify homepage and Connect hotfix on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: home-connect-hotfix-production-command
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 220 &&
+      github.event.comment.body == '/verify-home-connect-hotfix' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run exact public hotfix verifier
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          node scripts/check-home-connect-hotfix-production.mjs
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish sanitized result to issue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            if [ -f artifacts/home-connect-hotfix-production.md ]; then
+              cat artifacts/home-connect-hotfix-production.md
+            else
+              echo "# Homepage + Hermes Connect hotfix production verification"
+              echo
+              echo "The verifier did not produce its sanitized report."
+            fi
+            echo
+            echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
+            echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/home-connect-hotfix-comment.md
+          gh issue comment 220 --repo "${{ github.repository }}" --body-file /tmp/home-connect-hotfix-comment.md
+
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: home-connect-hotfix-production-verification
+          path: |
+            artifacts/home-connect-hotfix-production.json
+            artifacts/home-connect-hotfix-production.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce live hotfix result
+        shell: bash
+        run: test "${{ steps.verify.outputs.status }}" = "0"
