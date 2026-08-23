@@ -23,17 +23,62 @@ test("mobile homepage keeps Four directions visible after load", async ({ page }
   expect(paint.webkitTextFillColor).not.toContain("transparent");
 });
 
-test("homepage contact shell has a dark corner backdrop", async ({ page }) => {
+test("homepage contact shell is square outside and rounded only on the inner contact surface", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  const shell = page.locator(".home-contact-shell");
+  const shell = page.locator("#contact.home-contact-shell");
+  const contact = shell.locator(".home-final-contact");
   await shell.scrollIntoViewIfNeeded();
   await expect(shell).toBeVisible();
+  await expect(contact).toBeVisible();
 
-  const background = await shell.evaluate((node) => getComputedStyle(node).backgroundColor);
-  expect(background).not.toBe("rgb(255, 255, 255)");
+  const shellPaint = await shell.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      topLeft: style.borderTopLeftRadius,
+      topRight: style.borderTopRightRadius,
+      backgroundColor: style.backgroundColor,
+      overflow: style.overflow,
+    };
+  });
+  expect(shellPaint.topLeft).toBe("0px");
+  expect(shellPaint.topRight).toBe("0px");
+  expect(shellPaint.backgroundColor).not.toBe("rgb(255, 255, 255)");
+  expect(shellPaint.overflow).toBe("hidden");
+
+  const contactPaint = await contact.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      topLeft: style.borderTopLeftRadius,
+      topRight: style.borderTopRightRadius,
+    };
+  });
+  expect(contactPaint.topLeft).not.toBe("0px");
+  expect(contactPaint.topRight).not.toBe("0px");
 });
+
+for (const width of [360, 390, 412, 768]) {
+  test(`homepage uses mobile header contract at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+
+    await expect(page.locator(".site-header .desktop-nav")).toBeHidden();
+    await expect(page.locator(".site-header .header-actions")).toBeHidden();
+    await expect(page.locator(".site-header .menu-button")).toBeVisible();
+  });
+}
+
+for (const width of [1024, 1280]) {
+  test(`homepage keeps desktop header contract at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+
+    await expect(page.locator(".site-header .desktop-nav")).toBeVisible();
+    await expect(page.locator(".site-header .header-actions")).toBeVisible();
+    await expect(page.locator(".site-header .menu-button")).toBeHidden();
+  });
+}
 
 test("Hermes Connect Russian selection persists across product-family navigation", async ({ page }) => {
   await page.goto("/services/hermes-connect/?lang=ru");
