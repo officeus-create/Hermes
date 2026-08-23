@@ -1,4 +1,4 @@
-# Release trigger: homepage + Hermes Connect locale fixes — 2026-08-23
+# Release trigger: production sync after LCP preload rollback — 2026-08-23
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
