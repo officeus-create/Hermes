@@ -7,7 +7,7 @@
 html.hc-experience .workspace-page,
 html.hc-experience .availability-page,
 html.hc-experience .customers-page {
-  --hc-workspace-bg: #f4f2ed;
+  --hc-workspace-bg: var(--hermes-pearl);
   --hc-workspace-panel: rgba(255, 255, 255, .92);
   --hc-workspace-panel-soft: #f8f7f3;
   --hc-workspace-panel-hover: #fff;
@@ -112,11 +112,11 @@ html.hc-experience .customers-page .state-card { padding: 20px; }
 html.hc-experience .workspace-page .primary-btn,
 html.hc-experience .availability-page .primary-btn {
   min-height: 46px;
-  border: 1px solid #171a24;
+  border: 1px solid var(--hermes-obsidian);
   border-radius: 12px;
   padding: 11px 15px;
   color: #fff;
-  background: #171a24;
+  background: var(--hermes-obsidian);
   box-shadow: 0 9px 24px rgba(20, 25, 38, .14);
   font-weight: 800;
 }
