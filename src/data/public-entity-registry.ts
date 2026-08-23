@@ -113,14 +113,14 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
   },
   hermes_it: {
     id: "hermes_it",
-    publicName: "Hermes IT Development",
+    publicName: "Hermes Technology",
     schemaId: "https://hermeslogisticsus.com/#technology",
     websiteOwner: "/paths/technology/",
     relationshipStatus: "owner_verification_required",
     schemaPublication: "hold",
     socialProfiles: [],
     notes:
-      "The service direction is public, but a separate organization/brand identity and social account map have not been approved.",
+      "Hermes Technology is the canonical public direction label. IT Development may remain a subordinate service/operating label, but a separate organization/brand identity and social account map have not been approved.",
   },
 };
 
