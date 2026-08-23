@@ -17,7 +17,7 @@ The most directly reusable mechanism found in the archaeology pass. Use this to 
 
 Rule: autonomy continues until the next boundary is crossed — don't stop mid-tier to ask about something the current tier already covers. For A3–A5, state before acting: action / target / expected result / risk / rollback / test result / approval source / who is monitoring.
 
-Standing rules regardless of tier: never overwrite raw business data silently; distinguish `DRAFT_CREATED` from `SENT`; never put secrets in shared docs, prompts, or commits (see the owner's 2026-08-23 note: credential rotation is intentionally deferred until first revenue, not being ignored — track exposed secrets, don't act on them alone).
+Standing rules regardless of tier: never overwrite raw business data silently; distinguish `DRAFT_CREATED` from `SENT`; never put secrets — or specifics of a known credential exposure — in shared docs, prompts, commits, or any other public/semi-public artifact. Known credential exposures are tracked only in the private security register; secret values and identifying exposure details must never enter public Git, shared prompts, or public artifacts.
 
 ## 2. Conflict-lock / work-ownership
 
