@@ -55,7 +55,9 @@
 .home-contact-shell {
   position: relative;
   overflow: clip;
-  background: #070912 !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(124,92,255,.14), transparent 34rem),
+    linear-gradient(180deg, #0a0c17 0%, #080a12 38%, #070912 100%) !important;
   isolation: isolate;
 }
 
