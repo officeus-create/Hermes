@@ -12,6 +12,7 @@ const sitemapFiles = (await readdir(dist, { withFileTypes: true }))
 const sitemap = (await Promise.all(sitemapFiles.map((file) => readFile(join(dist, file), "utf8")))).join("\n");
 const homepage = await readFile(join(dist, "index.html"), "utf8");
 const logisticsHub = await readFile(join(dist, "paths", "logistics", "index.html"), "utf8");
+const auctionChecklist = await readFile(join(dist, "logistics", "resources", "auction-vehicle-pickup-checklist", "index.html"), "utf8");
 
 const pages = [
   {
@@ -125,6 +126,22 @@ for (const page of pages) {
   assert.ok(logisticsHub.includes(`href="${page.route}"`), `${page.route} is not linked from the logistics hub`);
 }
 
+const auctionEntities = parseJsonLd(auctionChecklist);
+const auctionArticle = auctionEntities.find((entity) => entity?.["@type"] === "Article");
+const auctionFaq = auctionEntities.find((entity) => entity?.["@type"] === "FAQPage");
+assert.equal(getTagText(auctionChecklist, "title"), "Auction Vehicle Pickup Checklist | Hermes Logistics", "auction winner title must remain protected");
+assert.equal(getTagText(auctionChecklist, "h1"), "Auction Vehicle Pickup Checklist", "auction winner H1 must remain protected");
+assert.equal(getLinkHref(auctionChecklist, "canonical"), "https://hermeslogisticsus.com/logistics/resources/auction-vehicle-pickup-checklist/", "auction winner canonical must remain protected");
+assert.equal(auctionArticle?.dateModified, "2026-08-24", "auction winner Article dateModified must reflect the depth update");
+assert.ok(auctionArticle?.about?.length >= 3, "auction winner Article entity topics are missing");
+assert.ok(auctionFaq?.mainEntity?.length >= 5, "auction winner FAQ extraction layer is incomplete");
+for (const question of auctionFaq.mainEntity) assert.ok(auctionChecklist.includes(question.name), `auction winner FAQ question is not visible: ${question.name}`);
+for (const href of [
+  "/logistics/auction-vehicle-pickup/",
+  "/logistics/dealer-vehicle-transportation/",
+  "/logistics/resources/car-hauler-capacity-checklist/",
+]) assert.ok(auctionChecklist.includes(`href="${href}"`), `auction winner is missing related authority path ${href}`);
+
 assert.ok(homepage.includes('href="/paths/logistics/"'), "Focused homepage must link directly into the Logistics hub");
 for (const route of logisticsPriorityRoutes) {
   assert.ok(logisticsHub.includes(`href="${route}"`), `${route} is not linked from the Logistics discovery layer`);
@@ -160,4 +177,4 @@ assert.deepEqual(indexNowDryRun.urlList, [
   "https://hermeslogisticsus.com/logistics/resources/car-hauler-capacity-checklist/",
 ]);
 
-console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${logisticsPriorityRoutes.length} Logistics discovery links behind the focused homepage, ${wisconsinHubRoutes.length} Wisconsin hub links, and an offline-validated IndexNow payload.`);
+console.log(`Commercial logistics page checks passed: ${pages.length} indexable commercial pages, ${logisticsPriorityRoutes.length} Logistics discovery links behind the focused homepage, ${wisconsinHubRoutes.length} Wisconsin hub links, the protected auction winner depth layer, and an offline-validated IndexNow payload.`);
