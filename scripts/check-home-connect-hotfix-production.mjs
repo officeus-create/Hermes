@@ -153,7 +153,7 @@ try {
       waitUntil: "domcontentloaded",
       timeout: 30_000,
     });
-    await page.waitForSelector("[data-language-menu]", { timeout: 15_000 });
+    await page.waitForSelector("[data-language-menu]", { state: "attached", timeout: 15_000 });
     const initial = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
@@ -165,6 +165,7 @@ try {
       timeout: 30_000,
     });
     await page.waitForURL(/\/services\/hermes-connect\/\?lang=ru$/, { timeout: 15_000 });
+    await page.waitForSelector("[data-language-menu]", { state: "attached", timeout: 15_000 });
     const restored = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
