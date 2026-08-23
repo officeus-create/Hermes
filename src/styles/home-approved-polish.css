@@ -1,0 +1,151 @@
+/* CEO-approved homepage polish, 2026-08-23.
+ * Keep the semantic content intact while matching the approved visual direction:
+ * dark edge backing, luminous section handoffs, and a cleaner mobile entrance.
+ */
+
+body:has(.hermes-home-recovery) {
+  background: #070910;
+}
+
+.hermes-home-recovery {
+  background: #070910;
+}
+
+.hermes-home-recovery .home-rooms-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.hermes-home-recovery .home-rooms-shell::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -12vw;
+  right: -12vw;
+  top: 25%;
+  height: clamp(18rem, 38vw, 34rem);
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 28% 54%, rgba(124,92,255,.16), transparent 38%),
+    radial-gradient(ellipse at 69% 58%, rgba(90,200,250,.11), transparent 34%),
+    linear-gradient(104deg, transparent 16%, rgba(124,92,255,.08) 48%, rgba(90,200,250,.06) 62%, transparent 84%);
+  filter: blur(10px);
+  opacity: .88;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 72%, transparent 100%);
+}
+
+.hermes-home-recovery .home-rooms-grid {
+  position: relative;
+  box-shadow:
+    0 -18px 70px rgba(124,92,255,.07),
+    0 34px 110px rgba(0,0,0,.38);
+}
+
+/* The rounded contact shell now sits on a dark backing instead of the page default,
+ * eliminating the white wedges that were visible outside the top corners. */
+#contact.home-contact-shell {
+  box-shadow:
+    0 -1px 0 rgba(255,255,255,.04),
+    0 -28px 88px rgba(90,200,250,.08),
+    0 -48px 138px rgba(124,92,255,.14),
+    inset 0 1px 0 rgba(255,255,255,.07);
+}
+
+#contact.home-contact-shell::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: clamp(7rem, 14vw, 12rem);
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.055), transparent 18%),
+    radial-gradient(ellipse at 14% 0%, rgba(124,92,255,.26), transparent 42%),
+    radial-gradient(ellipse at 80% 0%, rgba(90,200,250,.18), transparent 40%);
+  opacity: .84;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.72) 38%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.72) 38%, transparent 100%);
+}
+
+#contact.home-contact-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 620px) {
+  /* Approved mobile composition: keep FOUR DIRECTIONS as the orientation label,
+   * remove the large handwritten/title treatment from view, and let atmosphere
+   * bridge directly into the direction cards. The H1 remains in the DOM for
+   * document structure and accessibility. */
+  .hermes-home-recovery .home-rooms-intro h1,
+  .hermes-home-recovery .home-rooms-ink-note {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .hermes-home-recovery .home-rooms-intro {
+    position: relative;
+    margin-bottom: 1.25rem;
+  }
+
+  .hermes-home-recovery .home-rooms-intro::after {
+    content: "";
+    position: absolute;
+    right: -18vw;
+    bottom: -1.4rem;
+    left: -18vw;
+    height: 8rem;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 48% 82%, rgba(124,92,255,.22), transparent 46%),
+      radial-gradient(ellipse at 66% 86%, rgba(90,200,250,.15), transparent 35%);
+    filter: blur(8px);
+    opacity: .92;
+  }
+
+  .hermes-home-recovery .home-rooms-grid {
+    gap: .78rem;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .hermes-home-recovery .home-room {
+    min-height: 210px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 26px;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--room-accent) 45%, transparent),
+      0 20px 58px rgba(0,0,0,.30),
+      0 -8px 34px color-mix(in srgb, var(--room-glow) 62%, transparent);
+  }
+
+  .hermes-home-recovery .home-room-image,
+  .hermes-home-recovery .home-room-shade,
+  .hermes-home-recovery .home-room-orbit {
+    border-radius: inherit;
+  }
+
+  #contact.home-contact-shell {
+    box-shadow:
+      0 -1px 0 rgba(255,255,255,.04),
+      0 -20px 62px rgba(90,200,250,.07),
+      0 -34px 96px rgba(124,92,255,.13),
+      inset 0 1px 0 rgba(255,255,255,.07);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hermes-home-recovery .home-rooms-shell::before,
+  #contact.home-contact-shell::after {
+    animation: none !important;
+  }
+}
