@@ -111,14 +111,33 @@ jobs:
           );
 
           await query(
-            `UPDATE specialists
-             SET location = ?, bio = ?
-             WHERE id = ?`,
-            [
-              'Kyiv, Ukraine',
-              'Hermes CEO QA identity for Repair Shops and Academy product verification.',
-              specialistId,
-            ],
+            `UPDATE specialists SET location = ?, bio = ? WHERE id = ?`,
+            ['Kyiv, Ukraine', 'Hermes CEO QA identity for Repair Shops and Academy product verification.', specialistId],
+          );
+
+          await query(`
+            CREATE TABLE IF NOT EXISTS repair_shop_capabilities (
+              shop_id TEXT PRIMARY KEY,
+              vehicle_types TEXT NOT NULL DEFAULT '[]',
+              fleet_service INTEGER NOT NULL DEFAULT 0,
+              mobile_roadside INTEGER NOT NULL DEFAULT 0,
+              emergency_24_7 INTEGER NOT NULL DEFAULT 0,
+              parallel_booking_capacity INTEGER NOT NULL DEFAULT 1,
+              updated_at TEXT NOT NULL
+            )
+          `);
+          await query(
+            `INSERT OR IGNORE INTO repair_shop_capabilities
+             (shop_id, vehicle_types, fleet_service, mobile_roadside, emergency_24_7, parallel_booking_capacity, updated_at)
+             VALUES (?, ?, 1, 1, 0, 2, ?)`,
+            [shop.id, JSON.stringify(['passenger_light','commercial_truck','trailer']), now],
+          );
+          await query(
+            `UPDATE repair_shop_capabilities
+             SET vehicle_types = ?, fleet_service = 1, mobile_roadside = 1, emergency_24_7 = 0,
+                 parallel_booking_capacity = 2, updated_at = ?
+             WHERE shop_id = ?`,
+            [JSON.stringify(['passenger_light','commercial_truck','trailer']), now, shop.id],
           );
 
           await query(`
@@ -148,6 +167,11 @@ jobs:
              FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1`,
             [specialistId],
           ))[0];
+          const capabilities = (await query(
+            `SELECT vehicle_types,fleet_service,mobile_roadside,emergency_24_7,parallel_booking_capacity
+             FROM repair_shop_capabilities WHERE shop_id = ? LIMIT 1`,
+            [shop.id],
+          ))[0];
           const academy = (await query(
             `SELECT preferred_language,timezone FROM academy_learner_profiles
              WHERE specialist_id = ? LIMIT 1`,
@@ -159,6 +183,9 @@ jobs:
             repaired?.city !== 'Milwaukee' ||
             repaired?.state !== 'WI' ||
             repaired?.timezone !== 'America/Chicago' ||
+            capabilities?.fleet_service !== 1 ||
+            capabilities?.mobile_roadside !== 1 ||
+            capabilities?.parallel_booking_capacity !== 2 ||
             academy?.preferred_language !== 'ru' ||
             academy?.timezone !== 'Europe/Kyiv'
           ) throw new Error('Profile verification mismatch after D1 update.');
@@ -181,13 +208,14 @@ jobs:
             '## Hermes Connect CEO QA profile refresh — PASS',
             '',
             `- Existing account updated in place: \`${email}\``,
-            '- ✅ Repair Shop profile: Northstar Auto Care — Hermes CEO QA · Milwaukee, WI · America/Chicago',
-            '- ✅ Academy profile: preferred language `ru` · timezone `Europe/Kyiv`',
+            '- ✅ Repair Shop: Northstar Auto Care — Hermes CEO QA · Milwaukee, WI · America/Chicago',
+            '- ✅ Capabilities: cars/light vehicles + commercial trucks + trailers · fleet service · mobile roadside · capacity 2; 24/7 emergency remains off.',
+            '- ✅ Academy: preferred language `ru` · timezone `Europe/Kyiv`',
             '- ✅ Shared Hermes identity preserved; no second account, password store, shop, slug, auth runtime, or D1 was created.',
           ];
           if (servicesCount !== null) lines.push(`- Existing public services observed: **${servicesCount}**`);
           if (availabilityCount !== null) lines.push(`- Existing open availability days observed: **${availabilityCount}**`);
-          lines.push('', '> No password, token, account ID, D1 ID, or private credential is published by this workflow.');
+          lines.push('', '> All shop data above is synthetic CEO QA profile data. No password, token, account ID, D1 ID, or private credential is published by this workflow.');
           fs.writeFileSync(resultPath, `${lines.join('\n')}\n`);
           NODE
 
