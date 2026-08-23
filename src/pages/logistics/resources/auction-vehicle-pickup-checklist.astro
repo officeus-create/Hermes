@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, ArrowRight, Check, ClipboardCheck, FileCheck, MapPin, ShieldCheck } from "@lucide/astro";
+import { ArrowLeft, ArrowRight, Check, ClipboardCheck, FileCheck, ShieldCheck, Truck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
@@ -10,6 +10,28 @@ const description =
 const canonicalUrl = new URL("/logistics/resources/auction-vehicle-pickup-checklist/", Astro.site).toString();
 const directAuctionIntake = "/logistics/request-vehicle-transport/?request=auction_pickup#transport-intake";
 const loadBoardDemo = "/load-board/?role=shipper#post-load";
+const faq = [
+  {
+    question: "What should be confirmed before an auction vehicle pickup?",
+    answer: "Confirm the vehicle is released, the exact pickup facility and gate instructions, pickup hours, storage deadline, vehicle condition, keys, authorized pickup reference, delivery location, and any equipment or access constraints.",
+  },
+  {
+    question: "What if an auction vehicle does not start?",
+    answer: "Describe whether it starts, rolls, steers, and brakes and disclose visible damage, locked wheels, suspension issues, missing keys, or other conditions that can change loading requirements. Inoperable vehicles may require different equipment or handling.",
+  },
+  {
+    question: "Which auction pickup details help reduce avoidable delays?",
+    answer: "Useful details include the facility name, exact pickup address, lot or stock reference, release status, pickup hours, appointment rules, storage deadline, keys, current condition, loading restrictions, delivery contact, and realistic timing window.",
+  },
+  {
+    question: "Does a storage deadline guarantee pickup before fees begin?",
+    answer: "No. A storage deadline is an important planning constraint, but pickup still depends on release, route, equipment, facility access, legal operating limits, weather, current qualified capacity, and final confirmation.",
+  },
+  {
+    question: "Should auction account passwords or sensitive credentials be sent with a transport request?",
+    answer: "No. Prepare only the non-sensitive buyer, stock, lot, gate-pass, or release reference needed for review. Do not send account passwords or other sensitive credentials through a public request.",
+  },
+];
 const schema = [
   {
     "@context": "https://schema.org",
@@ -17,8 +39,13 @@ const schema = [
     headline: "Auction Vehicle Pickup Checklist",
     description,
     datePublished: "2026-07-29",
-    dateModified: "2026-08-04",
+    dateModified: "2026-08-24",
     mainEntityOfPage: canonicalUrl,
+    about: [
+      { "@type": "Thing", name: "Auction vehicle pickup" },
+      { "@type": "Thing", name: "Vehicle transport preparation" },
+      { "@type": "Thing", name: "Car hauling" },
+    ],
     author: { "@type": "Organization", name: "Hermes Logistics" },
     publisher: {
       "@type": "Organization",
@@ -36,6 +63,15 @@ const schema = [
       { "@type": "ListItem", position: 3, name: "Resources", item: "https://hermeslogisticsus.com/paths/logistics/#logistics-resources" },
       { "@type": "ListItem", position: 4, name: "Auction Vehicle Pickup Checklist", item: canonicalUrl },
     ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
   },
 ];
 import "../../../styles/features/resource.css";
@@ -191,6 +227,31 @@ import "../../../styles/features/appleton.css";
           </div>
         </section>
 
+        <section class="section resource-content" aria-labelledby="auction-faq-title">
+          <div class="shell resource-article-grid">
+            <div class="resource-toc">
+              <p>Quick answers</p>
+              <span>Release</span>
+              <span>Condition</span>
+              <span>Access</span>
+              <span>Deadlines</span>
+              <span>Credentials</span>
+            </div>
+            <div class="resource-sections">
+              <section>
+                <p class="eyebrow">Auction pickup FAQ</p>
+                <h2 id="auction-faq-title">Questions to resolve before the truck arrives.</h2>
+              </section>
+              {faq.map((item) => (
+                <section>
+                  <h3>{item.question}</h3>
+                  <p>{item.answer}</p>
+                </section>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section class="section resource-related" aria-labelledby="auction-related-title">
           <div class="shell">
             <div class="section-heading">
@@ -198,8 +259,8 @@ import "../../../styles/features/appleton.css";
               <h2 id="auction-related-title">Related Hermes Logistics paths.</h2>
             </div>
             <div class="resource-related-grid">
-              <a href="/logistics/appleton-wi-vehicle-transport/"><MapPin size={22} aria-hidden="true" /><h3>Appleton vehicle transport</h3><p>A local example for dealer, auction, business, and private moves.</p><strong>Open guide <ArrowRight size={16} aria-hidden="true" /></strong></a>
-              <a href="/logistics/shipper-dealer/"><ClipboardCheck size={22} aria-hidden="true" /><h3>Shipper and dealer path</h3><p>See what helps Hermes review and route a vehicle transport request.</p><strong>Open path <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/auction-vehicle-pickup/"><Truck size={22} aria-hidden="true" /><h3>Auction vehicle pickup services</h3><p>Move from preparation guidance into the commercial auction-pickup review path.</p><strong>Open service <ArrowRight size={16} aria-hidden="true" /></strong></a>
+              <a href="/logistics/dealer-vehicle-transportation/"><ClipboardCheck size={22} aria-hidden="true" /><h3>Dealer vehicle transportation</h3><p>Review dealer inventory, auction, multi-unit, and equipment coordination requirements.</p><strong>Open dealer path <ArrowRight size={16} aria-hidden="true" /></strong></a>
               <a href="/logistics/resources/car-hauler-capacity-checklist/"><ShieldCheck size={22} aria-hidden="true" /><h3>Car hauler capacity checklist</h3><p>What carriers can prepare when sharing equipment and availability.</p><strong>Open checklist <ArrowRight size={16} aria-hidden="true" /></strong></a>
             </div>
           </div>
