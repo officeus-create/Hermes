@@ -72,15 +72,21 @@ assert(privateWorkspaceCss.includes("Northstar") === false, "Visual CSS must not
 assert(academyCss.includes("linear-gradient(145deg,#fff,#f4f1ff"), "Academy emphasis card must use the light intelligence surface.");
 assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-line-dark)"), "Academy must not restore the previous full Obsidian emphasis card.");
 
-// CEO profile refresh is in-place only: exact v3 identity, canonical Pages DB binding, no duplicate identity/shop creation.
+// CEO profile refresh is in-place only. It authenticates the exact v3 identity through
+// canonical production APIs, using only the matching retained Actions credential artifact.
+// It must not depend on a Cloudflare admin token or self-grant controlled Academy privileges.
 assert(ceoRefreshWorkflow.includes("officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com"), "CEO refresh must target the existing v3 QA identity.");
-assert(ceoRefreshWorkflow.includes("deployment_configs?.production?.d1_databases?.DB"), "CEO refresh must resolve the canonical production DB binding.");
-assert(ceoRefreshWorkflow.includes("UPDATE repair_shops"), "CEO refresh must update the existing Repair Shop profile in place.");
-assert(ceoRefreshWorkflow.includes("repair_shop_capabilities"), "CEO refresh must fill the existing capability profile rather than leave the QA shop visually empty.");
-assert(ceoRefreshWorkflow.includes("INSERT OR IGNORE INTO academy_learner_profiles"), "CEO refresh must ensure the existing identity has Academy preferences.");
-assert(ceoRefreshWorkflow.includes("academy_enrollments") && ceoRefreshWorkflow.includes("'CEO-QA'"), "CEO refresh must provision bounded Academy QA enrollment through the existing human-controlled table.");
-assert(ceoRefreshWorkflow.includes("academy_reviewer_access"), "CEO refresh must use the existing reviewer-access table for CEO QA inspection.");
-assert(!/UPDATE\s+specialists\s+SET[^;]*\brole\s*=/is.test(ceoRefreshWorkflow), "CEO refresh must not mutate the shared identity role to bypass authorization.");
+assert(ceoRefreshWorkflow.includes("actions: read"), "CEO refresh must have read-only Actions artifact permission for the existing secure handoff.");
+assert(ceoRefreshWorkflow.includes("hermes-connect-ceo-owner-qa"), "CEO refresh must locate the existing CEO QA credential artifact rather than create another identity.");
+assert(ceoRefreshWorkflow.includes("/api/auth/login"), "CEO refresh must authenticate through the canonical production auth API.");
+assert(ceoRefreshWorkflow.includes("/api/repair-shop/profile"), "CEO refresh must update/read the existing Repair Shop profile through its owner API.");
+assert(ceoRefreshWorkflow.includes("/api/repair-shop/capabilities"), "CEO refresh must fill the existing Repair Shop capability profile through its owner API.");
+assert(ceoRefreshWorkflow.includes("/api/academy/profile"), "CEO refresh must fill existing Academy learner preferences through the shared identity API.");
+assert(ceoRefreshWorkflow.includes("/api/academy/enrollments"), "CEO refresh may submit normal learner program requests through the existing enrollment API.");
+assert(!ceoRefreshWorkflow.includes("CLOUDFLARE_API_TOKEN"), "CEO refresh must not require unavailable Cloudflare admin credentials.");
+assert(!ceoRefreshWorkflow.includes("/d1/database/"), "CEO refresh must not bypass the product APIs with direct D1 admin queries.");
+assert(!ceoRefreshWorkflow.includes("academy_reviewer_access"), "CEO refresh must not self-grant reviewer authorization.");
+assert(!ceoRefreshWorkflow.includes("'CEO-QA'"), "CEO refresh must not force controlled cohort/enrollment state through an ops shortcut.");
 assert(!ceoRefreshWorkflow.includes("INSERT INTO specialists"), "CEO refresh must never create a duplicate Hermes identity.");
 assert(!ceoRefreshWorkflow.includes("INSERT INTO repair_shops"), "CEO refresh must never create a duplicate shop/slug.");
 
@@ -95,4 +101,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, and CEO QA data is provisioned in-place through existing controlled tables.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, and CEO QA profile refresh stays inside the existing authenticated production APIs without privilege bypasses.");
