@@ -3,6 +3,7 @@ import { expect, test } from "@playwright/test";
 const productRoute = "/services/hermes-connect/";
 const pilotRoute = "/services/hermes-connect/repair-shops/";
 const ownerAuthRoute = "/services/hermes-connect/repair-shops/auth/";
+const academyRoute = "/services/hermes-connect/academy/";
 
 test("Hermes Connect has one indexed adaptive product-family overview and one current live product", async ({ page }) => {
   await page.goto(productRoute);
@@ -16,8 +17,10 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
   expect(await page.locator(`a[href="${ownerAuthRoute}"]`).count()).toBeGreaterThan(0);
+  expect(await page.locator(`main a[href="${academyRoute}"]`).count()).toBeGreaterThan(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
-  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
+  await expect(page.getByText("PRIVATE LEARNER WORKSPACE", { exact: true })).toBeVisible();
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(4);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 
