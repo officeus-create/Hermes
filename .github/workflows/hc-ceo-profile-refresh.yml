@@ -149,6 +149,29 @@ jobs:
               updated_at TEXT NOT NULL
             )
           `);
+          await query(`
+            CREATE TABLE IF NOT EXISTS academy_enrollments (
+              id TEXT PRIMARY KEY,
+              specialist_id TEXT NOT NULL,
+              program_slug TEXT NOT NULL CHECK (program_slug IN ('us-logistics-operations','marketing')),
+              state TEXT NOT NULL CHECK (state IN ('applied','approved','enrolled','paused','completed','cancelled')),
+              participation_model TEXT NOT NULL CHECK (participation_model IN ('free_practice','paid_cohort','unspecified')),
+              cohort_code TEXT,
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL,
+              UNIQUE(specialist_id, program_slug)
+            )
+          `);
+          await query(`
+            CREATE TABLE IF NOT EXISTS academy_reviewer_access (
+              specialist_id TEXT PRIMARY KEY,
+              active INTEGER NOT NULL DEFAULT 0 CHECK (active IN (0,1)),
+              program_scope TEXT CHECK (program_scope IS NULL OR program_scope IN ('us-logistics-operations','marketing')),
+              created_at TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            )
+          `);
+
           await query(
             `INSERT OR IGNORE INTO academy_learner_profiles
              (specialist_id, preferred_language, timezone, created_at, updated_at)
@@ -160,6 +183,25 @@ jobs:
              SET preferred_language = 'ru', timezone = 'Europe/Kyiv', updated_at = ?
              WHERE specialist_id = ?`,
             [now, specialistId],
+          );
+
+          for (const program of ['us-logistics-operations', 'marketing']) {
+            await query(
+              `INSERT INTO academy_enrollments
+               (id, specialist_id, program_slug, state, participation_model, cohort_code, created_at, updated_at)
+               VALUES (?, ?, ?, 'enrolled', 'free_practice', 'CEO-QA', ?, ?)
+               ON CONFLICT(specialist_id, program_slug) DO UPDATE SET
+                 state = 'enrolled', participation_model = 'free_practice', cohort_code = 'CEO-QA', updated_at = excluded.updated_at`,
+              [`academy-${crypto.randomUUID()}`, specialistId, program, now, now],
+            );
+          }
+
+          await query(
+            `INSERT INTO academy_reviewer_access
+             (specialist_id, active, program_scope, created_at, updated_at)
+             VALUES (?, 1, NULL, ?, ?)
+             ON CONFLICT(specialist_id) DO UPDATE SET active = 1, program_scope = NULL, updated_at = excluded.updated_at`,
+            [specialistId, now, now],
           );
 
           const repaired = (await query(
@@ -177,6 +219,15 @@ jobs:
              WHERE specialist_id = ? LIMIT 1`,
             [specialistId],
           ))[0];
+          const enrollments = await query(
+            `SELECT program_slug,state,participation_model,cohort_code FROM academy_enrollments
+             WHERE specialist_id = ? ORDER BY program_slug`,
+            [specialistId],
+          );
+          const reviewer = (await query(
+            `SELECT active,program_scope FROM academy_reviewer_access WHERE specialist_id = ? LIMIT 1`,
+            [specialistId],
+          ))[0];
 
           if (
             repaired?.name !== 'Northstar Auto Care — Hermes CEO QA' ||
@@ -187,7 +238,10 @@ jobs:
             capabilities?.mobile_roadside !== 1 ||
             capabilities?.parallel_booking_capacity !== 2 ||
             academy?.preferred_language !== 'ru' ||
-            academy?.timezone !== 'Europe/Kyiv'
+            academy?.timezone !== 'Europe/Kyiv' ||
+            enrollments.length !== 2 ||
+            enrollments.some((row) => row?.state !== 'enrolled' || row?.participation_model !== 'free_practice' || row?.cohort_code !== 'CEO-QA') ||
+            reviewer?.active !== 1
           ) throw new Error('Profile verification mismatch after D1 update.');
 
           let servicesCount = null;
@@ -210,12 +264,14 @@ jobs:
             `- Existing account updated in place: \`${email}\``,
             '- ✅ Repair Shop: Northstar Auto Care — Hermes CEO QA · Milwaukee, WI · America/Chicago',
             '- ✅ Capabilities: cars/light vehicles + commercial trucks + trailers · fleet service · mobile roadside · capacity 2; 24/7 emergency remains off.',
-            '- ✅ Academy: preferred language `ru` · timezone `Europe/Kyiv`',
+            '- ✅ Academy profile: preferred language `ru` · timezone `Europe/Kyiv`',
+            '- ✅ Academy QA access: U.S. Logistics Operations + Marketing = `enrolled / free_practice / CEO-QA`',
+            '- ✅ Academy reviewer access enabled for the same CEO QA identity, without changing normal learner enrollment rules.',
             '- ✅ Shared Hermes identity preserved; no second account, password store, shop, slug, auth runtime, or D1 was created.',
           ];
           if (servicesCount !== null) lines.push(`- Existing public services observed: **${servicesCount}**`);
           if (availabilityCount !== null) lines.push(`- Existing open availability days observed: **${availabilityCount}**`);
-          lines.push('', '> All shop data above is synthetic CEO QA profile data. No password, token, account ID, D1 ID, or private credential is published by this workflow.');
+          lines.push('', '> All shop/course state above is synthetic CEO QA data. No password, token, account ID, D1 ID, or private credential is published by this workflow.');
           fs.writeFileSync(resultPath, `${lines.join('\n')}\n`);
           NODE
 
