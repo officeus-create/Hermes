@@ -7,12 +7,17 @@ Use one numbered slot per real shop. Keep shop names, contact details, customer 
 
 ## Release gates before a real first-5 cohort
 
-Do not move a real shop from `INVITED` into `REGISTERED` or later cohort tracking until the current Repair Shop release path has cleared the applicable launch gates:
+Do not move a real shop from `INVITED` into `REGISTERED` or later cohort tracking until the selected exact `main` release has cleared the applicable production gates:
 
-- canonical Repair Shop P0 release candidate is merged and production-smoked;
-- Cloudflare Preview D1 evidence gate #687 is cleared for the release candidate/re-review path;
-- local tunnel security gate #579/#566 is cleared or the pilot is explicitly proven independent of that disabled legacy runtime by the security owner;
-- no second D1, auth stack or Hermes Connect runtime is introduced to bypass a gate.
+- canonical Repair Shop P0/current closure release is merged to `main` and the exact deployed SHA is recorded;
+- exact-current-main production smoke proves the real registration/auth → profile → services → availability → public booking → owner visibility loop on the canonical production domain;
+- desktop and 390px browser acceptance is green for the selected release, including applicable locale behavior;
+- local legacy tunnel issue #579 remains stopped and the current web pilot is explicitly independent of that legacy runtime; retiring/containing the local file remains a separate security task and must not be bypassed by reintroducing it;
+- Cloudflare Preview D1 issue #687 is **not** an unconditional blocker to a tightly controlled production first-5 cohort when the exact `main` production smoke above is green. #687 remains required before a branch Preview is treated as a trusted D1-backed acceptance/re-review environment;
+- automated password-reset email issue #611 may remain on the existing localized support fallback until its scoped Cloudflare deploy credential + production email proof is complete; do not claim automated reset-email delivery is live before that proof;
+- no second D1, auth stack, copied runtime, mock authority or legacy workspace is introduced to bypass a gate.
+
+A generic PR Preview without the canonical `DB` binding must fail closed and must not be represented as D1-backed acceptance evidence.
 
 Allowed cohort state:
 `DATA_PENDING | INVITED | REGISTERED | ACTIVATED | FIRST_BOOKING | COMPLETED_SERVICE | 7D_ACTIVE | PAID_INTENT | PAID | PAUSED`
