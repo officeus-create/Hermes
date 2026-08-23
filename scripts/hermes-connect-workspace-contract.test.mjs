@@ -19,6 +19,7 @@ const js = await text("workspace.js");
 const enhancements = await text("workspace-enhancements.js");
 const privateWorkspaceCss = await readFile(join(root, "src", "styles", "hermes-connect-workspace.css"), "utf8");
 const academyCss = await readFile(join(root, "src", "styles", "hermes-academy-app.css"), "utf8");
+const ownerCurrentJs = await readFile(join(root, "public", "hermes-connect-repair-owner-p0-current.js"), "utf8");
 const ceoRefreshWorkflow = await readFile(join(root, ".github", "workflows", "hc-ceo-profile-refresh.yml"), "utf8");
 
 for (const [name, html] of [["workspace.html", workspace], ["review.html", review]]) {
@@ -72,6 +73,15 @@ assert(privateWorkspaceCss.includes("Northstar") === false, "Visual CSS must not
 assert(academyCss.includes("linear-gradient(145deg,#fff,#f4f1ff"), "Academy emphasis card must use the light intelligence surface.");
 assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-line-dark)"), "Academy must not restore the previous full Obsidian emphasis card.");
 
+// Today overview is a derived presentation layer only: it must reuse already-rendered
+// owner DOM state instead of duplicating profile/services/bookings network reads.
+assert(ownerCurrentJs.includes("data-hc-today-overview"), "Repair Shop owner helper must expose the bounded Today overview.");
+assert(ownerCurrentJs.includes("function updateTodayOverview"), "Repair Shop Today overview must remain explicitly derived and refreshable.");
+assert(ownerCurrentJs.includes("shop-timezone"), "Repair Shop Today overview must derive the shop-local calendar date from the existing timezone control.");
+assert(ownerCurrentJs.includes("#bookings-list .booking-card") && ownerCurrentJs.includes("service-count"), "Repair Shop Today overview must derive booking/service state from existing rendered owner data.");
+assert(!/\bfetch\s*\(/.test(ownerCurrentJs), "Repair Shop Today overview helper must not add duplicate API reads.");
+assert(!ownerCurrentJs.includes("XMLHttpRequest") && !ownerCurrentJs.includes("sendBeacon"), "Repair Shop Today overview helper must remain network-free.");
+
 // CEO profile refresh is in-place only. It authenticates the exact v3 identity through
 // canonical production APIs, using only the matching retained Actions credential artifact.
 // Artifact recovery itself must be bounded and observable instead of relying on an opaque
@@ -106,4 +116,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, and CEO QA profile refresh stays inside the existing authenticated production APIs with bounded artifact recovery and no privilege bypasses.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, Repair Shop Today remains derived/network-free, and CEO QA profile refresh stays inside the existing authenticated production APIs with bounded artifact recovery and no privilege bypasses.");
