@@ -13,6 +13,7 @@ import "../styles/home-mobile-visual-fixes.css";
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
 const ecosystemHeroUrl = new URL(ecosystemHeroImage.src, Astro.site).href;
+const homepageLcpImage = "/images/path-logistics-system.jpg";
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -65,6 +66,7 @@ const websiteSchema = {
   description="U.S. logistics plus international marketing, practical business education, CRM, AI automation, and web development coordinated through the Hermes ecosystem."
   schema={[organizationSchema, websiteSchema]}
   alternates={languageAlternates}
+  preloadImage={homepageLcpImage}
 >
   <SiteHeader />
   <main id="main-content" class="hermes-home-recovery">
