@@ -74,10 +74,15 @@ assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-li
 
 // CEO profile refresh is in-place only. It authenticates the exact v3 identity through
 // canonical production APIs, using only the matching retained Actions credential artifact.
-// It must not depend on a Cloudflare admin token or self-grant controlled Academy privileges.
+// Artifact recovery itself must be bounded and observable instead of relying on an opaque
+// gh-api timeout; controlled Academy privileges remain outside the workflow.
 assert(ceoRefreshWorkflow.includes("officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com"), "CEO refresh must target the existing v3 QA identity.");
 assert(ceoRefreshWorkflow.includes("actions: read"), "CEO refresh must have read-only Actions artifact permission for the existing secure handoff.");
 assert(ceoRefreshWorkflow.includes("hermes-connect-ceo-owner-qa"), "CEO refresh must locate the existing CEO QA credential artifact rather than create another identity.");
+assert(ceoRefreshWorkflow.includes("actions/artifacts?name=hermes-connect-ceo-owner-qa"), "CEO refresh must use the bounded GitHub Actions artifact inventory endpoint.");
+assert(ceoRefreshWorkflow.includes("--retry-all-errors") && ceoRefreshWorkflow.includes("--max-time 25"), "CEO refresh artifact recovery must have bounded retry and timeout behavior.");
+assert(ceoRefreshWorkflow.includes("GitHub Actions artifact inventory request failed after bounded retries"), "CEO refresh must publish a sanitized artifact-inventory failure instead of exiting silently.");
+assert(!ceoRefreshWorkflow.includes("gh api"), "CEO refresh must not restore the opaque gh-api artifact recovery path that timed out without diagnostics.");
 assert(ceoRefreshWorkflow.includes("/api/auth/login"), "CEO refresh must authenticate through the canonical production auth API.");
 assert(ceoRefreshWorkflow.includes("/api/repair-shop/profile"), "CEO refresh must update/read the existing Repair Shop profile through its owner API.");
 assert(ceoRefreshWorkflow.includes("/api/repair-shop/capabilities"), "CEO refresh must fill the existing Repair Shop capability profile through its owner API.");
@@ -101,4 +106,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, and CEO QA profile refresh stays inside the existing authenticated production APIs without privilege bypasses.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, and CEO QA profile refresh stays inside the existing authenticated production APIs with bounded artifact recovery and no privilege bypasses.");
