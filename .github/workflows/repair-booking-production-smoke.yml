@@ -22,6 +22,8 @@ on:
       - public/_headers
       - scripts/repair-booking-production-smoke.sh
       - .github/workflows/repair-booking-production-smoke.yml
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
@@ -29,12 +31,20 @@ permissions:
 
 jobs:
   smoke:
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.number == 510 &&
+       github.event.comment.body == '/verify-repair-booking-production' &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     name: Verify production customer to owner booking loop
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Check out exact main revision
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - name: Wait for exact Cloudflare Pages deploy and run production smoke
         env:
