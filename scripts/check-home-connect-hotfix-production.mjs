@@ -13,7 +13,7 @@ async function fetchPublic(input) {
     const response = await fetch(url, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesHotfixProductionVerifier/1.1 (+public read-only release check)",
+        "user-agent": "HermesHotfixProductionVerifier/1.2 (+public read-only release check)",
         accept: "text/html,text/css,*/*;q=0.8",
         "cache-control": "no-cache",
         pragma: "no-cache",
@@ -75,8 +75,8 @@ const homepageChecks = {
   safariPaintGuard: css.includes("@supports(-webkit-touch-callout:none)"),
   contactTransitionGuard:
     css.includes(".home-contact-shell") &&
-    css.includes(".home-final-contact::after") &&
-    css.includes("clamp(80px,12vw,170px)"),
+    css.includes("overflow:clip") &&
+    css.includes(".home-final-contact"),
 };
 
 const connect = await fetchPublic("/services/hermes-connect/?lang=ru");
