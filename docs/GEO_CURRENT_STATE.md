@@ -24,7 +24,7 @@ SEO remains the owner of search canonicals, indexability, sitemap/robots, techni
 
 ## Current bounded releases
 
-- #830: two evidence-backed reciprocal semantic links from the canonical Car Hauling Dispatch owner to the existing Broker Setup Packet Checklist and New Authority Car Hauler Readiness Checklist. One public SEO file only; no Connect files.
+- #832: two evidence-backed reciprocal semantic links from the canonical Car Hauling Dispatch owner to the existing Broker Setup Packet Checklist and New Authority Car Hauler Readiness Checklist, with regression protection. No Connect files.
 - #837: current-main public direction entity/breadcrumb convergence. It replaces the safe remaining GEO/entity value of stale #809 without replaying old Header/Footer or Connect-adjacent work.
 
 ## External evidence still required
