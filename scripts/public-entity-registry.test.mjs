@@ -35,6 +35,12 @@ assert.equal(academy.relationshipStatus, "approved_direction");
 assert.equal(academy.schemaPublication, "approved");
 assert.equal(academy.socialProfiles.length, 0, "Academy must not invent or infer a social profile URL.");
 
+const technology = publicEntityRegistry.hermes_it;
+assert.equal(technology.publicName, "Hermes Technology");
+assert.equal(technology.websiteOwner, "/paths/technology/");
+assert.equal(technology.relationshipStatus, "owner_verification_required");
+assert.equal(technology.schemaPublication, "hold");
+
 assert.ok(
   Object.values(publicEntityRegistry)
     .filter((entity) => entity.relationshipStatus === "relationship_resolution_required")
@@ -62,4 +68,4 @@ assert.ok(pipelineAcademy);
 assert.equal(pipelineAcademy.relationshipStatus, "approved_parent");
 assert.equal(pipelineAcademy.socialProfiles.length, 0);
 
-console.log("Public entity registry checks passed: Hermes sameAs is exact, ProgressoPro remains on relationship hold, and downstream content channels stay blocked.");
+console.log("Public entity registry checks passed: Hermes sameAs is exact, Technology uses the canonical public direction label, ProgressoPro remains on relationship hold, and downstream content channels stay blocked.");
