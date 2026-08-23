@@ -66,7 +66,7 @@ assert.match(loadAnalyzerApp, /load_analyzer_start/);
 assert.match(loadAnalyzerApp, /load_analyzer_complete/);
 assert.doesNotMatch(loadAnalyzerApp, /\bfetch\s*\(/);
 
-// The canonical public product family is one adaptive operating system with one verified live vertical.
+// The canonical public product family is one adaptive operating system with one verified public live vertical.
 assert.match(hubSource, /Run your business/);
 assert.match(hubSource, /with AI\./);
 assert.match(hubSource, /One system\. Different business realities\./);
@@ -75,10 +75,12 @@ assert.match(hubSource, /LIVE PRODUCT/);
 assert.match(hubSource, /PREVIEW CONFIGURATION/);
 assert.match(hubSource, /WORKSPACE PREVIEW · SAMPLE DATA/);
 assert.match(hubSource, /Configuration preview · not a released vertical/);
-assert.match(hubSource, /One shared product family/);
+assert.match(hubSource, /One product family/);
+assert.match(hubSource, /PRIVATE LEARNER WORKSPACE/);
+assert.match(hubSource, /\/services\/hermes-connect\/academy\//);
 assert.doesNotMatch(hubSource, /connect\.hermeslogisticsus\.com\/workspace/);
 assert.doesNotMatch(hubSource, /\$99|\$299|\$799/);
 assert.match(capabilityPage, /Reference capability · not current live pilot/);
 assert.match(capabilityPage, /Open current Repair Shop product/);
 
-console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, Load Analyzer demo boundary, and one canonical Repair Shop live product.`);
+console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, private Academy learner entry, Load Analyzer demo boundary, and one canonical Repair Shop public live product.`);
