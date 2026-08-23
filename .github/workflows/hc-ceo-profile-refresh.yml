@@ -58,7 +58,7 @@ jobs:
 
           product_request() {
             local method="$1" url="$2" output="$3" payload="${4:-}" auth="${5:-yes}"
-            local args=(-fsS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o "$output" -w '%{http_code}' -X "$method")
+            local args=(-fsS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o "$output" -w '%{http_code}' -X "$method" -c "$COOKIE")
             if [ "$auth" = yes ]; then args+=(-b "$COOKIE"); fi
             if [ -n "$payload" ]; then args+=(-H 'Content-Type: application/json' --data-binary "$payload"); fi
             local code
@@ -114,6 +114,7 @@ jobs:
           if [ "$LOGIN_HTTP" != 200 ] || [ "$(jq -r '.success // false' "$TMP/login.json" 2>/dev/null)" != true ]; then
             fail 'The retained v3 artifact credential is no longer accepted by production auth. No profile mutation was attempted.'
           fi
+          [ -s "$COOKIE" ] || fail 'Production login succeeded but did not persist an authenticated session cookie.'
 
           ME_HTTP="$(product_request GET "$BASE_URL/api/auth/me" "$TMP/me.json")"
           [ "$ME_HTTP" = 200 ] || fail 'Authenticated identity readback failed before mutation.'
