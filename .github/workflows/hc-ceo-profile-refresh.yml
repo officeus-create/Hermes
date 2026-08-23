@@ -26,7 +26,7 @@ jobs:
       - name: Recover exact v3 credential and refresh through canonical production APIs
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
 
           TMP="${RUNNER_TEMP}/hc-ceo-profile-refresh"
           COOKIE="${TMP}/session.cookies"
@@ -45,24 +45,56 @@ jobs:
             exit 1
           }
 
+          github_get() {
+            local url="$1" output="$2"
+            curl -fsSL \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 10 --max-time 25 \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "$url" -o "$output"
+          }
+
+          product_request() {
+            local method="$1" url="$2" output="$3" payload="${4:-}" auth="${5:-yes}"
+            local args=(-fsS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o "$output" -w '%{http_code}' -X "$method")
+            if [ "$auth" = yes ]; then args+=(-b "$COOKIE"); fi
+            if [ -n "$payload" ]; then args+=(-H 'Content-Type: application/json' --data-binary "$payload"); fi
+            local code
+            if ! code="$(curl "${args[@]}" "$url")"; then
+              printf '000'
+              return 0
+            fi
+            printf '%s' "$code"
+          }
+
           # Recover only an unexpired private Actions artifact whose credential file
-          # explicitly names the canonical v3 account. Never guess a run/artifact ID,
-          # never create a new account, and never print the credential.
-          ARTIFACTS="$(gh api -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/actions/artifacts?name=hermes-connect-ceo-owner-qa&per_page=100")"
-          mapfile -t ARTIFACT_IDS < <(printf '%s' "$ARTIFACTS" | jq -r \
-            '.artifacts | sort_by(.created_at) | reverse | .[] | select(.expired == false) | .id')
+          # explicitly names the canonical v3 account. Never guess a credential,
+          # never create another account, and never print the password.
+          ARTIFACTS_JSON="${TMP}/artifacts.json"
+          ARTIFACTS_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts?name=hermes-connect-ceo-owner-qa&per_page=100"
+          if ! github_get "$ARTIFACTS_URL" "$ARTIFACTS_JSON"; then
+            fail 'GitHub Actions artifact inventory request failed after bounded retries. No product mutation was attempted.'
+          fi
+          if ! jq -e '.artifacts | type == "array"' "$ARTIFACTS_JSON" >/dev/null 2>&1; then
+            fail 'GitHub Actions artifact inventory returned an invalid response. No product mutation was attempted.'
+          fi
+
+          mapfile -t ARTIFACT_IDS < <(jq -r '.artifacts | sort_by(.created_at) | reverse | .[] | select(.expired == false) | .id' "$ARTIFACTS_JSON")
+          [ "${#ARTIFACT_IDS[@]}" -gt 0 ] || fail 'No unexpired CEO QA credential artifacts remain. Refresh stopped safely.'
 
           CREDENTIAL_FILE=''
-          for ARTIFACT_ID in "${ARTIFACT_IDS[@]:-}"; do
+          for ARTIFACT_ID in "${ARTIFACT_IDS[@]}"; do
             [ -n "$ARTIFACT_ID" ] || continue
             CANDIDATE_DIR="${TMP}/artifact-${ARTIFACT_ID}"
+            ZIP="${TMP}/artifact-${ARTIFACT_ID}.zip"
             mkdir -p "$CANDIDATE_DIR"
-            if ! gh api -H 'Accept: application/vnd.github+json' \
-              "/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" > "${TMP}/artifact.zip" 2>/dev/null; then
+            ARTIFACT_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip"
+            if ! github_get "$ARTIFACT_URL" "$ZIP"; then
               continue
             fi
-            if ! unzip -qq -o "${TMP}/artifact.zip" -d "$CANDIDATE_DIR"; then
+            if ! unzip -qq -o "$ZIP" -d "$CANDIDATE_DIR"; then
               continue
             fi
             CANDIDATE="$(find "$CANDIDATE_DIR" -type f -name credentials.txt -print -quit)"
@@ -77,22 +109,13 @@ jobs:
           [ -n "$PASSWORD" ] || fail 'The matched v3 credential artifact is incomplete. Refresh stopped safely.'
           echo "::add-mask::$PASSWORD"
 
-          request() {
-            local method="$1" url="$2" output="$3" payload="${4:-}" auth="${5:-yes}"
-            local args=(-sS -o "$output" -w '%{http_code}' -X "$method")
-            if [ "$auth" = yes ]; then args+=(-b "$COOKIE"); fi
-            if [ -n "$payload" ]; then args+=(-H 'Content-Type: application/json' --data-binary "$payload"); fi
-            curl "${args[@]}" "$url"
-          }
-
           LOGIN_PAYLOAD="$(jq -nc --arg email "$CEO_QA_EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password}')"
-          LOGIN_HTTP="$(curl -sS -o "$TMP/login.json" -w '%{http_code}' -c "$COOKIE" \
-            -X POST "$BASE_URL/api/auth/login" -H 'Content-Type: application/json' --data-binary "$LOGIN_PAYLOAD")"
-          if [ "$LOGIN_HTTP" != 200 ] || [ "$(jq -r '.success // false' "$TMP/login.json")" != true ]; then
+          LOGIN_HTTP="$(product_request POST "$BASE_URL/api/auth/login" "$TMP/login.json" "$LOGIN_PAYLOAD" no)"
+          if [ "$LOGIN_HTTP" != 200 ] || [ "$(jq -r '.success // false' "$TMP/login.json" 2>/dev/null)" != true ]; then
             fail 'The retained v3 artifact credential is no longer accepted by production auth. No profile mutation was attempted.'
           fi
 
-          ME_HTTP="$(request GET "$BASE_URL/api/auth/me" "$TMP/me.json")"
+          ME_HTTP="$(product_request GET "$BASE_URL/api/auth/me" "$TMP/me.json")"
           [ "$ME_HTTP" = 200 ] || fail 'Authenticated identity readback failed before mutation.'
           [ "$(jq -r '.specialist.email // empty' "$TMP/me.json")" = "$CEO_QA_EMAIL" ] || fail 'Authenticated identity did not match the exact v3 CEO QA email.'
           [ "$(jq -r '.specialist.role // empty' "$TMP/me.json")" = 'Shop Owner' ] || fail 'Authenticated v3 identity is not the expected Shop Owner role.'
@@ -106,57 +129,62 @@ jobs:
             postal_code:"53202",
             timezone:"America/Chicago"
           }')"
-          PROFILE_HTTP="$(request PUT "$BASE_URL/api/repair-shop/profile" "$TMP/profile-put.json" "$PROFILE")"
+          PROFILE_HTTP="$(product_request PUT "$BASE_URL/api/repair-shop/profile" "$TMP/profile-put.json" "$PROFILE")"
           [ "$PROFILE_HTTP" = 200 ] || fail 'Repair Shop profile update failed.'
 
           CAPABILITIES='{"vehicle_types":["passenger_light","commercial_truck","trailer"],"fleet_service":true,"mobile_roadside":true,"emergency_24_7":false,"parallel_booking_capacity":2}'
-          CAP_HTTP="$(request PUT "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-put.json" "$CAPABILITIES")"
+          CAP_HTTP="$(product_request PUT "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-put.json" "$CAPABILITIES")"
           [ "$CAP_HTTP" = 200 ] || fail 'Repair Shop capability profile update failed.'
 
-          SERVICES_HTTP="$(request GET "$BASE_URL/api/services" "$TMP/services.json")"
+          SERVICES_HTTP="$(product_request GET "$BASE_URL/api/services" "$TMP/services.json")"
           [ "$SERVICES_HTTP" = 200 ] || fail 'Existing Repair Shop services could not be read.'
           SERVICES_COUNT="$(jq '.services | length' "$TMP/services.json")"
 
-          AVAIL_HTTP="$(request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability.json")"
+          AVAIL_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability.json")"
           [ "$AVAIL_HTTP" = 200 ] || fail 'Existing Repair Shop availability could not be read.'
           OPEN_DAYS="$(jq '[.days[]? | select(.is_open == true)] | length' "$TMP/availability.json")"
           if [ "$OPEN_DAYS" -lt 5 ]; then
             AVAILABILITY='{"days":[{"day_of_week":0,"is_open":false,"start_time":"09:00","end_time":"17:00"},{"day_of_week":1,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"14:00"}]}'
-            AVAIL_PUT_HTTP="$(request PUT "$BASE_URL/api/repair-shop/availability" "$TMP/availability-put.json" "$AVAILABILITY")"
+            AVAIL_PUT_HTTP="$(product_request PUT "$BASE_URL/api/repair-shop/availability" "$TMP/availability-put.json" "$AVAILABILITY")"
             [ "$AVAIL_PUT_HTTP" = 200 ] || fail 'Repair Shop weekly availability completion failed.'
           fi
 
           ACADEMY_PROFILE='{"preferred_language":"ru","timezone":"Europe/Kyiv"}'
-          ACADEMY_PROFILE_HTTP="$(request PUT "$BASE_URL/api/academy/profile" "$TMP/academy-profile-put.json" "$ACADEMY_PROFILE")"
+          ACADEMY_PROFILE_HTTP="$(product_request PUT "$BASE_URL/api/academy/profile" "$TMP/academy-profile-put.json" "$ACADEMY_PROFILE")"
           [ "$ACADEMY_PROFILE_HTTP" = 200 ] || fail 'Academy learner preferences update failed.'
 
+          ENROLL_GET_HTTP="$(product_request GET "$BASE_URL/api/academy/enrollments" "$TMP/enrollments-before.json")"
+          [ "$ENROLL_GET_HTTP" = 200 ] || fail 'Academy enrollment state could not be read before program requests.'
           for PROGRAM in us-logistics-operations marketing; do
-            ENROLL_PAYLOAD="$(jq -nc --arg program "$PROGRAM" '{program_slug:$program}')"
-            ENROLL_HTTP="$(request POST "$BASE_URL/api/academy/enrollments" "$TMP/enrollment-${PROGRAM}.json" "$ENROLL_PAYLOAD")"
-            if [ "$ENROLL_HTTP" != 200 ] && [ "$ENROLL_HTTP" != 201 ]; then
-              fail "Academy program request failed for ${PROGRAM}."
+            EXISTS="$(jq -r --arg program "$PROGRAM" '[.enrollments[]? | select(.program_slug==$program)] | length' "$TMP/enrollments-before.json")"
+            if [ "$EXISTS" = 0 ]; then
+              ENROLL_PAYLOAD="$(jq -nc --arg program "$PROGRAM" '{program_slug:$program}')"
+              ENROLL_HTTP="$(product_request POST "$BASE_URL/api/academy/enrollments" "$TMP/enrollment-${PROGRAM}.json" "$ENROLL_PAYLOAD")"
+              if [ "$ENROLL_HTTP" != 200 ] && [ "$ENROLL_HTTP" != 201 ]; then
+                fail "Academy program request failed for ${PROGRAM}."
+              fi
             fi
           done
 
           # Read everything back through the same public/private product APIs.
-          PROFILE_GET_HTTP="$(request GET "$BASE_URL/api/repair-shop/profile" "$TMP/profile-get.json")"
-          CAP_GET_HTTP="$(request GET "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-get.json")"
-          AVAIL_GET_HTTP="$(request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability-get.json")"
-          ACADEMY_GET_HTTP="$(request GET "$BASE_URL/api/academy/profile" "$TMP/academy-profile-get.json")"
-          ENROLL_GET_HTTP="$(request GET "$BASE_URL/api/academy/enrollments" "$TMP/enrollments-get.json")"
+          PROFILE_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/profile" "$TMP/profile-get.json")"
+          CAP_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-get.json")"
+          AVAIL_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability-get.json")"
+          ACADEMY_GET_HTTP="$(product_request GET "$BASE_URL/api/academy/profile" "$TMP/academy-profile-get.json")"
+          ENROLL_GET_HTTP="$(product_request GET "$BASE_URL/api/academy/enrollments" "$TMP/enrollments-get.json")"
           for CODE in "$PROFILE_GET_HTTP" "$CAP_GET_HTTP" "$AVAIL_GET_HTTP" "$ACADEMY_GET_HTTP" "$ENROLL_GET_HTTP"; do
             [ "$CODE" = 200 ] || fail 'Post-update readback failed; refusing to call the refresh complete.'
           done
 
-          test "$(jq -r '.shop.name // empty' "$TMP/profile-get.json")" = 'Northstar Auto Care — Hermes CEO QA'
-          test "$(jq -r '.shop.city // empty' "$TMP/profile-get.json")" = 'Milwaukee'
-          test "$(jq -r '.shop.state // empty' "$TMP/profile-get.json")" = 'WI'
-          test "$(jq -r '.shop.timezone // empty' "$TMP/profile-get.json")" = 'America/Chicago'
-          test "$(jq -r '.capabilities.fleet_service // false' "$TMP/capabilities-get.json")" = true
-          test "$(jq -r '.capabilities.mobile_roadside // false' "$TMP/capabilities-get.json")" = true
-          test "$(jq -r '.capabilities.parallel_booking_capacity // 0' "$TMP/capabilities-get.json")" = 2
-          test "$(jq -r '.profile.preferred_language // empty' "$TMP/academy-profile-get.json")" = ru
-          test "$(jq -r '.profile.timezone // empty' "$TMP/academy-profile-get.json")" = Europe/Kyiv
+          [ "$(jq -r '.shop.name // empty' "$TMP/profile-get.json")" = 'Northstar Auto Care — Hermes CEO QA' ] || fail 'Repair Shop name readback mismatch.'
+          [ "$(jq -r '.shop.city // empty' "$TMP/profile-get.json")" = 'Milwaukee' ] || fail 'Repair Shop city readback mismatch.'
+          [ "$(jq -r '.shop.state // empty' "$TMP/profile-get.json")" = 'WI' ] || fail 'Repair Shop state readback mismatch.'
+          [ "$(jq -r '.shop.timezone // empty' "$TMP/profile-get.json")" = 'America/Chicago' ] || fail 'Repair Shop timezone readback mismatch.'
+          [ "$(jq -r '.capabilities.fleet_service // false' "$TMP/capabilities-get.json")" = true ] || fail 'Fleet-service capability readback mismatch.'
+          [ "$(jq -r '.capabilities.mobile_roadside // false' "$TMP/capabilities-get.json")" = true ] || fail 'Mobile-roadside capability readback mismatch.'
+          [ "$(jq -r '.capabilities.parallel_booking_capacity // 0' "$TMP/capabilities-get.json")" = 2 ] || fail 'Parallel booking capacity readback mismatch.'
+          [ "$(jq -r '.profile.preferred_language // empty' "$TMP/academy-profile-get.json")" = ru ] || fail 'Academy preferred-language readback mismatch.'
+          [ "$(jq -r '.profile.timezone // empty' "$TMP/academy-profile-get.json")" = Europe/Kyiv ] || fail 'Academy timezone readback mismatch.'
 
           OPEN_DAYS="$(jq '[.days[]? | select(.is_open == true)] | length' "$TMP/availability-get.json")"
           LOGISTICS_STATE="$(jq -r '[.enrollments[]? | select(.program_slug=="us-logistics-operations")][0].state // "missing"' "$TMP/enrollments-get.json")"
