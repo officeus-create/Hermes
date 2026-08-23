@@ -76,7 +76,11 @@ assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-li
 assert(ceoRefreshWorkflow.includes("officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com"), "CEO refresh must target the existing v3 QA identity.");
 assert(ceoRefreshWorkflow.includes("deployment_configs?.production?.d1_databases?.DB"), "CEO refresh must resolve the canonical production DB binding.");
 assert(ceoRefreshWorkflow.includes("UPDATE repair_shops"), "CEO refresh must update the existing Repair Shop profile in place.");
+assert(ceoRefreshWorkflow.includes("repair_shop_capabilities"), "CEO refresh must fill the existing capability profile rather than leave the QA shop visually empty.");
 assert(ceoRefreshWorkflow.includes("INSERT OR IGNORE INTO academy_learner_profiles"), "CEO refresh must ensure the existing identity has Academy preferences.");
+assert(ceoRefreshWorkflow.includes("academy_enrollments") && ceoRefreshWorkflow.includes("'CEO-QA'"), "CEO refresh must provision bounded Academy QA enrollment through the existing human-controlled table.");
+assert(ceoRefreshWorkflow.includes("academy_reviewer_access"), "CEO refresh must use the existing reviewer-access table for CEO QA inspection.");
+assert(!/UPDATE\s+specialists\s+SET[^;]*\brole\s*=/is.test(ceoRefreshWorkflow), "CEO refresh must not mutate the shared identity role to bypass authorization.");
 assert(!ceoRefreshWorkflow.includes("INSERT INTO specialists"), "CEO refresh must never create a duplicate Hermes identity.");
 assert(!ceoRefreshWorkflow.includes("INSERT INTO repair_shops"), "CEO refresh must never create a duplicate shop/slug.");
 
@@ -91,4 +95,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first, and CEO profile refresh is in-place only.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first, and CEO QA data is provisioned in-place through existing controlled tables.");
