@@ -13,7 +13,7 @@ async function fetchPublic(input) {
     const response = await fetch(url, {
       redirect: "follow",
       headers: {
-        "user-agent": "HermesHotfixProductionVerifier/1.0 (+public read-only release check)",
+        "user-agent": "HermesHotfixProductionVerifier/1.1 (+public read-only release check)",
         accept: "text/html,text/css,*/*;q=0.8",
         "cache-control": "no-cache",
         pragma: "no-cache",
@@ -68,9 +68,15 @@ const homepageChecks = {
   fourDirectionsMarkup: homepage.body.includes("Four directions."),
   hotfixSelectorPresent: css.includes(".home-rooms-display"),
   opaqueWebkitTextFill: css.includes("-webkit-text-fill-color:#fff!important"),
-  opaqueBackgroundReset: css.includes("background:none!important"),
+  opaquePaintLayer:
+    css.includes("opacity:1!important") &&
+    css.includes("visibility:visible!important") &&
+    css.includes("color:#fff!important"),
   safariPaintGuard: css.includes("@supports(-webkit-touch-callout:none)"),
-  contactGradientGuard: css.includes(".home-contact-shell") && css.includes("linear-gradient(180deg,#0a0c17"),
+  contactTransitionGuard:
+    css.includes(".home-contact-shell") &&
+    css.includes(".home-final-contact::after") &&
+    css.includes("clamp(80px,12vw,170px)"),
 };
 
 const connect = await fetchPublic("/services/hermes-connect/?lang=ru");
