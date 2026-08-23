@@ -19,7 +19,7 @@ jobs:
       github.event.comment.body == '/verify-home-connect-hotfix' &&
       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
 
     steps:
       - name: Check out approved main
@@ -31,6 +31,13 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install verifier dependencies
+        run: npm ci
+
+      - name: Install Chromium for public browser verification
+        run: npx playwright install --with-deps chromium
 
       - name: Run exact public hotfix verifier
         id: verify
