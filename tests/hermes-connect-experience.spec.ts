@@ -134,7 +134,7 @@ test("Hermes Connect Hub renders real Russian content and keeps Academy private 
   await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
   await expect(page.locator("[data-hc-product-context] [data-hc-english-only]")).toHaveCount(0);
   await expect(page.getByText("ПРИВАТНОЕ ПРОСТРАНСТВО ОБУЧЕНИЯ", { exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Открыть Академию" })).toHaveAttribute("href", "/services/hermes-connect/academy/");
+  await expect(page.getByRole("link", { name: "Открыть Академию" })).toHaveAttribute("href", "/services/hermes-connect/academy/?lang=ru");
 
   await page.goto("/services/hermes-connect/");
   await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
