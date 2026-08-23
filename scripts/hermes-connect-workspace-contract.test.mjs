@@ -17,6 +17,9 @@ const review = await text("review.html");
 const css = await text("workspace.css");
 const js = await text("workspace.js");
 const enhancements = await text("workspace-enhancements.js");
+const privateWorkspaceCss = await readFile(join(root, "src", "styles", "hermes-connect-workspace.css"), "utf8");
+const academyCss = await readFile(join(root, "src", "styles", "hermes-academy-app.css"), "utf8");
+const ceoRefreshWorkflow = await readFile(join(root, ".github", "workflows", "hc-ceo-profile-refresh.yml"), "utf8");
 
 for (const [name, html] of [["workspace.html", workspace], ["review.html", review]]) {
   assert(/name=["']robots["'][^>]*noindex/i.test(html), `${name}: must remain noindex.`);
@@ -62,6 +65,21 @@ assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav"), "workspace
 assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer"), "workspace.js: core interaction contracts are missing.");
 assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
+// The live private workspaces intentionally inherit the previously approved Pearl-room direction.
+assert(privateWorkspaceCss.includes("--hc-workspace-bg: #f4f2ed"), "Repair Shop owner workspace must be Pearl-first, not a full Obsidian room.");
+assert(privateWorkspaceCss.includes("background: #171a24"), "Repair Shop owner workspace must retain Obsidian only for decisive actions.");
+assert(privateWorkspaceCss.includes("Northstar") === false, "Visual CSS must not contain account-specific profile data.");
+assert(academyCss.includes("linear-gradient(145deg,#fff,#f4f1ff"), "Academy emphasis card must use the light intelligence surface.");
+assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-line-dark)"), "Academy must not restore the previous full Obsidian emphasis card.");
+
+// CEO profile refresh is in-place only: exact v3 identity, canonical Pages DB binding, no duplicate identity/shop creation.
+assert(ceoRefreshWorkflow.includes("officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com"), "CEO refresh must target the existing v3 QA identity.");
+assert(ceoRefreshWorkflow.includes("deployment_configs?.production?.d1_databases?.DB"), "CEO refresh must resolve the canonical production DB binding.");
+assert(ceoRefreshWorkflow.includes("UPDATE repair_shops"), "CEO refresh must update the existing Repair Shop profile in place.");
+assert(ceoRefreshWorkflow.includes("INSERT OR IGNORE INTO academy_learner_profiles"), "CEO refresh must ensure the existing identity has Academy preferences.");
+assert(!ceoRefreshWorkflow.includes("INSERT INTO specialists"), "CEO refresh must never create a duplicate Hermes identity.");
+assert(!ceoRefreshWorkflow.includes("INSERT INTO repair_shops"), "CEO refresh must never create a duplicate shop/slug.");
+
 const forbiddenNetworkPatterns = [
   /\bfetch\s*\(/,
   /XMLHttpRequest/,
@@ -73,4 +91,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect canonical workspace contract passed: one responsive workspace, review hub, industry switching, Hermes Intelligence, and no-network preview boundary are present.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first, and CEO profile refresh is in-place only.");
