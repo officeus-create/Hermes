@@ -154,10 +154,17 @@ try {
       timeout: 30_000,
     });
     await page.waitForSelector("[data-language-menu]", { timeout: 15_000 });
+    await page.waitForSelector('[data-hc-hub-locale="ru"]', { timeout: 15_000 });
     const initial = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
       stored: localStorage.getItem("hermes-connect-language"),
+      hubLocale: document.querySelector(".hc-brand-page")?.getAttribute("data-hc-hub-locale") ?? "",
+      hero: document.querySelector("#hc-title")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      lead: document.querySelector(".hc-lead")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      contentLanguage: document.querySelector(".hc-content-language")?.textContent?.trim() ?? "",
+      englishOnlyNotice: document.querySelector("[data-hc-english-only]")?.textContent?.trim() ?? "",
+      title: document.title,
     }));
 
     await page.goto(`${baseUrl}/services/hermes-connect/`, {
@@ -165,10 +172,15 @@ try {
       timeout: 30_000,
     });
     await page.waitForURL(/\/services\/hermes-connect\/\?lang=ru$/, { timeout: 15_000 });
+    await page.waitForSelector('[data-hc-hub-locale="ru"]', { timeout: 15_000 });
     const restored = await page.evaluate(() => ({
       lang: document.documentElement.lang,
       label: document.querySelector("[data-language-menu] summary span")?.textContent?.trim() ?? "",
       stored: localStorage.getItem("hermes-connect-language"),
+      hubLocale: document.querySelector(".hc-brand-page")?.getAttribute("data-hc-hub-locale") ?? "",
+      hero: document.querySelector("#hc-title")?.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      contentLanguage: document.querySelector(".hc-content-language")?.textContent?.trim() ?? "",
+      englishOnlyNotice: document.querySelector("[data-hc-english-only]")?.textContent?.trim() ?? "",
     }));
 
     connectRussian = {
@@ -176,6 +188,19 @@ try {
       queryPreserved: page.url().endsWith("/services/hermes-connect/?lang=ru"),
       initialRussian: initial.lang === "ru" && initial.label === "Русский" && initial.stored === "ru",
       restoredRussian: restored.lang === "ru" && restored.label === "Русский" && restored.stored === "ru",
+      contentRussian:
+        initial.hubLocale === "ru" &&
+        restored.hubLocale === "ru" &&
+        initial.hero === "Управляйте бизнесом с AI." &&
+        restored.hero === "Управляйте бизнесом с AI." &&
+        initial.lead.startsWith("Одна операционная система") &&
+        initial.contentLanguage === "Язык контента: русский" &&
+        restored.contentLanguage === "Язык контента: русский" &&
+        initial.englishOnlyNotice === "" &&
+        restored.englishOnlyNotice === "" &&
+        initial.title.includes("AI-операционная система"),
+      initial,
+      restored,
     };
     await page.close();
   }
@@ -197,7 +222,8 @@ const russianPass = Boolean(
   connectRussian?.status200 &&
   connectRussian?.queryPreserved &&
   connectRussian?.initialRussian &&
-  connectRussian?.restoredRussian,
+  connectRussian?.restoredRussian &&
+  connectRussian?.contentRussian,
 );
 
 const live = !fatalError && mobilePass && desktopPass && headingPass && contactPass && russianPass;
@@ -245,7 +271,7 @@ const lines = [
   "",
   "## Hermes Connect Russian locale",
   "",
-  `- ${russianPass ? "✅" : "❌"} Russian selection and saved-locale restoration work in-browser`,
+  `- ${russianPass ? "✅" : "❌"} Russian selection, saved-locale restoration, and real Product Hub content work in-browser`,
   "",
 ];
 
