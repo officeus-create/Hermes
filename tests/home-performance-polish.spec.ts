@@ -5,17 +5,15 @@ import { expect, test } from "@playwright/test";
 const root = process.cwd();
 const read = (file: string) => fs.readFileSync(path.join(root, file), "utf8");
 
-test("homepage keeps interaction polish lightweight and prioritizes the mobile LCP image", () => {
+test("homepage keeps interaction polish lightweight and defers mobile image work", () => {
   const page = read("src/pages/index.astro");
-  const layout = read("src/layouts/BaseLayout.astro");
   const layer = read("src/components/HomePerformanceLayer.astro");
   const headers = read("public/_headers");
 
   expect(page).toContain('import HomePerformanceLayer from "../components/HomePerformanceLayer.astro"');
   expect(page).toContain("<HomePerformanceLayer />");
-  expect(page).toContain('const homepageLcpImage = "/images/path-logistics-system.jpg"');
-  expect(page).toContain("preloadImage={homepageLcpImage}");
-  expect(layout).toContain('<link rel="preload" as="image" href={preloadImage} fetchpriority="high" />');
+  expect(page).not.toContain('const homepageLcpImage = "/images/path-logistics-system.jpg"');
+  expect(page).not.toContain("preloadImage={homepageLcpImage}");
 
   expect(layer).toContain('window.matchMedia("(max-width: 900px)")');
   expect(layer).toContain("IntersectionObserver");
