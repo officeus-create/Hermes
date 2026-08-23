@@ -2,14 +2,33 @@
 
 This directory is the shared decision and knowledge system for all AI assistants and human contributors working on Hermes Logistics, Hermes Connect, ProgressoPro, SEO, design, engineering, sales, recruiting, academy, finance, and operations.
 
+## One local workspace
+
+Every local AI tool must open the same physical repository root: `/Users/progressopro/Hermes` (`~/Hermes`).
+
+Do not treat `hermes-connect-next`, an old Documents checkout, a copied folder, or an agent-specific clone as a second source of truth. Read `00_READ_FIRST/LOCAL_AI_WORKSPACE.md` for the normalization contract and safe Mac migration procedure.
+
+The six active AI conversations are routed through `workstreams/`:
+
+- `01_HERMES_CORE`
+- `02_WEB`
+- `03_HERMES_CONNECT`
+- `04_SEO`
+- `05_GEO`
+- `06_AUDIT`
+
+They are workstreams inside one repository, not separate projects.
+
 ## Start here
 
-1. Read `00_READ_FIRST/AI_COLLABORATION_PROTOCOL.md`.
-2. Read `00_READ_FIRST/CURRENT_STATE.md`.
-3. Read the relevant department `CURRENT_STATE.md` and `DECISIONS.md` when present.
-4. Create or update a proposal using `templates/PROPOSAL_TEMPLATE.md`.
-5. Identify yourself using `templates/AI_IDENTITY_TEMPLATE.md`.
-6. Do not delete prior proposals or decisions. Add a review, superseding proposal, or deprecation decision.
+1. Read `00_READ_FIRST/LOCAL_AI_WORKSPACE.md`.
+2. Read `00_READ_FIRST/AI_COLLABORATION_PROTOCOL.md`.
+3. Read `00_READ_FIRST/CURRENT_STATE.md`.
+4. Read `workstreams/README.md` and the relevant workstream route.
+5. Read the relevant department `CURRENT_STATE.md` and `DECISIONS.md` when present.
+6. Create or update a proposal using `templates/PROPOSAL_TEMPLATE.md`.
+7. Identify yourself using `templates/AI_IDENTITY_TEMPLATE.md`.
+8. Do not delete prior proposals or decisions. Add a review, superseding proposal, or deprecation decision.
 
 ## Departments
 
@@ -21,6 +40,8 @@ This directory is the shared decision and knowledge system for all AI assistants
 - `06_AI_ENGINEERING` — agents, automation, data, integrations and infrastructure.
 - `07_ACADEMY_HR` — recruiting, training, assessment and people operations.
 - `99_ARCHIVE` — superseded or historical materials retained for traceability.
+
+Department folders store durable domain knowledge. `workstreams/` routes the current execution threads shown in AI applications.
 
 ## Status vocabulary
 
@@ -34,4 +55,4 @@ Use stable IDs such as `LOGO-001`, `DESIGN-001`, `SEO-001`, `CRM-001`, `OPS-001`
 
 ## Core rule
 
-One source of truth, visible assumptions, measurable outcomes, and preserved history.
+One repository, one canonical project state, visible assumptions, measurable outcomes, preserved history, and no agent-specific duplicate source of truth.
