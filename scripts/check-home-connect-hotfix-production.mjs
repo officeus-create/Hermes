@@ -78,18 +78,17 @@ const homepageChecks = {
     css.includes("border-radius:0!important") &&
     css.includes("background-color:#070912!important"),
   contactInnerRounded:
-    css.includes("#contact.home-contact-shell.home-final-contact") ||
-    (css.includes("#contact.home-contact-shell") && css.includes(".home-final-contact") && css.includes("border-radius:clamp(34px,5vw,72px)")),
+    css.includes("#contact.home-contact-shell.home-final-contact") &&
+    css.includes("border-radius:clamp(34px,5vw,72px)"),
   contactTransitionGuard:
     css.includes(".home-final-contact::after") &&
     css.includes("clamp(80px,12vw,170px)"),
   responsiveHeaderMobileContract:
     css.includes("@media(max-width:900px)") &&
-    css.includes(".site-header.desktop-nav") === false &&
-    css.includes(".site-header .desktop-nav") &&
-    css.includes(".site-header .header-actions") &&
+    css.includes(".site-header.desktop-nav") &&
+    css.includes(".site-header.header-actions") &&
     css.includes("display:none!important") &&
-    css.includes(".site-header .menu-button") &&
+    css.includes(".site-header.menu-button") &&
     css.includes("display:inline-flex!important"),
 };
 
