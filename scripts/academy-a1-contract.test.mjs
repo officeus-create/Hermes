@@ -52,9 +52,13 @@ assert.match(sharedSession, /FROM sessions WHERE token = \?/);
 assert.match(sharedSession, /FROM specialists WHERE id = \?/);
 
 assert.match(profileApi, /getAuthenticatedSpecialist/);
+assert.match(profileApi, /getAcademyReviewerAccess/);
+assert.match(profileApi, /location: specialist\.location/);
+assert.match(profileApi, /reviewer_access:/);
 assert.match(profileApi, /identity_or_progress_fields_not_editable_here/);
 assert.match(profileApi, /WHERE specialist_id = \?/);
 assert.doesNotMatch(profileApi, /searchParams\.get\(["'](?:learner|specialist|email)/);
+assert.doesNotMatch(profileApi, /UPDATE\s+specialists/i);
 
 assert.match(enrollmentApi, /getAuthenticatedSpecialist/);
 assert.match(enrollmentApi, /learner_cannot_set_controlled_enrollment_fields/);
@@ -73,6 +77,9 @@ assert.match(auth, /role: "Academy Learner"/);
 assert.doesNotMatch(auth, /academy_session|academy_password|\/api\/academy\/auth/);
 assert.match(dashboard, /\/api\/academy\/profile/);
 assert.match(dashboard, /\/api\/academy\/enrollments/);
+assert.match(dashboard, /data-learner-location/);
+assert.match(dashboard, /data-reviewer-link/);
+assert.match(dashboard, /reviewer_access/);
 assert.match(dashboard, /Applied · human review pending/);
 assert.doesNotMatch(dashboard, /automatic admission|guaranteed employment|guaranteed income/i);
 

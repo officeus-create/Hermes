@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import "./media-provenance-gate.test.mjs";
 
 const root = process.cwd();
 const registry = JSON.parse(fs.readFileSync(path.join(root, "docs/compliance/font-provenance.json"), "utf8"));

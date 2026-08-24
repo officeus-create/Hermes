@@ -711,3 +711,57 @@ npm run test:e2e
 - Search Console opened under the browser's active Google account with no
   existing Hermes website property. No property, DNS record, or verification
   method was created.
+
+## 2026-08-22 — P0 carrier contract execution containment
+
+### Governing boundary
+
+- Issue #280 remains the activation gate for qualified Wisconsin
+  transportation counsel approval.
+- The carrier contract endpoint now fails closed in review/onboarding mode even
+  when stale deployment configuration requests `live` mode.
+- Standard 6% and 8% selections create signed review/onboarding packets only;
+  custom terms remain review-only.
+- Previously cached live records are preserved but quarantined from download or
+  delivery until the legal gate is explicitly changed in reviewed code.
+
+### Public and asset containment
+
+- Removed active public execution/approval claims and restored a visible
+  review-only boundary without redesigning the carrier pages.
+- Removed the execution PDF from the public current tree while preserving its
+  Git history; the former URL receives a temporary compatibility redirect to
+  the review agreement page.
+- Removed request middleware and HTML rewrite functions that forced live mode
+  or replaced review copy/assets at runtime.
+
+### Verification
+
+```bash
+node --experimental-strip-types scripts/carrier-contract-review-containment.test.mjs
+# Passed: standard 6%, standard 8%, custom, cached-live quarantine, public copy,
+# review-master ownership, and zero-external-delivery assertions.
+
+npm test
+# Passed, including contract engine, delivery reliability, journey, readiness,
+# static links, and the new #280 containment gate.
+
+npm run build
+# 169 pages built; 0 errors, 0 warnings, 68 existing hints.
+
+npx playwright test tests/carrier-agreement.spec.ts
+# 4 passed across desktop and mobile.
+
+npm run test:e2e
+# 938 passed, 11 skipped, 1 unrelated Hermes Connect desktop overflow failure.
+# The same 8px overflow reproduces from clean current main 37eecc753f72fcaf44f1cfd6851e8008e08a1001.
+```
+
+### Exposure audit and release boundary
+
+- Read-only production KV enumeration found zero current `contract:id:` keys.
+- Email delivery history, expired KV records, and retrospective Worker logs
+  were not available, so real-execution exposure remains
+  `UNVERIFIED_DUE_TO_ACCESS` rather than being inferred as zero.
+- No signing request, external delivery, KV mutation, push, merge, Preview
+  deployment, or production deployment was performed.

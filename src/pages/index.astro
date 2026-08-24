@@ -2,11 +2,13 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ecosystemHeroImage from "../assets/hermes-ecosystem-hero.jpg";
 import HomeFourRooms from "../components/HomeFourRooms.astro";
+import HomePerformanceLayer from "../components/HomePerformanceLayer.astro";
 import HomeRecoveryFinish from "../components/HomeRecoveryFinish.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import { languageAlternates } from "../data/locales";
 import { approvedHermesSameAs } from "../data/public-entity-registry";
+import "../styles/home-mobile-visual-fixes.css";
 
 const organizationId = "https://hermeslogisticsus.com/#organization";
 const websiteId = "https://hermeslogisticsus.com/#website";
@@ -72,4 +74,5 @@ const websiteSchema = {
     <HomeRecoveryFinish />
     <SiteFooter />
   </div>
+  <HomePerformanceLayer />
 </BaseLayout>

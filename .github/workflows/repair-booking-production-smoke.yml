@@ -22,19 +22,30 @@ on:
       - public/_headers
       - scripts/repair-booking-production-smoke.sh
       - .github/workflows/repair-booking-production-smoke.yml
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
   checks: read
+  issues: write
 
 jobs:
   smoke:
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.number == 510 &&
+       github.event.comment.body == '/verify-repair-booking-production' &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     name: Verify production customer to owner booking loop
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - name: Check out exact main revision
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
 
       - name: Wait for exact Cloudflare Pages deploy and run production smoke
         env:
@@ -81,3 +92,27 @@ jobs:
           test "$(jq -r '.success // false' "${RUNNER_TEMP}/access-cleanup.json")" = true
           test "$(jq -r '.remaining' "${RUNNER_TEMP}/access-cleanup.json")" = 0
           echo "FINAL_ACCESS_STATE_VERDICT=PASS"
+
+      - name: Publish sanitized command result
+        if: always() && github.event_name == 'issue_comment'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          {
+            echo "## Repair Shop production smoke — command result"
+            echo
+            echo "- Checked main commit: \`${GITHUB_SHA}\`"
+            echo "- Workflow run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Job status: **${JOB_STATUS}**"
+            if [ "${JOB_STATUS}" = "success" ]; then
+              echo "- ✅ Production registration/auth → profile → service → availability → public booking → owner processing/access-state smoke passed."
+              echo "- ✅ Temporary synthetic smoke rows were cleaned by the existing smoke/cleanup path."
+            else
+              echo "- ❌ Production smoke did not pass. First-5 activation remains blocked until the failing run is repaired and rerun."
+            fi
+            echo
+            echo "> Synthetic smoke identities only. No real shop/customer data, credentials, or private identifiers are published here."
+          } > "${RUNNER_TEMP}/repair-production-smoke-comment.md"
+          gh issue comment 510 --repo "${GITHUB_REPOSITORY}" --body-file "${RUNNER_TEMP}/repair-production-smoke-comment.md"

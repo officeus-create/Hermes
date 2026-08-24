@@ -17,6 +17,10 @@ const review = await text("review.html");
 const css = await text("workspace.css");
 const js = await text("workspace.js");
 const enhancements = await text("workspace-enhancements.js");
+const privateWorkspaceCss = await readFile(join(root, "src", "styles", "hermes-connect-workspace.css"), "utf8");
+const academyCss = await readFile(join(root, "src", "styles", "hermes-academy-app.css"), "utf8");
+const ownerCurrentJs = await readFile(join(root, "public", "hermes-connect-repair-owner-p0-current.js"), "utf8");
+const ceoRefreshWorkflow = await readFile(join(root, ".github", "workflows", "hc-ceo-profile-refresh.yml"), "utf8");
 
 for (const [name, html] of [["workspace.html", workspace], ["review.html", review]]) {
   assert(/name=["']robots["'][^>]*noindex/i.test(html), `${name}: must remain noindex.`);
@@ -62,6 +66,45 @@ assert(css.includes(".hermes-drawer") && css.includes(".mobile-nav"), "workspace
 assert(js.includes("function setView") && js.includes("function setVertical") && js.includes("function setDrawer"), "workspace.js: core interaction contracts are missing.");
 assert(!enhancements.includes("LAUNCH-V2"), "workspace-enhancements.js: retired launcher name must not remain in the canonical runtime.");
 
+// The live private workspaces intentionally inherit the previously approved Pearl-room direction.
+assert(privateWorkspaceCss.includes("--hc-workspace-bg: var(--hermes-pearl)"), "Repair Shop owner workspace must consume canonical Pearl, not a full Obsidian room or a third palette.");
+assert(privateWorkspaceCss.includes("background: var(--hermes-obsidian)"), "Repair Shop owner workspace must retain canonical Obsidian for decisive actions.");
+assert(privateWorkspaceCss.includes("Northstar") === false, "Visual CSS must not contain account-specific profile data.");
+assert(academyCss.includes("linear-gradient(145deg,#fff,#f4f1ff"), "Academy emphasis card must use the light intelligence surface.");
+assert(!academyCss.includes("var(--hermes-obsidian);border-color:var(--hermes-line-dark)"), "Academy must not restore the previous full Obsidian emphasis card.");
+
+// Today overview is a derived presentation layer only: it must reuse already-rendered
+// owner DOM state instead of duplicating profile/services/bookings network reads.
+assert(ownerCurrentJs.includes("data-hc-today-overview"), "Repair Shop owner helper must expose the bounded Today overview.");
+assert(ownerCurrentJs.includes("function updateTodayOverview"), "Repair Shop Today overview must remain explicitly derived and refreshable.");
+assert(ownerCurrentJs.includes("shop-timezone"), "Repair Shop Today overview must derive the shop-local calendar date from the existing timezone control.");
+assert(ownerCurrentJs.includes("#bookings-list .booking-card") && ownerCurrentJs.includes("service-count"), "Repair Shop Today overview must derive booking/service state from existing rendered owner data.");
+assert(!/\bfetch\s*\(/.test(ownerCurrentJs), "Repair Shop Today overview helper must not add duplicate API reads.");
+assert(!ownerCurrentJs.includes("XMLHttpRequest") && !ownerCurrentJs.includes("sendBeacon"), "Repair Shop Today overview helper must remain network-free.");
+
+// CEO profile refresh is in-place only. It authenticates the exact v3 identity through
+// canonical production APIs, using only the matching retained Actions credential artifact.
+// Artifact recovery itself must be bounded and observable instead of relying on an opaque
+// gh-api timeout; controlled Academy privileges remain outside the workflow.
+assert(ceoRefreshWorkflow.includes("officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com"), "CEO refresh must target the existing v3 QA identity.");
+assert(ceoRefreshWorkflow.includes("actions: read"), "CEO refresh must have read-only Actions artifact permission for the existing secure handoff.");
+assert(ceoRefreshWorkflow.includes("hermes-connect-ceo-owner-qa"), "CEO refresh must locate the existing CEO QA credential artifact rather than create another identity.");
+assert(ceoRefreshWorkflow.includes("actions/artifacts?name=hermes-connect-ceo-owner-qa"), "CEO refresh must use the bounded GitHub Actions artifact inventory endpoint.");
+assert(ceoRefreshWorkflow.includes("--retry-all-errors") && ceoRefreshWorkflow.includes("--max-time 25"), "CEO refresh artifact recovery must have bounded retry and timeout behavior.");
+assert(ceoRefreshWorkflow.includes("GitHub Actions artifact inventory request failed after bounded retries"), "CEO refresh must publish a sanitized artifact-inventory failure instead of exiting silently.");
+assert(!ceoRefreshWorkflow.includes("gh api"), "CEO refresh must not restore the opaque gh-api artifact recovery path that timed out without diagnostics.");
+assert(ceoRefreshWorkflow.includes("/api/auth/login"), "CEO refresh must authenticate through the canonical production auth API.");
+assert(ceoRefreshWorkflow.includes("/api/repair-shop/profile"), "CEO refresh must update/read the existing Repair Shop profile through its owner API.");
+assert(ceoRefreshWorkflow.includes("/api/repair-shop/capabilities"), "CEO refresh must fill the existing Repair Shop capability profile through its owner API.");
+assert(ceoRefreshWorkflow.includes("/api/academy/profile"), "CEO refresh must fill existing Academy learner preferences through the shared identity API.");
+assert(ceoRefreshWorkflow.includes("/api/academy/enrollments"), "CEO refresh may submit normal learner program requests through the existing enrollment API.");
+assert(!ceoRefreshWorkflow.includes("CLOUDFLARE_API_TOKEN"), "CEO refresh must not require unavailable Cloudflare admin credentials.");
+assert(!ceoRefreshWorkflow.includes("/d1/database/"), "CEO refresh must not bypass the product APIs with direct D1 admin queries.");
+assert(!ceoRefreshWorkflow.includes("academy_reviewer_access"), "CEO refresh must not self-grant reviewer authorization.");
+assert(!ceoRefreshWorkflow.includes("'CEO-QA'"), "CEO refresh must not force controlled cohort/enrollment state through an ops shortcut.");
+assert(!ceoRefreshWorkflow.includes("INSERT INTO specialists"), "CEO refresh must never create a duplicate Hermes identity.");
+assert(!ceoRefreshWorkflow.includes("INSERT INTO repair_shops"), "CEO refresh must never create a duplicate shop/slug.");
+
 const forbiddenNetworkPatterns = [
   /\bfetch\s*\(/,
   /XMLHttpRequest/,
@@ -73,4 +116,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect canonical workspace contract passed: one responsive workspace, review hub, industry switching, Hermes Intelligence, and no-network preview boundary are present.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, Repair Shop Today remains derived/network-free, and CEO QA profile refresh stays inside the existing authenticated production APIs with bounded artifact recovery and no privilege bypasses.");

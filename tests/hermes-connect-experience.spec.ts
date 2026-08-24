@@ -36,8 +36,9 @@ test("Hermes Connect language switching stays on the equivalent product route", 
   await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
 
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
-  await expect(page.getByRole("heading", { name: "Give customers one link to book your repair shop." })).toBeVisible();
-  await expect(page.locator("[data-hc-english-only]")).toContainText("страница пока доступна только на английском");
+  await expect(page.getByRole("heading", { name: "Дайте клиентам одну ссылку для записи в ваш автосервис." })).toBeVisible();
+  await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
+  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
 
   const languageMenu = page.locator("[data-language-menu]");
   await expect(languageMenu.locator("summary span")).toHaveText("Русский");
@@ -108,7 +109,7 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
-test("Hermes Connect Hub presents one live product and adaptive preview configurations", async ({ page }) => {
+test("Hermes Connect Hub presents one live product, private Academy, and adaptive preview configurations", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
@@ -116,9 +117,33 @@ test("Hermes Connect Hub presents one live product and adaptive preview configur
   await expect(page.getByRole("heading", { name: "One system. Different business realities." })).toBeVisible();
   await expect(page.locator('main a[href^="https://connect.hermeslogisticsus.com"]')).toHaveCount(0);
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
-  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(5);
+  await expect(page.getByText("PRIVATE LEARNER WORKSPACE", { exact: true })).toBeVisible();
+  await expect(page.locator('main a[href="/services/hermes-connect/academy/"]')).not.toHaveCount(0);
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(4);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
+});
+
+test("Hermes Connect Hub renders real Russian content and keeps Academy private entry", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/services/hermes-connect/?lang=ru");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator(".hc-brand-page")).toHaveAttribute("data-hc-hub-locale", "ru");
+  await expect(page.getByRole("heading", { name: "Управляйте бизнесом с AI." })).toBeVisible();
+  await expect(page.locator(".hc-lead")).toContainText("Одна операционная система");
+  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
+  await expect(page.locator("[data-hc-product-context] [data-hc-english-only]")).toHaveCount(0);
+  await expect(page.getByText("ПРИВАТНОЕ ПРОСТРАНСТВО ОБУЧЕНИЯ", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Открыть Академию" })).toHaveAttribute("href", "/services/hermes-connect/academy/?lang=ru");
+
+  await page.goto("/services/hermes-connect/");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
+  await expect(page.getByRole("heading", { name: "Управляйте бизнесом с AI." })).toBeVisible();
+  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
 });
 
 test("non-live Hermes Connect modules are reference capabilities without legacy pricing or workspace CTA", async ({ page }) => {

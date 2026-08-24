@@ -115,7 +115,7 @@ for (const required of [
   "service_percentage",
   "offer_code",
   "data-signature-canvas",
-  "Confirm the exact standard terms before signing",
+  "Confirm the exact proposed terms before signing",
   'const requestedPlan = currentUrl.searchParams.get("plan")',
   "window.history.replaceState",
 ]) assert.ok(onboarding.includes(required), `Minimized carrier signing form is missing: ${required}`);
@@ -127,11 +127,11 @@ for (const rawParameter of ["rate", "rep", "offer", "carrier_name", "mc", "usdot
 
 for (const required of [
   'title="Carrier Agreement Terms | Hermes Logistics"',
-  "HERMES-CARRIER-EXECUTION-V2026-08-06",
+  "ATTORNEY-REVIEW-V3-2026-08-06",
   "Percentage only in Appendix A",
   "No personal guaranty or UCC lien",
   "Five-business-day objection window",
-  "ac35ae765617010dd7551b4a22537b32715923c49601d9aac1f21bbb5e0904a8",
+  "9d26436b95b63610179f3af9ac4cddf5df59a1610e402bad2162ef394951d5cb",
   'data-contract-download="pdf"',
 ]) assert.ok(agreement.includes(required), `v3 agreement page is missing: ${required}`);
 
@@ -170,9 +170,10 @@ for (const required of [
   "Continue to carrier packet",
   "No passwords, bank details, W-9, CDL image, VIN list, or shipment documents in this flow.",
   "Do not use fake deadlines, false scarcity, guaranteed income, guaranteed loads, hidden conditions, or threatening language.",
-  "HERMES-CARRIER-EXECUTION-V2026-08-06",
+  "ATTORNEY-REVIEW-V3-2026-08-06",
+  "Issue #280 is the governing activation boundary",
   "CARRIER_CONTRACT_ALLOWED_PERCENTAGES",
   "opaque, signed, expiring",
 ]) assert.ok(playbook.includes(required), `Carrier sales handoff playbook is missing: ${required}`);
 
-console.log("Carrier agreement journey v3 passed: clean SMS entry, plan-only same-origin context, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and execution gates are present.");
+console.log("Carrier agreement journey v3 passed: clean SMS entry, plan-only same-origin context, trust-first review, three-step minimized packet, private Appendix A percentage, privacy-safe analytics, and Issue #280 boundary are present.");

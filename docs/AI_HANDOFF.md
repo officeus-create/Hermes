@@ -776,3 +776,33 @@ entries — append only.
 - Guardrails: category/rating/message validation, 2,000-character maximum, private D1 storage, and a static contract executed by the existing Hermes Connect test chain.
 - Verification: focused contract, auth integration chain, module syntax check, and `git diff --check` pass locally. A focused Playwright contract covers submission, persisted rendering, and the analytics privacy boundary; full build and browser execution are delegated to PR CI because this fresh checkout has no installed dependencies.
 - Next: after green CI and owner-approved merge, onboard 5–10 permissioned Repair Shop pilots and review only privacy-safe aggregate outcomes.
+
+## 2026-08-22 — Codex — Public UX friction release candidate
+
+- Agent/task owner: Codex; bounded current-main UX consolidation after multi-AI review.
+- Branch: `fix/site-ux-friction-2026-08-22`.
+- Primary outcome: four verified interaction problems were removed without redesigning pages or changing public claims: mobile consent no longer covers conversion actions, the Logistics desktop title stays clear of its image, the Hermes Connect mobile product-family rail visibly signals horizontal continuation, and the canonical desktop workspace no longer overflows by 8px.
+- Files changed: `src/components/TrackingConsent.astro`, `src/components/HermesConnectExperience.astro`, `src/styles/hermes-public-path-shell.css`, `public/demos/hermes-connect/workspace.css`, three focused Playwright contracts, this handoff, and the error register.
+- SEO: no URL, canonical, sitemap, metadata, schema, H1 wording, or query owner changed. AI-assisted images were not removed because current Google guidance does not define their production method as a ranking penalty; the current build already produces responsive AVIF/WebP variants and useful alt text. Media provenance remains gated by #320 / `ERR-GATE-005`.
+- Conversion: the consent surface remains explicit while taking substantially less mobile space; post-choice privacy settings sit in document flow; Logistics text/image collision is prevented.
+- Knowledge: recorded the evidence-based image decision and the four regression boundaries here and in `ERR-RES-021`.
+- Internal linking: neutral; no link graph change was needed.
+- Scale: the shared consent behavior and Connect family navigation apply across their existing route families without creating new pages.
+- AI/product: the canonical Connect navigation and workspace remain the single runtime; no new product or integration was introduced.
+- Data/privacy: consent defaults and GA4 boundary are unchanged; analytics remains off before affirmative consent, advertising storage and personalization remain disabled, and no submitted values or PII were added to analytics.
+- Content reuse: neutral; no new public copy package was created.
+- Architecture: existing shared components were strengthened and focused browser contracts now guard viewport/CTA behavior.
+- Deferred opportunities: no wholesale image removal or return to a columns-only site without measured LCP/CTR evidence; no prices, offices, testimonials, brand rename, redirect family, or large redesign from unverified AI suggestions. Image rights/provenance must be resolved separately under #320 before treating affected media as fully cleared.
+- Verification: `npm run build` passed (169 Astro pages); `npm test` passed (185 generated public HTML pages validated, zero broken internal links); focused UX suite passed 44/44; canonical workspace desktop contract passed 2/2 after the overflow fix; desktop and 390px visual evidence reviewed locally. Full Playwright completed with 944 passed, 11 expected skips, and one unrelated desktop checkbox click flake; the exact failed scenario passed immediately in a bounded single-test rerun.
+
+## 2026-08-22 — Codex — Public-media provenance gate
+
+- Registered 14 in-scope material visuals and first-party Hermes brand icons
+  with exact SHA-256 identities and first-tracked commits.
+- Six material JPEG visuals remain explicitly `NEEDS_OWNER_PROVENANCE` because
+  no original creator, generator/vendor, source URL, or publication-permission
+  record was recovered. Existing use is preserved without asserting a legal
+  defect; expanded reuse is blocked pending evidence or documented replacement.
+- The existing font provenance test chain now enforces the media registry too,
+  so unregistered assets and unreviewed byte changes fail CI.
+- No public image bytes, routes, copy, metadata, forms, analytics, or APIs changed.

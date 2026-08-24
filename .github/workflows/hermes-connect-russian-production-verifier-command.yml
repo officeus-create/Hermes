@@ -1,0 +1,84 @@
+name: Verify Hermes Connect Russian on command
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: hermes-connect-russian-production-command
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 220 &&
+      github.event.comment.body == '/verify-connect-ru' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Check out approved main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install verifier dependencies
+        run: npm ci
+
+      - name: Install Chromium for public browser verification
+        run: npx playwright install --with-deps chromium
+
+      - name: Run exact Russian Connect verifier
+        id: verify
+        shell: bash
+        run: |
+          set +e
+          node scripts/check-hermes-connect-russian-production.mjs
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Publish sanitized result to issue
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            if [ -f artifacts/hermes-connect-russian-production.md ]; then
+              cat artifacts/hermes-connect-russian-production.md
+            else
+              echo "# Hermes Connect Russian production verification"
+              echo
+              echo "The verifier did not produce its sanitized report."
+            fi
+            echo
+            echo "Verifier exit code: \`${{ steps.verify.outputs.status }}\`."
+            echo "Checked approved \`main\` commit: \`${{ github.sha }}\`."
+          } > /tmp/hermes-connect-russian-production-comment.md
+          gh issue comment 220 --repo "${{ github.repository }}" --body-file /tmp/hermes-connect-russian-production-comment.md
+
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hermes-connect-russian-production-verification
+          path: |
+            artifacts/hermes-connect-russian-production.json
+            artifacts/hermes-connect-russian-production.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce live Russian Connect result
+        shell: bash
+        run: test "${{ steps.verify.outputs.status }}" = "0"

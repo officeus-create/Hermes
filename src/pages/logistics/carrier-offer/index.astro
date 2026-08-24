@@ -19,7 +19,7 @@ const schema = {
 
 <BaseLayout
   title="Carrier Support Options | Hermes Logistics"
-  description="Review carrier-controlled dispatch support options and continue to a phone-friendly Appendix A execution packet."
+  description="Review carrier-controlled dispatch support options and continue to a phone-friendly Appendix A review/onboarding packet."
   robots="noindex,nofollow"
   schema={schema}
 >
@@ -53,7 +53,7 @@ const schema = {
             <h2>Confirm the offer and sign</h2>
             <p>Select the support model, enter the exact percentage discussed with Hermes, confirm the company and authorized signer, then sign from a phone.</p>
             <a class="button button-primary offer-primary" href={onboardingPath} data-primary-choice="agreement">Review and sign <ArrowRight size={18} aria-hidden="true" /></a>
-            <small>Only the information needed for the approved agreement packet is requested before signing.</small>
+            <small>Only the information needed for the review/onboarding packet is requested before signing.</small>
           </article>
           <article class="primary-choice primary-choice-learn">
             <Info size={28} aria-hidden="true" />
@@ -115,7 +115,7 @@ const schema = {
             <p>You propose the percentage and volume of work. Terms take effect only after written Hermes confirmation and a signed matching package.</p>
             <ul><li><Check size={17} aria-hidden="true" />Requested responsibilities</li><li><Check size={17} aria-hidden="true" />Proposed percentage</li><li><Check size={17} aria-hidden="true" />New signature after written acceptance</li></ul>
             <a href={`${onboardingPath}?plan=custom`} data-plan-link="custom">Submit a carrier proposal <ArrowRight size={16} aria-hidden="true" /></a>
-            <small>A custom proposal is non-binding and never enters live execution automatically.</small>
+            <small>A custom proposal is non-binding and remains review-only.</small>
           </article>
         </div>
       </div>
@@ -130,7 +130,7 @@ const schema = {
           <article><h3>Who receives freight money?</h3><p>The carrier or its factor. Hermes receives only the service fee stated in Appendix A.</p></article>
           <article><h3>Do I upload private documents now?</h3><p>No. The signature step does not request W-9s, CDL images, passwords, bank details, VIN lists, or shipment documents.</p></article>
           <article><h3>Are loads or revenue guaranteed?</h3><p>No. The agreement promises a defined support process, not a market result.</p></article>
-          <article><h3>Is there a personal guaranty or lien?</h3><p>The approved execution agreement does not include a personal guaranty, UCC lien, automatic card debit, or confession of judgment.</p></article>
+          <article><h3>Is there a personal guaranty or lien?</h3><p>The attorney-review agreement does not include a personal guaranty, UCC lien, automatic card debit, or confession of judgment.</p></article>
         </div>
       </div>
     </section>
@@ -149,7 +149,7 @@ const schema = {
 
     <section class="section offer-final" aria-labelledby="offer-final-title">
       <div class="shell offer-final-card">
-        <div><p class="eyebrow">Choose the next step</p><h2 id="offer-final-title">Confirm the exact offer or read the full agreement.</h2><p>The approved master, SHA-256, standard percentages, and production controls are active. Custom terms still require separate written acceptance before execution.</p></div>
+        <div><p class="eyebrow">Choose the next step</p><h2 id="offer-final-title">Confirm the exact offer or read the full agreement.</h2><p>The attorney-review master and SHA-256 controls support signed review/onboarding packets. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel and the approval gates tracked by #280.</p></div>
         <div class="offer-final-actions"><a class="button button-primary offer-primary" href={onboardingPath}>Review and sign <ArrowRight size={18} aria-hidden="true" /></a><a class="button" href={agreementPath}>Read full agreement <FileText size={18} aria-hidden="true" /></a><a class="button" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Talk to Logistics Sales</a></div>
       </div>
     </section>

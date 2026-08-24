@@ -1,0 +1,294 @@
+---
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import "../../../../../styles/hermes-academy-app.css";
+import "../../../../../styles/hermes-academy-review.css";
+---
+
+<BaseLayout
+  title="Academy Lesson | Hermes Connect"
+  description="Private enrolled-learner lesson view for Hermes Business Academy."
+  robots="noindex,nofollow"
+>
+  <div class="academy-app-page">
+    <SiteHeader activePath="/paths/academy/" />
+    <main id="main-content" class="academy-app-shell">
+      <nav class="academy-app-breadcrumbs" aria-label="Breadcrumb">
+        <a href="/services/hermes-connect/academy/dashboard/">Learner dashboard</a><span>/</span><a data-program-link href="/services/hermes-connect/academy/dashboard/">Program</a><span>/</span><span aria-current="page">Lesson</span>
+      </nav>
+
+      <div class="academy-app-alert" data-lesson-alert role="status"></div>
+
+      <section class="academy-app-hero">
+        <article class="academy-app-card">
+          <p class="academy-app-eyebrow">Private Academy lesson · enrolled learners</p>
+          <h1 data-lesson-title>Loading lesson…</h1>
+          <p data-lesson-purpose>Checking shared Hermes identity and program enrollment.</p>
+          <div class="academy-app-actions">
+            <a class="academy-app-button" data-program-link-secondary href="/services/hermes-connect/academy/dashboard/">Back to program</a>
+            <a class="academy-app-button" href="/services/hermes-connect/academy/progression/">View progression</a>
+          </div>
+        </article>
+        <aside class="academy-app-card academy-app-dark">
+          <span class="academy-app-status" data-lesson-version>Enrollment check</span>
+          <h2 style="margin-top:14px">Learning content does not grant operational access.</h2>
+          <p>Lesson reading, self-tracked progress and accepted evidence stay separate from employment, certification, income, client access and permission to work with live operations.</p>
+        </aside>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-lesson-content>
+        <p class="academy-app-eyebrow">Learning objectives</p>
+        <h2>What you should be able to do</h2>
+        <ul class="academy-app-list" data-objectives></ul>
+      </section>
+
+      <section class="academy-app-grid academy-app-hidden" data-section-grid style="margin-top:18px"></section>
+
+      <section class="academy-app-panel academy-app-hidden" data-source-panel style="margin-top:18px">
+        <p class="academy-app-eyebrow">Approved source pages</p>
+        <h2>Build from these canonical public destinations.</h2>
+        <div class="academy-app-list" data-source-list></div>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-assignment-panel style="margin-top:18px">
+        <p class="academy-app-eyebrow">Practice → private evidence → human review</p>
+        <h2 data-assignment-title>Assignment</h2>
+        <p data-assignment-scenario></p>
+        <p data-assignment-prompt></p>
+        <ol class="academy-app-list" data-assignment-parts></ol>
+        <div class="academy-app-note" data-assignment-limit></div>
+        <div class="academy-app-actions" style="margin-top:16px">
+          <a class="academy-app-button intelligence" data-submit-assignment href="/services/hermes-connect/academy/submissions/">Submit this assignment</a>
+        </div>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-rubric-panel style="margin-top:18px">
+        <p class="academy-app-eyebrow">Human assessment rubric</p>
+        <h2>Every criterion is Pass or Revise.</h2>
+        <div class="academy-app-list" data-rubric-list></div>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-boundary-panel style="margin-top:18px">
+        <p class="academy-app-eyebrow">Safety and data boundaries</p>
+        <h2>Keep learner evidence synthetic and reviewable.</h2>
+        <ul class="academy-app-list" data-boundaries></ul>
+      </section>
+
+      <section class="academy-app-panel academy-app-hidden" data-next-panel style="margin-top:18px">
+        <p class="academy-app-eyebrow">Next lesson</p>
+        <h2>Continue when you are ready.</h2>
+        <div class="academy-app-actions">
+          <a class="academy-app-button primary" data-next-lesson href="/services/hermes-connect/academy/dashboard/">Continue</a>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type LessonSection = { title: string; summary: string; actions?: string[] };
+  type RubricItem = { key: string; label: string; pass: string };
+  type ApprovedSource = { title: string; path: string };
+  type LessonPayload = {
+    program_slug: string;
+    lesson_id: string;
+    version: string;
+    title: string;
+    purpose: string;
+    objectives?: string[];
+    sections?: LessonSection[];
+    approved_sources?: ApprovedSource[];
+    boundaries?: string[];
+    scenario?: string;
+    assignment?: {
+      submission_type: string;
+      max_words?: number;
+      prompt: string;
+      parts?: string[];
+    };
+    rubric?: RubricItem[];
+    next?: { lesson_id: string; label: string };
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const programSlug = params.get("program") || "";
+  const lessonId = params.get("lesson") || "";
+  const alert = document.querySelector<HTMLElement>("[data-lesson-alert]");
+  const title = document.querySelector<HTMLElement>("[data-lesson-title]");
+  const purpose = document.querySelector<HTMLElement>("[data-lesson-purpose]");
+  const version = document.querySelector<HTMLElement>("[data-lesson-version]");
+  const contentPanel = document.querySelector<HTMLElement>("[data-lesson-content]");
+  const objectives = document.querySelector<HTMLElement>("[data-objectives]");
+  const sectionGrid = document.querySelector<HTMLElement>("[data-section-grid]");
+  const sourcePanel = document.querySelector<HTMLElement>("[data-source-panel]");
+  const sourceList = document.querySelector<HTMLElement>("[data-source-list]");
+  const assignmentPanel = document.querySelector<HTMLElement>("[data-assignment-panel]");
+  const assignmentScenario = document.querySelector<HTMLElement>("[data-assignment-scenario]");
+  const assignmentPrompt = document.querySelector<HTMLElement>("[data-assignment-prompt]");
+  const assignmentParts = document.querySelector<HTMLElement>("[data-assignment-parts]");
+  const assignmentLimit = document.querySelector<HTMLElement>("[data-assignment-limit]");
+  const submitAssignment = document.querySelector<HTMLAnchorElement>("[data-submit-assignment]");
+  const rubricPanel = document.querySelector<HTMLElement>("[data-rubric-panel]");
+  const rubricList = document.querySelector<HTMLElement>("[data-rubric-list]");
+  const boundaryPanel = document.querySelector<HTMLElement>("[data-boundary-panel]");
+  const boundaries = document.querySelector<HTMLElement>("[data-boundaries]");
+  const nextPanel = document.querySelector<HTMLElement>("[data-next-panel]");
+  const nextLesson = document.querySelector<HTMLAnchorElement>("[data-next-lesson]");
+  const programLinks = [
+    document.querySelector<HTMLAnchorElement>("[data-program-link]"),
+    document.querySelector<HTMLAnchorElement>("[data-program-link-secondary]"),
+  ].filter(Boolean) as HTMLAnchorElement[];
+
+  const programHref = programSlug
+    ? `/services/hermes-connect/academy/program/${encodeURIComponent(programSlug)}/`
+    : "/services/hermes-connect/academy/dashboard/";
+  programLinks.forEach((link) => { link.href = programHref; });
+
+  function showAlert(message: string, kind: "error" | "success" = "error") {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `academy-app-alert show ${kind}`;
+  }
+
+  function appendList(target: HTMLElement | null, values: string[] = []) {
+    if (!target) return;
+    target.replaceChildren();
+    for (const value of values) {
+      const item = document.createElement("li");
+      item.textContent = value;
+      target.append(item);
+    }
+  }
+
+  function renderSections(items: LessonSection[] = []) {
+    if (!sectionGrid) return;
+    sectionGrid.replaceChildren();
+    for (const item of items) {
+      const card = document.createElement("article");
+      card.className = "academy-app-panel";
+      const heading = document.createElement("h2");
+      heading.textContent = item.title;
+      const summary = document.createElement("p");
+      summary.textContent = item.summary;
+      card.append(heading, summary);
+      if (Array.isArray(item.actions) && item.actions.length > 0) {
+        const list = document.createElement("ul");
+        list.className = "academy-app-list";
+        appendList(list, item.actions);
+        card.append(list);
+      }
+      sectionGrid.append(card);
+    }
+    sectionGrid.classList.toggle("academy-app-hidden", items.length === 0);
+  }
+
+  function renderSources(items: ApprovedSource[] = []) {
+    if (!sourceList || !sourcePanel) return;
+    sourceList.replaceChildren();
+    for (const item of items) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = item.title;
+      const link = document.createElement("a");
+      link.className = "academy-app-button";
+      link.href = item.path;
+      link.textContent = item.path;
+      card.append(heading, link);
+      sourceList.append(card);
+    }
+    sourcePanel.classList.toggle("academy-app-hidden", items.length === 0);
+  }
+
+  function renderRubric(items: RubricItem[] = []) {
+    if (!rubricList || !rubricPanel) return;
+    rubricList.replaceChildren();
+    for (const item of items) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = item.label;
+      const copy = document.createElement("p");
+      copy.textContent = `Pass: ${item.pass}`;
+      card.append(heading, copy);
+      rubricList.append(card);
+    }
+    rubricPanel.classList.toggle("academy-app-hidden", items.length === 0);
+  }
+
+  function renderLesson(lesson: LessonPayload) {
+    if (title) title.textContent = lesson.title;
+    if (purpose) purpose.textContent = lesson.purpose;
+    if (version) version.textContent = `Lesson version · ${lesson.version}`;
+    appendList(objectives, lesson.objectives || []);
+    contentPanel?.classList.remove("academy-app-hidden");
+    renderSections(lesson.sections || []);
+    renderSources(lesson.approved_sources || []);
+    appendList(boundaries, lesson.boundaries || []);
+    boundaryPanel?.classList.toggle("academy-app-hidden", !(lesson.boundaries?.length));
+
+    if (lesson.assignment && assignmentPanel) {
+      assignmentPanel.classList.remove("academy-app-hidden");
+      if (assignmentScenario) assignmentScenario.textContent = lesson.scenario || "";
+      if (assignmentPrompt) assignmentPrompt.textContent = lesson.assignment.prompt;
+      appendList(assignmentParts, lesson.assignment.parts || []);
+      if (assignmentLimit) assignmentLimit.textContent = lesson.assignment.max_words
+        ? `Maximum length: ${lesson.assignment.max_words} words.`
+        : "Submit only the evidence requested by this lesson.";
+      if (submitAssignment) {
+        const query = new URLSearchParams({
+          program: lesson.program_slug,
+          lesson: lesson.lesson_id,
+          type: lesson.assignment.submission_type,
+        });
+        submitAssignment.href = `/services/hermes-connect/academy/submissions/?${query.toString()}`;
+      }
+    }
+
+    renderRubric(lesson.rubric || []);
+
+    if (lesson.next && nextLesson && nextPanel) {
+      nextPanel.classList.remove("academy-app-hidden");
+      nextLesson.textContent = lesson.next.label;
+      const query = new URLSearchParams({ program: lesson.program_slug, lesson: lesson.next.lesson_id });
+      nextLesson.href = `/services/hermes-connect/academy/lesson/?${query.toString()}`;
+    }
+  }
+
+  async function loadLesson() {
+    if (!programSlug || !lessonId) {
+      showAlert("Choose a lesson from your enrolled Academy program.");
+      if (title) title.textContent = "Lesson not selected";
+      if (purpose) purpose.textContent = "Open an enrolled program and choose an available full lesson.";
+      return;
+    }
+    try {
+      const query = new URLSearchParams({ program: programSlug, lesson: lessonId });
+      const response = await fetch(`/api/academy/lesson?${query.toString()}`, { credentials: "same-origin" });
+      if (response.status === 401) {
+        const returnTo = `${window.location.pathname}${window.location.search}`;
+        window.location.replace(`/services/hermes-connect/academy/auth/?mode=login&return_to=${encodeURIComponent(returnTo)}`);
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        if (data.error === "enrollment_not_found" || data.error === "enrollment_not_active") {
+          throw new Error("This full lesson is available only inside an enrolled Academy program.");
+        }
+        if (data.error === "lesson_content_not_ready") {
+          throw new Error("This module remains on the curriculum map, but its full learner lesson is not published yet.");
+        }
+        throw new Error(data.error || "Could not load lesson");
+      }
+      renderLesson(data.lesson as LessonPayload);
+    } catch (error) {
+      showAlert(error instanceof Error ? error.message : "Could not load lesson");
+      if (title) title.textContent = "Lesson unavailable";
+      if (purpose) purpose.textContent = "Return to the program curriculum and continue with an available lesson.";
+    }
+  }
+
+  loadLesson();
+</script>

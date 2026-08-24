@@ -1,0 +1,222 @@
+name: Refresh Hermes Connect CEO QA profile
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+jobs:
+  refresh:
+    if: >-
+      github.event.issue.number == 671 &&
+      github.event.comment.body == '/refresh-hc-ceo-profile' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CEO_QA_EMAIL: officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com
+      BASE_URL: https://hermeslogisticsus.com
+
+    steps:
+      - name: Recover exact v3 credential and refresh through canonical production APIs
+        shell: bash
+        run: |
+          set -uo pipefail
+
+          TMP="${RUNNER_TEMP}/hc-ceo-profile-refresh"
+          COOKIE="${TMP}/session.cookies"
+          RESULT="${TMP}/result.md"
+          mkdir -p "$TMP"
+          chmod 700 "$TMP"
+
+          fail() {
+            printf '%s\n' \
+              '## Hermes Connect CEO QA profile refresh — FAILED' \
+              '' \
+              "- ${1}" \
+              '- Existing v3 identity/shop were not replaced or duplicated.' \
+              '- No password, token, account ID, artifact credential, or private customer identifier is published.' \
+              > "$RESULT"
+            exit 1
+          }
+
+          github_get() {
+            local url="$1" output="$2"
+            curl -fsSL \
+              --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 10 --max-time 25 \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "$url" -o "$output"
+          }
+
+          product_request() {
+            local method="$1" url="$2" output="$3" payload="${4:-}" auth="${5:-yes}"
+            local args=(-fsS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 -o "$output" -w '%{http_code}' -X "$method" -c "$COOKIE")
+            if [ "$auth" = yes ]; then args+=(-b "$COOKIE"); fi
+            if [ -n "$payload" ]; then args+=(-H 'Content-Type: application/json' --data-binary "$payload"); fi
+            local code
+            if ! code="$(curl "${args[@]}" "$url")"; then
+              printf '000'
+              return 0
+            fi
+            printf '%s' "$code"
+          }
+
+          ARTIFACTS_JSON="${TMP}/artifacts.json"
+          ARTIFACTS_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts?name=hermes-connect-ceo-owner-qa&per_page=100"
+          if ! github_get "$ARTIFACTS_URL" "$ARTIFACTS_JSON"; then
+            fail 'GitHub Actions artifact inventory request failed after bounded retries. No product mutation was attempted.'
+          fi
+          if ! jq -e '.artifacts | type == "array"' "$ARTIFACTS_JSON" >/dev/null 2>&1; then
+            fail 'GitHub Actions artifact inventory returned an invalid response. No product mutation was attempted.'
+          fi
+
+          mapfile -t ARTIFACT_IDS < <(jq -r '.artifacts | sort_by(.created_at) | reverse | .[] | select(.expired == false) | .id' "$ARTIFACTS_JSON")
+          [ "${#ARTIFACT_IDS[@]}" -gt 0 ] || fail 'No unexpired CEO QA credential artifacts remain. Refresh stopped safely.'
+
+          CREDENTIAL_FILE=''
+          for ARTIFACT_ID in "${ARTIFACT_IDS[@]}"; do
+            [ -n "$ARTIFACT_ID" ] || continue
+            CANDIDATE_DIR="${TMP}/artifact-${ARTIFACT_ID}"
+            ZIP="${TMP}/artifact-${ARTIFACT_ID}.zip"
+            mkdir -p "$CANDIDATE_DIR"
+            ARTIFACT_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip"
+            if ! github_get "$ARTIFACT_URL" "$ZIP"; then
+              continue
+            fi
+            if ! unzip -qq -o "$ZIP" -d "$CANDIDATE_DIR"; then
+              continue
+            fi
+            CANDIDATE="$(find "$CANDIDATE_DIR" -type f -name credentials.txt -print -quit)"
+            if [ -n "$CANDIDATE" ] && grep -Fqx "Email: ${CEO_QA_EMAIL}" "$CANDIDATE"; then
+              CREDENTIAL_FILE="$CANDIDATE"
+              break
+            fi
+          done
+
+          [ -n "$CREDENTIAL_FILE" ] || fail 'No unexpired credential artifact for the exact v3 CEO QA identity was found. Refresh stopped safely.'
+          PASSWORD="$(sed -n 's/^Password: //p' "$CREDENTIAL_FILE" | head -n 1)"
+          [ -n "$PASSWORD" ] || fail 'The matched v3 credential artifact is incomplete. Refresh stopped safely.'
+          echo "::add-mask::$PASSWORD"
+
+          LOGIN_PAYLOAD="$(jq -nc --arg email "$CEO_QA_EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password}')"
+          LOGIN_HTTP="$(product_request POST "$BASE_URL/api/auth/login" "$TMP/login.json" "$LOGIN_PAYLOAD" no)"
+          if [ "$LOGIN_HTTP" != 200 ] || [ "$(jq -r '.success // false' "$TMP/login.json" 2>/dev/null)" != true ]; then
+            fail 'The retained v3 artifact credential is no longer accepted by production auth. No profile mutation was attempted.'
+          fi
+          [ -s "$COOKIE" ] || fail 'Production login succeeded but did not persist an authenticated session cookie.'
+
+          ME_HTTP="$(product_request GET "$BASE_URL/api/auth/me" "$TMP/me.json")"
+          [ "$ME_HTTP" = 200 ] || fail 'Authenticated identity readback failed before mutation.'
+          [ "$(jq -r '.specialist.email // empty' "$TMP/me.json")" = "$CEO_QA_EMAIL" ] || fail 'Authenticated identity did not match the exact v3 CEO QA email.'
+          [ "$(jq -r '.specialist.role // empty' "$TMP/me.json")" = 'Shop Owner' ] || fail 'Authenticated v3 identity is not the expected Shop Owner role.'
+
+          PROFILE="$(jq -nc '{
+            name:"Northstar Auto Care — Hermes CEO QA",
+            phone:"+1 414 555 0197",
+            address_line1:"Internal CEO QA demo location — not a customer-facing physical address",
+            city:"Milwaukee",
+            state:"WI",
+            postal_code:"53202",
+            timezone:"America/Chicago"
+          }')"
+          PROFILE_HTTP="$(product_request PUT "$BASE_URL/api/repair-shop/profile" "$TMP/profile-put.json" "$PROFILE")"
+          [ "$PROFILE_HTTP" = 200 ] || fail 'Repair Shop profile update failed.'
+
+          CAPABILITIES='{"vehicle_types":["passenger_light","commercial_truck","trailer"],"fleet_service":true,"mobile_roadside":true,"emergency_24_7":false,"parallel_booking_capacity":2}'
+          CAP_HTTP="$(product_request PUT "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-put.json" "$CAPABILITIES")"
+          [ "$CAP_HTTP" = 200 ] || fail 'Repair Shop capability profile update failed.'
+
+          SERVICES_HTTP="$(product_request GET "$BASE_URL/api/services" "$TMP/services.json")"
+          [ "$SERVICES_HTTP" = 200 ] || fail 'Existing Repair Shop services could not be read.'
+          SERVICES_COUNT="$(jq '.services | length' "$TMP/services.json")"
+
+          AVAIL_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability.json")"
+          [ "$AVAIL_HTTP" = 200 ] || fail 'Existing Repair Shop availability could not be read.'
+          OPEN_DAYS="$(jq '[.days[]? | select(.is_open == true)] | length' "$TMP/availability.json")"
+          if [ "$OPEN_DAYS" -lt 5 ]; then
+            AVAILABILITY='{"days":[{"day_of_week":0,"is_open":false,"start_time":"09:00","end_time":"17:00"},{"day_of_week":1,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":2,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":3,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":4,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":5,"is_open":true,"start_time":"08:00","end_time":"17:00"},{"day_of_week":6,"is_open":true,"start_time":"09:00","end_time":"14:00"}]}'
+            AVAIL_PUT_HTTP="$(product_request PUT "$BASE_URL/api/repair-shop/availability" "$TMP/availability-put.json" "$AVAILABILITY")"
+            [ "$AVAIL_PUT_HTTP" = 200 ] || fail 'Repair Shop weekly availability completion failed.'
+          fi
+
+          ACADEMY_PROFILE='{"preferred_language":"ru","timezone":"Europe/Kyiv"}'
+          ACADEMY_PROFILE_HTTP="$(product_request PUT "$BASE_URL/api/academy/profile" "$TMP/academy-profile-put.json" "$ACADEMY_PROFILE")"
+          [ "$ACADEMY_PROFILE_HTTP" = 200 ] || fail 'Academy learner preferences update failed.'
+
+          ENROLL_GET_HTTP="$(product_request GET "$BASE_URL/api/academy/enrollments" "$TMP/enrollments-before.json")"
+          [ "$ENROLL_GET_HTTP" = 200 ] || fail 'Academy enrollment state could not be read before program requests.'
+          for PROGRAM in us-logistics-operations marketing; do
+            EXISTS="$(jq -r --arg program "$PROGRAM" '[.enrollments[]? | select(.program_slug==$program)] | length' "$TMP/enrollments-before.json")"
+            if [ "$EXISTS" = 0 ]; then
+              ENROLL_PAYLOAD="$(jq -nc --arg program "$PROGRAM" '{program_slug:$program}')"
+              ENROLL_HTTP="$(product_request POST "$BASE_URL/api/academy/enrollments" "$TMP/enrollment-${PROGRAM}.json" "$ENROLL_PAYLOAD")"
+              if [ "$ENROLL_HTTP" != 200 ] && [ "$ENROLL_HTTP" != 201 ]; then
+                fail "Academy program request failed for ${PROGRAM}."
+              fi
+            fi
+          done
+
+          PROFILE_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/profile" "$TMP/profile-get.json")"
+          CAP_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/capabilities" "$TMP/capabilities-get.json")"
+          AVAIL_GET_HTTP="$(product_request GET "$BASE_URL/api/repair-shop/availability" "$TMP/availability-get.json")"
+          ACADEMY_GET_HTTP="$(product_request GET "$BASE_URL/api/academy/profile" "$TMP/academy-profile-get.json")"
+          ENROLL_GET_HTTP="$(product_request GET "$BASE_URL/api/academy/enrollments" "$TMP/enrollments-get.json")"
+          for CODE in "$PROFILE_GET_HTTP" "$CAP_GET_HTTP" "$AVAIL_GET_HTTP" "$ACADEMY_GET_HTTP" "$ENROLL_GET_HTTP"; do
+            [ "$CODE" = 200 ] || fail 'Post-update readback failed; refusing to call the refresh complete.'
+          done
+
+          [ "$(jq -r '.shop.name // empty' "$TMP/profile-get.json")" = 'Northstar Auto Care — Hermes CEO QA' ] || fail 'Repair Shop name readback mismatch.'
+          [ "$(jq -r '.shop.city // empty' "$TMP/profile-get.json")" = 'Milwaukee' ] || fail 'Repair Shop city readback mismatch.'
+          [ "$(jq -r '.shop.state // empty' "$TMP/profile-get.json")" = 'WI' ] || fail 'Repair Shop state readback mismatch.'
+          [ "$(jq -r '.shop.timezone // empty' "$TMP/profile-get.json")" = 'America/Chicago' ] || fail 'Repair Shop timezone readback mismatch.'
+          [ "$(jq -r '.capabilities.fleet_service // false' "$TMP/capabilities-get.json")" = true ] || fail 'Fleet-service capability readback mismatch.'
+          [ "$(jq -r '.capabilities.mobile_roadside // false' "$TMP/capabilities-get.json")" = true ] || fail 'Mobile-roadside capability readback mismatch.'
+          [ "$(jq -r '.capabilities.parallel_booking_capacity // 0' "$TMP/capabilities-get.json")" = 2 ] || fail 'Parallel booking capacity readback mismatch.'
+          [ "$(jq -r '.learner.preferred_language // empty' "$TMP/academy-profile-get.json")" = ru ] || fail 'Academy preferred-language readback mismatch.'
+          [ "$(jq -r '.learner.timezone // empty' "$TMP/academy-profile-get.json")" = Europe/Kyiv ] || fail 'Academy timezone readback mismatch.'
+
+          OPEN_DAYS="$(jq '[.days[]? | select(.is_open == true)] | length' "$TMP/availability-get.json")"
+          LOGISTICS_STATE="$(jq -r '[.enrollments[]? | select(.program_slug=="us-logistics-operations")][0].state // "missing"' "$TMP/enrollments-get.json")"
+          MARKETING_STATE="$(jq -r '[.enrollments[]? | select(.program_slug=="marketing")][0].state // "missing"' "$TMP/enrollments-get.json")"
+          REVIEWER_ACTIVE="$(jq -r '.reviewer_access.active // false' "$TMP/academy-profile-get.json")"
+
+          {
+            echo '## Hermes Connect CEO QA profile refresh — PASS'
+            echo
+            echo '- ✅ Existing v3 Hermes identity authenticated and updated in place; no duplicate account/shop/runtime was created.'
+            echo '- ✅ Repair Shop profile: Northstar Auto Care — Hermes CEO QA · Milwaukee, WI · America/Chicago.'
+            echo '- ✅ Capability profile: cars/light vehicles + commercial trucks + trailers · fleet service · mobile roadside · capacity 2 · emergency 24/7 off.'
+            echo "- ✅ Existing services preserved: **${SERVICES_COUNT}**."
+            echo "- ✅ Weekly availability open days: **${OPEN_DAYS}**."
+            echo '- ✅ Academy preferences: Russian · Europe/Kyiv.'
+            echo "- Academy U.S. Logistics Operations state: **${LOGISTICS_STATE}**."
+            echo "- Academy Marketing state: **${MARKETING_STATE}**."
+            echo "- Academy reviewer access already authorized: **${REVIEWER_ACTIVE}**."
+            echo '- Human-controlled enrollment/reviewer privileges were not self-granted or bypassed by this workflow.'
+            echo
+            echo '> Credential material was used only inside the runner, masked, and is not included in this report.'
+          } > "$RESULT"
+
+      - name: Publish sanitized refresh result
+        if: success()
+        shell: bash
+        run: gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "${RUNNER_TEMP}/hc-ceo-profile-refresh/result.md"
+
+      - name: Publish sanitized failure
+        if: failure()
+        shell: bash
+        run: |
+          RESULT="${RUNNER_TEMP}/hc-ceo-profile-refresh/result.md"
+          if [ -f "$RESULT" ]; then
+            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
+          else
+            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body $'## Hermes Connect CEO QA profile refresh — FAILED\n\nRefresh stopped before a verified production readback. The existing v3 account was not replaced or duplicated, and no credential is published.'
+          fi

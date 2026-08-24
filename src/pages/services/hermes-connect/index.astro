@@ -11,6 +11,7 @@ const verticals = [
     body: "Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace.",
     modules: ["Bookings", "Services", "Customers", "Vehicles"],
     href: "/services/hermes-connect/repair-shops/",
+    live: true,
   },
   {
     name: "Logistics",
@@ -26,9 +27,11 @@ const verticals = [
   },
   {
     name: "Academy",
-    status: "PREVIEW CONFIGURATION",
-    body: "Students, programs, assignments, practice, progress, and coaching around measurable learning work.",
-    modules: ["Students", "Programs", "Practice", "Progress"],
+    status: "PRIVATE LEARNER WORKSPACE",
+    body: "Students, programs, assignments, practice, evidence, progress, support, and human-reviewed progression in one learner workspace.",
+    modules: ["Students", "Programs", "Evidence", "Progress"],
+    href: "/services/hermes-connect/academy/",
+    live: false,
   },
   {
     name: "Beauty & Wellness",
@@ -57,7 +60,7 @@ const labs = [
 const faqs = [
   {
     question: "Which Hermes Connect configuration is live today?",
-    answer: "Repair Shops is the current live product vertical. Other business configurations on this page are previews and are not presented as released production runtimes.",
+    answer: "Repair Shops is the current public live product vertical. Academy also has an existing private learner workspace for approved training flows. Other business configurations on this page remain previews.",
   },
   {
     question: "Is Hermes Connect one product or many separate apps?",
@@ -65,7 +68,7 @@ const faqs = [
   },
   {
     question: "Are the dashboard numbers real customer data?",
-    answer: "No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live product surfaces are identified separately.",
+    answer: "No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live and private product surfaces are identified separately.",
   },
 ];
 
@@ -77,7 +80,7 @@ const schema = [
     url: "https://hermeslogisticsus.com/services/hermes-connect/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
-    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current live vertical; other business configurations are product previews.",
+    description: "Hermes Connect is an adaptive AI operating-system product family for business. Repair Shops is the current public live vertical; Academy has an existing private learner workspace; other business configurations are product previews.",
   },
   {
     "@context": "https://schema.org",
@@ -112,12 +115,13 @@ const schema = [
           <div class="hc-actions">
             <a class="hc-primary" href="/services/hermes-connect/repair-shops/"><Wrench size={18} aria-hidden="true" />Open Repair Shops <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="hc-secondary" href="/services/hermes-connect/repair-shops/auth/">Owner access</a>
+            <a class="hc-secondary" href="/services/hermes-connect/academy/">Open Academy</a>
             <a class="hc-secondary" href="#choose-your-business">Choose your business</a>
           </div>
           <div class="hc-truth" aria-label="Current Hermes Connect product status">
             <span><CheckCircle2 size={15} aria-hidden="true" />Repair Shops is live</span>
-            <span><ShieldCheck size={15} aria-hidden="true" />Other industries are previews</span>
-            <span><CheckCircle2 size={15} aria-hidden="true" />One shared product family</span>
+            <span><ShieldCheck size={15} aria-hidden="true" />Academy has private learner access</span>
+            <span><CheckCircle2 size={15} aria-hidden="true" />Other industries are previews</span>
           </div>
         </div>
 
@@ -169,12 +173,12 @@ const schema = [
         </div>
         <div class="hc-vertical-grid">
           {verticals.map((vertical, index) => (
-            <article class={vertical.href ? "is-live" : "is-preview"}>
+            <article class={vertical.live ? "is-live" : "is-preview"}>
               <div class="hc-card-top"><span>{vertical.status}</span><small>{String(index + 1).padStart(2, "0")}</small></div>
               <h3>{vertical.name}</h3>
               <p>{vertical.body}</p>
               <div class="hc-chips">{vertical.modules.map((module) => <span>{module}</span>)}</div>
-              {vertical.href ? <a href={vertical.href}>Open live product <ArrowRight size={15} aria-hidden="true" /></a> : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
+              {vertical.href ? <a href={vertical.href}>{vertical.live ? "Open live product" : "Open learner workspace"} <ArrowRight size={15} aria-hidden="true" /></a> : <small class="hc-preview-note">Configuration preview · not a released vertical</small>}
             </article>
           ))}
         </div>
@@ -208,12 +212,150 @@ const schema = [
       <div class="hc-shell">
         <div class="hc-heading-row compact">
           <div><p class="hc-kicker">Product truth</p><h2 id="truth-title">Clear status. No fake live surface.</h2></div>
-          <p>Preview UI is labeled as preview or sample data. Repair Shops remains the only current live vertical on this product hub.</p>
+          <p>Preview UI is labeled as preview or sample data. Repair Shops is the current public live vertical; Academy learner access remains private.</p>
         </div>
         <div class="hc-faq-grid">{faqs.map((faq) => <article><h3>{faq.question}</h3><p>{faq.answer}</p></article>)}</div>
       </div>
     </section>
   </main>
+
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      let locale = params.get("lang");
+      if (!locale) {
+        try { locale = window.localStorage.getItem("hermes-connect-language"); } catch {}
+      }
+      if (locale !== "ru") return;
+
+      const translations = new Map([
+        ["AI operating system for business", "AI-операционная система для бизнеса"],
+        ["Run your business", "Управляйте бизнесом"],
+        ["with AI.", "с AI."],
+        ["One operating system for leads, bookings, customers, operations, and growth. Hermes adapts the workspace around the way your business actually works.", "Одна операционная система для лидов, записей, клиентов, операций и роста. Hermes адаптирует рабочее пространство под реальные процессы вашего бизнеса."],
+        ["Open Repair Shops", "Открыть СТО"],
+        ["Owner access", "Вход владельца"],
+        ["Open Academy", "Открыть Академию"],
+        ["Choose your business", "Выбрать направление"],
+        ["Repair Shops is live", "СТО уже работает"],
+        ["Academy has private learner access", "Academy: приватный доступ к обучению"],
+        ["Other industries are previews", "Другие направления — превью"],
+        ["Hermes Intelligence · signature system object", "Hermes Intelligence · ключевой объект системы"],
+        ["Signal arrives", "Поступает сигнал"],
+        ["Request captured", "Запрос зафиксирован"],
+        ["Hermes coordinates", "Hermes координирует"],
+        ["Intent + next step", "Намерение + следующий шаг"],
+        ["Work moves forward", "Работа движется дальше"],
+        ["Human-review ready", "Готово к проверке человеком"],
+        ["WORKSPACE PREVIEW · SAMPLE DATA", "ПРЕВЬЮ РАБОЧЕГО ПРОСТРАНСТВА · ПРИМЕР ДАННЫХ"],
+        ["Home", "Главная"],
+        ["Inbox", "Входящие"],
+        ["Calendar", "Календарь"],
+        ["Customers", "Клиенты"],
+        ["Operations", "Операции"],
+        ["Good morning.", "Доброе утро."],
+        ["Here’s what needs attention today.", "Вот что требует внимания сегодня."],
+        ["Bookings", "Записи"],
+        ["New leads", "Новые лиды"],
+        ["AI reviews", "AI-проверки"],
+        ["sample", "пример"],
+        ["AI workflows", "AI-процессы"],
+        ["Reception", "Приём"],
+        ["Preview", "Превью"],
+        ["Follow-up", "Сопровождение"],
+        ["What needs attention next?", "Что требует внимания дальше?"],
+        ["Illustrative UI — no autonomous action.", "Демонстрационный интерфейс — без автономных действий."],
+        ["Adaptive by business", "Адаптация под бизнес"],
+        ["One system. Different business realities.", "Одна система. Разные бизнес-процессы."],
+        ["The product identity stays constant. Language and modules adapt to the operating context without creating separate Hermes brands.", "Идентичность продукта остаётся единой. Язык и модули адаптируются под рабочий контекст без создания отдельных брендов Hermes."],
+        ["Repair Shops", "СТО"],
+        ["LIVE PRODUCT", "РАБОЧИЙ ПРОДУКТ"],
+        ["Bookings, services, availability, customers, vehicles, follow-up, and owner operations in one workspace.", "Записи, услуги, доступность, клиенты, автомобили, сопровождение и операции владельца в одном рабочем пространстве."],
+        ["Services", "Услуги"],
+        ["Vehicles", "Автомобили"],
+        ["Open live product", "Открыть рабочий продукт"],
+        ["Logistics", "Логистика"],
+        ["PREVIEW CONFIGURATION", "КОНФИГУРАЦИЯ-ПРЕВЬЮ"],
+        ["Loads, carriers, dispatch, documents, freight decisions, and operating visibility around one shared workflow.", "Грузы, перевозчики, диспетчинг, документы, решения по перевозкам и операционная прозрачность в едином процессе."],
+        ["Loads", "Грузы"],
+        ["Carriers", "Перевозчики"],
+        ["Dispatch", "Диспетчинг"],
+        ["Documents", "Документы"],
+        ["Marketing", "Маркетинг"],
+        ["Leads, clients, campaigns, meetings, sales handoff, and AI-assisted follow-up in one operating view.", "Лиды, клиенты, кампании, встречи, передача в продажи и AI-сопровождение в одном операционном представлении."],
+        ["Leads", "Лиды"],
+        ["Clients", "Клиенты"],
+        ["Campaigns", "Кампании"],
+        ["Pipeline", "Воронка"],
+        ["Academy", "Академия"],
+        ["PRIVATE LEARNER WORKSPACE", "ПРИВАТНОЕ ПРОСТРАНСТВО ОБУЧЕНИЯ"],
+        ["Students, programs, assignments, practice, evidence, progress, support, and human-reviewed progression in one learner workspace.", "Студенты, программы, задания, практика, доказательства выполнения, прогресс, поддержка и проверяемое человеком продвижение в одном учебном пространстве."],
+        ["Students", "Студенты"],
+        ["Programs", "Программы"],
+        ["Evidence", "Результаты"],
+        ["Progress", "Прогресс"],
+        ["Open learner workspace", "Открыть обучение"],
+        ["Beauty & Wellness", "Красота и wellness"],
+        ["Appointments, clients, services, specialists, repeat visits, reviews, and relationship management.", "Записи, клиенты, услуги, специалисты, повторные визиты, отзывы и управление отношениями."],
+        ["Appointments", "Записи"],
+        ["Retention", "Удержание"],
+        ["Professional Services", "Профессиональные услуги"],
+        ["Requests, clients, proposals, projects, tasks, documents, and follow-up for service businesses.", "Запросы, клиенты, предложения, проекты, задачи, документы и сопровождение для сервисного бизнеса."],
+        ["Requests", "Запросы"],
+        ["Projects", "Проекты"],
+        ["Tasks", "Задачи"],
+        ["Configuration preview · not a released vertical", "Превью конфигурации · направление ещё не выпущено"],
+        ["One Hermes workspace", "Единое рабочее пространство Hermes"],
+        ["Pearl outside. Obsidian where work gets serious.", "Pearl снаружи. Obsidian там, где начинается серьёзная работа."],
+        ["Public pages explain the system with clarity and air. Operational tools become darker, denser, and more focused. The visual language stays unmistakably Hermes in both modes.", "Публичные страницы объясняют систему ясно и свободно. Операционные инструменты становятся темнее, плотнее и сфокусированнее. В обоих режимах визуальный язык остаётся узнаваемо Hermes."],
+        ["Reference capabilities stay visible without pretending they are separate live products.", "Референсные возможности остаются видимыми, но не выдаются за отдельные рабочие продукты."],
+        ["These modules support product exploration while remaining subordinate to the current Repair Shops live vertical.", "Эти модули помогают исследовать продукт, оставаясь вспомогательными по отношению к текущему рабочему направлению СТО."],
+        ["REFERENCE", "РЕФЕРЕНС"],
+        ["Product truth", "Статус продукта"],
+        ["Clear status. No fake live surface.", "Чёткий статус. Никакой имитации рабочего продукта."],
+        ["Preview UI is labeled as preview or sample data. Repair Shops is the current public live vertical; Academy learner access remains private.", "Превью-интерфейсы отмечены как превью или пример данных. СТО — текущее публичное рабочее направление; доступ к обучению Academy остаётся приватным."],
+        ["Which Hermes Connect configuration is live today?", "Какая конфигурация Hermes Connect работает сейчас?"],
+        ["Repair Shops is the current public live product vertical. Academy also has an existing private learner workspace for approved training flows. Other business configurations on this page remain previews.", "СТО — текущее публичное рабочее направление. В Academy уже существует приватное пространство для утверждённых учебных потоков. Остальные бизнес-конфигурации на этой странице остаются превью."],
+        ["Is Hermes Connect one product or many separate apps?", "Hermes Connect — это один продукт или несколько отдельных приложений?"],
+        ["One product family. Identity, workspace principles, intelligence, and operating patterns stay recognizable while terminology and workflows adapt to the business.", "Это единая продуктовая экосистема. Идентичность, принципы рабочего пространства, intelligence и операционные паттерны остаются узнаваемыми, а терминология и процессы адаптируются под бизнес."],
+        ["Are the dashboard numbers real customer data?", "Цифры на демонстрационной панели — реальные данные клиентов?"],
+        ["No. The product-preview dashboard on this page is explicitly labeled as sample presentation data. Live and private product surfaces are identified separately.", "Нет. Демонстрационная панель на этой странице прямо отмечена как пример данных. Рабочие и приватные поверхности продукта обозначаются отдельно."],
+      ]);
+
+      const root = document.querySelector(".hc-brand-page");
+      if (!root) return;
+
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        const parent = node.parentElement;
+        if (!parent || ["SCRIPT", "STYLE"].includes(parent.tagName)) return;
+        const value = node.nodeValue || "";
+        const key = value.trim();
+        const translated = translations.get(key);
+        if (!translated) return;
+        node.nodeValue = value.replace(key, translated);
+      });
+
+      root.setAttribute("data-hc-hub-locale", "ru");
+      root.querySelector('[aria-label="Current Hermes Connect product status"]')?.setAttribute("aria-label", "Текущий статус продукта Hermes Connect");
+      root.querySelector('[aria-label="Hermes Connect product preview"]')?.setAttribute("aria-label", "Превью продукта Hermes Connect");
+
+      const productContext = document.querySelector("[data-hc-product-context]");
+      productContext?.querySelector("[data-hc-english-only]")?.remove();
+      const contentLanguage = productContext?.querySelector(".hc-content-language");
+      if (contentLanguage) contentLanguage.textContent = "Язык контента: русский";
+      productContext?.querySelectorAll(".hc-family-nav a").forEach((link) => {
+        const label = link.textContent?.trim();
+        if (label === "Repair Shops") link.textContent = "СТО";
+      });
+
+      document.title = "Hermes Connect | AI-операционная система для бизнеса";
+      const description = document.querySelector('meta[name="description"]');
+      if (description) description.setAttribute("content", "Управляйте бизнесом с AI. Hermes Connect адаптирует единую операционную систему под разные бизнес-процессы; СТО — текущее публичное рабочее направление, Academy — приватное учебное пространство.");
+    })();
+  </script>
 
   <SiteFooter />
 </BaseLayout>
@@ -261,7 +403,7 @@ const schema = [
 
   .hc-section{padding:var(--hermes-section-space) 0}.hc-heading-row{display:grid;grid-template-columns:1fr minmax(280px,.52fr);gap:2.5rem;align-items:end;margin-bottom:2rem}.hc-heading-row>p,.hc-labs-grid>div>p,.hc-obsidian-grid>p{margin:0;color:var(--hermes-muted);line-height:1.7}.hc-heading-row h2,.hc-labs h2,.hc-obsidian-band h2{max-width:900px;margin:0;font-family:var(--font-display);font-size:clamp(2.6rem,5.3vw,5.4rem);font-weight:720;line-height:.94;letter-spacing:-.055em;text-wrap:balance}.hc-heading-row.compact h2{font-size:clamp(2.3rem,4vw,3.8rem)}
   .hc-vertical-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.hc-vertical-grid article{display:flex;flex-direction:column;min-height:285px;padding:1.45rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.74);box-shadow:var(--hermes-shadow-card);transition:transform var(--hermes-motion-fast) ease,box-shadow var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-vertical-grid article:hover{transform:translateY(-2px);border-color:rgba(124,92,255,.22);box-shadow:var(--hermes-shadow-card-hover)}.hc-vertical-grid article.is-live{color:#fff;border-color:rgba(255,255,255,.08);background:radial-gradient(circle at 92% 10%,rgba(124,92,255,.14),transparent 16rem),var(--hermes-obsidian);box-shadow:var(--hermes-shadow-workspace)}
-  .hc-card-top{display:flex;justify-content:space-between;gap:1rem;align-items:center}.hc-card-top span{color:#7c650e;font-size:.61rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.hc-card-top small{color:#9da2ac;font-family:var(--font-mono);font-size:.62rem}.is-live .hc-card-top span{color:#80dfbe}.hc-vertical-grid h3{margin:1.55rem 0 .65rem;font-size:1.45rem;letter-spacing:-.035em}.hc-vertical-grid p{margin:0;color:var(--hermes-muted);line-height:1.6}.is-live p{color:#aeb7c7}.hc-chips{display:flex;gap:.38rem;flex-wrap:wrap;margin-top:1.1rem}.hc-chips span{padding:.32rem .5rem;border:1px solid var(--hermes-line-light-soft);border-radius:999px;background:rgba(255,255,255,.52);font-size:.61rem}.is-live .hc-chips span{color:#cbd3df;border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.04)}.hc-vertical-grid a{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1.25rem;color:#fff;font-size:.78rem;font-weight:760}.hc-preview-note{margin-top:auto;padding-top:1.25rem;color:#898f9a;font-size:.66rem}
+  .hc-card-top{display:flex;justify-content:space-between;gap:1rem;align-items:center}.hc-card-top span{color:#7c650e;font-size:.61rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.hc-card-top small{color:#9da2ac;font-family:var(--font-mono);font-size:.62rem}.is-live .hc-card-top span{color:#80dfbe}.hc-vertical-grid h3{margin:1.55rem 0 .65rem;font-size:1.45rem;letter-spacing:-.035em}.hc-vertical-grid p{margin:0;color:var(--hermes-muted);line-height:1.6}.is-live p{color:#aeb7c7}.hc-chips{display:flex;gap:.38rem;flex-wrap:wrap;margin-top:1.1rem}.hc-chips span{padding:.32rem .5rem;border:1px solid var(--hermes-line-light-soft);border-radius:999px;background:rgba(255,255,255,.52);font-size:.61rem}.is-live .hc-chips span{color:#cbd3df;border-color:rgba(255,255,255,.08);background:rgba(255,255,255,.04)}.hc-vertical-grid a{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1.25rem;color:#fff;font-size:.78rem;font-weight:760}.hc-vertical-grid .is-preview a{color:var(--hermes-ink)}.hc-preview-note{margin-top:auto;padding-top:1.25rem;color:#898f9a;font-size:.66rem}
 
   .hc-obsidian-band{padding:clamp(4rem,7vw,6rem) 0;color:#fff;background:var(--hermes-obsidian)}.hc-obsidian-grid{display:grid;grid-template-columns:1fr minmax(300px,.52fr);gap:3rem;align-items:end}.hc-dark-kicker{color:#a99aff}.hc-obsidian-grid>p{color:#aeb7c7}.hc-obsidian-band h2{max-width:960px}
   .hc-labs{background:#fbfaf7}.hc-labs-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(360px,.7fr);gap:clamp(2rem,5vw,5rem)}.hc-labs h2{font-size:clamp(2.4rem,4.4vw,4.35rem)}.hc-lab-links{display:grid;gap:.5rem}.hc-lab-links a{display:grid;grid-template-columns:88px 1fr auto;gap:.7rem;align-items:center;min-height:55px;padding:.72rem .85rem;border:1px solid var(--hermes-line-light);border-radius:14px;background:rgba(255,255,255,.72);text-decoration:none;transition:transform var(--hermes-motion-fast) ease,border-color var(--hermes-motion-fast) ease}.hc-lab-links a:hover{transform:translateX(2px);border-color:rgba(124,92,255,.22)}.hc-lab-links span{color:#8a909b;font-size:.57rem;letter-spacing:.07em}.hc-lab-links strong{font-size:.82rem}

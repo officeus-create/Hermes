@@ -1,0 +1,188 @@
+<script>
+  const mobileQuery = window.matchMedia("(max-width: 900px)");
+  const rooms = [...document.querySelectorAll<HTMLElement>(".home-room")];
+
+  const imageUrlFor = (room: HTMLElement) => {
+    const value = getComputedStyle(room).getPropertyValue("--room-image").trim();
+    const match = value.match(/url\(["']?(.*?)["']?\)/i);
+    return match?.[1] ?? "";
+  };
+
+  const activateImage = (room: HTMLElement) => {
+    if (room.dataset.imageReady === "true") return;
+    const url = imageUrlFor(room);
+    if (!url) {
+      room.dataset.imageReady = "true";
+      return;
+    }
+
+    const preload = new Image();
+    preload.decoding = "async";
+    preload.src = url;
+
+    const reveal = () => {
+      room.dataset.imageReady = "true";
+    };
+
+    if (typeof preload.decode === "function") {
+      void preload.decode().then(reveal).catch(reveal);
+    } else {
+      preload.addEventListener("load", reveal, { once: true });
+      preload.addEventListener("error", reveal, { once: true });
+    }
+  };
+
+  if (mobileQuery.matches && rooms.length > 1 && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const room = entry.target as HTMLElement;
+        activateImage(room);
+        observer.unobserve(room);
+      }
+    }, { rootMargin: "360px 0px", threshold: 0.01 });
+
+    rooms.slice(1).forEach((room) => observer.observe(room));
+  } else {
+    rooms.forEach((room) => { room.dataset.imageReady = "true"; });
+  }
+</script>
+
+<style is:global>
+  .home-contact-shell {
+    content-visibility: auto;
+    contain-intrinsic-size: 1100px;
+  }
+
+  @media (max-width: 900px) {
+    .home-room:not(:first-child):not([data-image-ready="true"]) .home-room-image {
+      background-image: none !important;
+      opacity: 0;
+    }
+
+    .home-room[data-image-ready="true"] .home-room-image {
+      opacity: 1;
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .site-header a,
+    .home-rooms-intro h1,
+    .home-rooms-kicker span,
+    .home-rooms-ink-note strong,
+    .home-room-copy small,
+    .home-room-copy strong,
+    .home-room-copy > span,
+    .home-contact-shell h2,
+    .home-contact-shell h3,
+    .home-contact-shell a,
+    .home-contact-shell .eyebrow {
+      transition:
+        color 220ms ease,
+        opacity 220ms ease,
+        transform 260ms cubic-bezier(.22,.75,.2,1),
+        text-shadow 260ms ease,
+        letter-spacing 260ms ease,
+        background-size 260ms ease;
+    }
+
+    .site-header a:not(.brand) {
+      background-image: linear-gradient(90deg, rgba(124,92,255,.9), rgba(90,200,250,.85));
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      background-size: 0 1px;
+    }
+
+    .site-header a:not(.brand):hover,
+    .site-header a:not(.brand):focus-visible {
+      color: #fff;
+      text-shadow: 0 0 18px rgba(124,92,255,.38);
+      background-size: 100% 1px;
+      transform: translateY(-1px);
+    }
+
+    .home-rooms-intro h1:hover .home-rooms-display {
+      transform: translateX(4px);
+      text-shadow: 0 0 34px rgba(124,92,255,.22);
+    }
+
+    .home-rooms-intro h1:hover .home-rooms-script em {
+      color: rgba(255,255,255,.96);
+      text-shadow: 0 0 24px rgba(90,200,250,.18);
+    }
+
+    .home-rooms-kicker:hover span {
+      background-position: 100% 0;
+      text-shadow: 0 0 20px rgba(124,92,255,.22);
+    }
+
+    .home-rooms-ink-note strong:hover {
+      color: #fff;
+      text-shadow: 0 0 20px rgba(124,92,255,.22);
+    }
+
+    .home-room:hover .home-room-copy small,
+    .home-room:focus-visible .home-room-copy small {
+      letter-spacing: .1em;
+      text-shadow: 0 0 14px var(--room-glow);
+      transform: translateX(2px);
+    }
+
+    .home-room:hover .home-room-copy strong,
+    .home-room:focus-visible .home-room-copy strong {
+      color: color-mix(in srgb, var(--room-accent) 38%, white);
+      text-shadow: 0 0 22px var(--room-glow);
+      transform: translateX(4px);
+    }
+
+    .home-room:hover .home-room-copy > span,
+    .home-room:focus-visible .home-room-copy > span {
+      color: rgba(255,255,255,.82);
+      transform: translateX(3px);
+    }
+
+    .home-contact-shell h2:hover,
+    .home-contact-shell h3:hover {
+      transform: translateX(3px);
+      text-shadow: 0 0 24px rgba(124,92,255,.18);
+    }
+
+    .home-contact-shell a {
+      background-image: linear-gradient(90deg, rgba(124,92,255,.78), rgba(90,200,250,.78));
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      background-size: 0 1px;
+    }
+
+    .home-contact-shell a:hover,
+    .home-contact-shell a:focus-visible {
+      color: #fff;
+      text-shadow: 0 0 16px rgba(124,92,255,.25);
+      background-size: 100% 1px;
+      transform: translateX(2px);
+    }
+
+    .home-contact-shell .eyebrow:hover {
+      color: #c7bcff;
+      letter-spacing: .05em;
+      text-shadow: 0 0 16px rgba(124,92,255,.2);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header a,
+    .home-rooms-intro h1,
+    .home-rooms-kicker span,
+    .home-rooms-ink-note strong,
+    .home-room-copy small,
+    .home-room-copy strong,
+    .home-room-copy > span,
+    .home-contact-shell h2,
+    .home-contact-shell h3,
+    .home-contact-shell a,
+    .home-contact-shell .eyebrow {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+</style>

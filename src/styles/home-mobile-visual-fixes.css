@@ -1,0 +1,154 @@
+/* CEO-approved homepage mobile visual fixes — 2026-08-23.
+ * Scope: homepage only. Keep the main Four directions heading permanently readable,
+ * remove white corner leaks around the final contact surface, soften section handoffs,
+ * and force the homepage header into the correct mobile presentation on narrow screens.
+ */
+
+.hermes-home-recovery .home-rooms-display {
+  position: relative;
+  z-index: 2;
+  display: block;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  animation: none !important;
+  color: #fff !important;
+  -webkit-text-fill-color: #fff !important;
+  background: none !important;
+  filter: drop-shadow(0 0 24px rgba(124,92,255,.12));
+}
+
+/* Safari/iOS can intermittently lose text when an ancestor uses transparent
+ * -webkit-text-fill-color + animated background clipping. Give the display line
+ * its own opaque paint layer so it can never disappear while the script line animates.
+ */
+@supports (-webkit-touch-callout: none) {
+  .hermes-home-recovery .home-rooms-display {
+    -webkit-background-clip: border-box !important;
+    background-clip: border-box !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+}
+
+.hermes-home-recovery .home-rooms-grid {
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    0 -24px 70px rgba(92,72,255,.10),
+    0 40px 120px rgba(0,0,0,.34);
+}
+
+.hermes-home-recovery .home-rooms-grid::before {
+  position: absolute;
+  z-index: 3;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 34px;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(180deg, rgba(112,91,255,.16), rgba(90,200,250,.045) 42%, transparent 100%);
+  mix-blend-mode: screen;
+}
+
+/* The full-width shell must stay square. The previous global HomeRecoveryFinish
+ * rule rounded this parent, which exposed the light page background at the outer
+ * top corners on Android Chrome. Only the inner contact surface is rounded. */
+body:has(.hermes-home-recovery) {
+  background-color: #070912;
+}
+
+body:has(.hermes-home-recovery) #contact.home-contact-shell {
+  position: relative;
+  overflow: hidden !important;
+  margin-top: -1px;
+  border-radius: 0 !important;
+  background-color: #070912 !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(124,92,255,.14), transparent 34rem),
+    linear-gradient(180deg, #0a0c17 0%, #080a12 38%, #070912 100%) !important;
+  isolation: isolate;
+}
+
+body:has(.hermes-home-recovery) #contact.home-contact-shell::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 auto;
+  height: clamp(90px, 10vw, 180px);
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(180deg, #080a12 0%, rgba(28,25,69,.92) 34%, rgba(17,22,47,.55) 68%, transparent 100%);
+}
+
+body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: clamp(34px, 5vw, 72px) clamp(34px, 5vw, 72px) 0 0;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(124,92,255,.34), transparent 31rem),
+    radial-gradient(circle at 88% 10%, rgba(90,200,250,.16), transparent 29rem),
+    linear-gradient(180deg, #15163a 0%, #0d1228 48%, #080a12 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact::after {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: clamp(80px, 12vw, 170px);
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(180deg, transparent 0%, rgba(8,10,18,.55) 48%, #070912 100%);
+}
+
+/* The screenshot exposed a desktop-header fallback at phone width. Lock the
+ * homepage header to the mobile contract through tablet widths; the existing
+ * SiteHeader script continues to own panel open/close behavior. */
+@media (max-width: 900px) {
+  body:has(.hermes-home-recovery) .site-header {
+    width: calc(100% - 16px);
+    min-height: 60px;
+    padding-inline: .75rem;
+  }
+
+  body:has(.hermes-home-recovery) .site-header .desktop-nav,
+  body:has(.hermes-home-recovery) .site-header .header-actions {
+    display: none !important;
+  }
+
+  body:has(.hermes-home-recovery) .site-header .menu-button {
+    display: inline-flex !important;
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 800px) {
+  .hermes-home-recovery .home-rooms-intro h1 {
+    min-height: 1em;
+  }
+
+  .hermes-home-recovery .home-rooms-display {
+    font-size: clamp(2.8rem, 13vw, 4.7rem);
+    line-height: .92;
+    letter-spacing: -.055em;
+  }
+
+  .hermes-home-recovery .home-rooms-grid {
+    box-shadow:
+      0 -18px 54px rgba(92,72,255,.13),
+      0 30px 84px rgba(0,0,0,.36);
+  }
+
+  body:has(.hermes-home-recovery) #contact.home-contact-shell .home-final-contact {
+    border-radius: 38px 38px 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hermes-home-recovery .home-rooms-display {
+    animation: none !important;
+  }
+}

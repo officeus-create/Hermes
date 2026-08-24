@@ -10,6 +10,7 @@
       const legacyHost = ["connect", "hermeslogisticsus", "com"].join(".");
       const path = window.location.pathname;
       const normalizedPath = path.replace(/\/+$/, "") || "/";
+      const repairRoot = "/services/hermes-connect/repair-shops";
 
       const withLocale = (href) => {
         const url = new URL(href, window.location.origin);
@@ -94,6 +95,133 @@
         }
       };
 
+      const ruRepairTranslations = {
+        "Product Hub": "Центр продуктов",
+        "Repair Shops": "СТО",
+        "AI Command Center": "ИИ-командный центр",
+        "Unified Inbox": "Единый центр сообщений",
+        "Load Analyzer": "Анализатор грузов",
+        "Rate Negotiator": "Переговорщик по ставкам",
+        "Proposal Builder": "Конструктор предложений",
+        "ROI Calculator": "Калькулятор ROI",
+        "Business Automation": "Автоматизация бизнеса",
+        "Hermes Connect · Repair Shops": "Hermes Connect · СТО",
+        "Hermes Connect · Auto Repair Shop Software": "Hermes Connect · программа для автосервисов",
+        "Give customers one link to book your repair shop.": "Дайте клиентам одну ссылку для записи в ваш автосервис.",
+        "Hermes Connect repair shop software helps independent shops publish services and hours, accept online appointment requests, process bookings, and keep customer and vehicle context together instead of coordinating everything across calls, messages, and separate notes.": "Hermes Connect для СТО помогает независимым автосервисам публиковать услуги и часы работы, принимать онлайн-заявки на запись, обрабатывать записи и хранить данные о клиентах и автомобилях в одном месте — вместо координации через звонки, сообщения и отдельные заметки.",
+        "Set up my shop": "Настроить СТО",
+        "View $99 Founding Plan": "Посмотреть тариф $99",
+        "Works from a modern phone or computer": "Работает на современном телефоне и компьютере",
+        "Real booking, customer, and availability data": "Реальные данные записей, клиентов и доступности",
+        "Founding Shop Plan: $99/month per location": "Тариф Founding Shop: $99/месяц за одну локацию",
+        "From setup to first booking": "От настройки до первой записи",
+        "Create the owner account": "Создайте аккаунт владельца",
+        "Add shop details and services": "Добавьте данные СТО и услуги",
+        "Set weekly availability": "Настройте недельный график",
+        "Share your booking link": "Поделитесь ссылкой для записи",
+        "Manage bookings and customers": "Управляйте записями и клиентами",
+        "Online booking & repair shop workflow": "Онлайн-запись и работа СТО",
+        "Manage scheduling, bookings, customers, and vehicle context in one place.": "Управляйте расписанием, записями, клиентами и данными автомобилей в одном месте.",
+        "Start with the tasks that immediately reduce coordination: publish what you do, show when you are available, let customers request a time, and keep the relationship attached to the booking.": "Начните с задач, которые сразу уменьшают ручную координацию: опубликуйте услуги, покажите свободное время, дайте клиентам возможность выбрать запись и храните всю историю вместе с ней.",
+        "One booking link": "Одна ссылка для записи",
+        "Give customers a simple public path to choose a service and request an appointment from your real availability.": "Дайте клиентам простой публичный путь: выбрать услугу и запросить время из вашего реального графика.",
+        "Shop profile & services": "Профиль СТО и услуги",
+        "Keep the business identity, service catalog, hours, and customer-facing details in one place.": "Храните данные бизнеса, каталог услуг, часы работы и клиентскую информацию в одном месте.",
+        "Online scheduling & availability": "Онлайн-расписание и доступность",
+        "Set weekly hours once and let customers request real open times instead of repeating the same scheduling conversation by phone or message.": "Один раз задайте недельный график и позволяйте клиентам выбирать реально свободное время вместо постоянных согласований по телефону и в сообщениях.",
+        "Booking & customer workflow": "Записи и работа с клиентами",
+        "Process appointment requests through clear statuses and keep the history attached to each booking.": "Обрабатывайте заявки через понятные статусы и сохраняйте историю каждой записи.",
+        "Customers & vehicles": "Клиенты и автомобили",
+        "Keep customer and vehicle context connected to booking activity so the next interaction starts with useful history.": "Связывайте данные клиента и автомобиля с записями, чтобы следующий контакт начинался с полезной истории.",
+        "Owner feedback": "Обратная связь владельца",
+        "Tell the Hermes product team what saves time, what is confusing, and what your shop needs next.": "Сообщайте команде Hermes, что экономит время, что непонятно и что нужно вашему СТО дальше.",
+        "Founding Shop Plan": "Тариф Founding Shop",
+        "If the workflow saves your shop time, keep using it for $99/month.": "Если Hermes Connect экономит время вашего СТО, продолжайте пользоваться им за $99 в месяц.",
+        "One repair shop location gets the current owner workspace, public booking path, availability, booking inbox, customers, vehicle context, and direct product-feedback channel.": "Одна локация СТО получает рабочее пространство владельца, публичную запись, расписание, входящие записи, клиентов, данные автомобилей и прямой канал обратной связи по продукту.",
+        "Request paid activation": "Запросить платную активацию",
+        "No card is collected on this website. Hermes confirms the activation and invoice first.": "На сайте не запрашивается банковская карта. Сначала Hermes подтверждает активацию и выставление счёта.",
+        "Owner workspace": "Рабочее пространство владельца",
+        "Start with the next useful action.": "Начните со следующего полезного действия.",
+        "Login / Register": "Войти / зарегистрироваться",
+        "Create your shop or return to the workspace.": "Создайте СТО или вернитесь в рабочее пространство.",
+        "Shop workspace": "Рабочее пространство СТО",
+        "Manage profile, services, bookings, and customer activity.": "Управляйте профилем, услугами, записями и активностью клиентов.",
+        "Scheduling & availability": "Расписание и доступность",
+        "Set the hours customers can request.": "Укажите часы, на которые клиенты могут записываться.",
+        "Review customer and vehicle context.": "Просматривайте данные клиентов и автомобилей.",
+        "Request paid activation for $99/month.": "Запросите платную активацию за $99 в месяц.",
+        "Get found and booked": "Больше видимости и записей",
+        "Need more customers to discover your repair shop online?": "Хотите, чтобы больше клиентов находили ваше СТО онлайн?",
+        "The $99 Hermes Connect plan covers the software workflow described above. Hermes can separately help a repair business improve its website, Local SEO, and broader organic search visibility when that growth scope is useful.": "Тариф Hermes Connect за $99 покрывает описанный выше программный процесс. Отдельно Hermes может помочь СТО улучшить сайт, Local SEO и общую органическую видимость в поиске.",
+        "Local SEO & Google visibility": "Local SEO и видимость в Google",
+        "Improve eligible local discovery around the shop, services, and real service area.": "Улучшайте локальную видимость СТО, услуг и реальной зоны обслуживания.",
+        "Repair shop website development": "Разработка сайта для СТО",
+        "Build a conversion-focused website that can connect discovery to the booking journey.": "Создайте сайт, который переводит поиск и интерес клиента в запись.",
+        "SEO services": "SEO-услуги",
+        "Map commercial search demand to useful pages, internal paths, measurement, and qualified actions.": "Связывайте коммерческий поисковый спрос с полезными страницами, внутренними переходами, измерением и целевыми действиями.",
+        "For repair partners": "Для партнёров-СТО",
+        "Want your shop reviewed as a Hermes Logistics repair partner too?": "Хотите, чтобы ваше СТО также рассмотрели как ремонтного партнёра Hermes Logistics?",
+        "This is separate from the $99 Hermes Connect software plan. Submit a real corporate service offer if your shop wants Hermes Logistics to review its roadside, labor, parts, equipment, and turnaround terms.": "Это отдельное направление и не входит в тариф Hermes Connect за $99. Отправьте реальное корпоративное предложение, если хотите, чтобы Hermes Logistics рассмотрел условия по выездному ремонту, работам, запчастям, оборудованию и срокам.",
+        "Submitting a partner offer does not automatically create approval, payment, contract execution, or preferred-provider status.": "Отправка партнёрского предложения не означает автоматического одобрения, оплаты, заключения договора или статуса предпочтительного поставщика.",
+        "Shop type": "Тип СТО",
+        "Select shop type": "Выберите тип СТО",
+        "Auto repair": "Автосервис",
+        "Truck / diesel repair": "Ремонт грузовиков / дизель",
+        "Mobile mechanic": "Выездной механик",
+        "Tire service": "Шиномонтаж",
+        "Body shop": "Кузовной ремонт",
+        "City / state": "Город / штат",
+        "Emergency roadside hourly": "Выездной ремонт, ставка в час",
+        "Labor discount %": "Скидка на работы, %",
+        "Parts discount %": "Скидка на запчасти, %",
+        "Minimum turnaround hours": "Минимальный срок, часов",
+        "optional": "необязательно",
+        "Equipment supported": "Поддерживаемая техника",
+        "Car hauler": "Автовоз",
+        "Dry van": "Сухой фургон",
+        "Reefer": "Рефрижератор",
+        "Flatbed": "Платформа",
+        "Hotshot": "Hotshot",
+        "Box truck": "Box truck",
+        "Prepare Corporate Offer": "Подготовить корпоративное предложение",
+        "Repair shop software questions": "Вопросы о программе для СТО",
+        "Frequently asked questions": "Частые вопросы",
+        "What does Hermes Connect repair shop software include?": "Что входит в Hermes Connect для СТО?",
+        "You can register an owner account, set up the shop profile and services, configure weekly availability, share a public online booking link, process bookings, review customer and vehicle context, and send private product feedback.": "Вы можете зарегистрировать аккаунт владельца, настроить профиль СТО и услуги, задать недельный график, поделиться публичной ссылкой для онлайн-записи, обрабатывать записи, видеть историю клиентов и автомобилей и отправлять приватную обратную связь по продукту.",
+        "Can customers book repair appointments online?": "Могут ли клиенты записываться на ремонт онлайн?",
+        "Yes. Your shop can publish services and weekly availability and share one booking link. Customers choose a service and request an available time while Hermes Connect keeps the booking attached to the shop workflow.": "Да. СТО публикует услуги и недельный график и делится одной ссылкой для записи. Клиент выбирает услугу и свободное время, а Hermes Connect сохраняет запись в рабочем процессе СТО.",
+        "How much is the Founding Shop Plan?": "Сколько стоит тариф Founding Shop?",
+        "The current launch offer is $99 per month for one repair shop location. The website does not collect a card on the activation request; Hermes confirms the shop, plan scope, billing details, and invoice before paid activation.": "Текущий стартовый тариф — $99 в месяц за одну локацию СТО. При запросе активации сайт не запрашивает карту: Hermes сначала подтверждает СТО, состав тарифа, платёжные данные и счёт.",
+        "Can I try the workspace before requesting paid activation?": "Можно ли попробовать рабочее пространство до платной активации?",
+        "Yes. Start with owner registration, configure the shop, and see whether the workflow is useful. When you are ready to keep using it as a paid shop, open the Founding Shop Plan and request activation.": "Да. Зарегистрируйте владельца, настройте СТО и проверьте, полезен ли процесс. Когда будете готовы продолжить на платной основе, откройте тариф Founding Shop и запросите активацию.",
+        "Does Hermes Connect guarantee more customers or revenue?": "Гарантирует ли Hermes Connect больше клиентов или выручки?",
+        "No. Hermes Connect provides the shop, booking, customer, and operating tools described here. Customer volume, demand, rankings, revenue, and business results are not guaranteed.": "Нет. Hermes Connect предоставляет описанные инструменты для СТО, записей, клиентов и операций. Количество клиентов, спрос, позиции, выручка и бизнес-результаты не гарантируются.",
+        "Do I need a native mobile app?": "Нужно ли устанавливать мобильное приложение?",
+        "No. The current product is browser-first and responsive, so an owner can use it from a modern phone or computer without installing an app.": "Нет. Текущий продукт работает в браузере и адаптирован под мобильные устройства, поэтому владелец может пользоваться им с современного телефона или компьютера без установки приложения.",
+
+        "Real D1 data": "Рабочие данные",
+        "These are the same services customers see on your public booking page.": "Это те же услуги, которые клиенты видят на публичной странице записи.",
+        "Appointments from your public link appear here with vehicle details and persisted status history.": "Записи с вашей публичной ссылки появляются здесь вместе с данными автомобиля и сохранённой историей статусов.",
+        "Share your public booking link after services and hours are configured.": "Поделитесь публичной ссылкой после настройки услуг и часов работы.",
+        "Excellent": "Отлично", "Good": "Хорошо", "Okay": "Нормально", "Difficult": "Сложно", "Blocked": "Заблокировано",
+        "Private beta record. Your note is available only in your authenticated workspace and to the Hermes product team. It is never sent to GA4 or shown on public shop pages, and is automatically deleted after 180 days.": "Приватная запись. Заметка доступна только в вашем защищённом рабочем пространстве и команде Hermes. Она не отправляется в GA4, не показывается на публичных страницах СТО и автоматически удаляется через 180 дней.",
+        "Loading feedback…": "Загружаем отзывы…", "No feedback sent yet": "Отзывов пока нет", "Your recent private notes will appear here.": "Ваши последние приватные заметки появятся здесь.",
+        "Saved": "Сохранено", "Delete": "Удалить", "Confirmed": "Подтверждено", "In progress": "В работе", "Completed": "Завершено", "Cancelled": "Отменено",
+
+        "Production D1 schedule": "Рабочее расписание", "Shop hours": "Часы работы", "One continuous booking window per day. Times are interpreted in your saved shop timezone.": "Один непрерывный интервал записи в день. Время рассчитывается в сохранённом часовом поясе СТО.", "Save weekly availability": "Сохранить недельный график", "What this controls": "Что регулирует этот график", "This schedule is stored for your shop only and is also exposed through your public shop profile. Customer bookable time slots are generated from these hours and each service duration.": "Этот график хранится только для вашего СТО и публикуется в публичном профиле. Доступные интервалы записи формируются на основе этих часов и длительности каждой услуги.",
+        "Sunday": "Воскресенье", "Monday": "Понедельник", "Tuesday": "Вторник", "Wednesday": "Среда", "Thursday": "Четверг", "Friday": "Пятница", "Saturday": "Суббота", "to": "—",
+        "Save your shop profile in the owner workspace before setting availability.": "Сначала сохраните профиль СТО в рабочем пространстве владельца, затем настраивайте график.", "Unable to load weekly availability.": "Не удалось загрузить недельный график.", "Weekly availability saved to production.": "Недельный график сохранён.",
+
+        "Shop Owner Workspace": "Рабочее пространство владельца СТО", "A private customer view built from your shop’s real Hermes Connect bookings and saved vehicle details.": "Приватный список клиентов, сформированный из реальных записей Hermes Connect и сохранённых данных автомобилей.", "Customer search": "Поиск клиентов", "Loading customer history…": "Загружаем историю клиентов…", "No customers yet": "Клиентов пока нет", "Customers appear automatically after real bookings are created through your public booking link.": "Клиенты появляются автоматически после создания реальных записей через вашу публичную ссылку.", "None yet": "Пока нет", "Mileage not provided": "Пробег не указан", "booking": "запись", "bookings": "записей", "completed": "завершено", "Upcoming": "Предстоящая запись", "Past customer": "Бывший клиент", "Lead": "Лид", "Last completed service": "Последнее завершённое обслуживание", "Vehicles": "Автомобили", "No vehicle details were captured for earlier bookings.": "Для более ранних записей данные автомобиля не были сохранены.", "Unable to verify your secure session.": "Не удалось проверить защищённую сессию.", "Unable to load customers.": "Не удалось загрузить клиентов.", "Unable to initialize customer history.": "Не удалось открыть историю клиентов.",
+
+        "Hermes Connect · Public Booking": "Hermes Connect · публичная запись", "Loading repair shop…": "Загружаем СТО…", "Loading shop profile, services, and hours from production.": "Загружаем профиль СТО, услуги и часы работы…", "Real appointment intake": "Реальная онлайн-запись", "Book a service": "Записаться на услугу", "Hermes Connect Repair Shops is the current live pilot. Repair service pricing is set by each participating shop.": "Hermes Connect для СТО — текущий рабочий продукт. Стоимость ремонтных услуг устанавливает каждое СТО самостоятельно.", "Service": "Услуга", "Select a service": "Выберите услугу", "Date": "Дата", "Select a date": "Выберите дату", "Time": "Время", "Select a time": "Выберите время", "Choose a service and date to load current availability.": "Выберите услугу и дату, чтобы загрузить актуальное свободное время.", "Vehicle": "Автомобиль", "Saved with this appointment so the shop can prepare before you arrive.": "Данные сохраняются вместе с записью, чтобы СТО могло подготовиться к вашему приезду.", "Year": "Год", "Make": "Марка", "Model": "Модель", "Mileage": "Пробег", "VIN": "VIN", "Contact": "Контакт", "The repair shop uses this information for your appointment.": "СТО использует эти данные для вашей записи.", "Full name": "Имя и фамилия", "Confirm appointment": "Подтвердить запись", "Production booking created": "Запись создана", "Appointment confirmed": "Запись подтверждена", "Booking ID": "ID записи", "Shop": "СТО", "Status": "Статус", "Add to calendar (.ics)": "Добавить в календарь (.ics)", "Services come from this shop’s owner workspace.": "Услуги загружаются из рабочего пространства владельца СТО.", "Times are checked against the shop’s saved weekly hours and existing bookings.": "Время проверяется по сохранённому недельному графику и существующим записям СТО.", "Shop location loads from the saved public profile.": "Адрес СТО загружается из сохранённого публичного профиля.", "The shop is closed on this date.": "В эту дату СТО закрыто.", "Checking current production bookings…": "Проверяем актуальные записи…", "Unable to load live availability.": "Не удалось загрузить доступное время.", "No open times remain for this service on that date.": "На эту дату для выбранной услуги свободного времени не осталось.", "This shop has not opened any booking days yet.": "Это СТО ещё не открыло дни для онлайн-записи.", "This booking link is missing its shop identifier. Ask the repair shop for its current Hermes Connect booking link.": "В ссылке отсутствует идентификатор СТО. Попросите у автосервиса актуальную ссылку Hermes Connect для записи.", "This repair shop booking link is not active.": "Эта ссылка для записи в СТО неактивна.", "Unable to load this repair shop.": "Не удалось загрузить данные СТО.",
+
+        "Back to Repair Shops": "Назад к СТО", "Hermes Connect · Founding Shop Plan": "Hermes Connect · тариф Founding Shop", "Activate Hermes Connect for your repair shop.": "Активируйте Hermes Connect для своего СТО.", "Keep the booking workflow your shop can already try — services, hours, appointment requests, customers, and vehicle context — for $99/month per repair shop location.": "Продолжайте использовать уже доступный процесс — услуги, часы работы, заявки на запись, клиентов и данные автомобилей — за $99 в месяц за одну локацию СТО.", "Try the workspace first": "Сначала попробовать рабочее пространство", "No card is collected on this website. A paid activation request starts a human confirmation and invoice process.": "На сайте не запрашивается карта. Запрос платной активации запускает подтверждение менеджером и выставление счёта.", "Launch price": "Стартовая цена", "/month": "/месяц", "per repair shop location": "за одну локацию СТО", "Owner workspace for one repair shop location": "Рабочее пространство владельца для одной локации СТО", "Public shop profile and service catalog": "Публичный профиль СТО и каталог услуг", "Weekly availability and shareable booking link": "Недельный график и ссылка для записи", "Booking inbox with appointment status history": "Входящие записи с историей статусов", "Customer and vehicle context connected to bookings": "Данные клиентов и автомобилей, связанные с записями", "Private product feedback with founding-customer priority review": "Приватная обратная связь по продукту с приоритетным рассмотрением", "I want this plan": "Хочу этот тариф", "What the shop gets": "Что получает СТО", "One simple operating loop from availability to repeat customer.": "Один простой рабочий цикл: от свободного времени до повторного клиента.", "Set up the shop": "Настройте СТО", "Add business details and the services customers can request.": "Добавьте данные бизнеса и услуги, на которые могут записываться клиенты.", "Open real booking times": "Откройте реальное время для записи", "Configure weekly availability so customers can request useful appointment windows.": "Настройте недельный график, чтобы клиенты выбирали подходящее свободное время.", "Keep customer context": "Сохраняйте контекст клиента", "Appointments, vehicle details, and customer history stay connected instead of living in separate notes.": "Записи, данные автомобиля и история клиента остаются связанными, а не разбросанными по отдельным заметкам.", "Reduce coordination": "Сократите ручные согласования", "Share one booking link instead of repeating the same scheduling conversation by phone or message.": "Делитесь одной ссылкой для записи вместо повторяющихся согласований по телефону и в сообщениях.", "Paid activation": "Платная активация", "Request the $99/month Founding Shop Plan.": "Запросить тариф Founding Shop за $99 в месяц.", "Send your shop details. Hermes will confirm the current plan scope, billing contact, and invoice before paid activation. Submitting this form does not charge you.": "Отправьте данные СТО. Перед платной активацией Hermes подтвердит состав тарифа, платёжный контакт и счёт. Отправка формы не списывает деньги.", "This is a purchase-intent request for shops ready to keep using Hermes Connect — not a generic demo form.": "Это запрос на покупку для СТО, готовых продолжить пользоваться Hermes Connect, а не обычная демо-форма.", "Repair shop name": "Название СТО", "Contact name": "Контактное лицо", "What would make Hermes Connect worth paying for?": "За что вашему СТО было бы полезно платить в Hermes Connect?", "I agree that Hermes may contact me about this paid activation request and billing setup.": "Я согласен, что Hermes может связаться со мной по поводу платной активации и настройки оплаты.", "No payment is taken here. The $99/month price is the current Founding Shop Plan launch offer; final activation details are confirmed before invoicing.": "Здесь оплата не списывается. $99 в месяц — текущая стартовая цена тарифа Founding Shop; финальные условия подтверждаются до выставления счёта.", "Before you activate": "Перед активацией", "Straight answers.": "Короткие ответы.", "Can I try the workspace before paying?": "Можно ли попробовать рабочее пространство до оплаты?", "Yes. Use the current owner registration flow, configure the shop, and see how the workspace fits your operation before requesting paid activation.": "Да. Зарегистрируйте владельца, настройте СТО и проверьте, насколько рабочее пространство подходит вашему процессу, прежде чем запрашивать платную активацию.", "Will this form charge my card?": "Спишет ли эта форма деньги с карты?", "No. The website does not collect a card on this step. Hermes confirms the paid activation and invoice with the shop directly.": "Нет. На этом шаге сайт не запрашивает карту. Hermes отдельно подтверждает платную активацию и счёт с СТО.", "What is included for $99/month?": "Что входит в $99 в месяц?", "The current Founding Shop Plan covers one repair shop location and the owner workspace, public booking path, availability, booking inbox, customer and vehicle context, and private product feedback described on this page.": "Текущий тариф Founding Shop включает одну локацию СТО, рабочее пространство владельца, публичную запись, расписание, входящие записи, данные клиентов и автомобилей и приватную обратную связь по продукту.", "No. Hermes Connect provides the repair shop booking and operating tools described here. Customer volume, demand, rankings, revenue, and other business results are not guaranteed.": "Нет. Hermes Connect предоставляет описанные инструменты для записи и работы СТО. Количество клиентов, спрос, позиции, выручка и другие бизнес-результаты не гарантируются.",
+
+        "Unable to load your secure session.": "Не удалось загрузить защищённую сессию.", "Unable to load shop profile.": "Не удалось загрузить профиль СТО.", "Unable to save shop profile.": "Не удалось сохранить профиль СТО.", "Shop profile saved to production.": "Профиль СТО сохранён.", "Network error while saving shop profile.": "Ошибка сети при сохранении профиля СТО.", "Public booking link copied.": "Ссылка для записи скопирована.", "Could not copy the link. Select it manually.": "Не удалось скопировать ссылку. Выделите её вручную.", "This service has bookings and cannot be deleted.": "У этой услуги есть записи, поэтому её нельзя удалить.", "Unable to delete service.": "Не удалось удалить услугу.", "Network error while deleting service.": "Ошибка сети при удалении услуги.", "Logout failed.": "Не удалось выйти.", "Login failed": "Не удалось войти", "Network error during login": "Ошибка сети при входе", "Registration failed": "Не удалось зарегистрироваться", "Network error during registration": "Ошибка сети при регистрации",
+        "Use the current Hermes Connect product in your browser. No simulated native installation is reported as successful.": "Используйте текущий Hermes Connect в браузере. Мы не имитируем успешную установку нативного приложения."
+      };
+
       const placeholders = {
         uk: { "Min. 8 characters": "Мінімум 8 символів", "What worked, what was confusing, or what should change next?": "Що працювало, що було незрозуміло або що потрібно змінити?" },
         ru: { "Min. 8 characters": "Минимум 8 символов", "What worked, what was confusing, or what should change next?": "Что работало, что было непонятно или что нужно изменить?" },
@@ -102,15 +230,51 @@
         fr: { "Min. 8 characters": "8 caractères minimum", "What worked, what was confusing, or what should change next?": "Qu’est-ce qui a fonctionné, qu’est-ce qui était confus ou que faudrait-il changer ?" }
       };
 
+      const ruRepairPlaceholders = {
+        "Search name, email, phone, vehicle, VIN, or service": "Поиск по имени, email, телефону, автомобилю, VIN или услуге",
+        "Optional vehicle identification number": "Необязательный VIN автомобиля",
+        "Your name": "Ваше имя",
+        "Fewer scheduling calls, easier appointments, customer history, more repeat bookings…": "Меньше звонков для согласования, проще запись, история клиентов, больше повторных обращений…"
+      };
+
+      const pluralRu = (value, one, few, many) => {
+        const n = Math.abs(Number(value)) % 100;
+        const last = n % 10;
+        if (n > 10 && n < 20) return many;
+        if (last === 1) return one;
+        if (last >= 2 && last <= 4) return few;
+        return many;
+      };
+
+      const translateDynamicRu = (value) => {
+        if (locale !== "ru") return null;
+        let match = value.match(/^(\d+) (service|services)$/i);
+        if (match) return `${match[1]} ${pluralRu(match[1], "услуга", "услуги", "услуг")}`;
+        match = value.match(/^(\d+) (booking|bookings)$/i);
+        if (match) return `${match[1]} ${pluralRu(match[1], "запись", "записи", "записей")}`;
+        match = value.match(/^(\d+) (customer|customers)$/i);
+        if (match) return `${match[1]} ${pluralRu(match[1], "клиент", "клиента", "клиентов")}`;
+        match = value.match(/^(\d+) (note|notes)$/i);
+        if (match) return `${match[1]} ${pluralRu(match[1], "заметка", "заметки", "заметок")}`;
+        match = value.match(/^(\d+) min$/i);
+        if (match) return `${match[1]} мин`;
+        match = value.match(/^(\d+) live (time|times) available\.$/i);
+        if (match) return `Доступно ${match[1]} ${pluralRu(match[1], "время", "времени", "вариантов времени")}.`;
+        return null;
+      };
+
       const translateTree = (root = document.body) => {
-        const table = translations[locale] || {};
+        const baseTable = translations[locale] || {};
+        const table = locale === "ru" && path.startsWith(repairRoot)
+          ? { ...baseTable, ...ruRepairTranslations }
+          : baseTable;
         if (locale === "en" || !root) return;
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
         let node = walker.nextNode();
         while (node) {
           const raw = node.nodeValue || "";
           const normalized = raw.replace(/\s+/g, " ").trim();
-          const translated = table[normalized];
+          const translated = table[normalized] || translateDynamicRu(normalized);
           if (translated) {
             const leading = raw.match(/^\s*/)?.[0] || "";
             const trailing = raw.match(/\s*$/)?.[0] || "";
@@ -120,8 +284,15 @@
         }
         root.querySelectorAll?.("input[placeholder], textarea[placeholder]").forEach((field) => {
           const current = field.getAttribute("placeholder");
-          const translated = placeholders[locale]?.[current];
+          const translated = placeholders[locale]?.[current] || (locale === "ru" ? ruRepairPlaceholders[current] : undefined);
           if (translated) field.setAttribute("placeholder", translated);
+        });
+        root.querySelectorAll?.("[aria-label], [title]").forEach((node) => {
+          for (const attr of ["aria-label", "title"]) {
+            const current = node.getAttribute(attr);
+            const translated = current ? table[current] : undefined;
+            if (translated) node.setAttribute(attr, translated);
+          }
         });
       };
 
@@ -203,6 +374,12 @@
           replacement.textContent = "Use the current Hermes Connect product in your browser. No simulated native installation is reported as successful.";
           button.replaceWith(replacement);
         });
+
+        if (locale === "ru") {
+          const contentLanguage = document.querySelector(".hc-content-language");
+          if (contentLanguage) contentLanguage.textContent = "Язык контента: русский";
+          document.querySelectorAll("[data-hc-english-only]").forEach((notice) => notice.remove());
+        }
 
         translateTree(document.body);
 

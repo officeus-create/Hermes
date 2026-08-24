@@ -41,4 +41,28 @@ test.describe("Hermes Connect dedicated mobile regression", () => {
     await expect(page.locator(".hc-family-nav")).toBeVisible();
     await expect(page.locator("#partner-beta-form")).toHaveAttribute("data-live-partner-offer", "true");
   });
+
+  test("product family navigation visibly signals and supports horizontal exploration", async ({ page }) => {
+    await page.goto("/services/hermes-connect/");
+    const nav = page.locator(".hc-family-nav");
+    await expect(nav).toHaveAttribute("data-scrollable", "true");
+    await expect(nav).toHaveAttribute("data-scroll-start", "true");
+
+    const state = await nav.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth,
+        maskImage: style.maskImage,
+        scrollSnapType: style.scrollSnapType,
+      };
+    });
+    expect(state.scrollWidth).toBeGreaterThan(state.clientWidth);
+    expect(state.maskImage).not.toBe("none");
+    expect(state.scrollSnapType).toContain("x");
+
+    await nav.evaluate((element) => { element.scrollLeft = element.scrollWidth; });
+    await expect(nav).toHaveAttribute("data-scroll-end", "true");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+  });
 });

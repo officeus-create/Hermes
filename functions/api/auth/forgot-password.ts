@@ -19,6 +19,12 @@ type Env = {
   LEAD_SERVICE_TOKEN?: string;
 };
 
+type RequestContext = {
+  request: Request;
+  env: Env;
+  waitUntil(promise: Promise<unknown>): void;
+};
+
 const acknowledgement = {
   success: true,
   message: "If an eligible Repair Shop owner account exists for that email, a reset link will be sent shortly.",
@@ -46,50 +52,32 @@ async function deliverResetEmail(env: Env, recipient: string, resetUrl: string, 
   }
 }
 
-export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
-  if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
-
-  let body: Record<string, unknown>;
-  try {
-    body = (await request.json()) as Record<string, unknown>;
-  } catch {
-    return jsonResponse(400, { success: false, error: "invalid_json" });
-  }
-
-  const email = String(body.email ?? "").trim().toLowerCase().slice(0, 160);
-  const locale = normalizePasswordResetLocale(body.lang);
-
+async function processPasswordResetRequest(env: Env, email: string, locale: string) {
   await ensurePasswordResetSchema(env.DB);
   const now = new Date();
   const nowIso = now.toISOString();
   const recentWindow = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
-  // Keep one hour of request history so the hourly limit is real. Old expired/used
-  // rows are removed only after they no longer contribute to that window.
   await env.DB
     .prepare("DELETE FROM password_reset_tokens WHERE created_at < ? AND (expires_at <= ? OR used_at IS NOT NULL)")
     .bind(recentWindow, nowIso)
     .run();
-
-  // Keep the public response identical for unknown, malformed, and eligible accounts.
-  if (!isValidEmail(email)) return jsonResponse(200, acknowledgement);
 
   const specialist = await env.DB
     .prepare("SELECT id, email, role FROM specialists WHERE email = ? LIMIT 1")
     .bind(email)
     .first() as { id: string; email: string; role: string } | null;
 
-  if (!specialist || specialist.role !== "Shop Owner") return jsonResponse(200, acknowledgement);
+  if (!specialist || specialist.role !== "Shop Owner") return;
 
   const recent = await env.DB
     .prepare("SELECT COUNT(*) AS count FROM password_reset_tokens WHERE specialist_id = ? AND created_at >= ?")
     .bind(specialist.id, recentWindow)
     .first() as { count?: number } | null;
-  if (Number(recent?.count ?? 0) >= 3) return jsonResponse(200, acknowledgement);
+  if (Number(recent?.count ?? 0) >= 3) return;
 
   const token = createPasswordResetToken();
   const tokenHash = await hashPasswordResetToken(token);
   const expiresAt = passwordResetExpiry(now);
-  // Invalidate prior links without deleting their request-history rows.
   await env.DB
     .prepare("UPDATE password_reset_tokens SET used_at = ? WHERE specialist_id = ? AND used_at IS NULL")
     .bind(nowIso, specialist.id)
@@ -103,6 +91,27 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   if (!delivered) {
     await env.DB.prepare("DELETE FROM password_reset_tokens WHERE token_hash = ?").bind(tokenHash).run();
     console.error("password_reset_delivery_failed", { category: "email_unavailable" });
+  }
+}
+
+export async function onRequestPost(context: RequestContext) {
+  const { request, env } = context;
+  if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
+
+  let body: Record<string, unknown>;
+  try {
+    body = (await request.json()) as Record<string, unknown>;
+  } catch {
+    return jsonResponse(400, { success: false, error: "invalid_json" });
+  }
+
+  const email = String(body.email ?? "").trim().toLowerCase().slice(0, 160);
+  const locale = normalizePasswordResetLocale(body.lang);
+
+  if (isValidEmail(email)) {
+    context.waitUntil(processPasswordResetRequest(env, email, locale).catch(() => {
+      console.error("password_reset_processing_failed", { category: "background_processing" });
+    }));
   }
 
   return jsonResponse(200, acknowledgement);

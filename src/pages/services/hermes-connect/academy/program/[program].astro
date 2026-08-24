@@ -31,6 +31,20 @@ const lessonIds: Record<string, string[]> = {
   ],
 };
 const currentLessonIds = lessonIds[course.slug] || [];
+const fullLessonIds = new Set([
+  "us-logistics-operations:dispatch-foundations",
+  "us-logistics-operations:carrier-broker-communication",
+  "us-logistics-operations:equipment-lane-logic",
+  "us-logistics-operations:documents-setup",
+  "us-logistics-operations:negotiation-practice",
+  "us-logistics-operations:operating-rhythm",
+  "marketing:positioning-offer",
+  "marketing:website-first-content",
+  "marketing:platform-distribution",
+  "marketing:lead-journey",
+  "marketing:sales-follow-up",
+  "marketing:analytics-improvement",
+]);
 const publicHref = `/academy/${course.slug}/`;
 ---
 
@@ -70,15 +84,26 @@ const publicHref = `/academy/${course.slug}/`;
         <h2>Use the existing public curriculum as your learning map.</h2>
         <p>{course.modulesIntro}</p>
         <div class="academy-app-programs" style="margin-top:18px">
-          {course.modules.map((module, index) => (
-            <article class="academy-program-card" data-lesson-id={currentLessonIds[index]} data-lesson-state="not_started">
-              <span class="academy-app-status">Module {String(index + 1).padStart(2, "0")}</span>
-              <h3>{module.title}</h3>
-              <p>{module.body}</p>
-              <p class="academy-app-kicker"><strong data-lesson-state-label>Not started</strong></p>
-              <button class="academy-app-button primary" type="button" data-progress-action disabled>Start module</button>
-            </article>
-          ))}
+          {course.modules.map((module, index) => {
+            const lessonId = currentLessonIds[index];
+            const hasFullLesson = fullLessonIds.has(`${course.slug}:${lessonId}`);
+            const lessonQuery = new URLSearchParams({ program: course.slug, lesson: lessonId }).toString();
+            return (
+              <article class="academy-program-card" data-lesson-id={lessonId} data-lesson-state="not_started">
+                <span class="academy-app-status">Module {String(index + 1).padStart(2, "0")}</span>
+                <h3>{module.title}</h3>
+                <p>{module.body}</p>
+                <p class="academy-app-kicker"><strong data-lesson-state-label>Not started</strong></p>
+                <div class="academy-app-actions">
+                  {hasFullLesson && (
+                    <a class="academy-app-button intelligence" href={`/services/hermes-connect/academy/lesson/?${lessonQuery}`} data-full-lesson-link>Open full lesson</a>
+                  )}
+                  <button class="academy-app-button primary" type="button" data-progress-action disabled>Start module</button>
+                </div>
+                {hasFullLesson && <p class="academy-app-note" style="margin-top:10px">Full lesson content requires an existing Enrolled state and is loaded through the shared Hermes session.</p>}
+              </article>
+            );
+          })}
         </div>
       </section>
 

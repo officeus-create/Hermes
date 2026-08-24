@@ -16,7 +16,7 @@ const schema = {
 
 <BaseLayout
   title="Carrier Agreement Packet | Hermes Logistics"
-  description="Confirm the carrier-specific service scope and percentage, provide authorized signer details, and create a signed execution packet from a phone or computer."
+  description="Confirm the carrier-specific service scope and percentage, provide authorized signer details, and create a signed review/onboarding packet from a phone or computer."
   robots="noindex,nofollow"
   schema={schema}
 >
@@ -28,7 +28,7 @@ const schema = {
         <div>
           <p class="eyebrow">Hermes Logistics · Private agreement packet</p>
           <h1>Review the exact terms. Sign from your phone.</h1>
-          <p class="onboarding-lead">This short workflow asks only for the information needed to identify the carrier, confirm the authorized signer, record the agreed percentage in Appendix A, and create the signed PDF execution packet.</p>
+          <p class="onboarding-lead">This short workflow asks only for the information needed to identify the carrier, confirm the authorized signer, record the proposed percentage in Appendix A, and create a signed PDF review/onboarding packet.</p>
           <div class="trust-row">
             <span><Check size={17} aria-hidden="true" />Three steps</span>
             <span><Check size={17} aria-hidden="true" />Carrier-specific percentage</span>
@@ -39,9 +39,9 @@ const schema = {
         <aside class="status-card">
           <ShieldCheck size={30} aria-hidden="true" />
           <p class="eyebrow">Current document status</p>
-          <strong>Approved execution master</strong>
-          <p>Standard 6% and 8% packets execute only after production verifies the approved master version, SHA-256, selected percentage, and signature controls. Custom terms remain a review proposal until separately accepted in writing.</p>
-          <a href="/logistics/carrier-agreement/">Read the approved agreement</a>
+          <strong>Review/onboarding only</strong>
+          <p>Standard 6% and 8% selections create signed review/onboarding packets only. Custom terms remain review-only. Final production execution is not activated and remains pending qualified Wisconsin transportation counsel and the approval gates tracked by #280.</p>
+          <a href="/logistics/carrier-agreement/">Read the review agreement</a>
         </aside>
       </div>
     </section>
@@ -58,7 +58,7 @@ const schema = {
             <div class="step-heading">
               <p class="eyebrow">Appendix A</p>
               <h2>Confirm the service model and exact percentage.</h2>
-              <p>The master agreement contains no fixed percentage. Enter the number already discussed with Hermes. It is written into the carrier-specific Appendix A and the server will not activate an unapproved percentage.</p>
+              <p>The review master contains no fixed percentage. Enter the number already discussed with Hermes. It is written into the carrier-specific review Appendix A and does not activate a final production agreement.</p>
             </div>
             <div class="plan-choice-grid">
               <label class="plan-choice"><input type="radio" name="selected_plan" value="essential" required /><span class="plan-choice-main"><strong>Dispatch Support</strong><b>6%</b></span><small>Opportunity research, communication, negotiation within instructions, and ordinary document coordination.</small></label>
@@ -72,7 +72,7 @@ const schema = {
             </div>
             <div class="custom-plan-fields" data-custom-plan hidden>
               <label>Custom scope proposed <textarea name="custom_scope" rows="5" maxlength="1500" placeholder="Describe what Hermes should handle and what the carrier will handle."></textarea></label>
-              <p>A custom submission creates only a proposal/review record. Hermes must approve the scope and issue a matching execution package before a final signature.</p>
+              <p>A custom submission creates only a proposal/review record. It remains review-only pending separate written approval and the legal-approval gates tracked by #280.</p>
             </div>
             <div class="control-callout"><ShieldCheck size={25} aria-hidden="true" /><p><strong>Your company remains in control.</strong> You approve every load. The relationship is non-exclusive, has no minimum load volume, and does not transfer freight funds to Hermes.</p></div>
           </section>
@@ -113,12 +113,12 @@ const schema = {
                 <li><Check size={17} aria-hidden="true" />No load, rate, mileage, customer, profit, or revenue is guaranteed.</li>
                 <li><Check size={17} aria-hidden="true" />The exact service fee is the percentage displayed in this Appendix A summary.</li>
               </ul>
-              <a href="/logistics/carrier-agreement/" target="_blank" rel="noopener noreferrer">Open the approved execution agreement in a new tab</a>
+              <a href="/logistics/carrier-agreement/" target="_blank" rel="noopener noreferrer">Open the attorney-review agreement in a new tab</a>
             </div>
             <div class="consent-list">
               <label><input type="checkbox" name="consent_electronic_records" required />I consent to electronic records and signatures for this transaction, can access and retain PDF files, may request a paper copy, and may withdraw electronic consent before final execution.</label>
               <label><input type="checkbox" name="consent_authority" required />I confirm that I am authorized to provide this information and sign for the carrier company identified above.</label>
-              <label><input type="checkbox" name="consent_document_review" required />I reviewed the applicable master draft or approved master and understand the document status displayed on this page.</label>
+              <label><input type="checkbox" name="consent_document_review" required />I reviewed the attorney-review master and understand that this packet does not activate a final production agreement.</label>
               <label><input type="checkbox" name="consent_selected_scope" required />I confirm the selected service model, exact percentage, and Appendix A information shown in the summary.</label>
             </div>
             <label>Type the authorized signer name exactly as entered above <input name="typed_signature" required maxlength="120" autocomplete="off" /></label>
@@ -127,7 +127,7 @@ const schema = {
               <canvas width="600" height="180" data-signature-canvas aria-label="Signature drawing area" tabindex="0"></canvas>
               <p>Use a finger, stylus, mouse, or trackpad. The PDF also records the typed signer name and timestamp.</p>
             </div>
-            <div class="final-warning"><strong>Confirm the exact standard terms before signing.</strong><p>Standard 6% and 8% selections create an execution packet only when the approved master version and SHA-256 match production. A custom percentage or scope creates a review proposal and requires separate written Hermes approval.</p></div>
+            <div class="final-warning"><strong>Confirm the exact proposed terms before signing.</strong><p>Standard 6% and 8% selections create signed review/onboarding packets only. A custom percentage or scope also remains review-only. No selection activates a final production agreement while #280 remains open.</p></div>
           </section>
 
           <div class="form-error" data-form-error role="alert" hidden></div>
