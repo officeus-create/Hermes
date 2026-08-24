@@ -45,6 +45,12 @@ import "../../../../../styles/hermes-academy-review.css";
 
       <section class="academy-app-grid academy-app-hidden" data-section-grid style="margin-top:18px"></section>
 
+      <section class="academy-app-panel academy-app-hidden" data-source-panel style="margin-top:18px">
+        <p class="academy-app-eyebrow">Approved source pages</p>
+        <h2>Build from these canonical public destinations.</h2>
+        <div class="academy-app-list" data-source-list></div>
+      </section>
+
       <section class="academy-app-panel academy-app-hidden" data-assignment-panel style="margin-top:18px">
         <p class="academy-app-eyebrow">Practice → private evidence → human review</p>
         <h2 data-assignment-title>Assignment</h2>
@@ -84,6 +90,7 @@ import "../../../../../styles/hermes-academy-review.css";
 <script>
   type LessonSection = { title: string; summary: string; actions?: string[] };
   type RubricItem = { key: string; label: string; pass: string };
+  type ApprovedSource = { title: string; path: string };
   type LessonPayload = {
     program_slug: string;
     lesson_id: string;
@@ -92,6 +99,7 @@ import "../../../../../styles/hermes-academy-review.css";
     purpose: string;
     objectives?: string[];
     sections?: LessonSection[];
+    approved_sources?: ApprovedSource[];
     boundaries?: string[];
     scenario?: string;
     assignment?: {
@@ -114,6 +122,8 @@ import "../../../../../styles/hermes-academy-review.css";
   const contentPanel = document.querySelector<HTMLElement>("[data-lesson-content]");
   const objectives = document.querySelector<HTMLElement>("[data-objectives]");
   const sectionGrid = document.querySelector<HTMLElement>("[data-section-grid]");
+  const sourcePanel = document.querySelector<HTMLElement>("[data-source-panel]");
+  const sourceList = document.querySelector<HTMLElement>("[data-source-list]");
   const assignmentPanel = document.querySelector<HTMLElement>("[data-assignment-panel]");
   const assignmentScenario = document.querySelector<HTMLElement>("[data-assignment-scenario]");
   const assignmentPrompt = document.querySelector<HTMLElement>("[data-assignment-prompt]");
@@ -174,6 +184,24 @@ import "../../../../../styles/hermes-academy-review.css";
     sectionGrid.classList.toggle("academy-app-hidden", items.length === 0);
   }
 
+  function renderSources(items: ApprovedSource[] = []) {
+    if (!sourceList || !sourcePanel) return;
+    sourceList.replaceChildren();
+    for (const item of items) {
+      const card = document.createElement("article");
+      card.className = "academy-review-card";
+      const heading = document.createElement("h3");
+      heading.textContent = item.title;
+      const link = document.createElement("a");
+      link.className = "academy-app-button";
+      link.href = item.path;
+      link.textContent = item.path;
+      card.append(heading, link);
+      sourceList.append(card);
+    }
+    sourcePanel.classList.toggle("academy-app-hidden", items.length === 0);
+  }
+
   function renderRubric(items: RubricItem[] = []) {
     if (!rubricList || !rubricPanel) return;
     rubricList.replaceChildren();
@@ -197,6 +225,7 @@ import "../../../../../styles/hermes-academy-review.css";
     appendList(objectives, lesson.objectives || []);
     contentPanel?.classList.remove("academy-app-hidden");
     renderSections(lesson.sections || []);
+    renderSources(lesson.approved_sources || []);
     appendList(boundaries, lesson.boundaries || []);
     boundaryPanel?.classList.toggle("academy-app-hidden", !(lesson.boundaries?.length));
 
