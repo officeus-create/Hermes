@@ -82,6 +82,25 @@ Evidence should carry, where applicable:
 
 Secrets, raw webhook URLs, customer PII and private operational payloads do not belong in public evidence.
 
+### External review evidence adapter
+
+Any independent AI or human review used for a merge, release, production-readiness, security, visual, UX or other material verdict must identify the evidence boundary before stating `PASS`, `FAIL` or a promotion recommendation.
+
+Record, where applicable:
+- reviewer/system and review role(s);
+- environment actually inspected (`production | preview | local | platform | other`);
+- exact source revision / commit SHA / document revision;
+- observation date/time;
+- exact URLs, workflows, viewport/device and auth/network scope tested;
+- methods/tools used (for example browser observation, network/console evidence, code inspection, screenshots, accessibility tree or automated tests);
+- what could not be tested and why;
+- evidence class (`live_observed | code_inspected | supplied_report_only | mixed`);
+- verdict (`PASS | PARTIAL_PASS | FAIL | BLOCKED`), without converting `BLOCKED`/unobserved scope into a guessed pass or fail.
+
+Each material finding should include reproducible evidence and classify impact using the smallest useful taxonomy: `P0 blocker | P1 activation | P2 enhancement` plus the relevant domain such as `CODE | UX | INFRASTRUCTURE | PRODUCT | SECURITY | ARCHITECTURE`. Green CI is never a substitute for CEO visual approval when material visual approval is required.
+
+This adapter is part of HUEG, not a second review system. Domain-specific review templates may add stricter fields but must not weaken these evidence requirements.
+
 ## Capability and handoff rule
 
 Before taking work, an agent must distinguish actual access from assumed access. If the current surface cannot perform a required check, do not fabricate it and do not block safe work unnecessarily. Emit a bounded `EVIDENCE_REQUEST` or takeover bundle for a capable peer.
