@@ -114,10 +114,97 @@ const negotiationPractice = {
   ],
 };
 
+const websiteFirstContent = {
+  program_slug: "marketing",
+  lesson_id: "website-first-content",
+  version: "2026-08-24-v1",
+  title: "Website-first content: build a one-week distribution plan",
+  purpose: "Turn approved public website assets into a coherent five-record organic distribution plan instead of inventing disconnected posts or sending every audience to the homepage.",
+  objectives: [
+    "Identify the correct canonical website owner for a topic.",
+    "Match each topic to a specific audience and funnel stage.",
+    "Create platform-appropriate concepts rather than copying one universal post.",
+    "Write useful hooks and value statements without unsupported outcome claims.",
+    "Choose one CTA that matches the destination page and one privacy-safe measurement path.",
+    "Flag evidence, entity, freshness, privacy or platform uncertainty for human review.",
+  ],
+  sections: [
+    {
+      title: "Start with the canonical destination",
+      summary: "Every content record begins with an approved public page that owns the topic. The homepage, private files, previews, redirects and draft routes are not substitutes.",
+      actions: [
+        "Name the exact public destination before writing the hook.",
+        "Define the audience and funnel stage that fit that page.",
+        "Choose one CTA that the destination can actually fulfill.",
+      ],
+    },
+    {
+      title: "Adapt to the platform",
+      summary: "Facebook, Threads and Instagram require different presentation choices even when they distribute the same canonical source.",
+      actions: [
+        "Facebook: provide enough context to understand the problem before the CTA.",
+        "Threads: lead with a clear observation, tension or useful opinion and keep the explanation concise.",
+        "Instagram: begin with the visual idea and name a realistic destination strategy rather than assuming every caption link is clickable.",
+        "Do not publish identical copy across platforms or treat an emoji change as a new content version.",
+      ],
+    },
+    {
+      title: "Keep measurement privacy-safe",
+      summary: "UTM values may describe source, medium, campaign and a stable variant, but they must never carry personal or private operational information.",
+      actions: [
+        "Use utm_source=facebook|threads|instagram.",
+        "Use utm_medium=organic_social.",
+        "Use a controlled campaign value tied to the business direction.",
+        "Use a stable safe variant ID in utm_content.",
+        "Never put names, emails, phone numbers, identifiers, private routes, budgets or free-text messages in a URL.",
+      ],
+    },
+  ],
+  scenario: "Synthetic case: a U.S.-market logistics and business-services ecosystem has approved public pages in Logistics, Marketing, Technology and Academy and needs a one-week organic content plan. The learner receives no social credentials, customer data, private analytics, real leads, private routes, contracts, rates or internal conversations.",
+  approved_sources: [
+    { title: "Dispatch Service vs Self-Dispatch", path: "/logistics/resources/dispatch-service-vs-self-dispatch/" },
+    { title: "Broker Setup Packet Checklist", path: "/logistics/resources/broker-setup-packet-checklist/" },
+    { title: "Search-to-Inquiry Conversion Checklist", path: "/resources/search-to-inquiry-conversion-checklist/" },
+    { title: "Academy — U.S. Logistics Operations", path: "/academy/us-logistics-operations/" },
+    { title: "Technical SEO Checklist", path: "/resources/technical-seo-checklist/" },
+  ],
+  assignment: {
+    submission_type: "written_reflection",
+    prompt: "Create exactly five content records — one for each approved source page.",
+    parts: [
+      "For each record include day/sequence, business direction, canonical destination, target audience and funnel stage.",
+      "Choose one primary platform and format; write a hook, one claim-safe value statement, three key points and one CTA.",
+      "Add privacy-safe UTM values, evidence/claim status, one related website asset, a KPI to observe and one human-review note.",
+      "Vary topics, hooks, formats and CTAs meaningfully; do not repeat one template five times.",
+    ],
+  },
+  rubric: [
+    { key: "five_records", label: "Exactly five records", pass: "Five complete records, one per approved source page." },
+    { key: "canonical_ownership", label: "Canonical ownership", pass: "Each record leads to the relevant public page rather than the homepage, preview or private route." },
+    { key: "audience_funnel", label: "Audience and funnel stage", pass: "Audience and stage are specific and consistent with the source page and CTA." },
+    { key: "platform_fit", label: "Platform fit", pass: "Format and copy concept fit the selected platform and do not assume impossible link behavior." },
+    { key: "hook_value", label: "Useful hook and value", pass: "Hook and value are specific and educational without clickbait or unsupported outcomes." },
+    { key: "cta_quality", label: "CTA quality", pass: "One action matches page readiness and visible functionality." },
+    { key: "utm_safety", label: "UTM safety", pass: "UTM values are normalized, allowlisted and contain no PII or private operational data." },
+    { key: "evidence_claims", label: "Evidence and claims", pass: "Facts are visible on the approved source or clearly framed as general education; uncertain claims are flagged for review." },
+    { key: "non_duplication", label: "Non-duplication", pass: "Topics, hooks, formats and CTAs have meaningful variation rather than thin rewrites." },
+    { key: "measurement_review", label: "Measurement and review", pass: "The KPI supports the business path and the human-review note identifies a real approval need." },
+  ],
+  boundaries: [
+    "Use only approved public destinations and synthetic planning context; do not paste private source text, contacts, screenshots, conversations, credentials or operational data.",
+    "Do not promise leads, rankings, traffic, lower acquisition cost, sales, income, employment, direct shippers, response times or other outcomes.",
+    "All ten rubric items require human Pass/Revise review. Passing does not authorize publication, account access, advertising, external messages or work on behalf of a client.",
+    "A learner draft remains inside the existing Evidence and Progression workflow until a separately authorized person makes any real publication decision.",
+  ],
+};
+
 export const ACADEMY_LESSON_CONTENT = {
   "us-logistics-operations": {
     "carrier-broker-communication": logisticsConversation,
     "negotiation-practice": negotiationPractice,
+  },
+  marketing: {
+    "website-first-content": websiteFirstContent,
   },
 };
 
