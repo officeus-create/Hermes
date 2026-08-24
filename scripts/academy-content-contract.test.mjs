@@ -6,15 +6,42 @@ import {
   hasAcademyLessonContent,
 } from "../functions/api/_lib/academy-content.mjs";
 
+const logisticsLessonIds = [
+  "dispatch-foundations",
+  "carrier-broker-communication",
+  "equipment-lane-logic",
+  "documents-setup",
+  "negotiation-practice",
+  "operating-rhythm",
+];
+for (const lessonId of logisticsLessonIds) {
+  assert.equal(hasAcademyLessonContent("us-logistics-operations", lessonId), true, `Expected full Logistics lesson: ${lessonId}`);
+}
+assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT["us-logistics-operations"]), logisticsLessonIds);
+
+const foundations = getAcademyLessonContent("us-logistics-operations", "dispatch-foundations");
 const conversation = getAcademyLessonContent("us-logistics-operations", "carrier-broker-communication");
+const equipment = getAcademyLessonContent("us-logistics-operations", "equipment-lane-logic");
+const documents = getAcademyLessonContent("us-logistics-operations", "documents-setup");
 const practice = getAcademyLessonContent("us-logistics-operations", "negotiation-practice");
-assert.ok(conversation);
-assert.ok(practice);
-assert.equal(hasAcademyLessonContent("us-logistics-operations", "carrier-broker-communication"), true);
-assert.equal(hasAcademyLessonContent("us-logistics-operations", "dispatch-foundations"), false);
+const rhythm = getAcademyLessonContent("us-logistics-operations", "operating-rhythm");
+assert.ok(foundations && conversation && equipment && documents && practice && rhythm);
+assert.equal(foundations.approved_sources?.length, 1);
+assert.equal(equipment.approved_sources?.length, 1);
+assert.equal(documents.approved_sources?.length, 1);
+assert.equal(foundations.rubric?.length, 6);
+assert.equal(equipment.rubric?.length, 6);
+assert.equal(documents.rubric?.length, 7);
 assert.equal(practice.assignment?.submission_type, "written_reflection");
 assert.equal(practice.assignment?.max_words, 120);
 assert.equal(practice.rubric?.length, 6);
+assert.equal(rhythm.rubric?.length, 6);
+assert.equal(foundations.next?.lesson_id, "carrier-broker-communication");
+assert.equal(conversation.next?.lesson_id, "equipment-lane-logic");
+assert.equal(equipment.next?.lesson_id, "documents-setup");
+assert.equal(documents.next?.lesson_id, "negotiation-practice");
+assert.equal(practice.next?.lesson_id, "operating-rhythm");
+assert.equal(rhythm.next, undefined);
 
 const marketingLessonIds = [
   "positioning-offer",
@@ -64,6 +91,10 @@ assert.doesNotMatch(contentSource, /\$\d|salary|commission|guaranteed income|gua
 assert.doesNotMatch(contentSource, /@[A-Za-z0-9.-]+\.[A-Za-z]{2,}|\+?1[ .()-]*\d{3}[ .()-]*\d{3}[ .-]*\d{4}/);
 assert.match(contentSource, /synthetic/i);
 assert.match(contentSource, /human review/i);
+assert.match(contentSource, /roles, control and the load workflow/i);
+assert.match(contentSource, /fact-assumption-question/i);
+assert.match(contentSource, /verify, submit, record and refresh/i);
+assert.match(contentSource, /plan, act, evidence, review, correct/i);
 assert.match(contentSource, /Exactly five records/);
 assert.match(contentSource, /UTM safety/);
 assert.match(contentSource, /duplicate cross-posting/i);
@@ -88,8 +119,9 @@ assert.doesNotMatch(lessonPage, /innerHTML|outerHTML|insertAdjacentHTML/);
 assert.match(lessonPage, /employment, certification, income, client access/i);
 
 assert.match(programPage, /data-full-lesson-link/);
-assert.match(programPage, /carrier-broker-communication/);
-assert.match(programPage, /negotiation-practice/);
+for (const lessonId of logisticsLessonIds) {
+  assert.match(programPage, new RegExp(`us-logistics-operations:${lessonId}`));
+}
 for (const lessonId of marketingLessonIds) {
   assert.match(programPage, new RegExp(`marketing:${lessonId}`));
 }
