@@ -24,6 +24,40 @@ const negotiationLesson = {
   boundaries: ["Use the synthetic scenario only.", "Human review remains required."],
 };
 
+const documentsLesson = {
+  program_slug: "us-logistics-operations",
+  lesson_id: "documents-setup",
+  version: "2026-08-24-v1",
+  title: "Documents and setup: verify, submit, record and refresh",
+  purpose: "Understand a controlled carrier setup workflow without exposing credentials or private data.",
+  objectives: ["Recognize setup areas", "Use secure submission", "Keep carrier authorization explicit"],
+  sections: [
+    { title: "Build a verified core packet", summary: "Keep reusable setup information consistent and current.", actions: ["Verify business identity.", "Review authority and insurance."] },
+    { title: "Protect sensitive information", summary: "A packet is not a credential or payment-data dump.", actions: ["Never include passwords or one-time codes."] },
+  ],
+  approved_sources: [
+    { title: "Broker Setup Packet Checklist", path: "/logistics/resources/broker-setup-packet-checklist/" },
+  ],
+  scenario: "Synthetic setup request with one expired document and an unexpected payment-change message.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 350,
+    prompt: "Create a safe setup-review plan for the synthetic request.",
+    parts: ["Packet areas", "Verify", "Secure submission", "Payment-change control", "Status record", "Refresh rule"],
+  },
+  rubric: [
+    { key: "packet_scope", label: "Packet scope", pass: "Relevant setup areas are identified." },
+    { key: "verification", label: "Verification", pass: "Uncertainty is resolved before representation." },
+    { key: "secure_submission", label: "Secure submission", pass: "Only required information uses an approved route." },
+    { key: "credential_boundary", label: "Credential boundary", pass: "Credentials and unnecessary identity data are excluded." },
+    { key: "payment_control", label: "Payment control", pass: "Unexpected payment changes require verification." },
+    { key: "status_refresh", label: "Status and refresh", pass: "Non-sensitive status and refresh rules are clear." },
+    { key: "approval_boundary", label: "Approval boundary", pass: "Packet completeness is not described as guaranteed approval." },
+  ],
+  boundaries: ["Synthetic documents only.", "Human review remains required."],
+  next: { lesson_id: "negotiation-practice", label: "Continue to negotiation practice" },
+};
+
 const marketingLesson = {
   program_slug: "marketing",
   lesson_id: "website-first-content",
@@ -94,6 +128,15 @@ const distributionLesson = {
   next: { lesson_id: "lead-journey", label: "Continue to lead journey" },
 };
 
+const logisticsLessonIds = [
+  "dispatch-foundations",
+  "carrier-broker-communication",
+  "equipment-lane-logic",
+  "documents-setup",
+  "negotiation-practice",
+  "operating-rhythm",
+];
+
 const marketingLessonIds = [
   "positioning-offer",
   "website-first-content",
@@ -135,6 +178,49 @@ for (const viewport of [
     await expect(submit).toHaveAttribute(
       "href",
       /\/services\/hermes-connect\/academy\/submissions\/\?program=us-logistics-operations&lesson=negotiation-practice&type=written_reflection$/,
+    );
+    expect(lessonRequests).toBe(1);
+
+    const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
+    expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+  });
+
+  test(`enrolled learner can continue from Logistics documents to negotiation on ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    let lessonRequests = 0;
+
+    await page.route("**/api/academy/lesson*", async (route) => {
+      lessonRequests += 1;
+      const url = new URL(route.request().url());
+      expect(url.searchParams.get("program")).toBe("us-logistics-operations");
+      expect(url.searchParams.get("lesson")).toBe("documents-setup");
+      await route.fulfill(ok({
+        success: true,
+        enrollment: { program_slug: "us-logistics-operations", state: "enrolled" },
+        lesson: documentsLesson,
+      }));
+    });
+
+    await page.goto(
+      "/services/hermes-connect/academy/lesson/?program=us-logistics-operations&lesson=documents-setup",
+      { waitUntil: "domcontentloaded" },
+    );
+
+    await expect(page.getByRole("heading", { name: documentsLesson.title })).toBeVisible();
+    await expect(page.getByText(documentsLesson.assignment.prompt)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build from these canonical public destinations." })).toBeVisible();
+    await expect(page.getByRole("link", { name: "/logistics/resources/broker-setup-packet-checklist/" })).toHaveAttribute(
+      "href",
+      "/logistics/resources/broker-setup-packet-checklist/",
+    );
+    await expect(page.locator("[data-rubric-list] .academy-review-card")).toHaveCount(7);
+    await expect(page.getByRole("link", { name: "Continue to negotiation practice" })).toHaveAttribute(
+      "href",
+      "/services/hermes-connect/academy/lesson/?program=us-logistics-operations&lesson=negotiation-practice",
+    );
+    await expect(page.getByRole("link", { name: "Submit this assignment" })).toHaveAttribute(
+      "href",
+      /\/services\/hermes-connect\/academy\/submissions\/\?program=us-logistics-operations&lesson=documents-setup&type=written_reflection$/,
     );
     expect(lessonRequests).toBe(1);
 
@@ -219,28 +305,30 @@ for (const viewport of [
   });
 }
 
-test("enrolled Marketing program exposes all six canonical full lessons on mobile", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.route("**/api/academy/progress*", async (route) => {
+async function expectCompleteProgram(
+  page: Parameters<typeof test>[0] extends never ? never : any,
+  programSlug: string,
+  lessonIds: string[],
+) {
+  await page.route("**/api/academy/progress*", async (route: any) => {
     const url = new URL(route.request().url());
-    expect(url.searchParams.get("program")).toBe("marketing");
+    expect(url.searchParams.get("program")).toBe(programSlug);
     await route.fulfill(ok({
       success: true,
-      enrollment: { program_slug: "marketing", state: "enrolled" },
+      enrollment: { program_slug: programSlug, state: "enrolled" },
       progress: [
-        { lesson_id: "positioning-offer", state: "completed" },
-        { lesson_id: "website-first-content", state: "in_progress" },
+        { lesson_id: lessonIds[0], state: "completed" },
+        { lesson_id: lessonIds[1], state: "in_progress" },
       ],
     }));
   });
 
-  await page.goto("/services/hermes-connect/academy/program/marketing/", { waitUntil: "domcontentloaded" });
-
+  await page.goto(`/services/hermes-connect/academy/program/${programSlug}/`, { waitUntil: "domcontentloaded" });
   await expect(page.locator("[data-enrollment-status]")).toHaveText("Enrollment · enrolled");
   const fullLessonLinks = page.locator("[data-full-lesson-link]");
   await expect(fullLessonLinks).toHaveCount(6);
-  const hrefs = await fullLessonLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
-  expect(hrefs).toEqual(marketingLessonIds.map((lessonId) => `/services/hermes-connect/academy/lesson/?program=marketing&lesson=${lessonId}`));
+  const hrefs = await fullLessonLinks.evaluateAll((links: Element[]) => links.map((link) => link.getAttribute("href")));
+  expect(hrefs).toEqual(lessonIds.map((lessonId) => `/services/hermes-connect/academy/lesson/?program=${programSlug}&lesson=${lessonId}`));
   await expect(page.locator("[data-progress-action]")).toHaveCount(6);
   for (const button of await page.locator("[data-progress-action]").all()) {
     await expect(button).toBeEnabled();
@@ -249,6 +337,16 @@ test("enrolled Marketing program exposes all six canonical full lessons on mobil
 
   const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
   expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+}
+
+test("enrolled Logistics program exposes all six canonical full lessons on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expectCompleteProgram(page, "us-logistics-operations", logisticsLessonIds);
+});
+
+test("enrolled Marketing program exposes all six canonical full lessons on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expectCompleteProgram(page, "marketing", marketingLessonIds);
 });
 
 test("lesson shell does not reveal content when enrollment is not active", async ({ page }) => {
