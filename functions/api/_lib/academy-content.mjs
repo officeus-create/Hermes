@@ -114,6 +114,82 @@ const negotiationPractice = {
   ],
 };
 
+const positioningOffer = {
+  program_slug: "marketing",
+  lesson_id: "positioning-offer",
+  version: "2026-08-24-v1",
+  title: "Positioning and offer: define the useful next action",
+  purpose: "Connect a specific audience and business problem to a bounded service scope, evidence boundary and useful next action without promising an outcome.",
+  objectives: [
+    "Define the business objective before choosing a channel or format.",
+    "Name a specific audience and problem in language that can be checked against the approved offer.",
+    "Separate useful scope from unsupported promises, assumptions and future possibilities.",
+    "Identify what evidence is available and what still requires human verification.",
+    "Choose one next action that the destination can actually fulfill.",
+  ],
+  sections: [
+    {
+      title: "Start with the business objective",
+      summary: "A channel is not the objective. Define the action the business needs before deciding how to distribute the message.",
+      actions: [
+        "Name one primary audience and one problem worth solving.",
+        "Define the useful next action: review, compare, prepare, apply, request or schedule only when the destination supports it.",
+        "Avoid beginning with posting volume, follower targets or a platform tactic.",
+      ],
+    },
+    {
+      title: "Frame the offer around bounded scope",
+      summary: "A useful offer explains what can be reviewed or delivered, what remains outside scope and which decision stays with the customer or human owner.",
+      actions: [
+        "Describe the service or learning scope in plain language.",
+        "Separate current capability from future ideas.",
+        "State the important exclusion or decision boundary.",
+        "Use differentiation that can be demonstrated rather than a superlative that cannot be proved.",
+      ],
+    },
+    {
+      title: "Separate proof from promise",
+      summary: "Evidence can support a claim, but it does not turn an uncertain future result into a guarantee.",
+      actions: [
+        "Identify which facts are visible on an approved source.",
+        "Label assumptions, estimates and unresolved claims for human review.",
+        "Do not convert historical results, platform behavior or a single case into a universal promise.",
+      ],
+    },
+  ],
+  scenario: "Synthetic case: a service business has a useful website and marketing capability, but its message currently mixes audience, features, broad outcome claims and several competing calls to action.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 250,
+    prompt: "Create one six-part positioning and offer frame for the synthetic business.",
+    parts: [
+      "Audience — identify one specific audience and why the problem matters to them.",
+      "Problem — describe the current friction without exaggeration.",
+      "Useful scope — state what the offer can actually help review, build or improve.",
+      "Evidence boundary — name what is supported and what still needs verification.",
+      "Differentiation or objection — give one defensible distinction or address one likely concern.",
+      "Next action — choose one CTA that the destination can fulfill now.",
+    ],
+  },
+  rubric: [
+    { key: "audience_problem", label: "Audience and problem", pass: "Audience and problem are specific, coherent and not inflated." },
+    { key: "scope_boundary", label: "Scope boundary", pass: "Useful scope and important exclusions are clear." },
+    { key: "differentiation", label: "Defensible differentiation", pass: "Difference is concrete and does not rely on unverifiable superiority claims." },
+    { key: "evidence_safety", label: "Evidence safety", pass: "Supported facts, assumptions and review-needed claims are separated." },
+    { key: "objection_clarity", label: "Objection clarity", pass: "Concern is answered without pressure, invented urgency or outcome promises." },
+    { key: "cta_fit", label: "CTA fit", pass: "One next action matches the actual destination and current readiness." },
+  ],
+  boundaries: [
+    "Use synthetic business context and approved public source material only.",
+    "Do not promise reach, traffic, ranking, leads, sales, savings, response time, employment or other future outcomes.",
+    "Passing this lesson means the positioning frame met the learning rubric; it does not authorize publication, pricing, an offer change or client communication.",
+  ],
+  next: {
+    lesson_id: "website-first-content",
+    label: "Continue to website-first content",
+  },
+};
+
 const websiteFirstContent = {
   program_slug: "marketing",
   lesson_id: "website-first-content",
@@ -196,6 +272,318 @@ const websiteFirstContent = {
     "All ten rubric items require human Pass/Revise review. Passing does not authorize publication, account access, advertising, external messages or work on behalf of a client.",
     "A learner draft remains inside the existing Evidence and Progression workflow until a separately authorized person makes any real publication decision.",
   ],
+  next: {
+    lesson_id: "platform-distribution",
+    label: "Continue to platform distribution",
+  },
+};
+
+const platformDistribution = {
+  program_slug: "marketing",
+  lesson_id: "platform-distribution",
+  version: "2026-08-24-v1",
+  title: "Platform distribution: adapt one source without duplicate cross-posting",
+  purpose: "Turn one approved canonical asset into platform-specific distribution concepts while preserving source ownership, destination accuracy, claim safety and human approval.",
+  objectives: [
+    "Give each platform a distinct job instead of copying one universal post.",
+    "Keep the website or approved public asset as the canonical source of the complete explanation.",
+    "Match hook, format, visual idea and destination strategy to the platform context.",
+    "Use normalized privacy-safe tracking without personal or operational values in URLs.",
+    "Recognize duplicate distribution and review blockers before any external action.",
+    "Keep publication, account access and external communication behind an authorized human decision.",
+  ],
+  sections: [
+    {
+      title: "Give each platform a different job",
+      summary: "The same source can support several channels, but each derivative should match how that channel presents context, discussion or visual information.",
+      actions: [
+        "Facebook: provide context and discussion around the problem and next action.",
+        "Threads: introduce a sharp observation, tension or useful question.",
+        "Instagram: begin with a visual proof idea, demonstration, Reel, Story or carousel and use a realistic destination strategy.",
+        "LinkedIn: use professional context, process insight or decision-maker framing when the approved account and format support it.",
+        "X: keep a concise finding only when account ownership, format and destination behavior are verified.",
+        "Video or email: use a substantial explanation or owned-audience follow-up only when rights, consent and the destination are approved.",
+      ],
+    },
+    {
+      title: "Keep the canonical owner and tracked destination",
+      summary: "A derivative should summarize and distribute the source asset, not become an unreviewed replacement for it.",
+      actions: [
+        "Point to the most relevant service, resource, program or approved intake rather than the generic homepage.",
+        "Use one CTA that matches the destination.",
+        "Use a stable privacy-safe variant identifier for tracking.",
+        "Do not put submitted values, names, contact details, private routes, budgets or messages in URL parameters.",
+      ],
+    },
+    {
+      title: "Review before external action",
+      summary: "Hermes distribution logic separates generated drafts from reviewed, approved and manual-export-ready states; learning exercises preserve the same boundary.",
+      actions: [
+        "Check source freshness, claim approval, privacy and entity ownership.",
+        "Detect thin duplicate variants before review.",
+        "Flag unsupported platform behavior rather than guessing.",
+        "A draft may be prepared in Academy; a person controls every real post, message, ad or account action.",
+      ],
+    },
+  ],
+  scenario: "Synthetic case: one approved public guide needs channel-specific distribution. No social account, publishing credential, customer list, private analytics, ad account or external messaging permission is available to the learner.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 450,
+    prompt: "Create four meaningfully different distribution variants for one approved public asset.",
+    parts: [
+      "Create one Facebook variant with context, format, CTA and destination strategy.",
+      "Create one Threads variant built around an observation or question rather than copied Facebook text.",
+      "Create one Instagram variant with a visual-first concept and realistic profile/Story/destination behavior.",
+      "Create one additional variant for LinkedIn, X, video or email and state the condition that must be verified before use.",
+      "For all four, name the canonical source, one privacy-safe tracking idea and one human-review blocker to check.",
+    ],
+  },
+  rubric: [
+    { key: "canonical_source", label: "Canonical source", pass: "All variants preserve one approved public owner and relevant destination." },
+    { key: "platform_roles", label: "Platform roles", pass: "Each platform has a defensible role rather than a copied universal purpose." },
+    { key: "meaningful_adaptation", label: "Meaningful adaptation", pass: "Hooks, formats and presentation differ in substance, not only punctuation or emoji." },
+    { key: "destination_accuracy", label: "Destination accuracy", pass: "CTA and link strategy reflect realistic platform behavior and page readiness." },
+    { key: "tracking_privacy", label: "Tracking privacy", pass: "Tracking concept uses stable non-personal values and exposes no private operational data." },
+    { key: "claim_safety", label: "Claim safety", pass: "No variant invents results, platform guarantees or unverifiable evidence." },
+    { key: "duplicate_control", label: "Duplicate control", pass: "Learner identifies how thin cross-post duplicates would be detected or rejected." },
+    { key: "human_gate", label: "Human approval gate", pass: "Real publication, account access and external action remain explicitly human-controlled." },
+  ],
+  boundaries: [
+    "Do not sign in to a social account, publish, schedule, advertise, send a message or upload a customer list as part of this lesson.",
+    "Use synthetic drafts and approved public source material only.",
+    "Passing the lesson does not verify a platform account, authorize a campaign or prove that a channel will produce a business result.",
+  ],
+  next: {
+    lesson_id: "lead-journey",
+    label: "Continue to lead journey",
+  },
+};
+
+const leadJourney = {
+  program_slug: "marketing",
+  lesson_id: "lead-journey",
+  version: "2026-08-24-v1",
+  title: "Lead journey: connect attention to an explicit human handoff",
+  purpose: "Map a privacy-safe path from source and distribution to the correct destination, one CTA, minimal qualification, accountable human ownership and a measurable next step.",
+  objectives: [
+    "Route attention to the page that owns the promise rather than a generic destination.",
+    "Choose one CTA that creates the next useful decision instead of unnecessary friction.",
+    "Collect only the minimum information required for the next human action.",
+    "Preserve source, campaign, owner, status and next action through the handoff.",
+    "Keep submitted values out of URLs, analytics and public fixtures.",
+    "Identify where journey friction should change the page, form, targeting or handoff process.",
+  ],
+  sections: [
+    {
+      title: "Route attention to the correct destination",
+      summary: "A service topic should lead to the relevant service or guide; education to the relevant program; a technical workflow to the approved technical owner; a checklist directly to that checklist.",
+      actions: [
+        "Name the source asset and the destination separately.",
+        "Confirm that the destination can fulfill the CTA.",
+        "Avoid sending every user to the homepage or an unrelated form.",
+      ],
+    },
+    {
+      title: "Qualify only what the next decision needs",
+      summary: "Qualification should reduce uncertainty for a human decision without turning a form or analytics event into a private-data dump.",
+      actions: [
+        "Ask only for fields needed to route or review the request.",
+        "Keep personal and private operational values out of URLs and analytics payloads.",
+        "Explain why a field is needed when the reason is not obvious.",
+      ],
+    },
+    {
+      title: "Create an explicit handoff",
+      summary: "Every inquiry needs a responsible owner, source context, current status, next action, review history and a safe way to correct or close the request.",
+      actions: [
+        "Name the responsible business direction or human owner role.",
+        "Preserve the source page and campaign context.",
+        "Set a current status and one next action.",
+        "Record a stop, correction or closure path rather than assuming endless follow-up.",
+      ],
+    },
+  ],
+  scenario: "Synthetic case: a visitor discovers a useful Hermes resource through an organic social concept, reads the page and considers asking for help. The learner must design the journey without receiving the visitor's real identity or private values.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 350,
+    prompt: "Map one complete source-to-human-handoff journey for the synthetic visitor.",
+    parts: [
+      "Source and entry — name the canonical asset and distribution context.",
+      "Destination and CTA — choose the exact destination and one next action.",
+      "Qualification — list only the minimum fields needed for the next human decision and explain why.",
+      "Human owner — name the responsible direction or role, not a private individual.",
+      "Status and next action — define the initial status, next step and closure/stop condition.",
+      "Measurement — name privacy-safe events that show where the journey progressed or broke.",
+    ],
+  },
+  rubric: [
+    { key: "source_destination", label: "Source and destination", pass: "The canonical source and destination are relevant and not collapsed into a generic homepage route." },
+    { key: "cta_fit", label: "CTA fit", pass: "One CTA matches the destination's current capability and the visitor's stage." },
+    { key: "minimal_qualification", label: "Minimal qualification", pass: "Requested fields are necessary for the next decision and avoid unnecessary sensitive detail." },
+    { key: "privacy_boundary", label: "Privacy boundary", pass: "Submitted values remain out of URLs, analytics, screenshots and public fixtures." },
+    { key: "handoff_owner", label: "Human handoff owner", pass: "A responsible role, status and next action are explicit." },
+    { key: "closure_path", label: "Closure path", pass: "Journey includes a safe correction, decline or close condition." },
+    { key: "friction_measurement", label: "Friction measurement", pass: "Events can identify the broken stage without pretending to prove causation or revenue." },
+  ],
+  boundaries: [
+    "Do not use a real lead, real contact details, private CRM record or submitted form values in the exercise.",
+    "Automation may prepare routing context, but a person controls real communication, offers, bookings, payments and commitments.",
+    "A complete map is learning evidence only; it does not authorize a live form, CRM write or customer workflow change.",
+  ],
+  next: {
+    lesson_id: "sales-follow-up",
+    label: "Continue to sales follow-up",
+  },
+};
+
+const salesFollowUp = {
+  program_slug: "marketing",
+  lesson_id: "sales-follow-up",
+  version: "2026-08-24-v1",
+  title: "Sales follow-up: preserve context and one useful next step",
+  purpose: "Turn an inbound marketing response into a concise, pressure-free human follow-up that preserves source context, asks a useful question and records a clear next action.",
+  objectives: [
+    "Use the source page, CTA and prior response as context rather than restarting with a generic pitch.",
+    "Ask one focused discovery question before assuming the buyer's need.",
+    "Answer only what is supported and flag anything requiring human verification.",
+    "Offer one next step without invented urgency or pressure.",
+    "Record a useful status, next action and stop condition for review.",
+  ],
+  sections: [
+    {
+      title: "Preserve the marketing context",
+      summary: "A follow-up should know which source, page and CTA created the conversation so the person does not have to repeat the entire journey.",
+      actions: [
+        "Summarize the relevant context briefly.",
+        "Reference the question or action the person actually took.",
+        "Do not invent intent from a page view or click alone.",
+      ],
+    },
+    {
+      title: "Clarify before proposing",
+      summary: "Use one focused question to understand the current situation or decision before offering a detailed next step.",
+      actions: [
+        "Acknowledge the stated concern or goal.",
+        "Ask one question that changes what the next useful action should be.",
+        "Respond to the stated issue instead of delivering every service feature.",
+      ],
+    },
+    {
+      title: "Close the loop without pressure",
+      summary: "The follow-up should end with one clear option and a visible stop or timing condition.",
+      actions: [
+        "Offer one review, comparison, call, brief or resource only when it is actually available.",
+        "Make it easy to decline, pause or change timing.",
+        "Record current status and next action so follow-up does not depend on memory.",
+      ],
+    },
+  ],
+  scenario: "Synthetic case: a service-business owner reaches an approved marketing intake after reading a website-first resource. They say they already publish content but cannot tell which activity is creating useful inquiries and are unsure whether another marketing project is worth reviewing.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 180,
+    prompt: "Draft a bounded follow-up and a short handoff note for the synthetic inquiry.",
+    parts: [
+      "Context — summarize the source and stated concern in one or two sentences.",
+      "Discovery — ask one focused question that would change the recommended next step.",
+      "Claim-safe response — state what can be reviewed without promising a result.",
+      "Next action — offer one useful option and preserve the person's control.",
+      "Handoff note — record a role-owned status, next action and stop condition without private identifiers.",
+    ],
+  },
+  rubric: [
+    { key: "context_preserved", label: "Context preserved", pass: "Response uses the known source and concern without inventing intent." },
+    { key: "discovery_question", label: "Discovery question", pass: "One focused question would materially improve the next decision." },
+    { key: "claim_safety", label: "Claim safety", pass: "Response promises no traffic, lead, sales, ranking or other unsupported outcome." },
+    { key: "next_step", label: "Useful next step", pass: "One available action is offered without pressure or invented urgency." },
+    { key: "crm_discipline", label: "Handoff discipline", pass: "Status, responsible role, next action and stop condition are reviewable." },
+    { key: "tone_length", label: "Tone and length", pass: "Professional, concise, respectful and within 180 words." },
+  ],
+  boundaries: [
+    "Use the synthetic inquiry only. Do not copy a real email, direct message, call transcript, CRM record or customer identity into learner evidence.",
+    "Do not send the drafted follow-up. Academy evidence remains a private draft for human review.",
+    "Passing the rubric does not authorize sales activity, account access, an offer, a proposal or customer communication.",
+  ],
+  next: {
+    lesson_id: "analytics-improvement",
+    label: "Continue to analytics and improvement",
+  },
+};
+
+const analyticsImprovement = {
+  program_slug: "marketing",
+  lesson_id: "analytics-improvement",
+  version: "2026-08-24-v1",
+  title: "Analytics and improvement: measure the complete path",
+  purpose: "Use privacy-safe evidence across source, landing, CTA, qualification and human handoff to choose the next improvement without treating vanity metrics or correlation as proof of a business outcome.",
+  objectives: [
+    "Define privacy-safe events for the complete path from source to reviewed handoff.",
+    "Separate supporting indicators such as views or clicks from inquiry quality and human-reviewed outcomes.",
+    "Distinguish an observation from a causal explanation.",
+    "Use source, page, CTA and stage evidence to identify where friction occurs.",
+    "Turn repeated questions or failures into a specific content, form, targeting or handoff improvement.",
+  ],
+  sections: [
+    {
+      title: "Measure the complete path",
+      summary: "A useful measurement plan can connect a source and landing page to engagement, CTA action, qualification, handoff and an approved business outcome when lawful attribution exists.",
+      actions: [
+        "Track page view and meaningful engagement without submitted values.",
+        "Track CTA action and form/application start as separate stages.",
+        "Track approved handoff and qualified inquiry separately from simple clicks.",
+        "Use a human-reviewed business outcome only when the attribution is lawful and actually available.",
+      ],
+    },
+    {
+      title: "Do not stop at vanity metrics",
+      summary: "Followers, views, clicks and posting volume can support diagnosis, but they are not the final business result.",
+      actions: [
+        "Compare the metric to the stage it is supposed to represent.",
+        "Do not say a channel caused a result when the evidence only shows correlation.",
+        "Flag missing attribution instead of filling the gap with an assumption.",
+      ],
+    },
+    {
+      title: "Return evidence to the content system",
+      summary: "Measurement becomes useful when it changes the next review decision.",
+      actions: [
+        "Turn repeated questions into FAQ or explanation improvements.",
+        "Review pages with traffic but weak CTA engagement for clarity or offer mismatch.",
+        "Use repeated qualification failure to review the page, form, audience or program description.",
+        "Document what changed and what evidence would confirm or reject the next hypothesis.",
+      ],
+    },
+  ],
+  scenario: "Synthetic evidence: Content A attracts substantially more sessions but very few visitors reach its CTA. Content B attracts fewer sessions, but more visitors reach the CTA and a small number proceed to a human-reviewed qualified inquiry. No revenue attribution or causal experiment is available.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 300,
+    prompt: "Create an evidence-safe measurement diagnosis and one next improvement for the synthetic scenario.",
+    parts: [
+      "Event chain — define the privacy-safe stages you would measure from source through human handoff.",
+      "Observation — state what the synthetic evidence supports without adding a causal claim.",
+      "Vanity-metric boundary — explain why the highest traffic number is not automatically the best outcome.",
+      "Friction hypothesis — identify one stage that deserves review and label the explanation as a hypothesis.",
+      "Next improvement — propose one bounded page, CTA, qualification or handoff change.",
+      "Next evidence — state what observation would support or challenge that improvement decision.",
+    ],
+  },
+  rubric: [
+    { key: "complete_path", label: "Complete path", pass: "Measurement covers source, landing, CTA, qualification and human handoff rather than stopping at reach or clicks." },
+    { key: "privacy_safe", label: "Privacy-safe events", pass: "Events contain no submitted values, private messages or personal identifiers." },
+    { key: "observation_causation", label: "Observation vs causation", pass: "Learner states what is observed and labels unproven explanations as hypotheses." },
+    { key: "vanity_boundary", label: "Vanity-metric boundary", pass: "Supporting metrics are not presented as the final business result." },
+    { key: "friction_stage", label: "Friction stage", pass: "Diagnosis identifies a defensible stage of the journey to review." },
+    { key: "bounded_improvement", label: "Bounded improvement", pass: "Recommendation changes one controllable element rather than promising a result." },
+    { key: "next_evidence", label: "Next evidence", pass: "Learner defines evidence that could support or challenge the next decision." },
+  ],
+  boundaries: [
+    "Use synthetic metrics only; do not paste private analytics exports, customer values, lead identities or revenue records into learner evidence.",
+    "Do not claim that social activity directly improves search ranking, lowers acquisition cost or creates sales without appropriate evidence.",
+    "A reviewer evaluates the reasoning. Completing this lesson does not authorize analytics access, tracking changes, publication or customer-data processing.",
+  ],
 };
 
 export const ACADEMY_LESSON_CONTENT = {
@@ -204,7 +592,12 @@ export const ACADEMY_LESSON_CONTENT = {
     "negotiation-practice": negotiationPractice,
   },
   marketing: {
+    "positioning-offer": positioningOffer,
     "website-first-content": websiteFirstContent,
+    "platform-distribution": platformDistribution,
+    "lead-journey": leadJourney,
+    "sales-follow-up": salesFollowUp,
+    "analytics-improvement": analyticsImprovement,
   },
 };
 
