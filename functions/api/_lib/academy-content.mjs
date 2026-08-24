@@ -1,3 +1,83 @@
+const dispatchFoundations = {
+  program_slug: "us-logistics-operations",
+  lesson_id: "dispatch-foundations",
+  version: "2026-08-24-v1",
+  title: "Dispatch foundations: roles, control and the load workflow",
+  purpose: "Understand the main responsibilities in a carrier dispatch workflow, who controls each decision and which information must be confirmed before work moves forward.",
+  objectives: [
+    "Distinguish carrier control from dispatcher coordination and support.",
+    "Map load search, communication, route review, setup, documents, booking approval and follow-up into one workflow.",
+    "Identify which facts a dispatcher can organize and which decisions remain with the motor carrier.",
+    "Separate a useful operating question from an unsupported promise about loads, rates, utilization or revenue.",
+    "Record a clear owner and next action when information is missing or a workflow breaks.",
+  ],
+  sections: [
+    {
+      title: "Assign responsibilities before acting",
+      summary: "A reliable workflow makes search, calls, route review, setup, documents and approval ownership explicit instead of assuming that one person controls everything.",
+      actions: [
+        "Carrier: controls the truck, driver, safety, compliance and final load approval.",
+        "Dispatcher: may research, organize information, coordinate approved communication and prepare follow-up within the agreed scope.",
+        "Broker or shipper: provides the opportunity, requirements and commercial information they control.",
+        "When a responsibility is unclear, stop and identify the decision owner before proceeding.",
+      ],
+    },
+    {
+      title: "Follow the information flow",
+      summary: "A load opportunity becomes useful only after the relevant equipment, area, timing, access, document and approval questions are understood.",
+      actions: [
+        "Search or receive an opportunity without treating availability as a promise.",
+        "Confirm the facts needed to review operating fit.",
+        "Surface conflicts or missing information rather than hiding uncertainty.",
+        "Preserve the carrier's final approval before any booking action.",
+      ],
+    },
+    {
+      title: "Separate coordination from authority",
+      summary: "Support can reduce repeatable workload, but it does not transfer the carrier's legal, safety or operating responsibility.",
+      actions: [
+        "Document what communication the dispatcher may handle.",
+        "Define what always requires carrier confirmation.",
+        "Keep credentials, security codes, shipment details and payment data out of public URLs or learner fixtures.",
+        "Measure workflow quality without promising market outcomes.",
+      ],
+    },
+  ],
+  approved_sources: [
+    { title: "Dispatch Service vs Self-Dispatch", path: "/logistics/resources/dispatch-service-vs-self-dispatch/" },
+  ],
+  scenario: "Synthetic case: a small car-hauling carrier wants help organizing load search and back-office work but has not yet defined who may discuss a load, who reviews route fit, who handles setup documents or who gives final booking approval.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 300,
+    prompt: "Create a responsibility map for the synthetic carrier workflow.",
+    parts: [
+      "Workflow — list search, communication, route/equipment review, setup/documents and booking/follow-up in a sensible sequence.",
+      "Owner — assign each step to carrier, dispatcher/support, broker/shipper or shared review.",
+      "Carrier-control boundary — identify at least three decisions that must remain with the carrier.",
+      "Missing-information rule — state what happens when a critical fact or approval is missing.",
+      "Claim-safety note — give one example of a useful operating statement and one outcome claim that should not be made.",
+    ],
+  },
+  rubric: [
+    { key: "workflow_sequence", label: "Workflow sequence", pass: "The main operating steps are ordered coherently and no booking is implied before review." },
+    { key: "role_clarity", label: "Role clarity", pass: "Carrier, dispatcher/support and external-party responsibilities are distinguished." },
+    { key: "carrier_control", label: "Carrier control", pass: "Truck, driver, safety and final approval remain explicitly with the carrier." },
+    { key: "missing_information", label: "Missing-information handling", pass: "The learner pauses, escalates or verifies rather than inventing an answer." },
+    { key: "privacy_boundary", label: "Privacy boundary", pass: "Sensitive credentials, payment and shipment values are not exposed in public or learner systems." },
+    { key: "claim_safety", label: "Claim safety", pass: "No guaranteed load, rate, utilization, profit or revenue claim is used." },
+  ],
+  boundaries: [
+    "Use the synthetic carrier and approved public resource only; do not paste a real load, carrier, broker, driver or customer record.",
+    "This lesson teaches responsibility and information flow. It does not authorize a learner to dispatch, book freight, sign documents or represent a carrier.",
+    "Human review is required for the assignment and remains separate from self-tracked lesson progress.",
+  ],
+  next: {
+    lesson_id: "carrier-broker-communication",
+    label: "Continue to carrier and broker communication",
+  },
+};
+
 const logisticsConversation = {
   program_slug: "us-logistics-operations",
   lesson_id: "carrier-broker-communication",
@@ -70,6 +150,165 @@ const logisticsConversation = {
     "Self-tracked completion is not reviewer acceptance, Academy completion, employment, certification, income or permission to work with live operations.",
   ],
   next: {
+    lesson_id: "equipment-lane-logic",
+    label: "Continue to equipment and lane logic",
+  },
+};
+
+const equipmentLaneLogic = {
+  program_slug: "us-logistics-operations",
+  lesson_id: "equipment-lane-logic",
+  version: "2026-08-24-v1",
+  title: "Equipment and lane logic: verify fit before recommendation",
+  purpose: "Review equipment, capacity, deadhead, timing, route and pickup/delivery constraints without pretending that an opportunity is safe, profitable or bookable before the carrier approves it.",
+  objectives: [
+    "Identify the operating facts required before recommending that a carrier review an opportunity.",
+    "Separate equipment fit, route fit, timing fit and commercial information instead of collapsing them into one guess.",
+    "Recognize deadhead and pickup/delivery access as review inputs rather than universal decision rules.",
+    "Label facts, assumptions and unanswered questions explicitly.",
+    "Keep safety, operating judgment and final approval with the carrier.",
+  ],
+  sections: [
+    {
+      title: "Check equipment and practical capacity",
+      summary: "Truck/trailer type, practical capacity, dimensions, specialty capability and operating restrictions must be understood before fit can be discussed.",
+      actions: [
+        "Use the carrier's approved equipment profile rather than guessing from a general truck class.",
+        "Confirm capacity and restrictions relevant to the opportunity.",
+        "Treat uncertain dimensions, operability or specialty requirements as questions to resolve.",
+      ],
+    },
+    {
+      title: "Check route, deadhead and timing",
+      summary: "A route is more than origin and destination; operating area, current location, empty miles, pickup/delivery timing and access constraints can change the fit review.",
+      actions: [
+        "Separate current location from pickup location and loaded route.",
+        "Confirm pickup and delivery windows or constraints when available.",
+        "Surface deadhead and access considerations without inventing a universal acceptable threshold.",
+      ],
+    },
+    {
+      title: "Return the decision to the carrier",
+      summary: "Dispatch support can organize facts and conflicts, but the carrier controls safety, operating cost judgment and final acceptance.",
+      actions: [
+        "Summarize confirmed facts.",
+        "List unresolved questions and material assumptions.",
+        "Do not describe an opportunity as profitable, safe or approved without the relevant decision and evidence.",
+      ],
+    },
+  ],
+  approved_sources: [
+    { title: "Dispatch Service vs Self-Dispatch", path: "/logistics/resources/dispatch-service-vs-self-dispatch/" },
+  ],
+  scenario: "Synthetic opportunity: a carrier has an approved equipment profile and preferred operating area, but the opportunity summary is missing one access constraint and the learner does not know whether the current deadhead or timing works for the carrier.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 300,
+    prompt: "Produce a fact-assumption-question fit review for the synthetic opportunity.",
+    parts: [
+      "Confirmed facts — list only what is actually known about equipment, route and timing.",
+      "Assumptions — identify anything the learner is tempted to infer but cannot yet prove.",
+      "Questions — list the minimum questions needed to review equipment, route, access and timing fit.",
+      "Carrier decision — state which judgment stays with the carrier before any booking.",
+      "Recommendation wording — write one safe sentence that surfaces the opportunity without calling it profitable, guaranteed or approved.",
+    ],
+  },
+  rubric: [
+    { key: "equipment_facts", label: "Equipment facts", pass: "Equipment and capacity are based on the approved profile, not guessed." },
+    { key: "route_timing", label: "Route and timing", pass: "Deadhead, operating area, windows and access are treated as separate review inputs." },
+    { key: "fact_assumption", label: "Fact vs assumption", pass: "Unknowns are not presented as facts." },
+    { key: "useful_questions", label: "Useful questions", pass: "Questions are necessary and specific enough to resolve fit uncertainty." },
+    { key: "carrier_decision", label: "Carrier decision", pass: "Safety, operating judgment and final approval remain with the carrier." },
+    { key: "claim_safety", label: "Claim safety", pass: "No profitability, rate, utilization, safety or booking guarantee is introduced." },
+  ],
+  boundaries: [
+    "Use synthetic opportunity data only; do not submit a live load, rate, VIN, driver location or private route record.",
+    "This exercise is a review method, not dispatch authority or safety advice.",
+    "Human review is required before the assignment can count as accepted evidence.",
+  ],
+  next: {
+    lesson_id: "documents-setup",
+    label: "Continue to documents and setup",
+  },
+};
+
+const documentsSetup = {
+  program_slug: "us-logistics-operations",
+  lesson_id: "documents-setup",
+  version: "2026-08-24-v1",
+  title: "Documents and setup: verify, submit, record and refresh",
+  purpose: "Understand how a controlled carrier setup packet is prepared and maintained while keeping credentials, unnecessary personal data and unverified payment changes out of the workflow.",
+  objectives: [
+    "Recognize the main setup areas: business identity, tax information, authority, insurance, equipment, payment/factoring, communication ownership and document control.",
+    "Use a controlled core packet while reviewing each broker's requirements separately.",
+    "Follow a verify → request review → secure submission → status record → refresh cycle.",
+    "Identify information that should never appear in a setup packet, public URL, analytics event or ordinary learner fixture.",
+    "Keep carrier authorization and final responsibility explicit throughout document handling.",
+  ],
+  sections: [
+    {
+      title: "Build a verified core packet",
+      summary: "A consistent core packet reduces conflicting business names, expired certificates, incorrect payment instructions, unclear dispatch authority and unnecessary data exposure.",
+      actions: [
+        "Verify business identity and authorized signer role.",
+        "Confirm authority and insurance status through appropriate sources.",
+        "Keep equipment profile and operating restrictions current.",
+        "Document payment/factoring and communication ownership without trusting unexpected changes blindly.",
+      ],
+    },
+    {
+      title: "Adapt to the broker request",
+      summary: "One packet does not guarantee acceptance or satisfy every broker; review the stated requirements and share only what is required through an approved route.",
+      actions: [
+        "Compare the request with the controlled core packet.",
+        "Resolve missing, expired or uncertain items.",
+        "Use the broker's approved portal or controlled route for required documents.",
+        "Record what was sent, current status and the responsible owner.",
+      ],
+    },
+    {
+      title: "Protect sensitive information",
+      summary: "Setup work must not become a credential, identity or payment-data dump.",
+      actions: [
+        "Never include passwords, API keys, authentication or recovery codes.",
+        "Do not add identity documents or sensitive personal values unless a specific approved secure process requires them.",
+        "Independently verify unexpected banking or payment changes.",
+        "Keep load-specific rate confirmations and transport documents separate from a reusable core setup packet.",
+      ],
+    },
+  ],
+  approved_sources: [
+    { title: "Broker Setup Packet Checklist", path: "/logistics/resources/broker-setup-packet-checklist/" },
+  ],
+  scenario: "Synthetic case: a broker requests setup from a carrier whose core packet contains current business and authority information, but an insurance document needs refresh and an unexpected message proposes new payment instructions.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 350,
+    prompt: "Create a safe setup-review plan for the synthetic request.",
+    parts: [
+      "Packet areas — identify which of the eight core areas are relevant to the request.",
+      "Verify — state which facts or document versions must be checked before submission.",
+      "Secure submission — state what should be shared and through what kind of approved route.",
+      "Payment-change control — explain how the unexpected instruction should be handled before any change.",
+      "Status record — define what submission/status metadata may be recorded without exposing private documents.",
+      "Refresh rule — state what triggers replacement or re-verification later.",
+    ],
+  },
+  rubric: [
+    { key: "packet_scope", label: "Packet scope", pass: "Relevant setup areas are identified without assuming one universal broker packet." },
+    { key: "verification", label: "Verification", pass: "Identity, authority, insurance, equipment or payment uncertainty is resolved before representation." },
+    { key: "secure_submission", label: "Secure submission", pass: "Only required information is routed through an approved secure process." },
+    { key: "credential_boundary", label: "Credential boundary", pass: "Passwords, codes, recovery information and unnecessary identity data are excluded." },
+    { key: "payment_control", label: "Payment control", pass: "Unexpected payment changes require independent verification." },
+    { key: "status_refresh", label: "Status and refresh", pass: "The learner records non-sensitive status metadata and defines a refresh trigger." },
+    { key: "approval_boundary", label: "Approval boundary", pass: "A complete packet is not described as guaranteed broker approval." },
+  ],
+  boundaries: [
+    "Use synthetic documents and statuses only; do not paste a real W-9, insurance certificate, bank instruction, identity document, rate confirmation or broker credential.",
+    "This lesson is operational education, not legal, tax, insurance, banking, safety, regulatory or accounting advice.",
+    "Passing the rubric does not authorize a learner to submit documents or change carrier payment information.",
+  ],
+  next: {
     lesson_id: "negotiation-practice",
     label: "Continue to negotiation practice",
   },
@@ -111,6 +350,83 @@ const negotiationPractice = {
     "Use the synthetic scenario only; do not paste a real call, contact, rate, route, contract or customer/carrier record.",
     "All six rubric items require human review. Revision may be submitted again through the existing Evidence workspace.",
     "Passing this exercise means only that the response met the learning rubric.",
+  ],
+  next: {
+    lesson_id: "operating-rhythm",
+    label: "Continue to operating rhythm",
+  },
+};
+
+const operatingRhythm = {
+  program_slug: "us-logistics-operations",
+  lesson_id: "operating-rhythm",
+  version: "2026-08-24-v1",
+  title: "Operating rhythm: plan, act, evidence, review, correct",
+  purpose: "Turn day-to-day logistics work into a repeatable control loop with priorities, status updates, handoffs, evidence and correction instead of relying on memory or activity volume alone.",
+  objectives: [
+    "Define a small set of priorities before work begins.",
+    "Record status and evidence in a way another authorized teammate or reviewer can understand.",
+    "Use handoffs with owner, context, current state and next action.",
+    "Interpret activity metrics as signals rather than guarantees of quality or business outcomes.",
+    "Close the loop by reviewing errors, unresolved items and the next improvement target.",
+  ],
+  sections: [
+    {
+      title: "Plan the work around priorities",
+      summary: "A useful plan identifies the most important work, prerequisites and fallback tasks instead of filling a schedule with arbitrary activity counts.",
+      actions: [
+        "Name the top operating priorities and why they matter.",
+        "Identify information or approvals required before each priority can advance.",
+        "Keep a fallback task for blocked work without hiding the blocker.",
+      ],
+    },
+    {
+      title: "Make status and handoffs reviewable",
+      summary: "A teammate should be able to understand what happened, what remains unresolved and who owns the next action without reconstructing the whole day from messages.",
+      actions: [
+        "Record current state and material evidence.",
+        "Name the responsible role for the next action.",
+        "Preserve relevant context without copying unnecessary private data.",
+        "Escalate blockers that require a carrier, supervisor or other authorized human decision.",
+      ],
+    },
+    {
+      title: "Review and correct",
+      summary: "The end of the loop is not a report of activity; it is a decision about what to repeat, change, verify or stop next.",
+      actions: [
+        "Compare intended work with completed and blocked work.",
+        "Separate quantity signals from quality and outcome evidence.",
+        "Identify one recurring error or friction point.",
+        "Define one bounded correction and the evidence that will show whether it helped.",
+      ],
+    },
+  ],
+  scenario: "Synthetic workday: several logistics tasks are planned, one opportunity becomes blocked by missing carrier approval, a setup item needs refreshed information, and a follow-up requires another authorized role. The learner must produce a plan and end-of-cycle review without using real operational records.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 350,
+    prompt: "Create a synthetic operating plan and end-of-cycle review using the same control loop.",
+    parts: [
+      "Priorities — choose three tasks and identify the prerequisite or decision owner for each.",
+      "Status format — show how completed, blocked and waiting states will be recorded.",
+      "Handoff — write one role-based handoff with context, current state and next action.",
+      "Evidence — name what can demonstrate that work occurred without exposing private records.",
+      "Review — identify one friction point and one correction for the next cycle.",
+      "Metric boundary — explain why activity volume alone does not prove quality, acceptance or business outcome.",
+    ],
+  },
+  rubric: [
+    { key: "priority_clarity", label: "Priority clarity", pass: "Tasks are ordered by a defensible operating reason rather than arbitrary activity volume." },
+    { key: "state_visibility", label: "State visibility", pass: "Completed, blocked and waiting work can be distinguished." },
+    { key: "handoff_quality", label: "Handoff quality", pass: "Responsible role, context, current state and next action are clear." },
+    { key: "evidence_boundary", label: "Evidence boundary", pass: "Useful evidence is named without exposing live carrier, shipment or customer data." },
+    { key: "correction_loop", label: "Correction loop", pass: "One friction point leads to a specific next-cycle correction." },
+    { key: "metric_interpretation", label: "Metric interpretation", pass: "Activity counts are treated as signals, not proof of quality, revenue or progression." },
+  ],
+  boundaries: [
+    "Use synthetic tasks and role names only; do not paste a real load board, CRM record, private message, customer/carrier identity or live KPI report.",
+    "Historical schedules and activity quotas are reference material, not universal current Academy requirements.",
+    "Completing this lesson does not create operational access, employment, promotion or permission to direct live logistics work.",
   ],
 };
 
@@ -588,8 +904,12 @@ const analyticsImprovement = {
 
 export const ACADEMY_LESSON_CONTENT = {
   "us-logistics-operations": {
+    "dispatch-foundations": dispatchFoundations,
     "carrier-broker-communication": logisticsConversation,
+    "equipment-lane-logic": equipmentLaneLogic,
+    "documents-setup": documentsSetup,
     "negotiation-practice": negotiationPractice,
+    "operating-rhythm": operatingRhythm,
   },
   marketing: {
     "positioning-offer": positioningOffer,
