@@ -142,6 +142,10 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
   const accessNote = document.querySelector<HTMLElement>("[data-submission-access-note]");
   const submissionList = document.querySelector<HTMLElement>("[data-submission-list]");
   const submissionEmpty = document.querySelector<HTMLElement>("[data-submission-empty]");
+  const requested = new URLSearchParams(window.location.search);
+  const requestedProgram = requested.get("program") || "";
+  const requestedLesson = requested.get("lesson") || "";
+  const requestedType = requested.get("type") || "";
 
   const programNames: Record<string, string> = {
     "us-logistics-operations": "U.S. Logistics Operations",
@@ -184,6 +188,25 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
     linkField?.classList.toggle("academy-app-hidden", !linkMode);
     if (textInput) textInput.required = !linkMode;
     if (urlInput) urlInput.required = Boolean(linkMode);
+  }
+
+  function applyRequestedContext(enrolledPrograms: Set<string>) {
+    if (!programSelect || !lessonSelect || !typeSelect) return false;
+    if (!requestedProgram || !enrolledPrograms.has(requestedProgram)) return false;
+
+    const programOption = [...programSelect.options].find((option) => option.value === requestedProgram && !option.disabled);
+    if (!programOption) return false;
+    programSelect.value = requestedProgram;
+    syncLessonOptions();
+
+    const lessonOption = [...lessonSelect.options].find((option) =>
+      option.value === requestedLesson && option.dataset.program === requestedProgram && !option.disabled && !option.hidden
+    );
+    if (requestedLesson && lessonOption) lessonSelect.value = requestedLesson;
+
+    if (["written_reflection", "evidence_link"].includes(requestedType)) typeSelect.value = requestedType;
+    syncSubmissionType();
+    return Boolean(requestedLesson && lessonOption);
   }
 
   function stateClass(state: string) {
@@ -267,7 +290,7 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
       if (!profileResponse.ok || !profileData.success) throw new Error(profileData.error || "Could not load Academy enrollment state");
       if (!submissionsResponse.ok || !submissionsData.success) throw new Error(submissionsData.error || "Could not load submissions");
 
-      const enrolledPrograms = new Set((profileData.enrollments as Enrollment[] || []).filter((item) => item.state === "enrolled").map((item) => item.program_slug));
+      const enrolledPrograms = new Set<string>((profileData.enrollments as Enrollment[] || []).filter((item) => item.state === "enrolled").map((item) => item.program_slug));
       if (programSelect) {
         [...programSelect.options].forEach((option) => {
           if (!option.value) return;
@@ -282,6 +305,11 @@ const courses = Object.values(academySubsitePages).filter((page) => page.schemaT
         : "No enrolled program is available yet. Existing submission history remains visible, but new evidence is locked.";
       syncLessonOptions();
       syncSubmissionType();
+      const preselected = applyRequestedContext(enrolledPrograms);
+      if (preselected) {
+        const lessonName = lessonNames.get(`${requestedProgram}:${requestedLesson}`) || requestedLesson;
+        showAlert(`Assignment selected: ${lessonName}. Complete the evidence below and submit it for human review.`, "success");
+      }
       renderSubmissions(Array.isArray(submissionsData.submissions) ? submissionsData.submissions as Submission[] : []);
     } catch (error) {
       showAlert(error instanceof Error ? error.message : "Could not load evidence submissions");
