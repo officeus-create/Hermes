@@ -8,15 +8,21 @@ import {
 
 const conversation = getAcademyLessonContent("us-logistics-operations", "carrier-broker-communication");
 const practice = getAcademyLessonContent("us-logistics-operations", "negotiation-practice");
+const marketing = getAcademyLessonContent("marketing", "website-first-content");
 assert.ok(conversation);
 assert.ok(practice);
+assert.ok(marketing);
 assert.equal(hasAcademyLessonContent("us-logistics-operations", "carrier-broker-communication"), true);
 assert.equal(hasAcademyLessonContent("us-logistics-operations", "dispatch-foundations"), false);
-assert.equal(hasAcademyLessonContent("marketing", "website-first-content"), false);
+assert.equal(hasAcademyLessonContent("marketing", "website-first-content"), true);
+assert.equal(hasAcademyLessonContent("marketing", "platform-distribution"), false);
 assert.equal(practice.assignment?.submission_type, "written_reflection");
 assert.equal(practice.assignment?.max_words, 120);
 assert.equal(practice.rubric?.length, 6);
-assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT), ["us-logistics-operations"]);
+assert.equal(marketing.assignment?.submission_type, "written_reflection");
+assert.equal(marketing.approved_sources?.length, 5);
+assert.equal(marketing.rubric?.length, 10);
+assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT), ["us-logistics-operations", "marketing"]);
 
 const root = new URL("../", import.meta.url);
 const [contentSource, api, lessonPage, programPage, submissionsPage] = await Promise.all([
@@ -31,6 +37,9 @@ assert.doesNotMatch(contentSource, /\$\d|salary|commission|guaranteed income|gua
 assert.doesNotMatch(contentSource, /@[A-Za-z0-9.-]+\.[A-Za-z]{2,}|\+?1[ .()-]*\d{3}[ .()-]*\d{3}[ .-]*\d{4}/);
 assert.match(contentSource, /synthetic/i);
 assert.match(contentSource, /human review/i);
+assert.match(contentSource, /website-first-content/);
+assert.match(contentSource, /Exactly five records/);
+assert.match(contentSource, /UTM safety/);
 
 assert.match(api, /getAuthenticatedSpecialist/);
 assert.match(api, /getAcademyEnrollment/);
@@ -44,12 +53,15 @@ assert.match(lessonPage, /robots="noindex,nofollow"/);
 assert.match(lessonPage, /\/api\/academy\/lesson/);
 assert.match(lessonPage, /credentials: "same-origin"/);
 assert.match(lessonPage, /\/academy\/submissions\/\?\$\{query\.toString\(\)\}/);
+assert.match(lessonPage, /data-source-panel/);
+assert.match(lessonPage, /renderSources/);
 assert.doesNotMatch(lessonPage, /innerHTML|outerHTML|insertAdjacentHTML/);
 assert.match(lessonPage, /employment, certification, income, client access/i);
 
 assert.match(programPage, /data-full-lesson-link/);
 assert.match(programPage, /carrier-broker-communication/);
 assert.match(programPage, /negotiation-practice/);
+assert.match(programPage, /marketing:website-first-content/);
 assert.match(programPage, /Full lesson content requires an existing Enrolled state/);
 
 assert.match(submissionsPage, /requestedProgram/);
