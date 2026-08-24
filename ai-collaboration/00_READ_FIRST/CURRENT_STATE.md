@@ -73,16 +73,20 @@ Current priority is to strengthen discoverability, relevant internal support, me
 
 The bridge remains document/GitHub based rather than a live credential-sharing AI-to-AI bus.
 
-Routing principle for SEO:
+**2026-08-23 governance override:** DEC-007, DEC-008 and DEC-009 supersede the older fixed identity-to-role routing below. The current model is One Brain + Hermes Operating Stack (HOS) + Hermes Universal Evidence Gate (HUEG): route each slice by required skill and verified capability, assign one primary writer and an independent reviewer when required, and continue safe reversible work when another agent is unavailable.
 
-- ChatGPT — strategy, commercial intent, prioritization, orchestration and contradiction resolution;
-- Codex — repository implementation, tests, technical verification and authenticated measurement coordination when its environment has the required access;
-- Antigravity — crawl/UI/browser verification and bounded draft metadata or visual inspection;
-- Claude — independent SEO/QA review, challenge and evidence-gap analysis;
-- Gemini — read-only Google/search evidence when authenticated Google access is available;
-- human owner — final authority for destructive account changes, ownership, billing, secret rotation and decisions not already delegated.
+Current durable routing principles:
 
-The collaboration protocol now requires an evidence receipt, explicit task owner, source of truth, write scope and handoff target. A passing bridge/self-test is not enough if the transported context is stale.
+- ChatGPT — orchestration/synthesis and any connected-source execution or verification that the active surface can physically perform; not a substitute for unavailable local-shell/browser evidence.
+- Codex and Claude — peer execution agents with equal baseline governance authority; either may implement or review within a bounded assigned slice, subject to actual tool access and one-writer rules.
+- Antigravity — browser/local verification, research and other explicitly assigned capabilities; it may not be treated as a second source of truth or parallel writer.
+- Gemini — peer agent for Workspace/research/evidence governance or other capabilities its current surface actually verifies; no GitHub/local-shell/browser capability is assumed merely from model identity.
+- future agents — routed by verified capability and task scope, not vendor prestige or historical role labels.
+- human owner — final authority at the applicable security/access, destructive, billing/payment, legal/contract, irreversible production/data/domain, material commercial/hiring/business-policy boundary.
+
+The execution protocol is defined in `HERMES_OPERATING_STACK.md`. Core rule: `NO_EVIDENCE_NO_PROMOTION`. A merge, deployment, HTTP 200, green stale-head CI, or AI-generated JSON does not automatically prove the promoted business/production claim.
+
+The collaboration protocol requires an evidence receipt, explicit task owner, source of truth, write scope and handoff target. A passing bridge/self-test is not enough if the transported context is stale.
 
 ## External evidence still required
 
@@ -107,7 +111,7 @@ Final legal execution remains gated by the approved master agreement/version/has
 4. Resolve GA4 ownership/access and verify controlled event receipt exactly once before adding any parallel analytics runtime.
 5. Capture Bing performance when its current processing completes; do not create a replacement Bing site/account to make a checklist green.
 6. Improve external entity consistency and authority through legitimate owned/claimable profiles and editorially justified references; do not manufacture backlinks.
-7. Keep all agent handoffs scoped, evidence-labelled and free of credentials/private operational data.
+7. Route every task through HOS/HUEG with one current writer, claim-matching evidence and bounded takeover when an executor is unavailable.
 
 ## Operating rule
 
