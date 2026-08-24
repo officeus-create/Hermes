@@ -62,6 +62,47 @@ const marketingLesson = {
   boundaries: ["Use only approved public destinations and synthetic planning context.", "Human review remains required."],
 };
 
+const distributionLesson = {
+  program_slug: "marketing",
+  lesson_id: "platform-distribution",
+  version: "2026-08-24-v1",
+  title: "Platform distribution: adapt one source without duplicate cross-posting",
+  purpose: "Turn one approved canonical asset into platform-specific distribution concepts while preserving human approval.",
+  objectives: ["Give each platform a distinct job", "Preserve the canonical source", "Keep publication human-controlled"],
+  sections: [
+    { title: "Give each platform a different job", summary: "Adapt the presentation instead of copying one post.", actions: ["Facebook adds context.", "Threads starts with an observation.", "Instagram starts with the visual idea."] },
+    { title: "Review before external action", summary: "Generated learner drafts never authorize publication.", actions: ["Check source, claims, privacy and ownership."] },
+  ],
+  scenario: "Synthetic approved public guide with no social account credentials or publishing permission.",
+  assignment: {
+    submission_type: "written_reflection",
+    max_words: 450,
+    prompt: "Create four meaningfully different distribution variants for one approved public asset.",
+    parts: ["Facebook variant", "Threads variant", "Instagram variant", "One additional channel", "Human-review blocker"],
+  },
+  rubric: [
+    { key: "canonical_source", label: "Canonical source", pass: "All variants preserve one approved public owner." },
+    { key: "platform_roles", label: "Platform roles", pass: "Each platform has a distinct role." },
+    { key: "meaningful_adaptation", label: "Meaningful adaptation", pass: "Variants differ in substance." },
+    { key: "destination_accuracy", label: "Destination accuracy", pass: "CTA and destination reflect realistic platform behavior." },
+    { key: "tracking_privacy", label: "Tracking privacy", pass: "No PII or private operational data." },
+    { key: "claim_safety", label: "Claim safety", pass: "No invented outcomes." },
+    { key: "duplicate_control", label: "Duplicate control", pass: "Thin duplicates are identified." },
+    { key: "human_gate", label: "Human approval gate", pass: "External action remains human-controlled." },
+  ],
+  boundaries: ["Synthetic drafts only.", "Human review remains required."],
+  next: { lesson_id: "lead-journey", label: "Continue to lead journey" },
+};
+
+const marketingLessonIds = [
+  "positioning-offer",
+  "website-first-content",
+  "platform-distribution",
+  "lead-journey",
+  "sales-follow-up",
+  "analytics-improvement",
+];
+
 for (const viewport of [
   { name: "desktop", width: 1440, height: 1000 },
   { name: "mobile-390", width: 390, height: 844 },
@@ -138,7 +179,77 @@ for (const viewport of [
     const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
     expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
   });
+
+  test(`enrolled learner can continue from Marketing distribution to lead journey on ${viewport.name}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    let lessonRequests = 0;
+
+    await page.route("**/api/academy/lesson*", async (route) => {
+      lessonRequests += 1;
+      const url = new URL(route.request().url());
+      expect(url.searchParams.get("program")).toBe("marketing");
+      expect(url.searchParams.get("lesson")).toBe("platform-distribution");
+      await route.fulfill(ok({
+        success: true,
+        enrollment: { program_slug: "marketing", state: "enrolled" },
+        lesson: distributionLesson,
+      }));
+    });
+
+    await page.goto(
+      "/services/hermes-connect/academy/lesson/?program=marketing&lesson=platform-distribution",
+      { waitUntil: "domcontentloaded" },
+    );
+
+    await expect(page.getByRole("heading", { name: distributionLesson.title })).toBeVisible();
+    await expect(page.getByText(distributionLesson.assignment.prompt)).toBeVisible();
+    await expect(page.locator("[data-rubric-list] .academy-review-card")).toHaveCount(8);
+    await expect(page.getByRole("link", { name: "Continue to lead journey" })).toHaveAttribute(
+      "href",
+      "/services/hermes-connect/academy/lesson/?program=marketing&lesson=lead-journey",
+    );
+    await expect(page.getByRole("link", { name: "Submit this assignment" })).toHaveAttribute(
+      "href",
+      /\/services\/hermes-connect\/academy\/submissions\/\?program=marketing&lesson=platform-distribution&type=written_reflection$/,
+    );
+    expect(lessonRequests).toBe(1);
+
+    const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
+    expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+  });
 }
+
+test("enrolled Marketing program exposes all six canonical full lessons on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/api/academy/progress*", async (route) => {
+    const url = new URL(route.request().url());
+    expect(url.searchParams.get("program")).toBe("marketing");
+    await route.fulfill(ok({
+      success: true,
+      enrollment: { program_slug: "marketing", state: "enrolled" },
+      progress: [
+        { lesson_id: "positioning-offer", state: "completed" },
+        { lesson_id: "website-first-content", state: "in_progress" },
+      ],
+    }));
+  });
+
+  await page.goto("/services/hermes-connect/academy/program/marketing/", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator("[data-enrollment-status]")).toHaveText("Enrollment · enrolled");
+  const fullLessonLinks = page.locator("[data-full-lesson-link]");
+  await expect(fullLessonLinks).toHaveCount(6);
+  const hrefs = await fullLessonLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(hrefs).toEqual(marketingLessonIds.map((lessonId) => `/services/hermes-connect/academy/lesson/?program=marketing&lesson=${lessonId}`));
+  await expect(page.locator("[data-progress-action]")).toHaveCount(6);
+  for (const button of await page.locator("[data-progress-action]").all()) {
+    await expect(button).toBeEnabled();
+  }
+  await expect(page.locator("[data-progress-count]")).toHaveText("1");
+
+  const widths = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
+  expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+});
 
 test("lesson shell does not reveal content when enrollment is not active", async ({ page }) => {
   await page.route("**/api/academy/lesson*", (route) => route.fulfill(ok({
