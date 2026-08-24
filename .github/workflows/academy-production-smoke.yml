@@ -1,0 +1,66 @@
+name: Academy read-only production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - functions/api/academy/**
+      - src/pages/services/hermes-connect/academy/**
+      - scripts/academy-production-smoke.sh
+      - .github/workflows/academy-production-smoke.yml
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  checks: read
+  issues: write
+
+jobs:
+  smoke:
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.number == 644 &&
+       github.event.comment.body == '/verify-academy-production' &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    name: Verify Academy production routes and private boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Wait for exact Cloudflare Pages deploy and run read-only Academy smoke
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/academy-production-smoke.sh
+
+      - name: Publish sanitized command result
+        if: always() && github.event_name == 'issue_comment'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          {
+            echo "## Academy production smoke — command result"
+            echo
+            echo "- Checked main commit: \`${GITHUB_SHA}\`"
+            echo "- Workflow run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Job status: **${JOB_STATUS}**"
+            if [ "${JOB_STATUS}" = "success" ]; then
+              echo "- ✅ Private Academy entry/auth/dashboard/program/submission/progression/support/reviewer routes returned the expected production markers and noindex boundary."
+              echo "- ✅ U.S. Logistics Operations exposes 6 full-lesson links; Marketing exposes 6 full-lesson links."
+              echo "- ✅ Unauthenticated learner/reviewer/support APIs rejected access with 401 \`not_authenticated\`."
+              echo "- ✅ Production writes performed by this verifier: **0**."
+            else
+              echo "- ❌ Academy read-only production smoke did not pass. Do not promote the route-specific production evidence until the failing run is repaired and rerun."
+            fi
+            echo
+            echo "> Read-only verifier only. It creates no learner/reviewer identity, D1 row, submission, support item, progression decision, payment state or commercial entitlement."
+          } > "${RUNNER_TEMP}/academy-production-smoke-comment.md"
+          gh issue comment 644 --repo "${GITHUB_REPOSITORY}" --body-file "${RUNNER_TEMP}/academy-production-smoke-comment.md"
