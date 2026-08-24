@@ -108,3 +108,4 @@ await import('./academy-a2-contract.test.mjs');
 await import('./academy-a3-contract.test.mjs');
 await import('./academy-a4-contract.test.mjs');
 await import('./academy-support-contract.test.mjs');
+await import('./academy-content-contract.test.mjs');
