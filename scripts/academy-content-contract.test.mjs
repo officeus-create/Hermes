@@ -19,11 +19,12 @@ assert.equal(practice.rubric?.length, 6);
 assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT), ["us-logistics-operations"]);
 
 const root = new URL("../", import.meta.url);
-const [contentSource, api, lessonPage, programPage] = await Promise.all([
+const [contentSource, api, lessonPage, programPage, submissionsPage] = await Promise.all([
   readFile(new URL("functions/api/_lib/academy-content.mjs", root), "utf8"),
   readFile(new URL("functions/api/academy/lesson.ts", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/lesson/index.astro", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/academy/program/[program].astro", root), "utf8"),
+  readFile(new URL("src/pages/services/hermes-connect/academy/submissions/index.astro", root), "utf8"),
 ]);
 
 assert.doesNotMatch(contentSource, /\$\d|salary|commission|guaranteed income|guaranteed employment/i);
@@ -50,5 +51,13 @@ assert.match(programPage, /data-full-lesson-link/);
 assert.match(programPage, /carrier-broker-communication/);
 assert.match(programPage, /negotiation-practice/);
 assert.match(programPage, /Full lesson content requires an existing Enrolled state/);
+
+assert.match(submissionsPage, /requestedProgram/);
+assert.match(submissionsPage, /requestedLesson/);
+assert.match(submissionsPage, /requestedType/);
+assert.match(submissionsPage, /enrolledPrograms\.has\(requestedProgram\)/);
+assert.match(submissionsPage, /option\.dataset\.program === requestedProgram/);
+assert.match(submissionsPage, /\["written_reflection", "evidence_link"\]\.includes\(requestedType\)/);
+assert.doesNotMatch(submissionsPage, /requested.*(?:learner|specialist|email)/i);
 
 console.log("Academy enrolled lesson content contract passed.");
