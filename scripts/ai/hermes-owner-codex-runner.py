@@ -87,6 +87,40 @@ def current_pr_url() -> str:
         return ""
 
 
+def tracked_worktree_changes() -> str:
+    """Return tracked changes only; known local untracked tool state must not be destroyed."""
+    return git("status", "--porcelain", "--untracked-files=no")
+
+
+def repo_execution_preflight() -> str | None:
+    """Require a clean tracked canonical starting point before accepting remote execution."""
+    branch = git("branch", "--show-current")
+    if branch != "main":
+        return f"Local runner requires the canonical main branch before starting a browser task; current branch is {branch or 'unknown'}."
+    if tracked_worktree_changes():
+        return "Local runner requires a clean tracked working tree before starting a browser task. Untracked files are left untouched."
+    return None
+
+
+def restore_main_if_safe() -> None:
+    """Return to main after a task only when the task left no tracked work in progress."""
+    if tracked_worktree_changes():
+        print("[hermes-owner-runner] tracked task changes remain; leaving checkout untouched for review", file=sys.stderr)
+        return
+    if git("branch", "--show-current") == "main":
+        return
+    try:
+        subprocess.run(
+            ["git", "-C", str(REPO), "switch", "main"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=30,
+        )
+    except Exception:
+        print("[hermes-owner-runner] unable to restore main automatically; next task will fail closed until reconciled", file=sys.stderr)
+
+
 def request_json(path: str, *, method: str = "GET", payload: dict[str, Any] | None = None) -> dict[str, Any]:
     url = f"{API_BASE}{path}"
     data = None if payload is None else json.dumps(payload).encode("utf-8")
@@ -189,7 +223,12 @@ def execute_task(task: dict[str, Any]) -> None:
         complete(task_id, status="failed", output="Hermes Codex launcher is missing or not executable.", return_code=None)
         return
 
-    post_event(task_id, "runner_started", f"Runner accepted task on repo SHA {git('rev-parse', 'HEAD') or 'unknown'}.")
+    preflight_error = repo_execution_preflight()
+    if preflight_error:
+        complete(task_id, status="failed", output=preflight_error, return_code=None)
+        return
+
+    post_event(task_id, "runner_started", f"Runner accepted task on repo SHA {git('rev-parse', 'HEAD') or 'unknown'} from clean tracked main.")
     command = [str(CODEX_HERMES), "exec", prompt]
     env = os.environ.copy()
     process = subprocess.Popen(
@@ -278,6 +317,7 @@ def execute_task(task: dict[str, Any]) -> None:
         # never leave the owned Codex child running detached in the background.
         terminate_owned_process(process)
         selector.close()
+        restore_main_if_safe()
 
 
 def main() -> None:
