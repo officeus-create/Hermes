@@ -806,3 +806,15 @@ entries — append only.
 - The existing font provenance test chain now enforces the media registry too,
   so unregistered assets and unreviewed byte changes fail CI.
 - No public image bytes, routes, copy, metadata, forms, analytics, or APIs changed.
+
+## 2026-08-25 — Codex — Corporate discovery and One Brain architecture audit
+
+- **Agent/task owner:** Codex; full corporate discovery and One Brain architecture audit.
+- **Branch:** `audit/corporate-one-brain-2026-08-25` from `origin/main` `ff20f033945dd8b026513c95a31a98c8ef1641e9`; no PR opened.
+- **Files added:** `docs/CORPORATE_SYSTEM_MAP.md`, `docs/HERMES_ONE_BRAIN_BLUEPRINT.md`, `docs/CORPORATE_INTEGRATION_MAP.md`, `docs/CORPORATE_ERROR_REGISTER.md`, `docs/CORPORATE_AUTOMATION_MATRIX.md`, `docs/AI_EMPLOYEE_FACTORY.md`, `docs/AI_WORKFORCE_24_7.md`, `docs/CORPORATE_CONSOLIDATION_PLAN.md`, `docs/CORPORATE_TOP_100_IMPROVEMENTS.md`, `docs/CORPORATE_DISCOVERY_REPORT_2026-08-25.md`, and the resumability checkpoint.
+- **Behavior delivered:** evidence-first corporation map, integration/duplication/consolidation plan, HOS/HUEG-compatible One Brain target, 24/7 control plane and ranked improvement backlog. No website, production, external system, credential, inbox, Drive, CRM, DNS, deployment or message changed.
+- **Evidence class:** `REPOSITORY_VERIFIED` + GitHub read-only metadata + public HTTP/title/canonical observations + local structure inventory. Gmail/Drive/private operational data, analytics, Cloudflare/D1 and CRM remain `BLOCKED_BY_ACCESS` or protected; no claim based on them was upgraded.
+- **Key risks:** documented P0 #566 dormant legacy bridge; project-state freshness conflict; multiple local source trees; GA4/private CRM reconciliation incomplete. Existing uncommitted work in other local checkouts was not modified.
+- **Ecosystem compounding:** Knowledge high; architecture/automation high; conversion/SEO/analytics implementation intentionally deferred pending authenticated evidence and owner gates; privacy preserved by never importing private content.
+- **Verification:** `git diff --check`, `npm run build`, and `npm test` PASS. Full `npm run test:e2e` is NOT green: `1033 passed / 10 failed / 11 skipped`, dominated by 30-second Connect/consent timeouts; sequential targeted rerun was `21 passed / 1 failed` at the mobile GA collection assertion. This documentation-only change did not modify that runtime. Treat E2E as an existing current-head verification blocker, not as a passing result.
+- **Recommended next task/owner:** (1) reproduce/triage the mobile GA/Connect E2E instability in a writer-owned QA slice; (2) owner/security operator clears #566 and grants least-privilege read-only Drive/Gmail/GSC/GA4/Bing/Cloudflare access; (3) review PR #865 before any One Brain control-surface implementation; then Knowledge Steward reconciles authoritative sources into the proposed registries.
