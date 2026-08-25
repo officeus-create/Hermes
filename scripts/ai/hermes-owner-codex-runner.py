@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 POLL_SECONDS = max(5, int(os.environ.get("HERMES_OWNER_CODEX_POLL_SECONDS", "10")))
+STATE_POLL_SECONDS = max(5, int(os.environ.get("HERMES_OWNER_CODEX_STATE_POLL_SECONDS", "10")))
 EVENT_FLUSH_SECONDS = 2.0
 MAX_EVENT_CHARS = 3500
 MAX_SUMMARY_CHARS = 18000
@@ -70,6 +71,20 @@ def codex_version() -> str:
         return subprocess.check_output(["codex", "--version"], text=True, stderr=subprocess.DEVNULL).strip()
     except Exception:
         return "unknown"
+
+
+def current_pr_url() -> str:
+    """Return the PR for the current branch when gh is authenticated; otherwise stay empty."""
+    try:
+        return subprocess.check_output(
+            ["gh", "pr", "view", "--json", "url", "--jq", ".url"],
+            cwd=REPO,
+            text=True,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        ).strip()
+    except Exception:
+        return ""
 
 
 def request_json(path: str, *, method: str = "GET", payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -135,13 +150,34 @@ def complete(task_id: str, *, status: str, output: str, return_code: int | None)
             "status": status,
             "repo_sha": repo_sha or None,
             "branch": branch or None,
-            "pr_url": None,
+            "pr_url": current_pr_url() or None,
             "model": MODEL or None,
             "fallback_route": FALLBACKS or None,
             "evidence_class": "LOCAL_RUNNER_EXECUTION",
             "output_summary": summary,
         },
     )
+
+
+def terminate_owned_process(process: subprocess.Popen[str]) -> None:
+    """Terminate only the Codex process group created by this runner."""
+    if process.poll() is not None:
+        return
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+    try:
+        process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            pass
 
 
 def execute_task(task: dict[str, Any]) -> None:
@@ -175,7 +211,7 @@ def execute_task(task: dict[str, Any]) -> None:
     last_state_check = 0.0
     last_flush = time.monotonic()
     buffered: list[str] = []
-    all_output: list[str] = []
+    summary_tail = ""
     cancelled = False
 
     try:
@@ -183,28 +219,25 @@ def execute_task(task: dict[str, Any]) -> None:
             now = time.monotonic()
             if now - started > RUNNER_TIMEOUT_SECONDS:
                 post_event(task_id, "timeout", "Task exceeded the configured local runner timeout and was terminated.")
-                os.killpg(process.pid, signal.SIGTERM)
-                time.sleep(2)
-                if process.poll() is None:
-                    os.killpg(process.pid, signal.SIGKILL)
+                terminate_owned_process(process)
                 break
 
-            if now - last_state_check >= 2.0:
+            if now - last_state_check >= STATE_POLL_SECONDS:
                 last_state_check = now
                 try:
                     state = task_state(task_id)
                     if state and state.get("cancel_requested"):
                         cancelled = True
                         post_event(task_id, "cancel_requested", "Owner requested cancellation; terminating only the owned Codex process group.")
-                        os.killpg(process.pid, signal.SIGTERM)
+                        terminate_owned_process(process)
                         break
                 except Exception as exc:
-                    print(f"[hermes-owner-runner] cancel poll warning: {sanitize(str(exc), 300)}", file=sys.stderr)
+                    print(f"[hermes-owner-runner] cancel/heartbeat poll warning: {sanitize(str(exc), 300)}", file=sys.stderr)
 
             for key, _ in selector.select(timeout=0.5):
                 line = key.fileobj.readline()
                 if line:
-                    all_output.append(line)
+                    summary_tail = (summary_tail + line)[-MAX_SUMMARY_CHARS:]
                     buffered.append(line)
 
             if buffered and (time.monotonic() - last_flush >= EVENT_FLUSH_SECONDS or sum(map(len, buffered)) >= MAX_EVENT_CHARS):
@@ -220,7 +253,7 @@ def execute_task(task: dict[str, Any]) -> None:
         if process.stdout:
             remainder = process.stdout.read()
             if remainder:
-                all_output.append(remainder)
+                summary_tail = (summary_tail + remainder)[-MAX_SUMMARY_CHARS:]
                 buffered.append(remainder)
         if buffered:
             try:
@@ -231,17 +264,19 @@ def execute_task(task: dict[str, Any]) -> None:
         try:
             return_code = process.wait(timeout=5)
         except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            return_code = process.wait(timeout=5)
+            terminate_owned_process(process)
+            return_code = process.poll() if process.poll() is not None else -9
 
-        output = "".join(all_output)
         if cancelled:
-            complete(task_id, status="cancelled", output=output or "Cancelled by owner.", return_code=return_code)
+            complete(task_id, status="cancelled", output=summary_tail or "Cancelled by owner.", return_code=return_code)
         elif return_code == 0:
-            complete(task_id, status="completed", output=output, return_code=return_code)
+            complete(task_id, status="completed", output=summary_tail, return_code=return_code)
         else:
-            complete(task_id, status="failed", output=output, return_code=return_code)
+            complete(task_id, status="failed", output=summary_tail, return_code=return_code)
     finally:
+        # KeyboardInterrupt, terminal closure or an unexpected runner exception must
+        # never leave the owned Codex child running detached in the background.
+        terminate_owned_process(process)
         selector.close()
 
 
