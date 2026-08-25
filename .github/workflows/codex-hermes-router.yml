@@ -1,0 +1,57 @@
+name: Codex Hermes router checks
+
+on:
+  pull_request:
+    paths:
+      - "scripts/ai/codex-hermes"
+      - "scripts/ai/codex-hermes-doctor"
+      - "scripts/ai/codex-hermes-server"
+      - "scripts/ai/setup-codex-hermes.sh"
+      - "docs/CODEX_HERMES_RUNTIME.md"
+      - ".github/workflows/codex-hermes-router.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/ai/codex-hermes"
+      - "scripts/ai/codex-hermes-doctor"
+      - "scripts/ai/codex-hermes-server"
+      - "scripts/ai/setup-codex-hermes.sh"
+      - "docs/CODEX_HERMES_RUNTIME.md"
+      - ".github/workflows/codex-hermes-router.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Validate shell syntax
+        run: |
+          bash -n scripts/ai/setup-codex-hermes.sh
+          bash -n scripts/ai/codex-hermes-server
+          bash -n scripts/ai/codex-hermes
+          bash -n scripts/ai/codex-hermes-doctor
+
+      - name: Validate executable bits
+        run: |
+          test -x scripts/ai/setup-codex-hermes.sh
+          test -x scripts/ai/codex-hermes-server
+          test -x scripts/ai/codex-hermes
+          test -x scripts/ai/codex-hermes-doctor
+
+      - name: Validate isolation and pinned upstream contract
+        run: |
+          grep -Fq 'CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"' scripts/ai/codex-hermes
+          grep -Fq 'exec "$FCC_CODEX" "$@"' scripts/ai/codex-hermes
+          grep -Fq '8b312c3a18279466732c3942d7e9246a75725d51' scripts/ai/setup-codex-hermes.sh
+          grep -Fq 'FCC_VERSION="5.14.5"' scripts/ai/setup-codex-hermes.sh
+          if grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,})' \
+            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/setup-codex-hermes.sh; then
+            echo "Potential credential material detected in Hermes Codex router scripts" >&2
+            exit 1
+          fi

@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+set -u
+
+HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
+FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
+FCC_CODEX="$FCC_VENV/bin/fcc-codex"
+FCC_PYTHON="$FCC_VENV/bin/python"
+HERMES_CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
+EXPECTED_FCC_VERSION="5.14.5"
+status=0
+
+pass() { printf '[PASS] %s\n' "$*"; }
+warn() { printf '[WARN] %s\n' "$*"; }
+fail() { printf '[FAIL] %s\n' "$*"; status=1; }
+
+if command -v codex >/dev/null 2>&1; then
+  pass "Official codex remains available at $(command -v codex)"
+else
+  fail "Official codex is not on PATH"
+fi
+
+if [[ -x "$FCC_CODEX" && -x "$FCC_PYTHON" ]]; then
+  installed_version="$($FCC_PYTHON -c 'import importlib.metadata as m; print(m.version("free-claude-code"))' 2>/dev/null || true)"
+  if [[ "$installed_version" == "$EXPECTED_FCC_VERSION" ]]; then
+    pass "Hermes FCC runtime is pinned to $installed_version"
+  else
+    fail "Hermes FCC runtime version is '${installed_version:-unknown}', expected $EXPECTED_FCC_VERSION"
+  fi
+else
+  fail "Hermes FCC runtime is missing. Run ./scripts/ai/setup-codex-hermes.sh"
+fi
+
+if [[ "$HERMES_CODEX_HOME" != "$HOME/.codex" ]]; then
+  pass "Hermes Codex state is isolated at $HERMES_CODEX_HOME"
+else
+  fail "HERMES_CODEX_HOME points at the ordinary Codex home; choose a separate path"
+fi
+
+if [[ -f "$HOME/.fcc/.env" ]]; then
+  pass "FCC managed provider config exists at ~/.fcc/.env (values not inspected or printed)"
+else
+  warn "FCC provider config is not present yet. Start ./scripts/ai/codex-hermes-server and configure providers in the FCC Admin UI"
+fi
+
+if [[ -x "$FCC_CODEX" ]]; then
+  tmp="$(mktemp)"
+  CODEX_HOME="$HERMES_CODEX_HOME" "$FCC_CODEX" --version >"$tmp" 2>&1
+  rc=$?
+  if [[ $rc -eq 0 ]]; then
+    pass "FCC proxy + Codex launcher preflight succeeded: $(head -n 1 "$tmp")"
+  else
+    warn "FCC launcher preflight did not succeed. The FCC server is probably not running yet. Start ./scripts/ai/codex-hermes-server"
+  fi
+  rm -f "$tmp"
+fi
+
+if [[ -n "${HERMES_CODEX_MODEL:-}" ]]; then
+  pass "Per-run primary route override is set: $HERMES_CODEX_MODEL"
+else
+  warn "Primary model is owned by FCC managed Model Config"
+fi
+
+if [[ -n "${HERMES_CODEX_FALLBACKS:-}" ]]; then
+  pass "Per-run fallback override is configured with $(awk -F',' '{print NF}' <<<"$HERMES_CODEX_FALLBACKS") route(s)"
+else
+  warn "Fallback chain is owned by FCC managed Model Config; verify it in Admin before relying on automatic failover"
+fi
+
+printf '\nHUEG: local runtime/bootstrap checks above do not prove a provider request succeeds.\n'
+printf 'After providers are configured, run one bounded smoke request through ./scripts/ai/codex-hermes and record the model/fallback evidence.\n'
+
+exit "$status"
