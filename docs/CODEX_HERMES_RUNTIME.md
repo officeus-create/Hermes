@@ -63,7 +63,9 @@ cd ~/Hermes
 The setup requires:
 
 - the official `codex` command already installed;
-- `uv` available (`brew install uv` on the current macOS setup if it is missing).
+- `uv` available. If it is missing, use the [official standalone uv installer](https://docs.astral.sh/uv/getting-started/installation/), not Homebrew.
+
+On Intel macOS, the pinned FCC release may build a Python cryptography dependency from source because its Python 3.14 wheel is unavailable. The setup automatically uses an isolated OpenSSL installation at `~/.hermes-ai/deps/openssl` when present. It does not modify macOS OpenSSL. To supply a different already-reviewed isolated installation, set `HERMES_OPENSSL_DIR` for the setup run.
 
 The setup creates only:
 
@@ -73,6 +75,8 @@ The setup creates only:
 ```
 
 FCC itself stores its managed provider configuration under `~/.fcc`. Provider keys/tokens must stay there or in the provider's approved authentication flow. Never write them into this repository, GitHub issues, handoffs, screenshots, prompts, or committed `.env` files.
+
+The Hermes launcher also prepends only the isolated FCC virtual environment to its own process `PATH`. This lets Codex resolve FCC's local external-auth helper during a routed request; it does not replace the ordinary `codex` executable or change the system `PATH`.
 
 ## Start the router
 

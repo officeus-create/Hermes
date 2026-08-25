@@ -6,6 +6,7 @@ FCC_VERSION="5.14.5"
 HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
 FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 HERMES_CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
+HERMES_OPENSSL_DIR="${HERMES_OPENSSL_DIR:-$HERMES_AI_HOME/deps/openssl}"
 
 log() {
   printf '[codex-hermes setup] %s\n' "$*"
@@ -17,10 +18,23 @@ fail() {
 }
 
 command -v codex >/dev/null 2>&1 || fail "Official Codex CLI is not on PATH. Install it separately first; this setup intentionally does not replace or modify the official codex command."
-command -v uv >/dev/null 2>&1 || fail "uv is required for the isolated FCC environment. On macOS: brew install uv"
+command -v uv >/dev/null 2>&1 || fail "uv is required for the isolated FCC environment. Install it with the official standalone installer: https://docs.astral.sh/uv/getting-started/installation/"
 
 mkdir -p "$HERMES_AI_HOME" "$HERMES_CODEX_HOME"
 chmod 700 "$HERMES_AI_HOME" "$HERMES_CODEX_HOME" 2>/dev/null || true
+
+# The pinned FCC release requires Python 3.14. On Intel macOS, its cryptography
+# dependency may not have a compatible wheel and therefore builds from source.
+# Prefer an isolated OpenSSL dependency when it is present; do not alter system
+# OpenSSL or install a package manager.
+if [[ -z "${OPENSSL_DIR:-}" && -d "$HERMES_OPENSSL_DIR/include" && -d "$HERMES_OPENSSL_DIR/lib" ]]; then
+  export OPENSSL_DIR="$HERMES_OPENSSL_DIR"
+  export OPENSSL_INCLUDE_DIR="$HERMES_OPENSSL_DIR/include"
+  export OPENSSL_LIB_DIR="$HERMES_OPENSSL_DIR/lib"
+  export OPENSSL_STATIC=1
+  export PKG_CONFIG_PATH="$HERMES_OPENSSL_DIR/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+  log "Using isolated OpenSSL dependency at $HERMES_OPENSSL_DIR"
+fi
 
 if [[ ! -x "$FCC_VENV/bin/python" ]]; then
   log "Creating isolated FCC Python environment at $FCC_VENV"

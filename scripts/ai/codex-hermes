@@ -27,6 +27,11 @@ fi
 mkdir -p "$CODEX_HOME"
 chmod 700 "$CODEX_HOME" 2>/dev/null || true
 
+# FCC writes an external-auth command into the temporary Codex configuration.
+# Keep the isolated FCC executable on PATH so Codex can resolve that command
+# during an actual provider request, not just the launcher --version preflight.
+export PATH="$FCC_VENV/bin:$PATH"
+
 # Optional per-run route overrides. When unset, FCC's managed Model Config owns
 # the primary model and fallback chain. Values must use FCC provider/model refs.
 if [[ -n "${HERMES_CODEX_MODEL:-}" ]]; then
