@@ -26,8 +26,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   const message = sanitizeExecutionText(payload?.message, 4000);
   if (!taskId || !eventType || !message) return jsonResponse(400, { success: false, error: "invalid_event" });
 
-  const task = await env.DB.prepare(`SELECT id FROM owner_codex_tasks WHERE id = ?`).bind(taskId).first();
-  if (!task) return jsonResponse(404, { success: false, error: "task_not_found" });
+  const task = await env.DB.prepare(
+    `SELECT id FROM owner_codex_tasks WHERE id = ? AND status = 'running' AND runner_id = 'mac-owner-runner'`,
+  )
+    .bind(taskId)
+    .first();
+  if (!task) return jsonResponse(409, { success: false, error: "task_not_running_for_runner" });
 
   await env.DB.prepare(
     `INSERT INTO owner_codex_events (task_id, event_type, message, created_at) VALUES (?, ?, ?, ?)`,
