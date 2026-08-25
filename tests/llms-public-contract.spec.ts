@@ -34,13 +34,17 @@ test("llms.txt describes current public owners and evidence boundaries", async (
   expect(parsedVerificationDate.getTime()).toBeLessThanOrEqual(tomorrow.getTime());
 
   expect(body).toContain("> Canonical website: https://hermeslogisticsus.com/");
-  expect(body).toContain("- Sitemap index: https://hermeslogisticsus.com/sitemapindex.xml");
+  expect(body).toContain("- [Canonical Hermes website](https://hermeslogisticsus.com/)");
+  expect(body).toContain("- [Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)");
   expect(body).toContain("## Public business directions");
   expect(body).toContain("## Public evidence and resources");
   expect(body).toContain("## Interpretation boundaries");
   expect(body).toContain("A demo or preview is not proof that a feature or external integration is live for every customer.");
   expect(body).toContain("Delivery is considered confirmed only when the approved receiver reports success");
   expect(body).toContain("Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.");
+
+  const markdownLinks = body.match(/\[[^\]]+\]\(https:\/\/[^)]+\)/g) ?? [];
+  expect(markdownLinks.length).toBeGreaterThanOrEqual(20);
 
   for (const url of requiredPublicUrls) expect(body).toContain(url);
   for (const url of privateWorkspaceUrls) expect(body).not.toContain(url);
@@ -57,5 +61,5 @@ test("llms.txt describes current public owners and evidence boundaries", async (
 
   expect(body).not.toMatch(/@[a-z0-9.-]+\.[a-z]{2,}/i);
   expect(body).not.toMatch(/\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i);
-  expect(body).not.toMatch(/\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/);
+  expect(body).not.toMatch(/\+?1?[\s().-]*\d{3}[\s().-]*\d{4}/);
 });
