@@ -41,6 +41,14 @@ for (const required of [
   'categories?.["agentic-browsing"]',
   "Agentic Browsing all applicable audits pass",
   "failedAudits",
+  "largest-contentful-paint-element",
+  "lcp-breakdown-insight",
+  "lcp-lazy-loaded",
+  "prioritize-lcp-image",
+  "uses-responsive-images",
+  "uses-optimized-images",
+  "representative LCP diagnostic",
+  "Mobile LCP diagnostic",
 ]) {
   assert.ok(source.includes(required), `Lighthouse summarizer must preserve ${required}`);
 }
