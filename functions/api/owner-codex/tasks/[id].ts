@@ -18,6 +18,12 @@ type Context = {
   params: { id?: string };
 };
 
+function sameOriginMutation(request: Request) {
+  if (request.headers.get("Sec-Fetch-Site") === "cross-site") return false;
+  const origin = request.headers.get("Origin");
+  return !origin || origin === new URL(request.url).origin;
+}
+
 export async function onRequestGet({ request, env, params }: Context) {
   const owner = await requireHermesOwner(request, env);
   if (owner.response) return owner.response;
@@ -34,6 +40,7 @@ export async function onRequestGet({ request, env, params }: Context) {
 }
 
 export async function onRequestPatch({ request, env, params }: Context) {
+  if (!sameOriginMutation(request)) return jsonResponse(403, { success: false, error: "csrf_origin_mismatch" });
   const owner = await requireHermesOwner(request, env);
   if (owner.response) return owner.response;
   await ensureOwnerCodexSchema(env.DB);
