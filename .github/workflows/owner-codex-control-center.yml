@@ -36,4 +36,4 @@ jobs:
       - run: npm run build
       - run: node scripts/owner-codex-control-center-contract.test.mjs
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/owner-hermes-codex-control-center.spec.ts --project=chromium
+      - run: npx playwright test tests/owner-hermes-codex-control-center.spec.ts --project=desktop --project=mobile
