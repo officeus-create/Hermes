@@ -15,6 +15,12 @@ type Env = {
   HERMES_OWNER_EMAIL?: string;
 };
 
+function sameOriginMutation(request: Request) {
+  if (request.headers.get("Sec-Fetch-Site") === "cross-site") return false;
+  const origin = request.headers.get("Origin");
+  return !origin || origin === new URL(request.url).origin;
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const owner = await requireHermesOwner(request, env);
   if (owner.response) return owner.response;
@@ -30,6 +36,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
+  if (!sameOriginMutation(request)) return jsonResponse(403, { success: false, error: "csrf_origin_mismatch" });
   const owner = await requireHermesOwner(request, env);
   if (owner.response) return owner.response;
   await ensureOwnerCodexSchema(env.DB);
