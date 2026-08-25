@@ -138,6 +138,7 @@ export function publicTask(row) {
     task_type: row.task_type,
     prompt: row.prompt,
     status: row.status,
+    created_by: row.created_by,
     created_at: row.created_at,
     started_at: row.started_at,
     completed_at: row.completed_at,
