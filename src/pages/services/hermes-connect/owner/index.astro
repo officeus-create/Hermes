@@ -1,8 +1,8 @@
 ---
 import { Bot, BookOpen, ExternalLink, Play, RefreshCw, ShieldCheck, Square, Wrench } from "@lucide/astro";
-import BaseLayout from "../../../../../layouts/BaseLayout.astro";
-import SiteHeader from "../../../../../components/SiteHeader.astro";
-import SiteFooter from "../../../../../components/SiteFooter.astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
 ---
 
 <BaseLayout
@@ -17,48 +17,51 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
         <div>
           <p class="eyebrow">Hermes Connect · Private owner workspace</p>
           <h1>Owner Control Center</h1>
-          <p>One private place for Repair Shops, Academy, and Hermes Codex. The browser never receives provider credentials or a shell.</p>
+          <p>Repair Shops, Academy, and Hermes Codex in one private owner workspace. The browser never receives provider credentials or a remote shell.</p>
         </div>
         <span class="security-pill"><ShieldCheck size={16} /> Owner session required</span>
       </header>
 
       <nav class="owner-tabs" aria-label="Owner workspaces">
         <a class="owner-tab" href="/services/hermes-connect/repair-shops/dashboard/">
-          <Wrench size={20} /><span><strong>Repair Shops</strong><small>Bookings, customers, services</small></span>
+          <Wrench size={20} />
+          <span><strong>Repair Shops</strong><small>Bookings, customers, services</small></span>
         </a>
         <a class="owner-tab" href="/services/hermes-connect/academy/dashboard/">
-          <BookOpen size={20} /><span><strong>Academy</strong><small>Programs, learners, evidence</small></span>
+          <BookOpen size={20} />
+          <span><strong>Academy</strong><small>Programs, learners, evidence</small></span>
         </a>
         <a class="owner-tab active" href="/services/hermes-connect/owner/" aria-current="page">
-          <Bot size={20} /><span><strong>Hermes Codex</strong><small>Tasks, runtime, evidence</small></span>
+          <Bot size={20} />
+          <span><strong>Hermes Codex</strong><small>Tasks, runtime, evidence</small></span>
         </a>
       </nav>
 
       <section class="access-state" data-access-state role="status">
         <div class="spinner" aria-hidden="true"></div>
-        <div><strong>Checking owner access…</strong><p>Loading the private runtime contract.</p></div>
+        <div><strong data-access-title>Checking owner access…</strong><p data-access-copy>Loading the private runtime contract.</p></div>
       </section>
 
       <div class="owner-content hidden" data-owner-content>
         <section class="runtime-grid" aria-label="Hermes Codex runtime status">
-          <article class="runtime-card primary">
-            <div class="runtime-card-head"><span>Hermes Codex</span><span class="runtime-dot" data-runtime-dot></span></div>
-            <strong class="runtime-state" data-runtime-state>Not connected</strong>
+          <article class="runtime-card runtime-primary">
+            <div class="runtime-head"><span>Hermes Codex</span><span class="runtime-dot" data-runtime-dot></span></div>
+            <strong data-runtime-state>Not connected</strong>
             <p data-runtime-copy>The local Mac runner has not checked in yet.</p>
           </article>
-          <article class="runtime-card"><span>Primary model</span><strong data-runtime-model>—</strong><p>Provider/model name only. No credentials are exposed.</p></article>
-          <article class="runtime-card"><span>Fallback chain</span><strong data-runtime-fallbacks>—</strong><p>Ordered fallback route reported by the local runner.</p></article>
+          <article class="runtime-card"><span>Primary model</span><strong data-runtime-model>—</strong><p>Provider/model label only.</p></article>
+          <article class="runtime-card"><span>Fallback chain</span><strong data-runtime-fallbacks>—</strong><p>Ordered route reported by the runner.</p></article>
           <article class="runtime-card"><span>Repository</span><strong data-runtime-sha>—</strong><p data-runtime-version>Runtime version not reported.</p></article>
         </section>
 
         <section class="workspace-grid">
-          <article class="composer-card">
+          <article class="panel composer-card">
             <div class="section-heading">
               <div><p class="eyebrow">New task</p><h2>Tell Hermes Codex what to do</h2></div>
               <button class="icon-button" type="button" data-refresh title="Refresh"><RefreshCw size={18} /></button>
             </div>
 
-            <div class="quick-actions" data-quick-actions>
+            <div class="quick-actions">
               <button type="button" data-template="continue_wave_1">Continue Wave 1</button>
               <button type="button" data-template="current_priorities">Current priorities</button>
               <button type="button" data-template="hermes_connect_audit">Audit Hermes Connect</button>
@@ -69,7 +72,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 
             <label class="task-field" for="owner-task-prompt">
               <span>Task</span>
-              <textarea id="owner-task-prompt" data-task-prompt maxlength="12000" rows="8" placeholder="Example: Check current Hermes Connect tasks, choose the safest unfinished P0/P1 item, follow HOS/HUEG, and prepare a PR. Do not merge or deploy."></textarea>
+              <textarea id="owner-task-prompt" data-task-prompt maxlength="12000" rows="8" placeholder="Check current Hermes tasks, follow HOS/HUEG, and prepare the next safe result. Do not merge or deploy without the owner gate."></textarea>
             </label>
             <div class="composer-footer">
               <p>Custom text is passed as Codex task input, never as a shell command.</p>
@@ -78,8 +81,11 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
             <div class="inline-alert hidden" data-task-alert role="status"></div>
           </article>
 
-          <aside class="active-card">
-            <div class="section-heading"><div><p class="eyebrow">Active task</p><h2 data-active-title>No active task</h2></div><span class="task-status" data-active-status>Idle</span></div>
+          <aside class="panel active-card">
+            <div class="section-heading">
+              <div><p class="eyebrow">Active task</p><h2 data-active-title>No active task</h2></div>
+              <span class="task-status" data-active-status>Idle</span>
+            </div>
             <p class="active-prompt" data-active-prompt>The queue is ready for an owner-approved task.</p>
             <dl class="evidence-grid">
               <div><dt>Task ID</dt><dd data-active-id>—</dd></div>
@@ -94,19 +100,19 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
           </aside>
         </section>
 
-        <section class="output-card">
+        <section class="panel output-card">
           <div class="section-heading"><div><p class="eyebrow">Execution log</p><h2>Sanitized output</h2></div><span data-output-count>0 events</span></div>
           <div class="output-stream" data-output-stream><p class="muted">No execution events yet.</p></div>
         </section>
 
-        <section class="history-card">
+        <section class="panel history-card">
           <div class="section-heading"><div><p class="eyebrow">Recent activity</p><h2>Task history</h2></div><span>Last 30</span></div>
           <div class="history-list" data-history-list><p class="muted">No task history yet.</p></div>
         </section>
 
         <section class="gate-card">
           <ShieldCheck size={22} />
-          <div><strong>Owner gates stay in force.</strong><p>Merge, deploy, DNS, credentials, billing, destructive actions, and external messages still require their explicit approval boundary. This page does not expose a remote shell.</p></div>
+          <div><strong>Owner gates stay in force.</strong><p>Merge, deploy, DNS, credentials, billing, destructive actions, and external messages keep their explicit approval boundary.</p></div>
         </section>
       </div>
     </div>
@@ -116,42 +122,72 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 
 <script>
   type Task = {
-    id: string; task_type: string; prompt: string; status: string; created_at: string; started_at?: string | null;
-    completed_at?: string | null; updated_at: string; repo_sha?: string | null; branch?: string | null; pr_url?: string | null;
-    model?: string | null; fallback_route?: string | null; evidence_class?: string | null; output_summary?: string | null;
-    cancel_requested?: boolean;
+    id: string;
+    task_type: string;
+    prompt: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    repo_sha?: string | null;
+    branch?: string | null;
+    pr_url?: string | null;
+    evidence_class?: string | null;
   };
-  type Runtime = { online: boolean; last_seen_at?: string | null; repo_sha?: string | null; runtime_version?: string | null; model?: string | null; fallback_route?: string | null };
-  type Event = { id: number; event_type: string; message: string; created_at: string };
+  type Runtime = {
+    online: boolean;
+    last_seen_at?: string | null;
+    repo_sha?: string | null;
+    runtime_version?: string | null;
+    model?: string | null;
+    fallback_route?: string | null;
+  };
+  type ExecutionEvent = { id: number; event_type: string; message: string; created_at: string };
 
   const templates: Record<string, string> = {
-    continue_wave_1: "Open GitHub issue #863. Continue the next safe non-conflicting READY task in Hermes Routed Execution Wave 1. Run the sync handshake first, obey HOS/HUEG, do not duplicate an active writer, and do not merge/deploy without the owner gate.",
+    continue_wave_1: "Open GitHub issue #863. Continue the next safe non-conflicting READY task in Hermes Routed Execution Wave 1. Run the sync handshake first, obey HOS/HUEG, do not duplicate an active writer, and do not merge or deploy without the owner gate.",
     current_priorities: "Read AGENTS.md, docs/AI_START_HERE.md, ai-collaboration/00_READ_FIRST/CURRENT_STATE.md and current open PRs/issues. Return the 5 highest-value executable priorities with evidence and blockers. Do not modify files unless a clearly uncontested P0 defect is found.",
     hermes_connect_audit: "Audit current Hermes Connect on current main. Do not create new product surfaces. Find unfinished work already started, prioritize the safest P0/P1 item, implement only if ownership is uncontested, add tests, and prepare a PR. Do not merge or deploy.",
-    seo_geo_audit: "Continue current SEO/GEO measurement and authority work from current main. Respect observation freezes, canonical ownership, HUEG evidence classes, and existing SEO/GEO writers. Do not mass-generate pages or fabricate external measurements.",
+    seo_geo_audit: "Continue current SEO/GEO work from current main. Respect observation freezes, canonical ownership, HUEG evidence classes, and existing writers. Do not mass-generate pages or fabricate external measurements.",
     review_open_prs: "Review current open Hermes PRs for actionable blockers, stale-head risk, current-head CI, overlap, and owner gates. Do not merge. Return a prioritized review queue with exact PR/SHA evidence.",
     custom: "",
   };
 
   const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector);
-  const accessState = $<HTMLElement>("[data-access-state]");
   const ownerContent = $<HTMLElement>("[data-owner-content]");
+  const accessState = $<HTMLElement>("[data-access-state]");
   const promptBox = $<HTMLTextAreaElement>("[data-task-prompt]");
   const runButton = $<HTMLButtonElement>("[data-run]");
   const stopButton = $<HTMLButtonElement>("[data-stop]");
   const taskAlert = $<HTMLElement>("[data-task-alert]");
   let selectedType = "custom";
   let activeTask: Task | null = null;
-  let refreshTimer: number | null = null;
+  let refreshTimer: number | undefined;
 
-  function setText(selector: string, value: string) { const node = $(selector); if (node) node.textContent = value; }
-  function formatDate(value?: string | null) { if (!value) return "—"; const date = new Date(value); return Number.isNaN(date.getTime()) ? value : date.toLocaleString(); }
-  function shortSha(value?: string | null) { return value ? value.slice(0, 12) : "—"; }
-  function showAlert(message: string, kind: "error" | "success" = "error") { if (!taskAlert) return; taskAlert.textContent = message; taskAlert.className = `inline-alert ${kind}`; }
-  function clearAlert() { if (taskAlert) { taskAlert.textContent = ""; taskAlert.className = "inline-alert hidden"; } }
+  const setText = (selector: string, value: string) => { const node = $(selector); if (node) node.textContent = value; };
+  const shortSha = (value?: string | null) => value ? value.slice(0, 12) : "—";
+  const formatDate = (value?: string | null) => {
+    if (!value) return "—";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+  };
+
+  function showAlert(message: string, kind: "error" | "success" = "error") {
+    if (!taskAlert) return;
+    taskAlert.textContent = message;
+    taskAlert.className = `inline-alert ${kind}`;
+  }
+  function clearAlert() {
+    if (!taskAlert) return;
+    taskAlert.textContent = "";
+    taskAlert.className = "inline-alert hidden";
+  }
 
   async function api(path: string, init?: RequestInit) {
-    const response = await fetch(path, { credentials: "same-origin", headers: { "Content-Type": "application/json", ...(init?.headers || {}) }, ...init });
+    const response = await fetch(path, {
+      credentials: "same-origin",
+      ...init,
+      headers: { "Content-Type": "application/json", ...(init?.headers || {}) },
+    });
     let data: any = {};
     try { data = await response.json(); } catch { data = { success: false, error: "invalid_server_response" }; }
     return { response, data };
@@ -164,8 +200,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     setText("[data-runtime-fallbacks]", runtime.fallback_route || "—");
     setText("[data-runtime-sha]", shortSha(runtime.repo_sha));
     setText("[data-runtime-version]", runtime.runtime_version || "Runtime version not reported.");
-    const dot = $<HTMLElement>("[data-runtime-dot]");
-    dot?.classList.toggle("online", runtime.online);
+    $<HTMLElement>("[data-runtime-dot]")?.classList.toggle("online", runtime.online);
   }
 
   function renderActive(task: Task | null) {
@@ -178,7 +213,10 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     setText("[data-active-branch]", task?.branch || "—");
     setText("[data-active-evidence]", task?.evidence_class || "—");
     const prLink = $<HTMLAnchorElement>("[data-pr-link]");
-    if (prLink) { prLink.classList.toggle("hidden", !task?.pr_url); if (task?.pr_url) prLink.href = task.pr_url; }
+    if (prLink) {
+      prLink.classList.toggle("hidden", !task?.pr_url);
+      if (task?.pr_url) prLink.href = task.pr_url;
+    }
     stopButton?.classList.toggle("hidden", !task || !["queued", "running"].includes(task.status));
   }
 
@@ -186,57 +224,70 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     const list = $<HTMLElement>("[data-history-list]");
     if (!list) return;
     list.replaceChildren();
-    if (!tasks.length) { const p = document.createElement("p"); p.className = "muted"; p.textContent = "No task history yet."; list.append(p); return; }
+    if (!tasks.length) {
+      const empty = document.createElement("p"); empty.className = "muted"; empty.textContent = "No task history yet."; list.append(empty); return;
+    }
     for (const task of tasks) {
-      const item = document.createElement("button");
-      item.type = "button"; item.className = "history-item";
-      const head = document.createElement("span"); head.className = "history-head";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "history-item";
       const title = document.createElement("strong"); title.textContent = task.task_type.replaceAll("_", " ");
-      const status = document.createElement("em"); status.textContent = task.status;
-      head.append(title, status);
-      const meta = document.createElement("small"); meta.textContent = `${formatDate(task.created_at)} · ${shortSha(task.repo_sha)}`;
-      item.append(head, meta);
-      item.addEventListener("click", () => void loadTask(task.id));
-      list.append(item);
+      const meta = document.createElement("small"); meta.textContent = `${task.status} · ${formatDate(task.created_at)} · ${shortSha(task.repo_sha)}`;
+      button.append(title, meta);
+      button.addEventListener("click", () => void loadTask(task.id));
+      list.append(button);
     }
   }
 
-  function renderEvents(events: Event[]) {
+  function renderEvents(events: ExecutionEvent[]) {
     const stream = $<HTMLElement>("[data-output-stream]");
     if (!stream) return;
     stream.replaceChildren();
     setText("[data-output-count]", `${events.length} ${events.length === 1 ? "event" : "events"}`);
-    if (!events.length) { const p = document.createElement("p"); p.className = "muted"; p.textContent = "No execution events yet."; stream.append(p); return; }
+    if (!events.length) {
+      const empty = document.createElement("p"); empty.className = "muted"; empty.textContent = "No execution events yet."; stream.append(empty); return;
+    }
     for (const event of events) {
       const row = document.createElement("article"); row.className = "output-event";
-      const meta = document.createElement("div"); const type = document.createElement("strong"); type.textContent = event.event_type; const time = document.createElement("time"); time.textContent = formatDate(event.created_at); meta.append(type, time);
+      const meta = document.createElement("div");
+      const type = document.createElement("strong"); type.textContent = event.event_type;
+      const time = document.createElement("time"); time.textContent = formatDate(event.created_at);
+      meta.append(type, time);
       const pre = document.createElement("pre"); pre.textContent = event.message;
-      row.append(meta, pre); stream.append(row);
+      row.append(meta, pre);
+      stream.append(row);
     }
-    stream.scrollTop = stream.scrollHeight;
   }
 
   async function loadTask(id: string) {
     const { response, data } = await api(`/api/owner-codex/tasks/${encodeURIComponent(id)}`);
-    if (!response.ok || !data.success) return showAlert(data.error || "Unable to load task.");
+    if (!response.ok || !data.success) return;
     renderActive(data.task);
     renderEvents(data.events || []);
+  }
+
+  function showAccessError(title: string, copy: string) {
+    setText("[data-access-title]", title);
+    setText("[data-access-copy]", copy);
+    accessState?.classList.remove("hidden");
+    ownerContent?.classList.add("hidden");
   }
 
   async function refresh() {
     const { response, data } = await api("/api/owner-codex/status");
     if (response.status === 401 || response.status === 403) {
-      if (accessState) accessState.innerHTML = `<div><strong>Owner access required</strong><p>Sign in with the Hermes owner identity, then reopen this page. Repair Shop and Academy sessions use the same Hermes session.</p></div>`;
-      ownerContent?.classList.add("hidden");
+      showAccessError("Owner access required", "Sign in with the Hermes owner identity, then reopen this page.");
       return;
     }
     if (!response.ok || !data.success) {
-      if (accessState) accessState.innerHTML = `<div><strong>Owner control is not connected yet</strong><p>${String(data.error || "runtime_unavailable")}</p></div>`;
-      ownerContent?.classList.add("hidden");
+      showAccessError("Owner control is not connected yet", String(data.error || "runtime_unavailable"));
       return;
     }
-    accessState?.classList.add("hidden"); ownerContent?.classList.remove("hidden");
-    renderRuntime(data.runtime || { online: false }); renderActive(data.active_task || null);
+    accessState?.classList.add("hidden");
+    ownerContent?.classList.remove("hidden");
+    renderRuntime(data.runtime || { online: false });
+    renderActive(data.active_task || null);
+
     const history = await api("/api/owner-codex/tasks");
     if (history.response.ok && history.data.success) renderHistory(history.data.tasks || []);
     if (data.active_task?.id) await loadTask(data.active_task.id);
@@ -246,7 +297,7 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
   for (const button of document.querySelectorAll<HTMLButtonElement>("[data-template]")) {
     button.addEventListener("click", () => {
       selectedType = button.dataset.template || "custom";
-      for (const item of document.querySelectorAll("[data-template]")) item.classList.toggle("selected", item === button);
+      for (const candidate of document.querySelectorAll("[data-template]")) candidate.classList.toggle("selected", candidate === button);
       if (promptBox) { promptBox.value = templates[selectedType] || ""; promptBox.focus(); }
     });
   }
@@ -257,23 +308,40 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
     if (!prompt) return showAlert("Write a task or choose a template.");
     runButton.disabled = true;
     try {
-      const { response, data } = await api("/api/owner-codex/tasks", { method: "POST", body: JSON.stringify({ task_type: selectedType, prompt }) });
-      if (!response.ok || !data.success) return showAlert(data.error === "active_task_exists" ? `Another task is already active: ${data.active_task_id}` : data.error || "Unable to create task.");
+      const { response, data } = await api("/api/owner-codex/tasks", {
+        method: "POST",
+        body: JSON.stringify({ task_type: selectedType, prompt }),
+      });
+      if (!response.ok || !data.success) {
+        return showAlert(data.error === "active_task_exists" ? `Another task is already active: ${data.active_task_id}` : data.error || "Unable to create task.");
+      }
       showAlert("Task queued for Hermes Codex.", "success");
-      renderActive(data.task); await refresh();
-    } catch { showAlert("Network error while creating task."); }
-    finally { runButton.disabled = false; }
+      renderActive(data.task);
+      await refresh();
+    } catch {
+      showAlert("Network error while creating task.");
+    } finally {
+      runButton.disabled = false;
+    }
   });
 
   stopButton?.addEventListener("click", async () => {
     if (!activeTask) return;
-    clearAlert(); stopButton.disabled = true;
+    clearAlert();
+    stopButton.disabled = true;
     try {
-      const { response, data } = await api(`/api/owner-codex/tasks/${encodeURIComponent(activeTask.id)}`, { method: "PATCH", body: JSON.stringify({ action: "cancel" }) });
+      const { response, data } = await api(`/api/owner-codex/tasks/${encodeURIComponent(activeTask.id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({ action: "cancel" }),
+      });
       if (!response.ok || !data.success) return showAlert(data.error || "Unable to request cancellation.");
-      showAlert("Cancellation requested for this task only.", "success"); renderActive(data.task); await refresh();
-    } catch { showAlert("Network error while cancelling task."); }
-    finally { stopButton.disabled = false; }
+      showAlert("Cancellation requested for this task only.", "success");
+      renderActive(data.task);
+    } catch {
+      showAlert("Network error while cancelling task.");
+    } finally {
+      stopButton.disabled = false;
+    }
   });
 
   $<HTMLButtonElement>("[data-refresh]")?.addEventListener("click", () => void refresh());
@@ -283,30 +351,85 @@ import SiteFooter from "../../../../../components/SiteFooter.astro";
 </script>
 
 <style>
-  .owner-control-page { min-height: 80vh; background: radial-gradient(circle at 16% 0%, rgba(109,92,255,.10), transparent 34%), #f6f5f1; color:#182033; }
-  .owner-shell { width:min(1180px, calc(100% - 40px)); margin:0 auto; padding:52px 0 80px; }
-  .owner-hero { display:flex; justify-content:space-between; align-items:flex-start; gap:28px; margin-bottom:24px; }
-  .owner-hero h1 { margin:4px 0 10px; font-size:clamp(34px,5vw,60px); letter-spacing:-.045em; }
+  .owner-control-page { min-height:80vh; background:radial-gradient(circle at 18% 0%,rgba(109,92,255,.10),transparent 34%),#f6f5f1; color:#182033; }
+  .owner-shell { width:min(1180px,calc(100% - 40px)); margin:0 auto; padding:52px 0 80px; }
+  .owner-hero { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin-bottom:24px; }
+  .owner-hero h1 { margin:4px 0 10px; font-size:clamp(34px,5vw,58px); letter-spacing:-.045em; }
   .owner-hero p { max-width:720px; margin:0; color:#667085; line-height:1.6; }
-  .eyebrow { margin:0; color:#6d5cff!important; font-size:12px; font-weight:850; letter-spacing:.12em; text-transform:uppercase; }
+  .eyebrow { margin:0!important; color:#6d5cff!important; font-size:12px!important; font-weight:850!important; letter-spacing:.12em; text-transform:uppercase; }
   .security-pill { display:inline-flex; align-items:center; gap:7px; white-space:nowrap; padding:9px 12px; border-radius:999px; background:#edf9f3; border:1px solid #ccebdc; color:#21785b; font-size:12px; font-weight:800; }
   .owner-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px; }
-  .owner-tab { min-width:0; display:flex; gap:12px; align-items:center; padding:16px; border:1px solid rgba(24,32,51,.10); border-radius:18px; background:#fff; color:inherit; text-decoration:none; box-shadow:0 8px 28px rgba(32,38,51,.05); }
+  .owner-tab { min-width:0; min-height:64px; display:flex; gap:12px; align-items:center; padding:16px; border:1px solid rgba(24,32,51,.10); border-radius:18px; background:#fff; color:inherit; text-decoration:none; box-shadow:0 8px 28px rgba(32,38,51,.05); }
   .owner-tab.active { border-color:rgba(109,92,255,.35); background:linear-gradient(135deg,#fff,#f1efff); }
-  .owner-tab span { min-width:0; display:grid; gap:3px; }.owner-tab strong,.owner-tab small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.owner-tab small { color:#7b8190; }
-  .access-state,.runtime-card,.composer-card,.active-card,.output-card,.history-card,.gate-card { border:1px solid rgba(24,32,51,.10); border-radius:22px; background:rgba(255,255,255,.96); box-shadow:0 14px 42px rgba(31,38,54,.06); }
-  .access-state { display:flex; align-items:center; gap:14px; padding:22px; }.access-state p { margin:4px 0 0; color:#667085; }.spinner { width:20px;height:20px;border:2px solid #ddd;border-top-color:#6d5cff;border-radius:50%;animation:spin .8s linear infinite; }
-  @keyframes spin { to { transform:rotate(360deg); } }.hidden { display:none!important; }
-  .runtime-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }.runtime-card { padding:18px; }.runtime-card span { color:#7b8190; font-size:12px; font-weight:750; }.runtime-card strong { display:block; margin:9px 0 7px; font-size:18px; overflow-wrap:anywhere; }.runtime-card p { margin:0;color:#7b8190;font-size:12px;line-height:1.45; }.runtime-card.primary { background:#171b2c;color:#fff; }.runtime-card.primary p,.runtime-card.primary span { color:#adb4cb; }.runtime-card-head { display:flex;align-items:center;justify-content:space-between; }.runtime-dot { width:10px;height:10px;border-radius:50%;background:#6b7280;box-shadow:0 0 0 4px rgba(107,114,128,.15); }.runtime-dot.online { background:#35d39a;box-shadow:0 0 0 4px rgba(53,211,154,.14); }
-  .workspace-grid { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(300px,.8fr); gap:16px; }.composer-card,.active-card,.output-card,.history-card { padding:22px; }.section-heading { display:flex;align-items:flex-start;justify-content:space-between;gap:12px; }.section-heading h2 { margin:3px 0 0; font-size:23px; }.icon-button { width:42px;height:42px;display:grid;place-items:center;border:1px solid #e2e4ea;border-radius:12px;background:#fff;cursor:pointer; }
-  .quick-actions { display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 16px; }.quick-actions button { min-height:38px;padding:8px 11px;border:1px solid #dedfe6;border-radius:999px;background:#f8f8fa;color:#394056;font-weight:750;cursor:pointer; }.quick-actions button.selected { background:#ece9ff;border-color:#bbb2ff;color:#5848db; }
-  .task-field { display:grid;gap:8px; }.task-field span { font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:#707789; }.task-field textarea { width:100%;box-sizing:border-box;resize:vertical;border:1px solid #d9dce5;border-radius:16px;padding:14px 15px;background:#fbfbfc;color:#182033;font:inherit;line-height:1.55; }.task-field textarea:focus { outline:3px solid rgba(109,92,255,.12);border-color:#8578ed; }
-  .composer-footer { display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px; }.composer-footer p { margin:0;color:#7b8190;font-size:12px; }.run-button,.secondary-button,.stop-button { min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:13px;padding:10px 15px;font-weight:850;text-decoration:none;cursor:pointer; }.run-button { border:0;background:#6d5cff;color:#fff;box-shadow:0 10px 28px rgba(109,92,255,.24); }.stop-button { border:1px solid #efc9c9;background:#fff5f5;color:#a93c3c; }.secondary-button { border:1px solid #dedfe6;background:#fff;color:#394056; }.run-button:disabled,.stop-button:disabled { opacity:.55;cursor:not-allowed; }
-  .inline-alert { margin-top:14px;padding:11px 13px;border-radius:12px;background:#fff3f3;color:#9a3636;font-size:13px; }.inline-alert.success { background:#edf9f3;color:#21785b; }
-  .task-status { padding:6px 9px;border-radius:999px;background:#f0efff;color:#5b4ddd;font-size:11px;font-weight:850;text-transform:uppercase; }.active-prompt { margin:18px 0;color:#667085;line-height:1.5;max-height:120px;overflow:auto; }.evidence-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0; }.evidence-grid div { padding:11px;border-radius:12px;background:#f7f7f9;min-width:0; }.evidence-grid dt { color:#8a90a0;font-size:10px;text-transform:uppercase;font-weight:850; }.evidence-grid dd { margin:5px 0 0;font-size:12px;font-weight:800;overflow-wrap:anywhere; }.active-actions { display:flex;gap:9px;flex-wrap:wrap;margin-top:16px; }
-  .output-card,.history-card,.gate-card { margin-top:16px; }.output-stream { margin-top:16px;max-height:360px;overflow:auto;border-radius:15px;background:#121624;color:#d7dcef;padding:12px; }.output-event { padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.08); }.output-event:last-child { border-bottom:0; }.output-event div { display:flex;justify-content:space-between;gap:12px;color:#9aa5c2;font-size:11px; }.output-event pre { white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0 0;font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }.muted { color:#7b8190; }
-  .history-list { display:grid;gap:8px;margin-top:14px; }.history-item { text-align:left;width:100%;padding:13px 14px;border:1px solid #ececf0;border-radius:14px;background:#fbfbfc;cursor:pointer; }.history-head { display:flex;justify-content:space-between;gap:12px; }.history-head em { font-style:normal;color:#6d5cff;font-size:11px;font-weight:850;text-transform:uppercase; }.history-item small { display:block;margin-top:5px;color:#8a90a0; }.gate-card { display:flex;gap:14px;align-items:flex-start;padding:18px;background:#f0f7ff;border-color:#d8e7fa; }.gate-card p { margin:5px 0 0;color:#5d6d80;font-size:13px;line-height:1.5; }
-  @media (max-width:900px) { .runtime-grid { grid-template-columns:1fr 1fr; }.workspace-grid { grid-template-columns:1fr; } }
-  @media (max-width:620px) { .owner-shell { width:min(100% - 24px,1180px);padding-top:30px; }.owner-hero { display:block; }.security-pill { margin-top:14px; }.owner-tabs { grid-template-columns:1fr; }.runtime-grid { grid-template-columns:1fr; }.composer-card,.active-card,.output-card,.history-card { padding:17px; }.composer-footer { align-items:stretch;flex-direction:column; }.run-button { width:100%; }.evidence-grid { grid-template-columns:1fr; }.owner-tab { min-height:64px; }.quick-actions button,.icon-button,.run-button,.stop-button,.secondary-button { min-height:44px; } }
-  @media (prefers-reduced-motion:reduce) { .spinner { animation:none; } *,*::before,*::after { scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important; } }
+  .owner-tab span { min-width:0; display:grid; gap:3px; }
+  .owner-tab small { color:#7b8190; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .access-state,.panel,.runtime-card,.gate-card { border:1px solid rgba(24,32,51,.10); border-radius:22px; background:rgba(255,255,255,.96); box-shadow:0 14px 42px rgba(31,38,54,.06); }
+  .access-state { display:flex; align-items:center; gap:14px; padding:22px; }
+  .access-state p { margin:4px 0 0; color:#667085; }
+  .spinner { width:20px; height:20px; border:2px solid #ddd; border-top-color:#6d5cff; border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .hidden { display:none!important; }
+  .runtime-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .runtime-card { padding:18px; }
+  .runtime-card span { color:#7b8190; font-size:12px; font-weight:750; }
+  .runtime-card strong { display:block; margin:9px 0 7px; font-size:18px; overflow-wrap:anywhere; }
+  .runtime-card p { margin:0; color:#7b8190; font-size:12px; line-height:1.45; }
+  .runtime-primary { background:#171b2c; color:#fff; }
+  .runtime-primary span,.runtime-primary p { color:#adb4cb; }
+  .runtime-head { display:flex; align-items:center; justify-content:space-between; }
+  .runtime-dot { width:10px; height:10px; border-radius:50%; background:#6b7280; box-shadow:0 0 0 4px rgba(107,114,128,.15); }
+  .runtime-dot.online { background:#35d39a; box-shadow:0 0 0 4px rgba(53,211,154,.14); }
+  .workspace-grid { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(300px,.8fr); gap:16px; }
+  .panel { padding:22px; }
+  .section-heading { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .section-heading h2 { margin:3px 0 0; font-size:23px; }
+  .icon-button { width:44px; height:44px; display:grid; place-items:center; border:1px solid #e2e4ea; border-radius:12px; background:#fff; cursor:pointer; }
+  .quick-actions { display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 16px; }
+  .quick-actions button { min-height:40px; padding:8px 11px; border:1px solid #dedfe6; border-radius:999px; background:#f8f8fa; color:#394056; font-weight:750; cursor:pointer; }
+  .quick-actions button.selected { background:#ece9ff; border-color:#bbb2ff; color:#5848db; }
+  .task-field { display:grid; gap:8px; }
+  .task-field span { font-size:12px; font-weight:850; text-transform:uppercase; letter-spacing:.08em; color:#707789; }
+  .task-field textarea { width:100%; box-sizing:border-box; resize:vertical; border:1px solid #d9dce5; border-radius:16px; padding:14px 15px; background:#fbfbfc; color:#182033; font:inherit; line-height:1.55; }
+  .task-field textarea:focus { outline:3px solid rgba(109,92,255,.12); border-color:#8578ed; }
+  .composer-footer { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:14px; }
+  .composer-footer p { margin:0; color:#7b8190; font-size:12px; }
+  .run-button,.secondary-button,.stop-button { min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:7px; border-radius:13px; padding:10px 15px; font-weight:850; text-decoration:none; cursor:pointer; }
+  .run-button { border:0; background:#6d5cff; color:#fff; box-shadow:0 10px 28px rgba(109,92,255,.24); }
+  .secondary-button { border:1px solid #dedfe6; background:#fff; color:#394056; }
+  .stop-button { border:1px solid #efc9c9; background:#fff5f5; color:#a93c3c; }
+  .run-button:disabled,.stop-button:disabled { opacity:.55; cursor:not-allowed; }
+  .inline-alert { margin-top:14px; padding:11px 13px; border-radius:12px; background:#fff3f3; color:#9a3636; font-size:13px; }
+  .inline-alert.success { background:#edf9f3; color:#21785b; }
+  .task-status { padding:6px 9px; border-radius:999px; background:#f0efff; color:#5b4ddd; font-size:11px; font-weight:850; text-transform:uppercase; }
+  .active-prompt { margin:18px 0; color:#667085; line-height:1.5; max-height:120px; overflow:auto; }
+  .evidence-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0; }
+  .evidence-grid div { padding:11px; border-radius:12px; background:#f7f7f9; min-width:0; }
+  .evidence-grid dt { color:#8a90a0; font-size:10px; text-transform:uppercase; font-weight:850; }
+  .evidence-grid dd { margin:5px 0 0; font-size:12px; font-weight:800; overflow-wrap:anywhere; }
+  .active-actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:16px; }
+  .output-card,.history-card,.gate-card { margin-top:16px; }
+  .output-stream { margin-top:16px; max-height:360px; overflow:auto; border-radius:15px; background:#121624; color:#d7dcef; padding:12px; }
+  .output-event { padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); }
+  .output-event div { display:flex; justify-content:space-between; gap:12px; color:#9aa5c2; font-size:11px; }
+  .output-event pre { white-space:pre-wrap; overflow-wrap:anywhere; margin:8px 0 0; font:12px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  .muted { color:#7b8190; }
+  .history-list { display:grid; gap:8px; margin-top:14px; }
+  .history-item { text-align:left; width:100%; padding:13px 14px; border:1px solid #ececf0; border-radius:14px; background:#fbfbfc; cursor:pointer; }
+  .history-item strong,.history-item small { display:block; }
+  .history-item small { margin-top:5px; color:#8a90a0; }
+  .gate-card { display:flex; gap:14px; align-items:flex-start; padding:18px; background:#f0f7ff; border-color:#d8e7fa; }
+  .gate-card p { margin:5px 0 0; color:#5d6d80; font-size:13px; line-height:1.5; }
+  @media (max-width:900px) { .runtime-grid { grid-template-columns:1fr 1fr; } .workspace-grid { grid-template-columns:1fr; } }
+  @media (max-width:620px) {
+    .owner-shell { width:min(100% - 24px,1180px); padding-top:30px; }
+    .owner-hero { display:block; }
+    .security-pill { margin-top:14px; }
+    .owner-tabs,.runtime-grid { grid-template-columns:1fr; }
+    .panel { padding:17px; }
+    .composer-footer { align-items:stretch; flex-direction:column; }
+    .run-button { width:100%; }
+    .evidence-grid { grid-template-columns:1fr; }
+    .quick-actions button,.icon-button,.run-button,.stop-button,.secondary-button { min-height:44px; }
+  }
+  @media (prefers-reduced-motion:reduce) { .spinner { animation:none; } *,*::before,*::after { transition-duration:.01ms!important; animation-duration:.01ms!important; } }
 </style>
