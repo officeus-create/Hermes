@@ -41,16 +41,20 @@ assert.match(runnerComplete, /task_not_running_for_runner/, "completion must fai
 
 assert.match(runner, /subprocess\.Popen\(/, "local runner must invoke Hermes Codex through an argument array");
 assert.doesNotMatch(runner, /shell\s*=\s*True/, "local runner must never enable shell interpolation");
-assert.match(runner, /command = \[str\(CODEX_HERMES\), "exec", prompt\]/, "custom prompt must remain a process argument");
+assert.match(runner, /guarded_prompt = bounded_owner_prompt\(prompt, task_branch\)/, "browser prompt must be wrapped in the fixed governance boundary");
+assert.match(runner, /command = \[str\(CODEX_HERMES\), "exec", guarded_prompt\]/, "bounded prompt must remain a single process argument");
+assert.match(runner, /This browser task is authorization to investigate and perform ordinary low-risk repository work only/, "browser channel must not become implicit merge/deploy approval");
 assert.doesNotMatch(runner, /socket\.|listen\(|HTTPServer|Flask|FastAPI/, "local runner must not open an inbound server");
 assert.match(runner, /API_BASE\.startswith\("https:\/\/"\)/, "runner must require HTTPS for the outbound task API");
 assert.match(runner, /os\.killpg\(process\.pid/, "cancellation must target only the owned process group");
 assert.match(runner, /terminate_owned_process\(process\)/, "unexpected runner shutdown must clean up its owned child process");
 assert.match(runner, /current_pr_url\(\) or None/, "runner should attach current PR evidence when the local GitHub CLI can resolve it");
 assert.match(runner, /\[-MAX_SUMMARY_CHARS:\]/, "runner must bound retained local output memory");
-assert.match(runner, /branch != "main"/, "remote execution must start from canonical main");
+assert.match(runner, /branch != "main"/, "remote execution preflight must start from canonical main");
+assert.match(runner, /head != origin_main/, "remote execution must verify local main is aligned with origin/main");
+assert.match(runner, /switch", "-c", branch/, "runner must isolate the claimed task on a non-main branch before Codex starts");
 assert.match(runner, /--untracked-files=no/, "repo preflight must preserve unrelated untracked local state");
-assert.match(runner, /clean tracked working tree/, "remote execution must fail closed on tracked local changes");
-assert.match(runner, /restore_main_if_safe\(\)/, "runner must restore canonical main only when task work is safely committed or absent");
+assert.match(runner, /tracked working-tree changes remain uncommitted/, "successful Codex exit must not hide uncommitted tracked changes");
+assert.match(runner, /restore_main_if_safe\(task_branch, starting_sha\)/, "runner must restore canonical main only when task work is safely committed or absent");
 
 console.log("Hermes Owner Codex control center contract: PASS");
