@@ -34,6 +34,17 @@ for (const text of [
   "Prototype = prototype. Demo = demo. Not configured = not configured.",
 ]) requireText(text);
 
+const markdownLinks = body.match(/\[[^\]]+\]\(https:\/\/[^)]+\)/g) ?? [];
+if (markdownLinks.length < 20) {
+  errors.push(`llms.txt must expose at least 20 recognized Markdown HTTPS links for agent discovery; found ${markdownLinks.length}`);
+}
+for (const link of [
+  "[Canonical Hermes website](https://hermeslogisticsus.com/)",
+  "[Company Information](https://hermeslogisticsus.com/company-information/)",
+  "[Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)",
+  "[Extended AI context](https://hermeslogisticsus.com/llms-full.txt)",
+]) requireText(link);
+
 const prohibitedClaims = [
   [/\b0\s*ms response time\b/i, "unsupported zero-latency claim"],
   [/\bLCP\b[^\n]{0,80}<\s*0\.8\s*s\b/i, "unsupported LCP claim"],
@@ -59,4 +70,4 @@ if (errors.length) {
   throw new Error(`llms.txt evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms.txt evidence contract passed: short AI context is aligned, evidence-bounded, entity-disambiguated, and public-safe.");
+console.log("llms.txt evidence contract passed: short AI context is aligned, evidence-bounded, entity-disambiguated, Markdown-linked for agent discovery, and public-safe.");
