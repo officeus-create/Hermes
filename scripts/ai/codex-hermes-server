@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
+FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
+FCC_SERVER="$FCC_VENV/bin/fcc-server"
+
+if [[ ! -x "$FCC_SERVER" ]]; then
+  printf '[codex-hermes server] FCC runtime is missing at %s\n' "$FCC_SERVER" >&2
+  printf '[codex-hermes server] Run: ./scripts/ai/setup-codex-hermes.sh\n' >&2
+  exit 127
+fi
+
+exec "$FCC_SERVER" "$@"

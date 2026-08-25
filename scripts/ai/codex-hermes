@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${HERMES_REPO_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
+FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
+FCC_CODEX="$FCC_VENV/bin/fcc-codex"
+export CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
+
+if [[ ! -x "$FCC_CODEX" ]]; then
+  printf '[codex-hermes] FCC runtime is missing at %s\n' "$FCC_CODEX" >&2
+  printf '[codex-hermes] Run: ./scripts/ai/setup-codex-hermes.sh\n' >&2
+  exit 127
+fi
+
+if ! command -v codex >/dev/null 2>&1; then
+  printf '[codex-hermes] Official Codex CLI is not on PATH. This wrapper will not install or replace it.\n' >&2
+  exit 127
+fi
+
+[[ -f "$REPO_ROOT/AGENTS.md" ]] || {
+  printf '[codex-hermes] Hermes repository boundary not found at %s\n' "$REPO_ROOT" >&2
+  exit 2
+}
+
+mkdir -p "$CODEX_HOME"
+chmod 700 "$CODEX_HOME" 2>/dev/null || true
+
+# Optional per-run route overrides. When unset, FCC's managed Model Config owns
+# the primary model and fallback chain. Values must use FCC provider/model refs.
+if [[ -n "${HERMES_CODEX_MODEL:-}" ]]; then
+  export MODEL="$HERMES_CODEX_MODEL"
+fi
+if [[ -n "${HERMES_CODEX_FALLBACKS:-}" ]]; then
+  export MODEL_FALLBACKS="$HERMES_CODEX_FALLBACKS"
+fi
+
+export HERMES_CODEX_RUNTIME="fcc"
+export HERMES_CODEX_REPO="$REPO_ROOT"
+
+cd "$REPO_ROOT"
+exec "$FCC_CODEX" "$@"
