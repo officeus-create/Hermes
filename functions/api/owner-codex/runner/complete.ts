@@ -34,11 +34,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   }
 
   const now = nowIso();
-  await env.DB.prepare(
+  const update = await env.DB.prepare(
     `UPDATE owner_codex_tasks SET
       status = ?, completed_at = ?, updated_at = ?, repo_sha = ?, branch = ?, pr_url = ?,
       model = ?, fallback_route = ?, evidence_class = ?, output_summary = ?
-     WHERE id = ? AND runner_id = 'mac-owner-runner'`,
+     WHERE id = ? AND runner_id = 'mac-owner-runner' AND status = 'running'`,
   )
     .bind(
       terminalStatus,
@@ -54,6 +54,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       taskId,
     )
     .run();
+
+  if (!update?.meta?.changes) {
+    return jsonResponse(409, {
+      success: false,
+      error: "task_not_running_for_runner",
+      task: publicTask(existing),
+    });
+  }
 
   const row = await env.DB.prepare(`SELECT * FROM owner_codex_tasks WHERE id = ?`).bind(taskId).first();
   return jsonResponse(200, { success: true, task: publicTask(row) });
