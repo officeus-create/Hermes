@@ -47,9 +47,10 @@ test("owner control center presents Repair Shops, Academy and routed Hermes Code
   await page.goto("/services/hermes-connect/owner/");
 
   await expect(page.getByRole("heading", { name: "Owner Control Center" })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Repair Shops/ })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/");
-  await expect(page.getByRole("link", { name: /Academy/ })).toHaveAttribute("href", "/services/hermes-connect/academy/dashboard/");
-  await expect(page.getByRole("link", { name: /Hermes Codex/ })).toHaveAttribute("aria-current", "page");
+  const ownerTabs = page.locator(".owner-tabs");
+  await expect(ownerTabs.locator('a[href="/services/hermes-connect/repair-shops/dashboard/"]')).toBeVisible();
+  await expect(ownerTabs.locator('a[href="/services/hermes-connect/academy/dashboard/"]')).toBeVisible();
+  await expect(ownerTabs.locator('a[href="/services/hermes-connect/owner/"]')).toHaveAttribute("aria-current", "page");
   await expect(page.getByText("Online", { exact: true })).toBeVisible();
   await expect(page.getByText("openai/gpt-5.6-terra", { exact: true })).toBeVisible();
   await expect(page.getByText("openai/gpt-5.4-mini", { exact: true })).toBeVisible();
