@@ -58,10 +58,19 @@ These production environment changes are owner-gated. Repository code may be rev
 
 ## Local runner
 
-After the production API is deployed and the scoped credential is provisioned locally, run from the Hermes Mac:
+After the production API is deployed and the scoped credential is provisioned locally, prepare a canonical execution checkout before starting the worker:
 
 ```bash
 cd ~/Hermes
+git switch main
+git status --short
+```
+
+The runner requires `main` and a clean **tracked** working tree before it starts any browser-created task. It deliberately ignores unrelated untracked files during this preflight and never deletes them. If a task leaves tracked work in progress, the runner leaves the checkout untouched for review and the next browser task fails closed rather than overwriting it. If a task finishes with a clean tracked tree on a task branch, the runner attempts to restore `main` safely.
+
+Then start the runner with its local-only scoped credential:
+
+```bash
 export HERMES_OWNER_CODEX_API="https://hermeslogisticsus.com"
 export HERMES_OWNER_CODEX_RUNNER_TOKEN="<local-only scoped token>"
 python3 scripts/ai/hermes-owner-codex-runner.py
@@ -146,12 +155,13 @@ Production proof remains separate and owner-gated:
 1. configure explicit owner identity binding;
 2. configure scoped runner token in the server environment;
 3. deploy the reviewed PR;
-4. configure the same scoped token locally without exposing it;
-5. start the outbound runner;
-6. open `/services/hermes-connect/owner/` from desktop and phone;
-7. submit a harmless read-only task;
-8. prove browser -> queue -> Mac runner -> routed Hermes Codex -> sanitized browser result;
-9. verify direct `codex` remains independent;
-10. keep merge/deploy/DNS/credential/external-action owner gates intact.
+4. update the local Hermes checkout to the deployed reviewed revision and return it to clean tracked `main`;
+5. configure the same scoped token locally without exposing it;
+6. start the outbound runner;
+7. open `/services/hermes-connect/owner/` from desktop and phone;
+8. submit a harmless read-only task;
+9. prove browser -> queue -> Mac runner -> routed Hermes Codex -> sanitized browser result;
+10. verify direct `codex` remains independent;
+11. keep merge/deploy/DNS/credential/external-action owner gates intact.
 
 Until the production proof exists, `REMOTE_BROWSER_TO_CODEX` remains `UNVERIFIED`.
