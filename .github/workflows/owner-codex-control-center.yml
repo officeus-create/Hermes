@@ -34,6 +34,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: python3 -m py_compile scripts/ai/hermes-owner-codex-runner.py
       - run: node scripts/owner-codex-control-center-contract.test.mjs
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/owner-hermes-codex-control-center.spec.ts --project=desktop --project=mobile
