@@ -10,6 +10,8 @@ const helper = read("functions/api/_lib/owner-codex.mjs");
 const tasks = read("functions/api/owner-codex/tasks.ts");
 const claim = read("functions/api/owner-codex/runner/claim.ts");
 const runnerTask = read("functions/api/owner-codex/runner/task.ts");
+const runnerEvent = read("functions/api/owner-codex/runner/event.ts");
+const runnerComplete = read("functions/api/owner-codex/runner/complete.ts");
 const runner = read("scripts/ai/hermes-owner-codex-runner.py");
 
 assert.match(page, /robots="noindex,nofollow"/, "owner control center must stay noindex");
@@ -23,6 +25,7 @@ assert.match(helper, /HERMES_OWNER_EMAIL/, "owner authorization may support an e
 assert.match(helper, /HERMES_CODEX_RUNNER_TOKEN/, "runner API must require a scoped credential");
 assert.match(helper, /owner_access_required/, "non-owner sessions must fail closed");
 assert.match(helper, /\[REDACTED/, "execution output must be sanitized before persistence");
+assert.match(helper, /created_by: row\.created_by/, "owner-only task receipts must retain creator identity");
 
 assert.match(tasks, /active_task_exists/, "task creation must preserve one-active-task ownership");
 assert.match(tasks, /status IN \('queued', 'running'\)/, "task queue must reject concurrent active tasks");
@@ -32,6 +35,9 @@ assert.match(claim, /runner_id = 'mac-owner-runner'/, "claimed work must record 
 assert.match(claim, /running_task_requires_reconciliation/, "runner restart must fail closed instead of duplicating a running task");
 assert.match(claim, /cancelled_after_runner_restart/, "owner-cancelled orphan work must have a bounded reconciliation path");
 assert.match(runnerTask, /UPDATE owner_codex_runner_state SET last_seen_at/, "running tasks must refresh the bounded runtime heartbeat");
+assert.match(runnerEvent, /status = 'running' AND runner_id = 'mac-owner-runner'/, "execution events must attach only to the active owned task");
+assert.match(runnerComplete, /status = 'running'/, "completion must transition only a running task");
+assert.match(runnerComplete, /task_not_running_for_runner/, "completion must fail closed if runner ownership/state no longer matches");
 
 assert.match(runner, /subprocess\.Popen\(/, "local runner must invoke Hermes Codex through an argument array");
 assert.doesNotMatch(runner, /shell\s*=\s*True/, "local runner must never enable shell interpolation");
