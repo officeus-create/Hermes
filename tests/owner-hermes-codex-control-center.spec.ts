@@ -62,7 +62,7 @@ test("owner Hermes Codex composer works at 390px without horizontal overflow", a
   await page.goto("/services/hermes-connect/owner/");
 
   await page.getByRole("button", { name: "Current priorities" }).click();
-  await expect(page.locator("[data-task-prompt]")).toContainText("Read AGENTS.md");
+  await expect(page.locator("[data-task-prompt]")).toHaveValue(/Read AGENTS\.md/);
   await page.getByRole("button", { name: "Run", exact: true }).click();
   await expect(page.locator("[data-task-alert]")).toContainText("Task queued for Hermes Codex");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
