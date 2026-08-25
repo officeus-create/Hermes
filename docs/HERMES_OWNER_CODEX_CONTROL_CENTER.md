@@ -95,6 +95,14 @@ Runner-only endpoints:
 
 Only one queued/running task is allowed at a time. This is an execution safety control, not a replacement for HOS/HUEG one-writer governance.
 
+The authenticated task-state poll also refreshes the runner heartbeat during long tasks, so the owner page does not falsely show the Mac offline while Codex is still working.
+
+### Restart/reconciliation boundary
+
+The runner deliberately does **not** automatically execute a task that was already marked `running` by an earlier local runner process. After a runner restart, an existing `running` task causes a fail-closed `running_task_requires_reconciliation` response. This prevents the same Codex task from being executed twice when the previous local process state cannot be proven.
+
+The owner may explicitly cancel that orphaned task from the control center. A newly authenticated runner can then finalize that cancellation and return to the queue. Unexpected runner shutdown also terminates only the child process group created by that runner, rather than leaving a detached Codex process behind.
+
 ## Data boundary
 
 Task records contain only bounded operational metadata:
@@ -109,7 +117,7 @@ Task records contain only bounded operational metadata:
 
 Do not store credentials, cookies, OAuth tokens, provider secrets, private customer data, contracts, or unrelated private records in this queue.
 
-Execution output is length-bounded and server-side sanitized for common credential patterns before persistence. The local runner also applies a conservative redaction pass before upload.
+Execution output is length-bounded and server-side sanitized for common credential patterns before persistence. The local runner also applies a conservative redaction pass before upload. The runner keeps only a bounded output tail in local memory for the final summary and, when the local GitHub CLI can resolve it, attaches the current branch PR URL as evidence without treating its absence as a task failure.
 
 ## Cancellation
 
@@ -122,7 +130,7 @@ Repository gate:
 ```bash
 npm run build
 node scripts/owner-codex-control-center-contract.test.mjs
-npx playwright test tests/owner-hermes-codex-control-center.spec.ts --project=chromium
+npx playwright test tests/owner-hermes-codex-control-center.spec.ts --project=desktop --project=mobile
 ```
 
 Then full Hermes gate before merge:
