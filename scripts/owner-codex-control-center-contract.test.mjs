@@ -42,5 +42,9 @@ assert.match(runner, /os\.killpg\(process\.pid/, "cancellation must target only 
 assert.match(runner, /terminate_owned_process\(process\)/, "unexpected runner shutdown must clean up its owned child process");
 assert.match(runner, /current_pr_url\(\) or None/, "runner should attach current PR evidence when the local GitHub CLI can resolve it");
 assert.match(runner, /\[-MAX_SUMMARY_CHARS:\]/, "runner must bound retained local output memory");
+assert.match(runner, /branch != "main"/, "remote execution must start from canonical main");
+assert.match(runner, /--untracked-files=no/, "repo preflight must preserve unrelated untracked local state");
+assert.match(runner, /clean tracked working tree/, "remote execution must fail closed on tracked local changes");
+assert.match(runner, /restore_main_if_safe\(\)/, "runner must restore canonical main only when task work is safely committed or absent");
 
 console.log("Hermes Owner Codex control center contract: PASS");
