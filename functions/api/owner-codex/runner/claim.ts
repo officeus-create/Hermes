@@ -40,6 +40,38 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     .bind(now, repoSha, runtimeVersion, model, fallbackRoute)
     .run();
 
+  // Fail closed after a runner restart instead of executing the same Codex task twice.
+  // If an earlier local process disappeared while a task was marked running, the owner
+  // must explicitly cancel/reconcile it. A cancellation is safe to finalize here because
+  // this claim happens only after a new authenticated runner process starts polling.
+  const existingRunning = await env.DB.prepare(
+    `SELECT * FROM owner_codex_tasks
+     WHERE status = 'running' AND runner_id = 'mac-owner-runner'
+     ORDER BY started_at ASC LIMIT 1`,
+  ).first();
+  if (existingRunning) {
+    if (existingRunning.cancel_requested) {
+      await env.DB.prepare(
+        `UPDATE owner_codex_tasks
+         SET status = 'cancelled', completed_at = ?, updated_at = ?
+         WHERE id = ? AND status = 'running' AND cancel_requested = 1`,
+      )
+        .bind(now, now, existingRunning.id)
+        .run();
+      return jsonResponse(200, {
+        success: true,
+        task: null,
+        reconciled_task_id: existingRunning.id,
+        reconciliation: "cancelled_after_runner_restart",
+      });
+    }
+    return jsonResponse(409, {
+      success: false,
+      error: "running_task_requires_reconciliation",
+      task_id: existingRunning.id,
+    });
+  }
+
   const candidate = await env.DB.prepare(
     `SELECT * FROM owner_codex_tasks
      WHERE status = 'queued' AND cancel_requested = 0
