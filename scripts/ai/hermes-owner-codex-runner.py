@@ -93,21 +93,56 @@ def tracked_worktree_changes() -> str:
 
 
 def repo_execution_preflight() -> str | None:
-    """Require a clean tracked canonical starting point before accepting remote execution."""
+    """Require a clean, current canonical starting point before accepting remote execution."""
     branch = git("branch", "--show-current")
     if branch != "main":
         return f"Local runner requires the canonical main branch before starting a browser task; current branch is {branch or 'unknown'}."
     if tracked_worktree_changes():
         return "Local runner requires a clean tracked working tree before starting a browser task. Untracked files are left untouched."
+    try:
+        subprocess.run(
+            ["git", "-C", str(REPO), "fetch", "origin", "main", "--quiet"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=60,
+        )
+    except Exception:
+        return "Local runner could not refresh origin/main; refusing to start a browser task from unverified repository state."
+    head = git("rev-parse", "HEAD")
+    origin_main = git("rev-parse", "origin/main")
+    if not head or not origin_main or head != origin_main:
+        return "Local main is not exactly aligned with origin/main. Reconcile it manually before starting a browser task; the runner will not reset or overwrite local history."
     return None
 
 
-def restore_main_if_safe() -> None:
+def task_branch_name(task_id: str) -> str:
+    safe = "".join(ch if ch.isalnum() or ch in "-_" else "-" for ch in task_id)[:80]
+    return f"owner-codex/{safe or 'task'}"
+
+
+def prepare_task_branch(task_id: str) -> tuple[str, str]:
+    """Create one isolated branch for the claimed owner task; never let remote work start on main."""
+    starting_sha = git("rev-parse", "HEAD")
+    branch = task_branch_name(task_id)
+    subprocess.run(
+        ["git", "-C", str(REPO), "switch", "-c", branch],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        timeout=30,
+    )
+    return branch, starting_sha
+
+
+def restore_main_if_safe(task_branch: str | None = None, starting_sha: str | None = None) -> None:
     """Return to main after a task only when the task left no tracked work in progress."""
     if tracked_worktree_changes():
         print("[hermes-owner-runner] tracked task changes remain; leaving checkout untouched for review", file=sys.stderr)
         return
-    if git("branch", "--show-current") == "main":
+    current_branch = git("branch", "--show-current")
+    current_sha = git("rev-parse", "HEAD")
+    if current_branch == "main":
         return
     try:
         subprocess.run(
@@ -117,8 +152,32 @@ def restore_main_if_safe() -> None:
             stderr=subprocess.DEVNULL,
             timeout=30,
         )
+        if task_branch and current_branch == task_branch and starting_sha and current_sha == starting_sha:
+            subprocess.run(
+                ["git", "-C", str(REPO), "branch", "-d", task_branch],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=30,
+            )
     except Exception:
         print("[hermes-owner-runner] unable to restore main automatically; next task will fail closed until reconciled", file=sys.stderr)
+
+
+def bounded_owner_prompt(prompt: str, task_branch: str) -> str:
+    """Preserve governance regardless of what free-form text is typed into the browser."""
+    return f"""HERMES OWNER BROWSER TASK — BOUNDED EXECUTION CONTRACT
+
+You are Hermes-Codex operating inside ~/Hermes on isolated task branch `{task_branch}`.
+Read and obey AGENTS.md, docs/AI_START_HERE.md and current HOS/HUEG/one-writer rules before acting.
+
+This browser task is authorization to investigate and perform ordinary low-risk repository work only. It is NOT, by itself, authorization to merge, deploy, change DNS, modify credentials/billing, perform destructive production actions, or send external communications. If the requested work reaches one of those gates, prepare evidence and stop at the exact gate.
+
+Do not switch to `main` for implementation. Keep writes on the isolated task branch (or a more specific non-main branch if governance requires it), run relevant tests, and create a PR where justified. Never delete or overwrite unrelated local/untracked work.
+
+OWNER TASK:
+{prompt}
+"""
 
 
 def request_json(path: str, *, method: str = "GET", payload: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -228,8 +287,17 @@ def execute_task(task: dict[str, Any]) -> None:
         complete(task_id, status="failed", output=preflight_error, return_code=None)
         return
 
-    post_event(task_id, "runner_started", f"Runner accepted task on repo SHA {git('rev-parse', 'HEAD') or 'unknown'} from clean tracked main.")
-    command = [str(CODEX_HERMES), "exec", prompt]
+    task_branch: str | None = None
+    starting_sha: str | None = None
+    try:
+        task_branch, starting_sha = prepare_task_branch(task_id)
+    except Exception:
+        complete(task_id, status="failed", output="Unable to create an isolated non-main task branch; no Codex task was started.", return_code=None)
+        return
+
+    post_event(task_id, "runner_started", f"Runner accepted task on repo SHA {starting_sha or 'unknown'} and isolated branch {task_branch}.")
+    guarded_prompt = bounded_owner_prompt(prompt, task_branch)
+    command = [str(CODEX_HERMES), "exec", guarded_prompt]
     env = os.environ.copy()
     process = subprocess.Popen(
         command,
@@ -306,8 +374,16 @@ def execute_task(task: dict[str, Any]) -> None:
             terminate_owned_process(process)
             return_code = process.poll() if process.poll() is not None else -9
 
+        remaining_tracked = tracked_worktree_changes()
         if cancelled:
             complete(task_id, status="cancelled", output=summary_tail or "Cancelled by owner.", return_code=return_code)
+        elif remaining_tracked:
+            complete(
+                task_id,
+                status="failed",
+                output=(summary_tail + "\n\nGovernance gate: tracked working-tree changes remain uncommitted; checkout was left untouched for review."),
+                return_code=return_code,
+            )
         elif return_code == 0:
             complete(task_id, status="completed", output=summary_tail, return_code=return_code)
         else:
@@ -317,7 +393,7 @@ def execute_task(task: dict[str, Any]) -> None:
         # never leave the owned Codex child running detached in the background.
         terminate_owned_process(process)
         selector.close()
-        restore_main_if_safe()
+        restore_main_if_safe(task_branch, starting_sha)
 
 
 def main() -> None:
