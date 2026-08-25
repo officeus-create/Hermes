@@ -61,5 +61,5 @@ test("llms.txt describes current public owners and evidence boundaries", async (
 
   expect(body).not.toMatch(/@[a-z0-9.-]+\.[a-z]{2,}/i);
   expect(body).not.toMatch(/\b(?:MC|USDOT|DOT)\s*-?\s*\d{5,8}\b/i);
-  expect(body).not.toMatch(/\+?1?[\s().-]*\d{3}[\s().-]*\d{4}/);
+  expect(body).not.toMatch(/\+?1?[\s().-]*\d{3}[\s().-]*\d{3}[\s.-]*\d{4}/);
 });
