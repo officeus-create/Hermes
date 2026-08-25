@@ -44,6 +44,7 @@
     "test:business-lead-receiver": "node --experimental-strip-types scripts/business-lead-receiver.test.mjs",
     "test:repair-shop-growth-cta": "node scripts/repair-shop-growth-cta-contract.test.mjs",
     "test:repair-shop-password-recovery": "node --experimental-strip-types scripts/repair-shop-password-recovery-contract.test.mjs",
+    "test:hermes-ai-benchmark": "node scripts/hermes-ai-benchmark.test.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

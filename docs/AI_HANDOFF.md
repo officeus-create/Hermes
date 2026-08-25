@@ -913,3 +913,11 @@ entries — append only.
 - Verification so far: build passed at 172 Astro pages; full `npm test` passed; the previously unstable focused mobile scenario passed 10/10 parallel repetitions after correction. Final full browser suite and exact-head GitHub/Cloudflare checks are required before merge.
 - Risks/assumptions: repository changes do not prove recrawl or index-state improvement. GSC follow-up remains a later comparable platform measurement, not a merge claim.
 - Recommended next task and responsible agent: Codex — complete the full browser suite, push the refreshed PR head, wait for exact-head GitHub and Cloudflare checks, then merge only if both are green under the existing owner authorization.
+
+## 2026-08-25 — Codex — Hermes AI route benchmark and resilience boundary
+
+- Added a local-only benchmark for the ordinary Codex route and the Hermes routed route using identical bounded read-only prompts, private local transcripts and a review ledger.
+- The active routed model is `openai/gpt-5.6-terra`; `openai/gpt-5.4-mini` is configured as the authenticated fallback. NVIDIA is not an active fallback because a missing key is a preflight configuration failure, not a resilient-runtime test.
+- The benchmark now records an evidence-scope guard. A route that reads outside the Hermes repository is marked `REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ` and cannot be used for a quality or cost comparison without review.
+- First equivalent `current-state` run: both routes completed (`codex`: 201.7 seconds, `gpt-5.6-sol`; Hermes: 82.4 seconds, `openai/gpt-5.6-terra`), but both were scope-flagged. This is timing telemetry only, not a valid quality/cost ranking; the next benchmark hardening task is to prevent the external project lookups observed in the transcripts.
+- No deployment, website edit, external message, CRM action, DNS change, billing action, or scheduled automation was performed.

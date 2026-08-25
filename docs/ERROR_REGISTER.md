@@ -41,6 +41,7 @@ For SEO/revenue execution, start with Issue #346. Detailed production measuremen
 | ERR-GATE-004 | WATCH | Advertising/vendor technology | Meta Pixel, Ads remarketing, new analytics vendor, international processor or similar activation | #324. |
 | ERR-GATE-005 | WATCH | Media/asset provenance | New or existing photo/video/icon/downloadable/client media whose publication rights are not documented | #320. Font binary provenance is already completed via PR #333. |
 | ERR-GATE-006 | ACTIVE | Android APK distribution | Any direct APK binary or download claim | #511 — the stale debug-signed binary was retired. Rebuild from the canonical runtime, use a controlled release key, record artifact/certificate checksums, and pass clean-device install/launch/core-flow smoke before restoring distribution. |
+| ERR-AI-001 | ACTIVE | Hermes AI resilient route | Any fallback configuration or resilience claim | Local primary smoke passed through FCC with `openai/gpt-5.6-terra`; a missing NVIDIA key failed before a fallback could be exercised. Keep only authenticated providers in the active chain. Verify fallback later with two real providers and a controlled retryable runtime failure; record local evidence. |
 
 ## Resolved repository and site errors
 
