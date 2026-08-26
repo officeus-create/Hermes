@@ -98,6 +98,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
   const saveProfileButton = $<HTMLButtonElement>("save-profile-btn");
   const feedbackForm = $<HTMLFormElement>("feedback-form");
   const submitFeedbackButton = $<HTMLButtonElement>("submit-feedback-btn");
+  const activeLocale = new URLSearchParams(window.location.search).get("lang") || "en";
   let publicBookingUrl = "";
 
   const statusLabels: Record<string, string> = { confirmed: "Confirmed", in_progress: "In progress", completed: "Completed", cancelled: "Cancelled" };
@@ -162,7 +163,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     const label = document.createElement("span"); label.className = `status-pill status-${booking.status}`; label.textContent = statusLabels[booking.status] || booking.status; wrap.append(label);
     const allowed = transitions[booking.status] || [];
     if (!allowed.length) return wrap;
-    const select = document.createElement("select"); select.className = "status-select"; select.setAttribute("aria-label", `Change status for ${booking.service_name}`);
+    const select = document.createElement("select"); select.className = "status-select"; select.setAttribute("aria-label", activeLocale === "ru" ? `Изменить статус для ${booking.service_name}` : `Change status for ${booking.service_name}`);
     const placeholder = document.createElement("option"); placeholder.value=""; placeholder.textContent="Change status…"; select.append(placeholder);
     for (const next of allowed) { const option=document.createElement("option"); option.value=next; option.textContent=statusLabels[next] || next; select.append(option); }
     select.addEventListener("change", async () => {

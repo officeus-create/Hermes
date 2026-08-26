@@ -806,3 +806,16 @@ entries — append only.
 - The existing font provenance test chain now enforces the media registry too,
   so unregistered assets and unreviewed byte changes fail CI.
 - No public image bytes, routes, copy, metadata, forms, analytics, or APIs changed.
+
+## 2026-08-26 — Codex — Repair Shops Russian owner-workspace audit
+
+- Agent/task owner: Codex; bounded Repair Shops `?lang=ru` static and API-backed UI audit.
+- Branch: `fix/repair-shops-ru-audit-2026-08-26`.
+- Behavior delivered: completed the next confirmed Russian localization slice in the canonical owner dashboard: translated API-backed booking status controls, status-history states, missing-vehicle fallback, service/feedback errors, feedback confirmation, supported timezone labels, and rating labels. The status-change accessibility label now renders in Russian without changing user-entered service, customer, contact, VIN, or other business data.
+- Files changed: `src/components/HermesConnectDomReady.astro`, `src/pages/services/hermes-connect/repair-shops/dashboard.astro`, and `tests/hermes-connect-repair-owner-locale-parity.spec.ts`.
+- Ecosystem compounding scorecard: search visibility neutral (private `noindex` workspace); conversion positive (Russian owners can safely understand operational outcomes); expertise neutral; internal linking neutral; durable knowledge positive (the exact runtime translation gaps have a browser regression); reusable architecture positive (extends the existing canonical Connect DOM-ready localization runtime); privacy-safe measurement neutral; future automation positive (mocked API contract covers asynchronous owner UI); cross-business product value neutral.
+- Verification: `git diff --check`; `npm run build` (170 pages); `npm test`; focused Repair Shops Playwright 42/42 desktop and 42/42 mobile; full `npm run test:e2e` 1045 passed / 11 skipped on this branch.
+- Screenshots: browser evidence exercised at desktop and 390px through the focused Playwright suite; no screenshot asset was added.
+- Risks and assumptions: `?lang=ru` remains a runtime locale parameter in the existing single canonical page/runtime, not a second route tree. Server/API error values remain bounded by existing user-safe API contracts; raw user/business data is intentionally not translated.
+- What remains incomplete: Gmail/Workspace signature write access has not been authorized or discovered; prepare the repository rollout package next rather than claiming mailbox deployment. Production verification and merge remain owner-gated.
+- Recommended next task and responsible agent: Codex — create the bounded Gmail signatures rollout package, then re-check PR #867 evidence before any performance implementation.

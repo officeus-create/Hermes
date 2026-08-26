@@ -207,6 +207,10 @@
         "Private beta record. Your note is available only in your authenticated workspace and to the Hermes product team. It is never sent to GA4 or shown on public shop pages, and is automatically deleted after 180 days.": "Приватная запись. Заметка доступна только в вашем защищённом рабочем пространстве и команде Hermes. Она не отправляется в GA4, не показывается на публичных страницах СТО и автоматически удаляется через 180 дней.",
         "Loading feedback…": "Загружаем отзывы…", "No feedback sent yet": "Отзывов пока нет", "Your recent private notes will appear here.": "Ваши последние приватные заметки появятся здесь.",
         "Saved": "Сохранено", "Delete": "Удалить", "Confirmed": "Подтверждено", "In progress": "В работе", "Completed": "Завершено", "Cancelled": "Отменено",
+        "A service with this name already exists.": "Услуга с таким названием уже существует.", "Unable to add service.": "Не удалось добавить услугу.", "Network error while adding service.": "Ошибка сети при добавлении услуги.",
+        "Change status…": "Изменить статус…", "Status history": "История статусов", "No history recorded yet.": "История пока не записана.", "Vehicle details were not captured for this booking.": "Данные автомобиля для этой записи не сохранены.", "Unable to load booking inbox.": "Не удалось загрузить входящие записи.", "That booking status transition is no longer allowed. Refreshing current state.": "Этот переход статуса записи больше недоступен. Обновляем текущее состояние.", "Unable to change booking status.": "Не удалось изменить статус записи.", "Network error while changing booking status.": "Ошибка сети при изменении статуса записи.", "Booking moved to": "Статус записи изменён:",
+        "Unable to load private feedback.": "Не удалось загрузить приватные отзывы.", "Unable to save private feedback.": "Не удалось сохранить приватный отзыв.", "Private feedback saved. Thank you.": "Приватный отзыв сохранён. Спасибо.", "Network error while saving private feedback.": "Ошибка сети при сохранении приватного отзыва.", "Unable to initialize the shop workspace.": "Не удалось открыть рабочее пространство СТО.",
+        "Eastern": "Восточное время", "Central": "Центральное время", "Mountain": "Горное время", "Arizona": "Аризона", "Pacific": "Тихоокеанское время", "Alaska": "Аляска", "Hawaii": "Гавайи", "5 — Excellent": "5 — Отлично", "4 — Good": "4 — Хорошо", "3 — Okay": "3 — Нормально", "2 — Difficult": "2 — Сложно", "1 — Blocked": "1 — Заблокировано",
 
         "Production D1 schedule": "Рабочее расписание", "Shop hours": "Часы работы", "One continuous booking window per day. Times are interpreted in your saved shop timezone.": "Один непрерывный интервал записи в день. Время рассчитывается в сохранённом часовом поясе СТО.", "Save weekly availability": "Сохранить недельный график", "What this controls": "Что регулирует этот график", "This schedule is stored for your shop only and is also exposed through your public shop profile. Customer bookable time slots are generated from these hours and each service duration.": "Этот график хранится только для вашего СТО и публикуется в публичном профиле. Доступные интервалы записи формируются на основе этих часов и длительности каждой услуги.",
         "Sunday": "Воскресенье", "Monday": "Понедельник", "Tuesday": "Вторник", "Wednesday": "Среда", "Thursday": "Четверг", "Friday": "Пятница", "Saturday": "Суббота", "to": "—",
@@ -260,6 +264,8 @@
         if (match) return `${match[1]} мин`;
         match = value.match(/^(\d+) live (time|times) available\.$/i);
         if (match) return `Доступно ${match[1]} ${pluralRu(match[1], "время", "времени", "вариантов времени")}.`;
+        match = value.match(/^Booking moved to (.+)\.$/);
+        if (match) return `Статус записи изменён: ${ruRepairTranslations[match[1]] || match[1]}.`;
         return null;
       };
 
@@ -290,7 +296,11 @@
         root.querySelectorAll?.("[aria-label], [title]").forEach((node) => {
           for (const attr of ["aria-label", "title"]) {
             const current = node.getAttribute(attr);
-            const translated = current ? table[current] : undefined;
+            const translated = current
+              ? table[current] || (locale === "ru" && current.startsWith("Change status for ")
+                ? `Изменить статус для ${current.slice("Change status for ".length)}`
+                : undefined)
+              : undefined;
             if (translated) node.setAttribute(attr, translated);
           }
         });
