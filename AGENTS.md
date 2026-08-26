@@ -64,6 +64,42 @@ Agents may, without repeated permission, audit, research, edit files, create fea
 
 Explicit owner confirmation is still required for merge to `main`, production deployment, DNS/Cloudflare/account/billing/permission changes, deletions, credential handling, messages or public communications, and any standing permission-bypass/full-access mode.
 
+## Hermes autonomy policy
+
+**Default behavior: act, do not ask.** For an assigned bounded Hermes task, investigate independently; inspect current `main` and active ownership; choose the safest reversible implementation; edit only in-scope workspace files; run and retry checks; diagnose failures; create a branch, commit, push a feature branch, open a review-only PR, record evidence, and continue with the remaining in-scope work.
+
+Do not ask the owner to choose between technically equivalent safe options. Evaluate value, risk, effort, reversibility, current ownership, and evidence; make the best decision and record why in the handoff. Do not stop merely because a command fails, a test is flaky, dependencies are missing, context is compacted, or the first approach fails: retry, classify the failure, recover, or choose another safe approach.
+
+Escalate only for:
+
+1. deleting valuable or unrecovered data;
+2. irreversible production changes, including merge or deploy;
+3. payments, purchases, billing, or permission changes;
+4. creating, rotating, exposing, or using credentials or secrets;
+5. external communications in the owner's name;
+6. legal or commercial commitments;
+7. destructive database migrations;
+8. material expansion outside the accepted task; or
+9. an ambiguity that cannot be resolved from current evidence.
+
+Execution environments may still impose their own sandbox or approval prompts. Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` / `--yolo`. When the installed Codex CLI supports it, the preferred Hermes invocation is `./scripts/ai/codex-hermes --approve-for-me`, retaining the `workspace-write` sandbox. The wrapper already forwards supported Codex arguments; do not edit global Codex configuration from a repository task unless the owner explicitly assigns that external configuration change.
+
+### Organizational lessons
+
+After a meaningful resolution, record a durable, evidence-backed lesson in the relevant handoff, error register, or canonical knowledge artifact using:
+
+```text
+PROBLEM
+ROOT_CAUSE
+FAILED_APPROACH
+WORKING_APPROACH
+EVIDENCE
+LESSON
+REUSE_RULE
+```
+
+This is organizational memory, not a claim that a model was permanently retrained. Return only when the bounded task is done, blocked by a real external gate, or needs an owner decision under the rules above; if safe in-scope work remains, continue it.
+
 ## Required verification
 
 Run all of these before handoff, in CI order:
