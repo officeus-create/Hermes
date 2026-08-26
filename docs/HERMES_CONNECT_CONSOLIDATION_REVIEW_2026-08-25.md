@@ -85,6 +85,45 @@ plaintext Telegram credential. Its value is deliberately not recorded here.
 - **Closure evidence:** private owner/provider confirmation only; no secret,
   account identifier, or raw alert belongs in GitHub evidence.
 
+### Redacted security manifest — 2026-08-25
+
+| Field | Redacted finding |
+| --- | --- |
+| `SOURCE` | `origin/feature/brand-exploration-v2` historical legacy prototype |
+| `PATH` | `legacy/hermes-connect-prototype/.dev.vars` |
+| `SECRET_TYPE` | Telegram bot credential (`TELEGRAM_BOT_TOKEN` variable name only; value never inspected or recorded in this package) |
+| `CURRENT_OR_HISTORICAL` | Historical recovery material; it is not canonical runtime configuration |
+| `POSSIBLE_CONSUMER` | Historical `legacy/hermes-connect-prototype/functions/api/auth/telegram.ts`; the canonical repository has a Telegram auth handler contract, but a live provider binding cannot be verified from repository inspection |
+| `RELATED_DERIVED_MATERIAL` | Historical `.wrangler/tmp` worker bundles may preserve derived copies; they are not recovery inputs and must remain excluded from source ports |
+| `ROTATION_REQUIRED` | Yes — private owner/provider action before any historical source can be considered safe recovery material |
+| `READ_ONLY_PATTERN_SCAN` | Other known recovery sources contain Telegram-related code, tests, documentation, or auth contracts; no additional plaintext credential value is reported by this review. This does not prove provider-account absence or invalidate the required rotation. |
+
+#### Private owner rotation/revocation procedure
+
+This procedure is intentionally operational but not executable by a repository
+agent. It must be performed only in the authorized Telegram/provider and
+deployment-account surfaces:
+
+1. Identify the affected bot privately from the historical configuration; do
+   not paste its identifier or token into GitHub, chat, shell history, or a
+   repository file.
+2. Revoke/rotate the current bot token through the authorized Telegram bot
+   owner workflow, then issue a replacement token only if a current approved
+   consumer is still required.
+3. Identify every current consumer through approved provider/deployment
+   configuration and logs. Treat the canonical Telegram auth handler as a
+   possible consumer until the active runtime binding is checked.
+4. Store any replacement solely in the existing approved encrypted
+   provider-secret surface; never in `.dev.vars`, Git, screenshots, prompts,
+   test fixtures, browser storage, or generated worker bundles.
+5. If a live consumer exists, use its existing approved release process and
+   run one bounded authorized authentication smoke after rotation. Do not
+   create a second Worker, auth stack, bot, or provider account.
+6. Privately record the rotation date, owner, current-consumer result and
+   smoke verdict. GitHub evidence may state only `ROTATED_PRIVATE_CONFIRMATION`
+   or `NO_CURRENT_CONSUMER_PRIVATE_CONFIRMATION`, never the secret or account
+   identifiers.
+
 ## Recommended decision queue
 
 ### Consider first after review
