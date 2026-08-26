@@ -819,3 +819,16 @@ entries — append only.
 - Risks and assumptions: `?lang=ru` remains a runtime locale parameter in the existing single canonical page/runtime, not a second route tree. Server/API error values remain bounded by existing user-safe API contracts; raw user/business data is intentionally not translated.
 - What remains incomplete: Gmail/Workspace signature write access has not been authorized or discovered; prepare the repository rollout package next rather than claiming mailbox deployment. Production verification and merge remain owner-gated.
 - Recommended next task and responsible agent: Codex — create the bounded Gmail signatures rollout package, then re-check PR #867 evidence before any performance implementation.
+
+## 2026-08-26 — Codex — Hermes autonomy policy
+
+- Agent/task owner: Codex; owner-approved governance clarification for safe autonomous execution.
+- Branch: `docs/hermes-autonomy-policy-2026-08-26`.
+- Files changed: `AGENTS.md` and this handoff.
+- Behavior delivered: makes the existing standing autonomy operational: agents act independently for safe bounded investigation, edits, tests, retries, feature-branch pushes, review-only PRs, evidence, and in-scope continuation; escalation remains mandatory for deletion, secrets, irreversible production changes, money/permissions, external communication, legal/commercial commitments, destructive migrations, material scope expansion, and evidence-unresolvable ambiguity.
+- Runtime boundary: verified locally that the installed Codex CLI exposes `--approve-for-me`, and that `scripts/ai/codex-hermes` forwards arguments to its managed FCC launcher. The policy prefers `./scripts/ai/codex-hermes --approve-for-me` with workspace-write behavior, explicitly rejects YOLO/full-sandbox bypass, and does not modify global Codex configuration from this repository task.
+- Organizational learning: records a standard evidence-backed lesson format (`PROBLEM`, `ROOT_CAUSE`, `FAILED_APPROACH`, `WORKING_APPROACH`, `EVIDENCE`, `LESSON`, `REUSE_RULE`) and explicitly distinguishes organizational memory from model retraining.
+- Ecosystem compounding scorecard: search/conversion/internal linking/public content neutral; durable knowledge, reusable governance, evidence continuity, and future automation positive; privacy unchanged because no private data or credentials are introduced.
+- Verification: installed CLI help inspection, `git diff --check`; documentation-only change with no website/runtime behavior to build or deploy.
+- Remaining: environment-enforced approvals remain outside repository control; changing global `~/.codex` configuration requires an explicitly assigned external configuration action.
+- Recommended next task: continue the accepted Gmail signatures rollout package from the current execution wave.
