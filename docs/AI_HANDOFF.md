@@ -806,3 +806,15 @@ entries — append only.
 - The existing font provenance test chain now enforces the media registry too,
   so unregistered assets and unreviewed byte changes fail CI.
 - No public image bytes, routes, copy, metadata, forms, analytics, or APIs changed.
+
+## 2026-08-25 — Codex — Hermes Connect duplicate/recovery review package
+
+- Agent/task owner: Codex; read-only Hermes Connect consolidation discovery and ChatGPT decision package.
+- Branch: `fix/connect-ru-and-performance-handoff-2026-08-25`.
+- Scope: compared canonical current `main` (`ff20f033945dd8b026513c95a31a98c8ef1641e9`) against known local `hermes-connect-next`, mobile, prototype, recovery and legacy checkouts plus the historical Antigravity experiment. No local recovery source was modified, checked out, copied, deleted or deployed.
+- Files changed: `docs/HERMES_CONNECT_CONSOLIDATION_REVIEW_2026-08-25.md`, `docs/ERROR_REGISTER.md`, this handoff.
+- Behavior delivered: one safe candidate matrix now distinguishes already-canonical and superseded flows from five ChatGPT-review candidates: Repair Shop staff model, private customer notes, custom services, iOS scaffold review and evidence-led adaptive onboarding. It blocks whole-history merges, duplicate auth/booking/localization/PWA systems, stale generated bundles and mock external adapters.
+- Security: a historical source contained a plaintext Telegram credential. No value is recorded or reused. `ERR-SEC-001` requires private owner rotation/revocation and consumer verification before the source can be considered safe recovery material.
+- Evidence class: mixed repository verification and local read-only inventory; it does not prove production behavior or authorize a recovery port/delete decision.
+- Tests: `git diff --check` passed; `npm run build` and `npm test` passed on this worktree. Required `npm run test:e2e` reached `1040 passed, 3 failed, 11 skipped`; the failures are pre-existing/unrelated runtime baseline candidates in the business lead form (desktop validation), mobile Load Analyzer click stability, and mobile homepage hero background assertion. No test/runtime code was changed in this review package.
+- Deferred: every recovery port, source alteration, archive or deletion requires a separate explicit ChatGPT task naming the candidate and action. No merge/deploy request is implied.
