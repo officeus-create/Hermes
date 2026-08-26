@@ -15,6 +15,105 @@ const median = (values) => {
 };
 
 const round = (value, digits = 0) => Number(value.toFixed(digits));
+const compactText = (value, max = 260) => {
+  if (typeof value !== "string") return null;
+  const normalized = value.replace(/\s+/g, " ").trim();
+  return normalized ? normalized.slice(0, max) : null;
+};
+
+const findFirstNode = (value) => {
+  const queue = [value];
+  const seen = new Set();
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || typeof current !== "object") continue;
+    if (seen.has(current)) continue;
+    seen.add(current);
+
+    const node = current.node;
+    if (node && typeof node === "object") {
+      const selector = compactText(node.selector, 220);
+      const snippet = compactText(node.snippet, 320);
+      const nodeLabel = compactText(node.nodeLabel, 220);
+      if (selector || snippet || nodeLabel) return { selector, snippet, nodeLabel };
+    }
+
+    for (const child of Object.values(current)) {
+      if (child && typeof child === "object") queue.push(child);
+    }
+  }
+  return null;
+};
+
+const collectLcpPhases = (value) => {
+  const queue = [value];
+  const seen = new Set();
+  const phases = [];
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || typeof current !== "object") continue;
+    if (seen.has(current)) continue;
+    seen.add(current);
+
+    const label = compactText(current.phase ?? current.label ?? current.name, 120);
+    const numeric = [current.timing, current.duration, current.value, current.numericValue]
+      .find((candidate) => typeof candidate === "number" && Number.isFinite(candidate));
+    if (label && typeof numeric === "number") {
+      phases.push({ label, ms: round(numeric, 1) });
+    }
+
+    for (const child of Object.values(current)) {
+      if (child && typeof child === "object") queue.push(child);
+    }
+  }
+
+  const unique = [];
+  const keys = new Set();
+  for (const phase of phases) {
+    const key = `${phase.label}:${phase.ms}`;
+    if (keys.has(key)) continue;
+    keys.add(key);
+    unique.push(phase);
+    if (unique.length >= 8) break;
+  }
+  return unique;
+};
+
+const auditSummary = (report, id) => {
+  const audit = report.audits?.[id];
+  if (!audit) return null;
+  return {
+    id,
+    title: compactText(audit.title, 180),
+    score: typeof audit.score === "number" ? audit.score : null,
+    scoreDisplayMode: audit.scoreDisplayMode ?? null,
+    displayValue: compactText(audit.displayValue, 180),
+  };
+};
+
+const readLcpDiagnostics = (report) => {
+  const elementAudit = report.audits?.["largest-contentful-paint-element"];
+  const breakdownAudit = report.audits?.["lcp-breakdown-insight"];
+  return {
+    element: findFirstNode(elementAudit?.details ?? null),
+    breakdown: breakdownAudit
+      ? {
+          title: compactText(breakdownAudit.title, 180),
+          displayValue: compactText(breakdownAudit.displayValue, 180),
+          phases: collectLcpPhases(breakdownAudit.details ?? null),
+        }
+      : null,
+    audits: [
+      auditSummary(report, "lcp-lazy-loaded"),
+      auditSummary(report, "prioritize-lcp-image"),
+      auditSummary(report, "uses-responsive-images"),
+      auditSummary(report, "uses-optimized-images"),
+    ].filter(Boolean),
+  };
+};
+
+const nearestRun = (runs, metric, target) => [...runs]
+  .sort((a, b) => Math.abs(Number(a[metric]) - target) - Math.abs(Number(b[metric]) - target))[0] ?? null;
 
 const readMode = async (mode) => {
   const files = (await fs.readdir(artifactsDir))
@@ -40,12 +139,14 @@ const readMode = async (mode) => {
       tbtMs: audit("total-blocking-time"),
       cls: audit("cumulative-layout-shift"),
       speedIndexMs: audit("speed-index"),
+      lcpDiagnostics: readLcpDiagnostics(report),
     });
   }
 
   const metricNames = ["performance", "accessibility", "bestPractices", "seo", "fcpMs", "lcpMs", "tbtMs", "cls", "speedIndexMs"];
   const medians = Object.fromEntries(metricNames.map((metric) => [metric, median(runs.map((run) => Number(run[metric])))]));
-  return { files, runs, medians };
+  const representativeLcpRun = nearestRun(runs, "lcpMs", medians.lcpMs);
+  return { files, runs, medians, representativeLcpRun };
 };
 
 const readAgentic = async () => {
@@ -96,6 +197,12 @@ const deltaText = (current, before, digits = 0) => {
   const value = delta(current, before, digits);
   return `${value > 0 ? "+" : ""}${value}`;
 };
+const auditState = (audit) => {
+  if (!audit) return "not reported";
+  if (audit.score === 1) return "pass";
+  if (audit.score === 0) return "fail";
+  return audit.scoreDisplayMode ?? "informational";
+};
 
 const result = {
   checkedAt: new Date().toISOString(),
@@ -105,7 +212,7 @@ const result = {
     mobileRuns: mobile.runs.length,
     desktopRuns: desktop.runs.length,
     agenticRuns: 1,
-    statistic: "median for performance; deterministic single pass for Agentic Browsing",
+    statistic: "median for performance; representative LCP diagnostic uses the run nearest the median LCP; deterministic single pass for Agentic Browsing",
     note: "GitHub-hosted Lighthouse lab runs. Compare directionally with the owner-supplied 2026-08-11 PSI baseline; these are not CrUX field metrics and do not guarantee identical PSI infrastructure conditions. Agentic Browsing is experimental and reported as pass/applicable audits, not a 0-100 ranking score.",
   },
   baseline,
@@ -116,6 +223,11 @@ const result = {
 
 const mobileM = mobile.medians;
 const desktopM = desktop.medians;
+const representative = mobile.representativeLcpRun;
+const lcpElement = representative?.lcpDiagnostics?.element ?? null;
+const lcpBreakdown = representative?.lcpDiagnostics?.breakdown ?? null;
+const lcpAudits = representative?.lcpDiagnostics?.audits ?? [];
+const lcpAuditById = Object.fromEntries(lcpAudits.map((audit) => [audit.id, audit]));
 const lines = [
   "# Production Lighthouse comparison",
   "",
@@ -136,6 +248,19 @@ const lines = [
   `- TBT: **${round(mobileM.tbtMs)}ms** (baseline 20ms; Δ ${deltaText(mobileM.tbtMs, baseline.mobile.tbtMs)}ms)`,
   `- CLS: **${round(mobileM.cls, 4)}** (baseline 0; Δ ${deltaText(mobileM.cls, baseline.mobile.cls, 4)})`,
   `- Speed Index: **${formatSeconds(mobileM.speedIndexMs)}** (baseline 4.4s; Δ ${formatSeconds(delta(mobileM.speedIndexMs, baseline.mobile.speedIndexMs))})`,
+  "",
+  "## Mobile LCP diagnostic",
+  "",
+  `- Representative run nearest median LCP: **${representative?.file ?? "not reported"}**${representative?.lcpMs ? ` (${formatSeconds(representative.lcpMs)})` : ""}`,
+  `- LCP element selector: ${lcpElement?.selector ? `\`${lcpElement.selector}\`` : "not reported by Lighthouse"}`,
+  `- LCP element snippet: ${lcpElement?.snippet ? `\`${lcpElement.snippet.replace(/`/g, "'")}\`` : "not reported by Lighthouse"}`,
+  `- LCP lazy-load audit: **${auditState(lcpAuditById["lcp-lazy-loaded"])}**${lcpAuditById["lcp-lazy-loaded"]?.displayValue ? ` — ${lcpAuditById["lcp-lazy-loaded"].displayValue}` : ""}`,
+  `- LCP image priority audit: **${auditState(lcpAuditById["prioritize-lcp-image"])}**${lcpAuditById["prioritize-lcp-image"]?.displayValue ? ` — ${lcpAuditById["prioritize-lcp-image"].displayValue}` : ""}`,
+  `- Responsive image audit: **${auditState(lcpAuditById["uses-responsive-images"])}**${lcpAuditById["uses-responsive-images"]?.displayValue ? ` — ${lcpAuditById["uses-responsive-images"].displayValue}` : ""}`,
+  `- Optimized image audit: **${auditState(lcpAuditById["uses-optimized-images"])}**${lcpAuditById["uses-optimized-images"]?.displayValue ? ` — ${lcpAuditById["uses-optimized-images"].displayValue}` : ""}`,
+  ...(lcpBreakdown?.phases?.length
+    ? ["- LCP breakdown phases:", ...lcpBreakdown.phases.map((phase) => `  - ${phase.label}: ${phase.ms}ms`)]
+    : [`- LCP breakdown: ${lcpBreakdown?.displayValue ?? "not reported by Lighthouse"}`]),
   "",
   "## Desktop median",
   "",
