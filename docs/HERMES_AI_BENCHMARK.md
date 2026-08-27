@@ -22,7 +22,9 @@ node scripts/ai/hermes-ai-benchmark.mjs --case current-state
 
 Both runners receive the same prompt, use the Codex `read-only` sandbox, and run as ephemeral sessions. The result directory is local-only under `~/.hermes-ai/benchmarks/`; it is not written to Git, the website, CRM, analytics, or any external system.
 
-Every prompt includes a repository-only boundary. The ledger records `evidenceScope`. A pair is valid for comparison only when both routes report `REPOSITORY_ONLY_OBSERVED`; `REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ` means the transcript must not be used to rank the routes until the scope issue is understood.
+The benchmark prompt also uses a repository-only execution protocol: runners may use only repository-relative paths, must limit reads to task-relevant repository sources, must not enumerate worktrees or branches, and must not inspect user configuration, memories, local transcript directories, or other projects. Each response must list the repository-relative sources it actually read. This is a prompt-and-ledger safeguard, not a claim that the underlying read-only sandbox supplies a cryptographic filesystem boundary.
+
+Every prompt includes the repository-only execution protocol. The ledger records `evidenceScope`; outside-workspace paths and forbidden-location mentions both require review. A pair is valid for comparison only when both routes report `REPOSITORY_ONLY_OBSERVED`; `REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ` means the transcript must not be used to rank the routes until the scope issue is understood.
 
 Available read-only cases:
 

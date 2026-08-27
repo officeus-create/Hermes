@@ -29,7 +29,12 @@ Propose one evidence-gated SEO action for the existing canonical commercial owne
 
 const WORKSPACE_BOUNDARY = `
 
-Workspace boundary: read only files inside the repository working directory. Do not read user memories, ~/.codex, configuration files, the home directory, external sources, or any other location. If repository sources are insufficient, state that limitation instead of searching elsewhere.`;
+Repository-only execution protocol:
+- Treat the current working directory as the only readable workspace. Use only repository-relative file paths and commands executed from that directory.
+- Read only the files named in this task and any repository-relative file directly needed to verify a claim. Do not browse for other projects, worktrees, branches, user memories, or historical transcripts.
+- Do not inspect or mention ~/.codex, ~/.codex-hermes, ~/.hermes-ai, $HOME, /Users, /private, /tmp, environment variables, configuration files outside this repository, external sources, or any other location.
+- Do not run broad discovery commands outside the repository (including find .., rg outside the repository, git worktree list, or commands that enumerate other branches or directories).
+- If repository sources are insufficient, state that limitation instead of searching elsewhere. In the final response, list only the repository-relative sources you actually read.`;
 
 function usage() {
   return `Usage: scripts/ai/hermes-ai-benchmark.mjs [--case <name>] [--prompt-file <path>] [--output-dir <path>] [--timeout-seconds <n>] [--dry-run]\n\nCases: ${Object.keys(CASES).join(", ")}`;
@@ -81,8 +86,9 @@ export function classifyEvidenceScope(output) {
   const repositoryPath = repoRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const candidatePaths = output.match(/\/(?:Users|private|var|tmp)\/[^\s'"`)<>{},;]+/g) || [];
   const outsideRepositoryReads = [...new Set(candidatePaths.filter((path) => !new RegExp(`^${repositoryPath}(?:/|$)`).test(path)))];
+  const forbiddenLocationMentions = /(?:~\/(?:\.codex(?:-hermes)?|\.hermes-ai)|\$(?:HOME|USERPROFILE))/i.test(output);
   return {
-    status: outsideRepositoryReads.length ? "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ" : "REPOSITORY_ONLY_OBSERVED",
+    status: outsideRepositoryReads.length || forbiddenLocationMentions ? "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ" : "REPOSITORY_ONLY_OBSERVED",
     outsideRepositoryReadCount: outsideRepositoryReads.length,
   };
 }

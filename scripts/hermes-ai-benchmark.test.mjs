@@ -21,8 +21,15 @@ try {
     status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
     outsideRepositoryReadCount: 1,
   });
-  assert.equal(await readFile(new URL("./ai/hermes-ai-benchmark.mjs", import.meta.url), "utf8").then(Boolean), true);
-  console.log("Hermes AI benchmark contract passed: matched prompts, read-only runners, local ledger contract.");
+  assert.deepEqual(classifyEvidenceScope("I inspected ~/.codex/memories before answering"), {
+    status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
+    outsideRepositoryReadCount: 0,
+  });
+  const benchmarkSource = await readFile(new URL("./ai/hermes-ai-benchmark.mjs", import.meta.url), "utf8");
+  assert.match(benchmarkSource, /Repository-only execution protocol:/);
+  assert.match(benchmarkSource, /git worktree list/);
+  assert.match(benchmarkSource, /repository-relative sources you actually read/);
+  console.log("Hermes AI benchmark contract passed: matched prompts, read-only runners, repository-only protocol, and local ledger contract.");
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

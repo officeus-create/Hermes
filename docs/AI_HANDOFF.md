@@ -921,3 +921,14 @@ entries — append only.
 - The benchmark now records an evidence-scope guard. A route that reads outside the Hermes repository is marked `REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ` and cannot be used for a quality or cost comparison without review.
 - First equivalent `current-state` run: both routes completed (`codex`: 201.7 seconds, `gpt-5.6-sol`; Hermes: 82.4 seconds, `openai/gpt-5.6-terra`), but both were scope-flagged. This is timing telemetry only, not a valid quality/cost ranking; the next benchmark hardening task is to prevent the external project lookups observed in the transcripts.
 - No deployment, website edit, external message, CRM action, DNS change, billing action, or scheduled automation was performed.
+
+## 2026-08-27 — Codex — Hermes AI benchmark repository-only hardening
+
+- Agent/task owner: Codex; continue the local benchmark hardening identified in the 2026-08-25 benchmark handoff.
+- Branch: `feat/hermes-ai-benchmark`.
+- Files changed: `scripts/ai/hermes-ai-benchmark.mjs`, `scripts/hermes-ai-benchmark.test.mjs`, `package.json`, `docs/HERMES_AI_BENCHMARK.md`, and this handoff.
+- Behavior delivered: benchmark prompts now explicitly constrain runners to task-relevant repository-relative sources, prohibit external project/worktree/branch enumeration and local-memory/config/transcript reads, and require a repository-relative source list. The ledger fails comparison eligibility when transcripts mention a forbidden external location as well as when a concrete outside-repository path is observed.
+- Ecosystem compounding scorecard: SEO/conversion/internal linking/content reuse are not applicable; durable knowledge and AI architecture improve through a reusable, tested local evaluation protocol; data/privacy improves because local private contexts are explicitly excluded; scale is limited to future read-only benchmark cases.
+- Verification: `git diff --check`; focused benchmark contract; benchmark `--dry-run`; `npm run build` (170 pages); `npm test` (including the benchmark contract); and `npm run test:e2e` (1,043 passed, 11 expected skips) passed on the current head.
+- Risks and assumptions: Codex read-only mode is not represented as a cryptographic filesystem isolation guarantee; protocol violations remain review-gated through transcript evidence. No live benchmark was rerun because it would invoke external model providers and the prior comparison result was intentionally not promoted.
+- Recommended next task: independently review several repository-only benchmark transcripts, then run a controlled two-authenticated-provider fallback test only when account/quota risk is acceptable; owner/agent: Codex with owner-approved provider boundary.
