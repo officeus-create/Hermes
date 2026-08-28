@@ -1,0 +1,74 @@
+---
+const path = Astro.url.pathname.replace(/\/+$/, "/");
+const items = [
+  { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
+  { key: "project", href: "/services/hermes-connect/internal/ai-connect/projects/hermes-connect-internal-ai-pilot/", en: "Project", ru: "Проект" },
+  { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "ИИ-ассистент" },
+];
+---
+<section class="hc-internal-cabinet" data-hc-internal-cabinet aria-label="Hermes Connect internal cabinet">
+  <div class="hc-internal-cabinet__inner">
+    <div class="hc-internal-cabinet__identity">
+      <span class="hc-internal-cabinet__eyebrow" data-en="Hermes Connect" data-ru="Hermes Connect">Hermes Connect</span>
+      <strong data-en="Internal cabinet" data-ru="Внутренний кабинет">Internal cabinet</strong>
+      <span class="hc-internal-cabinet__status" data-en="Owner workspace" data-ru="Рабочее пространство владельца">Owner workspace</span>
+    </div>
+    <nav class="hc-internal-cabinet__nav" aria-label="Internal workspace sections">
+      {items.map((item) => (
+        <a href={item.href} aria-current={path === item.href ? "page" : undefined} data-cabinet-link data-en={item.en} data-ru={item.ru}>{item.en}</a>
+      ))}
+    </nav>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const apply = () => {
+      const params = new URLSearchParams(window.location.search);
+      let stored = "";
+      try { stored = window.localStorage.getItem("hermes-connect-language") || ""; } catch {}
+      const locale = params.get("lang") === "ru" || (!params.get("lang") && stored === "ru") ? "ru" : "en";
+      document.documentElement.lang = locale;
+      document.documentElement.dataset.internalCabinetLocale = locale;
+      document.body.classList.add("hc-internal-cabinet-mode");
+
+      document.querySelectorAll("[data-en][data-ru]").forEach((node) => {
+        const value = node.getAttribute(locale === "ru" ? "data-ru" : "data-en");
+        if (value !== null) node.textContent = value;
+      });
+      document.querySelectorAll("[data-placeholder-en][data-placeholder-ru]").forEach((node) => {
+        if (!(node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)) return;
+        node.placeholder = node.getAttribute(locale === "ru" ? "data-placeholder-ru" : "data-placeholder-en") || "";
+      });
+      document.querySelectorAll("[data-cabinet-link]").forEach((node) => {
+        if (!(node instanceof HTMLAnchorElement)) return;
+        const next = new URL(node.getAttribute("href") || "", window.location.origin);
+        if (locale === "ru") next.searchParams.set("lang", "ru");
+        else next.searchParams.delete("lang");
+        node.href = `${next.pathname}${next.search}`;
+      });
+
+      if (locale === "ru") {
+        document.querySelector("[data-hc-english-only]")?.remove();
+      }
+      window.dispatchEvent(new CustomEvent("hc-internal-locale-ready", { detail: { locale } }));
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply, { once: true });
+    else apply();
+  })();
+</script>
+
+<style is:global>
+  .hc-internal-cabinet-mode .site-footer{display:none}
+  .hc-internal-cabinet{position:relative;z-index:19;border-bottom:1px solid rgba(255,255,255,.1);background:#0d1320;color:#eef4ff;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .hc-internal-cabinet__inner{width:min(1180px,calc(100% - 2rem));margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 0}
+  .hc-internal-cabinet__identity{display:grid;grid-template-columns:auto auto;column-gap:.65rem;row-gap:.12rem;align-items:center;min-width:0}
+  .hc-internal-cabinet__eyebrow{grid-column:1/-1;color:#9aa8bf;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+  .hc-internal-cabinet__identity strong{font-size:.95rem}
+  .hc-internal-cabinet__status{font-size:.75rem;color:#95a3b9;padding-left:.65rem;border-left:1px solid rgba(255,255,255,.16)}
+  .hc-internal-cabinet__nav{display:flex;align-items:center;gap:.35rem;overflow-x:auto;scrollbar-width:none}
+  .hc-internal-cabinet__nav::-webkit-scrollbar{display:none}
+  .hc-internal-cabinet__nav a{white-space:nowrap;text-decoration:none;color:#aeb9ca;border:1px solid transparent;border-radius:.7rem;padding:.55rem .75rem;font-size:.82rem;font-weight:750}
+  .hc-internal-cabinet__nav a:hover,.hc-internal-cabinet__nav a:focus-visible,.hc-internal-cabinet__nav a[aria-current="page"]{color:#fff;border-color:rgba(139,219,255,.28);background:rgba(139,219,255,.1)}
+  @media(max-width:700px){.hc-internal-cabinet__inner{align-items:stretch;flex-direction:column;padding:.7rem 0}.hc-internal-cabinet__identity{display:flex;flex-wrap:wrap}.hc-internal-cabinet__eyebrow{width:100%}.hc-internal-cabinet__nav{padding-bottom:.1rem}}
+</style>
