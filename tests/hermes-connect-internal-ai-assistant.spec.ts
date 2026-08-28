@@ -24,13 +24,17 @@ test.describe("Hermes Connect internal AI Assistant", () => {
   test("renders the native cabinet entry only after the server confirms the internal owner capability", async ({ page }) => {
     await page.route("**/api/internal-ai/status", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, runtime: {}, active_task: null, latest_task: null }) }));
     await page.goto("/services/hermes-connect/");
-    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveText("AI Assistant");
-    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveAttribute("href", "/services/hermes-connect/internal/ai-assistant/");
+    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveText("AI Connect");
+    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveAttribute("href", "/services/hermes-connect/internal/ai-connect/");
   });
 
-  test("does not render the internal cabinet entry for a non-owner session", async ({ page }) => {
-    await page.route("**/api/internal-ai/status", (route) => route.fulfill({ status: 403, contentType: "application/json", body: JSON.stringify({ success: false, error: "hermes_internal_owner_required" }) }));
+  test("does not render the internal cabinet entry for anonymous or non-owner sessions", async ({ page }) => {
+    let status = 401;
+    await page.route("**/api/internal-ai/status", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify({ success: false, error: status === 401 ? "not_authenticated" : "hermes_internal_owner_required" }) }));
     await page.goto("/services/hermes-connect/");
+    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveCount(0);
+    status = 403;
+    await page.reload();
     await expect(page.locator("[data-hc-internal-ai-link]")).toHaveCount(0);
   });
 });
