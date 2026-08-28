@@ -44,7 +44,6 @@ const items = [
       const locale = params.get("lang") === "ru" || (!params.get("lang") && stored === "ru") ? "ru" : "en";
       document.documentElement.lang = locale;
       document.documentElement.dataset.internalCabinetLocale = locale;
-
       document.querySelectorAll("[data-en][data-ru]").forEach((node) => {
         const value = node.getAttribute(locale === "ru" ? "data-ru" : "data-en");
         if (value !== null && node.textContent !== value) node.textContent = value;
@@ -91,7 +90,6 @@ const items = [
           });
         }
       });
-
       const cabinet = document.querySelector("[data-hc-internal-cabinet]");
       if (cabinet instanceof HTMLElement) {
         const title = cabinet.getAttribute(locale === "ru" ? "data-title-ru" : "data-title-en");
@@ -103,10 +101,7 @@ const items = [
 
     const revealForVerifiedOwner = async () => {
       try {
-        const response = await fetch("/api/internal-ai/status", {
-          credentials: "same-origin",
-          headers: { Accept: "application/json" },
-        });
+        const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
         const payload = await response.json().catch(() => null);
         if (!response.ok || !payload?.success) return;
         const cabinet = document.querySelector("[data-hc-internal-cabinet]");
@@ -114,15 +109,11 @@ const items = [
         cabinet.hidden = false;
         document.body.classList.add("hc-internal-cabinet-mode");
       } catch {
-        // Fail closed: direct visitors do not discover internal cabinet navigation
-        // unless the server has already verified HERMES_INTERNAL_OWNER.
+        // Fail closed: only a verified HERMES_INTERNAL_OWNER reveals this navigation.
       }
     };
 
-    const apply = () => {
-      applyLocale();
-      void revealForVerifiedOwner();
-    };
+    const apply = () => { applyLocale(); void revealForVerifiedOwner(); };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply, { once: true });
     else apply();
   })();
