@@ -7,16 +7,28 @@ const ownerStatus = {
   latest_task: null,
 };
 
+async function routeOwner(page: import("@playwright/test").Page) {
+  await page.route("**/api/internal-ai/status", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify(ownerStatus),
+  }));
+}
+
 test.describe("Hermes Connect internal AI cabinet UX", () => {
-  test.beforeEach(async ({ page }) => {
+  test("keeps internal cabinet navigation hidden from an anonymous direct visitor", async ({ page }) => {
     await page.route("**/api/internal-ai/status", (route) => route.fulfill({
-      status: 200,
+      status: 401,
       contentType: "application/json",
-      body: JSON.stringify(ownerStatus),
+      body: JSON.stringify({ success: false, error: "not_authenticated" }),
     }));
+    await page.goto("/services/hermes-connect/internal/ai-connect/");
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeHidden();
+    await expect(page.getByText("Sign in required")).toBeVisible();
   });
 
-  test("makes the internal area look and navigate like a cabinet", async ({ page }) => {
+  test("makes the verified owner area look and navigate like a cabinet", async ({ page }) => {
+    await routeOwner(page);
     await page.goto("/services/hermes-connect/internal/ai-connect/");
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByText("Internal cabinet", { exact: true })).toBeVisible();
@@ -27,6 +39,7 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
   });
 
   test("keeps Russian across AI Connect, project and AI Assistant", async ({ page }) => {
+    await routeOwner(page);
     await page.goto("/services/hermes-connect/internal/ai-connect/?lang=ru");
     await expect(page.getByText("Внутренний кабинет", { exact: true })).toBeVisible();
     await expect(page.getByText("Текущий проект", { exact: true })).toBeVisible();
@@ -44,6 +57,7 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
   });
 
   test("is familiar and usable at 390px", async ({ page }) => {
+    await routeOwner(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/services/hermes-connect/internal/ai-connect/?lang=ru");
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
