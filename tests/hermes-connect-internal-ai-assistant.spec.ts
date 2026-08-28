@@ -8,7 +8,7 @@ test.describe("Hermes Connect internal AI Assistant", () => {
     await expect(page.locator("[data-hc-product-context]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "AI Assistant" })).toBeVisible();
     await expect(page.getByText("Sign in required")).toBeVisible();
-    await expect(page.getByText("Use your Hermes Connect account, then reopen this internal route.")).toBeVisible();
+    await expect(page.getByText("Sign in to Hermes Connect, then reopen AI Assistant.")).toBeVisible();
     await expect(page.locator("[data-ai-content]")).toHaveClass(/hidden/);
     await expect(page.locator('a[href="/services/hermes-connect/owner/"]')).toHaveCount(0);
   });
