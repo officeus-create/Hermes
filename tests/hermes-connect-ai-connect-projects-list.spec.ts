@@ -19,24 +19,34 @@ test.describe("AI Connect Projects", () => {
   test("shows only the real current project and opens its workspace", async ({ page }) => {
     await owner(page);
     await page.goto("/services/hermes-connect/internal/ai-connect/projects/");
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Projects" })).toBeVisible();
     await expect(page.getByText("1 current project", { exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Hermes Connect · Internal AI Pilot" })).toBeVisible();
     await expect(page.locator('[data-cabinet-link][aria-current="page"]')).toHaveText("Projects");
-    await page.getByRole("link", { name: /Open project/ }).click();
-    await expect(page).toHaveURL(/internal\/ai-connect\/projects\/hermes-connect-internal-ai-pilot\/$/);
+    const open = page.getByRole("link", { name: /Open project/ });
+    await expect(open).toBeVisible();
+    await Promise.all([
+      page.waitForURL(/internal\/ai-connect\/projects\/hermes-connect-internal-ai-pilot\/$/),
+      open.click(),
+    ]);
   });
 
   test("keeps Russian language through the projects list into the project", async ({ page }) => {
     await owner(page);
     await page.goto("/services/hermes-connect/internal/ai-connect/projects/?lang=ru");
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Проекты" })).toBeVisible();
     await expect(page.getByText("1 текущий проект", { exact: true })).toBeVisible();
     await expect(page.locator('[data-cabinet-link][aria-current="page"]')).toHaveText("Проекты");
     const open = page.getByRole("link", { name: /Открыть проект/ });
+    await expect(open).toBeVisible();
     await expect(open).toHaveAttribute("href", /lang=ru/);
-    await open.click();
-    await expect(page).toHaveURL(/hermes-connect-internal-ai-pilot\/?\?lang=ru/);
+    await Promise.all([
+      page.waitForURL(/hermes-connect-internal-ai-pilot\/?\?lang=ru/),
+      open.click(),
+    ]);
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByText("Текущий проект", { exact: true })).toBeVisible();
   });
 
@@ -44,6 +54,7 @@ test.describe("AI Connect Projects", () => {
     await owner(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/services/hermes-connect/internal/ai-connect/projects/?lang=ru");
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.locator("body")).not.toHaveCSS("overflow-x", "scroll");
     await expect(page.getByRole("link", { name: "Проекты" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Открыть проект/ })).toBeVisible();
