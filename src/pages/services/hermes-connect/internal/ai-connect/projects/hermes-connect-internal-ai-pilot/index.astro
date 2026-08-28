@@ -4,71 +4,73 @@ import BaseLayout from "../../../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../../../../components/SiteFooter.astro";
 import HermesConnectExperience from "../../../../../../../components/HermesConnectExperience.astro";
+import HermesConnectInternalCabinetNav from "../../../../../../../components/HermesConnectInternalCabinetNav.astro";
 ---
 <BaseLayout title="Hermes Connect Internal AI Pilot | AI Connect" description="Private internal AI Connect project workspace." robots="noindex,nofollow">
   <SiteHeader activePath="/paths/technology/" />
   <HermesConnectExperience />
+  <HermesConnectInternalCabinetNav />
   <main id="main-content" class="project-page">
     <div class="project-shell">
-      <a class="back-link" href="/services/hermes-connect/internal/ai-connect/"><ArrowLeft size={15} /> AI Connect</a>
+      <a class="back-link" data-cabinet-link href="/services/hermes-connect/internal/ai-connect/"><ArrowLeft size={15} /><span data-en="Back to AI Connect" data-ru="Назад в AI Connect">Back to AI Connect</span></a>
 
       <header class="project-hero">
         <div>
-          <p class="project-kicker"><FolderKanban size={15} /> Current project</p>
+          <p class="project-kicker"><FolderKanban size={15} /><span data-en="Current project" data-ru="Текущий проект">Current project</span></p>
           <h1>Hermes Connect · Internal AI Pilot</h1>
-          <p>Prove one safe internal-owner → task → runner → Codex → evidence loop inside the existing Hermes Connect product, without exposing customer access or a remote shell.</p>
+          <p data-en="Prove one safe owner → task → runner → Codex → evidence loop inside Hermes Connect, without exposing customer access or a remote shell." data-ru="Доказать один полный безопасный цикл владелец → задача → runner → Codex → результат внутри Hermes Connect, без доступа клиентов и без удалённого терминала.">Prove one safe owner → task → runner → Codex → evidence loop inside Hermes Connect, without exposing customer access or a remote shell.</p>
         </div>
-        <span class="project-badge"><ShieldCheck size={16} /> Internal owner only</span>
+        <span class="project-badge"><ShieldCheck size={16} /><span data-en="Internal owner only" data-ru="Только для владельца">Internal owner only</span></span>
       </header>
 
       <section class="project-state" data-access-state role="status">
-        <strong data-access-title>Checking internal access…</strong>
-        <p data-access-copy>This workspace opens only after Hermes Connect verifies HERMES_INTERNAL_OWNER.</p>
+        <strong data-access-title data-en="Checking internal access…" data-ru="Проверяем доступ…">Checking internal access…</strong>
+        <p data-access-copy data-en="This project opens only after Hermes Connect verifies the internal owner capability." data-ru="Проект открывается только после проверки внутреннего доступа владельца Hermes Connect.">This project opens only after Hermes Connect verifies the internal owner capability.</p>
       </section>
 
       <div class="project-content hidden" data-project-content>
         <section class="project-grid project-grid-top">
           <article class="project-card">
-            <p class="project-kicker"><Sparkles size={14} /> Objective</p>
-            <h2>First verified internal AI loop</h2>
-            <p>Keep the first agent narrow: Software Engineer only. The project is complete only when a real bounded task is claimed by the outbound runner, executed through Hermes Codex, and returns sanitized evidence to Hermes Connect.</p>
+            <p class="project-kicker"><Sparkles size={14} /><span data-en="Objective" data-ru="Цель">Objective</span></p>
+            <h2 data-en="First verified internal AI loop" data-ru="Первый подтверждённый внутренний ИИ-цикл">First verified internal AI loop</h2>
+            <p data-en="Keep the first agent narrow: Software Engineer only. The project is complete only when a real bounded task is claimed, executed through Hermes Codex, and returns sanitized evidence to this cabinet." data-ru="Первый агент остаётся узким: только Software Engineer. Проект считается завершённым, когда реальная безопасная задача будет принята runner, выполнена через Hermes Codex и вернёт очищенные подтверждения в этот кабинет.">Keep the first agent narrow: Software Engineer only. The project is complete only when a real bounded task is claimed, executed through Hermes Codex, and returns sanitized evidence to this cabinet.</p>
           </article>
 
           <aside class="project-card runtime-card">
-            <p class="project-kicker"><Activity size={14} /> Live state</p>
-            <h2 data-runtime-title>Runtime not checked</h2>
+            <p class="project-kicker"><Activity size={14} /><span data-en="Live state" data-ru="Текущее состояние">Live state</span></p>
+            <h2 data-runtime-title data-en="Runtime not checked" data-ru="Система ещё не проверена">Runtime not checked</h2>
             <div class="runtime-line"><span>Hermes runner</span><strong data-runner-state>Unknown</strong></div>
-            <div class="runtime-line"><span>Software Engineer</span><strong data-agent-state>Ready</strong></div>
-            <div class="runtime-line"><span>Current task</span><strong data-task-state>None</strong></div>
+            <div class="runtime-line"><span>Software Engineer</span><strong data-agent-state data-en="Ready" data-ru="Готов">Ready</strong></div>
+            <div class="runtime-line"><span data-en="Current task" data-ru="Текущая задача">Current task</span><strong data-task-state>None</strong></div>
           </aside>
         </section>
 
         <section class="project-grid">
           <article class="project-card">
-            <p class="project-kicker"><CheckCircle2 size={14} /> Completed foundation</p>
-            <h2>What is already real</h2>
+            <p class="project-kicker"><CheckCircle2 size={14} /><span data-en="Completed foundation" data-ru="Что уже готово">Completed foundation</span></p>
+            <h2 data-en="What is already real" data-ru="Что уже работает">What is already real</h2>
             <ul class="project-list done-list">
-              <li>Internal AI Assistant is inside the canonical Hermes Connect shell.</li>
-              <li>Access is separated by HERMES_INTERNAL_OWNER instead of customer role inheritance.</li>
-              <li>Task, event, cancellation, evidence, and approval-state contracts exist.</li>
-              <li>The Mac execution path remains outbound-only and does not expose a browser shell.</li>
+              <li data-en="AI Assistant is inside the canonical Hermes Connect shell." data-ru="ИИ-ассистент уже находится внутри единого Hermes Connect.">AI Assistant is inside the canonical Hermes Connect shell.</li>
+              <li data-en="Access is separated by HERMES_INTERNAL_OWNER instead of customer role inheritance." data-ru="Внутренний доступ отделён от клиентских ролей через HERMES_INTERNAL_OWNER.">Access is separated by HERMES_INTERNAL_OWNER instead of customer role inheritance.</li>
+              <li data-en="Task, event, cancellation, evidence and approval-state contracts exist." data-ru="Уже есть контракты задач, событий, отмены, подтверждений и запросов на согласование.">Task, event, cancellation, evidence and approval-state contracts exist.</li>
+              <li data-en="The Mac execution path remains outbound-only and does not expose a browser shell." data-ru="Mac работает только через исходящие соединения и не открывает удалённый терминал в браузере.">The Mac execution path remains outbound-only and does not expose a browser shell.</li>
             </ul>
           </article>
 
           <article class="project-card">
-            <p class="project-kicker"><CircleAlert size={14} /> Current blocker</p>
-            <h2 data-blocker-title>Live pilot still needs proof</h2>
-            <p data-blocker-copy>The runtime has not reported an active runner in this session. The next useful action is to finish the real internal pilot instead of adding more agents.</p>
+            <p class="project-kicker"><CircleAlert size={14} /><span data-en="Current blocker" data-ru="Текущий блокер">Current blocker</span></p>
+            <h2 data-blocker-title data-en="Live pilot still needs proof" data-ru="Живой пилот ещё нужно подтвердить">Live pilot still needs proof</h2>
+            <p data-blocker-copy data-en="The runtime has not reported an active runner in this session. Finish the real internal pilot before adding more agents." data-ru="В этой сессии runner ещё не подтвердил активное соединение. Сначала завершаем реальный внутренний пилот, потом добавляем новых агентов.">The runtime has not reported an active runner in this session. Finish the real internal pilot before adding more agents.</p>
           </article>
         </section>
 
         <section class="project-card next-action-card">
           <div>
-            <p class="project-kicker">Next action</p>
-            <h2 data-next-title>Run one bounded Software Engineer task</h2>
-            <p data-next-copy>Open AI Assistant, submit one safe repository inspection task, and verify task → runner → Codex → evidence → result.</p>
+            <p class="project-kicker" data-en="Next action" data-ru="Следующее действие">Next action</p>
+            <h2 data-next-title data-en="Run one bounded Software Engineer task" data-ru="Запустить одну безопасную задачу Software Engineer">Run one bounded Software Engineer task</h2>
+            <p data-next-copy data-en="Open AI Assistant, submit one safe repository inspection task, and verify task → runner → Codex → evidence → result." data-ru="Откройте ИИ-ассистент, поставьте одну безопасную задачу на проверку репозитория и подтвердите цепочку задача → runner → Codex → подтверждения → результат.">Open AI Assistant, submit one safe repository inspection task, and verify task → runner → Codex → evidence → result.</p>
           </div>
-          <a class="primary-action" href="/services/hermes-connect/internal/ai-assistant/">Open AI Assistant <ArrowRight size={16} /></a>
+          <a class="primary-action" data-cabinet-link href="/services/hermes-connect/internal/ai-assistant/"><span data-en="Open AI Assistant" data-ru="Открыть ИИ-ассистент">Open AI Assistant</span><ArrowRight size={16} /></a>
         </section>
       </div>
     </div>
@@ -77,55 +79,61 @@ import HermesConnectExperience from "../../../../../../../components/HermesConne
 </BaseLayout>
 
 <script>
-  type Task = { id?: string; status?: string; updated_at?: string | null; approval_gate?: string | null };
+  type Task = { id?: string; status?: string; approval_gate?: string | null };
   const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector);
-  const text = (selector: string, value: string) => { const node = $(selector); if (node) node.textContent = value; };
-  const lock = (title: string, copy: string) => {
-    text("[data-access-title]", title);
-    text("[data-access-copy]", copy);
+  const locale = () => document.documentElement.dataset.internalCabinetLocale === "ru" ? "ru" : "en";
+  const t = (en: string, ru: string) => locale() === "ru" ? ru : en;
+  const text = (selector: string, value: string) => { const node = $(selector); if (node && node.textContent !== value) node.textContent = value; };
+  const lock = (titleEn: string, titleRu: string, copyEn: string, copyRu: string) => {
+    text("[data-access-title]", t(titleEn, titleRu));
+    text("[data-access-copy]", t(copyEn, copyRu));
     $("[data-access-state]")?.classList.remove("hidden");
     $("[data-project-content]")?.classList.add("hidden");
+  };
+  const statusLabel = (status?: string | null) => {
+    const map: Record<string,[string,string]> = { queued:["Queued","В очереди"], running:["Running","В работе"], completed:["Completed","Завершено"], failed:["Failed","Ошибка"], cancelled:["Cancelled","Отменено"], needs_approval:["Needs approval","Нужно подтверждение"] };
+    return status && map[status] ? t(map[status][0], map[status][1]) : t("None","Нет");
   };
 
   async function refresh() {
     const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
     let data: any = {};
     try { data = await response.json(); } catch {}
-    if (response.status === 401) return lock("Sign in required", "Use your Hermes Connect account, then reopen this internal project workspace.");
-    if (response.status === 403) return lock("Internal owner capability required", "Customer and ordinary Hermes Connect accounts cannot access this project.");
-    if (!response.ok || !data.success) return lock("Project workspace is unavailable", String(data.error || "runtime_unavailable"));
+    if (response.status === 401) return lock("Sign in required","Нужно войти","Sign in to Hermes Connect, then reopen this project.","Войдите в Hermes Connect и снова откройте этот проект.");
+    if (response.status === 403) return lock("Internal owner capability required","Нужен доступ владельца","Customer and ordinary Hermes Connect accounts cannot access this project.","Клиентские и обычные аккаунты Hermes Connect не имеют доступа к этому проекту.");
+    if (!response.ok || !data.success) return lock("Project workspace is unavailable","Проект недоступен",String(data.error || "runtime_unavailable"),String(data.error || "runtime_unavailable"));
 
     $("[data-access-state]")?.classList.add("hidden");
     $("[data-project-content]")?.classList.remove("hidden");
-
     const task: Task | null = data.active_task || data.latest_task || null;
     const runnerOnline = Boolean(data.runtime?.online);
-    text("[data-runner-state]", runnerOnline ? "Online" : "Not connected");
-    text("[data-runtime-title]", runnerOnline ? "Execution path is online" : "Waiting for runner");
-    text("[data-task-state]", task?.status ? task.status.replaceAll("_", " ") : "None");
+    text("[data-runner-state]", runnerOnline ? t("Online","Онлайн") : t("Not connected","Не подключён"));
+    text("[data-runtime-title]", runnerOnline ? t("Execution path is online","Контур выполнения онлайн") : t("Waiting for runner","Ожидаем runner"));
+    text("[data-task-state]", statusLabel(task?.status));
 
     if (task?.status === "needs_approval") {
-      const gate = task.approval_gate ? task.approval_gate.replaceAll("_", " ") : "owner gate";
-      text("[data-blocker-title]", `Approval required: ${gate}`);
-      text("[data-blocker-copy]", "The task stopped safely at a consequential owner gate. Review sanitized evidence before any next action.");
-      text("[data-next-title]", "Review the current approval gate");
-      text("[data-next-copy]", "Open AI Assistant to inspect the stopped task and its sanitized evidence. Do not start a parallel task.");
+      const gate = task.approval_gate ? task.approval_gate.replaceAll("_", " ") : t("owner gate","решение владельца");
+      text("[data-blocker-title]", t(`Approval required: ${gate}`,`Нужно подтверждение: ${gate}`));
+      text("[data-blocker-copy]", t("The task stopped safely at an owner gate. Review sanitized evidence before any next action.","Задача безопасно остановилась на шаге, требующем решения владельца. Проверьте подтверждения перед продолжением."));
+      text("[data-next-title]", t("Review the current approval gate","Проверить текущий запрос на подтверждение"));
+      text("[data-next-copy]", t("Open AI Assistant to inspect the stopped task. Do not start a parallel task.","Откройте ИИ-ассистент и проверьте остановленную задачу. Не запускайте параллельную задачу."));
     } else if (task?.status === "running" || task?.status === "queued") {
-      text("[data-blocker-title]", "No new task needed");
-      text("[data-blocker-copy]", "A Software Engineer task is already active. Keep this project single-writer and let the current task finish.");
-      text("[data-next-title]", "Observe the active task");
-      text("[data-next-copy]", "Open AI Assistant to watch sanitized activity and wait for a completed result or a real approval gate.");
+      text("[data-blocker-title]", t("No new task needed","Новая задача сейчас не нужна"));
+      text("[data-blocker-copy]", t("A Software Engineer task is already active. Keep this project single-writer and let it finish.","Задача Software Engineer уже активна. Сохраняем одного исполнителя и ждём завершения."));
+      text("[data-next-title]", t("Observe the active task","Следить за активной задачей"));
+      text("[data-next-copy]", t("Open AI Assistant to watch sanitized activity and wait for a result or approval gate.","Откройте ИИ-ассистент, чтобы видеть безопасный ход работы и дождаться результата или запроса на подтверждение."));
     } else if (runnerOnline) {
-      text("[data-blocker-title]", "Runner is ready for the live receipt");
-      text("[data-blocker-copy]", "The local execution path is online. The remaining proof is one harmless bounded task returning evidence to Hermes Connect.");
+      text("[data-blocker-title]", t("Runner is ready for the live receipt","Runner готов к живой проверке"));
+      text("[data-blocker-copy]", t("The execution path is online. The remaining proof is one harmless bounded task returning evidence to Hermes Connect.","Контур выполнения онлайн. Осталось подтвердить одну безопасную задачу, которая вернёт результат в Hermes Connect."));
     }
   }
 
+  window.addEventListener("hc-internal-locale-ready", () => void refresh());
   void refresh();
   const timer = window.setInterval(() => void refresh(), 8000);
   window.addEventListener("pagehide", () => window.clearInterval(timer), { once: true });
 </script>
 
 <style>
-  .project-page{min-height:76vh;background:#090d16;color:#edf2fb}.project-shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:2rem 0 5rem}.back-link{display:inline-flex;align-items:center;gap:.4rem;color:#b9c5d8;text-decoration:none;font-weight:750;margin-bottom:1.4rem}.back-link:hover,.back-link:focus-visible{color:#fff}.project-hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.5rem}.project-hero h1{font-size:clamp(2.2rem,5vw,3.7rem);margin:.3rem 0 .75rem;max-width:850px}.project-hero p{max-width:800px;color:#b9c5d8;line-height:1.6}.project-kicker{display:flex;gap:.4rem;align-items:center;margin:0;color:#a99aff;font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.project-badge{white-space:nowrap;border:1px solid rgba(96,165,250,.32);border-radius:999px;padding:.5rem .72rem;color:#dceaff;background:rgba(96,165,250,.1);font-size:.78rem;font-weight:750}.project-state,.project-card{border:1px solid rgba(255,255,255,.11);border-radius:1.25rem;background:rgba(17,24,39,.82);box-shadow:0 18px 40px rgba(0,0,0,.18)}.project-state{padding:1.2rem}.project-state p,.project-card>p,.next-action-card p{color:#b9c5d8;line-height:1.55}.hidden{display:none!important}.project-content{display:grid;gap:1rem}.project-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.project-grid-top{grid-template-columns:1.2fr .8fr}.project-card{padding:1.25rem}.project-card h2{margin:.35rem 0 .8rem;font-size:1.25rem}.project-list{margin:.8rem 0 0;padding-left:1.1rem;color:#dce5f4;display:grid;gap:.65rem;line-height:1.5}.done-list li::marker{color:#34d399}.runtime-line{display:flex;justify-content:space-between;gap:1rem;padding:.72rem 0;border-bottom:1px solid rgba(255,255,255,.08)}.runtime-line span{color:#9eabc0}.next-action-card{display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.next-action-card>div{max-width:760px}.primary-action{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:.7rem;padding:.72rem .9rem;text-decoration:none;font-weight:800;background:#8bdbff;color:#07101c;white-space:nowrap}@media(max-width:700px){.project-shell{padding-top:1.4rem}.project-hero,.next-action-card{align-items:stretch;flex-direction:column}.project-grid,.project-grid-top{grid-template-columns:1fr}.project-badge{white-space:normal}.primary-action{width:100%;box-sizing:border-box}}
+  .project-page{min-height:calc(100vh - 12rem);background:#090d16;color:#edf2fb}.project-shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:1.5rem 0 4rem}.back-link{display:inline-flex;align-items:center;gap:.4rem;color:#b9c5d8;text-decoration:none;font-weight:750;margin-bottom:1.2rem}.back-link:hover,.back-link:focus-visible{color:#fff}.project-hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.5rem}.project-hero h1{font-size:clamp(2.2rem,5vw,3.7rem);margin:.3rem 0 .75rem;max-width:850px}.project-hero p{max-width:800px;color:#b9c5d8;line-height:1.6}.project-kicker{display:flex;gap:.4rem;align-items:center;margin:0;color:#a99aff;font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.project-badge{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;border:1px solid rgba(96,165,250,.32);border-radius:999px;padding:.5rem .72rem;color:#dceaff;background:rgba(96,165,250,.1);font-size:.78rem;font-weight:750}.project-state,.project-card{border:1px solid rgba(255,255,255,.11);border-radius:1.25rem;background:rgba(17,24,39,.82);box-shadow:0 18px 40px rgba(0,0,0,.18)}.project-state{padding:1.2rem}.project-state p,.project-card>p,.next-action-card p{color:#b9c5d8;line-height:1.55}.hidden{display:none!important}.project-content{display:grid;gap:1rem}.project-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.project-grid-top{grid-template-columns:1.2fr .8fr}.project-card{padding:1.25rem}.project-card h2{margin:.35rem 0 .8rem;font-size:1.25rem}.project-list{margin:.8rem 0 0;padding-left:1.1rem;color:#dce5f4;display:grid;gap:.65rem;line-height:1.5}.done-list li::marker{color:#34d399}.runtime-line{display:flex;justify-content:space-between;gap:1rem;padding:.72rem 0;border-bottom:1px solid rgba(255,255,255,.08)}.runtime-line span{color:#9eabc0}.next-action-card{display:flex;align-items:center;justify-content:space-between;gap:1.5rem}.next-action-card>div{max-width:760px}.primary-action{display:inline-flex;align-items:center;justify-content:center;gap:.45rem;border-radius:.7rem;padding:.72rem .9rem;text-decoration:none;font-weight:800;background:#8bdbff;color:#07101c;white-space:nowrap;flex:0 0 auto}@media(max-width:700px){.project-shell{padding-top:1rem}.project-hero,.next-action-card{align-items:stretch;flex-direction:column}.project-grid,.project-grid-top{grid-template-columns:1fr}.project-badge{white-space:normal}.primary-action{width:100%;box-sizing:border-box}}
 </style>

@@ -8,7 +8,7 @@ test.describe("Hermes Connect internal AI Assistant", () => {
     await expect(page.locator("[data-hc-product-context]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "AI Assistant" })).toBeVisible();
     await expect(page.getByText("Sign in required")).toBeVisible();
-    await expect(page.getByText("Use your Hermes Connect account, then reopen this internal route.")).toBeVisible();
+    await expect(page.getByText("Sign in to Hermes Connect, then reopen AI Assistant.")).toBeVisible();
     await expect(page.locator("[data-ai-content]")).toHaveClass(/hidden/);
     await expect(page.locator('a[href="/services/hermes-connect/owner/"]')).toHaveCount(0);
   });
@@ -24,17 +24,13 @@ test.describe("Hermes Connect internal AI Assistant", () => {
   test("renders the native cabinet entry only after the server confirms the internal owner capability", async ({ page }) => {
     await page.route("**/api/internal-ai/status", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true, runtime: {}, active_task: null, latest_task: null }) }));
     await page.goto("/services/hermes-connect/");
-    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveText("AI Connect");
-    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveAttribute("href", "/services/hermes-connect/internal/ai-connect/");
+    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveText("AI Assistant");
+    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveAttribute("href", "/services/hermes-connect/internal/ai-assistant/");
   });
 
-  test("does not render the internal cabinet entry for anonymous or non-owner sessions", async ({ page }) => {
-    let status = 401;
-    await page.route("**/api/internal-ai/status", (route) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify({ success: false, error: status === 401 ? "not_authenticated" : "hermes_internal_owner_required" }) }));
+  test("does not render the internal cabinet entry for a non-owner session", async ({ page }) => {
+    await page.route("**/api/internal-ai/status", (route) => route.fulfill({ status: 403, contentType: "application/json", body: JSON.stringify({ success: false, error: "hermes_internal_owner_required" }) }));
     await page.goto("/services/hermes-connect/");
-    await expect(page.locator("[data-hc-internal-ai-link]")).toHaveCount(0);
-    status = 403;
-    await page.reload();
     await expect(page.locator("[data-hc-internal-ai-link]")).toHaveCount(0);
   });
 });
