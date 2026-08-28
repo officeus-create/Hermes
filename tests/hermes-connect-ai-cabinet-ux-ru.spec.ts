@@ -64,9 +64,9 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(openAssistant).toBeVisible();
     await expect(openAssistant).toHaveAttribute("href", /lang=ru/);
 
-    // Use the stable cabinet navigation for the cross-surface transition. The project CTA
-    // is asserted above as an equivalent localized target, while the sticky cabinet link
-    // is the familiar primary navigation users can rely on even while live project cards refresh.
+    // The sticky cabinet navigation is the stable cross-surface path while live project
+    // cards may refresh beneath it. The project CTA above is also verified to target the
+    // same localized assistant route, so both familiar entry points remain discoverable.
     await navAssistant.click();
     await expect(page).toHaveURL(/internal\/ai-assistant\/?\?lang=ru/);
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
