@@ -25,6 +25,7 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await page.goto("/services/hermes-connect/internal/ai-connect/");
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeHidden();
     await expect(page.getByText("Sign in required")).toBeVisible();
+    await expect(page.locator(".site-header")).toBeVisible();
   });
 
   test("makes the verified owner area look and navigate like a cabinet", async ({ page }) => {
@@ -35,7 +36,10 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(page.locator('[data-cabinet-link][aria-current="page"]')).toHaveText("Overview");
     await expect(page.getByRole("link", { name: /Open project/ })).toBeVisible();
     await expect(page.getByRole("link", { name: /Open AI Assistant/ })).toBeVisible();
+    await expect(page.locator(".site-header")).toBeHidden();
+    await expect(page.locator("[data-hc-product-context]")).toBeHidden();
     await expect(page.locator(".site-footer")).toBeHidden();
+    await expect(page.getByRole("link", { name: "Hermes Connect home" })).toBeVisible();
   });
 
   test("keeps Russian across AI Connect, project and AI Assistant", async ({ page }) => {
@@ -43,6 +47,8 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await page.goto("/services/hermes-connect/internal/ai-connect/?lang=ru");
     await expect(page.getByText("Внутренний кабинет", { exact: true })).toBeVisible();
     await expect(page.getByText("Текущий проект", { exact: true })).toBeVisible();
+    await expect(page.locator('[data-locale-choice="ru"]')).toHaveAttribute("aria-current", "true");
+    await expect(page.getByRole("link", { name: "На главную Hermes Connect" })).toHaveAttribute("href", /lang=ru/);
     const project = page.getByRole("link", { name: /Открыть проект/ });
     await expect(project).toHaveAttribute("href", /lang=ru/);
     await project.click();
@@ -56,6 +62,15 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
   });
 
+  test("allows the owner to switch the internal cabinet back to English", async ({ page }) => {
+    await routeOwner(page);
+    await page.goto("/services/hermes-connect/internal/ai-connect/?lang=ru");
+    await page.locator('[data-locale-choice="en"]').click();
+    await expect(page).toHaveURL(/internal\/ai-connect\/$/);
+    await expect(page.getByText("Internal cabinet", { exact: true })).toBeVisible();
+    await expect(page.locator('[data-locale-choice="en"]')).toHaveAttribute("aria-current", "true");
+  });
+
   test("is familiar and usable at 390px", async ({ page }) => {
     await routeOwner(page);
     await page.setViewportSize({ width: 390, height: 844 });
@@ -65,5 +80,6 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(page.getByRole("link", { name: "Обзор" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Проект" })).toBeVisible();
     await expect(page.getByRole("link", { name: "ИИ-ассистент" })).toBeVisible();
+    await expect(page.locator('[data-locale-choice="ru"]')).toBeVisible();
   });
 });
