@@ -31,7 +31,7 @@ test.describe("Hermes Connect AI Connect", () => {
     await expect(page.getByRole("heading", { name: "Hermes Connect · Internal AI Pilot" })).toBeVisible();
     await expect(page.locator("[data-runner-state]")).toHaveText("Online");
     await expect(page.locator("[data-active-task]")).toHaveText("hcai_demo");
-    await expect(page.locator("[data-task-status]")).toHaveText("running");
+    await expect(page.locator("[data-task-status]")).toHaveText("Running");
     await expect(page.getByRole("link", { name: /Open AI Assistant/i })).toHaveAttribute("href", "/services/hermes-connect/internal/ai-assistant/");
   });
 
