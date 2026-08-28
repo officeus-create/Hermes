@@ -47,29 +47,32 @@ const items = [
 
       document.querySelectorAll("[data-en][data-ru]").forEach((node) => {
         const value = node.getAttribute(locale === "ru" ? "data-ru" : "data-en");
-        if (value !== null) node.textContent = value;
+        if (value !== null && node.textContent !== value) node.textContent = value;
       });
       document.querySelectorAll("[data-aria-en][data-aria-ru]").forEach((node) => {
         const value = node.getAttribute(locale === "ru" ? "data-aria-ru" : "data-aria-en");
-        if (value !== null) node.setAttribute("aria-label", value);
+        if (value !== null && node.getAttribute("aria-label") !== value) node.setAttribute("aria-label", value);
       });
       document.querySelectorAll("[data-placeholder-en][data-placeholder-ru]").forEach((node) => {
         if (!(node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)) return;
-        node.placeholder = node.getAttribute(locale === "ru" ? "data-placeholder-ru" : "data-placeholder-en") || "";
+        const value = node.getAttribute(locale === "ru" ? "data-placeholder-ru" : "data-placeholder-en") || "";
+        if (node.placeholder !== value) node.placeholder = value;
       });
       document.querySelectorAll("[data-cabinet-link]").forEach((node) => {
         if (!(node instanceof HTMLAnchorElement)) return;
         const next = new URL(node.getAttribute("href") || "", window.location.origin);
         if (locale === "ru") next.searchParams.set("lang", "ru");
         else next.searchParams.delete("lang");
-        node.href = `${next.pathname}${next.search}`;
+        const nextHref = `${next.pathname}${next.search}`;
+        if (node.getAttribute("href") !== nextHref) node.setAttribute("href", nextHref);
       });
       document.querySelectorAll("[data-cabinet-exit]").forEach((node) => {
         if (!(node instanceof HTMLAnchorElement)) return;
         const next = new URL(node.getAttribute("href") || "", window.location.origin);
         if (locale === "ru") next.searchParams.set("lang", "ru");
         else next.searchParams.delete("lang");
-        node.href = `${next.pathname}${next.search}`;
+        const nextHref = `${next.pathname}${next.search}`;
+        if (node.getAttribute("href") !== nextHref) node.setAttribute("href", nextHref);
       });
       document.querySelectorAll("[data-locale-choice]").forEach((node) => {
         if (!(node instanceof HTMLAnchorElement)) return;
@@ -77,18 +80,22 @@ const items = [
         const next = new URL(window.location.href);
         if (target === "ru") next.searchParams.set("lang", "ru");
         else next.searchParams.delete("lang");
-        node.href = `${next.pathname}${next.search}${next.hash}`;
+        const nextHref = `${next.pathname}${next.search}${next.hash}`;
+        if (node.getAttribute("href") !== nextHref) node.setAttribute("href", nextHref);
         if (target === locale) node.setAttribute("aria-current", "true");
         else node.removeAttribute("aria-current");
-        node.addEventListener("click", () => {
-          try { window.localStorage.setItem("hermes-connect-language", target); } catch {}
-        }, { once: true });
+        if (node.dataset.localeBound !== "true") {
+          node.dataset.localeBound = "true";
+          node.addEventListener("click", () => {
+            try { window.localStorage.setItem("hermes-connect-language", target); } catch {}
+          });
+        }
       });
 
       const cabinet = document.querySelector("[data-hc-internal-cabinet]");
       if (cabinet instanceof HTMLElement) {
         const title = cabinet.getAttribute(locale === "ru" ? "data-title-ru" : "data-title-en");
-        if (title) document.title = title;
+        if (title && document.title !== title) document.title = title;
       }
       if (locale === "ru") document.querySelector("[data-hc-english-only]")?.remove();
       window.dispatchEvent(new CustomEvent("hc-internal-locale-ready", { detail: { locale } }));
