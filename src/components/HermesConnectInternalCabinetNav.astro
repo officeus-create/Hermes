@@ -1,12 +1,17 @@
 ---
 const path = Astro.url.pathname.replace(/\/+$/, "/");
+const pageTitle = path === "/services/hermes-connect/internal/ai-assistant/"
+  ? { en: "AI Assistant | Hermes Connect", ru: "ИИ-ассистент | Hermes Connect" }
+  : path.includes("/projects/hermes-connect-internal-ai-pilot/")
+    ? { en: "Hermes Connect Internal AI Pilot | AI Connect", ru: "Внутренний ИИ-пилот Hermes Connect | AI Connect" }
+    : { en: "AI Connect | Hermes Connect", ru: "AI Connect | Hermes Connect" };
 const items = [
   { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
   { key: "project", href: "/services/hermes-connect/internal/ai-connect/projects/hermes-connect-internal-ai-pilot/", en: "Project", ru: "Проект" },
   { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "ИИ-ассистент" },
 ];
 ---
-<section class="hc-internal-cabinet" data-hc-internal-cabinet aria-label="Hermes Connect internal cabinet" hidden>
+<section class="hc-internal-cabinet" data-hc-internal-cabinet data-title-en={pageTitle.en} data-title-ru={pageTitle.ru} data-aria-en="Hermes Connect internal cabinet" data-aria-ru="Внутренний кабинет Hermes Connect" aria-label="Hermes Connect internal cabinet" hidden>
   <div class="hc-internal-cabinet__top">
     <div class="hc-internal-cabinet__identity">
       <span class="hc-internal-cabinet__eyebrow">Hermes Connect</span>
@@ -14,7 +19,7 @@ const items = [
       <span class="hc-internal-cabinet__status" data-en="Owner workspace" data-ru="Рабочее пространство владельца">Owner workspace</span>
     </div>
     <div class="hc-internal-cabinet__utilities">
-      <div class="hc-internal-language" aria-label="Cabinet language">
+      <div class="hc-internal-language" data-aria-en="Cabinet language" data-aria-ru="Язык кабинета" aria-label="Cabinet language">
         <a href={path} data-locale-choice="en" lang="en">EN</a>
         <a href={`${path}?lang=ru`} data-locale-choice="ru" lang="ru">RU</a>
       </div>
@@ -22,7 +27,7 @@ const items = [
     </div>
   </div>
   <div class="hc-internal-cabinet__sections">
-    <nav class="hc-internal-cabinet__nav" aria-label="Internal workspace sections">
+    <nav class="hc-internal-cabinet__nav" data-aria-en="Internal workspace sections" data-aria-ru="Разделы внутреннего кабинета" aria-label="Internal workspace sections">
       {items.map((item) => (
         <a href={item.href} aria-current={path === item.href ? "page" : undefined} data-cabinet-link data-en={item.en} data-ru={item.ru}>{item.en}</a>
       ))}
@@ -43,6 +48,10 @@ const items = [
       document.querySelectorAll("[data-en][data-ru]").forEach((node) => {
         const value = node.getAttribute(locale === "ru" ? "data-ru" : "data-en");
         if (value !== null) node.textContent = value;
+      });
+      document.querySelectorAll("[data-aria-en][data-aria-ru]").forEach((node) => {
+        const value = node.getAttribute(locale === "ru" ? "data-aria-ru" : "data-aria-en");
+        if (value !== null) node.setAttribute("aria-label", value);
       });
       document.querySelectorAll("[data-placeholder-en][data-placeholder-ru]").forEach((node) => {
         if (!(node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement)) return;
@@ -76,6 +85,11 @@ const items = [
         }, { once: true });
       });
 
+      const cabinet = document.querySelector("[data-hc-internal-cabinet]");
+      if (cabinet instanceof HTMLElement) {
+        const title = cabinet.getAttribute(locale === "ru" ? "data-title-ru" : "data-title-en");
+        if (title) document.title = title;
+      }
       if (locale === "ru") document.querySelector("[data-hc-english-only]")?.remove();
       window.dispatchEvent(new CustomEvent("hc-internal-locale-ready", { detail: { locale } }));
     };
