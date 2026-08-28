@@ -178,10 +178,10 @@
         const payload = await response.json().catch(() => null);
         if (!response.ok || !payload?.success || nav.querySelector("[data-hc-internal-ai-link]")) return;
         const link = document.createElement("a");
-        link.textContent = "AI Assistant";
-        link.href = withLocale("/services/hermes-connect/internal/ai-assistant/");
+        link.textContent = "AI Connect";
+        link.href = withLocale("/services/hermes-connect/internal/ai-connect/");
         link.setAttribute("data-hc-internal-ai-link", "true");
-        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-assistant/") link.setAttribute("aria-current", "page");
+        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-connect/") link.setAttribute("aria-current", "page");
         nav.append(link);
         updateFamilyNavCue();
       } catch {
