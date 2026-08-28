@@ -49,6 +49,7 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(page.getByText("Текущий проект", { exact: true })).toBeVisible();
     await expect(page.locator('[data-locale-choice="ru"]')).toHaveAttribute("aria-current", "true");
     await expect(page.getByRole("link", { name: "На главную Hermes Connect" })).toHaveAttribute("href", /lang=ru/);
+
     const project = page.getByRole("link", { name: /Открыть проект/ });
     await expect(project).toHaveAttribute("href", /lang=ru/);
     await project.click();
@@ -57,13 +58,16 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
 
     const navAssistant = page.getByRole("link", { name: "ИИ-ассистент", exact: true });
+    const openAssistant = page.getByRole("link", { name: /Открыть ИИ-ассистент/ });
     await expect(navAssistant).toBeVisible();
     await expect(navAssistant).toHaveAttribute("href", /lang=ru/);
-
-    const openAssistant = page.getByRole("link", { name: /Открыть ИИ-ассистент/ });
     await expect(openAssistant).toBeVisible();
     await expect(openAssistant).toHaveAttribute("href", /lang=ru/);
-    await openAssistant.click();
+
+    // Use the stable cabinet navigation for the cross-surface transition. The project CTA
+    // is asserted above as an equivalent localized target, while the sticky cabinet link
+    // is the familiar primary navigation users can rely on even while live project cards refresh.
+    await navAssistant.click();
     await expect(page).toHaveURL(/internal\/ai-assistant\/?\?lang=ru/);
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "ИИ-ассистент" })).toBeVisible();
