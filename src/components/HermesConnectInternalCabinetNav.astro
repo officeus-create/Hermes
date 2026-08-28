@@ -59,7 +59,7 @@ const isCurrent = (item: CabinetItem) => item.key === "projects" ? path.startsWi
         if (value !== null) node.textContent = value;
       });
       document.querySelectorAll("[data-aria-en][data-aria-ru]").forEach((node) => {
-        const value = node.getAttribute(locale === "ru" ? "data-ru" : "data-en");
+        const value = node.getAttribute(locale === "ru" ? "data-aria-ru" : "data-aria-en");
         if (value !== null) node.setAttribute("aria-label", value);
       });
       document.querySelectorAll("[data-placeholder-en][data-placeholder-ru]").forEach((node) => {
