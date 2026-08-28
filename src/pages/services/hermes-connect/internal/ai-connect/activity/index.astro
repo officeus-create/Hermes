@@ -1,0 +1,153 @@
+---
+import { Activity, CircleAlert, ExternalLink, ShieldCheck, Sparkles } from "@lucide/astro";
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import HermesConnectExperience from "../../../../../../components/HermesConnectExperience.astro";
+import HermesConnectInternalCabinetNav from "../../../../../../components/HermesConnectInternalCabinetNav.astro";
+---
+<BaseLayout title="Activity | AI Connect | Hermes Connect" description="Private internal AI Connect task activity." robots="noindex,nofollow">
+  <SiteHeader activePath="/paths/technology/" />
+  <HermesConnectExperience />
+  <HermesConnectInternalCabinetNav />
+  <main id="main-content" class="activity-page">
+    <div class="activity-shell">
+      <header class="activity-hero">
+        <div>
+          <p class="activity-kicker"><Sparkles size={15} /><span data-en="AI Connect · activity" data-ru="AI Connect · активность">AI Connect · activity</span></p>
+          <h1 data-en="Activity" data-ru="Активность">Activity</h1>
+          <p data-en="See recent internal AI tasks, safe results and real approval stops in one familiar history view." data-ru="Смотрите последние внутренние ИИ-задачи, безопасные результаты и реальные остановки на подтверждение в единой истории.">See recent internal AI tasks, safe results and real approval stops in one familiar history view.</p>
+        </div>
+        <span class="activity-badge"><ShieldCheck size={16} /><span data-en="Internal owner only" data-ru="Только для владельца">Internal owner only</span></span>
+      </header>
+
+      <section class="activity-state" data-access-state role="status">
+        <strong data-access-title data-en="Checking internal access…" data-ru="Проверяем доступ…">Checking internal access…</strong>
+        <p data-access-copy data-en="Activity opens only after Hermes Connect verifies the internal owner capability." data-ru="История открывается только после проверки внутреннего доступа владельца Hermes Connect.">Activity opens only after Hermes Connect verifies the internal owner capability.</p>
+      </section>
+
+      <div class="activity-content hidden" data-activity-content>
+        <div class="activity-summary">
+          <div><span data-en="Recent tasks" data-ru="Последние задачи">Recent tasks</span><strong data-task-count>0</strong></div>
+          <div><span data-en="Needs approval" data-ru="Нужно подтверждение">Needs approval</span><strong data-approval-count>0</strong></div>
+          <a data-cabinet-link href="/services/hermes-connect/internal/ai-assistant/"><span data-en="Open AI Assistant" data-ru="Открыть ИИ-ассистент">Open AI Assistant</span></a>
+        </div>
+
+        <section class="activity-list" data-task-list aria-live="polite">
+          <article class="activity-empty" data-empty-state>
+            <Activity size={24} />
+            <h2 data-en="No task activity yet" data-ru="Истории задач пока нет">No task activity yet</h2>
+            <p data-en="The first real Software Engineer task will appear here after it is created through AI Assistant." data-ru="Первая реальная задача Software Engineer появится здесь после запуска через ИИ-ассистент.">The first real Software Engineer task will appear here after it is created through AI Assistant.</p>
+          </article>
+        </section>
+      </div>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type Task = {
+    id?: string;
+    agent_role?: string;
+    status?: string;
+    created_at?: string | null;
+    started_at?: string | null;
+    completed_at?: string | null;
+    updated_at?: string | null;
+    branch?: string | null;
+    pr_url?: string | null;
+    evidence_class?: string | null;
+    output_summary?: string | null;
+    approval_gate?: string | null;
+  };
+  const $ = <T extends HTMLElement = HTMLElement>(selector:string) => document.querySelector<T>(selector);
+  const locale = () => document.documentElement.dataset.internalCabinetLocale === "ru" ? "ru" : "en";
+  const t = (en:string,ru:string) => locale() === "ru" ? ru : en;
+  const text = (selector:string,value:string) => { const node=$(selector); if(node) node.textContent=value; };
+  const lock = (titleEn:string,titleRu:string,copyEn:string,copyRu:string) => {
+    text("[data-access-title]",t(titleEn,titleRu));
+    text("[data-access-copy]",t(copyEn,copyRu));
+    $("[data-access-state]")?.classList.remove("hidden");
+    $("[data-activity-content]")?.classList.add("hidden");
+  };
+  const statusLabel = (status?:string|null) => {
+    const map:Record<string,[string,string]>={queued:["Queued","В очереди"],running:["Running","В работе"],completed:["Completed","Завершено"],failed:["Failed","Ошибка"],cancelled:["Cancelled","Отменено"],needs_approval:["Needs approval","Нужно подтверждение"]};
+    return status && map[status] ? t(map[status][0],map[status][1]) : t("Unknown","Неизвестно");
+  };
+  const dateLabel = (value?:string|null) => value ? new Date(value).toLocaleString(locale()==="ru"?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}) : "—";
+  const safePrUrl = (value?:string|null) => {
+    if(!value) return null;
+    try {
+      const url=new URL(value);
+      return url.protocol==="https:" && url.hostname==="github.com" && /^\/officeus-create\/Hermes\/pull\/\d+\/?$/.test(url.pathname) ? url.href : null;
+    } catch { return null; }
+  };
+  const taskTitle = (task:Task,index:number) => {
+    const suffix=String(task.id||"").replace(/^hcai_/,"").slice(0,8);
+    return suffix ? `${t("Task","Задача")} ${suffix}` : `${t("Task","Задача")} ${index+1}`;
+  };
+  function render(tasks:Task[]){
+    text("[data-task-count]",String(tasks.length));
+    text("[data-approval-count]",String(tasks.filter((task)=>task.status==="needs_approval").length));
+    const list=$("[data-task-list]"); if(!list) return;
+    list.replaceChildren();
+    if(!tasks.length){
+      const empty=document.createElement("article"); empty.className="activity-empty";
+      const heading=document.createElement("h2"); heading.textContent=t("No task activity yet","Истории задач пока нет");
+      const copy=document.createElement("p"); copy.textContent=t("The first real Software Engineer task will appear here after it is created through AI Assistant.","Первая реальная задача Software Engineer появится здесь после запуска через ИИ-ассистент.");
+      empty.append(heading,copy); list.append(empty); return;
+    }
+    tasks.slice(0,30).forEach((task,index)=>{
+      const card=document.createElement("article"); card.className=`activity-card status-${task.status||"unknown"}`;
+      const top=document.createElement("div"); top.className="activity-card__top";
+      const title=document.createElement("div");
+      const kicker=document.createElement("span"); kicker.className="activity-card__agent"; kicker.textContent="Software Engineer";
+      const heading=document.createElement("h2"); heading.textContent=taskTitle(task,index);
+      title.append(kicker,heading);
+      const status=document.createElement("span"); status.className="activity-card__status"; status.textContent=statusLabel(task.status);
+      top.append(title,status); card.append(top);
+
+      const meta=document.createElement("dl"); meta.className="activity-meta";
+      const addMeta=(label:string,value:string)=>{const row=document.createElement("div"),dt=document.createElement("dt"),dd=document.createElement("dd");dt.textContent=label;dd.textContent=value;row.append(dt,dd);meta.append(row)};
+      addMeta(t("Updated","Обновлено"),dateLabel(task.updated_at||task.completed_at||task.started_at||task.created_at));
+      addMeta(t("Branch","Ветка"),task.branch||"—");
+      addMeta(t("Evidence","Подтверждение"),task.evidence_class||"—");
+      card.append(meta);
+
+      const result=document.createElement("p"); result.className="activity-result";
+      result.textContent=task.output_summary||t("No result has been returned yet.","Результат пока не получен.");
+      card.append(result);
+
+      if(task.status==="needs_approval"){
+        const approval=document.createElement("div"); approval.className="activity-approval";
+        const icon=document.createElement("span"); icon.textContent="!"; icon.setAttribute("aria-hidden","true");
+        const copy=document.createElement("span"); const gate=task.approval_gate?task.approval_gate.replaceAll("_"," "):t("owner decision","решение владельца");
+        copy.textContent=t(`Stopped safely for approval: ${gate}.`,`Безопасно остановлено для подтверждения: ${gate}.`);
+        approval.append(icon,copy); card.append(approval);
+      }
+
+      const pr=safePrUrl(task.pr_url);
+      if(pr){const link=document.createElement("a");link.className="activity-pr";link.href=pr;link.target="_blank";link.rel="noopener";link.textContent=t("Open PR","Открыть PR");card.append(link)}
+      list.append(card);
+    });
+  }
+  async function refresh(){
+    const response=await fetch("/api/internal-ai/tasks",{credentials:"same-origin",headers:{Accept:"application/json"}});
+    let data:any={}; try{data=await response.json()}catch{}
+    if(response.status===401) return lock("Sign in required","Нужно войти","Sign in to Hermes Connect, then reopen Activity.","Войдите в Hermes Connect и снова откройте Активность.");
+    if(response.status===403) return lock("Internal owner capability required","Нужен доступ владельца","Customer and ordinary Hermes Connect accounts cannot access internal AI activity.","Клиентские и обычные аккаунты Hermes Connect не имеют доступа к внутренней ИИ-активности.");
+    if(!response.ok||!data.success) return lock("Activity is unavailable","Активность недоступна",t("The task history could not be loaded.","Не удалось загрузить историю задач."),t("The task history could not be loaded.","Не удалось загрузить историю задач."));
+    $("[data-access-state]")?.classList.add("hidden");
+    $("[data-activity-content]")?.classList.remove("hidden");
+    render(Array.isArray(data.tasks)?data.tasks:[]);
+  }
+  window.addEventListener("hc-internal-locale-ready",()=>void refresh());
+  void refresh();
+  const timer=window.setInterval(()=>void refresh(),8000);
+  window.addEventListener("pagehide",()=>window.clearInterval(timer),{once:true});
+</script>
+
+<style>
+.activity-page{min-height:calc(100vh - 10rem);background:#090d16;color:#edf2fb}.activity-shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:2rem 0 4rem}.activity-hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.5rem}.activity-hero h1{font-size:clamp(2.2rem,5vw,3.8rem);margin:.3rem 0 .7rem}.activity-hero p{max-width:760px;color:#b9c5d8;line-height:1.6}.activity-kicker{display:flex;align-items:center;gap:.4rem;margin:0;color:#a99aff;font-size:.72rem;font-weight:820;letter-spacing:.09em;text-transform:uppercase}.activity-badge,.activity-card__status{display:inline-flex;align-items:center;white-space:nowrap;border:1px solid rgba(96,165,250,.3);border-radius:999px;padding:.48rem .68rem;color:#dceaff;background:rgba(96,165,250,.1);font-size:.76rem;font-weight:760}.activity-state,.activity-summary,.activity-card,.activity-empty{border:1px solid rgba(255,255,255,.11);border-radius:1.2rem;background:rgba(17,24,39,.82);box-shadow:0 18px 40px rgba(0,0,0,.16)}.activity-state{padding:1.2rem}.activity-state p{margin:.35rem 0 0;color:#b9c5d8}.hidden{display:none!important}.activity-content{display:grid;gap:1rem}.activity-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr)) auto;gap:.8rem;align-items:center;padding:1rem}.activity-summary div{display:grid;gap:.18rem}.activity-summary span{color:#8fa0b8;font-size:.76rem}.activity-summary strong{font-size:1.15rem}.activity-summary a{justify-self:end;text-decoration:none;border-radius:.7rem;padding:.62rem .78rem;background:#8bdbff;color:#07101c;font-weight:800}.activity-list{display:grid;gap:.8rem}.activity-empty{padding:2rem;text-align:center;color:#b9c5d8}.activity-empty h2{color:#edf2fb}.activity-card{padding:1.15rem;display:grid;gap:.9rem}.activity-card__top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}.activity-card__agent{color:#8fa0b8;font-size:.72rem;font-weight:760}.activity-card h2{margin:.2rem 0 0;font-size:1.08rem}.activity-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:0}.activity-meta div{padding:.7rem;border-radius:.7rem;background:rgba(255,255,255,.035);min-width:0}.activity-meta dt{color:#8fa0b8;font-size:.7rem}.activity-meta dd{margin:.18rem 0 0;overflow-wrap:anywhere}.activity-result{margin:0;color:#c6d0de;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.activity-approval{display:flex;align-items:flex-start;gap:.55rem;padding:.72rem;border:1px solid rgba(251,191,36,.28);border-radius:.75rem;background:rgba(251,191,36,.08);color:#ffe8a3}.activity-approval>span:first-child{display:grid;place-items:center;min-width:1.35rem;height:1.35rem;border-radius:999px;background:rgba(251,191,36,.16);font-weight:900}.activity-pr{justify-self:start;color:#9edfff;font-weight:780;text-decoration:none}.status-needs_approval .activity-card__status{border-color:rgba(251,191,36,.35);color:#ffe8a3;background:rgba(251,191,36,.08)}.status-completed .activity-card__status{border-color:rgba(52,211,153,.3);color:#b8f7df;background:rgba(52,211,153,.08)}@media(max-width:700px){.activity-shell{padding-top:1.3rem}.activity-hero{flex-direction:column}.activity-badge{white-space:normal}.activity-summary{grid-template-columns:1fr 1fr}.activity-summary a{grid-column:1/-1;justify-self:stretch;text-align:center}.activity-meta{grid-template-columns:1fr}.activity-card__top{align-items:flex-start}.activity-card__status{white-space:normal;text-align:center}}
+</style>
