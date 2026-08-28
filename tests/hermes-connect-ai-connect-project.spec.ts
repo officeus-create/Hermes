@@ -32,8 +32,8 @@ test.describe("AI Connect project workspace", () => {
 
     await page.goto(projectPath);
     await expect(page.getByRole("heading", { name: "Hermes Connect · Internal AI Pilot" })).toBeVisible();
-    await expect(page.getByText("Execution path is online")).toBeVisible();
-    await expect(page.getByText("Runner is ready for the live receipt")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Execution path is online" })).toBeVisible();
+    await expect(page.getByText("Runner is ready for the live receipt", { exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: /Open AI Assistant/ })).toHaveAttribute("href", "/services/hermes-connect/internal/ai-assistant/");
   });
 
