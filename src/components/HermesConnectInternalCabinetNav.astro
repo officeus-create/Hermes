@@ -7,12 +7,21 @@ const items = [
 ];
 ---
 <section class="hc-internal-cabinet" data-hc-internal-cabinet aria-label="Hermes Connect internal cabinet" hidden>
-  <div class="hc-internal-cabinet__inner">
+  <div class="hc-internal-cabinet__top">
     <div class="hc-internal-cabinet__identity">
-      <span class="hc-internal-cabinet__eyebrow" data-en="Hermes Connect" data-ru="Hermes Connect">Hermes Connect</span>
+      <span class="hc-internal-cabinet__eyebrow">Hermes Connect</span>
       <strong data-en="Internal cabinet" data-ru="Внутренний кабинет">Internal cabinet</strong>
       <span class="hc-internal-cabinet__status" data-en="Owner workspace" data-ru="Рабочее пространство владельца">Owner workspace</span>
     </div>
+    <div class="hc-internal-cabinet__utilities">
+      <div class="hc-internal-language" aria-label="Cabinet language">
+        <a href={path} data-locale-choice="en" lang="en">EN</a>
+        <a href={`${path}?lang=ru`} data-locale-choice="ru" lang="ru">RU</a>
+      </div>
+      <a class="hc-internal-exit" href="/services/hermes-connect/" data-cabinet-exit data-en="Hermes Connect home" data-ru="На главную Hermes Connect">Hermes Connect home</a>
+    </div>
+  </div>
+  <div class="hc-internal-cabinet__sections">
     <nav class="hc-internal-cabinet__nav" aria-label="Internal workspace sections">
       {items.map((item) => (
         <a href={item.href} aria-current={path === item.href ? "page" : undefined} data-cabinet-link data-en={item.en} data-ru={item.ru}>{item.en}</a>
@@ -45,6 +54,26 @@ const items = [
         if (locale === "ru") next.searchParams.set("lang", "ru");
         else next.searchParams.delete("lang");
         node.href = `${next.pathname}${next.search}`;
+      });
+      document.querySelectorAll("[data-cabinet-exit]").forEach((node) => {
+        if (!(node instanceof HTMLAnchorElement)) return;
+        const next = new URL(node.getAttribute("href") || "", window.location.origin);
+        if (locale === "ru") next.searchParams.set("lang", "ru");
+        else next.searchParams.delete("lang");
+        node.href = `${next.pathname}${next.search}`;
+      });
+      document.querySelectorAll("[data-locale-choice]").forEach((node) => {
+        if (!(node instanceof HTMLAnchorElement)) return;
+        const target = node.dataset.localeChoice === "ru" ? "ru" : "en";
+        const next = new URL(window.location.href);
+        if (target === "ru") next.searchParams.set("lang", "ru");
+        else next.searchParams.delete("lang");
+        node.href = `${next.pathname}${next.search}${next.hash}`;
+        if (target === locale) node.setAttribute("aria-current", "true");
+        else node.removeAttribute("aria-current");
+        node.addEventListener("click", () => {
+          try { window.localStorage.setItem("hermes-connect-language", target); } catch {}
+        }, { once: true });
       });
 
       if (locale === "ru") document.querySelector("[data-hc-english-only]")?.remove();
@@ -80,16 +109,27 @@ const items = [
 
 <style is:global>
   .hc-internal-cabinet[hidden]{display:none!important}
-  .hc-internal-cabinet-mode .site-footer{display:none}
-  .hc-internal-cabinet{position:relative;z-index:19;border-bottom:1px solid rgba(255,255,255,.1);background:#0d1320;color:#eef4ff;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-  .hc-internal-cabinet__inner{width:min(1180px,calc(100% - 2rem));margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.85rem 0}
-  .hc-internal-cabinet__identity{display:grid;grid-template-columns:auto auto;column-gap:.65rem;row-gap:.12rem;align-items:center;min-width:0}
-  .hc-internal-cabinet__eyebrow{grid-column:1/-1;color:#9aa8bf;font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
-  .hc-internal-cabinet__identity strong{font-size:.95rem}
-  .hc-internal-cabinet__status{font-size:.75rem;color:#95a3b9;padding-left:.65rem;border-left:1px solid rgba(255,255,255,.16)}
+  .hc-internal-cabinet-mode .site-header,
+  .hc-internal-cabinet-mode [data-hc-product-context],
+  .hc-internal-cabinet-mode [data-hc-intelligence-core],
+  .hc-internal-cabinet-mode .site-footer{display:none!important}
+  .hc-internal-cabinet{position:sticky;top:0;z-index:60;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(13,19,32,.97);color:#eef4ff;box-shadow:0 10px 30px rgba(0,0,0,.22);backdrop-filter:blur(18px)}
+  .hc-internal-cabinet__top,.hc-internal-cabinet__sections{width:min(1180px,calc(100% - 2rem));margin:0 auto}
+  .hc-internal-cabinet__top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.78rem 0 .62rem}
+  .hc-internal-cabinet__identity{display:grid;grid-template-columns:auto auto;column-gap:.65rem;row-gap:.1rem;align-items:center;min-width:0}
+  .hc-internal-cabinet__eyebrow{grid-column:1/-1;color:#8fa0b8;font-size:.64rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+  .hc-internal-cabinet__identity strong{font-size:1rem;color:#fff}
+  .hc-internal-cabinet__status{font-size:.74rem;color:#9cabc0;padding-left:.65rem;border-left:1px solid rgba(255,255,255,.16)}
+  .hc-internal-cabinet__utilities{display:flex;align-items:center;gap:.6rem}
+  .hc-internal-language{display:flex;align-items:center;border:1px solid rgba(255,255,255,.12);border-radius:.6rem;padding:.14rem;background:rgba(255,255,255,.04)}
+  .hc-internal-language a{min-width:2rem;text-align:center;padding:.33rem .4rem;border-radius:.45rem;text-decoration:none;color:#91a0b5;font-size:.72rem;font-weight:850}
+  .hc-internal-language a[aria-current="true"]{background:#eef4ff;color:#0b1220}
+  .hc-internal-exit{white-space:nowrap;color:#aeb9ca;text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:.6rem;padding:.48rem .65rem;font-size:.76rem;font-weight:750}
+  .hc-internal-exit:hover,.hc-internal-exit:focus-visible{color:#fff;border-color:rgba(255,255,255,.24)}
+  .hc-internal-cabinet__sections{padding:0 0 .65rem}
   .hc-internal-cabinet__nav{display:flex;align-items:center;gap:.35rem;overflow-x:auto;scrollbar-width:none}
   .hc-internal-cabinet__nav::-webkit-scrollbar{display:none}
-  .hc-internal-cabinet__nav a{white-space:nowrap;text-decoration:none;color:#aeb9ca;border:1px solid transparent;border-radius:.7rem;padding:.55rem .75rem;font-size:.82rem;font-weight:750}
+  .hc-internal-cabinet__nav a{white-space:nowrap;text-decoration:none;color:#aeb9ca;border:1px solid transparent;border-radius:.65rem;padding:.5rem .7rem;font-size:.8rem;font-weight:750}
   .hc-internal-cabinet__nav a:hover,.hc-internal-cabinet__nav a:focus-visible,.hc-internal-cabinet__nav a[aria-current="page"]{color:#fff;border-color:rgba(139,219,255,.28);background:rgba(139,219,255,.1)}
-  @media(max-width:700px){.hc-internal-cabinet__inner{align-items:stretch;flex-direction:column;padding:.7rem 0}.hc-internal-cabinet__identity{display:flex;flex-wrap:wrap}.hc-internal-cabinet__eyebrow{width:100%}.hc-internal-cabinet__nav{padding-bottom:.1rem}}
+  @media(max-width:700px){.hc-internal-cabinet__top{align-items:flex-start}.hc-internal-cabinet__identity{display:flex;flex-wrap:wrap}.hc-internal-cabinet__eyebrow{width:100%}.hc-internal-cabinet__status{display:none}.hc-internal-cabinet__utilities{gap:.35rem}.hc-internal-exit{max-width:8.6rem;overflow:hidden;text-overflow:ellipsis}.hc-internal-cabinet__sections{padding-bottom:.55rem}}
 </style>
