@@ -54,9 +54,15 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await project.click();
     await expect(page).toHaveURL(/internal\/ai-connect\/projects\/hermes-connect-internal-ai-pilot\/?\?lang=ru/);
     await expect(page.getByText("Что уже готово", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     const assistant = page.getByRole("link", { name: "ИИ-ассистент", exact: true });
+    await expect(assistant).toBeVisible();
     await expect(assistant).toHaveAttribute("href", /lang=ru/);
-    await assistant.click();
+    await Promise.all([
+      page.waitForURL(/internal\/ai-assistant\/?\?lang=ru/),
+      assistant.click(),
+    ]);
+    await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "ИИ-ассистент" })).toBeVisible();
     await expect(page.getByText("Поставить задачу", { exact: true })).toBeVisible();
     await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
