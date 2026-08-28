@@ -113,7 +113,10 @@ const items = [
         if (!(cabinet instanceof HTMLElement)) return;
         cabinet.hidden = false;
         document.body.classList.add("hc-internal-cabinet-mode");
-      } catch {}
+      } catch {
+        // Fail closed: direct visitors do not discover internal cabinet navigation
+        // unless the server has already verified HERMES_INTERNAL_OWNER.
+      }
     };
 
     const apply = () => {
