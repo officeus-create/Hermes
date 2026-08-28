@@ -1,16 +1,20 @@
 ---
 const path = Astro.url.pathname.replace(/\/+$/, "/");
 const projectsRoot = "/services/hermes-connect/internal/ai-connect/projects/";
+const activityRoot = "/services/hermes-connect/internal/ai-connect/activity/";
 const pageTitle = path === "/services/hermes-connect/internal/ai-assistant/"
   ? { en: "AI Assistant | Hermes Connect", ru: "ИИ-ассистент | Hermes Connect" }
-  : path === projectsRoot
-    ? { en: "Projects | AI Connect | Hermes Connect", ru: "Проекты | AI Connect | Hermes Connect" }
-    : path.includes("/projects/hermes-connect-internal-ai-pilot/")
-      ? { en: "Hermes Connect Internal AI Pilot | AI Connect", ru: "Внутренний ИИ-пилот Hermes Connect | AI Connect" }
-      : { en: "AI Connect | Hermes Connect", ru: "AI Connect | Hermes Connect" };
+  : path === activityRoot
+    ? { en: "Activity | AI Connect | Hermes Connect", ru: "Активность | AI Connect | Hermes Connect" }
+    : path === projectsRoot
+      ? { en: "Projects | AI Connect | Hermes Connect", ru: "Проекты | AI Connect | Hermes Connect" }
+      : path.includes("/projects/hermes-connect-internal-ai-pilot/")
+        ? { en: "Hermes Connect Internal AI Pilot | AI Connect", ru: "Внутренний ИИ-пилот Hermes Connect | AI Connect" }
+        : { en: "AI Connect | Hermes Connect", ru: "AI Connect | Hermes Connect" };
 const items = [
   { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
   { key: "projects", href: projectsRoot, en: "Projects", ru: "Проекты" },
+  { key: "activity", href: activityRoot, en: "Activity", ru: "Активность" },
   { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "ИИ-ассистент" },
 ];
 type CabinetItem = (typeof items)[number];
@@ -55,7 +59,7 @@ const isCurrent = (item: CabinetItem) => item.key === "projects" ? path.startsWi
         if (value !== null) node.textContent = value;
       });
       document.querySelectorAll("[data-aria-en][data-aria-ru]").forEach((node) => {
-        const value = node.getAttribute(locale === "ru" ? "data-aria-ru" : "data-aria-en");
+        const value = node.getAttribute(locale === "ru" ? "data-ru" : "data-en");
         if (value !== null) node.setAttribute("aria-label", value);
       });
       document.querySelectorAll("[data-placeholder-en][data-placeholder-ru]").forEach((node) => {
