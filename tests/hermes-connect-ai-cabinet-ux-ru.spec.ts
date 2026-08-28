@@ -55,13 +55,16 @@ test.describe("Hermes Connect internal AI cabinet UX", () => {
     await expect(page).toHaveURL(/internal\/ai-connect\/projects\/hermes-connect-internal-ai-pilot\/?\?lang=ru/);
     await expect(page.getByText("Что уже готово", { exact: true })).toBeVisible();
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
-    const assistant = page.getByRole("link", { name: "ИИ-ассистент", exact: true });
-    await expect(assistant).toBeVisible();
-    await expect(assistant).toHaveAttribute("href", /lang=ru/);
-    await Promise.all([
-      page.waitForURL(/internal\/ai-assistant\/?\?lang=ru/),
-      assistant.click(),
-    ]);
+
+    const navAssistant = page.getByRole("link", { name: "ИИ-ассистент", exact: true });
+    await expect(navAssistant).toBeVisible();
+    await expect(navAssistant).toHaveAttribute("href", /lang=ru/);
+
+    const openAssistant = page.getByRole("link", { name: /Открыть ИИ-ассистент/ });
+    await expect(openAssistant).toBeVisible();
+    await expect(openAssistant).toHaveAttribute("href", /lang=ru/);
+    await openAssistant.click();
+    await expect(page).toHaveURL(/internal\/ai-assistant\/?\?lang=ru/);
     await expect(page.locator("[data-hc-internal-cabinet]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "ИИ-ассистент" })).toBeVisible();
     await expect(page.getByText("Поставить задачу", { exact: true })).toBeVisible();
