@@ -1,15 +1,19 @@
 ---
 const path = Astro.url.pathname.replace(/\/+$/, "/");
+const projectsRoot = "/services/hermes-connect/internal/ai-connect/projects/";
 const pageTitle = path === "/services/hermes-connect/internal/ai-assistant/"
   ? { en: "AI Assistant | Hermes Connect", ru: "ИИ-ассистент | Hermes Connect" }
-  : path.includes("/projects/hermes-connect-internal-ai-pilot/")
-    ? { en: "Hermes Connect Internal AI Pilot | AI Connect", ru: "Внутренний ИИ-пилот Hermes Connect | AI Connect" }
-    : { en: "AI Connect | Hermes Connect", ru: "AI Connect | Hermes Connect" };
+  : path === projectsRoot
+    ? { en: "Projects | AI Connect | Hermes Connect", ru: "Проекты | AI Connect | Hermes Connect" }
+    : path.includes("/projects/hermes-connect-internal-ai-pilot/")
+      ? { en: "Hermes Connect Internal AI Pilot | AI Connect", ru: "Внутренний ИИ-пилот Hermes Connect | AI Connect" }
+      : { en: "AI Connect | Hermes Connect", ru: "AI Connect | Hermes Connect" };
 const items = [
   { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
-  { key: "project", href: "/services/hermes-connect/internal/ai-connect/projects/hermes-connect-internal-ai-pilot/", en: "Project", ru: "Проект" },
+  { key: "projects", href: projectsRoot, en: "Projects", ru: "Проекты" },
   { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "ИИ-ассистент" },
 ];
+const isCurrent = (item) => item.key === "projects" ? path.startsWith(projectsRoot) : path === item.href;
 ---
 <section class="hc-internal-cabinet" data-hc-internal-cabinet data-title-en={pageTitle.en} data-title-ru={pageTitle.ru} data-aria-en="Hermes Connect internal cabinet" data-aria-ru="Внутренний кабинет Hermes Connect" aria-label="Hermes Connect internal cabinet" hidden>
   <div class="hc-internal-cabinet__top">
@@ -29,7 +33,7 @@ const items = [
   <div class="hc-internal-cabinet__sections">
     <nav class="hc-internal-cabinet__nav" data-aria-en="Internal workspace sections" data-aria-ru="Разделы внутреннего кабинета" aria-label="Internal workspace sections">
       {items.map((item) => (
-        <a href={item.href} aria-current={path === item.href ? "page" : undefined} data-cabinet-link data-en={item.en} data-ru={item.ru}>{item.en}</a>
+        <a href={item.href} aria-current={isCurrent(item) ? "page" : undefined} data-cabinet-link data-en={item.en} data-ru={item.ru}>{item.en}</a>
       ))}
     </nav>
   </div>
