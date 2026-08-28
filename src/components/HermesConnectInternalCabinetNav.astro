@@ -13,7 +13,8 @@ const items = [
   { key: "projects", href: projectsRoot, en: "Projects", ru: "Проекты" },
   { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "ИИ-ассистент" },
 ];
-const isCurrent = (item) => item.key === "projects" ? path.startsWith(projectsRoot) : path === item.href;
+type CabinetItem = (typeof items)[number];
+const isCurrent = (item: CabinetItem) => item.key === "projects" ? path.startsWith(projectsRoot) : path === item.href;
 ---
 <section class="hc-internal-cabinet" data-hc-internal-cabinet data-title-en={pageTitle.en} data-title-ru={pageTitle.ru} data-aria-en="Hermes Connect internal cabinet" data-aria-ru="Внутренний кабинет Hermes Connect" aria-label="Hermes Connect internal cabinet" hidden>
   <div class="hc-internal-cabinet__top">
