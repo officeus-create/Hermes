@@ -112,7 +112,6 @@ const items = [
         // Fail closed: only a verified HERMES_INTERNAL_OWNER reveals this navigation.
       }
     };
-
     const apply = () => { applyLocale(); void revealForVerifiedOwner(); };
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", apply, { once: true });
     else apply();
