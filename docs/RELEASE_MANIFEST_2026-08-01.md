@@ -5,7 +5,7 @@ Snapshot generated: 2026-08-03T19:18:24Z
 ## Decision summary
 
 - Current main: 2a1004b92e5aeb5bd01317174d8d6e497b31e7cb.
-- Current build: **104 HTML routes**, **95 indexable routes**, **7 sitemap files**.
+- Current build: **104 HTML routes**, **86 indexable routes**, **7 sitemap files**.
 - Production snapshot: **AVAILABLE**, 95 discovered route(s).
 - Production comparison: 95 present, 9 absent current-build routes; all absent routes are noindex or 404 workspaces.
 - Immutable release snapshot: **AVAILABLE**, 46 discovered route(s).
@@ -36,7 +36,7 @@ Snapshot generated: 2026-08-03T19:18:24Z
 | sitemap-local.xml | 16 |
 | sitemap-services.xml | 13 |
 | sitemap-trust.xml | 4 |
-| sitemap.xml | 46 |
+| sitemap.xml | 37 |
 
 ## Route reconciliation
 
@@ -195,28 +195,28 @@ Snapshot generated: 2026-08-03T19:18:24Z
 | /paths/logistics/brokers/carrier-capacity/ current_main indexable https://hermeslogisticsus.com/paths/logistics/brokers/carrier-capacity/ public/sitemap.xml COMPLETE — |
 | /paths/logistics/brokers/carrier-capacity/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/brokers/carrier-capacity/ /sitemap.xml COMPLETE — |
 | /paths/logistics/brokers/carrier-capacity/ production indexable https://hermeslogisticsus.com/paths/logistics/brokers/carrier-capacity/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/box-truck/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/box-truck/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/  COMPLETE — |
 | /paths/logistics/carriers/box-truck/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/box-truck/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/box-truck/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/car-hauling/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/car-hauling/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/  COMPLETE — |
 | /paths/logistics/carriers/car-hauling/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/car-hauling/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/cargo-van/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/cargo-van/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/  COMPLETE — |
 | /paths/logistics/carriers/cargo-van/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/cargo-van/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/cargo-van/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/direct-freight-development/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/direct-freight-development/ public/sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/direct-freight-development/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/direct-freight-development/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/direct-freight-development/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/direct-freight-development/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/dry-van/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/dry-van/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/  COMPLETE — |
 | /paths/logistics/carriers/dry-van/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/dry-van/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/dry-van/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/flatbed/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/flatbed/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/  COMPLETE — |
 | /paths/logistics/carriers/flatbed/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/flatbed/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/flatbed/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/fleet-owners/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/ public/sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/fleet-owners/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/fleet-owners/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/fleet-owners/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/hotshot/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/hotshot/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/  COMPLETE — |
 | /paths/logistics/carriers/hotshot/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/hotshot/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/hotshot/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/new-authority/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/new-authority/ public/sitemap.xml COMPLETE — |
@@ -225,13 +225,13 @@ Snapshot generated: 2026-08-03T19:18:24Z
 | /paths/logistics/carriers/owner-operators/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/ public/sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/owner-operators/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/owner-operators/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/owner-operators/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/power-only/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/power-only/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/power-only/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/power-only/  COMPLETE — |
 | /paths/logistics/carriers/power-only/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/power-only/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/power-only/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/power-only/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/reefer/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/reefer/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/reefer/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/reefer/  COMPLETE — |
 | /paths/logistics/carriers/reefer/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/reefer/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/reefer/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/reefer/ /sitemap.xml COMPLETE — |
-| /paths/logistics/carriers/step-deck/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/ public/sitemap.xml COMPLETE — |
+| /paths/logistics/carriers/step-deck/ current_main noindex https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/  COMPLETE — |
 | /paths/logistics/carriers/step-deck/ immutable_release indexable https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/step-deck/ production indexable https://hermeslogisticsus.com/paths/logistics/carriers/step-deck/ /sitemap.xml COMPLETE — |
 | /paths/logistics/carriers/trusted-carrier-network/ current_main indexable https://hermeslogisticsus.com/paths/logistics/carriers/trusted-carrier-network/ public/sitemap.xml COMPLETE — |

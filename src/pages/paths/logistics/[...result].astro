@@ -15,6 +15,25 @@ export function getStaticPaths() {
 
 const { recommendation } = Astro.props;
 const canonicalUrl = new URL(recommendation.route, Astro.site).toString();
+// These recommendation pages remain useful inside the guided selector, but the
+// shared template does not yet provide enough distinct search value to make
+// them separate organic-search owners. Keep them crawlable for link discovery
+// while preventing thin equipment variants from competing with canonical
+// commercial pages.
+const lowEvidenceEquipmentPathIds = new Set([
+  "carrier-car-hauling",
+  "carrier-hotshot",
+  "carrier-box-truck",
+  "carrier-cargo-van",
+  "carrier-power-only",
+  "carrier-dry-van",
+  "carrier-reefer",
+  "carrier-flatbed",
+  "carrier-step-deck",
+]);
+const robots = lowEvidenceEquipmentPathIds.has(recommendation.id)
+  ? "noindex,follow"
+  : "index,follow,max-image-preview:large";
 const carHaulingCommercialAudienceIds = new Set([
   "carrier-car-hauling",
   "carrier-owner-operators",
@@ -81,6 +100,7 @@ import "../../../styles/features/case.css";
   title={`${recommendation.seoTitle ?? recommendation.title} | Hermes Logistics`}
   description={recommendation.seoDescription ?? recommendation.summary}
   schema={schema}
+  robots={robots}
 >
   <div class="logistics-recommendation-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
