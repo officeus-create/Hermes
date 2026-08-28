@@ -57,9 +57,10 @@ for (const required of [
   "/logistics/appleton-wi-vehicle-transport/",
   "/logistics/resources/auction-vehicle-pickup-checklist/",
   "/logistics/resources/car-hauler-capacity-checklist/",
-  "/paths/marketing/?service=logistics_seo#contact",
+  "/services/seo-for-logistics-companies/",
+  'data-seo-owner-link',
   'data-service-group="logistics_seo"',
-  "Start a logistics SEO review",
+  "Review logistics SEO services",
   "Measurement in progress",
   "No public metric yet",
 ]) assert.ok(appletonCase.includes(required), `Appleton case is missing: ${required}`);
@@ -69,6 +70,7 @@ assert.match(
   /\bdata-seo-service-cta(?:="")?\b/,
   "Appleton case must expose the established SEO service CTA contract",
 );
+assert.ok(!appletonCase.includes('/paths/marketing/?service=logistics_seo#contact'), "Appleton SEO case must route directly to the canonical Logistics SEO owner");
 assert.ok(!appletonCase.includes('href="/contacts/">Discuss an SEO or logistics project'), "Appleton SEO case must not end in the generic contacts route");
 
 for (const prohibited of ["guaranteed rankings", "guaranteed leads", "ranks #1", "capacity is available now"]) {
@@ -97,4 +99,4 @@ assert.ok(primarySitemap.includes("<loc>https://hermeslogisticsus.com/case/it-de
 assert.ok(robots.includes("Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml"));
 assert.ok(homepage.includes('href="/case/"'), "English footer must link to the case hub");
 
-console.log("Case studies and Appleton intent-boundary checks passed: Home routes to Logistics, Logistics owns the descriptive Appleton crawl path, case schema/claims remain bounded, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
+console.log("Case studies and Appleton intent-boundary checks passed: Home routes to Logistics, Logistics owns the descriptive Appleton crawl path, the Appleton case routes to the canonical Logistics SEO owner, case schema/claims remain bounded, sitemap ownership stays unique, and no warehousing-intent stuffing is present.");
