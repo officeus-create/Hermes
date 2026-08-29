@@ -1,6 +1,6 @@
 import { chromium } from "@playwright/test";
 
-const targetUrl = "https://hermeslogisticsus.com/paths/logistics/carrier-car-hauling/";
+const targetUrl = "https://hermeslogisticsus.com/paths/logistics/carriers/car-hauling/";
 const expectedMeasurementId = "G-RY26321PVW";
 const expectedEvent = "contact_route_clicked";
 
@@ -48,7 +48,10 @@ page.on("requestfailed", (request) => {
 });
 
 try {
-  await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 45_000 });
+  const response = await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 45_000 });
+  if (!response || response.status() !== 200) {
+    throw new Error(`Target route returned ${response?.status() ?? "no response"}; expected 200.`);
+  }
 
   const consentButton = page.getByRole("button", { name: "Allow analytics" });
   await consentButton.waitFor({ state: "visible", timeout: 15_000 });
