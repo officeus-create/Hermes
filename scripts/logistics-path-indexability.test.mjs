@@ -1,9 +1,25 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();
-const sitemap = await readFile(path.join(root, "public/sitemap.xml"), "utf8");
+const publicDir = path.join(root, "public");
+const sitemapFiles = (await readdir(publicDir)).filter((name) => /^sitemap.*\.xml$/i.test(name));
+const sitemapBodies = await Promise.all(
+  sitemapFiles.map(async (name) => ({
+    name,
+    body: await readFile(path.join(publicDir, name), "utf8"),
+  })),
+);
+const primarySitemap = sitemapBodies.find(({ name }) => name === "sitemap.xml")?.body ?? "";
+
+function assertAbsentFromAllSitemaps(route) {
+  const absoluteUrl = `https://hermeslogisticsus.com${route}`;
+  for (const { name, body } of sitemapBodies) {
+    assert(!body.includes(absoluteUrl), `${route} must not appear in ${name} while noindex`);
+  }
+}
+
 const lowEvidenceEquipmentRoutes = [
   "/paths/logistics/carriers/car-hauling/",
   "/paths/logistics/carriers/hotshot/",
@@ -20,8 +36,42 @@ for (const route of lowEvidenceEquipmentRoutes) {
   const htmlPath = path.join(root, "dist", route.replace(/^\//, ""), "index.html");
   const html = await readFile(htmlPath, "utf8");
   assert.match(html, /<meta name="robots" content="noindex,follow">/, `${route} must remain noindex,follow until distinct search evidence exists`);
-  assert(!sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} must not remain in the sitemap while noindex`);
+  assertAbsentFromAllSitemaps(route);
 }
+
+const intentionalNoindexWorkspaces = [
+  { route: "/logistics/request-vehicle-transport/", robots: /<meta name="robots" content="noindex,follow">/ },
+  { route: "/logistics/start-car-hauling-dispatch/", robots: /<meta name="robots" content="noindex,follow">/ },
+  { route: "/logistics/carrier-onboarding/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/logistics/carrier-offer/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/logistics/carrier-agreement/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/contracts/carrier-agreement-v3/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/carrier/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/sign/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/demos/crm-validation/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/demos/website-audit/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+];
+
+for (const { route, robots } of intentionalNoindexWorkspaces) {
+  const htmlPath = path.join(root, "dist", route.replace(/^\//, ""), "index.html");
+  const html = await readFile(htmlPath, "utf8");
+  assert.match(html, robots, `${route} must preserve its intentional noindex directive`);
+  assertAbsentFromAllSitemaps(route);
+}
+
+const attorneyReviewHtmlRoute = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW.html";
+const attorneyReviewExtensionlessRoute = "/contracts/Hermes_Carrier_Administrative_and_Dispatch_Support_Agreement_v3_ATTORNEY_REVIEW";
+const attorneyReviewHtml = await readFile(
+  path.join(root, "dist", attorneyReviewHtmlRoute.replace(/^\//, "")),
+  "utf8",
+);
+assert.match(
+  attorneyReviewHtml,
+  /<meta name="robots" content="noindex,nofollow,noarchive"\s*\/?>/,
+  "Attorney-review carrier agreement HTML must remain noindex,nofollow,noarchive",
+);
+assertAbsentFromAllSitemaps(attorneyReviewHtmlRoute);
+assertAbsentFromAllSitemaps(attorneyReviewExtensionlessRoute);
 
 const protectedIndexableRoutes = [
   "/paths/logistics/carriers/owner-operators/",
@@ -37,7 +87,7 @@ for (const route of protectedIndexableRoutes) {
   const htmlPath = path.join(root, "dist", route.replace(/^\//, ""), "index.html");
   const html = await readFile(htmlPath, "utf8");
   assert.doesNotMatch(html, /<meta name="robots" content="[^"]*noindex/i, `${route} must remain indexable`);
-  assert(sitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} must remain in the sitemap`);
+  assert(primarySitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} must remain in the primary sitemap`);
 }
 
-console.log("Logistics path indexability contract passed: low-evidence equipment variants are noindex,follow and excluded from sitemap.");
+console.log("Logistics path indexability contract passed: low-evidence variants and intentional private/conversion workspaces stay noindex and out of every sitemap while protected owners remain indexable.");
