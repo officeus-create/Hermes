@@ -1,0 +1,33 @@
+name: GA4 production network diagnostic
+
+on:
+  push:
+    branches:
+      - diagnostic/ga4-production-network-2026-08-29
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-carrier-event-transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout diagnostic branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify privacy-safe carrier event reaches GA4 network exactly once
+        run: node scripts/ga4-production-network-diagnostic.mjs
