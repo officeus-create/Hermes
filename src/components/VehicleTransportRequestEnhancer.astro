@@ -7,6 +7,7 @@
     reviewLoadBoardPayload,
     type LogisticsSalesLead,
   } from "../lib/load-board";
+  import { trackEvent } from "../lib/analytics";
 
   const setupVehicleTransportRequest = () => {
     if (window.location.pathname !== "/logistics/request-vehicle-transport/") return;
@@ -59,8 +60,9 @@
     let handoffRecorded = false;
 
     const pushEvent = (payload: Record<string, string>) => {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(payload);
+      const { event, ...parameters } = payload;
+      if (!event) return;
+      trackEvent(event, parameters);
     };
 
     const baseEvent = {
