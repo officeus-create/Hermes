@@ -33,7 +33,7 @@ Available read-only cases:
 - `code-review` — bounded review of current runtime-related work;
 - `seo-planning` — evidence-gated action for existing canonical SEO owners.
 
-Use `--prompt-file <path>` only for a sanitized, bounded prompt. Do not put credentials, customer information, contracts, raw conversations, submitted forms, or other private records into benchmark prompts.
+Use `--prompt-file <path>` only for a sanitized, bounded prompt stored inside this repository; symlinks resolving outside it are rejected. Do not put credentials, customer information, contracts, raw conversations, submitted forms, or other private records into benchmark prompts.
 
 ## Ledger fields
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const scriptPath = fileURLToPath(import.meta.url);
@@ -82,6 +82,22 @@ function modelFrom(output) {
   return output.match(/^model:\s*(.+)$/m)?.[1]?.trim() || "NOT_REPORTED";
 }
 
+function isPathWithin(candidate, directory) {
+  const pathFromDirectory = relative(directory, candidate);
+  return pathFromDirectory === "" || (!pathFromDirectory.startsWith(`..${sep}`) && pathFromDirectory !== ".." && !isAbsolute(pathFromDirectory));
+}
+
+async function repositoryPromptFile(promptFile) {
+  const [repositoryPath, promptPath] = await Promise.all([
+    realpath(repoRoot),
+    realpath(resolve(promptFile)),
+  ]);
+  if (!isPathWithin(promptPath, repositoryPath)) {
+    throw new Error("--prompt-file must resolve to a file inside this repository");
+  }
+  return promptPath;
+}
+
 export function classifyEvidenceScope(output) {
   const repositoryPath = repoRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const candidatePaths = output.match(/\/(?:Users|private|var|tmp)\/[^\s'"`)<>{},;]+/g) || [];
@@ -96,7 +112,7 @@ export function classifyEvidenceScope(output) {
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) return console.log(usage());
-  const basePrompt = options.promptFile ? await readFile(resolve(options.promptFile), "utf8") : CASES[options.caseName];
+  const basePrompt = options.promptFile ? await readFile(await repositoryPromptFile(options.promptFile), "utf8") : CASES[options.caseName];
   const prompt = basePrompt && `${basePrompt.trim()}${WORKSPACE_BOUNDARY}`;
   if (!prompt) throw new Error(`Unknown case '${options.caseName}'. ${usage()}`);
 
