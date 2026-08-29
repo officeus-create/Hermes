@@ -26,7 +26,7 @@ entries — append only.
 
 - Agent/task owner: Codex; bounded technical-readiness audit from fresh `origin/main` (`62662983`).
 - Branch: `fix/seo-ga4-event-transport-2026-08-29`.
-- Commit/PR: pending commit and review-only PR at the time of this handoff entry; no merge, deployment, analytics-account change, or key-event configuration was performed.
+- Commit/PR: implementation commit `2c6cbafb`; review-only PR #889. No merge, deployment, analytics-account change, or key-event configuration was performed.
 - Crawl/index result: built output contains 115 unique indexable URLs across seven sitemap files with zero duplicates or contract warnings. Nine guided equipment routes retain self-canonical plus `noindex,follow` and are absent from every sitemap. The protected Logistics SEO, car-hauling dispatch, Auction Checklist, and Capacity Checklist owners retain self-canonical, `index,follow,max-image-preview:large`, and intended sitemap membership.
 - Concrete defect: both SEO intake enhancers wrote the four requested commercial events only as plain objects in `window.dataLayer`; they did not invoke `gtag("event", ...)`, so repository behavior could not establish delivery to GA4.
 - Bounded fix: after explicit analytics consent only, the existing privacy-safe event payload is also passed to the Google tag. No submitted value is added. Automated browser contracts prove exactly one queued Google-tag event for `commercial_cta_click`, `seo_intake_start`, `seo_intake_preview_ready`, and `seo_handoff_ready`, including a double-click handoff scenario, and reject synthetic name, email, website, market, and free-text values from both local and GA4 queues.
