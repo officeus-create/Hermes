@@ -1,10 +1,15 @@
 /**
  * Browser micro-conversion helpers.
  * Emits CustomEvent `hermes:analytics` for local product behavior.
- * Google dataLayer delivery is permitted only after explicit analytics consent.
+ * Google delivery is permitted only after explicit analytics consent.
  */
 
 export type AnalyticsPayload = Record<string, string | number | boolean | undefined>;
+
+type GtagParameters = Record<string, string | number | boolean>;
+type AnalyticsWindow = Window & {
+  gtag?: (command: "event", eventName: string, parameters?: GtagParameters) => void;
+};
 
 declare global {
   interface Window {
@@ -23,6 +28,12 @@ function analyticsConsentGranted(): boolean {
   }
 }
 
+function normalizePayload(payload: AnalyticsPayload): GtagParameters {
+  return Object.fromEntries(
+    Object.entries(payload).filter(([, value]) => value !== undefined),
+  ) as GtagParameters;
+}
+
 function emit(name: string, payload: AnalyticsPayload = {}): void {
   if (typeof window === "undefined") return;
 
@@ -30,7 +41,9 @@ function emit(name: string, payload: AnalyticsPayload = {}): void {
   window.dispatchEvent(new CustomEvent("hermes:analytics", { detail }));
 
   if (analyticsConsentGranted() && Array.isArray(window.dataLayer)) {
-    window.dataLayer.push({ event: name, ...payload });
+    const parameters = normalizePayload(payload);
+    window.dataLayer.push({ event: name, ...parameters });
+    (window as AnalyticsWindow).gtag?.("event", name, parameters);
   }
 }
 
