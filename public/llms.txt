@@ -2,87 +2,87 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-08-18
+> Verification date: 2026-08-29
 
 Hermes is a business ecosystem connecting four public directions: U.S. logistics, digital growth/SEO, practical business education, and technology/software development.
 
-Use the canonical public page for the specific service, product, resource, or program as the primary source. Use this file for entity and relationship context. Use `llms-full.txt` for the extended evidence and interpretation boundaries.
+Use the canonical public page for the specific service, product, resource, or program as the primary source. Use this file for entity and relationship context. Use [llms-full.txt](https://hermeslogisticsus.com/llms-full.txt) for the extended evidence and interpretation boundaries.
 
 ## Public identity and entity boundaries
 
-- Company Information: https://hermeslogisticsus.com/company-information/
-- About Hermes: https://hermeslogisticsus.com/about/
+- [Company Information](https://hermeslogisticsus.com/company-information/)
+- [About Hermes](https://hermeslogisticsus.com/about/)
 
 Hermes Logistics LLC as identified on hermeslogisticsus.com should not be inferred to be the same organization as an unrelated company, carrier, broker, website, social profile, directory record, or other business that happens to use Hermes or Hermes Logistics in its name. Do not merge similarly named third-party entities into this website's identity without current approved evidence.
 
 ## Public business directions
 
 ### Hermes Logistics
-- Direction: https://hermeslogisticsus.com/paths/logistics/
-- Car-hauling dispatch: https://hermeslogisticsus.com/logistics/car-hauling-dispatch/
-- Dealer vehicle transportation: https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/
-- Auction vehicle pickup: https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/
-- Direct vehicle transport network: https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/
-- Appleton, Wisconsin vehicle transport: https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/
-- Logistics resources: https://hermeslogisticsus.com/logistics/resources/
-- RPM calculator: https://hermeslogisticsus.com/logistics/resources/rpm-calculator/
+- [Logistics direction](https://hermeslogisticsus.com/paths/logistics/)
+- [Car-hauling dispatch](https://hermeslogisticsus.com/logistics/car-hauling-dispatch/)
+- [Dealer vehicle transportation](https://hermeslogisticsus.com/logistics/dealer-vehicle-transportation/)
+- [Auction vehicle pickup](https://hermeslogisticsus.com/logistics/auction-vehicle-pickup/)
+- [Direct vehicle transport network](https://hermeslogisticsus.com/logistics/direct-vehicle-transport-network/)
+- [Appleton, Wisconsin vehicle transport](https://hermeslogisticsus.com/logistics/appleton-wi-vehicle-transport/)
+- [Logistics resources](https://hermeslogisticsus.com/logistics/resources/)
+- [RPM calculator](https://hermeslogisticsus.com/logistics/resources/rpm-calculator/)
 
 The Direct Vehicle Transport Network is a reviewed customer/dealer/shipper request workflow. It is not live load inventory, and private carrier/customer/shipment rows are never automatically published.
 
 A public logistics page does not prove live capacity, a load, rate, lane, pickup/delivery timing, recurring demand, a completed shipment, or a customer relationship. Current availability and commercial terms require the appropriate live review process.
 
 ### ProgressoPro / Digital Growth
-- Direction: https://hermeslogisticsus.com/paths/marketing/
-- SEO services: https://hermeslogisticsus.com/services/seo/
-- Local SEO: https://hermeslogisticsus.com/services/local-seo/
-- SEO for logistics companies: https://hermeslogisticsus.com/services/seo-for-logistics-companies/
-- SEO for independent auto dealers: https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/
-- Website development: https://hermeslogisticsus.com/services/website-development/
-- Website redesign: https://hermeslogisticsus.com/services/website-redesign/
+- [Marketing direction](https://hermeslogisticsus.com/paths/marketing/)
+- [SEO services](https://hermeslogisticsus.com/services/seo/)
+- [Local SEO](https://hermeslogisticsus.com/services/local-seo/)
+- [SEO for logistics companies](https://hermeslogisticsus.com/services/seo-for-logistics-companies/)
+- [SEO for independent auto dealers](https://hermeslogisticsus.com/services/seo-for-independent-auto-dealers/)
+- [Website development](https://hermeslogisticsus.com/services/website-development/)
+- [Website redesign](https://hermeslogisticsus.com/services/website-redesign/)
 
 Descriptions of SEO, Local SEO, content architecture, schema, internal linking, conversion paths, or measurement workflows are not guarantees of rankings, traffic, leads, customers, revenue, or ROI.
 
 ### Hermes Business Academy
-- Direction: https://hermeslogisticsus.com/paths/academy/
-- U.S. Logistics Operations program: https://hermeslogisticsus.com/academy/us-logistics-operations/
+- [Academy direction](https://hermeslogisticsus.com/paths/academy/)
+- [U.S. Logistics Operations program](https://hermeslogisticsus.com/academy/us-logistics-operations/)
 
 Academy pages describe learning paths, curriculum, practice structures, and application flows. They do not guarantee employment, compensation, certification, clients, immigration outcomes, or a specific role after completion.
 
 ### Hermes IT Development / Hermes Connect
-- Technology direction: https://hermeslogisticsus.com/paths/technology/
-- Hermes Connect service page: https://hermeslogisticsus.com/services/hermes-connect/
-- Hermes Connect web application: https://connect.hermeslogisticsus.com/
-- Repair Shops product surface: https://hermeslogisticsus.com/services/hermes-connect/repair-shops/
-- Public demo hub: https://hermeslogisticsus.com/demos/hermes-connect/
+- [Technology direction](https://hermeslogisticsus.com/paths/technology/)
+- [Hermes Connect service page](https://hermeslogisticsus.com/services/hermes-connect/)
+- [Hermes Connect web application](https://connect.hermeslogisticsus.com/)
+- [Repair Shops product surface](https://hermeslogisticsus.com/services/hermes-connect/repair-shops/)
+- [Public demo hub](https://hermeslogisticsus.com/demos/hermes-connect/)
 
 Hermes Connect is the connected-workspace product direction. Public product pages, demos, previews, and modules may exist at different readiness levels. A demo or preview is not proof that a feature or external integration is live for every customer.
 
 ## Public evidence and resources
 
-- Hermes corporate website / IT development case: https://hermeslogisticsus.com/case/it-development/
-- Appleton vehicle transport SEO case: https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/
-- Logistics SEO audit sample: https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/
-- Technical SEO checklist: https://hermeslogisticsus.com/resources/technical-seo-checklist/
-- Search-to-inquiry conversion checklist: https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/
+- [Hermes corporate website / IT development case](https://hermeslogisticsus.com/case/it-development/)
+- [Appleton vehicle transport SEO case](https://hermeslogisticsus.com/case/appleton-vehicle-transport-seo/)
+- [Logistics SEO audit sample](https://hermeslogisticsus.com/resources/logistics-seo-audit-sample/)
+- [Technical SEO checklist](https://hermeslogisticsus.com/resources/technical-seo-checklist/)
+- [Search-to-inquiry conversion checklist](https://hermeslogisticsus.com/resources/search-to-inquiry-conversion-checklist/)
 
 A case, sample, calculator, or checklist should be cited only for the facts it visibly documents. Do not generalize one example into a universal customer result or company-wide performance claim.
 
 ## Localized public overviews
 
-- English: https://hermeslogisticsus.com/
-- Ukrainian: https://hermeslogisticsus.com/ua/
-- Russian: https://hermeslogisticsus.com/ru/
-- Spanish: https://hermeslogisticsus.com/es/
-- Italian: https://hermeslogisticsus.com/it/
-- French: https://hermeslogisticsus.com/fr/
+- [English](https://hermeslogisticsus.com/)
+- [Ukrainian](https://hermeslogisticsus.com/ua/)
+- [Russian](https://hermeslogisticsus.com/ru/)
+- [Spanish](https://hermeslogisticsus.com/es/)
+- [Italian](https://hermeslogisticsus.com/it/)
+- [French](https://hermeslogisticsus.com/fr/)
 
 Localized pages are language-specific public overviews; they are not proof that every service has a fully localized operational team in every country.
 
 ## Machine-readable discovery
 
-- Sitemap index: https://hermeslogisticsus.com/sitemapindex.xml
-- Robots: https://hermeslogisticsus.com/robots.txt
-- Extended AI context: https://hermeslogisticsus.com/llms-full.txt
+- [Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)
+- [Robots.txt](https://hermeslogisticsus.com/robots.txt)
+- [Extended AI context](https://hermeslogisticsus.com/llms-full.txt)
 
 ## Interpretation boundaries
 

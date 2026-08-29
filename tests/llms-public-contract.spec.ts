@@ -34,13 +34,25 @@ test("llms.txt describes current public owners and evidence boundaries", async (
   expect(parsedVerificationDate.getTime()).toBeLessThanOrEqual(tomorrow.getTime());
 
   expect(body).toContain("> Canonical website: https://hermeslogisticsus.com/");
-  expect(body).toContain("- Sitemap index: https://hermeslogisticsus.com/sitemapindex.xml");
+  expect(body).toContain("- [Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)");
   expect(body).toContain("## Public business directions");
   expect(body).toContain("## Public evidence and resources");
   expect(body).toContain("## Interpretation boundaries");
   expect(body).toContain("A demo or preview is not proof that a feature or external integration is live for every customer.");
   expect(body).toContain("Delivery is considered confirmed only when the approved receiver reports success");
   expect(body).toContain("Unknown values remain unknown; do not substitute zero, an estimate, or an assumed result.");
+
+  const markdownLinks = body.match(/\[[^\]]+\]\(https:\/\/[^)]+\)/g) ?? [];
+  expect(markdownLinks.length).toBeGreaterThanOrEqual(30);
+
+  const fileListUrlLines = body
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith("- ") && line.includes("https://"));
+  expect(fileListUrlLines.length).toBeGreaterThanOrEqual(30);
+  for (const line of fileListUrlLines) {
+    expect(line).toMatch(/^- \[[^\]]+\]\(https:\/\/[^)]+\)(?::.*)?$/);
+  }
 
   for (const url of requiredPublicUrls) expect(body).toContain(url);
   for (const url of privateWorkspaceUrls) expect(body).not.toContain(url);
