@@ -7,6 +7,7 @@ HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
 FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 HERMES_CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
 HERMES_OPENSSL_DIR="${HERMES_OPENSSL_DIR:-$HERMES_AI_HOME/deps/openssl}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
 log() {
   printf '[codex-hermes setup] %s\n' "$*"
@@ -25,9 +26,21 @@ chmod 700 "$HERMES_AI_HOME" "$HERMES_CODEX_HOME" 2>/dev/null || true
 
 # The pinned FCC release requires Python 3.14. On Intel macOS, its cryptography
 # dependency may not have a compatible wheel and therefore builds from source.
-# Prefer an isolated OpenSSL dependency when it is present; do not alter system
-# OpenSSL or install a package manager.
+# Bootstrap and verify a pinned isolated OpenSSL dependency before the source
+# build path is possible. The helper never changes system OpenSSL or invokes a
+# package manager.
+if [[ "$(uname -s)" == "Darwin" && "$(uname -m)" == "x86_64" ]]; then
+  if [[ -n "${OPENSSL_DIR:-}" ]]; then
+    HERMES_OPENSSL_DIR="$OPENSSL_DIR" "$SCRIPT_DIR/bootstrap-hermes-openssl.sh" --verify
+  else
+    "$SCRIPT_DIR/bootstrap-hermes-openssl.sh"
+  fi
+fi
+
+# Use only the verified isolated dependency. A caller-supplied OPENSSL_DIR is
+# intentionally left untouched: it is an explicit external prerequisite.
 if [[ -z "${OPENSSL_DIR:-}" && -d "$HERMES_OPENSSL_DIR/include" && -d "$HERMES_OPENSSL_DIR/lib" ]]; then
+  [[ -f "$HERMES_OPENSSL_DIR/include/openssl/ssl.h" && -f "$HERMES_OPENSSL_DIR/lib/libssl.a" && -f "$HERMES_OPENSSL_DIR/lib/libcrypto.a" ]] || fail "Isolated OpenSSL at $HERMES_OPENSSL_DIR is incomplete. Run $SCRIPT_DIR/bootstrap-hermes-openssl.sh or set OPENSSL_DIR to an already-reviewed isolated static OpenSSL installation."
   export OPENSSL_DIR="$HERMES_OPENSSL_DIR"
   export OPENSSL_INCLUDE_DIR="$HERMES_OPENSSL_DIR/include"
   export OPENSSL_LIB_DIR="$HERMES_OPENSSL_DIR/lib"

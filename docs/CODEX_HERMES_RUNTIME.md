@@ -65,13 +65,16 @@ The setup requires:
 - the official `codex` command already installed;
 - `uv` available. If it is missing, use the [official standalone uv installer](https://docs.astral.sh/uv/getting-started/installation/), not Homebrew.
 
-On Intel macOS, the pinned FCC release may build a Python cryptography dependency from source because its Python 3.14 wheel is unavailable. The setup automatically uses an isolated OpenSSL installation at `~/.hermes-ai/deps/openssl` when present. It does not modify macOS OpenSSL. To supply a different already-reviewed isolated installation, set `HERMES_OPENSSL_DIR` for the setup run.
+On Intel macOS, the pinned FCC release may build a Python cryptography dependency from source because its Python 3.14 wheel is unavailable. Before that can happen, setup runs `scripts/ai/bootstrap-hermes-openssl.sh` when no explicit `OPENSSL_DIR` is set. The bootstrap downloads the official `openssl-3.5.4.tar.gz` source archive from `https://www.openssl.org/source/`, verifies SHA-256 `967311f84955316969bdb1d8d4b983718ef42338639c621ec4c34fddef355e99`, and builds static libraries only in `~/.hermes-ai/deps/openssl`.
+
+The bootstrap is Intel-macOS-only, requires Apple Command Line Tools (`curl`, `shasum`, `tar`, and `make`), refuses system and package-manager paths, and fails before FCC installation if the isolated header/static-library/version receipt is absent. It never invokes Homebrew or modifies macOS OpenSSL. To use an already-reviewed external isolated static OpenSSL installation instead, set `OPENSSL_DIR` explicitly for the setup run; setup verifies that the path contains the pinned headers, static libraries, and `OpenSSL 3.5.4` receipt before it invokes `uv pip install`.
 
 The setup creates only:
 
 ```text
 ~/.hermes-ai/fcc-venv
 ~/.codex-hermes
+~/.hermes-ai/deps/openssl (Intel macOS only)
 ```
 
 FCC itself stores its managed provider configuration under `~/.fcc`. Provider keys/tokens must stay there or in the provider's approved authentication flow. Never write them into this repository, GitHub issues, handoffs, screenshots, prompts, or committed `.env` files.

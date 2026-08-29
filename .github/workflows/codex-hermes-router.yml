@@ -7,6 +7,7 @@ on:
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
       - "scripts/ai/setup-codex-hermes.sh"
+      - "scripts/ai/bootstrap-hermes-openssl.sh"
       - "docs/CODEX_HERMES_RUNTIME.md"
       - ".github/workflows/codex-hermes-router.yml"
   push:
@@ -17,6 +18,7 @@ on:
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
       - "scripts/ai/setup-codex-hermes.sh"
+      - "scripts/ai/bootstrap-hermes-openssl.sh"
       - "docs/CODEX_HERMES_RUNTIME.md"
       - ".github/workflows/codex-hermes-router.yml"
 
@@ -33,6 +35,7 @@ jobs:
       - name: Validate shell syntax
         run: |
           bash -n scripts/ai/setup-codex-hermes.sh
+          bash -n scripts/ai/bootstrap-hermes-openssl.sh
           bash -n scripts/ai/codex-hermes-server
           bash -n scripts/ai/codex-hermes
           bash -n scripts/ai/codex-hermes-doctor
@@ -40,6 +43,7 @@ jobs:
       - name: Validate executable bits
         run: |
           test -x scripts/ai/setup-codex-hermes.sh
+          test -x scripts/ai/bootstrap-hermes-openssl.sh
           test -x scripts/ai/codex-hermes-server
           test -x scripts/ai/codex-hermes
           test -x scripts/ai/codex-hermes-doctor
@@ -50,6 +54,10 @@ jobs:
           grep -Fq 'exec "$FCC_CODEX" "$@"' scripts/ai/codex-hermes
           grep -Fq '8b312c3a18279466732c3942d7e9246a75725d51' scripts/ai/setup-codex-hermes.sh
           grep -Fq 'FCC_VERSION="5.14.5"' scripts/ai/setup-codex-hermes.sh
+          grep -Fq 'OPENSSL_VERSION="3.5.4"' scripts/ai/bootstrap-hermes-openssl.sh
+          grep -Fq 'OPENSSL_SHA256="967311f84955316969bdb1d8d4b983718ef42338639c621ec4c34fddef355e99"' scripts/ai/bootstrap-hermes-openssl.sh
+          grep -Fq 'https://www.openssl.org/source/' scripts/ai/bootstrap-hermes-openssl.sh
+          grep -Fq 'bootstrap-hermes-openssl.sh' scripts/ai/setup-codex-hermes.sh
           if grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,})' \
             scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/setup-codex-hermes.sh; then
             echo "Potential credential material detected in Hermes Codex router scripts" >&2
