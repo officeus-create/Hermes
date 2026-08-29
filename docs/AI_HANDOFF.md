@@ -942,3 +942,12 @@ entries — append only.
 - Verification on current head: focused benchmark contract passed (including external path and symlink rejection); `npm run build` passed (170 pages, 0 Astro errors); `npm test` passed; `npm run test:e2e` passed (1,043 passed, 11 expected skips).
 - Risks and assumptions: this constrains benchmark prompt-file loading but does not make the underlying Codex read-only sandbox a cryptographic filesystem boundary. Live route comparisons and fallback validation remain intentionally deferred because they invoke authenticated external model providers and require the separate provider-boundary decision.
 - Recommended next task: review existing local benchmark transcripts only if they meet the repository-only ledger gate; separately authorize a controlled two-authenticated-provider fallback exercise before making any resilience claim. Owner/agent: Codex with owner-approved provider boundary.
+
+## 2026-08-29 — Codex — Hermes AI benchmark historical-evidence review
+
+- Agent/task owner: Codex; local-only review of the two retained 2026-08-25 `current-state` benchmark pairs for PR #862.
+- Evidence result: both pairs are ineligible for route comparison. Transcript scans found external local context/configuration or memory-path activity; the older ledger additionally predates the `evidenceScope` field. No quality, speed, cost, fallback, or model-ranking conclusion is made or promoted.
+- Files changed: `docs/HERMES_AI_BENCHMARK.md` and this handoff. No transcript, local ledger, website, production setting, analytics, CRM, external communication, or provider call was changed.
+- Ecosystem compounding scorecard: SEO, conversion, internal linking, and public content are not applicable. Durable AI governance and privacy improve because invalid evidence is explicitly quarantined rather than silently compared; reusable architecture is unchanged.
+- Verification: targeted ledger/transcript review against the repository-only gate; `git diff --check`. The current benchmark contract and full build/static/browser suite passed on the preceding input-boundary commit; re-run required after the planned current-main rebase.
+- Remaining: create a fresh repository-only comparison only with approved provider/quota boundary; run a controlled two-authenticated-provider failure only before making a fallback-resilience claim.

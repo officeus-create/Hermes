@@ -52,6 +52,10 @@ Review each pair with:
 
 Do not aggregate results or claim one route is better after a single run. Compare at least several equivalent cases, and keep write-capable implementation tests in isolated worktrees with their own branch, verification, and reviewer.
 
+## Historical evidence review
+
+The two local `current-state` pairs retained from 2026-08-25 are **not eligible for comparison**. Transcript review found external local context/configuration or memory-path activity, and the older ledger predates the `evidenceScope` field. They may be retained as local debugging evidence only; do not derive a quality, cost, speed, fallback, or model-ranking claim from either pair. A future comparison requires a new repository-only pair and the normal reviewer checks.
+
 ## Fallback rule
 
 The active Hermes route must contain only authenticated providers. A provider missing a key is a configuration error, not a valid fallback test. Verify fallback only with two real providers and a controlled retryable runtime failure, then retain the relevant local transcript or FCC log evidence.
