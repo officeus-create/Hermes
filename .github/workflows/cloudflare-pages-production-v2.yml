@@ -1,4 +1,4 @@
-# Release trigger: production sync after LCP preload rollback — 2026-08-23
+# Release trigger: GA4 carrier transport fix — 2026-08-29
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
