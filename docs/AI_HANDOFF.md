@@ -951,3 +951,11 @@ entries — append only.
 - Ecosystem compounding scorecard: SEO, conversion, internal linking, and public content are not applicable. Durable AI governance and privacy improve because invalid evidence is explicitly quarantined rather than silently compared; reusable architecture is unchanged.
 - Verification: targeted ledger/transcript review against the repository-only gate; `git diff --check`. The current benchmark contract and full build/static/browser suite passed on the preceding input-boundary commit; re-run required after the planned current-main rebase.
 - Remaining: create a fresh repository-only comparison only with approved provider/quota boundary; run a controlled two-authenticated-provider failure only before making a fallback-resilience claim.
+
+## 2026-08-29 — Codex — Hermes AI benchmark CI portability repair
+
+- Agent/task owner: Codex; exact-head PR #862 CI diagnosis and repair.
+- Defect and repair: GitHub Actions failed only because a scope-classifier fixture hard-coded one developer's absolute repository path. The fixture now builds its allowed in-repository path from the active checkout root; external-path and outside-symlink rejection coverage is preserved.
+- Files changed: `scripts/hermes-ai-benchmark.test.mjs`, `docs/ERROR_REGISTER.md`, and this handoff.
+- Verification so far: focused benchmark contract and `git diff --check` passed locally. Full `npm run build`, `npm test`, and `npm run test:e2e` must be rerun on this exact repair head before push.
+- Data/privacy and scope: no prompt, transcript, provider call, website, public route, analytics, CRM, or external business record changed. The repair makes the same privacy boundary portable across developer and CI filesystem layouts.

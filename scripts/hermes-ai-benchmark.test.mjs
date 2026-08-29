@@ -29,7 +29,7 @@ try {
   const symlinkedExternalPrompt = spawnSync(process.execPath, ["scripts/ai/hermes-ai-benchmark.mjs", "--prompt-file", symlinkedPrompt, "--output-dir", tempDir, "--dry-run"], { cwd: root, encoding: "utf8" });
   assert.notEqual(symlinkedExternalPrompt.status, 0);
   assert.match(symlinkedExternalPrompt.stderr, /--prompt-file must resolve to a file inside this repository/);
-  assert.equal(classifyEvidenceScope("Read /Users/progressopro/Hermes/docs/AI_START_HERE.md").status, "REPOSITORY_ONLY_OBSERVED");
+  assert.equal(classifyEvidenceScope(`Read ${root}docs/AI_START_HERE.md`).status, "REPOSITORY_ONLY_OBSERVED");
   assert.deepEqual(classifyEvidenceScope("Read /Users/progressopro/.codex/memories/MEMORY.md"), {
     status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
     outsideRepositoryReadCount: 1,
