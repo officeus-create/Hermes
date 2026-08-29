@@ -42,3 +42,11 @@ jobs:
 
       - name: Verify vehicle production reaches GA4 network exactly once without submission
         run: node scripts/ga4-vehicle-event-production-diagnostic.mjs
+
+      - name: Verify Logistics SEO branch preview reaches GA4 network exactly once without submission
+        env:
+          SEO_SUPPORTING_TARGET_ORIGIN: https://fix-logistics-seo-ga4-transp.hermes-eu4.pages.dev
+        run: node scripts/ga4-supporting-seo-production-diagnostic.mjs
+
+      - name: Verify Logistics SEO production baseline without submission
+        run: node scripts/ga4-supporting-seo-production-diagnostic.mjs
