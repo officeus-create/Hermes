@@ -35,5 +35,10 @@ jobs:
       - name: Verify shared analytics helper reaches GA4 network exactly once
         run: node scripts/ga4-shared-event-production-diagnostic.mjs
 
-      - name: Verify vehicle intake event reaches GA4 network exactly once without submission
+      - name: Verify vehicle branch preview reaches GA4 network exactly once without submission
+        env:
+          VEHICLE_TARGET_URL: https://fix-vehicle-ga4-transport-20.hermes-eu4.pages.dev/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake
+        run: node scripts/ga4-vehicle-event-production-diagnostic.mjs
+
+      - name: Verify vehicle production reaches GA4 network exactly once without submission
         run: node scripts/ga4-vehicle-event-production-diagnostic.mjs
