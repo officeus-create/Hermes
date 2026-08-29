@@ -1,4 +1,8 @@
 <script>
+  type SupportingSeoAnalyticsWindow = Window & {
+    gtag?: (command: "event", eventName: string, parameters: Record<string, string>) => void;
+  };
+
   type SupportingSeoConfig = {
     serviceGroup: "local_seo" | "logistics_seo" | "auto_dealer_seo";
     label: string;
@@ -28,6 +32,17 @@
   const pushSupportingSeoEvent = (payload: Record<string, string>) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
+
+    let analyticsConsentGranted = false;
+    try {
+      analyticsConsentGranted = window.localStorage.getItem("hermes-analytics-consent") === "granted";
+    } catch {
+      // Keep the privacy-safe local data-layer receipt when storage is unavailable.
+    }
+    if (!analyticsConsentGranted) return;
+
+    const { event, ...parameters } = payload;
+    (window as SupportingSeoAnalyticsWindow).gtag?.("event", event, parameters);
   };
 
   document.addEventListener("click", (event) => {

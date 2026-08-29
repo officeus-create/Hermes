@@ -1,7 +1,22 @@
 <script>
+  type SeoAnalyticsWindow = Window & {
+    gtag?: (command: "event", eventName: string, parameters: Record<string, string>) => void;
+  };
+
   const pushSeoAnalyticsEvent = (payload: Record<string, string>) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
+
+    let analyticsConsentGranted = false;
+    try {
+      analyticsConsentGranted = window.localStorage.getItem("hermes-analytics-consent") === "granted";
+    } catch {
+      // Keep the privacy-safe local data-layer receipt when storage is unavailable.
+    }
+    if (!analyticsConsentGranted) return;
+
+    const { event, ...parameters } = payload;
+    (window as SeoAnalyticsWindow).gtag?.("event", event, parameters);
   };
 
   const trackSeoCommercialClick = (event: MouseEvent) => {

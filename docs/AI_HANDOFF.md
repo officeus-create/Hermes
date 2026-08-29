@@ -22,6 +22,20 @@ entries — append only.
 
 ## Log
 
+## 2026-08-29 — Codex — Hermes SEO technical readiness and GA4 funnel transport
+
+- Agent/task owner: Codex; bounded technical-readiness audit from fresh `origin/main` (`62662983`).
+- Branch: `fix/seo-ga4-event-transport-2026-08-29`.
+- Commit/PR: pending commit and review-only PR at the time of this handoff entry; no merge, deployment, analytics-account change, or key-event configuration was performed.
+- Crawl/index result: built output contains 115 unique indexable URLs across seven sitemap files with zero duplicates or contract warnings. Nine guided equipment routes retain self-canonical plus `noindex,follow` and are absent from every sitemap. The protected Logistics SEO, car-hauling dispatch, Auction Checklist, and Capacity Checklist owners retain self-canonical, `index,follow,max-image-preview:large`, and intended sitemap membership.
+- Concrete defect: both SEO intake enhancers wrote the four requested commercial events only as plain objects in `window.dataLayer`; they did not invoke `gtag("event", ...)`, so repository behavior could not establish delivery to GA4.
+- Bounded fix: after explicit analytics consent only, the existing privacy-safe event payload is also passed to the Google tag. No submitted value is added. Automated browser contracts prove exactly one queued Google-tag event for `commercial_cta_click`, `seo_intake_start`, `seo_intake_preview_ready`, and `seo_handoff_ready`, including a double-click handoff scenario, and reject synthetic name, email, website, market, and free-text values from both local and GA4 queues.
+- Files changed: `src/components/SeoIntakeEnhancer.astro`, `src/components/SeoSupportingIntakeEnhancer.astro`, `tests/seo-intake-funnel.spec.ts`, `docs/ERROR_REGISTER.md`, and this handoff. Separate dated CSV evidence is stored outside the repository task output folder.
+- Verification: `git diff --check`; `npm run build` (172 pages, 0 errors); full `npm test` (115 indexable pages / 115 sitemap URLs / seven sitemap files / zero warnings); focused SEO intake Playwright `14/14`; focused analytics privacy Playwright `2/2`; full `npm run test:e2e` `1063 passed / 11 skipped`.
+- Ecosystem compounding scorecard: crawl/indexing and protected SEO copy preserved; conversion measurement improved through a reusable consent-gated transport contract; durable knowledge improved through exact URL/event evidence and regression tests; privacy improved by negative PII assertions; content, title/H1/meta, schema, internal linking, Arkansas/city/equipment pages, and product architecture remain unchanged.
+- Remaining / open items: actual GA4 receipt is `NEEDS REVIEW` until the exact branch reaches a review preview or production. Exact-head GitHub/Cloudflare CI is required. After owner-approved merge/deploy, execute one synthetic non-private funnel and confirm exactly one receipt per event in GA4 DebugView/Realtime; do not infer platform receipt from the local queue test.
+- Rollback: revert the single branch commit/PR. This removes the two consent-gated `gtag` calls and their regression assertions; it does not require restoring page content, sitemap rows, canonical tags, account configuration, or customer data.
+
 ## 2026-08-14 — Antigravity — Onboarding Flow Restoration, Bypass Elimination & Dedicated E2E Suite
 
 - Agent: Antigravity
