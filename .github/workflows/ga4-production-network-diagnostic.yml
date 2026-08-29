@@ -31,3 +31,6 @@ jobs:
 
       - name: Verify privacy-safe carrier event reaches GA4 network exactly once
         run: node scripts/ga4-production-network-diagnostic.mjs
+
+      - name: Verify shared analytics helper reaches GA4 network exactly once
+        run: node scripts/ga4-shared-event-production-diagnostic.mjs
