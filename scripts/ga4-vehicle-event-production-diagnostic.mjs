@@ -11,6 +11,7 @@ const page = await context.newPage();
 const googleRequests = [];
 const failedGoogleRequests = [];
 const nonAnalyticsWrites = [];
+const platformTelemetryWrites = [];
 
 const sanitizeGoogleRequest = (request) => {
   const url = new URL(request.url());
@@ -35,9 +36,18 @@ const isGoogleAnalyticsRequest = (urlString) => {
   );
 };
 
+const isPlatformTelemetryRequest = (urlString) => {
+  const url = new URL(urlString);
+  return url.hostname === "hermeslogisticsus.com" && url.pathname === "/cdn-cgi/rum";
+};
+
 page.on("request", (request) => {
   if (isGoogleAnalyticsRequest(request.url())) {
     googleRequests.push(sanitizeGoogleRequest(request));
+    return;
+  }
+  if (isPlatformTelemetryRequest(request.url())) {
+    platformTelemetryWrites.push({ method: request.method(), path: new URL(request.url()).pathname });
     return;
   }
   if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) {
@@ -109,6 +119,7 @@ try {
     google_script_requests: googleRequests.filter((entry) => entry.host === "www.googletagmanager.com"),
     analytics_collect_events: transportEvidence,
     failed_google_requests: failedGoogleRequests,
+    platform_telemetry_writes: platformTelemetryWrites,
     non_analytics_writes: nonAnalyticsWrites,
     result:
       runtimeEvidence.custom_event_seen && matchingMeasurement.length === 1
@@ -132,7 +143,7 @@ try {
     throw new Error(`${expectedEvent} was not observed in the production dataLayer.`);
   }
   if (nonAnalyticsWrites.length !== 0) {
-    throw new Error(`Vehicle diagnostic caused ${nonAnalyticsWrites.length} non-analytics write request(s); expected 0.`);
+    throw new Error(`Vehicle diagnostic caused ${nonAnalyticsWrites.length} product write request(s); expected 0.`);
   }
   if (matchingMeasurement.length !== 1) {
     throw new Error(
