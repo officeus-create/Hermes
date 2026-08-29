@@ -6,6 +6,18 @@ const readEvents = (page: Page) =>
     return (analyticsWindow.dataLayer || []).filter((item) => typeof item.event === "string");
   });
 
+const readEventQueueOrder = (page: Page, eventName: string) =>
+  page.evaluate((name) => {
+    const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
+    const entries = (analyticsWindow.dataLayer || []) as Array<Record<string, unknown> & { 0?: unknown; 1?: unknown }>;
+    return {
+      gtagCommandIndex: entries.findIndex(
+        (item) => Object.prototype.toString.call(item) === "[object Arguments]" && item[0] === "event" && item[1] === name,
+      ),
+      mirrorIndex: entries.findIndex((item) => item.event === name),
+    };
+  }, eventName);
+
 test("SEO service CTA records a privacy-safe commercial entry", async ({ page }) => {
   await page.goto("/services/seo/");
   const cta = page.locator(".digital-service-actions").getByRole("link", { name: "Start an SEO review request" });
@@ -168,6 +180,10 @@ for (const context of supportingContexts) {
       service_group: context.serviceGroup,
       page_path: "/paths/marketing/",
     }));
+
+    const queueOrder = await readEventQueueOrder(page, "seo_intake_start");
+    expect(queueOrder.gtagCommandIndex).toBeGreaterThanOrEqual(0);
+    expect(queueOrder.mirrorIndex).toBeGreaterThan(queueOrder.gtagCommandIndex);
   });
 }
 
