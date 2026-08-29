@@ -1,6 +1,7 @@
 import { chromium } from "@playwright/test";
 
-const targetUrl = "https://hermeslogisticsus.com/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake";
+const defaultTargetUrl = "https://hermeslogisticsus.com/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake";
+const targetUrl = process.env.VEHICLE_TARGET_URL || defaultTargetUrl;
 const expectedMeasurementId = "G-RY26321PVW";
 const expectedEvent = "vehicle_transport_intake_start";
 
@@ -36,10 +37,7 @@ const isGoogleAnalyticsRequest = (urlString) => {
   );
 };
 
-const isPlatformTelemetryRequest = (urlString) => {
-  const url = new URL(urlString);
-  return url.hostname === "hermeslogisticsus.com" && url.pathname === "/cdn-cgi/rum";
-};
+const isPlatformTelemetryRequest = (urlString) => new URL(urlString).pathname === "/cdn-cgi/rum";
 
 page.on("request", (request) => {
   if (isGoogleAnalyticsRequest(request.url())) {
@@ -47,7 +45,8 @@ page.on("request", (request) => {
     return;
   }
   if (isPlatformTelemetryRequest(request.url())) {
-    platformTelemetryWrites.push({ method: request.method(), path: new URL(request.url()).pathname });
+    const url = new URL(request.url());
+    platformTelemetryWrites.push({ method: request.method(), host: url.hostname, path: url.pathname });
     return;
   }
   if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method())) {
@@ -113,6 +112,7 @@ try {
   );
 
   const report = {
+    target_url: targetUrl,
     target: new URL(targetUrl).pathname,
     expected_event: expectedEvent,
     runtime: runtimeEvidence,
@@ -140,7 +140,7 @@ try {
     throw new Error(`Analytics consent state was ${runtimeEvidence.consent}; expected granted.`);
   }
   if (!runtimeEvidence.custom_event_seen) {
-    throw new Error(`${expectedEvent} was not observed in the production dataLayer.`);
+    throw new Error(`${expectedEvent} was not observed in the target dataLayer.`);
   }
   if (nonAnalyticsWrites.length !== 0) {
     throw new Error(`Vehicle diagnostic caused ${nonAnalyticsWrites.length} product write request(s); expected 0.`);
