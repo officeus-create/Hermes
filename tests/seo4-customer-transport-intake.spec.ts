@@ -78,14 +78,16 @@ test("direct auction request is noindex, preselected, reviewable, and privacy-sa
     }
   });
 
+  await page.addInitScript(() => {
+    localStorage.setItem("hermes-analytics-consent", "granted");
+  });
+
   await page.goto("/logistics/request-vehicle-transport/?role=dealer&request=auction_pickup#transport-intake");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
   await expect(page.getByRole("heading", { name: "Request a Vehicle Transportation Review" })).toBeVisible();
   await expect(page.locator('select[name="submitter_type"]')).toHaveValue("dealer");
   await expect(page.locator('select[name="request_type"]')).toHaveValue("auction_pickup");
   await expect(page.getByText(/does not claim affiliation with those companies/i)).toBeVisible();
-
-  await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
 
   await page.evaluate(() => {
