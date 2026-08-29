@@ -34,6 +34,10 @@ try {
     status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
     outsideRepositoryReadCount: 1,
   });
+  assert.deepEqual(classifyEvidenceScope("Read /home/runner/.codex/memories/MEMORY.md"), {
+    status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
+    outsideRepositoryReadCount: 1,
+  });
   assert.deepEqual(classifyEvidenceScope("I inspected ~/.codex/memories before answering"), {
     status: "REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ",
     outsideRepositoryReadCount: 0,

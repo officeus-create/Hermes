@@ -959,3 +959,11 @@ entries — append only.
 - Files changed: `scripts/hermes-ai-benchmark.test.mjs`, `docs/ERROR_REGISTER.md`, and this handoff.
 - Verification so far: focused benchmark contract and `git diff --check` passed locally. Full `npm run build`, `npm test`, and `npm run test:e2e` must be rerun on this exact repair head before push.
 - Data/privacy and scope: no prompt, transcript, provider call, website, public route, analytics, CRM, or external business record changed. The repair makes the same privacy boundary portable across developer and CI filesystem layouts.
+
+## 2026-08-29 — Codex — live benchmark quarantine and Linux scope repair
+
+- Agent/task owner: Codex; owner-authorized one-pair live `code-review` benchmark on the rebased PR #862 worktree.
+- Evidence result: the pair is explicitly **not comparable**. Direct route failed with authenticated transport `401`; Hermes returned a review but its transcript contained external worktree/system-path evidence and subsequently reported an unavailable `fcc-codex` external-auth helper. No quality, speed, cost, provider, or fallback conclusion is made. No transcript contents are committed or published.
+- Confirmed repository defect and repair: the Hermes review correctly identified that `classifyEvidenceScope()` did not recognize Linux `/home/...` paths. The classifier now conservatively covers macOS/Linux home and system roots, and regression coverage requires `/home/runner/.codex/...` to be review-gated.
+- Fallback boundary: no fallback exercise was attempted. A direct `401` and absent external-auth helper are configuration/transport failures, not valid evidence of a controlled authenticated-provider fallback.
+- Verification: focused benchmark contract passed; `npm run build`, `npm test`, and `npm run test:e2e` passed on the repaired current head (`1061 passed`, `11 skipped`). Exact-head remote CI remains required before merge. The owner-authorized provider call was bounded to this single quarantined pair.

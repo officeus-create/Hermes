@@ -26,6 +26,8 @@ The benchmark prompt also uses a repository-only execution protocol: runners may
 
 Every prompt includes the repository-only execution protocol. The ledger records `evidenceScope`; outside-workspace paths and forbidden-location mentions both require review. A pair is valid for comparison only when both routes report `REPOSITORY_ONLY_OBSERVED`; `REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ` means the transcript must not be used to rank the routes until the scope issue is understood.
 
+The scope classifier is deliberately conservative across macOS and Linux home/system roots (`/Users`, `/home`, `/private`, `/var`, `/tmp`, `/opt`, `/etc`, `/usr`, `/Volumes`, and `/System`). This prevents a Linux-local path from being certified simply because an earlier fixture exercised only macOS paths.
+
 Available read-only cases:
 
 - `current-state` — priority and evidence understanding;
