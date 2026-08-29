@@ -69,7 +69,12 @@ const waitForGa = async () => {
     undefined,
     { timeout: 15_000 },
   );
-  await page.waitForTimeout(1_500);
+  await page.waitForFunction(
+    () => performance.getEntriesByType("resource").some((entry) => entry.name.includes("googletagmanager.com/gtag/js")),
+    undefined,
+    { timeout: 15_000 },
+  );
+  await page.waitForTimeout(500);
 };
 
 const runtimeEvent = async (eventName) =>
