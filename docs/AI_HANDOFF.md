@@ -913,3 +913,13 @@ entries — append only.
 - Verification so far: build passed at 172 Astro pages; full `npm test` passed; the previously unstable focused mobile scenario passed 10/10 parallel repetitions after correction. Final full browser suite and exact-head GitHub/Cloudflare checks are required before merge.
 - Risks/assumptions: repository changes do not prove recrawl or index-state improvement. GSC follow-up remains a later comparable platform measurement, not a merge claim.
 - Recommended next task and responsible agent: Codex — complete the full browser suite, push the refreshed PR head, wait for exact-head GitHub and Cloudflare checks, then merge only if both are green under the existing owner authorization.
+
+## 2026-08-29 — Codex — reproducible Intel macOS OpenSSL bootstrap for Hermes FCC
+
+- Agent/task owner: Codex; resolved the outstanding PR #861 review boundary under the owner's explicit authorization to finish the plan.
+- Branch/PR: `fix/hermes-fcc-intel-macos-bootstrap`, PR #861; rebased onto `origin/main` at `ace1b323` before final verification.
+- Behavior delivered: `scripts/ai/bootstrap-hermes-openssl.sh` obtains only pinned OpenSSL 3.5.4 from the official source archive, validates SHA-256 `967311f84955316969bdb1d8d4b983718ef42338639c621ec4c34fddef355e99`, builds static libraries in the isolated Hermes dependency directory, rejects system/package-manager paths, and verifies headers, static libraries, and the executable version receipt. Intel setup invokes this bootstrap before `uv pip install`; an explicit `OPENSSL_DIR` is verified rather than silently accepted.
+- Evidence and tests: the existing isolated OpenSSL 3.0.21 was rejected fail-closed; a clean build to `/private/tmp/hermes-pr861-openssl-test/openssl` completed and verified `OpenSSL 3.5.4`. Added the Node contract test and router-workflow syntax/executable/pin checks. Full current-head repository suite and remote CI remain required before merge.
+- Ecosystem compounding scorecard: public SEO/conversion/content/internal linking are neutral; reusable AI runtime architecture and operational reproducibility improve; privacy/security improve by preventing silent system/dependency fallback; no website route, analytics, CRM, provider secret, public claim, deployment, or system OpenSSL was changed.
+- Risks and assumptions: the setup performs a public source download only after checksum pinning; Apple Command Line Tools remain a documented external prerequisite. This is bootstrap evidence, not a provider-success or fallback-resilience claim.
+- Recommended next task and responsible agent: Codex — run the full current-head suite, push the rebased PR, verify GitHub/Pages CI, and merge under the owner authorization already recorded for this execution.
