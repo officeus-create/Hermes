@@ -17,7 +17,7 @@ result: EXPECTED_NOINDEX / NO_INDEXABILITY_CHANGE
 
 The owner-provided GSC export is scoped to:
 
-- **Problem:** `Indexed page blocked by noindex` / page indexing prohibited by `noindex`.
+- **Problem:** page indexing prohibited by `noindex`;
 - affected examples rise from `0` on 2026-08-04 to `12` on 2026-08-05, `19` on 2026-08-07, and `20` on 2026-08-10;
 - the chart remains at `20` through its final included date, 2026-08-20;
 - example last-crawl dates range from 2026-08-07 through 2026-08-12.
@@ -80,7 +80,7 @@ Decision: **PRESERVE**. They are preview/diagnostic artifacts and must not compe
 
 ## Technical action
 
-`script/logistics-path-indexability.test.mjs` is extended on the bounded branch to:
+`scripts/logistics-path-indexability.test.mjs` is extended on the bounded branch to:
 
 1. load every committed `public/sitemap*.xml` file;
 2. require all intentional private/conversion/demo routes above to remain `noindex` with their current follow/nofollow policy;
