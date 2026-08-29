@@ -34,6 +34,31 @@ for (const text of [
   "Prototype = prototype. Demo = demo. Not configured = not configured.",
 ]) requireText(text);
 
+const markdownLinks = body.match(/\[[^\]]+\]\(https:\/\/[^)]+\)/g) ?? [];
+if (markdownLinks.length < 30) {
+  errors.push(`llms.txt must expose at least 30 recognized Markdown HTTPS links for agent discovery; found ${markdownLinks.length}`);
+}
+
+const fileListUrlLines = body
+  .split("\n")
+  .map((line) => line.trim())
+  .filter((line) => line.startsWith("- ") && line.includes("https://"));
+for (const line of fileListUrlLines) {
+  if (!/^- \[[^\]]+\]\(https:\/\/[^)]+\)(?::.*)?$/.test(line)) {
+    errors.push(`llms.txt file-list URL must use a Markdown hyperlink: ${line}`);
+  }
+}
+
+for (const link of [
+  "[Company Information](https://hermeslogisticsus.com/company-information/)",
+  "[Logistics direction](https://hermeslogisticsus.com/paths/logistics/)",
+  "[Marketing direction](https://hermeslogisticsus.com/paths/marketing/)",
+  "[Academy direction](https://hermeslogisticsus.com/paths/academy/)",
+  "[Technology direction](https://hermeslogisticsus.com/paths/technology/)",
+  "[Sitemap index](https://hermeslogisticsus.com/sitemapindex.xml)",
+  "[Extended AI context](https://hermeslogisticsus.com/llms-full.txt)",
+]) requireText(link);
+
 const prohibitedClaims = [
   [/\b0\s*ms response time\b/i, "unsupported zero-latency claim"],
   [/\bLCP\b[^\n]{0,80}<\s*0\.8\s*s\b/i, "unsupported LCP claim"],
@@ -59,4 +84,4 @@ if (errors.length) {
   throw new Error(`llms.txt evidence contract failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log("llms.txt evidence contract passed: short AI context is aligned, evidence-bounded, entity-disambiguated, and public-safe.");
+console.log("llms.txt evidence contract passed: short AI context is aligned, evidence-bounded, entity-disambiguated, Markdown-linked for v2 agent discovery, and public-safe.");
