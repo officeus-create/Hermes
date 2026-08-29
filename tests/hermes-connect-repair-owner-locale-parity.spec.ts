@@ -33,6 +33,34 @@ async function mockSecondaryOwnerApis(page: import("@playwright/test").Page) {
         }],
       }));
     }
+    if (path === "/api/repair-shop/profile") {
+      return route.fulfill(json({ success: true, shop: null }));
+    }
+    if (path === "/api/services") {
+      return route.fulfill(json({ success: true, services: [{ id: "service-1", name: "Brake inspection", duration_minutes: 30, owner_specialist_id: "owner-locale" }] }));
+    }
+    if (path === "/api/repair-shop/bookings") {
+      return route.fulfill(json({
+        success: true,
+        bookings: [{
+          id: "booking-1",
+          service_name: "Brake inspection",
+          duration_minutes: 30,
+          appointment_date: "2026-08-25",
+          start_time: "10:00",
+          end_time: "10:30",
+          status: "confirmed",
+          client_name: "Maria Rivera",
+          client_email: "maria@example.com",
+          client_phone: "+14145550111",
+          vehicle: null,
+          history: [],
+        }],
+      }));
+    }
+    if (path === "/api/repair-shop/feedback") {
+      return route.fulfill(json({ success: true, feedback: [] }));
+    }
     return route.fulfill(json({ success: true }));
   });
 }
@@ -65,4 +93,21 @@ test("customers renders static and dynamic owner copy in French", async ({ page 
   await expect(page.locator(".next-appointment")).toContainText("Prochain:");
   await expect(page.locator(".vehicle-card strong")).toContainText("Kilométrage non indiqué");
   await expect(page.locator(".vehicle-card span")).toContainText("Dernière visite");
+});
+
+test("dashboard renders Russian static and API-backed owner workspace copy", async ({ page }) => {
+  await mockSecondaryOwnerApis(page);
+  await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil: "domcontentloaded" });
+
+  await expect(page.locator(".workspace-page h1")).toHaveText(/Рабочее пространство.*СТО/);
+  await expect(page.locator("#profile-state")).toHaveText("Не настроено");
+  await expect(page.locator("#service-count")).toHaveText("1 услуга");
+  await expect(page.locator(".status-pill")).toHaveText("Подтверждено");
+  await expect(page.locator(".status-select")).toHaveAttribute("aria-label", /Изменить статус/);
+  await expect(page.locator(".vehicle-line")).toHaveText("Данные автомобиля для этой записи не сохранены.");
+  await expect(page.locator(".history")).toContainText("История статусов");
+  await expect(page.locator(".history")).toContainText("История пока не записана.");
+  await expect(page.locator("#feedback-empty")).toContainText("Отзывов пока нет");
+  await expect(page.locator(".workspace-page")).not.toContainText("Change status…");
+  await expect(page.locator(".workspace-page")).not.toContainText("Vehicle details were not captured for this booking.");
 });

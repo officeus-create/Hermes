@@ -1,0 +1,17 @@
+{
+  "version": "1",
+  "mailboxes": [
+    {
+      "email": "partnership@hermeslogisticsus.com",
+      "accountType": "generic",
+      "department": "Partnerships",
+      "signatureFile": "html/partnerships.html",
+      "phone": "+1 (682) 777-5337",
+      "verification": {
+        "source": "Owner-confirmed Wave 1 task instruction",
+        "verifiedAt": "2026-08-26",
+        "verifiedBy": "Owner"
+      }
+    }
+  ]
+}

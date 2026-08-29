@@ -167,6 +167,28 @@
     }
 
     header.insertAdjacentElement("afterend", context);
+
+    // The internal entry is deliberately capability-discovered server-side.
+    // A customer, ordinary Hermes account, Academy account, or anonymous visitor
+    // receives no link node at all; the internal endpoint returns no task data
+    // unless it has already verified HERMES_INTERNAL_OWNER.
+    void (async () => {
+      try {
+        const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok || !payload?.success || nav.querySelector("[data-hc-internal-ai-link]")) return;
+        const link = document.createElement("a");
+        link.textContent = "AI Connect";
+        link.href = withLocale("/services/hermes-connect/internal/ai-connect/");
+        link.setAttribute("data-hc-internal-ai-link", "true");
+        if (path.replace(/\/+$/, "/") === "/services/hermes-connect/internal/ai-connect/") link.setAttribute("aria-current", "page");
+        nav.append(link);
+        updateFamilyNavCue();
+      } catch {
+        // Fail closed: an unavailable authorization endpoint never exposes an
+        // internal destination in the shared customer-facing shell.
+      }
+    })();
   })();
 </script>
 
