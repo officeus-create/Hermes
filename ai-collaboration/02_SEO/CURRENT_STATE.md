@@ -1,6 +1,6 @@
 # Hermes SEO — Current State
 
-Last updated: 2026-08-14
+Last updated: 2026-08-28
 
 ## Objective
 
@@ -28,6 +28,19 @@ Latest sanitized SEO14 owner-provided Codex handoff dated 2026-08-14 reports the
 - GA4: current Hermes property/stream receipt remains unconfirmed; the inspected environment showed the start-measuring state.
 
 Evidence class in this file: `OWNER_PROVIDED_HANDOFF`. The owner supplied the Codex SEO14 result from an authenticated run; this file may use it for prioritization, but a different agent must not claim it independently opened those platform views unless it actually did.
+
+## Newer authenticated measurement — 2026-08-28
+
+This newer `PLATFORM_VERIFIED` evidence supersedes the older access classifications above while preserving the older window as historical context:
+
+- GSC 7 days, Web, United States, Desktop (`2026-08-20`–`2026-08-26`): 2 clicks, 294 impressions, 0.7% CTR and average position 37.7.
+- GSC 28 days, Web, United States, Desktop (`2026-07-30`–`2026-08-26`): 5 clicks, 800 impressions, 0.6% CTR and average position 45.6.
+- All four priority URLs were indexed in Google.
+- GSC Page indexing last updated `2026-08-20`: 87 indexed and 92 not indexed. The 28 discovered-not-indexed examples and both blocked `www` variants are identified in `docs/SEO_INDEXATION_QUALITY_2026-08-28.md`.
+- Bing's existing Hermes site and sitemap index were accessible. The sitemap index reported success, 110 discovered URLs and zero errors/warnings. Both checklists and Car Hauling Dispatch were indexed; only Logistics SEO remained discovered but not crawled among the four priorities.
+- The existing GA4 property and single web stream were accessible and collecting. No obvious duplicate-tag configuration was visible, but the commercial exact-once receipt is not yet proven in DebugView and the visible seven-day report showed zero key events.
+
+Evidence limitation: authenticated access, sitemap success, index state and analytics receipt are separate claims. None proves a qualified lead or revenue.
 
 ## Repository-complete foundation
 
@@ -82,9 +95,9 @@ Repeated sitemap submission is not the next bottleneck.
 
 The following still require direct authenticated or owner-controlled evidence:
 
-- current query × page exports after the SEO13 change;
-- Bing indexing/query performance after processing completes;
-- GA4 property/stream ownership, event receipt, duplicate-tag status and production privacy behavior;
+- a comparable next query × page export after the current 7-day/28-day windows;
+- Bing query/click performance beyond the small visible baseline and recrawl of the remaining Logistics SEO priority URL;
+- GA4 commercial-event DebugView receipt exactly once, key-event configuration and internal/test/bot traffic separation;
 - human-qualified inquiry counts and sales dispositions;
 - CrUX or Search Console field Core Web Vitals;
 - permissioned real customer/carrier cases;

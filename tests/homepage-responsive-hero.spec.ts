@@ -13,13 +13,14 @@ test("homepage entry uses four directional visual scenes and keeps the canonical
   await expect(rooms).toHaveCount(4);
   await expect(roomImages).toHaveCount(4);
 
-  const backgrounds = await roomImages.evaluateAll((nodes) =>
-    nodes.map((node) => getComputedStyle(node as HTMLElement).backgroundImage),
-  );
-  expect(backgrounds).toHaveLength(4);
-  for (const background of backgrounds) {
-    expect(background).toMatch(/^url\(/);
-    expect(background).not.toBe("none");
+  for (let index = 0; index < 4; index += 1) {
+    await rooms.nth(index).scrollIntoViewIfNeeded();
+    if (index > 0) {
+      await expect(rooms.nth(index)).toHaveAttribute("data-image-ready", "true");
+    }
+    await expect.poll(() =>
+      roomImages.nth(index).evaluate((node) => getComputedStyle(node as HTMLElement).backgroundImage),
+    ).toMatch(/^url\(/);
   }
 
   await expect(page.locator('link[rel="preload"][href*="hermes-ecosystem-hero"]')).toHaveCount(0);

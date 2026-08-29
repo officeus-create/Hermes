@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "reviewed_at": "2026-08-15",
+  "reviewed_at": "2026-08-28",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
   "main_commit_at_review": "0527355eb71df52249fcee4e7c6adb7e373f9c58",
@@ -102,7 +102,7 @@
     },
     "production_measurement": {
       "issue": 206,
-      "status": "gsc_baseline_refreshed_ga4_and_bing_performance_incomplete",
+      "status": "gsc_bing_ga4_access_verified_conversion_receipts_and_crawl_quality_incomplete",
       "methodology_status": "complete",
       "latest_owner_provided_authenticated_handoff": {
         "observed_at": "2026-08-14",
@@ -121,11 +121,22 @@
         "evidence_class": "owner_provided_authenticated_platform_handoff",
         "boundary": "Use for prioritization and contradiction resolution; an agent must not claim it independently opened the platform unless it actually did."
       },
+      "latest_platform_verified": {
+        "observed_at": "2026-08-28",
+        "gsc_7d_us_desktop": "2026-08-20..2026-08-26: 2 clicks / 294 impressions / 0.7% CTR / average position 37.7",
+        "gsc_28d_us_desktop": "2026-07-30..2026-08-26: 5 clicks / 800 impressions / 0.6% CTR / average position 45.6",
+        "google_priority_index_state": "All four priority URLs indexed",
+        "google_page_indexing": "87 indexed / 92 not indexed; exact 28 discovered-not-indexed examples and two blocked www variants captured",
+        "bing": "Existing site accessible; sitemap index Success with 110 discovered URLs and zero errors/warnings; both checklists and Car Hauling Dispatch indexed; Logistics SEO discovered but not crawled",
+        "ga4": "Existing property and one web stream accessible and collecting; zero connected site tags; no obvious duplicate configuration; zero visible key-event receipts and no exact-once DebugView proof",
+        "evidence_class": "platform_verified",
+        "boundary": "Authenticated platform state and production metadata do not prove qualified inquiries or revenue. Account identifiers and private values remain outside repository evidence."
+      },
       "next_required_evidence": [
-        "approximately 7-day and 28-day comparable GSC query-by-page rows after the 2026-08-13 Logistics SEO change",
-        "current index-state readout for priority money pages where still unresolved",
-        "existing Hermes GA4 property/stream ownership resolution and exact-once production event receipt verification",
-        "Bing page/index/search-performance evidence after current processing completes",
+        "next comparable 7-day and 28-day GSC query-by-page rows after the 2026-08-28 baseline",
+        "GSC recrawl outcome after approved sitemap/indexability quality changes and the owner-confirmed www redirect",
+        "GA4 synthetic non-private commercial event receipt exactly once in DebugView plus key-event and traffic-quality review",
+        "Bing query/click baseline and recrawl of the remaining Logistics SEO priority URL",
         "private-safe delivery to human-review to qualification to commercial-outcome reconciliation",
         "first complete 7-day and 28-day revenue-facing funnel scorecard"
       ]

@@ -189,7 +189,7 @@ const pr85 = manifest.sources.find((source) => source.id === "pr_85");
 const pr86 = manifest.sources.find((source) => source.id === "merged_pr_86");
 const production = manifest.external_snapshots.find((source) => source.source === "production");
 const immutable = manifest.external_snapshots.find((source) => source.source === "immutable_release");
-assert(currentSource?.route_count === 104 && currentSource?.indexable_route_count === 95, "Immutable Phase 1 baseline counts are incorrect.");
+assert(currentSource?.route_count === 104 && currentSource?.indexable_route_count === 86, "Current Phase 1 baseline counts are incorrect.");
 assert(currentRows.length === htmlFiles.length, "Baseline, release deltas, and retired-route removals do not reconcile.");
 assert(pr83?.state === "open_draft_stale" && pr83?.public_route_count === 1, "PR #83 reconciliation is incorrect.");
 assert(pr85?.state === "open_draft_stale" && pr85?.public_route_count === 0, "PR #85 reconciliation is incorrect.");
