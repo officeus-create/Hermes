@@ -85,6 +85,9 @@ test("direct auction request is noindex, preselected, reviewable, and privacy-sa
   await expect(page.locator('select[name="request_type"]')).toHaveValue("auction_pickup");
   await expect(page.getByText(/does not claim affiliation with those companies/i)).toBeVisible();
 
+  await page.getByRole("button", { name: "Allow analytics" }).click();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
+
   await page.evaluate(() => {
     window.dataLayer = [];
   });
