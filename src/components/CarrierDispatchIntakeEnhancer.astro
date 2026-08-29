@@ -8,6 +8,10 @@
     type QualifiedCarrierLead,
   } from "../lib/carrier-qualification";
 
+  type CarrierAnalyticsWindow = Window & {
+    gtag?: (command: "event", eventName: string, parameters: Record<string, string>) => void;
+  };
+
   const setupCarrierDispatchIntake = () => {
     if (window.location.pathname !== "/logistics/start-car-hauling-dispatch/") return;
 
@@ -39,6 +43,17 @@
     const pushEvent = (payload: Record<string, string>) => {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push(payload);
+
+      let analyticsConsentGranted = false;
+      try {
+        analyticsConsentGranted = window.localStorage.getItem("hermes-analytics-consent") === "granted";
+      } catch {
+        // Preserve the privacy-safe local receipt when storage is unavailable.
+      }
+      if (!analyticsConsentGranted) return;
+
+      const { event, ...parameters } = payload;
+      (window as CarrierAnalyticsWindow).gtag?.("event", event, parameters);
     };
 
     const baseEvent = {
