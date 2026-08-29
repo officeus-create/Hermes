@@ -10,6 +10,8 @@ const logisticsCasePath = path.join(process.cwd(), 'src/pages/case/appleton-vehi
 const logisticsCaseSource = fs.readFileSync(logisticsCasePath, 'utf8');
 const digitalSitemapPath = path.join(process.cwd(), 'public/sitemap-digital-services.xml');
 const digitalSitemapSource = fs.readFileSync(digitalSitemapPath, 'utf8');
+const sitemapIndexPath = path.join(process.cwd(), 'public/sitemapindex.xml');
+const sitemapIndexSource = fs.readFileSync(sitemapIndexPath, 'utf8');
 
 test('Logistics SEO page remains the canonical commercial owner for observed demand', () => {
   expect(source).toContain('digitalNicheServicePages.logisticsSeo');
@@ -42,5 +44,8 @@ test('published Appleton SEO case hands topical authority directly to the Logist
 test('Logistics SEO sitemap freshness reflects the substantive SEO13 owner release', () => {
   expect(digitalSitemapSource).toContain(
     '<loc>https://hermeslogisticsus.com/services/seo-for-logistics-companies/</loc>\n    <lastmod>2026-08-13</lastmod>',
+  );
+  expect(sitemapIndexSource).toContain(
+    '<loc>https://hermeslogisticsus.com/sitemap-digital-services.xml</loc>\n    <lastmod>2026-08-29</lastmod>',
   );
 });
