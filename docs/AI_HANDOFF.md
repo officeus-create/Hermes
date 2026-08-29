@@ -923,3 +923,9 @@ entries — append only.
 - Ecosystem compounding scorecard: public SEO/conversion/content/internal linking are neutral; reusable AI runtime architecture and operational reproducibility improve; privacy/security improve by preventing silent system/dependency fallback; no website route, analytics, CRM, provider secret, public claim, deployment, or system OpenSSL was changed.
 - Risks and assumptions: the setup performs a public source download only after checksum pinning; Apple Command Line Tools remain a documented external prerequisite. This is bootstrap evidence, not a provider-success or fallback-resilience claim.
 - Recommended next task and responsible agent: Codex — run the full current-head suite, push the rebased PR, verify GitHub/Pages CI, and merge under the owner authorization already recorded for this execution.
+
+## 2026-08-29 — Codex — PR #861 push permission blocker
+
+- Exact local head: `4906d9f8`; required verification passed on the rebased branch: `npm run build`, `npm test`, and `npm run test:e2e` (`1061 passed`, `11 skipped`), plus clean-path OpenSSL 3.5.4 success and mismatched OpenSSL 3.0.21 fail-closed evidence.
+- External blocker: `git push --force-with-lease origin fix/hermes-fcc-intel-macos-bootstrap` was rejected by GitHub because the available OAuth token lacks the required `workflow` scope for `.github/workflows/codex-hermes-router.yml`. No remote change, deployment, token change, secret exposure, merge, or workaround occurred.
+- Next smallest safe action: owner supplies or authorizes a GitHub credential with the minimal workflow-update permission; then Codex pushes this exact rebased head, verifies exact-head GitHub/Pages CI, and uses the already granted merge authorization only if the remote checks are green.
