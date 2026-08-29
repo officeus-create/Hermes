@@ -130,6 +130,10 @@ const supportingContexts = [
 
 for (const context of supportingContexts) {
   test(`${context.service} uses a privacy-safe commercial event and approved intake preset`, async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("hermes-analytics-consent", "granted");
+    });
+
     await page.goto(context.sourcePath);
     await page.evaluate(() => {
       document.querySelector("[data-seo-service-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
@@ -152,6 +156,18 @@ for (const context of supportingContexts) {
     await expect(form.locator(`select[name="${context.presetName}"]`)).toHaveValue(context.presetValue);
     await expect(form.locator('select[name="path"]')).toHaveValue("ProgressoPro");
     await expect(form.locator('select[name="path"]')).toBeDisabled();
+
+    await form.locator('input[name="seo_primary_market"]').click();
+    await form.locator('textarea[name="seo_current_problem"]').click();
+    await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "seo_intake_start").length).toBe(1);
+    const intakeStart = (await readEvents(page)).find((item) => item.event === "seo_intake_start");
+    expect(intakeStart).toEqual(expect.objectContaining({
+      event: "seo_intake_start",
+      intake_type: "seo_service",
+      page_group: "marketing_contact",
+      service_group: context.serviceGroup,
+      page_path: "/paths/marketing/",
+    }));
   });
 }
 
