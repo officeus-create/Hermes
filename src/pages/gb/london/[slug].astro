@@ -11,6 +11,7 @@ const serviceBySlug: Record<string,string> = {
 };
 export function getStaticPaths(){return londonCommercialPages.map(page=>({params:{slug:page.slug},props:{page}}));}
 const {page}=Astro.props; const service=serviceBySlug[page.slug] ?? "marketing";
+const leadHref=`/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-services&utm_content=${page.slug}&service=${service}`;
 const schema=[
  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:page.h1,item:`https://hermeslogisticsus.com/gb/london/${page.slug}/`}]},
  {"@context":"https://schema.org","@type":"Service",name:page.h1,description:page.description,provider:{"@type":"Organization",name:"Hermes",url:"https://hermeslogisticsus.com/"},areaServed:{"@type":"City",name:"London"},url:`https://hermeslogisticsus.com/gb/london/${page.slug}/`}
@@ -21,7 +22,7 @@ const schema=[
   <main id="main-content">
     <section class="section detail-overview"><div class="shell detail-intro">
       <p class="eyebrow">{page.eyebrow}</p><h1>{page.h1}</h1><p>{page.description}</p>
-      <p><a class="button button-primary" href={`/business-growth/?source=london&service=${service}`}>Request a London growth audit</a> <a class="button" href="/gb/london/">London hub</a></p>
+      <p><a class="button button-primary" href={leadHref}>Request a London growth audit</a> <a class="button" href="/gb/london/">London hub</a></p>
     </div></section>
     <section class="section"><div class="shell grid">{page.points.map(point=><article><h2>{point}</h2><p>Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.</p></article>)}</div></section>
     <section class="section"><div class="shell"><p><strong>Commercial boundary:</strong> platform spend, third-party fees and production costs are separate unless explicitly included. Search rankings, leads, sales and revenue are not guaranteed.</p></div></section>
