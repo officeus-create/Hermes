@@ -6,6 +6,18 @@ const readEvents = (page: Page) =>
     return (analyticsWindow.dataLayer || []).filter((item) => typeof item.event === "string");
   });
 
+const readEventQueueOrder = (page: Page, eventName: string) =>
+  page.evaluate((name) => {
+    const analyticsWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> };
+    const entries = (analyticsWindow.dataLayer || []) as Array<Record<string, unknown> & { 0?: unknown; 1?: unknown }>;
+    return {
+      gtagCommandIndex: entries.findIndex(
+        (item) => Object.prototype.toString.call(item) === "[object Arguments]" && item[0] === "event" && item[1] === name,
+      ),
+      mirrorIndex: entries.findIndex((item) => item.event === name),
+    };
+  }, eventName);
+
 test("SEO service CTA records a privacy-safe commercial entry", async ({ page }) => {
   await page.goto("/services/seo/");
   const cta = page.locator(".digital-service-actions").getByRole("link", { name: "Start an SEO review request" });
@@ -130,6 +142,10 @@ const supportingContexts = [
 
 for (const context of supportingContexts) {
   test(`${context.service} uses a privacy-safe commercial event and approved intake preset`, async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("hermes-analytics-consent", "granted");
+    });
+
     await page.goto(context.sourcePath);
     await page.evaluate(() => {
       document.querySelector("[data-seo-service-cta]")?.addEventListener("click", (event) => event.preventDefault(), {
@@ -152,6 +168,22 @@ for (const context of supportingContexts) {
     await expect(form.locator(`select[name="${context.presetName}"]`)).toHaveValue(context.presetValue);
     await expect(form.locator('select[name="path"]')).toHaveValue("ProgressoPro");
     await expect(form.locator('select[name="path"]')).toBeDisabled();
+
+    await form.locator('input[name="seo_primary_market"]').click();
+    await form.locator('textarea[name="seo_current_problem"]').click();
+    await expect.poll(async () => (await readEvents(page)).filter((item) => item.event === "seo_intake_start").length).toBe(1);
+    const intakeStart = (await readEvents(page)).find((item) => item.event === "seo_intake_start");
+    expect(intakeStart).toEqual(expect.objectContaining({
+      event: "seo_intake_start",
+      intake_type: "seo_service",
+      page_group: "marketing_contact",
+      service_group: context.serviceGroup,
+      page_path: "/paths/marketing/",
+    }));
+
+    const queueOrder = await readEventQueueOrder(page, "seo_intake_start");
+    expect(queueOrder.gtagCommandIndex).toBeGreaterThanOrEqual(0);
+    expect(queueOrder.mirrorIndex).toBeGreaterThan(queueOrder.gtagCommandIndex);
   });
 }
 

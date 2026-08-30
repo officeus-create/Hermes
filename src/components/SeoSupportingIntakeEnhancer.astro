@@ -1,4 +1,6 @@
 <script>
+  import { trackEvent } from "../lib/analytics";
+
   type SupportingSeoConfig = {
     serviceGroup: "local_seo" | "logistics_seo" | "auto_dealer_seo";
     label: string;
@@ -26,8 +28,9 @@
   };
 
   const pushSupportingSeoEvent = (payload: Record<string, string>) => {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(payload);
+    const { event, ...parameters } = payload;
+    if (!event) return;
+    trackEvent(event, parameters);
   };
 
   document.addEventListener("click", (event) => {
