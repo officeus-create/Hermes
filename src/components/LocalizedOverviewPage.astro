@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Check, Mail, ShieldCheck } from "@lucide/astro";
 import { Picture } from "astro:assets";
 import heroImage from "../assets/hermes-ecosystem-hero.jpg";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import RussianLocaleIntegrity from "./RussianLocaleIntegrity.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { LocalizedOverview } from "../data/localized-overviews";
@@ -137,4 +138,5 @@ import "../styles/features/localized.css";
     </section>
   </main>
   <SiteFooter locale={content.locale} />
+  {content.locale === "ru" && <RussianLocaleIntegrity />}
 </BaseLayout>
