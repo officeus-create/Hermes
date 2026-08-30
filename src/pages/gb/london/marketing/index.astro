@@ -2,15 +2,16 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
+const alternates=[{lang:"en",href:"/gb/london/marketing/"},{lang:"ru",href:"/ru/gb/london/marketing/"},{lang:"uk",href:"/ua/gb/london/marketing/"},{lang:"x-default",href:"/gb/london/marketing/"}];
 ---
-<BaseLayout title="Social Media Marketing & Meta Ads London | Hermes" description="Social media strategy, Instagram, Facebook, Threads, Meta Ads, content systems and growth support for London businesses.">
+<BaseLayout title="Social Media Marketing & Meta Ads London | Hermes" description="Social media strategy, Instagram, Facebook, Threads, Meta Ads, content systems and growth support for London businesses." alternates={alternates}>
   <SiteHeader theme="dark" />
   <main id="main-content">
     <section class="section detail-overview"><div class="shell detail-intro">
       <p class="eyebrow">London marketing</p>
       <h1>Turn social media into a measurable customer-acquisition system.</h1>
       <p>Hermes helps London businesses connect Instagram, Facebook, Threads, content planning, short-form video scripts, Meta Ads, landing pages and lead tracking into one practical growth path.</p>
-      <a class="button button-primary" href="/business-growth/">Request a marketing audit</a>
+      <a class="button button-primary" href="/business-growth/?source=london-marketing">Request a marketing audit</a>
     </div></section>
     <section class="section"><div class="shell grid">
       <article><h2>Organic social</h2><p>Content strategy, publishing structure, scripts, hooks, captions and repeatable production workflows.</p></article>
