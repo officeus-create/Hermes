@@ -3,10 +3,24 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const runtimeUrl = new URL('../src/components/AcademyLocaleRuntime.astro', import.meta.url);
+const domReadyUrl = new URL('../src/components/HermesConnectDomReady.astro', import.meta.url);
+const domReadyCoreUrl = new URL('../src/components/HermesConnectDomReadyCore.astro', import.meta.url);
 
 async function loadRuntime() {
   return readFile(runtimeUrl, 'utf8');
 }
+
+test('Academy Russian runtime is mounted through the canonical Hermes Connect shell', async () => {
+  const [wrapper, core] = await Promise.all([
+    readFile(domReadyUrl, 'utf8'),
+    readFile(domReadyCoreUrl, 'utf8'),
+  ]);
+  assert.match(wrapper, /AcademyLocaleRuntime/);
+  assert.match(wrapper, /HermesConnectDomReadyCore/);
+  assert.match(wrapper, /<HermesConnectDomReadyCore \/>/);
+  assert.match(wrapper, /<AcademyLocaleRuntime \/>/);
+  assert.match(core, /data-workspace-nav/);
+});
 
 test('Academy Russian runtime is query-locale driven and private-route scoped', async () => {
   const source = await loadRuntime();
