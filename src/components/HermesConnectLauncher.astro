@@ -65,7 +65,10 @@ const copy = {
 
 const localeCopy = copy[activeLocale];
 const displayTitle = label || "Hermes Connect";
-const displaySubtitle = sublabel || localeCopy.context[context] || localeCopy.context.general;
+const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · current live pilot"
+  ? "СТО · текущий рабочий пилот"
+  : sublabel;
+const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
 const rawHref = href || "/services/hermes-connect/";
 const computedHref = (() => {
   if (activeLocale !== "ru" || !rawHref.startsWith("/services/hermes-connect/")) return rawHref;
