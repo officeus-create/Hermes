@@ -4,6 +4,7 @@ import { site } from "../data/site";
 import { localeConfig, siteLocales, type SiteLocale } from "../data/locales";
 import "../styles/hermes-connect-safe-polish.css";
 import "../styles/hermes-repair-public-shell.css";
+import HermesConnectAccountSwitcher from "./HermesConnectAccountSwitcher.astro";
 import HermesConnectDomReady from "./HermesConnectDomReady.astro";
 import HermesConnectExperience from "./HermesConnectExperience.astro";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
@@ -17,6 +18,21 @@ interface Props {
 const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isHermesConnectRoute = currentPath.startsWith("/services/hermes-connect");
+const isRepairPrivateRoute = [
+  "/services/hermes-connect/repair-shops/dashboard",
+  "/services/hermes-connect/repair-shops/availability",
+  "/services/hermes-connect/repair-shops/customers",
+].some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
+const isAcademyPrivateRoute = [
+  "/services/hermes-connect/academy/dashboard",
+  "/services/hermes-connect/academy/lesson",
+  "/services/hermes-connect/academy/program",
+  "/services/hermes-connect/academy/progression",
+  "/services/hermes-connect/academy/reviewer",
+  "/services/hermes-connect/academy/submissions",
+  "/services/hermes-connect/academy/support",
+].some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
+const privateWorkspace: "repair" | "academy" | null = isRepairPrivateRoute ? "repair" : isAcademyPrivateRoute ? "academy" : null;
 const requestedLocale = Astro.url.searchParams.get("lang");
 const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.includes(requestedLocale as SiteLocale)
   ? requestedLocale as SiteLocale
@@ -76,6 +92,7 @@ const languageLinks = siteLocales.map((language) => {
       label="Hermes Connect"
       sublabel="Repair Shops · current live pilot"
     />
+    {privateWorkspace && <HermesConnectAccountSwitcher current={privateWorkspace} mode="menu" />}
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[activeLocale].name}`}>
         <Languages size={16} aria-hidden="true" />
@@ -101,6 +118,7 @@ const languageLinks = siteLocales.map((language) => {
   </button>
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
+    {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} /></div>}
     <HermesConnectLauncher
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
@@ -280,6 +298,12 @@ const languageLinks = siteLocales.map((language) => {
     padding-bottom: .52rem;
     color: #9eaabd;
     font-size: .72rem;
+  }
+  .hc-experience .hc-mobile-account-panel {
+    width: 100%;
+  }
+  .hc-experience .hc-mobile-account-panel .hc-account-switcher {
+    margin: 0;
   }
   @media (max-width: 980px) {
     .hc-experience .site-header { min-height: 70px; }
