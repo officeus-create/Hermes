@@ -42,8 +42,8 @@ function emit(name: string, payload: AnalyticsPayload = {}): void {
 
   if (analyticsConsentGranted() && Array.isArray(window.dataLayer)) {
     const parameters = normalizePayload(payload);
-    window.dataLayer.push({ event: name, ...parameters });
     (window as AnalyticsWindow).gtag?.("event", name, parameters);
+    window.dataLayer.push({ event: name, ...parameters });
   }
 }
 
