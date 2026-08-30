@@ -913,3 +913,57 @@ entries — append only.
 - Verification so far: build passed at 172 Astro pages; full `npm test` passed; the previously unstable focused mobile scenario passed 10/10 parallel repetitions after correction. Final full browser suite and exact-head GitHub/Cloudflare checks are required before merge.
 - Risks/assumptions: repository changes do not prove recrawl or index-state improvement. GSC follow-up remains a later comparable platform measurement, not a merge claim.
 - Recommended next task and responsible agent: Codex — complete the full browser suite, push the refreshed PR head, wait for exact-head GitHub and Cloudflare checks, then merge only if both are green under the existing owner authorization.
+
+## 2026-08-25 — Codex — Hermes AI route benchmark and resilience boundary
+
+- Added a local-only benchmark for the ordinary Codex route and the Hermes routed route using identical bounded read-only prompts, private local transcripts and a review ledger.
+- The active routed model is `openai/gpt-5.6-terra`; `openai/gpt-5.4-mini` is configured as the authenticated fallback. NVIDIA is not an active fallback because a missing key is a preflight configuration failure, not a resilient-runtime test.
+- The benchmark now records an evidence-scope guard. A route that reads outside the Hermes repository is marked `REVIEW_REQUIRED_OUTSIDE_REPOSITORY_READ` and cannot be used for a quality or cost comparison without review.
+- First equivalent `current-state` run: both routes completed (`codex`: 201.7 seconds, `gpt-5.6-sol`; Hermes: 82.4 seconds, `openai/gpt-5.6-terra`), but both were scope-flagged. This is timing telemetry only, not a valid quality/cost ranking; the next benchmark hardening task is to prevent the external project lookups observed in the transcripts.
+- No deployment, website edit, external message, CRM action, DNS change, billing action, or scheduled automation was performed.
+
+## 2026-08-27 — Codex — Hermes AI benchmark repository-only hardening
+
+- Agent/task owner: Codex; continue the local benchmark hardening identified in the 2026-08-25 benchmark handoff.
+- Branch: `feat/hermes-ai-benchmark`.
+- Files changed: `scripts/ai/hermes-ai-benchmark.mjs`, `scripts/hermes-ai-benchmark.test.mjs`, `package.json`, `docs/HERMES_AI_BENCHMARK.md`, and this handoff.
+- Behavior delivered: benchmark prompts now explicitly constrain runners to task-relevant repository-relative sources, prohibit external project/worktree/branch enumeration and local-memory/config/transcript reads, and require a repository-relative source list. The ledger fails comparison eligibility when transcripts mention a forbidden external location as well as when a concrete outside-repository path is observed.
+- Ecosystem compounding scorecard: SEO/conversion/internal linking/content reuse are not applicable; durable knowledge and AI architecture improve through a reusable, tested local evaluation protocol; data/privacy improves because local private contexts are explicitly excluded; scale is limited to future read-only benchmark cases.
+- Verification: `git diff --check`; focused benchmark contract; benchmark `--dry-run`; `npm run build` (170 pages); `npm test` (including the benchmark contract); and `npm run test:e2e` (1,043 passed, 11 expected skips) passed on the current head.
+- Risks and assumptions: Codex read-only mode is not represented as a cryptographic filesystem isolation guarantee; protocol violations remain review-gated through transcript evidence. No live benchmark was rerun because it would invoke external model providers and the prior comparison result was intentionally not promoted.
+- Recommended next task: independently review several repository-only benchmark transcripts, then run a controlled two-authenticated-provider fallback test only when account/quota risk is acceptable; owner/agent: Codex with owner-approved provider boundary.
+
+## 2026-08-29 — Codex — Hermes AI benchmark prompt-source boundary
+
+- Agent/task owner: Codex; continued local benchmark hardening on `feat/hermes-ai-benchmark`.
+- Files changed: `scripts/ai/hermes-ai-benchmark.mjs`, `scripts/hermes-ai-benchmark.test.mjs`, `docs/HERMES_AI_BENCHMARK.md`, and this handoff.
+- Behavior delivered: `--prompt-file` now resolves canonical paths and accepts only files inside the Hermes repository. Direct external prompt paths and repository symlinks that resolve outside the repository fail before any prompt content is read. The benchmark documentation states this boundary.
+- Ecosystem compounding scorecard: SEO, conversion, public knowledge, and internal linking are not applicable to this local-only tool. AI/product and reusable architecture improve through an explicit, tested input boundary; data/privacy improves by preventing an accidental local private-file prompt source; scale remains limited to future read-only benchmark cases. No public route, deployment, external message, analytics event, CRM action, or model-provider run occurred.
+- Verification on current head: focused benchmark contract passed (including external path and symlink rejection); `npm run build` passed (170 pages, 0 Astro errors); `npm test` passed; `npm run test:e2e` passed (1,043 passed, 11 expected skips).
+- Risks and assumptions: this constrains benchmark prompt-file loading but does not make the underlying Codex read-only sandbox a cryptographic filesystem boundary. Live route comparisons and fallback validation remain intentionally deferred because they invoke authenticated external model providers and require the separate provider-boundary decision.
+- Recommended next task: review existing local benchmark transcripts only if they meet the repository-only ledger gate; separately authorize a controlled two-authenticated-provider fallback exercise before making any resilience claim. Owner/agent: Codex with owner-approved provider boundary.
+
+## 2026-08-29 — Codex — Hermes AI benchmark historical-evidence review
+
+- Agent/task owner: Codex; local-only review of the two retained 2026-08-25 `current-state` benchmark pairs for PR #862.
+- Evidence result: both pairs are ineligible for route comparison. Transcript scans found external local context/configuration or memory-path activity; the older ledger additionally predates the `evidenceScope` field. No quality, speed, cost, fallback, or model-ranking conclusion is made or promoted.
+- Files changed: `docs/HERMES_AI_BENCHMARK.md` and this handoff. No transcript, local ledger, website, production setting, analytics, CRM, external communication, or provider call was changed.
+- Ecosystem compounding scorecard: SEO, conversion, internal linking, and public content are not applicable. Durable AI governance and privacy improve because invalid evidence is explicitly quarantined rather than silently compared; reusable architecture is unchanged.
+- Verification: targeted ledger/transcript review against the repository-only gate; `git diff --check`. The current benchmark contract and full build/static/browser suite passed on the preceding input-boundary commit; re-run required after the planned current-main rebase.
+- Remaining: create a fresh repository-only comparison only with approved provider/quota boundary; run a controlled two-authenticated-provider failure only before making a fallback-resilience claim.
+
+## 2026-08-29 — Codex — Hermes AI benchmark CI portability repair
+
+- Agent/task owner: Codex; exact-head PR #862 CI diagnosis and repair.
+- Defect and repair: GitHub Actions failed only because a scope-classifier fixture hard-coded one developer's absolute repository path. The fixture now builds its allowed in-repository path from the active checkout root; external-path and outside-symlink rejection coverage is preserved.
+- Files changed: `scripts/hermes-ai-benchmark.test.mjs`, `docs/ERROR_REGISTER.md`, and this handoff.
+- Verification so far: focused benchmark contract and `git diff --check` passed locally. Full `npm run build`, `npm test`, and `npm run test:e2e` must be rerun on this exact repair head before push.
+- Data/privacy and scope: no prompt, transcript, provider call, website, public route, analytics, CRM, or external business record changed. The repair makes the same privacy boundary portable across developer and CI filesystem layouts.
+
+## 2026-08-29 — Codex — live benchmark quarantine and Linux scope repair
+
+- Agent/task owner: Codex; owner-authorized one-pair live `code-review` benchmark on the rebased PR #862 worktree.
+- Evidence result: the pair is explicitly **not comparable**. Direct route failed with authenticated transport `401`; Hermes returned a review but its transcript contained external worktree/system-path evidence and subsequently reported an unavailable `fcc-codex` external-auth helper. No quality, speed, cost, provider, or fallback conclusion is made. No transcript contents are committed or published.
+- Confirmed repository defect and repair: the Hermes review correctly identified that `classifyEvidenceScope()` did not recognize Linux `/home/...` paths. The classifier now conservatively covers macOS/Linux home and system roots, and regression coverage requires `/home/runner/.codex/...` to be review-gated.
+- Fallback boundary: no fallback exercise was attempted. A direct `401` and absent external-auth helper are configuration/transport failures, not valid evidence of a controlled authenticated-provider fallback.
+- Verification: focused benchmark contract passed; `npm run build`, `npm test`, and `npm run test:e2e` passed on the repaired current head (`1061 passed`, `11 skipped`). Exact-head remote CI remains required before merge. The owner-authorized provider call was bounded to this single quarantined pair.
