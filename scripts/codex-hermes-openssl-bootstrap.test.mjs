@@ -30,7 +30,7 @@ assert(setup.includes('if [[ -n "${OPENSSL_DIR:-}" ]]'), "Explicit OPENSSL_DIR m
 assert(setup.includes('bootstrap-hermes-openssl.sh" --verify'), "Explicit OPENSSL_DIR must pass the same pinned verification contract.");
 assert(setup.includes("OPENSSL_STATIC=1"), "FCC source builds must be pointed at the isolated static OpenSSL.");
 
-assert(docs.includes("OpenSSL 3.5.4"), "Runtime documentation must record the pinned OpenSSL version.");
+assert(docs.includes("OpenSSL `3.5.4`") || docs.includes("OpenSSL 3.5.4"), "Runtime documentation must record the pinned OpenSSL version.");
 assert(docs.includes("967311f84955316969bdb1d8d4b983718ef42338639c621ec4c34fddef355e99"), "Runtime documentation must record the reviewed OpenSSL SHA-256.");
 assert(/without (?:installing|requiring) Homebrew|does not (?:use|require|modify).*Homebrew/i.test(docs), "Runtime documentation must preserve the no-Homebrew/no-system-modification boundary.");
 
