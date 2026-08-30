@@ -15,6 +15,10 @@ test.describe("Russian route integrity", () => {
     await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/\?lang=ru$/);
     await expect(page.locator("html")).toHaveAttribute("lang", "ru");
     await expect(page.locator(".repair-live-hero h1")).toHaveText("Дайте клиентам одну ссылку для записи в ваш автосервис.");
+    await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
+    await expect(page.locator(".site-footer")).toContainText("Выбрать направление обращения");
+    await expect(page.locator(".site-footer")).toContainText("Открыть центр Hermes Connect");
+    await expect(page.locator('.site-footer a[href="/ru/privacy/"]')).toContainText("Конфиденциальность");
   });
 
   test("Russian business growth hub keeps a Russian shell and form UI", async ({ page }) => {
