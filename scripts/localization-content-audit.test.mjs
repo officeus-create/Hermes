@@ -66,6 +66,8 @@ const knownEnglishLeakage = [
   "Discuss the system you want to build.",
   "Return to Hermes",
   "Page not found",
+];
+const russianOnlyEnglishLeakage = [
   "Repair Shops · current live pilot",
   "Open Hermes Connect Product Hub",
   "Current product",
@@ -98,6 +100,11 @@ for (const page of pages) {
 
   for (const phrase of knownEnglishLeakage) {
     if (page.lang !== "en" && visible.includes(phrase)) errors.push(`${page.route}: untranslated English phrase found: ${phrase}`);
+  }
+  if (page.lang === "ru") {
+    for (const phrase of russianOnlyEnglishLeakage) {
+      if (visible.includes(phrase)) errors.push(`${page.route}: untranslated Russian-shell English phrase found: ${phrase}`);
+    }
   }
   for (const label of page.requiredLabels ?? []) {
     if (!visible.includes(label)) errors.push(`${page.route}: required localized label is missing: ${label}`);
