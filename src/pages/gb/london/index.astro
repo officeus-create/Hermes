@@ -2,8 +2,9 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
+const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/"},{lang:"uk",href:"/ua/gb/london/"},{lang:"x-default",href:"/gb/london/"}];
 ---
-<BaseLayout title="London Marketing, IT & US Logistics Training | Hermes" description="Hermes services and training for London: marketing, websites, SEO, IT and practical US logistics education.">
+<BaseLayout title="London Marketing, IT & US Logistics Training | Hermes" description="Hermes services and training for London: marketing, websites, SEO, IT and practical US logistics education." alternates={alternates}>
   <SiteHeader theme="dark" />
   <main id="main-content">
     <section class="section detail-overview">
@@ -11,7 +12,7 @@ import SiteFooter from "../../../components/SiteFooter.astro";
         <p class="eyebrow">London · United Kingdom</p>
         <h1>Marketing, IT and US logistics training for London.</h1>
         <p>One London hub for businesses that need websites, SEO, social media and automation, and for people who want practical training connected to the US logistics market.</p>
-        <p><a class="button button-primary" href="/business-growth/">Request a growth plan</a> <a class="button" href="/academy/us-logistics-operations/">Explore logistics training</a></p>
+        <p><a class="button button-primary" href="/business-growth/?source=london">Request a growth plan</a> <a class="button" href="/gb/london/academy/">Explore London Academy</a></p>
       </div>
     </section>
     <section class="section"><div class="shell"><div class="cards">
