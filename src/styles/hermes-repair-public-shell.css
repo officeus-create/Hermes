@@ -117,6 +117,157 @@ html.hc-experience body .repair-free-launch .launch-cta:focus-visible {
   background: #151922 !important;
 }
 
+/* Private Repair Shop workspaces share one calm Pearl shell. The page files keep
+   their operational markup and D1/runtime code unchanged; this late cascade only
+   replaces the old dark/violet presentation with the canonical Repair blue accent. */
+html.hc-experience body .workspace-page,
+html.hc-experience body .availability-page,
+html.hc-experience body .customers-page {
+  color: var(--hermes-ink) !important;
+  background:
+    radial-gradient(circle at 14% 8%, color-mix(in srgb, var(--hermes-repair) 8%, transparent), transparent 27rem),
+    radial-gradient(circle at 88% 16%, rgba(90,200,250,.09), transparent 24rem),
+    var(--hermes-pearl) !important;
+  color-scheme: light;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(h1,h2,strong) {
+  color: var(--hermes-ink);
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .muted,
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .privacy-note {
+  color: var(--hermes-muted) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.eyebrow,.mini-label) {
+  color: var(--hermes-repair) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .back-link {
+  color: #4f5d73 !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.panel,.note-panel,.customer-card,.state-card) {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light) !important;
+  background: rgba(255,255,255,.84) !important;
+  box-shadow: var(--hermes-shadow-card) !important;
+  backdrop-filter: blur(16px);
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.row,.booking-card,.feedback-row,.day-row,.stats>div,.vehicle-card) {
+  color: var(--hermes-ink) !important;
+  border-color: var(--hermes-line-light-soft) !important;
+  background: rgba(255,255,255,.68) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.public-link,.next-appointment) {
+  border-color: color-mix(in srgb, var(--hermes-repair) 18%, transparent) !important;
+  background: color-mix(in srgb, var(--hermes-repair) 6%, #fff) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .public-link strong,
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .booking-when,
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .vehicle-line,
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .stats strong {
+  color: var(--hermes-ink) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.field,.open-toggle) {
+  color: var(--hermes-ink) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.field input,.field select,.field textarea,.status-select,.time-wrap input,.search-panel input) {
+  color: var(--hermes-ink) !important;
+  border-color: rgba(11,13,18,.13) !important;
+  background: rgba(255,255,255,.94) !important;
+  box-shadow: none;
+  color-scheme: light;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.field input,.field select,.field textarea,.status-select,.time-wrap input,.search-panel input):focus {
+  border-color: var(--hermes-repair) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hermes-repair) 13%, transparent) !important;
+}
+
+html.hc-experience body .availability-page .open-toggle input {
+  accent-color: var(--hermes-repair) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.pill,.status-pill,.timezone-pill) {
+  color: #125fb7 !important;
+  border-color: color-mix(in srgb, var(--hermes-repair) 24%, transparent) !important;
+  background: color-mix(in srgb, var(--hermes-repair) 8%, #fff) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .status-completed {
+  color: #18785b !important;
+  border-color: rgba(40,180,135,.24) !important;
+  background: rgba(40,180,135,.08) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .status-cancelled {
+  color: #a43848 !important;
+  border-color: rgba(216,75,95,.22) !important;
+  background: rgba(216,75,95,.07) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .status-in_progress {
+  color: #1266a7 !important;
+  border-color: rgba(30,136,255,.22) !important;
+  background: rgba(30,136,255,.07) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .primary-btn {
+  color: #fff !important;
+  border-color: var(--hermes-repair) !important;
+  background: var(--hermes-repair) !important;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--hermes-repair) 18%, transparent) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .secondary-btn {
+  color: var(--hermes-ink) !important;
+  border-color: rgba(11,13,18,.13) !important;
+  background: rgba(255,255,255,.88) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .danger-btn {
+  color: #a43848 !important;
+  border-color: rgba(216,75,95,.20) !important;
+  background: rgba(216,75,95,.06) !important;
+}
+
+html.hc-experience body .customers-page .search-panel svg,
+html.hc-experience body .customers-page .contact-link {
+  color: var(--hermes-repair) !important;
+}
+
+html.hc-experience body .customers-page .search-panel input::placeholder {
+  color: #8a94a5 !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.history,.vehicle-section) {
+  border-color: var(--hermes-line-light-soft) !important;
+}
+
+html.hc-experience body .workspace-page .history li {
+  color: var(--hermes-ink) !important;
+  background: rgba(11,13,18,.035) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .alert {
+  color: #9e3544 !important;
+  border-color: rgba(216,75,95,.20) !important;
+  background: rgba(216,75,95,.07) !important;
+}
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .alert.success {
+  color: #18785b !important;
+  border-color: rgba(40,180,135,.22) !important;
+  background: rgba(40,180,135,.08) !important;
+}
+
 @media (max-width: 900px) {
   html.hc-experience body .plan-page .hero {
     grid-template-columns: minmax(0, 1fr) !important;
@@ -137,7 +288,9 @@ html.hc-experience body .repair-free-launch .launch-cta:focus-visible {
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  html.hc-experience body .repair-free-launch {
+  html.hc-experience body .repair-free-launch,
+  html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.panel,.note-panel,.customer-card,.state-card) {
     background: var(--hermes-paper) !important;
+    backdrop-filter: none;
   }
 }
