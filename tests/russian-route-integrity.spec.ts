@@ -8,6 +8,7 @@ test.describe("Russian route integrity", () => {
     await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
     await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
 
+    // Click the launcher a real user can see: desktop header or the opened mobile menu.
     const headerConnect = page.locator('[data-hermes-connect-launcher="header"]');
     let connect = headerConnect;
 
