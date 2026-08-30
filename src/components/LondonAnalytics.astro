@@ -1,0 +1,29 @@
+<script>
+  import { trackEvent } from "../lib/analytics";
+
+  const path = window.location.pathname;
+  const londonRoute = path.startsWith("/gb/london/") || path.startsWith("/ru/gb/london/") || path.startsWith("/ua/gb/london/");
+
+  if (londonRoute) {
+    const locale = path.startsWith("/ru/") ? "ru" : path.startsWith("/ua/") ? "uk" : "en";
+    const parts = path.split("/").filter(Boolean);
+    const academyIndex = parts.indexOf("academy");
+    const marketIndex = parts.indexOf("london");
+    const intent = academyIndex >= 0 ? (parts[academyIndex + 1] || "academy") : (parts[marketIndex + 1] || "hub");
+
+    trackEvent("london_page_view", { market: "london", locale, route: path, intent });
+
+    document.addEventListener("click", (event) => {
+      const target = event.target instanceof Element ? event.target.closest("a") : null;
+      if (!(target instanceof HTMLAnchorElement)) return;
+      const href = target.getAttribute("href") || "";
+
+      if (href.startsWith("/business-growth/") || href.startsWith("/academy/apply/")) {
+        trackEvent("london_cta_clicked", { market: "london", locale, route: path, intent, destination: href.split("?")[0] });
+      }
+      if (href.startsWith("mailto:") || href.startsWith("tel:") || href.includes("wa.me") || href.includes("whatsapp")) {
+        trackEvent("london_contact_clicked", { market: "london", locale, route: path, intent, contactType: href.split(":")[0] || "link" });
+      }
+    });
+  }
+</script>
