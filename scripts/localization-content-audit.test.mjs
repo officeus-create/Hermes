@@ -13,6 +13,7 @@ const pages = [
     route: "/ru/", path: "ru/index.html", lang: "ru",
     requiredLabels: ["Технологии", "Маркетинг", "Академия", "Логистика"],
     requiredCtas: ["Выбрать направление", "Написать команде", "Отправить описание по электронной почте"],
+    requiredHrefs: ["/services/hermes-connect/repair-shops/?lang=ru", "/ru/privacy/"],
   },
   {
     route: "/es/", path: "es/index.html", lang: "es",
@@ -28,6 +29,26 @@ const pages = [
     route: "/fr/", path: "fr/index.html", lang: "fr",
     requiredLabels: ["Technologie", "Marketing", "Académie", "Logistique"],
     requiredCtas: ["Choisir un pôle", "Écrire à l'équipe", "Envoyer la description par email"],
+  },
+  {
+    route: "/ru/business-growth/", path: "ru/business-growth/index.html", lang: "ru",
+    requiredLabels: ["Логистика", "Маркетинг", "Академия", "IT-разработка"],
+    requiredCtas: ["Оставить заявку"],
+    requiredHrefs: ["/services/hermes-connect/repair-shops/?lang=ru", "/ru/privacy/"],
+  },
+  ...["website", "seo", "advertising", "social-media", "ai-automation"].map((slug) => ({
+    route: `/ru/business-growth/${slug}/`,
+    path: `ru/business-growth/${slug}/index.html`,
+    lang: "ru",
+    requiredLabels: ["Логистика", "Маркетинг", "Академия", "IT-разработка"],
+    requiredCtas: [],
+    requiredHrefs: ["/services/hermes-connect/repair-shops/?lang=ru", "/ru/privacy/"],
+  })),
+  {
+    route: "/ru/privacy/", path: "ru/privacy/index.html", lang: "ru",
+    requiredLabels: ["Политика конфиденциальности", "Конфиденциальность", "Главная"],
+    requiredCtas: ["Написать officeus@hermeslogisticsus.com"],
+    requiredHrefs: ["/services/hermes-connect/?lang=ru", "/ru/privacy/"],
   },
 ];
 
@@ -45,6 +66,11 @@ const knownEnglishLeakage = [
   "Discuss the system you want to build.",
   "Return to Hermes",
   "Page not found",
+];
+const russianOnlyEnglishLeakage = [
+  "Repair Shops · current live pilot",
+  "Open Hermes Connect Product Hub",
+  "Current product",
 ];
 const errors = [];
 const titles = new Map();
@@ -73,13 +99,21 @@ for (const page of pages) {
   );
 
   for (const phrase of knownEnglishLeakage) {
-    if (visible.includes(phrase)) errors.push(`${page.route}: untranslated English phrase found: ${phrase}`);
+    if (page.lang !== "en" && visible.includes(phrase)) errors.push(`${page.route}: untranslated English phrase found: ${phrase}`);
   }
-  for (const label of page.requiredLabels) {
-    if (!visible.includes(label)) errors.push(`${page.route}: localized partnership label is missing: ${label}`);
+  if (page.lang === "ru") {
+    for (const phrase of russianOnlyEnglishLeakage) {
+      if (visible.includes(phrase)) errors.push(`${page.route}: untranslated Russian-shell English phrase found: ${phrase}`);
+    }
   }
-  for (const cta of page.requiredCtas) {
+  for (const label of page.requiredLabels ?? []) {
+    if (!visible.includes(label)) errors.push(`${page.route}: required localized label is missing: ${label}`);
+  }
+  for (const cta of page.requiredCtas ?? []) {
     if (!visible.includes(cta)) errors.push(`${page.route}: natural-language CTA is missing: ${cta}`);
+  }
+  for (const href of page.requiredHrefs ?? []) {
+    if (!html.includes(`href="${href}"`)) errors.push(`${page.route}: required locale-safe href is missing: ${href}`);
   }
 
   const title = getTagText(html, "title");
@@ -103,4 +137,4 @@ if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Localization content audit passed: ${pages.length} localized pages have unique metadata, localized partnership labels, natural CTAs, and no known English UI leakage.`);
+console.log(`Localization content audit passed: ${pages.length} localized pages have unique metadata, localized labels, natural CTAs, locale-safe links, and no known English UI leakage.`);

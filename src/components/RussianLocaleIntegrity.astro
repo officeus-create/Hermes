@@ -1,0 +1,146 @@
+---
+---
+
+<script is:inline>
+  (() => {
+    if (document.documentElement.lang !== "ru") return;
+    if (window.__hermesRussianLocaleIntegrity) return;
+    window.__hermesRussianLocaleIntegrity = true;
+
+    const translateMenuButton = (button) => {
+      if (!button) return;
+      const label = button.getAttribute("aria-label");
+      if (label === "Open navigation") button.setAttribute("aria-label", "Открыть навигацию");
+      if (label === "Close navigation") button.setAttribute("aria-label", "Закрыть навигацию");
+    };
+
+    const replaceExactText = (root, translations) => {
+      if (!root) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const raw = node.nodeValue || "";
+        const normalized = raw.replace(/\s+/g, " ").trim();
+        const replacement = translations.get(normalized);
+        if (replacement) {
+          const leading = raw.match(/^\s*/)?.[0] || "";
+          const trailing = raw.match(/\s*$/)?.[0] || "";
+          node.nodeValue = `${leading}${replacement}${trailing}`;
+        }
+        node = walker.nextNode();
+      }
+    };
+
+    const run = () => {
+      const wordmark = document.querySelector(".site-header .wordmark");
+      if (wordmark) wordmark.setAttribute("href", "/ru/#top");
+
+      document.querySelectorAll('a[href="/privacy/"]').forEach((link) => {
+        link.setAttribute("href", "/ru/privacy/");
+      });
+
+      const footerLocation = document.querySelector(".footer-location");
+      if (footerLocation) footerLocation.textContent = "Логистика в США · международная координация по электронной почте";
+
+      const footerIntro = document.querySelector(".site-footer .footer-intro");
+      replaceExactText(footerIntro, new Map([
+        ["Logistics, growth, education, and technology working with one practical standard.", "Логистика, развитие, образование и технологии по единому практическому стандарту."],
+        ["Current product", "Текущий продукт"],
+        ["One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.", "Единое семейство продуктов. СТО — текущий рабочий пилот; остальные модули остаются справочными возможностями до проверки в production."],
+        ["Open Hermes Connect Product Hub", "Открыть центр Hermes Connect"],
+      ]));
+
+      const footerNav = document.querySelector(".site-footer .footer-primary-nav");
+      if (footerNav) {
+        const items = [
+          ["Логистика", "/ru/#logistics"],
+          ["Маркетинг", "/ru/#marketing"],
+          ["Академия", "/ru/#academy"],
+          ["IT-разработка", "/ru/#technology"],
+          ["Конфиденциальность", "/ru/privacy/"],
+        ];
+        footerNav.replaceChildren(...items.map(([label, href]) => {
+          const link = document.createElement("a");
+          link.textContent = label;
+          link.href = href;
+          return link;
+        }));
+      }
+
+      const footerContacts = document.querySelector(".site-footer .footer-contacts");
+      if (footerContacts) {
+        const label = footerContacts.querySelector(".footer-contacts-label");
+        if (label) label.textContent = "Контакт";
+        const links = footerContacts.querySelectorAll("a");
+        const routeLink = links[0];
+        if (routeLink) {
+          routeLink.textContent = "Выбрать направление обращения";
+          routeLink.setAttribute("href", "/ru/#contact");
+        }
+      }
+
+      const footerMeta = document.querySelector(".site-footer .footer-meta");
+      replaceExactText(footerMeta, new Map([
+        ["Designed and engineered by", "Дизайн и разработка"],
+        ["· Human-led, AI-assisted", "· Под управлением людей, с поддержкой AI"],
+      ]));
+      const footerMetaLines = footerMeta?.querySelectorAll("span");
+      if (footerMetaLines?.[1]) {
+        footerMetaLines[1].textContent = "© 2026 Hermes · Логистика в США · международная координация по электронной почте · Обращения отправляются по электронной почте";
+      }
+
+      replaceExactText(document.querySelector(".site-header"), new Map([
+        ["Repair Shops · current live pilot", "СТО · текущий рабочий пилот"],
+        ["Open product", "Открыть продукт"],
+      ]));
+
+      const budgetLabels = new Map([
+        ["Not sure yet", "Пока не определён"],
+        ["Under $1,000", "До $1 000"],
+        ["$1,000–$3,000", "$1 000–$3 000"],
+        ["$3,000–$10,000", "$3 000–$10 000"],
+        ["$10,000–$25,000", "$10 000–$25 000"],
+        ["$25,000+", "$25 000+"],
+      ]);
+      document.querySelectorAll('select[name="planning_budget"] option').forEach((option) => {
+        const translated = budgetLabels.get(option.getAttribute("value") || option.textContent?.trim() || "");
+        if (translated) option.textContent = translated;
+      });
+
+      const horizonLabels = new Map([
+        ["Not sure yet", "Пока не определён"],
+        ["3 months", "3 месяца"],
+        ["6 months", "6 месяцев"],
+        ["9 months", "9 месяцев"],
+        ["12 months", "12 месяцев"],
+      ]);
+      document.querySelectorAll('select[name="planning_horizon"] option').forEach((option) => {
+        const translated = horizonLabels.get(option.getAttribute("value") || option.textContent?.trim() || "");
+        if (translated) option.textContent = translated;
+      });
+
+      const telegram = document.querySelector('input[name="telegram"]');
+      if (telegram instanceof HTMLInputElement && telegram.placeholder === "@username or t.me/...") {
+        telegram.placeholder = "@username или t.me/...";
+      }
+
+      document.querySelectorAll('[aria-label="Primary navigation"]').forEach((node) => node.setAttribute("aria-label", "Основная навигация"));
+      document.querySelectorAll('[aria-label="Mobile navigation"]').forEach((node) => node.setAttribute("aria-label", "Мобильная навигация"));
+      document.querySelectorAll('[aria-label="Choose language"]').forEach((node) => node.setAttribute("aria-label", "Выбор языка"));
+      document.querySelectorAll('[aria-label^="Language:"]').forEach((node) => node.setAttribute("aria-label", "Язык: Русский"));
+      document.querySelectorAll('[aria-label="Footer navigation"]').forEach((node) => node.setAttribute("aria-label", "Навигация в футере"));
+      document.querySelectorAll('[aria-label="Contact options"]').forEach((node) => node.setAttribute("aria-label", "Варианты связи"));
+      document.querySelectorAll('[aria-label="Social media"]').forEach((node) => node.setAttribute("aria-label", "Социальные сети"));
+
+      const backToTop = document.querySelector(".back-to-top");
+      if (backToTop) backToTop.setAttribute("aria-label", "Наверх");
+
+      const menuButton = document.querySelector("[data-menu-button]");
+      translateMenuButton(menuButton);
+      menuButton?.addEventListener("click", () => queueMicrotask(() => translateMenuButton(menuButton)));
+    };
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
+    else run();
+  })();
+</script>

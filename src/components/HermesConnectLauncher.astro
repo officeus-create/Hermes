@@ -20,27 +20,69 @@ const {
   class: className = "",
 } = Astro.props;
 
-const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-connect");
+const path = Astro.url.pathname;
+const isHermesConnectRoute = path.startsWith("/services/hermes-connect");
+const requestedLocale = Astro.url.searchParams.get("lang");
+const routeLocale = path === "/ru" || path.startsWith("/ru/") ? "ru" : "en";
+const activeLocale = isHermesConnectRoute && requestedLocale === "ru" ? "ru" : routeLocale;
 
-const contextCopy = {
-  general: "Repair Shops is the current live pilot",
-  logistics: "Repair Shops is live; logistics modules are reference capabilities",
-  marketing: "Repair Shops is live; growth modules are reference capabilities",
-  academy: "Repair Shops is live; training modules are reference capabilities",
-  technology: "Repair Shops is live; automation modules are reference capabilities",
-  beauty: "Repair Shops is live; beauty modules are reference capabilities",
-};
+const copy = {
+  en: {
+    context: {
+      general: "Repair Shops is the current live pilot",
+      logistics: "Repair Shops is live; logistics modules are reference capabilities",
+      marketing: "Repair Shops is live; growth modules are reference capabilities",
+      academy: "Repair Shops is live; training modules are reference capabilities",
+      technology: "Repair Shops is live; automation modules are reference capabilities",
+      beauty: "Repair Shops is live; beauty modules are reference capabilities",
+    },
+    openProduct: "Open product",
+    currentProduct: "Current product",
+    footerBody: "One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.",
+    openHub: "Open Hermes Connect Product Hub",
+    currentFamily: "Hermes Connect · Current product family",
+    explore: "Explore Hermes Connect",
+    bannerSuffix: "No legacy workspace or historical pricing is presented as the current product.",
+  },
+  ru: {
+    context: {
+      general: "СТО — текущий рабочий пилот",
+      logistics: "СТО уже работает; логистические модули пока показаны как справочные возможности",
+      marketing: "СТО уже работает; модули роста пока показаны как справочные возможности",
+      academy: "СТО уже работает; учебные модули пока показаны как справочные возможности",
+      technology: "СТО уже работает; модули автоматизации пока показаны как справочные возможности",
+      beauty: "СТО уже работает; beauty-модули пока показаны как справочные возможности",
+    },
+    openProduct: "Открыть продукт",
+    currentProduct: "Текущий продукт",
+    footerBody: "Единое семейство продуктов. СТО — текущий рабочий пилот; остальные модули остаются справочными возможностями до проверки в production.",
+    openHub: "Открыть центр Hermes Connect",
+    currentFamily: "Hermes Connect · текущее семейство продуктов",
+    explore: "Открыть Hermes Connect",
+    bannerSuffix: "Устаревшие рабочие пространства и исторические цены не показываются как текущий продукт.",
+  },
+} as const;
 
+const localeCopy = copy[activeLocale];
 const displayTitle = label || "Hermes Connect";
-const displaySubtitle = sublabel || contextCopy[context] || contextCopy.general;
+const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · current live pilot"
+  ? "СТО · текущий рабочий пилот"
+  : sublabel;
+const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
 const computedHref = href || "/services/hermes-connect/";
+const localizedHref = (() => {
+  if (activeLocale !== "ru" || !computedHref.startsWith("/services/hermes-connect/")) return computedHref;
+  const url = new URL(computedHref, "https://hermeslogisticsus.com");
+  url.searchParams.set("lang", "ru");
+  return `${url.pathname}${url.search}${url.hash}`;
+})();
 const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
 
 {variant === "header" && (
-  <a href={computedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
+  <a href={localizedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
     <img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="22" height="22" loading="eager" alt="Hermes Connect mark" />
     <span>{displayTitle}</span>
     <ArrowUpRight size={15} aria-hidden="true" />
@@ -48,10 +90,10 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 )}
 
 {variant === "mobile" && (
-  <a href={computedHref} class={`hc-launcher-mobile ${className}`} data-hermes-connect-launcher="mobile">
+  <a href={localizedHref} class={`hc-launcher-mobile ${className}`} data-hermes-connect-launcher="mobile">
     <img class="hc-brand-mark hc-brand-mark-mobile hermes-knot-mark" src={connectMark} width="30" height="30" loading="eager" alt="Hermes Connect mark" />
     <div><strong>{displayTitle}</strong><small>{displaySubtitle}</small></div>
-    <span>Open product <ArrowUpRight size={16} aria-hidden="true" /></span>
+    <span>{localeCopy.openProduct} <ArrowUpRight size={16} aria-hidden="true" /></span>
   </a>
 )}
 
@@ -59,26 +101,26 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
   <div class={`hc-launcher-panel ${className}`} data-hermes-connect-launcher="footer">
     <div class="hc-launcher-panel-head">
       <span class="hc-launcher-panel-brand"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="24" height="24" loading="lazy" alt="Hermes Connect mark" /><strong>Hermes Connect</strong></span>
-      <span>Current product</span>
+      <span>{localeCopy.currentProduct}</span>
     </div>
-    <p>One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.</p>
-    <a href={computedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />Open Hermes Connect Product Hub <ArrowUpRight size={16} aria-hidden="true" /></a>
+    <p>{localeCopy.footerBody}</p>
+    <a href={localizedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />{localeCopy.openHub} <ArrowUpRight size={16} aria-hidden="true" /></a>
   </div>
 )}
 
 {variant === "banner" && (
   <section class={`hc-launcher-banner ${className}`} data-hermes-connect-launcher="banner">
     <div>
-      <span class="hc-launcher-badge"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" /> Hermes Connect · Current product family</span>
+      <span class="hc-launcher-badge"><img class="hc-brand-mark hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" /> {localeCopy.currentFamily}</span>
       <h3>{displayTitle}</h3>
-      <p>{displaySubtitle}. No legacy workspace or historical pricing is presented as the current product.</p>
+      <p>{displaySubtitle}. {localeCopy.bannerSuffix}</p>
     </div>
-    <a href={computedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />Explore Hermes Connect <ArrowUpRight size={17} aria-hidden="true" /></a>
+    <a href={localizedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />{localeCopy.explore} <ArrowUpRight size={17} aria-hidden="true" /></a>
   </section>
 )}
 
 {variant === "inline" && (
-  <a href={computedHref} class={`hc-launcher-inline ${className}`} data-hermes-connect-launcher="inline">
+  <a href={localizedHref} class={`hc-launcher-inline ${className}`} data-hermes-connect-launcher="inline">
     <img class="hc-brand-mark hc-brand-mark-inline hermes-knot-mark" src={connectMark} width="18" height="18" loading="lazy" alt="Hermes Connect mark" /><span>{displayTitle}</span><ArrowUpRight size={14} aria-hidden="true" />
   </a>
 )}

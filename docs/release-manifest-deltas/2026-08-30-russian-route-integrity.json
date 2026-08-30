@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "base_manifest": "docs/release-manifest-2026-08-01.json",
+  "release_delta": "2026-08-30-russian-route-integrity",
+  "generated_at": "2026-08-30T11:15:00+03:00",
+  "status": "PENDING_PRODUCTION_DEPLOYMENT",
+  "additions": [
+    {
+      "route": "/ru/privacy/",
+      "source_state": "current_main",
+      "indexability": "indexable",
+      "robots": "index,follow",
+      "canonical": "https://hermeslogisticsus.com/ru/privacy/",
+      "sitemap_owner": "public/sitemap.xml",
+      "source_file": "src/pages/ru/privacy.astro",
+      "status": "COMPLETE",
+      "blocker": null,
+      "response_status": 200,
+      "comparison": { "production": "pending_deployment", "immutable_release": "missing" }
+    }
+  ],
+  "acceptance": {
+    "route_count_added": 1,
+    "indexable_route_count_added": 1,
+    "requires_green_current_head_ci": true,
+    "requires_production_snapshot_reconciliation_after_deploy": true
+  }
+}

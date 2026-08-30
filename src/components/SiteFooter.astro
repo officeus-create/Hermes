@@ -3,15 +3,20 @@ import { ArrowUp, Phone } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
+import RussianLocaleIntegrity from "./RussianLocaleIntegrity.astro";
 
 interface Props {
   locale?: SiteLocale;
 }
 
-const { locale = "en" } = Astro.props;
-const publicLocationBoundary = "U.S. logistics · International email coordination";
-const logisticsPhone = site.publicPhones[0];
+const { locale: requestedPropLocale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
+const connectRequestedLocale = currentPath.startsWith("/services/hermes-connect") ? Astro.url.searchParams.get("lang") : null;
+const locale: SiteLocale = connectRequestedLocale === "ru" ? "ru" : requestedPropLocale;
+const publicLocationBoundary = locale === "ru"
+  ? "Логистика в США · международная координация по электронной почте"
+  : "U.S. logistics · International email coordination";
+const logisticsPhone = site.publicPhones[0];
 const showLogisticsPhone =
   currentPath === "/load-board/" ||
   currentPath.startsWith("/logistics/") ||
@@ -94,6 +99,7 @@ const localized = {
   },
 }[locale];
 const localePath = localeConfig[locale].path;
+const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 ---
 
 {showTransportRequestActions && (
@@ -154,7 +160,7 @@ const localePath = localeConfig[locale].path;
     </div>
     <nav class="footer-primary-nav" aria-label="Footer navigation">
       {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
-      <a href="/privacy/">{localized.privacy}</a>
+      <a href={privacyHref}>{localized.privacy}</a>
       {locale === "en" && (
         <>
           <a href="/legal-compliance/">Legal & Compliance</a>
@@ -193,6 +199,7 @@ const localePath = localeConfig[locale].path;
     <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
 </footer>
+<RussianLocaleIntegrity />
 
 <style>
   @media (max-width: 700px) {
