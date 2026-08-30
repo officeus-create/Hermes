@@ -25,27 +25,26 @@ const pages = [
   { slug:"home-services-marketing", title:"Home Services Marketing London | Hermes", eyebrow:"London home services", h1:"Make local service demand easier to find and easier to convert.", description:"Marketing for London home-service companies across local SEO, websites, Google visibility, social content, paid acquisition and CRM workflows.", points:["Service-area search architecture","Trust, reviews and proof of work","Quote and follow-up workflows"] },
   { slug:"professional-services-marketing", title:"Professional Services Marketing London | Hermes", eyebrow:"London professional services", h1:"Turn expertise into credible, measurable demand generation.", description:"Digital marketing for London professional-service firms across websites, SEO, thought-leadership content, paid acquisition and lead qualification.", points:["Authority-led website structure","Search and expert content","Lead qualification and CRM tracking"] },
 ];
-
-export function getStaticPaths() {
-  return pages.map((page) => ({ params: { slug: page.slug }, props: { page } }));
-}
-
-const { page } = Astro.props;
+const serviceBySlug: Record<string,string> = {
+  "social-media-management":"smm","meta-ads":"meta-ads","website-development":"website-development","seo-services":"seo","local-seo":"seo","google-business-profile":"seo","landing-page-development":"website-development","crm-automation":"crm","content-reels-scripts":"content","marketing-audit":"marketing",
+  "auto-repair-marketing":"marketing","beauty-salon-marketing":"marketing","dental-clinic-marketing":"marketing","restaurant-marketing":"marketing","contractor-marketing":"marketing","logistics-company-marketing":"marketing","car-detailing-marketing":"marketing","cleaning-company-marketing":"marketing","home-services-marketing":"marketing","professional-services-marketing":"marketing"
+};
+export function getStaticPaths(){return pages.map(page=>({params:{slug:page.slug},props:{page}}));}
+const {page}=Astro.props; const service=serviceBySlug[page.slug] ?? "marketing";
+const schema=[
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:page.h1,item:`https://hermeslogisticsus.com/gb/london/${page.slug}/`}]},
+ {"@context":"https://schema.org","@type":"Service",name:page.h1,description:page.description,provider:{"@type":"Organization",name:"Hermes",url:"https://hermeslogisticsus.com/"},areaServed:{"@type":"City",name:"London"},url:`https://hermeslogisticsus.com/gb/london/${page.slug}/`}
+];
 ---
-<BaseLayout title={page.title} description={page.description}>
+<BaseLayout title={page.title} description={page.description} schema={schema}>
   <SiteHeader theme="dark" />
   <main id="main-content">
     <section class="section detail-overview"><div class="shell detail-intro">
-      <p class="eyebrow">{page.eyebrow}</p>
-      <h1>{page.h1}</h1>
-      <p>{page.description}</p>
-      <p><a class="button button-primary" href="/business-growth/?source=london">Request a London growth audit</a> <a class="button" href="/gb/london/">London hub</a></p>
+      <p class="eyebrow">{page.eyebrow}</p><h1>{page.h1}</h1><p>{page.description}</p>
+      <p><a class="button button-primary" href={`/business-growth/?source=london&service=${service}`}>Request a London growth audit</a> <a class="button" href="/gb/london/">London hub</a></p>
     </div></section>
-    <section class="section"><div class="shell grid">
-      {page.points.map((point) => <article><h2>{point}</h2><p>Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.</p></article>)}
-    </div></section>
+    <section class="section"><div class="shell grid">{page.points.map(point=><article><h2>{point}</h2><p>Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.</p></article>)}</div></section>
     <section class="section"><div class="shell"><p><strong>Commercial boundary:</strong> platform spend, third-party fees and production costs are separate unless explicitly included. Search rankings, leads, sales and revenue are not guaranteed.</p></div></section>
-  </main>
-  <SiteFooter />
+  </main><SiteFooter />
 </BaseLayout>
 <style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.35rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
