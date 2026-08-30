@@ -32,6 +32,23 @@
   --hermes-ocean: #5ac8fa;
   --hermes-intelligence-gradient: linear-gradient(135deg, #7c5cff 0%, #5ac8fa 100%);
 
+  /* Canonical direction accents.
+   * These values preserve the approved Hermes Connect division system:
+   * Logistics blue, Marketing green, Academy violet, IT & Product orange.
+   * Product workspaces inherit these semantically instead of hardcoding page colors.
+   */
+  --hermes-logistics: #1e88ff;
+  --hermes-marketing: #00c853;
+  --hermes-academy: #7c5cff;
+  --hermes-technology: #ff7a00;
+
+  /* Current product aliases. Beauty intentionally has no canonical token yet. */
+  --hermes-repair: var(--hermes-logistics);
+  --hermes-ai-product: var(--hermes-technology);
+  --hermes-vertical-accent: var(--hermes-violet);
+  --hermes-vertical-accent-soft: color-mix(in srgb, var(--hermes-vertical-accent) 10%, transparent);
+  --hermes-vertical-accent-line: color-mix(in srgb, var(--hermes-vertical-accent) 24%, transparent);
+
   /* Supporting brand / semantic states */
   --hermes-sage: #7fd1b6;
   --hermes-success: #28b487;
@@ -71,6 +88,25 @@
   --hermes-ease: cubic-bezier(0.22, 0.75, 0.2, 1);
 }
 
+/* One context switch changes the accent without changing the shared Hermes shell. */
+[data-hermes-vertical="logistics"],
+[data-hermes-vertical="repair"] {
+  --hermes-vertical-accent: var(--hermes-logistics);
+}
+
+[data-hermes-vertical="marketing"] {
+  --hermes-vertical-accent: var(--hermes-marketing);
+}
+
+[data-hermes-vertical="academy"] {
+  --hermes-vertical-accent: var(--hermes-academy);
+}
+
+[data-hermes-vertical="technology"],
+[data-hermes-vertical="ai"] {
+  --hermes-vertical-accent: var(--hermes-technology);
+}
+
 /* Opt-in primitives. No legacy page changes merely from importing this file. */
 .hermes-surface-pearl {
   color: var(--hermes-ink);
@@ -102,7 +138,7 @@
   border: 1px solid var(--hermes-line-dark);
   border-radius: var(--hermes-radius-panel);
   background:
-    radial-gradient(circle at 88% 10%, rgba(124, 92, 255, 0.12), transparent 25rem),
+    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--hermes-vertical-accent) 12%, transparent), transparent 25rem),
     var(--hermes-obsidian);
   box-shadow: var(--hermes-shadow-workspace);
 }
@@ -113,6 +149,20 @@
 
 .hermes-intelligence-fill {
   background: var(--hermes-intelligence-gradient);
+}
+
+.hermes-vertical-accent-text {
+  color: var(--hermes-vertical-accent);
+}
+
+.hermes-vertical-accent-fill {
+  background: var(--hermes-vertical-accent);
+}
+
+.hermes-vertical-accent-chip {
+  color: var(--hermes-vertical-accent);
+  border: 1px solid var(--hermes-vertical-accent-line);
+  background: var(--hermes-vertical-accent-soft);
 }
 
 .hermes-glass {
