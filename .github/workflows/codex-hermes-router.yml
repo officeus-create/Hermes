@@ -7,6 +7,8 @@ on:
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
       - "scripts/ai/setup-codex-hermes.sh"
+      - "scripts/ai/bootstrap-hermes-openssl.sh"
+      - "scripts/codex-hermes-openssl-bootstrap.test.mjs"
       - "docs/CODEX_HERMES_RUNTIME.md"
       - ".github/workflows/codex-hermes-router.yml"
   push:
@@ -17,6 +19,8 @@ on:
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
       - "scripts/ai/setup-codex-hermes.sh"
+      - "scripts/ai/bootstrap-hermes-openssl.sh"
+      - "scripts/codex-hermes-openssl-bootstrap.test.mjs"
       - "docs/CODEX_HERMES_RUNTIME.md"
       - ".github/workflows/codex-hermes-router.yml"
 
@@ -33,6 +37,7 @@ jobs:
       - name: Validate shell syntax
         run: |
           bash -n scripts/ai/setup-codex-hermes.sh
+          bash -n scripts/ai/bootstrap-hermes-openssl.sh
           bash -n scripts/ai/codex-hermes-server
           bash -n scripts/ai/codex-hermes
           bash -n scripts/ai/codex-hermes-doctor
@@ -51,7 +56,10 @@ jobs:
           grep -Fq '8b312c3a18279466732c3942d7e9246a75725d51' scripts/ai/setup-codex-hermes.sh
           grep -Fq 'FCC_VERSION="5.14.5"' scripts/ai/setup-codex-hermes.sh
           if grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,})' \
-            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/setup-codex-hermes.sh; then
+            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
             echo "Potential credential material detected in Hermes Codex router scripts" >&2
             exit 1
           fi
+
+      - name: Validate Intel macOS OpenSSL bootstrap contract
+        run: node scripts/codex-hermes-openssl-bootstrap.test.mjs

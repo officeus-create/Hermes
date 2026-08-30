@@ -47,6 +47,7 @@ Do not float Hermes automatically to upstream `main`. Upgrade the pinned revisio
 ## Files
 
 - `scripts/ai/setup-codex-hermes.sh` — creates the isolated FCC Python environment without touching the ordinary Codex install.
+- `scripts/ai/bootstrap-hermes-openssl.sh` — Intel-macOS-only pinned OpenSSL bootstrap/verification used before an FCC source build.
 - `scripts/ai/codex-hermes-server` — starts the Hermes FCC server.
 - `scripts/ai/codex-hermes` — launches Codex through FCC with separate `CODEX_HOME`.
 - `scripts/ai/codex-hermes-doctor` — checks separation, pinned FCC version and proxy/launcher readiness without printing provider secrets.
@@ -63,14 +64,32 @@ cd ~/Hermes
 The setup requires:
 
 - the official `codex` command already installed;
-- `uv` available (`brew install uv` on the current macOS setup if it is missing).
+- `uv` available. If it is missing, install it with the official standalone uv installer rather than Homebrew.
 
-The setup creates only:
+The normal setup creates only isolated Hermes state:
 
 ```text
 ~/.hermes-ai/fcc-venv
 ~/.codex-hermes
 ```
+
+On Intel macOS, FCC's pinned Python 3.14 dependency set may need to compile `cryptography` from source. In that case the setup also creates:
+
+```text
+~/.hermes-ai/deps/openssl
+```
+
+Hermes does not use or modify macOS OpenSSL, Homebrew OpenSSL, or MacPorts OpenSSL for this path. The bootstrap is pinned to:
+
+- OpenSSL `3.5.4`;
+- official source: `https://www.openssl.org/source/openssl-3.5.4.tar.gz`;
+- SHA-256: `967311f84955316969bdb1d8d4b983718ef42338639c621ec4c34fddef355e99`;
+- Intel macOS target `darwin64-x86_64-cc`;
+- static `libssl.a` and `libcrypto.a` (`no-shared`).
+
+Before use, Hermes verifies the pinned version, headers, both static libraries, and the isolated `bin/openssl` version receipt. A pre-existing mismatched or incomplete isolated directory fails closed rather than being overwritten or silently accepted.
+
+`HERMES_OPENSSL_DIR` may select a different already-reviewed isolated target. If an explicit `OPENSSL_DIR` is supplied to the setup, Hermes treats it as an isolated candidate and runs the same pinned verification first. System and package-manager targets under `/usr`, `/System`, `/opt/homebrew`, and `/opt/local` are rejected.
 
 FCC itself stores its managed provider configuration under `~/.fcc`. Provider keys/tokens must stay there or in the provider's approved authentication flow. Never write them into this repository, GitHub issues, handoffs, screenshots, prompts, or committed `.env` files.
 
@@ -119,6 +138,8 @@ A doctor PASS is **not** provider evidence. It proves only the bootstrap/router 
 cd ~/Hermes
 ./scripts/ai/codex-hermes
 ```
+
+The Hermes launcher prepends only the isolated FCC virtual environment to the routed process `PATH`. That lets Codex resolve FCC's local external-auth helper during a routed request. It does not replace the ordinary `codex` executable and does not change the system `PATH` outside the process.
 
 Arguments pass through to `fcc-codex`, so non-interactive Codex use is also possible, for example:
 
