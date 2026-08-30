@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+const pages=[
+ {section:"marketing",title:"Маркетинг в Лондоне: SMM, Meta Ads и SEO | Hermes",h1:"Маркетинг для бизнеса в Лондоне: от контента до измеримых заявок.",description:"SMM, Instagram, Facebook, Threads, Meta Ads, сайты, SEO и аналитика для бизнеса в Лондоне.",en:"/gb/london/marketing/",body:"Связываем контент, рекламу, сайт, SEO и аналитику в единый путь привлечения клиентов без обещаний гарантированных лидов или продаж."},
+ {section:"it-web-development",title:"Сайты, SEO и IT в Лондоне | Hermes",h1:"Сайты и IT-системы как часть продаж и операций бизнеса.",description:"Разработка сайтов, landing pages, technical SEO, аналитика, CRM и автоматизация для бизнеса в Лондоне.",en:"/gb/london/it-web-development/",body:"Начинаем с конкретного бизнес-узкого места и добавляем сайт, SEO, CRM и автоматизацию только там, где они решают измеримую задачу."},
+ {section:"us-logistics-training",title:"Обучение логистике США в Лондоне | Hermes Academy",h1:"Практическое обучение операциям и продажам в логистике США.",description:"Обучение логистике США для русскоязычных жителей Лондона и Великобритании: операции, планирование, продажи и переговоры.",en:"/gb/london/us-logistics-training/",body:"Треки с живыми звонками и переговорами на рынке США требуют разговорного английского B2+. Обучение не гарантирует трудоустройство или доход."}
+];
+export function getStaticPaths(){return pages.map(page=>({params:{section:page.section},props:{page}}));}
+const {page}=Astro.props; const alternates=[{lang:"en",href:page.en},{lang:"ru",href:`/ru/gb/london/${page.section}/`},{lang:"uk",href:`/ua/gb/london/${page.section}/`},{lang:"x-default",href:page.en}];
+---
+<BaseLayout title={page.title} description={page.description} locale="ru" alternates={alternates}><SiteHeader theme="dark" locale="ru"/><main id="main-content"><section class="section detail-overview"><div class="shell detail-intro"><p class="eyebrow">Лондон · Hermes</p><h1>{page.h1}</h1><p>{page.body}</p><p><a class="button button-primary" href="/ru/gb/london/">London hub</a></p></div></section></main><SiteFooter/></BaseLayout>
