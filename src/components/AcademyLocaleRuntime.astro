@@ -1,0 +1,389 @@
+---
+---
+
+<script is:inline>
+  (() => {
+    const path = window.location.pathname;
+    if (!path.startsWith("/services/hermes-connect/academy")) return;
+    const locale = new URLSearchParams(window.location.search).get("lang") || "en";
+    if (locale !== "ru") return;
+
+    document.documentElement.lang = "ru";
+
+    const translations = new Map([
+      ["Skip to content", "Перейти к содержимому"],
+      ["Breadcrumb", "Навигационная цепочка"],
+      ["Academy", "Академия"],
+      ["Academy learner access", "Доступ ученика Академии"],
+      ["Sign in", "Вход"],
+      ["Dashboard", "Панель ученика"],
+      ["Learner dashboard", "Панель ученика"],
+      ["Shared Hermes identity", "Общая учётная запись Hermes"],
+      ["Use one Hermes account across the ecosystem.", "Используйте один аккаунт Hermes во всей экосистеме."],
+      ["If you already have a Hermes Connect session, the Academy uses that same identity. New learners create an identity through the existing Hermes authentication service; no second password store, account database or Academy-only session cookie is created.", "Если у вас уже есть сессия Hermes Connect, Академия использует ту же учётную запись. Новые ученики создают её через существующую систему авторизации Hermes — без второго хранилища паролей, отдельной базы аккаунтов или отдельной сессии Академии."],
+      ["Creating a learner account does not approve an Academy application or enroll you in a cohort. Enrollment state is shown separately in the learner dashboard.", "Создание аккаунта ученика не одобряет заявку в Академию и не зачисляет вас в поток. Статус участия отображается отдельно в панели ученика."],
+      ["Secure session", "Защищённая сессия"],
+      ["Checking your Hermes session…", "Проверяем вашу сессию Hermes…"],
+      ["Existing Hermes sessions work here without another login.", "Существующая сессия Hermes работает здесь без повторного входа."],
+      ["Session active", "Сессия активна"],
+      ["Welcome,", "Добро пожаловать,"],
+      ["Learner", "Ученик"],
+      ["Open learner dashboard", "Открыть панель ученика"],
+      ["Log out", "Выйти"],
+      ["Authentication mode", "Режим авторизации"],
+      ["Login", "Войти"],
+      ["Create account", "Создать аккаунт"],
+      ["Email", "Email"],
+      ["Password", "Пароль"],
+      ["Secure login", "Безопасный вход"],
+      ["Full name", "Имя и фамилия"],
+      ["Country and city", "Страна и город"],
+      ["Create learner identity", "Создать аккаунт ученика"],
+      ["Secure learner workspace", "Защищённое пространство ученика"],
+      ["Loading your Academy state…", "Загружаем состояние Академии…"],
+      ["The dashboard reads only the learner attached to your current Hermes session.", "Панель загружает только данные ученика, связанные с вашей текущей сессией Hermes."],
+      ["Hermes Connect · Academy learner", "Hermes Connect · ученик Академии"],
+      ["Your Academy profile and enrollment state are attached to the same Hermes identity/session used across Hermes Connect. They persist independently of this browser.", "Профиль Академии и статус участия связаны с той же учётной записью и сессией Hermes, что используется во всём Hermes Connect. Эти данные не зависят от конкретного браузера."],
+      ["How training works", "Как проходит обучение"],
+      ["Public application / qualification", "Публичная заявка / квалификация"],
+      ["Evidence submissions", "Отправленные работы"],
+      ["Reviewer workspace", "Пространство проверяющего"],
+      ["Human progression gate", "Человеческий контроль прогресса"],
+      ["Enrollment state is not a hiring decision.", "Статус участия — не решение о найме."],
+      ["A learner may request one of the two approved public programs. New requests enter only as Applied. Approval, enrollment, completion, employment, operational access and commercial terms require separate authorized decisions.", "Ученик может запросить одну из двух утверждённых публичных программ. Новая заявка получает только статус «Подано». Одобрение, зачисление, завершение, трудоустройство, операционный доступ и коммерческие условия требуют отдельных уполномоченных решений."],
+      ["Your learner profile", "Ваш профиль ученика"],
+      ["One identity, learner preferences.", "Одна учётная запись, отдельные учебные настройки."],
+      ["Preferred learning language", "Предпочтительный язык обучения"],
+      ["Not selected", "Не выбран"],
+      ["Time zone", "Часовой пояс"],
+      ["Save learner preferences", "Сохранить учебные настройки"],
+      ["Email, name and location stay in the shared Hermes identity; Academy stores only learning preferences and controlled program state. Passwords are never copied into a second account store.", "Email, имя и местоположение остаются в общей учётной записи Hermes; Академия хранит только учебные настройки и контролируемое состояние программ. Пароли никогда не копируются во второе хранилище аккаунтов."],
+      ["Program access", "Доступ к программам"],
+      ["Choose an approved public program.", "Выберите утверждённую публичную программу."],
+      ["Creating a request records Applied only. It does not auto-approve you or choose a paid/free cohort.", "Создание запроса фиксирует только статус «Подано». Оно не одобряет участие автоматически и не назначает платный или бесплатный поток."],
+      ["Program", "Программа"],
+      ["Choose program", "Выберите программу"],
+      ["Request program review", "Отправить программу на рассмотрение"],
+      ["Logistics curriculum", "Программа по логистике"],
+      ["Marketing curriculum", "Программа по маркетингу"],
+      ["Enrollment state", "Статус участия"],
+      ["Your programs", "Ваши программы"],
+      ["No program request yet. Review the public curriculum first, then submit one program for human review.", "Заявок на программы пока нет. Сначала изучите публичную программу, затем отправьте одну программу на рассмотрение человеком."],
+      ["Your current program access is configured.", "Ваш текущий доступ к программам настроен."],
+      ["Open either program below to continue the real learner journey. Enrollment and progression remain human-controlled for normal learners.", "Откройте любую программу ниже, чтобы продолжить обучение. Зачисление и продвижение обычных учеников остаются под контролем людей."],
+      ["Continue learning", "Продолжить обучение"],
+      ["Review curriculum", "Посмотреть программу"],
+      ["Learner preferences saved.", "Настройки ученика сохранены."],
+      ["This program request already exists.", "Запрос на эту программу уже существует."],
+      ["Program request recorded as Applied. Human review is still required.", "Запрос на программу записан со статусом «Подано». Проверка человеком по-прежнему обязательна."],
+      ["Authenticated curriculum · A2", "Авторизованная программа · A2"],
+      ["Open canonical public curriculum", "Открыть публичную программу"],
+      ["Back to dashboard", "Назад в панель"],
+      ["Checking enrollment…", "Проверяем зачисление…"],
+      ["Use the existing public curriculum as your learning map.", "Используйте существующую публичную программу как карту обучения."],
+      ["Not started", "Не начато"],
+      ["Open full lesson", "Открыть полный урок"],
+      ["Start module", "Начать модуль"],
+      ["Full lesson content requires an existing Enrolled state and is loaded through the shared Hermes session.", "Полный урок доступен только при действующем статусе «Зачислен» и загружается через общую сессию Hermes."],
+      ["Progress boundary", "Граница прогресса"],
+      ["Self-tracking does not change enrollment.", "Самостоятельная отметка прогресса не меняет статус участия."],
+      ["Only an existing Enrolled state unlocks progress controls. Marking modules complete never changes your enrollment, reviewer decision, participation model, cohort, candidate status, or employment status.", "Управление прогрессом доступно только при действующем статусе «Зачислен». Отметка модулей как завершённых никогда не меняет статус участия, решение проверяющего, формат участия, поток, статус кандидата или трудоустройство."],
+      ["Evidence → human review → progression", "Работа → проверка человеком → продвижение"],
+      ["The next Academy stages are already connected.", "Следующие этапы Академии уже связаны."],
+      ["Use the private Evidence workspace to submit lesson work for an authorized human reviewer. Accepted evidence and requested changes then roll into your separate Progression view; self-tracked module completion never substitutes for that human decision.", "Используйте приватное пространство работ, чтобы отправлять задания уполномоченному проверяющему. Принятые работы и запросы на исправления затем отображаются в отдельном разделе прогресса; самостоятельная отметка модулей не заменяет решение человека."],
+      ["Open Evidence workspace", "Открыть пространство работ"],
+      ["View Progression", "Посмотреть прогресс"],
+      ["Reopen module", "Открыть модуль снова"],
+      ["Mark module complete", "Отметить модуль завершённым"],
+      ["Completed · self-tracked", "Завершено · отмечено учеником"],
+      ["In progress", "В процессе"],
+      ["No program request", "Нет запроса на программу"],
+      ["No enrollment request exists for this program. Review the curriculum, then request the program from your learner dashboard.", "Для этой программы нет запроса на участие. Изучите программу, затем запросите её в панели ученика."],
+      ["Self-tracked lesson progress saved. Enrollment state was not changed.", "Самостоятельный прогресс урока сохранён. Статус участия не изменён."],
+      ["Private Academy lesson · enrolled learners", "Приватный урок Академии · зачисленные ученики"],
+      ["Loading lesson…", "Загружаем урок…"],
+      ["Checking shared Hermes identity and program enrollment.", "Проверяем общую учётную запись Hermes и зачисление на программу."],
+      ["Back to program", "Назад к программе"],
+      ["View progression", "Посмотреть прогресс"],
+      ["Enrollment check", "Проверка зачисления"],
+      ["Learning content does not grant operational access.", "Учебный материал не предоставляет операционный доступ."],
+      ["Lesson reading, self-tracked progress and accepted evidence stay separate from employment, certification, income, client access and permission to work with live operations.", "Изучение уроков, самостоятельный прогресс и принятые работы отделены от трудоустройства, сертификации, дохода, доступа к клиентам и разрешения работать с реальными операциями."],
+      ["Learning objectives", "Цели обучения"],
+      ["What you should be able to do", "Что вы должны уметь после урока"],
+      ["Approved source pages", "Утверждённые источники"],
+      ["Build from these canonical public destinations.", "Используйте эти канонические публичные источники."],
+      ["Practice → private evidence → human review", "Практика → приватная работа → проверка человеком"],
+      ["Assignment", "Задание"],
+      ["Submit this assignment", "Отправить это задание"],
+      ["Human assessment rubric", "Критерии человеческой оценки"],
+      ["Every criterion is Pass or Revise.", "По каждому критерию решение: зачёт или доработка."],
+      ["Safety and data boundaries", "Границы безопасности и данных"],
+      ["Keep learner evidence synthetic and reviewable.", "Учебные материалы должны оставаться синтетическими и проверяемыми."],
+      ["Next lesson", "Следующий урок"],
+      ["Continue when you are ready.", "Продолжайте, когда будете готовы."],
+      ["Continue", "Продолжить"],
+      ["Choose a lesson from your enrolled Academy program.", "Выберите урок из программы Академии, на которую вы зачислены."],
+      ["Lesson not selected", "Урок не выбран"],
+      ["Open an enrolled program and choose an available full lesson.", "Откройте программу, на которую вы зачислены, и выберите доступный полный урок."],
+      ["This full lesson is available only inside an enrolled Academy program.", "Полный урок доступен только внутри программы Академии со статусом «Зачислен»."],
+      ["This module remains on the curriculum map, but its full learner lesson is not published yet.", "Этот модуль остаётся в карте программы, но полный урок для ученика ещё не опубликован."],
+      ["Lesson unavailable", "Урок недоступен"],
+      ["Return to the program curriculum and continue with an available lesson.", "Вернитесь к программе и продолжите с доступного урока."],
+      ["Academy A3 · Private evidence", "Академия A3 · приватные работы"],
+      ["Submit evidence for human review.", "Отправьте работу на проверку человеком."],
+      ["Enrolled learners can submit a written reflection or an HTTPS evidence link for one allowlisted lesson. Reviewer feedback stays private inside the Academy account.", "Зачисленные ученики могут отправить письменный ответ или HTTPS-ссылку на работу для разрешённого урока. Комментарии проверяющего остаются приватными внутри аккаунта Академии."],
+      ["Back to learner dashboard", "Назад в панель ученика"],
+      ["Human review only", "Только проверка человеком"],
+      ["Accepted evidence is not a final Academy decision.", "Принятая работа — не финальное решение Академии."],
+      ["An accepted submission does not automatically complete the program, issue a certificate, create employment, income, client access, cohort access, or permission to work with live operations.", "Принятая работа не завершает программу автоматически, не выдаёт сертификат, не создаёт трудоустройство, доход, доступ к клиентам, потоку или разрешение работать с реальными операциями."],
+      ["New evidence", "Новая работа"],
+      ["Choose an enrolled program and lesson.", "Выберите программу и урок, на которые вы зачислены."],
+      ["Checking your enrolled programs…", "Проверяем ваши зачисленные программы…"],
+      ["Choose enrolled program", "Выберите зачисленную программу"],
+      ["Lesson", "Урок"],
+      ["Choose lesson", "Выберите урок"],
+      ["Evidence type", "Тип работы"],
+      ["Written reflection", "Письменный ответ"],
+      ["HTTPS evidence link", "HTTPS-ссылка на работу"],
+      ["Evidence URL", "Ссылка на работу"],
+      ["Optional reviewer note", "Необязательная заметка проверяющему"],
+      ["Submit for human review", "Отправить на проверку человеком"],
+      ["Hermes stores the reference URL but does not automatically crawl, download or execute content from evidence links in A3.", "Hermes сохраняет ссылку, но в A3 не сканирует, не скачивает и не запускает содержимое ссылок на работы автоматически."],
+      ["Your private history", "Ваша приватная история"],
+      ["Submissions and reviewer feedback", "Работы и комментарии проверяющего"],
+      ["No evidence submitted yet.", "Работы ещё не отправлялись."],
+      ["Only programs with an existing Enrolled state are selectable.", "Можно выбрать только программы с действующим статусом «Зачислен»."],
+      ["No enrolled program is available yet. Existing submission history remains visible, but new evidence is locked.", "Пока нет доступной зачисленной программы. История прошлых работ остаётся видимой, но отправка новых работ заблокирована."],
+      ["Academy A4 · Private progression", "Академия A4 · приватный прогресс"],
+      ["Your learning evidence, one view.", "Все ваши учебные результаты в одном месте."],
+      ["A4 combines your A2 lesson self-tracking with A3 human-reviewed evidence. Counts help you and your reviewer understand the current state; they never make the progression decision automatically.", "A4 объединяет самостоятельный прогресс уроков A2 с работами A3, проверенными человеком. Счётчики помогают вам и проверяющему видеть состояние, но никогда не принимают решение о продвижении автоматически."],
+      ["Human completion gate", "Человеческое решение о завершении"],
+      ["Program completion is a human Academy decision.", "Завершение программы — решение человека в Академии."],
+      ["Select an enrolled program.", "Выберите зачисленную программу."],
+      ["Enrolled program", "Зачисленная программа"],
+      ["Loading enrolled programs…", "Загружаем зачисленные программы…"],
+      ["Learning signal", "Учебный показатель"],
+      ["Lesson completion remains your A2 self-tracking signal. It cannot complete the Academy program by itself.", "Завершение уроков остаётся вашим самостоятельным показателем A2. Само по себе оно не может завершить программу Академии."],
+      ["Evidence signal", "Показатель работ"],
+      ["Accepted evidence is reviewer-confirmed A3 work. Submitted or changes-requested items remain visible until reviewed or corrected.", "Принятые работы — это задания A3, подтверждённые проверяющим. Отправленные работы и работы на доработке остаются видимыми до проверки или исправления."],
+      ["Human progression state", "Статус продвижения по решению человека"],
+      ["No human progression decision has been recorded yet.", "Решение человека о продвижении пока не зафиксировано."],
+      ["Lesson + evidence map", "Карта уроков и работ"],
+      ["What is complete and what still needs review.", "Что завершено и что ещё требует проверки."],
+      ["Progression history", "История продвижения"],
+      ["Private human decisions and feedback.", "Приватные решения людей и комментарии."],
+      ["No human progression review yet.", "Проверки прогресса человеком пока не было."],
+      ["No enrolled program available", "Нет доступной зачисленной программы"],
+      ["Progression evidence becomes available after a program is enrolled.", "Данные прогресса становятся доступны после зачисления на программу."],
+      ["Academy A3.1 · Private support", "Академия A3.1 · приватная поддержка"],
+      ["Questions & support", "Вопросы и поддержка"],
+      ["Ask a course question. Keep the answer with your learning history.", "Задайте вопрос по курсу. Ответ сохранится в вашей учебной истории."],
+      ["Enrolled learners can open a private Academy question for one current program or lesson. Replies come only from a separately authorized human support account.", "Зачисленные ученики могут создать приватный вопрос по текущей программе или уроку. Ответы приходят только от отдельно уполномоченного сотрудника поддержки."],
+      ["Progression", "Прогресс"],
+      ["Support-state only", "Только состояние поддержки"],
+      ["A support answer does not change Academy decisions.", "Ответ поддержки не меняет решения Академии."],
+      ["Questions and answers cannot change enrollment, lesson progress, evidence review, progression, employment, certification, payment, commercial rights, or live operational access.", "Вопросы и ответы не могут менять зачисление, прогресс уроков, проверку работ, продвижение, трудоустройство, сертификацию, оплату, коммерческие права или доступ к реальным операциям."],
+      ["New question", "Новый вопрос"],
+      ["Ask within an enrolled program.", "Задайте вопрос внутри зачисленной программы."],
+      ["Lesson (optional)", "Урок (необязательно)"],
+      ["General program question", "Общий вопрос по программе"],
+      ["Subject", "Тема"],
+      ["Question", "Вопрос"],
+      ["Send private question", "Отправить приватный вопрос"],
+      ["Your support history", "История вашей поддержки"],
+      ["Questions and human responses", "Вопросы и ответы сотрудников"],
+      ["No support questions yet.", "Вопросов в поддержку пока нет."],
+      ["Follow-up question", "Дополнительный вопрос"],
+      ["Send follow-up", "Отправить дополнение"],
+      ["Add a specific follow-up question first.", "Сначала добавьте конкретный дополнительный вопрос."],
+      ["Private follow-up sent to Academy support.", "Приватное дополнение отправлено в поддержку Академии."],
+      ["Choose one of your enrolled programs. Support state is separate from course progression.", "Выберите одну из зачисленных программ. Состояние поддержки отделено от прогресса курса."],
+      ["Support questions become available after a program is enrolled.", "Вопросы в поддержку становятся доступны после зачисления на программу."],
+      ["Private Academy support question created.", "Приватный вопрос в поддержку Академии создан."],
+      ["Academy support", "Поддержка Академии"],
+      ["You", "Вы"],
+      ["Too many support messages were sent recently. Please try again later.", "Недавно было отправлено слишком много сообщений в поддержку. Попробуйте позже."],
+      ["Questions are available only for a program that is currently enrolled.", "Вопросы доступны только для программы с действующим зачислением."],
+      ["This support thread is closed. Start a new question if you still need help.", "Эта ветка поддержки закрыта. Создайте новый вопрос, если помощь всё ещё нужна."],
+      ["This support thread could not be found.", "Эта ветка поддержки не найдена."],
+      ["Add a specific question before sending.", "Перед отправкой добавьте конкретный вопрос."],
+      ["Add a clear subject before sending.", "Перед отправкой укажите понятную тему."],
+      ["Choose an available Academy program.", "Выберите доступную программу Академии."],
+      ["Choose a lesson that belongs to this program.", "Выберите урок, который относится к этой программе."],
+      ["Academy support is temporarily unavailable. Please try again later.", "Поддержка Академии временно недоступна. Попробуйте позже."],
+      ["Academy support is temporarily unavailable. Please try again.", "Поддержка Академии временно недоступна. Попробуйте ещё раз."],
+      ["Academy A3 · Authorized reviewer", "Академия A3 · уполномоченный проверяющий"],
+      ["Reviewer queue", "Очередь проверяющего"],
+      ["Private evidence review queue.", "Приватная очередь проверки работ."],
+      ["Only Hermes identities manually provisioned in the separate Academy reviewer allowlist can open learner evidence here. Display role text never grants access.", "Открывать работы учеников здесь могут только учётные записи Hermes, вручную добавленные в отдельный список проверяющих Академии. Текст роли в профиле никогда не предоставляет доступ."],
+      ["Human decision boundary", "Граница человеческого решения"],
+      ["Review evidence, not employment.", "Проверяйте работу, а не трудоустройство."],
+      ["Accepted or changes-requested feedback updates only the submission review state. It does not change enrollment, lesson self-tracking, candidate/employment status, certification, commercial access, or permission to work with live customers.", "Принятие работы или запрос изменений меняет только состояние проверки этой работы. Оно не меняет зачисление, самостоятельный прогресс уроков, статус кандидата или сотрудника, сертификацию, коммерческий доступ или разрешение работать с реальными клиентами."],
+      ["Reviewer access is not authorized.", "Доступ проверяющего не разрешён."],
+      ["Your Hermes identity may be valid, but reviewer power requires a separate active `academy_reviewer_access` record provisioned by an authorized operator. Changing an account role label cannot unlock this queue.", "Ваша учётная запись Hermes может быть действующей, но полномочия проверяющего требуют отдельной активной записи `academy_reviewer_access`, созданной уполномоченным оператором. Изменение названия роли аккаунта не открывает эту очередь."],
+      ["Return to learner dashboard", "Вернуться в панель ученика"],
+      ["Authorized reviewer", "Уполномоченный проверяющий"],
+      ["Program filter", "Фильтр программы"],
+      ["All authorized programs", "Все разрешённые программы"],
+      ["No submissions in this authorized queue.", "В этой разрешённой очереди нет работ."],
+      ["Private reviewer feedback", "Приватный комментарий проверяющего"],
+      ["Request changes", "Запросить исправления"],
+      ["Accept evidence", "Принять работу"],
+      ["Add specific reviewer feedback before recording a decision.", "Добавьте конкретный комментарий проверяющего перед фиксацией решения."],
+      ["Private human review saved. Enrollment and lesson progress were not changed.", "Приватная проверка человеком сохранена. Зачисление и прогресс урока не изменены."],
+      ["U.S. Logistics Operations", "Операции логистики США"],
+      ["Marketing", "Маркетинг"],
+      ["Applied · human review pending", "Подано · ожидает проверки человеком"],
+      ["Approved", "Одобрено"],
+      ["Enrolled", "Зачислен"],
+      ["Paused", "Приостановлено"],
+      ["Completed", "Завершено"],
+      ["Cancelled", "Отменено"],
+      ["Submitted", "Отправлено"],
+      ["Changes requested", "Нужны изменения"],
+      ["Accepted", "Принято"],
+      ["Could not load learner state", "Не удалось загрузить состояние ученика"],
+      ["Could not save learner preferences", "Не удалось сохранить настройки ученика"],
+      ["Could not create program request", "Не удалось создать запрос на программу"],
+      ["Could not refresh learner state", "Не удалось обновить состояние ученика"],
+      ["Could not load curriculum progress", "Не удалось загрузить прогресс программы"],
+      ["Could not save lesson progress", "Не удалось сохранить прогресс урока"],
+      ["Could not load lesson", "Не удалось загрузить урок"],
+      ["Could not load submissions", "Не удалось загрузить отправленные работы"],
+      ["Could not load progression evidence", "Не удалось загрузить данные прогресса"],
+      ["Could not load learner programs", "Не удалось загрузить программы ученика"],
+      ["Could not load support history", "Не удалось загрузить историю поддержки"],
+      ["Could not create support question", "Не удалось создать вопрос в поддержку"],
+      ["Could not send follow-up", "Не удалось отправить дополнительный вопрос"],
+      ["Could not load reviewer queue", "Не удалось загрузить очередь проверяющего"],
+      ["Could not save review", "Не удалось сохранить проверку"],
+      ["Login failed", "Не удалось войти"],
+      ["Registration failed", "Не удалось зарегистрироваться"],
+    ]);
+
+    const placeholders = new Map([
+      ["Kyiv, Ukraine", "Киев, Украина"],
+      ["Explain what you learned, how you would apply it, and what still needs clarification.", "Опишите, что вы изучили, как применили бы это и что всё ещё требует уточнения."],
+      ["Explain what the reviewer should look for in the linked evidence.", "Объясните, на что проверяющему обратить внимание в работе по ссылке."],
+      ["What do you need help understanding?", "Что вам нужно помочь понять?"],
+      ["Give the context, what you already tried, and the exact point that is unclear.", "Опишите контекст, что вы уже пробовали и какой именно момент остаётся непонятным."],
+      ["Explain what is strong, what must change, and the learner's next concrete action.", "Укажите, что сделано хорошо, что нужно изменить и какое конкретное действие ученику выполнить дальше."],
+    ]);
+
+    const statusRu = (value) => {
+      const normalized = String(value || "").replaceAll("_", " ").trim().toLowerCase();
+      const map = {
+        applied: "подано", approved: "одобрено", enrolled: "зачислен", paused: "приостановлено", completed: "завершено", cancelled: "отменено",
+        submitted: "отправлено", "changes requested": "нужны изменения", accepted: "принято", "not started": "не начато", "in progress": "в процессе", closed: "закрыто", open: "открыто",
+        "written reflection": "письменный ответ", "evidence link": "ссылка на работу", "free practice": "бесплатная практика", "paid cohort": "платный поток", unspecified: "не определено",
+      };
+      return map[normalized] || String(value || "");
+    };
+
+    const dynamic = (value) => {
+      let match = value.match(/^Shared Hermes identity · (.+)$/);
+      if (match) return `Общая учётная запись Hermes · ${match[1]}`;
+      match = value.match(/^Location · (.+)$/);
+      if (match) return match[1] === "not set" ? "Местоположение · не указано" : `Местоположение · ${match[1]}`;
+      match = value.match(/^Enrollment · (.+)$/);
+      if (match) return `Зачисление · ${statusRu(match[1])}`;
+      match = value.match(/^Participation model: (.+?)( · Cohort: (.+))?$/);
+      if (match) {
+        const model = match[1] === "decided during human review" ? "определяется при проверке человеком" : statusRu(match[1]);
+        return `Формат участия: ${model}${match[3] ? ` · Поток: ${match[3]}` : ""}`;
+      }
+      match = value.match(/^(\d+) of (\d+) modules self-tracked complete$/);
+      if (match) return `${match[1]} из ${match[2]} модулей отмечено завершёнными`;
+      match = value.match(/^Module (\d+)$/);
+      if (match) return `Модуль ${match[1]}`;
+      match = value.match(/^Lesson version · (.+)$/);
+      if (match) return `Версия урока · ${match[1]}`;
+      match = value.match(/^Maximum length: (\d+) words\.$/);
+      if (match) return `Максимальный объём: ${match[1]} слов.`;
+      match = value.match(/^(\d+) \/ (\d+) lessons self-tracked complete$/);
+      if (match) return `${match[1]} / ${match[2]} уроков отмечено завершёнными`;
+      match = value.match(/^(\d+) accepted · (\d+) unresolved$/);
+      if (match) return `${match[1]} принято · ${match[2]} не решено`;
+      match = value.match(/^Recorded (.+)$/);
+      if (match) return `Зафиксировано ${match[1]}`;
+      match = value.match(/^Lesson: (.+?) · evidence accepted (\d+) · pending (\d+)$/);
+      if (match) return `Урок: ${statusRu(match[1])} · принято работ ${match[2]} · ожидают ${match[3]}`;
+      match = value.match(/^Human review · (.+)$/);
+      if (match) return `Проверка человеком · ${statusRu(match[1])}`;
+      match = value.match(/^Prior review · (.+)$/);
+      if (match) return `Предыдущая проверка · ${statusRu(match[1])}`;
+      match = value.match(/^Academy support · (.+)$/);
+      if (match) return `Поддержка Академии · ${match[1]}`;
+      match = value.match(/^You · (.+)$/);
+      if (match) return `Вы · ${match[1]}`;
+      match = value.match(/^Assignment selected: (.+)\. Complete the evidence below and submit it for human review\.$/);
+      if (match) return `Выбрано задание: ${match[1]}. Выполните работу ниже и отправьте её на проверку человеком.`;
+      match = value.match(/^Follow-up question for (.+)$/);
+      if (match) return `Дополнительный вопрос по теме «${match[1]}»`;
+      return null;
+    };
+
+    const protectedContentSelectors = [
+      "[data-lesson-title]", "[data-lesson-purpose]", "[data-objectives]", "[data-section-grid]", "[data-source-list]",
+      "[data-assignment-scenario]", "[data-assignment-prompt]", "[data-assignment-parts]", "[data-rubric-list]", "[data-boundaries]",
+      ".academy-review-evidence", ".academy-review-feedback span",
+    ].join(",");
+
+    const translateTree = (root) => {
+      if (!root) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const parent = node.parentElement;
+        if (!parent?.closest(protectedContentSelectors)) {
+          const raw = node.nodeValue || "";
+          const normalized = raw.replace(/\s+/g, " ").trim();
+          const replacement = translations.get(normalized) || dynamic(normalized);
+          if (replacement) {
+            const leading = raw.match(/^\s*/)?.[0] || "";
+            const trailing = raw.match(/\s*$/)?.[0] || "";
+            node.nodeValue = `${leading}${replacement}${trailing}`;
+          }
+        }
+        node = walker.nextNode();
+      }
+
+      root.querySelectorAll?.("input[placeholder], textarea[placeholder]").forEach((field) => {
+        const current = field.getAttribute("placeholder") || "";
+        const replacement = placeholders.get(current);
+        if (replacement) field.setAttribute("placeholder", replacement);
+      });
+      root.querySelectorAll?.("[aria-label]").forEach((element) => {
+        const current = element.getAttribute("aria-label") || "";
+        const replacement = translations.get(current) || dynamic(current);
+        if (replacement) element.setAttribute("aria-label", replacement);
+      });
+    };
+
+    const titles = [
+      [/\/auth\/?$/, "Вход ученика Академии | Hermes Connect"],
+      [/\/dashboard\/?$/, "Панель ученика Академии | Hermes Connect"],
+      [/\/lesson\/?$/, "Урок Академии | Hermes Connect"],
+      [/\/program\//, "Программа Академии | Hermes Connect"],
+      [/\/progression\/?$/, "Прогресс Академии | Hermes Connect"],
+      [/\/submissions\/?$/, "Работы Академии | Hermes Connect"],
+      [/\/reviewer\/?$/, "Проверка работ Академии | Hermes Connect"],
+      [/\/support\/?$/, "Поддержка Академии | Hermes Connect"],
+      [/\/academy\/?$/, "Академия | Hermes Connect"],
+    ];
+    const titleMatch = titles.find(([pattern]) => pattern.test(path));
+    if (titleMatch) document.title = titleMatch[1];
+
+    translateTree(document.body);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        mutation.addedNodes.forEach((added) => {
+          if (added.nodeType === Node.ELEMENT_NODE) translateTree(added);
+          else if (added.nodeType === Node.TEXT_NODE && added.parentElement) translateTree(added.parentElement);
+        });
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  })();
+</script>
