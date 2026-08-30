@@ -97,15 +97,12 @@ for (const sitemapFile of sitemapFiles) {
       continue;
     }
 
-    if (parsed.protocol !== "https:" || parsed.hostname !== canonicalHost) {
-      errors.push(`/${sitemapFile}: non-canonical host or protocol ${url}`);
-    }
+    if (parsed.protocol !== "https:" || parsed.hostname !== canonicalHost) errors.push(`/${sitemapFile}: non-canonical host or protocol ${url}`);
     if (parsed.search || parsed.hash) errors.push(`/${sitemapFile}: query string or fragment is not allowed ${url}`);
 
     const owners = urlOwners.get(url) ?? [];
     owners.push(sitemapFile);
     urlOwners.set(url, owners);
-
     if (sitemapFile !== "sitemap.xml") clusterUrls.add(url);
   }
 }
@@ -158,6 +155,13 @@ for (const url of clusterUrls) {
   const schemas = parseJsonLd(html, route);
   const schemaTypes = collectSchemaTypes(schemas);
   const isWebApplication = schemaTypes.has("WebApplication");
+  const isService = schemaTypes.has("Service");
+  const isCourse = schemaTypes.has("Course");
+  const isArticle = schemaTypes.has("Article");
+  const isCollection = schemaTypes.has("CollectionPage");
+  const isFaqPage = schemaTypes.has("FAQPage") && !isService;
+  const isWebPage = schemaTypes.has("WebPage");
+
   const requiredTypes = isTrustPage
     ? ["WebPage", "BreadcrumbList"]
     : isCaseStudy
@@ -166,7 +170,19 @@ for (const url of clusterUrls) {
         : ["CreativeWork", "BreadcrumbList"]
       : isWebApplication
         ? ["WebApplication", "BreadcrumbList"]
-        : ["Service", "BreadcrumbList", "FAQPage"];
+        : isService
+          ? ["Service", "BreadcrumbList", "FAQPage"]
+          : isCourse
+            ? ["Course", "BreadcrumbList"]
+            : isArticle
+              ? ["Article", "BreadcrumbList"]
+              : isCollection
+                ? ["CollectionPage", "BreadcrumbList"]
+                : isFaqPage
+                  ? ["FAQPage", "BreadcrumbList"]
+                  : isWebPage
+                    ? ["WebPage", "BreadcrumbList"]
+                    : ["Service", "BreadcrumbList", "FAQPage"];
   for (const requiredType of requiredTypes) {
     if (!schemaTypes.has(requiredType)) errors.push(`${route}: required ${requiredType} schema is missing`);
   }
@@ -201,8 +217,5 @@ for (const [description, routes] of descriptionOwners) {
 }
 
 for (const warning of warnings) console.warn(`SEO cluster warning — ${warning}`);
-if (errors.length) {
-  throw new Error(`SEO cluster regression failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
-}
-
+if (errors.length) throw new Error(`SEO cluster regression failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 console.log(`SEO cluster regression passed: ${sitemapFiles.length} sitemap file(s), ${clusterUrls.size} cluster URL(s), ${warnings.length} warning(s).`);
