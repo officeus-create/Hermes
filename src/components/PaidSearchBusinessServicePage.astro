@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BusinessLeadForm from "./BusinessLeadForm.astro";
 import DefaultLeadServices from "./DefaultLeadServices.astro";
+import RussianLocaleIntegrity from "./RussianLocaleIntegrity.astro";
 import SiteFooter from "./SiteFooter.astro";
 import SiteHeader from "./SiteHeader.astro";
 import type { PaidSearchBusinessService, PaidSearchLocale } from "../data/paid-search-business-services";
@@ -13,6 +14,7 @@ interface Props {
 
 const { campaign, locale } = Astro.props;
 const t = campaign.copy[locale];
+const siteLocale = locale === "uk" ? "uk" : "ru";
 const alternates = [
   { lang: "en", href: "/business-growth/" },
   { lang: "ru", href: `/ru/business-growth/${campaign.slug}/` },
@@ -25,10 +27,10 @@ const alternates = [
   title={t.title}
   description={t.description}
   robots="noindex,follow"
-  locale={locale === "uk" ? "uk" : "ru"}
+  locale={siteLocale}
   alternates={alternates}
 >
-  <SiteHeader theme="dark" />
+  <SiteHeader theme="dark" locale={siteLocale} />
   <main id="main-content">
     <section class="section detail-overview" aria-labelledby="paid-service-title">
       <div class="shell detail-intro" data-reveal>
@@ -51,7 +53,8 @@ const alternates = [
     <BusinessLeadForm selectedPath="ProgressoPro" locale={locale} />
     <DefaultLeadServices services={campaign.services} />
   </main>
-  <SiteFooter />
+  <SiteFooter locale={siteLocale} />
+  {siteLocale === "ru" && <RussianLocaleIntegrity />}
 </BaseLayout>
 
 <style>
