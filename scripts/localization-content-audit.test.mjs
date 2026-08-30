@@ -33,7 +33,7 @@ const pages = [
   {
     route: "/ru/business-growth/", path: "ru/business-growth/index.html", lang: "ru",
     requiredLabels: ["Логистика", "Маркетинг", "Академия", "IT-разработка"],
-    requiredCtas: ["Оставить заявку", "Отправить заявку"],
+    requiredCtas: ["Оставить заявку"],
     requiredHrefs: ["/services/hermes-connect/repair-shops/?lang=ru", "/ru/privacy/"],
   },
   ...["website", "seo", "advertising", "social-media", "ai-automation"].map((slug) => ({
@@ -41,7 +41,7 @@ const pages = [
     path: `ru/business-growth/${slug}/index.html`,
     lang: "ru",
     requiredLabels: ["Логистика", "Маркетинг", "Академия", "IT-разработка"],
-    requiredCtas: ["Отправить заявку"],
+    requiredCtas: [],
     requiredHrefs: ["/services/hermes-connect/repair-shops/?lang=ru", "/ru/privacy/"],
   })),
   {
