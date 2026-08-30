@@ -2,6 +2,7 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../components/LondonAnalytics.astro";
 const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/"},{lang:"uk",href:"/ua/gb/london/"},{lang:"x-default",href:"/gb/london/"}];
 ---
 <BaseLayout title="London Marketing, IT & US Logistics Training | Hermes" description="Hermes services and training for London: marketing, websites, SEO, IT and practical US logistics education." alternates={alternates}>
@@ -12,7 +13,7 @@ const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/
         <p class="eyebrow">London · United Kingdom</p>
         <h1>Marketing, IT and US logistics training for London.</h1>
         <p>One London hub for businesses that need websites, SEO, social media and automation, and for people who want practical training connected to the US logistics market.</p>
-        <p><a class="button button-primary" href="/business-growth/?source=london">Request a growth plan</a> <a class="button" href="/gb/london/academy/">Explore London Academy</a></p>
+        <p><a class="button button-primary" href="/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-hub&service=marketing">Request a growth plan</a> <a class="button" href="/gb/london/academy/">Explore London Academy</a></p>
       </div>
     </section>
     <section class="section"><div class="shell"><div class="cards">
@@ -21,6 +22,7 @@ const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/
       <article><h2>US logistics training</h2><p>Training for Russian- and Ukrainian-speaking residents in the UK who want to understand real US logistics operations.</p><a href="/gb/london/us-logistics-training/">London logistics training</a></article>
     </div></div></section>
   </main>
+  <LondonAnalytics />
   <SiteFooter />
 </BaseLayout>
 <style>.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.cards article{padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.cards p{color:#64718f;line-height:1.6}@media(max-width:800px){.cards{grid-template-columns:1fr}}</style>
