@@ -4,24 +4,50 @@ import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../../components/SiteFooter.astro";
 import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
+import HermesConnectAccountSwitcher from "../../../../../components/HermesConnectAccountSwitcher.astro";
+
+const isRu = Astro.url.searchParams.get("lang") === "ru";
+const localeSuffix = isRu ? "?lang=ru" : "";
+const c = isRu ? {
+  title: "AI Connect | Hermes Connect",
+  description: "Приватный обзор внутреннего AI-проекта Hermes Connect.",
+  kicker: "Hermes Connect · внутренний владелец",
+  intro: "Единое внутреннее пространство для текущего AI-проекта Hermes, Software Engineer-агента, состояния runner и следующей исполняемой задачи.",
+  ownerOnly: "Только внутренний владелец",
+  checking: "Проверяем внутренний доступ…",
+  checkingCopy: "AI Connect открывается только после серверной проверки capability HERMES_INTERNAL_OWNER.",
+  project: "Текущий проект",
+  projectName: "Hermes Connect · внутренний AI-пилот",
+  ready: "Готово",
+  objective: "Текущая цель: доказать полный цикл внутренний владелец → задача → runner → Codex → evidence без открытия клиентского доступа или удалённой shell-сессии.",
+  agent: "Агент", activeTask: "Активная задача", taskStatus: "Статус задачи", lastUpdate: "Последнее обновление", none: "Нет", idle: "Ожидание",
+  openAssistant: "Открыть AI Assistant",
+  runtime: "Среда выполнения", executionHealth: "Состояние выполнения", runner: "Hermes runner", codexRole: "Роль Codex", tenant: "Контур", unknown: "Неизвестно",
+  runtimeNote: "AI Connect показывает только очищенный внутренний статус. Ключи провайдеров, runner-токены, cookies и исходные credentials здесь никогда не отображаются.",
+  next: "Следующее исполняемое действие", startTask: "Запустить первую ограниченную задачу", startTaskCopy: "Через AI Assistant поставьте одну безопасную задачу Software Engineer. Результаты и evidence вернутся в тот же внутренний runtime Hermes Connect.", continueProject: "Продолжить проект",
+} : {
+  title: "AI Connect | Hermes Connect", description: "Private internal Hermes Connect AI project overview.", kicker: "Hermes Connect · Internal owner", intro: "One internal place to see the current Hermes AI project, its Software Engineer agent, live runner state, and the next executable task.", ownerOnly: "Internal owner only", checking: "Checking internal access…", checkingCopy: "AI Connect is visible only after the server verifies the HERMES_INTERNAL_OWNER capability.", project: "Current project", projectName: "Hermes Connect · Internal AI Pilot", ready: "Ready", objective: "Current objective: prove the internal owner → task → runner → Codex → evidence loop without exposing customer access or remote shell behavior.", agent: "Agent", activeTask: "Active task", taskStatus: "Task status", lastUpdate: "Last update", none: "None", idle: "Idle", openAssistant: "Open AI Assistant", runtime: "Runtime", executionHealth: "Execution health", runner: "Hermes runner", codexRole: "Codex role", tenant: "Tenant scope", unknown: "Unknown", runtimeNote: "AI Connect reads only sanitized internal status. Provider keys, runner tokens, cookies, and raw credentials are never rendered here.", next: "Next executable action", startTask: "Start the first bounded task", startTaskCopy: "Use AI Assistant to queue one safe Software Engineer task. Results and evidence return to the same Hermes Connect internal runtime.", continueProject: "Continue project",
+};
 ---
-<BaseLayout title="AI Connect | Hermes Connect" description="Private internal Hermes Connect AI project overview." robots="noindex,nofollow">
+<BaseLayout title={c.title} description={c.description} robots="noindex,nofollow">
   <SiteHeader activePath="/paths/technology/" />
   <HermesConnectExperience />
   <main id="main-content" class="ai-connect-page">
     <div class="ai-connect-shell">
       <header class="ai-connect-hero">
         <div>
-          <p class="ai-connect-kicker"><Sparkles size={15} /> Hermes Connect · Internal owner</p>
+          <p class="ai-connect-kicker"><Sparkles size={15} /> {c.kicker}</p>
           <h1>AI Connect</h1>
-          <p>One internal place to see the current Hermes AI project, its Software Engineer agent, live runner state, and the next executable task.</p>
+          <p>{c.intro}</p>
         </div>
-        <span class="ai-connect-badge"><ShieldCheck size={16} /> Internal owner only</span>
+        <span class="ai-connect-badge"><ShieldCheck size={16} /> {c.ownerOnly}</span>
       </header>
 
+      <HermesConnectAccountSwitcher current="ai" />
+
       <section class="ai-connect-state" data-access-state role="status">
-        <strong data-access-title>Checking internal access…</strong>
-        <p data-access-copy>AI Connect is visible only after the server verifies the HERMES_INTERNAL_OWNER capability.</p>
+        <strong data-access-title>{c.checking}</strong>
+        <p data-access-copy>{c.checkingCopy}</p>
       </section>
 
       <div class="ai-connect-content hidden" data-ai-connect-content>
@@ -29,38 +55,38 @@ import HermesConnectExperience from "../../../../../components/HermesConnectExpe
           <article class="ai-connect-card project-card">
             <div class="card-heading">
               <div>
-                <p class="ai-connect-kicker"><FolderKanban size={14} /> Current project</p>
-                <h2>Hermes Connect · Internal AI Pilot</h2>
+                <p class="ai-connect-kicker"><FolderKanban size={14} /> {c.project}</p>
+                <h2>{c.projectName}</h2>
               </div>
-              <span class="status-pill" data-project-status>Ready</span>
+              <span class="status-pill" data-project-status>{c.ready}</span>
             </div>
-            <p>Current objective: prove the internal owner → task → runner → Codex → evidence loop without exposing customer access or remote shell behavior.</p>
+            <p>{c.objective}</p>
             <dl class="project-facts">
-              <div><dt>Agent</dt><dd>Software Engineer</dd></div>
-              <div><dt>Active task</dt><dd data-active-task>None</dd></div>
-              <div><dt>Task status</dt><dd data-task-status>Idle</dd></div>
-              <div><dt>Last update</dt><dd data-task-updated>—</dd></div>
+              <div><dt>{c.agent}</dt><dd>Software Engineer</dd></div>
+              <div><dt>{c.activeTask}</dt><dd data-active-task>{c.none}</dd></div>
+              <div><dt>{c.taskStatus}</dt><dd data-task-status>{c.idle}</dd></div>
+              <div><dt>{c.lastUpdate}</dt><dd data-task-updated>—</dd></div>
             </dl>
-            <a class="primary-action" href="/services/hermes-connect/internal/ai-assistant/">Open AI Assistant <ArrowRight size={16} /></a>
+            <a class="primary-action" href={`/services/hermes-connect/internal/ai-assistant/${localeSuffix}`}>{c.openAssistant} <ArrowRight size={16} /></a>
           </article>
 
           <aside class="ai-connect-card runtime-card">
-            <p class="ai-connect-kicker"><Activity size={14} /> Runtime</p>
-            <h2>Execution health</h2>
-            <div class="runtime-line"><span>Hermes runner</span><strong data-runner-state>Unknown</strong></div>
-            <div class="runtime-line"><span>Codex role</span><strong>Software Engineer</strong></div>
-            <div class="runtime-line"><span>Tenant scope</span><strong>hermes_internal</strong></div>
-            <p class="runtime-note">AI Connect reads only sanitized internal status. Provider keys, runner tokens, cookies, and raw credentials are never rendered here.</p>
+            <p class="ai-connect-kicker"><Activity size={14} /> {c.runtime}</p>
+            <h2>{c.executionHealth}</h2>
+            <div class="runtime-line"><span>{c.runner}</span><strong data-runner-state>{c.unknown}</strong></div>
+            <div class="runtime-line"><span>{c.codexRole}</span><strong>Software Engineer</strong></div>
+            <div class="runtime-line"><span>{c.tenant}</span><strong>hermes_internal</strong></div>
+            <p class="runtime-note">{c.runtimeNote}</p>
           </aside>
         </section>
 
         <section class="ai-connect-card next-card">
           <div>
-            <p class="ai-connect-kicker"><Wrench size={14} /> Next executable action</p>
-            <h2 data-next-title>Start the first bounded task</h2>
-            <p data-next-copy>Use AI Assistant to queue one safe Software Engineer task. Results and evidence return to the same Hermes Connect internal runtime.</p>
+            <p class="ai-connect-kicker"><Wrench size={14} /> {c.next}</p>
+            <h2 data-next-title>{c.startTask}</h2>
+            <p data-next-copy>{c.startTaskCopy}</p>
           </div>
-          <a class="secondary-action" href="/services/hermes-connect/internal/ai-assistant/">Continue project <ArrowRight size={16} /></a>
+          <a class="secondary-action" href={`/services/hermes-connect/internal/ai-assistant/${localeSuffix}`}>{c.continueProject} <ArrowRight size={16} /></a>
         </section>
       </div>
     </div>
@@ -72,38 +98,37 @@ import HermesConnectExperience from "../../../../../components/HermesConnectExpe
   type Task = { id?: string; status?: string; updated_at?: string | null };
   const $ = <T extends HTMLElement = HTMLElement>(selector: string) => document.querySelector<T>(selector);
   const text = (selector: string, value: string) => { const node = $(selector); if (node) node.textContent = value; };
-  const lock = (title: string, copy: string) => {
-    text("[data-access-title]", title);
-    text("[data-access-copy]", copy);
-    $("[data-access-state]")?.classList.remove("hidden");
-    $("[data-ai-connect-content]")?.classList.add("hidden");
+  const ru = new URLSearchParams(window.location.search).get("lang") === "ru";
+  const ui = ru ? {
+    none: "Нет", idle: "Ожидание", online: "В сети", offline: "Нет соединения", inProgress: "В работе", approval: "Нужно подтверждение", active: "Активно", ready: "Готово",
+    signIn: "Требуется вход", signInCopy: "Войдите в аккаунт Hermes Connect и снова откройте AI Connect.", owner: "Нужны права внутреннего владельца", ownerCopy: "Клиентские и обычные аккаунты Hermes Connect не имеют доступа к AI Connect.", unavailable: "AI Connect недоступен",
+    review: "Проверьте запрос на подтверждение", reviewCopy: "Активная задача остановилась на значимом owner-gate. Откройте AI Assistant и проверьте очищенные evidence перед следующим действием.", running: "Дождитесь завершения текущей задачи", runningCopy: "Задача Software Engineer уже выполняется. Откройте AI Assistant, чтобы видеть очищенную активность и evidence.", start: "Запустить первую ограниченную задачу", startCopy: "Через AI Assistant поставьте одну безопасную задачу Software Engineer. Результаты и evidence вернутся в тот же внутренний runtime Hermes Connect.",
+  } : {
+    none: "None", idle: "Idle", online: "Online", offline: "Not connected", inProgress: "In progress", approval: "Needs approval", active: "Active", ready: "Ready", signIn: "Sign in required", signInCopy: "Use your Hermes Connect account, then reopen AI Connect.", owner: "Internal owner capability required", ownerCopy: "Customer and ordinary Hermes Connect accounts cannot access AI Connect.", unavailable: "AI Connect is unavailable", review: "Review the approval gate", reviewCopy: "The active task stopped at a consequential owner gate. Open AI Assistant to review sanitized evidence before any next action.", running: "Let the current task finish", runningCopy: "The Software Engineer task is already active. Open AI Assistant to watch sanitized activity and evidence.", start: "Start the first bounded task", startCopy: "Use AI Assistant to queue one safe Software Engineer task. Results and evidence return to the same Hermes Connect internal runtime.",
   };
-  const taskLabel = (task: Task | null) => task?.id ? task.id : "None";
-  const statusLabel = (task: Task | null) => task?.status ? task.status.replaceAll("_", " ") : "Idle";
+  const lock = (title: string, copy: string) => { text("[data-access-title]", title); text("[data-access-copy]", copy); $("[data-access-state]")?.classList.remove("hidden"); $("[data-ai-connect-content]")?.classList.add("hidden"); };
+  const taskLabel = (task: Task | null) => task?.id ? task.id : ui.none;
+  const statusLabel = (task: Task | null) => task?.status ? task.status.replaceAll("_", " ") : ui.idle;
 
   async function refresh() {
     const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
     let data: any = {};
     try { data = await response.json(); } catch {}
-    if (response.status === 401) return lock("Sign in required", "Use your Hermes Connect account, then reopen AI Connect.");
-    if (response.status === 403) return lock("Internal owner capability required", "Customer and ordinary Hermes Connect accounts cannot access AI Connect.");
-    if (!response.ok || !data.success) return lock("AI Connect is unavailable", String(data.error || "runtime_unavailable"));
+    if (response.status === 401) return lock(ui.signIn, ui.signInCopy);
+    if (response.status === 403) return lock(ui.owner, ui.ownerCopy);
+    if (!response.ok || !data.success) return lock(ui.unavailable, String(data.error || "runtime_unavailable"));
 
     $("[data-access-state]")?.classList.add("hidden");
     $("[data-ai-connect-content]")?.classList.remove("hidden");
     const task: Task | null = data.active_task || data.latest_task || null;
-    text("[data-runner-state]", data.runtime?.online ? "Online" : "Not connected");
+    text("[data-runner-state]", data.runtime?.online ? ui.online : ui.offline);
     text("[data-active-task]", taskLabel(task));
     text("[data-task-status]", statusLabel(task));
-    text("[data-task-updated]", task?.updated_at ? new Date(task.updated_at).toLocaleString() : "—");
-    text("[data-project-status]", task?.status === "running" ? "In progress" : task?.status === "needs_approval" ? "Needs approval" : task ? "Active" : "Ready");
-    if (task?.status === "needs_approval") {
-      text("[data-next-title]", "Review the approval gate");
-      text("[data-next-copy]", "The active task stopped at a consequential owner gate. Open AI Assistant to review sanitized evidence before any next action.");
-    } else if (task?.status === "running" || task?.status === "queued") {
-      text("[data-next-title]", "Let the current task finish");
-      text("[data-next-copy]", "The Software Engineer task is already active. Open AI Assistant to watch sanitized activity and evidence.");
-    }
+    text("[data-task-updated]", task?.updated_at ? new Date(task.updated_at).toLocaleString(ru ? "ru-RU" : undefined) : "—");
+    text("[data-project-status]", task?.status === "running" ? ui.inProgress : task?.status === "needs_approval" ? ui.approval : task ? ui.active : ui.ready);
+    if (task?.status === "needs_approval") { text("[data-next-title]", ui.review); text("[data-next-copy]", ui.reviewCopy); }
+    else if (task?.status === "running" || task?.status === "queued") { text("[data-next-title]", ui.running); text("[data-next-copy]", ui.runningCopy); }
+    else { text("[data-next-title]", ui.start); text("[data-next-copy]", ui.startCopy); }
   }
 
   void refresh();
@@ -112,5 +137,5 @@ import HermesConnectExperience from "../../../../../components/HermesConnectExpe
 </script>
 
 <style>
-  .ai-connect-page{min-height:76vh;background:#090d16;color:#edf2fb}.ai-connect-shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:3rem 0 5rem}.ai-connect-hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.5rem}.ai-connect-hero h1{font-size:clamp(2.2rem,5vw,4rem);margin:.3rem 0 .75rem}.ai-connect-hero p{max-width:760px;color:#b9c5d8;line-height:1.6}.ai-connect-kicker{display:flex;gap:.4rem;align-items:center;margin:0;color:#a99aff;font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.ai-connect-badge,.status-pill{white-space:nowrap;border:1px solid rgba(96,165,250,.32);border-radius:999px;padding:.5rem .72rem;color:#dceaff;background:rgba(96,165,250,.1);font-size:.78rem;font-weight:750}.ai-connect-state,.ai-connect-card{border:1px solid rgba(255,255,255,.11);border-radius:1.25rem;background:rgba(17,24,39,.82);box-shadow:0 18px 40px rgba(0,0,0,.18)}.ai-connect-state{padding:1.2rem}.ai-connect-state p,.ai-connect-card>p,.runtime-note,.next-card p{color:#b9c5d8;line-height:1.55}.hidden{display:none!important}.ai-connect-content{display:grid;gap:1rem}.ai-connect-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:1rem}.ai-connect-card{padding:1.25rem}.card-heading{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}.ai-connect-card h2{margin:.35rem 0 .75rem;font-size:1.25rem}.project-facts{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin:1rem 0 1.2rem}.project-facts dt{color:#9eabc0;font-size:.75rem}.project-facts dd{margin:.2rem 0 0;overflow-wrap:anywhere}.primary-action,.secondary-action{display:inline-flex;align-items:center;gap:.45rem;border-radius:.7rem;padding:.72rem .9rem;text-decoration:none;font-weight:800}.primary-action{background:#8bdbff;color:#07101c}.secondary-action{border:1px solid rgba(255,255,255,.14);color:#fff;background:rgba(255,255,255,.06)}.runtime-line{display:flex;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.08)}.runtime-line span{color:#9eabc0}.runtime-note{margin:1rem 0 0;font-size:.85rem}.next-card{display:flex;justify-content:space-between;gap:1.5rem;align-items:center}.next-card>div{max-width:760px}.next-card p{margin-bottom:0}@media(max-width:700px){.ai-connect-shell{padding-top:2rem}.ai-connect-hero,.next-card,.card-heading{align-items:stretch;flex-direction:column}.ai-connect-grid{grid-template-columns:1fr}.project-facts{grid-template-columns:1fr}.ai-connect-badge{white-space:normal}.primary-action,.secondary-action{justify-content:center}}
+  .ai-connect-page{min-height:76vh;background:radial-gradient(circle at 10% 4%,rgba(255,122,0,.08),transparent 28rem),radial-gradient(circle at 88% 10%,rgba(124,92,255,.06),transparent 30rem),#f7f6f3;color:#11161f}.ai-connect-shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:3rem 0 5rem}.ai-connect-hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.5rem}.ai-connect-hero h1{font-size:clamp(2.2rem,5vw,4rem);margin:.3rem 0 .75rem}.ai-connect-hero p{max-width:760px;color:#657083;line-height:1.6}.ai-connect-kicker{display:flex;gap:.4rem;align-items:center;margin:0;color:#d76500;font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.ai-connect-badge,.status-pill{white-space:nowrap;border:1px solid rgba(255,122,0,.22);border-radius:999px;padding:.5rem .72rem;color:#9a4900;background:rgba(255,122,0,.08);font-size:.78rem;font-weight:750}.ai-connect-state,.ai-connect-card{border:1px solid rgba(17,22,31,.1);border-radius:1.25rem;background:rgba(255,255,255,.86);box-shadow:0 18px 40px rgba(24,32,48,.08)}.ai-connect-state{padding:1.2rem}.ai-connect-state p,.ai-connect-card>p,.runtime-note,.next-card p{color:#657083;line-height:1.55}.hidden{display:none!important}.ai-connect-content{display:grid;gap:1rem}.ai-connect-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:1rem}.ai-connect-card{padding:1.25rem}.card-heading{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}.ai-connect-card h2{margin:.35rem 0 .75rem;font-size:1.25rem}.project-facts{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin:1rem 0 1.2rem}.project-facts dt{color:#7a8595;font-size:.75rem}.project-facts dd{margin:.2rem 0 0;overflow-wrap:anywhere}.primary-action,.secondary-action{display:inline-flex;align-items:center;gap:.45rem;border-radius:.7rem;padding:.72rem .9rem;text-decoration:none;font-weight:800}.primary-action{background:#11161f;color:#fff}.secondary-action{border:1px solid rgba(17,22,31,.12);color:#11161f;background:#fff}.runtime-line{display:flex;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid rgba(17,22,31,.08)}.runtime-line span{color:#7a8595}.runtime-note{margin:1rem 0 0;font-size:.85rem}.next-card{display:flex;justify-content:space-between;gap:1.5rem;align-items:center}.next-card>div{max-width:760px}.next-card p{margin-bottom:0}@media(max-width:700px){.ai-connect-shell{padding-top:2rem}.ai-connect-hero,.next-card,.card-heading{align-items:stretch;flex-direction:column}.ai-connect-grid{grid-template-columns:1fr}.project-facts{grid-template-columns:1fr}.ai-connect-badge{white-space:normal}.primary-action,.secondary-action{justify-content:center}}
 </style>
