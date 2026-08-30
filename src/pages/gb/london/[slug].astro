@@ -2,6 +2,7 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../components/LondonAnalytics.astro";
 import { londonCommercialPages } from "../../../data/london-commercial-pages";
 
 const serviceBySlug: Record<string,string> = {
@@ -24,6 +25,6 @@ const schema=[
     </div></section>
     <section class="section"><div class="shell grid">{page.points.map(point=><article><h2>{point}</h2><p>Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.</p></article>)}</div></section>
     <section class="section"><div class="shell"><p><strong>Commercial boundary:</strong> platform spend, third-party fees and production costs are separate unless explicitly included. Search rankings, leads, sales and revenue are not guaranteed.</p></div></section>
-  </main><SiteFooter />
+  </main><LondonAnalytics /><SiteFooter />
 </BaseLayout>
 <style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.35rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
