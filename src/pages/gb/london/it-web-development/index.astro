@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+---
+<BaseLayout title="Web Development, SEO & Automation London | Hermes" description="Web development, technical SEO, landing pages, integrations and business automation for London small and growing businesses.">
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview"><div class="shell detail-intro">
+      <p class="eyebrow">London IT & web development</p>
+      <h1>Build the website as part of the sales system, not as a brochure.</h1>
+      <p>Hermes builds fast business websites and landing pages with technical SEO, analytics, lead capture, integrations and practical automation designed around how customers actually find and contact the business.</p>
+      <a class="button button-primary" href="/business-growth/">Plan a website or SEO project</a>
+    </div></section>
+    <section class="section"><div class="shell grid">
+      <article><h2>Websites & landing pages</h2><p>Responsive business sites, focused service pages and conversion paths that can be expanded instead of rebuilt every few months.</p></article>
+      <article><h2>SEO foundation</h2><p>Search-friendly architecture, metadata, internal linking, schema, sitemap hygiene, performance and location/service coverage.</p></article>
+      <article><h2>Automation & integrations</h2><p>Forms, CRM handoff, booking, analytics and approved workflow automation where it removes repetitive work or improves response speed.</p></article>
+    </div></section>
+  </main><SiteFooter />
+</BaseLayout>
+<style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
