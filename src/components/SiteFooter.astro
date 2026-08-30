@@ -3,6 +3,7 @@ import { ArrowUp, Phone } from "@lucide/astro";
 import { site } from "../data/site";
 import { localeConfig, type SiteLocale } from "../data/locales";
 import HermesConnectLauncher from "./HermesConnectLauncher.astro";
+import RussianLocaleIntegrity from "./RussianLocaleIntegrity.astro";
 
 interface Props {
   locale?: SiteLocale;
@@ -198,6 +199,7 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
     <span>© 2026 Hermes · {publicLocationBoundary} · {localized.status}</span>
   </div>
 </footer>
+{locale === "ru" && <RussianLocaleIntegrity />}
 
 <style>
   @media (max-width: 700px) {
