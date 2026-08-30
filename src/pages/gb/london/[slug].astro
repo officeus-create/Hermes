@@ -12,9 +12,14 @@ const serviceBySlug: Record<string,string> = {
 export function getStaticPaths(){return londonCommercialPages.map(page=>({params:{slug:page.slug},props:{page}}));}
 const {page}=Astro.props; const service=serviceBySlug[page.slug] ?? "marketing";
 const leadHref=`/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-services&utm_content=${page.slug}&service=${service}`;
+const faq=[
+ {question:"What does the first London growth audit cover?",answer:"It reviews the current offer, website or landing path, search visibility, social and paid acquisition signals, tracking and follow-up, then identifies the smallest useful first test."},
+ {question:"Do you guarantee rankings, leads or revenue?",answer:"No. Hermes can control agreed research, implementation, testing, tracking and optimisation, but search rankings, platform auctions, buyer behaviour, sales execution and revenue cannot be guaranteed."}
+];
 const schema=[
  {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:page.h1,item:`https://hermeslogisticsus.com/gb/london/${page.slug}/`}]},
- {"@context":"https://schema.org","@type":"Service",name:page.h1,description:page.description,provider:{"@type":"Organization",name:"Hermes",url:"https://hermeslogisticsus.com/"},areaServed:{"@type":"City",name:"London"},url:`https://hermeslogisticsus.com/gb/london/${page.slug}/`}
+ {"@context":"https://schema.org","@type":"Service",name:page.h1,description:page.description,provider:{"@type":"Organization",name:"Hermes",url:"https://hermeslogisticsus.com/"},areaServed:{"@type":"City",name:"London"},url:`https://hermeslogisticsus.com/gb/london/${page.slug}/`},
+ {"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map(item=>({"@type":"Question",name:item.question,acceptedAnswer:{"@type":"Answer",text:item.answer}}))}
 ];
 ---
 <BaseLayout title={page.title} description={page.description} schema={schema}>
@@ -25,7 +30,8 @@ const schema=[
       <p><a class="button button-primary" href={leadHref}>Request a London growth audit</a> <a class="button" href="/gb/london/">London hub</a></p>
     </div></section>
     <section class="section"><div class="shell grid">{page.points.map(point=><article><h2>{point}</h2><p>Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.</p></article>)}</div></section>
+    <section class="section"><div class="shell faq"><h2>Questions before starting</h2>{faq.map(item=><details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div></section>
     <section class="section"><div class="shell"><p><strong>Commercial boundary:</strong> platform spend, third-party fees and production costs are separate unless explicitly included. Search rankings, leads, sales and revenue are not guaranteed.</p></div></section>
   </main><LondonAnalytics /><SiteFooter />
 </BaseLayout>
-<style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.35rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
+<style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.35rem;border:1px solid #dce3f3;border-radius:12px}.grid p,.faq p{color:#64718f;line-height:1.65}.faq{max-width:850px}.faq details{padding:1rem 0;border-bottom:1px solid #dce3f3}.faq summary{font-weight:800;cursor:pointer}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
