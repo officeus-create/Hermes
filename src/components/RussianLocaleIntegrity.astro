@@ -5,6 +5,13 @@
   (() => {
     if (document.documentElement.lang !== "ru") return;
 
+    const translateMenuButton = (button) => {
+      if (!button) return;
+      const label = button.getAttribute("aria-label");
+      if (label === "Open navigation") button.setAttribute("aria-label", "Открыть навигацию");
+      if (label === "Close navigation") button.setAttribute("aria-label", "Закрыть навигацию");
+    };
+
     const run = () => {
       const wordmark = document.querySelector(".site-header .wordmark");
       if (wordmark) wordmark.setAttribute("href", "/ru/#top");
@@ -49,6 +56,7 @@
       document.querySelectorAll('[aria-label="Primary navigation"]').forEach((node) => node.setAttribute("aria-label", "Основная навигация"));
       document.querySelectorAll('[aria-label="Mobile navigation"]').forEach((node) => node.setAttribute("aria-label", "Мобильная навигация"));
       document.querySelectorAll('[aria-label="Choose language"]').forEach((node) => node.setAttribute("aria-label", "Выбор языка"));
+      document.querySelectorAll('[aria-label^="Language:"]').forEach((node) => node.setAttribute("aria-label", "Язык: Русский"));
       document.querySelectorAll('[aria-label="Footer navigation"]').forEach((node) => node.setAttribute("aria-label", "Навигация в футере"));
       document.querySelectorAll('[aria-label="Contact options"]').forEach((node) => node.setAttribute("aria-label", "Варианты связи"));
       document.querySelectorAll('[aria-label="Social media"]').forEach((node) => node.setAttribute("aria-label", "Социальные сети"));
@@ -57,7 +65,8 @@
       if (backToTop) backToTop.setAttribute("aria-label", "Наверх");
 
       const menuButton = document.querySelector("[data-menu-button]");
-      if (menuButton?.getAttribute("aria-label") === "Open navigation") menuButton.setAttribute("aria-label", "Открыть навигацию");
+      translateMenuButton(menuButton);
+      menuButton?.addEventListener("click", () => queueMicrotask(() => translateMenuButton(menuButton)));
     };
 
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run, { once: true });
