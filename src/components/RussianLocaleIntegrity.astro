@@ -4,6 +4,8 @@
 <script is:inline>
   (() => {
     if (document.documentElement.lang !== "ru") return;
+    if (window.__hermesRussianLocaleIntegrity) return;
+    window.__hermesRussianLocaleIntegrity = true;
 
     const translateMenuButton = (button) => {
       if (!button) return;
