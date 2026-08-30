@@ -8,7 +8,16 @@ test.describe("Russian route integrity", () => {
     await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
     await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
 
-    const connect = page.locator('[data-hermes-connect-launcher="header"]');
+    const headerConnect = page.locator('[data-hermes-connect-launcher="header"]');
+    let connect = headerConnect;
+
+    if (!(await headerConnect.isVisible())) {
+      await page.locator("[data-menu-button]").click();
+      await expect(page.locator("[data-mobile-menu]")).toBeVisible();
+      connect = page.locator('[data-hermes-connect-launcher="mobile"]');
+    }
+
+    await expect(connect).toBeVisible();
     await expect(connect).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/\?lang=ru$/);
     await connect.click();
 
