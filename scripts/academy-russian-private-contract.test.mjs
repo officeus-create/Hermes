@@ -19,7 +19,7 @@ test('Academy Russian runtime is mounted through the canonical Hermes Connect sh
   assert.match(wrapper, /HermesConnectDomReadyCore/);
   assert.match(wrapper, /<HermesConnectDomReadyCore \/>/);
   assert.match(wrapper, /<AcademyLocaleRuntime \/>/);
-  assert.match(core, /data-workspace-nav/);
+  assert.match(core, /Repair Shop Owner Access/);
 });
 
 test('Academy Russian runtime is query-locale driven and private-route scoped', async () => {
