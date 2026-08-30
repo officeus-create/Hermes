@@ -14,6 +14,23 @@
       if (label === "Close navigation") button.setAttribute("aria-label", "Закрыть навигацию");
     };
 
+    const replaceExactText = (root, translations) => {
+      if (!root) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        const raw = node.nodeValue || "";
+        const normalized = raw.replace(/\s+/g, " ").trim();
+        const replacement = translations.get(normalized);
+        if (replacement) {
+          const leading = raw.match(/^\s*/)?.[0] || "";
+          const trailing = raw.match(/\s*$/)?.[0] || "";
+          node.nodeValue = `${leading}${replacement}${trailing}`;
+        }
+        node = walker.nextNode();
+      }
+    };
+
     const run = () => {
       const wordmark = document.querySelector(".site-header .wordmark");
       if (wordmark) wordmark.setAttribute("href", "/ru/#top");
@@ -24,6 +41,58 @@
 
       const footerLocation = document.querySelector(".footer-location");
       if (footerLocation) footerLocation.textContent = "Логистика в США · международная координация по электронной почте";
+
+      const footerIntro = document.querySelector(".site-footer .footer-intro");
+      replaceExactText(footerIntro, new Map([
+        ["Logistics, growth, education, and technology working with one practical standard.", "Логистика, развитие, образование и технологии по единому практическому стандарту."],
+        ["Current product", "Текущий продукт"],
+        ["One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.", "Единое семейство продуктов. СТО — текущий рабочий пилот; остальные модули остаются справочными возможностями до проверки в production."],
+        ["Open Hermes Connect Product Hub", "Открыть центр Hermes Connect"],
+      ]));
+
+      const footerNav = document.querySelector(".site-footer .footer-primary-nav");
+      if (footerNav) {
+        const items = [
+          ["Логистика", "/ru/#logistics"],
+          ["Маркетинг", "/ru/#marketing"],
+          ["Академия", "/ru/#academy"],
+          ["IT-разработка", "/ru/#technology"],
+          ["Конфиденциальность", "/ru/privacy/"],
+        ];
+        footerNav.replaceChildren(...items.map(([label, href]) => {
+          const link = document.createElement("a");
+          link.textContent = label;
+          link.href = href;
+          return link;
+        }));
+      }
+
+      const footerContacts = document.querySelector(".site-footer .footer-contacts");
+      if (footerContacts) {
+        const label = footerContacts.querySelector(".footer-contacts-label");
+        if (label) label.textContent = "Контакт";
+        const links = footerContacts.querySelectorAll("a");
+        const routeLink = links[0];
+        if (routeLink) {
+          routeLink.textContent = "Выбрать направление обращения";
+          routeLink.setAttribute("href", "/ru/#contact");
+        }
+      }
+
+      const footerMeta = document.querySelector(".site-footer .footer-meta");
+      replaceExactText(footerMeta, new Map([
+        ["Designed and engineered by", "Дизайн и разработка"],
+        ["· Human-led, AI-assisted", "· Под управлением людей, с поддержкой AI"],
+      ]));
+      const footerMetaLines = footerMeta?.querySelectorAll("span");
+      if (footerMetaLines?.[1]) {
+        footerMetaLines[1].textContent = "© 2026 Hermes · Логистика в США · международная координация по электронной почте · Обращения отправляются по электронной почте";
+      }
+
+      replaceExactText(document.querySelector(".site-header"), new Map([
+        ["Repair Shops · current live pilot", "СТО · текущий рабочий пилот"],
+        ["Open product", "Открыть продукт"],
+      ]));
 
       const budgetLabels = new Map([
         ["Not sure yet", "Пока не определён"],
