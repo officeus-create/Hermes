@@ -1,6 +1,7 @@
 ---
 import { ArrowUpRight } from "@lucide/astro";
 import "../styles/hermes-connect-knot-core.css";
+import AcademyLocaleRuntime from "./AcademyLocaleRuntime.astro";
 
 export interface Props {
   variant?: "header" | "mobile" | "footer" | "banner" | "inline";
@@ -80,6 +81,7 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
 {isHermesConnectRoute && variant === "header" && <span hidden data-hc-server-route="connect"></span>}
+{isHermesConnectRoute && variant === "header" && <AcademyLocaleRuntime />}
 
 {variant === "header" && (
   <a href={localizedHref} class={`hc-launcher hc-launcher-header hermes-connect-header-launcher ${className}`} data-hermes-connect-launcher="header" aria-label={`${displayTitle} — ${displaySubtitle}`}>
