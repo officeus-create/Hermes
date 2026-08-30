@@ -7,8 +7,6 @@ export interface Props {
 }
 
 const { current, mode = "panel" } = Astro.props;
-const requestedLocale = Astro.url.searchParams.get("lang");
-const locale = ["ru", "uk", "es", "it", "fr"].includes(requestedLocale || "") ? requestedLocale! : "en";
 const copy = {
   en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", owned: "Owned business", shared: "Shared Hermes workspace", internal: "Internal capability", current: "Current", open: "Open", loading: "Loading account…" },
   ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", ai: "AI Connect", owned: "Ваш бизнес", shared: "Общее пространство Hermes", internal: "Внутренний доступ", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…" },
@@ -17,65 +15,64 @@ const copy = {
   it: { account: "Account Hermes", signedIn: "Accesso effettuato", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", ai: "AI Connect", owned: "La tua attività", shared: "Spazio Hermes condiviso", internal: "Accesso interno", current: "Attuale", open: "Apri", loading: "Caricamento account…" },
   fr: { account: "Compte Hermes", signedIn: "Connecté", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", ai: "AI Connect", owned: "Votre entreprise", shared: "Espace Hermes partagé", internal: "Accès interne", current: "Actuel", open: "Ouvrir", loading: "Chargement du compte…" },
 } as const;
-const t = copy[locale as keyof typeof copy];
-const suffix = locale === "en" ? "" : `?lang=${locale}`;
+const t = copy.en;
 ---
 
 {mode === "panel" ? (
-  <section class="hc-account-switcher" data-hc-account-switcher data-current={current} data-locale={locale}>
+  <section class="hc-account-switcher" data-hc-account-switcher data-current={current} data-locale="en">
     <div class="hc-account-identity">
       <div class="hc-account-avatar" aria-hidden="true" data-account-avatar>H</div>
       <div class="hc-account-copy">
-        <span>{t.signedIn}</span>
-        <strong data-account-name>{t.account}</strong>
-        <small data-account-email>{t.loading}</small>
+        <span data-hc-copy="signedIn">{t.signedIn}</span>
+        <strong data-account-name data-hc-copy="account">{t.account}</strong>
+        <small data-account-email data-hc-copy="loading">{t.loading}</small>
       </div>
     </div>
-    <div class="hc-account-workspaces" aria-label={t.workspaces}>
-      <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href={`/services/hermes-connect/repair-shops/dashboard/${suffix}`} data-workspace-repair hidden>
+    <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label>
+      <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden>
         <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-repair-name>{t.repair}</strong><small>{t.owned}</small></span>
-        <em>{current === "repair" ? t.current : t.open}</em>
+        <span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-hc-copy="owned">{t.owned}</small></span>
+        <em data-hc-copy={current === "repair" ? "current" : "open"}>{current === "repair" ? t.current : t.open}</em>
       </a>
-      <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href={`/services/hermes-connect/academy/dashboard/${suffix}`}>
+      <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href="/services/hermes-connect/academy/dashboard/" data-hc-workspace-link="academy">
         <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong>{t.academy}</strong><small>{t.shared}</small></span>
-        <em>{current === "academy" ? t.current : t.open}</em>
+        <span><strong data-hc-copy="academy">{t.academy}</strong><small data-hc-copy="shared">{t.shared}</small></span>
+        <em data-hc-copy={current === "academy" ? "current" : "open"}>{current === "academy" ? t.current : t.open}</em>
       </a>
-      <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href={`/services/hermes-connect/internal/ai-connect/${suffix}`} data-workspace-ai hidden>
+      <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href="/services/hermes-connect/internal/ai-connect/" data-workspace-ai data-hc-workspace-link="ai" hidden>
         <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong>{t.ai}</strong><small>{t.internal}</small></span>
-        <em>{current === "ai" ? t.current : t.open}</em>
+        <span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span>
+        <em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em>
       </a>
     </div>
   </section>
 ) : (
-  <details class="hc-account-menu" data-hc-account-switcher data-current={current} data-locale={locale}>
-    <summary aria-label={t.workspaces}>
+  <details class="hc-account-menu" data-hc-account-switcher data-current={current} data-locale="en">
+    <summary aria-label={t.workspaces} data-hc-workspaces-label>
       <span class="hc-account-avatar hc-account-avatar-compact" aria-hidden="true" data-account-avatar>H</span>
       <span class="hc-account-menu-copy">
-        <strong data-account-name>{t.account}</strong>
-        <small data-account-email>{t.loading}</small>
+        <strong data-account-name data-hc-copy="account">{t.account}</strong>
+        <small data-account-email data-hc-copy="loading">{t.loading}</small>
       </span>
       <ChevronDown size={15} aria-hidden="true" />
     </summary>
     <div class="hc-account-menu-popover">
-      <span class="hc-account-menu-label">{t.workspaces}</span>
-      <div class="hc-account-workspaces" aria-label={t.workspaces}>
-        <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href={`/services/hermes-connect/repair-shops/dashboard/${suffix}`} data-workspace-repair hidden>
+      <span class="hc-account-menu-label" data-hc-copy="workspaces">{t.workspaces}</span>
+      <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label>
+        <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden>
           <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-repair-name>{t.repair}</strong><small>{t.owned}</small></span>
-          <em>{current === "repair" ? t.current : t.open}</em>
+          <span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-hc-copy="owned">{t.owned}</small></span>
+          <em data-hc-copy={current === "repair" ? "current" : "open"}>{current === "repair" ? t.current : t.open}</em>
         </a>
-        <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href={`/services/hermes-connect/academy/dashboard/${suffix}`}>
+        <a class:list={["hc-account-workspace", "academy", current === "academy" && "is-current"]} href="/services/hermes-connect/academy/dashboard/" data-hc-workspace-link="academy">
           <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong>{t.academy}</strong><small>{t.shared}</small></span>
-          <em>{current === "academy" ? t.current : t.open}</em>
+          <span><strong data-hc-copy="academy">{t.academy}</strong><small data-hc-copy="shared">{t.shared}</small></span>
+          <em data-hc-copy={current === "academy" ? "current" : "open"}>{current === "academy" ? t.current : t.open}</em>
         </a>
-        <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href={`/services/hermes-connect/internal/ai-connect/${suffix}`} data-workspace-ai hidden>
+        <a class:list={["hc-account-workspace", "ai", current === "ai" && "is-current"]} href="/services/hermes-connect/internal/ai-connect/" data-workspace-ai data-hc-workspace-link="ai" hidden>
           <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong>{t.ai}</strong><small>{t.internal}</small></span>
-          <em>{current === "ai" ? t.current : t.open}</em>
+          <span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span>
+          <em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em>
         </a>
       </div>
     </div>
@@ -84,10 +81,47 @@ const suffix = locale === "en" ? "" : `?lang=${locale}`;
 
 <script>
   (() => {
+    const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+    const requested = new URLSearchParams(window.location.search).get("lang") || "en";
+    const locale = supported.has(requested) ? requested : "en";
+    const clientCopy: Record<string, Record<string, string>> = {
+      en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", owned: "Owned business", shared: "Shared Hermes workspace", internal: "Internal capability", current: "Current", open: "Open", loading: "Loading account…" },
+      ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", ai: "AI Connect", owned: "Ваш бизнес", shared: "Общее пространство Hermes", internal: "Внутренний доступ", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…" },
+      uk: { account: "Акаунт Hermes", signedIn: "Ви увійшли", workspaces: "Ваші простори", repair: "СТО", academy: "Академія", ai: "AI Connect", owned: "Ваш бізнес", shared: "Спільний простір Hermes", internal: "Внутрішній доступ", current: "Зараз", open: "Відкрити", loading: "Завантажуємо акаунт…" },
+      es: { account: "Cuenta Hermes", signedIn: "Sesión iniciada", workspaces: "Tus espacios", repair: "Taller", academy: "Academia", ai: "AI Connect", owned: "Tu negocio", shared: "Espacio Hermes compartido", internal: "Acceso interno", current: "Actual", open: "Abrir", loading: "Cargando cuenta…" },
+      it: { account: "Account Hermes", signedIn: "Accesso effettuato", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", ai: "AI Connect", owned: "La tua attività", shared: "Spazio Hermes condiviso", internal: "Accesso interno", current: "Attuale", open: "Apri", loading: "Caricamento account…" },
+      fr: { account: "Compte Hermes", signedIn: "Connecté", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", ai: "AI Connect", owned: "Votre entreprise", shared: "Espace Hermes partagé", internal: "Accès interne", current: "Actuel", open: "Ouvrir", loading: "Chargement du compte…" },
+    };
+    const runtimeCopy = clientCopy[locale] || clientCopy.en;
+    const workspacePaths: Record<string, string> = {
+      repair: "/services/hermes-connect/repair-shops/dashboard/",
+      academy: "/services/hermes-connect/academy/dashboard/",
+      ai: "/services/hermes-connect/internal/ai-connect/",
+    };
+    const withLocale = (path: string) => {
+      const url = new URL(path, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
     const roots = document.querySelectorAll<HTMLElement>("[data-hc-account-switcher]");
     roots.forEach((root) => {
       if (root.dataset.ready === "true") return;
       root.dataset.ready = "true";
+      root.dataset.locale = locale;
+      root.querySelectorAll<HTMLElement>("[data-hc-copy]").forEach((node) => {
+        const key = node.dataset.hcCopy || "";
+        if (runtimeCopy[key]) node.textContent = runtimeCopy[key];
+      });
+      root.querySelectorAll<HTMLElement>("[data-hc-workspaces-label]").forEach((node) => {
+        node.setAttribute("aria-label", runtimeCopy.workspaces);
+      });
+      root.querySelectorAll<HTMLAnchorElement>("[data-hc-workspace-link]").forEach((link) => {
+        const key = link.dataset.hcWorkspaceLink || "";
+        if (workspacePaths[key]) link.href = withLocale(workspacePaths[key]);
+      });
+
       const name = root.querySelector<HTMLElement>("[data-account-name]");
       const email = root.querySelector<HTMLElement>("[data-account-email]");
       const avatar = root.querySelector<HTMLElement>("[data-account-avatar]");
@@ -121,7 +155,7 @@ const suffix = locale === "en" ? "" : `?lang=${locale}`;
           if (repairResponse) {
             const repairData = await readJson(repairResponse);
             if (repairResponse.ok && repairData?.success && repairData.shop) {
-              if (repairName) repairName.textContent = String(repairData.shop.name || repairName.textContent || "Repair Shop");
+              if (repairName) repairName.textContent = String(repairData.shop.name || runtimeCopy.repair);
               if (repair) repair.hidden = false;
             } else if (current === "repair" && repair) {
               repair.hidden = false;
