@@ -1,4 +1,4 @@
-# Release trigger: London growth cluster — 2026-08-31
+# Release trigger: Hermes Connect Option 02 — 2026-08-31
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
