@@ -84,5 +84,9 @@ assert.ok(fs.existsSync(workspaceEnhancementsPath), 'workspace enhancement CSS m
 const workspaceEnhancementsCss = fs.readFileSync(workspaceEnhancementsPath, 'utf8');
 assert.match(workspaceEnhancementsCss, /\.brand-mark\{[^}]*mark-option02\.svg/, 'workspace desktop/mobile brand mark must render approved Option 02');
 assert.match(workspaceEnhancementsCss, /\.brand-mark path\{display:none!important\}/, 'legacy inline workspace mark must be visually retired');
+assert.match(workspaceEnhancementsCss, /\.hermes-drawer:not\(\.open\)\{display:none!important\}/, 'closed Hermes drawer must be removed from layout so it cannot widen the mobile document');
+assert.match(workspaceEnhancementsCss, /\.hermes-drawer\.open\{display:grid!important;transform:none!important\}/, 'open Hermes drawer must restore the fixed work surface without off-canvas translation');
+assert.match(workspaceEnhancementsCss, /@media\(max-width:850px\)[\s\S]*overflow-x:clip/, 'mobile workspace must clip accidental horizontal overflow at the document boundary');
+assert.match(workspaceEnhancementsCss, /\.hermes-drawer\.open\{left:12px!important;right:12px!important;width:auto!important;max-width:calc\(100vw - 24px\)!important\}/, 'mobile open Hermes drawer must stay inside the 12px viewport insets');
 
-console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, PNG/SVG install icons, Option 02 workspace chrome, and responsive workspace are aligned.');
+console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, PNG/SVG install icons, Option 02 workspace chrome, mobile drawer containment, and responsive workspace are aligned.');
