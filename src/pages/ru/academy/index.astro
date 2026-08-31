@@ -1,0 +1,79 @@
+---
+import { ArrowRight, BookOpen, GraduationCap, ShieldCheck } from "@lucide/astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+
+const title = "Hermes Business Academy на русском | Логистика США и маркетинг";
+const description = "Практические программы Hermes Business Academy на русском: логистика США и маркетинг с человеческой проверкой, упражнениями, evidence и отдельным решением о прогрессе.";
+const alternates = [
+  { lang: "ru", href: "/ru/academy/" },
+  { lang: "x-default", href: "/paths/academy/" },
+];
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: title,
+  description,
+  url: "https://hermeslogisticsus.com/ru/academy/",
+  inLanguage: "ru",
+  about: { "@id": "https://hermeslogisticsus.com/#academy" },
+};
+---
+
+<BaseLayout title={title} description={description} locale="ru" alternates={alternates} schema={schema}>
+  <div class="logistics-resource-page academy-public-page">
+    <SiteHeader theme="dark" locale="ru" activePath="/ru/academy/" />
+    <main id="main-content">
+      <header class="resource-hero resource-hero-carrier">
+        <div class="shell">
+          <nav class="appleton-breadcrumbs" aria-label="Навигация"><a href="/ru/">Главная</a><span aria-hidden="true">/</span><span aria-current="page">Academy</span></nav>
+          <div class="resource-hero-grid">
+            <div>
+              <p class="eyebrow">Hermes Business Academy · Русский</p>
+              <h1>Практическое обучение для работы с рынком США и международным бизнесом.</h1>
+              <p>Выберите одно из двух текущих направлений: U.S. Logistics Operations или Marketing. Сначала изучите программу и требования, затем подайте заявку на человеческую проверку. Уже допущенные ученики используют один Hermes-аккаунт в Hermes Connect Academy.</p>
+              <div class="logistics-audience-actions">
+                <a class="button button-primary" href="/ru/academy/us-logistics-operations/">Логистика США <ArrowRight size={18} aria-hidden="true" /></a>
+                <a class="button" href="/ru/academy/marketing/">Marketing</a>
+                <a class="button" href="/services/hermes-connect/academy/auth/?lang=ru">Открыть учебный кабинет</a>
+              </div>
+            </div>
+            <aside class="resource-safety-card">
+              <ShieldCheck size={30} aria-hidden="true" />
+              <h2>Заявка, зачисление и завершение — разные решения.</h2>
+              <p>Публичная программа не обещает место, работу, доход, клиента, сертификат или доступ к реальным операциям. Зачисление и прогресс подтверждаются отдельно в рамках утверждённого формата.</p>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <section class="section capacity-pillars" aria-labelledby="ru-academy-programs">
+        <div class="shell">
+          <div class="section-heading split-heading"><div><p class="eyebrow">Два текущих направления</p><h2 id="ru-academy-programs">Выберите программу по реальной рабочей задаче.</h2></div><p>Обе программы используют практическую модель: контекст → понимание → применение → evidence → feedback → решение человека о следующем этапе.</p></div>
+          <div class="capacity-pillar-grid">
+            <article><span>01</span><BookOpen size={23} aria-hidden="true" /><h3>U.S. Logistics Operations</h3><p>Диспетчинг, перевозчики и брокеры, оборудование, документы, переговоры и рабочий ритм рынка США.</p><a href="/ru/academy/us-logistics-operations/">Открыть программу <ArrowRight size={16} aria-hidden="true" /></a></article>
+            <article><span>02</span><GraduationCap size={23} aria-hidden="true" /><h3>Marketing</h3><p>Позиционирование, website-first контент, SMM, lead journey, sales follow-up, аналитика и AI с человеческим контролем.</p><a href="/ru/academy/marketing/">Открыть программу <ArrowRight size={16} aria-hidden="true" /></a></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section capacity-review" aria-labelledby="ru-academy-flow">
+        <div class="shell">
+          <div class="section-heading"><p class="eyebrow">Как начать</p><h2 id="ru-academy-flow">Сначала программа и готовность. Потом заявка.</h2></div>
+          <div class="capacity-boundary-grid">
+            <article><strong>1. Выберите направление</strong><p>Сравните содержание, языковые требования и формат практики.</p></article>
+            <article><strong>2. Подайте заявку</strong><p>Укажите локацию, языки, английский, опыт, цель, график и удобный канал связи.</p></article>
+            <article><strong>3. Пройдите человеческую проверку</strong><p>Команда уточняет fit и доступный утверждённый формат без автоматического зачисления.</p></article>
+            <article><strong>4. Работайте в Hermes Connect</strong><p>Допущенный ученик использует единый Hermes-аккаунт для curriculum, progress, evidence и support.</p></article>
+          </div>
+          <div class="logistics-audience-actions" style="margin-top:24px">
+            <a class="button button-primary" href="/ru/academy/apply/#contact">Подать заявку <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button" href="/services/hermes-connect/academy/auth/?lang=ru">Уже есть доступ? Войти</a>
+          </div>
+        </div>
+      </section>
+    </main>
+    <SiteFooter locale="ru" />
+  </div>
+</BaseLayout>
