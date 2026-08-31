@@ -1,4 +1,6 @@
 <script>
+  import { trackEvent } from "../lib/analytics";
+
   const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
   const handoff = form?.querySelector<HTMLElement>("[data-contact-handoff]");
   const handoffSummary = form?.querySelector<HTMLElement>("[data-handoff-summary]");
@@ -8,27 +10,51 @@
   const params = new URLSearchParams(window.location.search);
   const requestedProgram = params.get("program") || "";
   const requestedLanguage = params.get("language") === "uk" ? "uk" : "en";
+  const requestedSource = (params.get("utm_source") || "").trim().toLowerCase();
+  const requestedMedium = (params.get("utm_medium") || "").trim().slice(0, 80);
+  const requestedCampaign = (params.get("utm_campaign") || "").trim().slice(0, 120);
+  const requestedContent = (params.get("utm_content") || "").trim().slice(0, 120);
+  const requestedTrack = (params.get("track") || "").trim().slice(0, 120);
+  const isLondon = requestedSource === "london";
 
-  const pushAcademyEvent = (eventName: string, extras: Record<string, string> = {}) => {
-    if (!form || pathSelect?.value !== "Hermes Business Academy") return;
+  const resolveProgram = () => {
+    if (!form) return "not_selected";
     const programField = form.elements.namedItem("academy_program");
     const selectedProgram = programField instanceof HTMLSelectElement ? programField.value : "";
-    const program = allowedPrograms.has(selectedProgram)
+    return allowedPrograms.has(selectedProgram)
       ? selectedProgram
       : allowedPrograms.has(requestedProgram)
         ? requestedProgram
         : "not_selected";
+  };
+
+  const pushAcademyEvent = (eventName: string, extras: Record<string, string> = {}) => {
+    if (!form || pathSelect?.value !== "Hermes Business Academy") return;
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: eventName,
       page_group: "academy_application",
       service_group: "academy",
-      academy_program: program,
+      academy_program: resolveProgram(),
       application_language: requestedLanguage,
       page_path: window.location.pathname,
       ...extras,
     });
+  };
+
+  const appendLondonAttribution = () => {
+    if (!isLondon || !handoffSummary || !handoffSummary.textContent?.trim()) return;
+    if (handoffSummary.textContent.includes("London attribution:")) return;
+
+    const details = [
+      requestedTrack ? `track=${requestedTrack}` : "",
+      requestedMedium ? `medium=${requestedMedium}` : "",
+      requestedCampaign ? `campaign=${requestedCampaign}` : "",
+      requestedContent ? `content=${requestedContent}` : "",
+    ].filter(Boolean);
+
+    handoffSummary.textContent = `${handoffSummary.textContent}\n\nLondon attribution:\nsource=london${details.length ? `\n${details.join("\n")}` : ""}`;
   };
 
   if (form && handoff && handoffSummary && handoffLink) {
@@ -60,6 +86,7 @@
         previewRecorded = true;
         handoffRecorded = false;
         pushAcademyEvent("academy_application_preview_ready", { preview_status: "prepared" });
+        window.setTimeout(appendLondonAttribution, 0);
       });
     });
 
@@ -72,6 +99,17 @@
         handoff_method: "email",
         preview_status: "prepared",
       });
+
+      if (isLondon) {
+        trackEvent("london_academy_application_handoff_ready", {
+          market: "london",
+          locale: requestedLanguage,
+          route: window.location.pathname,
+          academy_program: resolveProgram(),
+          track_intent: requestedTrack || "not_selected",
+          campaign: requestedCampaign || "london-academy",
+        });
+      }
     });
   }
 </script>
