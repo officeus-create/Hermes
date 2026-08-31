@@ -2,9 +2,15 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../../components/LondonAnalytics.astro";
 const alternates=[{lang:"en",href:"/gb/london/us-logistics-training/"},{lang:"ru",href:"/ru/gb/london/us-logistics-training/"},{lang:"uk",href:"/ua/gb/london/us-logistics-training/"},{lang:"x-default",href:"/gb/london/us-logistics-training/"}];
+const url="https://hermeslogisticsus.com/gb/london/us-logistics-training/";
+const schema=[
+ {"@context":"https://schema.org","@type":"Course",name:"US Logistics Training for London and UK residents",description:"Practical US logistics education covering operations, planning, sales, negotiation and communication readiness.",provider:{"@type":"Organization",name:"Hermes Academy",sameAs:"https://hermeslogisticsus.com/academy/"},url},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:"US logistics training",item:url}]}
+];
 ---
-<BaseLayout title="US Logistics Training London | Hermes Academy" description="Practical US logistics training for Russian- and Ukrainian-speaking residents in London and the UK, with English readiness requirements for live market communication tracks." alternates={alternates}>
+<BaseLayout title="US Logistics Training London | Hermes Academy" description="Practical US logistics training for Russian- and Ukrainian-speaking residents in London and the UK, with English readiness requirements for live market communication tracks." alternates={alternates} schema={schema}>
   <SiteHeader theme="dark" />
   <main id="main-content">
     <section class="section detail-overview"><div class="shell detail-intro">
@@ -12,13 +18,13 @@ const alternates=[{lang:"en",href:"/gb/london/us-logistics-training/"},{lang:"ru
       <h1>Learn how US logistics operations actually work.</h1>
       <p>This London route is for Russian- and Ukrainian-speaking residents in the UK who want structured training around US logistics operations, load planning, carrier and broker communication, sales, negotiation and real workflow discipline.</p>
       <p>Tracks involving live US-market calls or negotiation require working spoken English at B2 level or higher. Training does not guarantee employment, income or placement.</p>
-      <a class="button button-primary" href="/academy/us-logistics-operations/?source=london">Explore the full logistics track</a>
+      <a class="button button-primary" href="/academy/us-logistics-operations/?program=us-logistics-operations&utm_source=london&utm_medium=organic&utm_campaign=london-academy&utm_content=us-logistics-training">Explore the full logistics track</a>
     </div></section>
     <section class="section"><div class="shell grid">
       <article><h2>Operations</h2><p>Understand loads, equipment types, load boards, carriers, brokers, shippers, dealers and the operational flow behind US freight movement.</p></article>
       <article><h2>Communication</h2><p>Practice structured questions, negotiation logic, objection handling and professional US-market communication.</p></article>
       <article><h2>Progression</h2><p>Move from learning and observation into approved practice only when language, schedule, discipline and track requirements are met.</p></article>
     </div></section>
-  </main><SiteFooter />
+  </main><LondonAnalytics/><SiteFooter />
 </BaseLayout>
 <style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
