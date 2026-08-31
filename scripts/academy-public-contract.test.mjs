@@ -61,6 +61,16 @@ for (const text of [
   assert.ok(application.includes(text), `Academy application page is missing review clarity: ${text}`);
 }
 
+// Public program pages must serve both audiences without conflating them: new
+// candidates apply for human review; people who already have Academy access can
+// return to the existing private Hermes Connect learner workspace.
+assert.ok(logisticsProgramHtml.includes('data-academy-learner-workspace'), "English Academy program must expose the existing learner workspace handoff");
+assert.ok(logisticsProgramHtml.includes('href="/services/hermes-connect/academy/auth/"'), "English learner handoff must use the canonical Academy auth route");
+assert.ok(logisticsProgramText.includes("Already have Academy access? Open learner workspace"), "English learner handoff must be explicit about existing access");
+assert.ok(ukrainianLogisticsProgramHtml.includes('href="/services/hermes-connect/academy/auth/?lang=uk"'), "Ukrainian learner handoff must preserve the selected locale");
+assert.ok(ukrainianLogisticsProgramText.includes("Уже маєте доступ до Academy? Відкрити навчальний кабінет"), "Ukrainian learner handoff must use localized copy");
+assert.ok(applicationText.includes("does not accept payment, reserve a seat, enroll a learner"), "Application must remain distinct from enrollment after adding the learner workspace handoff");
+
 // Program-specific eligibility must remain explicit and job-relevant.
 assert.ok(logisticsProgramText.includes("B2 level or higher"), "U.S. Logistics program must state the B2+ English requirement for communication-heavy tracks");
 assert.ok(ukrainianLogisticsProgramText.includes("B2 або вище"), "Ukrainian Logistics program must state the B2+ English requirement");
@@ -100,4 +110,4 @@ for (const blockedPrice of ["$999", "$400/month", "$600/month"]) {
   assert.ok(!application.includes(blockedPrice), `Unapproved Academy price is visible on the application page: ${blockedPrice}`);
 }
 
-console.log("Academy public contract checks passed: Home routes to Academy, Academy owns two-program detail and participation models, language/compliance eligibility remains explicit, application review clarity remains explicit, and no blocked prices are visible.");
+console.log("Academy public contract checks passed: Home routes to Academy, Academy owns two-program detail and participation models, public programs hand existing learners to the canonical private workspace, language/compliance eligibility remains explicit, application review clarity remains explicit, and no blocked prices are visible.");
