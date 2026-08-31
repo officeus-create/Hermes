@@ -124,7 +124,7 @@
     },
     {
       "path": "public/demos/hermes-connect/icon-512.png",
-      "sha256": "4c20e7fa366bf63fb0c9aab4e25842913f321c69d05559591a8910551e6bee63",
+      "sha256": "52ec148dc33848d6b609d9847a1fe3f0a47893dcaac9d9f33d10b3fa69f6b6ae",
       "firstTrackedCommit": "bb27c196ff11fabcb5c14c9d356633c6b9dd58fe",
       "classification": "FIRST_PARTY_BRAND_ARTIFACT",
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
