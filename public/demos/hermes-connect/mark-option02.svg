@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" role="img" aria-labelledby="hc02-title hc02-desc">
+  <title id="hc02-title">Hermes Connect continuous loop mark</title>
+  <desc id="hc02-desc">The approved Hermes Connect option 02: one continuous connected flow.</desc>
+  <defs>
+    <linearGradient id="hc02-gradient" x1="14" y1="16" x2="106" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5AC8FA"/>
+      <stop offset="0.30" stop-color="#2E9BFF"/>
+      <stop offset="0.56" stop-color="#2563EB"/>
+      <stop offset="0.78" stop-color="#6657F2"/>
+      <stop offset="1" stop-color="#7C5CFF"/>
+    </linearGradient>
+    <linearGradient id="hc02-highlight" x1="22" y1="20" x2="94" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.62"/>
+      <stop offset="0.42" stop-color="#FFFFFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z"
+    fill="none"
+    stroke="url(#hc02-gradient)"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M28 23C20 30 20 49 29 57C37 64 45 57 51 47"
+    fill="none"
+    stroke="url(#hc02-highlight)"
+    stroke-width="2.2"
+    stroke-linecap="round"
+  />
+</svg>

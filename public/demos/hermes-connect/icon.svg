@@ -1,36 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Hermes Connect Icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="hc-icon-title hc-icon-desc">
+  <title id="hc-icon-title">Hermes Connect</title>
+  <desc id="hc-icon-desc">Approved option 02 continuous connected-flow mark.</desc>
   <defs>
-    <linearGradient id="hermesBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#141722"/>
-      <stop offset="100%" stop-color="#0B0D12"/>
+    <linearGradient id="hcBg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#141722"/>
+      <stop offset="1" stop-color="#090A0F"/>
     </linearGradient>
-    <linearGradient id="hermesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7C5CFF"/>
-      <stop offset="50%" stop-color="#9E86FF"/>
-      <stop offset="100%" stop-color="#5AC8FA"/>
+    <linearGradient id="hc02" x1="14" y1="16" x2="106" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5AC8FA"/>
+      <stop offset="0.30" stop-color="#2E9BFF"/>
+      <stop offset="0.56" stop-color="#2563EB"/>
+      <stop offset="0.78" stop-color="#6657F2"/>
+      <stop offset="1" stop-color="#7C5CFF"/>
     </linearGradient>
-    <radialGradient id="hermesGlow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#7C5CFF" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#7C5CFF" stop-opacity="0"/>
+    <linearGradient id="hc02Hi" x1="22" y1="20" x2="94" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.62"/>
+      <stop offset="0.42" stop-color="#FFFFFF" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="hcGlow" cx="50%" cy="49%" r="50%">
+      <stop offset="0" stop-color="#3B82F6" stop-opacity="0.20"/>
+      <stop offset="0.58" stop-color="#7C5CFF" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#7C5CFF" stop-opacity="0"/>
     </radialGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#7C5CFF" flood-opacity="0.3"/>
+    <filter id="hcShadow" x="-25%" y="-35%" width="150%" height="170%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#305DFF" flood-opacity="0.22"/>
     </filter>
   </defs>
-
-  <!-- Background Card -->
-  <rect width="512" height="512" rx="112" fill="url(#hermesBg)"/>
-  <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="3"/>
-
-  <!-- Ambient Glow -->
-  <circle cx="256" cy="256" r="180" fill="url(#hermesGlow)"/>
-
-  <!-- Intelligent Knot Brand Mark -->
-  <g transform="translate(104, 104) scale(6.9)" filter="url(#shadow)">
-    <path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" 
-          fill="none" stroke="url(#hermesGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" 
-          fill="none" stroke="url(#hermesGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <circle cx="36" cy="12" r="2.5" fill="#7FD1B6"/>
+  <rect width="512" height="512" rx="112" fill="url(#hcBg)"/>
+  <rect x="4" y="4" width="504" height="504" rx="108" fill="none" stroke="#FFFFFF" stroke-opacity="0.12" stroke-width="3"/>
+  <ellipse cx="256" cy="254" rx="194" ry="152" fill="url(#hcGlow)"/>
+  <g transform="translate(64 128) scale(3.2)" filter="url(#hcShadow)">
+    <path d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z" fill="none" stroke="url(#hc02)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M28 23C20 30 20 49 29 57C37 64 45 57 51 47" fill="none" stroke="url(#hc02Hi)" stroke-width="2.2" stroke-linecap="round"/>
   </g>
 </svg>
