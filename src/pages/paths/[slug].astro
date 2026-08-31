@@ -67,10 +67,16 @@ const schema = faqSchema
   <SiteHeader theme="light" />
   <PathDetailPage path={path} />
   <PathVerifiedAdvantages pathId={path.id} />
-  {path.id === "marketing" && <MarketingEngagementModel />}
+  {path.id === "marketing" && (
+    <>
+      <MarketingEngagementModel />
+      <section class="section london-market-entry" aria-labelledby="london-marketing-entry-title"><div class="shell london-market-entry-card"><div><p class="eyebrow">United Kingdom · London</p><h2 id="london-marketing-entry-title">Explore the dedicated London growth market.</h2><p>Use the London hub for local website development, SEO, social media, Meta Ads, CRM and industry-specific acquisition paths.</p></div><a class="button button-primary" href="/gb/london/">Explore Hermes London</a></div></section>
+    </>
+  )}
   {path.id === "academy" && (
     <>
       <AcademySubsiteNav />
+      <section class="section london-market-entry" aria-labelledby="london-academy-entry-title"><div class="shell london-market-entry-card"><div><p class="eyebrow">United Kingdom · London</p><h2 id="london-academy-entry-title">US logistics training has a dedicated London entry path.</h2><p>Review London and UK training routes for US logistics foundations, dispatch, load planning, sales and English readiness. Training does not guarantee employment or income.</p></div><a class="button button-primary" href="/gb/london/academy/">Explore London Academy</a></div></section>
       <template
         data-static-validator-compat
         data-required-copy="COO / Operational Director · Operating Career System · Executive · Three programs. Different responsibilities. · Practice environment · Program dates, scope, and prices are published before enrollment · Ask about the right Academy path. · do not guarantee employment · Learning preview only · Ask about learning AI automation"
@@ -82,3 +88,7 @@ const schema = faqSchema
   <ContactCTA selectedPath={contactInterestCategory} />
   <SiteFooter />
 </BaseLayout>
+
+<style>
+  .london-market-entry{background:#f7f8fc}.london-market-entry-card{display:flex;align-items:end;justify-content:space-between;gap:2rem;padding:1.4rem;border:1px solid #dce3f3;border-radius:14px;background:#fff}.london-market-entry-card h2{max-width:20ch;margin:.35rem 0 .65rem}.london-market-entry-card p{max-width:68ch;color:#64718f;line-height:1.65}@media(max-width:760px){.london-market-entry-card{display:grid;grid-template-columns:1fr}}
+</style>

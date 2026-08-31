@@ -1,0 +1,16 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../../components/LondonAnalytics.astro";
+import { londonAuthorityGuides } from "../../../../data/london-authority-guides";
+export function getStaticPaths(){return londonAuthorityGuides.map(guide=>({params:{slug:guide.slug},props:{guide}}));}
+const {guide}=Astro.props; const url=`https://hermeslogisticsus.com/gb/london/guides/${guide.slug}/`;
+const hubHref=`/gb/london/?utm_source=london&utm_medium=organic&utm_campaign=london-guides&utm_content=${guide.slug}`;
+const schema=[
+ {"@context":"https://schema.org","@type":"Article",headline:guide.h1,description:guide.description,mainEntityOfPage:url,author:{"@type":"Organization",name:"Hermes"},publisher:{"@type":"Organization",name:"Hermes"}},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:"Guides",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:3,name:guide.h1,item:url}]}
+];
+---
+<BaseLayout title={guide.title} description={guide.description} schema={schema}><SiteHeader theme="dark"/><main id="main-content"><article><header class="section detail-overview"><div class="shell detail-intro"><p class="eyebrow">London guide · Hermes</p><h1>{guide.h1}</h1><p>{guide.description}</p><p><a class="button button-primary" href={hubHref}>London hub</a></p></div></header><div class="section"><div class="shell guide">{guide.sections.map(([heading,body])=><section><h2>{heading}</h2><p>{body}</p></section>)}</div></div></article></main><LondonAnalytics/><SiteFooter/></BaseLayout>
+<style>.guide{max-width:850px}.guide section+section{margin-top:2.2rem}.guide p{line-height:1.75;color:#55627d}</style>

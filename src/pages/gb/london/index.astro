@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../components/SiteHeader.astro";
+import SiteFooter from "../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../components/LondonAnalytics.astro";
+const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/"},{lang:"uk",href:"/ua/gb/london/"},{lang:"x-default",href:"/gb/london/"}];
+const url="https://hermeslogisticsus.com/gb/london/";
+const schema=[
+ {"@context":"https://schema.org","@type":"CollectionPage",name:"Hermes London",description:"London hub for Hermes marketing, IT/web development and US logistics training.",url},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Hermes",item:"https://hermeslogisticsus.com/"},{"@type":"ListItem",position:2,name:"London",item:url}]}
+];
+const services=[
+ ["social-media-management","Social media management"],["meta-ads","Meta Ads"],["website-development","Website development"],["seo-services","SEO services"],["local-seo","Local SEO"],["google-business-profile","Google Business Profile"],["landing-page-development","Landing pages"],["crm-automation","CRM automation"],["content-reels-scripts","Content, reels & scripts"],["marketing-audit","Marketing audit"]
+];
+const industries=[
+ ["auto-repair-marketing","Auto repair"],["beauty-salon-marketing","Beauty salons"],["dental-clinic-marketing","Dental clinics"],["restaurant-marketing","Restaurants"],["contractor-marketing","Contractors"],["logistics-company-marketing","Logistics companies"],["car-detailing-marketing","Car detailing"],["cleaning-company-marketing","Cleaning companies"],["home-services-marketing","Home services"],["professional-services-marketing","Professional services"]
+];
+const guides=[
+ ["digital-growth-system","Digital growth system"],["small-business-website-guide","Small-business website guide"],["local-seo-london","Local SEO in London"],["meta-ads-expectations","Meta Ads expectations"],["social-media-strategy","Social media strategy"],["website-seo-funnel","Website + SEO funnel"],["us-logistics-roles","US logistics roles"],["dispatcher-vs-load-planner","Dispatcher vs load planner"],["b2-english-us-logistics","B2 English for US logistics"],["training-curriculum","Training curriculum"]
+];
+---
+<BaseLayout title="London Marketing, IT & US Logistics Training | Hermes" description="Hermes services and training for London: marketing, websites, SEO, IT and practical US logistics education." alternates={alternates} schema={schema}>
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview"><div class="shell detail-intro">
+      <p class="eyebrow">London · United Kingdom</p>
+      <h1>Marketing, IT and US logistics training for London.</h1>
+      <p>One London hub for businesses that need websites, SEO, social media and automation, and for people who want practical training connected to the US logistics market.</p>
+      <p><a class="button button-primary" href="/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-hub&utm_content=hub&service=marketing">Request a growth plan</a> <a class="button" href="/gb/london/academy/">Explore London Academy</a></p>
+      <p class="language-links">Language: <a href="/ru/gb/london/">Русский</a> · <a href="/ua/gb/london/">Українська</a></p>
+    </div></section>
+    <section class="section"><div class="shell"><div class="cards">
+      <article><h2>Marketing</h2><p>Instagram, Facebook, Threads, content systems, Meta Ads and measurable lead generation for London businesses.</p><a href="/gb/london/marketing/">London marketing</a></article>
+      <article><h2>IT & websites</h2><p>Business websites, landing pages, SEO foundations, integrations and practical automation.</p><a href="/gb/london/it-web-development/">London IT & web development</a></article>
+      <article><h2>US logistics training</h2><p>Training for Russian- and Ukrainian-speaking residents in the UK who want to understand real US logistics operations.</p><a href="/gb/london/us-logistics-training/">London logistics training</a></article>
+    </div></div></section>
+    <section class="section link-directory"><div class="shell"><p class="eyebrow">London services</p><h2>Choose the first growth problem to solve.</h2><div class="link-grid">{services.map(([slug,label])=><a href={`/gb/london/${slug}/`}>{label}</a>)}</div></div></section>
+    <section class="section link-directory"><div class="shell"><p class="eyebrow">Industry paths</p><h2>Start from the operating reality of the business.</h2><div class="link-grid">{industries.map(([slug,label])=><a href={`/gb/london/${slug}/`}>{label}</a>)}</div></div></section>
+    <section class="section link-directory"><div class="shell"><p class="eyebrow">Guides</p><h2>Learn before choosing a project or training track.</h2><div class="link-grid">{guides.map(([slug,label])=><a href={`/gb/london/guides/${slug}/`}>{label}</a>)}</div></div></section>
+  </main>
+  <LondonAnalytics />
+  <SiteFooter />
+</BaseLayout>
+<style>
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.cards article{padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.cards p{color:#64718f;line-height:1.6}.language-links{margin-top:1rem}.link-directory{border-top:1px solid #e6eaf3}.link-directory h2{max-width:18ch}.link-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.75rem}.link-grid a{display:flex;align-items:center;min-height:3.5rem;padding:.8rem 1rem;border:1px solid #dce3f3;border-radius:10px;text-decoration:none;font-weight:700}@media(max-width:1000px){.link-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:800px){.cards,.link-grid{grid-template-columns:1fr}}
+</style>

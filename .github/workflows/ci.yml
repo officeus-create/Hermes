@@ -34,6 +34,9 @@ jobs:
       - name: Validate static output
         run: npm test
 
+      - name: Validate London launch contract
+        run: node scripts/london-launch-contract.test.mjs
+
       - name: Enforce 100-task SEO production invariants
         run: node scripts/seo-100-task-batch.test.mjs
 

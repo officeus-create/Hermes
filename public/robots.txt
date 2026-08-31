@@ -9,3 +9,4 @@ Sitemap: https://hermeslogisticsus.com/sitemap-digital-services.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-academy.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-cases.xml
 Sitemap: https://hermeslogisticsus.com/sitemap-trust.xml
+Sitemap: https://hermeslogisticsus.com/sitemap-london.xml

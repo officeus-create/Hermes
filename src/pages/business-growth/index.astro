@@ -13,160 +13,56 @@ const alternates = [
 ];
 
 const roadmap = [
-  {
-    horizon: "First step",
-    title: "Fix the first bottleneck",
-    body: "Start with the smallest useful change that can move a real business metric: a landing page, intake form, tracking fix, SEO foundation, campaign test, CRM step, or automation prototype.",
-  },
-  {
-    horizon: "3 months",
-    title: "Make acquisition measurable",
-    body: "Connect the offer, website or landing path, analytics, search visibility, content, and the first repeatable lead source that fits the market and budget.",
-  },
-  {
-    horizon: "6 months",
-    title: "Improve what already works",
-    body: "Use actual lead quality, conversion, search, content, and sales data to improve the channels that are producing useful signals instead of adding tools for their own sake.",
-  },
-  {
-    horizon: "9 months",
-    title: "Connect marketing and sales operations",
-    body: "Where the volume justifies it, connect CRM stages, follow-up, reporting, audience reuse, sales scripts, content production, and approved automation around the working funnel.",
-  },
-  {
-    horizon: "12 months",
-    title: "Scale the proven system",
-    body: "Increase spend, content, SEO coverage, automation, or sales capacity only where the previous stages have produced enough evidence to justify the next investment.",
-  },
+  { horizon: "First step", title: "Fix the first bottleneck", body: "Start with the smallest useful change that can move a real business metric: a landing page, intake form, tracking fix, SEO foundation, campaign test, CRM step, or automation prototype." },
+  { horizon: "3 months", title: "Make acquisition measurable", body: "Connect the offer, website or landing path, analytics, search visibility, content, and the first repeatable lead source that fits the market and budget." },
+  { horizon: "6 months", title: "Improve what already works", body: "Use actual lead quality, conversion, search, content, and sales data to improve the channels that are producing useful signals instead of adding tools for their own sake." },
+  { horizon: "9 months", title: "Connect marketing and sales operations", body: "Where the volume justifies it, connect CRM stages, follow-up, reporting, audience reuse, sales scripts, content production, and approved automation around the working funnel." },
+  { horizon: "12 months", title: "Scale the proven system", body: "Increase spend, content, SEO coverage, automation, or sales capacity only where the previous stages have produced enough evidence to justify the next investment." },
 ];
 ---
 
-<BaseLayout
-  title="Business Growth & Digital Launch | Hermes"
-  description="Plan the smallest useful first step, then build a 3, 6, 9, or 12-month growth roadmap across website, SEO, social media, paid acquisition, CRM, and automation."
-  robots="noindex,follow"
-  alternates={alternates}
->
+<BaseLayout title="Business Growth & Digital Launch | Hermes" description="Plan the smallest useful first step, then build a 3, 6, 9, or 12-month growth roadmap across website, SEO, social media, paid acquisition, CRM, and automation." robots="noindex,follow" alternates={alternates}>
   <SiteHeader theme="dark" />
   <main id="main-content">
-    <section class="section detail-overview" aria-labelledby="business-growth-title">
-      <div class="shell detail-intro" data-reveal>
-        <p class="eyebrow">Business growth · direct inquiry</p>
-        <h1 id="business-growth-title">Start with the business problem, budget, and next useful step.</h1>
-        <p>
-          A website is not automatically the first answer. Neither are ads, SEO, social media, CRM, or AI automation.
-          First define what needs to improve, what can be invested, what already exists, and what result would make the next stage worth funding.
-        </p>
-        <p>
-          Hermes can then build a staged plan across website or web applications, SEO, social media, paid acquisition,
-          content, CRM, sales workflows, and automation. The sequence depends on the business, evidence, and budget rather than a fixed package.
-        </p>
-        <p class="form-status" data-campaign-context hidden></p>
-        <a class="button button-primary" href="#business-lead">Build a growth plan</a>
-      </div>
-    </section>
+    <section class="section detail-overview" aria-labelledby="business-growth-title"><div class="shell detail-intro" data-reveal>
+      <p class="eyebrow">Business growth · direct inquiry</p><h1 id="business-growth-title">Start with the business problem, budget, and next useful step.</h1>
+      <p>A website is not automatically the first answer. Neither are ads, SEO, social media, CRM, or AI automation. First define what needs to improve, what can be invested, what already exists, and what result would make the next stage worth funding.</p>
+      <p>Hermes can then build a staged plan across website or web applications, SEO, social media, paid acquisition, content, CRM, sales workflows, and automation. The sequence depends on the business, evidence, and budget rather than a fixed package.</p>
+      <p class="form-status" data-campaign-context hidden></p><a class="button button-primary" href="#business-lead">Build a growth plan</a>
+    </div></section>
 
-    <section class="section business-growth-roadmap" aria-labelledby="business-growth-roadmap-title">
-      <div class="shell">
-        <div class="business-growth-roadmap-heading">
-          <div>
-            <p class="eyebrow">Need → budget → roadmap</p>
-            <h2 id="business-growth-roadmap-title">Do the smallest useful thing first. Add the next layer when the data supports it.</h2>
-          </div>
-          <p>
-            A common sequence is Website → SEO → SMM → paid acquisition → CRM → automation, but it is not a mandatory order.
-            Existing assets, lead quality, sales capacity, market demand, and budget decide what should happen next.
-          </p>
-        </div>
-        <ol class="business-growth-roadmap-grid">
-          {roadmap.map((step) => (
-            <li>
-              <span>{step.horizon}</span>
-              <h3>{step.title}</h3>
-              <p>{step.body}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
+    <section class="section business-growth-market" aria-labelledby="business-growth-market-title"><div class="shell market-card">
+      <div><p class="eyebrow">Current market focus</p><h2 id="business-growth-market-title">London businesses can start from the dedicated UK market hub.</h2><p>The London hub connects website development, SEO, local search, social media, Meta Ads, CRM/automation and industry-specific paths without claiming a physical London office.</p></div>
+      <a class="button" href="/gb/london/">Explore Hermes London</a>
+    </div></section>
 
-    <section class="section business-growth-principles" aria-labelledby="business-growth-principles-title">
-      <div class="shell">
-        <div class="business-growth-roadmap-heading">
-          <div>
-            <p class="eyebrow">How budget is used</p>
-            <h2 id="business-growth-principles-title">Budget is a planning constraint, not a target to spend.</h2>
-          </div>
-          <p>
-            The goal is to choose the first scope that can produce useful evidence without forcing a larger first sale. If a smaller test can answer the important question, start there.
-          </p>
-        </div>
-        <div class="business-growth-principle-grid">
-          <article><strong>Need first</strong><p>Define the bottleneck: visibility, conversion, lead quality, sales follow-up, website performance, reporting, or repetitive manual work.</p></article>
-          <article><strong>Budget second</strong><p>Use the available investment range to choose scope, sequence, channels, and the amount of testing that is realistic.</p></article>
-          <article><strong>Evidence before expansion</strong><p>Do not add another channel or automation layer because it sounds advanced. Add it when the current data shows a reason.</p></article>
-          <article><strong>Roadmap, not bundle</strong><p>A 3/6/9/12-month plan can change as real search, campaign, sales, and customer data replaces assumptions.</p></article>
-        </div>
-      </div>
-    </section>
+    <section class="section business-growth-roadmap" aria-labelledby="business-growth-roadmap-title"><div class="shell">
+      <div class="business-growth-roadmap-heading"><div><p class="eyebrow">Need → budget → roadmap</p><h2 id="business-growth-roadmap-title">Do the smallest useful thing first. Add the next layer when the data supports it.</h2></div><p>A common sequence is Website → SEO → SMM → paid acquisition → CRM → automation, but it is not a mandatory order. Existing assets, lead quality, sales capacity, market demand, and budget decide what should happen next.</p></div>
+      <ol class="business-growth-roadmap-grid">{roadmap.map((step) => (<li><span>{step.horizon}</span><h3>{step.title}</h3><p>{step.body}</p></li>))}</ol>
+    </div></section>
 
-    <section class="section business-growth-faq" aria-labelledby="business-growth-faq-title">
-      <div class="shell">
-        <div class="business-growth-roadmap-heading">
-          <div><p class="eyebrow">Commercial questions</p><h2 id="business-growth-faq-title">Questions before a proposal</h2></div>
-        </div>
-        <div class="business-growth-faq-list">
-          <details>
-            <summary>Do I need a new website first?</summary>
-            <p>No. If the current site can support the next measurable step, improving tracking, conversion, SEO, content, or acquisition may be more useful than rebuilding it. A redesign should solve a specific problem.</p>
-          </details>
-          <details>
-            <summary>Does a bigger budget mean a bigger first project?</summary>
-            <p>No. Budget helps define what can be tested and how quickly. Hermes can still recommend a smaller first scope when that is enough to validate demand, conversion, or workflow assumptions.</p>
-          </details>
-          <details>
-            <summary>Can the roadmap change after the first month?</summary>
-            <p>Yes. The roadmap is a planning model, not a guarantee. Search data, campaign economics, lead quality, sales capacity, technical constraints, and customer behavior can change the order or timing.</p>
-          </details>
-          <details>
-            <summary>Can Hermes work partly through barter?</summary>
-            <p>For some qualified businesses, a barter component may be discussed when the exchange has clear business value and can be documented. Barter is optional, reviewed case by case, and is never guaranteed or automatically accepted.</p>
-          </details>
-          <details>
-            <summary>Does Hermes guarantee leads, rankings, sales, or revenue?</summary>
-            <p>No. Hermes can control research, implementation, testing, content, tracking, optimization, and agreed follow-up. Market demand, platform auctions, search rankings, buyer behavior, sales execution, and revenue outcomes cannot be guaranteed.</p>
-          </details>
-        </div>
-      </div>
-    </section>
+    <section class="section business-growth-principles" aria-labelledby="business-growth-principles-title"><div class="shell">
+      <div class="business-growth-roadmap-heading"><div><p class="eyebrow">How budget is used</p><h2 id="business-growth-principles-title">Budget is a planning constraint, not a target to spend.</h2></div><p>The goal is to choose the first scope that can produce useful evidence without forcing a larger first sale. If a smaller test can answer the important question, start there.</p></div>
+      <div class="business-growth-principle-grid"><article><strong>Need first</strong><p>Define the bottleneck: visibility, conversion, lead quality, sales follow-up, website performance, reporting, or repetitive manual work.</p></article><article><strong>Budget second</strong><p>Use the available investment range to choose scope, sequence, channels, and the amount of testing that is realistic.</p></article><article><strong>Evidence before expansion</strong><p>Do not add another channel or automation layer because it sounds advanced. Add it when the current data shows a reason.</p></article><article><strong>Roadmap, not bundle</strong><p>A 3/6/9/12-month plan can change as real search, campaign, sales, and customer data replaces assumptions.</p></article></div>
+    </div></section>
 
-    <BusinessLeadForm selectedPath="ProgressoPro" locale="en" />
-    <CampaignLeadPrefill locale="en" />
-  </main>
-  <SiteFooter />
+    <section class="section business-growth-faq" aria-labelledby="business-growth-faq-title"><div class="shell">
+      <div class="business-growth-roadmap-heading"><div><p class="eyebrow">Commercial questions</p><h2 id="business-growth-faq-title">Questions before a proposal</h2></div></div>
+      <div class="business-growth-faq-list">
+        <details><summary>Do I need a new website first?</summary><p>No. If the current site can support the next measurable step, improving tracking, conversion, SEO, content, or acquisition may be more useful than rebuilding it. A redesign should solve a specific problem.</p></details>
+        <details><summary>Does a bigger budget mean a bigger first project?</summary><p>No. Budget helps define what can be tested and how quickly. Hermes can still recommend a smaller first scope when that is enough to validate demand, conversion, or workflow assumptions.</p></details>
+        <details><summary>Can the roadmap change after the first month?</summary><p>Yes. The roadmap is a planning model, not a guarantee. Search data, campaign economics, lead quality, sales capacity, technical constraints, and customer behavior can change the order or timing.</p></details>
+        <details><summary>Can Hermes work partly through barter?</summary><p>For some qualified businesses, a barter component may be discussed when the exchange has clear business value and can be documented. Barter is optional, reviewed case by case, and is never guaranteed or automatically accepted.</p></details>
+        <details><summary>Does Hermes guarantee leads, rankings, sales, or revenue?</summary><p>No. Hermes can control research, implementation, testing, content, tracking, optimization, and agreed follow-up. Market demand, platform auctions, search rankings, buyer behavior, sales execution, and revenue outcomes cannot be guaranteed.</p></details>
+      </div>
+    </div></section>
+
+    <BusinessLeadForm selectedPath="ProgressoPro" locale="en" /><CampaignLeadPrefill locale="en" />
+  </main><SiteFooter />
 </BaseLayout>
 
 <style>
-  .business-growth-roadmap { background: #f5f7ff; }
-  .business-growth-roadmap-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: end; margin-bottom: 2rem; }
-  .business-growth-roadmap-heading h2 { max-width: 16ch; margin: .35rem 0 0; font-size: clamp(2rem, 4vw, 3.8rem); line-height: 1.02; letter-spacing: -.035em; }
-  .business-growth-roadmap-heading > p { margin: 0; color: #5f6d8e; line-height: 1.7; }
-  .business-growth-roadmap-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .9rem; padding: 0; margin: 0; list-style: none; }
-  .business-growth-roadmap-grid li, .business-growth-principle-grid article { padding: 1.3rem; border: 1px solid #dce3f3; border-radius: 12px; background: #fff; }
-  .business-growth-roadmap-grid span { display: inline-block; margin-bottom: 1rem; font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #5d47cf; }
-  .business-growth-roadmap-grid h3 { margin: 0 0 .65rem; font-size: 1.08rem; }
-  .business-growth-roadmap-grid p, .business-growth-principle-grid p { margin: 0; color: #64718f; line-height: 1.62; }
-  .business-growth-principle-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
-  .business-growth-principle-grid strong { display: block; margin-bottom: .6rem; font-size: 1.05rem; }
-  .business-growth-faq-list { max-width: 900px; display: grid; gap: .75rem; }
-  .business-growth-faq-list details { border: 1px solid #dce3f3; border-radius: 10px; background: #fff; padding: 1rem 1.2rem; }
-  .business-growth-faq-list summary { cursor: pointer; font-weight: 800; }
-  .business-growth-faq-list p { color: #64718f; line-height: 1.65; }
-  @media (max-width: 1000px) {
-    .business-growth-roadmap-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .business-growth-principle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 720px) {
-    .business-growth-roadmap-heading, .business-growth-roadmap-grid, .business-growth-principle-grid { grid-template-columns: 1fr; }
-  }
+  .business-growth-market{background:#fff}.market-card{display:flex;justify-content:space-between;align-items:end;gap:2rem;padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.market-card h2{max-width:20ch}.market-card p{max-width:70ch;color:#64718f;line-height:1.65}.business-growth-roadmap { background: #f5f7ff; }.business-growth-roadmap-heading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .75fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: end; margin-bottom: 2rem; }.business-growth-roadmap-heading h2 { max-width: 16ch; margin: .35rem 0 0; font-size: clamp(2rem, 4vw, 3.8rem); line-height: 1.02; letter-spacing: -.035em; }.business-growth-roadmap-heading > p { margin: 0; color: #5f6d8e; line-height: 1.7; }.business-growth-roadmap-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .9rem; padding: 0; margin: 0; list-style: none; }.business-growth-roadmap-grid li, .business-growth-principle-grid article { padding: 1.3rem; border: 1px solid #dce3f3; border-radius: 12px; background: #fff; }.business-growth-roadmap-grid span { display: inline-block; margin-bottom: 1rem; font-size: .78rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #5d47cf; }.business-growth-roadmap-grid h3 { margin: 0 0 .65rem; font-size: 1.08rem; }.business-growth-roadmap-grid p, .business-growth-principle-grid p { margin: 0; color: #64718f; line-height: 1.62; }.business-growth-principle-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }.business-growth-principle-grid strong { display: block; margin-bottom: .6rem; font-size: 1.05rem; }.business-growth-faq-list { max-width: 900px; display: grid; gap: .75rem; }.business-growth-faq-list details { border: 1px solid #dce3f3; border-radius: 10px; background: #fff; padding: 1rem 1.2rem; }.business-growth-faq-list summary { cursor: pointer; font-weight: 800; }.business-growth-faq-list p { color: #64718f; line-height: 1.65; }
+  @media (max-width: 1000px) {.business-growth-roadmap-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.business-growth-principle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width: 720px) {.market-card{display:grid;grid-template-columns:1fr}.business-growth-roadmap-heading,.business-growth-roadmap-grid,.business-growth-principle-grid{grid-template-columns:1fr}}
 </style>

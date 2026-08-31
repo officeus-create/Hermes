@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../../components/LondonAnalytics.astro";
+const alternates=[{lang:"en",href:"/gb/london/marketing/"},{lang:"ru",href:"/ru/gb/london/marketing/"},{lang:"uk",href:"/ua/gb/london/marketing/"},{lang:"x-default",href:"/gb/london/marketing/"}];
+const url="https://hermeslogisticsus.com/gb/london/marketing/";
+const faq=[
+ {q:"Does Hermes guarantee leads or sales from London marketing?",a:"No. Hermes improves the acquisition system and measurement, but platform performance, lead volume, sales and revenue are not guaranteed."},
+ {q:"Can social media, Meta Ads and the website be planned together?",a:"Yes. The scope can connect content, paid media, landing pages, analytics and follow-up when those layers are needed."}
+];
+const schema=[
+ {"@context":"https://schema.org","@type":"Service",name:"London marketing growth support",description:"Social media strategy, Meta Ads readiness, content systems and conversion support for London businesses.",provider:{"@type":"Organization",name:"Hermes"},areaServed:{"@type":"City",name:"London"},url},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:"Marketing",item:url}]},
+ {"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map(x=>({"@type":"Question",name:x.q,acceptedAnswer:{"@type":"Answer",text:x.a}}))}
+];
+---
+<BaseLayout title="Social Media Marketing & Meta Ads London | Hermes" description="Social media strategy, Instagram, Facebook, Threads, Meta Ads, content systems and growth support for London businesses." alternates={alternates} schema={schema}>
+  <SiteHeader theme="dark" />
+  <main id="main-content">
+    <section class="section detail-overview"><div class="shell detail-intro">
+      <p class="eyebrow">London marketing</p>
+      <h1>Turn social media into a measurable customer-acquisition system.</h1>
+      <p>Hermes helps London businesses connect Instagram, Facebook, Threads, content planning, short-form video scripts, Meta Ads, landing pages and lead tracking into one practical growth path.</p>
+      <a class="button button-primary" href="/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-services&utm_content=marketing&service=marketing">Request a marketing audit</a>
+    </div></section>
+    <section class="section"><div class="shell grid">
+      <article><h2>Organic social</h2><p>Content strategy, publishing structure, scripts, hooks, captions and repeatable production workflows.</p></article>
+      <article><h2>Meta Ads</h2><p>Campaign setup, audience testing, tracking, retargeting and optimisation around lead quality rather than vanity metrics.</p></article>
+      <article><h2>Website + conversion</h2><p>Connect social traffic to focused landing pages, forms, analytics and follow-up instead of sending attention into a dead end.</p></article>
+    </div></section>
+    <section class="section"><div class="shell"><h2>FAQ</h2>{faq.map(item=><article><h3>{item.q}</h3><p>{item.a}</p></article>)}</div></section>
+  </main><LondonAnalytics/><SiteFooter />
+</BaseLayout>
+<style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
