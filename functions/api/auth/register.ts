@@ -1,5 +1,5 @@
 import { hashPassword, isValidEmail, isValidPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
-import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../src/data/hermes-connect-repair-shop-launch.ts";
+import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../src/data/hermes-connect-repair-shop-launch";
 import { jsonResponse } from "../_lib/session.mjs";
 import {
   parseRepairShopReferralCookie,
