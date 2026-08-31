@@ -58,6 +58,11 @@ for(const route of expectedRoutes){
   const h1Count=(html.match(/<h1\b/gi)??[]).length;
   if(h1Count!==1) errors.push(`${route}: expected one H1, found ${h1Count}`);
 
+  for(const imageMatch of html.matchAll(/<img\b[^>]*>/gi)){
+    const alt=tagAttr(imageMatch[0],"alt").trim();
+    if(!alt) errors.push(`${route}: image without non-empty alt text`);
+  }
+
   const types=collectTypes(parseSchemas(html,route));
   if(route==="/gb/london/" || route==="/gb/london/academy/" || route==="/ru/gb/london/" || route==="/ua/gb/london/") requireTypes(types,["CollectionPage","BreadcrumbList"],route);
   else if(route==="/gb/london/marketing/" || route==="/gb/london/it-web-development/" || commercialRoutes.includes(route)) requireTypes(types,["Service","BreadcrumbList","FAQPage"],route);
@@ -69,6 +74,17 @@ for(const route of expectedRoutes){
   } else if(localizedRoutes.includes(route)) requireTypes(types,["WebPage","BreadcrumbList"],route);
 
   if(/our london office|visit our office in london|london office address/i.test(html)) errors.push(`${route}: unsupported London physical-office claim detected`);
+}
+
+for(const locale of ["ru","ua"]){
+  const hubRoute=`/${locale}/gb/london/`;
+  const hubHtml=await readFile(htmlPath(hubRoute),"utf8");
+  for(const section of ["marketing","it-web-development","us-logistics-training"]){
+    const sectionRoute=`/${locale}/gb/london/${section}/`;
+    if(!hubHtml.includes(`href=\"${sectionRoute}\"`) && !hubHtml.includes(`href='${sectionRoute}'`)) errors.push(`${hubRoute}: missing locale-safe link to ${sectionRoute}`);
+    const sectionHtml=await readFile(htmlPath(sectionRoute),"utf8");
+    if(!sectionHtml.includes(`href=\"${hubRoute}\"`) && !sectionHtml.includes(`href='${hubRoute}'`)) errors.push(`${sectionRoute}: missing locale-safe return link to ${hubRoute}`);
+  }
 }
 
 const primaryLeadPages = ["/gb/london/","/gb/london/marketing/","/gb/london/it-web-development/","/gb/london/us-logistics-training/","/gb/london/academy/"];
@@ -92,6 +108,17 @@ for(const required of ["trackEvent","/gb/london/","/ru/gb/london/","/ua/gb/londo
 }
 if(/email|phone|message|name\s*:/i.test(analytics.replace(/london_contact_clicked/g,""))) errors.push("LondonAnalytics: possible PII field detected");
 
+const campaignPrefill=await readFile(join(root,"src/components/CampaignLeadPrefill.astro"),"utf8");
+for(const required of ["trackEvent","utm_source","london_business_inquiry_submitted","service_intent","campaign","content"]){
+  if(!campaignPrefill.includes(required)) errors.push(`CampaignLeadPrefill: missing London conversion contract ${required}`);
+}
+
+const academyAnalytics=await readFile(join(root,"src/components/AcademyApplicationAnalytics.astro"),"utf8");
+for(const required of ["trackEvent","London attribution:","requestedTrack","london_academy_application_handoff_ready","track_intent","academy_program"]){
+  if(!academyAnalytics.includes(required)) errors.push(`AcademyApplicationAnalytics: missing London attribution/conversion contract ${required}`);
+}
+if(/name\s*:|email\s*:|phone\s*:|message\s*:/i.test(academyAnalytics)) errors.push("AcademyApplicationAnalytics: possible PII field detected");
+
 for(const relative of [
   "docs/london/LONDON_SPRINT2_OFFERS_ACADEMY_2026-08-31.md",
   "docs/london/LONDON_SPRINT2_LEADS_SALES_CONTENT_2026-08-31.md",
@@ -103,4 +130,4 @@ for(const relative of [
 
 if(expectedRoutes.length!==52) errors.push(`route inventory invariant changed unexpectedly: ${expectedRoutes.length}`);
 if(errors.length) throw new Error(`London launch contract failed with ${errors.length} error(s):\n${errors.map((e)=>`- ${e}`).join("\n")}`);
-console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/CTA/attribution/analytics/artifact checks green.`);
+console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/CTA/locale/image/attribution/analytics/artifact checks green.`);
