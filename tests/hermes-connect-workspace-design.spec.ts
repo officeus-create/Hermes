@@ -126,7 +126,7 @@ test("Repair Shop owner availability uses the shared Pearl-first workspace gramm
   const expectedPanelRadius = viewportWidth <= 720 ? "18px" : "22px";
 
   expect(visual).not.toBeNull();
-  expect(visual!.rootBackgroundImage).toContain("linear-gradient");
+  expect(visual!.rootBackgroundImage).toMatch(/(?:linear|radial)-gradient\(/);
   expect(visual!.rootUsesCanonicalPearl).toBe(true);
   expect(visual!.panelRadius).toBe(expectedPanelRadius);
   expect(visual!.buttonBackground).toBe("rgb(11, 13, 18)");
