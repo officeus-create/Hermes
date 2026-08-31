@@ -12,13 +12,13 @@ for (const pageClass of ["workspace-page", "availability-page", "customers-page"
   assert.match(shellCss, new RegExp(`\\.${pageClass}`));
 }
 
-assert.match(shellCss, /var\(--hermes-pearl\)/);
-assert.match(shellCss, /var\(--hermes-repair\)/);
+assert.match(shellCss, /background-color:\s*var\(--hermes-pearl\)/);
+assert.match(shellCss, /background-image:[\s\S]*var\(--hermes-repair\)/);
 assert.match(shellCss, /var\(--hermes-ink\)/);
 assert.match(shellCss, /var\(--hermes-line-light\)/);
 assert.match(shellCss, /var\(--hermes-shadow-card\)/);
 assert.match(shellCss, /color-scheme:\s*light/);
-assert.match(shellCss, /\.primary-btn[\s\S]*background:\s*var\(--hermes-repair\)/);
+assert.match(shellCss, /\.primary-btn[\s\S]*background:\s*var\(--hermes-obsidian\)/);
 assert.match(shellCss, /\.open-toggle input[\s\S]*accent-color:\s*var\(--hermes-repair\)/);
 assert.match(shellCss, /prefers-reduced-transparency/);
 
@@ -30,4 +30,4 @@ assert.match(availability, /\/api\/repair-shop\/availability/);
 assert.match(customers, /\/api\/repair-shop\/customers/);
 assert.doesNotMatch(shellCss, /fetch\(|\/api\/|localStorage|sessionStorage/);
 
-console.log("Repair Shop private Pearl shell and canonical blue accent contract passed.");
+console.log("Repair Shop private Pearl shell, Obsidian decisive action, and canonical blue accent contract passed.");
