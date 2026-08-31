@@ -4,7 +4,6 @@ import path from "node:path";
 import process from "node:process";
 import { chromium } from "@playwright/test";
 import {
-  DEFAULT_SCREENSHOT_ROUTES,
   SCREENSHOT_VIEWPORTS,
   parseScreenshotBaseUrl,
   screenshotFileName,
@@ -32,13 +31,66 @@ async function readLayout(page) {
     bodyScrollWidth: document.body?.scrollWidth ?? 0,
     viewportWidth: window.innerWidth,
     drawerOpen: Boolean(document.querySelector("[data-hermes-drawer].open")),
+    onboardingOpen: Boolean(document.querySelector("[data-onboarding-modal].open")),
   }));
+}
+
+async function completeWorkspaceOnboardingIfNeeded(page, route, viewport) {
+  if (viewport.id !== "mobile" || route.id !== "hermes-connect-workspace") return null;
+
+  const onboarding = page.locator("[data-onboarding-modal]").first();
+  const onboardingVisible = await onboarding.evaluate((element) =>
+    element.classList.contains("open") && element.getAttribute("aria-hidden") !== "true",
+  ).catch(() => false);
+
+  if (!onboardingVisible) return { shown: false };
+
+  const before = await readLayout(page);
+  if (before.documentScrollWidth > viewport.width + 1) {
+    throw new Error(
+      `${route.path} first-run onboarding overflows mobile document: ${before.documentScrollWidth}px > ${viewport.width}px`,
+    );
+  }
+
+  const logisticsCard = page.locator('[data-onboarding-type="logistics"]:visible').first();
+  if (await logisticsCard.count()) {
+    await logisticsCard.click();
+  } else {
+    const firstCard = page.locator(".business-type-card:visible").first();
+    if (!(await firstCard.count())) {
+      throw new Error(`${route.path} first-run onboarding has no visible business-type option`);
+    }
+    await firstCard.click();
+  }
+
+  const launchButton = page.locator("[data-launch-workspace-btn]:visible").first();
+  if (!(await launchButton.count())) {
+    throw new Error(`${route.path} first-run onboarding has no visible Launch Workspace action`);
+  }
+  await launchButton.click();
+  await page.waitForTimeout(120);
+
+  const after = await readLayout(page);
+  if (after.onboardingOpen) {
+    throw new Error(`${route.path} first-run onboarding did not close after Launch Workspace`);
+  }
+  if (after.documentScrollWidth > viewport.width + 1) {
+    throw new Error(
+      `${route.path} overflows after completing first-run onboarding: ${after.documentScrollWidth}px > ${viewport.width}px`,
+    );
+  }
+
+  return { shown: true, before, after };
 }
 
 async function verifyMobileWorkspaceDrawer(page, route, viewport) {
   if (viewport.id !== "mobile" || route.id !== "hermes-connect-workspace") return null;
 
+  const onboarding = await completeWorkspaceOnboardingIfNeeded(page, route, viewport);
   const initial = await readLayout(page);
+  if (initial.onboardingOpen) {
+    throw new Error(`${route.path} onboarding must be closed before Hermes drawer verification`);
+  }
   if (initial.drawerOpen) {
     throw new Error(`${route.path} must load with the Hermes drawer closed on mobile`);
   }
@@ -49,6 +101,9 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
   }
 
   const opener = page.locator("[data-hermes-open]:visible").first();
+  if (!(await opener.count())) {
+    throw new Error(`${route.path} has no visible Ask Hermes action after onboarding`);
+  }
   await opener.click();
   await page.waitForTimeout(80);
 
@@ -80,6 +135,9 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
   }
 
   const closer = page.locator("[data-hermes-close]:visible").first();
+  if (!(await closer.count())) {
+    throw new Error(`${route.path} Hermes drawer has no visible close action`);
+  }
   await closer.click();
   await page.waitForTimeout(80);
 
@@ -91,7 +149,7 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
     );
   }
 
-  return { initial, openState, closedAgain };
+  return { onboarding, initial, openState, closedAgain };
 }
 
 async function capture() {
