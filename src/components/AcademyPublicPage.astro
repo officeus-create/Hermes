@@ -73,6 +73,19 @@ const {
   academyHubHref = "/paths/academy/",
 } = Astro.props;
 
+const learnerWorkspaceCopy = {
+  en: "Already have Academy access? Open learner workspace",
+  ru: "Уже есть доступ к Academy? Открыть учебный кабинет",
+  uk: "Уже маєте доступ до Academy? Відкрити навчальний кабінет",
+  es: "¿Ya tienes acceso a Academy? Abrir espacio del alumno",
+  it: "Hai già accesso ad Academy? Apri l’area studente",
+  fr: "Vous avez déjà accès à Academy ? Ouvrir l’espace apprenant",
+} as const;
+const learnerWorkspaceLabel = learnerWorkspaceCopy[locale as keyof typeof learnerWorkspaceCopy] ?? learnerWorkspaceCopy.en;
+const learnerWorkspaceHref = locale === "en"
+  ? "/services/hermes-connect/academy/auth/"
+  : `/services/hermes-connect/academy/auth/?lang=${encodeURIComponent(locale)}`;
+
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const academyUrl = new URL(academyHubHref, Astro.site).toString();
 const academyEntity = {
@@ -159,6 +172,7 @@ const breadcrumbSchema = {
                 <div class="logistics-audience-actions">
                   <a class="button button-primary" href={content.primaryAction.href}>{content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
                   <a class="button" href={content.secondaryAction.href}>{content.secondaryAction.label}</a>
+                  <a class="button" data-academy-learner-workspace href={learnerWorkspaceHref}>{learnerWorkspaceLabel}<ArrowRight size={18} aria-hidden="true" /></a>
                 </div>
               </div>
               <aside class="resource-safety-card">
@@ -259,7 +273,10 @@ const breadcrumbSchema = {
               <h2>{ui.applicationTitle}</h2>
               <p>{ui.applicationBody}</p>
             </div>
-            <a class="button button-primary" href={content.primaryAction.href}>{content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
+            <div class="logistics-audience-actions">
+              <a class="button button-primary" href={content.primaryAction.href}>{content.primaryAction.label}<ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button" data-academy-learner-workspace href={learnerWorkspaceHref}>{learnerWorkspaceLabel}<ArrowRight size={18} aria-hidden="true" /></a>
+            </div>
           </div>
         </section>
       </article>
