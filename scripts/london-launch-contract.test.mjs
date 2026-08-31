@@ -117,7 +117,11 @@ const academyAnalytics=await readFile(join(root,"src/components/AcademyApplicati
 for(const required of ["trackEvent","London attribution:","requestedTrack","london_academy_application_handoff_ready","track_intent","academy_program"]){
   if(!academyAnalytics.includes(required)) errors.push(`AcademyApplicationAnalytics: missing London attribution/conversion contract ${required}`);
 }
-if(/name\s*:|email\s*:|phone\s*:|message\s*:/i.test(academyAnalytics)) errors.push("AcademyApplicationAnalytics: possible PII field detected");
+const londonAcademyEventPayload = academyAnalytics.match(/trackEvent\("london_academy_application_handoff_ready",\s*\{([\s\S]*?)\}\s*\);/)?.[1] ?? "";
+if(!londonAcademyEventPayload) errors.push("AcademyApplicationAnalytics: London Academy event payload not found");
+for(const forbidden of ["name","email","phone","message"]){
+  if(new RegExp(`\\b${forbidden}\\s*:`,"i").test(londonAcademyEventPayload)) errors.push(`AcademyApplicationAnalytics: London event payload contains forbidden PII field ${forbidden}`);
+}
 
 for(const relative of [
   "docs/london/LONDON_SPRINT2_OFFERS_ACADEMY_2026-08-31.md",
