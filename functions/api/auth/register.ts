@@ -1,4 +1,5 @@
 import { hashPassword, isValidEmail, isValidPassword, createSessionToken, sessionExpiry, sessionCookieHeader } from "../../../src/legacy-prototype/auth.mjs";
+import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../src/data/hermes-connect-repair-shop-launch.ts";
 import { jsonResponse } from "../_lib/session.mjs";
 import {
   parseRepairShopReferralCookie,
@@ -18,6 +19,7 @@ const CONTROL_CHARS = new RegExp(
 );
 const cleanText = (value: unknown, max: number) =>
   String(value ?? "").replace(CONTROL_CHARS, "").trim().slice(0, max);
+const REPAIR_SHOP_FREE_REGISTRATION_END_MS = Date.parse(REPAIR_SHOP_FREE_REGISTRATION_END_ISO);
 
 function createdResponse(payload: Record<string, unknown>, sessionToken: string, clearReferralCookie: boolean) {
   const headers = new Headers({ "Content-Type": "application/json; charset=utf-8" });
@@ -54,6 +56,15 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const existing = await env.DB.prepare("SELECT id FROM specialists WHERE email = ?").bind(email).first();
   if (existing) return jsonResponse(409, { success: false, error: "email_already_registered" });
+
+  if (role === "Shop Owner" && Date.now() >= REPAIR_SHOP_FREE_REGISTRATION_END_MS) {
+    return jsonResponse(403, {
+      success: false,
+      error: "repair_shop_free_registration_ended",
+      registration_deadline: REPAIR_SHOP_FREE_REGISTRATION_END_ISO,
+      next_url: "/services/hermes-connect/repair-shops/plan/",
+    });
+  }
 
   const { hash, salt } = await hashPassword(password);
   const id = `specialist-${crypto.randomUUID()}`;
