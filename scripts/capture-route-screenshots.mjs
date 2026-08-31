@@ -35,6 +35,15 @@ async function readLayout(page) {
   }));
 }
 
+function assertMobileWidth(layout, viewport, routePath, stage) {
+  const widest = Math.max(layout.documentScrollWidth ?? 0, layout.bodyScrollWidth ?? 0);
+  if (widest > viewport.width + 1) {
+    throw new Error(
+      `${routePath} ${stage} overflows mobile width: document=${layout.documentScrollWidth}px, body=${layout.bodyScrollWidth}px, viewport=${viewport.width}px`,
+    );
+  }
+}
+
 async function completeWorkspaceOnboardingIfNeeded(page, route, viewport) {
   if (viewport.id !== "mobile" || route.id !== "hermes-connect-workspace") return null;
 
@@ -46,11 +55,7 @@ async function completeWorkspaceOnboardingIfNeeded(page, route, viewport) {
   if (!onboardingVisible) return { shown: false };
 
   const before = await readLayout(page);
-  if (before.documentScrollWidth > viewport.width + 1) {
-    throw new Error(
-      `${route.path} first-run onboarding overflows mobile document: ${before.documentScrollWidth}px > ${viewport.width}px`,
-    );
-  }
+  assertMobileWidth(before, viewport, route.path, "first-run onboarding");
 
   const logisticsCard = page.locator('[data-onboarding-type="logistics"]:visible').first();
   if (await logisticsCard.count()) {
@@ -74,11 +79,7 @@ async function completeWorkspaceOnboardingIfNeeded(page, route, viewport) {
   if (after.onboardingOpen) {
     throw new Error(`${route.path} first-run onboarding did not close after Launch Workspace`);
   }
-  if (after.documentScrollWidth > viewport.width + 1) {
-    throw new Error(
-      `${route.path} overflows after completing first-run onboarding: ${after.documentScrollWidth}px > ${viewport.width}px`,
-    );
-  }
+  assertMobileWidth(after, viewport, route.path, "after completing first-run onboarding");
 
   return { shown: true, before, after };
 }
@@ -94,11 +95,7 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
   if (initial.drawerOpen) {
     throw new Error(`${route.path} must load with the Hermes drawer closed on mobile`);
   }
-  if (initial.documentScrollWidth > viewport.width + 1) {
-    throw new Error(
-      `${route.path} has mobile document overflow before interaction: ${initial.documentScrollWidth}px > ${viewport.width}px`,
-    );
-  }
+  assertMobileWidth(initial, viewport, route.path, "before Hermes interaction");
 
   const opener = page.locator("[data-hermes-open]:visible").first();
   if (!(await opener.count())) {
@@ -115,6 +112,8 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
       drawerLeft: rect?.left ?? null,
       drawerRight: rect?.right ?? null,
       documentScrollWidth: document.documentElement.scrollWidth,
+      documentClientWidth: document.documentElement.clientWidth,
+      bodyScrollWidth: document.body?.scrollWidth ?? 0,
       viewportWidth: window.innerWidth,
     };
   });
@@ -128,11 +127,7 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
       `${route.path} Hermes drawer escapes mobile viewport: left=${openState.drawerLeft}, right=${openState.drawerRight}, viewport=${viewport.width}`,
     );
   }
-  if (openState.documentScrollWidth > viewport.width + 1) {
-    throw new Error(
-      `${route.path} overflows while Hermes drawer is open: ${openState.documentScrollWidth}px > ${viewport.width}px`,
-    );
-  }
+  assertMobileWidth(openState, viewport, route.path, "while Hermes drawer is open");
 
   const closer = page.locator("[data-hermes-close]:visible").first();
   if (!(await closer.count())) {
@@ -143,11 +138,7 @@ async function verifyMobileWorkspaceDrawer(page, route, viewport) {
 
   const closedAgain = await readLayout(page);
   if (closedAgain.drawerOpen) throw new Error(`${route.path} Hermes drawer did not close on mobile`);
-  if (closedAgain.documentScrollWidth > viewport.width + 1) {
-    throw new Error(
-      `${route.path} overflows after closing Hermes drawer: ${closedAgain.documentScrollWidth}px > ${viewport.width}px`,
-    );
-  }
+  assertMobileWidth(closedAgain, viewport, route.path, "after closing Hermes drawer");
 
   return { onboarding, initial, openState, closedAgain };
 }
