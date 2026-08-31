@@ -11,6 +11,8 @@ const { locale = "en" } = Astro.props;
 <div data-campaign-lead-prefill data-locale={locale} hidden></div>
 
 <script>
+  import { trackEvent } from "../lib/analytics";
+
   const marker = document.querySelector<HTMLElement>("[data-campaign-lead-prefill]");
   const form = document.querySelector<HTMLFormElement>("[data-business-lead-form]");
 
@@ -112,6 +114,31 @@ const { locale = "en" } = Astro.props;
       };
       context.textContent = messages[locale];
       context.hidden = false;
+    }
+
+    if ((params.get("utm_source") ?? "").trim().toLowerCase() === "london") {
+      const status = form.querySelector<HTMLElement>("[data-form-status]");
+      let conversionRecorded = false;
+      const recordConfirmedConversion = () => {
+        if (conversionRecorded || !status) return;
+        const receivedText = (form.dataset.received || "").trim();
+        if (!receivedText || status.textContent?.trim() !== receivedText) return;
+        conversionRecorded = true;
+        trackEvent("london_business_inquiry_submitted", {
+          market: "london",
+          locale,
+          route: window.location.pathname,
+          service_intent: selectedServices[0] || "not_selected",
+          campaign: (params.get("utm_campaign") || "london-services").slice(0, 120),
+          content: (params.get("utm_content") || "").slice(0, 120),
+        });
+      };
+
+      if (status) {
+        const observer = new MutationObserver(recordConfirmedConversion);
+        observer.observe(status, { childList: true, characterData: true, subtree: true });
+        recordConfirmedConversion();
+      }
     }
   }
 </script>
