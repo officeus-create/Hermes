@@ -4,8 +4,13 @@ import SiteHeader from "../../../components/SiteHeader.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import LondonAnalytics from "../../../components/LondonAnalytics.astro";
 const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/"},{lang:"uk",href:"/ua/gb/london/"},{lang:"x-default",href:"/gb/london/"}];
+const url="https://hermeslogisticsus.com/gb/london/";
+const schema=[
+ {"@context":"https://schema.org","@type":"CollectionPage",name:"Hermes London",description:"London hub for Hermes marketing, IT/web development and US logistics training.",url},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Hermes",item:"https://hermeslogisticsus.com/"},{"@type":"ListItem",position:2,name:"London",item:url}]}
+];
 ---
-<BaseLayout title="London Marketing, IT & US Logistics Training | Hermes" description="Hermes services and training for London: marketing, websites, SEO, IT and practical US logistics education." alternates={alternates}>
+<BaseLayout title="London Marketing, IT & US Logistics Training | Hermes" description="Hermes services and training for London: marketing, websites, SEO, IT and practical US logistics education." alternates={alternates} schema={schema}>
   <SiteHeader theme="dark" />
   <main id="main-content">
     <section class="section detail-overview">
@@ -13,7 +18,7 @@ const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/
         <p class="eyebrow">London · United Kingdom</p>
         <h1>Marketing, IT and US logistics training for London.</h1>
         <p>One London hub for businesses that need websites, SEO, social media and automation, and for people who want practical training connected to the US logistics market.</p>
-        <p><a class="button button-primary" href="/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-hub&service=marketing">Request a growth plan</a> <a class="button" href="/gb/london/academy/">Explore London Academy</a></p>
+        <p><a class="button button-primary" href="/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-hub&utm_content=hub&service=marketing">Request a growth plan</a> <a class="button" href="/gb/london/academy/">Explore London Academy</a></p>
       </div>
     </section>
     <section class="section"><div class="shell"><div class="cards">
