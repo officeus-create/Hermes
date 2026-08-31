@@ -119,15 +119,16 @@ html.hc-experience body .repair-free-launch .launch-cta:focus-visible {
 
 /* Private Repair Shop workspaces share one calm Pearl shell. The page files keep
    their operational markup and D1/runtime code unchanged; this late cascade only
-   replaces the old dark/violet presentation with the canonical Repair blue accent. */
+   replaces the old dark/violet presentation with the canonical Repair blue accent.
+   Pearl is an explicit base color; gradients are decorative accents only. */
 html.hc-experience body .workspace-page,
 html.hc-experience body .availability-page,
 html.hc-experience body .customers-page {
   color: var(--hermes-ink) !important;
-  background:
+  background-color: var(--hermes-pearl) !important;
+  background-image:
     radial-gradient(circle at 14% 8%, color-mix(in srgb, var(--hermes-repair) 8%, transparent), transparent 27rem),
-    radial-gradient(circle at 88% 16%, rgba(90,200,250,.09), transparent 24rem),
-    var(--hermes-pearl) !important;
+    radial-gradient(circle at 88% 16%, rgba(90,200,250,.09), transparent 24rem) !important;
   color-scheme: light;
 }
 
@@ -219,10 +220,11 @@ html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) 
   background: rgba(30,136,255,.07) !important;
 }
 
+/* Obsidian owns decisive actions; Repair blue remains the vertical accent. */
 html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) .primary-btn {
   color: #fff !important;
-  border-color: var(--hermes-repair) !important;
-  background: var(--hermes-repair) !important;
+  border-color: var(--hermes-obsidian) !important;
+  background: var(--hermes-obsidian) !important;
   box-shadow: 0 10px 24px color-mix(in srgb, var(--hermes-repair) 18%, transparent) !important;
 }
 
