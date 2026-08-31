@@ -23,10 +23,10 @@ const { compact = false, showCta = true } = Astro.props;
 >
   <div class="launch-icon" aria-hidden="true"><Gift size={20} /></div>
   <div class="launch-copy">
-    <p class="launch-kicker" data-launch-kicker>Launch offer</p>
-    <h2 id="repair-free-launch-title" data-launch-title>14-day launch offer: free repair shop registration.</h2>
-    <p data-launch-body>Set up your shop and use the current Hermes Connect workflow without a card while we finish online billing.</p>
-    <p class="launch-policy" data-launch-policy>If online billing is still not active when this countdown ends, registration stays free until it is.</p>
+    <p class="launch-kicker" data-launch-kicker>Free registration</p>
+    <h2 id="repair-free-launch-title" data-launch-title>Free repair shop registration through September 15.</h2>
+    <p data-launch-body>Create your Repair Shop owner account and start using the current Hermes Connect workflow without a card.</p>
+    <p class="launch-policy" data-launch-policy>Free registration closes at midnight Central Time after September 15, 2026. Existing accounts keep access.</p>
   </div>
 
   <div class="launch-timer-wrap">
@@ -43,89 +43,77 @@ const { compact = false, showCta = true } = Astro.props;
 </section>
 
 <script>
-  const strings: Record<string, any> = {
+  const strings: Record<string, Record<string, string>> = {
     en: {
-      kicker: "Launch offer",
-      title: "14-day launch offer: free repair shop registration.",
-      body: "Set up your shop and use the current Hermes Connect workflow without a card while we finish online billing.",
-      policy: "If online billing is still not active when this countdown ends, registration stays free until it is.",
+      kicker: "Free registration",
+      title: "Free repair shop registration through September 15.",
+      body: "Create your Repair Shop owner account and start using the current Hermes Connect workflow without a card.",
+      policy: "Free registration closes at midnight Central Time after September 15, 2026. Existing accounts keep access.",
       timer: "Free-registration countdown",
       days: "days", hours: "hours", minutes: "minutes", seconds: "seconds",
       cta: "Register free",
-      afterTitle: "Registration remains free while online billing is unavailable.",
-      afterFree: "Online billing is not active yet — registration remains free.",
-      endedTitle: "The free-registration launch offer has ended.",
-      ended: "See the current Founding Shop Plan.",
+      endedTitle: "Free repair shop registration ended September 15.",
+      ended: "New Repair Shop registrations now use the current Founding Shop Plan.",
       plan: "View current plan",
     },
     ru: {
-      kicker: "Стартовая акция",
-      title: "14-дневная стартовая акция: регистрация СТО бесплатно.",
-      body: "Настройте СТО и пользуйтесь текущим Hermes Connect без банковской карты, пока мы подключаем онлайн-оплату.",
-      policy: "Если к окончанию таймера онлайн-оплата ещё не будет подключена, регистрация останется бесплатной до её запуска.",
+      kicker: "Бесплатная регистрация",
+      title: "Бесплатная регистрация СТО до 15 сентября включительно.",
+      body: "Создайте аккаунт владельца СТО и начните пользоваться текущим Hermes Connect без банковской карты.",
+      policy: "Бесплатная регистрация закрывается после 15 сентября 2026 года в 00:00 по Central Time. Уже созданные аккаунты сохраняют доступ.",
       timer: "До конца бесплатной регистрации",
       days: "дней", hours: "часов", minutes: "минут", seconds: "секунд",
       cta: "Зарегистрироваться бесплатно",
-      afterTitle: "Регистрация остаётся бесплатной, пока онлайн-оплата не подключена.",
-      afterFree: "Онлайн-оплата ещё не подключена — регистрация остаётся бесплатной.",
-      endedTitle: "Стартовый период бесплатной регистрации завершён.",
-      ended: "Посмотрите текущий тариф Founding Shop.",
+      endedTitle: "Бесплатная регистрация СТО завершилась 15 сентября.",
+      ended: "Новые регистрации СТО теперь проходят через текущий тариф Founding Shop.",
       plan: "Посмотреть тариф",
     },
     uk: {
-      kicker: "Стартова акція",
-      title: "14-денна стартова акція: реєстрація СТО безкоштовна.",
-      body: "Налаштуйте СТО та користуйтеся поточним Hermes Connect без банківської картки, поки ми підключаємо онлайн-оплату.",
-      policy: "Якщо до завершення таймера онлайн-оплата ще не буде підключена, реєстрація залишиться безкоштовною до її запуску.",
+      kicker: "Безкоштовна реєстрація",
+      title: "Безкоштовна реєстрація СТО до 15 вересня включно.",
+      body: "Створіть акаунт власника СТО та почніть користуватися поточним Hermes Connect без банківської картки.",
+      policy: "Безкоштовна реєстрація закривається після 15 вересня 2026 року о 00:00 за Central Time. Уже створені акаунти зберігають доступ.",
       timer: "До завершення безкоштовної реєстрації",
       days: "днів", hours: "годин", minutes: "хвилин", seconds: "секунд",
       cta: "Зареєструватися безкоштовно",
-      afterTitle: "Реєстрація залишається безкоштовною, поки онлайн-оплату не підключено.",
-      afterFree: "Онлайн-оплату ще не підключено — реєстрація залишається безкоштовною.",
-      endedTitle: "Стартовий період безкоштовної реєстрації завершено.",
-      ended: "Перегляньте поточний тариф Founding Shop.",
+      endedTitle: "Безкоштовна реєстрація СТО завершилася 15 вересня.",
+      ended: "Нові реєстрації СТО тепер проходять через поточний тариф Founding Shop.",
       plan: "Переглянути тариф",
     },
     es: {
-      kicker: "Oferta de lanzamiento",
-      title: "Oferta de lanzamiento de 14 días: registro gratuito del taller.",
-      body: "Configura tu taller y usa el flujo actual de Hermes Connect sin tarjeta mientras terminamos la facturación en línea.",
-      policy: "Si la facturación en línea aún no está activa cuando termine la cuenta regresiva, el registro seguirá siendo gratuito hasta que lo esté.",
+      kicker: "Registro gratuito",
+      title: "Registro gratuito de talleres hasta el 15 de septiembre inclusive.",
+      body: "Crea tu cuenta de propietario y empieza a usar el flujo actual de Hermes Connect sin tarjeta.",
+      policy: "El registro gratuito cierra después del 15 de septiembre de 2026 a medianoche, hora central. Las cuentas existentes conservan el acceso.",
       timer: "Cuenta regresiva del registro gratuito",
       days: "días", hours: "horas", minutes: "minutos", seconds: "segundos",
       cta: "Registrarme gratis",
-      afterTitle: "El registro sigue siendo gratuito mientras la facturación en línea no esté disponible.",
-      afterFree: "La facturación en línea aún no está activa — el registro sigue siendo gratuito.",
-      endedTitle: "La oferta de registro gratuito de lanzamiento ha terminado.",
-      ended: "Consulta el plan Founding Shop actual.",
+      endedTitle: "El registro gratuito de talleres terminó el 15 de septiembre.",
+      ended: "Las nuevas altas de talleres pasan ahora por el plan Founding Shop vigente.",
       plan: "Ver plan actual",
     },
     it: {
-      kicker: "Offerta di lancio",
-      title: "Offerta di lancio di 14 giorni: registrazione gratuita dell’officina.",
-      body: "Configura l’officina e usa l’attuale flusso Hermes Connect senza carta mentre completiamo la fatturazione online.",
-      policy: "Se la fatturazione online non sarà ancora attiva alla fine del conto alla rovescia, la registrazione resterà gratuita fino alla sua attivazione.",
+      kicker: "Registrazione gratuita",
+      title: "Registrazione gratuita dell’officina fino al 15 settembre incluso.",
+      body: "Crea l’account proprietario e inizia a usare l’attuale flusso Hermes Connect senza carta.",
+      policy: "La registrazione gratuita chiude dopo il 15 settembre 2026 a mezzanotte, Central Time. Gli account esistenti mantengono l’accesso.",
       timer: "Conto alla rovescia registrazione gratuita",
       days: "giorni", hours: "ore", minutes: "minuti", seconds: "secondi",
       cta: "Registrati gratis",
-      afterTitle: "La registrazione resta gratuita finché la fatturazione online non è disponibile.",
-      afterFree: "La fatturazione online non è ancora attiva — la registrazione resta gratuita.",
-      endedTitle: "L’offerta di registrazione gratuita di lancio è terminata.",
-      ended: "Consulta il piano Founding Shop attuale.",
+      endedTitle: "La registrazione gratuita delle officine è terminata il 15 settembre.",
+      ended: "Le nuove registrazioni passano ora dal piano Founding Shop corrente.",
       plan: "Vedi piano attuale",
     },
     fr: {
-      kicker: "Offre de lancement",
-      title: "Offre de lancement de 14 jours : inscription gratuite de l’atelier.",
-      body: "Configurez votre atelier et utilisez le flux Hermes Connect actuel sans carte pendant que nous finalisons la facturation en ligne.",
-      policy: "Si la facturation en ligne n’est pas encore active à la fin du compte à rebours, l’inscription restera gratuite jusqu’à son activation.",
+      kicker: "Inscription gratuite",
+      title: "Inscription gratuite des ateliers jusqu’au 15 septembre inclus.",
+      body: "Créez votre compte propriétaire et commencez à utiliser le flux Hermes Connect actuel sans carte.",
+      policy: "L’inscription gratuite ferme après le 15 septembre 2026 à minuit, heure du Centre. Les comptes existants conservent leur accès.",
       timer: "Compte à rebours de l’inscription gratuite",
       days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes",
       cta: "S’inscrire gratuitement",
-      afterTitle: "L’inscription reste gratuite tant que la facturation en ligne n’est pas disponible.",
-      afterFree: "La facturation en ligne n’est pas encore active — l’inscription reste gratuite.",
-      endedTitle: "L’offre de lancement avec inscription gratuite est terminée.",
-      ended: "Consultez le forfait Founding Shop actuel.",
+      endedTitle: "L’inscription gratuite des ateliers s’est terminée le 15 septembre.",
+      ended: "Les nouvelles inscriptions passent désormais par le forfait Founding Shop en vigueur.",
       plan: "Voir le forfait",
     },
   };
@@ -134,9 +122,10 @@ const { compact = false, showCta = true } = Astro.props;
   const params = new URLSearchParams(window.location.search);
   const requested = params.get("lang") || document.documentElement.lang || "en";
   const locale = supported.has(requested) ? requested : "en";
-  const copy = strings[locale];
+  const copy = strings[locale] || strings.en;
   const route = window.location.pathname.replace(/\/+$/, "");
   const repairRoot = "/services/hermes-connect/repair-shops";
+  const offerId = "free_registration_through_2026_09_15";
 
   const setText = (root: Element, selector: string, value: string) => {
     const node = root.querySelector(selector);
@@ -163,6 +152,25 @@ const { compact = false, showCta = true } = Astro.props;
     return true;
   };
 
+  const closeFreeRegistrationUi = () => {
+    if (route !== `${repairRoot}/auth`) return;
+    const registerTab = document.querySelector<HTMLButtonElement>('.tab-btn[data-tab="register"]');
+    const registerForm = document.querySelector<HTMLElement>("#register-form");
+    const loginTab = document.querySelector<HTMLButtonElement>('.tab-btn[data-tab="login"]');
+    const loginForm = document.querySelector<HTMLElement>("#login-form");
+    if (registerTab) {
+      registerTab.disabled = true;
+      registerTab.hidden = true;
+      registerTab.setAttribute("aria-hidden", "true");
+    }
+    if (registerForm) {
+      registerForm.classList.remove("active");
+      registerForm.hidden = true;
+    }
+    if (loginTab) loginTab.classList.add("active");
+    if (loginForm) loginForm.classList.add("active");
+  };
+
   document.querySelectorAll<HTMLElement>("[data-repair-free-launch]").forEach((root) => {
     if (!placeOffer(root)) {
       root.remove();
@@ -170,7 +178,10 @@ const { compact = false, showCta = true } = Astro.props;
     }
 
     const deadlineMs = Date.parse(root.dataset.deadline || "");
-    const billingEnabled = root.dataset.billingEnabled === "true";
+    if (!Number.isFinite(deadlineMs)) {
+      root.remove();
+      return;
+    }
     const cta = root.querySelector<HTMLAnchorElement>("[data-launch-cta]");
 
     setText(root, "[data-launch-kicker]", copy.kicker);
@@ -188,12 +199,17 @@ const { compact = false, showCta = true } = Astro.props;
       cta.href = localizeHref(cta.getAttribute("href") || `${repairRoot}/auth/?mode=register`);
       cta.addEventListener("click", () => {
         window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ event: "connect_free_registration_cta", product: "repair_shops", offer: "14_day_free_registration" });
+        window.dataLayer.push({ event: "connect_free_registration_cta", product: "repair_shops", offer: offerId });
       });
     }
 
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: "connect_free_registration_offer_view", product: "repair_shops", offer: "14_day_free_registration" });
+    window.dataLayer.push({
+      event: "connect_free_registration_offer_view",
+      product: "repair_shops",
+      offer: offerId,
+      state: Date.now() < deadlineMs ? "open" : "ended",
+    });
 
     let timer: number | undefined;
     const tick = () => {
@@ -212,10 +228,12 @@ const { compact = false, showCta = true } = Astro.props;
       if (remaining > 0) return;
       if (timer) window.clearInterval(timer);
 
-      setText(root, "[data-launch-title]", billingEnabled ? copy.endedTitle : copy.afterTitle);
-      setText(root, "[data-launch-status]", billingEnabled ? copy.ended : copy.afterFree);
+      setText(root, "[data-launch-title]", copy.endedTitle);
+      setText(root, "[data-launch-status]", copy.ended);
       root.dataset.expired = "true";
-      if (cta && billingEnabled) {
+      closeFreeRegistrationUi();
+      window.setTimeout(closeFreeRegistrationUi, 0);
+      if (cta) {
         const textNode = Array.from(cta.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
         if (textNode) textNode.textContent = copy.plan + " ";
         cta.href = localizeHref(`${repairRoot}/plan/`);

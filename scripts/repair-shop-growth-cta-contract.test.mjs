@@ -1,7 +1,20 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [enhancer, customerActions, layout, repairLanding, paidPlan, activationEnhancer, activationRuntime, offerContract] = await Promise.all([
+const [
+  enhancer,
+  customerActions,
+  layout,
+  repairLanding,
+  paidPlan,
+  activationEnhancer,
+  activationRuntime,
+  offerContract,
+  freeLaunch,
+  launchPolicy,
+  registerApi,
+  repairProfileApi,
+] = await Promise.all([
   readFile(new URL("../src/components/RepairBookingGrowthEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairBookingCustomerActionsEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8"),
@@ -10,6 +23,10 @@ const [enhancer, customerActions, layout, repairLanding, paidPlan, activationEnh
   readFile(new URL("../src/components/RepairShopActivationEnhancer.astro", import.meta.url), "utf8"),
   readFile(new URL("../public/repair-shop-activation.js", import.meta.url), "utf8"),
   readFile(new URL("../src/data/hermes-connect-repair-shop-offer.ts", import.meta.url), "utf8"),
+  readFile(new URL("../src/components/RepairShopFreeLaunchOffer.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/data/hermes-connect-repair-shop-launch.ts", import.meta.url), "utf8"),
+  readFile(new URL("../functions/api/auth/register.ts", import.meta.url), "utf8"),
+  readFile(new URL("../functions/api/repair-shop/profile.ts", import.meta.url), "utf8"),
 ]);
 
 // Public repair booking confirmation is customer-focused. Do not reuse a repair
@@ -62,6 +79,35 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|contactName|shopName|cityState|goal)\b[^}]*\}\)/s,
 );
 
+// CEO promotion decision: Repair Shop owner registration is free through the full
+// Central-Time day of September 15, 2026, then new free Repair Shop creation closes
+// and routes to the existing human-confirmation Founding Shop Plan.
+assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO\s*=\s*"2026-09-16T05:00:00\.000Z"/);
+assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_TIMEZONE\s*=\s*"America\/Chicago"/);
+assert.match(launchPolicy, /REPAIR_SHOP_FREE_REGISTRATION_FREE_THROUGH_LOCAL_DATE\s*=\s*"2026-09-15"/);
+assert.match(launchPolicy, /id:\s*"repair_shop_free_registration_sep15_2026"/);
+assert.match(launchPolicy, /afterDeadlineWithoutBilling:\s*"current_plan_required"/);
+assert.match(launchPolicy, /cardRequired:\s*false/);
+assert.match(freeLaunch, /Free repair shop registration through September 15/);
+assert.match(freeLaunch, /Бесплатная регистрация СТО до 15 сентября включительно/);
+assert.match(freeLaunch, /free_registration_through_2026_09_15/);
+assert.match(freeLaunch, /closeFreeRegistrationUi/);
+assert.match(freeLaunch, /cta\.href = localizeHref\(`\$\{repairRoot\}\/plan\/`\)/);
+assert.doesNotMatch(freeLaunch, /14_day_free_registration|14-day launch offer|14-дневная стартовая акция/);
+
+// Public Shop Owner account creation is closed after the deadline, and the actual
+// first Repair Shop record has the same gate so another generic Hermes role cannot
+// bypass the promotion. Existing shop records remain editable because the profile
+// gate is only in the no-existing-shop branch.
+assert.match(registerApi, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO/);
+assert.match(registerApi, /role === "Shop Owner" && Date\.now\(\) >= REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
+assert.match(registerApi, /repair_shop_free_registration_ended/);
+assert.match(registerApi, /\/services\/hermes-connect\/repair-shops\/plan\//);
+assert.match(repairProfileApi, /REPAIR_SHOP_FREE_REGISTRATION_END_ISO/);
+assert.match(repairProfileApi, /if \(existing\)[\s\S]*?UPDATE repair_shops[\s\S]*?else \{[\s\S]*?Date\.now\(\) >= REPAIR_SHOP_FREE_REGISTRATION_END_MS/);
+assert.match(repairProfileApi, /repair_shop_free_registration_ended/);
+assert.match(repairProfileApi, /INSERT INTO repair_shops/);
+
 // Activation: one Repair Shop runtime owns customer-ready copy and the six-step
 // first-value loop through the first completed booking and paid-plan decision.
 assert.match(layout, /RepairShopActivationEnhancer/);
@@ -94,4 +140,4 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
-console.log("Repair Shop customer-focused booking actions, free launch entry, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
+console.log("Repair Shop customer-focused booking actions, Sep 15 free-registration account/profile gates, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
