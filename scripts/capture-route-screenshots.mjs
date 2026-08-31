@@ -25,6 +25,75 @@ async function sha256(filePath) {
   return createHash("sha256").update(await readFile(filePath)).digest("hex");
 }
 
+async function readLayout(page) {
+  return page.evaluate(() => ({
+    documentScrollWidth: document.documentElement.scrollWidth,
+    documentClientWidth: document.documentElement.clientWidth,
+    bodyScrollWidth: document.body?.scrollWidth ?? 0,
+    viewportWidth: window.innerWidth,
+    drawerOpen: Boolean(document.querySelector("[data-hermes-drawer].open")),
+  }));
+}
+
+async function verifyMobileWorkspaceDrawer(page, route, viewport) {
+  if (viewport.id !== "mobile" || route.id !== "hermes-connect-workspace") return null;
+
+  const initial = await readLayout(page);
+  if (initial.drawerOpen) {
+    throw new Error(`${route.path} must load with the Hermes drawer closed on mobile`);
+  }
+  if (initial.documentScrollWidth > viewport.width + 1) {
+    throw new Error(
+      `${route.path} has mobile document overflow before interaction: ${initial.documentScrollWidth}px > ${viewport.width}px`,
+    );
+  }
+
+  const opener = page.locator("[data-hermes-open]:visible").first();
+  await opener.click();
+  await page.waitForTimeout(80);
+
+  const openState = await page.evaluate(() => {
+    const drawer = document.querySelector("[data-hermes-drawer]");
+    const rect = drawer?.getBoundingClientRect();
+    return {
+      drawerOpen: Boolean(drawer?.classList.contains("open")),
+      drawerLeft: rect?.left ?? null,
+      drawerRight: rect?.right ?? null,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+  });
+
+  if (!openState.drawerOpen) throw new Error(`${route.path} Hermes drawer did not open on mobile`);
+  if (openState.drawerLeft == null || openState.drawerRight == null) {
+    throw new Error(`${route.path} Hermes drawer has no measurable mobile bounds`);
+  }
+  if (openState.drawerLeft < -1 || openState.drawerRight > viewport.width + 1) {
+    throw new Error(
+      `${route.path} Hermes drawer escapes mobile viewport: left=${openState.drawerLeft}, right=${openState.drawerRight}, viewport=${viewport.width}`,
+    );
+  }
+  if (openState.documentScrollWidth > viewport.width + 1) {
+    throw new Error(
+      `${route.path} overflows while Hermes drawer is open: ${openState.documentScrollWidth}px > ${viewport.width}px`,
+    );
+  }
+
+  const closer = page.locator("[data-hermes-close]:visible").first();
+  await closer.click();
+  await page.waitForTimeout(80);
+
+  const closedAgain = await readLayout(page);
+  if (closedAgain.drawerOpen) throw new Error(`${route.path} Hermes drawer did not close on mobile`);
+  if (closedAgain.documentScrollWidth > viewport.width + 1) {
+    throw new Error(
+      `${route.path} overflows after closing Hermes drawer: ${closedAgain.documentScrollWidth}px > ${viewport.width}px`,
+    );
+  }
+
+  return { initial, openState, closedAgain };
+}
+
 async function capture() {
   await rm(outputDirectory, { recursive: true, force: true });
   await mkdir(outputDirectory, { recursive: true });
@@ -69,6 +138,8 @@ async function capture() {
           throw new Error(`${route.path} returned screenshot status ${status}`);
         }
 
+        const drawerVerification = await verifyMobileWorkspaceDrawer(page, route, viewport);
+        const layout = await readLayout(page);
         const fileName = screenshotFileName(route.id, viewport.id);
         const filePath = path.join(outputDirectory, fileName);
         await page.screenshot({ path: filePath, fullPage: true, animations: "disabled" });
@@ -82,6 +153,10 @@ async function capture() {
           status,
           title: await page.title(),
           finalPath: new URL(page.url()).pathname,
+          documentScrollWidth: layout.documentScrollWidth,
+          documentClientWidth: layout.documentClientWidth,
+          bodyScrollWidth: layout.bodyScrollWidth,
+          drawerVerification,
           file: fileName,
           sha256: await sha256(filePath),
         });
