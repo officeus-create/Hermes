@@ -6,6 +6,8 @@ const baseDir = path.resolve('public/demos/hermes-connect');
 const manifestPath = path.join(baseDir, 'manifest.webmanifest');
 const swPath = path.join(baseDir, 'sw.js');
 const workspaceHtmlPath = path.join(baseDir, 'workspace.html');
+const workspaceEnhancementsPath = path.join(baseDir, 'workspace-enhancements.css');
+const option02MarkPath = path.join(baseDir, 'mark-option02.svg');
 
 console.log('Running Hermes Connect canonical PWA contract audit...');
 
@@ -77,4 +79,10 @@ assert.match(workspaceHtml, /workspace-enhancements\.css/, 'workspace.html must 
 assert.match(workspaceHtml, /workspace-enhancements\.js/, 'workspace.html must load canonical enhancement JS');
 assert.doesNotMatch(workspaceHtml, /hermes-connect-brand-v1|workspace-v2|workspace-launch-v2/, 'workspace.html must not reference retired duplicate surfaces');
 
-console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, PNG/SVG install icons, and responsive workspace are aligned.');
+assert.ok(fs.existsSync(option02MarkPath), 'approved Option 02 mark must exist in the canonical Connect tree');
+assert.ok(fs.existsSync(workspaceEnhancementsPath), 'workspace enhancement CSS must exist');
+const workspaceEnhancementsCss = fs.readFileSync(workspaceEnhancementsPath, 'utf8');
+assert.match(workspaceEnhancementsCss, /\.brand-mark\{[^}]*mark-option02\.svg/, 'workspace desktop/mobile brand mark must render approved Option 02');
+assert.match(workspaceEnhancementsCss, /\.brand-mark path\{display:none!important\}/, 'legacy inline workspace mark must be visually retired');
+
+console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, PNG/SVG install icons, Option 02 workspace chrome, and responsive workspace are aligned.');
