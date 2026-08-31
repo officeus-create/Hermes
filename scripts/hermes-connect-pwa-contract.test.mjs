@@ -35,6 +35,22 @@ for (const icon of manifest.icons) {
   assert.ok(stats.size > 0, `Icon file must not be zero bytes: ${iconFileName}`);
 }
 
+const requiredInstallIcons = [
+  { src: './icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+  { src: './icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+  { src: './apple-touch-icon.png', sizes: '180x180', type: 'image/png', purpose: 'any' },
+  { src: './icon-maskable.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' },
+];
+
+const iconsBySrc = new Map(manifest.icons.map((icon) => [icon.src, icon]));
+for (const requiredIcon of requiredInstallIcons) {
+  const actualIcon = iconsBySrc.get(requiredIcon.src);
+  assert.ok(actualIcon, `manifest must retain required install icon: ${requiredIcon.src}`);
+  assert.strictEqual(actualIcon.sizes, requiredIcon.sizes, `${requiredIcon.src} must retain ${requiredIcon.sizes} sizing`);
+  assert.strictEqual(actualIcon.type, requiredIcon.type, `${requiredIcon.src} must retain ${requiredIcon.type} MIME type`);
+  assert.strictEqual(actualIcon.purpose, requiredIcon.purpose, `${requiredIcon.src} must retain ${requiredIcon.purpose} purpose`);
+}
+
 const appleTouchIconPng = path.join(baseDir, 'apple-touch-icon.png');
 assert.ok(fs.existsSync(appleTouchIconPng), 'apple-touch-icon.png must exist for WebKit/iOS compatibility');
 assert.ok(fs.statSync(appleTouchIconPng).size > 100, 'apple-touch-icon.png must be a valid non-empty PNG');
@@ -61,4 +77,4 @@ assert.match(workspaceHtml, /workspace-enhancements\.css/, 'workspace.html must 
 assert.match(workspaceHtml, /workspace-enhancements\.js/, 'workspace.html must load canonical enhancement JS');
 assert.doesNotMatch(workspaceHtml, /hermes-connect-brand-v1|workspace-v2|workspace-launch-v2/, 'workspace.html must not reference retired duplicate surfaces');
 
-console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, icons, and responsive workspace are aligned.');
+console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, PNG/SVG install icons, and responsive workspace are aligned.');
