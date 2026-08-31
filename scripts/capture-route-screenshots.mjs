@@ -4,7 +4,6 @@ import path from "node:path";
 import process from "node:process";
 import { chromium } from "@playwright/test";
 import {
-  DEFAULT_SCREENSHOT_ROUTES,
   SCREENSHOT_VIEWPORTS,
   parseScreenshotBaseUrl,
   screenshotFileName,
@@ -23,6 +22,125 @@ const routes = validateScreenshotRoutes();
 
 async function sha256(filePath) {
   return createHash("sha256").update(await readFile(filePath)).digest("hex");
+}
+
+async function readLayout(page) {
+  return page.evaluate(() => ({
+    documentScrollWidth: document.documentElement.scrollWidth,
+    documentClientWidth: document.documentElement.clientWidth,
+    bodyScrollWidth: document.body?.scrollWidth ?? 0,
+    viewportWidth: window.innerWidth,
+    drawerOpen: Boolean(document.querySelector("[data-hermes-drawer].open")),
+    onboardingOpen: Boolean(document.querySelector("[data-onboarding-modal].open")),
+  }));
+}
+
+function assertMobileWidth(layout, viewport, routePath, stage) {
+  const widest = Math.max(layout.documentScrollWidth ?? 0, layout.bodyScrollWidth ?? 0);
+  if (widest > viewport.width + 1) {
+    throw new Error(
+      `${routePath} ${stage} overflows mobile width: document=${layout.documentScrollWidth}px, body=${layout.bodyScrollWidth}px, viewport=${viewport.width}px`,
+    );
+  }
+}
+
+async function completeWorkspaceOnboardingIfNeeded(page, route, viewport) {
+  if (viewport.id !== "mobile" || route.id !== "hermes-connect-workspace") return null;
+
+  const onboarding = page.locator("[data-onboarding-modal]").first();
+  const onboardingVisible = await onboarding.evaluate((element) =>
+    element.classList.contains("open") && element.getAttribute("aria-hidden") !== "true",
+  ).catch(() => false);
+
+  if (!onboardingVisible) return { shown: false };
+
+  const before = await readLayout(page);
+  assertMobileWidth(before, viewport, route.path, "first-run onboarding");
+
+  const logisticsCard = page.locator('[data-onboarding-type="logistics"]:visible').first();
+  if (await logisticsCard.count()) {
+    await logisticsCard.click();
+  } else {
+    const firstCard = page.locator(".business-type-card:visible").first();
+    if (!(await firstCard.count())) {
+      throw new Error(`${route.path} first-run onboarding has no visible business-type option`);
+    }
+    await firstCard.click();
+  }
+
+  const launchButton = page.locator("[data-launch-workspace-btn]:visible").first();
+  if (!(await launchButton.count())) {
+    throw new Error(`${route.path} first-run onboarding has no visible Launch Workspace action`);
+  }
+  await launchButton.click();
+  await page.waitForTimeout(120);
+
+  const after = await readLayout(page);
+  if (after.onboardingOpen) {
+    throw new Error(`${route.path} first-run onboarding did not close after Launch Workspace`);
+  }
+  assertMobileWidth(after, viewport, route.path, "after completing first-run onboarding");
+
+  return { shown: true, before, after };
+}
+
+async function verifyMobileWorkspaceDrawer(page, route, viewport) {
+  if (viewport.id !== "mobile" || route.id !== "hermes-connect-workspace") return null;
+
+  const onboarding = await completeWorkspaceOnboardingIfNeeded(page, route, viewport);
+  const initial = await readLayout(page);
+  if (initial.onboardingOpen) {
+    throw new Error(`${route.path} onboarding must be closed before Hermes drawer verification`);
+  }
+  if (initial.drawerOpen) {
+    throw new Error(`${route.path} must load with the Hermes drawer closed on mobile`);
+  }
+  assertMobileWidth(initial, viewport, route.path, "before Hermes interaction");
+
+  const opener = page.locator("[data-hermes-open]:visible").first();
+  if (!(await opener.count())) {
+    throw new Error(`${route.path} has no visible Ask Hermes action after onboarding`);
+  }
+  await opener.click();
+  await page.waitForTimeout(80);
+
+  const openState = await page.evaluate(() => {
+    const drawer = document.querySelector("[data-hermes-drawer]");
+    const rect = drawer?.getBoundingClientRect();
+    return {
+      drawerOpen: Boolean(drawer?.classList.contains("open")),
+      drawerLeft: rect?.left ?? null,
+      drawerRight: rect?.right ?? null,
+      documentScrollWidth: document.documentElement.scrollWidth,
+      documentClientWidth: document.documentElement.clientWidth,
+      bodyScrollWidth: document.body?.scrollWidth ?? 0,
+      viewportWidth: window.innerWidth,
+    };
+  });
+
+  if (!openState.drawerOpen) throw new Error(`${route.path} Hermes drawer did not open on mobile`);
+  if (openState.drawerLeft == null || openState.drawerRight == null) {
+    throw new Error(`${route.path} Hermes drawer has no measurable mobile bounds`);
+  }
+  if (openState.drawerLeft < -1 || openState.drawerRight > viewport.width + 1) {
+    throw new Error(
+      `${route.path} Hermes drawer escapes mobile viewport: left=${openState.drawerLeft}, right=${openState.drawerRight}, viewport=${viewport.width}`,
+    );
+  }
+  assertMobileWidth(openState, viewport, route.path, "while Hermes drawer is open");
+
+  const closer = page.locator("[data-hermes-close]:visible").first();
+  if (!(await closer.count())) {
+    throw new Error(`${route.path} Hermes drawer has no visible close action`);
+  }
+  await closer.click();
+  await page.waitForTimeout(80);
+
+  const closedAgain = await readLayout(page);
+  if (closedAgain.drawerOpen) throw new Error(`${route.path} Hermes drawer did not close on mobile`);
+  assertMobileWidth(closedAgain, viewport, route.path, "after closing Hermes drawer");
+
+  return { onboarding, initial, openState, closedAgain };
 }
 
 async function capture() {
@@ -69,6 +187,8 @@ async function capture() {
           throw new Error(`${route.path} returned screenshot status ${status}`);
         }
 
+        const drawerVerification = await verifyMobileWorkspaceDrawer(page, route, viewport);
+        const layout = await readLayout(page);
         const fileName = screenshotFileName(route.id, viewport.id);
         const filePath = path.join(outputDirectory, fileName);
         await page.screenshot({ path: filePath, fullPage: true, animations: "disabled" });
@@ -82,6 +202,10 @@ async function capture() {
           status,
           title: await page.title(),
           finalPath: new URL(page.url()).pathname,
+          documentScrollWidth: layout.documentScrollWidth,
+          documentClientWidth: layout.documentClientWidth,
+          bodyScrollWidth: layout.bodyScrollWidth,
+          drawerVerification,
           file: fileName,
           sha256: await sha256(filePath),
         });

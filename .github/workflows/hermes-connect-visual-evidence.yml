@@ -1,0 +1,65 @@
+name: Hermes Connect visual evidence
+
+on:
+  pull_request:
+    paths:
+      - 'public/demos/hermes-connect/**'
+      - 'src/styles/hermes-connect-**'
+      - 'src/styles/hermes-logistics-commercial-polish.css'
+      - 'src/pages/services/hermes-connect/**'
+      - 'scripts/capture-route-screenshots.mjs'
+      - 'scripts/route-screenshot-contract.mjs'
+      - 'scripts/route-screenshot-contract.test.mjs'
+      - '.github/workflows/hermes-connect-visual-evidence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  capture-visual-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build website
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture 1440px and 390px route evidence
+        shell: bash
+        run: |
+          python3 -m http.server 4321 --directory dist > /tmp/hermes-preview.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4321/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl -fsS http://127.0.0.1:4321/ > /dev/null
+          GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
+
+      - name: Upload visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hermes-connect-visual-evidence-${{ github.event.pull_request.head.sha }}
+          path: artifacts/route-screenshots
+          if-no-files-found: error
+          retention-days: 14

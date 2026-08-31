@@ -1,14 +1,14 @@
 # Hermes Connect Design — Current State
 
-Last updated: 2026-08-15
+Last updated: 2026-08-31
 
 ## Decision status
 
-**Hermes Connect Brand System V1 is approved as the current base direction.**
+**Hermes Connect Brand System V1 remains the base design system, with one explicit owner-approved logo update: original Option №02 (`continuous_loop`) is now approved for implementation / launch.**
 
-All AI assistants, designers and developers should read `APPROVED_BRAND_SYSTEM_V1.md` before proposing design changes.
+Read `OWNER_DECISION_OPTION02_2026-08-31.md` before proposing logo changes. That owner decision supersedes older V1 language only where V1 treated Möbius/infinity/continuous-loop concepts as unapproved replacements.
 
-The approved system should be refined and extended, not restarted from zero unless Vladimir / Hermes explicitly reopens the brand decision.
+The surrounding Hermes Connect system should still be refined and extended rather than restarted from zero.
 
 ## Product perception goal
 
@@ -23,7 +23,7 @@ Primary working message:
 - Warm Pearl / premium light marketing canvas.
 - Anthracite / Obsidian dark operating and command-center environment.
 - One visual system across website, app, web dashboard, presentations and social.
-- Small interconnected loop / intelligent-knot / continuous-connection logo direction.
+- Original Option №02 continuous connected-flow loop as the current production logo direction.
 - Fine digital flow waves as a recurring signature motif.
 - Restrained translucent / tactile 3D brand object for hero storytelling and motion.
 - Large, simple typography and generous whitespace.
@@ -32,9 +32,11 @@ Primary working message:
 
 ## Approved logo direction
 
-The preferred brand mark is a compact interconnected loop / knot representing connection, continuity, orchestration and multiple business processes working as one.
+The selected production mark is the original Brand Exploration V2 **Option №02**, concept id `continuous_loop`, historically described as the Infinity Workflow Loop / Петля Непрерывности.
 
-Geometry may still be refined for optical quality, favicon/app-icon performance, motion and trademark differentiation, but entirely new logo families are experiments unless explicitly approved.
+It should remain a simple horizontal continuous connected-flow symbol. Production refinement may improve optical quality, small-size performance, motion and trademark differentiation without turning it into a different logo family.
+
+For the current launch use the core blue / cobalt / violet Hermes Connect spectrum. Division-specific color behavior for Logistics / Marketing / Academy / IT is deferred to the next design phase and is not a launch gate.
 
 ## Approved flow-wave motif
 
@@ -95,7 +97,7 @@ Directional palette is locked around:
 
 Exact production tokens require implementation-level accessibility and contrast validation.
 
-Antigravity Brand Exploration V2 proposed candidate tokens including `#F8F6F0`, `#090A0F`, `#6D28D9`, `#2563EB`, `#D97706` and `#BE123C`; these are candidate implementation tokens until validated, not a reason to restart the brand.
+Antigravity Brand Exploration V2 proposed candidate tokens including `#F8F6F0`, `#090A0F`, `#6D28D9`, `#2563EB`, `#D97706` and `#BE123C`. The current Option №02 launch intentionally uses the blue / cobalt / violet portion of that family; division-color experimentation comes later.
 
 ## Hero direction
 
@@ -115,9 +117,15 @@ The remote branch `feature/brand-exploration-v2` contains:
 - adaptive onboarding;
 - updated logo explorer and UI components.
 
-At the 2026-08-15 review it was 26 commits ahead of its old merge base but 1005 commits behind current `main`. Treat it as historical exploration material only; do not merge or revive it wholesale. Reimplement a bounded visual refinement from fresh `main` only when it still fits the approved system and has a current product need.
+The branch remains historical exploration material and must not be merged wholesale. Only the owner-selected Option №02 concept is being reimplemented from fresh `main`.
 
 The production implementation source of truth is the single canonical responsive tree at `public/demos/hermes-connect/`, consolidated by PR #546 and clarified by #547-#548. Retired Brand V1/V2 directories are not alternative design choices.
+
+## Screenshot / visual-review rule
+
+Owner screenshots may intentionally mix design defects with examples that are already liked. Infer which is which from the visual evidence, preserve strong existing work, and repair obvious breaks without flattening every section into one template.
+
+The 2026-08-31 Logistics directory collapse / narrow stacked-link layout is a confirmed repair target in the current implementation cycle.
 
 ## Brand governance
 
@@ -128,7 +136,7 @@ Every design change should be labeled:
 - `Experiment`
 - `Rebrand Proposal`
 
-A Rebrand Proposal requires explicit owner approval.
+The Option №02 logo change has explicit owner approval. Any new replacement family still requires explicit owner approval.
 
 ## Required production validation
 
@@ -148,4 +156,5 @@ A Rebrand Proposal requires explicit owner approval.
 
 See:
 
-`ai-collaboration/01_DESIGN/hermes-connect/APPROVED_BRAND_SYSTEM_V1.md`
+- `ai-collaboration/01_DESIGN/hermes-connect/OWNER_DECISION_OPTION02_2026-08-31.md`
+- `ai-collaboration/01_DESIGN/hermes-connect/APPROVED_BRAND_SYSTEM_V1.md`

@@ -23,6 +23,7 @@ assert.equal(routeMap.get("carrier-signing"), "/sign/");
 assert.equal(routeMap.get("repair-shops"), "/services/hermes-connect/repair-shops/");
 assert.equal(routeMap.get("repair-shop-auth"), "/services/hermes-connect/repair-shops/auth/");
 assert.equal(routeMap.get("repair-shop-plan"), "/services/hermes-connect/repair-shops/plan/");
+assert.equal(routeMap.get("hermes-connect-workspace"), "/demos/hermes-connect/workspace.html");
 assert.equal(screenshotFileName("path-logistics", "desktop"), "path-logistics--desktop.png");
 assert.equal(screenshotFileName("path-marketing", "mobile"), "path-marketing--mobile.png");
 assert.equal(screenshotFileName("path-academy", "desktop"), "path-academy--desktop.png");
@@ -32,6 +33,7 @@ assert.equal(screenshotFileName("carrier-signing", "mobile"), "carrier-signing--
 assert.equal(screenshotFileName("repair-shops", "desktop"), "repair-shops--desktop.png");
 assert.equal(screenshotFileName("repair-shop-auth", "mobile"), "repair-shop-auth--mobile.png");
 assert.equal(screenshotFileName("repair-shop-plan", "desktop"), "repair-shop-plan--desktop.png");
+assert.equal(screenshotFileName("hermes-connect-workspace", "mobile"), "hermes-connect-workspace--mobile.png");
 
 assert.throws(() => parseScreenshotBaseUrl("https://hermeslogisticsus.com/"), /Remote screenshot capture is disabled/);
 assert.equal(parseScreenshotBaseUrl("https://hermeslogisticsus.com/", { allowRemote: true }).hostname, "hermeslogisticsus.com");
@@ -39,4 +41,4 @@ assert.throws(() => parseScreenshotBaseUrl("https://user:pass@localhost:4321/"),
 assert.throws(() => validateScreenshotRoutes([{ id: "duplicate", path: "/a/" }, { id: "duplicate", path: "/b/" }]), /Duplicate screenshot route/);
 assert.throws(() => validateScreenshotRoutes([{ id: "unsafe", path: "/a/?token=x" }]), /clean absolute path/);
 
-console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, and clean desktop/mobile coverage.");
+console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, and clean desktop/mobile coverage.");

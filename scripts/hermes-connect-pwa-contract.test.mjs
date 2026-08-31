@@ -6,6 +6,8 @@ const baseDir = path.resolve('public/demos/hermes-connect');
 const manifestPath = path.join(baseDir, 'manifest.webmanifest');
 const swPath = path.join(baseDir, 'sw.js');
 const workspaceHtmlPath = path.join(baseDir, 'workspace.html');
+const workspaceEnhancementsPath = path.join(baseDir, 'workspace-enhancements.css');
+const option02MarkPath = path.join(baseDir, 'mark-option02.svg');
 
 console.log('Running Hermes Connect canonical PWA contract audit...');
 
@@ -35,6 +37,22 @@ for (const icon of manifest.icons) {
   assert.ok(stats.size > 0, `Icon file must not be zero bytes: ${iconFileName}`);
 }
 
+const requiredInstallIcons = [
+  { src: './icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+  { src: './icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+  { src: './apple-touch-icon.png', sizes: '180x180', type: 'image/png', purpose: 'any' },
+  { src: './icon-maskable.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'maskable' },
+];
+
+const iconsBySrc = new Map(manifest.icons.map((icon) => [icon.src, icon]));
+for (const requiredIcon of requiredInstallIcons) {
+  const actualIcon = iconsBySrc.get(requiredIcon.src);
+  assert.ok(actualIcon, `manifest must retain required install icon: ${requiredIcon.src}`);
+  assert.strictEqual(actualIcon.sizes, requiredIcon.sizes, `${requiredIcon.src} must retain ${requiredIcon.sizes} sizing`);
+  assert.strictEqual(actualIcon.type, requiredIcon.type, `${requiredIcon.src} must retain ${requiredIcon.type} MIME type`);
+  assert.strictEqual(actualIcon.purpose, requiredIcon.purpose, `${requiredIcon.src} must retain ${requiredIcon.purpose} purpose`);
+}
+
 const appleTouchIconPng = path.join(baseDir, 'apple-touch-icon.png');
 assert.ok(fs.existsSync(appleTouchIconPng), 'apple-touch-icon.png must exist for WebKit/iOS compatibility');
 assert.ok(fs.statSync(appleTouchIconPng).size > 100, 'apple-touch-icon.png must be a valid non-empty PNG');
@@ -61,4 +79,14 @@ assert.match(workspaceHtml, /workspace-enhancements\.css/, 'workspace.html must 
 assert.match(workspaceHtml, /workspace-enhancements\.js/, 'workspace.html must load canonical enhancement JS');
 assert.doesNotMatch(workspaceHtml, /hermes-connect-brand-v1|workspace-v2|workspace-launch-v2/, 'workspace.html must not reference retired duplicate surfaces');
 
-console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, icons, and responsive workspace are aligned.');
+assert.ok(fs.existsSync(option02MarkPath), 'approved Option 02 mark must exist in the canonical Connect tree');
+assert.ok(fs.existsSync(workspaceEnhancementsPath), 'workspace enhancement CSS must exist');
+const workspaceEnhancementsCss = fs.readFileSync(workspaceEnhancementsPath, 'utf8');
+assert.match(workspaceEnhancementsCss, /\.brand-mark\{[^}]*mark-option02\.svg/, 'workspace desktop/mobile brand mark must render approved Option 02');
+assert.match(workspaceEnhancementsCss, /\.brand-mark path\{display:none!important\}/, 'legacy inline workspace mark must be visually retired');
+assert.match(workspaceEnhancementsCss, /\.hermes-drawer:not\(\.open\)\{display:none!important\}/, 'closed Hermes drawer must be removed from layout so it cannot widen the mobile document');
+assert.match(workspaceEnhancementsCss, /\.hermes-drawer\.open\{display:grid!important;transform:none!important\}/, 'open Hermes drawer must restore the fixed work surface without off-canvas translation');
+assert.match(workspaceEnhancementsCss, /@media\(max-width:850px\)[\s\S]*overflow-x:clip/, 'mobile workspace must clip accidental horizontal overflow at the document boundary');
+assert.match(workspaceEnhancementsCss, /\.hermes-drawer\.open\{left:12px!important;right:12px!important;width:auto!important;max-width:calc\(100vw - 24px\)!important\}/, 'mobile open Hermes drawer must stay inside the 12px viewport insets');
+
+console.log('Hermes Connect canonical PWA contract passed: manifest, service worker, PNG/SVG install icons, Option 02 workspace chrome, mobile drawer containment, and responsive workspace are aligned.');
