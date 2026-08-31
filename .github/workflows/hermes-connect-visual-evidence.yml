@@ -9,6 +9,7 @@ on:
       - 'src/pages/services/hermes-connect/**'
       - 'scripts/capture-route-screenshots.mjs'
       - 'scripts/route-screenshot-contract.mjs'
+      - 'scripts/route-screenshot-contract.test.mjs'
       - '.github/workflows/hermes-connect-visual-evidence.yml'
 
 permissions:
@@ -18,8 +19,10 @@ jobs:
   capture-visual-evidence:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out exact PR head
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
@@ -51,7 +54,7 @@ jobs:
           done
 
           curl -fsS http://127.0.0.1:4321/ > /dev/null
-          GIT_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
+          GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
 
       - name: Upload visual evidence
         uses: actions/upload-artifact@v4
