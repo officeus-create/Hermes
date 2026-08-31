@@ -2,22 +2,34 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
+import LondonAnalytics from "../../../../components/LondonAnalytics.astro";
 const alternates=[{lang:"en",href:"/gb/london/it-web-development/"},{lang:"ru",href:"/ru/gb/london/it-web-development/"},{lang:"uk",href:"/ua/gb/london/it-web-development/"},{lang:"x-default",href:"/gb/london/it-web-development/"}];
+const url="https://hermeslogisticsus.com/gb/london/it-web-development/";
+const faq=[
+ {q:"Is a website project automatically an SEO retainer?",a:"No. Hermes scopes the smallest useful project. Ongoing SEO is recommended only when recurring search work is justified."},
+ {q:"Can Hermes connect forms, CRM and analytics?",a:"Yes, when the current stack supports the required integration and the data/consent flow is defined."}
+];
+const schema=[
+ {"@context":"https://schema.org","@type":"Service",name:"London web development, SEO and automation",description:"Web development, technical SEO, landing pages, integrations and business automation for London businesses.",provider:{"@type":"Organization",name:"Hermes"},areaServed:{"@type":"City",name:"London"},url},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"London",item:"https://hermeslogisticsus.com/gb/london/"},{"@type":"ListItem",position:2,name:"IT & web development",item:url}]},
+ {"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map(x=>({"@type":"Question",name:x.q,acceptedAnswer:{"@type":"Answer",text:x.a}}))}
+];
 ---
-<BaseLayout title="Web Development, SEO & Automation London | Hermes" description="Web development, technical SEO, landing pages, integrations and business automation for London small and growing businesses." alternates={alternates}>
+<BaseLayout title="Web Development, SEO & Automation London | Hermes" description="Web development, technical SEO, landing pages, integrations and business automation for London small and growing businesses." alternates={alternates} schema={schema}>
   <SiteHeader theme="dark" />
   <main id="main-content">
     <section class="section detail-overview"><div class="shell detail-intro">
       <p class="eyebrow">London IT & web development</p>
       <h1>Build the website as part of the sales system, not as a brochure.</h1>
       <p>Hermes builds fast business websites and landing pages with technical SEO, analytics, lead capture, integrations and practical automation designed around how customers actually find and contact the business.</p>
-      <a class="button button-primary" href="/business-growth/?source=london-it">Plan a website or SEO project</a>
+      <a class="button button-primary" href="/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-services&utm_content=it-web-development&service=website-development">Plan a website or SEO project</a>
     </div></section>
     <section class="section"><div class="shell grid">
       <article><h2>Websites & landing pages</h2><p>Responsive business sites, focused service pages and conversion paths that can be expanded instead of rebuilt every few months.</p></article>
       <article><h2>SEO foundation</h2><p>Search-friendly architecture, metadata, internal linking, schema, sitemap hygiene, performance and location/service coverage.</p></article>
       <article><h2>Automation & integrations</h2><p>Forms, CRM handoff, booking, analytics and approved workflow automation where it removes repetitive work or improves response speed.</p></article>
     </div></section>
-  </main><SiteFooter />
+    <section class="section"><div class="shell"><h2>FAQ</h2>{faq.map(item=><article><h3>{item.q}</h3><p>{item.a}</p></article>)}</div></section>
+  </main><LondonAnalytics/><SiteFooter />
 </BaseLayout>
 <style>.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.grid article{padding:1.4rem;border:1px solid #dce3f3;border-radius:12px}.grid p{color:#64718f;line-height:1.65}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style>
