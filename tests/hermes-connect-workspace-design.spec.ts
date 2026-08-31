@@ -112,8 +112,9 @@ test("Repair Shop owner availability uses the shared Pearl-first workspace gramm
     pearlProbe.remove();
 
     return {
+      rootBackgroundColor: rootStyle.backgroundColor,
       rootBackgroundImage: rootStyle.backgroundImage,
-      rootUsesCanonicalPearl: rootStyle.backgroundImage.includes(canonicalPearl),
+      rootUsesCanonicalPearl: rootStyle.backgroundColor === canonicalPearl,
       panelRadius: panelStyle.borderRadius,
       buttonBackground: buttonStyle.backgroundColor,
       buttonBackgroundImage: buttonStyle.backgroundImage,
@@ -126,6 +127,7 @@ test("Repair Shop owner availability uses the shared Pearl-first workspace gramm
   const expectedPanelRadius = viewportWidth <= 720 ? "18px" : "22px";
 
   expect(visual).not.toBeNull();
+  expect(visual!.rootBackgroundColor).toBe("rgb(247, 246, 243)");
   expect(visual!.rootBackgroundImage).toMatch(/(?:linear|radial)-gradient\(/);
   expect(visual!.rootUsesCanonicalPearl).toBe(true);
   expect(visual!.panelRadius).toBe(expectedPanelRadius);
