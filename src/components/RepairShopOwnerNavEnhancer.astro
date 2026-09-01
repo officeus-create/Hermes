@@ -1,0 +1,84 @@
+---
+const repairShopRoot = "/services/hermes-connect/repair-shops";
+---
+
+<script is:inline define:vars={{ repairShopRoot }}>
+  (() => {
+    const ROOT = repairShopRoot;
+    const path = window.location.pathname.replace(/\/+$/, "");
+    const ownerPaths = new Set([`${ROOT}/dashboard`, `${ROOT}/availability`, `${ROOT}/customers`]);
+    if (!ownerPaths.has(path) || document.querySelector("[data-repair-owner-nav]")) return;
+
+    const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+    const requested = (new URLSearchParams(window.location.search).get("lang") || document.documentElement.lang || "en").toLowerCase();
+    const locale = supported.has(requested) ? requested : "en";
+    const strings = {
+      en: { label: "Repair Shop workspace", dashboard: "Dashboard", availability: "Availability", customers: "Customers", repairShops: "Repair Shops" },
+      ru: { label: "Навигация кабинета СТО", dashboard: "Главная", availability: "Доступность", customers: "Клиенты", repairShops: "СТО" },
+      uk: { label: "Навігація кабінету СТО", dashboard: "Головна", availability: "Доступність", customers: "Клієнти", repairShops: "СТО" },
+      es: { label: "Navegación del taller", dashboard: "Panel", availability: "Disponibilidad", customers: "Clientes", repairShops: "Talleres" },
+      it: { label: "Navigazione officina", dashboard: "Pannello", availability: "Disponibilità", customers: "Clienti", repairShops: "Officine" },
+      fr: { label: "Navigation de l’atelier", dashboard: "Tableau de bord", availability: "Disponibilités", customers: "Clients", repairShops: "Ateliers" },
+    };
+    const copy = strings[locale] || strings.en;
+
+    const localize = (href) => {
+      const url = new URL(href, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
+    const items = [
+      { key: "dashboard", href: `${ROOT}/dashboard/`, active: path === `${ROOT}/dashboard` },
+      { key: "availability", href: `${ROOT}/availability/`, active: path === `${ROOT}/availability` },
+      { key: "customers", href: `${ROOT}/customers/`, active: path === `${ROOT}/customers` },
+      { key: "repairShops", href: `${ROOT}/`, active: false },
+    ];
+
+    const install = () => {
+      const page = document.querySelector(".workspace-page,.availability-page,.customers-page");
+      const shell = page?.querySelector(".shell");
+      if (!(shell instanceof HTMLElement) || shell.querySelector("[data-repair-owner-nav]")) return false;
+
+      const nav = document.createElement("nav");
+      nav.className = "hc-repair-owner-nav";
+      nav.dataset.repairOwnerNav = "true";
+      nav.setAttribute("aria-label", copy.label);
+
+      for (const item of items) {
+        const link = document.createElement("a");
+        link.href = localize(item.href);
+        link.dataset.ownerNavItem = item.key;
+        link.textContent = copy[item.key];
+        if (item.active) {
+          link.classList.add("is-active");
+          link.setAttribute("aria-current", "page");
+        }
+        nav.appendChild(link);
+      }
+
+      const backLink = shell.querySelector(":scope > .back-link");
+      if (backLink) backLink.insertAdjacentElement("afterend", nav);
+      else shell.prepend(nav);
+      return true;
+    };
+
+    if (!install()) {
+      const observer = new MutationObserver(() => {
+        if (install()) observer.disconnect();
+      });
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+      window.setTimeout(() => observer.disconnect(), 5000);
+    }
+  })();
+</script>
+
+<style is:global>
+  .hc-repair-owner-nav{display:flex;align-items:center;gap:6px;width:100%;margin:0 0 20px;padding:6px;overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid var(--hermes-line-light,rgba(11,13,18,.10));border-radius:14px;background:rgba(255,255,255,.76);box-shadow:0 10px 28px rgba(31,38,54,.045);scrollbar-width:thin}
+  .hc-repair-owner-nav a{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-height:40px;padding:8px 12px;border:1px solid transparent;border-radius:10px;color:#4f5d73;text-decoration:none;font-size:13px;font-weight:800;white-space:nowrap;transition:border-color .16s ease,background-color .16s ease,color .16s ease}
+  .hc-repair-owner-nav a:hover,.hc-repair-owner-nav a:focus-visible{color:#125fb7;border-color:color-mix(in srgb,var(--hermes-repair,#1e88ff) 24%,transparent);background:color-mix(in srgb,var(--hermes-repair,#1e88ff) 6%,#fff)}
+  .hc-repair-owner-nav a.is-active{color:#125fb7;border-color:color-mix(in srgb,var(--hermes-repair,#1e88ff) 28%,transparent);background:color-mix(in srgb,var(--hermes-repair,#1e88ff) 10%,#fff);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--hermes-repair,#1e88ff) 6%,transparent)}
+  @media(max-width:760px){.hc-repair-owner-nav{margin-bottom:16px;padding:5px}.hc-repair-owner-nav a{min-height:44px;padding:9px 11px;font-size:12px}}
+  @media(prefers-reduced-motion:reduce){.hc-repair-owner-nav a{transition:none}}
+</style>
