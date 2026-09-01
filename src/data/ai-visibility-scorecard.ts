@@ -153,7 +153,7 @@ export const syntheticAiVisibilityObservations: AiVisibilityObservation[] = [
   },
 ];
 
-const rate = (value: number, total: number) => total === 0 ? 0 : Number(((value / total) * 100).toFixed(1));
+const rate = (value: number, total: number): number | null => total === 0 ? null : Number(((value / total) * 100).toFixed(1));
 
 export const calculateAiVisibilityMetrics = (observations: AiVisibilityObservation[]) => {
   const total = observations.length;
