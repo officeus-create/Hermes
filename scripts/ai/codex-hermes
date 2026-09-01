@@ -27,6 +27,12 @@ fi
 mkdir -p "$CODEX_HOME"
 chmod 700 "$CODEX_HOME" 2>/dev/null || true
 
+# Internal AI transport/bootstrap credentials belong to the parent control
+# plane only. Never inherit them into FCC/Codex, even when the runner starts
+# this wrapper with a copied environment.
+unset HERMES_INTERNAL_AI_RUNNER_TOKEN
+unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN
+
 # FCC writes an external-auth helper into its temporary Codex configuration.
 # Keep only FCC's isolated virtualenv ahead of the inherited PATH so routed
 # requests can resolve that helper without replacing the ordinary Codex CLI or
