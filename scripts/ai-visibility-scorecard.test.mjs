@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import {
   aiVisibilityObservations,
   aiVisibilityPrompts,
+  aiVisibilityWaveProviders,
   calculateAiVisibilityMetrics,
   syntheticAiVisibilityObservations,
 } from "../src/data/ai-visibility-scorecard.ts";
@@ -24,6 +25,24 @@ assert.ok(aiVisibilityPrompts.some((item) => item.language === "uk"), "Ukrainian
 assert.ok(aiVisibilityPrompts.every((item) => item.canonicalOwner.startsWith("/")), "Every prompt needs a site-relative canonical owner");
 assert.ok(aiVisibilityPrompts.every((item) => item.expectedFacts.length > 0), "Every prompt needs expected safe facts");
 assert.ok(aiVisibilityPrompts.every((item) => item.prohibitedClaims.length > 0), "Every prompt needs prohibited claims");
+
+const expectedProviders = ["chatgpt", "gemini", "copilot", "perplexity", "google_ai_mode"];
+assert.deepEqual(
+  aiVisibilityWaveProviders.map((item) => item.id),
+  expectedProviders,
+  "Wave 01 must expose exactly the five governed provider environments",
+);
+
+const promptContractText = aiVisibilityPrompts
+  .flatMap((item) => [item.prompt, ...item.expectedFacts])
+  .join("\n");
+assert.ok(!promptContractText.includes("Hermes Business Academy"), "Wave prompts must use the canonical Hermes Academy root entity");
+assert.ok(!promptContractText.includes("Hermes IT Development"), "Wave prompts must use the canonical Hermes Technology root entity");
+
+const connectPrompt = aiVisibilityPrompts.find((item) => item.id === "TEC-07");
+assert.ok(connectPrompt, "TEC-07 must remain registered");
+assert.equal(connectPrompt.canonicalOwner, "/services/hermes-connect/", "Hermes Connect must use its product canonical owner");
+assert.ok(connectPrompt.expectedFacts.some((fact) => fact.includes("Repair Shops is the current public live product vertical")), "TEC-07 must use current Hermes Connect product truth");
 
 assert.deepEqual(aiVisibilityObservations, [], "The real baseline must start empty");
 assert.ok(syntheticAiVisibilityObservations.every((item) => item.synthetic), "QA observations must be marked synthetic");
@@ -71,7 +90,6 @@ assert.ok(
 );
 
 const ledger = JSON.parse(readFileSync(new URL("../docs/GEO_AI_OBSERVATION_LEDGER_2026-08-22.json", import.meta.url), "utf8"));
-const expectedProviders = ["chatgpt", "gemini", "copilot", "perplexity", "google_ai_mode"];
 assert.equal(ledger.prompt_count, 48, "The governed ledger must declare 48 prompts");
 assert.deepEqual(ledger.providers, expectedProviders, "The governed ledger must use exactly five clean-provider interfaces");
 assert.equal(ledger.expected_observation_count, 240, "48 prompts × 5 providers must produce 240 governed slots");
@@ -96,4 +114,29 @@ for (const prohibitedField of ["password", "token", "cookie", "account_id", "acc
   assert.ok(!ledgerSchemaText.includes(prohibitedField), `Ledger result schema must not expose ${prohibitedField}`);
 }
 
-console.log("AI visibility scorecard and 48x5 ledger contract passed");
+const llms = readFileSync(new URL("../public/llms.txt", import.meta.url), "utf8");
+const llmsFull = readFileSync(new URL("../public/llms-full.txt", import.meta.url), "utf8");
+const about = readFileSync(new URL("../src/pages/about.astro", import.meta.url), "utf8");
+const canonicalFourDirections = "Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology";
+
+assert.ok(llms.includes(canonicalFourDirections), "llms.txt must publish the canonical Four Directions");
+assert.ok(llms.includes("### Hermes Marketing"), "llms.txt must use Hermes Marketing as the root direction");
+assert.ok(llms.includes("### Hermes Academy"), "llms.txt must use Hermes Academy as the root direction");
+assert.ok(llms.includes("### Hermes Technology"), "llms.txt must use Hermes Technology as the root direction");
+assert.ok(!llms.includes("### ProgressoPro / Digital Growth"), "ProgressoPro must not replace Hermes Marketing as a root AI entity");
+assert.ok(!llms.includes("### Hermes Business Academy"), "Hermes Business Academy must not replace Hermes Academy as a root AI entity");
+assert.ok(!llms.includes("### Hermes IT Development / Hermes Connect"), "IT Development must not replace Hermes Technology as a root AI entity");
+
+assert.ok(llmsFull.includes(canonicalFourDirections), "llms-full.txt must publish the canonical Four Directions");
+assert.ok(llmsFull.includes("## 4. Hermes Marketing"), "Extended AI context must use Hermes Marketing as the root direction");
+assert.ok(llmsFull.includes("## 5. Hermes Academy"), "Extended AI context must use Hermes Academy as the root direction");
+assert.ok(llmsFull.includes("## 6. Hermes Technology and Hermes Connect"), "Extended AI context must use Hermes Technology as the root direction");
+assert.ok(!llmsFull.includes("## 4. ProgressoPro / SEO and digital growth"), "ProgressoPro must not own the root Marketing section");
+assert.ok(!llmsFull.includes("## 5. Hermes Business Academy"), "Hermes Business Academy must not own the root Academy section");
+assert.ok(!llmsFull.includes("## 6. Hermes IT Development and Hermes Connect"), "IT Development must not own the root Technology section");
+
+assert.ok(about.includes(`four practical directions: ${canonicalFourDirections}.`), "About body must use the canonical Four Directions");
+assert.ok(about.includes('title="About Hermes | Logistics, Marketing, Academy & IT"'), "This GEO change must preserve the frozen About title");
+assert.ok(about.includes('description="Learn how Hermes organizes U.S. logistics, ProgressoPro marketing and SEO, practical business education, and IT development with clear evidence and service boundaries."'), "This GEO change must preserve the frozen About description");
+
+console.log("AI visibility scorecard, 48x5 ledger, and pre-Wave entity context contract passed");
