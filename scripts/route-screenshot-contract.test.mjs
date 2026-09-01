@@ -33,6 +33,7 @@ assert.equal(routeMap.get("repair-shops"), "/services/hermes-connect/repair-shop
 assert.equal(routeMap.get("repair-shop-auth"), "/services/hermes-connect/repair-shops/auth/");
 assert.equal(routeMap.get("repair-shop-plan"), "/services/hermes-connect/repair-shops/plan/");
 assert.equal(routeMap.get("hermes-connect-workspace"), "/demos/hermes-connect/workspace.html");
+assert.equal(routeMap.get("hermes-connect-mark-preview"), "/demos/hermes-connect/mark-preview.html");
 assert.equal(screenshotFileName("path-logistics", "desktop"), "path-logistics--desktop.png");
 assert.equal(screenshotFileName("path-marketing", "mobile"), "path-marketing--mobile.png");
 assert.equal(screenshotFileName("path-academy", "desktop"), "path-academy--desktop.png");
@@ -43,6 +44,7 @@ assert.equal(screenshotFileName("repair-shops", "desktop"), "repair-shops--deskt
 assert.equal(screenshotFileName("repair-shop-auth", "mobile"), "repair-shop-auth--mobile.png");
 assert.equal(screenshotFileName("repair-shop-plan", "desktop"), "repair-shop-plan--desktop.png");
 assert.equal(screenshotFileName("hermes-connect-workspace", "mobile"), "hermes-connect-workspace--mobile.png");
+assert.equal(screenshotFileName("hermes-connect-mark-preview", "mobile"), "hermes-connect-mark-preview--mobile.png");
 
 assert.throws(() => parseScreenshotBaseUrl("https://hermeslogisticsus.com/"), /Remote screenshot capture is disabled/);
 assert.equal(parseScreenshotBaseUrl("https://hermeslogisticsus.com/", { allowRemote: true }).hostname, "hermeslogisticsus.com");
@@ -50,4 +52,4 @@ assert.throws(() => parseScreenshotBaseUrl("https://user:pass@localhost:4321/"),
 assert.throws(() => validateScreenshotRoutes([{ id: "duplicate", path: "/a/" }, { id: "duplicate", path: "/b/" }]), /Duplicate screenshot route/);
 assert.throws(() => validateScreenshotRoutes([{ id: "unsafe", path: "/a/?token=x" }]), /clean absolute path/);
 
-console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, and the 390/430/768/1024/1440 visual evidence matrix.");
+console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, Option 02 QA stand, and the 390/430/768/1024/1440 visual evidence matrix.");
