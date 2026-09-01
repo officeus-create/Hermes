@@ -27,6 +27,22 @@ function resolveLessonLocale(request: Request, url: URL) {
   return "en";
 }
 
+function projectLocalizedShape(base: any, localized: any): any {
+  if (Array.isArray(base)) {
+    if (!Array.isArray(localized)) return base;
+    return base.map((value, index) => projectLocalizedShape(value, localized[index]));
+  }
+
+  if (base && typeof base === "object") {
+    const candidate = localized && typeof localized === "object" && !Array.isArray(localized) ? localized : {};
+    return Object.fromEntries(
+      Object.entries(base).map(([key, value]) => [key, projectLocalizedShape(value, candidate[key])]),
+    );
+  }
+
+  return typeof localized === typeof base ? localized : base;
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
 
@@ -52,10 +68,11 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     });
   }
 
-  const lesson = locale === "ru"
-    ? getAcademyLessonContentRu(programSlug, lessonId) || getAcademyLessonContent(programSlug, lessonId)
-    : getAcademyLessonContent(programSlug, lessonId);
-  if (!lesson) return jsonResponse(404, { success: false, error: "lesson_content_not_ready" });
+  const baseLesson = getAcademyLessonContent(programSlug, lessonId);
+  if (!baseLesson) return jsonResponse(404, { success: false, error: "lesson_content_not_ready" });
+
+  const localizedLesson = locale === "ru" ? getAcademyLessonContentRu(programSlug, lessonId) : null;
+  const lesson = localizedLesson ? projectLocalizedShape(baseLesson, localizedLesson) : baseLesson;
 
   return jsonResponse(200, {
     success: true,
