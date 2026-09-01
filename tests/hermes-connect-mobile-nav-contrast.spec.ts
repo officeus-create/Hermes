@@ -22,7 +22,7 @@ function rgb(value: string) {
   return values;
 }
 
-test("Russian Repair Shop mobile drawer keeps navigation and languages readable", async ({ page }) => {
+test("Repair Shop mobile drawer keeps navigation and Russian language selection readable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.route("**/api/auth/me", (route) => route.fulfill({
     status: 401,
@@ -44,7 +44,7 @@ test("Russian Repair Shop mobile drawer keeps navigation and languages readable"
   await menuButton.click();
 
   const menu = page.locator("[data-mobile-menu]");
-  const logistics = menu.getByRole("link", { name: "Логистика", exact: true });
+  const logistics = menu.locator(':scope > a[href="/paths/logistics/"]');
   const russian = menu.locator(".mobile-language-switcher a[lang='ru']");
   await expect(menu).toBeVisible();
   await expect(logistics).toBeVisible();
@@ -56,8 +56,7 @@ test("Russian Repair Shop mobile drawer keeps navigation and languages readable"
   expect(geometry!.x + geometry!.width).toBeLessThanOrEqual(390);
 
   const styles = await menu.evaluate((node) => {
-    const logistics = [...node.querySelectorAll<HTMLAnchorElement>(":scope > a")]
-      .find((link) => link.textContent?.trim() === "Логистика");
+    const logistics = node.querySelector<HTMLAnchorElement>(':scope > a[href="/paths/logistics/"]');
     const russian = node.querySelector<HTMLAnchorElement>(".mobile-language-switcher a[lang='ru']");
     if (!logistics || !russian) throw new Error("Expected Repair Shop mobile navigation targets are missing");
     const drawerStyle = getComputedStyle(node);
