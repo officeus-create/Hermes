@@ -59,5 +59,8 @@ test("Russian public site keeps the signed-in account visible on mobile and pres
 test("global account presence stays hidden when there is no authenticated Hermes session", async ({ page }) => {
   await page.route("**/api/hermes-connect/account", (route) => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ success: false, error: "not_authenticated" }) }));
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("[data-hc-global-account]")).toBeHidden();
+  const accounts = page.locator("[data-hc-global-account]");
+  await expect(accounts).toHaveCount(2);
+  await expect(accounts.nth(0)).toBeHidden();
+  await expect(accounts.nth(1)).toBeHidden();
 });
