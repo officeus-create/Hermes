@@ -1,12 +1,20 @@
-# Hermes Connect — Approved Brand System V1
+# Hermes Connect — Approved Brand System V1 [HISTORICAL]
 
-Status: **APPROVED BASE DIRECTION**
+> **CURRENT-STATE NOTICE — 2026-09-01**
+>
+> This file is retained for design rationale and the still-useful Pearl / Obsidian / product-system principles approved in August 2026. It is **not the current source of truth for Hermes Connect logo geometry**.
+>
+> The later owner decision `OWNER_DECISION_OPTION02_2026-08-31.md` supersedes the V1 intelligent-knot preference: **Option 02 continuous connected-flow geometry is the approved production mark.**
+>
+> For current work, read `../HERMES_BRAND_SYSTEM_2_0.md` and `../README.md` first. Do not use historical Section 3 below to restore the retired knot or reopen logo exploration.
+
+Status: **HISTORICAL APPROVED BASE — PARTIALLY SUPERSEDED BY LATER OWNER DECISIONS**
 
 Approved by: Vladimir / Hermes
 
 Date: 2026-08-12
 
-This document is the current visual source of truth for Hermes Connect. New AI assistants, designers and developers must treat this as the default brand direction. They may refine it, validate it, and improve individual production details, but they must not restart the brand from zero unless the owner explicitly reopens the decision.
+This document records the August 2026 approved base direction. New AI assistants, designers and developers may use its still-current visual architecture and product principles as historical rationale, but later explicit owner decisions and current production evidence take precedence. They must not restart the brand from zero unless the owner explicitly reopens the decision.
 
 ## 1. Positioning
 
@@ -38,7 +46,9 @@ The approved direction combines:
 5. **Flow-wave signature** — fine digital waves / flowing lines are an approved recurring brand motif for movement, orchestration, signal, connection and intelligence.
 6. **Editorial industry cards** — different verticals may use distinct photographic/art-direction moods while keeping the same Hermes typography, spacing, frame geometry and product system.
 
-## 3. Approved logo direction
+## 3. Approved logo direction — HISTORICAL / SUPERSEDED
+
+> **Superseded:** the text in this section records the earlier August 12 preference. The August 31 owner decision approved **Option 02 continuous connected-flow geometry** for production. Do not implement the intelligent-knot preference below as the current mark.
 
 The current preferred mark direction is a **small interconnected loop / intelligent knot / continuous connection symbol** paired with the Hermes Connect wordmark.
 
@@ -310,8 +320,8 @@ Before production brand lock, validate:
 - industry-card consistency;
 - performance impact of 3D and motion.
 
-## 18. Decision
+## 18. Historical decision
 
-The brand direction above is **approved and locked as the current base system**.
+The brand architecture above was approved and locked as the August 12 base system. **Its logo-geometry preference was later superseded by the explicit August 31 owner approval of Option 02.**
 
-Future work should deepen and productionize this direction rather than repeatedly restarting visual exploration.
+Future work should preserve the still-current architecture while following the later current mark decision and Brand System 2.0.
