@@ -27,10 +27,10 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || vars.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID || vars.CF_ACCOUNT_ID }}
 
     steps:
-      - name: Check out current approved main
+      - name: Check out exact approved revision
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ github.sha }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
