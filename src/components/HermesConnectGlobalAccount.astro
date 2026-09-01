@@ -1,0 +1,190 @@
+---
+import { ChevronDown } from "@lucide/astro";
+
+export interface Props {
+  variant?: "header" | "mobile";
+}
+
+const { variant = "header" } = Astro.props;
+const path = Astro.url.pathname;
+const privatePrefixes = [
+  "/services/hermes-connect/repair-shops/dashboard",
+  "/services/hermes-connect/repair-shops/availability",
+  "/services/hermes-connect/repair-shops/customers",
+  "/services/hermes-connect/academy/dashboard",
+  "/services/hermes-connect/academy/lesson",
+  "/services/hermes-connect/academy/program",
+  "/services/hermes-connect/academy/progression",
+  "/services/hermes-connect/academy/reviewer",
+  "/services/hermes-connect/academy/submissions",
+  "/services/hermes-connect/academy/support",
+  "/services/hermes-connect/beauty/workspace",
+  "/services/hermes-connect/internal/ai-connect",
+  "/services/hermes-connect/internal/ai-assistant",
+];
+const isPrivateWorkspace = privatePrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+---
+
+{!isPrivateWorkspace && variant === "header" && (
+  <details class="hc-global-account hc-global-account-header" data-hc-global-account hidden>
+    <summary aria-label="Hermes account">
+      <span class="hc-global-account-avatar" data-hc-global-avatar aria-hidden="true">H</span>
+      <span class="hc-global-account-summary-copy">
+        <small data-hc-global-signed>Signed in</small>
+        <strong data-hc-global-name>Hermes account</strong>
+      </span>
+      <ChevronDown size={15} aria-hidden="true" />
+    </summary>
+    <div class="hc-global-account-popover">
+      <div class="hc-global-account-identity">
+        <span class="hc-global-account-avatar hc-global-account-avatar-large" data-hc-global-avatar aria-hidden="true">H</span>
+        <span>
+          <small data-hc-global-signed>Signed in</small>
+          <strong data-hc-global-name>Hermes account</strong>
+          <em data-hc-global-email></em>
+        </span>
+      </div>
+      <span class="hc-global-account-label" data-hc-global-workspaces-label>Your workspaces</span>
+      <nav class="hc-global-account-workspaces" aria-label="Your workspaces" data-hc-global-workspaces></nav>
+    </div>
+  </details>
+)}
+
+{!isPrivateWorkspace && variant === "mobile" && (
+  <section class="hc-global-account hc-global-account-mobile" data-hc-global-account hidden>
+    <div class="hc-global-account-identity">
+      <span class="hc-global-account-avatar hc-global-account-avatar-large" data-hc-global-avatar aria-hidden="true">H</span>
+      <span>
+        <small data-hc-global-signed>Signed in</small>
+        <strong data-hc-global-name>Hermes account</strong>
+        <em data-hc-global-email></em>
+      </span>
+    </div>
+    <span class="hc-global-account-label" data-hc-global-workspaces-label>Your workspaces</span>
+    <nav class="hc-global-account-workspaces" aria-label="Your workspaces" data-hc-global-workspaces></nav>
+  </section>
+)}
+
+<script>
+  (() => {
+    type AccountPayload = {
+      success?: boolean;
+      identity?: { name?: string | null; email?: string | null };
+      owned_businesses?: Array<{ key?: string; name?: string; href?: string | null; workspace_state?: string }>;
+      workspaces?: Array<{ key?: string; href?: string | null; available?: boolean }>;
+    };
+
+    const roots = document.querySelectorAll<HTMLElement>("[data-hc-global-account]");
+    if (!roots.length) return;
+
+    const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+    const params = new URLSearchParams(window.location.search);
+    const pathLocale = window.location.pathname === "/ru" || window.location.pathname.startsWith("/ru/") ? "ru" : "en";
+    const requested = params.get("lang") || pathLocale;
+    const locale = supported.has(requested) ? requested : "en";
+    const copy: Record<string, Record<string, string>> = {
+      en: { signed: "Signed in", account: "Hermes account", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", beauty: "Beauty", owned: "Owned business", shared: "Shared workspace", internal: "Internal access", open: "Open" },
+      ru: { signed: "Вы вошли", account: "Аккаунт Hermes", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", ai: "AI Connect", beauty: "Beauty", owned: "Ваш бизнес", shared: "Общее пространство", internal: "Внутренний доступ", open: "Открыть" },
+      uk: { signed: "Ви увійшли", account: "Акаунт Hermes", workspaces: "Ваші простори", repair: "СТО", academy: "Академія", ai: "AI Connect", beauty: "Beauty", owned: "Ваш бізнес", shared: "Спільний простір", internal: "Внутрішній доступ", open: "Відкрити" },
+      es: { signed: "Sesión iniciada", account: "Cuenta Hermes", workspaces: "Tus espacios", repair: "Taller", academy: "Academia", ai: "AI Connect", beauty: "Beauty", owned: "Tu negocio", shared: "Espacio compartido", internal: "Acceso interno", open: "Abrir" },
+      it: { signed: "Accesso effettuato", account: "Account Hermes", workspaces: "I tuoi spazi", repair: "Officina", academy: "Academy", ai: "AI Connect", beauty: "Beauty", owned: "La tua attività", shared: "Spazio condiviso", internal: "Accesso interno", open: "Apri" },
+      fr: { signed: "Connecté", account: "Compte Hermes", workspaces: "Vos espaces", repair: "Atelier", academy: "Académie", ai: "AI Connect", beauty: "Beauty", owned: "Votre entreprise", shared: "Espace partagé", internal: "Accès interne", open: "Ouvrir" },
+    };
+    const t = copy[locale] || copy.en;
+
+    const withLocale = (href: string) => {
+      const url = new URL(href, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
+    const accountPromise = (() => {
+      const globalWindow = window as typeof window & { __hermesAccountPromise?: Promise<AccountPayload> };
+      if (!globalWindow.__hermesAccountPromise) {
+        globalWindow.__hermesAccountPromise = fetch("/api/hermes-connect/account", {
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        }).then(async (response) => {
+          const payload = await response.json().catch(() => null) as AccountPayload | null;
+          if (!response.ok || !payload?.success || !payload.identity) throw new Error("account_unavailable");
+          return payload;
+        });
+      }
+      return globalWindow.__hermesAccountPromise;
+    })();
+
+    const makeWorkspace = (label: string, kind: string, href: string, accent: string) => {
+      const link = document.createElement("a");
+      link.className = "hc-global-workspace-link";
+      link.href = withLocale(href);
+      link.style.setProperty("--hc-global-workspace-accent", accent);
+      const dot = document.createElement("span");
+      dot.className = "hc-global-workspace-dot";
+      dot.setAttribute("aria-hidden", "true");
+      const copyWrap = document.createElement("span");
+      const strong = document.createElement("strong");
+      strong.textContent = label;
+      const small = document.createElement("small");
+      small.textContent = kind;
+      copyWrap.append(strong, small);
+      const action = document.createElement("em");
+      action.textContent = t.open;
+      link.append(dot, copyWrap, action);
+      return link;
+    };
+
+    roots.forEach((root) => {
+      void accountPromise.then((payload) => {
+        const name = String(payload.identity?.name || t.account).trim() || t.account;
+        const email = String(payload.identity?.email || "").trim();
+        root.querySelectorAll<HTMLElement>("[data-hc-global-name]").forEach((node) => { node.textContent = name; });
+        root.querySelectorAll<HTMLElement>("[data-hc-global-email]").forEach((node) => { node.textContent = email; });
+        root.querySelectorAll<HTMLElement>("[data-hc-global-signed]").forEach((node) => { node.textContent = t.signed; });
+        root.querySelectorAll<HTMLElement>("[data-hc-global-workspaces-label]").forEach((node) => {
+          node.textContent = t.workspaces;
+          node.setAttribute("aria-label", t.workspaces);
+        });
+        root.querySelectorAll<HTMLElement>("[data-hc-global-avatar]").forEach((node) => { node.textContent = name.slice(0, 1).toUpperCase() || "H"; });
+
+        const nav = root.querySelector<HTMLElement>("[data-hc-global-workspaces]");
+        if (nav) {
+          nav.innerHTML = "";
+          const owned = Array.isArray(payload.owned_businesses) ? payload.owned_businesses : [];
+          const workspaces = Array.isArray(payload.workspaces) ? payload.workspaces : [];
+          const repair = owned.find((item) => item?.key === "repair_shop");
+          const beauty = owned.find((item) => item?.key === "beauty_salon");
+          const academy = workspaces.find((item) => item?.key === "academy" && item?.available !== false);
+          const ai = workspaces.find((item) => item?.key === "internal_ai" && item?.available !== false);
+          if (repair?.href) nav.append(makeWorkspace(String(repair.name || t.repair), t.owned, repair.href, "#1E88FF"));
+          if (beauty?.href) nav.append(makeWorkspace(String(beauty.name || t.beauty), t.owned, beauty.href, "#7C8798"));
+          if (academy?.href) nav.append(makeWorkspace(t.academy, t.shared, academy.href, "#7C5CFF"));
+          if (ai?.href) nav.append(makeWorkspace(t.ai, t.internal, ai.href, "#FF7A00"));
+        }
+
+        root.hidden = false;
+      }).catch(() => {
+        root.hidden = true;
+      });
+
+      if (root instanceof HTMLDetailsElement) {
+        root.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => { root.open = false; }));
+      }
+    });
+
+    if (document.documentElement.dataset.hcGlobalAccountOutsideClick !== "true") {
+      document.documentElement.dataset.hcGlobalAccountOutsideClick = "true";
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof Node)) return;
+        document.querySelectorAll<HTMLDetailsElement>("details[data-hc-global-account]").forEach((menu) => {
+          if (!menu.contains(target)) menu.open = false;
+        });
+      });
+    }
+  })();
+</script>
+
+<style>
+  .hc-global-account{--hc-global-ink:currentColor}.hc-global-account-header{position:relative}.hc-global-account-header>summary{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.42rem;min-height:38px;max-width:220px;padding:.28rem .55rem .28rem .32rem;border:1px solid color-mix(in srgb,currentColor 22%,transparent);border-radius:999px;background:color-mix(in srgb,currentColor 7%,transparent);color:inherit;cursor:pointer;list-style:none}.hc-global-account-header>summary::-webkit-details-marker{display:none}.hc-global-account-avatar{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border-radius:9px;background:#11161f;color:#fff;font-size:.72rem;font-weight:850}.hc-global-account-summary-copy{min-width:0}.hc-global-account-summary-copy small,.hc-global-account-summary-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-global-account-summary-copy small{font-size:.54rem;font-weight:800;letter-spacing:.055em;text-transform:uppercase;opacity:.62}.hc-global-account-summary-copy strong{margin-top:.03rem;font-size:.72rem}.hc-global-account-header[open]>summary{background:color-mix(in srgb,currentColor 11%,transparent)}.hc-global-account-popover{position:absolute;z-index:140;top:calc(100% + .55rem);right:0;width:min(390px,calc(100vw - 2rem));padding:.8rem;border:1px solid rgba(17,22,31,.1);border-radius:1rem;background:rgba(255,255,255,.99);color:#11161f;box-shadow:0 22px 60px rgba(24,32,48,.18);backdrop-filter:blur(20px)}.hc-global-account-identity{display:flex;align-items:center;gap:.65rem;padding:.2rem .15rem .7rem;border-bottom:1px solid #e7eaf0}.hc-global-account-avatar-large{width:38px;height:38px;flex-basis:38px;border-radius:12px;font-size:.82rem}.hc-global-account-identity>span:last-child{min-width:0}.hc-global-account-identity small,.hc-global-account-identity strong,.hc-global-account-identity em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-global-account-identity small{color:#7c8798;font-size:.6rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.hc-global-account-identity strong{margin-top:.08rem;font-size:.84rem}.hc-global-account-identity em{margin-top:.08rem;color:#697386;font-size:.66rem;font-style:normal}.hc-global-account-label{display:block;margin:.65rem 0 .42rem .12rem;color:#7c8798;font-size:.6rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}.hc-global-account-workspaces{display:grid;gap:.4rem}.hc-global-workspace-link{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.52rem;padding:.62rem .65rem;border:1px solid color-mix(in srgb,var(--hc-global-workspace-accent) 17%,#dfe4ec);border-radius:.82rem;background:color-mix(in srgb,var(--hc-global-workspace-accent) 4%,#fff);color:#11161f;text-decoration:none}.hc-global-workspace-dot{width:8px;height:8px;border-radius:999px;background:var(--hc-global-workspace-accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--hc-global-workspace-accent) 12%,transparent)}.hc-global-workspace-link span:nth-child(2){min-width:0}.hc-global-workspace-link strong,.hc-global-workspace-link small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hc-global-workspace-link strong{font-size:.78rem}.hc-global-workspace-link small{margin-top:.1rem;color:#747f91;font-size:.64rem}.hc-global-workspace-link em{color:var(--hc-global-workspace-accent);font-size:.65rem;font-style:normal;font-weight:850}.hc-global-workspace-link:hover,.hc-global-workspace-link:focus-visible{border-color:color-mix(in srgb,var(--hc-global-workspace-accent) 42%,#dfe4ec);transform:translateY(-1px)}.hc-global-account-mobile{display:grid;gap:.55rem;padding:.8rem;border:1px solid rgba(157,136,255,.2);border-radius:14px;background:rgba(13,17,27,.8);color:#fff}.hc-global-account-mobile .hc-global-account-identity{border-bottom-color:rgba(255,255,255,.1)}.hc-global-account-mobile .hc-global-account-identity small,.hc-global-account-mobile .hc-global-account-identity em,.hc-global-account-mobile .hc-global-account-label{color:#9ba7ba}.hc-global-account-mobile .hc-global-workspace-link{background:rgba(255,255,255,.96)}
+</style>
