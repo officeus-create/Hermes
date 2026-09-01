@@ -16,12 +16,17 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "repair-shops", path: "/services/hermes-connect/repair-shops/" },
   { id: "repair-shop-auth", path: "/services/hermes-connect/repair-shops/auth/" },
   { id: "repair-shop-plan", path: "/services/hermes-connect/repair-shops/plan/" },
+  { id: "beauty-workspace", path: "/services/hermes-connect/beauty/workspace/" },
   { id: "hermes-connect-web-app", path: "/demos/hermes-connect/" },
   { id: "hermes-connect-workspace", path: "/demos/hermes-connect/workspace.html" },
+  { id: "hermes-connect-mark-preview", path: "/demos/hermes-connect/mark-preview.html" },
 ]);
 
 export const SCREENSHOT_VIEWPORTS = Object.freeze([
   { id: "desktop", width: 1440, height: 1200 },
+  { id: "laptop", width: 1024, height: 900 },
+  { id: "tablet", width: 768, height: 1024 },
+  { id: "mobile-wide", width: 430, height: 932 },
   { id: "mobile", width: 390, height: 844 },
 ]);
 
