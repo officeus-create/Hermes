@@ -36,6 +36,19 @@ test("scheduled checks can deliver shortly after a registration time that crosse
   }, new Date("2026-08-31T15:52:00.000Z"))).toBe(false); // never send before the registration time
 });
 
+test("registration-time reminder window remains valid when the scheduler crosses local midnight", async () => {
+  const createdAt = "2026-08-23T04:55:00.000Z"; // Saturday 23:55 America/Chicago
+  const now = new Date("2026-08-30T05:07:00.000Z"); // Sunday 00:07 America/Chicago, 12 minutes later in the weekly window
+
+  expect(engagement.isWeeklyInactivityReminderDue({
+    createdAt,
+    lastActiveAt: createdAt,
+    lastReminderAt: null,
+    timeZone: "America/Chicago",
+    emailEnabled: true,
+  }, now)).toBe(true);
+});
+
 test("weekly inactivity reminder does not fire when the owner returned recently or outside the registration-time window", async () => {
   const createdAt = "2026-08-24T15:37:00.000Z";
 
