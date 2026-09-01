@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   aiVisibilityObservations,
   aiVisibilityPrompts,
@@ -34,12 +35,12 @@ assert.deepEqual(emptyMetrics, {
   cited: 0,
   recommended: 0,
   factualErrors: 0,
-  mentionRate: 0,
-  citationRate: 0,
-  recommendationRate: 0,
-  entityAccuracyRate: 0,
-  descriptionAccuracyRate: 0,
-  factualErrorRate: 0,
+  mentionRate: null,
+  citationRate: null,
+  recommendationRate: null,
+  entityAccuracyRate: null,
+  descriptionAccuracyRate: null,
+  factualErrorRate: null,
 });
 
 const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
@@ -69,4 +70,30 @@ assert.ok(
   "Factual error handling must be represented",
 );
 
-console.log("AI visibility scorecard contract passed");
+const ledger = JSON.parse(readFileSync(new URL("../docs/GEO_AI_OBSERVATION_LEDGER_2026-08-22.json", import.meta.url), "utf8"));
+const expectedProviders = ["chatgpt", "gemini", "copilot", "perplexity", "google_ai_mode"];
+assert.equal(ledger.prompt_count, 48, "The governed ledger must declare 48 prompts");
+assert.deepEqual(ledger.providers, expectedProviders, "The governed ledger must use exactly five clean-provider interfaces");
+assert.equal(ledger.expected_observation_count, 240, "48 prompts × 5 providers must produce 240 governed slots");
+assert.equal(ledger.observation_slots.length, 240, "The ledger must physically contain all 240 slots before measurement");
+assert.equal(ledger.completed_observation_count, 0, "An unobserved baseline must not fabricate completed observations");
+
+const promptIds = new Set(ledger.observation_slots.map((slot) => slot.prompt_id));
+assert.equal(promptIds.size, 48, "The ledger must contain exactly 48 distinct prompt IDs");
+for (const promptId of promptIds) {
+  const slots = ledger.observation_slots.filter((slot) => slot.prompt_id === promptId);
+  assert.equal(slots.length, 5, `${promptId} must have exactly five provider slots`);
+  assert.deepEqual(slots.map((slot) => slot.provider), expectedProviders, `${promptId} must preserve the fixed provider order`);
+}
+
+assert.ok(
+  ledger.observation_slots.every((slot) => slot.status === "unobserved" && slot.observed_at === null && slot.result === null),
+  "Every untouched slot must remain unobserved/null rather than a synthetic negative",
+);
+
+const ledgerSchemaText = JSON.stringify(ledger.result_schema).toLowerCase();
+for (const prohibitedField of ["password", "token", "cookie", "account_id", "accountid", "email", "phone", "full_conversation", "conversation_text", "lead_pii", "deal_amount", "revenue_amount"]) {
+  assert.ok(!ledgerSchemaText.includes(prohibitedField), `Ledger result schema must not expose ${prohibitedField}`);
+}
+
+console.log("AI visibility scorecard and 48x5 ledger contract passed");
