@@ -98,20 +98,49 @@ jobs:
           NODE
           )"
 
-          response="$(curl --fail-with-body --silent --show-error \
+          response_file="$(mktemp)"
+          http_status="$(curl --silent --show-error \
+            --output "$response_file" \
+            --write-out '%{http_code}' \
             --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
             --header 'Origin: https://hermeslogisticsus.com' \
             --header 'Content-Type: application/json' \
             --header "Idempotency-Key: ${REQUEST_ID}" \
             --data "$payload")"
+          response="$(cat "$response_file")"
+          rm -f "$response_file"
 
-          RESPONSE="$response" node - <<'NODE'
-          const body = JSON.parse(process.env.RESPONSE);
-          if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate === true) {
-            throw new Error(`Unexpected first-send response: ${JSON.stringify(body)}`);
+          classification="$(HTTP_STATUS="$http_status" RESPONSE="$response" REQUEST_ID="$REQUEST_ID" node - <<'NODE'
+          const allowedErrors = new Set([
+            "delivery_not_configured",
+            "delivery_temporarily_unavailable",
+            "delivery_failed",
+            "rate_limit_exceeded",
+            "invalid_lead",
+            "contact_details_required"
+          ]);
+          const status = Number(process.env.HTTP_STATUS || "0");
+          let body = null;
+          try { body = JSON.parse(process.env.RESPONSE || "null"); } catch {}
+
+          if (status === 200 && body?.success === true && body?.request_id === process.env.REQUEST_ID && body?.duplicate !== true) {
+            process.stdout.write("accepted");
+            process.exit(0);
           }
-          console.log("Synthetic paid-intent request accepted by production receiver.");
+
+          const error = typeof body?.error === "string" && allowedErrors.has(body.error)
+            ? body.error
+            : `unexpected_http_${status || "unknown"}`;
+          process.stdout.write(error);
           NODE
+          )"
+
+          echo "classification=$classification" >> "$GITHUB_OUTPUT"
+          echo "Production paid-intent receiver classification: $classification"
+
+          if [[ "$classification" != "accepted" ]]; then
+            exit 1
+          fi
 
       - name: Confirm paid-intent duplicate suppression
         id: duplicate
@@ -165,10 +194,10 @@ jobs:
             --header "Idempotency-Key: ${REQUEST_ID}" \
             --data "$payload")"
 
-          RESPONSE="$response" node - <<'NODE'
+          RESPONSE="$response" REQUEST_ID="$REQUEST_ID" node - <<'NODE'
           const body = JSON.parse(process.env.RESPONSE);
           if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate !== true) {
-            throw new Error(`Unexpected duplicate response: ${JSON.stringify(body)}`);
+            throw new Error("Unexpected duplicate response contract.");
           }
           console.log("Paid-intent duplicate suppression confirmed without second delivery.");
           NODE
@@ -180,9 +209,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TRUTH_OUTCOME: ${{ steps.production_truth.outcome }}
           SEND_OUTCOME: ${{ steps.first_send.outcome }}
+          RECEIVER_CLASS: ${{ steps.first_send.outputs.classification }}
           DUPLICATE_OUTCOME: ${{ steps.duplicate.outcome }}
         run: |
           set -euo pipefail
+          safe_receiver_class="${RECEIVER_CLASS:-not_run}"
+          case "$safe_receiver_class" in
+            accepted|delivery_not_configured|delivery_temporarily_unavailable|delivery_failed|rate_limit_exceeded|invalid_lead|contact_details_required|not_run|unexpected_http_*) ;;
+            *) safe_receiver_class="unexpected_response" ;;
+          esac
+
           if [[ "$TRUTH_OUTCOME" == "success" && "$SEND_OUTCOME" == "success" && "$DUPLICATE_OUTCOME" == "success" ]]; then
             overall="PASS"
             summary="Production exposes the truthful $99/month Founding Shop request path, accepted one explicitly synthetic paid-intent request, and suppressed its duplicate. This is receiver evidence only — not a customer, payment, conversion, activation, or revenue event."
@@ -199,10 +235,11 @@ jobs:
           - tested repository revision: \`${GITHUB_SHA}\`
           - production paid-plan truth: \`${TRUTH_OUTCOME}\`
           - first explicitly synthetic request: \`${SEND_OUTCOME}\`
+          - privacy-safe receiver classification: \`${safe_receiver_class}\`
           - duplicate suppression: \`${DUPLICATE_OUTCOME}\`
           - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
-          Guardrail: the request is labeled SYNTHETIC QA / DO NOT INVOICE and uses the Hermes office email. No customer identity, payment, Cloudflare secret, account ID, KV ID, or provider diagnostic is included here.
+          Guardrail: only an allowlisted generic receiver error class is reported. The request is labeled SYNTHETIC QA / DO NOT INVOICE and uses the Hermes office email. No submitted payload, customer identity, payment, Cloudflare secret, account ID, KV ID, binding identifier, or provider diagnostic is included here.
           EOF
 
           gh issue comment 960 --repo "$GITHUB_REPOSITORY" --body-file /tmp/repair-paid-intent-smoke.md
