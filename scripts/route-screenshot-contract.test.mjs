@@ -20,6 +20,7 @@ assert.equal(routeMap.get("path-academy"), "/paths/academy/");
 assert.equal(routeMap.get("path-technology"), "/paths/technology/");
 assert.equal(routeMap.get("carrier-sales"), "/carrier/");
 assert.equal(routeMap.get("carrier-signing"), "/sign/");
+assert.equal(routeMap.get("website-factory"), "/services/hermes-connect/website-factory/");
 assert.equal(routeMap.get("repair-shops"), "/services/hermes-connect/repair-shops/");
 assert.equal(routeMap.get("repair-shop-auth"), "/services/hermes-connect/repair-shops/auth/");
 assert.equal(routeMap.get("repair-shop-plan"), "/services/hermes-connect/repair-shops/plan/");
@@ -30,6 +31,7 @@ assert.equal(screenshotFileName("path-academy", "desktop"), "path-academy--deskt
 assert.equal(screenshotFileName("path-technology", "mobile"), "path-technology--mobile.png");
 assert.equal(screenshotFileName("carrier-sales", "desktop"), "carrier-sales--desktop.png");
 assert.equal(screenshotFileName("carrier-signing", "mobile"), "carrier-signing--mobile.png");
+assert.equal(screenshotFileName("website-factory", "mobile"), "website-factory--mobile.png");
 assert.equal(screenshotFileName("repair-shops", "desktop"), "repair-shops--desktop.png");
 assert.equal(screenshotFileName("repair-shop-auth", "mobile"), "repair-shop-auth--mobile.png");
 assert.equal(screenshotFileName("repair-shop-plan", "desktop"), "repair-shop-plan--desktop.png");
@@ -41,4 +43,4 @@ assert.throws(() => parseScreenshotBaseUrl("https://user:pass@localhost:4321/"),
 assert.throws(() => validateScreenshotRoutes([{ id: "duplicate", path: "/a/" }, { id: "duplicate", path: "/b/" }]), /Duplicate screenshot route/);
 assert.throws(() => validateScreenshotRoutes([{ id: "unsafe", path: "/a/?token=x" }]), /clean absolute path/);
 
-console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, and clean desktop/mobile coverage.");
+console.log("Route screenshot safety contract passed, including all four Hermes public directions, Website Factory, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, and clean desktop/mobile coverage.");
