@@ -3,11 +3,11 @@
   "reviewed_at": "2026-09-01",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "9a976da558e9441cd743744430eb4899393b8cbe",
+  "main_commit_at_review": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
   "freshness": {
     "state_class": "current_github_snapshot_with_labelled_external_gates",
     "historical_handoff_is_not_current_state": true,
-    "refresh_policy": "Re-fetch canonical main and all open PRs before material repository work. Refresh this snapshot after material merges, governance changes, active-program changes, approval-gate changes or authenticated production evidence; otherwise explicitly classify it STALE.",
+    "refresh_policy": "Re-fetch canonical main and all open PRs before material repository work. Refresh this snapshot after material merges, writer-routing changes, governance changes or authenticated production evidence; otherwise classify it STALE.",
     "conflict_precedence": [
       "latest_explicit_owner_decision",
       "fresh_authenticated_production_or_platform_evidence",
@@ -19,73 +19,161 @@
   },
   "governance": {
     "operating_stack": "HOS_HUEG_CANONICAL",
-    "agent_sync": {"skill":"SKILL_HERMES_AGENT_SYNC","version":"2.0.0","status":"ACTIVE"},
     "writer_rule": "ONE_TASK_ONE_ARTIFACT_ONE_ACTIVE_WRITER_MANY_REVIEWERS",
     "no_evidence_no_promotion": true,
     "green_ci_does_not_override_locks": true,
     "main_branch_protected": false,
     "required_status_check_enforcement": "off",
     "repository_rulesets_present": false,
-    "platform_enforcement": "PARTIAL_OWNER_ADMIN_ACTION_REQUIRED",
     "platform_enforcement_issue": 938,
     "drive_permission_last_verified": "FIX_REQUIRED",
     "drive_permission_current_recheck": "ACCESS_GAP",
     "drive_permission_issue": 431
   },
-  "condition_watch": {
-    "automation": "Hermes CI / HUEG Watch",
-    "mode": "condition_watch",
-    "state_snapshot_required": true,
-    "snapshot_fields": ["observed_at","canonical_main_sha","open_pr_numbers","exact_head_sha","base_main_relation","draft","mergeable","exact_head_checks","active_blockers_and_locks","promotion_state","next_step_class"],
-    "suppression_rule": "Do not alert on mergeable/ahead-behind/routine-head/queued-or-in-progress changes by themselves when PROMOTION_STATE and NEXT_STEP_CLASS are unchanged.",
-    "historical_failure_rule": "Ignore failed historical SHAs when the exact current head passes."
+  "current_thread_scope": {
+    "classification": "NON_AI_HERMES_CONNECT_REPAIR_SHOP_PLUS_GOVERNANCE",
+    "owner_directive_date": "2026-09-01",
+    "ai_connect_product_work_allowed": false,
+    "ai_connect_target_chat": "AI Hermes Connect",
+    "out_of_scope_prs": [882, 885, 886, 887, 877],
+    "mixed_scope_hold_prs": [910],
+    "rule": "This thread must not implement, mutate, merge or continue Hermes Connect AI / AI Connect product behavior. Mixed-scope work that requires an Internal AI decision is routed to AI Hermes Connect."
+  },
+  "repair_shop_merge_wave": {
+    "status": "MERGED_POST_MERGE_VERIFICATION_PENDING",
+    "main_after_wave": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
+    "merged_prs": [936, 934, 930],
+    "receipts": [
+      {
+        "pr": 936,
+        "merge_sha": "b37382a6a4c5fceda19e779f5dd1453329eb374e",
+        "scope": "Repair Shop registration feedback and partner-offer clarity/failure handling",
+        "premerge_evidence": "exact-head build-and-test SUCCESS + Cloudflare preview SUCCESS + mergeable=true"
+      },
+      {
+        "pr": 934,
+        "merge_sha": "21316deeaa80ee183ec82a940dc0049e2bb92e81",
+        "scope": "localized Repair Shop owner navigation across Dashboard/Availability/Customers",
+        "premerge_evidence": "exact-head build-and-test SUCCESS + Cloudflare preview SUCCESS + mergeable=true"
+      },
+      {
+        "pr": 930,
+        "merge_sha": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
+        "scope": "Pearl/Obsidian/Repair-blue private Repair Shop visual convergence",
+        "premerge_evidence": "exact-head build-and-test SUCCESS + Cloudflare preview SUCCESS + mergeable=true"
+      }
+    ],
+    "file_overlap_check": "NO_OVERLAP_ACROSS_936_934_930",
+    "promotion_rule": "Do not mark LIVE_VERIFIED until exact-main post-merge checks/deployment and production readback pass."
   },
   "open_pull_requests_at_review": [
-    {"number":936,"title":"docs: add Hermes Connect security response plan","branch":"docs/hermes-connect-security-response-2026-09-01","exact_head_sha":"f41cd0e11a84e5fa7d2a2d6e475b257dbdebc37f","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"REVIEW_REQUIRED","next_step_class":"SECURITY_DOC_REVIEW"},
-    {"number":935,"title":"feat(academy): connect public programs to existing learner workspace","branch":"feat/academy-public-learner-handoff","exact_head_sha":"d977bcb6a4c479fd6ec69f8769411e53984b5d72","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI","next_step_class":"ACADEMY_OWNER_FIX_EXACT_HEAD"},
-    {"number":934,"title":"feat(connect): restore contextual Repair Shop owner navigation","branch":"feat/repair-owner-context-nav-fresh","exact_head_sha":"cb5dde5ca4ac31222acc176da3308263d678d722","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"CI_READY_ONLY","next_step_class":"CONNECT_OWNER_REVIEW"},
-    {"number":930,"title":"fix(connect): replay Pearl Design OS on private Repair Shop workspaces","branch":"fix/repair-private-pearl-shell-fresh-2026-08-31","exact_head_sha":"b6ea689175d96a782530f71fd3421e3c83963f32","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"CI_READY_ONLY","next_step_class":"CONNECT_OWNER_REVIEW"},
-    {"number":926,"title":"fix(london): close attribution, conversion, locale and mobile QA gaps","branch":"fix/london-postlaunch-gaps","exact_head_sha":"ad2ee607789c0bd234c0f1d9eb656222bb663d67","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI","next_step_class":"LONDON_OWNER_FIX_EXACT_HEAD"},
-    {"number":910,"title":"refactor(connect): drive shared account switcher from unified portfolio","branch":"feat/shared-account-portfolio-main","exact_head_sha":"5299d35caf212dd15f4af6bc5f4a5ff19b24b4ab","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"CI_READY_ONLY","next_step_class":"CONNECT_OWNER_REVIEW"},
-    {"number":887,"title":"feat(connect): add internal AI activity history","branch":"feat/ai-connect-activity-history","exact_head_sha":"574bd57aa2a09732842943811df1120e92b41520","base_branch":"feat/ai-connect-projects-list","base_sha_at_review":"a46e8eae89c6633466e5dca4b3bbad4da2c7a6f4","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI_STACKED","next_step_class":"AI_CONNECT_STACK_RECONCILE"},
-    {"number":886,"title":"feat(connect): add familiar AI Connect Projects list","branch":"feat/ai-connect-projects-list","exact_head_sha":"a46e8eae89c6633466e5dca4b3bbad4da2c7a6f4","base_branch":"feat/ai-connect-cabinet-ux-ru","base_sha_at_review":"a9c6995dbc08209f9549fc3f481d40b171ef58f1","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI_STACKED","next_step_class":"AI_CONNECT_STACK_RECONCILE"},
-    {"number":885,"title":"feat(connect): make internal AI cabinet familiar and Russian-localized","branch":"feat/ai-connect-cabinet-ux-ru","exact_head_sha":"a9c6995dbc08209f9549fc3f481d40b171ef58f1","base_branch":"feat/ai-connect-project-main","base_sha_at_review":"18d07649e0f9da54680c2848cb9c431ff39c5bf0","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI_STACKED","next_step_class":"AI_CONNECT_STACK_RECONCILE"},
-    {"number":882,"title":"feat(connect): add AI Connect project workspace","branch":"feat/ai-connect-project-main","exact_head_sha":"18d07649e0f9da54680c2848cb9c431ff39c5bf0","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"STACK_BASE_CI_READY_ONLY","next_step_class":"AI_CONNECT_STACK_RECONCILE"}
+    {
+      "number": 937,
+      "title": "chore(ai): harden learning loop and refresh current state",
+      "branch": "governance/learning-enforcement-hardening-2026-09-01",
+      "promotion_state": "CURRENT_WRITER_SELF_UPDATE_CI_PENDING",
+      "next_step_class": "RUN_EXACT_HEAD_CHECKS_THEN_REVIEW"
+    },
+    {
+      "number": 935,
+      "title": "feat(academy): connect public programs to existing learner workspace",
+      "branch": "feat/academy-public-learner-workspace-handoff-2026-08-31",
+      "exact_head_sha": "d977bcb6a4c479fd6ec69f8769411e53984b5d72",
+      "exact_head_build_and_test": "FAILURE",
+      "cloudflare_preview": "SUCCESS",
+      "promotion_state": "BLOCKED_CI",
+      "next_step_class": "ACADEMY_OWNER_FIX_EXACT_HEAD"
+    },
+    {
+      "number": 926,
+      "title": "fix(london): close attribution, conversion, locale and mobile QA gaps",
+      "branch": "fix/london-closeout-100",
+      "exact_head_sha": "ad2ee607789c0bd234c0f1d9eb656222bb663d67",
+      "exact_head_build_and_test": "SUCCESS",
+      "cloudflare_preview": "SUCCESS",
+      "promotion_state": "STALE_BASE_OWNER_LANE",
+      "next_step_class": "LONDON_RECONCILE_TO_CURRENT_MAIN"
+    },
+    {
+      "number": 910,
+      "title": "refactor(connect): drive shared account switcher from unified portfolio",
+      "branch": "feat/connect-account-switcher-unified-api-2026-08-30",
+      "exact_head_sha": "5299d35caf212dd15f4af6bc5f4a5ff19b24b4ab",
+      "exact_head_build_and_test": "SUCCESS",
+      "cloudflare_preview": "SUCCESS",
+      "promotion_state": "MIXED_SCOPE_HOLD",
+      "next_step_class": "ROUTE_INTERNAL_AI_DECISION_TO_AI_HERMES_CONNECT"
+    },
+    {
+      "number": 887,
+      "title": "feat(connect): add internal AI activity history",
+      "promotion_state": "OUT_OF_SCOPE_THIS_THREAD",
+      "next_step_class": "AI_HERMES_CONNECT"
+    },
+    {
+      "number": 886,
+      "title": "feat(connect): add familiar AI Connect Projects list",
+      "promotion_state": "OUT_OF_SCOPE_THIS_THREAD",
+      "next_step_class": "AI_HERMES_CONNECT"
+    },
+    {
+      "number": 885,
+      "title": "feat(connect): make internal AI cabinet familiar and Russian-localized",
+      "promotion_state": "OUT_OF_SCOPE_THIS_THREAD",
+      "next_step_class": "AI_HERMES_CONNECT"
+    },
+    {
+      "number": 882,
+      "title": "feat(connect): add AI Connect project workspace",
+      "promotion_state": "OUT_OF_SCOPE_THIS_THREAD",
+      "next_step_class": "AI_HERMES_CONNECT"
+    },
+    {
+      "number": 877,
+      "title": "docs(ai): record embedded assistant cabinet decision",
+      "exact_head_sha": "d99fe15a8580658f7f407903b5ba7e1c84328855",
+      "promotion_state": "STALE_AI_DECISION_DONOR_OUT_OF_SCOPE_THIS_THREAD",
+      "next_step_class": "AI_HERMES_CONNECT_RECONCILIATION"
+    },
+    {
+      "number": 871,
+      "title": "docs: add corporate discovery one brain audit",
+      "exact_head_sha": "319040d102680252ef09ae98f08a1437c4f8bddb",
+      "promotion_state": "STALE_SOURCE_ONLY_CORPORATE_AUDIT",
+      "next_step_class": "PRESERVE_UNIQUE_EVIDENCE_DO_NOT_TREAT_AS_CURRENT_STATE"
+    }
   ],
   "main_exact_head_evidence": {
-    "sha": "9a976da558e9441cd743744430eb4899393b8cbe",
-    "check_run_count_observed": 45,
-    "observations": [
-      {"name":"Russian Repair Shop Production Verifier","conclusion":"SUCCESS"},
-      {"name":"Hermes Connect Repair Shop Real Booking Production Smoke","conclusion":"FAILURE"},
-      {"name":"Hermes Connect Beauty Bangkok International Production Smoke","conclusion":"FAILURE"},
-      {"name":"Production Lighthouse Evidence","conclusion":"FAILURE"},
-      {"name":"Cloudflare Pages","conclusion":"IN_PROGRESS_AT_ONE_OBSERVATION"}
-    ],
-    "classification": "MIXED_VERIFIER_RESULTS",
-    "boundary": "Verifier-specific failures must be diagnosed by their owning lane. Do not convert mixed verifier evidence into a blanket site-wide pass or failure claim."
+    "sha": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
+    "observed_state": "CHECKS_IN_PROGRESS_AT_SNAPSHOT_WRITE",
+    "observed_checks": ["build-and-test", "verify", "Cloudflare Pages"],
+    "classification": "POST_MERGE_VERIFICATION_PENDING",
+    "boundary": "Update this object after the exact-main checks finish; no LIVE_VERIFIED promotion while required checks are pending."
   },
-  "learning_hardening": {
-    "date": "2026-09-01",
-    "one_brain_error_lessons_persisted": true,
-    "condition_watch_snapshot_guard_enabled": true,
-    "mergeability_only_noise_suppressed": true,
-    "writer_lock_before_mutation_required": true,
-    "durable_monitor_state_required": true,
-    "platform_enforcement_gap_recorded": true,
-    "stale_state_is_bridge_defect": true,
-    "lesson_classes": ["CONDITION_WATCH_STATE_NOISE","WRITE_BEFORE_SYNC_RELEASE","NARRATIVE_AUDIT_WITHOUT_DURABLE_STATE","GOVERNANCE_POLICY_WITHOUT_PLATFORM_ENFORCEMENT","MACHINE_STATE_STALE_AFTER_MATERIAL_MERGES"]
+  "condition_watch": {
+    "automation": "Hermes CI / HUEG Watch",
+    "state_snapshot_required": true,
+    "suppression_rule": "Do not alert on mergeable/ahead-behind/routine-head changes alone when PROMOTION_STATE and NEXT_STEP_CLASS are unchanged.",
+    "historical_failure_rule": "Ignore failed historical SHAs when the exact current head passes."
   },
   "active_external_gates": [
-    {"id":"GITHUB_MAIN_PROTECTION","issue":938,"state":"OWNER_ADMIN_ACTION_REQUIRED","reason":"Current connector can verify branch protection/rulesets but exposes no safe write action for repository protection configuration."},
-    {"id":"ONE_BRAIN_EFFECTIVE_DRIVE_ACL","issue":431,"state":"LAST_VERIFIED_FIX_REQUIRED_CURRENT_RECHECK_ACCESS_GAP","reason":"Issue #431 preserves authenticated evidence that anonymous writer access existed. The current connector does not expose effective ACL, so remediation cannot be verified from this surface."}
+    {
+      "id": "GITHUB_MAIN_PROTECTION",
+      "issue": 938,
+      "state": "OWNER_ADMIN_ACTION_REQUIRED"
+    },
+    {
+      "id": "ONE_BRAIN_EFFECTIVE_DRIVE_ACL",
+      "issue": 431,
+      "state": "LAST_VERIFIED_FIX_REQUIRED_CURRENT_RECHECK_ACCESS_GAP"
+    }
   ],
   "current_execution_rules": [
     "Re-enumerate all open PRs and current main before repository decisions.",
+    "Do not mutate Hermes Connect AI product work from this thread.",
+    "Do not treat top-N PR search output as exhaustive when older known-open PRs exist.",
     "Do not repair another active writer lane from a governance/audit lane.",
-    "Do not close stacked or superseded PRs until replacement/current-main coverage is proven.",
-    "Prefer bounded clean replay from current main when stale branch history would drag unrelated work.",
-    "Persist useful lessons to One Brain and hand off exact revisions/evidence.",
+    "Persist durable owner routing and evidence to One Brain.",
     "Refresh this snapshot after material state changes or mark it STALE."
   ]
 }
