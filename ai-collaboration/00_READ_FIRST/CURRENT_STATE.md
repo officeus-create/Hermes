@@ -23,7 +23,7 @@ This is a compact bridge, not timeless truth. Before any repository mutation, fe
 - Core rule: `ONE TASK / ONE ARTIFACT / ONE ACTIVE WRITER — MANY REVIEWERS`.
 - `MERGED != LIVE_VERIFIED`; green CI does not override owner/security/legal/writer-lock gates.
 - Main branch protection is currently disabled; required-status enforcement is off. Issue #938 remains the owner/admin platform-enforcement gate.
-- One Brain ACL risk remains tracked in issue #431. Fresh Drive metadata observed `anyone = writer` on multiple One Brain/control-tree nodes; remediation is an owner/admin action because the current connector does not expose permission removal.
+- Issue #431 remains the Drive-security source of truth. The **canonical governance core is now ACL-remediated and readback-verified**; legacy Drive trees with previously observed `anyone = writer` grants remain cleanup/security debt and are not trusted as current canonical storage.
 - Every material agent handoff must use the Agent Report Passport and learning ledger: model/version if exposed, execution surface, chat/agent name, role/lane, date/time/timezone, task scope, source of truth, evidence, confidence class, learned facts, skills used, new/improved skill, proof, and next-agent reuse.
 
 ## Current owner routing override — 2026-09-01
@@ -56,7 +56,7 @@ Current canonical main:
 
 The latest main commit is the specialist-owned unified account-switcher merge. This governance thread did not implement that product slice; it is recorded only because it materially changed current-main truth.
 
-Fresh open PR enumeration at this checkpoint returns 13 PRs:
+Fresh exhaustive open PR enumeration at this checkpoint returns 13 PRs:
 
 | PR | Routing classification |
 | --- | --- |
@@ -84,7 +84,8 @@ Safety actions:
 
 - pre-replay head `6f852224a0f7a43be4e9120b2617d3c0a0c835f2` preserved at `backup/governance-current-state-closeout-pre-06e0-2026-09-01`;
 - active branch reset to exact current main before rewriting only the two machine/governance state files;
-- no product, design, AI Connect or SEO/GEO file was modified.
+- no product, design, AI Connect or SEO/GEO file was modified;
+- after the Drive remediation, the same two governance files were refreshed again so repository state does not preserve the now-superseded claim that the canonical Master Board is still anonymously writable.
 
 Promotion rule: exact-head CI must be green before #941 can be considered merge-ready. If main changes materially again first, refresh or classify #941 stale rather than merging an obsolete state snapshot.
 
@@ -105,19 +106,31 @@ Until that fresh package is supplied and reconciled: `CLAUDE_DECOMMISSION = HOLD
 
 ## One Brain security state
 
-Fresh Drive metadata observed anonymous writer access (`type=anyone`, `role=writer`) on multiple control-tree nodes including the canonical Master Board parent chain. This is an integrity P0.
+### Canonical governance core — remediated
 
-Current connected surface can inspect metadata but does not expose safe permission removal. Therefore:
+Fresh authenticated Drive metadata/readback verifies the protected governance path:
 
-1. keep issue #431 as the security source of truth;
-2. owner/admin must remove anonymous writer access at the highest applicable parent while preserving required named-account/service access;
-3. ChatGPT rechecks representative file/folder metadata after remediation;
-4. secrets and plaintext credentials remain outside ordinary One Brain knowledge documents.
+- `00_HERMES_DIGITAL_CEO_MASTER_CONTROL` → owner-only / `shared=false`;
+- `00_HERMES_GLOBAL_CORE` → owner-only / `shared=false`;
+- `00_HERMES_GLOBAL_CORE/07_GOVERNANCE` → owner-only / `shared=false`;
+- canonical `AI MASTER OPERATING BOARD — HERMES — CANONICAL — 2026-08-14` moved by the **same Drive file ID** from the legacy public-writer Knowledge Hub into protected `07_GOVERNANCE`; immediate ACL readback = owner-only / `shared=false`;
+- `15 — HERMES ACCESS REGISTRY — POINTERS ONLY — 2026-08-23` moved by the **same Drive file ID** from the legacy Claude audit folder into protected `07_GOVERNANCE`; immediate ACL readback = owner-only / `shared=false`;
+- current chat routing/naming governance and Google Stack adoption-gate documents are also stored in the protected governance path.
+
+Classification: `CORE_CANONICAL_GOVERNANCE = ACL_REMEDIATED_AND_READBACK_VERIFIED`.
+
+### Legacy trees — cleanup still open
+
+Legacy trees such as old `AI_COMMAND_CENTER`, `Hermes Connect / HERMES CONNECT — KNOWLEDGE HUB`, `Marketing`, and `CLAUDE — Knowledge Audit — 2026-08-17` were observed with inherited `anyone=writer` access. They remain historical/donor/security cleanup scope.
+
+Do **not** bulk-move/delete these trees. Classify and promote canonical/sensitive artifacts individually, preserve lineage, and keep secret rotation or legacy-folder permission cleanup as separate owner/admin governance work.
+
+Secrets and plaintext credentials remain outside ordinary One Brain knowledge documents.
 
 ## Immediate next actions for this thread
 
-1. Keep #941 current with exact main and exact open-PR routing; do not merge a stale machine snapshot.
-2. Continue One Brain ACL/security evidence and owner/admin remediation handoff.
+1. Keep #941 current with exact main, exact open-PR routing and the verified core ACL remediation; do not merge a stale machine snapshot.
+2. Continue legacy One Brain tree classification without bulk destructive cleanup.
 3. Receive and audit the fresh Codex 2 Claude transfer package when supplied; do not decommission Claude early.
 4. Continue PR archaeology only for governance/source-of-truth cleanup; route specialist product PRs to their active owner chats.
 5. Keep Agent Report Passport + learning ledger mandatory for all future delegated tasks.
