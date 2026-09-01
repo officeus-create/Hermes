@@ -1,118 +1,111 @@
 # Hermes AI Ecosystem — Current State
 
-Last updated: 2026-08-15
+Last updated: 2026-09-01
+Evidence checkpoint: `officeus-create/Hermes` canonical `main` = `9a976da558e9441cd743744430eb4899393b8cbe`
+Freshness class: `CURRENT_GITHUB_SNAPSHOT_WITH_LABELLED_EXTERNAL_GATES`
 
-## Objective
+## Purpose
 
-Build a shared, version-controlled knowledge and decision system where multiple AI assistants and humans can review the same current context, contribute specialized work, challenge assumptions and preserve evidence behind decisions without duplicating execution or sharing secrets.
+This file is a compact current-state bridge for AI workers. It is a snapshot, not timeless truth. For repository work, every agent must fetch fresh `main`, all open pull requests, exact current heads and relevant exact-head checks before acting. Historical chat, old PR green checks and older copies of this file never override fresh GitHub/platform evidence.
 
-## Active systems
+## Source precedence
 
-- Hermes Logistics corporate website with commercial logistics, SEO, marketing, Academy and technology paths.
-- Hermes Connect web-first product system and main-site bridge, with product expansion continuing iteratively.
-- Direct carrier dispatch intake and direct vehicle-transport request workflows.
-- Carrier proposal, plan selection, mobile onboarding, finger signature and PDF review/onboarding packet generation.
-- Logistics operations, recruiting, Academy, marketing and sales workflows.
-- ProgressoPro marketing and sales direction.
-- GitHub-based multi-agent collaboration hub with department current-state files, decisions, proposals, handoffs and evidence records.
+1. Latest explicit owner decision.
+2. Fresh authenticated production/platform evidence.
+3. Current GitHub `main`, open PRs, exact-head checks/reviews and active issues.
+4. Canonical AI Master Operating Board / One Brain.
+5. Current department/task brief.
+6. Historical documents, handoffs and chat.
 
-## Current Hermes Connect direction
+## Governance now
 
-Approved decisions now supersede the older exploratory design state:
+- Hermes Operating Stack (HOS) + Hermes Universal Evidence Gate (HUEG) are canonical.
+- Active sync skill: `SKILL_HERMES_AGENT_SYNC` v2.0.0 in One Brain.
+- Core rule: `ONE TASK / ONE ARTIFACT / ONE ACTIVE WRITER — MANY REVIEWERS`.
+- Green CI does not cancel `HOLD`, `REVIEW_ONLY`, `PRIMARY_WRITER`, owner/security/legal/compliance gates.
+- `MERGED != LIVE_VERIFIED`; `HTTP 200 != working system`; `SEO implemented != search outcome`; narrative is not evidence.
+- Before a material shared mutation: fresh sync, active-writer check, exact last-proven state and required evidence must be known.
 
-- Brand System V1 is the current approved base direction under DEC-004: Hermes Connect as an AI Operating System for Business, with the approved Pearl + Anthracite/Obsidian environments, compact intelligent-knot/loop identity direction, restrained digital-flow language and unified Hermes Intelligence.
-- DEC-005 establishes the web-first productization sequence: validate desktop/web first, derive responsive/mobile-web from the approved system, then begin native mobile implementation from validated components and workflows.
-- New contributors should refine or extend this approved direction rather than restarting the identity or product sequence without an explicit new decision.
+## Platform enforcement gap
 
-## Current Hermes Connect implementation
+Fresh GitHub branch metadata on 2026-09-01 shows:
 
-- `public/demos/hermes-connect/` is the only canonical generic preview/tool tree.
-- `public/demos/hermes-connect/workspace.html` is one responsive desktop/mobile workspace; there is no separate mobile application page.
-- Repair Shop production routes and D1 APIs remain a separate real product track under `src/pages/services/hermes-connect/repair-shops*` and the owner/public Repair Shop API namespaces.
-- PRs #529 and #532-#545 delivered D1 auth hardening, owner services/profile/availability, real booking, persisted status history, cancelled-slot rebooking, vehicle data and booking-derived customer CRM.
-- PRs #546-#548 removed duplicate Brand V1/V2 physical runtimes, corrected active guidance and removed retired runtime labels/debug output.
-- PR #509 is closed as superseded. Its old branch must not be merged or used as a product source because it predates and conflicts with the later production runtime.
-- Historical retired URLs remain compatibility redirects and historical release deltas remain audit evidence; neither is an active duplicate application.
-- Web and installable PWA are the current supported distribution paths. The old Android APK was removed after it was found to bundle retired runtimes and use an Android Debug certificate; direct APK distribution remains blocked until a current release-signed build passes checksum and clean-device gates.
+- `main` protected: **false**;
+- required branch status-check enforcement: **off**;
+- repository rulesets: **none**.
 
-The next Repair Shop milestone is distribution to the first 5-10 permissioned real shops and privacy-safe feedback/booking measurement, not another app rewrite.
+Classification: `GOVERNANCE_CANONICAL / PLATFORM_ENFORCEMENT_PARTIAL`.
 
-## Current revenue and SEO state
+HOS/HUEG therefore remains mandatory operating policy, but GitHub does not yet physically prevent a manual/direct bypass. Enabling the intended `main` PR/check/review protections is an owner/admin platform action unless a write-capable repository-administration surface is available.
 
-Repository work already provides:
+## Fresh open pull-request set
 
-- indexable commercial logistics and digital-service pages;
-- direct mobile CTAs from priority money pages into real intake workflows;
-- controlled analytics events that exclude submitted private values;
-- canonical, robots, hreflang, sitemap, internal-link and structured-data regression tests;
-- a short private carrier sales link at `/carrier/`;
-- proposal, agreement-review and onboarding routes separated by user intent;
-- build, static, contract-engine and desktop/mobile browser test coverage.
+This list was rebuilt from GitHub on 2026-09-01. Do not reuse it as current truth on a later run; re-enumerate all open PRs first.
 
-Latest sanitized SEO14 owner-provided Codex handoff dated 2026-08-14 reports:
+| PR | Branch | Exact head | Base relationship at checkpoint | Exact-head Website checks | Snapshot classification |
+| --- | --- | --- | --- | --- | --- |
+| #936 | `docs/hermes-connect-security-response-2026-09-01` | `f41cd0e11a84e5fa7d2a2d6e475b257dbdebc37f` | targets current `main` | SUCCESS | `REVIEW_REQUIRED`; docs/security lane |
+| #935 | `feat/academy-public-learner-handoff` | `d977bcb6a4c479fd6ec69f8769411e53984b5d72` | targets current `main` | FAILURE | `BLOCKED_CI`; Academy owner lane |
+| #934 | `feat/repair-owner-context-nav-fresh` | `cb5dde5ca4ac31222acc176da3308263d678d722` | targets current `main` | SUCCESS | `CI_READY_ONLY`; Connect owner/review gates still apply |
+| #930 | `fix/repair-private-pearl-shell-fresh-2026-08-31` | `b6ea689175d96a782530f71fd3421e3c83963f32` | targets current `main` | SUCCESS | `CI_READY_ONLY`; Connect owner/review gates still apply |
+| #926 | `fix/london-postlaunch-gaps` | `ad2ee607789c0bd234c0f1d9eb656222bb663d67` | targets current `main` | FAILURE | `BLOCKED_CI`; London owner lane |
+| #910 | `feat/shared-account-portfolio-main` | `5299d35caf212dd15f4af6bc5f4a5ff19b24b4ab` | targets current `main` | SUCCESS | `CI_READY_ONLY`; Connect owner/review gates still apply |
+| #887 | `feat/ai-connect-activity-history` | `574bd57aa2a09732842943811df1120e92b41520` | stacked on #886 | FAILURE | `BLOCKED_CI / STACK_RECONCILE` |
+| #886 | `feat/ai-connect-projects-list` | `a46e8eae89c6633466e5dca4b3bbad4da2c7a6f4` | stacked on #885 | FAILURE | `BLOCKED_CI / STACK_RECONCILE` |
+| #885 | `feat/ai-connect-cabinet-ux-ru` | `a9c6995dbc08209f9549fc3f481d40b171ef58f1` | stacked on #882 | FAILURE | `BLOCKED_CI / STACK_RECONCILE` |
+| #882 | `feat/ai-connect-project-main` | `18d07649e0f9da54680c2848cb9c431ff39c5bf0` | targets current `main` | SUCCESS | `STACK_BASE_CI_READY`; downstream heads still require their own evidence |
 
-- Google Search Console window 2026-07-28 through 2026-08-12: 17 clicks, 487 impressions, 3.5% CTR and average position 40.8;
-- United States slice: 306 impressions and 2 clicks;
-- `/services/seo-for-logistics-companies/`: 119 impressions and 0 clicks in that handoff;
-- GSC external links: 4, reported from work.ua; GSC internal links: 28;
-- production sitemap coverage: 108 indexable URLs;
-- Google sitemap status: Success;
-- Bing sitemap status: Success, with seven child sitemap files rather than seven total URLs;
-- `robots.txt` reportedly exposes all eight sitemap references and `BingSiteAuth.xml` returns HTTP 200;
-- GA4 ownership/receipt is still not platform-confirmed in the current handoff; the visible environment reportedly shows only the start-measuring state.
+A Website-check result is only one HUEG input. Before merge/promotion, re-read reviews, governance comments, locks, owner approvals and exact base/current-main relationship on the then-current head.
 
-Evidence boundary: the metrics above are `OWNER_PROVIDED_HANDOFF` from the authenticated Codex SEO14 run supplied by the owner in the current workstream. They are current enough for prioritization, but this ChatGPT contribution did not independently open the authenticated GSC/Bing/GA4 account views and therefore does not silently reclassify them as direct `PLATFORM_VERIFIED` evidence.
+## Current-main production/evidence observations
 
-## Current SEO decision boundary
+Exact-main check evidence inspected for `9a976da...` includes mixed verifier outcomes. At this checkpoint:
 
-SEO13 already optimized `/services/seo-for-logistics-companies/` on 2026-08-13 from authenticated GSC demand evidence. The page remains the canonical owner for logistics/trucking/transportation SEO commercial intent. Do not rewrite its title/H1/description again immediately merely because the latest snapshot still shows zero clicks; preserve the planned 7-day and 28-day measurement windows unless fresh evidence reveals a defect.
+- Russian Repair Shop Production Verifier: SUCCESS;
+- Hermes Connect Repair Shop Real Booking Production Smoke: FAILURE;
+- Hermes Connect Beauty Bangkok International Production Smoke: FAILURE;
+- Production Lighthouse Evidence: FAILURE;
+- Cloudflare Pages check was observed in progress during one fresh read.
 
-Current priority is to strengthen discoverability, relevant internal support, measurement integrity, entity consistency and external authority while preserving one canonical owner per intent.
+These are verifier-specific states, not permission to declare the whole website either healthy or broken. The owning product/performance lanes must diagnose exact current failures. Historical failed SHAs are irrelevant when superseded by a green exact head; current-head failures remain actionable until fixed, superseded or correctly reclassified.
 
-## Current AI collaboration state
+## Learning and monitor hardening
 
-The bridge remains document/GitHub based rather than a live credential-sharing AI-to-AI bus.
+The 2026-09-01 orchestration audit produced durable One Brain lessons for:
 
-**2026-08-23 governance override:** DEC-007, DEC-008 and DEC-009 supersede the older fixed identity-to-role routing below. The current model is One Brain + Hermes Operating Stack (HOS) + Hermes Universal Evidence Gate (HUEG): route each slice by required skill and verified capability, assign one primary writer and an independent reviewer when required, and continue safe reversible work when another agent is unavailable.
+1. condition-watch noise from `mergeable`/ahead-behind metadata without next-step change;
+2. repository writes before a writer-lock release / sync proof;
+3. narrative audits without durable run-to-run state snapshots;
+4. governance policy without physical platform enforcement;
+5. stale machine-state files after material merges.
 
-Current durable routing principles:
+The Hermes CI / HUEG condition-watch now requires a successful-run `STATE_SNAPSHOT` and compares `PROMOTION_STATE + NEXT_STEP_CLASS`. Volatile mergeability/ahead-behind/routine-head changes are suppressed when they do not change readiness or the next action.
 
-- ChatGPT — orchestration/synthesis and any connected-source execution or verification that the active surface can physically perform; not a substitute for unavailable local-shell/browser evidence.
-- Codex and Claude — peer execution agents with equal baseline governance authority; either may implement or review within a bounded assigned slice, subject to actual tool access and one-writer rules.
-- Antigravity — browser/local verification, research and other explicitly assigned capabilities; it may not be treated as a second source of truth or parallel writer.
-- Gemini — peer agent for Workspace/research/evidence governance or other capabilities its current surface actually verifies; no GitHub/local-shell/browser capability is assumed merely from model identity.
-- future agents — routed by verified capability and task scope, not vendor prestige or historical role labels.
-- human owner — final authority at the applicable security/access, destructive, billing/payment, legal/contract, irreversible production/data/domain, material commercial/hiring/business-policy boundary.
+## One Brain state
 
-The execution protocol is defined in `HERMES_OPERATING_STACK.md`. Core rule: `NO_EVIDENCE_NO_PROMOTION`. A merge, deployment, HTTP 200, green stale-head CI, or AI-generated JSON does not automatically prove the promoted business/production claim.
+Google Drive remains the durable business/knowledge memory; GitHub remains technical truth for code, PRs, tests and repository evidence. The One Brain learning loop and Agent Sync V2 require `RECALL LESSONS -> EXECUTE -> EVIDENCE -> RETRO -> LEARN -> PERSIST -> HANDOFF` for material work.
 
-The collaboration protocol requires an evidence receipt, explicit task owner, source of truth, write scope and handoff target. A passing bridge/self-test is not enough if the transported context is stale.
+Current Drive permission metadata available to this agent reports effective ACL as not exposed/`access_not_verified`. Therefore the old permission-security concern is neither assumed fixed nor repeated as a current proven `anyone=writer` fact. Classification is `SECURITY_PERMISSION_STATE_UNVERIFIED` until an authenticated owner/admin permission surface proves the effective ACL.
 
-## External evidence still required
+## Current execution rules
 
-- direct authenticated GA4 property/stream ownership and event receipt verification;
-- GA4 duplicate-tag and privacy verification in DebugView/Realtime/network inspection;
-- completed current Bing search-performance baseline once processing is available;
-- human-qualified inquiry reconciliation and aggregate 7-day/28-day funnel scorecards;
-- field Core Web Vitals from real-user data where available;
-- permissioned customer/carrier cases and authoritative external-profile corrections.
+- Never start from a remembered PR list or SHA.
+- Never repair another active writer's product lane from a governance/audit lane merely because a failure is visible.
+- Never close stacked/superseded PRs until replacement/current-main coverage is physically proven.
+- Prefer a clean bounded replay from current `main` over dragging unrelated branch history when a branch is stale/conflicted.
+- Persist reusable errors/lessons in One Brain; do not leave them only in chat.
+- Refresh `docs/ai-project-state.json` and this file after material state changes, or explicitly classify them stale.
 
-## Current carrier-contract boundary
+## Immediate next actions by owner
 
-The website can create a signed review/onboarding packet and deliver/download the generated PDF through the implemented contract engine.
-
-Final legal execution remains gated by the approved master agreement/version/hash, legal approval, private production bindings, permanent records storage and synthetic end-to-end verification. SEO or AI-collaboration autonomy does not override legal activation gates.
-
-## Immediate next actions
-
-1. Keep issue #206 as the measurement source of truth and add sanitized fresh evidence rather than spawning duplicate measurement issues.
-2. Preserve the 2026-08-13 Logistics SEO page change long enough to measure 7-day and 28-day effects before another snippet rewrite.
-3. Audit and strengthen relevant internal support paths into the Logistics SEO canonical owner without creating doorway variants.
-4. Resolve GA4 ownership/access and verify controlled event receipt exactly once before adding any parallel analytics runtime.
-5. Capture Bing performance when its current processing completes; do not create a replacement Bing site/account to make a checklist green.
-6. Improve external entity consistency and authority through legitimate owned/claimable profiles and editorially justified references; do not manufacture backlinks.
-7. Route every task through HOS/HUEG with one current writer, claim-matching evidence and bounded takeover when an executor is unavailable.
+- Academy lane: diagnose/fix #935 exact-head Website failure; obtain new exact-head evidence.
+- London lane: diagnose/fix #926 exact-head Website failure; obtain new exact-head evidence.
+- AI Connect lane: reconcile #882 -> #885 -> #886 -> #887 stack from the current canonical base; do not trust historical greens on failing downstream heads.
+- Repair Shop/Connect lane: investigate current-main Repair Booking production-smoke failure without parallel rewrites.
+- Performance lane: investigate current-main Lighthouse evidence failure before making a performance claim.
+- Governance/admin: enable physical `main` protection/ruleset when an authorized admin surface is available.
+- One Brain owner/admin: verify effective Drive permissions and remediate only from authenticated ACL evidence.
 
 ## Operating rule
 
-This file describes the latest verified repository state plus explicitly labelled current owner-provided platform handoffs. Update it whenever a newer approved decision or authenticated measurement materially changes the operating picture. A stale current-state file is itself a bridge defect.
+A stale current-state file is itself a bridge defect. If this checkpoint is older than the task's material repository/platform changes, refresh first and classify the old snapshot as historical evidence.
