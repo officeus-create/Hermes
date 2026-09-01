@@ -157,6 +157,18 @@ export async function ensureWebsiteFactorySchema(db) {
     )
   `).run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_website_factory_owner_updated ON website_factory_drafts(specialist_id, updated_at DESC)").run();
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS website_factory_handoffs (
+      draft_id TEXT PRIMARY KEY,
+      specialist_id TEXT NOT NULL,
+      notification_status TEXT NOT NULL DEFAULT 'pending' CHECK (notification_status IN ('pending','sent','failed')),
+      notification_error TEXT,
+      last_attempt_at TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `).run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_website_factory_handoff_owner ON website_factory_handoffs(specialist_id, updated_at DESC)").run();
 }
 
 export function parseWebsiteFactoryDraft(row) {
