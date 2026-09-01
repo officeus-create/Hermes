@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import {
+  cleanWebsiteFactoryUrl,
+  normalizeWebsiteFactoryPayload,
+  websiteFactoryReadiness,
+} from "../functions/api/_lib/website-factory.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8");
@@ -18,9 +23,9 @@ assert.match(page, /automated source reading is not yet connected/i, "B1 must no
 assert.match(page, /Secure audio storage\/transcription is not connected in B1/, "B1 voice boundary must be truthful");
 assert.match(page, /B1 does not invent an upload backend/, "B1 upload boundary must be truthful");
 assert.match(page, /three different jobs/i, "reference roles must be explicit");
+assert.match(page, /not a fake promise that a production build has already started/i, "client copy must preserve the build-start boundary");
 for (const role of ["visual", "functionality", "structure"]) assert.match(page, new RegExp(`data-ref-url="${role}"`), `${role} reference input is required`);
 for (let step = 1; step <= 9; step += 1) assert.match(page, new RegExp(`data-step="${step}"`), `step ${step} must exist`);
-assert.match(page, /build_started/, "client must consume explicit build-start boundary");
 assert.doesNotMatch(page, /MediaRecorder|navigator\.mediaDevices|getUserMedia/, "B1 must not create disposable voice capture without storage");
 
 assert.match(helper, /website_factory_drafts/, "Website Factory must persist drafts in one owner-scoped D1 model");
@@ -30,6 +35,22 @@ assert.match(helper, /url\.protocol !== "https:"/, "public sources must be HTTPS
 assert.match(helper, /password\|secret\|token\|cookie\|credential/, "credential-shaped fields must be blocked from draft payloads");
 assert.match(helper, /WEBSITE_FACTORY_MAX_PAYLOAD_BYTES/, "autosave payload must be bounded");
 assert.match(helper, /critical_conflicts_unresolved/, "critical fact conflicts must block handoff");
+
+assert.equal(cleanWebsiteFactoryUrl("http://example.com"), null, "HTTP sources must be rejected");
+assert.equal(cleanWebsiteFactoryUrl("https://example.com/path#fragment"), "https://example.com/path", "safe HTTPS URLs should be normalized and lose fragments");
+const readyPayload = normalizeWebsiteFactoryPayload({
+  starting_from_zero: true,
+  goals: { primary: "Get calls" },
+  brief: { text: "Build a clear service website for qualified local leads." },
+  references: [
+    { role: "visual", url: "https://example.com/visual" },
+    { role: "functionality", url: "https://example.com/functionality" },
+    { role: "structure", url: "https://example.com/structure" },
+  ],
+});
+assert.deepEqual(websiteFactoryReadiness(readyPayload), { ready: true, reasons: [] }, "minimum valid owner brief should reach the handoff gate");
+const blockedPayload = normalizeWebsiteFactoryPayload({ starting_from_zero: false });
+assert.equal(websiteFactoryReadiness(blockedPayload).ready, false, "missing source/goal/brief/references must stay blocked");
 
 assert.match(drafts, /getAuthenticatedSpecialist/, "draft collection must require the shared Hermes session");
 assert.match(drafts, /sameOriginMutation/, "draft creation must be same-origin protected");
