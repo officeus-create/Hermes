@@ -5,7 +5,7 @@
   "production_url": "https://hermeslogisticsus.com",
   "main_commit_at_review": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
   "freshness": {
-    "state_class": "current_github_snapshot_with_labelled_external_gates",
+    "state_class": "current_github_and_production_snapshot_with_labelled_external_gates",
     "historical_handoff_is_not_current_state": true,
     "refresh_policy": "Re-fetch canonical main and all open PRs before material repository work. Refresh this snapshot after material merges, writer-routing changes, governance changes or authenticated production evidence; otherwise classify it STALE.",
     "conflict_precedence": [
@@ -40,7 +40,7 @@
     "rule": "This thread must not implement, mutate, merge or continue Hermes Connect AI / AI Connect product behavior. Mixed-scope work that requires an Internal AI decision is routed to AI Hermes Connect."
   },
   "repair_shop_merge_wave": {
-    "status": "MERGED_POST_MERGE_VERIFICATION_PENDING",
+    "status": "MERGED_MAIN_GREEN_PRODUCTION_BOOKING_AND_RU_VERIFIED",
     "main_after_wave": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
     "merged_prs": [936, 934, 930],
     "receipts": [
@@ -64,43 +64,51 @@
       }
     ],
     "file_overlap_check": "NO_OVERLAP_ACROSS_936_934_930",
-    "promotion_rule": "Do not mark LIVE_VERIFIED until exact-main post-merge checks/deployment and production readback pass."
+    "production_evidence": {
+      "main_build_and_test": "SUCCESS",
+      "main_verify": "SUCCESS",
+      "cloudflare_pages": "SUCCESS",
+      "booking_smoke": {
+        "workflow": "Repair Shop real booking production smoke",
+        "run_id": 33492286932,
+        "head_sha": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
+        "conclusion": "SUCCESS"
+      },
+      "russian_browser_verifier": {
+        "workflow": "Verify Hermes Connect Russian on command",
+        "run_id": 33492528227,
+        "head_sha": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
+        "conclusion": "SUCCESS",
+        "checked_at": "2026-09-01T09:31:29.438Z",
+        "classification": "LIVE_HERMES_CONNECT_RUSSIAN_COMPLETE",
+        "mode": "real Chromium browser against public custom domain"
+      }
+    },
+    "boundary": "Production booking and Russian public surfaces are verified on exact main. Do not generalize this into blanket proof of concurrency, tenant isolation, cache/PWA behavior or real-human conversion friction."
   },
   "open_pull_requests_at_review": [
     {
       "number": 937,
       "title": "chore(ai): harden learning loop and refresh current state",
       "branch": "governance/learning-enforcement-hardening-2026-09-01",
-      "promotion_state": "CURRENT_WRITER_SELF_UPDATE_CI_PENDING",
-      "next_step_class": "RUN_EXACT_HEAD_CHECKS_THEN_REVIEW"
+      "promotion_state": "CURRENT_WRITER_FINAL_EVIDENCE_WRITE_CI_PENDING",
+      "next_step_class": "RUN_EXACT_HEAD_CHECKS_THEN_MERGE_IF_GREEN"
     },
     {
       "number": 935,
       "title": "feat(academy): connect public programs to existing learner workspace",
-      "branch": "feat/academy-public-learner-workspace-handoff-2026-08-31",
-      "exact_head_sha": "d977bcb6a4c479fd6ec69f8769411e53984b5d72",
-      "exact_head_build_and_test": "FAILURE",
-      "cloudflare_preview": "SUCCESS",
-      "promotion_state": "BLOCKED_CI",
+      "promotion_state": "BLOCKED_CI_OWNER_LANE",
       "next_step_class": "ACADEMY_OWNER_FIX_EXACT_HEAD"
     },
     {
       "number": 926,
       "title": "fix(london): close attribution, conversion, locale and mobile QA gaps",
-      "branch": "fix/london-closeout-100",
-      "exact_head_sha": "ad2ee607789c0bd234c0f1d9eb656222bb663d67",
-      "exact_head_build_and_test": "SUCCESS",
-      "cloudflare_preview": "SUCCESS",
       "promotion_state": "STALE_BASE_OWNER_LANE",
       "next_step_class": "LONDON_RECONCILE_TO_CURRENT_MAIN"
     },
     {
       "number": 910,
       "title": "refactor(connect): drive shared account switcher from unified portfolio",
-      "branch": "feat/connect-account-switcher-unified-api-2026-08-30",
-      "exact_head_sha": "5299d35caf212dd15f4af6bc5f4a5ff19b24b4ab",
-      "exact_head_build_and_test": "SUCCESS",
-      "cloudflare_preview": "SUCCESS",
       "promotion_state": "MIXED_SCOPE_HOLD",
       "next_step_class": "ROUTE_INTERNAL_AI_DECISION_TO_AI_HERMES_CONNECT"
     },
@@ -131,25 +139,34 @@
     {
       "number": 877,
       "title": "docs(ai): record embedded assistant cabinet decision",
-      "exact_head_sha": "d99fe15a8580658f7f407903b5ba7e1c84328855",
       "promotion_state": "STALE_AI_DECISION_DONOR_OUT_OF_SCOPE_THIS_THREAD",
       "next_step_class": "AI_HERMES_CONNECT_RECONCILIATION"
     },
     {
       "number": 871,
       "title": "docs: add corporate discovery one brain audit",
-      "exact_head_sha": "319040d102680252ef09ae98f08a1437c4f8bddb",
       "promotion_state": "STALE_SOURCE_ONLY_CORPORATE_AUDIT",
       "next_step_class": "PRESERVE_UNIQUE_EVIDENCE_DO_NOT_TREAT_AS_CURRENT_STATE"
     }
   ],
-  "main_exact_head_evidence": {
-    "sha": "809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac",
-    "observed_state": "CHECKS_IN_PROGRESS_AT_SNAPSHOT_WRITE",
-    "observed_checks": ["build-and-test", "verify", "Cloudflare Pages"],
-    "classification": "POST_MERGE_VERIFICATION_PENDING",
-    "boundary": "Update this object after the exact-main checks finish; no LIVE_VERIFIED promotion while required checks are pending."
-  },
+  "remaining_non_ai_repair_evidence_tails": [
+    {
+      "id": "PARALLEL_CAPACITY_CONCURRENCY",
+      "state": "FRESH_EXACT_MAIN_RUN_NOT_TRIGGERED_BY_THIS_WAVE",
+      "evidence": ".github/workflows/repair-capacity-production-smoke.yml exists and verifies production parallel booking capacity when capacity paths change",
+      "rule": "Do not promote from code inspection alone; obtain a fresh bounded run when capacity/double-booking is the decision."
+    },
+    {
+      "id": "CROSS_TENANT_ISOLATION",
+      "state": "ADVERSARIAL_RUNTIME_RECHECK_RECOMMENDED",
+      "rule": "Current owner APIs are identity-scoped in code, but an explicit two-tenant runtime attack test is still the stronger closure evidence."
+    },
+    {
+      "id": "REAL_HUMAN_REGISTRATION_FRICTION",
+      "state": "MEASURE_FROM_PILOT_USERS",
+      "rule": "Browser/synthetic success does not replace real user feedback."
+    }
+  ],
   "condition_watch": {
     "automation": "Hermes CI / HUEG Watch",
     "state_snapshot_required": true,
