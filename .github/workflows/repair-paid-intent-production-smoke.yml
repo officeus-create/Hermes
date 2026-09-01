@@ -1,0 +1,220 @@
+name: Repair paid-intent production smoke
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/repair-paid-intent-production-smoke.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: repair-paid-intent-production-smoke
+  cancel-in-progress: false
+
+jobs:
+  verify-paid-intent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Verify current paid-plan production truth
+        id: production_truth
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          live=0
+          for attempt in $(seq 1 18); do
+            url="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/plan/?paid-intent-smoke=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            html="$(curl --fail --silent --show-error --location \
+              --connect-timeout 10 --max-time 30 \
+              --header 'Cache-Control: no-cache' \
+              --header 'Pragma: no-cache' \
+              "$url")"
+
+            if grep -Fq 'Founding Shop Plan' <<<"$html" \
+              && grep -Fq '$99/month per repair shop location' <<<"$html" \
+              && grep -Fq 'No card is collected on this website' <<<"$html" \
+              && grep -Fq 'Request paid activation' <<<"$html"; then
+              echo "Current paid-plan production truth observed on attempt $attempt."
+              live=1
+              break
+            fi
+
+            echo "Paid-plan production markers are not current yet on attempt $attempt."
+            sleep 10
+          done
+
+          if [[ "$live" != "1" ]]; then
+            echo "Current paid-plan truth was not observed on the production custom domain." >&2
+            exit 1
+          fi
+
+      - name: Send one explicitly synthetic paid activation request
+        id: first_send
+        if: steps.production_truth.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          REQUEST_ID: repair_paid_smoke_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          payload="$(node - <<'NODE'
+          const payload = {
+            request_id: process.env.REQUEST_ID,
+            submitted_at: new Date().toISOString(),
+            source_path: "/services/hermes-connect/repair-shops/plan/",
+            name: "Hermes Paid Plan Production Smoke",
+            email: "officeus@hermeslogisticsus.com",
+            interest: "Hermes Logistics",
+            consent: true,
+            message: [
+              "SYNTHETIC QA — NOT A CUSTOMER / NOT A PAYMENT / DO NOT INVOICE",
+              "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan",
+              "Launch price under test: $99/month per repair shop location",
+              "Shop: Hermes Synthetic QA Repair Shop",
+              "Hermes Connect shop identity: synthetic production receiver proof only",
+              "City / state: Milwaukee, WI",
+              "Phone: +1 414 555 0199",
+              "Purchase reason / desired value: Verify the production paid-intent receiver and idempotency contract without creating a real customer or payment.",
+              "Requested action: no sales follow-up; this request is synthetic QA only.",
+              "Website payment status: no card charged on submission."
+            ].join("\n"),
+            direction_fields: {
+              direction: "Hermes Logistics",
+              fields: {
+                phone: "+1 414 555 0199",
+                preferred_lanes: "Milwaukee, WI",
+                service_needed: "Hermes Connect Repair Shops — Founding Shop Plan",
+                primary_goal: "SYNTHETIC QA paid activation receiver proof — $99/month",
+                equipment_type: []
+              }
+            }
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          )"
+
+          response="$(curl --fail-with-body --silent --show-error \
+            --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
+            --header 'Origin: https://hermeslogisticsus.com' \
+            --header 'Content-Type: application/json' \
+            --header "Idempotency-Key: ${REQUEST_ID}" \
+            --data "$payload")"
+
+          RESPONSE="$response" node - <<'NODE'
+          const body = JSON.parse(process.env.RESPONSE);
+          if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate === true) {
+            throw new Error(`Unexpected first-send response: ${JSON.stringify(body)}`);
+          }
+          console.log("Synthetic paid-intent request accepted by production receiver.");
+          NODE
+
+      - name: Confirm paid-intent duplicate suppression
+        id: duplicate
+        if: steps.first_send.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          REQUEST_ID: repair_paid_smoke_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          payload="$(node - <<'NODE'
+          const payload = {
+            request_id: process.env.REQUEST_ID,
+            submitted_at: new Date().toISOString(),
+            source_path: "/services/hermes-connect/repair-shops/plan/",
+            name: "Hermes Paid Plan Production Smoke",
+            email: "officeus@hermeslogisticsus.com",
+            interest: "Hermes Logistics",
+            consent: true,
+            message: [
+              "SYNTHETIC QA — NOT A CUSTOMER / NOT A PAYMENT / DO NOT INVOICE",
+              "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan",
+              "Launch price under test: $99/month per repair shop location",
+              "Shop: Hermes Synthetic QA Repair Shop",
+              "Hermes Connect shop identity: synthetic production receiver proof only",
+              "City / state: Milwaukee, WI",
+              "Phone: +1 414 555 0199",
+              "Purchase reason / desired value: Verify the production paid-intent receiver and idempotency contract without creating a real customer or payment.",
+              "Requested action: no sales follow-up; this request is synthetic QA only.",
+              "Website payment status: no card charged on submission."
+            ].join("\n"),
+            direction_fields: {
+              direction: "Hermes Logistics",
+              fields: {
+                phone: "+1 414 555 0199",
+                preferred_lanes: "Milwaukee, WI",
+                service_needed: "Hermes Connect Repair Shops — Founding Shop Plan",
+                primary_goal: "SYNTHETIC QA paid activation receiver proof — $99/month",
+                equipment_type: []
+              }
+            }
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          )"
+
+          response="$(curl --fail-with-body --silent --show-error \
+            --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
+            --header 'Origin: https://hermeslogisticsus.com' \
+            --header 'Content-Type: application/json' \
+            --header "Idempotency-Key: ${REQUEST_ID}" \
+            --data "$payload")"
+
+          RESPONSE="$response" node - <<'NODE'
+          const body = JSON.parse(process.env.RESPONSE);
+          if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate !== true) {
+            throw new Error(`Unexpected duplicate response: ${JSON.stringify(body)}`);
+          }
+          console.log("Paid-intent duplicate suppression confirmed without second delivery.");
+          NODE
+
+      - name: Report paid-intent production result
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRUTH_OUTCOME: ${{ steps.production_truth.outcome }}
+          SEND_OUTCOME: ${{ steps.first_send.outcome }}
+          DUPLICATE_OUTCOME: ${{ steps.duplicate.outcome }}
+        run: |
+          set -euo pipefail
+          if [[ "$TRUTH_OUTCOME" == "success" && "$SEND_OUTCOME" == "success" && "$DUPLICATE_OUTCOME" == "success" ]]; then
+            overall="PASS"
+            summary="Production exposes the truthful $99/month Founding Shop request path, accepted one explicitly synthetic paid-intent request, and suppressed its duplicate. This is receiver evidence only — not a customer, payment, conversion, activation, or revenue event."
+          else
+            overall="FAIL"
+            summary="Paid-intent production receiver proof is incomplete. No customer/payment claim is authorized from this run."
+          fi
+
+          cat > /tmp/repair-paid-intent-smoke.md <<EOF
+          ## Repair Shop paid-intent production smoke — ${overall}
+
+          ${summary}
+
+          - tested repository revision: \`${GITHUB_SHA}\`
+          - production paid-plan truth: \`${TRUTH_OUTCOME}\`
+          - first explicitly synthetic request: \`${SEND_OUTCOME}\`
+          - duplicate suppression: \`${DUPLICATE_OUTCOME}\`
+          - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          Guardrail: the request is labeled SYNTHETIC QA / DO NOT INVOICE and uses the Hermes office email. No customer identity, payment, Cloudflare secret, account ID, KV ID, or provider diagnostic is included here.
+          EOF
+
+          gh issue comment 960 --repo "$GITHUB_REPOSITORY" --body-file /tmp/repair-paid-intent-smoke.md
+
+      - name: Enforce paid-intent production verification
+        if: always()
+        shell: bash
+        env:
+          TRUTH_OUTCOME: ${{ steps.production_truth.outcome }}
+          SEND_OUTCOME: ${{ steps.first_send.outcome }}
+          DUPLICATE_OUTCOME: ${{ steps.duplicate.outcome }}
+        run: |
+          if [[ "$TRUTH_OUTCOME" != "success" || "$SEND_OUTCOME" != "success" || "$DUPLICATE_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
