@@ -6,10 +6,13 @@ on:
       - 'public/demos/hermes-connect/**'
       - 'src/styles/hermes-connect-**'
       - 'src/styles/hermes-logistics-commercial-polish.css'
+      - 'src/styles/hermes-marketing-socials-polish.css'
       - 'src/pages/services/hermes-connect/**'
+      - 'src/pages/paths/**'
       - 'scripts/capture-route-screenshots.mjs'
       - 'scripts/route-screenshot-contract.mjs'
       - 'scripts/route-screenshot-contract.test.mjs'
+      - 'scripts/validate-route-screenshot-layout.mjs'
       - '.github/workflows/hermes-connect-visual-evidence.yml'
 
 permissions:
@@ -39,7 +42,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Capture 1440px and 390px route evidence
+      - name: Capture 1440/1024/768/430/390 route evidence
         shell: bash
         run: |
           python3 -m http.server 4321 --directory dist > /tmp/hermes-preview.log 2>&1 &
@@ -55,6 +58,7 @@ jobs:
 
           curl -fsS http://127.0.0.1:4321/ > /dev/null
           GITHUB_SHA="${{ github.event.pull_request.head.sha }}" node scripts/capture-route-screenshots.mjs
+          node scripts/validate-route-screenshot-layout.mjs
 
       - name: Upload visual evidence
         uses: actions/upload-artifact@v4
