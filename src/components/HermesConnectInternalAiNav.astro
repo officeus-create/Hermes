@@ -1,0 +1,46 @@
+---
+const normalized = Astro.url.pathname.replace(/\/+$/, "/");
+const isRu = Astro.url.searchParams.get("lang") === "ru";
+const suffix = isRu ? "?lang=ru" : "";
+const items = [
+  { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
+  { key: "projects", href: "/services/hermes-connect/internal/ai-connect/projects/", en: "Projects", ru: "Проекты" },
+  { key: "activity", href: "/services/hermes-connect/internal/ai-connect/activity/", en: "Activity", ru: "Активность" },
+  { key: "assistant", href: "/services/hermes-connect/internal/ai-assistant/", en: "AI Assistant", ru: "AI Assistant" },
+];
+const currentKey = normalized.includes("/activity/") ? "activity"
+  : normalized.includes("/projects/") ? "projects"
+  : normalized.includes("/ai-assistant/") ? "assistant"
+  : "overview";
+---
+<nav class="hc-ai-nav" data-hc-ai-nav aria-label={isRu ? "Разделы AI Hermes Connect" : "AI Hermes Connect sections"} hidden>
+  <div class="hc-ai-nav__identity">
+    <span class="hc-ai-nav__mark" aria-hidden="true">AI</span>
+    <span><strong>Hermes Connect</strong><small>{isRu ? "Кабинет владельца · AI" : "Owner cabinet · AI"}</small></span>
+  </div>
+  <div class="hc-ai-nav__links">
+    {items.map((item) => (
+      <a href={`${item.href}${suffix}`} aria-current={currentKey === item.key ? "page" : undefined}>{isRu ? item.ru : item.en}</a>
+    ))}
+  </div>
+</nav>
+
+<script>
+  (() => {
+    const nav = document.querySelector<HTMLElement>("[data-hc-ai-nav]");
+    if (!nav) return;
+    void (async () => {
+      try {
+        const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
+        const payload = await response.json().catch(() => null);
+        if (response.ok && payload?.success) nav.hidden = false;
+      } catch {
+        nav.hidden = true;
+      }
+    })();
+  })();
+</script>
+
+<style>
+  .hc-ai-nav[hidden]{display:none!important}.hc-ai-nav{width:min(1120px,calc(100% - 2rem));margin:1rem auto 0;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.68rem .78rem;border:1px solid rgba(17,22,31,.1);border-radius:1rem;background:rgba(255,255,255,.9);box-shadow:0 14px 34px rgba(24,32,48,.07);backdrop-filter:blur(18px)}.hc-ai-nav__identity{display:flex;align-items:center;gap:.62rem;min-width:0}.hc-ai-nav__mark{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#11161f;color:#fff;font-size:.7rem;font-weight:900;box-shadow:inset 0 0 0 1px rgba(255,122,0,.28)}.hc-ai-nav__identity span:last-child{display:grid;min-width:0}.hc-ai-nav__identity strong{color:#11161f;font-size:.8rem}.hc-ai-nav__identity small{color:#747f91;font-size:.65rem}.hc-ai-nav__links{display:flex;align-items:center;gap:.25rem;overflow-x:auto;scrollbar-width:none}.hc-ai-nav__links::-webkit-scrollbar{display:none}.hc-ai-nav__links a{min-height:44px;display:inline-flex;align-items:center;white-space:nowrap;padding:.5rem .68rem;border:1px solid transparent;border-radius:.7rem;color:#5f6979;text-decoration:none;font-size:.76rem;font-weight:800}.hc-ai-nav__links a:hover,.hc-ai-nav__links a:focus-visible{border-color:rgba(255,122,0,.2);color:#11161f;background:rgba(255,122,0,.05)}.hc-ai-nav__links a[aria-current="page"]{border-color:rgba(255,122,0,.28);color:#8e4300;background:rgba(255,122,0,.09)}@media(max-width:760px){.hc-ai-nav{align-items:stretch;flex-direction:column}.hc-ai-nav__links{width:100%}.hc-ai-nav__links a{flex:0 0 auto}}
+</style>
