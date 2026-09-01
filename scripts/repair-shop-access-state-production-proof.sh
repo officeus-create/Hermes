@@ -171,6 +171,11 @@ if [[ "$TRIAL_HTTP" != "200" ]] \
   fail_classified "trialing_readback_failed"
 fi
 
+CURRENT_MAIN_BEFORE_TRANSITION="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha' 2>/dev/null || true)"
+if [[ "$CURRENT_MAIN_BEFORE_TRANSITION" != "$TARGET_SHA" ]]; then
+  fail_classified "stale_main_before_transition"
+fi
+
 NOW="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
 UPSERT_BODY="$(jq -nc --arg shop "$SHOP_ID" --arg now "$NOW" '{
   sql:"INSERT INTO repair_shop_access (shop_id,access_state,plan_id,started_at,current_period_end,updated_at) VALUES (?, 'founding', 'repair_shop_founding', ?, NULL, ?) ON CONFLICT(shop_id) DO UPDATE SET access_state = 'founding', plan_id = 'repair_shop_founding', current_period_end = NULL, updated_at = excluded.updated_at;",
