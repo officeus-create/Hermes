@@ -26,6 +26,7 @@ function timingSafeEqualText(left: unknown, right: unknown) {
 }
 
 const noStore = { "Cache-Control": "no-store" };
+const MIN_BOOTSTRAP_SECRET_LENGTH = 32;
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" }, noStore);
@@ -45,6 +46,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   const expected = String(env.HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN || "");
   if (!expected) return jsonResponse(503, { success: false, error: "internal_owner_bootstrap_not_configured" }, noStore);
+  if (expected.length < MIN_BOOTSTRAP_SECRET_LENGTH) {
+    return jsonResponse(503, { success: false, error: "internal_owner_bootstrap_secret_too_weak" }, noStore);
+  }
 
   let body: BootstrapInput;
   try {
@@ -53,7 +57,11 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     return jsonResponse(400, { success: false, error: "invalid_json" }, noStore);
   }
   const supplied = String(body.bootstrap_token || "").trim();
-  if (!supplied || supplied.length > 512 || !timingSafeEqualText(supplied, expected)) {
+  if (
+    supplied.length < MIN_BOOTSTRAP_SECRET_LENGTH ||
+    supplied.length > 512 ||
+    !timingSafeEqualText(supplied, expected)
+  ) {
     return jsonResponse(403, { success: false, error: "invalid_bootstrap_token" }, noStore);
   }
 
