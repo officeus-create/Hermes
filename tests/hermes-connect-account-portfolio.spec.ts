@@ -28,7 +28,40 @@ const shop = {
   timezone: "America/Chicago",
 };
 
+const accountPortfolio = {
+  success: true,
+  identity: {
+    id: identity.specialist.id,
+    name: identity.specialist.name,
+    email: identity.specialist.email,
+    role: identity.specialist.role,
+    location: "Kyiv",
+  },
+  owned_businesses: [
+    {
+      key: "repair_shop",
+      kind: "owned_business",
+      id: shop.id,
+      name: shop.name,
+      slug: shop.slug,
+      href: "/services/hermes-connect/repair-shops/dashboard/",
+      workspace_state: "live",
+    },
+  ],
+  workspaces: [
+    {
+      key: "academy",
+      kind: "shared_workspace",
+      href: "/services/hermes-connect/academy/dashboard/",
+      available: true,
+      state: { profile_exists: true, enrollments: [], reviewer_access: { active: false, program_scope: null } },
+    },
+  ],
+  capabilities: { internal_ai: false },
+};
+
 async function mockSharedPortfolio(page: any) {
+  await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json(accountPortfolio)));
   await page.route("**/api/auth/me", (route: any) => route.fulfill(json(identity)));
   await page.route("**/api/repair-shop/profile", (route: any) => route.fulfill(json({ success: true, shop })));
   await page.route("**/api/internal-ai/status", (route: any) => route.fulfill(json({ success: false, error: "forbidden" }, 403)));
