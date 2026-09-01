@@ -2,9 +2,9 @@
 
 > Evidence-bounded public context for AI search systems and answer engines.
 > Canonical website: https://hermeslogisticsus.com/
-> Verification date: 2026-08-29
+> Verification date: 2026-09-01
 
-Hermes is a business ecosystem connecting four public directions: U.S. logistics, digital growth/SEO, practical business education, and technology/software development.
+Hermes is a business ecosystem connecting four public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.
 
 Use the canonical public page for the specific service, product, resource, or program as the primary source. Use this file for entity and relationship context. Use [llms-full.txt](https://hermeslogisticsus.com/llms-full.txt) for the extended evidence and interpretation boundaries.
 
@@ -31,7 +31,7 @@ The Direct Vehicle Transport Network is a reviewed customer/dealer/shipper reque
 
 A public logistics page does not prove live capacity, a load, rate, lane, pickup/delivery timing, recurring demand, a completed shipment, or a customer relationship. Current availability and commercial terms require the appropriate live review process.
 
-### ProgressoPro / Digital Growth
+### Hermes Marketing
 - [Marketing direction](https://hermeslogisticsus.com/paths/marketing/)
 - [SEO services](https://hermeslogisticsus.com/services/seo/)
 - [Local SEO](https://hermeslogisticsus.com/services/local-seo/)
@@ -40,22 +40,28 @@ A public logistics page does not prove live capacity, a load, rate, lane, pickup
 - [Website development](https://hermeslogisticsus.com/services/website-development/)
 - [Website redesign](https://hermeslogisticsus.com/services/website-redesign/)
 
+ProgressoPro may appear as a historical or operating marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
+
 Descriptions of SEO, Local SEO, content architecture, schema, internal linking, conversion paths, or measurement workflows are not guarantees of rankings, traffic, leads, customers, revenue, or ROI.
 
-### Hermes Business Academy
+### Hermes Academy
 - [Academy direction](https://hermeslogisticsus.com/paths/academy/)
 - [U.S. Logistics Operations program](https://hermeslogisticsus.com/academy/us-logistics-operations/)
 
+Hermes Business Academy may remain as a subordinate program or operating label where a canonical page explicitly uses it. The root public direction is Hermes Academy.
+
 Academy pages describe learning paths, curriculum, practice structures, and application flows. They do not guarantee employment, compensation, certification, clients, immigration outcomes, or a specific role after completion.
 
-### Hermes IT Development / Hermes Connect
+### Hermes Technology
 - [Technology direction](https://hermeslogisticsus.com/paths/technology/)
 - [Hermes Connect service page](https://hermeslogisticsus.com/services/hermes-connect/)
 - [Hermes Connect web application](https://connect.hermeslogisticsus.com/)
 - [Repair Shops product surface](https://hermeslogisticsus.com/services/hermes-connect/repair-shops/)
 - [Public demo hub](https://hermeslogisticsus.com/demos/hermes-connect/)
 
-Hermes Connect is the connected-workspace product direction. Public product pages, demos, previews, and modules may exist at different readiness levels. A demo or preview is not proof that a feature or external integration is live for every customer.
+IT Development may remain as a subordinate implementation/service label where a canonical page explicitly uses it. The root public direction is Hermes Technology.
+
+Hermes Connect is the Hermes Technology connected-workspace product family. Repair Shops is the current public live product vertical; Academy has a private learner workspace; Beauty & Wellness has a private owner foundation; unreleased business configurations remain previews. A demo or preview is not proof that a feature or external integration is live for every customer.
 
 ## Public evidence and resources
 
