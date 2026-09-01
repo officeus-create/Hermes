@@ -37,13 +37,13 @@ test('internal AI stays fail-closed to the capability workspace returned by the 
   assert.doesNotMatch(source, /\|\|\s*current\s*===\s*"ai"/);
 });
 
-test('owned Beauty is visible but has no invented canonical workspace or brand token', async () => {
+test('owned Beauty opens only the canonical private foundation and keeps a neutral accent', async () => {
   const source = await loadSwitcher();
   assert.match(source, /item\?\.key === "beauty_salon"/);
-  assert.match(source, /<div class="hc-account-workspace beauty is-disabled" data-workspace-beauty aria-disabled="true" hidden>/);
-  assert.match(source, /data-hc-copy="preparing"/);
-  assert.doesNotMatch(source, /data-hc-workspace-link="beauty"/);
-  assert.doesNotMatch(source, /\/services\/hermes-connect\/beauty\//);
+  assert.match(source, /data-workspace-beauty data-hc-workspace-link="beauty" hidden/);
+  assert.match(source, /beauty:\s*"\/services\/hermes-connect\/beauty\/workspace\/"/);
+  assert.match(source, /current === "beauty"/);
+  assert.match(source, /--workspace-accent:#7c8798/);
   assert.doesNotMatch(source, /--hermes-beauty/);
 });
 
@@ -56,6 +56,7 @@ test('switcher consumes canonical Design OS accents and preserves locale on real
   assert.match(source, /data-hc-workspace-link="repair"/);
   assert.match(source, /data-hc-workspace-link="academy"/);
   assert.match(source, /data-hc-workspace-link="ai"/);
+  assert.match(source, /data-hc-workspace-link="beauty"/);
 });
 
 test('account switcher remains fail-closed until a valid account payload is loaded', async () => {
