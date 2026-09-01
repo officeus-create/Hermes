@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" role="img" aria-label="Hermes Connect Option 02 Marketing contextual mark">
+  <defs>
+    <linearGradient id="base" x1="14" y1="16" x2="106" y2="64" gradientUnits="userSpaceOnUse"><stop stop-color="#5AC8FA"/><stop offset=".56" stop-color="#2563EB"/><stop offset="1" stop-color="#7C5CFF"/></linearGradient>
+    <linearGradient id="hi" x1="22" y1="20" x2="94" y2="55" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF" stop-opacity=".62"/><stop offset=".42" stop-color="#FFF" stop-opacity=".12"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></linearGradient>
+  </defs>
+  <path d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z" fill="none" stroke="url(#base)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M35 18C15 18 15 62 35 62C55 62 65 18 85 18C105 18 105 62 85 62C65 62 55 18 35 18Z" fill="none" stroke="#00C853" stroke-opacity=".24" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M28 23C20 30 20 49 29 57C37 64 45 57 51 47" fill="none" stroke="url(#hi)" stroke-width="2.2" stroke-linecap="round"/>
+</svg>
