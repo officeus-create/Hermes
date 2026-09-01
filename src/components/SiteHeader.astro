@@ -32,7 +32,14 @@ const isAcademyPrivateRoute = [
   "/services/hermes-connect/academy/submissions",
   "/services/hermes-connect/academy/support",
 ].some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
-const privateWorkspace: "repair" | "academy" | null = isRepairPrivateRoute ? "repair" : isAcademyPrivateRoute ? "academy" : null;
+const isBeautyPrivateRoute = currentPath === "/services/hermes-connect/beauty/workspace" || currentPath.startsWith("/services/hermes-connect/beauty/workspace/");
+const privateWorkspace: "repair" | "academy" | "beauty" | null = isRepairPrivateRoute
+  ? "repair"
+  : isAcademyPrivateRoute
+    ? "academy"
+    : isBeautyPrivateRoute
+      ? "beauty"
+      : null;
 const requestedLocale = Astro.url.searchParams.get("lang");
 const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.includes(requestedLocale as SiteLocale)
   ? requestedLocale as SiteLocale

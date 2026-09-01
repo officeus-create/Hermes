@@ -26,10 +26,11 @@ test('owned business portfolio is proven by owner-scoped backend records', async
   assert.match(source, /key:\s*["']beauty_salon["'][\s\S]*kind:\s*["']owned_business["']/);
 });
 
-test('Beauty is discoverable without exposing a fake canonical workspace', async () => {
+test('Beauty owned business points only to the canonical private B1 foundation', async () => {
   const source = await loadApi();
-  assert.match(source, /key:\s*["']beauty_salon["'][\s\S]*href:\s*null/);
-  assert.match(source, /backend_ready_no_canonical_ui/);
+  assert.match(source, /key:\s*["']beauty_salon["'][\s\S]*href:\s*["']\/services\/hermes-connect\/beauty\/workspace\/["']/);
+  assert.match(source, /workspace_state:\s*["']private_foundation["']/);
+  assert.doesNotMatch(source, /backend_ready_no_canonical_ui/);
 });
 
 test('Academy is a shared workspace and preserves real learner state separately', async () => {

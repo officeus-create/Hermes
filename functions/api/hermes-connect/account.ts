@@ -17,8 +17,8 @@ type OwnedBusiness = {
   id: string;
   name: string;
   slug: string;
-  href: string | null;
-  workspace_state: "live" | "backend_ready_no_canonical_ui";
+  href: string;
+  workspace_state: "live" | "private_foundation";
 };
 
 type Workspace = {
@@ -87,8 +87,8 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       id: String(beautySalon.id),
       name: String(beautySalon.name || "Beauty Salon"),
       slug: String(beautySalon.slug || ""),
-      href: null,
-      workspace_state: "backend_ready_no_canonical_ui",
+      href: "/services/hermes-connect/beauty/workspace/",
+      workspace_state: "private_foundation",
     });
   }
 
