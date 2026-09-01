@@ -18,6 +18,7 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "repair-shop-plan", path: "/services/hermes-connect/repair-shops/plan/" },
   { id: "hermes-connect-web-app", path: "/demos/hermes-connect/" },
   { id: "hermes-connect-workspace", path: "/demos/hermes-connect/workspace.html" },
+  { id: "hermes-connect-mark-preview", path: "/demos/hermes-connect/mark-preview.html" },
 ]);
 
 export const SCREENSHOT_VIEWPORTS = Object.freeze([
