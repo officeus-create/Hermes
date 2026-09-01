@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 const root = resolve(import.meta.dirname, "..");
@@ -14,6 +15,8 @@ const complete = read("functions/api/internal-ai/runner/complete.ts");
 const event = read("functions/api/internal-ai/runner/event.ts");
 const runner = read("scripts/ai/hermes-internal-ai-runner.py");
 const codexHermes = read("scripts/ai/codex-hermes");
+const sanitizerPath = resolve(root, "scripts/ai/hermes-internal-ai-sanitize.py");
+const sanitizer = read("scripts/ai/hermes-internal-ai-sanitize.py");
 const bootstrap = read("functions/api/internal-ai/bootstrap-owner.ts");
 const internalNav = read("src/components/HermesConnectInternalAiNav.astro");
 assert.match(page, /robots="noindex,nofollow"/, "internal AI page must stay noindex");
@@ -57,6 +60,38 @@ assert.match(runner, /\[str\(CODEX_HERMES\), "exec", \*CODEX_AUTONOMOUS_ARGS, gu
 assert.doesNotMatch(runner, /dangerously-bypass-approvals-and-sandbox|--yolo/, "runner must never bypass Codex sandbox or approvals entirely");
 assert.match(codexHermes, /unset HERMES_INTERNAL_AI_RUNNER_TOKEN/, "runner transport token must be scrubbed before FCC/Codex starts");
 assert.match(codexHermes, /unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN/, "one-time owner bootstrap token must never be inherited by FCC/Codex");
+assert.match(codexHermes, /RUNNER_SANITIZE=0/, "manual codex-hermes and Internal AI runner execution must remain distinguishable");
+assert.match(codexHermes, /HERMES_INTERNAL_AI_RUNNER_TOKEN:-/, "runner sanitizer selection must be derived only from the parent runner context before token scrubbing");
+assert.match(codexHermes, /python3 \"\$SANITIZER\"/, "Internal AI runner output must pass through the streaming sanitizer before returning to the runner");
+assert.match(codexHermes, /PIPESTATUS/, "wrapper must preserve FCC/Codex and sanitizer exit status separately");
+assert.match(codexHermes, /sanitizer failed; refusing to treat output as safe evidence/, "sanitizer failure must fail closed");
+assert.match(codexHermes, /exec \"\$FCC_CODEX\" \"\$@\"/, "manual codex-hermes usage must retain the ordinary direct exec path");
+assert.match(sanitizer, /REDACTED_PRIVATE_KEY_BLOCK/, "streaming sanitizer must suppress private-key bodies");
+assert.match(sanitizer, /GITHUB_TOKEN/, "streaming sanitizer must recognize GitHub token shapes");
+assert.match(sanitizer, /OPENAI_STYLE_KEY/, "streaming sanitizer must recognize common API-key shapes");
+assert.match(sanitizer, /JWT_TOKEN/, "streaming sanitizer must recognize JWT-shaped output");
+assert.match(sanitizer, /BEARER_TOKEN/, "streaming sanitizer must recognize bearer credentials without requiring key-value punctuation");
+const sanitizerProbe = [
+  "Authorization: Bearer super-secret-bearer-1234567890",
+  "token=plain-secret-token-1234567890",
+  "https://example.test/?access_token=url-secret-1234567890&ok=1",
+  "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+  "sk-proj-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature1234567890",
+  "-----BEGIN PRIVATE KEY-----",
+  "PRIVATEKEYBODYSHOULDNEVERLEAK",
+  "-----END PRIVATE KEY-----",
+  "HERMES_INTERNAL_APPROVAL_GATE=merge_deploy",
+].join("\n");
+const sanitizerRun = spawnSync("python3", [sanitizerPath], { input: sanitizerProbe, encoding: "utf8" });
+assert.equal(sanitizerRun.status, 0, `sanitizer probe must exit 0: ${sanitizerRun.stderr}`);
+assert.doesNotMatch(
+  sanitizerRun.stdout,
+  /super-secret|plain-secret|url-secret|ghp_|sk-proj-|eyJhbGci|PRIVATEKEYBODYSHOULDNEVERLEAK/,
+  "synthetic credential values must not survive the streaming sanitizer",
+);
+assert.match(sanitizerRun.stdout, /\[REDACTED/, "synthetic credential values must be visibly replaced rather than silently trusted");
+assert.match(sanitizerRun.stdout, /HERMES_INTERNAL_APPROVAL_GATE=merge_deploy/, "non-secret governance markers must survive redaction");
 assert.match(bootstrap, /getAuthenticatedSpecialist\(request, env\.DB\)/, "owner bootstrap must bind only the current authenticated Hermes session");
 assert.match(bootstrap, /HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN/, "bootstrap must require a separate server-side activation secret");
 assert.match(bootstrap, /MIN_BOOTSTRAP_SECRET_LENGTH = 32/, "bootstrap secret must meet a strong minimum length");
