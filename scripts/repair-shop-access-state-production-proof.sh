@@ -2,7 +2,7 @@
 set -euo pipefail
 
 BASE="https://hermeslogisticsus.com"
-EMAIL="repair-booking-production-smoke@hermesconnect.app"
+EMAIL="repair-access-production-smoke@hermesconnect.app"
 TEST_ID="${GITHUB_RUN_ID:-manual}-access-$(date +%s)"
 PASSWORD="HermesAccess-${TEST_ID}-A9!"
 COOKIE="${RUNNER_TEMP:-/tmp}/repair-access-owner.cookies"
@@ -74,22 +74,52 @@ if [[ -z "$DB_ID" || "$DB_ID" == "null" ]]; then
 fi
 echo "::add-mask::$DB_ID"
 
-cleanup() {
-  curl -sS -o "${TMP}/access-cleanup-trap.json" -X POST "$BASE/api/repair-shop/cleanup-booking-smoke" >/dev/null || true
+post_d1() {
+  local output_file="$1"
+  local body="$2"
+  curl -sS -o "$output_file" -w '%{http_code}' \
+    -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+    -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
+    -H 'Content-Type: application/json' \
+    --data-binary "$body"
 }
-trap cleanup EXIT
 
-PRE_CLEAN="$(curl -sS -o "${TMP}/access-pre-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
-if [[ "$PRE_CLEAN" != "200" ]] || [[ "$(jq -r '.success // false' "${TMP}/access-pre-clean.json")" != "true" ]]; then
+cleanup_synthetic() {
+  local body http
+  body="$(jq -nc --arg email "$EMAIL" '{batch:[
+    {sql:"DELETE FROM repair_shop_access WHERE shop_id IN (SELECT r.id FROM repair_shops r JOIN specialists s ON s.id = r.owner_specialist_id WHERE s.email = ?);",params:[$email]},
+    {sql:"DELETE FROM sessions WHERE specialist_id IN (SELECT id FROM specialists WHERE email = ?);",params:[$email]},
+    {sql:"DELETE FROM repair_shops WHERE owner_specialist_id IN (SELECT id FROM specialists WHERE email = ?);",params:[$email]},
+    {sql:"DELETE FROM specialists WHERE email = ?;",params:[$email]}
+  ]}')"
+  http="$(post_d1 "${TMP}/access-cleanup.json" "$body")"
+  [[ "$http" == "200" ]] \
+    && [[ "$(jq -r '.success // false' "${TMP}/access-cleanup.json")" == "true" ]] \
+    && [[ "$(jq -r '[.result[]?.success == true] | all' "${TMP}/access-cleanup.json")" == "true" ]]
+}
+
+cleanup_trap() {
+  cleanup_synthetic >/dev/null 2>&1 || true
+}
+trap cleanup_trap EXIT
+
+if ! cleanup_synthetic; then
   fail_classified "synthetic_cleanup_unavailable"
 fi
 
-# Create only the fixed synthetic smoke identity through authenticated D1.
-# This intentionally avoids the public Shop Owner registration endpoint so the
-# proof remains valid after the September 15 free-registration deadline and does
-# not introduce any registration-policy bypass for real users.
-SPECIALIST_ID="specialist-access-smoke-$(node -e 'console.log(crypto.randomUUID())')"
+# The public Shop Owner registration and profile-creation endpoints intentionally
+# close after the September 15 free-registration window. Production QA must not
+# add a user-facing bypass. Create only this fixed synthetic identity and shop
+# through the authenticated D1 operator path, then exercise the normal login,
+# session, and owner access API exactly as the product does.
+UUID="$(node -e 'console.log(crypto.randomUUID())')"
+SPECIALIST_ID="specialist-access-smoke-${UUID}"
+SHOP_ID="shop-access-smoke-${UUID}"
+SHOP_SLUG="hermes-access-smoke-${UUID%%-*}"
 echo "::add-mask::$SPECIALIST_ID"
+echo "::add-mask::$SHOP_ID"
+echo "::add-mask::$SHOP_SLUG"
+
 CREDS="$(PASSWORD="$PASSWORD" node --input-type=module - <<'NODE'
 import { hashPassword } from './src/legacy-prototype/auth.mjs';
 const { hash, salt } = await hashPassword(process.env.PASSWORD || '');
@@ -103,25 +133,26 @@ CREATED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
 echo "::add-mask::$PASSWORD_HASH"
 echo "::add-mask::$PASSWORD_SALT"
 
-SPECIALIST_BODY="$(jq -nc \
-  --arg id "$SPECIALIST_ID" \
+SETUP_BODY="$(jq -nc \
+  --arg specialist "$SPECIALIST_ID" \
+  --arg shop "$SHOP_ID" \
+  --arg slug "$SHOP_SLUG" \
   --arg email "$EMAIL" \
   --arg hash "$PASSWORD_HASH" \
   --arg salt "$PASSWORD_SALT" \
   --arg created "$CREATED_AT" \
-  '{sql:"INSERT INTO specialists (id,email,password_hash,password_salt,name,role,location,bio,created_at) VALUES (?,?,?,?,?,?,?,?,?);",params:[$id,$email,$hash,$salt,"Hermes Access Smoke Owner","Shop Owner","United States","Temporary production access-state verification account.",$created]}')"
-SPECIALIST_HTTP="$(curl -sS -o "${TMP}/access-specialist-insert.json" -w '%{http_code}' \
-  -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
-  -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
-  -H 'Content-Type: application/json' \
-  --data-binary "$SPECIALIST_BODY")"
-if [[ "$SPECIALIST_HTTP" == "401" || "$SPECIALIST_HTTP" == "403" ]]; then
+  '{batch:[
+    {sql:"INSERT INTO specialists (id,email,password_hash,password_salt,name,role,location,bio,created_at) VALUES (?,?,?,?,?,?,?,?,?);",params:[$specialist,$email,$hash,$salt,"Hermes Access Smoke Owner","Shop Owner","United States","Temporary production access-state verification account.",$created]},
+    {sql:"INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,postal_code,timezone,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);",params:[$shop,$specialist,"Hermes Access Smoke Shop",$slug,"+1 414 555 0195","105 Access Test Way","Milwaukee","WI","53202","America/Chicago",$created,$created]}
+  ]}')"
+SETUP_HTTP="$(post_d1 "${TMP}/access-setup.json" "$SETUP_BODY")"
+if [[ "$SETUP_HTTP" == "401" || "$SETUP_HTTP" == "403" ]]; then
   fail_classified "blocked_cloudflare_d1_write"
 fi
-if [[ "$SPECIALIST_HTTP" != "200" ]] \
-  || [[ "$(jq -r '.success // false' "${TMP}/access-specialist-insert.json")" != "true" ]] \
-  || [[ "$(jq -r '.result[0].success // false' "${TMP}/access-specialist-insert.json")" != "true" ]]; then
-  fail_classified "synthetic_identity_insert_failed"
+if [[ "$SETUP_HTTP" != "200" ]] \
+  || [[ "$(jq -r '.success // false' "${TMP}/access-setup.json")" != "true" ]] \
+  || [[ "$(jq -r '[.result[]?.success == true] | all' "${TMP}/access-setup.json")" != "true" ]]; then
+  fail_classified "synthetic_identity_setup_failed"
 fi
 
 LOGIN="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password}')"
@@ -131,23 +162,12 @@ if [[ "$LOGIN_HTTP" != "200" ]] || [[ "$(jq -r '.success // false' "${TMP}/acces
   fail_classified "synthetic_login_failed"
 fi
 
-PROFILE='{"name":"Hermes Access Smoke Shop","phone":"+1 414 555 0195","address_line1":"105 Access Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
-PROFILE_HTTP="$(curl -sS -o "${TMP}/access-profile.json" -w '%{http_code}' -b "$COOKIE" \
-  -X PUT "$BASE/api/repair-shop/profile" -H 'Content-Type: application/json' --data-binary "$PROFILE")"
-if [[ "$PROFILE_HTTP" != "200" ]]; then
-  fail_classified "synthetic_profile_unavailable"
-fi
-SHOP_ID="$(jq -r '.shop.id // empty' "${TMP}/access-profile.json")"
-if [[ -z "$SHOP_ID" || "$SHOP_ID" == "null" ]]; then
-  fail_classified "synthetic_shop_identity_unavailable"
-fi
-echo "::add-mask::$SHOP_ID"
-
 TRIAL_HTTP="$(curl -sS -o "${TMP}/access-trial.json" -w '%{http_code}' -b "$COOKIE" "$BASE/api/repair-shop/access")"
 if [[ "$TRIAL_HTTP" != "200" ]] \
   || [[ "$(jq -r '.success // false' "${TMP}/access-trial.json")" != "true" ]] \
   || [[ "$(jq -r '.access.state // empty' "${TMP}/access-trial.json")" != "trialing" ]] \
-  || [[ "$(jq -r '.access.plan_id // empty' "${TMP}/access-trial.json")" != "repair_shop_founding" ]]; then
+  || [[ "$(jq -r '.access.plan_id // empty' "${TMP}/access-trial.json")" != "repair_shop_founding" ]] \
+  || [[ "$(jq -r '.access.next_action // empty' "${TMP}/access-trial.json")" != "choose_plan" ]]; then
   fail_classified "trialing_readback_failed"
 fi
 
@@ -156,11 +176,7 @@ UPSERT_BODY="$(jq -nc --arg shop "$SHOP_ID" --arg now "$NOW" '{
   sql:"INSERT INTO repair_shop_access (shop_id,access_state,plan_id,started_at,current_period_end,updated_at) VALUES (?, 'founding', 'repair_shop_founding', ?, NULL, ?) ON CONFLICT(shop_id) DO UPDATE SET access_state = 'founding', plan_id = 'repair_shop_founding', current_period_end = NULL, updated_at = excluded.updated_at;",
   params:[$shop,$now,$now]
 }')"
-UPSERT_HTTP="$(curl -sS -o "${TMP}/access-upsert.json" -w '%{http_code}' \
-  -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
-  -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
-  -H 'Content-Type: application/json' \
-  --data-binary "$UPSERT_BODY")"
+UPSERT_HTTP="$(post_d1 "${TMP}/access-upsert.json" "$UPSERT_BODY")"
 if [[ "$UPSERT_HTTP" == "401" || "$UPSERT_HTTP" == "403" ]]; then
   fail_classified "blocked_cloudflare_d1_write"
 fi
@@ -180,11 +196,7 @@ if [[ "$FOUNDING_HTTP" != "200" ]] \
 fi
 
 READ_BODY="$(jq -nc --arg shop "$SHOP_ID" '{sql:"SELECT access_state,plan_id FROM repair_shop_access WHERE shop_id = ? LIMIT 1;",params:[$shop]}')"
-READ_HTTP="$(curl -sS -o "${TMP}/access-d1-read.json" -w '%{http_code}' \
-  -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
-  -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
-  -H 'Content-Type: application/json' \
-  --data-binary "$READ_BODY")"
+READ_HTTP="$(post_d1 "${TMP}/access-d1-read.json" "$READ_BODY")"
 if [[ "$READ_HTTP" != "200" ]] \
   || [[ "$(jq -r '.success // false' "${TMP}/access-d1-read.json")" != "true" ]] \
   || [[ "$(jq -r '.result[0].results[0].access_state // empty' "${TMP}/access-d1-read.json")" != "founding" ]] \
@@ -192,22 +204,22 @@ if [[ "$READ_HTTP" != "200" ]] \
   fail_classified "d1_founding_readback_failed"
 fi
 
-FINAL_CLEAN="$(curl -sS -o "${TMP}/access-final-clean.json" -w '%{http_code}' -X POST "$BASE/api/repair-shop/cleanup-booking-smoke")"
-if [[ "$FINAL_CLEAN" != "200" ]] \
-  || [[ "$(jq -r '.success // false' "${TMP}/access-final-clean.json")" != "true" ]] \
-  || [[ "$(jq -r '.remaining // -1' "${TMP}/access-final-clean.json")" != "0" ]]; then
+if ! cleanup_synthetic; then
   fail_classified "synthetic_cleanup_failed"
 fi
 
-COUNT_BODY="$(jq -nc --arg shop "$SHOP_ID" '{sql:"SELECT COUNT(*) AS count FROM repair_shop_access WHERE shop_id = ?;",params:[$shop]}')"
-COUNT_HTTP="$(curl -sS -o "${TMP}/access-d1-clean-read.json" -w '%{http_code}' \
-  -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
-  -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
-  -H 'Content-Type: application/json' \
-  --data-binary "$COUNT_BODY")"
-if [[ "$COUNT_HTTP" != "200" ]] \
-  || [[ "$(jq -r '.success // false' "${TMP}/access-d1-clean-read.json")" != "true" ]] \
-  || [[ "$(jq -r '.result[0].results[0].count // -1' "${TMP}/access-d1-clean-read.json")" != "0" ]]; then
+VERIFY_CLEAN_BODY="$(jq -nc \
+  --arg email "$EMAIL" \
+  --arg specialist "$SPECIALIST_ID" \
+  --arg shop "$SHOP_ID" \
+  '{sql:"SELECT (SELECT COUNT(*) FROM specialists WHERE email = ?) AS specialists_count, (SELECT COUNT(*) FROM sessions WHERE specialist_id = ?) AS sessions_count, (SELECT COUNT(*) FROM repair_shops WHERE id = ?) AS shops_count, (SELECT COUNT(*) FROM repair_shop_access WHERE shop_id = ?) AS access_count;",params:[$email,$specialist,$shop,$shop]}')"
+VERIFY_CLEAN_HTTP="$(post_d1 "${TMP}/access-clean-read.json" "$VERIFY_CLEAN_BODY")"
+if [[ "$VERIFY_CLEAN_HTTP" != "200" ]] \
+  || [[ "$(jq -r '.success // false' "${TMP}/access-clean-read.json")" != "true" ]] \
+  || [[ "$(jq -r '.result[0].results[0].specialists_count // -1' "${TMP}/access-clean-read.json")" != "0" ]] \
+  || [[ "$(jq -r '.result[0].results[0].sessions_count // -1' "${TMP}/access-clean-read.json")" != "0" ]] \
+  || [[ "$(jq -r '.result[0].results[0].shops_count // -1' "${TMP}/access-clean-read.json")" != "0" ]] \
+  || [[ "$(jq -r '.result[0].results[0].access_count // -1' "${TMP}/access-clean-read.json")" != "0" ]]; then
   fail_classified "cleanup_readback_failed"
 fi
 
