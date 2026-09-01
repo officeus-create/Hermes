@@ -1,3 +1,10 @@
+const RUSSIAN_CANONICAL_FALLBACKS = new Map([
+  [
+    "Self-tracked completion is not reviewer acceptance, Academy completion, employment, certification, income or permission to work with live operations.",
+    "Самостоятельно отмеченное завершение урока не означает принятие reviewer, завершение Academy, трудоустройство, сертификацию, доход или разрешение работать с реальными операциями.",
+  ],
+]);
+
 export function resolveAcademyLessonLocale(request, url) {
   const direct = String(url.searchParams.get("lang") || "").trim().toLowerCase();
   if (direct === "ru") return "ru";
@@ -28,5 +35,9 @@ export function projectLocalizedLessonShape(base, localized) {
     );
   }
 
-  return typeof localized === typeof base ? localized : base;
+  if (typeof localized === typeof base) return localized;
+  if (typeof base === "string" && RUSSIAN_CANONICAL_FALLBACKS.has(base)) {
+    return RUSSIAN_CANONICAL_FALLBACKS.get(base);
+  }
+  return base;
 }
