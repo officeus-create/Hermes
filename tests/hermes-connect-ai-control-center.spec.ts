@@ -81,8 +81,8 @@ test("Activity never renders stored task prompt and only allowlists Hermes PR UR
     { ...task, id: "hcai_bad_pr", status: "completed", prompt: "ANOTHER SECRET PROMPT", output_summary: "Another safe result.", pr_url: "https://evil.example/pull/1" },
   ] })));
 
-  await page.goto("/services/hermes-connect/internal/ai-connect/activity/?lang=ru", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Активность" })).toBeVisible();
+  await page.goto("/services/hermes-connect/internal/ai-connect/activity/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
   await expect(page.locator("[data-list]")).toContainText("Sanitized result only.");
   await expect(page.locator("[data-list]")).not.toContainText("SECRET PROMPT MUST NOT RENDER");
   await expect(page.locator("[data-list]")).not.toContainText("ANOTHER SECRET PROMPT");
