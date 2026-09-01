@@ -1,10 +1,10 @@
 name: Repair paid-intent production smoke
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Deploy approved main to Cloudflare Pages v2"]
+    types: [completed]
     branches: [main]
-    paths:
-      - .github/workflows/repair-paid-intent-production-smoke.yml
   workflow_dispatch:
 
 permissions:
@@ -17,8 +17,13 @@ concurrency:
 
 jobs:
   verify-paid-intent:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 12
+    env:
+      TESTED_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.sha }}
     steps:
       - name: Verify current paid-plan production truth
         id: production_truth
@@ -232,7 +237,7 @@ jobs:
 
           ${summary}
 
-          - tested repository revision: \`${GITHUB_SHA}\`
+          - tested repository revision: \`${TESTED_SHA}\`
           - production paid-plan truth: \`${TRUTH_OUTCOME}\`
           - first explicitly synthetic request: \`${SEND_OUTCOME}\`
           - privacy-safe receiver classification: \`${safe_receiver_class}\`
