@@ -28,15 +28,109 @@ const currentKey = normalized.includes("/activity/") ? "activity"
     const nav = document.querySelector<HTMLElement>("[data-hc-ai-nav]");
     if (!nav) return;
     const isRu = new URLSearchParams(window.location.search).get("lang") === "ru";
+    document.documentElement.lang = isRu ? "ru" : "en";
     nav.setAttribute("aria-label", isRu ? "Разделы AI Hermes Connect" : "AI Hermes Connect sections");
     const owner = nav.querySelector<HTMLElement>("[data-ai-nav-owner]");
     if (owner) owner.textContent = isRu ? "Кабинет владельца · AI" : "Owner cabinet · AI";
-    nav.querySelectorAll<HTMLAnchorElement>("[data-ai-nav-link]").forEach((link) => {
-      link.textContent = isRu ? (link.dataset.ru || link.textContent || "") : (link.dataset.en || link.textContent || "");
+
+    const ruCopy = new Map<string, string>([
+      ["Hermes Connect · internal AI", "Hermes Connect · внутренний AI"],
+      ["Your private Hermes AI control room: start a task, see the runner, follow execution, branch/PR/evidence and safe approval stops.", "Твой приватный кабинет управления Hermes AI: поставить задачу, увидеть runner, следить за выполнением, branch/PR/evidence и безопасными остановками на подтверждение."],
+      ["Checking internal access…", "Проверяем внутренний доступ…"],
+      ["Control Center opens only after server-side owner capability verification.", "Control Center откроется только после серверной проверки capability владельца."],
+      ["Runtime", "Среда выполнения"],
+      ["Execution path", "Контур исполнения"],
+      ["Version", "Версия"],
+      ["The runner is outbound-only. No remote shell, provider keys, cookies or credentials are exposed to the browser.", "Runner работает только исходящими запросами. Remote shell, provider keys, cookies и credentials в браузер не передаются."],
+      ["Current project", "Текущий проект"],
+      ["Ready", "Готов"],
+      ["First prove one Software Engineer through the full owner → task → runner → Codex → evidence loop. More agents come only after that.", "Сначала доводим одного Software Engineer до полностью доказанного owner → task → runner → Codex → evidence цикла. Новых агентов добавим только после этого."],
+      ["Projects", "Проекты"],
+      ["Activity", "Активность"],
+      ["Task control", "Управление задачей"],
+      ["Give Hermes AI an assignment", "Дай поручение Hermes AI"],
+      ["Ordinary low-risk repository work may run autonomously. Merge/deploy, credentials, billing, external communication and other consequential actions stop at owner approval.", "Обычная низкорисковая работа в репозитории может выполняться автономно. Merge/deploy, credentials, billing, внешние сообщения и другие значимые действия остановятся на owner approval."],
+      ["Task", "Задача"],
+      ["Start task", "Запустить задачу"],
+      ["Current / latest task", "Текущая / последняя задача"],
+      ["No task yet", "Задач пока нет"],
+      ["Updated", "Обновлено"],
+      ["Branch", "Ветка"],
+      ["Your approval is required", "Нужно твоё подтверждение"],
+      ["Sanitized result", "Очищенный результат"],
+      ["Open PR", "Открыть PR"],
+      ["Cancel task", "Отменить задачу"],
+      ["Full history", "Полная история"],
+      ["AI Connect · projects", "AI Connect · проекты"],
+      ["Only real Hermes internal projects with verified runtime state appear here — no demos or placeholder projects.", "Здесь отображаются только реальные внутренние проекты Hermes с подтверждённым runtime-состоянием — без демо и выдуманных карточек."],
+      ["Internal owner only", "Только для владельца"],
+      ["Projects open after the server verifies HERMES_INTERNAL_OWNER.", "Проекты откроются после серверной проверки HERMES_INTERNAL_OWNER."],
+      ["1 current project", "1 текущий проект"],
+      ["No demo projects", "Без демонстрационных проектов"],
+      ["Current workstream", "Текущее направление"],
+      ["Finish the full owner → task → outbound runner → Hermes Codex → sanitized result → evidence/PR → owner approval loop.", "Довести полный цикл: владелец → задача → outbound runner → Hermes Codex → очищенный результат → evidence/PR → owner approval при необходимости."],
+      ["Agent", "Агент"],
+      ["Open project", "Открыть проект"],
+      ["All projects", "Все проекты"],
+      ["Prove the full safe cabinet-controlled AI loop: task → outbound runner → Hermes Codex → branch/PR/evidence → result or owner approval.", "Цель — доказать полный безопасный цикл управления AI из кабинета: задача → outbound runner → Hermes Codex → branch/PR/evidence → результат или owner approval."],
+      ["The project opens after HERMES_INTERNAL_OWNER is verified.", "Проект откроется после проверки HERMES_INTERNAL_OWNER."],
+      ["Foundation", "Фундамент"],
+      ["What is already real", "Что уже реально работает"],
+      ["One Hermes identity with a separate HERMES_INTERNAL_OWNER capability.", "Один Hermes identity и отдельная HERMES_INTERNAL_OWNER capability."],
+      ["D1 task queue, events, cancellation, evidence and approval state.", "Очередь задач, события, отмена, evidence и approval-state в D1."],
+      ["The Mac runner is outbound-only and exposes no remote shell.", "Mac runner работает только исходящими запросами и не открывает remote shell."],
+      ["Codex runs on an isolated task branch and must stop at consequential gates.", "Codex запускается в отдельной task-ветке и обязан остановиться на consequential gate."],
+      ["Live state", "Живое состояние"],
+      ["Checking runtime", "Ожидаем проверку runtime"],
+      ["Next action", "Следующий шаг"],
+      ["Connect the live runner and execute one task", "Подключить живой runner и выполнить одну задачу"],
+      ["After that the project becomes a real managed AI loop rather than only an interface.", "После этого проект можно считать настоящим управляемым AI-контуром, а не только интерфейсом."],
+      ["Open Control Center", "Открыть Control Center"],
+      ["AI Connect · activity", "AI Connect · активность"],
+      ["Internal AI task history: sanitized results, branches, PRs, evidence and approval stops. Raw secrets and credentials are never rendered here.", "История внутренних AI-задач: безопасные результаты, ветки, PR, evidence и остановки на подтверждение. Исходные секреты и credentials здесь не отображаются."],
+      ["Activity opens after HERMES_INTERNAL_OWNER is verified.", "Активность откроется после проверки HERMES_INTERNAL_OWNER."],
+      ["Recent tasks", "Последние задачи"],
+      ["Needs approval", "Нужно подтверждение"],
+    ]);
+
+    const translateStaticCopy = () => {
+      if (!isRu) return;
+      const main = document.querySelector("main");
+      if (main) {
+        const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+        let node = walker.nextNode();
+        while (node) {
+          const raw = node.nodeValue || "";
+          const key = raw.trim();
+          const translated = ruCopy.get(key);
+          if (translated) node.nodeValue = raw.replace(key, translated);
+          node = walker.nextNode();
+        }
+      }
+      document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>("[placeholder]").forEach((input) => {
+        if (input.placeholder === "Example: inspect the current Hermes Connect AI Control Center, fix safe issues, run tests and prepare a PR. Do not merge/deploy.") {
+          input.placeholder = "Например: проверь текущий Hermes Connect AI Control Center, исправь найденные безопасные ошибки, запусти тесты и подготовь PR. Не merge/deploy.";
+        }
+      });
+      const path = window.location.pathname.replace(/\/+$/, "/");
+      if (path.endsWith("/activity/")) document.title = "Активность | AI Connect | Hermes Connect";
+      else if (path.endsWith("/projects/hermes-connect-internal-ai-pilot/")) document.title = "Внутренний AI-пилот | Hermes Connect";
+      else if (path.endsWith("/projects/")) document.title = "Проекты | AI Connect | Hermes Connect";
+    };
+
+    const preserveLocale = (link: HTMLAnchorElement) => {
       const url = new URL(link.getAttribute("href") || "/", window.location.origin);
       if (isRu) url.searchParams.set("lang", "ru"); else url.searchParams.delete("lang");
-      link.href = `${url.pathname}${url.search}`;
+      link.href = `${url.pathname}${url.search}${url.hash}`;
+    };
+
+    nav.querySelectorAll<HTMLAnchorElement>("[data-ai-nav-link]").forEach((link) => {
+      link.textContent = isRu ? (link.dataset.ru || link.textContent || "") : (link.dataset.en || link.textContent || "");
+      preserveLocale(link);
     });
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="/services/hermes-connect/internal/ai-connect/"],a[href^="/services/hermes-connect/internal/ai-assistant/"]').forEach(preserveLocale);
+    translateStaticCopy();
+
     void (async () => {
       try {
         const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
