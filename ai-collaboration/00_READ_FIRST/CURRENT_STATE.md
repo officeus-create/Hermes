@@ -36,7 +36,7 @@ Fresh GitHub branch metadata on 2026-09-01 shows:
 
 Classification: `GOVERNANCE_CANONICAL / PLATFORM_ENFORCEMENT_PARTIAL`.
 
-HOS/HUEG therefore remains mandatory operating policy, but GitHub does not yet physically prevent a manual/direct bypass. Enabling the intended `main` PR/check/review protections is an owner/admin platform action unless a write-capable repository-administration surface is available.
+HOS/HUEG therefore remains mandatory operating policy, but GitHub does not yet physically prevent a manual/direct bypass. Enabling the intended `main` PR/check/review protections is an owner/admin platform action unless a write-capable repository-administration surface is available. GitHub issue #938 is the current bounded owner/admin gate for this work.
 
 ## Fresh open pull-request set
 
@@ -85,7 +85,7 @@ The Hermes CI / HUEG condition-watch now requires a successful-run `STATE_SNAPSH
 
 Google Drive remains the durable business/knowledge memory; GitHub remains technical truth for code, PRs, tests and repository evidence. The One Brain learning loop and Agent Sync V2 require `RECALL LESSONS -> EXECUTE -> EVIDENCE -> RETRO -> LEARN -> PERSIST -> HANDOFF` for material work.
 
-Current Drive permission metadata available to this agent reports effective ACL as not exposed/`access_not_verified`. Therefore the old permission-security concern is neither assumed fixed nor repeated as a current proven `anyone=writer` fact. Classification is `SECURITY_PERMISSION_STATE_UNVERIFIED` until an authenticated owner/admin permission surface proves the effective ACL.
+Issue #431 contains the last authenticated effective-permission finding: the reviewed AI collaboration/handoff tree was `FIX_REQUIRED` because anonymous writer access existed. The current Drive connector surface now returns effective ACL as not exposed/`access_not_verified`, so it cannot prove whether that finding has been remediated. Current classification is therefore `LAST_VERIFIED_FIX_REQUIRED / CURRENT_RECHECK_ACCESS_GAP` — not `FIXED`, and not a fresh claim that the anonymous writer grant still exists today. Owner/admin must verify the effective ACL and then record sanitized `FIXED` or `NEEDS_OWNER_DECISION` evidence in #431.
 
 ## Current execution rules
 
@@ -103,8 +103,8 @@ Current Drive permission metadata available to this agent reports effective ACL 
 - AI Connect lane: reconcile #882 -> #885 -> #886 -> #887 stack from the current canonical base; do not trust historical greens on failing downstream heads.
 - Repair Shop/Connect lane: investigate current-main Repair Booking production-smoke failure without parallel rewrites.
 - Performance lane: investigate current-main Lighthouse evidence failure before making a performance claim.
-- Governance/admin: enable physical `main` protection/ruleset when an authorized admin surface is available.
-- One Brain owner/admin: verify effective Drive permissions and remediate only from authenticated ACL evidence.
+- Governance/admin: execute #938 and enable physical `main` protection/ruleset in an authorized GitHub admin surface.
+- One Brain owner/admin: execute #431 effective-permission recheck/remediation from an authenticated Drive ACL surface.
 
 ## Operating rule
 
