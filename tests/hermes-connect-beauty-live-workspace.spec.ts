@@ -65,8 +65,8 @@ test("Beauty B1 loads real owner-scoped profile, team and shared services", asyn
   await mockBeautyApis(page);
   await page.goto("/services/hermes-connect/beauty/workspace/", { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator('[name="name"]')).toHaveValue("Aurelia Studio");
-  await expect(page.locator('[name="city"]')).toHaveValue("Miami");
+  await expect(page.locator('[data-profile-form] [name="name"]')).toHaveValue("Aurelia Studio");
+  await expect(page.locator('[data-profile-form] [name="city"]')).toHaveValue("Miami");
   await expect(page.locator("[data-profile-state]")).toHaveText("Configured");
   await expect(page.locator("[data-team-list]")).toContainText("Leah Morgan");
   await expect(page.locator("[data-services-list]")).toContainText("Signature Facial");
