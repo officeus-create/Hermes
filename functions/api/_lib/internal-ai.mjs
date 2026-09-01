@@ -107,5 +107,9 @@ export function sanitizeTaskResult(payload = {}) {
 }
 export function publicTask(row) {
   if (!row) return null;
-  return { id: row.id, organization_scope: row.organization_scope, agent_role: row.agent_role, prompt: row.prompt, status: row.status, created_at: row.created_at, started_at: row.started_at, completed_at: row.completed_at, updated_at: row.updated_at, repo_sha: row.repo_sha, branch: row.branch, pr_url: row.pr_url, evidence_class: row.evidence_class, output_summary: row.output_summary, approval_gate: row.approval_gate, cancel_requested: Boolean(row.cancel_requested) };
+  return { id: row.id, organization_scope: row.organization_scope, agent_role: row.agent_role, status: row.status, created_at: row.created_at, started_at: row.started_at, completed_at: row.completed_at, updated_at: row.updated_at, repo_sha: row.repo_sha, branch: row.branch, pr_url: row.pr_url, evidence_class: row.evidence_class, output_summary: row.output_summary, approval_gate: row.approval_gate, cancel_requested: Boolean(row.cancel_requested) };
+}
+export function runnerTask(row) {
+  const task = publicTask(row);
+  return task ? { ...task, prompt: row.prompt } : null;
 }
