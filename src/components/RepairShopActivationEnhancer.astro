@@ -124,6 +124,20 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
   #public-link-text{display:block;overflow-wrap:anywhere;word-break:break-word}
   #public-link-wrap .link-actions{flex-wrap:wrap}
   #public-link-wrap .link-actions>*{min-width:0;max-width:100%;white-space:normal}
+
+  /* Repair Shop mobile drawer follows the Pearl Connect header. This late cascade
+     belongs to the canonical Repair Shop loader so legacy/global header rules cannot
+     leave white navigation text on the light drawer. */
+  html.hc-experience .site-header .menu-button{color:#111827!important}
+  html.hc-experience .site-header .mobile-nav{color:#111827!important;border-color:rgba(17,24,39,.10)!important;background:rgba(247,246,243,.985)!important;box-shadow:0 22px 70px rgba(17,24,39,.18)}
+  html.hc-experience .site-header .mobile-nav>a{color:#111827!important;border-bottom-color:rgba(17,24,39,.08);transition:none!important}
+  html.hc-experience .site-header .mobile-nav>a:hover,html.hc-experience .site-header .mobile-nav>a:focus-visible{color:#0b0d12!important;background:rgba(124,92,255,.08)}
+  html.hc-experience .site-header .mobile-language-switcher{color:#111827!important;border-top-color:rgba(17,24,39,.12)}
+  html.hc-experience .site-header .mobile-language-switcher strong{color:#4b5563!important}
+  html.hc-experience .site-header .mobile-language-switcher a{min-height:44px;color:#1f2937!important;border:1px solid transparent;border-radius:10px;transition:none!important}
+  html.hc-experience .site-header .mobile-language-switcher a:hover,html.hc-experience .site-header .mobile-language-switcher a:focus-visible{color:#111827!important;border-color:rgba(124,92,255,.18);background:rgba(124,92,255,.08)}
+  html.hc-experience .site-header .mobile-language-switcher a[aria-current="page"]{color:#fff!important;border-color:#111827!important;background:#111827!important}
+
   @media(max-width:760px){.repair-activation-head{display:block}.repair-activation-progress{margin-top:8px;text-align:left}.repair-activation-steps{grid-template-columns:1fr 1fr}.repair-activation-actions{align-items:stretch;flex-direction:column}.repair-activation-primary,.repair-activation-secondary{width:100%;box-sizing:border-box}#public-link-wrap .link-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}#public-link-wrap .link-actions>*{width:100%;box-sizing:border-box}}
   @media(max-width:440px){.repair-activation-steps{grid-template-columns:1fr}#public-link-wrap .link-actions{grid-template-columns:1fr}}
 </style>
