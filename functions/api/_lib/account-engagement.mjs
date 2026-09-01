@@ -2,7 +2,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const ACTIVITY_WRITE_INTERVAL_MS = 15 * 60 * 1000;
 const INACTIVITY_THRESHOLD_MS = 7 * DAY_MS;
 const REMINDER_COOLDOWN_MS = 6 * DAY_MS + 20 * 60 * 60 * 1000;
+const REMINDER_TIME_WINDOW_MINUTES = 20;
 const SUPPORTED_LOCALES = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+const WEEKDAY_INDEX = new Map([["Sun", 0], ["Mon", 1], ["Tue", 2], ["Wed", 3], ["Thu", 4], ["Fri", 5], ["Sat", 6]]);
 
 export const ACCOUNT_REMINDER_EMAIL_PATH = "https://lead-email.internal/v1/send-account";
 export const ACCOUNT_REMINDER_SUBJECTS = {
@@ -125,8 +127,10 @@ function localParts(value, timeZone) {
     parts = formatter("UTC").formatToParts(date);
   }
   const byType = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const weekday = byType.weekday || "";
   return {
-    weekday: byType.weekday || "",
+    weekday,
+    weekdayIndex: WEEKDAY_INDEX.get(weekday) ?? -1,
     hour: Number(byType.hour || 0),
     minute: Number(byType.minute || 0),
   };
@@ -146,9 +150,13 @@ export function isWeeklyInactivityReminderDue({ createdAt, lastActiveAt, lastRem
 
   const anchor = localParts(created, timeZone);
   const current = localParts(now, timeZone);
-  if (anchor.weekday !== current.weekday || anchor.hour !== current.hour) return false;
+  if (anchor.weekdayIndex < 0 || current.weekdayIndex < 0 || anchor.weekdayIndex !== current.weekdayIndex) return false;
 
-  return true;
+  const anchorMinuteOfDay = anchor.hour * 60 + anchor.minute;
+  const currentMinuteOfDay = current.hour * 60 + current.minute;
+  const minutesAfterRegistrationTime = currentMinuteOfDay - anchorMinuteOfDay;
+
+  return minutesAfterRegistrationTime >= 0 && minutesAfterRegistrationTime < REMINDER_TIME_WINDOW_MINUTES;
 }
 
 export function canonicalRepairShopDashboardUrl(locale = "en") {
