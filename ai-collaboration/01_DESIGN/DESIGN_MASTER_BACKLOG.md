@@ -30,11 +30,11 @@ Execution rule: simple -> complex; fix systemic causes before one-off screens; p
 - [x] RU continuity across significant public/private Connect flows substantially improved.
 - [x] Responsive/focus/reduced-motion foundations exist across major Connect flows.
 
-## Autonomous queue — simple to complex
+## autonomous queue — simple to complex
 
 ### P0 — housekeeping and system consistency
 - [x] Create this single Design Master Backlog.
-- [ ] Audit all current Hermes Connect logo references and eliminate stale pre-Option-02 production references where safe.
+- [x] Audit all current Hermes Connect logo references and eliminate stale pre-Option-02 production references where safe. Evidence: `hermes-connect/LOGO_REFERENCE_AUDIT_2026-09-01.md`; no active pre-Option-02 visual geometry found on the audited main baseline.
 - [ ] Audit shared header/footer/launcher logo sizing and spacing consistency.
 - [ ] Audit design-token duplication and document one canonical source per semantic token.
 - [ ] Add a design regression checklist for every visual PR: 1440, 390, overflow, focus, reduced motion, light/dark where applicable.
