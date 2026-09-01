@@ -26,8 +26,8 @@
     "required_status_check_enforcement": "off",
     "platform_enforcement_issue": 938,
     "drive_acl_issue": 431,
-    "drive_acl_observed_risk": "ANONYMOUS_WRITER_PRESENT_ON_MULTIPLE_ONE_BRAIN_CONTROL_TREE_NODES",
-    "drive_acl_remediation": "OWNER_ADMIN_ACTION_REQUIRED",
+    "drive_acl_core_state": "ACL_REMEDIATED_AND_READBACK_VERIFIED",
+    "drive_acl_legacy_tree_state": "LEGACY_ANYONE_WRITER_CLEANUP_OPEN",
     "agent_report_passport_required": true
   },
   "current_thread_scope": {
@@ -71,7 +71,7 @@
     {"number": 871, "title": "docs: add corporate discovery one brain audit", "routing": "STALE_SOURCE_ONLY_CORPORATE_AUDIT_GOVERNANCE_DONOR", "thread_action": "PRESERVE_AND_RECONCILE_UNIQUE_EVIDENCE"}
   ],
   "governance_pr_941": {
-    "status": "REPLAYED_FROM_FRESH_MAIN_CI_REQUIRED",
+    "status": "REPLAYED_FROM_FRESH_MAIN_UPDATED_FOR_ACL_REMEDIATION_CI_REQUIRED",
     "active_branch": "governance/current-state-closeout-2026-09-01",
     "previous_head": "6f852224a0f7a43be4e9120b2617d3c0a0c835f2",
     "backup_branch": "backup/governance-current-state-closeout-pre-06e0-2026-09-01",
@@ -97,15 +97,24 @@
     "decommission_gate": "Fresh Codex 2 package -> ChatGPT acceptance/reconciliation -> independent Gemini audit -> owner approval. No physical deletion/uninstall before all gates."
   },
   "one_brain_security": {
-    "state": "P0_INTEGRITY_RISK_OWNER_ADMIN_REMEDIATION_REQUIRED",
-    "observed": "Drive metadata showed type=anyone role=writer on canonical Master Board/control-tree nodes and parent folders.",
-    "connector_limitation": "Current Drive connector can inspect metadata but does not expose safe permission removal.",
-    "next_steps": [
-      "owner/admin remove anonymous writer permission at highest applicable parent",
-      "preserve required named-user/service access",
-      "recheck representative files/folders after remediation",
-      "keep passwords/API keys/tokens outside ordinary One Brain knowledge docs"
-    ]
+    "core_state": "ACL_REMEDIATED_AND_READBACK_VERIFIED",
+    "core_evidence": [
+      "00_HERMES_DIGITAL_CEO_MASTER_CONTROL shared=false owner-only",
+      "00_HERMES_GLOBAL_CORE shared=false owner-only",
+      "00_HERMES_GLOBAL_CORE/07_GOVERNANCE shared=false owner-only",
+      "canonical Master Board moved with same Drive file ID into protected 07_GOVERNANCE and immediately read back shared=false owner-only",
+      "pointer-only Access Registry moved with same Drive file ID into protected 07_GOVERNANCE and immediately read back shared=false owner-only",
+      "current chat routing/naming governance and Google Stack adoption gate are stored in protected governance storage"
+    ],
+    "legacy_tree_state": "CLEANUP_OPEN_DO_NOT_TRUST_AS_CURRENT_CANONICAL",
+    "legacy_tree_examples": [
+      "AI_COMMAND_CENTER",
+      "Hermes Connect / HERMES CONNECT — KNOWLEDGE HUB",
+      "Marketing",
+      "CLAUDE — Knowledge Audit — 2026-08-17"
+    ],
+    "legacy_tree_rule": "Do not bulk-move or delete. Classify/promote canonical artifacts individually, preserve lineage, and handle secret rotation or legacy-folder permission cleanup separately.",
+    "secrets_rule": "Keep passwords, API keys, tokens and plaintext credentials outside ordinary One Brain knowledge documents."
   },
   "agent_report_passport": {
     "required": true,
