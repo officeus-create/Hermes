@@ -22,6 +22,9 @@ export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
 
 export const SCREENSHOT_VIEWPORTS = Object.freeze([
   { id: "desktop", width: 1440, height: 1200 },
+  { id: "laptop", width: 1024, height: 900 },
+  { id: "tablet", width: 768, height: 1024 },
+  { id: "mobile-wide", width: 430, height: 932 },
   { id: "mobile", width: 390, height: 844 },
 ]);
 
