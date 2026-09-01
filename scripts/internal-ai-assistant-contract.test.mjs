@@ -78,7 +78,7 @@ assert.match(codexHermes, /exec \"\$FCC_CODEX\" \"\$@\"/, "manual codex-hermes u
 assert.match(agentPolicy, /Browser-queued Internal AI is stricter/, "canonical agent policy must describe the stricter unattended runner boundary");
 assert.match(agentPolicy, /sandbox denial is a blocker\/evidence signal/i, "canonical agent policy must treat sandbox denial as evidence rather than permission escalation");
 assert.doesNotMatch(agentPolicy, /preferred Hermes invocation is `\.\/scripts\/ai\/codex-hermes --approve-for-me`/, "canonical agent policy must not recommend the superseded auto-review invocation");
-assert.doesNotMatch(agentPolicy, /bypass them with .*--yolo/i, "canonical agent policy must not instruct agents to bypass sandbox or approval controls");
+assert.match(agentPolicy, /Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` \/ `--yolo`/, "canonical agent policy must explicitly prohibit sandbox/approval bypass modes");
 const shellCheck = spawnSync("bash", ["-n", codexHermesPath], { encoding: "utf8" });
 assert.equal(shellCheck.status, 0, `codex-hermes shell syntax must remain valid: ${shellCheck.stderr}`);
 assert.match(sanitizer, /REDACTED_PRIVATE_KEY_BLOCK/, "streaming sanitizer must suppress private-key bodies");
