@@ -1,0 +1,58 @@
+/*
+ * Hermes Connect division-context layer.
+ * Adds a restrained semantic signal around the shared launcher without changing
+ * Option 02 geometry or repainting the surrounding public page.
+ */
+
+body:has(.detail-page-logistics) { --hc-public-route-accent: var(--hermes-logistics,#1e88ff); }
+body:has(.detail-page-marketing) { --hc-public-route-accent: var(--hermes-marketing,#00c853); }
+body:has(.detail-page-academy) { --hc-public-route-accent: var(--hermes-academy,#7c5cff); }
+body:has(.detail-page-technology) { --hc-public-route-accent: var(--hermes-technology,#ff7a00); }
+
+body:has(.detail-page) .hermes-connect-header-launcher {
+  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 28%,rgba(11,13,18,.12));
+  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 7%,rgba(255,255,255,.82));
+}
+
+body:has(.detail-page) .hermes-connect-header-launcher:hover,
+body:has(.detail-page) .hermes-connect-header-launcher:focus-visible {
+  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 44%,rgba(11,13,18,.12));
+  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 11%,#fff);
+}
+
+body:has(.detail-page) .hermes-connect-banner {
+  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 24%,rgba(255,255,255,.10));
+  background:
+    radial-gradient(circle at 88% 12%,color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 18%,transparent),transparent 24rem),
+    linear-gradient(135deg,#121722 0%,#0b0d12 72%);
+}
+
+body:has(.detail-page) .hermes-connect-banner-badge {
+  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 30%,rgba(255,255,255,.12));
+  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 12%,rgba(255,255,255,.04));
+}
+
+body:has(.detail-page) .hermes-connect-banner-badge span,
+body:has(.detail-page) .hermes-connect-banner-copy > span {
+  color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 64%,#fff);
+}
+
+/* Keep the action neutral/operational. Context color is a signal, not a takeover. */
+body:has(.detail-page) .hermes-connect-banner-actions a {
+  border-color:rgba(255,255,255,.16);
+  background:#fff;
+  color:var(--hermes-obsidian,#0b0d12);
+}
+
+body:has(.detail-page) .hermes-connect-banner-actions a:hover,
+body:has(.detail-page) .hermes-connect-banner-actions a:focus-visible {
+  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 8%,#fff);
+}
+
+@media (forced-colors:active) {
+  body:has(.detail-page) .hermes-connect-header-launcher,
+  body:has(.detail-page) .hermes-connect-banner,
+  body:has(.detail-page) .hermes-connect-banner-badge {
+    border-color:CanvasText;
+  }
+}
