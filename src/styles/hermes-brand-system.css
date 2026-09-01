@@ -13,6 +13,9 @@
 @import "./hermes-digital-services.css";
 @import "./hermes-contact-public.css";
 @import "./hermes-carrier-entry.css";
+@import "./hermes-marketing-socials-polish.css";
+@import "./hermes-connect-division-context.css";
+@import "./hermes-repair-private-mobile.css";
 
 :root {
   /* Core surfaces */
@@ -170,6 +173,50 @@
   background: rgba(255, 255, 255, 0.58);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* Long localized workspace-state labels must wrap instead of widening the card. */
+.hc-account-workspace {
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, auto);
+}
+
+.hc-account-workspace em {
+  min-width: 0;
+  max-width: 9.5rem;
+  line-height: 1.2;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* Beauty B1 stays visually neutral until an owner-approved Beauty identity exists. */
+.beauty-b1-form input,
+.beauty-b1-service-form input,
+.beauty-b1-button {
+  min-height: 44px;
+}
+
+.beauty-b1-form input:focus-visible,
+.beauty-b1-service-form input:focus-visible,
+.beauty-b1-button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--hermes-violet) 24%, transparent);
+  outline-offset: 2px;
+}
+
+.beauty-b1-row,
+.beauty-b1-row > div {
+  min-width: 0;
+}
+
+.beauty-b1-row strong,
+.beauty-b1-row small {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .beauty-b1-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
 }
 
 @media (prefers-reduced-transparency: reduce) {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-31",
+  "updatedAt": "2026-09-01",
   "scope": {
     "description": "Material site visuals and first-party Hermes brand icons shipped by the public build.",
     "roots": [
@@ -32,66 +32,6 @@
     "REPOSITORY_SOURCE_VERIFIED": "First-party brand source or its raster derivative is tracked in the owner-controlled repository."
   },
   "assets": [
-    {
-      "path": "src/assets/hermes-ecosystem-hero.jpg",
-      "sha256": "b71800c1cef40c0f1b76464063b1b270422b8310735977a7bfe8177794b358b7",
-      "firstTrackedCommit": "00b14909a71dee4b41510462700e43bf46a4d27e",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
-      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
-    },
-    {
-      "path": "public/images/hermes-live-product.jpg",
-      "sha256": "162f0db4cda25b15dbeb489e8f88ee9c72721f28666fb62ed67e1b837a9b5c2b",
-      "firstTrackedCommit": "edca3d91dba685037eb26a286064ed128a32459a",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
-      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
-    },
-    {
-      "path": "public/images/path-academy-system.jpg",
-      "sha256": "27740d0c01487016ef7b1fe21b89102cacf6891f9e418535aee46ec18656ffae",
-      "firstTrackedCommit": "6681fd85244fcbcb332bce346feab64a5f5d1811",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
-      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
-    },
-    {
-      "path": "public/images/path-logistics-system.jpg",
-      "sha256": "4ec293290e5e3a1188bdb16f81e99a6f4fa30c048db265c4fb82e04e531a831d",
-      "firstTrackedCommit": "c926f46083745441c19363b0c40468277b3c9e0c",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
-      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
-    },
-    {
-      "path": "public/images/path-marketing-system.jpg",
-      "sha256": "1bf482a03131fbaf63065cce00433ad95e4956737187121970bc493ac260bdbf",
-      "firstTrackedCommit": "6681fd85244fcbcb332bce346feab64a5f5d1811",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
-      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
-    },
-    {
-      "path": "public/images/path-technology-portal.jpg",
-      "sha256": "72492ff34e9655a34402426721003464e66f2bd0e380455648243cfbd12d6d99",
-      "firstTrackedCommit": "94284cd1803e8f30d2ecd901619078800da94a33",
-      "classification": "CURRENT_REPO_ASSET",
-      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
-      "source": null,
-      "rightsEvidence": null,
-      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
-    },
     {
       "path": "public/demos/hermes-connect/apple-touch-icon.png",
       "sha256": "456a0eea5b4bad05225208e2df70fb333f5a2186c49faf77a34b084f627c2dc1",
@@ -163,6 +103,56 @@
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
+      "path": "public/demos/hermes-connect/mark-academy.svg",
+      "sha256": "1e581c0103a47c25acea8e5d775bab45d2679dfdf7857727a9d7eddf62def2e2",
+      "firstTrackedCommit": "0307c395dadd05097c43cbfb237e5acf161ca699",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/demos/hermes-connect/mark-logistics.svg",
+      "sha256": "1fccb07cf65f2018f0e6af4c385341ae85b8c5757f132a7a98609a36bfd4cb64",
+      "firstTrackedCommit": "d72ff96f5ab2805cd9db110455e2a43e375d0812",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/demos/hermes-connect/mark-marketing.svg",
+      "sha256": "182320a9d9033d09de0b33f0235a61dac349936b0e3d0406b4a46a94f3b249bb",
+      "firstTrackedCommit": "e2c5892bed73f606628fb958c07e96aecaa5e785",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/demos/hermes-connect/mark-mono-dark.svg",
+      "sha256": "bf9914414da84b5de8188f96e88d1135bbfe71d850d55ff8cbacf07a239e8e77",
+      "firstTrackedCommit": "fd7b5cec5c0e8d4e42394a071c7410e8f400fa0d",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/demos/hermes-connect/mark-mono-light.svg",
+      "sha256": "e8cda5eeb35195edc092f1d3dfadfbc5715f6d62ed504dcaabf044b94abfc008",
+      "firstTrackedCommit": "53d84facd9ce550a6062cca13966bd72335969c1",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
       "path": "public/demos/hermes-connect/mark-option02.svg",
       "sha256": "0b837ccb2a4d0990405ee794f516fac8e30bba14b05449bd7b6e6360d1ee664f",
       "firstTrackedCommit": "2bfb68df2719ea8455807b03c4d91b4523fe995d",
@@ -170,6 +160,26 @@
       "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
       "source": "owner-approved Hermes Connect Option 02, owner-controlled repository source",
       "rightsEvidence": "owner-controlled repository history and explicit owner approval 2026-08-31",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/demos/hermes-connect/mark-technology.svg",
+      "sha256": "e27cf406e1d65f4e1fc028e05fa3faaa2e9780fc5254646cdf94a12a53dfc2e2",
+      "firstTrackedCommit": "c2cdf383a6a45e53ed3371d001f8601b8ddcea28",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
+      "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/demos/hermes-connect/mark.svg",
+      "sha256": "795a054c170646ca87903b1bf3e53abe6338b238ed343ac4b77683fe85903171",
+      "firstTrackedCommit": "9ebceb53722512d701222f7c992cd333a3665070",
+      "classification": "FIRST_PARTY_BRAND_ARTIFACT",
+      "provenanceStatus": "REPOSITORY_SOURCE_VERIFIED",
+      "source": "owner-approved Hermes Connect Option 02 derivative from owner-controlled repository source",
+      "rightsEvidence": "owner-controlled repository history and explicit owner approval of Option 02",
       "publicationDecision": "CURRENT_USE_ALLOWED"
     },
     {
@@ -181,6 +191,66 @@
       "source": "owner-controlled repository source",
       "rightsEvidence": "owner-controlled repository history",
       "publicationDecision": "CURRENT_USE_ALLOWED"
+    },
+    {
+      "path": "public/images/hermes-live-product.jpg",
+      "sha256": "162f0db4cda25b15dbeb489e8f88ee9c72721f28666fb62ed67e1b837a9b5c2b",
+      "firstTrackedCommit": "edca3d91dba685037eb26a286064ed128a32459a",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/path-academy-system.jpg",
+      "sha256": "27740d0c01487016ef7b1fe21b89102cacf6891f9e418535aee46ec18656ffae",
+      "firstTrackedCommit": "6681fd85244fcbcb332bce346feab64a5f5d1811",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/path-logistics-system.jpg",
+      "sha256": "4ec293290e5e3a1188bdb16f81e99a6f4fa30c048db265c4fb82e04e531a831d",
+      "firstTrackedCommit": "c926f46083745441c19363b0c40468277b3c9e0c",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/path-marketing-system.jpg",
+      "sha256": "1bf482a03131fbaf63065cce00433ad95e4956737187121970bc493ac260bdbf",
+      "firstTrackedCommit": "6681fd85244fcbcb332bce346feab64a5f5d1811",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "public/images/path-technology-portal.jpg",
+      "sha256": "72492ff34e9655a34402426721003464e66f2bd0e380455648243cfbd12d6d99",
+      "firstTrackedCommit": "94284cd1803e8f30d2ecd901619078800da94a33",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
+    },
+    {
+      "path": "src/assets/hermes-ecosystem-hero.jpg",
+      "sha256": "b71800c1cef40c0f1b76464063b1b270422b8310735977a7bfe8177794b358b7",
+      "firstTrackedCommit": "00b14909a71dee4b41510462700e43bf46a4d27e",
+      "classification": "CURRENT_REPO_ASSET",
+      "provenanceStatus": "NEEDS_OWNER_PROVENANCE",
+      "source": null,
+      "rightsEvidence": null,
+      "publicationDecision": "PRESERVE_EXISTING_USE_NO_EXPANDED_REUSE"
     }
   ]
 }

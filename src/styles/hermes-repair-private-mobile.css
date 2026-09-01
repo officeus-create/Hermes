@@ -1,0 +1,49 @@
+/*
+ * Hermes Connect Repair Shops — private mobile ergonomics.
+ * Presentation-only hardening for authenticated owner/customer surfaces.
+ * No auth, booking, D1, API or routing behavior lives here.
+ */
+
+html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.primary-btn,.secondary-btn,.danger-btn) {
+  min-height:44px;
+}
+
+html.hc-experience body .availability-page .time-wrap input {
+  width:100%;
+  min-width:0;
+  min-height:44px;
+}
+
+html.hc-experience body .customers-page .contact-link {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+html.hc-experience body .workspace-page .feedback-row > div {
+  flex-wrap:wrap;
+}
+
+@media (max-width:520px) {
+  html.hc-experience body .workspace-page .row {
+    flex-wrap:wrap;
+  }
+
+  html.hc-experience body .workspace-page .row > div {
+    min-width:0;
+    flex:1 1 12rem;
+  }
+
+  html.hc-experience body .workspace-page .row .danger-btn {
+    flex:0 0 auto;
+  }
+
+  html.hc-experience body .availability-page .time-wrap {
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  }
+}
+
+@media (forced-colors:active) {
+  html.hc-experience body :is(.workspace-page,.availability-page,.customers-page) :is(.primary-btn,.secondary-btn,.danger-btn) {
+    border:1px solid ButtonText;
+  }
+}
