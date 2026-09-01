@@ -234,12 +234,60 @@ html.hc-experience .customers-page .alert { border-radius: 12px; color: #9f2e42;
 html.hc-experience .workspace-page .alert.success,
 html.hc-experience .availability-page .alert.success { color: #25775e; border-color: rgba(40,180,135,.20); background: #effaf5; }
 
-html.hc-experience .customers-page .contact-link { color: #5b49c7; }
-html.hc-experience .customers-page .next-appointment { color: #25775e; border-color: rgba(40,180,135,.20); background: #effaf5; }
+/* Customer cards are rendered after load, so their containment must live in this global layer rather than only in Astro-scoped page CSS. */
+html.hc-experience .customers-page .customer-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+html.hc-experience .customers-page .customer-header { display: flex; justify-content: space-between; gap: 16px; }
+html.hc-experience .customers-page .customer-header > div,
+html.hc-experience .customers-page .contact-grid,
+html.hc-experience .customers-page .stats > div,
+html.hc-experience .customers-page .vehicle-card { min-width: 0; }
+html.hc-experience .customers-page .contact-grid {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+html.hc-experience .customers-page .contact-link {
+  max-width: 100%;
+  color: #5b49c7;
+  overflow-wrap: anywhere;
+}
+html.hc-experience .customers-page .next-appointment {
+  max-width: 100%;
+  color: #25775e;
+  border-color: rgba(40,180,135,.20);
+  background: #effaf5;
+  overflow-wrap: anywhere;
+}
+html.hc-experience .customers-page .stats {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 10px;
+}
 html.hc-experience .customers-page .stats span,
 html.hc-experience .customers-page .vehicle-card span { color: #757d8d; }
+html.hc-experience .customers-page .stats strong,
+html.hc-experience .customers-page .vehicle-card strong,
+html.hc-experience .customers-page .vehicle-card span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
 html.hc-experience .customers-page .stats strong { color: #222a3a; }
-html.hc-experience .customers-page .vehicle-section { border-top-color: rgba(18,24,38,.08); }
+html.hc-experience .customers-page .vehicle-section { min-width: 0; border-top-color: rgba(18,24,38,.08); }
+html.hc-experience .customers-page .vehicle-grid {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
 html.hc-experience .customers-page .vehicle-card { border: 1px solid rgba(102,83,214,.12); border-radius: 12px; background: #f5f2ff; }
 html.hc-experience .availability-page .open-toggle input { accent-color: var(--hermes-violet); }
 html.hc-experience .availability-page .time-wrap input { color-scheme: light; }
@@ -281,6 +329,9 @@ html.hc-experience .customers-page input:focus-visible { outline: 2px solid #7c5
     min-width: 0;
     min-height: 44px;
   }
+  html.hc-experience .customers-page .stats,
+  html.hc-experience .customers-page .vehicle-grid { grid-template-columns: minmax(0, 1fr); }
+  html.hc-experience .customers-page .customer-header { display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) {
