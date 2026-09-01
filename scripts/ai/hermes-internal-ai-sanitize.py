@@ -38,13 +38,16 @@ AWS_ACCESS_KEY = re.compile(r"\b(?:AKIA|ASIA)[A-Z0-9]{16}\b")
 
 def redact_line(line: str) -> str:
     value = line.replace("\x00", "")
+    # Redact multi-token authorization syntax before the generic assignment
+    # matcher; otherwise `Authorization: Bearer <credential>` could consume only
+    # the word `Bearer` and leave the actual credential-shaped tail visible.
     value = QUERY_SECRET.sub(lambda match: f"{match.group('prefix')}{REDACTED}", value)
-    value = SENSITIVE_ASSIGNMENT.sub(lambda match: f"{match.group('prefix')}{REDACTED}", value)
     value = BEARER_TOKEN.sub(f"Bearer {REDACTED}", value)
     value = JWT_TOKEN.sub("[REDACTED_JWT]", value)
     value = GITHUB_TOKEN.sub("[REDACTED_GITHUB_TOKEN]", value)
     value = OPENAI_STYLE_KEY.sub("[REDACTED_API_KEY]", value)
     value = AWS_ACCESS_KEY.sub("[REDACTED_AWS_ACCESS_KEY]", value)
+    value = SENSITIVE_ASSIGNMENT.sub(lambda match: f"{match.group('prefix')}{REDACTED}", value)
     return value
 
 
