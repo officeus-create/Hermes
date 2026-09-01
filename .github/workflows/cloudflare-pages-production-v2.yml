@@ -1,4 +1,4 @@
-# Release trigger: Hermes Connect Option 02 — 2026-08-31
+# Release trigger: Hermes final design production release — 2026-09-01
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
