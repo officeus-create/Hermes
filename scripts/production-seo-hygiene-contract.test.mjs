@@ -39,6 +39,7 @@ for (const file of verifierFiles) {
 const verifier = await readFile(new URL("./check-production-custom-domain.mjs", import.meta.url), "utf8");
 for (const required of [
   '"/sitemapindex.xml"',
+  '"/sitemap-london.xml"',
   '"/llms.txt"',
   '"/business-growth/"',
   '"/logistics/auction-vehicle-pickup/"',
@@ -50,9 +51,11 @@ for (const required of [
   "exactControlledChildren",
   "hasMarkdownLinks",
   "isReal404",
+  "childSitemapPaths.length",
 ]) {
   assert.ok(verifier.includes(required), `production verifier must preserve ${required}`);
 }
+assert.ok(!verifier.includes("all seven controlled child sitemaps"), "production verifier must not hard-code the retired seven-child sitemap count");
 
 const workflow = await readFile(new URL("../.github/workflows/production-seo-hygiene-command.yml", import.meta.url), "utf8");
 assert.ok(workflow.includes("github.event.issue.number == 346"), "SEO hygiene command must stay scoped to the SEO 11 master issue");
