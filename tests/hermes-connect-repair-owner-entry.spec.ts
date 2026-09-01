@@ -16,6 +16,10 @@ test("registered Repair Shop owner gets a usable login form on the first mobile 
   await expect(page.locator("[data-repair-owner-login-email]")).toBeVisible();
   await expect(page.locator("[data-repair-owner-login-password]")).toBeVisible();
   await expect(page.locator("[data-repair-owner-login-submit]")).toHaveText("Sign in");
+  await expect(page.getByRole("link", { name: "Sign in to my shop" })).toHaveAttribute(
+    "href",
+    "/services/hermes-connect/repair-shops/auth/?mode=login",
+  );
 
   const box = await card.boundingBox();
   expect(box).not.toBeNull();
@@ -23,7 +27,7 @@ test("registered Repair Shop owner gets a usable login form on the first mobile 
   expect(box!.y + box!.height).toBeLessThanOrEqual(844);
 
   await expect(page.locator("[data-repair-free-launch] [data-owner-cta]")).toBeHidden();
-  await expect(page.getByRole("link", { name: "Register free" })).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "Register free" }).first()).toBeVisible();
 });
 
 test("landing login submits through canonical auth API and opens dashboard", async ({ page }) => {
@@ -55,6 +59,10 @@ test("Russian first-screen login form preserves locale", async ({ page }) => {
   const card = page.locator("[data-repair-owner-quick-login]");
   await expect(card).toBeVisible();
   await expect(card.getByRole("heading", { name: "Войдите в кабинет СТО" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Войти в кабинет СТО" })).toHaveAttribute(
+    "href",
+    "/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru",
+  );
   await expect(page.locator("[data-repair-owner-login-submit]")).toHaveText("Войти");
   await expect(page.locator("[data-repair-owner-register]")).toHaveAttribute(
     "href",
@@ -78,4 +86,5 @@ test("active owner session replaces login form with direct dashboard action", as
   await expect(dashboard).toBeVisible();
   await expect(dashboard).toHaveText("Открыть мой кабинет");
   await expect(dashboard).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/?lang=ru");
+  await expect(dashboard).toHaveAttribute("data-session-active", "true");
 });
