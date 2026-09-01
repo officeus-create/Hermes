@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, Clock3, Gift } from "@lucide/astro";
+import { ArrowRight, Clock3, Gift, LogIn } from "@lucide/astro";
 import {
   REPAIR_SHOP_FREE_REGISTRATION_END_ISO,
   REPAIR_SHOP_ONLINE_BILLING_ENABLED,
@@ -38,7 +38,14 @@ const { compact = false, showCta = true } = Astro.props;
       <div><strong data-seconds>00</strong><span data-seconds-label>seconds</span></div>
     </div>
     <p class="launch-status" data-launch-status aria-live="polite"></p>
-    {showCta && <a class="launch-cta" data-launch-cta href="/services/hermes-connect/repair-shops/auth/?mode=register">Register free <ArrowRight size={16} aria-hidden="true" /></a>}
+    {showCta && (
+      <div class="launch-actions">
+        <a class="launch-owner-cta" data-owner-cta href="/services/hermes-connect/repair-shops/auth/?mode=login">
+          <LogIn size={16} aria-hidden="true" /><span data-owner-cta-text>Sign in to my shop</span>
+        </a>
+        <a class="launch-cta" data-launch-cta href="/services/hermes-connect/repair-shops/auth/?mode=register">Register free <ArrowRight size={16} aria-hidden="true" /></a>
+      </div>
+    )}
   </div>
 </section>
 
@@ -51,7 +58,7 @@ const { compact = false, showCta = true } = Astro.props;
       policy: "Free registration closes at midnight Central Time after September 15, 2026. Existing accounts keep access.",
       timer: "Free-registration countdown",
       days: "days", hours: "hours", minutes: "minutes", seconds: "seconds",
-      cta: "Register free",
+      cta: "Register free", signin: "Sign in to my shop", dashboard: "Open my dashboard",
       endedTitle: "Free repair shop registration ended September 15.",
       ended: "New Repair Shop registrations now use the current Founding Shop Plan.",
       plan: "View current plan",
@@ -63,7 +70,7 @@ const { compact = false, showCta = true } = Astro.props;
       policy: "Бесплатная регистрация закрывается после 15 сентября 2026 года в 00:00 по Central Time. Уже созданные аккаунты сохраняют доступ.",
       timer: "До конца бесплатной регистрации",
       days: "дней", hours: "часов", minutes: "минут", seconds: "секунд",
-      cta: "Зарегистрироваться бесплатно",
+      cta: "Зарегистрироваться бесплатно", signin: "Войти в кабинет СТО", dashboard: "Открыть мой кабинет",
       endedTitle: "Бесплатная регистрация СТО завершилась 15 сентября.",
       ended: "Новые регистрации СТО теперь проходят через текущий тариф Founding Shop.",
       plan: "Посмотреть тариф",
@@ -75,7 +82,7 @@ const { compact = false, showCta = true } = Astro.props;
       policy: "Безкоштовна реєстрація закривається після 15 вересня 2026 року о 00:00 за Central Time. Уже створені акаунти зберігають доступ.",
       timer: "До завершення безкоштовної реєстрації",
       days: "днів", hours: "годин", minutes: "хвилин", seconds: "секунд",
-      cta: "Зареєструватися безкоштовно",
+      cta: "Зареєструватися безкоштовно", signin: "Увійти до кабінету СТО", dashboard: "Відкрити мій кабінет",
       endedTitle: "Безкоштовна реєстрація СТО завершилася 15 вересня.",
       ended: "Нові реєстрації СТО тепер проходять через поточний тариф Founding Shop.",
       plan: "Переглянути тариф",
@@ -87,7 +94,7 @@ const { compact = false, showCta = true } = Astro.props;
       policy: "El registro gratuito cierra después del 15 de septiembre de 2026 a medianoche, hora central. Las cuentas existentes conservan el acceso.",
       timer: "Cuenta regresiva del registro gratuito",
       days: "días", hours: "horas", minutes: "minutos", seconds: "segundos",
-      cta: "Registrarme gratis",
+      cta: "Registrarme gratis", signin: "Entrar a mi taller", dashboard: "Abrir mi panel",
       endedTitle: "El registro gratuito de talleres terminó el 15 de septiembre.",
       ended: "Las nuevas altas de talleres pasan ahora por el plan Founding Shop vigente.",
       plan: "Ver plan actual",
@@ -99,7 +106,7 @@ const { compact = false, showCta = true } = Astro.props;
       policy: "La registrazione gratuita chiude dopo il 15 settembre 2026 a mezzanotte, Central Time. Gli account esistenti mantengono l’accesso.",
       timer: "Conto alla rovescia registrazione gratuita",
       days: "giorni", hours: "ore", minutes: "minuti", seconds: "secondi",
-      cta: "Registrati gratis",
+      cta: "Registrati gratis", signin: "Accedi alla mia officina", dashboard: "Apri il mio pannello",
       endedTitle: "La registrazione gratuita delle officine è terminata il 15 settembre.",
       ended: "Le nuove registrazioni passano ora dal piano Founding Shop corrente.",
       plan: "Vedi piano attuale",
@@ -111,7 +118,7 @@ const { compact = false, showCta = true } = Astro.props;
       policy: "L’inscription gratuite ferme après le 15 septembre 2026 à minuit, heure du Centre. Les comptes existants conservent leur accès.",
       timer: "Compte à rebours de l’inscription gratuite",
       days: "jours", hours: "heures", minutes: "minutes", seconds: "secondes",
-      cta: "S’inscrire gratuitement",
+      cta: "S’inscrire gratuitement", signin: "Me connecter à mon atelier", dashboard: "Ouvrir mon tableau de bord",
       endedTitle: "L’inscription gratuite des ateliers s’est terminée le 15 septembre.",
       ended: "Les nouvelles inscriptions passent désormais par le forfait Founding Shop en vigueur.",
       plan: "Voir le forfait",
@@ -183,6 +190,7 @@ const { compact = false, showCta = true } = Astro.props;
       return;
     }
     const cta = root.querySelector<HTMLAnchorElement>("[data-launch-cta]");
+    const ownerCta = root.querySelector<HTMLAnchorElement>("[data-owner-cta]");
 
     setText(root, "[data-launch-kicker]", copy.kicker);
     setText(root, "[data-launch-title]", copy.title);
@@ -193,6 +201,23 @@ const { compact = false, showCta = true } = Astro.props;
     setText(root, "[data-hours-label]", copy.hours);
     setText(root, "[data-minutes-label]", copy.minutes);
     setText(root, "[data-seconds-label]", copy.seconds);
+    if (ownerCta) {
+      setText(root, "[data-owner-cta-text]", copy.signin);
+      ownerCta.href = localizeHref(`${repairRoot}/auth/?mode=login`);
+      ownerCta.addEventListener("click", () => {
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ event: "connect_owner_signin_cta", product: "repair_shops" });
+      });
+      fetch("/api/auth/me", { credentials: "same-origin", headers: { Accept: "application/json" } })
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          if (!data?.success || !data?.specialist) return;
+          setText(root, "[data-owner-cta-text]", copy.dashboard);
+          ownerCta.href = localizeHref(`${repairRoot}/dashboard/`);
+          ownerCta.dataset.sessionActive = "true";
+        })
+        .catch(() => {});
+    }
     if (cta) {
       const textNode = Array.from(cta.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
       if (textNode) textNode.textContent = copy.cta + " ";
@@ -246,5 +271,5 @@ const { compact = false, showCta = true } = Astro.props;
 </script>
 
 <style>
-  .repair-free-launch[hidden]{display:none!important}.repair-free-launch{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center;margin:1.1rem 0 1.4rem;padding:1rem 1.05rem;border:1px solid rgba(110,231,183,.22);border-radius:18px;background:linear-gradient(135deg,rgba(16,185,129,.095),rgba(124,92,255,.075));box-shadow:0 18px 50px rgba(0,0,0,.12);color:#f8fafc}.launch-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:rgba(110,231,183,.12);color:#9ff0cf}.launch-copy{min-width:0}.launch-kicker{margin:0 0 .25rem;color:#75e7bd;font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.launch-copy h2{margin:0;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.25}.launch-copy>p:not(.launch-kicker){margin:.35rem 0 0;color:#bac5d4;font-size:.86rem;line-height:1.5}.launch-policy{color:#8f9bad!important;font-size:.75rem!important}.launch-timer-wrap{min-width:320px}.launch-timer-label{display:flex;align-items:center;justify-content:flex-end;gap:.35rem;margin-bottom:.45rem;color:#9ca8b9;font-size:.72rem;font-weight:800}.launch-timer{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem}.launch-timer>div{min-width:62px;padding:.5rem .45rem;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(5,10,18,.48);text-align:center}.launch-timer strong{display:block;font-variant-numeric:tabular-nums;font-size:1.12rem;line-height:1.1}.launch-timer span{display:block;margin-top:.18rem;color:#8f9bad;font-size:.62rem}.launch-status{margin:.45rem 0 0;color:#8ff0c7;font-size:.72rem;font-weight:800;text-align:right}.launch-cta{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;float:right;min-height:42px;margin-top:.55rem;padding:.55rem .75rem;border-radius:10px;background:#f8fafc;color:#0b1220;text-decoration:none;font-size:.78rem;font-weight:900}.repair-free-launch.is-compact{grid-template-columns:auto minmax(0,1fr);padding:.85rem}.repair-free-launch.is-compact .launch-timer-wrap{grid-column:1/-1;min-width:0}.repair-free-launch.is-compact .launch-timer-label,.repair-free-launch.is-compact .launch-status{text-align:left;justify-content:flex-start}.repair-free-launch.is-compact .launch-cta{float:none;width:100%;box-sizing:border-box}.repair-free-launch[data-expired="true"] .launch-timer{opacity:.6}@media(max-width:760px){.repair-free-launch{grid-template-columns:auto minmax(0,1fr);align-items:start}.launch-timer-wrap{grid-column:1/-1;min-width:0}.launch-timer-label,.launch-status{text-align:left;justify-content:flex-start}.launch-cta{float:none;width:100%;box-sizing:border-box}.launch-timer>div{min-width:0;padding:.5rem .2rem}.launch-timer strong{font-size:1rem}.launch-timer span{font-size:.58rem}}
+  .repair-free-launch[hidden]{display:none!important}.repair-free-launch{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center;margin:1.1rem 0 1.4rem;padding:1rem 1.05rem;border:1px solid rgba(110,231,183,.22);border-radius:18px;background:linear-gradient(135deg,rgba(16,185,129,.095),rgba(124,92,255,.075));box-shadow:0 18px 50px rgba(0,0,0,.12);color:#f8fafc}.launch-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:rgba(110,231,183,.12);color:#9ff0cf}.launch-copy{min-width:0}.launch-kicker{margin:0 0 .25rem;color:#75e7bd;font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.launch-copy h2{margin:0;font-size:clamp(1.05rem,2vw,1.3rem);line-height:1.25}.launch-copy>p:not(.launch-kicker){margin:.35rem 0 0;color:#bac5d4;font-size:.86rem;line-height:1.5}.launch-policy{color:#8f9bad!important;font-size:.75rem!important}.launch-timer-wrap{min-width:320px}.launch-timer-label{display:flex;align-items:center;justify-content:flex-end;gap:.35rem;margin-bottom:.45rem;color:#9ca8b9;font-size:.72rem;font-weight:800}.launch-timer{display:grid;grid-template-columns:repeat(4,1fr);gap:.35rem}.launch-timer>div{min-width:62px;padding:.5rem .45rem;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(5,10,18,.48);text-align:center}.launch-timer strong{display:block;font-variant-numeric:tabular-nums;font-size:1.12rem;line-height:1.1}.launch-timer span{display:block;margin-top:.18rem;color:#8f9bad;font-size:.62rem}.launch-status{margin:.45rem 0 0;color:#8ff0c7;font-size:.72rem;font-weight:800;text-align:right}.launch-actions{display:flex;justify-content:flex-end;gap:.45rem;margin-top:.55rem}.launch-cta,.launch-owner-cta{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;min-height:42px;padding:.55rem .75rem;border-radius:10px;text-decoration:none;font-size:.78rem;font-weight:900}.launch-cta{background:#f8fafc;color:#0b1220}.launch-owner-cta{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.055);color:#f8fafc}.launch-owner-cta:hover,.launch-owner-cta:focus-visible{border-color:rgba(90,200,250,.5);background:rgba(90,200,250,.1)}.launch-owner-cta[data-session-active="true"]{border-color:rgba(110,231,183,.35);background:rgba(110,231,183,.1);color:#a7f3d0}.repair-free-launch.is-compact{grid-template-columns:auto minmax(0,1fr);padding:.85rem}.repair-free-launch.is-compact .launch-timer-wrap{grid-column:1/-1;min-width:0}.repair-free-launch.is-compact .launch-timer-label,.repair-free-launch.is-compact .launch-status{text-align:left;justify-content:flex-start}.repair-free-launch.is-compact .launch-actions{justify-content:stretch}.repair-free-launch.is-compact .launch-cta,.repair-free-launch.is-compact .launch-owner-cta{flex:1;box-sizing:border-box}.repair-free-launch[data-expired="true"] .launch-timer{opacity:.6}@media(max-width:760px){.repair-free-launch{grid-template-columns:auto minmax(0,1fr);align-items:start}.launch-timer-wrap{grid-column:1/-1;min-width:0}.launch-timer-label,.launch-status{text-align:left;justify-content:flex-start}.launch-actions{display:grid;grid-template-columns:1fr;width:100%}.launch-cta,.launch-owner-cta{width:100%;box-sizing:border-box}.launch-timer>div{min-width:0;padding:.5rem .2rem}.launch-timer strong{font-size:1rem}.launch-timer span{font-size:.58rem}}
 </style>
