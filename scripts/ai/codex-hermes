@@ -27,6 +27,14 @@ fi
 mkdir -p "$CODEX_HOME"
 chmod 700 "$CODEX_HOME" 2>/dev/null || true
 
+# Detect the browser-queued Internal AI path before removing its transport
+# credential from the child environment. Manual codex-hermes usage intentionally
+# keeps the historical direct exec path below.
+RUNNER_SANITIZE=0
+if [[ -n "${HERMES_INTERNAL_AI_RUNNER_TOKEN:-}" ]]; then
+  RUNNER_SANITIZE=1
+fi
+
 # Internal AI transport/bootstrap credentials belong to the parent control
 # plane only. Never inherit them into FCC/Codex, even when the runner starts
 # this wrapper with a copied environment.
@@ -52,4 +60,32 @@ export HERMES_CODEX_RUNTIME="fcc"
 export HERMES_CODEX_REPO="$REPO_ROOT"
 
 cd "$REPO_ROOT"
+
+if [[ "$RUNNER_SANITIZE" == "1" ]]; then
+  SANITIZER="$SCRIPT_DIR/hermes-internal-ai-sanitize.py"
+  [[ -r "$SANITIZER" ]] || {
+    printf '[codex-hermes] Internal AI output sanitizer is missing or unreadable at %s; refusing to start unsanitized runner execution.\n' "$SANITIZER" >&2
+    exit 74
+  }
+  command -v python3 >/dev/null 2>&1 || {
+    printf '[codex-hermes] python3 is required for the Internal AI output sanitizer; refusing to start unsanitized runner execution.\n' >&2
+    exit 74
+  }
+
+  # Defense in depth: the streaming filter removes credential-shaped output
+  # before it reaches the Python runner. The runner applies its own sanitizer
+  # again before uploading events/results. Preserve the FCC/Codex exit code and
+  # fail closed if the sanitizer itself fails.
+  set +e
+  "$FCC_CODEX" "$@" 2>&1 | python3 "$SANITIZER"
+  pipeline_status=("${PIPESTATUS[@]}")
+  set -e
+
+  if [[ "${pipeline_status[1]:-1}" -ne 0 ]]; then
+    printf '[codex-hermes] Internal AI output sanitizer failed; refusing to treat output as safe evidence.\n' >&2
+    exit 74
+  fi
+  exit "${pipeline_status[0]:-1}"
+fi
+
 exec "$FCC_CODEX" "$@"
