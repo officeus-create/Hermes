@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-async function fillPartnerOffer(page: import("@playwright/test").Page) {
+async function fillPartnerOffer(page: import("@playwright/test").Page, options: { consent?: boolean } = {}) {
   await page.locator("#shop-name").fill("Revenue Test Auto Care");
   await page.locator("#shop-type").selectOption("truck_diesel");
   await page.locator("#city-state").fill("Milwaukee, WI");
@@ -13,7 +13,7 @@ async function fillPartnerOffer(page: import("@playwright/test").Page) {
   await page.locator("#partner-contact-name").fill("Taylor Partner Test");
   await page.locator("#partner-contact-email").fill("taylor.partner@example.com");
   await page.locator("#partner-contact-phone").fill("+1 414 555 0188");
-  await page.locator("#partner-contact-consent").check();
+  if (options.consent !== false) await page.locator("#partner-contact-consent").check();
 }
 
 test("repair shop corporate offer is clear, delivered privately and waits for human review", async ({ page }) => {
@@ -98,6 +98,31 @@ test("repair shop corporate offer is clear, delivered privately and waits for hu
   expect(analyticsText).not.toContain("15%");
 });
 
+test("review step sends nothing and consent is required only for the real submission", async ({ page }) => {
+  let leadRequests = 0;
+  await page.route("**/api/logistics-lead", async (route) => {
+    leadRequests += 1;
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) });
+  });
+
+  await page.goto("/services/hermes-connect/repair-shops/");
+  await fillPartnerOffer(page, { consent: false });
+
+  await page.locator("#submit-btn").click();
+  await expect(page.locator("#status-label")).toHaveText("OFFER_DRAFT");
+  await expect(page.locator("[data-repair-partner-delivery-status]")).toContainText("Nothing has been sent yet");
+  expect(leadRequests).toBe(0);
+
+  await page.locator("#submit-btn").click();
+  await expect(page.locator("[data-repair-partner-delivery-status]")).toContainText("confirm consent");
+  expect(leadRequests).toBe(0);
+
+  await page.locator("#partner-contact-consent").check();
+  await page.locator("#submit-btn").click();
+  await expect(page.locator("#status-label")).toContainText("OFFER_SUBMITTED");
+  expect(leadRequests).toBe(1);
+});
+
 test("partner offer keeps entered data and exposes prepared email fallback when delivery cannot be confirmed", async ({ page }) => {
   const requestIds: string[] = [];
   await page.route("**/api/logistics-lead", async (route) => {
@@ -125,6 +150,15 @@ test("partner offer keeps entered data and exposes prepared email fallback when 
   await page.locator("#submit-btn").click();
   expect(requestIds).toHaveLength(2);
   expect(requestIds[1]).toBe(requestIds[0]);
+});
+
+test("Russian Repair Shop partner offer explains service location and next step in Russian", async ({ page }) => {
+  await page.goto("/services/hermes-connect/repair-shops/?lang=ru");
+
+  await expect(page.locator("label", { has: page.locator("#city-state") })).toContainText("Город / штат обслуживания");
+  await expect(page.locator("[data-repair-help='city-state']")).toContainText("Полный адрес улицы здесь не нужен");
+  await expect(page.locator("[data-repair-offer-next-step]")).toContainText("Что произойдёт дальше");
+  await expect(page.locator("#submit-btn")).toContainText("Проверить предложение");
 });
 
 test("Repair Shop owner registration explains the next step and keeps labels explicit", async ({ page }) => {
