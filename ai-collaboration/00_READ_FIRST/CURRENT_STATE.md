@@ -2,7 +2,7 @@
 
 Last updated: 2026-09-01
 Evidence checkpoint: `officeus-create/Hermes` canonical `main` = `809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac`
-Freshness class: `CURRENT_GITHUB_SNAPSHOT_WITH_LABELLED_EXTERNAL_GATES`
+Freshness class: `CURRENT_GITHUB_AND_PRODUCTION_SNAPSHOT_WITH_LABELLED_EXTERNAL_GATES`
 
 ## Purpose
 
@@ -48,40 +48,52 @@ Three previously prepared non-overlapping Repair Shop PRs were merged after veri
 - #930 `fix(connect): replay Pearl Design OS on private Repair Shop workspaces` → merged as `809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac`.
   - Presentation-only Pearl/Obsidian/Repair-blue convergence; operational APIs remain unchanged.
 
-The three PR file sets were checked before merge and did not overlap each other. Post-merge exact-main checks/deployment are the current promotion gate.
+The three PR file sets were checked before merge and did not overlap each other.
+
+## Fresh production evidence on exact current main
+
+Canonical main `809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac` has now passed its post-merge evidence gates:
+
+- repository `build-and-test` = SUCCESS;
+- repository `verify` = SUCCESS;
+- Cloudflare Pages deployment/check = SUCCESS;
+- `Repair Shop real booking production smoke` run `33492286932` = SUCCESS on this exact main, proving the controlled production customer→owner booking loop;
+- `Verify Hermes Connect Russian on command` run `33492528227` = SUCCESS on this exact main;
+- the published Russian browser report at 2026-09-01T09:31:29Z classified production as `LIVE_HERMES_CONNECT_RUSSIAN_COMPLETE` using real Chromium against the public custom domain, including Russian Repair Shops landing, owner authentication, Founding Shop plan and public-booking surfaces.
+
+This is strong evidence for current production reachability/localization and the controlled booking loop. It is not blanket proof of every possible concurrency, tenant-isolation, cache/PWA or real-human friction scenario.
 
 ## Fresh open PR inventory
 
-Freshly reconciled after #936/#934/#930 merged. Re-enumerate before later decisions.
+Re-enumerate before later decisions.
 
 | PR | Exact head / branch | Current classification in this thread |
 | --- | --- | --- |
-| #937 | `governance/learning-enforcement-hardening-2026-09-01` | `CURRENT_WRITER`; this machine-state refresh; exact-head CI must rerun after this update |
-| #935 | `d977bcb6...` / Academy public learner handoff | `BLOCKED_CI`; build-and-test failure, Cloudflare preview success; Academy owner lane |
-| #926 | `ad2ee607...` / London closeout | `STALE_BASE / OLD_HEAD_CI_SUCCESS`; London lane, not this Repair Shop slice |
-| #910 | `5299d35c...` / unified account switcher | `MIXED_SCOPE / ROUTE_AI_DECISION`; old-head CI success; do not mutate here because it includes Internal AI behavior |
+| #937 | `governance/learning-enforcement-hardening-2026-09-01` | `CURRENT_WRITER`; machine-state closeout; exact-head CI required after this final evidence write |
+| #935 | `d977bcb6...` / Academy public learner handoff | `BLOCKED_CI`; Academy owner lane |
+| #926 | `ad2ee607...` / London closeout | `STALE_BASE / OLD_HEAD_CI_SUCCESS`; London lane |
+| #910 | `5299d35c...` / unified account switcher | `MIXED_SCOPE / ROUTE_AI_DECISION`; do not mutate here because it includes Internal AI behavior |
 | #887 | `574bd57a...` | `OUT_OF_SCOPE_THIS_THREAD / ROUTED_AI_HERMES_CONNECT` |
 | #886 | `a46e8eae...` | `OUT_OF_SCOPE_THIS_THREAD / ROUTED_AI_HERMES_CONNECT` |
 | #885 | `a9c6995d...` | `OUT_OF_SCOPE_THIS_THREAD / ROUTED_AI_HERMES_CONNECT` |
 | #882 | `18d07649...` | `OUT_OF_SCOPE_THIS_THREAD / ROUTED_AI_HERMES_CONNECT` |
 | #877 | `d99fe15a...` | `STALE_AI_DECISION_DONOR / OUT_OF_SCOPE_THIS_THREAD` |
-| #871 | `319040d1...` | `STALE_SOURCE_ONLY_CORPORATE_AUDIT`; contains historical architecture evidence, not current state |
+| #871 | `319040d1...` | `STALE_SOURCE_ONLY_CORPORATE_AUDIT`; historical evidence, not current state |
 
 Open PR enumeration tools can omit older open PRs depending on search ordering/result windows; therefore an exhaustive state review must explicitly reconcile known older open items such as #871/#877 rather than trusting a remembered top-N list.
 
-## Current main evidence
+## Remaining non-AI evidence tails
 
-Canonical main after the Repair Shop merge wave: `809b1807c2f1e5f5fcb9d6cbb09827fec394b7ac`.
-
-At the moment this file was rewritten, exact-main `build-and-test`, `verify` and Cloudflare Pages checks were observed **in progress**. Therefore the Repair Shop merge wave is `MERGED / POST_MERGE_VERIFICATION_PENDING`, not `LIVE_VERIFIED` yet.
+- Dedicated production parallel-capacity/concurrency verification exists in `.github/workflows/repair-capacity-production-smoke.yml`, but this merge wave did not change its trigger paths and therefore did not generate a fresh exact-current-main capacity run. Do not promote concurrency from absence of failure; request a fresh bounded capacity verification when capacity/double-booking is the decision being made.
+- Cross-tenant isolation remains a runtime adversarial verification target even though the current owner APIs are coded to scope by authenticated owner identity.
+- Real-human registration friction should continue to be measured from actual pilot users; synthetic/browser success is not a substitute for user feedback.
 
 ## Immediate next actions
 
-1. Wait for exact-main checks/deployment on `809b1807...`; if any required check fails, diagnose only that evidence-proven regression.
-2. After green exact-main deployment, verify the public Repair Shop registration truth and the merged registration/navigation/design behavior on production.
-3. Keep Hermes Connect AI PRs and decisions untouched in this thread; hand them to `AI Hermes Connect`.
-4. Reconcile PR #937 to the final post-merge state and merge it only after its own exact-head checks are green and the two machine-state files remain non-conflicting with current main.
-5. Do not create new Repair Shop features until current registration/production tails are closed or real-user feedback proves a new gap.
+1. Finish #937 exact-head CI and merge only if green; this is governance/machine-state only.
+2. Keep Hermes Connect AI PRs and decisions untouched in this thread; route them to `AI Hermes Connect`.
+3. No new Repair Shop feature expansion unless fresh user/audit evidence proves a concrete defect.
+4. Give Gemini the current main SHA and exact production run IDs so its next pass verifies rather than repeats stale findings.
 
 ## Operating rule
 
