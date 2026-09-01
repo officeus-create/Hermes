@@ -1,4 +1,4 @@
-# Release trigger: Hermes final design production release — 2026-09-01
+# Approved-main production parity — 2026-09-01
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - .github/workflows/cloudflare-pages-production-v2.yml
 
 permissions:
   contents: read
@@ -43,17 +41,10 @@ jobs:
       - name: Validate and mask Cloudflare deployment credentials
         id: credentials
         run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "::add-mask::$CLOUDFLARE_API_TOKEN"
-          fi
-          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
-          fi
-
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then echo "::add-mask::$CLOUDFLARE_API_TOKEN"; fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"; fi
           missing=""
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            missing="scoped Cloudflare API token"
-          fi
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then missing="scoped Cloudflare API token"; fi
           if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
             if [ -n "$missing" ]; then missing="$missing, "; fi
             missing="${missing}Cloudflare account identifier"
@@ -72,7 +63,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MISSING: ${{ steps.credentials.outputs.missing }}
         run: |
-          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 blocked\n\nThe controlled release checked repository secrets, GitHub Environment \`production\` secrets, and the approved alias names for a scoped token and account identifier, but the required Cloudflare deployment credentials are still unavailable: \`${MISSING:-Cloudflare credentials}\`.\n\nNo credential value was printed. The preferred names are \`CLOUDFLARE_API_TOKEN\` and \`CLOUDFLARE_ACCOUNT_ID\`. The account identifier may also be stored as a repository/environment variable. Then run **Deploy approved main to Cloudflare Pages v2**. The token needs Cloudflare Pages edit access for the account that owns project \`hermes\`.\n\nRelease remains \`REPOSITORY_RELEASE_COMPLETE / CUSTOM_DOMAIN_DEPLOYMENT_STALE\`."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy blocked\n\nThe controlled release could not access the required scoped Cloudflare deployment credentials: \`${MISSING:-Cloudflare credentials}\`. No secret value was printed. Production parity remains unverified until the workflow completes."
 
       - name: Install dependencies
         run: npm ci
@@ -93,17 +84,26 @@ jobs:
           command: pages deploy dist --project-name=hermes --branch=main --commit-hash=${{ github.sha }} --commit-message="Approved main ${{ github.sha }}"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify main-domain product bridge
+      - name: Verify current main-domain product truth
         run: |
           node <<'NODE'
           const targets = [
             {
               url: "https://hermeslogisticsus.com/services/hermes-connect/",
-              markers: ["Hermes Connect Web App", "Request Web App access"],
+              markers: ["Run your business with AI.", "Repair Shops"],
+            },
+            {
+              url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
+              markers: ["Founding Shop Plan", "Free repair shop registration through September 15."],
+            },
+            {
+              url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/auth/",
+              markers: ["Repair Shop Owner Access", "Free repair shop registration through September 15."],
+              forbiddenMarkers: ["14-day launch offer", "registration stays free until it is"],
             },
             {
               url: "https://hermeslogisticsus.com/",
-              markers: ["Hermes Connect", "Web App"],
+              markers: ["Hermes Connect", "Open Hermes Connect Product Hub"],
             },
           ];
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -117,16 +117,15 @@ jobs:
                   headers: {
                     "cache-control": "no-cache",
                     pragma: "no-cache",
-                    "user-agent": "HermesPagesReleaseVerifier/2.0",
+                    "user-agent": "HermesPagesReleaseVerifier/3.0",
                   },
                   signal: AbortSignal.timeout(20_000),
                 });
                 const body = await response.text();
-                last = {
-                  status: response.status,
-                  title: body.match(/<title>([^<]*)<\/title>/i)?.[1]?.trim() ?? null,
-                };
-                if (response.status === 200 && target.markers.every((marker) => body.includes(marker))) {
+                const missing = target.markers.filter((marker) => !body.includes(marker));
+                const forbidden = (target.forbiddenMarkers || []).filter((marker) => body.includes(marker));
+                last = { status: response.status, missing, forbidden };
+                if (response.status === 200 && missing.length === 0 && forbidden.length === 0) {
                   ok = true;
                   break;
                 }
@@ -157,14 +156,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |
-          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Hermes Connect Web App is live\n\nApproved \`main\` was built, tested, and deployed to Cloudflare Pages project \`hermes\`. The indexed overview, homepage Web App bridge, and \`connect.hermeslogisticsus.com\` all passed public verification.\n\nDeployment URL returned by Wrangler: ${DEPLOYMENT_URL:-not returned}.\n\nThe release verifier returned \`LIVE_APPROVED_WEB_APP\`."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back\n\nApproved \`main\` was built, tested, deployed, and current Hermes Connect + Repair Shop commercial markers were read back from production. The auth surface no longer exposes the superseded 14-day launch policy. The existing Connect custom-domain verifier also passed.\n\nDeployment URL returned by Wrangler: ${DEPLOYMENT_URL:-not returned}."
 
       - name: Report deployment or verification failure
         if: failure() && steps.credentials.outputs.available == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue comment 232 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy v2 did not complete\n\nCloudflare credentials were available, but build, Wrangler upload, main-domain verification, or Connect-subdomain verification failed for approved \`main\`.\n\nReview the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID. No secret value is included here. Keep the Web App \`noindex,nofollow\` and do not submit a real access request until verification succeeds."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nCredentials were available, but build, tests, upload, current-product read-back, or Connect-subdomain verification failed. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
 
       - name: Publish sanitized summary
         if: always()
@@ -173,7 +172,7 @@ jobs:
           DEPLOYMENT_ALIAS: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
         run: |
           {
-            echo "# Cloudflare Pages production deployment v2"
+            echo "# Cloudflare Pages approved-main production parity"
             echo
             echo "- Commit: \`${GITHUB_SHA}\`"
             echo "- Environment: \`production\`"
