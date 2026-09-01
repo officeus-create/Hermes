@@ -1,7 +1,5 @@
 ---
 const normalized = Astro.url.pathname.replace(/\/+$/, "/");
-const isRu = Astro.url.searchParams.get("lang") === "ru";
-const suffix = isRu ? "?lang=ru" : "";
 const items = [
   { key: "overview", href: "/services/hermes-connect/internal/ai-connect/", en: "Overview", ru: "Обзор" },
   { key: "projects", href: "/services/hermes-connect/internal/ai-connect/projects/", en: "Projects", ru: "Проекты" },
@@ -13,14 +11,14 @@ const currentKey = normalized.includes("/activity/") ? "activity"
   : normalized.includes("/ai-assistant/") ? "assistant"
   : "overview";
 ---
-<nav class="hc-ai-nav" data-hc-ai-nav aria-label={isRu ? "Разделы AI Hermes Connect" : "AI Hermes Connect sections"} hidden>
+<nav class="hc-ai-nav" data-hc-ai-nav aria-label="AI Hermes Connect sections" hidden>
   <div class="hc-ai-nav__identity">
     <span class="hc-ai-nav__mark" aria-hidden="true">AI</span>
-    <span><strong>Hermes Connect</strong><small>{isRu ? "Кабинет владельца · AI" : "Owner cabinet · AI"}</small></span>
+    <span><strong>Hermes Connect</strong><small data-ai-nav-owner>Owner cabinet · AI</small></span>
   </div>
   <div class="hc-ai-nav__links">
     {items.map((item) => (
-      <a href={`${item.href}${suffix}`} aria-current={currentKey === item.key ? "page" : undefined}>{isRu ? item.ru : item.en}</a>
+      <a href={item.href} data-ai-nav-link={item.key} data-en={item.en} data-ru={item.ru} aria-current={currentKey === item.key ? "page" : undefined}>{item.en}</a>
     ))}
   </div>
 </nav>
@@ -29,6 +27,16 @@ const currentKey = normalized.includes("/activity/") ? "activity"
   (() => {
     const nav = document.querySelector<HTMLElement>("[data-hc-ai-nav]");
     if (!nav) return;
+    const isRu = new URLSearchParams(window.location.search).get("lang") === "ru";
+    nav.setAttribute("aria-label", isRu ? "Разделы AI Hermes Connect" : "AI Hermes Connect sections");
+    const owner = nav.querySelector<HTMLElement>("[data-ai-nav-owner]");
+    if (owner) owner.textContent = isRu ? "Кабинет владельца · AI" : "Owner cabinet · AI";
+    nav.querySelectorAll<HTMLAnchorElement>("[data-ai-nav-link]").forEach((link) => {
+      link.textContent = isRu ? (link.dataset.ru || link.textContent || "") : (link.dataset.en || link.textContent || "");
+      const url = new URL(link.getAttribute("href") || "/", window.location.origin);
+      if (isRu) url.searchParams.set("lang", "ru"); else url.searchParams.delete("lang");
+      link.href = `${url.pathname}${url.search}`;
+    });
     void (async () => {
       try {
         const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
