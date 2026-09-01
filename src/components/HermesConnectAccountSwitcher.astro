@@ -2,7 +2,7 @@
 import { ChevronDown } from "@lucide/astro";
 
 export interface Props {
-  current: "repair" | "academy" | "ai";
+  current: "repair" | "academy" | "ai" | "beauty";
   mode?: "panel" | "menu";
 }
 
@@ -44,11 +44,11 @@ const t = copy.en;
         <span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span>
         <em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em>
       </a>
-      <div class="hc-account-workspace beauty is-disabled" data-workspace-beauty aria-disabled="true" hidden>
+      <a class:list={["hc-account-workspace", "beauty", current === "beauty" && "is-current"]} href="/services/hermes-connect/beauty/workspace/" data-workspace-beauty data-hc-workspace-link="beauty" hidden>
         <span class="hc-workspace-dot" aria-hidden="true"></span>
-        <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-hc-copy="owned">{t.owned}</small></span>
-        <em data-hc-copy="preparing">{t.preparing}</em>
-      </div>
+        <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span>
+        <em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em>
+      </a>
     </div>
   </section>
 ) : (
@@ -79,11 +79,11 @@ const t = copy.en;
           <span><strong data-hc-copy="ai">{t.ai}</strong><small data-hc-copy="internal">{t.internal}</small></span>
           <em data-hc-copy={current === "ai" ? "current" : "open"}>{current === "ai" ? t.current : t.open}</em>
         </a>
-        <div class="hc-account-workspace beauty is-disabled" data-workspace-beauty aria-disabled="true" hidden>
+        <a class:list={["hc-account-workspace", "beauty", current === "beauty" && "is-current"]} href="/services/hermes-connect/beauty/workspace/" data-workspace-beauty data-hc-workspace-link="beauty" hidden>
           <span class="hc-workspace-dot" aria-hidden="true"></span>
-          <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-hc-copy="owned">{t.owned}</small></span>
-          <em data-hc-copy="preparing">{t.preparing}</em>
-        </div>
+          <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span>
+          <em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em>
+        </a>
       </div>
     </div>
   </details>
@@ -114,6 +114,7 @@ const t = copy.en;
       repair: "/services/hermes-connect/repair-shops/dashboard/",
       academy: "/services/hermes-connect/academy/dashboard/",
       ai: "/services/hermes-connect/internal/ai-connect/",
+      beauty: "/services/hermes-connect/beauty/workspace/",
     };
     const withLocale = (path: string) => {
       const url = new URL(path, window.location.origin);
@@ -189,8 +190,14 @@ const t = copy.en;
 
         const beauty = root.querySelector<HTMLElement>("[data-workspace-beauty]");
         const beautyName = root.querySelector<HTMLElement>("[data-beauty-name]");
+        const beautyKind = root.querySelector<HTMLElement>("[data-beauty-kind]");
         if (beautyBusiness) {
           if (beautyName) beautyName.textContent = String(beautyBusiness.name || runtimeCopy.beauty);
+          if (beautyKind) beautyKind.textContent = runtimeCopy.owned;
+          if (beauty) beauty.hidden = false;
+        } else if (current === "beauty") {
+          if (beautyName) beautyName.textContent = runtimeCopy.beauty;
+          if (beautyKind) beautyKind.textContent = runtimeCopy.setup;
           if (beauty) beauty.hidden = false;
         }
 
