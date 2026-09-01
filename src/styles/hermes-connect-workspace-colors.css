@@ -1,0 +1,85 @@
+/*
+ * Hermes Connect workspace context colors.
+ * These are semantic product cues, not separate brands or runtimes.
+ * Repair = Logistics blue · Academy = Academy violet · Internal AI = IT/Product orange.
+ * Beauty intentionally uses the Connect-family cyan cue until an owner-approved Beauty identity exists.
+ */
+
+.hc-account-workspace {
+  --hc-workspace-brand: var(--hc-blue,#00a8ff);
+  position: relative;
+  overflow: hidden;
+}
+
+.hc-account-workspace.repair { --hc-workspace-brand: var(--hermes-logistics,#1e88ff); }
+.hc-account-workspace.academy { --hc-workspace-brand: var(--hermes-academy,#7c5cff); }
+.hc-account-workspace.ai { --hc-workspace-brand: var(--hermes-technology,#ff7a00); }
+.hc-account-workspace.beauty { --hc-workspace-brand: var(--hc-cyan,#22d3ee); }
+
+.hc-account-workspace .hc-workspace-dot {
+  background: var(--hc-workspace-brand) !important;
+  box-shadow: 0 0 0 5px color-mix(in srgb,var(--hc-workspace-brand) 10%,transparent),
+              0 0 18px color-mix(in srgb,var(--hc-workspace-brand) 24%,transparent);
+}
+
+.hc-account-workspace::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  opacity: .38;
+  background: var(--hc-workspace-brand);
+}
+
+.hc-account-workspace:hover,
+.hc-account-workspace:focus-visible {
+  border-color: color-mix(in srgb,var(--hc-workspace-brand) 38%,var(--hermes-line-light)) !important;
+  background: color-mix(in srgb,var(--hc-workspace-brand) 6%,#fff) !important;
+}
+
+.hc-account-workspace.is-current {
+  border-color: color-mix(in srgb,var(--hc-workspace-brand) 52%,var(--hermes-line-light)) !important;
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--hc-workspace-brand) 13%,transparent),transparent 9rem),
+    color-mix(in srgb,var(--hc-workspace-brand) 7%,#fff) !important;
+  box-shadow:
+    inset 0 2px 0 color-mix(in srgb,var(--hc-workspace-brand) 68%,transparent),
+    0 12px 34px color-mix(in srgb,var(--hc-workspace-brand) 10%,transparent) !important;
+}
+
+.hc-account-workspace.is-current::before {
+  width: 4px;
+  opacity: 1;
+}
+
+.hc-account-workspace.is-current em,
+.hc-account-workspace:hover em {
+  color: color-mix(in srgb,var(--hc-workspace-brand) 68%,#101521) !important;
+}
+
+/* The currently open business adds a recognizable ambient cue to the switcher shell. */
+.hc-account-switcher[data-current="repair"],
+.hc-account-menu[data-current="repair"] { --hc-current-business: var(--hermes-logistics,#1e88ff); }
+.hc-account-switcher[data-current="academy"],
+.hc-account-menu[data-current="academy"] { --hc-current-business: var(--hermes-academy,#7c5cff); }
+.hc-account-switcher[data-current="ai"],
+.hc-account-menu[data-current="ai"] { --hc-current-business: var(--hermes-technology,#ff7a00); }
+.hc-account-switcher[data-current="beauty"],
+.hc-account-menu[data-current="beauty"] { --hc-current-business: var(--hc-cyan,#22d3ee); }
+
+.hc-account-switcher[data-current],
+.hc-account-menu[data-current] > summary {
+  border-color: color-mix(in srgb,var(--hc-current-business,var(--hc-blue,#00a8ff)) 20%,var(--hermes-line-light)) !important;
+  box-shadow: inset 0 2px 0 color-mix(in srgb,var(--hc-current-business,var(--hc-blue,#00a8ff)) 22%,transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-account-workspace { transition: none !important; }
+}
+
+@media (forced-colors: active) {
+  .hc-account-workspace,
+  .hc-account-switcher,
+  .hc-account-menu > summary { border-color: CanvasText !important; }
+  .hc-account-workspace .hc-workspace-dot { background: CanvasText !important; box-shadow:none; }
+}
