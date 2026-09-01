@@ -1,0 +1,300 @@
+---
+---
+
+<script is:inline>
+  (() => {
+    const repairRoot = "/services/hermes-connect/repair-shops";
+    const path = window.location.pathname.replace(/\/+$/, "");
+    if (path !== repairRoot) return;
+
+    const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+    const requested = new URLSearchParams(window.location.search).get("lang") || "en";
+    const locale = supported.has(requested) ? requested : "en";
+    const copy = {
+      en: {
+        eyebrow: "Already registered?",
+        title: "Sign in to your shop",
+        signInLink: "Sign in to my shop",
+        email: "Email",
+        password: "Password",
+        emailPlaceholder: "owner@shop.com",
+        passwordPlaceholder: "Your password",
+        submit: "Sign in",
+        working: "Signing in…",
+        register: "New shop? Register free",
+        dashboard: "Open my dashboard",
+        active: "Your owner session is active.",
+        invalid: "Email or password is incorrect.",
+        retry: "Could not sign in. Please try again.",
+      },
+      ru: {
+        eyebrow: "Уже зарегистрированы?",
+        title: "Войдите в кабинет СТО",
+        signInLink: "Войти в кабинет СТО",
+        email: "Email",
+        password: "Пароль",
+        emailPlaceholder: "owner@shop.com",
+        passwordPlaceholder: "Ваш пароль",
+        submit: "Войти",
+        working: "Входим…",
+        register: "Новое СТО? Зарегистрироваться бесплатно",
+        dashboard: "Открыть мой кабинет",
+        active: "Вы уже вошли как владелец СТО.",
+        invalid: "Неверный email или пароль.",
+        retry: "Не удалось войти. Попробуйте ещё раз.",
+      },
+      uk: {
+        eyebrow: "Вже зареєстровані?",
+        title: "Увійдіть до кабінету СТО",
+        signInLink: "Увійти до кабінету СТО",
+        email: "Email",
+        password: "Пароль",
+        emailPlaceholder: "owner@shop.com",
+        passwordPlaceholder: "Ваш пароль",
+        submit: "Увійти",
+        working: "Входимо…",
+        register: "Нове СТО? Зареєструватися безкоштовно",
+        dashboard: "Відкрити мій кабінет",
+        active: "Ви вже увійшли як власник СТО.",
+        invalid: "Неправильний email або пароль.",
+        retry: "Не вдалося увійти. Спробуйте ще раз.",
+      },
+      es: {
+        eyebrow: "¿Ya estás registrado?",
+        title: "Entra a tu taller",
+        signInLink: "Iniciar sesión en mi taller",
+        email: "Email",
+        password: "Contraseña",
+        emailPlaceholder: "owner@shop.com",
+        passwordPlaceholder: "Tu contraseña",
+        submit: "Iniciar sesión",
+        working: "Iniciando sesión…",
+        register: "¿Nuevo taller? Regístrate gratis",
+        dashboard: "Abrir mi panel",
+        active: "Tu sesión de propietario está activa.",
+        invalid: "El email o la contraseña son incorrectos.",
+        retry: "No se pudo iniciar sesión. Inténtalo de nuevo.",
+      },
+      it: {
+        eyebrow: "Sei già registrato?",
+        title: "Accedi alla tua officina",
+        signInLink: "Accedi alla mia officina",
+        email: "Email",
+        password: "Password",
+        emailPlaceholder: "owner@shop.com",
+        passwordPlaceholder: "La tua password",
+        submit: "Accedi",
+        working: "Accesso…",
+        register: "Nuova officina? Registrati gratis",
+        dashboard: "Apri il mio pannello",
+        active: "La sessione proprietario è attiva.",
+        invalid: "Email o password non corretti.",
+        retry: "Accesso non riuscito. Riprova.",
+      },
+      fr: {
+        eyebrow: "Déjà inscrit ?",
+        title: "Connectez-vous à votre atelier",
+        signInLink: "Se connecter à mon atelier",
+        email: "Email",
+        password: "Mot de passe",
+        emailPlaceholder: "owner@shop.com",
+        passwordPlaceholder: "Votre mot de passe",
+        submit: "Connexion",
+        working: "Connexion…",
+        register: "Nouvel atelier ? Inscription gratuite",
+        dashboard: "Ouvrir mon tableau de bord",
+        active: "Votre session propriétaire est active.",
+        invalid: "Email ou mot de passe incorrect.",
+        retry: "Connexion impossible. Réessayez.",
+      },
+    };
+    const t = copy[locale] || copy.en;
+
+    const withLocale = (href) => {
+      const url = new URL(href, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}`;
+    };
+
+    const hideLowerOwnerCta = () => {
+      const lower = document.querySelector("[data-repair-free-launch] [data-owner-cta]");
+      if (lower instanceof HTMLElement) lower.hidden = true;
+    };
+
+    const install = () => {
+      if (document.querySelector("[data-repair-owner-quick-login]")) {
+        hideLowerOwnerCta();
+        return true;
+      }
+
+      const hero = document.querySelector(".repair-live-hero");
+      const kicker = hero?.querySelector(".repair-kicker");
+      if (!(kicker instanceof HTMLElement)) return false;
+
+      const entry = document.createElement("section");
+      entry.className = "repair-owner-quick-login";
+      entry.dataset.repairOwnerQuickLogin = "true";
+      entry.setAttribute("aria-labelledby", "repair-owner-quick-login-title");
+
+      const header = document.createElement("div");
+      header.className = "repair-owner-quick-login__head";
+      const eyebrow = document.createElement("p");
+      eyebrow.className = "repair-owner-quick-login__eyebrow";
+      eyebrow.textContent = t.eyebrow;
+      const title = document.createElement("h2");
+      title.id = "repair-owner-quick-login-title";
+      title.textContent = t.title;
+      header.append(eyebrow, title);
+
+      const signInLink = document.createElement("a");
+      signInLink.className = "repair-owner-quick-login__full-login";
+      signInLink.dataset.repairOwnerSigninLink = "true";
+      signInLink.href = withLocale(`${repairRoot}/auth/?mode=login`);
+      signInLink.textContent = t.signInLink;
+
+      const form = document.createElement("form");
+      form.className = "repair-owner-quick-login__form";
+      form.dataset.repairOwnerLoginForm = "true";
+      form.noValidate = false;
+
+      const emailLabel = document.createElement("label");
+      emailLabel.textContent = t.email;
+      const email = document.createElement("input");
+      email.type = "email";
+      email.name = "email";
+      email.autocomplete = "username";
+      email.inputMode = "email";
+      email.required = true;
+      email.placeholder = t.emailPlaceholder;
+      email.dataset.repairOwnerLoginEmail = "true";
+      emailLabel.append(email);
+
+      const passwordLabel = document.createElement("label");
+      passwordLabel.textContent = t.password;
+      const password = document.createElement("input");
+      password.type = "password";
+      password.name = "password";
+      password.autocomplete = "current-password";
+      password.required = true;
+      password.placeholder = t.passwordPlaceholder;
+      password.dataset.repairOwnerLoginPassword = "true";
+      passwordLabel.append(password);
+
+      const submit = document.createElement("button");
+      submit.type = "submit";
+      submit.className = "repair-owner-quick-login__submit";
+      submit.dataset.repairOwnerLoginSubmit = "true";
+      submit.textContent = t.submit;
+
+      const message = document.createElement("p");
+      message.className = "repair-owner-quick-login__message";
+      message.dataset.repairOwnerLoginMessage = "true";
+      message.setAttribute("role", "status");
+      message.setAttribute("aria-live", "polite");
+
+      const register = document.createElement("a");
+      register.className = "repair-owner-quick-login__register";
+      register.dataset.repairOwnerRegister = "true";
+      register.href = withLocale(`${repairRoot}/auth/?mode=register`);
+      register.textContent = t.register;
+
+      form.append(emailLabel, passwordLabel, submit);
+      entry.append(header, signInLink, form, message, register);
+      kicker.insertAdjacentElement("beforebegin", entry);
+      hideLowerOwnerCta();
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        message.textContent = "";
+        submit.disabled = true;
+        submit.textContent = t.working;
+        try {
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ email: email.value.trim(), password: password.value }),
+          });
+          const data = await response.json().catch(() => null);
+          if (response.ok && data?.success) {
+            window.location.assign(withLocale(`${repairRoot}/dashboard/`));
+            return;
+          }
+          message.textContent = response.status === 401 || response.status === 403 ? t.invalid : t.retry;
+        } catch {
+          message.textContent = t.retry;
+        } finally {
+          submit.disabled = false;
+          submit.textContent = t.submit;
+        }
+      });
+
+      fetch("/api/auth/me", { credentials: "same-origin", headers: { Accept: "application/json" } })
+        .then((response) => response.ok ? response.json() : null)
+        .then((data) => {
+          if (!data?.success || !data?.specialist) return;
+          form.hidden = true;
+          signInLink.hidden = true;
+          register.hidden = true;
+          message.textContent = t.active;
+          const dashboard = document.createElement("a");
+          dashboard.className = "repair-owner-quick-login__dashboard";
+          dashboard.dataset.repairOwnerDashboard = "true";
+          dashboard.dataset.sessionActive = "true";
+          dashboard.href = withLocale(`${repairRoot}/dashboard/`);
+          dashboard.textContent = t.dashboard;
+          entry.appendChild(dashboard);
+        })
+        .catch(() => {});
+
+      return true;
+    };
+
+    if (!install()) requestAnimationFrame(() => install());
+    window.setTimeout(() => {
+      install();
+      hideLowerOwnerCta();
+    }, 100);
+  })();
+</script>
+
+<style is:global>
+  .repair-owner-quick-login {
+    margin: 0 0 22px;
+    padding: 16px;
+    border: 1px solid rgba(124,92,255,.22);
+    border-radius: 18px;
+    background: rgba(255,255,255,.94);
+    box-shadow: 0 16px 42px rgba(31,41,55,.10);
+    color: #111827;
+  }
+  .repair-owner-quick-login__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .repair-owner-quick-login__eyebrow{margin:0;color:#6d56d8;font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+  .repair-owner-quick-login h2{margin:0;color:#111827;font-size:18px;line-height:1.2;letter-spacing:-.02em}
+  .repair-owner-quick-login__full-login{display:inline-block;margin:0 0 10px;color:#5b45c5;text-decoration:underline;text-underline-offset:3px;font-size:12px;font-weight:850}
+  .repair-owner-quick-login__form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end}
+  .repair-owner-quick-login__form label{display:grid;gap:5px;color:#374151;font-size:12px;font-weight:800}
+  .repair-owner-quick-login__form input{width:100%;min-height:44px;box-sizing:border-box;border:1px solid #cfd5df;border-radius:11px;background:#fff;color:#111827;padding:10px 12px;font:inherit;outline:none}
+  .repair-owner-quick-login__form input:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.13)}
+  .repair-owner-quick-login__submit,.repair-owner-quick-login__dashboard{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:0;border-radius:11px;background:#111827;color:#fff;padding:10px 16px;text-decoration:none;font-size:14px;font-weight:850;cursor:pointer;white-space:nowrap}
+  .repair-owner-quick-login__submit:disabled{opacity:.62;cursor:wait}
+  .repair-owner-quick-login__register{display:inline-block;margin-top:8px;color:#5b45c5;text-decoration:none;font-size:12px;font-weight:800}
+  .repair-owner-quick-login__register:hover{text-decoration:underline}
+  .repair-owner-quick-login__message{min-height:0;margin:8px 0 0;color:#b42318;font-size:12px;font-weight:750;line-height:1.35}
+  .repair-owner-quick-login__message:empty{display:none}
+  .repair-owner-quick-login__dashboard{margin-top:6px;background:#111827}
+  .repair-owner-quick-login [hidden]{display:none!important}
+  @media(max-width:560px){
+    .repair-owner-quick-login{margin-bottom:14px;padding:12px;border-radius:15px}
+    .repair-owner-quick-login__head{display:block;margin-bottom:5px}
+    .repair-owner-quick-login__eyebrow{margin-bottom:2px;font-size:10px}
+    .repair-owner-quick-login h2{font-size:15px}
+    .repair-owner-quick-login__full-login{margin-bottom:6px;font-size:11px}
+    .repair-owner-quick-login__form{grid-template-columns:1fr 1fr;gap:6px}
+    .repair-owner-quick-login__form label{font-size:10px}
+    .repair-owner-quick-login__form input{min-height:38px;padding:7px 8px;font-size:12px}
+    .repair-owner-quick-login__submit{grid-column:1/-1;width:100%;min-height:40px;padding:7px 12px}
+    .repair-owner-quick-login__register{margin-top:5px;font-size:10px}
+  }
+</style>
