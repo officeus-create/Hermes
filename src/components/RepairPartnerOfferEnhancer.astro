@@ -29,7 +29,7 @@ const isRepairShopDashboard = normalizedPath === `${repairShopPath}/dashboard`;
           <input type="tel" id="partner-contact-phone" autocomplete="tel" maxlength="80" placeholder="+1 414 555 0100" />
         </label>
         <label class="repair-partner-consent">
-          <input type="checkbox" id="partner-contact-consent" required />
+          <input type="checkbox" id="partner-contact-consent" />
           <span>I agree that Hermes may use this information to contact me about this Repair Shop Partner offer and pilot onboarding.</span>
         </label>
         <p class="repair-partner-privacy">Your offer is sent privately to Hermes Logistics for human review. Contact details and offer terms are not sent to public analytics. Sales attribution is handled separately in the protected server-side pilot layer.</p>
@@ -62,5 +62,5 @@ const isRepairShopDashboard = normalizedPath === `${repairShopPath}/dashboard`;
   .repair-offer-next-step ol{margin:8px 0 0;padding-left:20px;color:#aab4c3;font-size:12px;line-height:1.6}
   .repair-offer-field-help{display:block;margin:5px 0 0;color:#8f95a5;font-size:11px;font-weight:500;line-height:1.45}
   .repair-partner-fallback{display:inline-flex;margin-top:9px;color:#b8d8ff;font-size:12px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
-  @media(max-width:720px){.repair-partner-contact-grid{grid-template-columns:1fr}}
+  @media(max-width:720px){.repair-partner-contact-grid{grid-template-columns:1fr 1fr}.repair-partner-contact-grid{grid-template-columns:1fr}}
 </style>
