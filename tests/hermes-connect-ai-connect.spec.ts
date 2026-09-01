@@ -10,9 +10,9 @@ test.describe("Hermes Connect AI Connect", () => {
     await page.goto("/services/hermes-connect/internal/ai-connect/");
     await expect(page).toHaveTitle(/AI Connect \| Hermes Connect/);
     await expect(page.locator("[data-hc-product-context]")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "AI Connect" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "AI Control Center" })).toBeVisible();
     await expect(page.getByText("Sign in required")).toBeVisible();
-    await expect(page.locator("[data-ai-connect-content]")).toHaveClass(/hidden/);
+    await expect(page.locator("[data-content]")).toHaveClass(/hidden/);
   });
 
   test("shows the live project/runtime overview only after internal-owner authorization", async ({ page }) => {
@@ -27,12 +27,12 @@ test.describe("Hermes Connect AI Connect", () => {
       }),
     }));
     await page.goto("/services/hermes-connect/internal/ai-connect/");
-    await expect(page.locator("[data-ai-connect-content]")).toBeVisible();
+    await expect(page.locator("[data-content]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Hermes Connect · Internal AI Pilot" })).toBeVisible();
     await expect(page.locator("[data-runner-state]")).toHaveText("Online");
-    await expect(page.locator("[data-active-task]")).toHaveText("hcai_demo");
-    await expect(page.locator("[data-task-status]")).toHaveText("running");
-    await expect(page.getByRole("link", { name: /Open AI Assistant/i })).toHaveAttribute("href", "/services/hermes-connect/internal/ai-assistant/");
+    await expect(page.locator("[data-task-title]")).toContainText("demo");
+    await expect(page.locator("[data-task-status]")).toHaveText("Running");
+    await expect(page.locator("[data-hc-ai-nav]").getByRole("link", { name: "AI Assistant" })).toHaveAttribute("href", "/services/hermes-connect/internal/ai-assistant/");
   });
 
   test("stays usable at 390px and exposes no localhost/FCC admin surface", async ({ page }) => {
