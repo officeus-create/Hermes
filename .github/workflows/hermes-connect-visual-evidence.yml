@@ -14,6 +14,7 @@ on:
       - 'scripts/route-screenshot-contract.test.mjs'
       - 'scripts/validate-route-screenshot-layout.mjs'
       - 'scripts/hermes-connect-mark-contract.test.mjs'
+      - 'scripts/academy-russian-private-contract.test.mjs'
       - '.github/workflows/hermes-connect-visual-evidence.yml'
 
 permissions:
@@ -39,6 +40,9 @@ jobs:
 
       - name: Verify Option 02 mark geometry
         run: node scripts/hermes-connect-mark-contract.test.mjs
+
+      - name: Verify Academy Russian private runtime
+        run: node --test scripts/academy-russian-private-contract.test.mjs
 
       - name: Build website
         run: npm run build
