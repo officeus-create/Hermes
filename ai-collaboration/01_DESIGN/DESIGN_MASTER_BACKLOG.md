@@ -2,6 +2,7 @@
 
 Status: ACTIVE
 Owner: CEO
+Active implementation PR: #944
 Execution rule: simple -> complex; fix systemic causes before one-off screens; preserve strong sections; validate desktop + mobile before merge.
 
 ## Status vocabulary
@@ -30,17 +31,17 @@ Execution rule: simple -> complex; fix systemic causes before one-off screens; p
 - [x] RU continuity across significant public/private Connect flows substantially improved.
 - [x] Responsive/focus/reduced-motion foundations exist across major Connect flows.
 
-## autonomous queue — simple to complex
+## Autonomous queue — simple to complex
 
 ### P0 — housekeeping and system consistency
 - [x] Create this single Design Master Backlog.
-- [x] Audit all current Hermes Connect logo references and eliminate stale pre-Option-02 production references where safe. Evidence: `hermes-connect/LOGO_REFERENCE_AUDIT_2026-09-01.md`; no active pre-Option-02 visual geometry found on the audited main baseline.
-- [ ] Audit shared header/footer/launcher logo sizing and spacing consistency.
-- [ ] Audit design-token duplication and document one canonical source per semantic token.
-- [ ] Add a design regression checklist for every visual PR: 1440, 390, overflow, focus, reduced motion, light/dark where applicable.
+- [x] Audit all current Hermes Connect logo references. Evidence: `hermes-connect/LOGO_REFERENCE_AUDIT_2026-09-01.md`; no active pre-Option-02 visual geometry found on the audited main baseline.
+- [x] Audit shared header/footer/launcher logo sizing and spacing consistency. Evidence: `hermes-connect/LAUNCHER_APPLICATION_AUDIT_2026-09-01.md`.
+- [x] Audit design-token duplication and document one canonical source per semantic token. Evidence: `DESIGN_TOKEN_AUDIT_2026-09-01.md`; Repair Shop partner UI migration is included in PR #944.
+- [x] Add a design regression checklist for every visual PR: `DESIGN_REGRESSION_CHECKLIST.md`.
 
 ### P1 — bounded public-site repairs
-- [ ] Repair Marketing official-channels/social block hierarchy and excessive dead space.
+- [~] Repair Marketing official-channels/social block hierarchy and excessive dead space. Implementation is in PR #944; remains IN PROGRESS until visual/CI evidence is green.
 - [ ] Audit remaining Logistics utility/directory blocks for the same collapsed-list pattern repaired in the Option 02 rollout.
 - [ ] Normalize section spacing where oversized containers hold low-information content.
 - [ ] Normalize repeated card/button/pill states only where inconsistent; do not flatten distinctive strong sections.
