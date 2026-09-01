@@ -6,7 +6,8 @@ import {
 
 type Env = {
   DB?: any;
-  HERMES_CONNECT_REMINDER_JOB_TOKEN?: string;
+  LEAD_SERVICE_TOKEN?: string;
+  HERMES_CONNECT_REMINDER_UNSUBSCRIBE_SECRET?: string;
 };
 
 const COPY = {
@@ -30,8 +31,13 @@ function htmlResponse(status: number, title: string, body: string, action: strin
   });
 }
 
+function reminderUnsubscribeSecret(env: Env) {
+  return String(env.HERMES_CONNECT_REMINDER_UNSUBSCRIBE_SECRET || env.LEAD_SERVICE_TOKEN || "");
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
-  if (!env.DB || !env.HERMES_CONNECT_REMINDER_JOB_TOKEN) {
+  const unsubscribeSecret = reminderUnsubscribeSecret(env);
+  if (!env.DB || !unsubscribeSecret) {
     return new Response("Reminder preferences are unavailable.", { status: 503, headers: { "Cache-Control": "no-store" } });
   }
 
@@ -41,7 +47,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const locale = normalizeEngagementLocale(url.searchParams.get("lang"));
   const copy = COPY[locale as keyof typeof COPY] || COPY.en;
 
-  if (!(await verifyReminderUnsubscribe(specialistId, signature, env.HERMES_CONNECT_REMINDER_JOB_TOKEN))) {
+  if (!(await verifyReminderUnsubscribe(specialistId, signature, unsubscribeSecret))) {
     return new Response("Invalid or incomplete reminder preference link.", { status: 400, headers: { "Cache-Control": "no-store" } });
   }
 
