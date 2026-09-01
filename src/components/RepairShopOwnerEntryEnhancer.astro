@@ -11,12 +11,12 @@
     const requested = new URLSearchParams(window.location.search).get("lang") || "en";
     const locale = supported.has(requested) ? requested : "en";
     const copy = {
-      en: { prompt: "Already registered?", action: "Sign in to my shop", aria: "Repair Shop owner sign in" },
-      ru: { prompt: "Уже зарегистрированы?", action: "Войти в кабинет СТО", aria: "Вход владельца СТО" },
-      uk: { prompt: "Вже зареєстровані?", action: "Увійти до кабінету СТО", aria: "Вхід власника СТО" },
-      es: { prompt: "¿Ya estás registrado?", action: "Iniciar sesión en mi taller", aria: "Acceso del propietario del taller" },
-      it: { prompt: "Sei già registrato?", action: "Accedi alla mia officina", aria: "Accesso proprietario officina" },
-      fr: { prompt: "Déjà inscrit ?", action: "Se connecter à mon atelier", aria: "Connexion propriétaire d’atelier" },
+      en: { prompt: "Already registered? Use your existing owner account.", action: "Sign in to my shop" },
+      ru: { prompt: "Уже зарегистрированы? Войдите в существующий аккаунт владельца.", action: "Войти в кабинет СТО" },
+      uk: { prompt: "Вже зареєстровані? Увійдіть до наявного акаунта власника.", action: "Увійти до кабінету СТО" },
+      es: { prompt: "¿Ya estás registrado? Entra con tu cuenta de propietario.", action: "Iniciar sesión en mi taller" },
+      it: { prompt: "Sei già registrato? Accedi con il tuo account proprietario.", action: "Accedi alla mia officina" },
+      fr: { prompt: "Déjà inscrit ? Connectez-vous avec votre compte propriétaire.", action: "Se connecter à mon atelier" },
     };
     const t = copy[locale] || copy.en;
 
@@ -27,90 +27,64 @@
       return `${url.pathname}${url.search}`;
     };
 
+    const replaceVisibleText = (link, value) => {
+      const textNode = Array.from(link.childNodes).find((node) => node.nodeType === Node.TEXT_NODE);
+      if (textNode) textNode.textContent = `${value} `;
+      else link.insertBefore(document.createTextNode(`${value} `), link.firstChild);
+    };
+
     const install = () => {
-      if (document.querySelector("[data-repair-owner-entry]")) return true;
-      const hero = document.querySelector(".repair-live-hero");
-      const lead = hero?.querySelector(".repair-lead");
-      if (!(lead instanceof HTMLElement)) return false;
+      const heroActions = document.querySelector(".repair-live-hero .repair-actions");
+      const heroPrimary = heroActions?.querySelector(".repair-primary");
+      if (!(heroActions instanceof HTMLElement) || !(heroPrimary instanceof HTMLAnchorElement)) return false;
 
-      const entry = document.createElement("aside");
-      entry.className = "repair-owner-entry";
-      entry.dataset.repairOwnerEntry = "true";
-      entry.setAttribute("aria-label", t.aria);
+      heroPrimary.dataset.repairOwnerSignin = "true";
+      heroPrimary.href = withLocale(`${repairRoot}/auth/?mode=login`);
+      heroPrimary.setAttribute("aria-label", t.action);
+      replaceVisibleText(heroPrimary, t.action);
 
-      const prompt = document.createElement("span");
-      prompt.className = "repair-owner-entry__prompt";
+      let prompt = document.querySelector("[data-repair-owner-prompt]");
+      if (!(prompt instanceof HTMLElement)) {
+        prompt = document.createElement("p");
+        prompt.dataset.repairOwnerPrompt = "true";
+        prompt.className = "repair-owner-prompt";
+        heroActions.insertAdjacentElement("beforebegin", prompt);
+      }
       prompt.textContent = t.prompt;
 
-      const link = document.createElement("a");
-      link.className = "repair-owner-entry__action";
-      link.dataset.repairOwnerSignin = "true";
-      link.href = withLocale(`${repairRoot}/auth/`);
-      link.textContent = t.action;
-
-      entry.append(prompt, link);
-      lead.insertAdjacentElement("beforebegin", entry);
+      // The launch card keeps the registration CTA. Its second owner-login CTA is
+      // removed on the landing route so there is one clear, accessible sign-in path.
+      document.querySelector("[data-repair-free-launch] [data-owner-cta]")?.remove();
       return true;
     };
 
-    if (!install()) {
-      requestAnimationFrame(() => install());
-      window.setTimeout(() => install(), 100);
-    }
+    if (!install()) requestAnimationFrame(() => install());
+    window.setTimeout(() => install(), 100);
   })();
 </script>
 
 <style is:global>
-  .repair-owner-entry {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin: 22px 0 18px;
-    padding: 12px 14px 12px 16px;
-    border: 1px solid rgba(124,92,255,.24);
-    border-radius: 18px;
-    background: rgba(255,255,255,.82);
-    box-shadow: 0 12px 34px rgba(31,41,55,.08);
+  .repair-owner-prompt {
+    margin: 18px 0 9px;
     color: #111827;
-  }
-  .repair-owner-entry__prompt {
     font-size: 15px;
     font-weight: 800;
-    line-height: 1.35;
+    line-height: 1.45;
   }
-  .repair-owner-entry__action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 46px;
-    padding: 11px 16px;
-    border-radius: 13px;
-    background: #111827;
-    color: #fff;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 850;
-    line-height: 1.2;
-    white-space: nowrap;
+  .repair-live-hero [data-repair-owner-signin] {
+    min-height: 48px;
+    box-shadow: 0 12px 30px rgba(17,24,39,.14);
   }
-  .repair-owner-entry__action:hover { background: #24194f; }
-  .repair-owner-entry__action:focus-visible {
-    outline: 3px solid rgba(124,92,255,.38);
+  .repair-live-hero [data-repair-owner-signin]:focus-visible {
+    outline: 3px solid rgba(124,92,255,.4);
     outline-offset: 3px;
   }
   @media (max-width: 560px) {
-    .repair-owner-entry {
-      align-items: stretch;
-      flex-direction: column;
-      margin: 18px 0 16px;
-      padding: 14px;
-    }
-    .repair-owner-entry__action {
+    .repair-owner-prompt { margin-top: 16px; font-size: 14px; }
+    .repair-live-hero [data-repair-owner-signin] {
       width: 100%;
-      min-height: 48px;
       box-sizing: border-box;
-      white-space: normal;
+      justify-content: center;
     }
   }
 </style>
