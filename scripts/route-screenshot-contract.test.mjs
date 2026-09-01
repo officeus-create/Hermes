@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import {
   DEFAULT_SCREENSHOT_ROUTES,
+  SCREENSHOT_VIEWPORTS,
   parseScreenshotBaseUrl,
   screenshotFileName,
   screenshotUrl,
@@ -12,6 +13,14 @@ assert.equal(local.href, "http://127.0.0.1:4321/");
 assert.equal(screenshotUrl(local, "/services/seo/").href, "http://127.0.0.1:4321/services/seo/");
 assert.equal(screenshotFileName("seo-service", "mobile"), "seo-service--mobile.png");
 assert.equal(validateScreenshotRoutes(), DEFAULT_SCREENSHOT_ROUTES);
+
+const viewportMap = new Map(SCREENSHOT_VIEWPORTS.map((viewport) => [viewport.id, viewport.width]));
+assert.equal(viewportMap.get("desktop"), 1440);
+assert.equal(viewportMap.get("laptop"), 1024);
+assert.equal(viewportMap.get("tablet"), 768);
+assert.equal(viewportMap.get("mobile-wide"), 430);
+assert.equal(viewportMap.get("mobile"), 390);
+assert.equal(SCREENSHOT_VIEWPORTS.length, 5, "visual evidence must keep the five-width regression matrix");
 
 const routeMap = new Map(DEFAULT_SCREENSHOT_ROUTES.map((route) => [route.id, route.path]));
 assert.equal(routeMap.get("path-logistics"), "/paths/logistics/");
@@ -41,4 +50,4 @@ assert.throws(() => parseScreenshotBaseUrl("https://user:pass@localhost:4321/"),
 assert.throws(() => validateScreenshotRoutes([{ id: "duplicate", path: "/a/" }, { id: "duplicate", path: "/b/" }]), /Duplicate screenshot route/);
 assert.throws(() => validateScreenshotRoutes([{ id: "unsafe", path: "/a/?token=x" }]), /clean absolute path/);
 
-console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, and clean desktop/mobile coverage.");
+console.log("Route screenshot safety contract passed, including all four Hermes public directions, carrier sales, Repair Shops public/auth/plan, canonical Hermes Connect workspace, and the 390/430/768/1024/1440 visual evidence matrix.");
