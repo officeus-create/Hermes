@@ -109,5 +109,6 @@ await import('./academy-a3-contract.test.mjs');
 await import('./academy-a4-contract.test.mjs');
 await import('./academy-support-contract.test.mjs');
 await import('./academy-content-contract.test.mjs');
+await import('./academy-russian-content-contract.test.mjs');
 await import('./hermes-connect-account-contract.test.mjs');
 await import('./hermes-connect-account-switcher-contract.test.mjs');
