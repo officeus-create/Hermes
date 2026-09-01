@@ -6,8 +6,26 @@ import {
   isAcademyProgram,
 } from "../_lib/academy.mjs";
 import { getAcademyLessonContent } from "../_lib/academy-content.mjs";
+import { getAcademyLessonContentRu } from "../_lib/academy-content-ru.mjs";
 
 type Env = { DB?: any };
+
+function resolveLessonLocale(request: Request, url: URL) {
+  const direct = String(url.searchParams.get("lang") || "").trim().toLowerCase();
+  if (direct === "ru") return "ru";
+
+  const referer = request.headers.get("referer");
+  if (referer) {
+    try {
+      const refererLocale = String(new URL(referer).searchParams.get("lang") || "").trim().toLowerCase();
+      if (refererLocale === "ru") return "ru";
+    } catch {
+      // Ignore malformed external referers and keep the canonical English fallback.
+    }
+  }
+
+  return "en";
+}
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
@@ -18,6 +36,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const url = new URL(request.url);
   const programSlug = String(url.searchParams.get("program") || "").trim();
   const lessonId = String(url.searchParams.get("lesson") || "").trim();
+  const locale = resolveLessonLocale(request, url);
 
   if (!isAcademyProgram(programSlug)) return jsonResponse(400, { success: false, error: "program_invalid" });
   if (!isAcademyLesson(programSlug, lessonId)) return jsonResponse(400, { success: false, error: "lesson_invalid" });
@@ -33,11 +52,14 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     });
   }
 
-  const lesson = getAcademyLessonContent(programSlug, lessonId);
+  const lesson = locale === "ru"
+    ? getAcademyLessonContentRu(programSlug, lessonId) || getAcademyLessonContent(programSlug, lessonId)
+    : getAcademyLessonContent(programSlug, lessonId);
   if (!lesson) return jsonResponse(404, { success: false, error: "lesson_content_not_ready" });
 
   return jsonResponse(200, {
     success: true,
+    locale,
     enrollment: { program_slug: programSlug, state: enrollment.state },
     lesson,
   });
