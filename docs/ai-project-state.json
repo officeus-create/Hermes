@@ -19,11 +19,7 @@
   },
   "governance": {
     "operating_stack": "HOS_HUEG_CANONICAL",
-    "agent_sync": {
-      "skill": "SKILL_HERMES_AGENT_SYNC",
-      "version": "2.0.0",
-      "status": "ACTIVE"
-    },
+    "agent_sync": {"skill":"SKILL_HERMES_AGENT_SYNC","version":"2.0.0","status":"ACTIVE"},
     "writer_rule": "ONE_TASK_ONE_ARTIFACT_ONE_ACTIVE_WRITER_MANY_REVIEWERS",
     "no_evidence_no_promotion": true,
     "green_ci_does_not_override_locks": true,
@@ -31,25 +27,16 @@
     "required_status_check_enforcement": "off",
     "repository_rulesets_present": false,
     "platform_enforcement": "PARTIAL_OWNER_ADMIN_ACTION_REQUIRED",
-    "drive_effective_permission_state": "UNVERIFIED_IN_CURRENT_CONNECTOR_SURFACE"
+    "platform_enforcement_issue": 938,
+    "drive_permission_last_verified": "FIX_REQUIRED",
+    "drive_permission_current_recheck": "ACCESS_GAP",
+    "drive_permission_issue": 431
   },
   "condition_watch": {
     "automation": "Hermes CI / HUEG Watch",
     "mode": "condition_watch",
     "state_snapshot_required": true,
-    "snapshot_fields": [
-      "observed_at",
-      "canonical_main_sha",
-      "open_pr_numbers",
-      "exact_head_sha",
-      "base_main_relation",
-      "draft",
-      "mergeable",
-      "exact_head_checks",
-      "active_blockers_and_locks",
-      "promotion_state",
-      "next_step_class"
-    ],
+    "snapshot_fields": ["observed_at","canonical_main_sha","open_pr_numbers","exact_head_sha","base_main_relation","draft","mergeable","exact_head_checks","active_blockers_and_locks","promotion_state","next_step_class"],
     "suppression_rule": "Do not alert on mergeable/ahead-behind/routine-head/queued-or-in-progress changes by themselves when PROMOTION_STATE and NEXT_STEP_CLASS are unchanged.",
     "historical_failure_rule": "Ignore failed historical SHAs when the exact current head passes."
   },
@@ -90,8 +77,8 @@
     "lesson_classes": ["CONDITION_WATCH_STATE_NOISE","WRITE_BEFORE_SYNC_RELEASE","NARRATIVE_AUDIT_WITHOUT_DURABLE_STATE","GOVERNANCE_POLICY_WITHOUT_PLATFORM_ENFORCEMENT","MACHINE_STATE_STALE_AFTER_MATERIAL_MERGES"]
   },
   "active_external_gates": [
-    {"id":"GITHUB_MAIN_PROTECTION","state":"OWNER_ADMIN_ACTION_REQUIRED","reason":"Current connector can verify branch protection/rulesets but exposes no safe write action for repository protection configuration."},
-    {"id":"ONE_BRAIN_EFFECTIVE_DRIVE_ACL","state":"UNVERIFIED","reason":"Current Drive metadata surface does not expose effective permissions; do not assume the old anyone-writer finding is either still true or fixed."}
+    {"id":"GITHUB_MAIN_PROTECTION","issue":938,"state":"OWNER_ADMIN_ACTION_REQUIRED","reason":"Current connector can verify branch protection/rulesets but exposes no safe write action for repository protection configuration."},
+    {"id":"ONE_BRAIN_EFFECTIVE_DRIVE_ACL","issue":431,"state":"LAST_VERIFIED_FIX_REQUIRED_CURRENT_RECHECK_ACCESS_GAP","reason":"Issue #431 preserves authenticated evidence that anonymous writer access existed. The current connector does not expose effective ACL, so remediation cannot be verified from this surface."}
   ],
   "current_execution_rules": [
     "Re-enumerate all open PRs and current main before repository decisions.",
