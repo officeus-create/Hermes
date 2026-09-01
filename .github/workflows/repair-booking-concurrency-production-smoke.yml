@@ -1,0 +1,58 @@
+name: Repair Shop concurrent booking production proof
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  checks: read
+  issues: write
+
+jobs:
+  concurrency-proof:
+    if: >-
+      github.event.issue.number == 939 &&
+      github.event.comment.body == '/verify-repair-booking-concurrency' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    name: Verify production D1 booking concurrency
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Run concurrent production booking proof
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: bash scripts/repair-booking-concurrency-production-smoke.sh
+
+      - name: Publish sanitized proof result
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          CHECKED_SHA="$(git rev-parse HEAD)"
+          {
+            echo "## Repair Shop production D1 concurrency proof"
+            echo
+            echo "- Checked main commit: \`${CHECKED_SHA}\`"
+            echo "- Workflow run: https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Job status: **${JOB_STATUS}**"
+            if [ "${JOB_STATUS}" = "success" ]; then
+              echo "- ✅ Two simultaneous public booking writes at explicit capacity=1 produced exactly one persisted booking."
+              echo "- ✅ The competing write returned \`409 slot_unavailable\`."
+              echo "- ✅ Owner inbox and public busy interval both confirmed a single persisted 09:00–10:00 booking."
+              echo "- ✅ Temporary synthetic production rows were cleaned through the existing smoke cleanup path."
+            else
+              echo "- ❌ Concurrency proof did not pass. Do not claim the capacity algorithm safe under simultaneous production writes until this run is repaired and rerun."
+            fi
+            echo
+            echo "> Synthetic smoke identities only. No real customer/shop data, credentials, tokens, or private identifiers are published."
+          } > "${RUNNER_TEMP}/repair-concurrency-proof-comment.md"
+          gh issue comment 939 --repo "${GITHUB_REPOSITORY}" --body-file "${RUNNER_TEMP}/repair-concurrency-proof-comment.md"
