@@ -1,0 +1,1 @@
+Global Hermes account presence acceptance is enforced by `tests/hermes-connect-global-account.spec.ts` in the full Playwright workflow. The source-only contract beside this file documents architectural invariants but is not a separate release gate.
