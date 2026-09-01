@@ -1,10 +1,17 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
+const workflowUrl = new URL("../.github/workflows/repair-access-state-production-proof.yml", import.meta.url);
+const proofUrl = new URL("./repair-shop-access-state-production-proof.sh", import.meta.url);
 const [workflow, proof] = await Promise.all([
-  readFile(new URL("../.github/workflows/repair-access-state-production-proof.yml", import.meta.url), "utf8"),
-  readFile(new URL("./repair-shop-access-state-production-proof.sh", import.meta.url), "utf8"),
+  readFile(workflowUrl, "utf8"),
+  readFile(proofUrl, "utf8"),
 ]);
+
+// Shell syntax is part of the release contract, not something to discover in production.
+execFileSync("bash", ["-n", fileURLToPath(proofUrl)], { stdio: "pipe" });
 
 // Consequential production writes must remain explicitly owner-authorized.
 assert.match(workflow, /issue_comment:/);
@@ -30,6 +37,9 @@ assert.match(proof, /cloudflare-pages-production-v2\.yml\/runs/);
 assert.match(proof, /run\?\.head_sha === sha/);
 assert.match(proof, /run\?\.conclusion === "success"/);
 assert.match(proof, /production_parity_required/);
+const parityGateIndex = proof.indexOf('fail_classified "production_parity_required"');
+const firstSyntheticMutationIndex = proof.indexOf('PRE_CLEAN="$(curl');
+assert.ok(parityGateIndex >= 0 && firstSyntheticMutationIndex > parityGateIndex, "No production mutation may precede exact-main parity proof.");
 
 // Discover the existing production D1 binding at runtime; never carry a database id in the repository.
 assert.match(proof, /pages\/projects\/hermes/);
@@ -40,6 +50,7 @@ assert.doesNotMatch(proof, /database_id\s*[=:]\s*["'][0-9a-f-]{20,}["']/i);
 // The proof must stay deadline-safe without weakening real Shop Owner registration policy.
 assert.doesNotMatch(proof, /\/api\/auth\/register/);
 assert.match(proof, /INSERT INTO specialists/);
+assert.match(proof, /params:\[\$id,\$email,\$hash,\$salt/);
 assert.match(proof, /repair-booking-production-smoke@hermesconnect\.app/);
 assert.match(proof, /\/api\/auth\/login/);
 assert.match(proof, /hashPassword/);
