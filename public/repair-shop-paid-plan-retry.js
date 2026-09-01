@@ -5,6 +5,7 @@
   window.__hermesPaidPlanRetryGuardInstalled = true;
 
   const nativeFetch = window.fetch.bind(window);
+  const fallbackId = "paid-plan-direct-fallback";
   let pending = null;
 
   const makeRequestId = () => `repair_paid_${Date.now().toString(36)}_${crypto.randomUUID().replaceAll("-", "").slice(0, 12)}`;
@@ -20,6 +21,36 @@
     message: payload.message ?? "",
     direction_fields: payload.direction_fields ?? null,
   });
+
+  const hideDirectFallback = () => document.getElementById(fallbackId)?.remove();
+  const showDirectFallback = () => {
+    if (document.getElementById(fallbackId)) return;
+    const status = document.getElementById("paid-plan-status");
+    if (!(status instanceof HTMLElement)) return;
+
+    const fallback = document.createElement("p");
+    fallback.id = fallbackId;
+    fallback.className = "form-note";
+    fallback.setAttribute("role", "note");
+
+    const intro = document.createTextNode("Need activation help now? Contact Hermes directly: ");
+    const email = document.createElement("a");
+    email.href = "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Founding%20Shop%20Plan";
+    email.textContent = "email Hermes";
+    const separator = document.createTextNode(" or call ");
+    const phone = document.createElement("a");
+    phone.href = "tel:+12623023626";
+    phone.textContent = "+1 (262) 302-3626";
+    const tail = document.createTextNode(". Nothing is charged by using either fallback.");
+
+    fallback.append(intro, email, separator, phone, tail);
+    status.insertAdjacentElement("afterend", fallback);
+    window.dataLayer?.push({
+      event: "connect_paid_plan_direct_fallback_shown",
+      product: "repair_shop_founding_plan",
+      reason: "receiver_unavailable",
+    });
+  };
 
   window.fetch = async (input, init) => {
     const url = typeof input === "string" || input instanceof URL
@@ -55,13 +86,23 @@
       submitted_at: pending.submittedAt,
     };
 
-    const response = await nativeFetch(input, {
-      ...init,
-      headers,
-      body: JSON.stringify(nextPayload),
-    });
+    try {
+      const response = await nativeFetch(input, {
+        ...init,
+        headers,
+        body: JSON.stringify(nextPayload),
+      });
 
-    if (response.ok) pending = null;
-    return response;
+      if (response.ok) {
+        pending = null;
+        hideDirectFallback();
+      } else {
+        showDirectFallback();
+      }
+      return response;
+    } catch (error) {
+      showDirectFallback();
+      throw error;
+    }
   };
 })();
