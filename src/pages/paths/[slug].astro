@@ -12,6 +12,7 @@ import SiteHeader from "../../components/SiteHeader.astro";
 import { publicPaths } from "../../data/public-paths";
 import { site } from "../../data/site";
 import "../../styles/hermes-public-path-shell.css";
+import "../../styles/hermes-connect-division-context.css";
 
 export function getStaticPaths() {
   return publicPaths.map((path) => ({ params: { slug: path.id }, props: { path } }));
