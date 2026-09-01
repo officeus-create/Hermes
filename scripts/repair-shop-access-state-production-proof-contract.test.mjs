@@ -30,6 +30,7 @@ assert.match(workflow, /CLOUDFLARE_PAGES_API_TOKEN:/);
 assert.match(workflow, /CLOUDFLARE_ACCOUNT_ID:/);
 assert.match(workflow, /continue-on-error:\s*true/);
 assert.match(workflow, /privacy-safe classification/);
+assert.match(workflow, /stale_main_before_transition/);
 assert.match(workflow, /Do not claim paid\/manual activation operationally proven/);
 
 // Exact-main + successful controlled deploy are mandatory before any synthetic production write.
@@ -68,7 +69,11 @@ assert.match(proof, /params:\[\$shop,\$now,\$now\]/);
 assert.match(proof, /SELECT access_state,plan_id FROM repair_shop_access WHERE shop_id = \?/);
 assert.match(proof, /\/api\/repair-shop\/access/);
 assert.match(proof, /trialing_readback_failed/);
+assert.match(proof, /stale_main_before_transition/);
 assert.match(proof, /owner_founding_readback_failed/);
+const transitionRaceGateIndex = proof.indexOf('fail_classified "stale_main_before_transition"');
+const foundingMutationIndex = proof.indexOf('UPSERT_HTTP="$(post_d1');
+assert.ok(transitionRaceGateIndex >= 0 && foundingMutationIndex > transitionRaceGateIndex, "The founding write must be race-guarded against a moving main branch.");
 
 // Cleanup is isolated to the dedicated synthetic email/id set and does not touch booking smoke.
 assert.doesNotMatch(proof, /repair-booking-production-smoke@hermesconnect\.app/);
