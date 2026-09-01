@@ -1,4 +1,5 @@
 ---
+import RepairShopOwnerEntryEnhancer from "./RepairShopOwnerEntryEnhancer.astro";
 import RepairShopOwnerNavEnhancer from "./RepairShopOwnerNavEnhancer.astro";
 
 const repairShopRoot = "/services/hermes-connect/repair-shops";
@@ -8,6 +9,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
 
 {isRepairShopSurface && (
   <>
+    <RepairShopOwnerEntryEnhancer />
     <RepairShopOwnerNavEnhancer />
     <script is:inline src="/repair-shop-activation.js"></script>
     <script is:inline src="/repair-shop-web-v1.js"></script>
