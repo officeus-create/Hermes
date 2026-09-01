@@ -56,9 +56,14 @@ test("internal owner can manage AI from the Russian cabinet at 390px", async ({ 
   await page.goto("/services/hermes-connect/internal/ai-connect/?lang=ru", { waitUntil: "domcontentloaded" });
 
   await expect(page.getByRole("heading", { name: "AI Control Center" })).toBeVisible();
+  await expect(page.getByText("Твой приватный кабинет управления Hermes AI", { exact: false })).toBeVisible();
   await expect(page.locator("[data-hc-ai-nav]")).toBeVisible();
-  await expect(page.locator("[data-hc-ai-nav]").getByText("Проекты")).toBeVisible();
-  await expect(page.locator("[data-hc-ai-nav]").getByText("Активность")).toBeVisible();
+  const projectsLink = page.locator("[data-hc-ai-nav]").getByText("Проекты");
+  const activityLink = page.locator("[data-hc-ai-nav]").getByText("Активность");
+  await expect(projectsLink).toBeVisible();
+  await expect(activityLink).toBeVisible();
+  await expect(projectsLink).toHaveAttribute("href", /lang=ru/);
+  await expect(activityLink).toHaveAttribute("href", /lang=ru/);
   await expect(page.locator("[data-runner-state]")).toHaveText("Онлайн");
 
   const prompt = "Проверь текущий AI кабинет, запусти тесты и подготовь PR. Не делай merge/deploy.";
@@ -81,8 +86,9 @@ test("Activity never renders stored task prompt and only allowlists Hermes PR UR
     { ...task, id: "hcai_bad_pr", status: "completed", prompt: "ANOTHER SECRET PROMPT", output_summary: "Another safe result.", pr_url: "https://evil.example/pull/1" },
   ] })));
 
-  await page.goto("/services/hermes-connect/internal/ai-connect/activity/", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Activity" })).toBeVisible();
+  await page.goto("/services/hermes-connect/internal/ai-connect/activity/?lang=ru", { waitUntil: "domcontentloaded" });
+  await expect(page).toHaveTitle("Активность | AI Connect | Hermes Connect");
+  await expect(page.getByRole("heading", { name: "Активность" })).toBeVisible();
   await expect(page.locator("[data-list]")).toContainText("Sanitized result only.");
   await expect(page.locator("[data-list]")).not.toContainText("SECRET PROMPT MUST NOT RENDER");
   await expect(page.locator("[data-list]")).not.toContainText("ANOTHER SECRET PROMPT");
