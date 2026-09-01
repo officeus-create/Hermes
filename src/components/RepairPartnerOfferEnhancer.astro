@@ -7,6 +7,7 @@ const isRepairShopDashboard = normalizedPath === `${repairShopPath}/dashboard`;
 ---
 
 {isRepairShopSurface && <script is:inline src="/repair-shop-capabilities.js"></script>}
+{isRepairShopSurface && <script is:inline src="/repair-shop-form-clarity.js"></script>}
 {isRepairShopDashboard && <script is:inline src="/repair-shop-operations.js"></script>}
 
 {isRepairShopPage && (
@@ -39,7 +40,7 @@ const isRepairShopDashboard = normalizedPath === `${repairShopPath}/dashboard`;
   </>
 )}
 
-<style>
+<style is:global>
   .repair-partner-contact-fields{margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}
   .repair-partner-contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .repair-partner-contact-field{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;color:#dfe2ea;font-size:13px;font-weight:750}
@@ -51,5 +52,15 @@ const isRepairShopDashboard = normalizedPath === `${repairShopPath}/dashboard`;
   .repair-partner-privacy{margin:10px 0 0;color:#8f95a5;font-size:12px;line-height:1.5}
   .repair-partner-delivery-status{margin:12px 0 0;padding:11px 12px;border-radius:10px;background:rgba(180,42,42,.14);color:#ffc4c4;font-size:13px;line-height:1.45}
   .repair-partner-delivery-status[data-state="success"]{background:rgba(34,151,104,.14);color:#a8f1cf}
+  .hc-optional-marker{display:inline-flex;width:max-content;margin-left:6px;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.055);color:#858b9a;font-size:10px;font-weight:700;line-height:1.35;text-transform:lowercase}
+  .hc-form-help{display:block;margin-top:3px;color:#8f95a5;font-size:11px;font-weight:500;line-height:1.45}
+  .hc-registration-next{margin:18px 0 0;padding:14px 15px;border:1px solid rgba(30,136,255,.18);border-radius:14px;background:rgba(30,136,255,.055);color:#dfe7f3}
+  .hc-registration-next strong{display:block;font-size:13px}
+  .hc-registration-next p{margin:6px 0 0;color:#a8b2c0;font-size:12px;line-height:1.55}
+  .repair-offer-next-step{margin:14px 0 2px;padding:14px 15px;border:1px solid rgba(30,136,255,.18);border-radius:14px;background:rgba(30,136,255,.055);color:#e7edf6}
+  .repair-offer-next-step strong{display:block;font-size:13px}
+  .repair-offer-next-step ol{margin:8px 0 0;padding-left:20px;color:#aab4c3;font-size:12px;line-height:1.6}
+  .repair-offer-field-help{display:block;margin:5px 0 0;color:#8f95a5;font-size:11px;font-weight:500;line-height:1.45}
+  .repair-partner-fallback{display:inline-flex;margin-top:9px;color:#b8d8ff;font-size:12px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
   @media(max-width:720px){.repair-partner-contact-grid{grid-template-columns:1fr}}
 </style>
