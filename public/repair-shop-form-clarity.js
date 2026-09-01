@@ -17,7 +17,7 @@
     ru: {
       optional: "необязательно",
       registerTitle: "Что произойдёт после регистрации?",
-      registerBody: "Сначала будет создан единый аккаунт Hermes. Затем вы откроете кабинет СТО, добавите данные и услуги, настроите часы записи и получите публичную ссылку для клиентов. Регистрация сама по себе не подключает платный тариф и не означает одобрение партнёрства.",
+      registerBody: "Сначала будет создан единый аккаунт Hermes. Затем вы откроете кабинет СТО, добавите данные и услуги, настроите часы записи и получите публичную ссылку для клиентов. Регистрация сама по себе не подключает платный тариф и не означает одобрения партнёрства.",
       emailHelp: "Укажите рабочую почту, которую хотите использовать для дальнейшего входа в Hermes.",
       passwordHelp: "Минимум 8 символов. Этот пароль будет использоваться для входа в тот же аккаунт Hermes.",
     },
@@ -54,8 +54,8 @@
   const addHelp = (controlId, text) => {
     const control = document.getElementById(controlId);
     if (!(control instanceof HTMLElement)) return;
-    const label = control.closest("label, .form-group");
-    if (!(label instanceof HTMLElement) || label.querySelector(`[data-hc-help-for="${controlId}"]`)) return;
+    const label = control.closest("label, .form-group") || document.querySelector(`label[for="${CSS.escape(controlId)}"]`);
+    if (!(label instanceof HTMLElement) || document.querySelector(`[data-hc-help-for="${controlId}"]`)) return;
     const help = document.createElement("small");
     help.className = "hc-form-help";
     help.dataset.hcHelpFor = controlId;
@@ -63,18 +63,28 @@
     control.insertAdjacentElement("afterend", help);
   };
 
+  const resolveLabelControl = (label) => {
+    const nested = label.querySelector("input, select, textarea");
+    if (nested instanceof HTMLInputElement || nested instanceof HTMLSelectElement || nested instanceof HTMLTextAreaElement) return nested;
+    const forId = label.htmlFor?.trim();
+    if (!forId) return null;
+    const linked = document.getElementById(forId);
+    return linked instanceof HTMLInputElement || linked instanceof HTMLSelectElement || linked instanceof HTMLTextAreaElement ? linked : null;
+  };
+
   const markOptionalFields = () => {
     document.querySelectorAll("label").forEach((label) => {
       if (!(label instanceof HTMLLabelElement) || label.dataset.hcOptionalChecked === "true") return;
       label.dataset.hcOptionalChecked = "true";
-      const control = label.querySelector("input, select, textarea");
-      if (!(control instanceof HTMLInputElement || control instanceof HTMLSelectElement || control instanceof HTMLTextAreaElement)) return;
+      const control = resolveLabelControl(label);
+      if (!control) return;
       if (control instanceof HTMLInputElement && ["hidden", "checkbox", "radio", "submit", "button"].includes(control.type)) return;
       if (control.required || /optional|необяз|необов|opcional|opzionale|facultatif/i.test(label.textContent || "")) return;
       const marker = document.createElement("span");
       marker.className = "hc-optional-marker";
       marker.textContent = copy.optional;
-      label.insertBefore(marker, control);
+      if (control.parentElement === label) label.insertBefore(marker, control);
+      else label.append(marker);
     });
   };
 
