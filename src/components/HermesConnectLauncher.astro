@@ -2,6 +2,7 @@
 import { ArrowUpRight } from "@lucide/astro";
 import "../styles/hermes-connect-knot-core.css";
 import AcademyLocaleRuntime from "./AcademyLocaleRuntime.astro";
+import HermesConnectGlobalAccount from "./HermesConnectGlobalAccount.astro";
 
 export interface Props {
   variant?: "header" | "mobile" | "footer" | "banner" | "inline";
@@ -90,7 +91,9 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
     <ArrowUpRight size={15} aria-hidden="true" />
   </a>
 )}
+{variant === "header" && <HermesConnectGlobalAccount variant="header" />}
 
+{variant === "mobile" && <HermesConnectGlobalAccount variant="mobile" />}
 {variant === "mobile" && (
   <a href={localizedHref} class={`hc-launcher-mobile ${className}`} data-hermes-connect-launcher="mobile">
     <img class="hc-brand-mark hc-brand-mark-mobile hermes-knot-mark" src={connectMark} width="30" height="30" loading="eager" alt="Hermes Connect mark" />
