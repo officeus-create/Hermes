@@ -34,12 +34,12 @@ assert.deepEqual(emptyMetrics, {
   cited: 0,
   recommended: 0,
   factualErrors: 0,
-  mentionRate: 0,
-  citationRate: 0,
-  recommendationRate: 0,
-  entityAccuracyRate: 0,
-  descriptionAccuracyRate: 0,
-  factualErrorRate: 0,
+  mentionRate: null,
+  citationRate: null,
+  recommendationRate: null,
+  entityAccuracyRate: null,
+  descriptionAccuracyRate: null,
+  factualErrorRate: null,
 });
 
 const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
