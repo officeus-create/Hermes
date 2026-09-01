@@ -1,4 +1,4 @@
-# Release trigger: Hermes final design production release — 2026-09-01
+# Release trigger: Repair Shop owner sign-in production verification — 2026-09-01
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
