@@ -1,0 +1,401 @@
+---
+import { Building2, Check, Globe2, Plus, Sparkles, Users } from "@lucide/astro";
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Beauty Owner Workspace | Hermes Connect"
+  description="Private Hermes Connect Beauty B1 owner workspace for salon profile, team and shared services."
+  robots="noindex,nofollow,noarchive"
+>
+  <div class="beauty-b1-page">
+    <SiteHeader activePath="/paths/technology/" />
+    <main id="main-content" class="beauty-b1-shell">
+      <section class="beauty-b1-hero">
+        <div>
+          <p class="beauty-b1-eyebrow" data-i18n="eyebrow">Hermes Connect · Beauty owner foundation</p>
+          <h1 data-i18n="title">Set up the salon, team and services in one real workspace.</h1>
+          <p class="beauty-b1-lead" data-i18n="lead">Beauty B1 uses the same Hermes identity, D1 and shared service model as the rest of Hermes Connect. This release does not claim appointments, CRM, payments, revenue metrics or medical data.</p>
+        </div>
+        <div class="beauty-b1-truth">
+          <span><Check size={15} aria-hidden="true" /><span data-i18n="truthProfile">Owner-scoped salon profile</span></span>
+          <span><Check size={15} aria-hidden="true" /><span data-i18n="truthTeam">Business-domain team roster</span></span>
+          <span><Check size={15} aria-hidden="true" /><span data-i18n="truthServices">Shared Hermes services context</span></span>
+        </div>
+      </section>
+
+      <div class="beauty-b1-alert" data-beauty-alert role="status"></div>
+
+      <section class="beauty-b1-loading" data-beauty-loading>
+        <Sparkles size={20} aria-hidden="true" />
+        <strong data-i18n="loading">Loading your Beauty workspace…</strong>
+      </section>
+
+      <div class="beauty-b1-content" data-beauty-content hidden>
+        <section class="beauty-b1-grid">
+          <article class="beauty-b1-panel" id="profile">
+            <div class="beauty-b1-panel-head">
+              <div>
+                <p class="beauty-b1-kicker"><Building2 size={14} aria-hidden="true" /><span data-i18n="profileKicker">Owned business</span></p>
+                <h2 data-i18n="profileTitle">Salon profile</h2>
+              </div>
+              <span class="beauty-b1-state" data-profile-state data-i18n="setupRequired">Setup required</span>
+            </div>
+            <p class="beauty-b1-copy" data-i18n="profileCopy">Save the real business identity, location and timezone first. The owner is always the current authenticated Hermes identity.</p>
+
+            <form class="beauty-b1-form" data-profile-form>
+              <label><span data-i18n="salonName">Salon name</span><input name="name" maxlength="120" required /></label>
+              <label><span data-i18n="phone">Phone</span><input name="phone" maxlength="32" inputmode="tel" /></label>
+              <label class="wide"><span data-i18n="website">Website</span><input name="website" maxlength="240" inputmode="url" placeholder="https://example.com" /></label>
+              <label class="wide"><span data-i18n="address">Address</span><input name="address_line1" maxlength="160" /></label>
+              <label><span data-i18n="city">City</span><input name="city" maxlength="100" required /></label>
+              <label><span data-i18n="region">Region / state</span><input name="region" maxlength="100" /></label>
+              <label><span data-i18n="postal">Postal code</span><input name="postal_code" maxlength="24" /></label>
+              <label><span data-i18n="country">Country code</span><input name="country_code" maxlength="2" required placeholder="US" /></label>
+              <label class="wide"><span data-i18n="timezone">Timezone</span><input name="timezone" maxlength="64" required placeholder="Europe/Kyiv" /></label>
+              <button class="beauty-b1-button primary" type="submit" data-i18n="saveProfile">Save salon profile</button>
+            </form>
+          </article>
+
+          <article class="beauty-b1-panel" id="team">
+            <div class="beauty-b1-panel-head">
+              <div>
+                <p class="beauty-b1-kicker"><Users size={14} aria-hidden="true" /><span data-i18n="teamKicker">Team foundation</span></p>
+                <h2 data-i18n="teamTitle">People in this salon</h2>
+              </div>
+              <span class="beauty-b1-state" data-team-count>0</span>
+            </div>
+            <p class="beauty-b1-copy" data-i18n="teamCopy">Team members are salon roster records, not additional Hermes login identities.</p>
+
+            <form class="beauty-b1-form compact" data-team-form>
+              <label><span data-i18n="memberName">Name</span><input name="display_name" maxlength="100" required disabled /></label>
+              <label><span data-i18n="memberRole">Internal role</span><input name="role_label" maxlength="80" required disabled /></label>
+              <label class="wide"><span data-i18n="publicTitle">Public title</span><input name="public_title" maxlength="100" disabled /></label>
+              <label class="beauty-b1-check wide"><input name="is_public" type="checkbox" disabled /><span data-i18n="showPublic">Show this team member publicly</span></label>
+              <button class="beauty-b1-button" type="submit" disabled><Plus size={15} aria-hidden="true" /><span data-i18n="addMember">Add team member</span></button>
+            </form>
+            <div class="beauty-b1-list" data-team-list></div>
+            <p class="beauty-b1-empty" data-team-empty data-i18n="teamEmpty">Save the salon profile first, then add the team.</p>
+          </article>
+        </section>
+
+        <section class="beauty-b1-panel" id="services">
+          <div class="beauty-b1-panel-head">
+            <div>
+              <p class="beauty-b1-kicker"><Globe2 size={14} aria-hidden="true" /><span data-i18n="servicesKicker">Shared service context</span></p>
+              <h2 data-i18n="servicesTitle">Services offered by this salon</h2>
+            </div>
+            <span class="beauty-b1-state" data-services-count>0</span>
+          </div>
+          <p class="beauty-b1-copy" data-i18n="servicesCopy">These records use the canonical Hermes Connect services model under the Beauty-owned service context. No second Beauty services table is created.</p>
+
+          <form class="beauty-b1-service-form" data-service-form>
+            <label><span data-i18n="serviceName">Service name</span><input name="name" maxlength="120" required disabled /></label>
+            <label><span data-i18n="duration">Duration, minutes</span><input name="duration_minutes" type="number" min="5" max="720" step="5" value="60" required disabled /></label>
+            <button class="beauty-b1-button" type="submit" disabled><Plus size={15} aria-hidden="true" /><span data-i18n="addService">Add service</span></button>
+          </form>
+          <div class="beauty-b1-list services" data-services-list></div>
+          <p class="beauty-b1-empty" data-services-empty data-i18n="servicesEmpty">Save the salon profile first to activate its shared services context.</p>
+        </section>
+
+        <section class="beauty-b1-boundary">
+          <div>
+            <p class="beauty-b1-kicker" data-i18n="boundaryKicker">B1 truth boundary</p>
+            <h2 data-i18n="boundaryTitle">Only ship what the backend can prove.</h2>
+            <p data-i18n="boundaryCopy">Appointments, customer CRM, payments, revenue/utilization, inventory, payroll and automated outreach remain outside this release until their canonical data and permissions exist. Clinical and medical data is excluded.</p>
+          </div>
+          <div class="beauty-b1-boundary-list" aria-label="Deferred Beauty capabilities">
+            <span data-i18n="deferredAppointments">Appointments · deferred</span>
+            <span data-i18n="deferredCrm">Customer CRM · deferred</span>
+            <span data-i18n="deferredPayments">Payments · deferred</span>
+            <span data-i18n="deferredMetrics">Revenue metrics · deferred</span>
+            <span data-i18n="excludedMedical">Medical data · excluded</span>
+          </div>
+        </section>
+      </div>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<script>
+  type Salon = {
+    id: string;
+    name: string;
+    phone?: string | null;
+    website?: string | null;
+    address_line1?: string | null;
+    city: string;
+    region?: string | null;
+    postal_code?: string | null;
+    country_code: string;
+    timezone: string;
+  };
+  type TeamMember = { id: string; display_name: string; role_label: string; public_title?: string | null; is_public: boolean; is_active: boolean };
+  type Service = { id: string; name: string; duration_minutes: number };
+
+  const params = new URLSearchParams(window.location.search);
+  const locale = params.get("lang") === "ru" ? "ru" : "en";
+  const copy: Record<string, Record<string, string>> = {
+    en: {
+      eyebrow: "Hermes Connect · Beauty owner foundation", title: "Set up the salon, team and services in one real workspace.", lead: "Beauty B1 uses the same Hermes identity, D1 and shared service model as the rest of Hermes Connect. This release does not claim appointments, CRM, payments, revenue metrics or medical data.",
+      truthProfile: "Owner-scoped salon profile", truthTeam: "Business-domain team roster", truthServices: "Shared Hermes services context", loading: "Loading your Beauty workspace…", profileKicker: "Owned business", profileTitle: "Salon profile", setupRequired: "Setup required", configured: "Configured", profileCopy: "Save the real business identity, location and timezone first. The owner is always the current authenticated Hermes identity.", salonName: "Salon name", phone: "Phone", website: "Website", address: "Address", city: "City", region: "Region / state", postal: "Postal code", country: "Country code", timezone: "Timezone", saveProfile: "Save salon profile",
+      teamKicker: "Team foundation", teamTitle: "People in this salon", teamCopy: "Team members are salon roster records, not additional Hermes login identities.", memberName: "Name", memberRole: "Internal role", publicTitle: "Public title", showPublic: "Show this team member publicly", addMember: "Add team member", teamEmpty: "Save the salon profile first, then add the team.", noTeam: "No team members yet.", public: "Public", private: "Private",
+      servicesKicker: "Shared service context", servicesTitle: "Services offered by this salon", servicesCopy: "These records use the canonical Hermes Connect services model under the Beauty-owned service context. No second Beauty services table is created.", serviceName: "Service name", duration: "Duration, minutes", addService: "Add service", servicesEmpty: "Save the salon profile first to activate its shared services context.", noServices: "No services yet.", minutes: "min",
+      boundaryKicker: "B1 truth boundary", boundaryTitle: "Only ship what the backend can prove.", boundaryCopy: "Appointments, customer CRM, payments, revenue/utilization, inventory, payroll and automated outreach remain outside this release until their canonical data and permissions exist. Clinical and medical data is excluded.", deferredAppointments: "Appointments · deferred", deferredCrm: "Customer CRM · deferred", deferredPayments: "Payments · deferred", deferredMetrics: "Revenue metrics · deferred", excludedMedical: "Medical data · excluded",
+      profileSaved: "Salon profile saved.", memberAdded: "Team member added.", serviceAdded: "Service added.", signIn: "Your Hermes session is not active. Sign in through the shared Hermes account flow first.", loadFailed: "Could not load the Beauty workspace.", saveFailed: "Could not save the salon profile.", teamFailed: "Could not load the salon team.", serviceFailed: "Could not load salon services.",
+    },
+    ru: {
+      eyebrow: "Hermes Connect · кабинет владельца Beauty", title: "Настройте салон, команду и услуги в одном реальном рабочем пространстве.", lead: "Beauty B1 использует ту же учётную запись Hermes, D1 и общую модель услуг, что и остальной Hermes Connect. В этой версии мы не заявляем запись клиентов, CRM, платежи, показатели выручки или медицинские данные.",
+      truthProfile: "Профиль салона с владельцем", truthTeam: "Рабочий состав команды", truthServices: "Общий контекст услуг Hermes", loading: "Загружаем рабочее пространство Beauty…", profileKicker: "Ваш бизнес", profileTitle: "Профиль салона", setupRequired: "Нужно настроить", configured: "Настроено", profileCopy: "Сначала сохраните реальные данные бизнеса, местоположение и часовой пояс. Владельцем всегда остаётся текущая авторизованная учётная запись Hermes.", salonName: "Название салона", phone: "Телефон", website: "Сайт", address: "Адрес", city: "Город", region: "Регион / область", postal: "Почтовый индекс", country: "Код страны", timezone: "Часовой пояс", saveProfile: "Сохранить профиль салона",
+      teamKicker: "Основа команды", teamTitle: "Люди в этом салоне", teamCopy: "Сотрудники — это записи команды салона, а не дополнительные аккаунты для входа в Hermes.", memberName: "Имя", memberRole: "Внутренняя роль", publicTitle: "Публичная должность", showPublic: "Показывать сотрудника публично", addMember: "Добавить сотрудника", teamEmpty: "Сначала сохраните профиль салона, затем добавьте команду.", noTeam: "Сотрудников пока нет.", public: "Публично", private: "Приватно",
+      servicesKicker: "Общий контекст услуг", servicesTitle: "Услуги этого салона", servicesCopy: "Эти записи используют каноническую модель услуг Hermes Connect внутри Beauty-контекста владельца. Отдельная таблица услуг Beauty не создаётся.", serviceName: "Название услуги", duration: "Длительность, минуты", addService: "Добавить услугу", servicesEmpty: "Сначала сохраните профиль салона, чтобы активировать общий контекст услуг.", noServices: "Услуг пока нет.", minutes: "мин",
+      boundaryKicker: "Граница Beauty B1", boundaryTitle: "Показываем только то, что подтверждено реальным backend.", boundaryCopy: "Запись клиентов, CRM, платежи, выручка и загрузка, склад, расчёт зарплат и автоматические рассылки остаются за пределами этой версии, пока нет канонических данных и прав доступа. Клинические и медицинские данные исключены.", deferredAppointments: "Запись клиентов · позже", deferredCrm: "CRM клиентов · позже", deferredPayments: "Платежи · позже", deferredMetrics: "Показатели выручки · позже", excludedMedical: "Медицинские данные · исключены",
+      profileSaved: "Профиль салона сохранён.", memberAdded: "Сотрудник добавлен.", serviceAdded: "Услуга добавлена.", signIn: "Сессия Hermes не активна. Сначала войдите через общую систему аккаунта Hermes.", loadFailed: "Не удалось загрузить рабочее пространство Beauty.", saveFailed: "Не удалось сохранить профиль салона.", teamFailed: "Не удалось загрузить команду салона.", serviceFailed: "Не удалось загрузить услуги салона.",
+    },
+  };
+  const t = copy[locale];
+  document.documentElement.lang = locale;
+  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => {
+    const key = node.dataset.i18n || "";
+    if (t[key]) node.textContent = t[key];
+  });
+
+  const loading = document.querySelector<HTMLElement>("[data-beauty-loading]");
+  const content = document.querySelector<HTMLElement>("[data-beauty-content]");
+  const alert = document.querySelector<HTMLElement>("[data-beauty-alert]");
+  const profileForm = document.querySelector<HTMLFormElement>("[data-profile-form]");
+  const teamForm = document.querySelector<HTMLFormElement>("[data-team-form]");
+  const serviceForm = document.querySelector<HTMLFormElement>("[data-service-form]");
+  let serviceContextId = "";
+
+  const showAlert = (message: string, kind: "error" | "success" = "error") => {
+    if (!alert) return;
+    alert.textContent = message;
+    alert.className = `beauty-b1-alert show ${kind}`;
+  };
+  const clearAlert = () => {
+    if (!alert) return;
+    alert.textContent = "";
+    alert.className = "beauty-b1-alert";
+  };
+  const errorText = (value: unknown, fallback: string) => {
+    const code = String(value || "");
+    const known: Record<string, string> = locale === "ru" ? {
+      invalid_salon_name: "Укажите корректное название салона.", invalid_city: "Укажите город.", invalid_country_code: "Код страны должен состоять из двух букв.", invalid_timezone: "Укажите корректный часовой пояс IANA.", invalid_phone: "Проверьте номер телефона.", invalid_website: "Укажите корректную ссылку на сайт.", salon_profile_required: "Сначала сохраните профиль салона.", invalid_team_member_name: "Укажите имя сотрудника.", invalid_team_member_role: "Укажите роль сотрудника.", service_already_exists: "Услуга с таким названием уже существует.", invalid_service_name: "Укажите корректное название услуги.", invalid_duration_minutes: "Длительность услуги должна быть от 5 до 720 минут.",
+    } : {};
+    return known[code] || (/^[a-z0-9_]+$/i.test(code) ? fallback : code || fallback);
+  };
+
+  const setDependentForms = (enabled: boolean) => {
+    teamForm?.querySelectorAll<HTMLInputElement | HTMLButtonElement>("input,button").forEach((node) => { node.disabled = !enabled; });
+    serviceForm?.querySelectorAll<HTMLInputElement | HTMLButtonElement>("input,button").forEach((node) => { node.disabled = !enabled; });
+  };
+
+  const fillProfile = (salon: Salon | null) => {
+    if (!profileForm) return;
+    const fields: Array<keyof Salon> = ["name","phone","website","address_line1","city","region","postal_code","country_code","timezone"];
+    for (const key of fields) {
+      const field = profileForm.elements.namedItem(key) as HTMLInputElement | null;
+      if (field) field.value = String(salon?.[key] || "");
+    }
+    const state = document.querySelector<HTMLElement>("[data-profile-state]");
+    if (state) state.textContent = salon ? t.configured : t.setupRequired;
+    setDependentForms(Boolean(salon));
+  };
+
+  const renderTeam = (team: TeamMember[]) => {
+    const list = document.querySelector<HTMLElement>("[data-team-list]");
+    const empty = document.querySelector<HTMLElement>("[data-team-empty]");
+    const count = document.querySelector<HTMLElement>("[data-team-count]");
+    if (count) count.textContent = String(team.filter((item) => item.is_active).length);
+    if (!list || !empty) return;
+    list.replaceChildren();
+    empty.textContent = team.length ? "" : t.noTeam;
+    empty.hidden = team.length > 0;
+    for (const member of team) {
+      const card = document.createElement("article");
+      card.className = "beauty-b1-row";
+      const body = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = member.display_name;
+      const detail = document.createElement("small");
+      detail.textContent = [member.role_label, member.public_title].filter(Boolean).join(" · ");
+      body.append(name, detail);
+      const state = document.createElement("span");
+      state.textContent = member.is_public ? t.public : t.private;
+      card.append(body, state);
+      list.append(card);
+    }
+  };
+
+  const renderServices = (services: Service[]) => {
+    const list = document.querySelector<HTMLElement>("[data-services-list]");
+    const empty = document.querySelector<HTMLElement>("[data-services-empty]");
+    const count = document.querySelector<HTMLElement>("[data-services-count]");
+    if (count) count.textContent = String(services.length);
+    if (!list || !empty) return;
+    list.replaceChildren();
+    empty.textContent = services.length ? "" : t.noServices;
+    empty.hidden = services.length > 0;
+    for (const service of services) {
+      const card = document.createElement("article");
+      card.className = "beauty-b1-row";
+      const body = document.createElement("div");
+      const name = document.createElement("strong");
+      name.textContent = service.name;
+      const detail = document.createElement("small");
+      detail.textContent = `${service.duration_minutes} ${t.minutes}`;
+      body.append(name, detail);
+      card.append(body);
+      list.append(card);
+    }
+  };
+
+  async function loadTeam() {
+    const response = await fetch("/api/beauty-salon/team", { credentials: "same-origin" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) throw new Error(data.error || t.teamFailed);
+    renderTeam(Array.isArray(data.team) ? data.team : []);
+  }
+
+  async function loadServices() {
+    if (!serviceContextId) return renderServices([]);
+    const response = await fetch(`/api/services?context=${encodeURIComponent(serviceContextId)}`, { credentials: "same-origin" });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.success) throw new Error(data.error || t.serviceFailed);
+    renderServices(Array.isArray(data.services) ? data.services : []);
+  }
+
+  async function loadWorkspace() {
+    clearAlert();
+    setDependentForms(false);
+    try {
+      const response = await fetch("/api/beauty-salon/profile", { credentials: "same-origin" });
+      if (response.status === 401) {
+        showAlert(t.signIn);
+        loading?.setAttribute("hidden", "");
+        content?.removeAttribute("hidden");
+        return;
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || t.loadFailed);
+      fillProfile(data.salon || null);
+      serviceContextId = String(data.service_context?.id || "");
+      if (data.salon) await Promise.all([loadTeam(), loadServices()]);
+      else {
+        renderTeam([]);
+        renderServices([]);
+      }
+      loading?.setAttribute("hidden", "");
+      content?.removeAttribute("hidden");
+    } catch (error) {
+      showAlert(errorText(error instanceof Error ? error.message : error, t.loadFailed));
+      loading?.setAttribute("hidden", "");
+      content?.removeAttribute("hidden");
+    }
+  }
+
+  profileForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const button = profileForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const values = new FormData(profileForm);
+      const payload = Object.fromEntries(values.entries());
+      const response = await fetch("/api/beauty-salon/profile", {
+        method: "PUT", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || t.saveFailed);
+      fillProfile(data.salon || null);
+      serviceContextId = String(data.service_context?.id || "");
+      await Promise.all([loadTeam(), loadServices()]);
+      showAlert(t.profileSaved, "success");
+    } catch (error) {
+      showAlert(errorText(error instanceof Error ? error.message : error, t.saveFailed));
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  teamForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const button = teamForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const values = new FormData(teamForm);
+      const payload = {
+        display_name: values.get("display_name"), role_label: values.get("role_label"), public_title: values.get("public_title"), is_public: values.get("is_public") === "on",
+      };
+      const response = await fetch("/api/beauty-salon/team", {
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || t.teamFailed);
+      teamForm.reset();
+      await loadTeam();
+      showAlert(t.memberAdded, "success");
+    } catch (error) {
+      showAlert(errorText(error instanceof Error ? error.message : error, t.teamFailed));
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  serviceForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    clearAlert();
+    const button = serviceForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (button) button.disabled = true;
+    try {
+      const values = new FormData(serviceForm);
+      const response = await fetch(`/api/services?context=${encodeURIComponent(serviceContextId)}`, {
+        method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: values.get("name"), duration_minutes: Number(values.get("duration_minutes")) }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) throw new Error(data.error || t.serviceFailed);
+      serviceForm.reset();
+      const duration = serviceForm.elements.namedItem("duration_minutes") as HTMLInputElement | null;
+      if (duration) duration.value = "60";
+      await loadServices();
+      showAlert(t.serviceAdded, "success");
+    } catch (error) {
+      showAlert(errorText(error instanceof Error ? error.message : error, t.serviceFailed));
+    } finally {
+      if (button) button.disabled = false;
+    }
+  });
+
+  loadWorkspace();
+</script>
+
+<style>
+  .beauty-b1-page{min-height:100vh;background:var(--hermes-pearl);color:var(--hermes-ink)}
+  .beauty-b1-shell{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:10rem 0 5rem}
+  .beauty-b1-hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr);gap:2rem;align-items:end;margin-bottom:1.25rem}
+  .beauty-b1-eyebrow,.beauty-b1-kicker{display:flex;align-items:center;gap:.45rem;margin:0 0 .6rem;color:var(--hermes-violet);font-size:.72rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+  .beauty-b1-hero h1{max-width:820px;margin:0;font:750 clamp(2.5rem,5.4vw,5.6rem)/.94 var(--font-display);letter-spacing:-.055em;text-wrap:balance}
+  .beauty-b1-lead{max-width:780px;margin:1rem 0 0;color:var(--hermes-muted);font-size:1rem;line-height:1.68}
+  .beauty-b1-truth{display:grid;gap:.6rem;padding:1rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.7);box-shadow:var(--hermes-shadow-card)}
+  .beauty-b1-truth>span{display:flex;align-items:center;gap:.55rem;padding:.55rem .65rem;border-radius:.8rem;background:#fff;color:#39404b;font-size:.78rem;font-weight:750}.beauty-b1-truth svg{color:var(--hermes-success)}
+  .beauty-b1-alert{display:none;margin:0 0 1rem;padding:.85rem 1rem;border-radius:1rem;font-size:.86rem;font-weight:720}.beauty-b1-alert.show{display:block}.beauty-b1-alert.error{border:1px solid rgba(216,75,95,.22);background:rgba(216,75,95,.07);color:#9f3042}.beauty-b1-alert.success{border:1px solid rgba(40,180,135,.22);background:rgba(40,180,135,.07);color:#19765a}
+  .beauty-b1-loading{display:flex;align-items:center;gap:.7rem;padding:1.2rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:#fff}.beauty-b1-loading[hidden]{display:none}
+  .beauty-b1-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:1rem;margin-bottom:1rem}
+  .beauty-b1-panel{padding:1.25rem;border:1px solid var(--hermes-line-light);border-radius:var(--hermes-radius-card);background:rgba(255,255,255,.88);box-shadow:var(--hermes-shadow-card)}
+  .beauty-b1-panel-head{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;margin-bottom:.65rem}.beauty-b1-panel h2,.beauty-b1-boundary h2{margin:0;font:720 1.35rem/1.1 var(--font-display);letter-spacing:-.03em}.beauty-b1-copy{margin:0 0 1rem;color:var(--hermes-muted);font-size:.83rem;line-height:1.6}
+  .beauty-b1-state{display:inline-flex;align-items:center;min-height:28px;padding:.3rem .55rem;border:1px solid rgba(124,92,255,.16);border-radius:999px;background:rgba(124,92,255,.055);color:var(--hermes-violet);font-size:.68rem;font-weight:820;white-space:nowrap}
+  .beauty-b1-form{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}.beauty-b1-form.compact{margin-bottom:1rem}.beauty-b1-form label,.beauty-b1-service-form label{display:grid;gap:.35rem}.beauty-b1-form label.wide{grid-column:1/-1}.beauty-b1-form label>span,.beauty-b1-service-form label>span{color:#707786;font-size:.69rem;font-weight:750}.beauty-b1-form input,.beauty-b1-service-form input{width:100%;min-width:0;min-height:42px;padding:0 .75rem;border:1px solid #dde1e7;border-radius:.75rem;background:#fff;color:var(--hermes-ink);font:inherit;font-size:.82rem}.beauty-b1-form input:disabled,.beauty-b1-service-form input:disabled{background:#f2f3f5;color:#9aa1ad}.beauty-b1-check{display:flex!important;grid-template-columns:auto 1fr!important;align-items:center;justify-content:start}.beauty-b1-check input{width:17px;height:17px;min-height:0;padding:0}
+  .beauty-b1-button{display:inline-flex;justify-content:center;align-items:center;gap:.4rem;min-height:42px;padding:.65rem .9rem;border:1px solid var(--hermes-line-light);border-radius:.78rem;background:#fff;color:var(--hermes-ink);font-weight:820;cursor:pointer}.beauty-b1-button.primary{grid-column:1/-1;background:var(--hermes-obsidian);color:#fff;border-color:var(--hermes-obsidian)}.beauty-b1-button:disabled{cursor:not-allowed;opacity:.48}
+  .beauty-b1-service-form{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(130px,.55fr) auto;gap:.75rem;align-items:end;margin-bottom:1rem}
+  .beauty-b1-list{display:grid;gap:.55rem}.beauty-b1-row{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.8rem .9rem;border:1px solid #e5e7eb;border-radius:.85rem;background:#fff}.beauty-b1-row>div{display:grid;gap:.15rem}.beauty-b1-row strong{font-size:.82rem}.beauty-b1-row small{color:#7a8190;font-size:.68rem}.beauty-b1-row>span{padding:.25rem .45rem;border-radius:999px;background:#f2f0fb;color:#6b50cf;font-size:.62rem;font-weight:800}.beauty-b1-empty{margin:.7rem 0 0;color:#8a909c;font-size:.76rem}
+  .beauty-b1-boundary{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem;padding:1.25rem;border:1px dashed #d4d6db;border-radius:var(--hermes-radius-card);background:#efede8}.beauty-b1-boundary p{margin:.6rem 0 0;color:#6f7580;font-size:.82rem;line-height:1.6}.beauty-b1-boundary-list{display:flex;flex-wrap:wrap;gap:.5rem;align-content:center}.beauty-b1-boundary-list span{padding:.5rem .65rem;border:1px solid #dcdddF;border-radius:999px;background:#fff;color:#636975;font-size:.68rem;font-weight:750}
+  @media(max-width:900px){.beauty-b1-shell{padding-top:8.5rem}.beauty-b1-hero,.beauty-b1-grid,.beauty-b1-boundary{grid-template-columns:1fr}.beauty-b1-service-form{grid-template-columns:1fr 150px}.beauty-b1-service-form button{grid-column:1/-1}.beauty-b1-truth{max-width:520px}}
+  @media(max-width:560px){.beauty-b1-shell{width:min(100% - 1rem,1180px);padding-top:7.5rem}.beauty-b1-hero h1{font-size:2.55rem}.beauty-b1-form,.beauty-b1-service-form{grid-template-columns:1fr}.beauty-b1-form label.wide,.beauty-b1-button.primary{grid-column:auto}.beauty-b1-panel-head{display:grid}.beauty-b1-state{justify-self:start}}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
