@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 // The reminder helper is runtime JavaScript shared by Pages Functions and these contract tests.
 const engagement = await import("../functions/api/_lib/account-engagement.mjs");
 
-test("weekly inactivity reminder becomes due in the registration weekday/hour after seven inactive days", async () => {
+test("weekly inactivity reminder becomes due shortly after the registration time after seven inactive days", async () => {
   const createdAt = "2026-08-24T15:37:00.000Z"; // 10:37 America/Chicago
   const now = new Date("2026-08-31T15:40:00.000Z"); // 10:40 America/Chicago
 
@@ -16,7 +16,27 @@ test("weekly inactivity reminder becomes due in the registration weekday/hour af
   }, now)).toBe(true);
 });
 
-test("weekly inactivity reminder does not fire when the owner returned recently or outside the registration hour", async () => {
+test("scheduled checks can deliver shortly after a registration time that crosses into the next clock hour", async () => {
+  const createdAt = "2026-08-24T15:55:00.000Z"; // 10:55 America/Chicago
+
+  expect(engagement.isWeeklyInactivityReminderDue({
+    createdAt,
+    lastActiveAt: createdAt,
+    lastReminderAt: null,
+    timeZone: "America/Chicago",
+    emailEnabled: true,
+  }, new Date("2026-08-31T16:07:00.000Z"))).toBe(true); // 11:07, 12 minutes after the original local time
+
+  expect(engagement.isWeeklyInactivityReminderDue({
+    createdAt,
+    lastActiveAt: createdAt,
+    lastReminderAt: null,
+    timeZone: "America/Chicago",
+    emailEnabled: true,
+  }, new Date("2026-08-31T15:52:00.000Z"))).toBe(false); // never send before the registration time
+});
+
+test("weekly inactivity reminder does not fire when the owner returned recently or outside the registration-time window", async () => {
   const createdAt = "2026-08-24T15:37:00.000Z";
 
   expect(engagement.isWeeklyInactivityReminderDue({
