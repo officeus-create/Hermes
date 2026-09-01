@@ -1,118 +1,127 @@
 # Hermes AI Ecosystem — Current State
 
-Last updated: 2026-08-15
+Last updated: 2026-09-01
+Evidence checkpoint: `officeus-create/Hermes` canonical `main` = `06e0d52446a74e454d1e42da83cbc2d77341553c`
+Freshness class: `CURRENT_GITHUB_ROUTING_AND_GOVERNANCE_SNAPSHOT`
 
-## Objective
+## Purpose
 
-Build a shared, version-controlled knowledge and decision system where multiple AI assistants and humans can review the same current context, contribute specialized work, challenge assumptions and preserve evidence behind decisions without duplicating execution or sharing secrets.
+This is a compact bridge, not timeless truth. Before any repository mutation, fetch fresh `main`, enumerate all open PRs, identify the active writer, inspect exact-head evidence, and obey the current owner lane split.
 
-## Active systems
+## Source precedence
 
-- Hermes Logistics corporate website with commercial logistics, SEO, marketing, Academy and technology paths.
-- Hermes Connect web-first product system and main-site bridge, with product expansion continuing iteratively.
-- Direct carrier dispatch intake and direct vehicle-transport request workflows.
-- Carrier proposal, plan selection, mobile onboarding, finger signature and PDF review/onboarding packet generation.
-- Logistics operations, recruiting, Academy, marketing and sales workflows.
-- ProgressoPro marketing and sales direction.
-- GitHub-based multi-agent collaboration hub with department current-state files, decisions, proposals, handoffs and evidence records.
+1. Latest explicit owner decision.
+2. Fresh authenticated production/platform evidence.
+3. Current GitHub `main`, open PRs, exact heads, checks/reviews and active issues.
+4. Canonical AI Master Operating Board / One Brain.
+5. Current department/task brief.
+6. Historical documents, handoffs and chat.
 
-## Current Hermes Connect direction
+## Governance
 
-Approved decisions now supersede the older exploratory design state:
+- Hermes Operating Stack (HOS) + Hermes Universal Evidence Gate (HUEG) are canonical.
+- Core rule: `ONE TASK / ONE ARTIFACT / ONE ACTIVE WRITER — MANY REVIEWERS`.
+- `MERGED != LIVE_VERIFIED`; green CI does not override owner/security/legal/writer-lock gates.
+- Main branch protection is currently disabled; required-status enforcement is off. Issue #938 remains the owner/admin platform-enforcement gate.
+- One Brain ACL risk remains tracked in issue #431. Fresh Drive metadata observed `anyone = writer` on multiple One Brain/control-tree nodes; remediation is an owner/admin action because the current connector does not expose permission removal.
+- Every material agent handoff must use the Agent Report Passport and learning ledger: model/version if exposed, execution surface, chat/agent name, role/lane, date/time/timezone, task scope, source of truth, evidence, confidence class, learned facts, skills used, new/improved skill, proof, and next-agent reuse.
 
-- Brand System V1 is the current approved base direction under DEC-004: Hermes Connect as an AI Operating System for Business, with the approved Pearl + Anthracite/Obsidian environments, compact intelligent-knot/loop identity direction, restrained digital-flow language and unified Hermes Intelligence.
-- DEC-005 establishes the web-first productization sequence: validate desktop/web first, derive responsive/mobile-web from the approved system, then begin native mobile implementation from validated components and workflows.
-- New contributors should refine or extend this approved direction rather than restarting the identity or product sequence without an explicit new decision.
+## Current owner routing override — 2026-09-01
 
-## Current Hermes Connect implementation
+This ChatGPT thread is an **integration / governance / One Brain** lane.
 
-- `public/demos/hermes-connect/` is the only canonical generic preview/tool tree.
-- `public/demos/hermes-connect/workspace.html` is one responsive desktop/mobile workspace; there is no separate mobile application page.
-- Repair Shop production routes and D1 APIs remain a separate real product track under `src/pages/services/hermes-connect/repair-shops*` and the owner/public Repair Shop API namespaces.
-- PRs #529 and #532-#545 delivered D1 auth hardening, owner services/profile/availability, real booking, persisted status history, cancelled-slot rebooking, vehicle data and booking-derived customer CRM.
-- PRs #546-#548 removed duplicate Brand V1/V2 physical runtimes, corrected active guidance and removed retired runtime labels/debug output.
-- PR #509 is closed as superseded. Its old branch must not be merged or used as a product source because it predates and conflicts with the later production runtime.
-- Historical retired URLs remain compatibility redirects and historical release deltas remain audit evidence; neither is an active duplicate application.
-- Web and installable PWA are the current supported distribution paths. The old Android APK was removed after it was found to bundle retired runtimes and use an Android Debug certificate; direct APK distribution remains blocked until a current release-signed build passes checksum and clean-device gates.
+### In scope here
 
-The next Repair Shop milestone is distribution to the first 5-10 permissioned real shops and privacy-safe feedback/booking measurement, not another app rewrite.
+- One Brain / Google Drive governance, canonicalization, source reconciliation and task routing.
+- Drive ACL/access-risk discovery and security handoff to owner/admin.
+- Claude exit/migration acceptance after Codex 2 produces the fresh transfer package; Claude remains `DECOMMISSION_HOLD` until evidence-backed acceptance and independent audit.
+- GitHub governance, machine-state freshness, PR archaeology/classification and cross-agent reconciliation.
+- Connected-source evidence verification for this lane.
+- Cross-chat collision prevention and writer-lock routing.
 
-## Current revenue and SEO state
+### Explicitly out of scope here
 
-Repository work already provides:
+- Hermes Connect design/UI/branding → dedicated Design Hermes Connect lane.
+- Hermes Connect AI / Internal AI / AI Connect runtime/features → dedicated `AI Hermes Connect` lane.
+- SEO/GEO promotion, local SEO, rankings, backlinks and search-content implementation → dedicated SEO/GEO lane(s).
+- Other product/domain implementation with an active specialist owner (Beauty, Academy, London, ordinary Hermes Connect product work) → route to that owner; do not take over from governance.
 
-- indexable commercial logistics and digital-service pages;
-- direct mobile CTAs from priority money pages into real intake workflows;
-- controlled analytics events that exclude submitted private values;
-- canonical, robots, hreflang, sitemap, internal-link and structured-data regression tests;
-- a short private carrier sales link at `/carrier/`;
-- proposal, agreement-review and onboarding routes separated by user intent;
-- build, static, contract-engine and desktop/mobile browser test coverage.
+A task discovered here that belongs to a specialist lane is recorded/routed, not implemented.
 
-Latest sanitized SEO14 owner-provided Codex handoff dated 2026-08-14 reports:
+## Fresh GitHub checkpoint
 
-- Google Search Console window 2026-07-28 through 2026-08-12: 17 clicks, 487 impressions, 3.5% CTR and average position 40.8;
-- United States slice: 306 impressions and 2 clicks;
-- `/services/seo-for-logistics-companies/`: 119 impressions and 0 clicks in that handoff;
-- GSC external links: 4, reported from work.ua; GSC internal links: 28;
-- production sitemap coverage: 108 indexable URLs;
-- Google sitemap status: Success;
-- Bing sitemap status: Success, with seven child sitemap files rather than seven total URLs;
-- `robots.txt` reportedly exposes all eight sitemap references and `BingSiteAuth.xml` returns HTTP 200;
-- GA4 ownership/receipt is still not platform-confirmed in the current handoff; the visible environment reportedly shows only the start-measuring state.
+Current canonical main:
 
-Evidence boundary: the metrics above are `OWNER_PROVIDED_HANDOFF` from the authenticated Codex SEO14 run supplied by the owner in the current workstream. They are current enough for prioritization, but this ChatGPT contribution did not independently open the authenticated GSC/Bing/GA4 account views and therefore does not silently reclassify them as direct `PLATFORM_VERIFIED` evidence.
+`06e0d52446a74e454d1e42da83cbc2d77341553c`
 
-## Current SEO decision boundary
+The latest main commit is the specialist-owned unified account-switcher merge. This governance thread did not implement that product slice; it is recorded only because it materially changed current-main truth.
 
-SEO13 already optimized `/services/seo-for-logistics-companies/` on 2026-08-13 from authenticated GSC demand evidence. The page remains the canonical owner for logistics/trucking/transportation SEO commercial intent. Do not rewrite its title/H1/description again immediately merely because the latest snapshot still shows zero clicks; preserve the planned 7-day and 28-day measurement windows unless fresh evidence reveals a defect.
+Fresh open PR enumeration at this checkpoint returns 13 PRs:
 
-Current priority is to strengthen discoverability, relevant internal support, measurement integrity, entity consistency and external authority while preserving one canonical owner per intent.
+| PR | Routing classification |
+| --- | --- |
+| #944 | `DESIGN_LANE / OUT_OF_SCOPE_THIS_THREAD` |
+| #943 | `HERMES_CONNECT_PRODUCT_LANE / OUT_OF_SCOPE_THIS_THREAD` |
+| #942 | `AI_HERMES_CONNECT / OUT_OF_SCOPE_THIS_THREAD` |
+| #941 | `GOVERNANCE_MACHINE_STATE / OWNED_HERE` |
+| #940 | `AI_HERMES_CONNECT / OUT_OF_SCOPE_THIS_THREAD` |
+| #935 | `ACADEMY_LANE / OUT_OF_SCOPE_THIS_THREAD` |
+| #926 | `LONDON_GROWTH_OR_SEO_GEO_LANE / OUT_OF_SCOPE_THIS_THREAD` |
+| #887 | `AI_HERMES_CONNECT / OUT_OF_SCOPE_THIS_THREAD` |
+| #886 | `AI_HERMES_CONNECT / OUT_OF_SCOPE_THIS_THREAD` |
+| #885 | `AI_HERMES_CONNECT / OUT_OF_SCOPE_THIS_THREAD` |
+| #882 | `AI_HERMES_CONNECT / OUT_OF_SCOPE_THIS_THREAD` |
+| #877 | `AI_DECISION_DONOR / SOURCE_ONLY / ROUTE_AI_HERMES_CONNECT` |
+| #871 | `STALE_SOURCE_ONLY_CORPORATE_AUDIT / GOVERNANCE_DONOR` |
 
-## Current AI collaboration state
+Do not infer ownership from PR age/title alone. Fresh owner routing and exact current diff always win.
 
-The bridge remains document/GitHub based rather than a live credential-sharing AI-to-AI bus.
+## Governance PR #941 replay
 
-**2026-08-23 governance override:** DEC-007, DEC-008 and DEC-009 supersede the older fixed identity-to-role routing below. The current model is One Brain + Hermes Operating Stack (HOS) + Hermes Universal Evidence Gate (HUEG): route each slice by required skill and verified capability, assign one primary writer and an independent reviewer when required, and continue safe reversible work when another agent is unavailable.
+PR #941 was originally created from `809b1807...`. Main advanced afterward to `06e0d524...`, so the governance branch was intentionally replayed from the new exact main instead of merging a stale snapshot.
 
-Current durable routing principles:
+Safety actions:
 
-- ChatGPT — orchestration/synthesis and any connected-source execution or verification that the active surface can physically perform; not a substitute for unavailable local-shell/browser evidence.
-- Codex and Claude — peer execution agents with equal baseline governance authority; either may implement or review within a bounded assigned slice, subject to actual tool access and one-writer rules.
-- Antigravity — browser/local verification, research and other explicitly assigned capabilities; it may not be treated as a second source of truth or parallel writer.
-- Gemini — peer agent for Workspace/research/evidence governance or other capabilities its current surface actually verifies; no GitHub/local-shell/browser capability is assumed merely from model identity.
-- future agents — routed by verified capability and task scope, not vendor prestige or historical role labels.
-- human owner — final authority at the applicable security/access, destructive, billing/payment, legal/contract, irreversible production/data/domain, material commercial/hiring/business-policy boundary.
+- pre-replay head `6f852224a0f7a43be4e9120b2617d3c0a0c835f2` preserved at `backup/governance-current-state-closeout-pre-06e0-2026-09-01`;
+- active branch reset to exact current main before rewriting only the two machine/governance state files;
+- no product, design, AI Connect or SEO/GEO file was modified.
 
-The execution protocol is defined in `HERMES_OPERATING_STACK.md`. Core rule: `NO_EVIDENCE_NO_PROMOTION`. A merge, deployment, HTTP 200, green stale-head CI, or AI-generated JSON does not automatically prove the promoted business/production claim.
+Promotion rule: exact-head CI must be green before #941 can be considered merge-ready. If main changes materially again first, refresh or classify #941 stale rather than merging an obsolete state snapshot.
 
-The collaboration protocol requires an evidence receipt, explicit task owner, source of truth, write scope and handoff target. A passing bridge/self-test is not enough if the transported context is stale.
+## Claude exit / migration state
 
-## External evidence still required
+Codex 2 reported an intermediate `PHASE_2_BLOCKED` transfer with claimed local artifacts and two blockers. That report is **not accepted as final** because:
 
-- direct authenticated GA4 property/stream ownership and event receipt verification;
-- GA4 duplicate-tag and privacy verification in DebugView/Realtime/network inspection;
-- completed current Bing search-performance baseline once processing is available;
-- human-qualified inquiry reconciliation and aggregate 7-day/28-day funnel scorecards;
-- field Core Web Vitals from real-user data where available;
-- permissioned customer/carrier cases and authoritative external-profile corrections.
+- the reported transfer path carried an anomalous historical-looking `20240517_143042` timestamp;
+- artifact accounting covered only 8 JSONL sessions while the audit also referenced skills, `CLAUDE.md`, Digital CEO Bridge, exit packs and code/dependency evidence;
+- claimed `claude-python@3.2.1` and `hermes-sdk@v2.4.7` dependencies still require exact source/consumer/breakage proof;
+- Telegram MCP being offline should be classified as an operational follow-up unless it physically blocks knowledge transfer.
 
-## Current carrier-contract boundary
+Required next artifact from Codex 2:
 
-The website can create a signed review/onboarding packet and deliver/download the generated PDF through the implemented contract engine.
+`~/Hermes-Claude-Exit-2026-09-01/CHATGPT_TRANSFER/HERMES_CLAUDE_EXIT_CHATGPT_TRANSFER.md`
 
-Final legal execution remains gated by the approved master agreement/version/hash, legal approval, private production bindings, permanent records storage and synthetic end-to-end verification. SEO or AI-collaboration autonomy does not override legal activation gates.
+Until that fresh package is supplied and reconciled: `CLAUDE_DECOMMISSION = HOLD`.
 
-## Immediate next actions
+## One Brain security state
 
-1. Keep issue #206 as the measurement source of truth and add sanitized fresh evidence rather than spawning duplicate measurement issues.
-2. Preserve the 2026-08-13 Logistics SEO page change long enough to measure 7-day and 28-day effects before another snippet rewrite.
-3. Audit and strengthen relevant internal support paths into the Logistics SEO canonical owner without creating doorway variants.
-4. Resolve GA4 ownership/access and verify controlled event receipt exactly once before adding any parallel analytics runtime.
-5. Capture Bing performance when its current processing completes; do not create a replacement Bing site/account to make a checklist green.
-6. Improve external entity consistency and authority through legitimate owned/claimable profiles and editorially justified references; do not manufacture backlinks.
-7. Route every task through HOS/HUEG with one current writer, claim-matching evidence and bounded takeover when an executor is unavailable.
+Fresh Drive metadata observed anonymous writer access (`type=anyone`, `role=writer`) on multiple control-tree nodes including the canonical Master Board parent chain. This is an integrity P0.
+
+Current connected surface can inspect metadata but does not expose safe permission removal. Therefore:
+
+1. keep issue #431 as the security source of truth;
+2. owner/admin must remove anonymous writer access at the highest applicable parent while preserving required named-account/service access;
+3. ChatGPT rechecks representative file/folder metadata after remediation;
+4. secrets and plaintext credentials remain outside ordinary One Brain knowledge documents.
+
+## Immediate next actions for this thread
+
+1. Keep #941 current with exact main and exact open-PR routing; do not merge a stale machine snapshot.
+2. Continue One Brain ACL/security evidence and owner/admin remediation handoff.
+3. Receive and audit the fresh Codex 2 Claude transfer package when supplied; do not decommission Claude early.
+4. Continue PR archaeology only for governance/source-of-truth cleanup; route specialist product PRs to their active owner chats.
+5. Keep Agent Report Passport + learning ledger mandatory for all future delegated tasks.
 
 ## Operating rule
 
-This file describes the latest verified repository state plus explicitly labelled current owner-provided platform handoffs. Update it whenever a newer approved decision or authenticated measurement materially changes the operating picture. A stale current-state file is itself a bridge defect.
+A stale current-state file is itself a bridge defect. Fresh GitHub/platform/owner evidence supersedes this snapshot immediately when material state changes.
