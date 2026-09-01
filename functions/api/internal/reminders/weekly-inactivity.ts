@@ -8,6 +8,7 @@ import {
   normalizeEngagementLocale,
   weeklyInactivityEmailText,
 } from "../../_lib/account-engagement.mjs";
+import { bearerToken, verifyGitHubReminderOidcToken } from "../../_lib/github-oidc.mjs";
 import { ensureRepairShopProfileSchema } from "../../_lib/repair-shop-schema.mjs";
 import { jsonResponse } from "../../_lib/session.mjs";
 
@@ -16,7 +17,7 @@ type Env = {
   DB?: any;
   LEAD_EMAIL_SERVICE?: ServiceFetcher;
   LEAD_SERVICE_TOKEN?: string;
-  HERMES_CONNECT_REMINDER_JOB_TOKEN?: string;
+  HERMES_CONNECT_REMINDER_UNSUBSCRIBE_SECRET?: string;
 };
 
 type ReminderRow = {
@@ -31,9 +32,8 @@ type ReminderRow = {
   locale?: string | null;
 };
 
-function authorized(request: Request, token: string) {
-  const header = request.headers.get("Authorization") || "";
-  return Boolean(token) && header === `Bearer ${token}`;
+function reminderUnsubscribeSecret(env: Env) {
+  return String(env.HERMES_CONNECT_REMINDER_UNSUBSCRIBE_SECRET || env.LEAD_SERVICE_TOKEN || "");
 }
 
 async function deliverReminder(env: Env, row: ReminderRow, dashboardUrl: string, unsubscribeUrl: string, locale: string) {
@@ -68,14 +68,18 @@ async function deliverReminder(env: Env, row: ReminderRow, dashboardUrl: string,
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
-  if (!env.HERMES_CONNECT_REMINDER_JOB_TOKEN) {
-    return jsonResponse(503, { success: false, error: "reminder_job_not_configured" });
-  }
-  if (!authorized(request, env.HERMES_CONNECT_REMINDER_JOB_TOKEN)) {
+
+  const oidcToken = bearerToken(request);
+  if (!(await verifyGitHubReminderOidcToken(oidcToken))) {
     return jsonResponse(401, { success: false, error: "not_authorized" });
   }
   if (!env.LEAD_EMAIL_SERVICE || !env.LEAD_SERVICE_TOKEN) {
     return jsonResponse(503, { success: false, error: "email_service_not_configured" });
+  }
+
+  const unsubscribeSecret = reminderUnsubscribeSecret(env);
+  if (!unsubscribeSecret) {
+    return jsonResponse(503, { success: false, error: "reminder_unsubscribe_not_configured" });
   }
 
   await ensureAccountEngagementSchema(env.DB);
@@ -121,7 +125,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const dashboardUrl = canonicalRepairShopDashboardUrl(locale);
     const unsubscribeUrl = await canonicalReminderUnsubscribeUrl(
       row.id,
-      env.HERMES_CONNECT_REMINDER_JOB_TOKEN,
+      unsubscribeSecret,
       locale,
     );
 
