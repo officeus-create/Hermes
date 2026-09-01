@@ -2,41 +2,44 @@ import { expect, test } from "@playwright/test";
 
 const repairRoot = "/services/hermes-connect/repair-shops/";
 
-test("registered Repair Shop owner sees sign-in immediately on mobile landing", async ({ page }) => {
+test("registered Repair Shop owner sees one sign-in action on the first mobile screen", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(repairRoot);
 
-  const entry = page.locator("[data-repair-owner-entry]");
-  await expect(entry).toBeVisible();
-  await expect(entry.locator(".repair-owner-entry__prompt")).toHaveText("Already registered?");
+  const prompt = page.locator("[data-repair-owner-prompt]");
+  await expect(prompt).toBeVisible();
+  await expect(prompt).toHaveText("Already registered? Use your existing owner account.");
 
-  const signIn = entry.locator("[data-repair-owner-signin]");
+  const signIn = page.getByRole("link", { name: "Sign in to my shop" });
+  await expect(signIn).toHaveCount(1);
   await expect(signIn).toBeVisible();
-  await expect(signIn).toHaveText("Sign in to my shop");
-  await expect(signIn).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/");
+  await expect(signIn).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/?mode=login");
 
-  const isBeforeLead = await page.evaluate(() => {
-    const entryNode = document.querySelector("[data-repair-owner-entry]");
-    const lead = document.querySelector(".repair-live-hero .repair-lead");
-    if (!entryNode || !lead) return false;
-    return Boolean(entryNode.compareDocumentPosition(lead) & Node.DOCUMENT_POSITION_FOLLOWING);
-  });
-  expect(isBeforeLead).toBe(true);
+  const box = await signIn.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.y).toBeLessThan(844);
+
+  await expect(page.locator("[data-repair-free-launch] [data-owner-cta]")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Register free" })).toHaveCount(1);
 });
 
-test("Russian owner sign-in preserves locale and reaches login", async ({ page }) => {
+test("Russian first-screen owner sign-in preserves locale and reaches login", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${repairRoot}?lang=ru`);
 
-  const entry = page.locator("[data-repair-owner-entry]");
-  await expect(entry).toBeVisible();
-  await expect(entry.locator(".repair-owner-entry__prompt")).toHaveText("Уже зарегистрированы?");
+  await expect(page.locator("[data-repair-owner-prompt]")).toHaveText(
+    "Уже зарегистрированы? Войдите в существующий аккаунт владельца.",
+  );
 
-  const signIn = entry.locator("[data-repair-owner-signin]");
-  await expect(signIn).toHaveText("Войти в кабинет СТО");
-  await expect(signIn).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/?lang=ru");
+  const signIn = page.getByRole("link", { name: "Войти в кабинет СТО" });
+  await expect(signIn).toHaveCount(1);
+  await expect(signIn).toBeVisible();
+  await expect(signIn).toHaveAttribute(
+    "href",
+    "/services/hermes-connect/repair-shops/auth/?mode=login&lang=ru",
+  );
 
   await signIn.click();
-  await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/auth\/\?lang=ru$/);
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/auth\/\?mode=login&lang=ru$/);
   await expect(page.locator('[data-tab="login"]')).toHaveText("Войти");
 });
