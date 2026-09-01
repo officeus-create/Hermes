@@ -25,13 +25,14 @@
 .hc-brand-page .hc-hero::before {
   content: "";
   position: absolute;
-  inset: auto -12% -36% 26%;
-  height: 72%;
+  inset: 12% 4% auto 34%;
+  width: 62%;
+  height: 76%;
   pointer-events: none;
   opacity: .82;
-  transform: rotate(-8deg);
   background:
     linear-gradient(105deg,transparent 4%,rgba(34,211,238,.08) 24%,rgba(0,168,255,.45) 43%,rgba(124,92,255,.36) 58%,transparent 82%);
+  border-radius: 50%;
   filter: blur(24px);
 }
 
@@ -181,8 +182,9 @@
 
 @media (max-width: 720px) {
   .hc-brand-page .hc-hero::before {
-    inset: auto -40% -18% 0;
-    height: 42%;
+    inset: 12% 4% auto 18%;
+    width: 78%;
+    height: 68%;
     opacity: .56;
   }
   .hc-brand-page .hc-knot {
