@@ -21,6 +21,18 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
       (() => {
         const root = "/services/hermes-connect/repair-shops";
         const path = window.location.pathname.replace(/\/+$/, "");
+        if (path !== `${root}/booking`) return;
+        const slotState = document.getElementById("slot-state");
+        if (!slotState) return;
+        slotState.setAttribute("role", "status");
+        slotState.setAttribute("aria-live", "polite");
+        slotState.setAttribute("aria-atomic", "true");
+      })();
+    </script>
+    <script is:inline>
+      (() => {
+        const root = "/services/hermes-connect/repair-shops";
+        const path = window.location.pathname.replace(/\/+$/, "");
         if (path !== `${root}/auth`) return;
 
         const params = new URLSearchParams(window.location.search);
@@ -107,6 +119,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
   .repair-activation-primary{background:linear-gradient(135deg,#8b5cf6,#5ac8fa);color:#07101c}
   .repair-activation-secondary{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#eef2f7}
   .repair-activation-next{margin:0;color:#8e99ab;font-size:12px;line-height:1.5}
+  .hc-capability-option{min-height:44px;box-sizing:border-box}
   #public-link-wrap,#public-link-wrap>div,#public-link-text,#public-link-wrap .link-actions{min-width:0;max-width:100%}
   #public-link-text{display:block;overflow-wrap:anywhere;word-break:break-word}
   #public-link-wrap .link-actions{flex-wrap:wrap}
