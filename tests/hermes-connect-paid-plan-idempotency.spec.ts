@@ -34,8 +34,17 @@ test("paid activation retries the same unchanged purchase intent with the same i
   await expect(page.locator("#paid-plan-status")).toContainText("Nothing was charged");
   await expect(page.locator("#paid-plan-submit")).toBeEnabled();
 
+  const fallback = page.locator("#paid-plan-direct-fallback");
+  await expect(fallback).toBeVisible();
+  await expect(fallback.getByRole("link", { name: "email Hermes" })).toHaveAttribute(
+    "href",
+    "mailto:officeus@hermeslogisticsus.com?subject=Hermes%20Connect%20Founding%20Shop%20Plan",
+  );
+  await expect(fallback.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
+
   await page.locator("#paid-plan-submit").click();
   await expect(page.locator("#paid-plan-status")).toContainText("Request received");
+  await expect(page.locator("#paid-plan-direct-fallback")).toHaveCount(0);
 
   expect(keys).toHaveLength(2);
   expect(keys[0]).toBeTruthy();
@@ -56,10 +65,12 @@ test("editing purchase intent after a failed delivery creates a new idempotency 
   await fillPlan(page);
   await page.locator("#paid-plan-submit").click();
   await expect(page.locator("#paid-plan-submit")).toBeEnabled();
+  await expect(page.locator("#paid-plan-direct-fallback")).toBeVisible();
 
   await page.locator("#plan-goal").fill("Reduce scheduling calls, retain customer history, and improve repeat booking follow-up.");
   await page.locator("#paid-plan-submit").click();
   await expect.poll(() => keys.length).toBe(2);
+  await expect(page.locator("#paid-plan-direct-fallback")).toBeVisible();
 
   expect(keys[0]).toBeTruthy();
   expect(keys[1]).toBeTruthy();
