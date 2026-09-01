@@ -4,6 +4,8 @@
  * This is a visual layer only. It does not alter product truth, auth, data or routing.
  */
 
+@import "./hermes-connect-workspace-colors.css";
+
 :root {
   --hc-blue: #00a8ff;
   --hc-violet: #7c5cff;
