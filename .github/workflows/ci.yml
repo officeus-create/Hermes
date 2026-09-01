@@ -61,6 +61,9 @@ jobs:
       - name: Validate repair shop access state
         run: node scripts/repair-shop-access-contract.test.mjs
 
+      - name: Validate repair shop production access proof contract
+        run: node scripts/repair-shop-access-state-production-proof-contract.test.mjs
+
       - name: Validate repair shop web v1
         run: node scripts/repair-shop-web-v1-contract.test.mjs
 
