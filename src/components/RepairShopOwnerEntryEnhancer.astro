@@ -14,6 +14,7 @@
       en: {
         eyebrow: "Already registered?",
         title: "Sign in to your shop",
+        signInLink: "Sign in to my shop",
         email: "Email",
         password: "Password",
         emailPlaceholder: "owner@shop.com",
@@ -29,6 +30,7 @@
       ru: {
         eyebrow: "Уже зарегистрированы?",
         title: "Войдите в кабинет СТО",
+        signInLink: "Войти в кабинет СТО",
         email: "Email",
         password: "Пароль",
         emailPlaceholder: "owner@shop.com",
@@ -44,6 +46,7 @@
       uk: {
         eyebrow: "Вже зареєстровані?",
         title: "Увійдіть до кабінету СТО",
+        signInLink: "Увійти до кабінету СТО",
         email: "Email",
         password: "Пароль",
         emailPlaceholder: "owner@shop.com",
@@ -59,6 +62,7 @@
       es: {
         eyebrow: "¿Ya estás registrado?",
         title: "Entra a tu taller",
+        signInLink: "Iniciar sesión en mi taller",
         email: "Email",
         password: "Contraseña",
         emailPlaceholder: "owner@shop.com",
@@ -74,6 +78,7 @@
       it: {
         eyebrow: "Sei già registrato?",
         title: "Accedi alla tua officina",
+        signInLink: "Accedi alla mia officina",
         email: "Email",
         password: "Password",
         emailPlaceholder: "owner@shop.com",
@@ -89,6 +94,7 @@
       fr: {
         eyebrow: "Déjà inscrit ?",
         title: "Connectez-vous à votre atelier",
+        signInLink: "Se connecter à mon atelier",
         email: "Email",
         password: "Mot de passe",
         emailPlaceholder: "owner@shop.com",
@@ -141,6 +147,12 @@
       title.textContent = t.title;
       header.append(eyebrow, title);
 
+      const signInLink = document.createElement("a");
+      signInLink.className = "repair-owner-quick-login__full-login";
+      signInLink.dataset.repairOwnerSigninLink = "true";
+      signInLink.href = withLocale(`${repairRoot}/auth/?mode=login`);
+      signInLink.textContent = t.signInLink;
+
       const form = document.createElement("form");
       form.className = "repair-owner-quick-login__form";
       form.dataset.repairOwnerLoginForm = "true";
@@ -188,7 +200,7 @@
       register.textContent = t.register;
 
       form.append(emailLabel, passwordLabel, submit);
-      entry.append(header, form, message, register);
+      entry.append(header, signInLink, form, message, register);
       kicker.insertAdjacentElement("beforebegin", entry);
       hideLowerOwnerCta();
 
@@ -223,11 +235,13 @@
         .then((data) => {
           if (!data?.success || !data?.specialist) return;
           form.hidden = true;
+          signInLink.hidden = true;
           register.hidden = true;
           message.textContent = t.active;
           const dashboard = document.createElement("a");
           dashboard.className = "repair-owner-quick-login__dashboard";
           dashboard.dataset.repairOwnerDashboard = "true";
+          dashboard.dataset.sessionActive = "true";
           dashboard.href = withLocale(`${repairRoot}/dashboard/`);
           dashboard.textContent = t.dashboard;
           entry.appendChild(dashboard);
@@ -255,30 +269,32 @@
     box-shadow: 0 16px 42px rgba(31,41,55,.10);
     color: #111827;
   }
-  .repair-owner-quick-login__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .repair-owner-quick-login__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
   .repair-owner-quick-login__eyebrow{margin:0;color:#6d56d8;font-size:12px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
   .repair-owner-quick-login h2{margin:0;color:#111827;font-size:18px;line-height:1.2;letter-spacing:-.02em}
+  .repair-owner-quick-login__full-login{display:inline-block;margin:0 0 10px;color:#5b45c5;text-decoration:underline;text-underline-offset:3px;font-size:12px;font-weight:850}
   .repair-owner-quick-login__form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end}
   .repair-owner-quick-login__form label{display:grid;gap:5px;color:#374151;font-size:12px;font-weight:800}
   .repair-owner-quick-login__form input{width:100%;min-height:44px;box-sizing:border-box;border:1px solid #cfd5df;border-radius:11px;background:#fff;color:#111827;padding:10px 12px;font:inherit;outline:none}
   .repair-owner-quick-login__form input:focus{border-color:#7c5cff;box-shadow:0 0 0 3px rgba(124,92,255,.13)}
   .repair-owner-quick-login__submit,.repair-owner-quick-login__dashboard{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:0;border-radius:11px;background:#111827;color:#fff;padding:10px 16px;text-decoration:none;font-size:14px;font-weight:850;cursor:pointer;white-space:nowrap}
   .repair-owner-quick-login__submit:disabled{opacity:.62;cursor:wait}
-  .repair-owner-quick-login__register{display:inline-block;margin-top:10px;color:#5b45c5;text-decoration:none;font-size:12px;font-weight:800}
+  .repair-owner-quick-login__register{display:inline-block;margin-top:8px;color:#5b45c5;text-decoration:none;font-size:12px;font-weight:800}
   .repair-owner-quick-login__register:hover{text-decoration:underline}
   .repair-owner-quick-login__message{min-height:0;margin:8px 0 0;color:#b42318;font-size:12px;font-weight:750;line-height:1.35}
   .repair-owner-quick-login__message:empty{display:none}
-  .repair-owner-quick-login__dashboard{margin-top:10px;background:#111827}
+  .repair-owner-quick-login__dashboard{margin-top:6px;background:#111827}
   .repair-owner-quick-login [hidden]{display:none!important}
   @media(max-width:560px){
-    .repair-owner-quick-login{margin-bottom:16px;padding:13px;border-radius:15px}
-    .repair-owner-quick-login__head{display:block;margin-bottom:9px}
-    .repair-owner-quick-login__eyebrow{margin-bottom:3px;font-size:10px}
-    .repair-owner-quick-login h2{font-size:16px}
-    .repair-owner-quick-login__form{grid-template-columns:1fr 1fr;gap:7px}
-    .repair-owner-quick-login__form label{font-size:11px}
-    .repair-owner-quick-login__form input{min-height:40px;padding:8px 9px;font-size:13px}
-    .repair-owner-quick-login__submit{grid-column:1/-1;width:100%;min-height:42px;padding:8px 12px}
-    .repair-owner-quick-login__register{margin-top:7px;font-size:11px}
+    .repair-owner-quick-login{margin-bottom:14px;padding:12px;border-radius:15px}
+    .repair-owner-quick-login__head{display:block;margin-bottom:5px}
+    .repair-owner-quick-login__eyebrow{margin-bottom:2px;font-size:10px}
+    .repair-owner-quick-login h2{font-size:15px}
+    .repair-owner-quick-login__full-login{margin-bottom:6px;font-size:11px}
+    .repair-owner-quick-login__form{grid-template-columns:1fr 1fr;gap:6px}
+    .repair-owner-quick-login__form label{font-size:10px}
+    .repair-owner-quick-login__form input{min-height:38px;padding:7px 8px;font-size:12px}
+    .repair-owner-quick-login__submit{grid-column:1/-1;width:100%;min-height:40px;padding:7px 12px}
+    .repair-owner-quick-login__register{margin-top:5px;font-size:10px}
   }
 </style>
