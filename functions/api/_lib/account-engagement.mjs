@@ -1,4 +1,5 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
+const WEEK_MINUTES = 7 * 24 * 60;
 const ACTIVITY_WRITE_INTERVAL_MS = 15 * 60 * 1000;
 const INACTIVITY_THRESHOLD_MS = 7 * DAY_MS;
 const REMINDER_COOLDOWN_MS = 6 * DAY_MS + 20 * 60 * 60 * 1000;
@@ -150,11 +151,11 @@ export function isWeeklyInactivityReminderDue({ createdAt, lastActiveAt, lastRem
 
   const anchor = localParts(created, timeZone);
   const current = localParts(now, timeZone);
-  if (anchor.weekdayIndex < 0 || current.weekdayIndex < 0 || anchor.weekdayIndex !== current.weekdayIndex) return false;
+  if (anchor.weekdayIndex < 0 || current.weekdayIndex < 0) return false;
 
-  const anchorMinuteOfDay = anchor.hour * 60 + anchor.minute;
-  const currentMinuteOfDay = current.hour * 60 + current.minute;
-  const minutesAfterRegistrationTime = currentMinuteOfDay - anchorMinuteOfDay;
+  const anchorMinuteOfWeek = anchor.weekdayIndex * 24 * 60 + anchor.hour * 60 + anchor.minute;
+  const currentMinuteOfWeek = current.weekdayIndex * 24 * 60 + current.hour * 60 + current.minute;
+  const minutesAfterRegistrationTime = (currentMinuteOfWeek - anchorMinuteOfWeek + WEEK_MINUTES) % WEEK_MINUTES;
 
   return minutesAfterRegistrationTime >= 0 && minutesAfterRegistrationTime < REMINDER_TIME_WINDOW_MINUTES;
 }
