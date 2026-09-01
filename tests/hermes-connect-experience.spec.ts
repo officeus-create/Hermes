@@ -109,7 +109,7 @@ test("completed first booking produces a 6/6 activation state and paid decision"
   await expect(page.getByText("Private beta", { exact: true })).toHaveCount(0);
 });
 
-test("Hermes Connect Hub presents one live product, private Academy, and adaptive preview configurations", async ({ page }) => {
+test("Hermes Connect Hub presents one live product, private Academy and Beauty, and adaptive preview configurations", async ({ page }) => {
   await page.goto("/services/hermes-connect/");
 
   await expect(page.locator("[data-hc-product-context]")).toContainText("PRODUCT FAMILY · CURRENT");
@@ -119,7 +119,9 @@ test("Hermes Connect Hub presents one live product, private Academy, and adaptiv
   await expect(page.getByText("LIVE PRODUCT", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("PRIVATE LEARNER WORKSPACE", { exact: true })).toBeVisible();
   await expect(page.locator('main a[href="/services/hermes-connect/academy/"]')).not.toHaveCount(0);
-  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(4);
+  await expect(page.getByText("PRIVATE OWNER FOUNDATION", { exact: true })).toBeVisible();
+  await expect(page.locator('main a[href="/services/hermes-connect/beauty/workspace/"]')).not.toHaveCount(0);
+  expect(await page.getByText("PREVIEW CONFIGURATION", { exact: true }).count()).toBeGreaterThanOrEqual(3);
   expect(await page.locator(".hc-lab-links a").count()).toBeGreaterThanOrEqual(7);
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 });
