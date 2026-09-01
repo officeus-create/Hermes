@@ -1,398 +1,104 @@
 {
-  "schema_version": 3,
-  "reviewed_at": "2026-08-28",
+  "schema_version": 4,
+  "reviewed_at": "2026-09-01",
   "repository": "officeus-create/Hermes",
   "production_url": "https://hermeslogisticsus.com",
-  "main_commit_at_review": "0527355eb71df52249fcee4e7c6adb7e373f9c58",
+  "main_commit_at_review": "9a976da558e9441cd743744430eb4899393b8cbe",
   "freshness": {
-    "state_class": "current_main_snapshot_plus_labelled_owner_platform_handoff",
-    "refresh_policy": "Refresh after any material merge that changes active programs, external-access classifications, canonical commercial paths, approval gates, AI execution ownership, or authenticated measurement evidence; during an active execution sprint, also recheck before relying on a snapshot older than 24 hours.",
+    "state_class": "current_github_snapshot_with_labelled_external_gates",
     "historical_handoff_is_not_current_state": true,
-    "conflict_rule": "Current main code/tests and newer authenticated platform evidence supersede older handoff classifications. Owner-provided authenticated handoffs may guide prioritization but must remain labelled until independently re-read by the acting agent. Preserve contradictions in the audit trail; do not silently blend statuses."
-  },
-  "platform": {
-    "framework": "Astro static site",
-    "runtime": "Node 22",
-    "hosting": "Cloudflare Pages",
-    "default_delivery_mode": "preview",
-    "required_verification": [
-      "npm run build",
-      "npm test",
-      "npm run test:e2e"
+    "refresh_policy": "Re-fetch canonical main and all open PRs before material repository work. Refresh this snapshot after material merges, governance changes, active-program changes, approval-gate changes or authenticated production evidence; otherwise explicitly classify it STALE.",
+    "conflict_precedence": [
+      "latest_explicit_owner_decision",
+      "fresh_authenticated_production_or_platform_evidence",
+      "current_github_main_open_prs_exact_head_checks_reviews_and_issues",
+      "canonical_one_brain_master_router",
+      "current_department_or_task_brief",
+      "historical_documents_handoffs_and_chat"
     ]
   },
-  "business_priority": "qualified organic inquiries and revenue without loss of indexation, trust, privacy, accessibility, or existing rankings",
-  "canonical_commercial_owners": [
-    {
-      "direction": "car_hauling_dispatch",
-      "path": "/logistics/car-hauling-dispatch/",
-      "supporting_owner": "/load-board/",
-      "cta_event": "commercial_cta_click",
-      "intake_event": "carrier_intake_start",
-      "preview_event": "carrier_intake_preview_ready",
-      "handoff_event": "carrier_handoff_ready"
+  "governance": {
+    "operating_stack": "HOS_HUEG_CANONICAL",
+    "agent_sync": {
+      "skill": "SKILL_HERMES_AGENT_SYNC",
+      "version": "2.0.0",
+      "status": "ACTIVE"
     },
-    {
-      "direction": "vehicle_transport_request",
-      "path": "/logistics/request-vehicle-transport/",
-      "supporting_owner": "/load-board/",
-      "maturity": "real_request_path_human_review_required"
-    },
-    {
-      "direction": "website_development",
-      "path": "/services/website-development/",
-      "cta_event": "commercial_cta_click",
-      "intake_event": "website_project_intake_start",
-      "preview_event": "website_project_preview_ready",
-      "handoff_event": "website_handoff_ready"
-    },
-    {
-      "direction": "seo_services",
-      "path": "/services/seo/",
-      "supporting_owners": [
-        "/services/local-seo/",
-        "/services/seo-for-logistics-companies/",
-        "/services/seo-for-independent-auto-dealers/"
-      ],
-      "cta_event": "commercial_cta_click",
-      "intake_event": "seo_intake_start",
-      "preview_event": "seo_intake_preview_ready",
-      "handoff_event": "seo_handoff_ready"
-    },
-    {
-      "direction": "logistics_seo",
-      "path": "/services/seo-for-logistics-companies/",
-      "canonical_intent": "logistics_trucking_transportation_seo_commercial_cluster",
-      "supporting_owner": "/services/seo/",
-      "last_material_content_change": "2026-08-13",
-      "measurement_rule": "Preserve the approximately 7-day and 28-day query-by-page observation windows unless a concrete production or canonical defect is found. Do not create wording-variant doorway pages."
-    }
-  ],
-  "current_execution_state": {
-    "open_pull_requests_at_review": 2,
-    "hermes_connect_canonical_runtime": {
-      "status": "single_canonical_runtime_production_verified",
-      "generic_preview_root": "public/demos/hermes-connect/",
-      "responsive_workspace": "public/demos/hermes-connect/workspace.html",
-      "repair_shop_runtime": "src/pages/services/hermes-connect/repair-shops* plus functions/api/repair-shop and functions/api/public repair endpoints",
-      "consolidation_prs": [546, 547, 548],
-      "superseded_pr": 509,
-      "rule": "Do not create another versioned Brand V1/V2/V3 tree or separate mobile workspace. Extend the canonical responsive runtime with bounded tests; keep retired URLs only as compatibility redirects and historical release evidence."
-    },
-    "seo14_orchestration": {
-      "status": "implementation_pr_open_ci_running",
-      "pull_request": 512,
-      "branch": "seo14/chatgpt-orchestrator-2026-08-14",
-      "source_of_truth": "Issue #206 for measurement; issue #462 for completed Logistics SEO demand pass; SEO agent routing document for ownership.",
-      "rule": "One execution owner per slice, explicit evidence receipts, no duplicate search/analytics properties, no credential transfer between AIs."
-    },
-    "human_first_website_and_ai": {
-      "issue": 418,
-      "status": "implementation_phases_1_to_7_complete_phase_8_evidence_gated",
-      "merged_phases": {
-        "1_homepage_situation_router": 419,
-        "2_logistics_two_team_value": 421,
-        "3_load_board_dual_entry": 429,
-        "4_business_growth_roadmap": 424,
-        "5_academy_method": 425,
-        "6_careers_metric_first": 426,
-        "7_ai_sales_assistant_contract": 428
-      },
-      "remaining_gate": "Issue #362 must produce permissioned publishable proof; do not fabricate or infer current-client status."
-    },
-    "production_measurement": {
-      "issue": 206,
-      "status": "gsc_bing_ga4_access_verified_conversion_receipts_and_crawl_quality_incomplete",
-      "methodology_status": "complete",
-      "latest_owner_provided_authenticated_handoff": {
-        "observed_at": "2026-08-14",
-        "gsc_date_range": "2026-07-28..2026-08-12",
-        "gsc_summary": "17 clicks / 487 impressions / 3.5% CTR / average position 40.8",
-        "gsc_us_summary": "306 impressions / 2 clicks",
-        "logistics_seo_page_summary": "119 impressions / 0 clicks for /services/seo-for-logistics-companies/",
-        "gsc_links_summary": "4 external links reported, all from work.ua; 28 internal links reported",
-        "production_sitemap_summary": "108 indexable URLs",
-        "google_sitemap": "Success",
-        "bing_sitemap": "Success; seven is the child-sitemap count, not total URL count",
-        "robots_summary": "eight sitemap references reported",
-        "bing_site_auth": "HTTP 200 reported",
-        "bing_search_performance": "processing",
-        "ga4": "existing Hermes property/stream receipt unresolved in the inspected environment",
-        "evidence_class": "owner_provided_authenticated_platform_handoff",
-        "boundary": "Use for prioritization and contradiction resolution; an agent must not claim it independently opened the platform unless it actually did."
-      },
-      "latest_platform_verified": {
-        "observed_at": "2026-08-28",
-        "gsc_7d_us_desktop": "2026-08-20..2026-08-26: 2 clicks / 294 impressions / 0.7% CTR / average position 37.7",
-        "gsc_28d_us_desktop": "2026-07-30..2026-08-26: 5 clicks / 800 impressions / 0.6% CTR / average position 45.6",
-        "google_priority_index_state": "All four priority URLs indexed",
-        "google_page_indexing": "87 indexed / 92 not indexed; exact 28 discovered-not-indexed examples and two blocked www variants captured",
-        "bing": "Existing site accessible; sitemap index Success with 110 discovered URLs and zero errors/warnings; both checklists and Car Hauling Dispatch indexed; Logistics SEO discovered but not crawled",
-        "ga4": "Existing property and one web stream accessible and collecting; zero connected site tags; no obvious duplicate configuration; zero visible key-event receipts and no exact-once DebugView proof",
-        "evidence_class": "platform_verified",
-        "boundary": "Authenticated platform state and production metadata do not prove qualified inquiries or revenue. Account identifiers and private values remain outside repository evidence."
-      },
-      "next_required_evidence": [
-        "next comparable 7-day and 28-day GSC query-by-page rows after the 2026-08-28 baseline",
-        "GSC recrawl outcome after approved sitemap/indexability quality changes and the owner-confirmed www redirect",
-        "GA4 synthetic non-private commercial event receipt exactly once in DebugView plus key-event and traffic-quality review",
-        "Bing query/click baseline and recrawl of the remaining Logistics SEO priority URL",
-        "private-safe delivery to human-review to qualification to commercial-outcome reconciliation",
-        "first complete 7-day and 28-day revenue-facing funnel scorecard"
-      ]
-    },
-    "permissioned_proof": {
-      "issue": 362,
-      "status": "eligibility_reviewed_permission_not_ready",
-      "rule": "Historical direct carrier and customer relationships are private evidence only until current authorized contact, exact publication consent, sanitization, and copy approval are documented."
-    },
-    "entity_reconciliation": {
-      "issue": 204,
-      "status": "copy_ready_external_authenticated_action_required",
-      "staff_am": "Profile-contact ownership evidence exists; current authenticated correction session is not verified. Do not create a duplicate profile.",
-      "latest_public_signal": "2026-08-14 public search sampling continues to surface same-name Hermes entities plus Work.ua/robota.ua historical resume pages carrying hermeslogisticsus.com. Treat this as entity-disambiguation pressure, not as proof of search-engine deindexing."
-    },
-    "mobile_performance": {
-      "issue": 354,
-      "status": "responsive_hero_measured_target_not_met",
-      "known_result": "Removing the premium mobile intro was tested and reverted; do not repeat that experiment without new evidence.",
-      "landed_change": "PR #432 merged: Astro Picture-based responsive AVIF/WebP/JPEG hero delivery with 640/960/1280/1600/1920 widths, preserved eager/high-priority LCP discovery, and no duplicate legacy hero preload.",
-      "verification": "Website checks #1365 passed on the final PR head. Production Lighthouse run 31590353392 completed 3 mobile + 3 desktop Lighthouse 13.4.1 passes plus the deterministic Agentic Browsing pass on the approved production build.",
-      "next_required_evidence": "Current production lab median is mobile Performance 94, Accessibility 100, Best Practices 100, SEO 100, FCP 2.00s and LCP 2.81s. The <=2.5s LCP target is not yet met. Isolate the remaining render-delay/critical-path cause in one bounded experiment and rerun the comparable median before claiming another improvement."
-    },
-    "production_compliance": {
-      "issue": 321,
-      "status": "production_routes_and_consent_smoke_pass_remaining_launch_gates_are_conditional",
-      "recorded_facts": [
-        "Production compliance smoke run 31587545325 passed 10 public compliance routes on 2026-08-12.",
-        "Production consent smoke run 31588338790 passed 2/2 Playwright consent tests on 2026-08-12.",
-        "Regional Privacy production route is present and its release delta is reconciled to PRODUCTION_VERIFIED."
-      ],
-      "remaining_gates": [
-        "service/state/country-specific legal review when the relevant launch is activated",
-        "payment/recurring-billing offer review before website payment activation",
-        "advertising/vendor/data-transfer review before new tracking or ad technology activation",
-        "remaining non-font media provenance under #320"
-      ]
-    },
-    "ai_handoff_drive_permissions": {
-      "issue": 431,
-      "status": "authenticated_permission_list_required",
-      "recorded_fact": "Connected Drive metadata shows the AI collaboration/handoff structure is shared but does not expose effective permissions; visibility remains access_not_verified.",
-      "boundary": "Do not infer safe permissions or public editor access. Review effective permissions in an authenticated owner/admin sharing UI before changing them."
-    },
-    "ai_knowledge_and_inbox_triage": {
-      "issue": 435,
-      "status": "evidence_packet_ready_second_pass_issue_open",
-      "evidence_date": "2026-08-11",
-      "verified_packet_facts": [
-        "174 total quarantined system-noise rows versus 163 in the last-300-row AI Brief window is reconciled by 11 older quarantined rows outside that window",
-        "source-first Gmail system-noise filtering is applied before relevance scoring/storage/phrase extraction and excluded again from the AI Brief",
-        "AI Inbox Triage allowed enums and safe fallbacks are documented",
-        "Sales Gmail classifier 33/33 passed",
-        "Sales Coach 20/20 passed",
-        "AI Inbox Triage behavior 7/7 passed",
-        "six Apps Script files passed preview/read-only source validation"
-      ],
-      "remaining_gate": "Issue #435 tracks one bounded Claude independent second-pass decision on the existing evidence packet. Do not recreate the packet; record PASS, PARTIAL_PASS, or FAIL with only explicit unresolved evidence requests."
-    },
-    "repair_shop_pilot_beta": {
-      "issue": 510,
-      "canonical_branch": "main",
-      "status": "production_mvp_runtime_verified_distribution_pending",
-      "proposal_date": "2026-08-14",
-      "implementation_owner": "Hermes Connect - Автономная Разработка",
-      "reviewer": "Синхронизация Базы Знаний Агентов",
-      "merged_prs": [529, 532, 533, 534, 535, 536, 537, 538, 541, 542, 543, 544, 545],
-      "facts": [
-        "A new CEO-approved truck and equipment repair shop outbound pilot has been established.",
-        "A detailed, natural-flow sales playbook has been created and corrected in docs/ISSUE_HC_REPAIR_BETA_TRUCK_REPAIR_PARTNER.md.",
-        "Production auth uses the D1-backed runtime and fails closed with a structured 503 when the DB binding is unavailable.",
-        "Owner-scoped services, shop profile/public link, weekly availability, real customer-to-owner booking, persisted status history, cancelled-slot rebooking, vehicle data and booking-derived customer CRM are merged on main.",
-        "The completed-visit next-appointment defect is fixed: only confirmed and in-progress bookings are eligible.",
-        "Repair Shop production smokes and the post-consolidation Connect route/PWA/custom-domain checks passed on the merged implementation.",
-        "PR #509 is closed as superseded because its old Brand V1 tree would remove or overwrite later production Repair Shop, carrier-contract, Android and canonical Connect work."
-      ],
-      "remaining_gate": "Move from repository completion to the first 5-10 permissioned real repair-shop users, capture privacy-safe feedback and measured booking outcomes, then select the smallest retention/reminder or fleet workflow supported by that evidence. Do not fork another app runtime."
-    },
-    "mobile_cross_platform_release": {
-      "issue": 511,
-      "canonical_branch": "main",
-      "status": "web_pwa_live_android_release_blocked_stale_debug_artifact_retired",
-      "proposal_date": "2026-08-14",
-      "implementation_owner": "Hermes Connect - Автономная Разработка",
-      "reviewer": "Синхронизация Базы Знаний Агентов",
-      "release_policy": {
-        "tier": "PUBLIC_BETA",
-        "pricing": "FREE",
-        "monetization": "DEFERRED"
-      },
-      "distribution_strategy": {
-        "phase_1_current": "Web App and installable browser PWA use the canonical responsive runtime. The stale debug-signed Android artifact was removed; direct APK distribution remains blocked until a fresh canonical release build passes every release gate.",
-        "phase_2_deferred_funding": "Apple App Store & Google Play native store submissions",
-        "phase_3_trigger": "Desktop macOS & Windows apps packaging (triggered at approximately 10 real active beta users)"
-      },
-      "platform_matrix": {
-        "web": "LIVE",
-        "iphone_pwa": "LIVE_WEB_INSTALL_PATH",
-        "android_apk": "BLOCKED_NO_PUBLIC_ARTIFACT",
-        "android_aab": "NOT_STARTED",
-        "app_store": "DEFERRED",
-        "google_play": "DEFERRED",
-        "macos": "NOT_STARTED",
-        "windows": "NOT_STARTED"
-      },
-      "compliance_gates": [
-        "iOS builds require Xcode 26 / iOS 26 SDK or later.",
-        "Android builds require Android 16 / API Level 36.",
-        "Apple Guideline 4.2 compliance: tracking native share, haptics, deep links, persistent local state, and offline shell.",
-        "Google Play Closed Testing audit: 12 testers for 14 continuous days is mandatory if developer account is personal and post-Nov 2023.",
-        "iOS .ipa must NOT be distributed directly from the website (iPhone uses Web/PWA installation in Phase 1).",
-        "Android .apk direct distribution is authorized only for a current canonical build with a controlled release certificate, recorded artifact and certificate checksums, and clean-device install/launch/core-flow evidence."
-      ],
-      "apk_audit_2026_08_15": {
-        "retired_artifact_sha256": "32e1c3cf35e77ac789cb8459dfddcfed6088e04e6aa4f113b34a95e8daf26b99",
-        "source_commit": "bb27c196ff11fabcb5c14c9d356633c6b9dd58fe",
-        "retired_runtime_paths": 25,
-        "signature_scheme": "APK_V2_ANDROID_DEBUG",
-        "certificate_sha256": "5b116b7f6393b7f1f0b87a5ab2d5045d73f3726ba4824687cf82cd62582eab72",
-        "action": "Removed the stale public binary and direct-download claims, temporarily redirected its old URL to the release-status page, and retained Android source for a future controlled release build."
-      },
-      "remaining_gate": "Build from the current canonical runtime, configure a controlled Android release key, record APK and certificate checksums, and pass clean-device install/launch/core-flow smoke before restoring direct APK distribution. Keep iPhone on the canonical PWA path and App Store/Google Play submissions deferred until their account, testing and compliance gates are intentionally funded."
-    }
+    "writer_rule": "ONE_TASK_ONE_ARTIFACT_ONE_ACTIVE_WRITER_MANY_REVIEWERS",
+    "no_evidence_no_promotion": true,
+    "green_ci_does_not_override_locks": true,
+    "main_branch_protected": false,
+    "required_status_check_enforcement": "off",
+    "repository_rulesets_present": false,
+    "platform_enforcement": "PARTIAL_OWNER_ADMIN_ACTION_REQUIRED",
+    "drive_effective_permission_state": "UNVERIFIED_IN_CURRENT_CONNECTOR_SURFACE"
   },
-  "search_platform_state": {
-    "google_search_console": {
-      "status": "access_confirmed",
-      "evidence_class": "owner_provided_authenticated_platform_handoff",
-      "latest_recorded_checkpoint": "2026-08-14",
-      "date_range": "2026-07-28..2026-08-12",
-      "recorded_facts": [
-        "17 clicks, 487 impressions, 3.5% CTR, average position 40.8",
-        "United States: 306 impressions and 2 clicks",
-        "/services/seo-for-logistics-companies/: 119 impressions and 0 clicks",
-        "4 external links reported, all from work.ua",
-        "28 internal links reported",
-        "Google sitemap reported Success",
-        "production sitemap set covers 108 indexable URLs in the same SEO14 handoff"
-      ],
-      "boundary": "These are authenticated platform observations supplied through the owner-provided Codex SEO14 handoff. They are not revenue claims and are not direct platform observations by every downstream agent."
-    },
-    "bing_webmaster_tools": {
-      "status": "access_confirmed_per_owner_handoff_performance_processing",
-      "evidence_class": "owner_provided_authenticated_platform_handoff",
-      "latest_recorded_checkpoint": "2026-08-14",
-      "recorded_facts": [
-        "existing Hermes site remains the intended property; do not create a duplicate",
-        "Bing sitemap status reported Success",
-        "seven represents child sitemap files, not total indexed URLs",
-        "BingSiteAuth.xml reported HTTP 200",
-        "Search Performance was still processing in the latest handoff"
-      ],
-      "next_required_evidence": "Capture page/index/search-performance evidence after processing completes; do not recreate or resubmit the existing site merely to make a checklist green."
-    },
-    "ga4": {
-      "status": "access_missing_existing_ownership_unresolved",
-      "measurement_id": "G-RY26321PVW",
-      "recorded_fact": "The production consent-gated source contract is pinned to G-RY26321PVW, while the latest inspected environment still did not confirm the existing Hermes GA4 property/stream and showed the start-measuring state.",
-      "boundary": "Do not create a replacement property, stream, tag, or GTM container merely to satisfy the checklist. Locate and authenticate the existing web stream first, then verify exact-once controlled event receipt and privacy."
-    }
+  "condition_watch": {
+    "automation": "Hermes CI / HUEG Watch",
+    "mode": "condition_watch",
+    "state_snapshot_required": true,
+    "snapshot_fields": [
+      "observed_at",
+      "canonical_main_sha",
+      "open_pr_numbers",
+      "exact_head_sha",
+      "base_main_relation",
+      "draft",
+      "mergeable",
+      "exact_head_checks",
+      "active_blockers_and_locks",
+      "promotion_state",
+      "next_step_class"
+    ],
+    "suppression_rule": "Do not alert on mergeable/ahead-behind/routine-head/queued-or-in-progress changes by themselves when PROMOTION_STATE and NEXT_STEP_CLASS are unchanged.",
+    "historical_failure_rule": "Ignore failed historical SHAs when the exact current head passes."
   },
-  "completed_foundations": [
-    "technical SEO build and static validation",
-    "desktop and mobile Playwright coverage",
-    "privacy-safe analytics event taxonomy",
-    "direct carrier and vehicle-transport request paths with human-review boundaries",
-    "website development and SEO service-specific intake foundations",
-    "manual qualified-lead, contract and revenue runbook",
-    "query-to-page ownership foundation",
-    "About, Terms, Editorial and Corrections, Accessibility, Privacy and security/trust foundations",
-    "vendor-neutral AI operating system and consolidated error register",
-    "human-first homepage situation router",
-    "two-team carrier value proposition with no-guarantee boundaries",
-    "Load Board real-customer versus fictional-carrier-preview dual entry",
-    "business growth need-budget-roadmap qualification",
-    "Academy application/practice/feedback methodology",
-    "metric-first Careers qualification",
-    "shared Hermes AI sales-assistant reasoning and claim-maturity contract",
-    "responsive modern homepage hero asset delivery with regression coverage",
-    "SEO13 GSC-demand optimization of the existing Logistics SEO canonical owner"
+  "open_pull_requests_at_review": [
+    {"number":936,"title":"docs: add Hermes Connect security response plan","branch":"docs/hermes-connect-security-response-2026-09-01","exact_head_sha":"f41cd0e11a84e5fa7d2a2d6e475b257dbdebc37f","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"REVIEW_REQUIRED","next_step_class":"SECURITY_DOC_REVIEW"},
+    {"number":935,"title":"feat(academy): connect public programs to existing learner workspace","branch":"feat/academy-public-learner-handoff","exact_head_sha":"d977bcb6a4c479fd6ec69f8769411e53984b5d72","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI","next_step_class":"ACADEMY_OWNER_FIX_EXACT_HEAD"},
+    {"number":934,"title":"feat(connect): restore contextual Repair Shop owner navigation","branch":"feat/repair-owner-context-nav-fresh","exact_head_sha":"cb5dde5ca4ac31222acc176da3308263d678d722","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"CI_READY_ONLY","next_step_class":"CONNECT_OWNER_REVIEW"},
+    {"number":930,"title":"fix(connect): replay Pearl Design OS on private Repair Shop workspaces","branch":"fix/repair-private-pearl-shell-fresh-2026-08-31","exact_head_sha":"b6ea689175d96a782530f71fd3421e3c83963f32","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"CI_READY_ONLY","next_step_class":"CONNECT_OWNER_REVIEW"},
+    {"number":926,"title":"fix(london): close attribution, conversion, locale and mobile QA gaps","branch":"fix/london-postlaunch-gaps","exact_head_sha":"ad2ee607789c0bd234c0f1d9eb656222bb663d67","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI","next_step_class":"LONDON_OWNER_FIX_EXACT_HEAD"},
+    {"number":910,"title":"refactor(connect): drive shared account switcher from unified portfolio","branch":"feat/shared-account-portfolio-main","exact_head_sha":"5299d35caf212dd15f4af6bc5f4a5ff19b24b4ab","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"CI_READY_ONLY","next_step_class":"CONNECT_OWNER_REVIEW"},
+    {"number":887,"title":"feat(connect): add internal AI activity history","branch":"feat/ai-connect-activity-history","exact_head_sha":"574bd57aa2a09732842943811df1120e92b41520","base_branch":"feat/ai-connect-projects-list","base_sha_at_review":"a46e8eae89c6633466e5dca4b3bbad4da2c7a6f4","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI_STACKED","next_step_class":"AI_CONNECT_STACK_RECONCILE"},
+    {"number":886,"title":"feat(connect): add familiar AI Connect Projects list","branch":"feat/ai-connect-projects-list","exact_head_sha":"a46e8eae89c6633466e5dca4b3bbad4da2c7a6f4","base_branch":"feat/ai-connect-cabinet-ux-ru","base_sha_at_review":"a9c6995dbc08209f9549fc3f481d40b171ef58f1","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI_STACKED","next_step_class":"AI_CONNECT_STACK_RECONCILE"},
+    {"number":885,"title":"feat(connect): make internal AI cabinet familiar and Russian-localized","branch":"feat/ai-connect-cabinet-ux-ru","exact_head_sha":"a9c6995dbc08209f9549fc3f481d40b171ef58f1","base_branch":"feat/ai-connect-project-main","base_sha_at_review":"18d07649e0f9da54680c2848cb9c431ff39c5bf0","mergeable_at_review":true,"website_checks":"FAILURE","promotion_state":"BLOCKED_CI_STACKED","next_step_class":"AI_CONNECT_STACK_RECONCILE"},
+    {"number":882,"title":"feat(connect): add AI Connect project workspace","branch":"feat/ai-connect-project-main","exact_head_sha":"18d07649e0f9da54680c2848cb9c431ff39c5bf0","base_branch":"main","base_sha_at_review":"9a976da558e9441cd743744430eb4899393b8cbe","mergeable_at_review":true,"website_checks":"SUCCESS","promotion_state":"STACK_BASE_CI_READY_ONLY","next_step_class":"AI_CONNECT_STACK_RECONCILE"}
   ],
-  "active_external_dependencies": [
-    {
-      "id": "EXT-GSC-MEASUREMENT",
-      "status": "authenticated_baseline_refreshed_followup_window_required",
-      "detail": "The 2026-08-14 owner-provided authenticated handoff records 17 clicks / 487 impressions for 2026-07-28..2026-08-12. Preserve the Aug 13 Logistics SEO change and collect comparable ~7-day/~28-day query-by-page follow-up evidence before another broad rewrite."
-    },
-    {
-      "id": "EXT-BING-MEASUREMENT",
-      "status": "authenticated_access_confirmed_measurement_processing",
-      "detail": "Existing Bing site and sitemap success are confirmed in the latest owner handoff; collect search-performance evidence after processing without duplicating setup."
-    },
-    {
-      "id": "EXT-GA4-OWNERSHIP",
-      "status": "owner_or_account_resolution_required",
-      "detail": "Locate the existing Hermes GA4 web stream by Measurement ID G-RY26321PVW before any new resource is created or event receipt is classified as verified."
-    },
-    {
-      "id": "EXT-PROOF-PERMISSION",
-      "status": "authorized_contact_and_consent_required",
-      "detail": "At least one carrier and one customer/dealer proof package require current authorized contact, exact publication permission, sanitization, and public-copy approval."
-    },
-    {
-      "id": "EXT-ENTITY-PROFILE-CORRECTION",
-      "status": "authenticated_profile_action_required",
-      "detail": "Issue #204 owns external entity reconciliation. Public search still shows significant same-name entity competition plus historical Work.ua/robota.ua records; correct only controlled profiles with approved current facts and do not create duplicates."
-    },
-    {
-      "id": "EXT-AI-DRIVE-PERMISSIONS",
-      "status": "authenticated_owner_admin_review_required",
-      "detail": "Effective sharing permissions for the AI handoff/source-of-truth tree are not exposed by the connected Drive metadata. Review inherited/direct grants in the authenticated sharing UI before making changes."
-    },
-    {
-      "id": "EXT-HERO-PROVENANCE",
-      "status": "owner_provenance_required",
-      "detail": "The current hero asset is traceable in repository history but its original photographer/generator/vendor/license evidence is not documented in the reviewed repository or Drive search. Do not infer a license defect; locate original permission evidence or later replace with a newly documented asset."
-    }
+  "main_exact_head_evidence": {
+    "sha": "9a976da558e9441cd743744430eb4899393b8cbe",
+    "check_run_count_observed": 45,
+    "observations": [
+      {"name":"Russian Repair Shop Production Verifier","conclusion":"SUCCESS"},
+      {"name":"Hermes Connect Repair Shop Real Booking Production Smoke","conclusion":"FAILURE"},
+      {"name":"Hermes Connect Beauty Bangkok International Production Smoke","conclusion":"FAILURE"},
+      {"name":"Production Lighthouse Evidence","conclusion":"FAILURE"},
+      {"name":"Cloudflare Pages","conclusion":"IN_PROGRESS_AT_ONE_OBSERVATION"}
+    ],
+    "classification": "MIXED_VERIFIER_RESULTS",
+    "boundary": "Verifier-specific failures must be diagnosed by their owning lane. Do not convert mixed verifier evidence into a blanket site-wide pass or failure claim."
+  },
+  "learning_hardening": {
+    "date": "2026-09-01",
+    "one_brain_error_lessons_persisted": true,
+    "condition_watch_snapshot_guard_enabled": true,
+    "mergeability_only_noise_suppressed": true,
+    "writer_lock_before_mutation_required": true,
+    "durable_monitor_state_required": true,
+    "platform_enforcement_gap_recorded": true,
+    "stale_state_is_bridge_defect": true,
+    "lesson_classes": ["CONDITION_WATCH_STATE_NOISE","WRITE_BEFORE_SYNC_RELEASE","NARRATIVE_AUDIT_WITHOUT_DURABLE_STATE","GOVERNANCE_POLICY_WITHOUT_PLATFORM_ENFORCEMENT","MACHINE_STATE_STALE_AFTER_MATERIAL_MERGES"]
+  },
+  "active_external_gates": [
+    {"id":"GITHUB_MAIN_PROTECTION","state":"OWNER_ADMIN_ACTION_REQUIRED","reason":"Current connector can verify branch protection/rulesets but exposes no safe write action for repository protection configuration."},
+    {"id":"ONE_BRAIN_EFFECTIVE_DRIVE_ACL","state":"UNVERIFIED","reason":"Current Drive metadata surface does not expose effective permissions; do not assume the old anyone-writer finding is either still true or fixed."}
   ],
-  "historical_archives": [
-    {
-      "pr": 83,
-      "status": "closed_unmerged_historical_reference",
-      "scope": "feature-gated Google Routes planning estimate; rebuild from current main only if reprioritized"
-    },
-    {
-      "pr": 85,
-      "status": "closed_unmerged_historical_reference",
-      "scope": "Shipment History experimental workspace; rebuild bounded slices from current main only if reprioritized"
-    }
-  ],
-  "protected_boundaries": [
-    "no credentials or private company records in the repository",
-    "no PII, submitted URLs, budgets, routes or free text in analytics",
-    "no duplicate GSC, GA4, Bing, entity or profile resources merely to satisfy a checklist",
-    "no claims without approved evidence",
-    "no automatic live delivery by default",
-    "no fabricated testimonials, current-client status, loads, rankings, revenue, offices or availability",
-    "no mass pages, doorway variants, fake locations, bought links, PBNs or fake reviews",
-    "one active owner per task/branch; avoid parallel duplicate implementations",
-    "a passing agent-bridge transport test does not prove current-state freshness"
-  ],
-  "primary_docs": [
-    "docs/AI_START_HERE.md",
-    "docs/ai-project-state.json",
-    "AGENTS.md",
-    "docs/AI_ROLES.md",
-    "docs/ERROR_REGISTER.md",
-    "docs/PRODUCTION_MEASUREMENT_BASELINE_RUNBOOK.md",
-    "docs/SEO11_GSC_QUERY_PAGE_SCORECARD_2026-08-11.md",
-    "docs/SEO11_PERMISSIONED_PROOF_REGISTRY.csv",
-    "docs/CANONICAL_COMPANY_FACTS_APPROVAL.md",
-    "docs/AI_HANDOFF.md",
-    "docs/ISSUE_HC_REPAIR_BETA_TRUCK_REPAIR_PARTNER.md",
-    "docs/ISSUE_510_REPAIR_SHOP_PILOT.md",
-    "ai-collaboration/00_READ_FIRST/CURRENT_STATE.md",
-    "ai-collaboration/02_SEO/CURRENT_STATE.md",
-    "ai-collaboration/02_SEO/SEO_AGENT_ROUTING_2026-08-14.md"
+  "current_execution_rules": [
+    "Re-enumerate all open PRs and current main before repository decisions.",
+    "Do not repair another active writer lane from a governance/audit lane.",
+    "Do not close stacked or superseded PRs until replacement/current-main coverage is proven.",
+    "Prefer bounded clean replay from current main when stale branch history would drag unrelated work.",
+    "Persist useful lessons to One Brain and hand off exact revisions/evidence.",
+    "Refresh this snapshot after material state changes or mark it STALE."
   ]
 }
