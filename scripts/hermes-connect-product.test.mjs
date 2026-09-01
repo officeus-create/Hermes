@@ -78,9 +78,17 @@ assert.match(hubSource, /Configuration preview · not a released vertical/);
 assert.match(hubSource, /One product family/);
 assert.match(hubSource, /PRIVATE LEARNER WORKSPACE/);
 assert.match(hubSource, /\/services\/hermes-connect\/academy\//);
+assert.match(hubSource, /Beauty & Wellness/);
+assert.match(hubSource, /PRIVATE OWNER FOUNDATION/);
+assert.match(hubSource, /Owner-scoped salon profile, team, and shared services are available in a private Hermes workspace/);
+assert.match(hubSource, /modules: \["Profile", "Team", "Services"\]/);
+assert.match(hubSource, /\/services\/hermes-connect\/beauty\/workspace\//);
+assert.match(hubSource, /Appointments, CRM, payments, revenue, inventory, payroll, and autonomous outreach remain deferred/);
+assert.doesNotMatch(hubSource, /Other industries are previews/);
+assert.doesNotMatch(hubSource, /Appointments, clients, services, specialists, repeat visits, reviews, and relationship management/);
 assert.doesNotMatch(hubSource, /connect\.hermeslogisticsus\.com\/workspace/);
 assert.doesNotMatch(hubSource, /\$99|\$299|\$799/);
 assert.match(capabilityPage, /Reference capability · not current live pilot/);
 assert.match(capabilityPage, /Open current Repair Shop product/);
 
-console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, private Academy learner entry, Load Analyzer demo boundary, and one canonical Repair Shop public live product.`);
+console.log(`Hermes Connect product contract passed: ${categoryCatalog.length} preserved reference categories, adaptive vertical OS presentation, private Academy and Beauty entries with bounded scope, Load Analyzer demo boundary, and one canonical Repair Shop public live product.`);
