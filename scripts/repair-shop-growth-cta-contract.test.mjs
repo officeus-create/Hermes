@@ -140,4 +140,6 @@ assert.doesNotMatch(
   /window\.dataLayer(?:\.|\?\.)push\(\{[^}]*\b(?:email|phone|name|shopName|slug|client)\b[^}]*\}\)/s,
 );
 
+await import("./repair-shop-private-design-contract.test.mjs");
+
 console.log("Repair Shop customer-focused booking actions, Sep 15 free-registration account/profile gates, revenue, offer state, six-step activation, multilingual UX, and zero-PII telemetry contracts passed.");
