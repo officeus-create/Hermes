@@ -16,6 +16,7 @@ on:
       - 'scripts/route-screenshot-contract.test.mjs'
       - 'scripts/validate-route-screenshot-layout.mjs'
       - 'scripts/hermes-connect-mark-contract.test.mjs'
+      - 'scripts/hermes-approved-color-application.test.mjs'
       - 'scripts/academy-russian-private-contract.test.mjs'
       - 'scripts/repair-russian-private-contract.test.mjs'
       - '.github/workflows/hermes-connect-visual-evidence.yml'
@@ -43,6 +44,9 @@ jobs:
 
       - name: Verify Option 02 mark geometry
         run: node scripts/hermes-connect-mark-contract.test.mjs
+
+      - name: Verify approved Hermes color application
+        run: node scripts/hermes-approved-color-application.test.mjs
 
       - name: Verify Academy Russian private runtime
         run: node --test scripts/academy-russian-private-contract.test.mjs
