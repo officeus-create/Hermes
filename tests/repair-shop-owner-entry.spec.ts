@@ -14,7 +14,7 @@ test("existing Repair Shop owner sees a prominent sign-in action on the first sc
   const login = page.getByRole("link", { name: "Sign in to my shop" });
   await expect(login).toBeVisible();
   await expect(login).toHaveAttribute("href", "/services/hermes-connect/repair-shops/auth/?mode=login");
-  await expect(page.getByRole("link", { name: "Register free" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Register free", exact: true })).toBeVisible();
 });
 
 test("Russian first screen exposes the owner login without scrolling to workspace links", async ({ page }) => {
