@@ -27,6 +27,9 @@ assert(experience.includes("data-hc-product-context"), "Experience: product-fami
 assert(experience.includes("data-hc-english-only"), "Experience: non-English routes must disclose English-only page content until fully localized.");
 assert(experience.includes("REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT"), "Experience: reference-capability status is required.");
 assert(experience.includes("CURRENT LIVE PILOT"), "Experience: current live pilot status is required.");
+assert(experience.includes("PRIVATE OWNER FOUNDATION"), "Experience: Beauty B1 must have a distinct private-foundation status rather than reference/live classification.");
+assert(experience.includes("isBeauty") && experience.includes("is-private"), "Experience: canonical Beauty workspace must receive the private product-context state.");
+assert(experience.includes('!(isBeauty && locale === "ru")'), "Experience: localized Russian Beauty must not show an English-only warning.");
 assert(experience.includes(".hermes-connect-header-launcher"), "Experience: current visual layer must target the launcher compatibility class.");
 
 const brandSystem = await text("src/styles/hermes-brand-system.css");

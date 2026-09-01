@@ -20,34 +20,34 @@
 
     const chrome = {
       en: {
-        live: "CURRENT LIVE PILOT", hub: "PRODUCT FAMILY · CURRENT", reference: "REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT",
-        currentProduct: "Current product: Repair Shops", content: "Content language: English",
+        live: "CURRENT LIVE PILOT", hub: "PRODUCT FAMILY · CURRENT", privateFoundation: "PRIVATE OWNER FOUNDATION", reference: "REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT",
+        currentProduct: "Current product: Repair Shops", beautyProduct: "Private workspace: Beauty & Wellness", content: "Content language: English",
         englishOnly: "This page is currently English-only. Hermes Connect navigation is localized; page content is not partially translated.",
       },
       uk: {
-        live: "ПОТОЧНИЙ ЖИВИЙ ПІЛОТ", hub: "СІМЕЙСТВО ПРОДУКТІВ · АКТУАЛЬНО", reference: "ДОВІДКОВИЙ МОДУЛЬ · НЕ ПОТОЧНИЙ ЖИВИЙ ПІЛОТ",
-        currentProduct: "Поточний продукт: СТО", content: "Мова контенту: англійська",
+        live: "ПОТОЧНИЙ ЖИВИЙ ПІЛОТ", hub: "СІМЕЙСТВО ПРОДУКТІВ · АКТУАЛЬНО", privateFoundation: "ПРИВАТНА ОСНОВА ДЛЯ ВЛАСНИКА", reference: "ДОВІДКОВИЙ МОДУЛЬ · НЕ ПОТОЧНИЙ ЖИВИЙ ПІЛОТ",
+        currentProduct: "Поточний продукт: СТО", beautyProduct: "Приватний простір: Beauty & Wellness", content: "Мова контенту: англійська",
         englishOnly: "Ця сторінка поки доступна лише англійською. Навігація Hermes Connect локалізована; часткового перекладу контенту немає.",
       },
       ru: {
-        live: "ТЕКУЩИЙ ЖИВОЙ ПИЛОТ", hub: "СЕМЕЙСТВО ПРОДУКТОВ · АКТУАЛЬНО", reference: "СПРАВОЧНЫЙ МОДУЛЬ · НЕ ТЕКУЩИЙ ЖИВОЙ ПИЛОТ",
-        currentProduct: "Текущий продукт: СТО", content: "Язык контента: английский",
+        live: "ТЕКУЩИЙ ЖИВОЙ ПИЛОТ", hub: "СЕМЕЙСТВО ПРОДУКТОВ · АКТУАЛЬНО", privateFoundation: "ПРИВАТНАЯ ОСНОВА ДЛЯ ВЛАДЕЛЬЦА", reference: "СПРАВОЧНЫЙ МОДУЛЬ · НЕ ТЕКУЩИЙ ЖИВОЙ ПИЛОТ",
+        currentProduct: "Текущий продукт: СТО", beautyProduct: "Приватное пространство: Красота и wellness", content: "Язык контента: английский",
         englishOnly: "Эта страница пока доступна только на английском. Навигация Hermes Connect локализована; частичного перевода контента нет.",
       },
       es: {
-        live: "PILOTO ACTUAL EN VIVO", hub: "FAMILIA DE PRODUCTOS · ACTUAL", reference: "CAPACIDAD DE REFERENCIA · NO ES EL PILOTO ACTUAL",
-        currentProduct: "Producto actual: Talleres", content: "Idioma del contenido: inglés",
+        live: "PILOTO ACTUAL EN VIVO", hub: "FAMILIA DE PRODUCTOS · ACTUAL", privateFoundation: "BASE PRIVADA PARA PROPIETARIOS", reference: "CAPACIDAD DE REFERENCIA · NO ES EL PILOTO ACTUAL",
+        currentProduct: "Producto actual: Talleres", beautyProduct: "Espacio privado: Beauty & Wellness", content: "Idioma del contenido: inglés",
         englishOnly: "Esta página está disponible actualmente solo en inglés. La navegación de Hermes Connect está localizada; el contenido no se traduce parcialmente.",
       },
       it: {
-        live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
-        currentProduct: "Prodotto attuale: Officine", content: "Lingua dei contenuti: inglese",
+        live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", privateFoundation: "BASE PRIVATA PER IL TITOLARE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
+        currentProduct: "Prodotto attuale: Officine", beautyProduct: "Spazio privato: Beauty & Wellness", content: "Lingua dei contenuti: inglese",
         englishOnly: "Questa pagina è attualmente disponibile solo in inglese. La navigazione Hermes Connect è localizzata; il contenuto non viene tradotto parzialmente.",
       },
       fr: {
-        live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
-        currentProduct: "Produit actuel : Ateliers", content: "Langue du contenu : anglais",
-        englishOnly: "Cette page est actuellement disponible uniquement en anglais. La navigation Hermes Connect est localisée ; le contenu n'est pas traduit partiellement.",
+        live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", privateFoundation: "BASE PRIVÉE POUR PROPRIÉTAIRE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
+        currentProduct: "Produit actuel : Ateliers", beautyProduct: "Espace privé : Beauty & Wellness", content: "Langue du contenu : anglais",
+        englishOnly: "Cette page est actuellement disponible uniquement en anglais. La navigation de Hermes Connect est localisée ; le contenu n'est pas traduit partiellement.",
       },
     };
 
@@ -98,10 +98,17 @@
 
     const isHub = path === "/services/hermes-connect/" || path === "/services/hermes-connect";
     const isRepair = path.startsWith("/services/hermes-connect/repair-shops");
-    const status = isHub ? chrome[locale].hub : isRepair ? chrome[locale].live : chrome[locale].reference;
+    const isBeauty = path === "/services/hermes-connect/beauty/workspace" || path.startsWith("/services/hermes-connect/beauty/workspace/");
+    const status = isHub
+      ? chrome[locale].hub
+      : isRepair
+        ? chrome[locale].live
+        : isBeauty
+          ? chrome[locale].privateFoundation
+          : chrome[locale].reference;
 
     const context = document.createElement("section");
-    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : "is-reference"}`;
+    context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : isBeauty ? "is-private" : "is-reference"}`;
     context.setAttribute("data-hc-product-context", "true");
     context.setAttribute("aria-label", "Hermes Connect product family navigation");
 
@@ -116,10 +123,10 @@
     const strong = document.createElement("strong");
     strong.textContent = status;
     const product = document.createElement("span");
-    product.textContent = chrome[locale].currentProduct;
+    product.textContent = isBeauty ? chrome[locale].beautyProduct : chrome[locale].currentProduct;
     const contentLanguage = document.createElement("span");
     contentLanguage.className = "hc-content-language";
-    contentLanguage.textContent = chrome[locale].content;
+    contentLanguage.textContent = isBeauty && locale === "ru" ? "Язык контента: русский" : chrome[locale].content;
     summary.append(dot, strong, product, contentLanguage);
 
     const family = [
@@ -158,7 +165,7 @@
     inner.append(summary, nav);
     context.append(inner);
 
-    if (locale !== "en") {
+    if (locale !== "en" && !(isBeauty && locale === "ru")) {
       const notice = document.createElement("div");
       notice.className = "hc-language-truth";
       notice.setAttribute("data-hc-english-only", "true");
@@ -197,7 +204,7 @@
   .hc-product-context{position:relative;z-index:20;border-bottom:1px solid rgba(255,255,255,.08);background:rgba(8,12,21,.94);backdrop-filter:blur(18px)}
   .hc-product-context__inner{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:.65rem 0 .55rem;display:grid;gap:.6rem}
   .hc-product-context__summary{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;color:rgba(248,250,252,.7);font-size:.76rem}.hc-product-context__summary strong{color:#fff;letter-spacing:.04em;font-size:.72rem}.hc-content-language{margin-left:auto;color:#9eabc0}
-  .hc-product-context__dot{width:8px;height:8px;border-radius:999px;background:#60a5fa;box-shadow:0 0 0 5px rgba(96,165,250,.12)}.hc-product-context.is-live .hc-product-context__dot{background:#34d399;box-shadow:0 0 0 5px rgba(52,211,153,.12)}.hc-product-context.is-reference .hc-product-context__dot{background:#fbbf24;box-shadow:0 0 0 5px rgba(251,191,36,.12)}
+  .hc-product-context__dot{width:8px;height:8px;border-radius:999px;background:#60a5fa;box-shadow:0 0 0 5px rgba(96,165,250,.12)}.hc-product-context.is-live .hc-product-context__dot{background:#34d399;box-shadow:0 0 0 5px rgba(52,211,153,.12)}.hc-product-context.is-private .hc-product-context__dot{background:#7c8798;box-shadow:0 0 0 5px rgba(124,135,152,.12)}.hc-product-context.is-reference .hc-product-context__dot{background:#fbbf24;box-shadow:0 0 0 5px rgba(251,191,36,.12)}
   .hc-family-nav{display:flex;align-items:center;gap:.35rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.1rem}.hc-family-nav::-webkit-scrollbar{display:none}.hc-family-nav a{white-space:nowrap;color:#b9c5d8;text-decoration:none;font-size:.76rem;font-weight:680;padding:.42rem .62rem;border:1px solid rgba(255,255,255,.065);border-radius:999px;background:rgba(255,255,255,.025)}.hc-family-nav a:hover,.hc-family-nav a:focus-visible,.hc-family-nav a[aria-current="page"]{color:#fff;border-color:rgba(157,136,255,.38);background:rgba(157,136,255,.11)}
   .hc-language-truth{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:0 0 .65rem;color:#c8d0dc;font-size:.78rem;line-height:1.5}
 

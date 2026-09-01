@@ -96,6 +96,12 @@ test("Beauty B1 Russian mobile shell is localized and does not expose deferred m
   await expect(page.locator("[data-beauty-content]")).toContainText("Запись клиентов · позже");
   await expect(page.locator("[data-beauty-content]")).not.toContainText("Revenue dashboard");
 
+  const productContext = page.locator("[data-hc-product-context]");
+  await expect(productContext).toContainText("ПРИВАТНАЯ ОСНОВА ДЛЯ ВЛАДЕЛЬЦА");
+  await expect(productContext).toContainText("Приватное пространство: Красота и wellness");
+  await expect(productContext).toContainText("Язык контента: русский");
+  await expect(page.locator("[data-hc-english-only]")).toHaveCount(0);
+
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
