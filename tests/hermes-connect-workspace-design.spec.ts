@@ -137,16 +137,51 @@ test("Repair Shop owner availability uses the shared Pearl-first workspace gramm
   expect(visual!.buttonRadius).toBe("12px");
 });
 
-test("Repair Shop owner availability remains usable on mobile after workspace convergence", async ({ page }) => {
+test("Repair Shop owner availability keeps every day control usable at 390px", async ({ page }) => {
   await mockAvailabilityWorkspace(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/availability/");
 
   await expect(page.getByRole("heading", { name: "Weekly availability" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Save weekly availability" })).toBeVisible();
+  const rows = page.locator(".day-row");
+  await expect(rows).toHaveCount(7);
 
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
-  expect(overflow).toBe(false);
+  const geometry = await page.evaluate(() => {
+    const viewportWidth = document.documentElement.clientWidth;
+    const rows = [...document.querySelectorAll<HTMLElement>(".day-row")];
+    return {
+      overflow: document.documentElement.scrollWidth > viewportWidth,
+      rows: rows.map((row) => {
+        const rowRect = row.getBoundingClientRect();
+        const toggle = row.querySelector<HTMLElement>(".open-toggle");
+        const times = [...row.querySelectorAll<HTMLInputElement>('input[type="time"]')];
+        return {
+          rowLeft: rowRect.left,
+          rowRight: rowRect.right,
+          toggleHeight: toggle?.getBoundingClientRect().height ?? 0,
+          timeInputs: times.map((input) => {
+            const rect = input.getBoundingClientRect();
+            return { left: rect.left, right: rect.right, width: rect.width, height: rect.height };
+          }),
+        };
+      }),
+    };
+  });
+
+  expect(geometry.overflow).toBe(false);
+  for (const row of geometry.rows) {
+    expect(row.rowLeft).toBeGreaterThanOrEqual(0);
+    expect(row.rowRight).toBeLessThanOrEqual(390);
+    expect(row.toggleHeight).toBeGreaterThanOrEqual(44);
+    expect(row.timeInputs).toHaveLength(2);
+    for (const input of row.timeInputs) {
+      expect(input.left).toBeGreaterThanOrEqual(row.rowLeft);
+      expect(input.right).toBeLessThanOrEqual(row.rowRight);
+      expect(input.width).toBeGreaterThanOrEqual(100);
+      expect(input.height).toBeGreaterThanOrEqual(44);
+    }
+  }
 });
 
 test("Repair Shop owner dashboard derives a useful Today overview from existing rendered state", async ({ page }) => {

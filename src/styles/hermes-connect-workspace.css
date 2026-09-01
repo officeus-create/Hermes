@@ -146,6 +146,11 @@ html.hc-experience .workspace-page .danger-btn {
 
 html.hc-experience .workspace-page .field,
 html.hc-experience .availability-page .open-toggle { color: #343b4b; }
+html.hc-experience .availability-page .open-toggle {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+}
 
 html.hc-experience .workspace-page .field input,
 html.hc-experience .workspace-page .field select,
@@ -159,6 +164,10 @@ html.hc-experience .customers-page .search-panel input {
   background: #fff;
   outline: none;
   color-scheme: light;
+}
+
+html.hc-experience .availability-page .time-wrap input {
+  min-height: 44px;
 }
 
 html.hc-experience .workspace-page .field input:focus,
@@ -263,6 +272,15 @@ html.hc-experience .customers-page input:focus-visible { outline: 2px solid #7c5
   html.hc-experience .customers-page { padding: 100px 15px 60px; }
   html.hc-experience .workspace-page .panel,
   html.hc-experience .availability-page .panel { padding: 19px; border-radius: 18px; }
+  html.hc-experience .availability-page .time-wrap {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  }
+  html.hc-experience .availability-page .time-wrap input {
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
