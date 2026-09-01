@@ -100,3 +100,34 @@ test("ordinary Hermes user does not discover internal AI navigation", async ({ p
   await expect(page.locator("[data-access-title]")).toContainText("внутреннего владельца");
   await expect(page.locator("[data-content]")).toBeHidden();
 });
+
+test("first authenticated Hermes account can activate AI only through one-time owner bootstrap", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let activated = false;
+  let bootstrapBody: any = null;
+  const activationCode = "owner-bootstrap-2026-09-01-very-long-secret";
+
+  await page.route("**/api/auth/me", route => route.fulfill(json(owner)));
+  await page.route("**/api/repair-shop/profile", route => route.fulfill(json({ success: true, shop: null })));
+  await page.route("**/api/internal-ai/status", route => {
+    if (!activated) return route.fulfill(json({ success: false, error: "hermes_internal_owner_required" }, 403));
+    return route.fulfill(json({ success: true, runtime: { online: false, repo_sha: null, runtime_version: null }, active_task: null, latest_task: null }));
+  });
+  await page.route("**/api/internal-ai/bootstrap-owner", route => {
+    bootstrapBody = route.request().postDataJSON();
+    activated = true;
+    return route.fulfill(json({ success: true, state: "activated", capability: "HERMES_INTERNAL_OWNER" }, 201));
+  });
+
+  await page.goto("/services/hermes-connect/internal/ai-connect/?lang=ru", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-hc-ai-nav]")).toBeHidden();
+  const activation = page.locator("[data-hc-ai-activation]");
+  await expect(activation).toBeVisible();
+  await expect(activation.getByText("Активировать AI в этом Hermes-аккаунте")).toBeVisible();
+  await activation.locator("[data-hc-ai-activation-token]").fill(activationCode);
+  await activation.getByRole("button", { name: "Активировать мой AI-кабинет" }).click();
+  await expect.poll(() => bootstrapBody).toEqual({ bootstrap_token: activationCode });
+  await expect(page.locator("[data-hc-ai-nav]")).toBeVisible();
+  await expect(page.locator("[data-content]")).toBeVisible();
+  await expect(page.locator("[data-hc-ai-activation]")).toBeHidden();
+});
