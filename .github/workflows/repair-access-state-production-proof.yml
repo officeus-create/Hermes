@@ -8,8 +8,9 @@ permissions:
   contents: read
   issues: write
 
-env:
-  PROOF_COMMAND: /verify-repair-access-state
+concurrency:
+  group: repair-access-state-production-proof
+  cancel-in-progress: false
 
 jobs:
   access-state-proof:
@@ -57,15 +58,16 @@ jobs:
           PROOF_CLASS: ${{ steps.proof.outputs.classification }}
         run: |
           set -euo pipefail
+          checked_sha="$(git rev-parse HEAD)"
           safe_class="${PROOF_CLASS:-not_run}"
           case "$safe_class" in
-            pass|github_release_evidence_unavailable|stale_main|production_parity_required|blocked_cloudflare_account_access|blocked_cloudflare_pages_read|production_db_binding_missing|synthetic_cleanup_unavailable|blocked_cloudflare_d1_write|synthetic_identity_insert_failed|synthetic_login_failed|synthetic_profile_unavailable|synthetic_shop_identity_unavailable|trialing_readback_failed|d1_access_transition_failed|owner_founding_readback_failed|d1_founding_readback_failed|synthetic_cleanup_failed|cleanup_readback_failed|stale_main_after_proof|not_run) ;;
+            pass|github_release_evidence_unavailable|stale_main|production_parity_required|blocked_cloudflare_account_access|blocked_cloudflare_pages_read|production_db_binding_missing|synthetic_cleanup_unavailable|blocked_cloudflare_d1_write|synthetic_identity_setup_failed|synthetic_login_failed|trialing_readback_failed|d1_access_transition_failed|owner_founding_readback_failed|d1_founding_readback_failed|synthetic_cleanup_failed|cleanup_readback_failed|stale_main_after_proof|not_run) ;;
             *) safe_class="unexpected_failure" ;;
           esac
 
           if [[ "$PROOF_OUTCOME" == "success" && "$safe_class" == "pass" ]]; then
             overall="PASS"
-            summary="A fixed synthetic Repair Shop owner was created through the authorized production D1 operator path, authenticated through the normal product login/session path, observed persisted trialing state, transitioned only its own synthetic access row to founding, read founding back through the owner API and D1, and was fully cleaned up. This is synthetic operational evidence only — not a customer, payment, invoice, activation, or revenue event."
+            summary="A fixed synthetic Repair Shop owner and shop were created through the authorized production D1 operator path, authenticated through the normal product login/session path, observed persisted trialing state, transitioned only the synthetic access row to founding, read founding back through the owner API and D1, and were fully cleaned up. This is synthetic operational evidence only — not a customer, payment, invoice, activation, or revenue event."
           else
             overall="FAIL"
             summary="Production repair_shop_access operator proof is incomplete. Do not claim paid/manual activation operationally proven from this run."
@@ -76,11 +78,11 @@ jobs:
 
           ${summary}
 
-          - checked repository revision: \`${GITHUB_SHA}\`
+          - checked repository revision: \`${checked_sha}\`
           - privacy-safe classification: \`${safe_class}\`
           - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
 
-          Guardrails: the workflow is command-gated to issue #960 and owner/member/collaborator authors, requires an already-successful exact-main controlled Pages deploy, discovers the existing production DB binding at runtime, writes only a fixed synthetic smoke identity/access row, and performs cleanup. No Cloudflare token, account ID, D1 database ID, password/hash/salt, session, shop ID, real customer data, invoice data, or payment data is published.
+          Guardrails: the workflow is command-gated to issue #960 and owner/member/collaborator authors, requires an already-successful exact-main controlled Pages deploy, discovers the existing production DB binding at runtime, writes only an isolated fixed synthetic smoke identity/shop/access row, and performs scoped D1 cleanup. No Cloudflare token, account ID, D1 database ID, password/hash/salt, session, shop ID, real customer data, invoice data, or payment data is published.
           EOF
 
           gh issue comment 960 --repo "$GITHUB_REPOSITORY" --body-file "${RUNNER_TEMP}/repair-access-state-proof.md"
