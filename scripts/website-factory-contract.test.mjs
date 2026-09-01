@@ -29,6 +29,8 @@ for (let step = 1; step <= 9; step += 1) assert.match(page, new RegExp(`data-ste
 assert.doesNotMatch(page, /MediaRecorder|navigator\.mediaDevices|getUserMedia/, "B1 must not create disposable voice capture without storage");
 
 assert.match(helper, /website_factory_drafts/, "Website Factory must persist drafts in one owner-scoped D1 model");
+assert.match(helper, /website_factory_handoffs/, "Website Factory must persist delivery state separately from the immutable brief");
+assert.match(helper, /notification_status IN \('pending','sent','failed'\)/, "handoff delivery state must be constrained");
 assert.match(helper, /specialist_id TEXT NOT NULL/, "draft ownership must bind to the shared specialist identity");
 assert.match(helper, /state IN \('draft','brief_ready','submitted'\)/, "draft lifecycle must be constrained");
 assert.match(helper, /url\.protocol !== "https:"/, "public sources must be HTTPS only");
@@ -62,6 +64,11 @@ assert.match(item, /WHERE id = \? AND specialist_id = \?/, "draft reads and writ
 assert.match(item, /draft_not_found/, "cross-owner draft IDs must fail closed as not found");
 assert.match(item, /submitted_draft_is_immutable/, "submitted handoff snapshots must be immutable");
 assert.match(item, /brief_not_ready/, "incomplete drafts must not submit");
+assert.match(item, /LEAD_EMAIL_SERVICE/, "submitted briefs must use the existing Hermes internal delivery service instead of a parallel inbox");
+assert.match(item, /website_factory_\$\{draft\.id\}/, "handoff delivery must use a stable brief-scoped request id");
+assert.match(item, /notification_status:\s*"pending"/, "delivery not configured must not erase or roll back the submitted brief");
+assert.match(item, /notification_status:\s*"failed"/, "delivery failures must be observable without losing the brief");
+assert.match(item, /retry:\s*true/, "reposting an already submitted brief must be able to retry a non-sent notification");
 assert.match(item, /build_started:\s*false/, "brief creation must never claim an automated website build started");
 assert.match(item, /No automated production build has been started/, "handoff copy must state the production boundary");
 
