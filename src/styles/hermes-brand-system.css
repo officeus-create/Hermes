@@ -15,6 +15,7 @@
 @import "./hermes-carrier-entry.css";
 @import "./hermes-marketing-socials-polish.css";
 @import "./hermes-connect-division-context.css";
+@import "./hermes-repair-private-mobile.css";
 
 :root {
   /* Core surfaces */
@@ -172,6 +173,19 @@
   background: rgba(255, 255, 255, 0.58);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* Long localized workspace-state labels must wrap instead of widening the card. */
+.hc-account-workspace {
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, auto);
+}
+
+.hc-account-workspace em {
+  min-width: 0;
+  max-width: 9.5rem;
+  line-height: 1.2;
+  text-align: right;
+  overflow-wrap: anywhere;
 }
 
 @media (prefers-reduced-transparency: reduce) {
