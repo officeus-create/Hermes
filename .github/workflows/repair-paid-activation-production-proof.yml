@@ -1,0 +1,186 @@
+name: Repair Shop paid activation production proof
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  checks: read
+  issues: write
+
+jobs:
+  proof:
+    if: >-
+      github.event.issue.number == 510 &&
+      github.event.comment.body == '/verify-repair-paid-activation-production' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    name: Verify paid activation receiver without creating revenue evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact current main revision
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Wait for exact Cloudflare Pages success
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=false
+          for attempt in $(seq 1 60); do
+            checks="$(curl -fsS \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/check-runs?per_page=100" || true)"
+            status="$(printf '%s' "$checks" | jq -r '[.check_runs[]? | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | .status // "missing"')"
+            conclusion="$(printf '%s' "$checks" | jq -r '[.check_runs[]? | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | .conclusion // "pending"')"
+            echo "CLOUDFLARE_PAGES_ATTEMPT_${attempt}: status=${status} conclusion=${conclusion}"
+            if [[ "$status" == completed && "$conclusion" == success ]]; then
+              ready=true
+              break
+            fi
+            if [[ "$status" == completed && "$conclusion" != success && "$conclusion" != pending ]]; then
+              echo "Cloudflare Pages failed for ${GITHUB_SHA}; refusing production proof." >&2
+              exit 1
+            fi
+            sleep 10
+          done
+          test "$ready" = true
+
+      - name: Require current paid-plan production HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://hermeslogisticsus.com/services/hermes-connect/repair-shops/plan/?paid-proof=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          html="$(curl --fail --silent --show-error --location \
+            --connect-timeout 10 --max-time 30 \
+            --header 'Cache-Control: no-cache' \
+            --header 'Pragma: no-cache' \
+            "$url")"
+          grep -Fq 'Request the $99/month Founding Shop Plan.' <<<"$html"
+          grep -Fq 'No card is collected on this website.' <<<"$html"
+          grep -Fq 'paid-plan-form' <<<"$html"
+
+      - name: Send one explicitly synthetic paid-activation request
+        id: first_send
+        shell: bash
+        env:
+          REQUEST_ID: repair_paid_smoke_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          payload="$(node <<'NODE'
+          const payload = {
+            request_id: process.env.REQUEST_ID,
+            submitted_at: new Date().toISOString(),
+            source_path: "/services/hermes-connect/repair-shops/plan/",
+            name: "Hermes Paid Activation Smoke",
+            email: "officeus@hermeslogisticsus.com",
+            interest: "Hermes Logistics",
+            consent: true,
+            message: [
+              "PAID ACTIVATION REQUEST — Hermes Connect Repair Shops Founding Shop Plan",
+              "SYNTHETIC PRODUCTION VERIFICATION — DO NOT INVOICE, CONTACT, OR PROCESS AS A CUSTOMER",
+              "Launch price: $99/month per repair shop location",
+              "Shop: Hermes Synthetic Paid Activation Smoke Shop",
+              "Hermes Connect shop identity: synthetic verification; no real customer linkage",
+              "City / state: Milwaukee, WI",
+              "Phone: +1 414 555 0196",
+              "Purchase reason / desired value: Verify the production paid-activation delivery contract only.",
+              "Requested action: synthetic verification only; do not issue an invoice.",
+              "Website payment status: no card charged on submission."
+            ].join("\n"),
+            direction_fields: {
+              direction: "Hermes Logistics",
+              fields: {
+                phone: "+1 414 555 0196",
+                preferred_lanes: "Milwaukee, WI",
+                service_needed: "Hermes Connect Repair Shops — Founding Shop Plan",
+                primary_goal: "Synthetic paid activation delivery verification — no sale",
+                equipment_type: []
+              }
+            }
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          )"
+
+          response="$(curl --fail-with-body --silent --show-error \
+            --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
+            --header 'Origin: https://hermeslogisticsus.com' \
+            --header 'Content-Type: application/json' \
+            --header "Idempotency-Key: ${REQUEST_ID}" \
+            --data "$payload")"
+
+          RESPONSE="$response" node <<'NODE'
+          const body = JSON.parse(process.env.RESPONSE);
+          if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate === true) {
+            throw new Error(`Unexpected first-send response: ${JSON.stringify(body)}`);
+          }
+          console.log("Synthetic Repair Shop paid-activation request accepted by the protected production receiver.");
+          NODE
+
+          printf '%s' "$payload" > "${RUNNER_TEMP}/repair-paid-payload.json"
+
+      - name: Verify paid-activation duplicate suppression
+        id: duplicate
+        shell: bash
+        env:
+          REQUEST_ID: repair_paid_smoke_${{ github.run_id }}_${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          response="$(curl --fail-with-body --silent --show-error \
+            --request POST 'https://hermeslogisticsus.com/api/logistics-lead' \
+            --header 'Origin: https://hermeslogisticsus.com' \
+            --header 'Content-Type: application/json' \
+            --header "Idempotency-Key: ${REQUEST_ID}" \
+            --data-binary "@${RUNNER_TEMP}/repair-paid-payload.json")"
+
+          RESPONSE="$response" node <<'NODE'
+          const body = JSON.parse(process.env.RESPONSE);
+          if (body.success !== true || body.request_id !== process.env.REQUEST_ID || body.duplicate !== true) {
+            throw new Error(`Unexpected duplicate response: ${JSON.stringify(body)}`);
+          }
+          console.log("Duplicate suppression confirmed; no second paid-activation delivery was created.");
+          NODE
+
+      - name: Publish sanitized evidence to First-5 ledger
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          if [[ "$JOB_STATUS" == success ]]; then
+            verdict='PASS'
+            summary='Current paid-plan HTML was present; one explicitly synthetic Repair Shop paid-activation request was accepted by the protected receiver; the identical retry was deduplicated.'
+          else
+            verdict='FAIL'
+            summary='The bounded paid-activation production proof did not complete; do not infer lead delivery or paid readiness.'
+          fi
+
+          cat > "${RUNNER_TEMP}/repair-paid-proof.md" <<EOF
+          ## Repair Shop paid activation production proof — ${verdict}
+
+          ${summary}
+
+          - checked main commit: \`${GITHUB_SHA}\`
+          - workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          - job status: **${JOB_STATUS}**
+
+          This is approved synthetic engineering evidence only. It is **not** a real lead, invoice, payment, customer, conversion, or revenue event. The test message explicitly instructs the receiving team not to contact or invoice anyone.
+          EOF
+
+          gh issue comment 510 --repo "$GITHUB_REPOSITORY" --body-file "${RUNNER_TEMP}/repair-paid-proof.md"
+
+      - name: Enforce proof result
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          test "$JOB_STATUS" = success
