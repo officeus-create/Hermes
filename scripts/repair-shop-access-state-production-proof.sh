@@ -10,6 +10,7 @@ TMP="${RUNNER_TEMP:-/tmp}"
 TARGET_SHA="$(git rev-parse HEAD)"
 SHOP_ID=""
 DB_ID=""
+SPECIALIST_ID=""
 
 emit_classification() {
   local value="$1"
@@ -83,11 +84,51 @@ if [[ "$PRE_CLEAN" != "200" ]] || [[ "$(jq -r '.success // false' "${TMP}/access
   fail_classified "synthetic_cleanup_unavailable"
 fi
 
-REGISTER="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password,name:"Hermes Access Smoke Owner",role:"Shop Owner",location:"United States",bio:"Temporary production access-state verification account."}')"
-REGISTER_HTTP="$(curl -sS -o "${TMP}/access-register.json" -w '%{http_code}' -c "$COOKIE" \
-  -X POST "$BASE/api/auth/register" -H 'Content-Type: application/json' --data-binary "$REGISTER")"
-if [[ "$REGISTER_HTTP" != "201" ]]; then
-  fail_classified "synthetic_registration_unavailable"
+# Create only the fixed synthetic smoke identity through authenticated D1.
+# This intentionally avoids the public Shop Owner registration endpoint so the
+# proof remains valid after the September 15 free-registration deadline and does
+# not introduce any registration-policy bypass for real users.
+SPECIALIST_ID="specialist-access-smoke-$(node -e 'console.log(crypto.randomUUID())')"
+echo "::add-mask::$SPECIALIST_ID"
+CREDS="$(PASSWORD="$PASSWORD" node --input-type=module - <<'NODE'
+import { hashPassword } from './src/legacy-prototype/auth.mjs';
+const { hash, salt } = await hashPassword(process.env.PASSWORD || '');
+process.stdout.write(JSON.stringify({ hash, salt }));
+NODE
+)"
+PASSWORD_HASH="$(jq -r '.hash' <<<"$CREDS")"
+PASSWORD_SALT="$(jq -r '.salt' <<<"$CREDS")"
+CREATED_AT="$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+
+echo "::add-mask::$PASSWORD_HASH"
+echo "::add-mask::$PASSWORD_SALT"
+
+SPECIALIST_BODY="$(jq -nc \
+  --arg id "$SPECIALIST_ID" \
+  --arg email "$EMAIL" \
+  --arg hash "$PASSWORD_HASH" \
+  --arg salt "$PASSWORD_SALT" \
+  --arg created "$CREATED_AT" \
+  '{sql:"INSERT INTO specialists (id,email,password_hash,password_salt,name,role,location,bio,created_at) VALUES (?,?,?,?,?,?,?,?,?);",params:[$id,$email,$hash,$salt,"Hermes Access Smoke Owner","Shop Owner","United States","Temporary production access-state verification account.",$created]}')"
+SPECIALIST_HTTP="$(curl -sS -o "${TMP}/access-specialist-insert.json" -w '%{http_code}' \
+  -X POST "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+  -H "Authorization: Bearer ${CLOUDFLARE_D1_API_TOKEN}" \
+  -H 'Content-Type: application/json' \
+  --data-binary "$SPECIALIST_BODY")"
+if [[ "$SPECIALIST_HTTP" == "401" || "$SPECIALIST_HTTP" == "403" ]]; then
+  fail_classified "blocked_cloudflare_d1_write"
+fi
+if [[ "$SPECIALIST_HTTP" != "200" ]] \
+  || [[ "$(jq -r '.success // false' "${TMP}/access-specialist-insert.json")" != "true" ]] \
+  || [[ "$(jq -r '.result[0].success // false' "${TMP}/access-specialist-insert.json")" != "true" ]]; then
+  fail_classified "synthetic_identity_insert_failed"
+fi
+
+LOGIN="$(jq -nc --arg email "$EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password}')"
+LOGIN_HTTP="$(curl -sS -o "${TMP}/access-login.json" -w '%{http_code}' -c "$COOKIE" \
+  -X POST "$BASE/api/auth/login" -H 'Content-Type: application/json' --data-binary "$LOGIN")"
+if [[ "$LOGIN_HTTP" != "200" ]] || [[ "$(jq -r '.success // false' "${TMP}/access-login.json")" != "true" ]]; then
+  fail_classified "synthetic_login_failed"
 fi
 
 PROFILE='{"name":"Hermes Access Smoke Shop","phone":"+1 414 555 0195","address_line1":"105 Access Test Way","city":"Milwaukee","state":"WI","postal_code":"53202","timezone":"America/Chicago"}'
@@ -165,6 +206,7 @@ COUNT_HTTP="$(curl -sS -o "${TMP}/access-d1-clean-read.json" -w '%{http_code}' \
   -H 'Content-Type: application/json' \
   --data-binary "$COUNT_BODY")"
 if [[ "$COUNT_HTTP" != "200" ]] \
+  || [[ "$(jq -r '.success // false' "${TMP}/access-d1-clean-read.json")" != "true" ]] \
   || [[ "$(jq -r '.result[0].results[0].count // -1' "${TMP}/access-d1-clean-read.json")" != "0" ]]; then
   fail_classified "cleanup_readback_failed"
 fi
