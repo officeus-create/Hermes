@@ -1,0 +1,52 @@
+---
+import { ArrowRight, FolderKanban, ShieldCheck, Sparkles } from "@lucide/astro";
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../../components/SiteFooter.astro";
+import HermesConnectExperience from "../../../../../../components/HermesConnectExperience.astro";
+import HermesConnectAccountSwitcher from "../../../../../../components/HermesConnectAccountSwitcher.astro";
+import HermesConnectInternalAiNav from "../../../../../../components/HermesConnectInternalAiNav.astro";
+const isRu = Astro.url.searchParams.get("lang") === "ru";
+const suffix = isRu ? "?lang=ru" : "";
+---
+<BaseLayout title={isRu ? "Проекты | AI Connect | Hermes Connect" : "Projects | AI Connect | Hermes Connect"} description="Private Hermes Connect internal AI projects." robots="noindex,nofollow">
+  <SiteHeader activePath="/paths/technology/" />
+  <HermesConnectExperience />
+  <HermesConnectInternalAiNav />
+  <main class="ai-projects-page">
+    <div class="shell">
+      <header class="hero">
+        <div><p class="kicker"><Sparkles size={15} /> AI Connect · {isRu ? "проекты" : "projects"}</p><h1>{isRu ? "Проекты" : "Projects"}</h1><p>{isRu ? "Здесь отображаются только реальные внутренние проекты Hermes с подтверждённым runtime-состоянием — без демо и выдуманных карточек." : "Only real Hermes internal projects with verified runtime state appear here — no demos or placeholder projects."}</p></div>
+        <span class="badge"><ShieldCheck size={16} /> {isRu ? "Только для владельца" : "Internal owner only"}</span>
+      </header>
+      <HermesConnectAccountSwitcher current="ai" />
+      <section class="access" data-access role="status"><strong>{isRu ? "Проверяем доступ…" : "Checking internal access…"}</strong><p>{isRu ? "Проекты откроются после серверной проверки HERMES_INTERNAL_OWNER." : "Projects open after the server verifies HERMES_INTERNAL_OWNER."}</p></section>
+      <section class="content hidden" data-content>
+        <div class="summary"><strong>{isRu ? "1 текущий проект" : "1 current project"}</strong><span>{isRu ? "Без демонстрационных проектов" : "No demo projects"}</span></div>
+        <article class="project-card">
+          <div class="top"><div class="icon"><FolderKanban size={22}/></div><span class="state" data-project-state>{isRu ? "Готов" : "Ready"}</span></div>
+          <div><p class="kicker">{isRu ? "Текущее направление" : "Current workstream"}</p><h2>Hermes Connect · Internal AI Pilot</h2><p>{isRu ? "Довести полный цикл: владелец → задача → outbound runner → Hermes Codex → очищенный результат → evidence/PR → owner approval при необходимости." : "Finish the full owner → task → outbound runner → Hermes Codex → sanitized result → evidence/PR → owner approval loop."}</p></div>
+          <dl><div><dt>{isRu ? "Агент" : "Agent"}</dt><dd>Software Engineer</dd></div><div><dt>{isRu ? "Задача" : "Task"}</dt><dd data-task-state>—</dd></div><div><dt>Runner</dt><dd data-runner-state>—</dd></div></dl>
+          <a class="action" href={`/services/hermes-connect/internal/ai-connect/projects/hermes-connect-internal-ai-pilot/${suffix}`}>{isRu ? "Открыть проект" : "Open project"}<ArrowRight size={16}/></a>
+        </article>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+<script>
+  const ru = new URLSearchParams(location.search).get("lang") === "ru";
+  const q = (s:string) => document.querySelector<HTMLElement>(s);
+  const label = (status?:string) => ({queued:ru?"В очереди":"Queued",running:ru?"В работе":"Running",needs_approval:ru?"Нужно подтверждение":"Needs approval",completed:ru?"Завершено":"Completed",failed:ru?"Ошибка":"Failed",cancelled:ru?"Отменено":"Cancelled"} as Record<string,string>)[status||""] || (ru?"Нет":"None");
+  async function refresh(){
+    const response=await fetch("/api/internal-ai/status",{credentials:"same-origin",headers:{Accept:"application/json"}}); let data:any={};try{data=await response.json()}catch{}
+    if(!response.ok||!data.success){const access=q("[data-access]");if(access){access.querySelector("strong")!.textContent=response.status===401?(ru?"Нужно войти":"Sign in required"):(ru?"Нужен доступ внутреннего владельца":"Internal owner capability required");}return;}
+    q("[data-access]")?.classList.add("hidden");q("[data-content]")?.classList.remove("hidden");const task=data.active_task||data.latest_task;
+    if(q("[data-task-state]")) q("[data-task-state]")!.textContent=label(task?.status);if(q("[data-runner-state]")) q("[data-runner-state]")!.textContent=data.runtime?.online?(ru?"Онлайн":"Online"):(ru?"Не подключён":"Not connected");
+    if(q("[data-project-state]")) q("[data-project-state]")!.textContent=task?.status==="running"?(ru?"В работе":"In progress"):task?.status==="needs_approval"?(ru?"Нужно подтверждение":"Needs approval"):(ru?"Готов":"Ready");
+  }
+  void refresh();const timer=setInterval(()=>void refresh(),8000);addEventListener("pagehide",()=>clearInterval(timer),{once:true});
+</script>
+<style>
+  .ai-projects-page{min-height:76vh;background:radial-gradient(circle at 8% 3%,rgba(255,122,0,.08),transparent 26rem),#f7f6f3;color:#11161f}.shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:2.2rem 0 5rem}.hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.2rem}.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);margin:.3rem 0 .65rem}.hero p{max-width:760px;color:#657083;line-height:1.6}.kicker{display:flex;align-items:center;gap:.4rem;margin:0;color:#d76500;font-size:.72rem;font-weight:850;letter-spacing:.09em;text-transform:uppercase}.badge,.state{display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(255,122,0,.24);border-radius:999px;padding:.46rem .66rem;background:rgba(255,122,0,.08);color:#934600;font-size:.75rem;font-weight:800}.access,.project-card{border:1px solid rgba(17,22,31,.1);border-radius:1.2rem;background:rgba(255,255,255,.9);box-shadow:0 18px 40px rgba(24,32,48,.08)}.access{padding:1.1rem}.access p{margin:.3rem 0 0;color:#657083}.hidden{display:none!important}.content{display:grid;gap:1rem}.summary{display:flex;justify-content:space-between;gap:1rem;color:#747f91;font-size:.8rem}.summary strong{color:#11161f}.project-card{padding:1.3rem;display:grid;gap:1rem}.top{display:flex;justify-content:space-between;align-items:center}.icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:rgba(255,122,0,.08);color:#d76500}.project-card h2{margin:.25rem 0 .55rem}.project-card p{color:#657083;line-height:1.55}.project-card dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin:0}.project-card dl div{padding:.72rem;border-radius:.75rem;background:#f7f6f3}.project-card dt{color:#7a8595;font-size:.7rem}.project-card dd{margin:.18rem 0 0}.action{justify-self:start;display:inline-flex;align-items:center;gap:.45rem;min-height:44px;padding:.68rem .9rem;border-radius:.72rem;background:#11161f;color:#fff;text-decoration:none;font-weight:850}@media(max-width:700px){.hero{flex-direction:column}.badge{white-space:normal}.summary{flex-direction:column;gap:.2rem}.project-card dl{grid-template-columns:1fr}.action{width:100%;box-sizing:border-box;justify-content:center}}
+</style>
