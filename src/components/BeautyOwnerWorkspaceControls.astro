@@ -1,0 +1,323 @@
+<div data-beauty-b11-controls hidden></div>
+
+<script>
+  (() => {
+    if (!window.location.pathname.startsWith("/services/hermes-connect/beauty/workspace")) return;
+
+    type TeamMember = {
+      id: string;
+      display_name: string;
+      role_label: string;
+      public_title?: string | null;
+      is_public: boolean;
+      is_active: boolean;
+    };
+    type Service = { id: string; name: string; duration_minutes: number };
+
+    const locale = new URLSearchParams(window.location.search).get("lang") === "ru" ? "ru" : "en";
+    const copy = {
+      en: {
+        edit: "Edit",
+        delete: "Delete",
+        editMember: "Edit team member",
+        name: "Name",
+        role: "Internal role",
+        title: "Public title",
+        public: "Show publicly",
+        active: "Active team member",
+        save: "Save changes",
+        cancel: "Cancel",
+        inactive: "Inactive",
+        private: "Private",
+        publicState: "Public",
+        memberSaved: "Team member updated.",
+        memberFailed: "Could not update the team member.",
+        deleteService: "Delete service",
+        deleteConfirm: "Delete this service? This cannot be undone.",
+        serviceDeleted: "Service deleted.",
+        serviceDeleteFailed: "Could not delete the service.",
+        serviceHasBookings: "This service cannot be deleted because existing bookings use it.",
+      },
+      ru: {
+        edit: "Изменить",
+        delete: "Удалить",
+        editMember: "Изменить сотрудника",
+        name: "Имя",
+        role: "Внутренняя роль",
+        title: "Публичная должность",
+        public: "Показывать публично",
+        active: "Активный сотрудник",
+        save: "Сохранить изменения",
+        cancel: "Отмена",
+        inactive: "Неактивен",
+        private: "Приватно",
+        publicState: "Публично",
+        memberSaved: "Данные сотрудника обновлены.",
+        memberFailed: "Не удалось обновить сотрудника.",
+        deleteService: "Удалить услугу",
+        deleteConfirm: "Удалить эту услугу? Действие нельзя отменить.",
+        serviceDeleted: "Услуга удалена.",
+        serviceDeleteFailed: "Не удалось удалить услугу.",
+        serviceHasBookings: "Эту услугу нельзя удалить: она уже используется в существующих записях.",
+      },
+    } as const;
+    const t = copy[locale];
+
+    const teamList = document.querySelector<HTMLElement>("[data-team-list]");
+    const serviceList = document.querySelector<HTMLElement>("[data-services-list]");
+    const alert = document.querySelector<HTMLElement>("[data-beauty-alert]");
+    const teamCount = document.querySelector<HTMLElement>("[data-team-count]");
+    const servicesCount = document.querySelector<HTMLElement>("[data-services-count]");
+    if (!teamList || !serviceList) return;
+
+    let members: TeamMember[] = [];
+    let services: Service[] = [];
+    let serviceContextId = "";
+    let teamSyncScheduled = false;
+    let serviceSyncScheduled = false;
+
+    const showAlert = (message: string, kind: "success" | "error" = "success") => {
+      if (!alert) return;
+      alert.textContent = message;
+      alert.className = `beauty-b1-alert show ${kind}`;
+      alert.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    };
+
+    const requestJson = async (url: string, init?: RequestInit) => {
+      const response = await fetch(url, { credentials: "same-origin", ...init });
+      const data = await response.json().catch(() => ({}));
+      return { response, data };
+    };
+
+    const ensureServiceContext = async () => {
+      if (serviceContextId) return serviceContextId;
+      const { response, data } = await requestJson("/api/beauty-salon/profile");
+      if (!response.ok || !data?.success) return "";
+      serviceContextId = String(data.service_context?.id || "");
+      return serviceContextId;
+    };
+
+    const memberStateText = (member: TeamMember) => {
+      if (!member.is_active) return t.inactive;
+      return member.is_public ? t.publicState : t.private;
+    };
+
+    const updateMemberRow = (row: HTMLElement, member: TeamMember) => {
+      row.dataset.beautyMemberId = member.id;
+      row.classList.toggle("beauty-b11-inactive", !member.is_active);
+      const body = row.querySelector<HTMLElement>(":scope > div:first-child");
+      const name = body?.querySelector<HTMLElement>("strong");
+      const detail = body?.querySelector<HTMLElement>("small");
+      if (name) name.textContent = member.display_name;
+      if (detail) detail.textContent = [member.role_label, member.public_title].filter(Boolean).join(" · ");
+      const state = Array.from(row.children).find((node) => node instanceof HTMLSpanElement) as HTMLSpanElement | undefined;
+      if (state) state.textContent = memberStateText(member);
+
+      let actions = row.querySelector<HTMLElement>("[data-beauty-member-actions]");
+      if (!actions) {
+        actions = document.createElement("div");
+        actions.className = "beauty-b11-row-actions";
+        actions.dataset.beautyMemberActions = "true";
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "beauty-b11-action";
+        edit.dataset.beautyEditMember = "true";
+        edit.textContent = t.edit;
+        actions.append(edit);
+        row.append(actions);
+      }
+      const edit = actions.querySelector<HTMLButtonElement>("[data-beauty-edit-member]");
+      if (edit) edit.onclick = () => openMemberDialog(member, row);
+    };
+
+    const syncTeamRows = async () => {
+      try {
+        const { response, data } = await requestJson("/api/beauty-salon/team");
+        if (!response.ok || !data?.success) return;
+        members = Array.isArray(data.team) ? data.team : [];
+        const rows = Array.from(teamList.querySelectorAll<HTMLElement>(":scope > .beauty-b1-row"));
+        if (rows.length !== members.length) return;
+        rows.forEach((row, index) => updateMemberRow(row, members[index]));
+        if (teamCount) teamCount.textContent = String(members.filter((item) => item.is_active).length);
+      } catch {
+        // Existing B1 loader remains the source of primary load-error messaging.
+      }
+    };
+
+    const updateServiceRow = (row: HTMLElement, service: Service) => {
+      row.dataset.beautyServiceId = service.id;
+      let actions = row.querySelector<HTMLElement>("[data-beauty-service-actions]");
+      if (!actions) {
+        actions = document.createElement("div");
+        actions.className = "beauty-b11-row-actions";
+        actions.dataset.beautyServiceActions = "true";
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "beauty-b11-action danger";
+        remove.dataset.beautyDeleteService = "true";
+        remove.textContent = t.delete;
+        remove.setAttribute("aria-label", `${t.deleteService}: ${service.name}`);
+        actions.append(remove);
+        row.append(actions);
+      }
+      const remove = actions.querySelector<HTMLButtonElement>("[data-beauty-delete-service]");
+      if (remove) remove.onclick = () => deleteService(service, row, remove);
+    };
+
+    const syncServiceRows = async () => {
+      try {
+        const contextId = await ensureServiceContext();
+        if (!contextId) return;
+        const { response, data } = await requestJson(`/api/services?context=${encodeURIComponent(contextId)}`);
+        if (!response.ok || !data?.success) return;
+        services = Array.isArray(data.services) ? data.services : [];
+        const rows = Array.from(serviceList.querySelectorAll<HTMLElement>(":scope > .beauty-b1-row"));
+        if (rows.length !== services.length) return;
+        rows.forEach((row, index) => updateServiceRow(row, services[index]));
+        if (servicesCount) servicesCount.textContent = String(services.length);
+      } catch {
+        // Existing B1 loader remains the source of primary load-error messaging.
+      }
+    };
+
+    const scheduleTeamSync = () => {
+      if (teamSyncScheduled) return;
+      teamSyncScheduled = true;
+      window.requestAnimationFrame(() => {
+        teamSyncScheduled = false;
+        void syncTeamRows();
+      });
+    };
+    const scheduleServiceSync = () => {
+      if (serviceSyncScheduled) return;
+      serviceSyncScheduled = true;
+      window.requestAnimationFrame(() => {
+        serviceSyncScheduled = false;
+        void syncServiceRows();
+      });
+    };
+
+    const teamObserver = new MutationObserver(scheduleTeamSync);
+    const serviceObserver = new MutationObserver(scheduleServiceSync);
+    teamObserver.observe(teamList, { childList: true });
+    serviceObserver.observe(serviceList, { childList: true });
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "beauty-b11-dialog";
+    dialog.dataset.beautyMemberDialog = "true";
+    dialog.innerHTML = `
+      <form method="dialog" data-beauty-member-edit-form>
+        <div class="beauty-b11-dialog-head"><strong>${t.editMember}</strong><button type="button" data-beauty-dialog-close aria-label="${t.cancel}">×</button></div>
+        <label><span>${t.name}</span><input name="display_name" maxlength="100" required /></label>
+        <label><span>${t.role}</span><input name="role_label" maxlength="80" required /></label>
+        <label><span>${t.title}</span><input name="public_title" maxlength="100" /></label>
+        <label class="beauty-b11-check"><input name="is_public" type="checkbox" /><span>${t.public}</span></label>
+        <label class="beauty-b11-check"><input name="is_active" type="checkbox" /><span>${t.active}</span></label>
+        <div class="beauty-b11-dialog-actions"><button type="button" class="beauty-b11-action" data-beauty-dialog-cancel>${t.cancel}</button><button type="submit" class="beauty-b11-action primary">${t.save}</button></div>
+      </form>`;
+    document.body.append(dialog);
+
+    const editForm = dialog.querySelector<HTMLFormElement>("[data-beauty-member-edit-form]");
+    const closeDialog = () => dialog.close();
+    dialog.querySelector<HTMLButtonElement>("[data-beauty-dialog-close]")?.addEventListener("click", closeDialog);
+    dialog.querySelector<HTMLButtonElement>("[data-beauty-dialog-cancel]")?.addEventListener("click", closeDialog);
+
+    let editingMember: TeamMember | null = null;
+    let editingRow: HTMLElement | null = null;
+    function openMemberDialog(member: TeamMember, row: HTMLElement) {
+      editingMember = member;
+      editingRow = row;
+      if (!editForm) return;
+      (editForm.elements.namedItem("display_name") as HTMLInputElement).value = member.display_name;
+      (editForm.elements.namedItem("role_label") as HTMLInputElement).value = member.role_label;
+      (editForm.elements.namedItem("public_title") as HTMLInputElement).value = member.public_title || "";
+      (editForm.elements.namedItem("is_public") as HTMLInputElement).checked = member.is_public;
+      (editForm.elements.namedItem("is_active") as HTMLInputElement).checked = member.is_active;
+      dialog.showModal();
+      (editForm.elements.namedItem("display_name") as HTMLInputElement).focus();
+    }
+
+    editForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!editingMember || !editingRow) return;
+      const submit = editForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+      if (submit) submit.disabled = true;
+      try {
+        const values = new FormData(editForm);
+        const payload = {
+          display_name: values.get("display_name"),
+          role_label: values.get("role_label"),
+          public_title: values.get("public_title"),
+          is_public: values.get("is_public") === "on",
+          is_active: values.get("is_active") === "on",
+        };
+        const { response, data } = await requestJson(`/api/beauty-salon/team/${encodeURIComponent(editingMember.id)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok || !data?.success || !data.member) throw new Error(String(data?.error || "member_update_failed"));
+        const updated = data.member as TeamMember;
+        const index = members.findIndex((item) => item.id === updated.id);
+        if (index >= 0) members[index] = updated;
+        updateMemberRow(editingRow, updated);
+        if (teamCount) teamCount.textContent = String(members.filter((item) => item.is_active).length);
+        dialog.close();
+        showAlert(t.memberSaved);
+      } catch {
+        showAlert(t.memberFailed, "error");
+      } finally {
+        if (submit) submit.disabled = false;
+      }
+    });
+
+    async function deleteService(service: Service, row: HTMLElement, button: HTMLButtonElement) {
+      if (!window.confirm(t.deleteConfirm)) return;
+      const contextId = await ensureServiceContext();
+      if (!contextId) return showAlert(t.serviceDeleteFailed, "error");
+      button.disabled = true;
+      try {
+        const { response, data } = await requestJson(`/api/services/${encodeURIComponent(service.id)}?context=${encodeURIComponent(contextId)}`, { method: "DELETE" });
+        if (response.status === 409 && data?.error === "service_has_bookings") {
+          showAlert(t.serviceHasBookings, "error");
+          return;
+        }
+        if (!response.ok || !data?.success) throw new Error(String(data?.error || "service_delete_failed"));
+        services = services.filter((item) => item.id !== service.id);
+        row.remove();
+        if (servicesCount) servicesCount.textContent = String(services.length);
+        const empty = document.querySelector<HTMLElement>("[data-services-empty]");
+        if (empty && services.length === 0) {
+          empty.textContent = locale === "ru" ? "Услуг пока нет." : "No services yet.";
+          empty.hidden = false;
+        }
+        showAlert(t.serviceDeleted);
+      } catch {
+        showAlert(t.serviceDeleteFailed, "error");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    scheduleTeamSync();
+    scheduleServiceSync();
+  })();
+</script>
+
+<style is:global>
+  .beauty-b11-row-actions{display:flex;align-items:center;gap:.4rem;margin-left:auto}
+  .beauty-b11-action{min-height:34px;padding:.42rem .65rem;border:1px solid #d8dde5;border-radius:.7rem;background:#fff;color:#252b35;font:700 .7rem/1 var(--font-sans);cursor:pointer}
+  .beauty-b11-action:hover,.beauty-b11-action:focus-visible{border-color:#9aa4b2;background:#f7f8fa}
+  .beauty-b11-action.primary{border-color:var(--hermes-obsidian);background:var(--hermes-obsidian);color:#fff}
+  .beauty-b11-action.danger{color:#9f3042;border-color:rgba(159,48,66,.2);background:rgba(216,75,95,.045)}
+  .beauty-b11-action:disabled{cursor:not-allowed;opacity:.5}
+  .beauty-b1-row.beauty-b11-inactive{opacity:.62;background:#f7f8fa}
+  .beauty-b11-dialog{width:min(520px,calc(100% - 1rem));padding:0;border:1px solid #dfe3e9;border-radius:1.1rem;background:#fff;color:var(--hermes-ink);box-shadow:0 28px 80px rgba(11,13,18,.22)}
+  .beauty-b11-dialog::backdrop{background:rgba(11,13,18,.36);backdrop-filter:blur(4px)}
+  .beauty-b11-dialog form{display:grid;gap:.8rem;padding:1rem}
+  .beauty-b11-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:1rem}.beauty-b11-dialog-head strong{font-size:1rem}.beauty-b11-dialog-head button{width:34px;height:34px;border:0;border-radius:.65rem;background:#f1f3f6;font-size:1.2rem;cursor:pointer}
+  .beauty-b11-dialog label{display:grid;gap:.35rem}.beauty-b11-dialog label>span{color:#707786;font-size:.72rem;font-weight:750}.beauty-b11-dialog input[type="text"],.beauty-b11-dialog input:not([type]){min-height:42px;padding:0 .72rem;border:1px solid #dce1e8;border-radius:.72rem;font:inherit}
+  .beauty-b11-check{grid-template-columns:auto 1fr!important;align-items:center!important}.beauty-b11-check input{width:17px;height:17px}
+  .beauty-b11-dialog-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.25rem}
+  @media(max-width:620px){.beauty-b1-row{align-items:flex-start;flex-wrap:wrap}.beauty-b11-row-actions{width:100%;margin-left:0}.beauty-b11-action{min-height:40px}.beauty-b11-dialog-actions{display:grid;grid-template-columns:1fr 1fr}.beauty-b11-dialog-actions .beauty-b11-action{width:100%}}
+</style>
