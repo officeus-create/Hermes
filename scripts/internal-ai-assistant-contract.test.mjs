@@ -12,6 +12,7 @@ const claim = read("functions/api/internal-ai/runner/claim.ts");
 const complete = read("functions/api/internal-ai/runner/complete.ts");
 const event = read("functions/api/internal-ai/runner/event.ts");
 const runner = read("scripts/ai/hermes-internal-ai-runner.py");
+const codexHermes = read("scripts/ai/codex-hermes");
 assert.match(page, /robots="noindex,nofollow"/, "internal AI page must stay noindex");
 assert.match(page, /<HermesConnectExperience\s*\/>/, "internal AI page must reuse canonical Hermes Connect experience");
 assert.match(page, /AI Assistant/, "embedded slice must identify itself as AI Assistant");
@@ -44,4 +45,6 @@ assert.match(runner, /status="needs_approval"/, "runner must surface a documente
 assert.match(runner, /CODEX_AUTONOMOUS_ARGS = \("--sandbox", "workspace-write", "--approve-for-me"\)/, "runner must use official safe autonomous approval inside workspace-write");
 assert.match(runner, /\[str\(CODEX_HERMES\), "exec", \*CODEX_AUTONOMOUS_ARGS, guarded_prompt\]/, "runner must pass safe autonomous options to codex exec before the task prompt");
 assert.doesNotMatch(runner, /dangerously-bypass-approvals-and-sandbox|--yolo/, "runner must never bypass Codex sandbox or approvals entirely");
+assert.match(codexHermes, /unset HERMES_INTERNAL_AI_RUNNER_TOKEN/, "runner transport token must be scrubbed before FCC/Codex starts");
+assert.match(codexHermes, /unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN/, "one-time owner bootstrap token must never be inherited by FCC/Codex");
 console.log("Hermes internal AI Assistant contract: PASS");
