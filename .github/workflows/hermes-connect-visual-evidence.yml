@@ -13,6 +13,7 @@ on:
       - 'scripts/route-screenshot-contract.mjs'
       - 'scripts/route-screenshot-contract.test.mjs'
       - 'scripts/validate-route-screenshot-layout.mjs'
+      - 'scripts/hermes-connect-mark-contract.test.mjs'
       - '.github/workflows/hermes-connect-visual-evidence.yml'
 
 permissions:
@@ -35,6 +36,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify Option 02 mark geometry
+        run: node scripts/hermes-connect-mark-contract.test.mjs
 
       - name: Build website
         run: npm run build
