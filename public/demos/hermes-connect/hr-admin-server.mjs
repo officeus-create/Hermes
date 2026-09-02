@@ -5,6 +5,22 @@ const REVIEW_OUTCOMES = Object.freeze({
   SUPERVISED_TEST: 'Authorize supervised test'
 });
 
+const SIGNAL_EVIDENCE_QUESTIONS = Object.freeze({
+  clarity: ['why_now','future_goal','understanding'],
+  evidence: ['evidence','followup_concrete'],
+  learning: ['evidence','understanding','followup_concrete'],
+  discovery: ['application','followup_discovery'],
+  application: ['application','followup_discovery']
+});
+
+const SIGNAL_RATIONALE = Object.freeze({
+  clarity: 'Current advisory score is linked to written context, future-goal and role-understanding evidence.',
+  evidence: 'Current advisory score is linked to concrete action/result examples supplied by the candidate.',
+  learning: 'Current advisory score is linked to written reflection, feedback and own-words understanding evidence.',
+  discovery: 'Current advisory score is linked to discovery questions and whether the candidate explores the problem before pitching.',
+  application: 'Current advisory score is linked to the written work scenario and the next actions/questions proposed.'
+});
+
 const queueEl = document.querySelector('[data-review-queue]');
 const detailEl = document.querySelector('[data-review-detail]');
 const sourceTable = document.querySelector('[data-source-table]');
@@ -108,18 +124,54 @@ function renderSources() {
   }
 }
 
-function signalBlock(signals={}) {
+function signalEvidenceDetails(key, answers=[]) {
+  const questionIds = SIGNAL_EVIDENCE_QUESTIONS[key] || [];
+  const linked = answers.filter(answer => questionIds.includes(answer.question_id));
+  const evidenceIds = linked.map(answer=>answer.evidence_id).filter(Boolean);
+  const wordCount = linked.reduce((total,answer)=>total+String(answer.answer||'').trim().split(/\s+/).filter(Boolean).length,0);
+  let confidence = 'LOW';
+  if (linked.length >= 2 && wordCount >= 100) confidence = 'HIGH';
+  else if (linked.length >= 1 && wordCount >= 45) confidence = 'MEDIUM';
+
+  let missingEvidence = 'More concrete job-relevant written evidence would improve this signal.';
+  if ((key === 'discovery' || key === 'application') && linked.length) {
+    missingEvidence = 'No supervised live roleplay/call evidence is included here; written scenario evidence should not be treated as live-work proof.';
+  } else if (linked.length) {
+    missingEvidence = 'This is candidate-provided written evidence and is not independently verified in this interview.';
+  }
+
+  return {
+    confidence,
+    evidenceIds,
+    rationale: SIGNAL_RATIONALE[key] || 'Advisory signal derived from job-relevant written evidence.',
+    missingEvidence
+  };
+}
+
+function signalBlock(signals={}, answers=[]) {
   const wrap=el('div','hr-signal-list');
   if (!signals || !Object.keys(signals).length) {
     wrap.append(el('div','hr-queue-empty','No advisory practice signals were persisted. Review raw evidence instead.'));
     return wrap;
   }
+  const note=el('div','hr-signal-confidence-note','Evidence confidence below means evidence coverage, not probability of job success and not an employment recommendation.');
+  wrap.append(note);
   for (const [key,value] of Object.entries(signals)) {
+    const item=el('div','hr-signal-item');
     const row=el('div','hr-signal-row');
     row.append(el('b','',key));
     const meter=el('div','hr-signal-meter');
     const fill=el('i'); fill.style.width=`${Math.max(0,Math.min(100,Number(value)||0))}%`; meter.append(fill);
-    row.append(meter,el('span','',String(value))); wrap.append(row);
+    row.append(meter,el('span','',String(value)));
+
+    const detail=signalEvidenceDetails(key,answers);
+    const lineage=el('div','hr-signal-detail');
+    lineage.append(el('small','hr-signal-confidence',`Evidence confidence: ${detail.confidence}`));
+    lineage.append(el('small','',`Evidence IDs: ${detail.evidenceIds.length ? detail.evidenceIds.join(', ') : 'none linked'}`));
+    lineage.append(el('small','',`Rationale: ${detail.rationale}`));
+    lineage.append(el('small','',`Missing / unknown: ${detail.missingEvidence}`));
+    item.append(row,lineage);
+    wrap.append(item);
   }
   return wrap;
 }
@@ -174,7 +226,7 @@ function renderSnapshot(snapshot) {
     card.append(identity);
   }
 
-  card.append(el('h4','','Practice signals (advisory, never the employment decision)'),signalBlock(snapshot.session?.practice_signals));
+  card.append(el('h4','','Practice signals (advisory, never the employment decision)'),signalBlock(snapshot.session?.practice_signals,snapshot.answers));
   card.append(el('h4','','Job-relevant answer evidence'),evidenceBlock(snapshot.answers));
 
   if (snapshot.reviews?.length) {
