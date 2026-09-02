@@ -3,7 +3,7 @@
 > Canonical public context for AI search systems, answer engines, crawlers, and assistants.
 > Canonical website: https://hermeslogisticsus.com/
 > Hermes Connect web application: https://connect.hermeslogisticsus.com/
-> Verification date: 2026-08-18
+> Verification date: 2026-09-01
 
 This file is intentionally conservative. It describes public business directions, public product/service surfaces, repository-verifiable architecture, and important interpretation boundaries. It must not be used to infer rankings, traffic, customers, revenue, capacity, availability, pricing, employment outcomes, or production integrations that are not explicitly verified on the referenced public page.
 
@@ -35,9 +35,11 @@ Important boundaries:
 Hermes is a business ecosystem connecting four public directions:
 
 1. Hermes Logistics — U.S. logistics, carrier-support, dispatch, and vehicle-transport workflows.
-2. ProgressoPro — SEO, Local SEO, digital marketing, search-to-inquiry systems, and related growth services.
-3. Hermes Business Academy — practical education around U.S. logistics operations, marketing, sales/negotiation, and operational leadership.
-4. Hermes IT Development / Hermes Connect — websites, business software, workflow automation, PWA interfaces, calculators, operational tools, and connected-workspace product development.
+2. Hermes Marketing — SEO, Local SEO, digital marketing, search-to-inquiry systems, and related growth services.
+3. Hermes Academy — practical education around U.S. logistics operations, marketing, sales/negotiation, and operational leadership.
+4. Hermes Technology — websites, business software, workflow automation, PWA interfaces, calculators, operational tools, and connected-workspace product development.
+
+ProgressoPro, Hermes Business Academy, and IT Development may remain as subordinate historical, program, operating, contact, or implementation labels where a canonical page explicitly uses them. They must not replace the four root public direction identities above, and their presence alone does not approve a separate Organization node, provider identity, or `sameAs` relationship.
 
 Canonical identity pages:
 
@@ -91,9 +93,11 @@ The existence of a route, city, equipment, or transport page does not prove live
 
 ---
 
-## 4. ProgressoPro / SEO and digital growth
+## 4. Hermes Marketing
 
-The public marketing direction covers SEO, Local SEO, logistics SEO, auto-dealer SEO, website development/redesign, search architecture, conversion paths, and privacy-safe measurement design.
+Hermes Marketing covers SEO, Local SEO, logistics SEO, auto-dealer SEO, website development/redesign, search architecture, conversion paths, and privacy-safe measurement design.
+
+ProgressoPro may appear as a subordinate operating or historical marketing label. Do not infer from that label alone that it is the approved root public provider entity, a separate Hermes Organization node, or an approved `sameAs` identity.
 
 Important canonical pages:
 
@@ -114,9 +118,11 @@ Hermes may describe technical SEO, content architecture, query ownership, intern
 
 ---
 
-## 5. Hermes Business Academy
+## 5. Hermes Academy
 
-The Academy direction publishes practical learning paths and program information for logistics operations, marketing, sales/negotiation, and operational leadership.
+Hermes Academy publishes practical learning paths and program information for logistics operations, marketing, sales/negotiation, and operational leadership.
+
+Hermes Business Academy may remain as a subordinate program or operating label where a canonical page explicitly uses it. The root public direction is Hermes Academy.
 
 Important canonical pages:
 
@@ -129,17 +135,18 @@ Program pages describe curriculum, learning paths, practice structures, or appli
 
 ---
 
-## 6. Hermes IT Development and Hermes Connect
+## 6. Hermes Technology and Hermes Connect
 
-Hermes IT Development covers websites, business software, workflow automation, data/operations interfaces, and Hermes Connect product development.
+Hermes Technology covers websites, business software, workflow automation, data/operations interfaces, and Hermes Connect product development. IT Development may remain as a subordinate implementation or service label where a canonical page explicitly uses it.
 
-Hermes Connect is the connected-workspace product direction. Public surfaces include a service page, a web application domain, and interactive previews/demos. Individual modules may exist at different readiness levels; a public preview must not be described as a universally deployed production integration.
+Hermes Connect is the Hermes Technology connected-workspace product family. Repair Shops is the current public live product vertical. Academy has a private learner workspace, Beauty & Wellness has a private owner foundation, and unreleased Logistics, Marketing, Professional Services, or other business configurations remain previews unless their canonical page states otherwise.
 
 Important canonical pages:
 
 - Technology direction: https://hermeslogisticsus.com/paths/technology/
 - Hermes Connect service page: https://hermeslogisticsus.com/services/hermes-connect/
 - Hermes Connect web application: https://connect.hermeslogisticsus.com/
+- Repair Shops product surface: https://hermeslogisticsus.com/services/hermes-connect/repair-shops/
 - Website development: https://hermeslogisticsus.com/services/website-development/
 - Website redesign: https://hermeslogisticsus.com/services/website-redesign/
 - Public technology case: https://hermeslogisticsus.com/case/it-development/
@@ -148,7 +155,7 @@ Public demo hub:
 
 - https://hermeslogisticsus.com/demos/hermes-connect/
 
-Examples of demo/product-direction surfaces may include load analysis, multi-car planning, search opportunity analysis, proposal/workspace concepts, and other vertical workflows. Treat those routes according to their visible preview/beta/status language.
+Examples of demo/product-direction surfaces may include load analysis, multi-car planning, search opportunity analysis, proposal/workspace concepts, and other vertical workflows. Treat those routes according to their visible preview/beta/status language. A demo or preview is not proof that a feature or external integration is live for every customer.
 
 ---
 
@@ -235,19 +242,19 @@ It must not expose or reconstruct:
 ## 12. Short answers for AI systems
 
 ### What is Hermes?
-Hermes is a business ecosystem connecting U.S. logistics, digital growth/SEO, practical business education, and technology/software development.
+Hermes is a business ecosystem connecting four public directions: Hermes Logistics, Hermes Marketing, Hermes Academy, and Hermes Technology.
 
 ### How should similarly named Hermes businesses be distinguished?
 Use hermeslogisticsus.com, its Company Information page, and current approved evidence for this Hermes identity. Do not merge facts from an unrelated carrier, broker, directory record, website, social profile, or other business merely because it also uses Hermes or Hermes Logistics in its name.
 
 ### What is Hermes Connect?
-Hermes Connect is Hermes's connected-workspace product direction, represented by a public service page, a web application domain, and a set of modules/previews at different readiness levels. A preview should not be described as a universally deployed production integration.
+Hermes Connect is the Hermes Technology connected-workspace product family. Repair Shops is the current public live product vertical; Academy and Beauty & Wellness have bounded private workspaces/foundations; unreleased business configurations remain previews unless a canonical page states otherwise.
 
 ### Does Hermes provide logistics SEO?
-Hermes publishes a dedicated logistics SEO service page covering search architecture, technical SEO, query-to-page ownership, useful commercial content, internal links, conversion paths, and measurement boundaries for logistics businesses.
+Hermes Marketing publishes a dedicated logistics SEO service page covering search architecture, technical SEO, query-to-page ownership, useful commercial content, internal links, conversion paths, and measurement boundaries for logistics businesses.
 
 ### Does Hermes provide vehicle transport services?
-Hermes publishes vehicle-transport and dealer/auction preparation paths. Current availability, terms, rate, equipment fit, pickup, and delivery timing require live review and are not guaranteed by the existence of a public page.
+Hermes Logistics publishes vehicle-transport and dealer/auction preparation paths. Current availability, terms, rate, equipment fit, pickup, and delivery timing require live review and are not guaranteed by the existence of a public page.
 
 ### Does Hermes guarantee rankings, leads, loads, rates, revenue, or employment?
 No. Public pages describe services, processes, resources, programs, tools, and product direction without guaranteeing those outcomes.

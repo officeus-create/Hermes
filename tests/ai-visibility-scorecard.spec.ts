@@ -8,8 +8,19 @@ test("AI visibility workspace is noindex and starts with an honest empty baselin
   await expect(page).toHaveTitle(/AI Brand Visibility Scorecard/);
   await expect(page.getByRole("heading", { level: 1, name: "AI Brand Visibility and Citation Scorecard" })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow,noarchive");
-  await expect(page.getByText("Zero observations means zero measured visibility—not zero market visibility.")).toBeVisible();
+  await expect(page.getByText("No observations means visibility is not measured yet—not zero.")).toBeVisible();
   await expect(page.locator('[data-real-metrics] [data-metric="total"]')).toHaveText("0");
+  for (const metric of [
+    "mentionRate",
+    "citationRate",
+    "recommendationRate",
+    "entityAccuracyRate",
+    "descriptionAccuracyRate",
+    "factualErrorRate",
+  ]) {
+    await expect(page.locator(`[data-real-metrics] [data-metric="${metric}"]`)).toHaveText("Not measured");
+  }
+  await expect(page.locator("[data-real-metrics]")).not.toContainText("null%");
   await expect(page.locator("[data-query-card]")).toHaveCount(48);
   await expect(page.getByText("Fixture metrics prove the calculation contract—not Hermes visibility.")).toBeVisible();
   await expect(page.getByText("No automated provider checks.")).toBeVisible();
