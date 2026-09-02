@@ -90,6 +90,27 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
 }
 
 {
+  const workspace = '<!doctype html><html><head></head><body><nav class="nav-stack"><button class="nav-item" data-view="academy"><i>◎</i><span>Academy</span></button></nav></body></html>';
+  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/demos/hermes-connect/workspace.html", { body: workspace, contentType: "text/html" });
+  const response = await routeMiddleware(context);
+  const html = await response.text();
+  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/workspace.html");
+  assert.match(html, /data-hermes-connect-hr-entry/);
+  assert.match(html, /href="\.\/hr-admin\.html"/);
+  assert.match(html, />HR<\/span>/);
+}
+
+{
+  const hrAdmin = '<!doctype html><html><head></head><body><main>HR</main></body></html>';
+  const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/hr-admin.html", { body: hrAdmin, contentType: "text/html" });
+  const response = await routeMiddleware(context);
+  const html = await response.text();
+  assert.equal(observed.assetRequests[0].pathname, "/demos/hermes-connect/hr-admin.html");
+  assert.match(html, /data-hermes-connect-analytics-consent/);
+  assert.doesNotMatch(html, /data-hermes-connect-brand-shell/);
+}
+
+{
   const { context, observed } = contextFor("https://connect.hermeslogisticsus.com/workspace.css", { body: "body{}", contentType: "text/css" });
   const response = await routeMiddleware(context);
   assert.equal(await response.text(), "body{}");
@@ -130,4 +151,4 @@ function contextFor(url, { body = "asset", contentType = "", headers = {} } = {}
   assert.equal(observed.nextCalls, 1);
 }
 
-console.log("Canonical Connect compatibility redirects, Markdown negotiation, demo boundary, PWA assets, referral privacy, and API routing contract passed.");
+console.log("Canonical Connect compatibility redirects, HR workspace entry, Markdown negotiation, demo boundary, PWA assets, referral privacy, and API routing contract passed.");
