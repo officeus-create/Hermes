@@ -76,6 +76,12 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(steps.nth(1).locator(".hc-signal-extra")).toBeVisible();
   });
 
+  test("AI motion stays sparse and is not injected into a non-AI direction hero", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/paths/logistics/");
+    await expect(page.locator(".detail-hero-content .hermes-ai-motion-mark")).toHaveCount(0);
+  });
+
   test("Technology partnership remains readable and exposes truthful delivery proof", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/paths/technology/");
