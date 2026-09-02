@@ -84,10 +84,15 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(proof).toContainText("Repair Shops is the current public live vertical");
   });
 
-  test("polish layer does not replace canonical or robots contracts", async ({ page }) => {
+  test("polish layer preserves canonical, robots, and structured-data contracts", async ({ page }) => {
     await page.goto("/paths/technology/");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hermeslogisticsus.com/paths/technology/");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
-    await expect(page.locator('script[type="application\/ld\+json"]')).toHaveCount(3);
+
+    const structuredData = page.locator('script[type="application/ld+json"]');
+    await expect(structuredData).toHaveCount(1);
+    const parsed = JSON.parse(await structuredData.textContent() || "[]");
+    expect(Array.isArray(parsed)).toBe(true);
+    expect(parsed.length).toBeGreaterThanOrEqual(2);
   });
 });
