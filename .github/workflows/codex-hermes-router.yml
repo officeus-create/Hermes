@@ -6,10 +6,13 @@ on:
       - "scripts/ai/codex-hermes"
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
+      - "scripts/ai/hermes-internal-ai-runner.py"
+      - "scripts/ai/hermes-internal-ai-sanitize.py"
       - "scripts/ai/setup-codex-hermes.sh"
       - "scripts/ai/bootstrap-hermes-openssl.sh"
       - "scripts/codex-hermes-openssl-bootstrap.test.mjs"
       - "docs/CODEX_HERMES_RUNTIME.md"
+      - "docs/HERMES_CONNECT_AI_INTERNAL_RUNNER.md"
       - ".github/workflows/codex-hermes-router.yml"
   push:
     branches:
@@ -18,10 +21,13 @@ on:
       - "scripts/ai/codex-hermes"
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
+      - "scripts/ai/hermes-internal-ai-runner.py"
+      - "scripts/ai/hermes-internal-ai-sanitize.py"
       - "scripts/ai/setup-codex-hermes.sh"
       - "scripts/ai/bootstrap-hermes-openssl.sh"
       - "scripts/codex-hermes-openssl-bootstrap.test.mjs"
       - "docs/CODEX_HERMES_RUNTIME.md"
+      - "docs/HERMES_CONNECT_AI_INTERNAL_RUNNER.md"
       - ".github/workflows/codex-hermes-router.yml"
 
 permissions:
@@ -34,13 +40,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Validate shell syntax
+      - name: Validate shell and Python syntax
         run: |
           bash -n scripts/ai/setup-codex-hermes.sh
           bash -n scripts/ai/bootstrap-hermes-openssl.sh
           bash -n scripts/ai/codex-hermes-server
           bash -n scripts/ai/codex-hermes
           bash -n scripts/ai/codex-hermes-doctor
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in (
+              Path("scripts/ai/hermes-internal-ai-runner.py"),
+              Path("scripts/ai/hermes-internal-ai-sanitize.py"),
+          ):
+              ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+          PY
 
       - name: Validate executable bits
         run: |
@@ -56,10 +71,70 @@ jobs:
           grep -Fq '8b312c3a18279466732c3942d7e9246a75725d51' scripts/ai/setup-codex-hermes.sh
           grep -Fq 'FCC_VERSION="5.14.5"' scripts/ai/setup-codex-hermes.sh
           if grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,})' \
-            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
-            echo "Potential credential material detected in Hermes Codex router scripts" >&2
+            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/hermes-internal-ai-runner.py scripts/ai/hermes-internal-ai-sanitize.py scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
+            echo "Potential credential material detected in Hermes Codex/Internal AI router scripts" >&2
             exit 1
           fi
+
+      - name: Validate read-only Internal AI doctor contract
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          mkdir -p "$tmp/home/.fcc" "$tmp/home/.codex-hermes" "$tmp/fcc/bin" "$tmp/bin" "$tmp/work/scripts/ai"
+          : > "$tmp/home/.fcc/.env"
+
+          cat > "$tmp/bin/codex" <<'EOF'
+          #!/usr/bin/env bash
+          printf 'codex-test 0.0\n'
+          EOF
+          chmod +x "$tmp/bin/codex"
+
+          cat > "$tmp/fcc/bin/fcc-codex" <<'EOF'
+          #!/usr/bin/env bash
+          printf 'fcc-codex-test 5.14.5\n'
+          EOF
+          chmod +x "$tmp/fcc/bin/fcc-codex"
+
+          cat > "$tmp/fcc/bin/python" <<'EOF'
+          #!/usr/bin/env bash
+          printf '5.14.5\n'
+          EOF
+          chmod +x "$tmp/fcc/bin/python"
+
+          cp AGENTS.md "$tmp/work/AGENTS.md"
+          cp scripts/ai/codex-hermes "$tmp/work/scripts/ai/codex-hermes"
+          cp scripts/ai/hermes-internal-ai-runner.py "$tmp/work/scripts/ai/hermes-internal-ai-runner.py"
+          cp scripts/ai/hermes-internal-ai-sanitize.py "$tmp/work/scripts/ai/hermes-internal-ai-sanitize.py"
+          chmod +x "$tmp/work/scripts/ai/codex-hermes"
+
+          git init --bare "$tmp/origin.git" >/dev/null
+          git -C "$tmp/work" init -b main >/dev/null
+          git -C "$tmp/work" config user.email doctor@example.invalid
+          git -C "$tmp/work" config user.name HermesDoctorTest
+          git -C "$tmp/work" add AGENTS.md scripts/ai
+          git -C "$tmp/work" commit -m baseline >/dev/null
+          git -C "$tmp/work" remote add origin "$tmp/origin.git"
+          git -C "$tmp/work" push -u origin main >/dev/null
+          before="$(git -C "$tmp/work" rev-parse HEAD)"
+
+          unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN
+          HOME="$tmp/home" \
+          PATH="$tmp/bin:$PATH" \
+          HERMES_REPO_ROOT="$tmp/work" \
+          HERMES_FCC_VENV="$tmp/fcc" \
+          HERMES_CODEX_HOME="$tmp/home/.codex-hermes" \
+          HERMES_INTERNAL_AI_API="https://example.test/api" \
+          HERMES_INTERNAL_AI_RUNNER_TOKEN="synthetic-doctor-token-12345678901234567890" \
+          ./scripts/ai/codex-hermes-doctor --internal-ai | tee "$tmp/doctor.out"
+
+          grep -Fq 'INTERNAL_AI_PREFLIGHT=PASS' "$tmp/doctor.out"
+          grep -Fq "LOCAL_HEAD_SHA=$before" "$tmp/doctor.out"
+          grep -Fq "REMOTE_MAIN_SHA=$before" "$tmp/doctor.out"
+          grep -Fq 'REMOTE_BROWSER_TO_CODEX=UNVERIFIED' "$tmp/doctor.out"
+          ! grep -Fq 'synthetic-doctor-token' "$tmp/doctor.out"
+          test "$(git -C "$tmp/work" rev-parse HEAD)" = "$before"
+          test -z "$(git -C "$tmp/work" status --porcelain --untracked-files=no)"
 
       - name: Validate Intel macOS OpenSSL bootstrap contract
         run: node scripts/codex-hermes-openssl-bootstrap.test.mjs
