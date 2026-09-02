@@ -13,6 +13,7 @@ import {
 
 const metrics = calculateAiVisibilityMetrics(aiVisibilityObservations);
 const syntheticMetrics = calculateAiVisibilityMetrics(syntheticAiVisibilityObservations);
+const formatRate = (value: number | null) => value === null ? "Not measured" : `${value}%`;
 const directions = ["all", "logistics", "marketing", "academy", "technology"] as const;
 const languages = ["all", "en", "ru", "uk"] as const;
 const intents = ["all", "commercial", "comparison", "educational", "problem_solving", "brand_discovery"] as const;
@@ -55,17 +56,17 @@ const intents = ["all", "commercial", "comparison", "educational", "problem_solv
       <section class="section capacity-review" aria-labelledby="baseline-title">
         <div class="shell">
           <div class="section-heading split-heading">
-            <div><p class="eyebrow">Current real baseline</p><h2 id="baseline-title">Zero observations means zero measured visibility—not zero market visibility.</h2></div>
-            <p>The workspace does not invent scores. Rates change only when a dated manual observation is entered locally or later added through a separately reviewed data workflow.</p>
+            <div><p class="eyebrow">Current real baseline</p><h2 id="baseline-title">No observations means visibility is not measured yet—not zero.</h2></div>
+            <p>The workspace does not invent scores. Rates become measurable only when a dated manual observation is entered locally or later added through a separately reviewed data workflow.</p>
           </div>
           <div class="capacity-boundary-grid" data-real-metrics>
             <article><strong data-metric="total">{metrics.total}</strong><p>Recorded real observations</p></article>
-            <article><strong data-metric="mentionRate">{metrics.mentionRate}%</strong><p>Brand mention rate</p></article>
-            <article><strong data-metric="citationRate">{metrics.citationRate}%</strong><p>Linked citation rate</p></article>
-            <article><strong data-metric="recommendationRate">{metrics.recommendationRate}%</strong><p>Considered or recommended</p></article>
-            <article><strong data-metric="entityAccuracyRate">{metrics.entityAccuracyRate}%</strong><p>Correct entity rate</p></article>
-            <article><strong data-metric="descriptionAccuracyRate">{metrics.descriptionAccuracyRate}%</strong><p>Correct description rate</p></article>
-            <article><strong data-metric="factualErrorRate">{metrics.factualErrorRate}%</strong><p>Factual-error rate</p></article>
+            <article><strong data-metric="mentionRate">{formatRate(metrics.mentionRate)}</strong><p>Brand mention rate</p></article>
+            <article><strong data-metric="citationRate">{formatRate(metrics.citationRate)}</strong><p>Linked citation rate</p></article>
+            <article><strong data-metric="recommendationRate">{formatRate(metrics.recommendationRate)}</strong><p>Considered or recommended</p></article>
+            <article><strong data-metric="entityAccuracyRate">{formatRate(metrics.entityAccuracyRate)}</strong><p>Correct entity rate</p></article>
+            <article><strong data-metric="descriptionAccuracyRate">{formatRate(metrics.descriptionAccuracyRate)}</strong><p>Correct description rate</p></article>
+            <article><strong data-metric="factualErrorRate">{formatRate(metrics.factualErrorRate)}</strong><p>Factual-error rate</p></article>
             <article><strong>{aiVisibilityPrompts.length}</strong><p>Registered prompts</p></article>
           </div>
         </div>
@@ -177,10 +178,10 @@ const intents = ["all", "commercial", "comparison", "educational", "problem_solv
             <p>These four examples are explicitly synthetic and are excluded from the real baseline.</p>
           </div>
           <div class="capacity-boundary-grid">
-            <article><strong>{syntheticMetrics.mentionRate}%</strong><p>Synthetic mention rate</p></article>
-            <article><strong>{syntheticMetrics.citationRate}%</strong><p>Synthetic citation rate</p></article>
-            <article><strong>{syntheticMetrics.recommendationRate}%</strong><p>Synthetic recommendation rate</p></article>
-            <article><strong>{syntheticMetrics.factualErrorRate}%</strong><p>Synthetic factual-error rate</p></article>
+            <article><strong>{formatRate(syntheticMetrics.mentionRate)}</strong><p>Synthetic mention rate</p></article>
+            <article><strong>{formatRate(syntheticMetrics.citationRate)}</strong><p>Synthetic citation rate</p></article>
+            <article><strong>{formatRate(syntheticMetrics.recommendationRate)}</strong><p>Synthetic recommendation rate</p></article>
+            <article><strong>{formatRate(syntheticMetrics.factualErrorRate)}</strong><p>Synthetic factual-error rate</p></article>
           </div>
         </div>
       </section>
@@ -190,7 +191,7 @@ const intents = ["all", "commercial", "comparison", "educational", "problem_solv
           <div class="section-heading"><p class="eyebrow">Release A boundaries</p><h2 id="visibility-boundaries-title">The workspace measures evidence; it does not manufacture it.</h2></div>
           <div class="capacity-boundary-grid">
             <article><Bot size={22} aria-hidden="true" /><strong>No provider automation</strong><p>No prompt is sent to any AI/search system.</p></article>
-            <article><Link2 size={22} aria-hidden="true" /><strong>No citation claim without a record</strong><p>The default real baseline is empty and all rates are zero.</p></article>
+            <article><Link2 size={22} aria-hidden="true" /><strong>No citation claim without a record</strong><p>The default real baseline is empty; rates remain not measured until observations exist.</p></article>
             <article><FileWarning size={22} aria-hidden="true" /><strong>No full conversation storage</strong><p>Only structured observation fields are permitted.</p></article>
             <article><ShieldCheck size={22} aria-hidden="true" /><strong>No secrets or personal history</strong><p>Accounts, cookies, tokens, personal prompts, and unrelated histories are out of scope.</p></article>
           </div>
