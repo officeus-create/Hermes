@@ -3,7 +3,7 @@
  * The exact owner-approved direction colors are already applied by
  * hermes-connect-division-context.css to hero atmosphere, CTA, framing and
  * Connect launcher/banner context. This layer only provides readable same-hue
- * text variants and removes a few older Logistics-violet public cues.
+ * text variants and removes a few older direction-color inheritance leaks.
  * Hermes Intelligence states remain violet.
  */
 
@@ -54,11 +54,61 @@
   border-color: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 42%, var(--hermes-line-light));
 }
 
+/* Technology / IT uses orange for ordinary route context. The dark build,
+   solution-mockup and partnership moments intentionally keep their existing
+   violet/blue-violet art direction as contained operating/Intelligence scenes. */
+.detail-page.detail-page-technology .technology-solution-grid article > svg,
+.detail-page.detail-page-technology .technology-solution-card-top svg,
+.detail-page.detail-page-technology .technology-solution-card > a,
+.detail-page.detail-page-technology .technology-delivery-process li span,
+.detail-page.detail-page-technology .technology-proof-meta span,
+.detail-page.detail-page-technology .it-stage-rail button span,
+.detail-page.detail-page-technology .it-brief-progress span,
+.detail-page.detail-page-technology .it-brief-panel legend span,
+.detail-page.detail-page-technology .it-brief-projects label > span,
+.detail-page.detail-page-technology .it-brief-reference-list label > span {
+  color: var(--path-signal-text);
+}
+
+.detail-page.detail-page-technology .it-stage-rail button[aria-selected="true"] {
+  border-color: var(--path-signal-text);
+  background: color-mix(in srgb, var(--hermes-technology, #ff7a00) 8%, var(--hermes-paper));
+  box-shadow:
+    inset 0 0 0 1px var(--path-signal-text),
+    0 8px 24px color-mix(in srgb, var(--hermes-technology, #ff7a00) 8%, transparent);
+}
+
+.detail-page.detail-page-technology .it-brief-progress li[aria-current="step"]::after {
+  background: var(--path-signal-text);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--hermes-technology, #ff7a00) 12%, transparent);
+}
+
+.detail-page.detail-page-technology .it-brief-field-grid input:focus,
+.detail-page.detail-page-technology .it-brief-field-grid select:focus,
+.detail-page.detail-page-technology .it-brief-field-grid textarea:focus,
+.detail-page.detail-page-technology .it-brief-projects textarea:focus,
+.detail-page.detail-page-technology .it-brief-reference-list input:focus,
+.detail-page.detail-page-technology .it-brief-reference-list textarea:focus {
+  border-color: var(--path-signal-text);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hermes-technology, #ff7a00) 18%, transparent);
+}
+
 @media (forced-colors: active) {
   .detail-page-logistics,
   .detail-page-marketing,
   .detail-page-academy,
   .detail-page-technology {
     --path-signal-text: CanvasText;
+  }
+
+  .detail-page.detail-page-technology .it-stage-rail button[aria-selected="true"],
+  .detail-page.detail-page-technology .it-brief-field-grid input:focus,
+  .detail-page.detail-page-technology .it-brief-field-grid select:focus,
+  .detail-page.detail-page-technology .it-brief-field-grid textarea:focus,
+  .detail-page.detail-page-technology .it-brief-projects textarea:focus,
+  .detail-page.detail-page-technology .it-brief-reference-list input:focus,
+  .detail-page.detail-page-technology .it-brief-reference-list textarea:focus {
+    border-color: CanvasText;
+    box-shadow: none;
   }
 }
