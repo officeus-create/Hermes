@@ -5,6 +5,10 @@ const RUSSIAN_CANONICAL_FALLBACKS = new Map([
   ],
 ]);
 
+const RUSSIAN_LESSON_SOURCE_ALIASES = new Map([
+  ["us-logistics-operations:documents-setup", "broker-setup-packet"],
+]);
+
 export function resolveAcademyLessonLocale(request, url) {
   const direct = String(url.searchParams.get("lang") || "").trim().toLowerCase();
   if (direct === "ru") return "ru";
@@ -20,6 +24,21 @@ export function resolveAcademyLessonLocale(request, url) {
   }
 
   return "en";
+}
+
+export function resolveRussianLessonSourceId(programSlug, lessonId) {
+  const program = String(programSlug || "");
+  const lesson = String(lessonId || "");
+  return RUSSIAN_LESSON_SOURCE_ALIASES.get(`${program}:${lesson}`) || lesson;
+}
+
+export function normalizeLocalizedLessonIdentity(base, localized) {
+  if (!localized || typeof localized !== "object" || !base || typeof base !== "object") return localized;
+  return {
+    ...localized,
+    program_slug: base.program_slug,
+    lesson_id: base.lesson_id,
+  };
 }
 
 export function projectLocalizedLessonShape(base, localized) {
