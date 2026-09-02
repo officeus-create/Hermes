@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 const root = resolve(import.meta.dirname, "..");
@@ -13,9 +14,13 @@ const runnerTaskEndpoint = read("functions/api/internal-ai/runner/task.ts");
 const complete = read("functions/api/internal-ai/runner/complete.ts");
 const event = read("functions/api/internal-ai/runner/event.ts");
 const runner = read("scripts/ai/hermes-internal-ai-runner.py");
+const codexHermesPath = resolve(root, "scripts/ai/codex-hermes");
 const codexHermes = read("scripts/ai/codex-hermes");
+const sanitizerPath = resolve(root, "scripts/ai/hermes-internal-ai-sanitize.py");
+const sanitizer = read("scripts/ai/hermes-internal-ai-sanitize.py");
 const bootstrap = read("functions/api/internal-ai/bootstrap-owner.ts");
 const internalNav = read("src/components/HermesConnectInternalAiNav.astro");
+const agentPolicy = read("AGENTS.md");
 assert.match(page, /robots="noindex,nofollow"/, "internal AI page must stay noindex");
 assert.match(page, /<HermesConnectExperience\s*\/>/, "internal AI page must reuse canonical Hermes Connect experience");
 assert.match(page, /AI Assistant/, "embedded slice must identify itself as AI Assistant");
@@ -52,11 +57,56 @@ assert.doesNotMatch(runner, /socket\.|listen\(|HTTPServer|Flask|FastAPI/, "runne
 assert.match(runner, /switch", "-c", branch/, "runner isolates each task branch");
 assert.match(runner, /HERMES_INTERNAL_APPROVAL_GATE/, "runner must record an explicit consequential approval stop");
 assert.match(runner, /status="needs_approval"/, "runner must surface a documented approval gate instead of treating it as success");
-assert.match(runner, /CODEX_AUTONOMOUS_ARGS = \("--sandbox", "workspace-write", "--approve-for-me"\)/, "runner must use official safe autonomous approval inside workspace-write");
-assert.match(runner, /\[str\(CODEX_HERMES\), "exec", \*CODEX_AUTONOMOUS_ARGS, guarded_prompt\]/, "runner must pass safe autonomous options to codex exec before the task prompt");
+assert.match(runner, /CODEX_AUTONOMOUS_ARGS = \("--sandbox", "workspace-write", "--approve-for-me"\)/, "legacy runner argv must remain explicit so the wrapper can normalize only the reviewed shape");
+assert.match(runner, /\[str\(CODEX_HERMES\), "exec", \*CODEX_AUTONOMOUS_ARGS, guarded_prompt\]/, "runner must pass the bounded prompt as one argument to the reviewed wrapper");
 assert.doesNotMatch(runner, /dangerously-bypass-approvals-and-sandbox|--yolo/, "runner must never bypass Codex sandbox or approvals entirely");
 assert.match(codexHermes, /unset HERMES_INTERNAL_AI_RUNNER_TOKEN/, "runner transport token must be scrubbed before FCC/Codex starts");
 assert.match(codexHermes, /unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN/, "one-time owner bootstrap token must never be inherited by FCC/Codex");
+assert.match(codexHermes, /RUNNER_SANITIZE=0/, "manual codex-hermes and Internal AI runner execution must remain distinguishable");
+assert.match(codexHermes, /HERMES_INTERNAL_AI_RUNNER_CONTEXT/, "a non-secret runner context marker must survive the clean-environment re-exec");
+assert.match(codexHermes, /exec env -i/, "browser-queued Codex must re-exec from a minimal allowlisted environment");
+const cleanEnvBlock = codexHermes.match(/clean_env=\([\s\S]*?exec env -i/)?.[0] || "";
+assert.ok(cleanEnvBlock, "runner clean-environment block must exist");
+assert.doesNotMatch(cleanEnvBlock, /GH_TOKEN|GITHUB_TOKEN|OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY|CLOUDFLARE_API_TOKEN|AWS_SECRET_ACCESS_KEY|SSH_AUTH_SOCK/, "runner environment allowlist must not forward remote-service credentials or agent sockets");
+assert.match(codexHermes, /runner_args=\(--sandbox workspace-write --ask-for-approval never exec/, "browser runner must normalize to workspace-write with approval escalation disabled");
+assert.doesNotMatch(codexHermes.match(/runner_args=\([^\n]+/)?.[0] || "", /approve-for-me|danger-full-access/, "effective runner argv must not use auto-review or full access");
+assert.match(codexHermes, /runner arguments do not match the reviewed contract; refusing execution/, "unexpected runner argv must fail closed instead of passing through");
+assert.match(codexHermes, /python3 \"\$SANITIZER\"/, "Internal AI runner output must pass through the streaming sanitizer before returning to the runner");
+assert.match(codexHermes, /PIPESTATUS/, "wrapper must preserve FCC/Codex and sanitizer exit status separately");
+assert.match(codexHermes, /sanitizer failed; refusing to treat output as safe evidence/, "sanitizer failure must fail closed");
+assert.match(codexHermes, /exec \"\$FCC_CODEX\" \"\$@\"/, "manual codex-hermes usage must retain the ordinary direct exec path");
+assert.match(agentPolicy, /Browser-queued Internal AI is stricter/, "canonical agent policy must describe the stricter unattended runner boundary");
+assert.match(agentPolicy, /sandbox denial is a blocker\/evidence signal/i, "canonical agent policy must treat sandbox denial as evidence rather than permission escalation");
+assert.doesNotMatch(agentPolicy, /preferred Hermes invocation is `\.\/scripts\/ai\/codex-hermes --approve-for-me`/, "canonical agent policy must not recommend the superseded auto-review invocation");
+assert.match(agentPolicy, /Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` \/ `--yolo`/, "canonical agent policy must explicitly prohibit sandbox/approval bypass modes");
+const shellCheck = spawnSync("bash", ["-n", codexHermesPath], { encoding: "utf8" });
+assert.equal(shellCheck.status, 0, `codex-hermes shell syntax must remain valid: ${shellCheck.stderr}`);
+assert.match(sanitizer, /REDACTED_PRIVATE_KEY_BLOCK/, "streaming sanitizer must suppress private-key bodies");
+assert.match(sanitizer, /GITHUB_TOKEN/, "streaming sanitizer must recognize GitHub token shapes");
+assert.match(sanitizer, /OPENAI_STYLE_KEY/, "streaming sanitizer must recognize common API-key shapes");
+assert.match(sanitizer, /JWT_TOKEN/, "streaming sanitizer must recognize JWT-shaped output");
+assert.match(sanitizer, /BEARER_TOKEN/, "streaming sanitizer must recognize bearer credentials without requiring key-value punctuation");
+const sanitizerProbe = [
+  "Authorization: Bearer super-secret-bearer-1234567890",
+  "token=plain-secret-token-1234567890",
+  "https://example.test/?access_token=url-secret-1234567890&ok=1",
+  "ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+  "sk-proj-ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+  "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.signature1234567890",
+  "-----BEGIN PRIVATE KEY-----",
+  "PRIVATEKEYBODYSHOULDNEVERLEAK",
+  "-----END PRIVATE KEY-----",
+  "HERMES_INTERNAL_APPROVAL_GATE=merge_deploy",
+].join("\n");
+const sanitizerRun = spawnSync("python3", [sanitizerPath], { input: sanitizerProbe, encoding: "utf8" });
+assert.equal(sanitizerRun.status, 0, `sanitizer probe must exit 0: ${sanitizerRun.stderr}`);
+assert.doesNotMatch(
+  sanitizerRun.stdout,
+  /super-secret|plain-secret|url-secret|ghp_|sk-proj-|eyJhbGci|PRIVATEKEYBODYSHOULDNEVERLEAK/,
+  "synthetic credential values must not survive the streaming sanitizer",
+);
+assert.match(sanitizerRun.stdout, /\[REDACTED/, "synthetic credential values must be visibly replaced rather than silently trusted");
+assert.match(sanitizerRun.stdout, /HERMES_INTERNAL_APPROVAL_GATE=merge_deploy/, "non-secret governance markers must survive redaction");
 assert.match(bootstrap, /getAuthenticatedSpecialist\(request, env\.DB\)/, "owner bootstrap must bind only the current authenticated Hermes session");
 assert.match(bootstrap, /HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN/, "bootstrap must require a separate server-side activation secret");
 assert.match(bootstrap, /MIN_BOOTSTRAP_SECRET_LENGTH = 32/, "bootstrap secret must meet a strong minimum length");
