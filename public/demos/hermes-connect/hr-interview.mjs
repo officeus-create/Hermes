@@ -1,8 +1,14 @@
 const STORAGE_KEY = 'hermes-connect-hr-pilot-v1';
 
-export const NON_SCORING_CONTEXT_FIELDS = Object.freeze(['country', 'language', 'source']);
+export const NON_SCORING_CONTEXT_FIELDS = Object.freeze([
+  'country', 'language', 'source', 'attribution'
+]);
 export const PROTECTED_FIELDS_NOT_COLLECTED = Object.freeze([
   'age','date_of_birth','gender','sex','race','ethnicity','religion','disability','family_status','political_affiliation'
+]);
+
+const ATTRIBUTION_KEYS = Object.freeze([
+  'utm_source','utm_medium','utm_campaign','utm_content','utm_term','vacancy','creative','market','placement'
 ]);
 
 const TRACKS = {
@@ -80,9 +86,9 @@ const FOLLOW_UPS = {
   }
 };
 
-function uid() {
-  if (globalThis.crypto?.randomUUID) return `hr_${crypto.randomUUID()}`;
-  return `hr_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
+function uid(prefix='hr') {
+  if (globalThis.crypto?.randomUUID) return `${prefix}_${crypto.randomUUID()}`;
+  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
 }
 
 function normalizeText(value='') {
@@ -94,6 +100,24 @@ function tokens(value='') {
 }
 
 function clamp(n, min=0, max=100) { return Math.max(min, Math.min(max, n)); }
+
+function safeHostname(value='') {
+  try { return new URL(value).hostname || ''; }
+  catch { return ''; }
+}
+
+export function captureAttribution(locationLike=window.location, documentLike=document) {
+  const params = new URLSearchParams(locationLike.search || '');
+  const attribution = {
+    landing_path: locationLike.pathname || '/hr.html',
+    referrer_host: safeHostname(documentLike.referrer || '')
+  };
+  for (const key of ATTRIBUTION_KEYS) {
+    const value = normalizeText(params.get(key) || '');
+    if (value) attribution[key] = value.slice(0, 240);
+  }
+  return attribution;
+}
 
 function textSignals(answer='') {
   const clean = normalizeText(answer);
@@ -165,10 +189,21 @@ function saveState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+function appendEvent(state, type, payload={}) {
+  state.events ||= [];
+  state.events.push({
+    event_id: uid('evt'),
+    type,
+    occurred_at: new Date().toISOString(),
+    candidate_id: state.candidate_id,
+    payload
+  });
+}
+
 function freshState(context) {
   const id = uid();
-  return {
-    version: 1,
+  const state = {
+    version: 2,
     candidate_id: id,
     learner_id: id,
     created_at: new Date().toISOString(),
@@ -176,8 +211,15 @@ function freshState(context) {
     answers: [],
     queue: BASE_QUESTIONS.map(q=>({...q})),
     index: 0,
+    events: [],
     completed_at: null
   };
+  appendEvent(state, 'candidate_started', {
+    track: context.track,
+    source: context.source,
+    attribution: context.attribution
+  });
+  return state;
 }
 
 const intakePanel = document.querySelector('[data-intake-panel]');
@@ -209,6 +251,24 @@ function showToast(text) {
 }
 
 function currentQuestion() { return state?.queue?.[state.index]; }
+
+function prefillIntakeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const track = params.get('track');
+  const source = params.get('source') || params.get('utm_source');
+  const country = params.get('country');
+  const language = params.get('lang') || params.get('language');
+
+  if (track && TRACKS[track]) {
+    const input = intakeForm.querySelector(`input[name="track"][value="${CSS.escape(track)}"]`);
+    if (input) input.checked = true;
+  }
+  for (const [name,value] of [['source',source],['country',country],['language',language]]) {
+    if (!value) continue;
+    const select = intakeForm.elements.namedItem(name);
+    if (select && [...select.options].some(option=>option.value===value || option.text===value)) select.value = value;
+  }
+}
 
 function renderQuestion() {
   const q = currentQuestion();
@@ -242,26 +302,36 @@ function maybeAddFollowup(q, answer) {
   const stats = textSignals(answer);
   if ((q.id === 'evidence' || q.id === 'understanding') && stats.wordCount < 45) {
     state.queue.splice(state.index + 1, 0, {...FOLLOW_UPS.concrete, parent:q.id});
+    appendEvent(state, 'adaptive_followup_added', {parent_question_id:q.id, followup_id:FOLLOW_UPS.concrete.id, reason:'insufficient_concrete_evidence'});
     return;
   }
   if (q.id === 'application' && stats.questionCount === 0 && stats.discoveryWords === 0) {
     state.queue.splice(state.index + 1, 0, {...FOLLOW_UPS.discovery, parent:q.id});
+    appendEvent(state, 'adaptive_followup_added', {parent_question_id:q.id, followup_id:FOLLOW_UPS.discovery.id, reason:'no_discovery_question_observed'});
   }
 }
 
 function finishInterview() {
-  state.completed_at = new Date().toISOString();
-  const signals = buildPracticeSignals(state.answers);
-  const recommendation = recommendedDevelopment(signals);
-  state.practice_signals = signals;
-  state.development_recommendation = recommendation;
-  saveState(state);
+  if (!state.completed_at) {
+    state.completed_at = new Date().toISOString();
+    const signals = buildPracticeSignals(state.answers);
+    const recommendation = recommendedDevelopment(signals);
+    state.practice_signals = signals;
+    state.development_recommendation = recommendation;
+    appendEvent(state, 'interview_completed', {
+      answer_count: state.answers.length,
+      recommendation_code: recommendation.code
+    });
+    saveState(state);
+  }
 
   interviewPanel.hidden = true;
   intakePanel.hidden = true;
   resultPanel.hidden = false;
   progressBar.style.width = '100%';
 
+  const signals = state.practice_signals || buildPracticeSignals(state.answers);
+  const recommendation = state.development_recommendation || recommendedDevelopment(signals);
   const labels = {
     clarity:['Clarity','Specific, understandable answers'],
     evidence:['Evidence','Concrete actions and observable examples'],
@@ -284,6 +354,7 @@ function resetAll() {
   resultPanel.hidden = true;
   intakePanel.hidden = false;
   intakeForm.reset();
+  prefillIntakeFromUrl();
   intakePanel.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
@@ -294,7 +365,8 @@ intakeForm.addEventListener('submit', (event)=>{
     country: data.get('country'),
     language: data.get('language'),
     source: data.get('source'),
-    track: data.get('track')
+    track: data.get('track'),
+    attribution: captureAttribution()
   };
   state = freshState(context);
   saveState(state);
@@ -308,7 +380,14 @@ answerForm.addEventListener('submit', (event)=>{
   const q = currentQuestion();
   const answer = normalizeText(answerBox.value);
   if (answer.length < 15) { showToast('Please add a little more detail.'); return; }
-  state.answers.push({id:q.id, phase:q.phase, track:state.context.track, answer, answered_at:new Date().toISOString()});
+  const evidenceId = uid('evidence');
+  state.answers.push({evidence_id:evidenceId,id:q.id, phase:q.phase, track:state.context.track, answer, answered_at:new Date().toISOString()});
+  appendEvent(state, 'answer_submitted', {
+    question_id:q.id,
+    evidence_id:evidenceId,
+    phase:q.phase,
+    word_count:textSignals(answer).wordCount
+  });
   maybeAddFollowup(q, answer);
   state.index += 1;
   saveState(state);
@@ -320,6 +399,8 @@ document.querySelector('[data-restart]').addEventListener('click',resetAll);
 
 document.querySelector('[data-export]').addEventListener('click',()=>{
   if (!state?.completed_at) return;
+  appendEvent(state, 'sanitized_summary_exported', {format:'json'});
+  saveState(state);
   const safe = {
     version: state.version,
     candidate_id: state.candidate_id,
@@ -328,7 +409,8 @@ document.querySelector('[data-export]').addEventListener('click',()=>{
     context_for_funnel_analytics: state.context,
     practice_signals: state.practice_signals,
     development_recommendation: state.development_recommendation,
-    answers: state.answers.map(a=>({id:a.id,phase:a.phase,answer:a.answer})),
+    answers: state.answers.map(a=>({evidence_id:a.evidence_id,id:a.id,phase:a.phase,answer:a.answer})),
+    event_ledger: state.events,
     governance: {
       context_fields_excluded_from_readiness_signals: NON_SCORING_CONTEXT_FIELDS,
       protected_fields_not_collected: PROTECTED_FIELDS_NOT_COLLECTED,
@@ -346,5 +428,6 @@ document.querySelector('[data-export]').addEventListener('click',()=>{
   showToast('Sanitized pilot summary exported.');
 });
 
+prefillIntakeFromUrl();
 if (state?.completed_at) finishInterview();
 else if (state?.queue?.length) renderQuestion();
