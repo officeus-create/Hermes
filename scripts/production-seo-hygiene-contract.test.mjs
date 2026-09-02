@@ -48,7 +48,7 @@ const expectedChildUrls = childSitemapFiles.map((file) => `https://${sitemapHost
 assert.deepEqual(
   new Set(sitemapIndexLocs),
   new Set(expectedChildUrls),
-  "sitemapindex.xml must reference exactly the eight controlled child sitemaps",
+  `sitemapindex.xml must reference exactly ${childSitemapFiles.length} controlled child sitemaps`,
 );
 assert.equal(sitemapIndexLocs.length, expectedChildUrls.length, "sitemapindex.xml must not duplicate child sitemap references");
 
@@ -103,6 +103,10 @@ for (const required of [
 ]) {
   assert.ok(verifier.includes(required), `production verifier must preserve ${required}`);
 }
+assert.ok(
+  !/\b(?:all|exactly)\s+eight\s+controlled child sitemaps\b/i.test(verifier),
+  "production verifier output must derive the controlled sitemap count instead of hardcoding eight",
+);
 
 const workflow = await readFile(new URL("../.github/workflows/production-seo-hygiene-command.yml", import.meta.url), "utf8");
 assert.ok(workflow.includes("github.event.issue.number == 346"), "SEO hygiene command must stay scoped to the SEO 11 master issue");
