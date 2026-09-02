@@ -362,7 +362,7 @@ const markdown = [
   "## Discovery files",
   "",
   `- robots.txt status: ${robotsResult.status ?? "—"}`,
-  `- robots.txt declares sitemap index + all eight controlled child sitemaps: ${robotsResult.includesAllSitemaps ? "yes" : "no"}`,
+  `- robots.txt declares sitemap index + all ${childSitemapPaths.length} controlled child sitemaps: ${robotsResult.includesAllSitemaps ? "yes" : "no"}`,
   ...sitemapResults.map((item) => `- ${item.path}: status ${item.status ?? "—"}; final URL ${item.finalUrlMatches ? "matches" : "drifted"}; sitemap XML ${item.looksLikeSitemap ? "recognized" : "not recognized"}`),
   `- sitemap index controlled children: ${sitemapIndexResult.discoveredChildren}/${sitemapIndexResult.expectedChildren}; exact set ${sitemapIndexResult.exactControlledChildren ? "yes" : "no"}`,
   `- llms.txt: status ${llmsResult.status ?? "—"}; H1 ${llmsResult.hasMarkdownH1 ? "yes" : "no"}; Markdown links ${llmsResult.markdownLinkCount}`,
