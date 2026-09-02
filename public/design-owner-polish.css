@@ -1,0 +1,403 @@
+/* Hermes owner feedback polish — 2026-09-02
+ * Presentation/interaction only. No canonical, metadata, schema, routing, or indexability changes.
+ */
+
+/* 1. One rounded Hermes header language across public surfaces. */
+@media (min-width: 761px) {
+  .site-header {
+    top: .7rem !important;
+    min-height: 68px;
+    padding-inline: 1rem;
+    border: 1px solid rgba(255,255,255,.16);
+    border-radius: 28px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.12), inset 0 1px 0 rgba(255,255,255,.05);
+    backdrop-filter: blur(22px) saturate(1.12);
+  }
+
+  .site-header-dark {
+    color: #fff;
+    background: rgba(7,9,16,.66);
+  }
+
+  .site-header-dark.site-header-scrolled {
+    background: rgba(7,9,16,.86);
+    border-color: rgba(255,255,255,.14);
+  }
+
+  .site-header-light,
+  .site-header-light.site-header-scrolled {
+    color: #0b0d12;
+    border-color: rgba(11,13,18,.10);
+    background: rgba(247,246,243,.92);
+    box-shadow: 0 16px 42px rgba(11,13,18,.08), inset 0 1px 0 rgba(255,255,255,.72);
+  }
+}
+
+/* 2. Hermes Connect stays legible on Pearl headers and opens Product Hub first. */
+.site-header-light .hc-launcher-header,
+.detail-page .hc-launcher-header {
+  color: #0b0d12 !important;
+  border-color: rgba(124,92,255,.22) !important;
+  background: rgba(124,92,255,.07) !important;
+}
+.site-header-light .hc-launcher-header:hover,
+.site-header-light .hc-launcher-header:focus-visible,
+.detail-page .hc-launcher-header:hover,
+.detail-page .hc-launcher-header:focus-visible {
+  color: #0b0d12 !important;
+  border-color: rgba(124,92,255,.38) !important;
+  background: rgba(124,92,255,.12) !important;
+}
+
+/* 3. Compact language control; active check follows aria-current set by runtime. */
+.language-menu summary {
+  min-width: 64px;
+  justify-content: center;
+  gap: .35rem !important;
+  padding-inline: .52rem !important;
+  border-radius: 999px !important;
+}
+.language-menu summary span {
+  min-width: 2ch;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-align: center;
+}
+.language-menu nav a > svg,
+.mobile-language-switcher a > svg {
+  display: none !important;
+}
+.language-menu nav a[aria-current="page"]::after,
+.mobile-language-switcher a[aria-current="page"]::after {
+  content: "✓";
+  font-size: .78rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* 4. Connect keeps the corporate navigation and adds a persistent product-family rail. */
+@media (min-width: 761px) {
+  .hc-experience .site-header .desktop-nav {
+    display: flex !important;
+  }
+  .hc-experience .site-header .header-cta {
+    display: inline-flex !important;
+  }
+  .hc-experience .site-header {
+    top: .7rem !important;
+    min-height: 68px !important;
+    width: min(calc(100% - 1.5rem), 1240px) !important;
+    color: #0b0d12 !important;
+    border: 1px solid rgba(11,13,18,.10) !important;
+    border-radius: 28px !important;
+    background: rgba(247,246,243,.94) !important;
+    box-shadow: 0 16px 42px rgba(11,13,18,.09), inset 0 1px 0 rgba(255,255,255,.75) !important;
+  }
+  .hc-experience .site-header .desktop-nav a {
+    color: #5f6673 !important;
+  }
+  .hc-experience .site-header .desktop-nav a:hover,
+  .hc-experience .site-header .desktop-nav a:focus-visible {
+    color: #0b0d12 !important;
+  }
+  .hc-experience .site-header .hermes-connect-header-launcher {
+    color: #fff !important;
+    border-color: #0b0d12 !important;
+    background: #0b0d12 !important;
+  }
+  .hc-experience .site-header + .hc-product-context {
+    margin-top: 88px !important;
+  }
+  .hc-experience .hc-product-context {
+    position: sticky !important;
+    top: 86px;
+    z-index: 39;
+    width: min(calc(100% - 1.5rem), 1240px);
+    margin-inline: auto;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 20px;
+    background: rgba(8,12,21,.91) !important;
+    box-shadow: 0 14px 36px rgba(0,0,0,.15);
+    backdrop-filter: blur(22px) saturate(1.08);
+  }
+}
+
+@media (max-width: 980px) and (min-width: 761px) {
+  .hc-experience .site-header .header-cta { display: none !important; }
+  .hc-experience .desktop-nav { gap: .55rem !important; font-size: .7rem !important; }
+  .hc-experience .hc-launcher-header { padding-right: .5rem !important; }
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    top: .45rem !important;
+    width: calc(100% - 1rem) !important;
+    min-height: 60px !important;
+    padding-inline: .7rem;
+    border: 1px solid rgba(11,13,18,.10);
+    border-radius: 22px;
+  }
+  .hc-experience .site-header + .hc-product-context { margin-top: 72px !important; }
+  .hc-experience .hc-product-context {
+    position: sticky !important;
+    top: 70px;
+    z-index: 39;
+    width: calc(100% - .75rem);
+    margin-inline: auto;
+    border: 1px solid rgba(255,255,255,.08) !important;
+    border-radius: 16px;
+    background: rgba(8,12,21,.94) !important;
+    box-shadow: 0 10px 28px rgba(0,0,0,.16);
+  }
+  .hc-experience .hc-product-context__summary { display: none !important; }
+  .hc-experience .hc-product-context__inner { padding: .34rem .15rem !important; }
+  .hc-experience .hc-family-nav { padding-block: .08rem !important; }
+}
+
+/* 5. Footer launcher: one mark is enough. */
+.hc-launcher-panel > a .hc-brand-mark,
+.hc-launcher-panel > a img.hc-brand-mark {
+  display: none !important;
+}
+
+/* 6. Public Hermes Connect banner gets Pearl contrast instead of dark-on-dark collisions. */
+.hc-launcher-banner {
+  color: #0b0d12 !important;
+  border-color: rgba(11,13,18,.10) !important;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(124,92,255,.10), transparent 18rem),
+    linear-gradient(135deg, rgba(255,255,255,.98), rgba(247,246,243,.96)) !important;
+  box-shadow: 0 22px 54px rgba(11,13,18,.08);
+}
+.hc-launcher-banner h3 { color: #0b0d12 !important; }
+.hc-launcher-banner p { color: #626977 !important; }
+.hc-launcher-banner .hc-launcher-badge { color: #6c56e8 !important; }
+.hc-launcher-banner > a {
+  color: #fff !important;
+  border: 1px solid #0b0d12;
+  background: #0b0d12 !important;
+}
+
+/* 7. IT Partnership contrast: dark section always owns white typography. */
+.technology-partnership,
+.technology-partnership .section-heading,
+.technology-partnership .technology-partnership-heading {
+  color: #fff !important;
+}
+.technology-partnership .section-heading h2,
+.technology-partnership .technology-partnership-heading h2,
+.technology-partnership .partnership-rail-content h3,
+.technology-partnership .partnership-rail-label strong {
+  color: #fff !important;
+}
+.technology-partnership .technology-partnership-intro p,
+.technology-partnership .partnership-rail-content p,
+.technology-partnership .partnership-rail-content li {
+  color: rgba(255,255,255,.76) !important;
+}
+.technology-partnership .partnership-rail-content a {
+  color: #fff !important;
+}
+
+/* 8. CTA arrows visibly respond on hover/focus without turning the whole site into motion. */
+:is(.button, .hc-primary, .hc-secondary, .hc-launcher-banner > a, .hc-launcher-inline,
+    .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
+    .department-technology-card-link, .department-technology-link, .hc-lab-links a) svg {
+  transition: transform 320ms cubic-bezier(.16,1,.3,1), filter 320ms ease !important;
+}
+:is(.button, .hc-primary, .hc-secondary, .hc-launcher-banner > a, .hc-launcher-inline,
+    .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
+    .department-technology-card-link, .department-technology-link, .hc-lab-links a):hover svg,
+:is(.button, .hc-primary, .hc-secondary, .hc-launcher-banner > a, .hc-launcher-inline,
+    .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
+    .department-technology-card-link, .department-technology-link, .hc-lab-links a):focus-visible svg {
+  transform: translate(5px,-2px) scale(1.06);
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* 9. Homepage direction hover should feel fluid, not slow. */
+.home-rooms-grid {
+  transition: grid-template-columns 420ms cubic-bezier(.16,1,.3,1) !important;
+}
+.home-room { transition: filter 320ms ease !important; }
+.home-room-image {
+  transition: transform 620ms cubic-bezier(.16,1,.3,1), filter 440ms ease !important;
+}
+.home-room-orbit {
+  transition: transform 520ms cubic-bezier(.16,1,.3,1), opacity 360ms ease !important;
+}
+
+/* 10. Recovered bouncing-I language. Kept sparse and reduced-motion safe. */
+.hermes-ai-motion-mark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .01em;
+  margin-left: .42rem;
+  color: currentColor;
+  font-family: var(--font-display);
+  font-size: .72em;
+  font-weight: 800;
+  letter-spacing: -.05em;
+  vertical-align: baseline;
+}
+.hermes-bouncing-i {
+  position: relative;
+  display: inline-block;
+  width: .25em;
+  margin-left: .02em;
+}
+.hermes-bouncing-i > span { display: block; }
+.hermes-bouncing-i > i {
+  position: absolute;
+  left: 50%;
+  top: .03em;
+  width: .11em;
+  height: .11em;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 .04em color-mix(in srgb, currentColor 18%, transparent);
+  transform: translate(-50%,0);
+  transform-origin: 50% 160%;
+  animation: hermes-i-dot-bounce 4.8s cubic-bezier(.3,.8,.25,1) 1.2s infinite;
+}
+@keyframes hermes-i-dot-bounce {
+  0%,84%,100% { transform: translate(-50%,0) scale(1); }
+  89% { transform: translate(-50%,-.2em) scale(.9,1.08); }
+  93% { transform: translate(-50%,.025em) scale(1.12,.86); }
+  96% { transform: translate(-50%,-.045em) scale(.97,1.03); }
+}
+.detail-hero-content .hermes-ai-motion-mark {
+  margin: .65rem 0 0;
+  padding: .24rem .48rem;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  font-size: .72rem;
+}
+.hc-copy .hermes-bouncing-i { color: inherit; }
+
+/* 11. Product Hub: make the signature Knot more dominant and playful. */
+.hc-brand-page .hc-knot-stage { perspective: 900px; }
+.hc-brand-page .hc-knot {
+  scale: 1.18;
+  translate: var(--hc-knot-x,0px) var(--hc-knot-y,0px);
+  transition: translate 420ms cubic-bezier(.16,1,.3,1), scale 420ms cubic-bezier(.16,1,.3,1), filter 420ms ease;
+  will-change: translate, scale;
+}
+.hc-brand-page .hc-knot-stage:hover .hc-knot,
+.hc-brand-page .hc-knot-stage:focus-within .hc-knot {
+  scale: 1.28;
+  filter: drop-shadow(0 34px 48px rgba(88,68,155,.22));
+}
+.hc-brand-page .hc-knot-loop {
+  transition: border-color 420ms ease, box-shadow 420ms ease, opacity 420ms ease;
+}
+.hc-brand-page .hc-knot-stage:hover .hc-knot-loop {
+  border-color: rgba(255,255,255,.72);
+  box-shadow: inset 7px 7px 18px rgba(255,255,255,.96), inset -9px -7px 17px rgba(92,113,255,.18), 0 0 0 1px rgba(124,92,255,.20), 0 18px 34px rgba(91,75,170,.16);
+}
+
+.hc-brand-page .hc-signal-list > div {
+  cursor: pointer;
+  outline: none;
+  transition: transform 300ms cubic-bezier(.16,1,.3,1), border-color 300ms ease, box-shadow 300ms ease, background 300ms ease;
+}
+.hc-brand-page .hc-signal-list > div:hover,
+.hc-brand-page .hc-signal-list > div:focus-visible,
+.hc-brand-page .hc-signal-list > div[aria-expanded="true"] {
+  transform: translateX(-6px);
+  border-color: rgba(124,92,255,.28);
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 16px 34px rgba(42,32,90,.10);
+}
+.hc-signal-extra {
+  display: block;
+  grid-column: 1 / -1;
+  max-height: 0;
+  overflow: hidden;
+  color: #626977;
+  font-size: .62rem;
+  line-height: 1.45;
+  opacity: 0;
+  transition: max-height 300ms ease, opacity 300ms ease, margin-top 300ms ease;
+}
+.hc-signal-list > div[aria-expanded="true"] .hc-signal-extra {
+  max-height: 5rem;
+  margin-top: .28rem;
+  opacity: 1;
+}
+
+/* Russian hero is longer: preserve the Pearl panel instead of letting copy collide with it. */
+.hc-brand-page[data-hc-hub-locale="ru"] .hc-copy h1 {
+  max-width: 720px;
+  font-size: clamp(3.25rem,5.35vw,5.75rem);
+  line-height: .94;
+  letter-spacing: -.055em;
+}
+@media (min-width: 1181px) {
+  .hc-brand-page[data-hc-hub-locale="ru"] .hc-hero-grid {
+    grid-template-columns: minmax(430px,.92fr) minmax(560px,1.08fr);
+  }
+}
+
+/* 12. Truthful proof below customer/team channels. */
+.technology-channel-proof {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: .75rem;
+  margin-top: .35rem;
+}
+.technology-channel-proof > article {
+  min-height: 130px;
+  padding: 1rem;
+  border: 1px solid #d5dae4;
+  border-radius: 16px;
+  background: rgba(255,255,255,.78);
+  box-shadow: 0 12px 30px rgba(12,20,66,.045);
+}
+.technology-channel-proof small {
+  display: block;
+  margin-bottom: .45rem;
+  color: #2563eb;
+  font: 750 .58rem/1.3 var(--font-mono);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.technology-channel-proof strong {
+  display: block;
+  color: #0a164f;
+  font-size: .92rem;
+  line-height: 1.3;
+}
+.technology-channel-proof p {
+  margin: .45rem 0 0;
+  color: #5f6275;
+  font-size: .76rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 760px) {
+  .technology-channel-proof { grid-template-columns: 1fr; }
+  .hc-brand-page .hc-knot { scale: 1.02; }
+  .hc-brand-page .hc-knot-stage:hover .hc-knot { scale: 1.06; }
+  .hc-brand-page[data-hc-hub-locale="ru"] .hc-copy h1 {
+    font-size: clamp(2.8rem,13.2vw,4.55rem);
+    line-height: .96;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hermes-bouncing-i > i { animation: none !important; }
+  .hc-brand-page .hc-knot { translate: 0 0 !important; scale: 1.08 !important; transition: none !important; }
+  .home-rooms-grid,
+  .home-room,
+  .home-room-image,
+  .home-room-orbit,
+  :is(.button, .hc-primary, .hc-secondary, .hc-launcher-banner > a, .hc-launcher-inline,
+      .partnership-rail-content a, .technology-proof-item > a, .technology-case-link,
+      .department-technology-card-link, .department-technology-link, .hc-lab-links a) svg {
+    transition: none !important;
+  }
+}
