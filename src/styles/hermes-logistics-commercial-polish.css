@@ -6,7 +6,15 @@
  * Copy, links, SEO paths and conversion behavior remain unchanged.
  */
 
-body:has(.detail-page-logistics) .logistics-commercial-links { border-top:1px solid var(--hermes-line-light); color:var(--hermes-ink); background:var(--hermes-pearl); }
+body:has(.detail-page-logistics) .logistics-commercial-links {
+  --logistics-commercial-accent: var(--hermes-logistics, #1e88ff);
+  /* Raw Logistics blue is reserved for icons/borders. Mix with ink for small text so
+     the semantic color remains recognizable while preserving readable contrast on Pearl. */
+  --logistics-commercial-accent-text: color-mix(in srgb, var(--logistics-commercial-accent) 80%, var(--hermes-ink));
+  border-top:1px solid var(--hermes-line-light);
+  color:var(--hermes-ink);
+  background:var(--hermes-pearl);
+}
 body:has(.detail-page-logistics) .logistics-commercial-links .section-heading h2,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid h3,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-directory h3,
@@ -34,15 +42,15 @@ body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commerci
   box-shadow:var(--hermes-shadow-card);
 }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid article > svg,
-body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-directory-heading > svg,
+body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-directory-heading > svg { color:var(--logistics-commercial-accent); }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid .eyebrow,
-body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-directory .eyebrow { color:var(--hermes-violet); }
+body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-directory .eyebrow { color:var(--logistics-commercial-accent-text); }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid article > a,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-actions a { min-height:44px; color:var(--hermes-ink); }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid article > a:hover,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid article > a:focus-visible,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-actions a:hover,
-body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-actions a:focus-visible { color:var(--hermes-violet); }
+body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-actions a:focus-visible { color:var(--logistics-commercial-accent-text); }
 body:has(.detail-page-logistics) .logistics-commercial-links .carrier-proposal-link { padding:11px 13px; border:1px solid var(--hermes-line-light); border-radius:var(--hermes-radius-control); color:var(--hermes-ink); background:var(--hermes-pearl); }
 
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-directory {
@@ -104,13 +112,13 @@ body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-col
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-columns a > svg { flex:0 0 auto; opacity:.55; }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-columns a:hover,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-columns a:focus-visible {
-  border-color:color-mix(in srgb,var(--hermes-violet) 38%,var(--hermes-line-light));
+  border-color:color-mix(in srgb,var(--logistics-commercial-accent) 38%,var(--hermes-line-light));
   color:var(--hermes-ink);
-  background:color-mix(in srgb,var(--hermes-violet) 4%,var(--hermes-paper));
+  background:color-mix(in srgb,var(--logistics-commercial-accent) 4%,var(--hermes-paper));
   transform:translateY(-1px);
 }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-columns a:hover > svg,
-body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-columns a:focus-visible > svg { opacity:.9; }
+body:has(.detail-page-logistics) .logistics-commercial-links .logistics-path-columns a:focus-visible > svg { opacity:.9; color:var(--logistics-commercial-accent); }
 
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:22px; padding-top:22px; border-top:1px solid var(--hermes-line-light); }
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer p { flex:1 0 100%; margin:0 0 2px; }
@@ -126,7 +134,7 @@ body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commerci
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .button-ghost:hover,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .button-ghost:focus-visible,
 body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .carrier-footer-proposal:hover,
-body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .carrier-footer-proposal:focus-visible { border-color:color-mix(in srgb,var(--hermes-violet) 38%,var(--hermes-line-light)); color:var(--hermes-ink); background:var(--hermes-pearl); }
+body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-footer .carrier-footer-proposal:focus-visible { border-color:color-mix(in srgb,var(--logistics-commercial-accent) 38%,var(--hermes-line-light)); color:var(--hermes-ink); background:color-mix(in srgb,var(--logistics-commercial-accent) 3%,var(--hermes-paper)); }
 
 @media (max-width:900px){
   body:has(.detail-page-logistics) .logistics-commercial-links .logistics-commercial-grid,
