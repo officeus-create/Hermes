@@ -126,7 +126,7 @@ assert.match(candidateApi, /X-HR-Candidate-Token/);
 assert.match(candidateApi, /Idempotency-Key/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_interview_answers/);
 assert.match(candidateApi, /INSERT OR IGNORE INTO hr_events/);
-assert.match(candidateApi, /status='completed'/);
+assert.match(candidateApi, /CASE WHEN status='interviewing' THEN 'completed' ELSE status END/);
 assert.match(candidateApi, /candidate_token_invalid/);
 assert.doesNotMatch(candidateApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
