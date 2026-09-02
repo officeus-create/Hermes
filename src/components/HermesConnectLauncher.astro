@@ -72,16 +72,17 @@ const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · 
   ? "СТО · текущий рабочий пилот"
   : sublabel;
 const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
-/* Product Hub is the primary global entrance. Contextual launchers retain an explicit href when one is supplied. */
+/* Product Hub remains the canonical default. Header/mobile always use it; contextual launchers may keep an explicit live-product href. */
+const computedHref = href || "/services/hermes-connect/";
 const hubFirstVariant = variant === "header" || variant === "mobile";
-const computedHref = hubFirstVariant ? "/services/hermes-connect/" : href || "/services/hermes-connect/";
+const effectiveHref = hubFirstVariant ? "/services/hermes-connect/" : computedHref;
 const localizeConnectHref = (value: string) => {
   if (activeLocale !== "ru" || !value.startsWith("/services/hermes-connect/")) return value;
   const url = new URL(value, "https://hermeslogisticsus.com");
   url.searchParams.set("lang", "ru");
   return `${url.pathname}${url.search}${url.hash}`;
 };
-const localizedHref = localizeConnectHref(computedHref);
+const localizedHref = localizeConnectHref(effectiveHref);
 const localizedRepairHref = localizeConnectHref("/services/hermes-connect/repair-shops/");
 const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
