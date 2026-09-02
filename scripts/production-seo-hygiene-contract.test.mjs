@@ -48,7 +48,7 @@ const expectedChildUrls = childSitemapFiles.map((file) => `https://${sitemapHost
 assert.deepEqual(
   new Set(sitemapIndexLocs),
   new Set(expectedChildUrls),
-  "sitemapindex.xml must reference exactly the eight controlled child sitemaps",
+  `sitemapindex.xml must reference exactly the ${childSitemapFiles.length} controlled child sitemaps`,
 );
 assert.equal(sitemapIndexLocs.length, expectedChildUrls.length, "sitemapindex.xml must not duplicate child sitemap references");
 
@@ -96,6 +96,7 @@ for (const required of [
   '"/services/website-development/"',
   '"/academy/us-logistics-operations/"',
   '"/__hermes-seo-healthcheck-nonexistent__/"',
+  "childSitemapPaths.length",
   "finalUrlMatches",
   "exactControlledChildren",
   "hasMarkdownLinks",
@@ -103,6 +104,10 @@ for (const required of [
 ]) {
   assert.ok(verifier.includes(required), `production verifier must preserve ${required}`);
 }
+assert.ok(
+  !verifier.includes("all eight controlled child sitemaps"),
+  "production verifier must derive the controlled child-sitemap count instead of hard-coding the current total",
+);
 
 const workflow = await readFile(new URL("../.github/workflows/production-seo-hygiene-command.yml", import.meta.url), "utf8");
 assert.ok(workflow.includes("github.event.issue.number == 346"), "SEO hygiene command must stay scoped to the SEO 11 master issue");
