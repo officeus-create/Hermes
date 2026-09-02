@@ -77,6 +77,37 @@ Ordinary/manual `scripts/ai/codex-hermes` usage remains on its direct execution 
 
 `REMOTE_BROWSER_TO_CODEX = UNVERIFIED` until this contract is configured and independently proven in an approved environment.
 
+## Read-only Mac preflight — required before activation
+
+Before starting, scheduling, claiming, or extending any Internal AI runner task, run:
+
+```bash
+cd ~/Hermes
+./scripts/ai/codex-hermes-doctor --internal-ai
+```
+
+This is a **read-only readiness receipt**, not an activator. It checks:
+
+- the normal isolated Codex/FCC runtime boundary;
+- the Hermes repository boundary and canonical `main` branch;
+- a clean tracked working tree without deleting or interpreting untracked local state;
+- local `HEAD` against `origin/main` using `git ls-remote` rather than `git fetch`, reset, checkout, pull, merge, or another repository mutation;
+- trusted wrapper shell syntax plus runner/sanitizer Python syntax without writing `__pycache__` into the repository;
+- an HTTPS Internal AI API value without query/fragment credential material;
+- presence and a 32-character minimum readiness floor for the scoped runner token without printing its value;
+- absence of the one-time owner bootstrap token from the local runner environment.
+
+The doctor must not start/stop local services, claim a task, contact Telegram, touch Carrier Database, merge, deploy, or modify Git state. Its successful receipt ends with:
+
+```text
+INTERNAL_AI_PREFLIGHT=PASS
+LOCAL_HEAD_SHA=<exact local main SHA>
+REMOTE_MAIN_SHA=<same exact origin/main SHA>
+REMOTE_BROWSER_TO_CODEX=UNVERIFIED
+```
+
+Any `FAIL` remains a blocker to the first browser-runner proof. A `PASS` proves only that the local prerequisites are structurally ready at that moment. It does **not** prove a provider request, runner scheduler, browser queue, production API binding, Cloudflare deployment, or live task execution.
+
 ## Real approval state
 
 The UI shows `Needs approval` only when a runner completes a task as `needs_approval` with one of these documented gates:
@@ -100,7 +131,7 @@ The local runner accepts only the listed gate values and reports the task as
 
 ## First live proof boundary
 
-The first live proof must remain harmless and repository-only:
+Only after a fresh `INTERNAL_AI_PREFLIGHT=PASS`, the first live proof must remain harmless and repository-only:
 
 `owner browser session → queued task → outbound Mac runner → isolated branch → Hermes Codex → sanitized evidence receipt`
 
