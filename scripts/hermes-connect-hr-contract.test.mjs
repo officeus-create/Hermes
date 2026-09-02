@@ -63,6 +63,13 @@ assert.match(adminJs, /MORE_EVIDENCE:\s*'Request more evidence'/);
 assert.match(adminJs, /SUPERVISED_TEST:\s*'Authorize supervised test'/);
 assert.match(adminJs, /automated:false/);
 assert.match(adminJs, /human_review_recorded/);
+assert.match(adminJs, /hermes-connect-academy-hr-handoffs-v1/);
+assert.match(adminJs, /READY_FOR_ACADEMY_INTAKE/);
+assert.match(adminJs, /candidate_id:\s*candidate\.candidate_id/);
+assert.match(adminJs, /learner_id:\s*candidate\.learner_id \|\| candidate\.candidate_id/);
+assert.match(adminJs, /capability_gaps:\s*capabilityGaps\(candidate\.practice_signals\)/);
+assert.match(adminJs, /evidence_ids:/);
+assert.match(adminJs, /academy_handoff_prepared/);
 assert.doesNotMatch(adminJs, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 assert.match(carrierLanding, /Carrier Acquisition · Hermes Connect HR/);
