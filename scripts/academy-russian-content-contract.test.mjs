@@ -10,8 +10,10 @@ import {
   getAcademyLessonContentRu,
 } from "../functions/api/_lib/academy-content-ru.mjs";
 import {
+  normalizeLocalizedLessonIdentity,
   projectLocalizedLessonShape,
   resolveAcademyLessonLocale,
+  resolveRussianLessonSourceId,
 } from "../functions/api/_lib/academy-lesson-localization.mjs";
 
 const expected = {
@@ -55,18 +57,20 @@ function assertSameShape(base, localized, path = "lesson") {
 
 test("Russian Academy content covers every current canonical lesson", () => {
   assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT_RU).sort(), Object.keys(expected).sort());
+  assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT).sort(), Object.keys(expected).sort());
 
   for (const [program, lessons] of Object.entries(expected)) {
-    assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT_RU[program]).sort(), [...lessons].sort());
     assert.deepEqual(Object.keys(ACADEMY_LESSON_CONTENT[program]).sort(), [...lessons].sort());
 
     for (const lessonId of lessons) {
       const base = getAcademyLessonContent(program, lessonId);
-      const rawRu = getAcademyLessonContentRu(program, lessonId);
+      const russianSourceId = resolveRussianLessonSourceId(program, lessonId);
+      const rawRu = getAcademyLessonContentRu(program, russianSourceId);
+      const normalizedRu = normalizeLocalizedLessonIdentity(base, rawRu);
       assert.ok(base, `${program}/${lessonId} English source missing`);
-      assert.ok(rawRu, `${program}/${lessonId} Russian source missing`);
+      assert.ok(rawRu, `${program}/${lessonId} Russian source missing (resolved source: ${russianSourceId})`);
 
-      const ru = projectLocalizedLessonShape(base, rawRu);
+      const ru = projectLocalizedLessonShape(base, normalizedRu);
       assertSameShape(base, ru, `${program}/${lessonId}`);
       assert.equal(ru.program_slug, base.program_slug);
       assert.equal(ru.lesson_id, base.lesson_id);
@@ -109,6 +113,12 @@ test("Russian Academy content covers every current canonical lesson", () => {
       }
     }
   }
+
+  assert.equal(
+    resolveRussianLessonSourceId("us-logistics-operations", "documents-setup"),
+    "broker-setup-packet",
+    "legacy Russian source must be explicitly mapped to the current canonical documents-setup lesson",
+  );
 });
 
 test("Russian lesson locale is explicit and safely falls back to English", () => {
@@ -128,6 +138,8 @@ test("lesson API uses the canonical English lesson as the schema owner", async (
   const source = await readFile(new URL("../functions/api/academy/lesson.ts", import.meta.url), "utf8");
   assert.match(source, /getAcademyLessonContentRu/);
   assert.match(source, /resolveAcademyLessonLocale/);
+  assert.match(source, /resolveRussianLessonSourceId/);
+  assert.match(source, /normalizeLocalizedLessonIdentity/);
   assert.match(source, /projectLocalizedLessonShape\(baseLesson, localizedLesson\)/);
   assert.match(source, /locale === "ru"/);
   assert.match(source, /locale,/);
