@@ -6,6 +6,7 @@ const CONNECT_ANALYTICS_SCRIPT = "/connect-analytics-consent.mjs";
 const CONNECT_ANALYTICS_MARKER = "data-hermes-connect-analytics-consent";
 const CONNECT_BRAND_SHELL = "/brand-shell.css";
 const CONNECT_BRAND_SHELL_MARKER = "data-hermes-connect-brand-shell";
+const HR_WORKSPACE_ENTRY_MARKER = "data-hermes-connect-hr-entry";
 const OLD_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/#apply";
 const NEW_CONNECT_ACCESS = "https://connect.hermeslogisticsus.com/request-access/#apply";
 const LIVE_DELIVERY_COPY = "Delivery is confirmed only after a successful server response.";
@@ -63,6 +64,9 @@ const NATIVE_CONNECT_DOCUMENTS = new Set([
   "/workspace.html",
   "/review.html",
   "/sales-roleplay.html",
+  "/hr.html",
+  "/hr-admin.html",
+  "/hr-carrier-acquisition.html",
 ]);
 
 const KNOT_MARKUP = `<span class="brand-mark brand-mark-knot" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><path d="M8 12c0-3 2.4-5.4 5.4-5.4h7.2c2.6 0 4.7 2.1 4.7 4.7v3.4c0 2.6-2.1 4.7-4.7 4.7h-7.2A5.4 5.4 0 0 0 8 24.8V28" fill="none" stroke="#9D88FF" stroke-width="5" stroke-linecap="round"/><path d="M36 32c0 3-2.4 5.4-5.4 5.4h-7.2a4.7 4.7 0 0 1-4.7-4.7v-3.4c0-2.6 2.1-4.7 4.7-4.7h7.2a5.4 5.4 0 0 0 5.4-5.4V16" fill="none" stroke="#5AC8FA" stroke-width="5" stroke-linecap="round"/></svg></span>`;
@@ -198,12 +202,21 @@ function applyLegacyBrandShell(html) {
   return next;
 }
 
+function applyHrWorkspaceEntry(html) {
+  if (html.includes(HR_WORKSPACE_ENTRY_MARKER) || !html.includes('class="nav-stack"')) return html;
+  const academyEntry = '<button class="nav-item" data-view="academy"><i>◎</i><span>Academy</span></button>';
+  if (!html.includes(academyEntry)) return html;
+  const hrEntry = `<a class="nav-item" href="./hr-admin.html" ${HR_WORKSPACE_ENTRY_MARKER} aria-label="Open Hermes Connect HR"><i>◈</i><span>HR</span></a>`;
+  return html.replace(academyEntry, `${academyEntry}${hrEntry}`);
+}
+
 async function connectHtmlResponse(response, { legacy = false } = {}) {
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.toLowerCase().includes("text/html")) return response;
 
   let html = await response.text();
   if (legacy) html = applyLegacyBrandShell(html);
+  html = applyHrWorkspaceEntry(html);
 
   if (!html.includes(CONNECT_ANALYTICS_MARKER)) {
     const bootstrap = `<script type="module" src="${CONNECT_ANALYTICS_SCRIPT}" ${CONNECT_ANALYTICS_MARKER}></script>`;
@@ -291,6 +304,7 @@ async function sanitizeMainDomainCopy(context) {
     original,
   );
   sanitized = sanitized.replaceAll(OLD_CONNECT_ACCESS, NEW_CONNECT_ACCESS);
+  sanitized = applyHrWorkspaceEntry(sanitized);
   if (sanitized === original) return new Response(original, response);
 
   const headers = new Headers(response.headers);
