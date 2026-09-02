@@ -13,6 +13,7 @@ import { publicPaths } from "../../data/public-paths";
 import { site } from "../../data/site";
 import "../../styles/hermes-public-path-shell.css";
 import "../../styles/hermes-connect-division-context.css";
+import "../../styles/hermes-public-division-colors.css";
 
 export function getStaticPaths() {
   return publicPaths.map((path) => ({ params: { slug: path.id }, props: { path } }));
