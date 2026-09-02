@@ -1,12 +1,12 @@
 # Hermes Connect Design — Current State
 
-Last updated: 2026-08-31
+Last updated: 2026-09-02
 
 ## Decision status
 
-**Hermes Connect Brand System V1 remains the base design system, with one explicit owner-approved logo update: original Option №02 (`continuous_loop`) is now approved for implementation / launch.**
+**Hermes Connect Brand System V1 remains the base design system, with two explicit owner-approved production decisions: original Option №02 (`continuous_loop`) is approved for implementation / launch, and the four Hermes business-direction semantic colors are now locked for contextual use.**
 
-Read `OWNER_DECISION_OPTION02_2026-08-31.md` before proposing logo changes. That owner decision supersedes older V1 language only where V1 treated Möbius/infinity/continuous-loop concepts as unapproved replacements.
+Read `OWNER_DECISION_OPTION02_2026-08-31.md` before proposing logo changes and `../DIVISION_COLOR_CONTRACT_2026-09-01.md` before proposing direction-color changes. Those decisions supersede older V1 language where it treated Möbius/infinity/continuous-loop concepts as unapproved replacements or division colors as deferred experimentation.
 
 The surrounding Hermes Connect system should still be refined and extended rather than restarted from zero.
 
@@ -29,6 +29,7 @@ Primary working message:
 - Large, simple typography and generous whitespace.
 - Real product workflows shown in motion instead of feature-list overload.
 - Editorial industry cards with controlled niche-specific art direction.
+- Business-direction color is a contextual navigation signal, not a separate-brand treatment.
 
 ## Approved logo direction
 
@@ -36,7 +37,22 @@ The selected production mark is the original Brand Exploration V2 **Option №02
 
 It should remain a simple horizontal continuous connected-flow symbol. Production refinement may improve optical quality, small-size performance, motion and trademark differentiation without turning it into a different logo family.
 
-For the current launch use the core blue / cobalt / violet Hermes Connect spectrum. Division-specific color behavior for Logistics / Marketing / Academy / IT is deferred to the next design phase and is not a launch gate.
+For the current launch the Hermes Connect master identity uses the core blue / cobalt / violet spectrum. Business-direction colors do not recolor or replace the master mark; they identify business context through controlled accents, borders, dots, atmosphere, navigation and other bounded UI signals.
+
+## Approved business-direction colors
+
+The semantic direction colors are locked:
+
+- Logistics — `--hermes-logistics: #1E88FF`.
+- Marketing — `--hermes-marketing: #00C853`.
+- Academy — `--hermes-academy: #7C5CFF`.
+- Technology / IT & Product — `--hermes-technology: #FF7A00`.
+
+These colors belong to the Hermes Brand System and must remain contextual signals rather than full-page rebrands. On Pearl/light surfaces, raw semantic colors must not be forced into small body text when contrast is insufficient; use approved same-hue contrast-safe text variants while preserving the canonical semantic hue for framing, atmosphere and UI cues.
+
+Beauty does **not** currently have an owner-approved standalone semantic brand color. Keep Beauty neutral or within existing Hermes Connect-family UI cues until an explicit owner decision is recorded; do not invent a new `--hermes-beauty` brand token.
+
+Hermes Intelligence remains a cross-business intelligence layer and may retain its violet / blue-violet identity where the UI is communicating Intelligence rather than a business division.
 
 ## Approved flow-wave motif
 
@@ -85,7 +101,7 @@ These are visual storytelling modes, not separate brands.
 
 ## Color direction
 
-Directional palette is locked around:
+The broader Hermes palette remains locked around:
 
 - Pearl / warm off-white;
 - Graphite / Anthracite / Obsidian;
@@ -93,11 +109,12 @@ Directional palette is locked around:
 - controlled blue / cobalt;
 - restrained sage / mint;
 - warm sand;
-- semantic amber / red.
+- semantic amber / red;
+- the four approved business-direction accents defined above.
 
-Exact production tokens require implementation-level accessibility and contrast validation.
+Exact production application still requires implementation-level accessibility and contrast validation.
 
-Antigravity Brand Exploration V2 proposed candidate tokens including `#F8F6F0`, `#090A0F`, `#6D28D9`, `#2563EB`, `#D97706` and `#BE123C`. The current Option №02 launch intentionally uses the blue / cobalt / violet portion of that family; division-color experimentation comes later.
+Antigravity Brand Exploration V2 proposed candidate tokens including `#F8F6F0`, `#090A0F`, `#6D28D9`, `#2563EB`, `#D97706` and `#BE123C`. Those are historical exploration references, not replacements for the owner-approved production direction-color contract.
 
 ## Hero direction
 
@@ -136,7 +153,7 @@ Every design change should be labeled:
 - `Experiment`
 - `Rebrand Proposal`
 
-The Option №02 logo change has explicit owner approval. Any new replacement family still requires explicit owner approval.
+The Option №02 logo change and four business-direction semantic colors have explicit owner approval. Any new replacement logo family or new division/business semantic color still requires explicit owner approval.
 
 ## Required production validation
 
@@ -157,4 +174,5 @@ The Option №02 logo change has explicit owner approval. Any new replacement fa
 See:
 
 - `ai-collaboration/01_DESIGN/hermes-connect/OWNER_DECISION_OPTION02_2026-08-31.md`
+- `ai-collaboration/01_DESIGN/DIVISION_COLOR_CONTRACT_2026-09-01.md`
 - `ai-collaboration/01_DESIGN/hermes-connect/APPROVED_BRAND_SYSTEM_V1.md`
