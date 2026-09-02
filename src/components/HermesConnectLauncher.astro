@@ -70,7 +70,8 @@ const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · 
   ? "СТО · текущий рабочий пилот"
   : sublabel;
 const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
-const computedHref = href || "/services/hermes-connect/";
+const hubFirstVariant = variant === "header" || variant === "mobile" || variant === "footer" || variant === "banner";
+const computedHref = hubFirstVariant ? "/services/hermes-connect/" : href || "/services/hermes-connect/";
 const localizedHref = (() => {
   if (activeLocale !== "ru" || !computedHref.startsWith("/services/hermes-connect/")) return computedHref;
   const url = new URL(computedHref, "https://hermeslogisticsus.com");
