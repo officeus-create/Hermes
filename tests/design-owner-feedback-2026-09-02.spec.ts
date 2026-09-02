@@ -61,6 +61,14 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     }
   });
 
+  test("AI motion is decorative and never rewrites the semantic Product Hub H1", async ({ page }) => {
+    await page.goto("/services/hermes-connect/");
+    const title = page.locator(".hc-copy h1");
+    await expect(title).toHaveText("Run your business with AI.");
+    await expect(page.locator(".hc-copy .hermes-ai-motion-mark")).toHaveAttribute("aria-hidden", "true");
+    await expect(title.locator(".hermes-bouncing-i")).toHaveCount(0);
+  });
+
   test("Product Hub signal steps are understandable and interactive", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/services/hermes-connect/");
@@ -82,7 +90,7 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(page.locator(".detail-hero-content .hermes-ai-motion-mark")).toHaveCount(0);
   });
 
-  test("Technology partnership remains readable and exposes truthful delivery proof", async ({ page }) => {
+  test("Technology partnership stays readable and relies on the existing server-rendered proof library", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/paths/technology/");
 
@@ -92,10 +100,11 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(heading).toBeVisible();
     await expect(heading).toHaveCSS("color", "rgb(255, 255, 255)");
 
-    const proof = page.locator(".technology-channel-proof");
-    await expect(proof).toBeVisible();
-    await expect(proof).toContainText("One corporate front door across four Hermes directions");
-    await expect(proof).toContainText("Repair Shops is the current public live vertical");
+    const proofLibrary = page.locator(".technology-proof-library");
+    await expect(proofLibrary).toBeVisible();
+    await expect(proofLibrary).toContainText("Real work, clearly labeled.");
+    await expect(proofLibrary).toContainText("Corporate digital front door");
+    await expect(page.locator(".technology-channel-proof")).toHaveCount(0);
   });
 
   test("polish layer preserves canonical, robots, and structured-data contracts", async ({ page }) => {
