@@ -70,7 +70,8 @@ const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · 
   ? "СТО · текущий рабочий пилот"
   : sublabel;
 const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
-const hubFirstVariant = variant === "header" || variant === "mobile" || variant === "footer" || variant === "banner";
+/* Product Hub is the primary global entrance. Contextual/footer launchers retain an explicit live-product href when one is supplied. */
+const hubFirstVariant = variant === "header" || variant === "mobile";
 const computedHref = hubFirstVariant ? "/services/hermes-connect/" : href || "/services/hermes-connect/";
 const localizedHref = (() => {
   if (activeLocale !== "ru" || !computedHref.startsWith("/services/hermes-connect/")) return computedHref;
