@@ -25,6 +25,9 @@ assert.match(html, /must not automatically hire, reject or rank candidates/i);
 assert.match(html, /name="name"/);
 assert.match(html, /name="email"/);
 assert.match(html, /consent to Hermes storing my contact details and job-relevant interview answers/i);
+assert.match(html, /Clear this browser & restart/);
+assert.match(html, /Clearing this browser removes only the local recovery copy/i);
+assert.match(html, /does not delete that server record/i);
 assert.match(html, /hr-server-sync\.mjs/);
 assert.match(html, /data-claim-hr/);
 assert.match(html, /\.\/academy\.html/);
@@ -106,6 +109,13 @@ assert.match(adminServer, /credentials:'same-origin'/);
 assert.match(adminServer, /ACADEMY:\s*'Academy practice'/);
 assert.match(adminServer, /MORE_EVIDENCE:\s*'Request more evidence'/);
 assert.match(adminServer, /SUPERVISED_TEST:\s*'Authorize supervised test'/);
+assert.match(adminServer, /SIGNAL_EVIDENCE_QUESTIONS/);
+assert.match(adminServer, /Evidence confidence:/);
+assert.match(adminServer, /Evidence IDs:/);
+assert.match(adminServer, /Rationale:/);
+assert.match(adminServer, /Missing \/ unknown:/);
+assert.match(adminServer, /evidence coverage, not probability of job success/i);
+assert.match(adminServer, /No supervised live roleplay\/call evidence/i);
 assert.doesNotMatch(adminServer, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
 for (const table of ['hr_candidates','hr_interview_sessions','hr_interview_answers','hr_events','hr_reviewer_access','hr_reviews','hr_academy_links']) {
@@ -169,4 +179,4 @@ assert.match(carrierLanding, /utm_source/);
 assert.match(carrierLanding, /creative/);
 assert.doesNotMatch(carrierLanding, /guaranteed income|guaranteed employment/i);
 
-console.log('Hermes Connect HR private persistence + human review + account capability contract: PASS');
+console.log('Hermes Connect HR private persistence + human review + evidence lineage + account capability contract: PASS');
