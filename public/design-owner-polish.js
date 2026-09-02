@@ -112,6 +112,9 @@
   const activateProductHubSignals = () => {
     const signalList = document.querySelector(".hc-brand-page .hc-signal-list");
     if (!signalList) return;
+    signalList.removeAttribute("aria-hidden");
+    signalList.setAttribute("aria-label", currentLocale() === "ru" ? "Как Hermes превращает сигнал в действие" : "How Hermes turns a signal into action");
+
     const locale = currentLocale();
     const copy = locale === "ru"
       ? [
