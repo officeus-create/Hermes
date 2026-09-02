@@ -82,7 +82,7 @@ Escalate only for:
 8. material expansion outside the accepted task; or
 9. an ambiguity that cannot be resolved from current evidence.
 
-Execution environments may still impose their own sandbox or approval prompts. Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` / `--yolo`. When the installed Codex CLI supports it, the preferred Hermes invocation is `./scripts/ai/codex-hermes --approve-for-me`, retaining the `workspace-write` sandbox. The wrapper already forwards supported Codex arguments; do not edit global Codex configuration from a repository task unless the owner explicitly assigns that external configuration change.
+Execution environments may still impose their own sandbox or approval prompts. Do not bypass them with `--dangerously-bypass-approvals-and-sandbox` / `--yolo`, standing full-access modes, or an auto-review flag merely to keep an unattended task moving. Ordinary interactive Hermes Codex work should use `./scripts/ai/codex-hermes` and the narrowest sandbox/approval policy appropriate to the assigned task; do not edit global Codex configuration from a repository task unless the owner explicitly assigns that external configuration change. Browser-queued Internal AI is stricter: its trusted wrapper must fail closed, run inside `workspace-write`, disable approval escalation, clean the inherited environment, and sanitize evidence as defined in `docs/HERMES_CONNECT_AI_INTERNAL_RUNNER.md`. A sandbox denial is a blocker/evidence signal, not permission to widen authority.
 
 ### Organizational lessons
 

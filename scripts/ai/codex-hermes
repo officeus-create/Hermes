@@ -27,11 +27,51 @@ fi
 mkdir -p "$CODEX_HOME"
 chmod 700 "$CODEX_HOME" 2>/dev/null || true
 
-# Internal AI transport/bootstrap credentials belong to the parent control
-# plane only. Never inherit them into FCC/Codex, even when the runner starts
-# this wrapper with a copied environment.
+# Detect the browser-queued Internal AI path before removing its transport
+# credential. A non-secret context marker survives the clean-environment re-exec
+# so the runner token itself never needs to reach FCC/Codex.
+RUNNER_SANITIZE=0
+if [[ "${HERMES_INTERNAL_AI_RUNNER_CONTEXT:-}" == "1" || -n "${HERMES_INTERNAL_AI_RUNNER_TOKEN:-}" ]]; then
+  RUNNER_SANITIZE=1
+fi
+
+# Browser-queued execution must not inherit the owner's arbitrary shell
+# environment. Re-exec this trusted wrapper with a minimal non-secret allowlist
+# before any model-controlled command can run. FCC provider credentials remain
+# in FCC's own managed local configuration/auth flow under ~/.fcc.
+if [[ "$RUNNER_SANITIZE" == "1" && "${HERMES_INTERNAL_AI_CLEAN_ENV:-}" != "1" ]]; then
+  clean_env=(
+    "HOME=$HOME"
+    "PATH=$PATH"
+    "HERMES_INTERNAL_AI_RUNNER_CONTEXT=1"
+    "HERMES_INTERNAL_AI_CLEAN_ENV=1"
+    "HERMES_AI_HOME=$HERMES_AI_HOME"
+    "HERMES_FCC_VENV=$FCC_VENV"
+    "HERMES_CODEX_HOME=$CODEX_HOME"
+    "HERMES_REPO_ROOT=$REPO_ROOT"
+  )
+
+  for name in USER LOGNAME SHELL TMPDIR LANG LC_ALL LC_CTYPE TERM XDG_CONFIG_HOME XDG_CACHE_HOME XDG_DATA_HOME SSL_CERT_FILE SSL_CERT_DIR; do
+    if [[ -n "${!name:-}" ]]; then
+      clean_env+=("$name=${!name}")
+    fi
+  done
+  if [[ -n "${HERMES_CODEX_MODEL:-}" ]]; then
+    clean_env+=("HERMES_CODEX_MODEL=$HERMES_CODEX_MODEL")
+  fi
+  if [[ -n "${HERMES_CODEX_FALLBACKS:-}" ]]; then
+    clean_env+=("HERMES_CODEX_FALLBACKS=$HERMES_CODEX_FALLBACKS")
+  fi
+
+  exec env -i "${clean_env[@]}" "$SCRIPT_DIR/codex-hermes" "$@"
+fi
+
+# Internal AI transport/bootstrap/context variables belong to the parent control
+# plane only. Never inherit them into FCC/Codex.
 unset HERMES_INTERNAL_AI_RUNNER_TOKEN
 unset HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN
+unset HERMES_INTERNAL_AI_RUNNER_CONTEXT
+unset HERMES_INTERNAL_AI_CLEAN_ENV
 
 # FCC writes an external-auth helper into its temporary Codex configuration.
 # Keep only FCC's isolated virtualenv ahead of the inherited PATH so routed
@@ -52,4 +92,42 @@ export HERMES_CODEX_RUNTIME="fcc"
 export HERMES_CODEX_REPO="$REPO_ROOT"
 
 cd "$REPO_ROOT"
+
+if [[ "$RUNNER_SANITIZE" == "1" ]]; then
+  SANITIZER="$SCRIPT_DIR/hermes-internal-ai-sanitize.py"
+  [[ -r "$SANITIZER" ]] || {
+    printf '[codex-hermes] Internal AI output sanitizer is missing or unreadable at %s; refusing to start unsanitized runner execution.\n' "$SANITIZER" >&2
+    exit 74
+  }
+  command -v python3 >/dev/null 2>&1 || {
+    printf '[codex-hermes] python3 is required for the Internal AI output sanitizer; refusing to start unsanitized runner execution.\n' >&2
+    exit 74
+  }
+
+  # Accept only the exact legacy runner argv shape and normalize it to a stricter
+  # current Codex policy. Browser tasks may work autonomously inside the
+  # workspace, but may not auto-review or escalate out of the sandbox.
+  if [[ "$#" -ne 5 || "${1:-}" != "exec" || "${2:-}" != "--sandbox" || "${3:-}" != "workspace-write" || "${4:-}" != "--approve-for-me" || -z "${5:-}" ]]; then
+    printf '[codex-hermes] Internal AI runner arguments do not match the reviewed contract; refusing execution.\n' >&2
+    exit 74
+  fi
+  runner_prompt="$5"
+  runner_args=(--sandbox workspace-write --ask-for-approval never exec "$runner_prompt")
+
+  # Defense in depth: the streaming filter removes credential-shaped output
+  # before it reaches the Python runner. The runner applies its own sanitizer
+  # again before uploading events/results. Preserve the FCC/Codex exit code and
+  # fail closed if the sanitizer itself fails.
+  set +e
+  "$FCC_CODEX" "${runner_args[@]}" 2>&1 | python3 "$SANITIZER"
+  pipeline_status=("${PIPESTATUS[@]}")
+  set -e
+
+  if [[ "${pipeline_status[1]:-1}" -ne 0 ]]; then
+    printf '[codex-hermes] Internal AI output sanitizer failed; refusing to treat output as safe evidence.\n' >&2
+    exit 74
+  fi
+  exit "${pipeline_status[0]:-1}"
+fi
+
 exec "$FCC_CODEX" "$@"

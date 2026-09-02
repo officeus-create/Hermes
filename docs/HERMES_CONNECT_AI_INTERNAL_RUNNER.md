@@ -52,7 +52,7 @@ HERMES_INTERNAL_AI_API=https://<approved HTTPS Hermes origin>
 HERMES_INTERNAL_AI_RUNNER_TOKEN=<scoped runner secret>
 ```
 
-The Cloudflare environment must have the corresponding server-side runner token. Provisioning the capability binding, secret, or external runner is an owner/security action and is intentionally out of scope for this PR.
+The Cloudflare environment must have the corresponding server-side runner token. Provisioning the capability binding, secret, or external runner is an owner/security action and is intentionally out of scope for this contract.
 
 The runner:
 
@@ -60,10 +60,20 @@ The runner:
 - starts from exact `origin/main` with a clean tracked worktree;
 - creates an isolated non-main task branch;
 - invokes `scripts/ai/codex-hermes` through an argument array (no shell interpolation);
-- invokes `codex exec --sandbox workspace-write --approve-for-me <bounded prompt>` through that wrapper; the installed CLI's `exec --help` confirms this supported option order, so routine approval prompts remain inside safe automatic review rather than hanging the unattended runner;
-- streams bounded sanitized evidence;
+- enters a dedicated Internal-AI wrapper path only when the parent runner context is present;
+- re-execs that trusted wrapper through a minimal `env -i` allowlist before any model-controlled command runs, so unrelated shell credentials and agent sockets are not forwarded into the browser-queued Codex process;
+- accepts only the exact reviewed runner argv shape and fails closed on unexpected permission flags;
+- normalizes the effective Codex invocation to `codex --sandbox workspace-write --ask-for-approval never exec <bounded prompt>` through FCC; routine workspace-local work may proceed, but sandbox escalation is not sent to automatic review and must fail instead of silently widening authority;
+- keeps shell-command network access restricted by the Codex workspace sandbox unless a separately reviewed configuration explicitly changes that boundary;
+- streams FCC/Codex output through `scripts/ai/hermes-internal-ai-sanitize.py` before it reaches the Python runner;
+- applies the existing runner-side sanitizer again before server event/result upload;
+- redacts common credential-shaped output including bearer values, sensitive assignments/query parameters, JWT-like values, common GitHub/OpenAI-style/AWS key shapes and private-key blocks;
+- fails closed if the streaming sanitizer is unavailable or fails;
+- preserves the non-secret `HERMES_INTERNAL_APPROVAL_GATE=<gate>` marker so consequential stops remain visible after redaction;
 - fails closed when an earlier running task needs reconciliation;
 - does not expose an inbound listener, browser shell, remote terminal, automatic merge, or deployment.
+
+Ordinary/manual `scripts/ai/codex-hermes` usage remains on its direct execution path. The stricter environment, no-escalation policy and streaming evidence sanitizer apply specifically to browser-queued Internal AI runner execution.
 
 `REMOTE_BROWSER_TO_CODEX = UNVERIFIED` until this contract is configured and independently proven in an approved environment.
 
@@ -87,3 +97,11 @@ When Codex reaches one of those gates, its bounded runner prompt requires an
 exact `HERMES_INTERNAL_APPROVAL_GATE=<gate>` marker on its own output line.
 The local runner accepts only the listed gate values and reports the task as
 `needs_approval`; it never performs the gated action itself.
+
+## First live proof boundary
+
+The first live proof must remain harmless and repository-only:
+
+`owner browser session → queued task → outbound Mac runner → isolated branch → Hermes Codex → sanitized evidence receipt`
+
+It must not require merge, deployment, credential access, billing, external communication, destructive database work, Telegram, Carrier Database, or another production mutation. Any need to cross those boundaries is evidence of a blocked pilot, not authorization to widen the runner.
