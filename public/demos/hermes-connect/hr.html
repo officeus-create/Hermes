@@ -58,8 +58,17 @@
 
     <section class="grid equal hr-grid" id="intake">
       <article class="panel" data-intake-panel>
-        <div class="panel-head"><div><small>STEP 1 · INTAKE</small><h3>Choose your direction</h3><p>No résumé is required for this pilot. Start with context and the work you want to explore.</p></div></div>
+        <div class="panel-head"><div><small>STEP 1 · INTAKE</small><h3>Choose your direction</h3><p>No résumé is required for this pilot. We need only enough contact information to return a human-reviewed next step.</p></div></div>
         <form class="hr-form" data-intake-form>
+          <label>Full name
+            <input type="text" name="name" minlength="2" maxlength="120" autocomplete="name" required placeholder="Your name">
+          </label>
+          <label>Email
+            <input type="email" name="email" maxlength="160" autocomplete="email" required placeholder="you@example.com">
+          </label>
+          <label>Telegram username <small>(optional)</small>
+            <input type="text" name="telegram_handle" maxlength="120" autocomplete="off" placeholder="@username">
+          </label>
           <label>Country / current market
             <select name="country" required>
               <option value="">Select</option>
@@ -83,8 +92,9 @@
             <label class="track-choice"><input type="radio" name="track" value="sales" required><span><b>U.S. Sales · Digital Services</b><small>Sell websites, SEO/GEO and social media marketing to U.S. businesses.</small></span></label>
             <label class="track-choice"><input type="radio" name="track" value="marketing" required><span><b>Marketing · Training Track</b><small>Learn research, positioning, content thinking and client-focused marketing.</small></span></label>
           </fieldset>
-          <label class="consent-row"><input type="checkbox" name="consent" required><span>I understand this is a pilot assessment/training flow. My answers are not an automatic employment decision.</span></label>
+          <label class="consent-row"><input type="checkbox" name="consent" required><span>I consent to Hermes storing my contact details and job-relevant interview answers for this pilot. I understand these answers support a human review and are not an automatic employment decision.</span></label>
           <button class="btn primary hr-primary" type="submit">Begin structured interview →</button>
+          <small class="hr-muted" data-server-sync-status>Private server persistence will be attempted when the Hermes HR endpoint is available; the browser keeps a local fallback so a network interruption does not erase the interview.</small>
         </form>
       </article>
 
@@ -109,7 +119,7 @@
       <div class="hr-brief" data-brief hidden></div>
       <form data-answer-form>
         <textarea data-answer rows="8" maxlength="4000" placeholder="Answer in your own words. Concrete examples are more useful than perfect wording." required></textarea>
-        <div class="hr-answer-meta"><small data-answer-counter>0 / 4000</small><small>Your answer is stored locally in this browser for the pilot.</small></div>
+        <div class="hr-answer-meta"><small data-answer-counter>0 / 4000</small><small data-server-sync-status>Saving privately to Hermes HR when available · local fallback enabled.</small></div>
         <div class="hr-actions">
           <button class="btn" type="button" data-reset>Delete pilot data</button>
           <button class="btn primary" type="submit">Save answer & continue →</button>
@@ -122,20 +132,23 @@
       <div class="kpi-grid hr-signal-grid" data-signal-grid></div>
       <div class="grid equal" style="margin-top:16px">
         <article class="card"><span class="status">Suggested development route</span><h4 data-route-title>Reviewer assessment</h4><p data-route-copy></p><div class="meta" data-route-meta></div></article>
-        <article class="card"><span class="status prep">Identity continuity</span><h4>One person, one learning record</h4><p><code data-candidate-id></code> continues into Academy as the same learner identifier in this pilot model.</p><div class="meta"><span>Candidate</span><span>Learner</span><span>Future team record</span></div></article>
+        <article class="card"><span class="status prep">Identity continuity</span><h4>One person, one learning record</h4><p><code data-candidate-id></code> remains the stable HR identifier. After authenticated account linking, Hermes maps it to the existing Academy specialist identity instead of creating a second person.</p><div class="meta"><span>Candidate</span><span>Hermes account</span><span>Academy</span></div></article>
       </div>
       <div class="hr-actions hr-result-actions">
         <button class="btn" type="button" data-export>Export sanitized pilot summary</button>
+        <button class="btn" type="button" data-claim-hr>Link to my Hermes account</button>
         <a class="btn" href="./hr-admin.html">Open human review →</a>
         <a class="btn iris" href="./academy.html">Continue to Hermes Academy →</a>
         <button class="btn" type="button" data-restart>Start another pilot</button>
       </div>
+      <small class="hr-muted" data-server-sync-status>Checking private server persistence…</small>
       <div class="callout hr-safe"><b>Reviewer rule:</b> Hermes may use the job-relevant answers and evidence shown here to support a human review. The pilot must not automatically hire, reject or rank candidates using protected traits, country, language or acquisition source.</div>
     </section>
 
-    <footer class="footer"><span>Hermes Connect HR Pilot V1 · Local prototype data only · Human-reviewed next steps</span><span><a href="./hr-admin.html">HR Review</a> · <a href="./academy.html">Academy</a> · <a href="./workspace.html">Workspace</a></span></footer>
+    <footer class="footer"><span>Hermes Connect HR Pilot V1 · Private D1 persistence when available · Human-reviewed next steps</span><span><a href="./hr-admin.html">HR Review</a> · <a href="./academy.html">Academy</a> · <a href="./workspace.html">Workspace</a></span></footer>
   </div>
   <div class="toast" data-toast>Saved.</div>
+  <script type="module" src="./hr-server-sync.mjs"></script>
   <script type="module" src="./hr-interview.mjs"></script>
   <script type="module" src="./hr-review-queue-sync.mjs"></script>
 </body>
