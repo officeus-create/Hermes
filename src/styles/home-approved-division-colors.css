@@ -1,0 +1,53 @@
+/* Owner-approved Hermes division identity on the primary four-direction entrance.
+   This intentionally overrides the older exploratory room palette still embedded
+   in HomeFourRooms without changing the component's layout or analytics behavior. */
+
+.home-room-logistics {
+  --room-accent: #1E88FF !important;
+  --room-glow: rgba(30, 136, 255, .44) !important;
+}
+
+.home-room-marketing {
+  --room-accent: #00C853 !important;
+  --room-glow: rgba(0, 200, 83, .40) !important;
+}
+
+.home-room-academy {
+  --room-accent: #7C5CFF !important;
+  --room-glow: rgba(124, 92, 255, .44) !important;
+}
+
+.home-room-technology {
+  --room-accent: #FF7A00 !important;
+  --room-glow: rgba(255, 122, 0, .42) !important;
+}
+
+.home-room {
+  box-shadow:
+    inset 0 3px 0 color-mix(in srgb, var(--room-accent) 84%, white),
+    inset 0 -90px 120px color-mix(in srgb, var(--room-accent) 12%, transparent);
+}
+
+.home-room:hover,
+.home-room:focus-visible {
+  box-shadow:
+    inset 0 3px 0 var(--room-accent),
+    inset 0 -120px 150px color-mix(in srgb, var(--room-accent) 18%, transparent),
+    0 0 32px color-mix(in srgb, var(--room-accent) 20%, transparent);
+}
+
+@media (max-width: 700px) {
+  .home-room {
+    box-shadow:
+      inset 3px 0 0 color-mix(in srgb, var(--room-accent) 90%, white),
+      inset 0 -72px 90px color-mix(in srgb, var(--room-accent) 14%, transparent);
+  }
+}
+
+@media (forced-colors: active) {
+  .home-room,
+  .home-room:hover,
+  .home-room:focus-visible {
+    box-shadow: none;
+  }
+}
