@@ -30,7 +30,6 @@
   const syncLanguageUi = () => {
     const locale = currentLocale();
     const code = LANGUAGE_CODES[locale] || locale.toUpperCase();
-
     document.querySelectorAll("[data-language-menu]").forEach((menu) => {
       const label = menu.querySelector("summary span");
       if (label) label.textContent = code;
@@ -41,7 +40,6 @@
         else link.removeAttribute("aria-current");
       });
     });
-
     document.querySelectorAll(".mobile-language-switcher").forEach((switcher) => {
       const label = switcher.querySelector("strong");
       if (label) label.textContent = code;
@@ -73,45 +71,22 @@
     return wrapper;
   };
 
-  const decorateAiPhrase = (root) => {
-    if (!(root instanceof HTMLElement) || root.dataset.aiMotionApplied === "true") return;
-    const text = root.textContent || "";
-    if (!/\bAI\b/.test(text)) return;
-
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    let node = walker.nextNode();
-    while (node) {
-      const value = node.nodeValue || "";
-      const localIndex = value.indexOf("AI");
-      if (localIndex >= 0 && node.parentElement && !node.parentElement.closest(".hermes-bouncing-i")) {
-        const before = document.createTextNode(value.slice(0, localIndex) + "A");
-        const after = document.createTextNode(value.slice(localIndex + 2));
-        const bouncingI = createBouncingI();
-        const fragment = document.createDocumentFragment();
-        fragment.append(before, bouncingI, after);
-        node.parentNode?.replaceChild(fragment, node);
-        root.dataset.aiMotionApplied = "true";
-        return;
-      }
-      node = walker.nextNode();
-    }
-  };
-
   const addSparseAiMotion = () => {
-    /* Keep the original bouncing-I language only on real AI phrases. */
-    Array.from(document.querySelectorAll("main h1, main h2"))
-      .filter((node) => /\bAI\b/.test(node.textContent || ""))
-      .slice(0, 2)
-      .forEach(decorateAiPhrase);
+    const hubCopy = document.querySelector(".hc-brand-page .hc-copy");
+    if (!(hubCopy instanceof HTMLElement) || hubCopy.querySelector(".hermes-ai-motion-mark")) return;
+    const mark = document.createElement("span");
+    mark.className = "hermes-ai-motion-mark";
+    mark.setAttribute("aria-hidden", "true");
+    mark.append(document.createTextNode("A"), createBouncingI());
+    const heading = hubCopy.querySelector("h1");
+    if (heading) heading.insertAdjacentElement("afterend", mark);
   };
 
   const activateProductHubSignals = () => {
     const signalList = document.querySelector(".hc-brand-page .hc-signal-list");
     if (!signalList) return;
     signalList.removeAttribute("aria-hidden");
-
-    const locale = currentLocale();
-    const localized = SIGNAL_COPY[locale];
+    const localized = SIGNAL_COPY[currentLocale()];
     if (localized) signalList.setAttribute("aria-label", localized.label);
 
     const cards = Array.from(signalList.children).filter((node) => node instanceof HTMLElement);
@@ -120,8 +95,6 @@
       const item = localized?.items[index];
       const strong = card.querySelector("strong");
       const small = card.querySelector("small");
-
-      /* Only replace text where this polish layer owns a translation. Other locales keep their server-rendered copy. */
       if (item) {
         if (strong) strong.textContent = item[0];
         if (small) small.textContent = item[1];
@@ -132,15 +105,11 @@
           card.append(extra);
         }
       }
-
       card.setAttribute("role", "button");
       card.setAttribute("tabindex", "0");
       card.setAttribute("aria-expanded", index === 0 ? "true" : "false");
       card.setAttribute("aria-label", strong?.textContent?.trim() || `Step ${index + 1}`);
-
-      const activate = () => {
-        cards.forEach((candidate) => candidate.setAttribute("aria-expanded", String(candidate === card)));
-      };
+      const activate = () => cards.forEach((candidate) => candidate.setAttribute("aria-expanded", String(candidate === card)));
       card.addEventListener("click", activate);
       card.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -157,7 +126,6 @@
     if (!(stage instanceof HTMLElement) || !(knot instanceof HTMLElement)) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
     stage.addEventListener("pointermove", (event) => {
       const rect = stage.getBoundingClientRect();
       const x = ((event.clientX - rect.left) / rect.width - .5) * 22;
@@ -171,34 +139,9 @@
     });
   };
 
-  const addTechnologyChannelProof = () => {
-    const channelMap = document.querySelector(".technology-channel-map");
-    if (!channelMap || channelMap.querySelector(".technology-channel-proof")) return;
-    const locale = currentLocale();
-    if (locale !== "en" && locale !== "ru") return;
-
-    const proof = document.createElement("div");
-    proof.className = "technology-channel-proof";
-    if (locale === "ru") {
-      proof.setAttribute("aria-label", "Проверенные примеры реализации Hermes");
-      proof.innerHTML = `
-        <article><small>Работает сейчас</small><strong>Один корпоративный вход для четырёх направлений Hermes.</strong><p>На этом сайте уже работают адаптивные публичные маршруты, многоязычная основа, browser QA и контролируемые release-проверки.</p></article>
-        <article><small>Рабочий операционный паттерн</small><strong>Контролируемый CRM intake до записи данных.</strong><p>Проверка дублей, review-очереди, routing preview и границы подтверждения используются как повторяемый операционный паттерн.</p></article>
-        <article><small>Доказательство продукта</small><strong>Hermes Connect связывает клиентские и owner-workflows.</strong><p>Repair Shops — текущая публичная рабочая вертикаль; Academy и Beauty имеют ограниченные private surfaces. Внешние каналы по-прежнему зависят от официального доступа платформ.</p></article>`;
-    } else {
-      proof.setAttribute("aria-label", "Verified Hermes delivery examples");
-      proof.innerHTML = `
-        <article><small>Live delivery</small><strong>One corporate front door across four Hermes directions.</strong><p>Responsive public journeys, multilingual foundations, browser QA, and controlled release checks are already implemented on this site.</p></article>
-        <article><small>Working operations pattern</small><strong>Controlled CRM intake before records are written.</strong><p>Duplicate checks, review queues, routing previews, and approval boundaries are used as a reusable operating pattern.</p></article>
-        <article><small>Product evidence</small><strong>Hermes Connect links customer-facing and owner workflows.</strong><p>Repair Shops is the current public live vertical; Academy and Beauty have bounded private surfaces. External channels still depend on official platform access.</p></article>`;
-    }
-    channelMap.append(proof);
-  };
-
   const markProductHubLocale = () => {
     const root = document.querySelector(".hc-brand-page");
-    if (!(root instanceof HTMLElement)) return;
-    root.dataset.hcHubLocale = currentLocale();
+    if (root instanceof HTMLElement) root.dataset.hcHubLocale = currentLocale();
   };
 
   const initialize = () => {
@@ -208,12 +151,9 @@
     addSparseAiMotion();
     activateProductHubSignals();
     activateKnotPointer();
-    addTechnologyChannelProof();
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize, { once: true });
   else initialize();
-
-  /* Hermes Connect has another locale runtime; re-sync after it finishes its DOM pass. */
   window.setTimeout(syncLanguageUi, 80);
 })();
