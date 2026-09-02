@@ -12,6 +12,7 @@ const sitemapBodies = await Promise.all(
   })),
 );
 const primarySitemap = sitemapBodies.find(({ name }) => name === "sitemap.xml")?.body ?? "";
+const digitalServicesSitemap = sitemapBodies.find(({ name }) => name === "sitemap-digital-services.xml")?.body ?? "";
 
 function assertAbsentFromAllSitemaps(route) {
   const absoluteUrl = `https://hermeslogisticsus.com${route}`;
@@ -49,7 +50,13 @@ const intentionalNoindexWorkspaces = [
   { route: "/carrier/", robots: /<meta name="robots" content="noindex,nofollow">/ },
   { route: "/sign/", robots: /<meta name="robots" content="noindex,nofollow">/ },
   { route: "/demos/crm-validation/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/demos/hermes-connect/", robots: /<meta name="robots" content="noindex,nofollow">/ },
   { route: "/demos/website-audit/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/auth/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/dashboard/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/customers/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/availability/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/forgot-password/", robots: /<meta name="robots" content="noindex,nofollow">/ },
 ];
 
 for (const { route, robots } of intentionalNoindexWorkspaces) {
@@ -73,7 +80,7 @@ assert.match(
 assertAbsentFromAllSitemaps(attorneyReviewHtmlRoute);
 assertAbsentFromAllSitemaps(attorneyReviewExtensionlessRoute);
 
-const protectedIndexableRoutes = [
+const protectedPrimaryIndexableRoutes = [
   "/paths/logistics/carriers/owner-operators/",
   "/paths/logistics/carriers/fleet-owners/",
   "/paths/logistics/carriers/new-authority/",
@@ -83,11 +90,26 @@ const protectedIndexableRoutes = [
   "/paths/logistics/find-your-path/",
 ];
 
-for (const route of protectedIndexableRoutes) {
+for (const route of protectedPrimaryIndexableRoutes) {
   const htmlPath = path.join(root, "dist", route.replace(/^\//, ""), "index.html");
   const html = await readFile(htmlPath, "utf8");
   assert.doesNotMatch(html, /<meta name="robots" content="[^"]*noindex/i, `${route} must remain indexable`);
   assert(primarySitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} must remain in the primary sitemap`);
 }
 
-console.log("Logistics path indexability contract passed: low-evidence variants and intentional private/conversion workspaces stay noindex and out of every sitemap while protected owners remain indexable.");
+const repairShopsPublicOwner = "/services/hermes-connect/repair-shops/";
+const repairShopsPublicHtml = await readFile(
+  path.join(root, "dist", repairShopsPublicOwner.replace(/^\//, ""), "index.html"),
+  "utf8",
+);
+assert.doesNotMatch(
+  repairShopsPublicHtml,
+  /<meta name="robots" content="[^"]*noindex/i,
+  `${repairShopsPublicOwner} must remain indexable`,
+);
+assert(
+  digitalServicesSitemap.includes(`https://hermeslogisticsus.com${repairShopsPublicOwner}`),
+  `${repairShopsPublicOwner} must remain in sitemap-digital-services.xml`,
+);
+
+console.log("Logistics and Hermes Connect indexability contract passed: low-evidence variants plus intentional private/conversion/demo routes stay noindex and out of every sitemap while protected public owners remain indexable in their declared sitemap.");
