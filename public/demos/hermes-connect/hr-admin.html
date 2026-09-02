@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#F7F6F3">
-  <meta name="description" content="Hermes Connect HR human-review command center pilot.">
+  <meta name="description" content="Hermes Connect HR authenticated human-review command center.">
   <title>Hermes Connect · HR Command Center</title>
   <link rel="stylesheet" href="./vertical-modules.css">
   <link rel="stylesheet" href="./hr.css">
@@ -15,14 +15,15 @@
   <div class="shell hr-shell">
     <header class="topbar">
       <a class="brand" href="./workspace.html"><span class="brand-mark" aria-hidden="true"></span><span><strong>Hermes Connect</strong><small>HR · Human Review Command Center</small></span></a>
-      <div class="top-actions"><span class="badge">Local Pilot</span><a class="btn" href="./hr.html">Candidate flow</a><a class="btn iris" href="./academy.html">Academy →</a></div>
+      <div class="top-actions"><span class="badge" data-admin-mode>Private D1</span><a class="btn" href="./hr.html">Candidate flow</a><a class="btn iris" href="./academy.html">Academy →</a></div>
     </header>
 
     <section class="hero hr-admin-hero">
       <article class="hero-copy">
         <div class="eyebrow">Owner / authorized reviewer view</div>
         <h1>Review evidence. Decide the next controlled step.</h1>
-        <p>This local pilot makes the HR funnel inspectable before server persistence is introduced. Automated practice signals can organize evidence, but an authorized human records the consequential next step and the reason.</p>
+        <p>Production mode reads the private D1 HR queue only after Hermes authentication and reviewer authorization. Automated practice signals organize evidence; an authorized human records the consequential next step and the reason.</p>
+        <p class="hr-muted" data-admin-mode-note>Checking authenticated HR access…</p>
       </article>
       <aside class="hero-card">
         <small>REVIEW POLICY</small>
@@ -31,8 +32,8 @@
       </aside>
     </section>
 
-    <section class="kpi-grid" aria-label="HR pilot queue metrics" data-kpi-grid>
-      <article class="kpi"><span>Completed interviews</span><strong data-kpi-total>0</strong><small>Local pilot queue</small></article>
+    <section class="kpi-grid" aria-label="HR private queue metrics" data-kpi-grid>
+      <article class="kpi"><span>Completed interviews</span><strong data-kpi-total>0</strong><small>Private HR queue</small></article>
       <article class="kpi"><span>Awaiting human review</span><strong data-kpi-pending>0</strong><small>No automatic decision</small></article>
       <article class="kpi"><span>Academy next step</span><strong data-kpi-academy>0</strong><small>Reviewer-recorded</small></article>
       <article class="kpi"><span>Supervised test next</span><strong data-kpi-test>0</strong><small>Reviewer-recorded</small></article>
@@ -40,24 +41,24 @@
 
     <section class="grid equal hr-admin-grid">
       <article class="panel">
-        <div class="panel-head"><div><small>HUMAN REVIEW QUEUE</small><h3>Candidate evidence</h3><p>Newest completed interview first. This browser-local queue is prototype evidence only.</p></div><button class="btn" type="button" data-clear-queue>Clear local queue</button></div>
+        <div class="panel-head"><div><small>HUMAN REVIEW QUEUE</small><h3>Candidate evidence</h3><p>Production evidence is server-side and permission-controlled. Browser-local evidence is used only on non-production preview origins where the private API does not exist.</p></div><button class="btn" type="button" data-clear-queue>Refresh queue</button></div>
         <div class="hr-queue" data-review-queue></div>
       </article>
 
       <article class="panel hr-review-detail" data-review-detail>
         <div class="panel-head"><div><small>REVIEW CARD</small><h3>Select a candidate</h3><p>Open an item from the queue to inspect evidence and record the next controlled step.</p></div></div>
-        <div class="callout hr-safe"><b>Allowed V0 outcomes:</b> Academy practice, request more job-relevant evidence, or authorize a supervised test. This pilot intentionally does not implement automated rejection.</div>
+        <div class="callout hr-safe"><b>Allowed V1 outcomes:</b> Academy practice, request more job-relevant evidence, or authorize a supervised test. There is no automated rejection or hiring action in this endpoint.</div>
       </article>
     </section>
 
     <section class="panel" style="margin-top:16px">
-      <div class="panel-head"><div><small>FUNNEL ATTRIBUTION</small><h3>What brought candidates into the pilot?</h3><p>Source analytics are shown separately from readiness evidence.</p></div></div>
+      <div class="panel-head"><div><small>FUNNEL ATTRIBUTION</small><h3>What brought candidates into the pilot?</h3><p>Source analytics stay separate from readiness evidence and human review reasoning.</p></div></div>
       <div class="table-wrap"><table class="table"><thead><tr><th>Source</th><th>Interviews</th><th>Academy</th><th>Supervised test</th><th>Pending</th></tr></thead><tbody data-source-table></tbody></table></div>
     </section>
 
-    <footer class="footer"><span>Hermes Connect HR Command Center V0 · browser-local pilot · authorized human review required</span><span><a href="./hr.html">Candidate flow</a> · <a href="./academy.html">Academy</a></span></footer>
+    <footer class="footer"><span>Hermes Connect HR Command Center V1 · authenticated private D1 queue · authorized human review required</span><span><a href="./hr.html">Candidate flow</a> · <a href="./academy.html">Academy</a></span></footer>
   </div>
   <div class="toast" data-toast>Saved.</div>
-  <script type="module" src="./hr-admin.mjs"></script>
+  <script type="module" src="./hr-admin-server.mjs"></script>
 </body>
 </html>
