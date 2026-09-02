@@ -90,9 +90,9 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index,follow/);
 
     const structuredData = page.locator('script[type="application/ld+json"]');
-    await expect(structuredData).toHaveCount(1);
-    const parsed = JSON.parse(await structuredData.textContent() || "[]");
-    expect(Array.isArray(parsed)).toBe(true);
-    expect(parsed.length).toBeGreaterThanOrEqual(2);
+    expect(await structuredData.count()).toBeGreaterThan(0);
+    const payloads = await structuredData.allTextContents();
+    expect(payloads.join("\n")).toContain('"@type":"Service"');
+    expect(payloads.join("\n")).toContain('"@type":"BreadcrumbList"');
   });
 });
