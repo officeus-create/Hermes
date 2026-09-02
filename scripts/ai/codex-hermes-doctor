@@ -1,17 +1,38 @@
 #!/usr/bin/env bash
 set -u
 
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${HERMES_REPO_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
 FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 FCC_CODEX="$FCC_VENV/bin/fcc-codex"
 FCC_PYTHON="$FCC_VENV/bin/python"
 HERMES_CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
 EXPECTED_FCC_VERSION="5.14.5"
+INTERNAL_AI=0
 status=0
 
 pass() { printf '[PASS] %s\n' "$*"; }
 warn() { printf '[WARN] %s\n' "$*"; }
 fail() { printf '[FAIL] %s\n' "$*"; status=1; }
+
+usage() {
+  cat <<'EOF'
+Usage: ./scripts/ai/codex-hermes-doctor [--internal-ai]
+
+Default mode checks the isolated Hermes Codex/FCC runtime.
+--internal-ai adds a read-only preflight for the browser-queued Internal AI runner.
+It never starts/stops services, mutates git state, or prints secret values.
+EOF
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    --internal-ai) INTERNAL_AI=1 ;;
+    -h|--help) usage; exit 0 ;;
+    *) printf '[FAIL] Unknown argument: %s\n' "$arg" >&2; usage >&2; exit 2 ;;
+  esac
+done
 
 if command -v codex >/dev/null 2>&1; then
   pass "Official codex remains available at $(command -v codex)"
@@ -66,7 +87,114 @@ else
   warn "Fallback chain is owned by FCC managed Model Config; verify it in Admin before relying on automatic failover"
 fi
 
+if [[ "$INTERNAL_AI" == "1" ]]; then
+  printf '\n== Internal AI read-only preflight ==\n'
+
+  if [[ -f "$REPO_ROOT/AGENTS.md" && -d "$REPO_ROOT/.git" ]]; then
+    pass "Hermes repository boundary exists at $REPO_ROOT"
+  else
+    fail "Hermes repository boundary is missing at $REPO_ROOT"
+  fi
+
+  local_branch="$(git -C "$REPO_ROOT" branch --show-current 2>/dev/null || true)"
+  local_head="$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || true)"
+  tracked_changes="$(git -C "$REPO_ROOT" status --porcelain --untracked-files=no 2>/dev/null || true)"
+
+  if [[ "$local_branch" == "main" ]]; then
+    pass "Local checkout is on canonical main"
+  else
+    fail "Local checkout must be on canonical main; current branch is ${local_branch:-unknown}"
+  fi
+
+  if [[ -z "$tracked_changes" ]]; then
+    pass "Tracked working tree is clean; untracked files are intentionally ignored"
+  else
+    fail "Tracked working tree is not clean; doctor will not reset or overwrite it"
+  fi
+
+  remote_main="$(git -C "$REPO_ROOT" ls-remote --exit-code origin refs/heads/main 2>/dev/null | awk 'NR==1 {print $1}' || true)"
+  if [[ -z "$remote_main" ]]; then
+    fail "Unable to read origin/main without mutating local git state"
+  elif [[ -n "$local_head" && "$local_head" == "$remote_main" ]]; then
+    pass "Local HEAD exactly matches read-only origin/main receipt: $local_head"
+  else
+    fail "Local HEAD does not match origin/main; local=${local_head:-unknown} remote=${remote_main:-unknown}"
+  fi
+
+  wrapper="$REPO_ROOT/scripts/ai/codex-hermes"
+  runner="$REPO_ROOT/scripts/ai/hermes-internal-ai-runner.py"
+  sanitizer="$REPO_ROOT/scripts/ai/hermes-internal-ai-sanitize.py"
+
+  if [[ -x "$wrapper" ]]; then
+    if bash -n "$wrapper"; then
+      pass "Internal AI trusted wrapper is executable and shell syntax is valid"
+    else
+      fail "Internal AI trusted wrapper shell syntax is invalid"
+    fi
+  else
+    fail "Internal AI trusted wrapper is missing or not executable"
+  fi
+
+  if command -v python3 >/dev/null 2>&1; then
+    for py_file in "$runner" "$sanitizer"; do
+      if [[ ! -r "$py_file" ]]; then
+        fail "Required Internal AI Python file is missing or unreadable: $py_file"
+        continue
+      fi
+      if python3 - "$py_file" <<'PY'
+import ast
+import pathlib
+import sys
+path = pathlib.Path(sys.argv[1])
+ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+PY
+      then
+        pass "Python syntax is valid: ${py_file#$REPO_ROOT/}"
+      else
+        fail "Python syntax is invalid: ${py_file#$REPO_ROOT/}"
+      fi
+    done
+  else
+    fail "python3 is required for Internal AI runner/sanitizer syntax checks"
+  fi
+
+  api_base="${HERMES_INTERNAL_AI_API:-}"
+  if [[ "$api_base" =~ ^https://[^/?#[:space:]]+(/[^?#[:space:]]*)?$ ]]; then
+    pass "Internal AI API uses an HTTPS origin/path with no embedded query credentials"
+  elif [[ -z "$api_base" ]]; then
+    fail "HERMES_INTERNAL_AI_API is not configured"
+  else
+    fail "HERMES_INTERNAL_AI_API must be an HTTPS URL without query/fragment credentials"
+  fi
+
+  runner_token="${HERMES_INTERNAL_AI_RUNNER_TOKEN:-}"
+  if [[ ${#runner_token} -ge 32 ]]; then
+    pass "Scoped Internal AI runner token is present and at least 32 characters (value not printed)"
+  elif [[ -z "$runner_token" ]]; then
+    fail "HERMES_INTERNAL_AI_RUNNER_TOKEN is not configured"
+  else
+    fail "HERMES_INTERNAL_AI_RUNNER_TOKEN is present but shorter than the 32-character readiness floor (value not printed)"
+  fi
+
+  if [[ -z "${HERMES_INTERNAL_OWNER_BOOTSTRAP_TOKEN:-}" ]]; then
+    pass "One-time owner bootstrap token is not inherited by the local runner environment"
+  else
+    fail "One-time owner bootstrap token is still present in the local runner environment; remove it before runner activation"
+  fi
+
+  pass "Read-only doctor performed no service start/stop, git fetch/reset/checkout, task claim, Telegram action, Carrier Database action, merge, or deploy"
+
+  printf '\nINTERNAL_AI_PREFLIGHT=%s\n' "$([[ $status -eq 0 ]] && printf PASS || printf FAIL)"
+  printf 'LOCAL_HEAD_SHA=%s\n' "${local_head:-unknown}"
+  printf 'REMOTE_MAIN_SHA=%s\n' "${remote_main:-unknown}"
+  printf 'REMOTE_BROWSER_TO_CODEX=UNVERIFIED\n'
+fi
+
 printf '\nHUEG: local runtime/bootstrap checks above do not prove a provider request succeeds.\n'
-printf 'After providers are configured, run one bounded smoke request through ./scripts/ai/codex-hermes and record the model/fallback evidence.\n'
+if [[ "$INTERNAL_AI" == "1" ]]; then
+  printf 'A PASS proves read-only readiness only. It does not prove a browser task, provider route, Mac scheduler, deployment, or LIVE_VERIFIED state.\n'
+else
+  printf 'After providers are configured, run one bounded smoke request through ./scripts/ai/codex-hermes and record the model/fallback evidence.\n'
+fi
 
 exit "$status"
