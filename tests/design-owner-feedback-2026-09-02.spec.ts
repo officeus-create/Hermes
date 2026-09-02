@@ -15,10 +15,15 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await expect(launcher).toHaveAttribute("href", /\/services\/hermes-connect\/$/);
   });
 
-  test("Product Hub-first exists in server HTML without JavaScript", async ({ browser }) => {
+  test("primary Hermes link graph exists in server HTML without JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 1440, height: 1000 } });
     const page = await context.newPage();
     await page.goto("/paths/technology/");
+
+    await expect(page.locator('.desktop-nav a[href="/paths/logistics/"]')).toHaveCount(1);
+    await expect(page.locator('.desktop-nav a[href="/paths/marketing/"]')).toHaveCount(1);
+    await expect(page.locator('.desktop-nav a[href="/paths/academy/"]')).toHaveCount(1);
+    await expect(page.locator('.desktop-nav a[href="/paths/technology/"]')).toHaveCount(1);
     await expect(page.locator('[data-hermes-connect-launcher="header"]')).toHaveAttribute("href", "/services/hermes-connect/");
     await context.close();
   });
