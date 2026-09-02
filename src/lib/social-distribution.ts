@@ -118,7 +118,7 @@ const allowedCampaigns = new Set<DistributionCampaign>([
   "recruiting",
   "investors",
 ]);
-const blockedActiveMarkets = new Set(["ru", "by", "russia", "belarus"]);
+const blockedActiveMarkets = new Set(["ru", "by", "russia", "belarus", "russian-federation", "republic-of-belarus"]);
 const safeVariantPattern = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const privateValuePattern = /(?:@|\+?\d[\d\s().-]{7,}|\b(?:mc|dot|usdot)[\s#:_-]*\d+\b)/i;
 
@@ -292,6 +292,9 @@ const xDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
   const evidence = asset.evidenceNumber ? `${asset.evidenceNumber} ` : "";
   const suffix = ` ${trackedUrl}`;
   const body = `${evidence}${asset.practicalPoints[0] ?? asset.conciseValue} ${asset.ctaLabel}.`;
+  if (suffix.length >= 280) {
+    throw new Error("Tracked X URL is too long for a compliant preview post.");
+  }
   return {
     hook: truncate(asset.title, 90),
     copy: `${truncate(body, 280 - suffix.length)}${suffix}`,
@@ -316,8 +319,8 @@ export const generatePlatformDraft = (
   const eligibility = validateDistributionEligibility(asset, channel);
   if (!eligibility.eligible) throw new Error(`Distribution blocked: ${eligibility.blockers.join(" ")}`);
 
-  const variantId = normalizeTrackingId(`${asset.id}-${asset.contentVersion}-${channel.platform}`);
-  const placementId = normalizeTrackingId(channel.alias);
+  const variantId = normalizeTrackingId(`c-${hashString(`${asset.id}|${asset.contentVersion}|${channel.platform}`)}`);
+  const placementId = normalizeTrackingId(`p-${hashString(channel.alias)}`);
   if (!variantId || !placementId) throw new Error("Distribution identifiers cannot normalize to an empty value.");
   const trackedUrl = buildTrackedUrl(asset.canonicalUrl, channel.platform, asset.campaign, variantId, {
     market: asset.market ?? null,
