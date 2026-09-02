@@ -20,6 +20,7 @@
       <div class="top-actions">
         <span class="badge">Pilot V1</span>
         <a class="btn" href="./workspace.html">← Command Center</a>
+        <a class="btn" href="./hr-admin.html">HR Review</a>
         <a class="btn iris" href="./academy.html">Open Academy →</a>
       </div>
     </header>
@@ -125,15 +126,17 @@
       </div>
       <div class="hr-actions hr-result-actions">
         <button class="btn" type="button" data-export>Export sanitized pilot summary</button>
+        <a class="btn" href="./hr-admin.html">Open human review →</a>
         <a class="btn iris" href="./academy.html">Continue to Hermes Academy →</a>
         <button class="btn" type="button" data-restart>Start another pilot</button>
       </div>
       <div class="callout hr-safe"><b>Reviewer rule:</b> Hermes may use the job-relevant answers and evidence shown here to support a human review. The pilot must not automatically hire, reject or rank candidates using protected traits, country, language or acquisition source.</div>
     </section>
 
-    <footer class="footer"><span>Hermes Connect HR Pilot V1 · Local prototype data only · Human-reviewed next steps</span><span><a href="./academy.html">Academy</a> · <a href="./workspace.html">Workspace</a></span></footer>
+    <footer class="footer"><span>Hermes Connect HR Pilot V1 · Local prototype data only · Human-reviewed next steps</span><span><a href="./hr-admin.html">HR Review</a> · <a href="./academy.html">Academy</a> · <a href="./workspace.html">Workspace</a></span></footer>
   </div>
   <div class="toast" data-toast>Saved.</div>
   <script type="module" src="./hr-interview.mjs"></script>
+  <script type="module" src="./hr-review-queue-sync.mjs"></script>
 </body>
 </html>
