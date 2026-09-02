@@ -6,6 +6,7 @@ const js = await readFile(new URL('../public/demos/hermes-connect/hr-interview.m
 const queueSync = await readFile(new URL('../public/demos/hermes-connect/hr-review-queue-sync.mjs', import.meta.url), 'utf8');
 const adminHtml = await readFile(new URL('../public/demos/hermes-connect/hr-admin.html', import.meta.url), 'utf8');
 const adminJs = await readFile(new URL('../public/demos/hermes-connect/hr-admin.mjs', import.meta.url), 'utf8');
+const carrierLanding = await readFile(new URL('../public/demos/hermes-connect/hr-carrier-acquisition.html', import.meta.url), 'utf8');
 
 assert.match(html, /Hermes Connect · HR/);
 assert.match(html, /Carrier Acquisition/);
@@ -63,5 +64,13 @@ assert.match(adminJs, /SUPERVISED_TEST:\s*'Authorize supervised test'/);
 assert.match(adminJs, /automated:false/);
 assert.match(adminJs, /human_review_recorded/);
 assert.doesNotMatch(adminJs, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
+
+assert.match(carrierLanding, /Carrier Acquisition · Hermes Connect HR/);
+assert.match(carrierLanding, /track=logistics&vacancy=carrier-acquisition-pilot/);
+assert.match(carrierLanding, /Academy participation does not guarantee employment/i);
+assert.match(carrierLanding, /no earnings guarantee/i);
+assert.match(carrierLanding, /utm_source/);
+assert.match(carrierLanding, /creative/);
+assert.doesNotMatch(carrierLanding, /guaranteed income|guaranteed employment/i);
 
 console.log('Hermes Connect HR pilot contract: PASS');
