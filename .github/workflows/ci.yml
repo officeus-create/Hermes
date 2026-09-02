@@ -34,6 +34,9 @@ jobs:
       - name: Validate static output
         run: npm test
 
+      - name: Validate Hermes Connect HR behavioral API integration
+        run: node --experimental-strip-types scripts/hermes-connect-hr-api-integration.test.mjs
+
       - name: Validate London launch contract
         run: node scripts/london-launch-contract.test.mjs
 
