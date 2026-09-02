@@ -13,6 +13,8 @@ const hrLib = await readFile(new URL('../functions/api/_lib/hr.mjs', import.meta
 const candidateApi = await readFile(new URL('../functions/api/hr/candidate.ts', import.meta.url), 'utf8');
 const reviewerApi = await readFile(new URL('../functions/api/hr/reviewer/candidates.ts', import.meta.url), 'utf8');
 const claimApi = await readFile(new URL('../functions/api/hr/claim.ts', import.meta.url), 'utf8');
+const accountApi = await readFile(new URL('../functions/api/hermes-connect/account.ts', import.meta.url), 'utf8');
+const accountSwitcher = await readFile(new URL('../src/components/HermesConnectAccountSwitcher.astro', import.meta.url), 'utf8');
 
 assert.match(html, /Hermes Connect · HR/);
 assert.match(html, /Carrier Acquisition/);
@@ -149,6 +151,16 @@ assert.match(claimApi, /specialist_already_linked_to_another_hr_candidate/);
 assert.match(claimApi, /ensureHrAcademyLink/);
 assert.doesNotMatch(claimApi, /AUTO_HIRE|AUTO_REJECT|REJECT_CANDIDATE|HIRING_DECISION/);
 
+assert.match(accountApi, /getHrReviewerAccess/);
+assert.match(accountApi, /key:\s*"hr"/);
+assert.match(accountApi, /hr_review:\s*Boolean\(hrReviewerAccess\)/);
+assert.match(accountApi, /reviewer_access:\s*true/);
+assert.match(accountSwitcher, /data-workspace-hr data-hc-workspace-link="hr" hidden/);
+assert.match(accountSwitcher, /item\?\.key === "hr"/);
+assert.match(accountSwitcher, /if \(hrWorkspace && hr\) hr\.hidden = false/);
+assert.match(accountSwitcher, /hr:\s*"\/demos\/hermes-connect\/hr-admin\.html"/);
+assert.doesNotMatch(accountSwitcher, /\|\|\s*current\s*===\s*"hr"/);
+
 assert.match(carrierLanding, /Carrier Acquisition · Hermes Connect HR/);
 assert.match(carrierLanding, /track=logistics&vacancy=carrier-acquisition-pilot/);
 assert.match(carrierLanding, /Academy participation does not guarantee employment/i);
@@ -157,4 +169,4 @@ assert.match(carrierLanding, /utm_source/);
 assert.match(carrierLanding, /creative/);
 assert.doesNotMatch(carrierLanding, /guaranteed income|guaranteed employment/i);
 
-console.log('Hermes Connect HR private persistence + human review contract: PASS');
+console.log('Hermes Connect HR private persistence + human review + account capability contract: PASS');
