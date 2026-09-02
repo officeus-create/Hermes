@@ -42,6 +42,24 @@ async function urlsFromSitemaps() {
   return values;
 }
 
+function isCanonicalHtmlPageUrl(url) {
+  const pathname = url.pathname;
+  const excludedInfrastructurePaths = new Set([
+    "/robots.txt",
+    "/BingSiteAuth.xml",
+    `/${key}.txt`,
+    "/llms.txt",
+    "/llms-full.txt",
+  ]);
+
+  if (excludedInfrastructurePaths.has(pathname)) return false;
+  if (/^\/sitemap(?:index|(?:-[a-z0-9-]+)?)\.xml$/i.test(pathname)) return false;
+
+  const lastSegment = pathname.split("/").filter(Boolean).at(-1) ?? "";
+  if (!lastSegment.includes(".")) return true;
+  return /\.html?$/i.test(lastSegment);
+}
+
 function validateUrls(values) {
   const unique = [];
   const seen = new Set();
@@ -51,6 +69,9 @@ function validateUrls(values) {
     if (url.protocol !== "https:") throw new Error(`IndexNow URL must use HTTPS: ${value}`);
     if (url.hostname !== host) throw new Error(`IndexNow URL must belong to ${host}: ${value}`);
     if (url.hash) throw new Error(`IndexNow URL must not contain a fragment: ${value}`);
+    if (!isCanonicalHtmlPageUrl(url)) {
+      throw new Error(`IndexNow only accepts canonical HTML page URLs, not assets or discovery files: ${value}`);
+    }
     url.search = "";
     const normalized = url.toString();
     if (!seen.has(normalized)) {

@@ -28,6 +28,55 @@ assert.ok(!homepage.includes("hermes-social-share-2026.jpg"), "Homepage schema m
 assert.ok(!layout.includes("/images/hermes-ecosystem-hero.jpg"), "BaseLayout must not revive the retired public hero duplicate.");
 assert.ok(!homepage.includes("/images/hermes-ecosystem-hero.jpg"), "Homepage schema must not revive the retired public hero duplicate.");
 
+const sitemapHost = "hermeslogisticsus.com";
+const childSitemapFiles = [
+  "sitemap.xml",
+  "sitemap-local.xml",
+  "sitemap-services.xml",
+  "sitemap-digital-services.xml",
+  "sitemap-academy.xml",
+  "sitemap-cases.xml",
+  "sitemap-trust.xml",
+  "sitemap-london.xml",
+];
+const expectedCurrentPageUrlCount = 168;
+const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
+
+const sitemapIndex = await readFile(new URL("../public/sitemapindex.xml", import.meta.url), "utf8");
+const sitemapIndexLocs = extractLocs(sitemapIndex);
+const expectedChildUrls = childSitemapFiles.map((file) => `https://${sitemapHost}/${file}`);
+assert.deepEqual(
+  new Set(sitemapIndexLocs),
+  new Set(expectedChildUrls),
+  "sitemapindex.xml must reference exactly the eight controlled child sitemaps",
+);
+assert.equal(sitemapIndexLocs.length, expectedChildUrls.length, "sitemapindex.xml must not duplicate child sitemap references");
+
+const sitemapPageUrls = [];
+for (const file of childSitemapFiles) {
+  const xml = await readFile(new URL(`../public/${file}`, import.meta.url), "utf8");
+  const locs = extractLocs(xml);
+  assert.ok(locs.length > 0, `${file} must contain at least one page URL`);
+  sitemapPageUrls.push(...locs);
+}
+
+assert.equal(
+  sitemapPageUrls.length,
+  expectedCurrentPageUrlCount,
+  `controlled sitemap inventory changed from ${expectedCurrentPageUrlCount}; reconcile the intentional delta before merging`,
+);
+assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled child sitemaps must not contain duplicate page URLs");
+
+for (const value of sitemapPageUrls) {
+  const url = new URL(value);
+  assert.equal(url.protocol, "https:", `sitemap URL must use HTTPS: ${value}`);
+  assert.equal(url.hostname, sitemapHost, `sitemap URL must stay on canonical host: ${value}`);
+  assert.equal(url.search, "", `sitemap URL must not contain query parameters: ${value}`);
+  assert.equal(url.hash, "", `sitemap URL must not contain a fragment: ${value}`);
+  const lastSegment = url.pathname.split("/").filter(Boolean).at(-1) ?? "";
+  assert.ok(!lastSegment.includes(".") || /\.html?$/i.test(lastSegment), `sitemap must contain HTML pages only, not assets: ${value}`);
+}
+
 for (const file of verifierFiles) {
   const check = spawnSync(process.execPath, ["--check", file], {
     cwd: root,
@@ -39,6 +88,7 @@ for (const file of verifierFiles) {
 const verifier = await readFile(new URL("./check-production-custom-domain.mjs", import.meta.url), "utf8");
 for (const required of [
   '"/sitemapindex.xml"',
+  '"/sitemap-london.xml"',
   '"/llms.txt"',
   '"/business-growth/"',
   '"/logistics/auction-vehicle-pickup/"',
@@ -60,4 +110,4 @@ assert.ok(workflow.includes("github.event.comment.body == '/verify-production-se
 assert.ok(workflow.includes("node scripts/check-production-seo-hygiene.mjs"), "workflow must use the bounded SEO hygiene wrapper");
 assert.ok(workflow.includes("no real lead") === false, "workflow should not imply that a lead is created");
 
-console.log("Production SEO hygiene contract passed.");
+console.log(`Production SEO hygiene contract passed: ${sitemapPageUrls.length} unique canonical page URLs across ${childSitemapFiles.length} child sitemaps.`);
