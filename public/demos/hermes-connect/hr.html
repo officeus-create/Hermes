@@ -94,7 +94,7 @@
           </fieldset>
           <label class="consent-row"><input type="checkbox" name="consent" required><span>I consent to Hermes storing my contact details and job-relevant interview answers for this pilot. I understand these answers support a human review and are not an automatic employment decision.</span></label>
           <button class="btn primary hr-primary" type="submit">Begin structured interview →</button>
-          <small class="hr-muted" data-server-sync-status>Private server persistence will be attempted when the Hermes HR endpoint is available; the browser keeps a local fallback so a network interruption does not erase the interview.</small>
+          <small class="hr-muted" data-server-sync-status>Private server persistence will be attempted when the Hermes HR endpoint is available; the browser keeps a local recovery copy so a network interruption does not erase the interview.</small>
         </form>
       </article>
 
@@ -119,11 +119,12 @@
       <div class="hr-brief" data-brief hidden></div>
       <form data-answer-form>
         <textarea data-answer rows="8" maxlength="4000" placeholder="Answer in your own words. Concrete examples are more useful than perfect wording." required></textarea>
-        <div class="hr-answer-meta"><small data-answer-counter>0 / 4000</small><small data-server-sync-status>Saving privately to Hermes HR when available · local fallback enabled.</small></div>
+        <div class="hr-answer-meta"><small data-answer-counter>0 / 4000</small><small data-server-sync-status>Saving privately to Hermes HR when available · local recovery copy enabled.</small></div>
         <div class="hr-actions">
-          <button class="btn" type="button" data-reset>Delete pilot data</button>
+          <button class="btn" type="button" data-reset>Clear this browser & restart</button>
           <button class="btn primary" type="submit">Save answer & continue →</button>
         </div>
+        <small class="hr-muted">Clearing this browser removes only the local recovery copy. If the interview has already synchronized to private Hermes HR, this button does not delete that server record.</small>
       </form>
     </section>
 
@@ -139,7 +140,7 @@
         <button class="btn" type="button" data-claim-hr>Link to my Hermes account</button>
         <a class="btn" href="./hr-admin.html">Open human review →</a>
         <a class="btn iris" href="./academy.html">Continue to Hermes Academy →</a>
-        <button class="btn" type="button" data-restart>Start another pilot</button>
+        <button class="btn" type="button" data-restart>Clear browser & start another interview</button>
       </div>
       <small class="hr-muted" data-server-sync-status>Checking private server persistence…</small>
       <div class="callout hr-safe"><b>Reviewer rule:</b> Hermes may use the job-relevant answers and evidence shown here to support a human review. The pilot must not automatically hire, reject or rank candidates using protected traits, country, language or acquisition source.</div>
