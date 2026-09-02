@@ -3,9 +3,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const switcherUrl = new URL('../src/components/HermesConnectAccountSwitcher.astro', import.meta.url);
+const accountApiUrl = new URL('../functions/api/hermes-connect/account.ts', import.meta.url);
 
 async function loadSwitcher() {
   return readFile(switcherUrl, 'utf8');
+}
+
+async function loadAccountApi() {
+  return readFile(accountApiUrl, 'utf8');
 }
 
 test('account switcher uses one unified authenticated portfolio endpoint', async () => {
@@ -28,6 +33,19 @@ test('owned Repair Shop and shared Academy come only from the account portfolio 
   assert.match(source, /item\?\.key === "academy"/);
   assert.match(source, /runtimeCopy\.setup/);
   assert.match(source, /current === "repair"/);
+});
+
+test('authorized HR stays fail-closed to the capability workspace returned by the backend', async () => {
+  const [source, accountApi] = await Promise.all([loadSwitcher(), loadAccountApi()]);
+  assert.match(source, /data-workspace-hr data-hc-workspace-link="hr" hidden/);
+  assert.match(source, /item\?\.key === "hr"/);
+  assert.match(source, /if \(hrWorkspace && hr\) hr\.hidden = false/);
+  assert.doesNotMatch(source, /\|\|\s*current\s*===\s*"hr"/);
+  assert.match(source, /hr:\s*"\/demos\/hermes-connect\/hr-admin\.html"/);
+  assert.match(accountApi, /getHrReviewerAccess/);
+  assert.match(accountApi, /key:\s*"hr"/);
+  assert.match(accountApi, /hr_review:\s*Boolean\(hrReviewerAccess\)/);
+  assert.match(accountApi, /reviewer_access:\s*true/);
 });
 
 test('internal AI stays fail-closed to the capability workspace returned by the backend', async () => {
@@ -55,6 +73,7 @@ test('switcher consumes canonical Design OS accents and preserves locale on real
   assert.match(source, /url\.searchParams\.set\("lang", locale\)/);
   assert.match(source, /data-hc-workspace-link="repair"/);
   assert.match(source, /data-hc-workspace-link="academy"/);
+  assert.match(source, /data-hc-workspace-link="hr"/);
   assert.match(source, /data-hc-workspace-link="ai"/);
   assert.match(source, /data-hc-workspace-link="beauty"/);
 });
