@@ -1,58 +1,221 @@
 /*
- * Hermes Connect division-context layer.
- * Adds a restrained semantic signal around the shared launcher without changing
- * Option 02 geometry or repainting the surrounding public page.
+ * Hermes approved division color application.
+ * Source: owner-approved #02 brandboard.
+ * Logistics blue #1E88FF · Marketing green #00C853 · Academy violet #7C5CFF · IT & Product orange #FF7A00.
+ *
+ * This layer intentionally makes the four public directions VISIBLY different while
+ * preserving one Hermes layout/runtime. Color changes atmosphere, CTA, media framing,
+ * focus and card interaction; it does not fork templates or product logic.
  */
 
-body:has(.detail-page-logistics) { --hc-public-route-accent: var(--hermes-logistics,#1e88ff); }
-body:has(.detail-page-marketing) { --hc-public-route-accent: var(--hermes-marketing,#00c853); }
-body:has(.detail-page-academy) { --hc-public-route-accent: var(--hermes-academy,#7c5cff); }
-body:has(.detail-page-technology) { --hc-public-route-accent: var(--hermes-technology,#ff7a00); }
+body:has(.detail-page-logistics),
+.detail-page-logistics {
+  --hc-public-route-accent: var(--hermes-logistics,#1e88ff);
+  --path-signal: var(--hermes-logistics,#1e88ff);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-logistics,#1e88ff) 14%,transparent);
+  --path-deep: #071522;
+}
 
+body:has(.detail-page-marketing),
+.detail-page-marketing {
+  --hc-public-route-accent: var(--hermes-marketing,#00c853);
+  --path-signal: var(--hermes-marketing,#00c853);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-marketing,#00c853) 14%,transparent);
+  --path-deep: #06170f;
+}
+
+body:has(.detail-page-academy),
+.detail-page-academy {
+  --hc-public-route-accent: var(--hermes-academy,#7c5cff);
+  --path-signal: var(--hermes-academy,#7c5cff);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-academy,#7c5cff) 15%,transparent);
+  --path-deep: #110d22;
+}
+
+body:has(.detail-page-technology),
+.detail-page-technology {
+  --hc-public-route-accent: var(--hermes-technology,#ff7a00);
+  --path-signal: var(--hermes-technology,#ff7a00);
+  --path-signal-soft: color-mix(in srgb,var(--hermes-technology,#ff7a00) 15%,transparent);
+  --path-deep: #1d1005;
+}
+
+/*
+ * The approved board used a dark cinematic first screen per direction.
+ * Keep the rest of the public page Pearl; make the hero the memorable color moment.
+ */
+body:has(.detail-page) .detail-hero {
+  position: relative;
+  isolation: isolate;
+  color: #fff;
+  background:
+    radial-gradient(circle at 82% 16%,color-mix(in srgb,var(--path-signal) 46%,transparent),transparent 24rem),
+    radial-gradient(circle at 18% 88%,color-mix(in srgb,var(--path-signal) 18%,transparent),transparent 28rem),
+    linear-gradient(126deg,var(--path-deep,#0b0f19) 0%,#0b0f19 48%,color-mix(in srgb,var(--path-signal) 16%,#0b0f19) 100%) !important;
+}
+
+body:has(.detail-page) .detail-hero::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: auto -12% -42% 28%;
+  height: 74%;
+  pointer-events: none;
+  opacity: .76;
+  transform: rotate(-7deg);
+  background:
+    radial-gradient(ellipse at center,color-mix(in srgb,var(--path-signal) 42%,transparent) 0 4%,transparent 44%),
+    linear-gradient(100deg,transparent 5%,color-mix(in srgb,var(--path-signal) 46%,transparent) 42%,transparent 76%);
+  filter: blur(22px);
+}
+
+body:has(.detail-page) .detail-hero-content,
+body:has(.detail-page) .detail-hero > img.detail-hero-media {
+  position: relative;
+  z-index: 1;
+}
+
+body:has(.detail-page) .detail-hero h1 {
+  color: #fff;
+  text-shadow: 0 12px 44px rgba(0,0,0,.2);
+}
+
+body:has(.detail-page) .detail-hero .hero-eyebrow {
+  color: color-mix(in srgb,var(--path-signal) 76%,#fff);
+}
+
+body:has(.detail-page) .detail-hero .detail-back,
+body:has(.detail-page) .detail-hero-content > p:not(.eyebrow) {
+  color: rgba(239,244,252,.76);
+}
+
+body:has(.detail-page) .detail-hero > img.detail-hero-media {
+  border-color: color-mix(in srgb,var(--path-signal) 46%,rgba(255,255,255,.22));
+  box-shadow:
+    0 32px 90px rgba(0,0,0,.30),
+    0 0 0 1px color-mix(in srgb,var(--path-signal) 18%,transparent),
+    0 0 70px color-mix(in srgb,var(--path-signal) 22%,transparent);
+}
+
+/* Approved direction color owns the primary action on the direction hero. */
+body:has(.detail-page) .detail-hero .button-primary {
+  border-color: color-mix(in srgb,var(--path-signal) 82%,#fff 18%);
+  color: #07101a;
+  background: linear-gradient(135deg,color-mix(in srgb,var(--path-signal) 84%,#fff 16%),var(--path-signal));
+  box-shadow: 0 14px 42px color-mix(in srgb,var(--path-signal) 28%,transparent);
+}
+
+body:has(.detail-page) .detail-hero .button-primary:hover,
+body:has(.detail-page) .detail-hero .button-primary:focus-visible {
+  color: #07101a;
+  background: linear-gradient(135deg,color-mix(in srgb,var(--path-signal) 70%,#fff 30%),color-mix(in srgb,var(--path-signal) 92%,#fff 8%));
+  box-shadow: 0 18px 52px color-mix(in srgb,var(--path-signal) 38%,transparent);
+}
+
+/* Carry the identity through the page without turning every surface into a color block. */
+body:has(.detail-page) .section-heading::before,
+body:has(.detail-page) .detail-intro::before {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 3px;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  background: var(--path-signal);
+  box-shadow: 0 0 24px color-mix(in srgb,var(--path-signal) 28%,transparent);
+}
+
+body:has(.detail-page) .offering-grid article,
+body:has(.detail-page) .equipment-grid article,
+body:has(.detail-page) .service-group-grid article,
+body:has(.detail-page) .direct-contact-grid article,
+body:has(.detail-page) .direction-social-grid a,
+body:has(.detail-page) .faq-list details {
+  box-shadow:
+    inset 0 2px 0 color-mix(in srgb,var(--path-signal) 22%,transparent),
+    var(--hermes-shadow-card);
+  transition: border-color var(--hermes-motion-fast,180ms) var(--hermes-ease,ease),
+              box-shadow var(--hermes-motion-fast,180ms) var(--hermes-ease,ease),
+              transform var(--hermes-motion-fast,180ms) var(--hermes-ease,ease);
+}
+
+body:has(.detail-page) .offering-grid article:hover,
+body:has(.detail-page) .equipment-grid article:hover,
+body:has(.detail-page) .service-group-grid article:hover,
+body:has(.detail-page) .direct-contact-grid article:hover,
+body:has(.detail-page) .direction-social-grid a:hover {
+  border-color: color-mix(in srgb,var(--path-signal) 38%,var(--hermes-line-light));
+  box-shadow:
+    inset 0 3px 0 color-mix(in srgb,var(--path-signal) 56%,transparent),
+    0 24px 64px color-mix(in srgb,var(--path-signal) 10%,rgba(20,20,31,.08));
+  transform: translateY(-2px);
+}
+
+/* The shared Hermes Connect launcher also adopts the current direction visibly. */
 body:has(.detail-page) .hermes-connect-header-launcher {
-  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 28%,rgba(11,13,18,.12));
-  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 7%,rgba(255,255,255,.82));
+  border-color: color-mix(in srgb,var(--hc-public-route-accent) 40%,rgba(11,13,18,.12));
+  background: color-mix(in srgb,var(--hc-public-route-accent) 11%,rgba(255,255,255,.88));
 }
 
 body:has(.detail-page) .hermes-connect-header-launcher:hover,
 body:has(.detail-page) .hermes-connect-header-launcher:focus-visible {
-  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 44%,rgba(11,13,18,.12));
-  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 11%,#fff);
+  border-color: color-mix(in srgb,var(--hc-public-route-accent) 62%,rgba(11,13,18,.12));
+  background: color-mix(in srgb,var(--hc-public-route-accent) 17%,#fff);
 }
 
 body:has(.detail-page) .hermes-connect-banner {
-  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 24%,rgba(255,255,255,.10));
+  border-color: color-mix(in srgb,var(--hc-public-route-accent) 42%,rgba(255,255,255,.10));
   background:
-    radial-gradient(circle at 88% 12%,color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 18%,transparent),transparent 24rem),
-    linear-gradient(135deg,#121722 0%,#0b0d12 72%);
+    radial-gradient(circle at 86% 12%,color-mix(in srgb,var(--hc-public-route-accent) 34%,transparent),transparent 23rem),
+    linear-gradient(135deg,color-mix(in srgb,var(--hc-public-route-accent) 14%,#121722) 0%,#0b0d12 72%);
+  box-shadow: 0 24px 70px color-mix(in srgb,var(--hc-public-route-accent) 12%,rgba(0,0,0,.18));
 }
 
 body:has(.detail-page) .hermes-connect-banner-badge {
-  border-color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 30%,rgba(255,255,255,.12));
-  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 12%,rgba(255,255,255,.04));
+  border-color: color-mix(in srgb,var(--hc-public-route-accent) 46%,rgba(255,255,255,.12));
+  background: color-mix(in srgb,var(--hc-public-route-accent) 18%,rgba(255,255,255,.04));
 }
 
 body:has(.detail-page) .hermes-connect-banner-badge span,
 body:has(.detail-page) .hermes-connect-banner-copy > span {
-  color:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 64%,#fff);
+  color: color-mix(in srgb,var(--hc-public-route-accent) 72%,#fff);
 }
 
-/* Keep the action neutral/operational. Context color is a signal, not a takeover. */
 body:has(.detail-page) .hermes-connect-banner-actions a {
-  border-color:rgba(255,255,255,.16);
-  background:#fff;
-  color:var(--hermes-obsidian,#0b0d12);
+  border-color: color-mix(in srgb,var(--hc-public-route-accent) 70%,#fff 30%);
+  background: var(--hc-public-route-accent);
+  color: #07101a;
 }
 
 body:has(.detail-page) .hermes-connect-banner-actions a:hover,
 body:has(.detail-page) .hermes-connect-banner-actions a:focus-visible {
-  background:color-mix(in srgb,var(--hc-public-route-accent,var(--hermes-violet,#7c5cff)) 8%,#fff);
+  background: color-mix(in srgb,var(--hc-public-route-accent) 78%,#fff 22%);
 }
 
-@media (forced-colors:active) {
+@media (max-width: 720px) {
+  body:has(.detail-page) .detail-hero::before {
+    inset: auto -35% -28% 8%;
+    height: 48%;
+    opacity: .58;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.detail-page) .offering-grid article,
+  body:has(.detail-page) .equipment-grid article,
+  body:has(.detail-page) .service-group-grid article,
+  body:has(.detail-page) .direct-contact-grid article,
+  body:has(.detail-page) .direction-social-grid a {
+    transition: none;
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
   body:has(.detail-page) .hermes-connect-header-launcher,
   body:has(.detail-page) .hermes-connect-banner,
-  body:has(.detail-page) .hermes-connect-banner-badge {
-    border-color:CanvasText;
+  body:has(.detail-page) .hermes-connect-banner-badge,
+  body:has(.detail-page) .detail-hero .button-primary {
+    border-color: CanvasText;
   }
 }

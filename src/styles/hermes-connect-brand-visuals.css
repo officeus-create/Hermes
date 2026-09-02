@@ -1,0 +1,210 @@
+/*
+ * Hermes Connect brand visual application.
+ * Approved Connect family: Hermes Blue #00A8FF · Iris Violet #7C5CFF · Electric Cyan #22D3EE · Deep Navy #0A0F1C.
+ * This is a visual layer only. It does not alter product truth, auth, data or routing.
+ */
+
+@import "./hermes-connect-workspace-colors.css";
+
+:root {
+  --hc-blue: #00a8ff;
+  --hc-violet: #7c5cff;
+  --hc-cyan: #22d3ee;
+  --hc-deep: #0a0f1c;
+}
+
+/* Make the public Connect hero feel like the approved premium platform, not a generic Pearl page. */
+.hc-brand-page .hc-hero {
+  color: #fff !important;
+  background:
+    radial-gradient(circle at 78% 14%,rgba(0,168,255,.30),transparent 23rem),
+    radial-gradient(circle at 54% 88%,rgba(124,92,255,.25),transparent 30rem),
+    linear-gradient(128deg,#08101f 0%,#0a0f1c 48%,#11102a 100%) !important;
+}
+
+.hc-brand-page .hc-hero::before {
+  content: "";
+  position: absolute;
+  inset: 12% 4% auto 34%;
+  width: 62%;
+  height: 76%;
+  pointer-events: none;
+  opacity: .82;
+  background:
+    linear-gradient(105deg,transparent 4%,rgba(34,211,238,.08) 24%,rgba(0,168,255,.45) 43%,rgba(124,92,255,.36) 58%,transparent 82%);
+  border-radius: 50%;
+  filter: blur(24px);
+}
+
+.hc-brand-page .hc-copy,
+.hc-brand-page .hc-product-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.hc-brand-page .hc-eyebrow {
+  color: #7de8ff !important;
+}
+
+.hc-brand-page .hc-copy h1 {
+  color: #fff !important;
+  text-shadow: 0 18px 52px rgba(0,0,0,.24);
+}
+
+.hc-brand-page .hc-copy h1 span {
+  color: transparent !important;
+  background: linear-gradient(92deg,var(--hc-cyan),var(--hc-blue) 45%,#a78bfa 88%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hc-brand-page .hc-lead {
+  color: rgba(235,243,255,.76) !important;
+}
+
+.hc-brand-page .hc-primary {
+  border-color: rgba(125,232,255,.58) !important;
+  color: #06121c !important;
+  background: linear-gradient(135deg,var(--hc-cyan),var(--hc-blue) 52%,#8b6cff) !important;
+  box-shadow: 0 16px 50px rgba(0,168,255,.28) !important;
+}
+
+.hc-brand-page .hc-primary:hover,
+.hc-brand-page .hc-primary:focus-visible {
+  box-shadow: 0 20px 64px rgba(34,211,238,.34) !important;
+  transform: translateY(-1px);
+}
+
+.hc-brand-page .hc-secondary {
+  border-color: rgba(255,255,255,.16) !important;
+  color: #eef6ff !important;
+  background: rgba(255,255,255,.055) !important;
+  backdrop-filter: blur(12px);
+}
+
+.hc-brand-page .hc-secondary:hover,
+.hc-brand-page .hc-secondary:focus-visible {
+  border-color: rgba(34,211,238,.46) !important;
+  background: rgba(0,168,255,.10) !important;
+}
+
+.hc-brand-page .hc-truth span {
+  border-color: rgba(255,255,255,.12) !important;
+  color: rgba(239,246,255,.78) !important;
+  background: rgba(255,255,255,.045) !important;
+}
+
+.hc-brand-page .hc-product-stage {
+  border: 1px solid rgba(125,232,255,.18) !important;
+  background:
+    radial-gradient(circle at 82% 8%,rgba(0,168,255,.16),transparent 22rem),
+    radial-gradient(circle at 18% 82%,rgba(124,92,255,.15),transparent 24rem),
+    rgba(7,12,23,.78) !important;
+  box-shadow:
+    0 38px 110px rgba(0,0,0,.34),
+    0 0 80px rgba(0,168,255,.10) !important;
+}
+
+/* Replace the retired decorative knot in the hero with the locked Option 02 mark. */
+.hc-brand-page .hc-knot {
+  width: min(100%,360px) !important;
+  min-height: 230px !important;
+  margin-inline: auto !important;
+  background: url('/demos/hermes-connect/mark-option02.svg') center/contain no-repeat !important;
+  filter: drop-shadow(0 24px 48px rgba(0,168,255,.25)) drop-shadow(0 0 32px rgba(124,92,255,.18));
+}
+
+.hc-brand-page .hc-knot > *,
+.hc-brand-page .hc-knot::before,
+.hc-brand-page .hc-knot::after {
+  display: none !important;
+}
+
+.hc-brand-page .hc-stage-label {
+  color: rgba(207,231,255,.62) !important;
+}
+
+.hc-brand-page .hc-signal-list div {
+  border-color: rgba(255,255,255,.10) !important;
+  background: rgba(255,255,255,.045) !important;
+}
+
+.hc-brand-page .hc-signal-list i {
+  background: linear-gradient(135deg,var(--hc-cyan),var(--hc-violet)) !important;
+  box-shadow: 0 0 18px rgba(34,211,238,.34);
+}
+
+/* Business cards show their real context colors instead of one neutral stack. */
+.hc-brand-page .hc-vertical-grid article {
+  --hc-business-accent: var(--hc-blue);
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb,var(--hc-business-accent) 22%,var(--hermes-line-light)) !important;
+  background:
+    radial-gradient(circle at 100% 0%,color-mix(in srgb,var(--hc-business-accent) 10%,transparent),transparent 12rem),
+    var(--hermes-paper) !important;
+  box-shadow:
+    inset 0 3px 0 color-mix(in srgb,var(--hc-business-accent) 64%,transparent),
+    var(--hermes-shadow-card) !important;
+}
+
+.hc-brand-page .hc-vertical-grid article:nth-child(1),
+.hc-brand-page .hc-vertical-grid article:nth-child(2) { --hc-business-accent: var(--hermes-logistics,#1e88ff); }
+.hc-brand-page .hc-vertical-grid article:nth-child(3) { --hc-business-accent: var(--hermes-marketing,#00c853); }
+.hc-brand-page .hc-vertical-grid article:nth-child(4) { --hc-business-accent: var(--hermes-academy,#7c5cff); }
+/* Beauty has no owner-approved standalone identity yet: use the Connect family cue, not a new canonical Beauty color. */
+.hc-brand-page .hc-vertical-grid article:nth-child(5) { --hc-business-accent: var(--hc-cyan); }
+.hc-brand-page .hc-vertical-grid article:nth-child(6) { --hc-business-accent: var(--hc-violet); }
+
+.hc-brand-page .hc-vertical-grid article .hc-card-top > span,
+.hc-brand-page .hc-vertical-grid article > a {
+  color: color-mix(in srgb,var(--hc-business-accent) 72%,#07101a) !important;
+}
+
+.hc-brand-page .hc-vertical-grid article .hc-chips span {
+  border-color: color-mix(in srgb,var(--hc-business-accent) 24%,var(--hermes-line-light)) !important;
+  background: color-mix(in srgb,var(--hc-business-accent) 8%,#fff) !important;
+}
+
+.hc-brand-page .hc-vertical-grid article:hover {
+  border-color: color-mix(in srgb,var(--hc-business-accent) 48%,var(--hermes-line-light)) !important;
+  box-shadow:
+    inset 0 4px 0 color-mix(in srgb,var(--hc-business-accent) 84%,transparent),
+    0 26px 70px color-mix(in srgb,var(--hc-business-accent) 12%,rgba(20,20,31,.08)) !important;
+}
+
+.hc-brand-page .hc-obsidian-band {
+  background:
+    radial-gradient(circle at 18% 25%,rgba(124,92,255,.22),transparent 25rem),
+    radial-gradient(circle at 88% 72%,rgba(0,168,255,.18),transparent 30rem),
+    var(--hc-deep) !important;
+}
+
+@media (max-width: 720px) {
+  .hc-brand-page .hc-hero::before {
+    inset: 12% 4% auto 18%;
+    width: 78%;
+    height: 68%;
+    opacity: .56;
+  }
+  .hc-brand-page .hc-knot {
+    min-height: 170px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hc-brand-page .hc-primary,
+  .hc-brand-page .hc-vertical-grid article {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .hc-brand-page .hc-primary,
+  .hc-brand-page .hc-secondary,
+  .hc-brand-page .hc-product-stage,
+  .hc-brand-page .hc-vertical-grid article {
+    border: 1px solid CanvasText !important;
+  }
+}
