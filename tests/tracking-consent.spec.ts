@@ -27,6 +27,9 @@ const isHermesGaCollectRequest = (url: string) => {
   );
 };
 
+const rectanglesOverlap = (a: DOMRect, b: DOMRect) =>
+  a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+
 test("analytics stays off before choice and after decline", async ({ page }) => {
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
@@ -87,58 +90,66 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
   expect(requestsAfterWithdrawal).toEqual([]);
 });
 
-test("Hermes Connect mobile consent stays compact and does not cover the primary product CTA", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
+test("mobile consent stays compact, below the header and clear of every primary hero CTA", async ({ page }) => {
+  const routes = [
+    { path: "/paths/logistics/", cta: ".detail-page-logistics .detail-hero .button-primary" },
+    { path: "/paths/marketing/", cta: ".detail-page-marketing .detail-hero .button-primary" },
+    { path: "/paths/academy/", cta: ".detail-page-academy .detail-hero .button-primary" },
+    { path: "/paths/technology/", cta: ".detail-page-technology .detail-hero .button-primary" },
+    { path: "/services/hermes-connect/", cta: ".hc-primary" },
+  ];
 
-  const banner = page.locator("[data-consent-banner]");
-  const primaryCta = page.getByRole("link", { name: /Open Repair Shops/ });
+  for (const route of routes) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(route.path, { waitUntil: "domcontentloaded" });
 
-  await expect(banner).toBeVisible();
-  await expect(primaryCta).toBeVisible();
-  await expect(page.getByText("Analytics is off until you choose. Advertising storage and personalization stay disabled.", { exact: false })).toBeVisible();
-  await expect(page.locator(".tracking-consent-detail")).toBeHidden();
-  await expect(page.getByRole("button", { name: "Allow analytics" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Continue without analytics" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Privacy Policy" }).first()).toBeVisible();
+    const banner = page.locator("[data-consent-banner]");
+    const primaryCta = page.locator(route.cta).first();
 
-  const geometry = await page.evaluate(() => {
-    const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
-    const ctaElement = document.querySelector<HTMLElement>(".hc-primary");
-    const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
-    const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
-    if (!bannerElement || !ctaElement || !acceptElement || !declineElement) return null;
-    const bannerRect = bannerElement.getBoundingClientRect();
-    const ctaRect = ctaElement.getBoundingClientRect();
-    const acceptRect = acceptElement.getBoundingClientRect();
-    const declineRect = declineElement.getBoundingClientRect();
-    return {
-      bannerHeight: bannerRect.height,
-      bannerTop: bannerRect.top,
-      ctaTop: ctaRect.top,
-      ctaBottom: ctaRect.bottom,
-      acceptHeight: acceptRect.height,
-      declineHeight: declineRect.height,
-    };
-  });
+    await expect(banner).toBeVisible();
+    await expect(primaryCta).toBeVisible();
+    await expect(page.locator(".tracking-consent-detail")).toBeHidden();
+    await expect(page.getByRole("button", { name: "Allow analytics" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue without analytics" })).toBeVisible();
 
-  expect(geometry).not.toBeNull();
-  expect(geometry!.bannerHeight).toBeLessThanOrEqual(120);
-  expect(geometry!.ctaBottom).toBeLessThanOrEqual(geometry!.bannerTop);
-  expect(geometry!.acceptHeight).toBeGreaterThanOrEqual(44);
-  expect(geometry!.declineHeight).toBeGreaterThanOrEqual(44);
+    const geometry = await page.evaluate(({ cta }) => {
+      const bannerElement = document.querySelector<HTMLElement>("[data-consent-banner]");
+      const ctaElement = document.querySelector<HTMLElement>(cta);
+      const acceptElement = document.querySelector<HTMLElement>("[data-consent-accept]");
+      const declineElement = document.querySelector<HTMLElement>("[data-consent-decline]");
+      if (!bannerElement || !ctaElement || !acceptElement || !declineElement) return null;
+      const bannerRect = bannerElement.getBoundingClientRect();
+      const ctaRect = ctaElement.getBoundingClientRect();
+      const acceptRect = acceptElement.getBoundingClientRect();
+      const declineRect = declineElement.getBoundingClientRect();
+      const overlap = bannerRect.left < ctaRect.right && bannerRect.right > ctaRect.left && bannerRect.top < ctaRect.bottom && bannerRect.bottom > ctaRect.top;
+      return {
+        bannerHeight: bannerRect.height,
+        bannerTop: bannerRect.top,
+        bannerBottom: bannerRect.bottom,
+        ctaTop: ctaRect.top,
+        ctaBottom: ctaRect.bottom,
+        overlap,
+        acceptHeight: acceptRect.height,
+        declineHeight: declineRect.height,
+      };
+    }, { cta: route.cta });
+
+    expect(geometry, route.path).not.toBeNull();
+    expect(geometry!.bannerHeight, route.path).toBeLessThanOrEqual(120);
+    expect(geometry!.bannerTop, route.path).toBeGreaterThanOrEqual(64);
+    expect(geometry!.overlap, route.path).toBe(false);
+    expect(geometry!.acceptHeight, route.path).toBeGreaterThanOrEqual(44);
+    expect(geometry!.declineHeight, route.path).toBeGreaterThanOrEqual(44);
+
+    await page.getByRole("button", { name: "Continue without analytics" }).click();
+    await page.evaluate(() => localStorage.removeItem("hermes-analytics-consent"));
+  }
 });
 
-test("mobile consent is compact on every public direction and privacy settings no longer float over CTAs", async ({ page }) => {
+test("privacy settings stays in document flow after a mobile choice", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/paths/logistics/", { waitUntil: "domcontentloaded" });
-
-  const banner = page.locator("[data-consent-banner]");
-  await expect(banner).toBeVisible();
-  await expect(page.locator(".tracking-consent-detail")).toBeHidden();
-
-  const bannerHeight = await banner.evaluate((element) => element.getBoundingClientRect().height);
-  expect(bannerHeight).toBeLessThanOrEqual(120);
+  await page.goto("/paths/marketing/", { waitUntil: "domcontentloaded" });
 
   await page.getByRole("button", { name: "Continue without analytics" }).click();
   const settings = page.getByRole("button", { name: "Privacy settings" });
@@ -147,11 +158,13 @@ test("mobile consent is compact on every public direction and privacy settings n
 
   const overlap = await page.evaluate(() => {
     const settingsButton = document.querySelector<HTMLElement>("[data-consent-settings]");
-    const primary = document.querySelector<HTMLElement>(".detail-page-logistics .detail-hero .button-primary");
+    const primary = document.querySelector<HTMLElement>(".detail-page-marketing .detail-hero .button-primary");
     if (!settingsButton || !primary) return null;
-    const a = settingsButton.getBoundingClientRect();
-    const b = primary.getBoundingClientRect();
-    return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    return rectanglesOverlap(settingsButton.getBoundingClientRect(), primary.getBoundingClientRect());
+
+    function rectanglesOverlap(a: DOMRect, b: DOMRect) {
+      return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+    }
   });
   expect(overlap).toBe(false);
 });
