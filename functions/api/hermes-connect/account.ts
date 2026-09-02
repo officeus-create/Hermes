@@ -8,6 +8,7 @@ import {
   listAcademyEnrollments,
 } from "../_lib/academy.mjs";
 import { ensureInternalAiSchema } from "../_lib/internal-ai.mjs";
+import { getHrReviewerAccess } from "../_lib/hr.mjs";
 
 type Env = { DB?: any };
 
@@ -22,7 +23,7 @@ type OwnedBusiness = {
 };
 
 type Workspace = {
-  key: "academy" | "internal_ai";
+  key: "academy" | "internal_ai" | "hr";
   kind: "shared_workspace" | "capability_workspace";
   href: string;
   available: true;
@@ -59,13 +60,14 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   await ensureAcademySchema(env.DB);
 
-  const [repairShop, beautySalon, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess] = await Promise.all([
+  const [repairShop, beautySalon, academyProfile, academyEnrollments, academyReviewerAccess, internalAiAccess, hrReviewerAccess] = await Promise.all([
     getOwnedRepairShop(env.DB, specialist.id),
     getOwnedBeautySalon(env.DB, specialist.id),
     getAcademyLearnerProfile(env.DB, specialist.id),
     listAcademyEnrollments(env.DB, specialist.id),
     getAcademyReviewerAccess(env.DB, specialist.id),
     getInternalAiAccess(env.DB, specialist.id),
+    getHrReviewerAccess(env.DB, specialist.id),
   ]);
 
   const ownedBusinesses: OwnedBusiness[] = [];
@@ -116,6 +118,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     },
   ];
 
+  if (hrReviewerAccess) {
+    workspaces.push({
+      key: "hr",
+      kind: "capability_workspace",
+      href: "/demos/hermes-connect/hr-admin.html",
+      available: true,
+      state: {
+        reviewer_access: true,
+        access_source: String(hrReviewerAccess.source || "hr_reviewer_access"),
+      },
+    });
+  }
+
   if (internalAiAccess) {
     workspaces.push({
       key: "internal_ai",
@@ -141,6 +156,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     workspaces,
     capabilities: {
       internal_ai: Boolean(internalAiAccess),
+      hr_review: Boolean(hrReviewerAccess),
     },
   }, privateHeaders);
 }
