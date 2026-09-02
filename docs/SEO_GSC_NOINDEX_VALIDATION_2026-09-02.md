@@ -69,7 +69,7 @@ The protected public search owner remains:
 
 - `/services/hermes-connect/repair-shops/`
 
-That public owner must remain indexable and in the primary sitemap.
+That public owner must remain indexable and in its declared canonical sitemap, `public/sitemap-digital-services.xml`.
 
 ## Technical correction
 
@@ -82,7 +82,7 @@ The repository regression guard now explicitly protects the additional Hermes Co
 - availability;
 - forgot-password.
 
-The same contract also protects `/services/hermes-connect/repair-shops/` as the indexable public owner.
+The same contract also protects `/services/hermes-connect/repair-shops/` as the indexable public owner and requires it to remain in `sitemap-digital-services.xml`.
 
 Every intentional noindex route is required to stay out of every sitemap.
 
@@ -94,7 +94,7 @@ Therefore the correction is:
 
 1. preserve the intentional `noindex` directives;
 2. preserve sitemap exclusion for private/demo/conversion states;
-3. protect the public Repair Shops owner from accidental `noindex`;
+3. protect the public Repair Shops owner from accidental `noindex` and preserve its declared sitemap ownership;
 4. stop treating this GSC validation as an active SEO defect;
 5. do not re-run “Validate fix” for this intentional exclusion class.
 
@@ -114,6 +114,6 @@ Reopen only if:
 
 - an intended public SEO owner appears in this noindex class;
 - an intentional noindex route appears in a sitemap;
-- a protected public owner loses indexability;
+- a protected public owner loses indexability or its declared sitemap ownership;
 - a canonical/index conflict affects a public owner;
 - parameter crawl volume becomes materially large enough to justify a separate crawl-budget intervention.
