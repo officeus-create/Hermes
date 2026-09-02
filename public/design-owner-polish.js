@@ -35,18 +35,8 @@
     });
   };
 
-  const routeConnectLaunchersToHub = () => {
-    document.querySelectorAll("[data-hermes-connect-launcher]").forEach((launcher) => {
-      if (!(launcher instanceof HTMLAnchorElement)) return;
-      const current = new URL(launcher.href, window.location.origin);
-      const locale = currentLocale();
-      current.pathname = "/services/hermes-connect/";
-      if (locale === "en") current.searchParams.delete("lang");
-      else current.searchParams.set("lang", locale);
-      launcher.href = `${current.pathname}${current.search}${current.hash}`;
-    });
-
-    document.querySelectorAll(".hc-launcher-panel > a, .hc-launcher-banner > a").forEach((launcher) => {
+  const routeGlobalConnectLaunchersToHub = () => {
+    document.querySelectorAll('[data-hermes-connect-launcher="header"], [data-hermes-connect-launcher="mobile"]').forEach((launcher) => {
       if (!(launcher instanceof HTMLAnchorElement)) return;
       const current = new URL(launcher.href, window.location.origin);
       const locale = currentLocale();
@@ -213,7 +203,7 @@
 
   const initialize = () => {
     syncLanguageUi();
-    routeConnectLaunchersToHub();
+    routeGlobalConnectLaunchersToHub();
     markProductHubLocale();
     addSparseAiMotion();
     activateProductHubSignals();
