@@ -1,19 +1,29 @@
 const QUEUE_KEY = 'hermes-connect-hr-review-queue-v1';
+const ACADEMY_HANDOFF_KEY = 'hermes-connect-academy-hr-handoffs-v1';
 const REVIEW_OUTCOMES = Object.freeze({
   ACADEMY: 'Academy practice',
   MORE_EVIDENCE: 'Request more evidence',
   SUPERVISED_TEST: 'Authorize supervised test'
 });
 
-function readQueue() {
+function readJson(key, fallback) {
   try {
-    const value = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
-    return Array.isArray(value) ? value : [];
-  } catch { return []; }
+    const value = JSON.parse(localStorage.getItem(key) || 'null');
+    return value ?? fallback;
+  } catch { return fallback; }
+}
+
+function writeJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function readQueue() {
+  const value = readJson(QUEUE_KEY, []);
+  return Array.isArray(value) ? value : [];
 }
 
 function saveQueue(queue) {
-  localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+  writeJson(QUEUE_KEY, queue);
 }
 
 function formatDate(value) {
@@ -23,6 +33,42 @@ function formatDate(value) {
 }
 
 function shortId(value='') { return value.length > 18 ? `${value.slice(0,10)}…${value.slice(-6)}` : value; }
+
+function capabilityGaps(signals={}) {
+  return Object.entries(signals)
+    .map(([capability,score])=>({capability,score:Number(score)||0}))
+    .sort((a,b)=>a.score-b.score)
+    .slice(0,3);
+}
+
+function syncAcademyHandoff(candidate) {
+  const handoffs = readJson(ACADEMY_HANDOFF_KEY, []);
+  const list = Array.isArray(handoffs) ? handoffs : [];
+  const index = list.findIndex(row=>row.candidate_id===candidate.candidate_id);
+
+  const record = {
+    handoff_id: index >= 0 ? list[index].handoff_id : `handoff_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,
+    candidate_id: candidate.candidate_id,
+    learner_id: candidate.learner_id || candidate.candidate_id,
+    track: candidate.track,
+    status: candidate.review?.outcome === 'ACADEMY' ? 'READY_FOR_ACADEMY_INTAKE' : 'NOT_ACTIVE',
+    capability_gaps: capabilityGaps(candidate.practice_signals),
+    evidence_ids: (candidate.answers || []).map(answer=>answer.evidence_id).filter(Boolean),
+    source_review: {
+      reviewer: candidate.review?.reviewer || null,
+      reason: candidate.review?.reason || null,
+      reviewed_at: candidate.review?.reviewed_at || null,
+      automated: false
+    },
+    created_from: 'HERMES_CONNECT_HR',
+    updated_at: new Date().toISOString()
+  };
+
+  if (index >= 0) list[index] = record;
+  else list.unshift(record);
+  writeJson(ACADEMY_HANDOFF_KEY, list.slice(0,250));
+  return record;
+}
 
 const queueEl = document.querySelector('[data-review-queue]');
 const detailEl = document.querySelector('[data-review-detail]');
@@ -134,6 +180,12 @@ function renderDetail(queue) {
   advisory.append(el('b','','System development suggestion: '),document.createTextNode(item.development_recommendation?.title || 'No suggestion available.'));
   card.append(advisory);
 
+  if (item.review?.outcome === 'ACADEMY') {
+    const bridge = el('div','hr-review-banner');
+    bridge.append(el('b','','Academy bridge: '),document.createTextNode('A human-approved handoff is prepared under the same learner ID. Capability gaps and evidence IDs are carried forward; protected/context fields are not used to decide readiness.'));
+    card.append(bridge);
+  }
+
   card.append(el('h4','','Practice signals (advisory, not an employment decision)'),signalBlock(item.practice_signals));
   card.append(el('h4','','Job-relevant answer evidence'),evidenceBlock(item.answers));
 
@@ -179,8 +231,17 @@ function renderDetail(queue) {
       outcome:current[index].review.outcome,
       reviewer:current[index].review.reviewer
     });
+    const handoff = syncAcademyHandoff(current[index]);
+    current[index].review_events.push({
+      event_id:`bridge_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`,
+      type: current[index].review.outcome === 'ACADEMY' ? 'academy_handoff_prepared' : 'academy_handoff_inactive',
+      occurred_at:handoff.updated_at,
+      handoff_id:handoff.handoff_id,
+      learner_id:handoff.learner_id,
+      automated:false
+    });
     saveQueue(current);
-    showToast('Human review recorded locally.');
+    showToast(current[index].review.outcome === 'ACADEMY' ? 'Human review saved. Academy handoff prepared.' : 'Human review recorded locally.');
     renderAll();
   });
   card.append(form);
