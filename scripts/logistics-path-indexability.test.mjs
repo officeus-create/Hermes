@@ -49,7 +49,13 @@ const intentionalNoindexWorkspaces = [
   { route: "/carrier/", robots: /<meta name="robots" content="noindex,nofollow">/ },
   { route: "/sign/", robots: /<meta name="robots" content="noindex,nofollow">/ },
   { route: "/demos/crm-validation/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/demos/hermes-connect/", robots: /<meta name="robots" content="noindex,nofollow">/ },
   { route: "/demos/website-audit/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/auth/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/dashboard/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/customers/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/availability/", robots: /<meta name="robots" content="noindex,nofollow">/ },
+  { route: "/services/hermes-connect/repair-shops/forgot-password/", robots: /<meta name="robots" content="noindex,nofollow">/ },
 ];
 
 for (const { route, robots } of intentionalNoindexWorkspaces) {
@@ -81,6 +87,7 @@ const protectedIndexableRoutes = [
   "/paths/logistics/brokers/carrier-capacity/",
   "/paths/logistics/customers/vehicle-transport/",
   "/paths/logistics/find-your-path/",
+  "/services/hermes-connect/repair-shops/",
 ];
 
 for (const route of protectedIndexableRoutes) {
@@ -90,4 +97,4 @@ for (const route of protectedIndexableRoutes) {
   assert(primarySitemap.includes(`https://hermeslogisticsus.com${route}`), `${route} must remain in the primary sitemap`);
 }
 
-console.log("Logistics path indexability contract passed: low-evidence variants and intentional private/conversion workspaces stay noindex and out of every sitemap while protected owners remain indexable.");
+console.log("Logistics and Hermes Connect indexability contract passed: low-evidence variants plus intentional private/conversion/demo routes stay noindex and out of every sitemap while protected public owners remain indexable.");
