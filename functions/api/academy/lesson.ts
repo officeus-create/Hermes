@@ -8,8 +8,10 @@ import {
 import { getAcademyLessonContent } from "../_lib/academy-content.mjs";
 import { getAcademyLessonContentRu } from "../_lib/academy-content-ru.mjs";
 import {
+  normalizeLocalizedLessonIdentity,
   projectLocalizedLessonShape,
   resolveAcademyLessonLocale,
+  resolveRussianLessonSourceId,
 } from "../_lib/academy-lesson-localization.mjs";
 
 type Env = { DB?: any };
@@ -42,7 +44,9 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const baseLesson = getAcademyLessonContent(programSlug, lessonId);
   if (!baseLesson) return jsonResponse(404, { success: false, error: "lesson_content_not_ready" });
 
-  const localizedLesson = locale === "ru" ? getAcademyLessonContentRu(programSlug, lessonId) : null;
+  const russianSourceId = resolveRussianLessonSourceId(programSlug, lessonId);
+  const rawLocalizedLesson = locale === "ru" ? getAcademyLessonContentRu(programSlug, russianSourceId) : null;
+  const localizedLesson = normalizeLocalizedLessonIdentity(baseLesson, rawLocalizedLesson);
   const lesson = localizedLesson ? projectLocalizedLessonShape(baseLesson, localizedLesson) : baseLesson;
 
   return jsonResponse(200, {
