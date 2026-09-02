@@ -1,51 +1,57 @@
 /*
- * HERMES PUBLIC DIRECTION COLORS
- * Context-only reconciliation of the four owner-approved division signals.
- * Pearl/Obsidian surfaces and Hermes Intelligence violet remain unchanged.
- * Exact canonical colors drive ambient/border cues; small text uses a darker
- * same-hue mixture where the raw token would not meet normal-text contrast.
+ * HERMES PUBLIC DIRECTION COLOR ACCESSIBILITY
+ * The exact owner-approved direction colors are already applied by
+ * hermes-connect-division-context.css to hero atmosphere, CTA, framing and
+ * Connect launcher/banner context. This layer only provides readable same-hue
+ * text variants and removes a few older Logistics-violet public cues.
+ * Hermes Intelligence states remain violet.
  */
 
 .detail-page-logistics {
-  --path-signal-canonical: var(--hermes-logistics, #1e88ff);
-  --path-signal: color-mix(in srgb, var(--path-signal-canonical) 80%, var(--hermes-ink));
-  --path-signal-soft: color-mix(in srgb, var(--path-signal-canonical) 11%, transparent);
+  --path-signal-text: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 80%, var(--hermes-ink));
 }
 
 .detail-page-marketing {
-  --path-signal-canonical: var(--hermes-marketing, #00c853);
-  --path-signal: color-mix(in srgb, var(--path-signal-canonical) 60%, var(--hermes-ink));
-  --path-signal-soft: color-mix(in srgb, var(--path-signal-canonical) 10%, transparent);
+  --path-signal-text: color-mix(in srgb, var(--hermes-marketing, #00c853) 60%, var(--hermes-ink));
 }
 
 .detail-page-academy {
-  --path-signal-canonical: var(--hermes-academy, #7c5cff);
-  --path-signal: color-mix(in srgb, var(--path-signal-canonical) 80%, var(--hermes-ink));
-  --path-signal-soft: color-mix(in srgb, var(--path-signal-canonical) 11%, transparent);
+  --path-signal-text: color-mix(in srgb, var(--hermes-academy, #7c5cff) 80%, var(--hermes-ink));
 }
 
 .detail-page-technology {
-  --path-signal-canonical: var(--hermes-technology, #ff7a00);
-  --path-signal: color-mix(in srgb, var(--path-signal-canonical) 65%, var(--hermes-ink));
-  --path-signal-soft: color-mix(in srgb, var(--path-signal-canonical) 10%, transparent);
+  --path-signal-text: color-mix(in srgb, var(--hermes-technology, #ff7a00) 65%, var(--hermes-ink));
+}
+
+/* Raw semantic tokens are intentionally too light for some normal-size text on
+   Pearl. Preserve the exact token for visual signal, but use its readable tint
+   for small labels and interactive text. */
+.detail-page > .section .eyebrow {
+  color: var(--path-signal-text, var(--path-signal));
+}
+
+.detail-page-marketing .marketing-service-meta,
+.detail-page-marketing .marketing-service-rails a:hover,
+.detail-page-marketing .marketing-service-rails a:focus-visible {
+  color: var(--path-signal-text);
 }
 
 /* Public Logistics cards are direction context, not Hermes Intelligence. Keep
-   violet inside explicit AI / Path Engine operating states, but move the public
-   audience and resource cues to the canonical Logistics signal. */
+   violet inside explicit AI / Path Engine operating states, but move these
+   audience/resource cues to the canonical Logistics family. */
 .detail-page-logistics .logistics-audience-grid > a:hover,
 .detail-page-logistics .logistics-audience-grid > a:focus-visible {
-  border-color: color-mix(in srgb, var(--path-signal-canonical) 38%, var(--hermes-line-light));
+  border-color: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 38%, var(--hermes-line-light));
 }
 
 .detail-page-logistics .logistics-audience-grid span,
 .detail-page-logistics .logistics-resource-library span {
-  color: var(--path-signal);
+  color: var(--path-signal-text);
 }
 
 .detail-page-logistics .logistics-resource-library a:hover,
 .detail-page-logistics .logistics-resource-library a:focus-visible {
-  border-color: color-mix(in srgb, var(--path-signal-canonical) 42%, var(--hermes-line-light));
+  border-color: color-mix(in srgb, var(--hermes-logistics, #1e88ff) 42%, var(--hermes-line-light));
 }
 
 @media (forced-colors: active) {
@@ -53,7 +59,6 @@
   .detail-page-marketing,
   .detail-page-academy,
   .detail-page-technology {
-    --path-signal: CanvasText;
-    --path-signal-soft: transparent;
+    --path-signal-text: CanvasText;
   }
 }
