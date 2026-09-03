@@ -47,6 +47,13 @@ if [[ -x "$FCC_CODEX" && -x "$FCC_PYTHON" ]]; then
   else
     fail "Hermes FCC runtime version is '${installed_version:-unknown}', expected $EXPECTED_FCC_VERSION"
   fi
+
+  site_packages="$($FCC_PYTHON -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])' 2>/dev/null || true)"
+  if [[ -n "$site_packages" ]] && "$FCC_PYTHON" "$SCRIPT_DIR/patch-fcc-ollama-thinking.py" --site-packages "$site_packages" --check >/dev/null 2>&1; then
+    pass "FCC Ollama reasoning-capability compatibility patch is applied"
+  else
+    fail "FCC Ollama reasoning-capability compatibility patch is missing or invalid; run ./scripts/ai/setup-codex-hermes.sh"
+  fi
 else
   fail "Hermes FCC runtime is missing. Run ./scripts/ai/setup-codex-hermes.sh"
 fi

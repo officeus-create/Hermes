@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 HERMES_AI_HOME="${HERMES_AI_HOME:-$HOME/.hermes-ai}"
 FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 FCC_SERVER="$FCC_VENV/bin/fcc-server"
+FCC_PYTHON="$FCC_VENV/bin/python"
 
-if [[ ! -x "$FCC_SERVER" ]]; then
-  printf '[codex-hermes server] FCC runtime is missing at %s\n' "$FCC_SERVER" >&2
+if [[ ! -x "$FCC_SERVER" || ! -x "$FCC_PYTHON" ]]; then
+  printf '[codex-hermes server] FCC runtime is missing at %s\n' "$FCC_VENV" >&2
   printf '[codex-hermes server] Run: ./scripts/ai/setup-codex-hermes.sh\n' >&2
   exit 127
 fi
+
+site_packages="$($FCC_PYTHON -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+"$FCC_PYTHON" "$SCRIPT_DIR/patch-fcc-ollama-thinking.py" --site-packages "$site_packages"
 
 exec "$FCC_SERVER" "$@"
