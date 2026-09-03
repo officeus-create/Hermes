@@ -73,7 +73,8 @@ function applyPrivateFactoryContext() {
   if (locale === "ru") context.querySelector("[data-hc-english-only]")?.remove();
 }
 
-const textMap = new Map(Object.entries({
+const ru = new Map(Object.entries({
+  "Hermes Connect · Technology": "Hermes Connect · Технологии",
   "Build the brief before the website.": "Сначала соберите бриф — потом создавайте сайт.",
   "Give Hermes the business truth, the outcome you want and three useful references. The result is a saved, reviewable website brief — not a fake promise that a production build has already started.": "Передайте Hermes подтвержденные данные о бизнесе, желаемый результат и три полезных референса. На выходе вы получите сохраненный бриф для проверки — без ложного обещания, что production-сборка уже запущена.",
   "Private · noindex": "Приватно · noindex",
@@ -210,7 +211,6 @@ const textMap = new Map(Object.entries({
   "Review what Hermes understands.": "Проверьте, как Hermes понял задачу.",
   "09 · Handoff": "09 · Передача",
   "Create the website brief.": "Создайте бриф сайта.",
-  "The handoff freezes this version as a reviewable snapshot. It does not claim a production website worker has started.": "Передача фиксирует эту версию как snapshot для проверки. Она не утверждает, что production-процесс создания сайта уже запущен.",
   "Ready when the required inputs are complete.": "Будет готово после заполнения обязательных данных.",
   "Your brief ID and submitted time will appear here.": "Здесь появятся ID брифа и время отправки.",
   "Create website brief": "Создать бриф сайта",
@@ -225,6 +225,10 @@ const textMap = new Map(Object.entries({
   "Could not load Website Factory drafts": "Не удалось загрузить черновики Website Factory",
   "Could not create draft": "Не удалось создать черновик",
   "Could not delete draft": "Не удалось удалить черновик",
+  "Could not save draft": "Не удалось сохранить черновик",
+  "Use a public HTTPS URL without embedded credentials.": "Используйте публичный HTTPS URL без встроенных учетных данных.",
+  "Brief is not ready": "Бриф еще не готов",
+  "Website Factory unavailable": "Website Factory недоступен",
   "Needs these answers first": "Сначала нужны эти ответы",
   "Ready to create brief": "Готово к созданию брифа",
   "Required decision inputs are present.": "Все обязательные данные для решения заполнены.",
@@ -232,25 +236,24 @@ const textMap = new Map(Object.entries({
   "Brief already created": "Бриф уже создан",
   "Ready to create website brief.": "Готово к созданию брифа сайта.",
   "This creates the handoff record only.": "Это создаст только запись передачи брифа.",
-  "Could not save draft": "Не удалось сохранить черновик",
-  "Use a public HTTPS URL without embedded credentials.": "Используйте публичный HTTPS URL без встроенных учетных данных.",
-  "Brief is not ready": "Бриф еще не готов",
-  "Website Factory unavailable": "Website Factory недоступен",
   "Add a source or choose starting from zero": "Добавьте источник или выберите «начинаю с нуля»",
   "Choose a primary goal": "Выберите главную цель",
   "Add a meaningful owner brief": "Добавьте содержательный бриф владельца",
   "Resolve critical conflicting facts": "Разрешите критические противоречия в данных",
   "Not named": "Название не указано",
   "Category not set": "Категория не указана",
+  "Market & goal": "Рынок и цель",
   "Primary goal missing": "Главная цель не указана",
   "Geography not set": "География не указана",
   "Brief missing": "Бриф не заполнен",
   "No pages selected": "Страницы не выбраны",
   "None selected": "Ничего не выбрано",
   "No brand direction supplied": "Направление бренда не задано",
+  "website": "сайт",
+  "No automated build started.": "Автоматическая сборка сайта не запускалась.",
 }));
 
-const phraseReplacements = [
+const patterns = [
   [/\bStep (\d+) of 9\b/g, "Шаг $1 из 9"],
   [/\bStep (\d+)\b/g, "Шаг $1"],
   [/\b(\d+) services\b/g, "$1 услуг"],
@@ -258,31 +261,32 @@ const phraseReplacements = [
   [/\bAdd the visual reference\b/g, "Добавьте визуальный референс"],
   [/\bAdd the functionality reference\b/g, "Добавьте референс функциональности"],
   [/\bAdd the structure reference\b/g, "Добавьте референс структуры"],
-  [/\bBrief needs (\d+) item\.?\b/g, "Для брифа нужен еще $1 пункт."],
-  [/\bBrief needs (\d+) items\.?\b/g, "Для брифа нужно еще $1 пунктов."],
-  [/\bNo automated build started\.\b/g, "Автоматическая сборка сайта не запускалась."],
+  [/\bBrief needs (\d+) item\.?/g, "Для брифа нужен еще $1 пункт."],
+  [/\bBrief needs (\d+) items\.?/g, "Для брифа нужно еще $1 пунктов."],
+  [/No automated build started\./g, "Автоматическая сборка сайта не запускалась."],
   [/\bdraft · Шаг/g, "черновик · Шаг"],
   [/\bsubmitted · Шаг/g, "отправлен · Шаг"],
+  [/^Delete (.+)\?$/g, "Удалить $1?"],
 ];
 
 function translateString(value) {
-  if (!value) return value;
+  if (!value || locale !== "ru") return value;
   const trimmed = value.trim();
-  if (textMap.has(trimmed)) {
-    const replacement = textMap.get(trimmed);
-    if (trimmed === value) return replacement;
-    return value.replace(trimmed, replacement);
+  if (ru.has(trimmed)) {
+    const replacement = ru.get(trimmed);
+    return trimmed === value ? replacement : value.replace(trimmed, replacement);
   }
+
   let output = value;
-  for (const [english, russian] of textMap.entries()) {
+  for (const [english, russian] of ru.entries()) {
     if (output.includes(english)) output = output.split(english).join(russian);
   }
-  for (const [pattern, replacement] of phraseReplacements) output = output.replace(pattern, replacement);
+  for (const [pattern, replacement] of patterns) output = output.replace(pattern, replacement);
   return output;
 }
 
 function translateElement(element) {
-  if (!(element instanceof Element)) return;
+  if (!(element instanceof Element) || locale !== "ru") return;
   for (const attribute of ["placeholder", "aria-label", "title"]) {
     const current = element.getAttribute(attribute);
     if (current) element.setAttribute(attribute, translateString(current));
@@ -305,8 +309,13 @@ function translateTree(root) {
   }
 }
 
-function normalizeDynamicRussian() {
+function normalizeRussianRuntime() {
   if (locale !== "ru") return;
+
+  const handoffCopy = document.querySelector('[data-step="9"] > p:not(.factory-kicker)');
+  if (handoffCopy) {
+    handoffCopy.innerHTML = "Передача фиксирует эту версию как snapshot для проверки. Она <strong>не</strong> утверждает, что production-процесс создания сайта уже запущен.";
+  }
 
   document.querySelectorAll("[data-draft-list] .draft-card span").forEach((node) => {
     node.textContent = translateString(node.textContent || "");
@@ -328,9 +337,12 @@ function normalizeDynamicRussian() {
 
 applyPrivateFactoryContext();
 translateTree(document.querySelector(".factory-page") || document);
-normalizeDynamicRussian();
+normalizeRussianRuntime();
 
 if (locale === "ru") {
+  const nativeConfirm = window.confirm.bind(window);
+  window.confirm = (message) => nativeConfirm(translateString(String(message)));
+
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === "characterData") {
@@ -347,8 +359,9 @@ if (locale === "ru") {
         }
       });
     }
-    normalizeDynamicRussian();
+    normalizeRussianRuntime();
   });
+
   observer.observe(document.querySelector(".factory-page") || document.body, {
     childList: true,
     subtree: true,
