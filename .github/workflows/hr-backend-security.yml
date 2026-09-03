@@ -1,0 +1,39 @@
+name: HR backend security
+
+on:
+  pull_request:
+    paths:
+      - 'functions/api/_lib/hr.mjs'
+      - 'functions/api/hr/**'
+      - 'functions/api/hermes-connect/account.ts'
+      - 'scripts/hermes-connect-hr-api-integration.test.mjs'
+      - 'scripts/hermes-connect-hr-backend-contract.test.mjs'
+      - '.github/workflows/hr-backend-security.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify HR backend authorization and persistence contract
+        run: node scripts/hermes-connect-hr-backend-contract.test.mjs
+
+      - name: Verify HR behavioral API integration
+        run: node scripts/hermes-connect-hr-api-integration.test.mjs
