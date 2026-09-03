@@ -65,6 +65,41 @@ const RUSSIAN_CANONICAL_FALLBACKS = new Map([
     "Activity counts are treated as signals, not proof of quality, revenue or progression.",
     "Количество действий рассматривается как сигнал, а не как доказательство качества, выручки или прогресса.",
   ],
+  ["Packet scope", "Объём пакета"],
+  [
+    "Relevant setup areas are identified without assuming one universal broker packet.",
+    "Определены релевантные области setup без предположения, что существует один универсальный пакет для всех брокеров.",
+  ],
+  ["Verification", "Проверка"],
+  [
+    "Identity, authority, insurance, equipment or payment uncertainty is resolved before representation.",
+    "Неопределённость по identity, authority, insurance, equipment или payment устраняется до представления информации от имени carrier.",
+  ],
+  ["Secure submission", "Безопасная передача"],
+  [
+    "Only required information is routed through an approved secure process.",
+    "Через одобренный безопасный процесс передаётся только действительно необходимая информация.",
+  ],
+  ["Credential boundary", "Граница credentials"],
+  [
+    "Passwords, codes, recovery information and unnecessary identity data are excluded.",
+    "Пароли, коды, данные восстановления доступа и ненужные identity-данные исключены.",
+  ],
+  ["Payment control", "Контроль платежных изменений"],
+  [
+    "Unexpected payment changes require independent verification.",
+    "Неожиданные изменения платёжных реквизитов требуют независимой проверки.",
+  ],
+  ["Status and refresh", "Статус и обновление"],
+  [
+    "The learner records non-sensitive status metadata and defines a refresh trigger.",
+    "Учащийся фиксирует нечувствительные метаданные статуса и определяет условие для повторной проверки или обновления.",
+  ],
+  ["Approval boundary", "Граница одобрения"],
+  [
+    "A complete packet is not described as guaranteed broker approval.",
+    "Полный пакет не описывается как гарантия одобрения брокером.",
+  ],
 ]);
 
 const RUSSIAN_LESSON_SOURCE_ALIASES = new Map([
