@@ -23,6 +23,7 @@ import TrackingConsent from "../components/TrackingConsent.astro";
 import VehicleTransportCtaEnhancer from "../components/VehicleTransportCtaEnhancer.astro";
 import WebsiteProjectScopeEnhancer from "../components/WebsiteProjectScopeEnhancer.astro";
 import { localeConfig, type SiteLocale } from "../data/locales";
+import { HERMES_CONNECT_SOCIAL_CARD } from "../lib/hermes-connect-social-card";
 
 interface Props {
   title: string;
@@ -38,7 +39,7 @@ interface Props {
 const {
   title,
   description,
-  image = heroImage.src,
+  image,
   schema,
   locale = "en",
   alternates = [],
@@ -47,6 +48,13 @@ const {
 } = Astro.props;
 
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
+const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
+const useHermesConnectSocialCard = isHermesConnectProductHub && !image;
+const socialImagePath = image ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.path : heroImage.src);
+const socialImageType = useHermesConnectSocialCard ? "image/png" : "image/jpeg";
+const socialImageAlt = useHermesConnectSocialCard
+  ? HERMES_CONNECT_SOCIAL_CARD.alt
+  : "Hermes ecosystem with four illuminated business portals";
 
 const PUBLIC_TEXT_REPLACEMENTS = new Map([
   ["freight_301@hermeslogisticsus.com", "officeus@hermeslogisticsus.com"],
@@ -89,7 +97,7 @@ const conciseDescription = (value: string, maxLength = 170) => {
 
 const metaDescription = conciseDescription(String(replaceRetiredPublicText(description)));
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const socialImage = new URL(image, Astro.site);
+const socialImage = new URL(socialImagePath, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
 const alternateOgLocales = alternates
   .filter((alternate) => alternate.lang !== locale && alternate.lang !== "x-default")
@@ -119,10 +127,10 @@ const safeSchema = schema
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:url" content={socialImage} />
     <meta property="og:image:secure_url" content={socialImage} />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:type" content={socialImageType} />
     <meta property="og:image:width" content="2200" />
     <meta property="og:image:height" content="1238" />
-    <meta property="og:image:alt" content="Hermes ecosystem with four illuminated business portals" />
+    <meta property="og:image:alt" content={socialImageAlt} />
     <meta property="og:site_name" content="Hermes" />
     <meta property="og:locale" content={ogLocale} />
     {alternateOgLocales.map((altLocale) => <meta property="og:locale:alternate" content={altLocale} />)}
@@ -130,7 +138,7 @@ const safeSchema = schema
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={socialImage} />
-    <meta name="twitter:image:alt" content="Hermes ecosystem with four illuminated business portals" />
+    <meta name="twitter:image:alt" content={socialImageAlt} />
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/design-owner-polish.css" />
