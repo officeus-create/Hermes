@@ -100,6 +100,10 @@ const RUSSIAN_CANONICAL_FALLBACKS = new Map([
     "A complete packet is not described as guaranteed broker approval.",
     "Полный пакет не описывается как гарантия одобрения брокером.",
   ],
+  [
+    "A learner draft remains inside the existing Evidence and Progression workflow until a separately authorized person makes any real publication decision.",
+    "Учебный draft остаётся внутри существующего workflow Evidence и Progression, пока отдельно авторизованный человек не примет решение о любой реальной публикации.",
+  ],
 ]);
 
 // Some of the original Russian curriculum drafts intentionally mixed Russian
@@ -115,7 +119,6 @@ const RUSSIAN_LEGACY_TEXT_FALLBACKS = new Map([
   ["Facts/assumptions/review claims separated.", "Факты, предположения и claims, требующие проверки, разделены."],
   ["No pressure/invented urgency/outcome promise.", "Нет давления, выдуманной срочности или обещаний результата."],
   ["Next action fits destination readiness.", "Следующее действие соответствует реальной готовности destination."],
-
   ["Flag evidence/entity/freshness/privacy/platform uncertainty.", "Отмечайте неопределённость по evidence, entity, актуальности, privacy и поведению платформы."],
   ["Facebook: enough context before CTA.", "Facebook: дайте достаточно контекста до CTA."],
   ["Threads: observation/tension/useful opinion concise.", "Threads: кратко используйте наблюдение, напряжение проблемы или полезное мнение."],
@@ -137,7 +140,6 @@ const RUSSIAN_LEGACY_TEXT_FALLBACKS = new Map([
   ["Facts supported/uncertain flagged.", "Факты подтверждены, а неопределённость явно отмечена."],
   ["Meaningful variation.", "Варианты содержательно различаются."],
   ["KPI and approval need clear.", "KPI и необходимость approval сформулированы ясно."],
-
   ["Canonical website/asset owner.", "Сохраняйте canonical website или asset как основной источник."],
   ["Match hook/format/visual/destination.", "Согласуйте hook, формат, визуал и destination между собой."],
   ["Privacy-safe tracking.", "Используйте tracking без персональных и приватных данных."],
@@ -171,7 +173,6 @@ const RUSSIAN_LEGACY_TEXT_FALLBACKS = new Map([
   ["No invented results/guarantees.", "Нет выдуманных результатов или гарантий."],
   ["Thin duplicates detected/rejected.", "Поверхностные дубли выявляются и отклоняются."],
   ["External action human-controlled.", "Внешнее действие остаётся под контролем человека."],
-
   ["Route attention to correct page.", "Направляйте внимание на правильную страницу."],
   ["One CTA fitting stage.", "Используйте один CTA, соответствующий этапу."],
   ["Minimum qualification.", "Собирайте минимально необходимую qualification."],
@@ -204,7 +205,6 @@ const RUSSIAN_LEGACY_TEXT_FALLBACKS = new Map([
   ["Role/status/next action clear.", "Роль, status и next action сформулированы ясно."],
   ["Safe decline/close condition.", "Определено безопасное условие decline или close."],
   ["Events locate stage without false causation.", "События помогают определить этап без ложного вывода о causation."],
-
   ["Preserve source/CTA/prior response context.", "Сохраняйте контекст source, CTA и предыдущего ответа."],
   ["Ask one focused discovery question.", "Задавайте один сфокусированный discovery-вопрос."],
   ["Answer supported facts only.", "Отвечайте только подтверждёнными фактами."],
@@ -233,7 +233,6 @@ const RUSSIAN_LEGACY_TEXT_FALLBACKS = new Map([
   ["One available action without pressure.", "Предложено одно доступное действие без давления."],
   ["Status/role/next action/stop reviewable.", "Status, role, next action и stop можно проверить при review."],
   ["Professional/concise/respectful/within 180 words.", "Ответ профессиональный, краткий, уважительный и укладывается в 180 слов."],
-
   ["Define privacy-safe events across full path.", "Определяйте privacy-safe события по всему пути."],
   ["Separate indicators from inquiry quality/outcomes.", "Отделяйте indicators от качества inquiry и outcomes."],
   ["Separate observation from causation.", "Отделяйте наблюдение от causation."],
