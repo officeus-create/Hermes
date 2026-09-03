@@ -309,16 +309,19 @@ function translateTree(root) {
   }
 }
 
+const handoffRussianText = "Передача фиксирует эту версию как snapshot для проверки. Она не утверждает, что production-процесс создания сайта уже запущен.";
+
 function normalizeRussianRuntime() {
   if (locale !== "ru") return;
 
   const handoffCopy = document.querySelector('[data-step="9"] > p:not(.factory-kicker)');
-  if (handoffCopy) {
+  if (handoffCopy && handoffCopy.textContent?.replace(/\s+/g, " ").trim() !== handoffRussianText) {
     handoffCopy.innerHTML = "Передача фиксирует эту версию как snapshot для проверки. Она <strong>не</strong> утверждает, что production-процесс создания сайта уже запущен.";
   }
 
   document.querySelectorAll("[data-draft-list] .draft-card span").forEach((node) => {
-    node.textContent = translateString(node.textContent || "");
+    const translated = translateString(node.textContent || "");
+    if (translated !== node.textContent) node.textContent = translated;
   });
   document.querySelectorAll("[data-draft-list] button[aria-label^='Delete ']").forEach((node) => {
     node.setAttribute("aria-label", `Удалить ${node.getAttribute("aria-label").slice(7)}`);
@@ -330,8 +333,10 @@ function normalizeRussianRuntime() {
   const back = document.querySelector(".factory-back");
   if (back instanceof HTMLAnchorElement) {
     const url = new URL(back.href, window.location.origin);
-    url.searchParams.set("lang", "ru");
-    back.href = `${url.pathname}${url.search}${url.hash}`;
+    if (url.searchParams.get("lang") !== "ru") {
+      url.searchParams.set("lang", "ru");
+      back.href = `${url.pathname}${url.search}${url.hash}`;
+    }
   }
 }
 
