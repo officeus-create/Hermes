@@ -190,20 +190,19 @@
 }
 
 /* Beauty B1 stays visually neutral until an owner-approved Beauty identity exists.
- * Scope the accessibility floor to the real Beauty page root. The page-local B1 CSS
- * is loaded later, so these selectors intentionally carry one extra class of
- * specificity without relying on a root class that the Beauty route does not own.
- * Native checkbox geometry remains compact and is not promoted to a 44px text field. */
-.beauty-b1-page .beauty-b1-form input:not([type="checkbox"]),
-.beauty-b1-page .beauty-b1-service-form input:not([type="checkbox"]),
-.beauty-b1-page .beauty-b1-button {
+ * The page's Astro-scoped B1 stylesheet still carries the legacy 42px floor, so the
+ * shared Design OS rule deliberately includes the real content root to outrank that
+ * scoped selector without !important. Native checkbox geometry remains compact. */
+.beauty-b1-page .beauty-b1-content .beauty-b1-form input:not([type="checkbox"]),
+.beauty-b1-page .beauty-b1-content .beauty-b1-service-form input:not([type="checkbox"]),
+.beauty-b1-page .beauty-b1-content .beauty-b1-button {
   min-height: 44px;
 }
 
-.beauty-b1-page .beauty-b1-form input:not([type="checkbox"]):focus-visible,
-.beauty-b1-page .beauty-b1-service-form input:not([type="checkbox"]):focus-visible,
-.beauty-b1-page .beauty-b1-button:focus-visible,
-.beauty-b1-page .beauty-b1-check input:focus-visible {
+.beauty-b1-page .beauty-b1-content .beauty-b1-form input:not([type="checkbox"]):focus-visible,
+.beauty-b1-page .beauty-b1-content .beauty-b1-service-form input:not([type="checkbox"]):focus-visible,
+.beauty-b1-page .beauty-b1-content .beauty-b1-button:focus-visible,
+.beauty-b1-page .beauty-b1-content .beauty-b1-check input:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--hermes-violet) 24%, transparent);
   outline-offset: 2px;
 }
