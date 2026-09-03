@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  buildAttributedSourcePath,
   buildContactPayload,
   buildRequestSummary,
   contactHandoffRoutes,
@@ -46,6 +47,16 @@ assert.doesNotMatch(logisticsSummary, /<script/i);
 const sanitized = sanitizeContactField("  hello\u0007world  ", 20);
 assert.equal(sanitized, "helloworld");
 
+const attributedPath = buildAttributedSourcePath(
+  "/academy/apply/",
+  "?utm_source=london&utm_medium=organic&utm_campaign=london-academy&utm_content=carrier-sales-training&service=academy&email=private@example.com&ref=secret",
+);
+assert.equal(
+  attributedPath,
+  "/academy/apply/?utm_source=london&utm_medium=organic&utm_campaign=london-academy&utm_content=carrier-sales-training&service=academy",
+);
+assert.doesNotMatch(attributedPath, /private@example|ref=|secret/);
+
 const logisticsRoute = getContactHandoffRoute("Hermes Logistics");
 assert.ok(logisticsRoute);
 assert.match(logisticsRoute.href, /^tel:/);
@@ -82,6 +93,34 @@ assert.match(marketingSummary, /Primary goal:/);
 assert.doesNotMatch(marketingSummary, /Phone:/);
 assert.doesNotMatch(marketingSummary, /<script/i);
 assert.doesNotMatch(marketingSummary, /</);
+
+// The extended Academy UI fields must survive the real payload, not only the preview DOM.
+const academyForm = new FormData();
+academyForm.set("name", "Academy Applicant");
+academyForm.set("email", "academy@example.com");
+academyForm.set("path", "Hermes Business Academy");
+academyForm.set("message", "I want structured training for the U.S. logistics market.");
+academyForm.set("consent", "on");
+academyForm.set("academy_program", "us-logistics-operations");
+academyForm.set("academy_country_city", "London, United Kingdom");
+academyForm.set("academy_languages_levels", "Ukrainian C2, English B2");
+academyForm.set("academy_english_level", "B2");
+academyForm.set("academy_recent_experience", "Customer communication and operations practice.");
+academyForm.set("academy_objective", "Career development");
+academyForm.set("academy_us_timezone_availability", "Available 14:00-22:00 London time");
+academyForm.set("academy_preferred_contact_route", "Email");
+
+const academyPayload = buildContactPayload(academyForm, "/academy/apply/", "academy-request-id");
+assert.equal(academyPayload.interest, "Hermes Business Academy");
+assert.match(academyPayload.message, /Academy qualification:/);
+assert.match(academyPayload.message, /Program: us-logistics-operations/);
+assert.match(academyPayload.message, /Country and city: London, United Kingdom/);
+assert.match(academyPayload.message, /Languages and levels: Ukrainian C2, English B2/);
+assert.match(academyPayload.message, /Spoken English: B2/);
+assert.match(academyPayload.message, /Recent experience: Customer communication and operations practice\./);
+assert.match(academyPayload.message, /Objective: Career development/);
+assert.match(academyPayload.message, /U\.S\. time-zone availability: Available 14:00-22:00 London time/);
+assert.match(academyPayload.message, /Preferred contact route: Email/);
 
 for (const category of ["ProgressoPro", "Hermes Business Academy", "IT Development"]) {
   const route = getContactHandoffRoute(category);
