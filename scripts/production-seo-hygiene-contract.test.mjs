@@ -21,7 +21,8 @@ const [layout, homepage] = await Promise.all([
 await assert.rejects(access(retiredSocialImage), undefined, "The redundant social-share JPEG must stay removed.");
 await assert.rejects(access(retiredPublicHeroImage), undefined, "The redundant public hero JPEG must stay removed.");
 assert.ok(layout.includes('import heroImage from "../assets/hermes-ecosystem-hero.jpg"'), "BaseLayout must import the canonical hero source.");
-assert.ok(layout.includes("image = heroImage.src"), "BaseLayout must use the canonical Astro asset for social previews.");
+assert.ok(layout.includes('const useHermesConnectSocialCard = isHermesConnectProductHub && !image;'), "BaseLayout must scope the dedicated Connect social card to the exact hub when no explicit image is supplied.");
+assert.ok(layout.includes('const socialImagePath = image ?? (useHermesConnectSocialCard ? HERMES_CONNECT_SOCIAL_CARD.path : heroImage.src);'), "BaseLayout must preserve explicit social images and the canonical Astro hero fallback outside the exact Hermes Connect hub.");
 assert.ok(homepage.includes("image: ecosystemHeroUrl"), "Homepage schema must use the canonical Astro asset.");
 assert.ok(!layout.includes("hermes-social-share-2026.jpg"), "BaseLayout must not revive the retired social-share duplicate.");
 assert.ok(!homepage.includes("hermes-social-share-2026.jpg"), "Homepage schema must not revive the retired social-share duplicate.");
