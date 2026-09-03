@@ -12,7 +12,12 @@ const icons = [GraduationCap, Route, BookOpen, ClipboardCheck, Library];
         <p class="eyebrow">Hermes Business Academy</p>
         <h2 id="academy-subsite-title">Open a program, understand the method, or prepare an application.</h2>
       </div>
-      <p>The existing Academy hub remains the canonical ecosystem owner. These child pages cover distinct program, methodology, application, and resource intents.</p>
+      <div class="academy-subsite-context">
+        <p>The existing Academy hub remains the canonical ecosystem owner. These child pages cover distinct program, methodology, application, and resource intents.</p>
+        <a class="academy-learner-handoff" href="/services/hermes-connect/academy/" data-academy-learner-handoff>
+          Already learning with Hermes? <strong>Open learner workspace</strong> <ArrowRight size={15} aria-hidden="true" />
+        </a>
+      </div>
     </div>
     <div class="resource-related-grid">
       {academySubsiteNavigation.map((item, index) => {
@@ -29,3 +34,26 @@ const icons = [GraduationCap, Route, BookOpen, ClipboardCheck, Library];
     </div>
   </div>
 </section>
+
+<script is:inline>
+  (() => {
+    const handoff = document.querySelector("[data-academy-learner-handoff]");
+    if (!(handoff instanceof HTMLAnchorElement)) return;
+    const locale = new URLSearchParams(window.location.search).get("lang") || "";
+    const supportedLocales = new Set(["ru", "uk", "es", "it", "fr"]);
+    if (!supportedLocales.has(locale)) return;
+    handoff.setAttribute("href", `/services/hermes-connect/academy/?lang=${encodeURIComponent(locale)}`);
+  })();
+</script>
+
+<style>
+  .academy-subsite-context { display:grid; gap:.7rem; align-content:start; }
+  .academy-subsite-context > p { margin:0; }
+  .academy-learner-handoff { display:inline-flex; align-items:center; gap:.38rem; width:fit-content; min-height:44px; padding:.35rem .15rem; color:var(--path-signal-text,var(--hermes-academy,#7c5cff)); text-decoration:none; font-size:.82rem; line-height:1.4; }
+  .academy-learner-handoff strong { color:inherit; font-weight:800; }
+  .academy-learner-handoff svg { flex:0 0 auto; transition:transform 220ms ease; }
+  .academy-learner-handoff:hover svg,.academy-learner-handoff:focus-visible svg { transform:translateX(3px); }
+  .academy-learner-handoff:focus-visible { outline:3px solid color-mix(in srgb,var(--hermes-academy,#7c5cff) 28%,transparent); outline-offset:3px; border-radius:.45rem; }
+  @media(max-width:760px){ .academy-learner-handoff { width:100%; justify-content:flex-start; } }
+  @media(prefers-reduced-motion:reduce){ .academy-learner-handoff svg { transition:none; } }
+</style>
