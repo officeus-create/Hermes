@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - 'public/demos/hermes-connect/**'
+      - 'public/design-owner-polish.css'
+      - 'public/design-owner-polish.js'
+      - 'src/components/HermesConnectLauncher.astro'
+      - 'src/layouts/BaseLayout.astro'
       - 'src/styles/hermes-connect-**'
       - 'src/styles/hermes-logistics-commercial-polish.css'
       - 'src/styles/hermes-marketing-socials-polish.css'

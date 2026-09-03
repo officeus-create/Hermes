@@ -35,10 +35,10 @@ test("Hermes Connect has one indexed adaptive product-family overview and one cu
   expect(schemaText).not.toMatch(/\"price\":(99|299|799)/);
 });
 
-test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop entry on desktop and mobile", async ({ page }) => {
+test("the shared site shell routes desktop and mobile Hermes Connect discovery through Product Hub first", async ({ page }) => {
   await page.goto("/logistics/car-hauling-dispatch/");
 
-  const desktopEntry = page.locator(`.header-actions a[href="${pilotRoute}"]`);
+  const desktopEntry = page.locator(`.header-actions a[href="${productRoute}"]`);
   await expect(desktopEntry).toHaveCount(1);
   await expect(desktopEntry).toContainText("Hermes Connect");
   await expect(desktopEntry).not.toContainText(/Realtime/i);
@@ -47,9 +47,12 @@ test("the shared site shell keeps one manager-ready Hermes Connect Repair Shop e
   await page.reload();
   await page.getByRole("button", { name: "Open navigation" }).click();
 
-  const mobileEntry = page.locator(`#mobile-menu a[href="${pilotRoute}"]`);
+  const mobileEntry = page.locator(`#mobile-menu a[href="${productRoute}"]`);
   await expect(mobileEntry).toHaveCount(1);
   await expect(mobileEntry).toContainText("Hermes Connect");
+
+  await page.goto(productRoute);
+  expect(await page.locator(`main a[href="${pilotRoute}"]`).count()).toBeGreaterThan(0);
 });
 
 test("the IT Development section routes visitors into the current Hermes Connect product family", async ({ page }) => {

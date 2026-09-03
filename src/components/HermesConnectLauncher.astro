@@ -41,6 +41,7 @@ const copy = {
     currentProduct: "Current product",
     footerBody: "One product family. Repair Shops is the current live pilot; other modules are reference capabilities until production verification.",
     openHub: "Open Hermes Connect Product Hub",
+    openLive: "Repair Shops · live",
     currentFamily: "Hermes Connect · Current product family",
     explore: "Explore Hermes Connect",
     bannerSuffix: "No legacy workspace or historical pricing is presented as the current product.",
@@ -58,6 +59,7 @@ const copy = {
     currentProduct: "Текущий продукт",
     footerBody: "Единое семейство продуктов. СТО — текущий рабочий пилот; остальные модули остаются справочными возможностями до проверки в production.",
     openHub: "Открыть центр Hermes Connect",
+    openLive: "СТО · работает",
     currentFamily: "Hermes Connect · текущее семейство продуктов",
     explore: "Открыть Hermes Connect",
     bannerSuffix: "Устаревшие рабочие пространства и исторические цены не показываются как текущий продукт.",
@@ -70,13 +72,18 @@ const providedSublabel = activeLocale === "ru" && sublabel === "Repair Shops · 
   ? "СТО · текущий рабочий пилот"
   : sublabel;
 const displaySubtitle = providedSublabel || localeCopy.context[context] || localeCopy.context.general;
+/* Product Hub remains the canonical default. Header/mobile always use it; contextual launchers may keep an explicit live-product href. */
 const computedHref = href || "/services/hermes-connect/";
-const localizedHref = (() => {
-  if (activeLocale !== "ru" || !computedHref.startsWith("/services/hermes-connect/")) return computedHref;
-  const url = new URL(computedHref, "https://hermeslogisticsus.com");
+const hubFirstVariant = variant === "header" || variant === "mobile";
+const effectiveHref = hubFirstVariant ? "/services/hermes-connect/" : computedHref;
+const localizeConnectHref = (value: string) => {
+  if (activeLocale !== "ru" || !value.startsWith("/services/hermes-connect/")) return value;
+  const url = new URL(value, "https://hermeslogisticsus.com");
   url.searchParams.set("lang", "ru");
   return `${url.pathname}${url.search}${url.hash}`;
-})();
+};
+const localizedHref = localizeConnectHref(effectiveHref);
+const localizedRepairHref = localizeConnectHref("/services/hermes-connect/repair-shops/");
 const connectMark = "/demos/hermes-connect/icon-192.svg";
 ---
 
@@ -106,7 +113,10 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
       <span>{localeCopy.currentProduct}</span>
     </div>
     <p>{localeCopy.footerBody}</p>
-    <a href={localizedHref}><img class="hc-brand-mark hc-brand-mark-link hermes-knot-mark" src={connectMark} width="20" height="20" loading="lazy" alt="Hermes Connect mark" />{localeCopy.openHub} <ArrowUpRight size={16} aria-hidden="true" /></a>
+    <div class="hc-launcher-panel-actions">
+      <a href={localizedHref}>{localeCopy.openHub} <ArrowUpRight size={16} aria-hidden="true" /></a>
+      <a class="hc-launcher-live-entry" href={localizedRepairHref}>{localeCopy.openLive} <ArrowUpRight size={15} aria-hidden="true" /></a>
+    </div>
   </div>
 )}
 
@@ -132,7 +142,7 @@ const connectMark = "/demos/hermes-connect/icon-192.svg";
   .hc-brand-mark-mobile{grid-row:1 / span 2}.hc-brand-mark-link{margin-right:.05rem}.hc-brand-mark-inline{border-radius:5px}
   .hc-launcher{display:inline-flex;align-items:center;gap:.42rem;text-decoration:none}.hc-launcher-header{padding:.35rem .72rem .35rem .38rem;border:1px solid rgba(157,136,255,.3);border-radius:999px;background:rgba(109,40,217,.12);color:#f8fafc;font-size:.82rem;font-weight:700}.hc-launcher-header:hover{background:rgba(109,40,217,.24);border-color:rgba(157,136,255,.5)}
   .hc-launcher-mobile{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.75rem 1rem;padding:1rem;border:1px solid rgba(157,136,255,.22);border-radius:14px;background:rgba(13,17,27,.9);color:#fff;text-decoration:none}.hc-launcher-mobile div{min-width:0}.hc-launcher-mobile strong,.hc-launcher-mobile small{display:block}.hc-launcher-mobile small{margin-top:.2rem;color:#9ba7ba;font-size:.72rem;line-height:1.35}.hc-launcher-mobile>span{display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;color:#bcaeff;font-size:.8rem;font-weight:700}
-  .hc-launcher-panel{display:grid;gap:.7rem;padding:1.15rem;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(11,15,24,.55);backdrop-filter:blur(18px)}.hc-launcher-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.hc-launcher-panel-brand{display:inline-flex!important;align-items:center;gap:.5rem;padding:0!important;background:transparent!important;color:#fff!important;font-size:inherit!important;text-transform:none!important}.hc-launcher-panel-head>span:last-child{padding:.2rem .45rem;border-radius:999px;background:rgba(52,211,153,.1);color:#6ee7b7;font-size:.68rem;font-weight:800;text-transform:uppercase}.hc-launcher-panel p{margin:0;color:#c0c8d6;font-size:.8rem;line-height:1.5}.hc-launcher-panel a{display:inline-flex;align-items:center;gap:.35rem;color:#fff;text-decoration:none;font-size:.82rem;font-weight:750}
+  .hc-launcher-panel{display:grid;gap:.7rem;padding:1.15rem;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(11,15,24,.55);backdrop-filter:blur(18px)}.hc-launcher-panel-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}.hc-launcher-panel-brand{display:inline-flex!important;align-items:center;gap:.5rem;padding:0!important;background:transparent!important;color:#fff!important;font-size:inherit!important;text-transform:none!important}.hc-launcher-panel-head>span:last-child{padding:.2rem .45rem;border-radius:999px;background:rgba(52,211,153,.1);color:#6ee7b7;font-size:.68rem;font-weight:800;text-transform:uppercase}.hc-launcher-panel p{margin:0;color:#c0c8d6;font-size:.8rem;line-height:1.5}.hc-launcher-panel-actions{display:flex;flex-wrap:wrap;gap:.5rem .85rem;align-items:center}.hc-launcher-panel-actions a{display:inline-flex;align-items:center;gap:.35rem;color:#fff;text-decoration:none;font-size:.82rem;font-weight:750}.hc-launcher-panel-actions .hc-launcher-live-entry{color:#bcaeff;font-size:.76rem}
   .hc-launcher-banner{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;max-width:1160px;margin:2.5rem auto;padding:1.5rem;border:1px solid rgba(157,136,255,.25);border-radius:20px;background:linear-gradient(140deg,rgba(109,40,217,.12),rgba(11,15,24,.9))}.hc-launcher-badge{display:inline-flex;align-items:center;gap:.4rem;color:#9d88ff;font-size:.72rem;font-weight:800;text-transform:uppercase}.hc-launcher-banner h3{margin:.35rem 0}.hc-launcher-banner p{margin:0;color:#9ba7ba;line-height:1.5;font-size:.86rem}.hc-launcher-banner>a{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;padding:.58rem .82rem .58rem .58rem;border-radius:12px;background:#6d28d9;color:#fff;text-decoration:none;font-size:.84rem;font-weight:750}
   .hc-launcher-inline{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .55rem .25rem .3rem;border:1px solid rgba(157,136,255,.25);border-radius:999px;background:rgba(109,40,217,.08);color:#bcaeff;text-decoration:none;font-size:.76rem;font-weight:700}
   @media(max-width:760px){.hc-launcher-banner{margin-inline:.75rem;flex-direction:column;align-items:flex-start}.hc-launcher-banner>a{width:100%;justify-content:center}.hc-launcher-mobile{grid-template-columns:auto 1fr}.hc-launcher-mobile>span{grid-column:1 / -1;white-space:normal}}
