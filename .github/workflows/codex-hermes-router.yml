@@ -6,6 +6,7 @@ on:
       - "scripts/ai/codex-hermes"
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
+      - "scripts/ai/patch-fcc-ollama-thinking.py"
       - "scripts/ai/hermes-internal-ai-runner.py"
       - "scripts/ai/hermes-internal-ai-sanitize.py"
       - "scripts/ai/setup-codex-hermes.sh"
@@ -21,6 +22,7 @@ on:
       - "scripts/ai/codex-hermes"
       - "scripts/ai/codex-hermes-doctor"
       - "scripts/ai/codex-hermes-server"
+      - "scripts/ai/patch-fcc-ollama-thinking.py"
       - "scripts/ai/hermes-internal-ai-runner.py"
       - "scripts/ai/hermes-internal-ai-sanitize.py"
       - "scripts/ai/setup-codex-hermes.sh"
@@ -51,6 +53,7 @@ jobs:
           import ast
           from pathlib import Path
           for path in (
+              Path("scripts/ai/patch-fcc-ollama-thinking.py"),
               Path("scripts/ai/hermes-internal-ai-runner.py"),
               Path("scripts/ai/hermes-internal-ai-sanitize.py"),
           ):
@@ -70,11 +73,52 @@ jobs:
           grep -Fq 'exec "$FCC_CODEX" "$@"' scripts/ai/codex-hermes
           grep -Fq '8b312c3a18279466732c3942d7e9246a75725d51' scripts/ai/setup-codex-hermes.sh
           grep -Fq 'FCC_VERSION="5.14.5"' scripts/ai/setup-codex-hermes.sh
+          grep -Fq 'patch-fcc-ollama-thinking.py' scripts/ai/setup-codex-hermes.sh
+          grep -Fq 'patch-fcc-ollama-thinking.py' scripts/ai/codex-hermes-server
           if grep -R -nE '(sk-[A-Za-z0-9_-]{20,}|AIza[A-Za-z0-9_-]{20,}|github_pat_[A-Za-z0-9_]{20,})' \
-            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/hermes-internal-ai-runner.py scripts/ai/hermes-internal-ai-sanitize.py scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
+            scripts/ai/codex-hermes scripts/ai/codex-hermes-doctor scripts/ai/codex-hermes-server scripts/ai/patch-fcc-ollama-thinking.py scripts/ai/hermes-internal-ai-runner.py scripts/ai/hermes-internal-ai-sanitize.py scripts/ai/setup-codex-hermes.sh scripts/ai/bootstrap-hermes-openssl.sh; then
             echo "Potential credential material detected in Hermes Codex/Internal AI router scripts" >&2
             exit 1
           fi
+
+      - name: Validate FCC Ollama reasoning capability patch contract
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' EXIT
+          site="$tmp/site"
+          mkdir -p "$site/free_claude_code/api" "$site/free_claude_code-5.14.5.dist-info"
+          cat > "$site/free_claude_code-5.14.5.dist-info/METADATA" <<'EOF'
+          Metadata-Version: 2.1
+          Name: free-claude-code
+          Version: 5.14.5
+          EOF
+          cat > "$site/free_claude_code/api/model_catalog.py" <<'PY'
+          def build(inventory_model, provider_model_ref):
+              allows_reasoning = inventory_model.supports_thinking is not False
+              return allows_reasoning
+          PY
+
+          PYTHONPATH="$site" python3 scripts/ai/patch-fcc-ollama-thinking.py --site-packages "$site"
+          PYTHONPATH="$site" python3 scripts/ai/patch-fcc-ollama-thinking.py --site-packages "$site" --check
+          grep -Fq 'inventory_model.supports_thinking is True' "$site/free_claude_code/api/model_catalog.py"
+          grep -Fq 'provider_model_ref.startswith("ollama/")' "$site/free_claude_code/api/model_catalog.py"
+          grep -Fq 'else inventory_model.supports_thinking is not False' "$site/free_claude_code/api/model_catalog.py"
+
+          PYTHONPATH="$site" python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+          path = Path("$site/free_claude_code/api/model_catalog.py")
+          spec = importlib.util.spec_from_file_location("patched_catalog", path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          class M:
+              def __init__(self, value): self.supports_thinking = value
+          assert mod.build(M(None), "ollama/qwen2.5-coder:3b") is False
+          assert mod.build(M(False), "ollama/qwen2.5-coder:3b") is False
+          assert mod.build(M(True), "ollama/qwen3:4b-thinking") is True
+          assert mod.build(M(None), "open_router/example") is True
+          PY
 
       - name: Validate read-only Internal AI doctor contract
         run: |
@@ -98,12 +142,18 @@ jobs:
 
           cat > "$tmp/fcc/bin/python" <<'EOF'
           #!/usr/bin/env bash
-          printf '5.14.5\n'
+          case "$*" in
+            *'import importlib.metadata'*) printf '5.14.5\n' ;;
+            *'import sysconfig'*) printf '%s\n' "${HERMES_TEST_SITE_PACKAGES:-/tmp/fake-site-packages}" ;;
+            *'patch-fcc-ollama-thinking.py'*) exit 0 ;;
+            *) printf '5.14.5\n' ;;
+          esac
           EOF
           chmod +x "$tmp/fcc/bin/python"
 
           cp AGENTS.md "$tmp/work/AGENTS.md"
           cp scripts/ai/codex-hermes "$tmp/work/scripts/ai/codex-hermes"
+          cp scripts/ai/patch-fcc-ollama-thinking.py "$tmp/work/scripts/ai/patch-fcc-ollama-thinking.py"
           cp scripts/ai/hermes-internal-ai-runner.py "$tmp/work/scripts/ai/hermes-internal-ai-runner.py"
           cp scripts/ai/hermes-internal-ai-sanitize.py "$tmp/work/scripts/ai/hermes-internal-ai-sanitize.py"
           chmod +x "$tmp/work/scripts/ai/codex-hermes"
