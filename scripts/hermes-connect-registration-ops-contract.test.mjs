@@ -28,7 +28,12 @@ assert.match(api, /last_7d/);
 assert.match(api, /last_30d/);
 assert.match(api, /retry_registration_alert/);
 assert.match(api, /set_synthetic/);
-assert.doesNotMatch(api, /password_hash|password_salt|sessions\s/i, "Owner ledger must not expose credentials/session material");
+assert.match(api, /ensureRepairShopAccessSchema/);
+assert.match(api, /rsa\.access_state/);
+assert.match(api, /AS last_session_at/);
+assert.match(api, /AS profile_complete/);
+assert.doesNotMatch(api, /password_hash|password_salt/i, "Owner ledger must not expose password material");
+assert.doesNotMatch(api, /SELECT\s+(?:se\.)?token\b/i, "Owner ledger may use session timestamps but must never select session tokens");
 
 const specialistInsert = register.indexOf("INSERT INTO specialists");
 const alertEnqueue = register.indexOf("enqueueRegistrationAlert");
@@ -44,5 +49,8 @@ assert.match(page, /\/api\/internal\/registrations/);
 assert.match(page, /Users \/ Registrations/);
 assert.match(page, /data-stat="total_real"/);
 assert.match(page, /data-stat="unreviewed"/);
+assert.match(page, /Profile \/ access/);
+assert.match(page, /Last session/);
+assert.match(page, /No phone yet/);
 
 console.log("Hermes Connect registration operations contract: PASS");
