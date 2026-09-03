@@ -202,7 +202,8 @@
 
 .beauty-b1-page .beauty-b1-form input:not([type="checkbox"]):focus-visible,
 .beauty-b1-page .beauty-b1-service-form input:not([type="checkbox"]):focus-visible,
-.beauty-b1-page .beauty-b1-button:focus-visible {
+.beauty-b1-page .beauty-b1-button:focus-visible,
+.beauty-b1-page .beauty-b1-check input:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--hermes-violet) 24%, transparent);
   outline-offset: 2px;
 }
