@@ -7,7 +7,7 @@
   "additions": [
     {
       "route": "/services/hermes-connect/website-factory/",
-      "source_state": "current_pr_head",
+      "source_state": "current_main",
       "indexability": "noindex",
       "robots": "noindex,nofollow",
       "canonical": "https://hermeslogisticsus.com/services/hermes-connect/website-factory/",
