@@ -1,5 +1,5 @@
 import { deflateSync } from "node:zlib";
-import { HERMES_CONNECT_SOCIAL_CARD } from "../data/hermes-connect-social-card";
+import { HERMES_CONNECT_SOCIAL_CARD } from "../data/hermes-connect-social-card.ts";
 
 type Rgb = readonly [number, number, number];
 
