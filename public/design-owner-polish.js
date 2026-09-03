@@ -163,6 +163,144 @@
     if (root instanceof HTMLElement) root.dataset.hcHubLocale = currentLocale();
   };
 
+  const activateRepairWorkspaceResilience = () => {
+    if (window.location.pathname !== "/services/hermes-connect/repair-shops/dashboard/") return;
+    const alertBox = document.getElementById("workspace-alert");
+    if (!(alertBox instanceof HTMLElement) || alertBox.dataset.hcResilienceBound === "true") return;
+    alertBox.dataset.hcResilienceBound = "true";
+
+    const locale = currentLocale();
+    const copy = locale === "ru"
+      ? {
+          offlineTitle: "Нет соединения",
+          offlineBody: "Сохранённые данные остаются на экране. Действия, которым нужен Hermes, будут доступны после восстановления связи.",
+          restoredTitle: "Соединение восстановлено",
+          restoredBody: "Если какой-то блок выглядит устаревшим, обновите кабинет.",
+          retry: "Повторить",
+          servicesTitle: "Сервисы временно недоступны",
+          bookingsTitle: "Записи временно недоступны",
+          feedbackTitle: "Отзывы временно недоступны",
+        }
+      : locale === "uk"
+        ? {
+            offlineTitle: "Немає з’єднання",
+            offlineBody: "Збережені дані залишаються на екрані. Дії, яким потрібен Hermes, відновляться після повернення мережі.",
+            restoredTitle: "З’єднання відновлено",
+            restoredBody: "Якщо якийсь блок виглядає застарілим, оновіть кабінет.",
+            retry: "Повторити",
+            servicesTitle: "Сервіси тимчасово недоступні",
+            bookingsTitle: "Записи тимчасово недоступні",
+            feedbackTitle: "Відгуки тимчасово недоступні",
+          }
+        : {
+            offlineTitle: "You’re offline",
+            offlineBody: "Saved data stays on screen. Actions that need Hermes will resume when your connection returns.",
+            restoredTitle: "Connection restored",
+            restoredBody: "If any section looks stale, refresh the workspace.",
+            retry: "Try again",
+            servicesTitle: "Services are temporarily unavailable",
+            bookingsTitle: "Bookings are temporarily unavailable",
+            feedbackTitle: "Feedback is temporarily unavailable",
+          };
+
+    if (!document.getElementById("hc-repair-resilience-style")) {
+      const style = document.createElement("style");
+      style.id = "hc-repair-resilience-style";
+      style.textContent = `
+        .hc-workspace-connectivity,.hc-workspace-recovery{margin-top:18px;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+        .hc-workspace-connectivity{border:1px solid rgba(255,196,92,.3);background:rgba(125,82,10,.16);color:#f6e8c5}
+        .hc-workspace-connectivity.is-restored{border-color:rgba(96,230,166,.24);background:rgba(32,156,101,.12);color:#c9f4dd}
+        .hc-workspace-recovery{border:1px solid rgba(255,108,108,.24);background:rgba(171,53,53,.1);color:#ffd2d2}
+        .hc-workspace-connectivity span,.hc-workspace-recovery span{color:inherit;opacity:.82;line-height:1.5}
+        .hc-workspace-recovery button{align-self:flex-start;min-height:44px;margin-top:4px}
+        .hc-workspace-connectivity.hidden,.hc-workspace-recovery.hidden{display:none!important}
+      `;
+      document.head.append(style);
+    }
+
+    const connectivity = document.createElement("div");
+    connectivity.id = "hc-workspace-connectivity";
+    connectivity.className = "hc-workspace-connectivity hidden";
+    connectivity.setAttribute("role", "status");
+    connectivity.setAttribute("aria-live", "polite");
+    const connectivityTitle = document.createElement("strong");
+    const connectivityBody = document.createElement("span");
+    connectivity.append(connectivityTitle, connectivityBody);
+    alertBox.insertAdjacentElement("afterend", connectivity);
+
+    let restoreTimer = 0;
+    const syncConnectivity = () => {
+      window.clearTimeout(restoreTimer);
+      if (navigator.onLine === false) {
+        connectivity.classList.remove("hidden", "is-restored");
+        connectivityTitle.textContent = copy.offlineTitle;
+        connectivityBody.textContent = copy.offlineBody;
+        return;
+      }
+      if (connectivity.classList.contains("hidden")) return;
+      connectivity.classList.add("is-restored");
+      connectivityTitle.textContent = copy.restoredTitle;
+      connectivityBody.textContent = copy.restoredBody;
+      restoreTimer = window.setTimeout(() => connectivity.classList.add("hidden"), 3200);
+    };
+
+    const sections = [
+      { key: "services", title: copy.servicesTitle, pattern: /load services|network error while (adding|deleting) service/i },
+      { key: "bookings", title: copy.bookingsTitle, pattern: /load booking inbox|network error while changing booking status/i },
+      { key: "feedback", title: copy.feedbackTitle, pattern: /load private feedback|network error while saving private feedback/i },
+    ];
+
+    const recoveryCards = new Map();
+    for (const section of sections) {
+      const loading = document.getElementById(`${section.key}-loading`);
+      if (!(loading instanceof HTMLElement)) continue;
+      const card = document.createElement("div");
+      card.id = `hc-${section.key}-recovery`;
+      card.className = "hc-workspace-recovery hidden";
+      card.setAttribute("role", "alert");
+      const title = document.createElement("strong");
+      title.textContent = section.title;
+      const detail = document.createElement("span");
+      detail.dataset.hcRecoveryDetail = section.key;
+      const retry = document.createElement("button");
+      retry.type = "button";
+      retry.className = "secondary-btn";
+      retry.textContent = copy.retry;
+      retry.dataset.hcRetrySection = section.key;
+      retry.addEventListener("click", () => window.location.reload());
+      card.append(title, detail, retry);
+      loading.insertAdjacentElement("afterend", card);
+      recoveryCards.set(section.key, card);
+
+      const successNodes = [document.getElementById(`${section.key}-empty`), document.getElementById(`${section.key}-list`)].filter((node) => node instanceof HTMLElement);
+      const successObserver = new MutationObserver(() => {
+        const hasVisibleSuccess = successNodes.some((node) => node instanceof HTMLElement && !node.classList.contains("hidden"));
+        if (hasVisibleSuccess) card.classList.add("hidden");
+      });
+      successNodes.forEach((node) => successObserver.observe(node, { attributes: true, attributeFilter: ["class"] }));
+    }
+
+    const syncAlert = () => {
+      const message = (alertBox.textContent || "").trim();
+      if (!message || alertBox.classList.contains("hidden") || alertBox.classList.contains("success")) return;
+      for (const section of sections) {
+        if (!section.pattern.test(message)) continue;
+        const card = recoveryCards.get(section.key);
+        if (!(card instanceof HTMLElement)) continue;
+        const detail = card.querySelector(`[data-hc-recovery-detail="${section.key}"]`);
+        if (detail instanceof HTMLElement) detail.textContent = message;
+        card.classList.remove("hidden");
+      }
+    };
+
+    const alertObserver = new MutationObserver(syncAlert);
+    alertObserver.observe(alertBox, { childList: true, characterData: true, subtree: true, attributes: true, attributeFilter: ["class"] });
+    window.addEventListener("offline", syncConnectivity);
+    window.addEventListener("online", syncConnectivity);
+    syncConnectivity();
+    syncAlert();
+  };
+
   const initialize = () => {
     syncLanguageUi();
     routeGlobalConnectLaunchersToHub();
@@ -170,6 +308,7 @@
     addSparseAiMotion();
     activateProductHubSignals();
     activateKnotPointer();
+    activateRepairWorkspaceResilience();
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize, { once: true });
