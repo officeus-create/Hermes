@@ -6,6 +6,13 @@ import {
   isAcademyProgram,
 } from "../_lib/academy.mjs";
 import { getAcademyLessonContent } from "../_lib/academy-content.mjs";
+import { getAcademyLessonContentRu } from "../_lib/academy-content-ru.mjs";
+import {
+  normalizeLocalizedLessonIdentity,
+  projectLocalizedLessonShape,
+  resolveAcademyLessonLocale,
+  resolveRussianLessonSourceId,
+} from "../_lib/academy-lesson-localization.mjs";
 
 type Env = { DB?: any };
 
@@ -18,6 +25,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const url = new URL(request.url);
   const programSlug = String(url.searchParams.get("program") || "").trim();
   const lessonId = String(url.searchParams.get("lesson") || "").trim();
+  const locale = resolveAcademyLessonLocale(request, url);
 
   if (!isAcademyProgram(programSlug)) return jsonResponse(400, { success: false, error: "program_invalid" });
   if (!isAcademyLesson(programSlug, lessonId)) return jsonResponse(400, { success: false, error: "lesson_invalid" });
@@ -33,11 +41,17 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     });
   }
 
-  const lesson = getAcademyLessonContent(programSlug, lessonId);
-  if (!lesson) return jsonResponse(404, { success: false, error: "lesson_content_not_ready" });
+  const baseLesson = getAcademyLessonContent(programSlug, lessonId);
+  if (!baseLesson) return jsonResponse(404, { success: false, error: "lesson_content_not_ready" });
+
+  const russianSourceId = resolveRussianLessonSourceId(programSlug, lessonId);
+  const rawLocalizedLesson = locale === "ru" ? getAcademyLessonContentRu(programSlug, russianSourceId) : null;
+  const localizedLesson = normalizeLocalizedLessonIdentity(baseLesson, rawLocalizedLesson);
+  const lesson = localizedLesson ? projectLocalizedLessonShape(baseLesson, localizedLesson) : baseLesson;
 
   return jsonResponse(200, {
     success: true,
+    locale,
     enrollment: { program_slug: programSlug, state: enrollment.state },
     lesson,
   });
