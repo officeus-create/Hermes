@@ -163,8 +163,8 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   }
 
   const shop = await getProfile(env.DB, specialist.id);
-  const contactBecameAvailable = !existing || (!clean(existing.phone, 32) && Boolean(phone));
-  if (contactBecameAvailable) {
+  const phoneBecameAvailable = Boolean(phone) && (!existing || !clean(existing.phone, 32));
+  if (phoneBecameAvailable) {
     const alertPromise = processProfileAlert(env, specialist.id, now);
     if (typeof waitUntil === "function") waitUntil(alertPromise);
     else await alertPromise;
