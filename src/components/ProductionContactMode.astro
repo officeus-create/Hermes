@@ -19,45 +19,29 @@
     return values;
   };
 
-  const attributionBlock = (attribution: Record<string, string>) => {
-    const labels: Record<string, string> = {
-      utm_source: "Source",
-      utm_medium: "Medium",
-      utm_campaign: "Campaign",
-      utm_content: "Content/track",
-      service: "Service",
-      track: "Track",
-      program: "Program",
-      language: "Language",
-    };
-    const lines = londonAttributionKeys.flatMap((key) => attribution[key] ? [`${labels[key]}: ${attribution[key]}`] : []);
-    return lines.length ? `London attribution:\n${lines.join("\n")}` : "";
-  };
-
   const installLondonIntakeBridge = (form: HTMLFormElement) => {
     const attribution = safeAttribution();
     if (!attribution) return;
 
-    const message = form.elements.namedItem("message");
     const status = form.querySelector<HTMLElement>("[data-form-status]");
-    if (!(message instanceof HTMLTextAreaElement) || !status) return;
+    if (!status) return;
+
+    for (const [key, value] of Object.entries(attribution)) {
+      const name = `hermes_attribution_${key}`;
+      let input = form.elements.namedItem(name);
+      if (!(input instanceof HTMLInputElement)) {
+        input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        form.append(input);
+      }
+      input.value = value;
+    }
 
     let pendingConversion = false;
-
     form.addEventListener("submit", () => {
       pendingConversion = true;
-      const original = message.value;
-      const block = attributionBlock(attribution);
-      if (!block) return;
-
-      // ContactCTA builds the JSON payload synchronously in the bubble phase.
-      // Prepend only for that event turn, then restore the visitor's textarea.
-      const augmented = `${block}\n\n${original}`.slice(0, 2000);
-      message.value = augmented;
-      queueMicrotask(() => {
-        if (message.value === augmented) message.value = original;
-      });
-    }, { capture: true });
+    });
 
     const observer = new MutationObserver(() => {
       if (!pendingConversion || !status.textContent?.includes("sent successfully")) return;
