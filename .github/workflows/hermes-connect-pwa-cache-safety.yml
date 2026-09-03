@@ -1,0 +1,30 @@
+name: Hermes Connect PWA cache safety
+
+on:
+  pull_request:
+    paths:
+      - 'public/demos/hermes-connect/sw.js'
+      - 'scripts/hermes-connect-pwa-cache-safety.test.mjs'
+      - '.github/workflows/hermes-connect-pwa-cache-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cache-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Verify network-first and private cache boundary
+        run: node scripts/hermes-connect-pwa-cache-safety.test.mjs
