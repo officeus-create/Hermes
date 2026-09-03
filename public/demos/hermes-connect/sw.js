@@ -28,7 +28,8 @@ function isDynamicOrPrivateRequest(url) {
 }
 
 function responseCanBeCached(response) {
-  if (!response || response.status !== 200 || response.type !== 'basic') return false;
+  if (!response || response.status !== 200) return false;
+  if (['opaque', 'opaqueredirect', 'error'].includes(response.type)) return false;
   const cacheControl = String(response.headers.get('cache-control') || '').toLowerCase();
   return !cacheControl.includes('no-store') && !cacheControl.includes('private');
 }
