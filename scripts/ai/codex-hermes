@@ -8,15 +8,22 @@ FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 FCC_CODEX="$FCC_VENV/bin/fcc-codex"
 export CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
 
-# One-command local mode for daily work. It keeps the ordinary wrapper behavior
-# unchanged unless explicitly requested, uses the fast local coder as primary,
-# and keeps the local thinking model as the first fallback. Explicit environment
-# overrides still win so benchmarks and advanced routing remain reproducible.
-if [[ "${1:-}" == "--local" ]]; then
-  shift
-  export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen2.5-coder:3b}"
-  export HERMES_CODEX_FALLBACKS="${HERMES_CODEX_FALLBACKS:-ollama/qwen3:4b-thinking}"
-fi
+# Explicit local presets keep model choice aligned with task complexity.
+# --local and --local-fast: fast daily coding on qwen2.5 with qwen3 fallback.
+# --local-deep: reasoning-heavy audits/planning on qwen3 with qwen2.5 fallback.
+# Explicit environment overrides still win so benchmarks remain reproducible.
+case "${1:-}" in
+  --local|--local-fast)
+    shift
+    export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen2.5-coder:3b}"
+    export HERMES_CODEX_FALLBACKS="${HERMES_CODEX_FALLBACKS:-ollama/qwen3:4b-thinking}"
+    ;;
+  --local-deep)
+    shift
+    export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen3:4b-thinking}"
+    export HERMES_CODEX_FALLBACKS="${HERMES_CODEX_FALLBACKS:-ollama/qwen2.5-coder:3b}"
+    ;;
+esac
 
 if [[ ! -x "$FCC_CODEX" ]]; then
   printf '[codex-hermes] FCC runtime is missing at %s\n' "$FCC_CODEX" >&2
@@ -110,7 +117,7 @@ if [[ "$RUNNER_SANITIZE" == "1" ]]; then
     exit 74
   }
   command -v python3 >/dev/null 2>&1 || {
-    printf '[codex-hermes] python3 is required for the Internal AI output sanitizer; refusing to start unsanitized runner execution.\n' >&2
+    printf '[codex-hermes] python3 is required for the Internal AI output sanitizer; refusing to start unsanitized runner execution.\n' "$SANITIZER" >&2
     exit 74
   }
 
