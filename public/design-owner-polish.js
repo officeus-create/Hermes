@@ -20,6 +20,56 @@
     },
   };
 
+  const REPAIR_DASHBOARD_PATH = "/services/hermes-connect/repair-shops/dashboard/";
+  const REPAIR_OUTCOME_EVENT = "hermes:repair-section-outcome";
+  const repairSectionOutcomes = new Map();
+  const repairReadPaths = new Map([
+    ["/api/services", "services"],
+    ["/api/repair-shop/bookings", "bookings"],
+    ["/api/repair-shop/feedback", "feedback"],
+  ]);
+
+  const publishRepairOutcome = (key, outcome) => {
+    repairSectionOutcomes.set(key, outcome);
+    window.dispatchEvent(new CustomEvent(REPAIR_OUTCOME_EVENT, { detail: { key, outcome } }));
+  };
+
+  const installRepairWorkspaceFetchObserver = () => {
+    if (window.location.pathname !== REPAIR_DASHBOARD_PATH) return;
+    const originalFetch = window.fetch.bind(window);
+    window.fetch = async (input, init) => {
+      const request = input instanceof Request ? input : null;
+      const method = String(init?.method || request?.method || "GET").toUpperCase();
+      let url;
+      try {
+        url = new URL(request?.url || String(input), window.location.origin);
+      } catch {
+        return originalFetch(input, init);
+      }
+      const sectionKey = url.origin === window.location.origin && method === "GET" ? repairReadPaths.get(url.pathname) : null;
+      if (!sectionKey) return originalFetch(input, init);
+
+      try {
+        const response = await originalFetch(input, init);
+        if (response.status === 401) {
+          publishRepairOutcome(sectionKey, { ok: true, status: 401, authRedirect: true, message: "" });
+          return response;
+        }
+        let payload = null;
+        try { payload = await response.clone().json(); } catch {}
+        const payloadFailed = payload && typeof payload === "object" && payload.success === false;
+        const message = payload && typeof payload.error === "string" ? payload.error : "";
+        publishRepairOutcome(sectionKey, { ok: response.ok && !payloadFailed, status: response.status, message });
+        return response;
+      } catch (error) {
+        publishRepairOutcome(sectionKey, { ok: false, status: 0, networkError: true, message: "" });
+        throw error;
+      }
+    };
+  };
+
+  installRepairWorkspaceFetchObserver();
+
   const currentLocale = () => {
     const requested = new URLSearchParams(window.location.search).get("lang");
     if (requested && LOCALES.has(requested)) return requested;
@@ -164,7 +214,7 @@
   };
 
   const activateRepairWorkspaceResilience = () => {
-    if (window.location.pathname !== "/services/hermes-connect/repair-shops/dashboard/") return;
+    if (window.location.pathname !== REPAIR_DASHBOARD_PATH) return;
     const alertBox = document.getElementById("workspace-alert");
     if (!(alertBox instanceof HTMLElement) || alertBox.dataset.hcResilienceBound === "true") return;
     alertBox.dataset.hcResilienceBound = "true";
@@ -258,8 +308,22 @@
       { key: "bookings", title: copy.bookingsTitle, body: copy.bookingsBody, pattern: /load booking inbox|network error while changing booking status/i },
       { key: "feedback", title: copy.feedbackTitle, body: copy.feedbackBody, pattern: /load private feedback|network error while saving private feedback/i },
     ];
-
+    const sectionByKey = new Map(sections.map((section) => [section.key, section]));
     const recoveryCards = new Map();
+
+    const syncOutcome = (key, outcome) => {
+      const section = sectionByKey.get(key);
+      const card = recoveryCards.get(key);
+      if (!section || !(card instanceof HTMLElement) || !outcome) return;
+      if (outcome.ok || outcome.authRedirect) {
+        card.classList.add("hidden");
+        return;
+      }
+      const detail = card.querySelector(`[data-hc-recovery-detail="${key}"]`);
+      if (detail instanceof HTMLElement) detail.textContent = section.body;
+      card.classList.remove("hidden");
+    };
+
     for (const section of sections) {
       const loading = document.getElementById(`${section.key}-loading`);
       if (!(loading instanceof HTMLElement)) continue;
@@ -281,21 +345,14 @@
       card.append(title, detail, retry);
       loading.insertAdjacentElement("afterend", card);
       recoveryCards.set(section.key, card);
-
-      const successNodes = [document.getElementById(`${section.key}-empty`), document.getElementById(`${section.key}-list`)].filter((node) => node instanceof HTMLElement);
-      const syncSectionState = () => {
-        const hasVisibleSuccess = successNodes.some((node) => node instanceof HTMLElement && !node.classList.contains("hidden"));
-        if (hasVisibleSuccess) {
-          card.classList.add("hidden");
-          return;
-        }
-        if (loading.classList.contains("hidden")) card.classList.remove("hidden");
-      };
-      const stateObserver = new MutationObserver(syncSectionState);
-      stateObserver.observe(loading, { attributes: true, attributeFilter: ["class"] });
-      successNodes.forEach((node) => stateObserver.observe(node, { attributes: true, attributeFilter: ["class"] }));
-      queueMicrotask(syncSectionState);
+      syncOutcome(section.key, repairSectionOutcomes.get(section.key));
     }
+
+    window.addEventListener(REPAIR_OUTCOME_EVENT, (event) => {
+      const detail = event instanceof CustomEvent ? event.detail : null;
+      if (!detail || typeof detail.key !== "string") return;
+      syncOutcome(detail.key, detail.outcome);
+    });
 
     const syncAlert = () => {
       const message = (alertBox.textContent || "").trim();
@@ -304,6 +361,8 @@
         if (!section.pattern.test(message)) continue;
         const card = recoveryCards.get(section.key);
         if (!(card instanceof HTMLElement)) continue;
+        const outcome = repairSectionOutcomes.get(section.key);
+        if (outcome?.ok || outcome?.authRedirect) continue;
         const detail = card.querySelector(`[data-hc-recovery-detail="${section.key}"]`);
         if (detail instanceof HTMLElement) detail.textContent = message;
         card.classList.remove("hidden");
