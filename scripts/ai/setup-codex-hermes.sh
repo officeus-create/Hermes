@@ -62,6 +62,10 @@ if [[ "$installed_version" != "$FCC_VERSION" ]]; then
   fail "Expected Free Claude Code $FCC_VERSION from $FCC_REF, got $installed_version"
 fi
 
+site_packages="$($FCC_VENV/bin/python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"
+"$FCC_VENV/bin/python" "$SCRIPT_DIR/patch-fcc-ollama-thinking.py" --site-packages "$site_packages"
+log "Verified Hermes Ollama reasoning-capability compatibility patch"
+
 log "Official Codex remains: $(command -v codex)"
 log "Hermes FCC runtime: $FCC_VENV"
 log "Hermes Codex state: $HERMES_CODEX_HOME"
