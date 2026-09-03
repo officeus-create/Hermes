@@ -125,6 +125,18 @@ async function expectControlHeight(page: Page, selector: string, surface: string
   }
 }
 
+async function expectCompactControl(page: Page, selector: string, surface: string, width: number) {
+  const control = page.locator(selector).first();
+  await control.scrollIntoViewIfNeeded();
+  await expect(control, `${surface} compact control must be visible at ${width}px`).toBeVisible();
+  const box = await control.boundingBox();
+  expect(box, `${surface} compact control must have a measurable box at ${width}px`).not.toBeNull();
+  if (box) {
+    expect(box.height, `${surface} compact control must not be inflated at ${width}px`).toBeLessThanOrEqual(24);
+    expect(box.width, `${surface} compact control must not be inflated at ${width}px`).toBeLessThanOrEqual(24);
+  }
+}
+
 async function expectHermesAccountContext(page: Page) {
   const standalone = page.locator("main [data-hc-account-switcher]").first();
   if (await standalone.count()) {
@@ -158,12 +170,14 @@ async function exerciseViewports(
     readySelector,
     primarySelector,
     extraControlSelector,
+    compactControlSelector,
   }: {
     surface: string;
     url: string;
     readySelector: string;
     primarySelector: string;
     extraControlSelector?: string;
+    compactControlSelector?: string;
   },
 ) {
   for (const viewport of viewports) {
@@ -174,6 +188,7 @@ async function exerciseViewports(
     await expectNoHorizontalOverflow(page, surface, viewport.width);
     await expectControlHeight(page, primarySelector, surface, viewport.width);
     if (extraControlSelector) await expectControlHeight(page, extraControlSelector, `${surface} input`, viewport.width);
+    if (compactControlSelector) await expectCompactControl(page, compactControlSelector, `${surface} checkbox`, viewport.width);
   }
 }
 
@@ -235,6 +250,7 @@ test("Beauty owner workspace keeps authenticated Design OS ergonomics at all fiv
     readySelector: "[data-beauty-content]",
     primarySelector: "[data-profile-form] .beauty-b1-button.primary",
     extraControlSelector: "[data-profile-form] input[name=\"name\"]",
+    compactControlSelector: "[data-team-form] input[type=\"checkbox\"]",
   });
 });
 
