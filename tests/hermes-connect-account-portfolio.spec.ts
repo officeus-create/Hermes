@@ -207,3 +207,39 @@ test("private Beauty header uses the same Hermes identity and marks the owned sa
   await expect(beauty).toHaveAttribute("href", /\/beauty\/workspace\/\?lang=ru$/);
   await expect(menu.locator("[data-workspace-ai]")).toBeHidden();
 });
+
+
+test("public Hermes Connect landing reveals only the backend-authorized portfolio", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json(accountPortfolio)));
+
+  const raw = await page.request.get("/services/hermes-connect/?lang=ru");
+  const rawHtml = await raw.text();
+  expect(rawHtml).not.toMatch(/<a\b[^>]*href=["']\/demos\/hermes-connect\/hr-admin\.html["']/i);
+  expect(rawHtml).not.toMatch(/<a\b[^>]*href=["']\/services\/hermes-connect\/internal\/ai-connect\/["']/i);
+
+  await page.goto("/services/hermes-connect/?lang=ru", { waitUntil: "domcontentloaded" });
+  const menu = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
+  await expect(menu).toBeVisible();
+  await expect(menu.locator("[data-account-name]")).toHaveText(identity.specialist.name);
+  await menu.locator("summary").click();
+
+  const repair = menu.locator('[data-hc-workspace-link="repair"]');
+  const academy = menu.locator('[data-hc-workspace-link="academy"]');
+  const beauty = menu.locator('[data-hc-workspace-link="beauty"]');
+  await expect(repair).toHaveCount(1);
+  await expect(academy).toHaveCount(1);
+  await expect(beauty).toHaveCount(1);
+  await expect(menu.locator('[data-hc-workspace-link="ai"]')).toHaveCount(0);
+  await expect(menu.locator('[data-hc-workspace-link="hr"]')).toHaveCount(0);
+  await expect(repair).toHaveAttribute("href", /\/repair-shops\/dashboard\/\?lang=ru$/);
+  await expect(academy).toHaveAttribute("href", /\/academy\/dashboard\/\?lang=ru$/);
+  await expect(beauty).toHaveAttribute("href", /\/beauty\/workspace\/\?lang=ru$/);
+});
+
+test("public Hermes Connect account affordance stays hidden when account auth fails", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json({ success: false, error: "unauthorized" }, 401)));
+  await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator('header details[data-hc-account-switcher][data-public-safe="true"]')).toBeHidden();
+});

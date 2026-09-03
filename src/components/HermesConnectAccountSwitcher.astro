@@ -4,9 +4,10 @@ import { ChevronDown } from "@lucide/astro";
 export interface Props {
   current: "repair" | "academy" | "ai" | "beauty" | "hr" | "neutral";
   mode?: "panel" | "menu";
+  publicSafe?: boolean;
 }
 
-const { current, mode = "panel" } = Astro.props;
+const { current, mode = "panel", publicSafe = false } = Astro.props;
 const switcherCurrent = current === "neutral" ? undefined : current;
 const copy = {
   en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", beauty: "Beauty", hr: "HR Review", owned: "Owned business", shared: "Shared Hermes workspace", internal: "Internal capability", setup: "Workspace setup", preparing: "Workspace preparing", current: "Current", open: "Open", loading: "Loading account…" },
@@ -20,7 +21,7 @@ const t = copy.en;
 ---
 
 {mode === "panel" ? (
-  <section class="hc-account-switcher" data-hc-account-switcher data-current={switcherCurrent} data-locale="en" hidden>
+  <section class="hc-account-switcher" data-hc-account-switcher data-current={switcherCurrent} data-public-safe={publicSafe ? "true" : undefined} data-locale="en" hidden>
     <div class="hc-account-identity">
       <div class="hc-account-avatar" aria-hidden="true" data-account-avatar>H</div>
       <div class="hc-account-copy">
@@ -29,7 +30,9 @@ const t = copy.en;
         <small data-account-email data-hc-copy="loading">{t.loading}</small>
       </div>
     </div>
-    <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label>
+    <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label data-hc-dynamic-workspaces={publicSafe ? "true" : undefined}>
+        {!publicSafe && (
+          <>
       <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden>
         <span class="hc-workspace-dot" aria-hidden="true"></span>
         <span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-repair-kind data-hc-copy="owned">{t.owned}</small></span>
@@ -55,10 +58,13 @@ const t = copy.en;
         <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span>
         <em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em>
       </a>
-    </div>
+
+          </>
+        )}
+      </div>
   </section>
 ) : (
-  <details class="hc-account-menu" data-hc-account-switcher data-current={switcherCurrent} data-locale="en" hidden>
+  <details class="hc-account-menu" data-hc-account-switcher data-current={switcherCurrent} data-public-safe={publicSafe ? "true" : undefined} data-locale="en" hidden>
     <summary aria-label={t.workspaces} data-hc-workspaces-label>
       <span class="hc-account-avatar hc-account-avatar-compact" aria-hidden="true" data-account-avatar>H</span>
       <span class="hc-account-menu-copy">
@@ -69,7 +75,9 @@ const t = copy.en;
     </summary>
     <div class="hc-account-menu-popover">
       <span class="hc-account-menu-label" data-hc-copy="workspaces">{t.workspaces}</span>
-      <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label>
+      <div class="hc-account-workspaces" aria-label={t.workspaces} data-hc-workspaces-label data-hc-dynamic-workspaces={publicSafe ? "true" : undefined}>
+        {!publicSafe && (
+          <>
         <a class:list={["hc-account-workspace", "repair", current === "repair" && "is-current"]} href="/services/hermes-connect/repair-shops/dashboard/" data-workspace-repair data-hc-workspace-link="repair" hidden>
           <span class="hc-workspace-dot" aria-hidden="true"></span>
           <span><strong data-repair-name data-hc-copy="repair">{t.repair}</strong><small data-repair-kind data-hc-copy="owned">{t.owned}</small></span>
@@ -95,6 +103,9 @@ const t = copy.en;
           <span><strong data-beauty-name data-hc-copy="beauty">{t.beauty}</strong><small data-beauty-kind data-hc-copy="owned">{t.owned}</small></span>
           <em data-hc-copy={current === "beauty" ? "current" : "open"}>{current === "beauty" ? t.current : t.open}</em>
         </a>
+
+          </>
+        )}
       </div>
     </div>
   </details>
@@ -167,6 +178,7 @@ const t = copy.en;
       });
 
       const current = root.dataset.current;
+      const publicSafe = root.dataset.publicSafe === "true";
       void accountRequest.then((payload) => {
         const identity = payload.identity || {};
         const specialistName = String(identity.name || "Hermes").trim() || "Hermes";
@@ -181,6 +193,57 @@ const t = copy.en;
         const academyWorkspace = workspaces.find((item) => item?.key === "academy" && item?.available !== false);
         const hrWorkspace = workspaces.find((item) => item?.key === "hr" && item?.available !== false);
         const aiWorkspace = workspaces.find((item) => item?.key === "internal_ai" && item?.available !== false);
+
+        if (publicSafe) {
+          const dynamicWorkspaces = root.querySelector<HTMLElement>("[data-hc-dynamic-workspaces]");
+          const entries: Array<{ key: string; label: string; kind: string }> = [];
+          if (repairBusiness) entries.push({ key: "repair", label: String(repairBusiness.name || runtimeCopy.repair), kind: runtimeCopy.owned });
+          if (academyWorkspace) entries.push({ key: "academy", label: runtimeCopy.academy, kind: runtimeCopy.shared });
+          if (hrWorkspace) entries.push({ key: "hr", label: runtimeCopy.hr, kind: runtimeCopy.internal });
+          if (aiWorkspace) entries.push({ key: "ai", label: runtimeCopy.ai, kind: runtimeCopy.internal });
+          if (beautyBusiness) entries.push({ key: "beauty", label: String(beautyBusiness.name || runtimeCopy.beauty), kind: runtimeCopy.owned });
+
+          if (!dynamicWorkspaces || entries.length === 0) {
+            root.hidden = true;
+            return;
+          }
+
+          dynamicWorkspaces.replaceChildren();
+          entries.forEach((entry) => {
+            const href = workspacePaths[entry.key];
+            if (!href) return;
+            const link = document.createElement("a");
+            link.className = `hc-account-workspace ${entry.key}`;
+            link.dataset.hcWorkspaceLink = entry.key;
+            link.href = withLocale(href);
+
+            const dot = document.createElement("span");
+            dot.className = "hc-workspace-dot";
+            dot.setAttribute("aria-hidden", "true");
+
+            const text = document.createElement("span");
+            const strong = document.createElement("strong");
+            strong.textContent = entry.label;
+            const small = document.createElement("small");
+            small.textContent = entry.kind;
+            text.append(strong, small);
+
+            const action = document.createElement("em");
+            action.textContent = runtimeCopy.open;
+            link.append(dot, text, action);
+            link.addEventListener("click", () => {
+              if (root instanceof HTMLDetailsElement) root.open = false;
+            });
+            dynamicWorkspaces.append(link);
+          });
+
+          if (!dynamicWorkspaces.querySelector("a")) {
+            root.hidden = true;
+            return;
+          }
+          root.hidden = false;
+          return;
+        }
 
         const repair = root.querySelector<HTMLElement>("[data-workspace-repair]");
         const repairName = root.querySelector<HTMLElement>("[data-repair-name]");

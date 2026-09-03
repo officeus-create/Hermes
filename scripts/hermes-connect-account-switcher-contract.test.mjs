@@ -3,9 +3,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const switcherUrl = new URL('../src/components/HermesConnectAccountSwitcher.astro', import.meta.url);
+const headerUrl = new URL('../src/components/SiteHeader.astro', import.meta.url);
 
 async function loadSwitcher() {
   return readFile(switcherUrl, 'utf8');
+}
+
+async function loadHeader() {
+  return readFile(headerUrl, 'utf8');
 }
 
 test('account switcher uses one unified authenticated portfolio endpoint', async () => {
@@ -65,4 +70,23 @@ test('account switcher remains fail-closed until a valid account payload is load
   assert.match(source, /if \(!response\.ok \|\| !payload\?\.success \|\| !payload\.identity\) throw new Error\("account_unavailable"\)/);
   assert.match(source, /root\.hidden = false/);
   assert.match(source, /\.catch\(\(\) => \{\s*root\.hidden = true;/);
+});
+
+
+test('public Hermes Connect account affordance is auth-hydrated without SSR private workspace anchors', async () => {
+  const source = await loadSwitcher();
+  const header = await loadHeader();
+
+  assert.match(source, /publicSafe\?: boolean/);
+  assert.match(source, /data-public-safe=\{publicSafe \? "true" : undefined\}/);
+  assert.match(source, /data-hc-dynamic-workspaces=\{publicSafe \? "true" : undefined\}/);
+  assert.match(source, /\{!publicSafe && \(/);
+  assert.match(source, /const publicSafe = root\.dataset\.publicSafe === "true"/);
+  assert.match(source, /if \(publicSafe\) \{/);
+  assert.match(source, /document\.createElement\("a"\)/);
+  assert.match(source, /if \(!dynamicWorkspaces \|\| entries\.length === 0\)/);
+
+  assert.match(header, /const isHermesConnectLanding = currentPath === "\/services\/hermes-connect" \|\| currentPath === "\/services\/hermes-connect\/"/);
+  assert.match(header, /HermesConnectAccountSwitcher current="neutral" mode="menu" publicSafe/);
+  assert.match(header, /HermesConnectAccountSwitcher current="neutral" publicSafe/);
 });
