@@ -19,13 +19,19 @@ test.describe("Russian route integrity", () => {
     }
 
     await expect(connect).toBeVisible();
-    await expect(connect).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/\?lang=ru$/);
+    await expect(connect).toHaveAttribute("href", /\/services\/hermes-connect\/\?lang=ru$/);
     await connect.click();
 
-    await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/\?lang=ru$/);
+    await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
     await expect(page.locator("html")).toHaveAttribute("lang", "ru");
-    await expect(page.locator(".repair-live-hero h1")).toHaveText("Дайте клиентам одну ссылку для записи в ваш автосервис.");
+    await expect(page.locator(".hc-copy h1")).toContainText("Управляйте бизнесом");
     await expect(page.locator(".site-header .wordmark")).toHaveAttribute("href", "/ru/#top");
+
+    // Product Hub owns discovery first; the live Repair product remains available from the Hub with locale preserved.
+    const repairEntry = page.locator('main a[href="/services/hermes-connect/repair-shops/?lang=ru"]').first();
+    await expect(repairEntry).toBeVisible();
+    await expect(repairEntry).toContainText(/СТО|автосервис|Repair/i);
+
     await expect(page.locator(".site-footer")).toContainText("Выбрать направление обращения");
     await expect(page.locator(".site-footer")).toContainText("Открыть центр Hermes Connect");
     await expect(page.locator('.site-footer a[href="/ru/privacy/"]')).toContainText("Конфиденциальность");
