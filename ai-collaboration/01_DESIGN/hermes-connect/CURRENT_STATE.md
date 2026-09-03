@@ -4,7 +4,7 @@ Last updated: 2026-09-03
 
 ## Executive state
 
-Hermes Connect is no longer in logo-selection or broad visual-exploration mode. **Design 4 is an audit/execution cycle over one canonical responsive Hermes runtime.** The owner direction is to finish near-complete work first, remove duplicates and stale implementations, preserve strong existing surfaces, and judge every change through UX, conversion, mobile/accessibility, backend truth, SEO and GEO before calling it done.
+Hermes Connect is no longer in logo-selection or broad visual-exploration mode. **Design 4 is an audit/execution cycle over one canonical responsive Hermes runtime.** Finish near-complete work first, remove duplicates and stale implementations, preserve strong existing surfaces, and judge every change through UX, conversion, mobile/accessibility, backend truth, SEO and GEO before calling it done.
 
 Product perception remains:
 
@@ -16,7 +16,7 @@ Do not restart the visual system from zero. Do not recreate Brand V1/V2/V3 as pa
 
 ## Locked identity and Design OS
 
-- Production mark: owner-approved original Brand Exploration V2 **Option №02** (`continuous_loop` / Infinity Workflow Loop).
+- Production mark: owner-approved Brand Exploration V2 **Option №02** (`continuous_loop` / Infinity Workflow Loop).
 - One mark geometry across master, monochrome, inverse, contextual and PWA/app-icon usage.
 - Public/storytelling surfaces: Pearl / warm light.
 - Dense operational/private surfaces: Anthracite / Obsidian.
@@ -26,7 +26,7 @@ Do not restart the visual system from zero. Do not recreate Brand V1/V2/V3 as pa
 
 ## Canonical direction and workspace colors
 
-Owner-approved public direction colors are already implemented and accessibility-adjusted; they are not a future experiment:
+Owner-approved public direction colors are implemented and accessibility-adjusted:
 
 - **Hermes Logistics** — `#1E88FF`
 - **Hermes Marketing** — `#00C853`
@@ -42,23 +42,25 @@ Private workspace cues are semantic orientation, not separate brands:
 - Internal AI → Technology orange;
 - Beauty → Connect cyan.
 
-**Beauty & Wellness has no owner-approved fifth canonical direction color.** The current Connect-family cyan is an intentional temporary cue. Do not invent `--hermes-beauty` or a new canonical Beauty identity without explicit owner approval.
+**Beauty & Wellness has no owner-approved fifth canonical direction color.** Keep the current Connect-family cyan/neutral cue until explicit owner approval; do not invent a new canonical Beauty brand color.
 
 ## Product and account architecture
 
 Strategic model: **one Hermes identity → multiple backend-authorized businesses/workspaces/capabilities**.
 
-The shared `HermesConnectAccountSwitcher` and `/api/hermes-connect/account` are canonical. Private Repair / Academy / Beauty / Internal AI navigation consumes server-confirmed access only, preserves locale, and never grants privileges from localStorage, email shape, display name, role text or frontend state.
-
-Replay PRs #1004, #1005 and #1008 are historical duplicate Global Account attempts. Do not reopen them wholesale. A future public authenticated-account affordance is an extension only and must reuse the existing account API/switcher.
+The shared `HermesConnectAccountSwitcher` and `/api/hermes-connect/account` are canonical. Private navigation consumes server-confirmed access only, preserves locale, and never grants privileges from localStorage, email shape, display name, role text or frontend state.
 
 Current product truth:
 
-- Repair Shops — current public live product vertical;
-- Academy — private learner workspace plus public Academy search/conversion surfaces;
+- Repair Shops — current public live product vertical plus authenticated owner workspace;
+- Academy — public search/conversion surfaces plus private learner workspace;
 - Beauty & Wellness — private owner foundation with bounded scope;
 - Internal AI — authenticated owner/internal capability;
-- Logistics / Marketing / Professional Services Hermes Connect configurations — reference/preview capability surfaces until separately proven live.
+- Website Factory — private `noindex,nofollow` owner workflow for creating and submitting a reviewable website brief; it is **not** a fifth owned business and does not claim an automated production build;
+- Logistics / Marketing / Professional Services Hermes Connect configurations — reference/preview capability surfaces until separately proven live;
+- HR — active convergence branch, not yet current production pilot truth.
+
+Replay PRs #1004, #1005 and #1008 are historical duplicate Global Account attempts. Do not reopen them wholesale. Any public authenticated-account affordance must reuse the existing account API/switcher.
 
 ## Design × SEO/GEO rule
 
@@ -71,6 +73,10 @@ SEO/GEO is part of design quality, not a later bolt-on.
 - Do not create thin duplicate pages for keyword coverage when one canonical page already owns the intent.
 - Structured-data entity truth must match visible product truth.
 - Public pages may explain private capabilities, but operational private-route navigation belongs inside authenticated Hermes shell.
+- Private query localization such as `?lang=ru` must not silently create a second crawlable locale family.
+- Visual and search-system non-regression must be proven on the **same exact HEAD** before promotion.
+
+The reusable One Brain skill is `SKILL — HERMES DESIGN REGRESSION + SEO GEO NON-INTERFERENCE` in `00_HERMES_GLOBAL_CORE / 01_SKILLS_LIBRARY`.
 
 ## Completed repository release gate
 
@@ -80,56 +86,39 @@ Patched transitive dependencies and a reproducible lockfile are on `main`. Curre
 
 ## Merged Design 4 release chain
 
-The near-complete runtime chain that was previously scattered across stale branches is now merged into canonical `main`:
-
 ### #1020 — owner-approved visual / interaction polish — `MERGED_VERIFY`
 
 Merged at `7f305d6005adbde0d19ee0b856218a68182e30db` after exact-head Website checks, visual evidence and ownership checks. It established the current public Design 4 baseline: shared header treatment, readable Connect wordmark, Product Hub-first launcher, Product Family context rail, compact locale UI, RU hero containment, restrained motion, dark-section contrast repair, semantic-heading protection, no generic AI decoration on non-AI pages, and no-JS crawlable navigation.
 
 ### #954 — complete Russian Academy lesson content — `MERGED_VERIFY`
 
-Merged at `31c0077abab4e6a5da0ad2a36d9c0689bebfd53d`.
-
-- English curriculum IDs/structure remain canonical.
-- `documents-setup` is canonical; historical `broker-setup-packet` survives only as an internal RU localization alias.
-- Russian content projects onto the canonical lesson shape instead of changing progression mechanics.
-- Auth, enrollment, reviewer and submission schema were not split into a second Academy model.
+Merged at `31c0077abab4e6a5da0ad2a36d9c0689bebfd53d`. English curriculum IDs/structure remain canonical; RU content projects onto the canonical lesson shape rather than changing progression mechanics.
 
 ### #1025 — SEO-safe Academy existing-learner handoff — `MERGED_VERIFY`
 
-Merged at `146d5f976fcd1eb452ce2d42cb1f82c9e88bf078`.
-
-One restrained tertiary learner link connects the public Academy surface to the existing private learner workspace without becoming a competing hero CTA. The no-JS fallback remains canonical/crawlable and supported locale query is preserved.
+Merged at `146d5f976fcd1eb452ce2d42cb1f82c9e88bf078`. One restrained tertiary learner link connects public Academy to the existing private learner workspace without becoming a competing hero CTA or creating a new indexable route family.
 
 ### #1026 — Hermes Connect capability GEO entity hierarchy — `MERGED_VERIFY`
 
-Merged at `45033b6b138f59ac44764392fa69f604819baf03`.
-
-Reference capability pages remain indexable where they own distinct intent, but page-level schema is a `WebPage` that is part of the parent Hermes Connect `WebApplication`; the UI continues to state reference/not-current-live truth.
+Merged at `45033b6b138f59ac44764392fa69f604819baf03`. Reference capability pages remain indexable where they own distinct intent, but page-level schema is a `WebPage` that is part of the parent Hermes Connect `WebApplication`; visible reference/not-current-live truth is preserved.
 
 ### #1027 — London responsive / locale-safe navigation QA — `MERGED_VERIFY`
 
-Merged at `aa0ecb361d18af9b8f9deae38f521d010c1b8b87` after the exact-head full Website/browser suite passed.
-
-The valid Design portion of old mixed #926 is now preserved without the Marketing attribution observer: 390px overflow protection, image-alt coverage, measurable primary CTA sizing, RU→RU and UA→UA internal London links, and same-locale hub backlinks.
+Merged at `aa0ecb361d18af9b8f9deae38f521d010c1b8b87` after exact-head Website/browser suite. It preserves 390px overflow protection, image-alt coverage, measurable CTA sizing, RU→RU and UA→UA London navigation, and same-locale backlinks.
 
 ### #1028 — Repair Shops public/private information architecture — `MERGED_VERIFY`
 
-Merged at `77ec30d5212756d65b1d363d119651ccc90dff8a` after exact-head Website checks and Hermes Connect visual evidence both passed.
+Merged at `77ec30d5212756d65b1d363d119651ccc90dff8a` after exact-head Website checks and five-width visual evidence. Public Repair keeps Login/Register, $99/month Founding Shop Plan boundary, live capability/workflow explanation and commercial SEO/GEO owners. Direct dashboard/availability/customers links are not exposed in public source HTML; operational navigation remains private.
 
-The public Repair page now keeps:
+### #1009 — Design source-of-truth replay — `DONE`
 
-- Login / Register;
-- $99/month Founding Shop Plan boundary;
-- live product capabilities and workflow explanation;
-- Local SEO / Website Development / SEO Services commercial owners;
-- canonical schema/SEO/GEO truth.
+Merged at `33f42a46eec3e4571c94d86d8d625c5577605666`. It made the Design current-state/backlog pair canonical after the earlier runtime chain. Later merges must update those docs rather than leaving stale ACTIVE entries.
 
-Direct dashboard / availability / customers links were removed from the public source HTML. Operational navigation remains inside the authenticated workspace instead of being hidden with client-side JS.
+### #1031 — authenticated private five-width responsive matrix — `MERGED_VERIFY`
 
-## Evidence state after the merged chain
+Merged at `3b2c112c39335a8461857612d67e96e140ccdd72`.
 
-Public visual evidence already runs the canonical five-width matrix:
+Representative private Repair / Academy / Beauty / Internal AI surfaces are verified with mock/auth-backed browser coverage at:
 
 - 390
 - 430
@@ -137,72 +126,84 @@ Public visual evidence already runs the canonical five-width matrix:
 - 1024
 - 1440
 
-The workflow builds the exact PR head, validates Option №02 and approved color contracts, captures route evidence and validates layout.
+The matrix requires real private content rather than login redirects, one server-authoritative Hermes account context, no horizontal overflow and a visible 44px+ primary control. It exposed one real Beauty defect: a page-local profile input measured 42px at 390px. The final correction was applied at the actual `.beauty-b1-page` root, excluded native checkboxes from the size floor and changed no auth, API, SEO metadata, canonical, sitemap or indexability behavior.
 
-Private Repair, Academy, Beauty and Internal AI already have real mock/auth-backed browser tests, especially at 390px. The next responsive task is **not** to add unauthenticated static screenshots of private routes because those can redirect to login and create false evidence. Extend the existing authenticated/mock-backed browser coverage across the five-width matrix instead.
+### #1033 — Website Factory Design OS convergence — `MERGED_VERIFY`
+
+Merged into current `main` at `ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f` from exact validated head `09e2ac5787d06eca24122d963705ed4ec3da8add`.
+
+Preserved product/backend truth:
+
+- one shared Hermes identity/session;
+- owner-scoped D1 drafts;
+- create/list/resume/autosave/delete-before-submit;
+- nine-step owner brief;
+- readiness gate and immutable submitted snapshot;
+- retryable handoff/delivery state;
+- credential-shaped-field and HTTPS-source guards;
+- truthful `build_started:false` boundary.
+
+Design convergence:
+
+- no second Factory accountbar or mini-account system;
+- neutral shared account switcher shows only real server-authorized workspaces;
+- Pearl-first private work surface, Obsidian decisive actions, Technology context;
+- product chrome says **private Website Factory workflow**, not `REFERENCE CAPABILITY`;
+- complete RU private wizard through the same `?lang=ru` route;
+- route remains `noindex,nofollow`, has no sitemap owner and adds **zero new indexable routes**;
+- dynamic RU/Handoff copy and locale MutationObserver behavior are idempotent and browser-tested.
+
+Exact-head evidence before merge:
+
+- Website checks `33756699840` — SUCCESS;
+- Hermes Connect visual evidence `33756699764` — SUCCESS;
+- Carrier Contract Live Activation `33756700140` — SUCCESS.
+
+Historical #955 is closed/unmerged and is superseded implementation provenance only. Do not reopen the stale Factory shell.
 
 ## External production gate — not a design-code regression
 
-**#961 `[HC-DEPLOY-PARITY]` remains OPEN.**
+**#961 `[HC-DEPLOY-PARITY]` remains the external owner/admin gate.**
 
-The code-side automatic production workflow trigger is proven, but controlled Cloudflare Pages deployment fails closed at credential/binding validation because the authorized GitHub `production` environment still lacks the required scoped Cloudflare deployment credentials/account identifier and production bindings are not fully reconciled.
+The code-side production workflow path is separate from Cloudflare credential/binding authorization. Do not mark the merged Design 4 chain `DONE` from merge alone.
 
-Do not mark the merged Design 4 chain `DONE` from merge alone.
-
-Canonical owner rule remains:
+Canonical rule:
 
 `MERGED != DEPLOYED != LIVE_VERIFIED`
 
-and for the commercial Repair surface:
+For commercial Repair:
 
 `PAID_INTENT != PAID`.
 
-When #961's external owner/admin gate is resolved, require exact-main production deploy, custom-domain read-back and the relevant live/synthetic receiver/D1 proofs before promoting the applicable items to `PRODUCTION_VERIFIED` / 100%.
+When #961 is resolved, require exact-main production deploy, custom-domain read-back and relevant live/synthetic receiver/D1 proofs before promoting applicable runtime items to production-verified / 100%.
 
-## Next Design 4 implementation work
+## Current bounded Design work
 
-### 1. Authenticated private five-width responsive matrix
+### HR adaptive interview — #1016 — `REWORK`
 
-Extend existing mock/auth-backed browser coverage for representative private Repair / Academy / Beauty / Internal AI surfaces across 390 / 430 / 768 / 1024 / 1440. Check real private heading/identity, no horizontal overflow, primary action usability, touch/focus behavior and avoid fake unauthenticated screenshot evidence.
+This is now the only open bounded Design OS convergence item in the active release queue.
 
-### 2. Website Factory B1 — #955 — `REWORK`
-
-Preserve:
-
-- shared Hermes session/auth endpoints;
-- private D1 owner-scoped drafts;
-- create/list/resume/autosave/delete;
-- 9-step owner brief;
-- readiness gate;
-- immutable submitted snapshot;
-- delivery retry/state;
-- HTTPS-source and credential-shaped-field guards;
-- truthful `build_started: false` boundary.
-
-Do not merge the stale `factory-*` mini-app shell wholesale. The current branch already uses shared `/api/auth/login` and `/api/auth/register`; there is no second password store to migrate. Rebuild the page against the current Design OS, remove the duplicate Factory accountbar/logout identity layer, and use the shared account system.
-
-Website Factory is not a fifth owned business merely because it needs account context. Add a neutral/no-current-workspace mode to the shared account switcher that displays only server-authorized workspaces. If login/register occurs inside the Factory access state, reload after successful shared-auth mutation so the account switcher rehydrates against the authenticated session instead of inventing a second client account bus.
-
-### 3. HR adaptive interview — #1016 — `REWORK`
-
-Preserve:
+Preserve unique HR truth:
 
 - D1 candidate/evidence/reviewer architecture;
 - candidate token and exact-origin boundaries;
 - human-only consequential decisions;
 - Academy identity bridge;
 - explicit HR reviewer capability from backend authorization;
-- candidate/reviewer separation already added to the branch;
-- RU/UK dynamic interview question localization already implemented.
+- candidate/reviewer separation already present on the branch;
+- existing localized dynamic interview questions.
 
-Final convergence requirements:
+Do **not** merge the 50-commit historical branch wholesale onto current main. Final convergence must:
 
-- candidate surface gets one dominant Start/Continue Interview path;
-- Command Center / HR Review remain private reviewer surfaces;
-- add `hr` to the shared account portfolio only when backend `getHrReviewerAccess` authorizes it; never use `current === "hr"` or client state as a bypass;
-- replay shared account/middleware/package/CI changes semantically onto current `main`, never blob-copy stale shared files;
-- finish full RU/UK candidate-shell localization (hero, model, intake labels, consent, buttons, progress/result copy), not only dynamic questions;
-- reviewer/admin localization and private-shell convergence can follow as a separate bounded step rather than mixing all candidate/admin UI into one uncontrolled rewrite.
+1. replay unique HR backend/API/product files onto the final #1031 + #1033 Design OS baseline;
+2. replay shared account/switcher/middleware/package/CI changes semantically, keeping current `main` authoritative;
+3. give the candidate one dominant Start/Continue Interview path;
+4. keep Command Center / HR Review private reviewer surfaces;
+5. expose `hr` in the shared account portfolio only when backend `getHrReviewerAccess` authorizes it; no `current === "hr"`, email, role text or client-state bypass;
+6. finish full RU/UK candidate-shell localization — hero, model explanation, intake labels, consent, buttons, progress/result copy — rather than translating only dynamic questions;
+7. treat reviewer/admin private-shell polish as a separate bounded phase if mixing it would widen the replay unnecessarily;
+8. run the exact-head Design + SEO/GEO non-interference gate before promotion;
+9. keep production D1/runtime/binding verification separate from code merge and from #961.
 
 ## Mobile and accessibility contract
 
@@ -233,19 +234,11 @@ Mobile is one responsive Hermes product, not a separate reduced runtime.
 - Beauty dedicated canonical color remains an owner decision.
 - Option №02 remains locked; any replacement family is a rebrand proposal requiring explicit owner approval.
 
-## Evidence and owner completion rule
+## Promotion discipline
 
-Evidence levels:
+Use the One Brain `PROMOTION-CLOSE LOOP`:
 
-1. `SOURCE_VERIFIED`
-2. `LOCAL_TEST_VERIFIED`
-3. `BROWSER_VERIFIED`
-4. `PRODUCTION_VERIFIED`
-
-A branch, green unit test, merged PR or attractive screenshot is not 100% by itself.
-
-- **100%** = appropriate live production verification, including representative desktop/mobile where relevant.
-- **101%** = real willingness-to-pay/revenue proof for commercial work.
+If exact HEAD is unchanged, the diff is reconciled against current main, mandatory exact-head gates are green and no owner-only irreversible decision remains, complete `ready → merge → verify merge → persist evidence` in the same cycle. Do not leave a promotion-eligible task at 99% merely to write another report.
 
 ## Source of truth
 
@@ -255,5 +248,6 @@ Read together:
 - `ai-collaboration/01_DESIGN/DESIGN_MASTER_BACKLOG.md`
 - `ai-collaboration/01_DESIGN/hermes-connect/OWNER_DECISION_OPTION02_2026-08-31.md`
 - this file
+- One Brain skill: `SKILL — HERMES DESIGN REGRESSION + SEO GEO NON-INTERFERENCE`
 
 Historical documents remain provenance only and do not override later owner decisions or later merged implementation state.
