@@ -8,22 +8,38 @@ FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 FCC_CODEX="$FCC_VENV/bin/fcc-codex"
 export CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
 
-# Explicit local presets keep model choice aligned with task complexity.
-# --local and --local-fast: fast daily coding on qwen2.5 with qwen3 fallback.
-# --local-deep: reasoning-heavy audits/planning on qwen3 with qwen2.5 fallback.
-# Explicit environment overrides still win so benchmarks remain reproducible.
+# Local presets are capability-based, not just speed-based.
+# qwen2.5-coder:3b is useful for short bounded prompts/smoke checks, but live
+# evidence showed it fabricating Codex tool calls in interactive agent sessions.
+# Therefore ordinary local interactive work uses the tool/thinking-capable qwen3
+# model. The 3B model is available only through --local-fast + `exec`.
 case "${1:-}" in
-  --local|--local-fast)
+  --local|--local-deep)
     shift
+    export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen3:4b-thinking}"
+    unset HERMES_CODEX_FALLBACKS 2>/dev/null || true
+    ;;
+  --local-fast)
+    shift
+    if [[ "${1:-}" != "exec" ]]; then
+      printf '[codex-hermes] --local-fast is restricted to bounded non-interactive exec requests.\n' >&2
+      printf '[codex-hermes] For an interactive local agent use: ./scripts/ai/codex-hermes --local\n' >&2
+      exit 64
+    fi
     export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen2.5-coder:3b}"
     export HERMES_CODEX_FALLBACKS="${HERMES_CODEX_FALLBACKS:-ollama/qwen3:4b-thinking}"
     ;;
-  --local-deep)
-    shift
-    export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen3:4b-thinking}"
-    export HERMES_CODEX_FALLBACKS="${HERMES_CODEX_FALLBACKS:-ollama/qwen2.5-coder:3b}"
-    ;;
 esac
+
+# Fail closed if the known text-capable but agent-unreliable 3B model is forced
+# into an interactive session by an environment override. This prevents a
+# superficially healthy Codex UI from fabricating tool calls/results.
+if [[ "${HERMES_CODEX_MODEL:-}" == "ollama/qwen2.5-coder:3b" && "$#" -eq 0 ]]; then
+  printf '[codex-hermes] Refusing interactive Codex agent mode on ollama/qwen2.5-coder:3b.\n' >&2
+  printf '[codex-hermes] Live verification showed unreliable/fabricated agent tool calls on this 3B model.\n' >&2
+  printf '[codex-hermes] Use ./scripts/ai/codex-hermes --local for the local interactive agent, or --local-fast exec for a bounded prompt.\n' >&2
+  exit 64
+fi
 
 if [[ ! -x "$FCC_CODEX" ]]; then
   printf '[codex-hermes] FCC runtime is missing at %s\n' "$FCC_CODEX" >&2
@@ -117,7 +133,7 @@ if [[ "$RUNNER_SANITIZE" == "1" ]]; then
     exit 74
   }
   command -v python3 >/dev/null 2>&1 || {
-    printf '[codex-hermes] python3 is required for the Internal AI output sanitizer; refusing to start unsanitized runner execution.\n' "$SANITIZER" >&2
+    printf '[codex-hermes] python3 is required for the Internal AI output sanitizer; refusing to start unsanitized runner execution.\n' >&2
     exit 74
   }
 
