@@ -9,6 +9,18 @@ const RUSSIAN_LESSON_SOURCE_ALIASES = new Map([
   ["us-logistics-operations:documents-setup", "broker-setup-packet"],
 ]);
 
+// Localized sources may translate human-readable copy, but they must never own
+// canonical curriculum identity or progression mechanics. These values remain
+// sourced from the English Academy model even when an older localized source
+// still contains a historical ID/key.
+const CANONICAL_STRUCTURE_FIELDS = new Set([
+  "program_slug",
+  "lesson_id",
+  "key",
+  "submission_type",
+  "max_words",
+]);
+
 export function resolveAcademyLessonLocale(request, url) {
   const direct = String(url.searchParams.get("lang") || "").trim().toLowerCase();
   if (direct === "ru") return "ru";
@@ -50,7 +62,10 @@ export function projectLocalizedLessonShape(base, localized) {
   if (base && typeof base === "object") {
     const candidate = localized && typeof localized === "object" && !Array.isArray(localized) ? localized : {};
     return Object.fromEntries(
-      Object.entries(base).map(([key, value]) => [key, projectLocalizedLessonShape(value, candidate[key])]),
+      Object.entries(base).map(([key, value]) => [
+        key,
+        CANONICAL_STRUCTURE_FIELDS.has(key) ? value : projectLocalizedLessonShape(value, candidate[key]),
+      ]),
     );
   }
 
