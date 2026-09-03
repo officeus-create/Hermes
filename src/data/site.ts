@@ -70,7 +70,7 @@ export const site = {
     { label: "Logistics", href: "paths/logistics/" },
     { label: "Marketing", href: "paths/marketing/" },
     { label: "Academy", href: "paths/academy/" },
-    { label: "IT Development", href: "paths/technology/" },
+    { label: "Technology", href: "paths/technology/" },
   ],
   hero: {
     eyebrow: "Logistics · Growth · Education · Technology",
