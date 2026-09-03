@@ -1,0 +1,227 @@
+---
+import { ArrowLeft, ArrowRight, Check, Globe2, Link2, Plus, Save, ShieldCheck, Sparkles, Trash2 } from "@lucide/astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import HermesConnectExperience from "../../../../components/HermesConnectExperience.astro";
+---
+
+<BaseLayout
+  title="Website Factory | Hermes Connect"
+  description="Create a reviewable website build brief from your business sources, goals, references and owner instructions."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <HermesConnectExperience />
+  <main id="main-content" class="factory-page">
+    <div class="factory-shell">
+      <a class="factory-back" href="/services/hermes-connect/"><ArrowLeft size={16} /> Hermes Connect</a>
+
+      <header class="factory-hero">
+        <div>
+          <p class="factory-kicker"><Sparkles size={15} /> Hermes Connect · Technology</p>
+          <h1>Build the brief before the website.</h1>
+          <p>Give Hermes the business truth, the outcome you want and three useful references. The result is a saved, reviewable website brief — not a fake promise that a production build has already started.</p>
+        </div>
+        <span class="factory-boundary"><ShieldCheck size={16} /> Private · noindex</span>
+      </header>
+
+      <section class="factory-state" data-factory-loading role="status">
+        <strong>Checking your Hermes account…</strong>
+        <span>Website Factory uses the same Hermes identity and session as the rest of Hermes Connect.</span>
+      </section>
+
+      <section class="factory-auth hidden" data-factory-auth aria-labelledby="factory-auth-title">
+        <div class="factory-auth-copy">
+          <p class="factory-kicker">One Hermes identity</p>
+          <h2 id="factory-auth-title">Sign in or create your Hermes account.</h2>
+          <p>No separate Website Factory password store is created. Your drafts are attached to your existing Hermes identity.</p>
+          <div class="factory-auth-tabs" role="tablist" aria-label="Authentication mode">
+            <button type="button" class="active" data-auth-tab="login">Sign in</button>
+            <button type="button" data-auth-tab="register">Create account</button>
+          </div>
+        </div>
+        <div>
+          <div class="factory-alert hidden" data-auth-alert role="alert"></div>
+          <form class="factory-auth-form active" data-auth-form="login">
+            <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+            <label>Password<input name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="factory-primary" type="submit">Sign in <ArrowRight size={16} /></button>
+          </form>
+          <form class="factory-auth-form" data-auth-form="register">
+            <label>Full name<input name="name" autocomplete="name" minlength="2" required /></label>
+            <label>Email<input name="email" type="email" autocomplete="email" required /></label>
+            <label>Password<input name="password" type="password" autocomplete="new-password" minlength="8" required /></label>
+            <label>Country and city<input name="location" autocomplete="address-level2" minlength="2" required /></label>
+            <button class="factory-primary" type="submit">Create Hermes account <ArrowRight size={16} /></button>
+          </form>
+        </div>
+      </section>
+
+      <section class="factory-app hidden" data-factory-app>
+        <div class="factory-accountbar">
+          <div><span>Hermes account</span><strong data-account-name>—</strong><small data-account-email></small></div>
+          <div class="factory-account-actions"><span class="factory-save-state" data-save-state>Saved</span><button type="button" class="factory-ghost" data-logout>Log out</button></div>
+        </div>
+
+        <section class="factory-resume" data-resume-view>
+          <div class="factory-section-head">
+            <div><p class="factory-kicker">Your website briefs</p><h2>Resume or start a new website.</h2><p>Drafts autosave to your Hermes account. Submitted briefs stay immutable as a handoff snapshot.</p></div>
+            <button type="button" class="factory-primary" data-new-draft><Plus size={17} /> Start new website</button>
+          </div>
+          <div class="factory-draft-list" data-draft-list></div>
+        </section>
+
+        <section class="factory-wizard hidden" data-wizard-view>
+          <div class="factory-progress" aria-label="Website brief progress">
+            <div class="factory-progress-top"><strong data-step-name>Sources</strong><span data-step-count>Step 1 of 9</span></div>
+            <div class="factory-progress-track"><span data-progress-bar></span></div>
+            <nav data-step-nav aria-label="Brief steps"></nav>
+          </div>
+
+          <div class="factory-wizard-head">
+            <div><button type="button" class="factory-text-button" data-back-drafts><ArrowLeft size={15} /> All drafts</button><h2 data-draft-title-heading>Website brief</h2></div>
+            <label class="factory-title-field">Draft title<input data-draft-title maxlength="120" placeholder="My new website" /></label>
+          </div>
+
+          <div class="factory-alert hidden" data-wizard-alert role="status"></div>
+
+          <section class="factory-step" data-step="1">
+            <p class="factory-kicker">01 · Sources</p><h3>Where does your business already exist?</h3>
+            <p>Add public URLs only. Hermes never asks for your social-media passwords here. B1 securely saves these sources for the brief; automated source reading is not yet connected, so imported facts remain owner-entered for now.</p>
+            <form class="source-input" data-source-form><label>Public business URL<input data-source-url type="url" inputmode="url" placeholder="https://…" /></label><button class="factory-secondary" type="submit"><Plus size={16} /> Add source</button></form>
+            <label class="factory-check"><input type="checkbox" data-start-zero /> <span><strong>I’m starting from zero</strong><small>Continue without an existing website or public profile.</small></span></label>
+            <div class="source-list" data-source-list></div>
+          </section>
+
+          <section class="factory-step hidden" data-step="2">
+            <p class="factory-kicker">02 · Business truth</p><h3>Confirm the facts the website should use.</h3>
+            <p>Until automated extraction is connected, these are owner-confirmed facts. Nothing is silently inferred from a public profile.</p>
+            <div class="factory-form-grid">
+              <label>Business name<input data-fact="business_name" /></label><label>Category<input data-fact="category" /></label>
+              <label class="span-2">Short description<textarea data-fact="description"></textarea></label>
+              <label>Phone<input data-fact="phone" inputmode="tel" /></label><label>Public email<input data-fact="email" type="email" /></label>
+              <label class="span-2">Address or service area<input data-fact="address" /></label>
+              <label class="span-2">Services / products <small>One per line</small><textarea data-services></textarea></label>
+            </div>
+          </section>
+
+          <section class="factory-step hidden" data-step="3">
+            <p class="factory-kicker">03 · Outcome</p><h3>What should the website do for the business?</h3>
+            <div class="factory-form-grid">
+              <label>Primary goal<select data-goal-primary><option value="">Choose primary goal</option><option>Get calls</option><option>Collect leads</option><option>Bookings / appointments</option><option>Sell services</option><option>Show portfolio / work</option><option>Explain a complex offer</option><option>Recruit people</option><option>Support local SEO</option><option>Establish credibility</option><option>Other</option></select></label>
+              <label>Primary visitor action<input data-goal-action placeholder="Call, request quote, book…" /></label>
+              <label class="span-2">Target customer<textarea data-goal-customer></textarea></label>
+              <label>Geography / market<input data-goal-geography /></label><label>Languages<input data-goal-languages placeholder="English, Russian…" /></label>
+            </div>
+          </section>
+
+          <section class="factory-step hidden" data-step="4">
+            <p class="factory-kicker">04 · Owner brief</p><h3>Explain what you want naturally.</h3>
+            <p>Write what should change, what matters most, what you dislike and any constraints. Your original text is preserved as owner input.</p>
+            <label class="factory-wide-label">Typed brief<textarea data-brief-text class="brief-text" placeholder="Tell Hermes what you want the new site to achieve, emphasize, remove or feel like…"></textarea></label>
+            <div class="factory-boundary-card"><strong>Voice brief boundary</strong><p>Secure audio storage/transcription is not connected in B1, so this version does not pretend to save voice recordings. The typed brief is fully production-persisted; voice will be enabled only with an observable storage/transcription path.</p></div>
+            <div class="factory-form-grid"><label>Brand tone<input data-brief-tone placeholder="Premium, calm, direct…" /></label><label>Constraints<input data-brief-constraints placeholder="One per line or comma separated" /></label></div>
+          </section>
+
+          <section class="factory-step hidden" data-step="5">
+            <p class="factory-kicker">05 · References</p><h3>Three references, three different jobs.</h3>
+            <p>These teach principles. Hermes is not instructed to clone competitor text, layout or assets.</p>
+            <div class="reference-grid">
+              <article><strong>Visual direction</strong><span>Which site has the visual feeling you want?</span><label>HTTPS URL<input type="url" data-ref-url="visual" /></label><label>What do you like?<textarea data-ref-note="visual"></textarea></label></article>
+              <article><strong>Functionality</strong><span>Which site works the way you want yours to work?</span><label>HTTPS URL<input type="url" data-ref-url="functionality" /></label><label>What works well?<textarea data-ref-note="functionality"></textarea></label></article>
+              <article><strong>Structure / content</strong><span>Which site explains or organizes the business well?</span><label>HTTPS URL<input type="url" data-ref-url="structure" /></label><label>What is organized well?<textarea data-ref-note="structure"></textarea></label></article>
+            </div>
+          </section>
+
+          <section class="factory-step hidden" data-step="6">
+            <p class="factory-kicker">06 · Pages & capabilities</p><h3>Choose the first build brief scope.</h3>
+            <div class="factory-two-column"><div><h4>Pages</h4><div class="choice-grid" data-pages></div></div><div><h4>Capabilities</h4><div class="choice-grid" data-capabilities></div></div></div>
+          </section>
+
+          <section class="factory-step hidden" data-step="7">
+            <p class="factory-kicker">07 · Brand</p><h3>Use what already exists — or describe the direction.</h3>
+            <div class="factory-form-grid"><label class="span-2">Existing public logo URL <small>Optional HTTPS URL</small><input type="url" data-brand-logo /></label><label>Known colors<input data-brand-colors placeholder="#11161F, #7C5CFF" /></label><label>Brand notes<input data-brand-notes /></label></div>
+            <div class="factory-boundary-card"><strong>File upload boundary</strong><p>B1 does not invent an upload backend. Logo/photo uploads stay deferred until secure object storage, retention and delete behavior are connected. A public logo URL and brand notes are saved now.</p></div>
+          </section>
+
+          <section class="factory-step hidden" data-step="8">
+            <p class="factory-kicker">08 · Review</p><h3>Review what Hermes understands.</h3>
+            <div class="review-grid" data-review></div>
+            <div class="readiness" data-readiness role="status"></div>
+          </section>
+
+          <section class="factory-step hidden" data-step="9">
+            <p class="factory-kicker">09 · Handoff</p><h3>Create the website brief.</h3>
+            <p>The handoff freezes this version as a reviewable snapshot. It does <strong>not</strong> claim a production website worker has started.</p>
+            <div class="handoff-card" data-handoff-state><strong>Ready when the required inputs are complete.</strong><span>Your brief ID and submitted time will appear here.</span></div>
+            <button class="factory-primary factory-submit" type="button" data-submit-brief>Create website brief <ArrowRight size={17} /></button>
+          </section>
+
+          <div class="factory-step-actions"><button type="button" class="factory-secondary" data-prev>Previous</button><button type="button" class="factory-primary" data-next>Save & continue <ArrowRight size={16} /></button></div>
+        </section>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type FactoryDraft = { id:string; title:string; current_step:number; state:string; payload:any; created_at:string; updated_at:string; submitted_at?:string|null };
+  const $ = <T extends HTMLElement = HTMLElement>(selector:string) => document.querySelector<T>(selector);
+  const $$ = <T extends HTMLElement = HTMLElement>(selector:string) => [...document.querySelectorAll<T>(selector)];
+  const loading = $("[data-factory-loading]"); const auth = $("[data-factory-auth]"); const app = $("[data-factory-app]");
+  const resumeView = $("[data-resume-view]"); const wizardView = $("[data-wizard-view]"); const wizardAlert = $("[data-wizard-alert]");
+  let drafts:FactoryDraft[] = []; let draft:FactoryDraft|null = null; let currentStep = 1; let saveTimer:number|undefined; let saving = false;
+  const steps = ["Sources","Business truth","Outcome","Owner brief","References","Pages & capabilities","Brand","Review","Handoff"];
+  const pageChoices = ["Home","Services","About / Trust","Work / Portfolio","FAQ","Contact"];
+  const capabilityChoices = [{id:"lead-form",label:"Lead form"},{id:"click-to-call",label:"Click to call"},{id:"booking",label:"Booking"},{id:"maps",label:"Maps / directions"},{id:"reviews",label:"Reviews / proof"},{id:"gallery",label:"Gallery"},{id:"multilingual",label:"Multilingual"},{id:"analytics",label:"Analytics"},{id:"crm-handoff",label:"CRM handoff"},{id:"ai-assistant",label:"AI assistant"}];
+  const emptyPayload = () => ({starting_from_zero:false,sources:[],facts:{},goals:{primary:"",secondary:[],target_customer:"",geography:"",languages:[],primary_action:""},brief:{text:"",must_have:[],nice_to_have:[],dislikes:[],tone:"",constraints:[],unresolved_questions:[]},references:[],pages:["Home","Services","About / Trust","FAQ","Contact"],capabilities:capabilityChoices.map(x=>({id:x.id,included:["lead-form","click-to-call","analytics"].includes(x.id)})),brand:{logo_url:null,colors:[],notes:""},unresolved_critical:[]});
+  const showOnly = (node:HTMLElement|null) => { [loading,auth,app].forEach(item=>item?.classList.add("hidden")); node?.classList.remove("hidden"); };
+  const setAlert = (message:string, kind="error") => { if(!wizardAlert)return; wizardAlert.textContent=message; wizardAlert.className=`factory-alert ${kind}`; };
+  const clearAlert = () => { if(!wizardAlert)return; wizardAlert.textContent=""; wizardAlert.className="factory-alert hidden"; };
+  const setSaveState = (text:string) => { const node=$("[data-save-state]"); if(node) node.textContent=text; };
+  const readJson = async (response:Response) => response.json().catch(()=>({}));
+  const secureUrl = (value:string) => { try { const u=new URL(value); return u.protocol==="https:" && !u.username && !u.password ? u.toString() : ""; } catch { return ""; } };
+  const listFromText = (value:string) => value.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean);
+
+  function selectAuth(mode:string){ $$<HTMLButtonElement>("[data-auth-tab]").forEach(x=>x.classList.toggle("active",x.dataset.authTab===mode)); $$<HTMLFormElement>("[data-auth-form]").forEach(x=>x.classList.toggle("active",x.dataset.authForm===mode)); }
+  $$<HTMLButtonElement>("[data-auth-tab]").forEach(x=>x.addEventListener("click",()=>selectAuth(x.dataset.authTab||"login")));
+  $$<HTMLFormElement>("[data-auth-form]").forEach(form=>form.addEventListener("submit",async event=>{
+    event.preventDefault(); const mode=form.dataset.authForm||"login"; const button=form.querySelector<HTMLButtonElement>('button[type="submit"]'); if(button)button.disabled=true;
+    const alertNode=$("[data-auth-alert]"); if(alertNode)alertNode.classList.add("hidden");
+    try { const fd=new FormData(form); const endpoint=mode==="register"?"/api/auth/register":"/api/auth/login"; const payload:any={email:fd.get("email"),password:fd.get("password")}; if(mode==="register")Object.assign(payload,{name:fd.get("name"),location:fd.get("location"),role:"Business Owner",bio:"Hermes Website Factory business owner identity for website brief creation."});
+      const response=await fetch(endpoint,{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}); const data=await readJson(response); if(!response.ok||!data.success)throw new Error(data.error||(Array.isArray(data.errors)?data.errors.join(", "):"Authentication failed")); await initialize();
+    } catch(error){ if(alertNode){alertNode.textContent=error instanceof Error?error.message:"Authentication failed";alertNode.classList.remove("hidden");} } finally {if(button)button.disabled=false;}
+  }));
+
+  async function loadDrafts(){ const response=await fetch("/api/website-factory/drafts",{credentials:"same-origin",headers:{Accept:"application/json"}}); const data=await readJson(response); if(response.status===401)return false; if(!response.ok||!data.success)throw new Error(data.error||"Could not load Website Factory drafts"); drafts=Array.isArray(data.drafts)?data.drafts:[]; const name=$("[data-account-name]"); const email=$("[data-account-email]"); if(name)name.textContent=data.identity?.name||"Hermes owner"; if(email)email.textContent=data.identity?.email||""; renderDrafts(); return true; }
+  function renderDrafts(){ const list=$("[data-draft-list]"); if(!list)return; list.replaceChildren(); if(!drafts.length){const empty=document.createElement("div");empty.className="factory-empty";empty.innerHTML="<strong>No website briefs yet.</strong><span>Start with one public source — or choose starting from zero.</span>";list.append(empty);return;} for(const item of drafts){const card=document.createElement("article");card.className="draft-card"; const copy=document.createElement("div"); const title=document.createElement("strong");title.textContent=item.title; const meta=document.createElement("span");meta.textContent=`${item.state.replaceAll("_"," ")} · Step ${item.current_step} · ${new Date(item.updated_at).toLocaleString()}`;copy.append(title,meta); const actions=document.createElement("div"); const open=document.createElement("button");open.type="button";open.className="factory-secondary";open.textContent=item.state==="submitted"?"View brief":"Resume";open.addEventListener("click",()=>openDraft(item));actions.append(open); if(item.state!=="submitted"){const del=document.createElement("button");del.type="button";del.className="factory-icon-button";del.setAttribute("aria-label",`Delete ${item.title}`);del.innerHTML="×";del.addEventListener("click",()=>deleteDraft(item));actions.append(del);} card.append(copy,actions);list.append(card);} }
+  async function createDraft(){ const response=await fetch("/api/website-factory/drafts",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:"New website brief",starting_from_zero:false})}); const data=await readJson(response); if(!response.ok||!data.success)throw new Error(data.error||"Could not create draft"); drafts.unshift(data.draft);openDraft(data.draft); }
+  async function deleteDraft(item:FactoryDraft){ if(!confirm(`Delete ${item.title}?`))return; const response=await fetch(`/api/website-factory/drafts/${encodeURIComponent(item.id)}`,{method:"DELETE",credentials:"same-origin"}); if(response.ok){drafts=drafts.filter(x=>x.id!==item.id);renderDrafts();} }
+  function openDraft(item:FactoryDraft){ draft=structuredClone(item); if(!draft.payload||typeof draft.payload!=="object")draft.payload=emptyPayload(); currentStep=Math.max(1,Math.min(9,draft.current_step||1)); resumeView?.classList.add("hidden");wizardView?.classList.remove("hidden"); hydrateForm();renderStep(); }
+  function closeDrafts(){ clearTimeout(saveTimer); draft=null; wizardView?.classList.add("hidden");resumeView?.classList.remove("hidden");renderDrafts(); }
+
+  function hydrateForm(){ if(!draft)return; const p={...emptyPayload(),...draft.payload}; draft.payload=p; const title=$<HTMLInputElement>("[data-draft-title]");if(title)title.value=draft.title||""; const zero=$<HTMLInputElement>("[data-start-zero]");if(zero)zero.checked=Boolean(p.starting_from_zero); $$<HTMLInputElement>("[data-fact]").forEach(input=>input.value=String(p.facts?.[input.dataset.fact||""]||"")); const services=$<HTMLTextAreaElement>("[data-services]");if(services)services.value=Array.isArray(p.facts?.services)?p.facts.services.join("\n"):""; const primary=$<HTMLSelectElement>("[data-goal-primary]");if(primary)primary.value=p.goals?.primary||""; const action=$<HTMLInputElement>("[data-goal-action]");if(action)action.value=p.goals?.primary_action||""; const customer=$<HTMLTextAreaElement>("[data-goal-customer]");if(customer)customer.value=p.goals?.target_customer||""; const geography=$<HTMLInputElement>("[data-goal-geography]");if(geography)geography.value=p.goals?.geography||""; const languages=$<HTMLInputElement>("[data-goal-languages]");if(languages)languages.value=(p.goals?.languages||[]).join(", "); const brief=$<HTMLTextAreaElement>("[data-brief-text]");if(brief)brief.value=p.brief?.text||""; const tone=$<HTMLInputElement>("[data-brief-tone]");if(tone)tone.value=p.brief?.tone||"";const constraints=$<HTMLInputElement>("[data-brief-constraints]");if(constraints)constraints.value=(p.brief?.constraints||[]).join(", "); for(const role of ["visual","functionality","structure"]){const ref=p.references?.find((x:any)=>x.role===role);const u=$<HTMLInputElement>(`[data-ref-url="${role}"]`);const n=$<HTMLTextAreaElement>(`[data-ref-note="${role}"]`);if(u)u.value=ref?.url||"";if(n)n.value=ref?.note||"";} const logo=$<HTMLInputElement>("[data-brand-logo]");if(logo)logo.value=p.brand?.logo_url||""; const colors=$<HTMLInputElement>("[data-brand-colors]");if(colors)colors.value=(p.brand?.colors||[]).join(", "); const notes=$<HTMLInputElement>("[data-brand-notes]");if(notes)notes.value=p.brand?.notes||""; renderSources(); renderChoices(); }
+  function collectPayload(){ if(!draft)return null; const p=structuredClone(draft.payload||emptyPayload()); p.starting_from_zero=Boolean($<HTMLInputElement>("[data-start-zero]")?.checked); p.facts=p.facts||{}; $$<HTMLInputElement>("[data-fact]").forEach(input=>{p.facts[input.dataset.fact||""]=input.value.trim();});p.facts.services=listFromText($<HTMLTextAreaElement>("[data-services]")?.value||""); p.goals={...(p.goals||{}),primary:$<HTMLSelectElement>("[data-goal-primary]")?.value||"",primary_action:$<HTMLInputElement>("[data-goal-action]")?.value.trim()||"",target_customer:$<HTMLTextAreaElement>("[data-goal-customer]")?.value.trim()||"",geography:$<HTMLInputElement>("[data-goal-geography]")?.value.trim()||"",languages:listFromText($<HTMLInputElement>("[data-goal-languages]")?.value||"")}; p.brief={...(p.brief||{}),text:$<HTMLTextAreaElement>("[data-brief-text]")?.value.trim()||"",tone:$<HTMLInputElement>("[data-brief-tone]")?.value.trim()||"",constraints:listFromText($<HTMLInputElement>("[data-brief-constraints]")?.value||"")}; p.references=["visual","functionality","structure"].flatMap(role=>{const url=secureUrl($<HTMLInputElement>(`[data-ref-url="${role}"]`)?.value||"");if(!url)return[];return[{role,url,principles:[],note:$<HTMLTextAreaElement>(`[data-ref-note="${role}"]`)?.value.trim()||""}];}); const logoRaw=$<HTMLInputElement>("[data-brand-logo]")?.value||"";p.brand={logo_url:logoRaw?secureUrl(logoRaw):null,colors:listFromText($<HTMLInputElement>("[data-brand-colors]")?.value||""),notes:$<HTMLInputElement>("[data-brand-notes]")?.value.trim()||""}; return p; }
+  async function saveNow(){ if(!draft||draft.state==="submitted"||saving)return; clearTimeout(saveTimer); saving=true;setSaveState("Saving…");clearAlert(); try{draft.payload=collectPayload();draft.title=$<HTMLInputElement>("[data-draft-title]")?.value.trim()||"Untitled website brief";draft.current_step=currentStep; const response=await fetch(`/api/website-factory/drafts/${encodeURIComponent(draft.id)}`,{method:"PUT",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({title:draft.title,current_step:currentStep,payload:draft.payload})});const data=await readJson(response);if(!response.ok||!data.success)throw new Error(data.error||"Could not save draft");draft=data.draft;setSaveState("Saved");}catch(error){setSaveState("Couldn’t save");setAlert(error instanceof Error?error.message:"Could not save draft");}finally{saving=false;} }
+  function queueSave(){ if(!draft||draft.state==="submitted")return;setSaveState("Unsaved changes");clearTimeout(saveTimer);saveTimer=window.setTimeout(()=>void saveNow(),700); }
+
+  function renderSources(){ if(!draft)return; const list=$("[data-source-list]");if(!list)return;list.replaceChildren();for(const source of draft.payload.sources||[]){const card=document.createElement("article");card.className="source-card";const copy=document.createElement("div");const strong=document.createElement("strong");strong.textContent=source.type?.replaceAll("_"," ")||"website";const link=document.createElement("a");link.href=source.url;link.target="_blank";link.rel="noopener";link.textContent=source.url;const small=document.createElement("small");small.textContent="Saved for brief · automated reading not connected in B1";copy.append(strong,link,small);const remove=document.createElement("button");remove.type="button";remove.className="factory-icon-button";remove.setAttribute("aria-label","Remove source");remove.innerHTML="×";remove.addEventListener("click",()=>{draft!.payload.sources=draft!.payload.sources.filter((x:any)=>x.url!==source.url);renderSources();queueSave();});card.append(copy,remove);list.append(card);} }
+  $("[data-source-form]")?.addEventListener("submit",event=>{event.preventDefault();if(!draft)return;const input=$<HTMLInputElement>("[data-source-url]");const url=secureUrl(input?.value||"");if(!url)return setAlert("Use a valid public HTTPS URL.");if(draft.payload.sources?.some((x:any)=>x.url===url))return setAlert("That source is already in this brief.");draft.payload.sources=[...(draft.payload.sources||[]),{url,type:"website",note:"",status:"saved"}];if(input)input.value="";clearAlert();renderSources();queueSave();});
+  function renderChoices(){ if(!draft)return; const pages=$("[data-pages]");if(pages){pages.replaceChildren();for(const label of pageChoices){const row=document.createElement("label");row.className="choice-card";const input=document.createElement("input");input.type="checkbox";input.checked=(draft.payload.pages||[]).includes(label);input.addEventListener("change",()=>{draft!.payload.pages=pageChoices.filter(x=>$$<HTMLInputElement>('[data-pages] input').find(i=>i.dataset.value===x)?.checked);queueSave();});input.dataset.value=label;const span=document.createElement("span");span.textContent=label;row.append(input,span);pages.append(row);}} const caps=$("[data-capabilities]");if(caps){caps.replaceChildren();for(const option of capabilityChoices){const state=draft.payload.capabilities?.find((x:any)=>x.id===option.id);const row=document.createElement("label");row.className="choice-card";const input=document.createElement("input");input.type="checkbox";input.checked=Boolean(state?.included);input.addEventListener("change",()=>{const found=draft!.payload.capabilities.find((x:any)=>x.id===option.id);if(found)found.included=input.checked;else draft!.payload.capabilities.push({id:option.id,included:input.checked});queueSave();});const span=document.createElement("span");span.textContent=option.label;row.append(input,span);caps.append(row);}} }
+  function readiness(p:any){const reasons:string[]=[];if(!p.starting_from_zero&&!p.sources?.length)reasons.push("Add a source or choose starting from zero");if(!p.goals?.primary)reasons.push("Choose a primary goal");if(!p.brief?.text||p.brief.text.length<10)reasons.push("Add a meaningful owner brief");for(const role of ["visual","functionality","structure"])if(!p.references?.some((x:any)=>x.role===role))reasons.push(`Add the ${role} reference`);if(p.unresolved_critical?.length)reasons.push("Resolve critical conflicting facts");return reasons;}
+  function renderReview(){ if(!draft)return;draft.payload=collectPayload();const p=draft.payload;const review=$("[data-review]");if(review){review.replaceChildren();const sections=[['Business truth',`${p.facts?.business_name||'Not named'} · ${p.facts?.category||'Category not set'} · ${(p.facts?.services||[]).length} services`],['Market & goal',`${p.goals?.primary||'Primary goal missing'} · ${p.goals?.geography||'Geography not set'}`],['Owner brief',p.brief?.text||'Brief missing'],['References',`${(p.references||[]).length} of 3 roles supplied`],['Pages',`${(p.pages||[]).join(', ')||'No pages selected'}`],['Capabilities',`${(p.capabilities||[]).filter((x:any)=>x.included).map((x:any)=>x.id).join(', ')||'None selected'}`],['Brand',p.brand?.notes||p.brand?.logo_url||'No brand direction supplied']];for(const [title,body] of sections){const card=document.createElement('article');const h=document.createElement('strong');h.textContent=title;const span=document.createElement('span');span.textContent=String(body);card.append(h,span);review.append(card);}}const reasons=readiness(p);const state=$("[data-readiness]");if(state){state.className=`readiness ${reasons.length?'needs':'ready'}`;state.innerHTML=reasons.length?`<strong>Needs these answers first</strong><span>${reasons.join(' · ')}</span>`:`<strong>Ready to create brief</strong><span>Required decision inputs are present.</span>`;} }
+  function renderStep(){ $$<HTMLElement>("[data-step]").forEach(section=>section.classList.toggle("hidden",Number(section.dataset.step)!==currentStep));const name=$("[data-step-name]");const count=$("[data-step-count]");const bar=$("[data-progress-bar]");if(name)name.textContent=steps[currentStep-1];if(count)count.textContent=`Step ${currentStep} of 9`;if(bar)bar.style.width=`${currentStep/9*100}%`;const nav=$("[data-step-nav]");if(nav){nav.replaceChildren();steps.forEach((label,index)=>{const button=document.createElement("button");button.type="button";button.textContent=String(index+1);button.title=label;button.disabled=index+1>Math.max(currentStep,draft?.current_step||1);button.classList.toggle("active",index+1===currentStep);button.addEventListener("click",async()=>{await saveNow();currentStep=index+1;renderStep();});nav.append(button);});}const prev=$<HTMLButtonElement>("[data-prev]");const next=$<HTMLButtonElement>("[data-next]");if(prev)prev.disabled=currentStep===1;if(next)next.classList.toggle("hidden",currentStep===9);if(currentStep===8)renderReview();if(currentStep===9)renderHandoff(); }
+  function renderHandoff(){ if(!draft)return;const state=$("[data-handoff-state]");const submit=$<HTMLButtonElement>("[data-submit-brief]");if(draft.state==="submitted"){if(state)state.innerHTML=`<strong>Website brief created</strong><span>ID: ${draft.id} · ${draft.submitted_at?new Date(draft.submitted_at).toLocaleString():''} · No automated build started.</span>`;if(submit){submit.disabled=true;submit.textContent="Brief already created";}return;}const reasons=readiness(collectPayload());if(state)state.innerHTML=reasons.length?`<strong>Brief needs ${reasons.length} item${reasons.length===1?'':'s'}.</strong><span>${reasons.join(' · ')}</span>`:`<strong>Ready to create website brief.</strong><span>This creates the handoff record only.</span>`;if(submit)submit.disabled=reasons.length>0; }
+  $<HTMLButtonElement>("[data-next]")?.addEventListener("click",async()=>{await saveNow();if(currentStep<9){currentStep++;if(draft)draft.current_step=Math.max(draft.current_step,currentStep);renderStep();}});$<HTMLButtonElement>("[data-prev]")?.addEventListener("click",async()=>{await saveNow();if(currentStep>1){currentStep--;renderStep();}});$<HTMLButtonElement>("[data-back-drafts]")?.addEventListener("click",async()=>{await saveNow();await loadDrafts();closeDrafts();});$<HTMLButtonElement>("[data-new-draft]")?.addEventListener("click",()=>void createDraft().catch(e=>setAlert(e.message)));$<HTMLButtonElement>("[data-submit-brief]")?.addEventListener("click",async()=>{if(!draft)return;await saveNow();const response=await fetch(`/api/website-factory/drafts/${encodeURIComponent(draft.id)}`,{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"submit"})});const data=await readJson(response);if(!response.ok||!data.success){setAlert(data.reasons?.join(" · ")||data.error||"Brief is not ready");return;}draft=data.draft;clearAlert();renderHandoff();setSaveState("Brief created");});
+  $<HTMLButtonElement>("[data-logout]")?.addEventListener("click",async()=>{await fetch("/api/auth/logout",{method:"POST",credentials:"same-origin"}).catch(()=>null);draft=null;drafts=[];showOnly(auth);});
+  $("[data-wizard-view]")?.addEventListener("input",event=>{if((event.target as HTMLElement).matches("[data-source-url]"))return;queueSave();});$("[data-wizard-view]")?.addEventListener("change",()=>queueSave());
+
+  async function initialize(){ showOnly(loading);try{const loggedIn=await loadDrafts();if(!loggedIn){showOnly(auth);return;}showOnly(app);resumeView?.classList.remove("hidden");wizardView?.classList.add("hidden");}catch(error){showOnly(auth);const alertNode=$("[data-auth-alert]");if(alertNode){alertNode.textContent=error instanceof Error?error.message:"Website Factory unavailable";alertNode.classList.remove("hidden");}} }
+  void initialize();
+</script>
+
+<style>
+  .factory-page{min-height:100vh;background:radial-gradient(circle at 88% 4%,rgba(255,122,0,.09),transparent 28rem),radial-gradient(circle at 8% 6%,rgba(124,92,255,.06),transparent 30rem),#f7f6f3;color:#11161f}.factory-shell{width:min(1120px,calc(100% - 2rem));margin:auto;padding:7.5rem 0 5rem}.factory-back,.factory-text-button{display:inline-flex;align-items:center;gap:.4rem;color:#5e697a;text-decoration:none;font-weight:750}.factory-text-button{padding:0;border:0;background:none;cursor:pointer}.factory-hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin:1.2rem 0 1.5rem}.factory-hero h1{max-width:16ch;margin:.35rem 0 .8rem;font-size:clamp(2.4rem,6vw,4.8rem);line-height:.94;letter-spacing:-.055em}.factory-hero>div>p:last-child{max-width:760px;color:#657083;line-height:1.65}.factory-kicker{display:flex;align-items:center;gap:.4rem;margin:0;color:#c65d00;font-size:.72rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}.factory-boundary{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap;padding:.5rem .7rem;border:1px solid rgba(255,122,0,.22);border-radius:999px;background:rgba(255,122,0,.07);color:#8e4300;font-size:.74rem;font-weight:800}.factory-state,.factory-auth,.factory-resume,.factory-wizard,.factory-accountbar{border:1px solid rgba(17,22,31,.1);border-radius:1.25rem;background:rgba(255,255,255,.88);box-shadow:0 18px 44px rgba(24,32,48,.07)}.factory-state{display:grid;gap:.35rem;padding:1.2rem}.factory-state span,.factory-auth p,.factory-section-head p,.factory-step>p,.factory-boundary-card p{color:#657083;line-height:1.6}.factory-auth{display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:1.4rem}.factory-auth h2,.factory-section-head h2{margin:.4rem 0 .6rem}.factory-auth-tabs{display:flex;gap:.4rem;margin-top:1rem}.factory-auth-tabs button{min-height:42px;padding:.55rem .8rem;border:1px solid #dfe4ec;border-radius:.7rem;background:#fff;cursor:pointer}.factory-auth-tabs button.active{background:#11161f;color:#fff;border-color:#11161f}.factory-auth-form{display:none;gap:.8rem}.factory-auth-form.active{display:grid}.factory-auth-form label,.factory-form-grid label,.factory-wide-label,.reference-grid label,.factory-title-field,.source-input label{display:grid;gap:.35rem;color:#4f5a6b;font-size:.78rem;font-weight:800}.factory-auth-form input,.factory-form-grid input,.factory-form-grid textarea,.factory-form-grid select,.factory-wide-label textarea,.reference-grid input,.reference-grid textarea,.factory-title-field input,.source-input input{box-sizing:border-box;width:100%;min-height:46px;padding:.7rem .8rem;border:1px solid #d7dde7;border-radius:.75rem;background:#fff;color:#11161f;font:inherit}.factory-form-grid textarea,.factory-wide-label textarea,.reference-grid textarea{min-height:110px;resize:vertical}.brief-text{min-height:210px!important}.factory-primary,.factory-secondary,.factory-ghost,.factory-icon-button{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:44px;border-radius:.75rem;font:inherit;font-weight:800;cursor:pointer}.factory-primary{padding:.65rem .9rem;border:1px solid #11161f;background:#11161f;color:#fff}.factory-secondary{padding:.65rem .9rem;border:1px solid #d7dde7;background:#fff;color:#11161f}.factory-ghost{padding:.55rem .75rem;border:1px solid #d7dde7;background:transparent;color:#4e596a}.factory-icon-button{width:44px;border:1px solid #d7dde7;background:#fff;color:#8b3340;font-size:1.2rem}.factory-primary:disabled,.factory-secondary:disabled{cursor:not-allowed;opacity:.45}.factory-alert{margin:0 0 1rem;padding:.8rem .9rem;border:1px solid rgba(205,70,80,.22);border-radius:.8rem;background:rgba(205,70,80,.07);color:#9c3340;font-weight:700}.factory-alert.success{border-color:rgba(32,145,100,.2);background:rgba(32,145,100,.07);color:#16704f}.factory-accountbar{display:flex;justify-content:space-between;gap:1rem;align-items:center;margin-bottom:1rem;padding:.85rem 1rem}.factory-accountbar span,.factory-accountbar strong,.factory-accountbar small{display:block}.factory-accountbar>div:first-child span{color:#7b8697;font-size:.65rem;text-transform:uppercase;letter-spacing:.08em}.factory-accountbar small{margin-top:.12rem;color:#737e8f}.factory-account-actions{display:flex;align-items:center;gap:.65rem}.factory-save-state{color:#657083;font-size:.72rem}.factory-resume,.factory-wizard{padding:1.25rem}.factory-section-head{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start}.factory-draft-list{display:grid;gap:.7rem;margin-top:1rem}.draft-card,.source-card{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.9rem;border:1px solid #e0e5ed;border-radius:.9rem;background:#fff}.draft-card strong,.draft-card span,.source-card strong,.source-card a,.source-card small{display:block;min-width:0}.draft-card span,.source-card small{margin-top:.2rem;color:#778294;font-size:.72rem}.source-card>div{min-width:0}.source-card a{max-width:680px;margin-top:.2rem;color:#315f99;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.draft-card>div:last-child{display:flex;gap:.45rem}.factory-empty{display:grid;gap:.3rem;padding:1.2rem;border:1px dashed #cfd6e1;border-radius:1rem;color:#657083}.factory-progress{position:sticky;top:70px;z-index:5;margin:-.25rem -.25rem 1.2rem;padding:.75rem;border:1px solid rgba(17,22,31,.09);border-radius:1rem;background:rgba(255,255,255,.94);backdrop-filter:blur(16px)}.factory-progress-top{display:flex;justify-content:space-between;gap:1rem;font-size:.78rem}.factory-progress-top span{color:#747f90}.factory-progress-track{height:4px;margin:.55rem 0;background:#eef1f5;border-radius:999px;overflow:hidden}.factory-progress-track span{display:block;height:100%;background:#ff7a00;transition:width .2s ease}.factory-progress nav{display:flex;gap:.35rem;overflow-x:auto}.factory-progress nav button{display:grid;place-items:center;min-width:34px;height:34px;border:1px solid #e0e5ed;border-radius:999px;background:#fff;color:#687386;cursor:pointer}.factory-progress nav button.active{border-color:#11161f;background:#11161f;color:#fff}.factory-progress nav button:disabled{opacity:.38;cursor:not-allowed}.factory-wizard-head{display:flex;justify-content:space-between;gap:1.5rem;align-items:end;padding-bottom:1rem;border-bottom:1px solid #e8ebf0}.factory-wizard-head h2{margin:.35rem 0 0}.factory-title-field{width:min(330px,100%)}.factory-step{padding:1.5rem 0}.factory-step h3{margin:.35rem 0 .55rem;font-size:clamp(1.6rem,3vw,2.2rem)}.factory-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:1rem}.span-2{grid-column:1/-1}.source-input{display:grid;grid-template-columns:1fr auto;gap:.7rem;align-items:end;margin-top:1rem}.factory-check{display:flex;align-items:flex-start;gap:.65rem;margin:1rem 0;padding:.85rem;border:1px solid #e0e5ed;border-radius:.9rem;background:#fff}.factory-check input{width:18px;height:18px}.factory-check span,.factory-check strong,.factory-check small{display:block}.factory-check small{margin-top:.15rem;color:#737e8f}.source-list{display:grid;gap:.6rem}.factory-boundary-card{margin-top:1rem;padding:1rem;border:1px solid rgba(255,122,0,.18);border-radius:1rem;background:rgba(255,122,0,.045)}.factory-boundary-card p{margin:.35rem 0 0}.reference-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:1rem}.reference-grid article{display:grid;gap:.7rem;padding:1rem;border:1px solid #e0e5ed;border-radius:1rem;background:#fff}.reference-grid article>span{min-height:3em;color:#737e8f;font-size:.8rem;line-height:1.45}.factory-two-column{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.choice-grid{display:grid;gap:.5rem}.choice-card{display:flex;align-items:center;gap:.6rem;min-height:46px;padding:.65rem .75rem;border:1px solid #e0e5ed;border-radius:.8rem;background:#fff;font-weight:700}.choice-card input{width:18px;height:18px;accent-color:#ff7a00}.review-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:1rem}.review-grid article{display:grid;gap:.3rem;padding:.9rem;border:1px solid #e0e5ed;border-radius:.85rem;background:#fff}.review-grid span{color:#697586;line-height:1.5;overflow-wrap:anywhere}.readiness,.handoff-card{display:grid;gap:.3rem;margin-top:1rem;padding:1rem;border-radius:.9rem}.readiness.ready{border:1px solid rgba(31,144,96,.2);background:rgba(31,144,96,.07);color:#176b4d}.readiness.needs{border:1px solid rgba(205,70,80,.2);background:rgba(205,70,80,.06);color:#8f3340}.readiness span,.handoff-card span{line-height:1.5}.handoff-card{border:1px solid #e0e5ed;background:#fff}.factory-submit{margin-top:1rem}.factory-step-actions{display:flex;justify-content:space-between;gap:.75rem;padding-top:1rem;border-top:1px solid #e8ebf0}.hidden{display:none!important}.factory-page :where(a,button,input,select,textarea):focus-visible{outline:3px solid rgba(255,122,0,.4);outline-offset:2px}@media(max-width:760px){.factory-shell{width:min(100% - 1rem,1120px);padding-top:6rem}.factory-hero,.factory-section-head,.factory-wizard-head{flex-direction:column;align-items:stretch}.factory-boundary{align-self:flex-start}.factory-auth{grid-template-columns:1fr}.factory-accountbar{align-items:flex-start}.factory-account-actions{flex-direction:column;align-items:flex-end}.factory-progress{top:64px}.factory-progress nav{padding-bottom:.1rem}.factory-form-grid,.reference-grid,.factory-two-column,.review-grid{grid-template-columns:1fr}.span-2{grid-column:auto}.source-input{grid-template-columns:1fr}.source-input .factory-secondary{width:100%}.draft-card,.source-card{align-items:flex-start}.draft-card{flex-direction:column}.draft-card>div:last-child{width:100%}.draft-card>div:last-child .factory-secondary{flex:1}.factory-title-field{width:100%}.factory-step-actions .factory-primary,.factory-step-actions .factory-secondary{flex:1}}@media(max-width:430px){.factory-resume,.factory-wizard,.factory-auth{padding:.9rem}.factory-hero h1{font-size:2.55rem}.factory-accountbar{display:grid}.factory-account-actions{align-items:stretch}.source-card{flex-direction:column}.source-card .factory-icon-button{align-self:flex-end}}@media(prefers-reduced-motion:reduce){.factory-progress-track span{transition:none}}
+</style>
