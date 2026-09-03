@@ -1,5 +1,84 @@
 <script>
+  import { trackEvent } from "../lib/analytics";
+
   const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
+  const londonAttributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "service", "track", "program", "language"] as const;
+
+  const safeAttribution = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("utm_source") !== "london") return null;
+
+    const values: Record<string, string> = {};
+    for (const key of londonAttributionKeys) {
+      const value = String(params.get(key) || "")
+        .replace(/[\u0000-\u001f\u007f<>]/g, "")
+        .trim()
+        .slice(0, 80);
+      if (value) values[key] = value;
+    }
+    return values;
+  };
+
+  const attributionBlock = (attribution: Record<string, string>) => {
+    const labels: Record<string, string> = {
+      utm_source: "Source",
+      utm_medium: "Medium",
+      utm_campaign: "Campaign",
+      utm_content: "Content/track",
+      service: "Service",
+      track: "Track",
+      program: "Program",
+      language: "Language",
+    };
+    const lines = londonAttributionKeys.flatMap((key) => attribution[key] ? [`${labels[key]}: ${attribution[key]}`] : []);
+    return lines.length ? `London attribution:\n${lines.join("\n")}` : "";
+  };
+
+  const installLondonIntakeBridge = (form: HTMLFormElement) => {
+    const attribution = safeAttribution();
+    if (!attribution) return;
+
+    const message = form.elements.namedItem("message");
+    const status = form.querySelector<HTMLElement>("[data-form-status]");
+    if (!(message instanceof HTMLTextAreaElement) || !status) return;
+
+    let pendingConversion = false;
+
+    form.addEventListener("submit", () => {
+      pendingConversion = true;
+      const original = message.value;
+      const block = attributionBlock(attribution);
+      if (!block) return;
+
+      // ContactCTA builds the JSON payload synchronously in the bubble phase.
+      // Prepend only for that event turn, then restore the visitor's textarea.
+      const augmented = `${block}\n\n${original}`.slice(0, 2000);
+      message.value = augmented;
+      queueMicrotask(() => {
+        if (message.value === augmented) message.value = original;
+      });
+    }, { capture: true });
+
+    const observer = new MutationObserver(() => {
+      if (!pendingConversion || !status.textContent?.includes("sent successfully")) return;
+      pendingConversion = false;
+
+      const path = form.elements.namedItem("path");
+      const direction = path instanceof HTMLSelectElement ? path.value : "";
+      const academy = direction === "Hermes Business Academy";
+      trackEvent(academy ? "london_academy_application_submitted" : "london_lead_submitted", {
+        market: "london",
+        direction,
+        campaign: attribution.utm_campaign,
+        content: attribution.utm_content,
+        service: attribution.service,
+        track: attribution.track,
+        program: attribution.program,
+        language: attribution.language,
+      });
+    });
+    observer.observe(status, { childList: true, characterData: true, subtree: true });
+  };
 
   const activateProductionContact = () => {
     if (window.location.protocol !== "https:" || !productionHosts.has(window.location.hostname)) return;
@@ -10,6 +89,8 @@
 
       const label = form.querySelector<HTMLElement>("[data-submit-label]");
       if (label) label.textContent = "Send request";
+
+      installLondonIntakeBridge(form);
     });
   };
 
