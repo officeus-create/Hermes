@@ -8,6 +8,16 @@ FCC_VENV="${HERMES_FCC_VENV:-$HERMES_AI_HOME/fcc-venv}"
 FCC_CODEX="$FCC_VENV/bin/fcc-codex"
 export CODEX_HOME="${HERMES_CODEX_HOME:-$HOME/.codex-hermes}"
 
+# One-command local mode for daily work. It keeps the ordinary wrapper behavior
+# unchanged unless explicitly requested, uses the fast local coder as primary,
+# and keeps the local thinking model as the first fallback. Explicit environment
+# overrides still win so benchmarks and advanced routing remain reproducible.
+if [[ "${1:-}" == "--local" ]]; then
+  shift
+  export HERMES_CODEX_MODEL="${HERMES_CODEX_MODEL:-ollama/qwen2.5-coder:3b}"
+  export HERMES_CODEX_FALLBACKS="${HERMES_CODEX_FALLBACKS:-ollama/qwen3:4b-thinking}"
+fi
+
 if [[ ! -x "$FCC_CODEX" ]]; then
   printf '[codex-hermes] FCC runtime is missing at %s\n' "$FCC_CODEX" >&2
   printf '[codex-hermes] Run: ./scripts/ai/setup-codex-hermes.sh\n' >&2
