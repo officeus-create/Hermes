@@ -43,7 +43,8 @@ assert.match(register, /registration_ops_failed/);
 assert.doesNotMatch(register, /console\.error\([^\n]*(?:email|phone|name)/i, "registration failure logs must not expose PII");
 
 assert.match(profile, /kind:\s*"profile"/);
-assert.match(profile, /contactBecameAvailable/);
+assert.match(profile, /phoneBecameAvailable/);
+assert.match(profile, /Boolean\(phone\)\s*&&\s*\(!existing\s*\|\|\s*!clean\(existing\.phone,\s*32\)\)/, "profile alert must wait until canonical phone first becomes available");
 assert.match(page, /robots="noindex,nofollow"/);
 assert.match(page, /\/api\/internal\/registrations/);
 assert.match(page, /Users \/ Registrations/);
