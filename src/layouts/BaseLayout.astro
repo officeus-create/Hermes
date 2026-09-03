@@ -142,7 +142,7 @@ const safeSchema = schema
     <meta name="theme-color" content="#0a164f" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/design-owner-polish.css" />
-    <script src="/design-owner-polish.js" defer></script>
+    <script src="/design-owner-polish.js" defer={Astro.url.pathname !== "/services/hermes-connect/repair-shops/dashboard/"}></script>
     <script is:inline>
       (() => {
         if (!window.location.pathname.startsWith("/services/hermes-connect")) return;
