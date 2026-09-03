@@ -6,6 +6,8 @@ Last updated: 2026-09-03
 
 Hermes Connect is no longer in logo-selection or broad visual-exploration mode. **Design 4 is an audit/execution cycle over one canonical responsive Hermes runtime.** Finish near-complete work first, remove duplicates and stale implementations, preserve strong existing surfaces, and judge every change through UX, conversion, mobile/accessibility, backend truth, SEO and GEO before calling it done.
 
+The bounded Design 4 code-convergence queue is now exhausted. Remaining production/live proof is external to ordinary Design code promotion and is tracked separately under #961.
+
 Product perception remains:
 
 > **Hermes Connect = premium AI Operating System for Business**
@@ -40,7 +42,8 @@ Private workspace cues are semantic orientation, not separate brands:
 - Repair → Logistics blue;
 - Academy → Academy violet;
 - Internal AI → Technology orange;
-- Beauty → Connect cyan.
+- Beauty → Connect cyan;
+- HR Review → neutral/Obsidian internal capability cue.
 
 **Beauty & Wellness has no owner-approved fifth canonical direction color.** Keep the current Connect-family cyan/neutral cue until explicit owner approval; do not invent a new canonical Beauty brand color.
 
@@ -57,8 +60,8 @@ Current product truth:
 - Beauty & Wellness — private owner foundation with bounded scope;
 - Internal AI — authenticated owner/internal capability;
 - Website Factory — private `noindex,nofollow` owner workflow for creating and submitting a reviewable website brief; it is **not** a fifth owned business and does not claim an automated production build;
-- Logistics / Marketing / Professional Services Hermes Connect configurations — reference/preview capability surfaces until separately proven live;
-- HR — active convergence branch, not yet current production pilot truth.
+- HR — merged bounded candidate/reviewer foundation with backend-authorized reviewer capability and RU/UK candidate-shell parity; production D1/runtime/binding/live-pilot proof is **not** yet claimed;
+- Logistics / Marketing / Professional Services Hermes Connect configurations — reference/preview capability surfaces until separately proven live.
 
 Replay PRs #1004, #1005 and #1008 are historical duplicate Global Account attempts. Do not reopen them wholesale. Any public authenticated-account affordance must reuse the existing account API/switcher.
 
@@ -130,7 +133,7 @@ The matrix requires real private content rather than login redirects, one server
 
 ### #1033 — Website Factory Design OS convergence — `MERGED_VERIFY`
 
-Merged into current `main` at `ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f` from exact validated head `09e2ac5787d06eca24122d963705ed4ec3da8add`.
+Merged at `ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f` from exact validated head `09e2ac5787d06eca24122d963705ed4ec3da8add`.
 
 Preserved product/backend truth:
 
@@ -161,11 +164,48 @@ Exact-head evidence before merge:
 
 Historical #955 is closed/unmerged and is superseded implementation provenance only. Do not reopen the stale Factory shell.
 
+### #1042 — HR adaptive interview Design OS convergence — `MERGED_VERIFY`
+
+Merged at `c5cfc9af32113505845f13a60ccfec6232729bc2` from exact validated head `60bcf86a042c1d6f958e22c04b5df4bca487f66f`.
+
+Preserved HR/backend truth:
+
+- D1 candidate/evidence/reviewer architecture;
+- candidate token and exact-origin boundaries;
+- Academy identity bridge;
+- protected/context fields outside readiness scoring;
+- no automated consequential hire/reject decision;
+- reviewer/admin capability requires explicit backend authorization.
+
+Design convergence:
+
+- candidate and reviewer/admin surfaces remain separated;
+- candidate has one dominant Start/Continue Interview path;
+- candidate route remains `noindex,nofollow` with no reviewer/admin navigation;
+- static and dynamic candidate shell has RU/UK same-route localization;
+- shared account portfolio exposes `hr` only when backend `getHrReviewerAccess` authorizes it; email/role/client-state/current-route bypass is forbidden;
+- existing Internal AI authorization behavior is preserved;
+- five-width 390/430/768/1024/1440 proof exposed a real 31px mobile CTA inherited from the common `.btn` override; the correction was scoped to the HR candidate shell and restores the 44px minimum without changing the shared Design OS.
+
+Exact-head evidence before merge:
+
+- Website checks `33763553540` — SUCCESS;
+- Hermes Connect visual evidence `33763553545` — SUCCESS;
+- HR Design 4 replay `33763553513` — SUCCESS;
+- HR backend security `33763553770` — SUCCESS;
+- Hermes Connect custom-domain verification `33763553665` — SUCCESS;
+- Cloudflare deployment ownership contract `33763553642` — SUCCESS;
+- Carrier Contract Live Activation `33763553543` — SUCCESS.
+
+Visual artifact `9896616746` was captured for the exact HR promotion head; digest `sha256:4fb2db641f7267019fa55f011ba14bc0adcbef6ac5b2873fc8a48c749304fda6`.
+
+Historical #1016 and conflict-only #1041 are closed/unmerged and superseded. Do not reopen either as a second HR implementation lane.
+
 ## External production gate — not a design-code regression
 
 **#961 `[HC-DEPLOY-PARITY]` remains the external owner/admin gate.**
 
-The code-side production workflow path is separate from Cloudflare credential/binding authorization. Do not mark the merged Design 4 chain `DONE` from merge alone.
+The code-side production workflow path is separate from Cloudflare credential/binding authorization. Do not mark the merged Design 4 runtime chain `DONE` from merge alone.
 
 Canonical rule:
 
@@ -179,31 +219,15 @@ When #961 is resolved, require exact-main production deploy, custom-domain read-
 
 ## Current bounded Design work
 
-### HR adaptive interview — #1016 — `REWORK`
+**No active bounded Design OS code-convergence item remains.**
 
-This is now the only open bounded Design OS convergence item in the active release queue.
+The prior HR #1016 REWORK lane has been superseded by merged #1042. Temporary #1041 remains conflict evidence only. Do not manufacture another convergence branch simply to keep a Design queue open.
 
-Preserve unique HR truth:
+Next work is intentionally separated into:
 
-- D1 candidate/evidence/reviewer architecture;
-- candidate token and exact-origin boundaries;
-- human-only consequential decisions;
-- Academy identity bridge;
-- explicit HR reviewer capability from backend authorization;
-- candidate/reviewer separation already present on the branch;
-- existing localized dynamic interview questions.
-
-Do **not** merge the 50-commit historical branch wholesale onto current main. Final convergence must:
-
-1. replay unique HR backend/API/product files onto the final #1031 + #1033 Design OS baseline;
-2. replay shared account/switcher/middleware/package/CI changes semantically, keeping current `main` authoritative;
-3. give the candidate one dominant Start/Continue Interview path;
-4. keep Command Center / HR Review private reviewer surfaces;
-5. expose `hr` in the shared account portfolio only when backend `getHrReviewerAccess` authorizes it; no `current === "hr"`, email, role text or client-state bypass;
-6. finish full RU/UK candidate-shell localization — hero, model explanation, intake labels, consent, buttons, progress/result copy — rather than translating only dynamic questions;
-7. treat reviewer/admin private-shell polish as a separate bounded phase if mixing it would widen the replay unnecessarily;
-8. run the exact-head Design + SEO/GEO non-interference gate before promotion;
-9. keep production D1/runtime/binding verification separate from code merge and from #961.
+1. external production/live verification under #961 when authorized Cloudflare owner/admin access is available;
+2. owner decisions that must not be guessed (Beauty fifth canonical accent; any replacement of Option №02);
+3. approved non-blocking extensions only after re-auditing current product value and scope.
 
 ## Mobile and accessibility contract
 
