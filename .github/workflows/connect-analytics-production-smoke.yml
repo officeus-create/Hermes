@@ -2,6 +2,9 @@ name: Verify Hermes Connect consent analytics production
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/connect-analytics-production-smoke.yml
   push:
     branches:
       - main
@@ -12,19 +15,20 @@ permissions:
   contents: read
 
 concurrency:
-  group: connect-analytics-production-smoke
+  group: connect-analytics-production-smoke-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   verify:
-    name: Verify consent bootstrap after Cloudflare propagation
+    name: Verify consent bootstrap on direct Connect owner
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Verify root injection and consent asset with retry
+      - name: Verify direct Connect surface and consent asset with retry
         run: |
           node <<'NODE'
-          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const connectOrigin = "https://connect.hermeslogisticsus.com";
+          const expectedPath = "/search-opportunity-radar/";
           const requiredAssetMarkers = [
             "G-RY26321PVW",
             "hermes-analytics-consent",
@@ -32,31 +36,35 @@ jobs:
             "analytics_storage",
             "ad_personalization",
           ];
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
           let last = {};
           for (let attempt = 1; attempt <= 18; attempt += 1) {
             try {
               const stamp = Date.now();
-              const root = await fetch(`https://connect.hermeslogisticsus.com/?analytics=${stamp}`, {
+              const surface = await fetch(`${connectOrigin}${expectedPath}?analytics=${stamp}`, {
+                redirect: "follow",
                 headers: {
                   "cache-control": "no-cache",
                   pragma: "no-cache",
-                  "user-agent": "HermesConnectAnalyticsVerifier/1.1",
+                  "user-agent": "HermesConnectAnalyticsVerifier/2.0",
                 },
                 signal: AbortSignal.timeout(20_000),
               });
-              const html = await root.text();
+              const html = await surface.text();
+              const final = new URL(surface.url);
 
-              const asset = await fetch(`https://connect.hermeslogisticsus.com/connect-analytics-consent.mjs?analytics=${stamp}`, {
+              const asset = await fetch(`${connectOrigin}/connect-analytics-consent.mjs?analytics=${stamp}`, {
                 headers: {
                   "cache-control": "no-cache",
                   pragma: "no-cache",
-                  "user-agent": "HermesConnectAnalyticsVerifier/1.1",
+                  "user-agent": "HermesConnectAnalyticsVerifier/2.0",
                 },
                 signal: AbortSignal.timeout(20_000),
               });
               const source = await asset.text();
 
+              const routeOwned = final.origin === connectOrigin && final.pathname === expectedPath;
               const bootstrap = html.includes("data-hermes-connect-analytics-consent")
                 && html.includes("/connect-analytics-consent.mjs");
               const preConsentVendorUrl = html.includes("googletagmanager.com/gtag/js");
@@ -64,14 +72,24 @@ jobs:
 
               last = {
                 attempt,
-                rootStatus: root.status,
+                surfaceStatus: surface.status,
+                finalOrigin: final.origin,
+                finalPath: final.pathname,
+                routeOwned,
                 bootstrap,
                 preConsentVendorUrl,
                 assetStatus: asset.status,
                 assetMarkers,
               };
 
-              if (root.status === 200 && bootstrap && !preConsentVendorUrl && asset.status === 200 && assetMarkers) {
+              if (
+                surface.status === 200
+                && routeOwned
+                && bootstrap
+                && !preConsentVendorUrl
+                && asset.status === 200
+                && assetMarkers
+              ) {
                 console.log(JSON.stringify({ ok: true, ...last }, null, 2));
                 process.exit(0);
               }
