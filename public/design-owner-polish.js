@@ -27,12 +27,31 @@
     return LOCALES.has(htmlLocale) ? htmlLocale : "en";
   };
 
+  const ensureCompactLanguageCodeStyles = () => {
+    if (document.getElementById("hermes-compact-language-code-style")) return;
+    const style = document.createElement("style");
+    style.id = "hermes-compact-language-code-style";
+    style.textContent = `
+      .language-menu summary span[data-hc-language-code],
+      .mobile-language-switcher strong[data-hc-language-code] { font-size: 0 !important; }
+      .language-menu summary span[data-hc-language-code]::after,
+      .mobile-language-switcher strong[data-hc-language-code]::after {
+        content: attr(data-hc-language-code);
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+      }
+    `;
+    document.head.append(style);
+  };
+
   const syncLanguageUi = () => {
     const locale = currentLocale();
     const code = LANGUAGE_CODES[locale] || locale.toUpperCase();
+    ensureCompactLanguageCodeStyles();
     document.querySelectorAll("[data-language-menu]").forEach((menu) => {
       const label = menu.querySelector("summary span");
-      if (label) label.textContent = code;
+      if (label instanceof HTMLElement) label.dataset.hcLanguageCode = code;
       menu.querySelectorAll("a[lang]").forEach((link) => {
         if (!(link instanceof HTMLAnchorElement)) return;
         const target = link.getAttribute("lang") || "en";
@@ -42,7 +61,7 @@
     });
     document.querySelectorAll(".mobile-language-switcher").forEach((switcher) => {
       const label = switcher.querySelector("strong");
-      if (label) label.textContent = code;
+      if (label instanceof HTMLElement) label.dataset.hcLanguageCode = code;
       switcher.querySelectorAll("a[lang]").forEach((link) => {
         const target = link.getAttribute("lang") || "en";
         if (target === locale) link.setAttribute("aria-current", "page");
