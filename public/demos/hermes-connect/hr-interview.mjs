@@ -29,6 +29,43 @@ const TRACKS = {
   }
 };
 
+const TRACK_COPY = {
+  ru: {
+    logistics: {
+      label: 'Логистика · Привлечение перевозчиков',
+      brief: 'Hermes работает с перевозчиками в США. Задача — не читать человеку скрипт, а понять его текущую работу, задать полезные вопросы, определить реальную проблему или возможность, объяснить релевантную ценность и договориться о конкретном следующем шаге. Доверие, умение слушать и дисциплина follow-up важны не меньше речи.',
+      scenario: 'Владелец carrier говорит: «У меня уже есть диспетчер, и я ничего не хочу менять». Что вы скажете дальше? Напишите разговор так, как реально его бы продолжили.'
+    },
+    sales: {
+      label: 'Продажи в США · Web / SEO-GEO / SMM',
+      brief: 'Продажи цифровых услуг Hermes начинаются с проблемы бизнеса, а не с универсального питча. Продавец изучает компанию, задаёт вопросы, понимает цену слабой видимости или неэффективного сайта, связывает подходящую услугу с этой потребностью и получает согласие на следующий шаг. Сначала — понимание и квалификация, закрытие сделки позже.',
+      scenario: 'Владелец бизнеса в США говорит: «У нас уже есть сайт, и мы раньше пробовали маркетинг. Это не сработало». Что вы ответите и что спросите дальше?'
+    },
+    marketing: {
+      label: 'Маркетинг · Обучение',
+      brief: 'Обучение маркетингу Hermes строится вокруг понимания аудитории, определения бизнес-проблемы, исследования спроса, превращения инсайта в полезный контент или предложение, измерения результата и улучшения на основе evidence. Ученик должен уметь объяснить, почему действие должно сработать, а не только повторить инструкцию.',
+      scenario: 'У локального бизнеса есть Instagram, но почти нет обращений. Что вы исследуете до предложения контента или рекламы и почему?'
+    }
+  },
+  uk: {
+    logistics: {
+      label: 'Логістика · Залучення перевізників',
+      brief: 'Hermes працює з перевізниками у США. Завдання — не читати людині скрипт, а зрозуміти її поточну роботу, поставити корисні запитання, визначити реальну проблему або можливість, пояснити релевантну цінність і домовитися про конкретний наступний крок. Довіра, уміння слухати та дисципліна follow-up важливі не менше за мовлення.',
+      scenario: 'Власник carrier каже: «У мене вже є диспетчер, і я нічого не хочу змінювати». Що ви скажете далі? Напишіть розмову так, як реально її продовжили б.'
+    },
+    sales: {
+      label: 'Продажі у США · Web / SEO-GEO / SMM',
+      brief: 'Продажі цифрових послуг Hermes починаються з проблеми бізнесу, а не з універсального пітчу. Продавець досліджує компанію, ставить запитання, розуміє ціну слабкої видимості або неефективного сайту, пов’язує потрібну послугу з цією потребою та отримує згоду на наступний крок. Спочатку — розуміння і кваліфікація, закриття угоди пізніше.',
+      scenario: 'Власник бізнесу у США каже: «У нас уже є сайт, і ми раніше пробували маркетинг. Це не спрацювало». Що ви відповісте і що запитаєте далі?'
+    },
+    marketing: {
+      label: 'Маркетинг · Навчання',
+      brief: 'Навчання маркетингу Hermes будується навколо розуміння аудиторії, визначення бізнес-проблеми, дослідження попиту, перетворення інсайту на корисний контент або пропозицію, вимірювання результату та покращення на основі evidence. Учень має вміти пояснити, чому дія повинна спрацювати, а не лише повторити інструкцію.',
+      scenario: 'У локального бізнесу є Instagram, але майже немає звернень. Що ви дослідите до пропозиції контенту або реклами і чому?'
+    }
+  }
+};
+
 const BASE_QUESTIONS = [
   {
     id: 'why_now',
@@ -83,6 +120,105 @@ const FOLLOW_UPS = {
     title: 'What would you ask before offering a solution?',
     help: 'Write 2–4 discovery questions that would help you understand the other person before you pitch.',
     signal: 'discovery'
+  }
+};
+
+const QUESTION_COPY = {
+  ru: {
+    why_now: { phase: 'КОНТЕКСТ', title: 'Почему вы ищете новое направление именно сейчас?', help: 'Расскажите, что изменилось, что вы хотите улучшить и что сделало бы следующую возможность действительно значимой для вас.' },
+    future_goal: { phase: 'НАПРАВЛЕНИЕ', title: 'Какой профессиональный результат через 12–24 месяца вы считали бы значимым?', help: 'Конкретно опишите навыки, ответственность, работу, которую хотите уметь выполнять, или измеримый прогресс. Не опирайтесь на обещания гарантированного дохода.' },
+    evidence: { phase: 'EVIDENCE', title: 'Расскажите об одном навыке, который вам пришлось освоить с нуля.', help: 'Что вы делали, где было сложно, какую обратную связь получили и что изменилось благодаря вашим действиям?' },
+    understanding: { phase: 'ПОНИМАНИЕ', title: 'Объясните роль своими словами.', help: 'Прочитайте короткое описание ниже. Не копируйте его. Объясните, что создаёт ценность, что человек должен понимать и как выглядит хорошая работа.' },
+    application: { phase: 'ПРИМЕНЕНИЕ', title: 'Примените идею к реальной ситуации.', help: 'Здесь нет выбора A/B/C. Покажите ход мыслей, какие вопросы вы зададите и какой следующий шаг постараетесь получить.' },
+    followup_concrete: { phase: 'УТОЧНЕНИЕ', title: 'Сделайте ответ конкретнее.', help: 'Дайте один конкретный пример: что произошло, что лично сделали вы и какой наблюдаемый результат получили.' },
+    followup_discovery: { phase: 'УТОЧНЕНИЕ', title: 'Что вы спросите до предложения решения?', help: 'Напишите 2–4 discovery-вопроса, которые помогут понять человека до питча.' }
+  },
+  uk: {
+    why_now: { phase: 'КОНТЕКСТ', title: 'Чому ви шукаєте новий напрям саме зараз?', help: 'Розкажіть, що змінилося, що ви хочете покращити і що зробило б наступну можливість справді значущою для вас.' },
+    future_goal: { phase: 'НАПРЯМ', title: 'Який професійний результат через 12–24 місяці ви вважали б значущим?', help: 'Конкретно опишіть навички, відповідальність, роботу, яку хочете вміти виконувати, або вимірюваний прогрес. Не спирайтеся на обіцянки гарантованого доходу.' },
+    evidence: { phase: 'EVIDENCE', title: 'Розкажіть про одну навичку, яку вам довелося опанувати з нуля.', help: 'Що ви робили, де було складно, який відгук отримали і що змінилося завдяки вашим діям?' },
+    understanding: { phase: 'РОЗУМІННЯ', title: 'Поясніть роль своїми словами.', help: 'Прочитайте короткий опис нижче. Не копіюйте його. Поясніть, що створює цінність, що людина має розуміти і як виглядає хороша робота.' },
+    application: { phase: 'ЗАСТОСУВАННЯ', title: 'Застосуйте ідею до реальної ситуації.', help: 'Тут немає вибору A/B/C. Покажіть хід думок, які запитання поставите і який наступний крок спробуєте отримати.' },
+    followup_concrete: { phase: 'УТОЧНЕННЯ', title: 'Зробіть відповідь конкретнішою.', help: 'Дайте один конкретний приклад: що сталося, що особисто зробили ви і який спостережуваний результат отримали.' },
+    followup_discovery: { phase: 'УТОЧНЕННЯ', title: 'Що ви запитаєте до пропозиції рішення?', help: 'Напишіть 2–4 discovery-запитання, які допоможуть зрозуміти людину до пітчу.' }
+  }
+};
+
+const UI_COPY = {
+  en: {
+    scenario: 'Scenario',
+    answerPlaceholder: 'Answer in your own words. Concrete examples are more useful than perfect wording.',
+    moreDetail: 'Please add a little more detail.',
+    exported: 'Sanitized pilot summary exported.',
+    signals: {
+      clarity: ['Clarity','Specific, understandable answers'],
+      evidence: ['Evidence','Concrete actions and observable examples'],
+      learning: ['Learning','Reflection, feedback and understanding'],
+      discovery: ['Discovery','Questions before pitching'],
+      application: ['Application','Turning ideas into next actions']
+    },
+    recommendations: {
+      REVIEW_FOR_SUPERVISED_TEST: {
+        title: 'Human review for a supervised test',
+        copy: 'The practice signals contain enough concrete evidence to justify a reviewer checking the full answers and deciding whether a supervised roleplay or test call is appropriate.',
+        meta: ['No auto-hire','Reviewer required','Supervised evidence still required']
+      },
+      ACADEMY_PRACTICE_RECOMMENDED: {
+        title: 'Academy practice before the next readiness gate',
+        copy: 'The current answers suggest more structured practice would be useful before a live-work test. The reviewer should inspect the answers and can change this suggestion.',
+        meta: ['No auto-reject','Academy is reviewer-routed','Reviewer required']
+      }
+    }
+  },
+  ru: {
+    scenario: 'Ситуация',
+    answerPlaceholder: 'Ответьте своими словами. Конкретные примеры полезнее идеальной формулировки.',
+    moreDetail: 'Добавьте, пожалуйста, немного больше конкретики.',
+    exported: 'Очищенная сводка интервью экспортирована.',
+    signals: {
+      clarity: ['Ясность','Конкретные и понятные ответы'],
+      evidence: ['Evidence','Конкретные действия и наблюдаемые примеры'],
+      learning: ['Обучение','Рефлексия, обратная связь и понимание'],
+      discovery: ['Discovery','Вопросы до предложения решения'],
+      application: ['Применение','Переход от идеи к следующему действию']
+    },
+    recommendations: {
+      REVIEW_FOR_SUPERVISED_TEST: {
+        title: 'Human review перед supervised test',
+        copy: 'В письменных ответах достаточно конкретного evidence, чтобы reviewer изучил ответы полностью и решил, уместен ли supervised roleplay или тестовый звонок.',
+        meta: ['Без auto-hire','Нужен reviewer','Живое evidence ещё требуется']
+      },
+      ACADEMY_PRACTICE_RECOMMENDED: {
+        title: 'Практика Academy перед следующим readiness gate',
+        copy: 'Текущие ответы показывают, что перед live-work test полезна более структурированная практика. Reviewer должен изучить ответы и может изменить эту рекомендацию.',
+        meta: ['Без auto-reject','Academy назначает reviewer','Нужен reviewer']
+      }
+    }
+  },
+  uk: {
+    scenario: 'Ситуація',
+    answerPlaceholder: 'Відповідайте своїми словами. Конкретні приклади корисніші за ідеальне формулювання.',
+    moreDetail: 'Додайте, будь ласка, трохи більше конкретики.',
+    exported: 'Очищену підсумкову інформацію інтерв’ю експортовано.',
+    signals: {
+      clarity: ['Ясність','Конкретні та зрозумілі відповіді'],
+      evidence: ['Evidence','Конкретні дії та спостережувані приклади'],
+      learning: ['Навчання','Рефлексія, відгук і розуміння'],
+      discovery: ['Discovery','Запитання до пропозиції рішення'],
+      application: ['Застосування','Перехід від ідеї до наступної дії']
+    },
+    recommendations: {
+      REVIEW_FOR_SUPERVISED_TEST: {
+        title: 'Human review перед supervised test',
+        copy: 'У письмових відповідях достатньо конкретного evidence, щоб reviewer повністю переглянув відповіді та вирішив, чи доречний supervised roleplay або тестовий дзвінок.',
+        meta: ['Без auto-hire','Потрібен reviewer','Живе evidence ще потрібне']
+      },
+      ACADEMY_PRACTICE_RECOMMENDED: {
+        title: 'Практика Academy перед наступним readiness gate',
+        copy: 'Поточні відповіді показують, що перед live-work test корисна більш структурована практика. Reviewer має переглянути відповіді та може змінити цю рекомендацію.',
+        meta: ['Без auto-reject','Academy призначає reviewer','Потрібен reviewer']
+      }
+    }
   }
 };
 
@@ -244,6 +380,21 @@ const toast = document.querySelector('[data-toast]');
 
 let state = stateFromStorage();
 
+function activeLanguage() {
+  const language = String(state?.context?.language || 'en').toLowerCase();
+  return language === 'ru' || language === 'uk' ? language : 'en';
+}
+
+function uiCopy() { return UI_COPY[activeLanguage()] || UI_COPY.en; }
+
+function localizedTrack(trackKey) {
+  return TRACK_COPY[activeLanguage()]?.[trackKey] || TRACKS[trackKey] || TRACKS.logistics;
+}
+
+function localizedQuestion(question) {
+  return QUESTION_COPY[activeLanguage()]?.[question?.id] || question;
+}
+
 function showToast(text) {
   toast.textContent = text;
   toast.classList.add('show');
@@ -270,29 +421,39 @@ function prefillIntakeFromUrl() {
   }
 }
 
+function setBrief(label, text) {
+  brief.replaceChildren();
+  const strong = document.createElement('b');
+  strong.textContent = label;
+  brief.append(strong, document.createElement('br'), document.createTextNode(text));
+}
+
 function renderQuestion() {
   const q = currentQuestion();
   if (!q) return finishInterview();
   intakePanel.hidden = true;
   resultPanel.hidden = true;
   interviewPanel.hidden = false;
-  const track = TRACKS[state.context.track];
-  phaseLabel.textContent = q.phase;
-  questionTitle.textContent = q.title;
-  questionHelp.textContent = q.help;
+  const track = localizedTrack(state.context.track);
+  const copy = localizedQuestion(q);
+  const ui = uiCopy();
+  phaseLabel.textContent = copy.phase || q.phase;
+  questionTitle.textContent = copy.title || q.title;
+  questionHelp.textContent = copy.help || q.help;
   progressLabel.textContent = `${state.index + 1} / ${state.queue.length}`;
   progressBar.style.width = `${((state.index) / state.queue.length) * 100}%`;
   if (q.brief) {
     brief.hidden = false;
-    brief.innerHTML = `<b>${track.label}</b><br>${track.brief}`;
+    setBrief(track.label, track.brief);
   } else if (q.scenario) {
     brief.hidden = false;
-    brief.innerHTML = `<b>Scenario</b><br>${track.scenario}`;
+    setBrief(ui.scenario, track.scenario);
   } else {
     brief.hidden = true;
     brief.textContent = '';
   }
   answerBox.value = '';
+  answerBox.placeholder = ui.answerPlaceholder;
   answerCounter.textContent = '0 / 4000';
   answerBox.focus({preventScroll:true});
   interviewPanel.scrollIntoView({behavior:'smooth',block:'start'});
@@ -308,6 +469,32 @@ function maybeAddFollowup(q, answer) {
   if (q.id === 'application' && stats.questionCount === 0 && stats.discoveryWords === 0) {
     state.queue.splice(state.index + 1, 0, {...FOLLOW_UPS.discovery, parent:q.id});
     appendEvent(state, 'adaptive_followup_added', {parent_question_id:q.id, followup_id:FOLLOW_UPS.discovery.id, reason:'no_discovery_question_observed'});
+  }
+}
+
+function renderSignalCards(signals, labels) {
+  signalGrid.replaceChildren();
+  for (const [key, value] of Object.entries(signals)) {
+    const label = labels[key] || [key, ''];
+    const card = document.createElement('article');
+    card.className = 'kpi';
+    const span = document.createElement('span');
+    span.textContent = label[0];
+    const strong = document.createElement('strong');
+    strong.textContent = String(value);
+    const small = document.createElement('small');
+    small.textContent = label[1];
+    card.append(span, strong, small);
+    signalGrid.append(card);
+  }
+}
+
+function renderRecommendationMeta(items) {
+  routeMeta.replaceChildren();
+  for (const item of items) {
+    const span = document.createElement('span');
+    span.textContent = item;
+    routeMeta.append(span);
   }
 }
 
@@ -332,17 +519,12 @@ function finishInterview() {
 
   const signals = state.practice_signals || buildPracticeSignals(state.answers);
   const recommendation = state.development_recommendation || recommendedDevelopment(signals);
-  const labels = {
-    clarity:['Clarity','Specific, understandable answers'],
-    evidence:['Evidence','Concrete actions and observable examples'],
-    learning:['Learning','Reflection, feedback and understanding'],
-    discovery:['Discovery','Questions before pitching'],
-    application:['Application','Turning ideas into next actions']
-  };
-  signalGrid.innerHTML = Object.entries(signals).map(([key,value])=>`<article class="kpi"><span>${labels[key][0]}</span><strong>${value}</strong><small>${labels[key][1]}</small></article>`).join('');
-  routeTitle.textContent = recommendation.title;
-  routeCopy.textContent = recommendation.copy;
-  routeMeta.innerHTML = recommendation.meta.map(x=>`<span>${x}</span>`).join('');
+  const ui = uiCopy();
+  const localizedRecommendation = ui.recommendations[recommendation.code] || recommendation;
+  renderSignalCards(signals, ui.signals);
+  routeTitle.textContent = localizedRecommendation.title || recommendation.title;
+  routeCopy.textContent = localizedRecommendation.copy || recommendation.copy;
+  renderRecommendationMeta(localizedRecommendation.meta || recommendation.meta || []);
   candidateId.textContent = state.candidate_id;
   resultPanel.scrollIntoView({behavior:'smooth',block:'start'});
 }
@@ -379,7 +561,7 @@ answerForm.addEventListener('submit', (event)=>{
   event.preventDefault();
   const q = currentQuestion();
   const answer = normalizeText(answerBox.value);
-  if (answer.length < 15) { showToast('Please add a little more detail.'); return; }
+  if (answer.length < 15) { showToast(uiCopy().moreDetail); return; }
   const evidenceId = uid('evidence');
   state.answers.push({evidence_id:evidenceId,id:q.id, phase:q.phase, track:state.context.track, answer, answered_at:new Date().toISOString()});
   appendEvent(state, 'answer_submitted', {
@@ -425,7 +607,7 @@ document.querySelector('[data-export]').addEventListener('click',()=>{
   a.download = `${state.candidate_id}-hr-pilot.json`;
   a.click();
   URL.revokeObjectURL(url);
-  showToast('Sanitized pilot summary exported.');
+  showToast(uiCopy().exported);
 });
 
 prefillIntakeFromUrl();
