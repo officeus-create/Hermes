@@ -1,36 +1,35 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { createHermesConnectSocialCardPng, HERMES_CONNECT_SOCIAL_CARD } from "../src/lib/hermes-connect-social-card.ts";
 
 const root = new URL("../", import.meta.url).pathname;
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const text = (path) => readFile(join(root, path), "utf8");
 
-const jpegDimensions = (buffer) => {
-  let offset = 2;
-  while (offset + 9 < buffer.length) {
-    if (buffer[offset] !== 0xff) { offset += 1; continue; }
-    const marker = buffer[offset + 1];
-    if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
-      return { height: buffer.readUInt16BE(offset + 5), width: buffer.readUInt16BE(offset + 7) };
-    }
-    if (marker === 0xd8 || marker === 0xd9) { offset += 2; continue; }
-    const length = buffer.readUInt16BE(offset + 2);
-    if (!length || length < 2) break;
-    offset += 2 + length;
-  }
-  throw new Error("Could not read JPEG dimensions");
-};
-
 console.log("Running Hermes Connect social card contract...");
 
 const layout = await text("src/layouts/BaseLayout.astro");
 assert(layout.includes('Astro.url.pathname === "/services/hermes-connect/"'), "BaseLayout must identify the canonical Hermes Connect product hub.");
-assert(layout.includes('"/images/hermes-connect-social-card.jpg"'), "Hermes Connect must use its dedicated social card rather than the generic ecosystem hero.");
+assert(layout.includes("HERMES_CONNECT_SOCIAL_CARD.path"), "Hermes Connect hub must use its dedicated social card instead of the generic ecosystem hero.");
+assert(layout.includes('useHermesConnectSocialCard ? "image/png" : "image/jpeg"'), "BaseLayout must advertise the correct social image MIME type without changing other routes.");
 assert(layout.includes("socialImageAlt"), "Hermes Connect social image must have route-specific alt text.");
 
-const card = await readFile(join(root, "public/images/hermes-connect-social-card.jpg"));
-assert(card[0] === 0xff && card[1] === 0xd8, "Hermes Connect social card must be a JPEG.");
-const dimensions = jpegDimensions(card);
-assert(dimensions.width === 2200 && dimensions.height === 1238, `Hermes Connect social card must match shared OG metadata dimensions; got ${dimensions.width}x${dimensions.height}.`);
+const endpoint = await text("src/pages/images/hermes-connect-social-card.png.ts");
+assert(endpoint.includes("export const prerender = true"), "Hermes Connect social card endpoint must be pre-rendered into a static asset.");
+assert(endpoint.includes('"Content-Type": "image/png"'), "Hermes Connect social card endpoint must return PNG content type.");
+
+const card = Buffer.from(createHermesConnectSocialCardPng());
+assert(card.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), "Hermes Connect social card must be a valid PNG.");
+assert(card.toString("ascii", 12, 16) === "IHDR", "Hermes Connect social card must expose PNG IHDR metadata.");
+const width = card.readUInt32BE(16);
+const height = card.readUInt32BE(20);
+assert(width === HERMES_CONNECT_SOCIAL_CARD.width && height === HERMES_CONNECT_SOCIAL_CARD.height, `Hermes Connect social card dimensions mismatch: ${width}x${height}.`);
+assert(width === 2200 && height === 1238, "Hermes Connect social card must match existing shared OG dimensions 2200x1238.");
+
+const generator = await text("src/lib/hermes-connect-social-card.ts");
+for (const token of ["30, 136, 255", "0, 200, 83", "124, 92, 255", "255, 122, 0"]) {
+  assert(generator.includes(token), `Hermes Connect social card must retain canonical division color ${token}.`);
+}
+assert(!generator.toLowerCase().includes("beauty:"), "Hermes Connect social card must not invent a canonical Beauty accent.");
 
 console.log("Hermes Connect dedicated social card contract passed.");
