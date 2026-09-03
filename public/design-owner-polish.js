@@ -178,8 +178,11 @@
           restoredBody: "Если какой-то блок выглядит устаревшим, обновите кабинет.",
           retry: "Повторить",
           servicesTitle: "Сервисы временно недоступны",
+          servicesBody: "Не удалось загрузить сервисы. Остальные доступные разделы кабинета продолжают работать.",
           bookingsTitle: "Записи временно недоступны",
+          bookingsBody: "Не удалось загрузить записи. Остальные доступные разделы кабинета продолжают работать.",
           feedbackTitle: "Отзывы временно недоступны",
+          feedbackBody: "Не удалось загрузить отзывы. Остальные доступные разделы кабинета продолжают работать.",
         }
       : locale === "uk"
         ? {
@@ -189,8 +192,11 @@
             restoredBody: "Якщо якийсь блок виглядає застарілим, оновіть кабінет.",
             retry: "Повторити",
             servicesTitle: "Сервіси тимчасово недоступні",
+            servicesBody: "Не вдалося завантажити сервіси. Інші доступні розділи кабінету продовжують працювати.",
             bookingsTitle: "Записи тимчасово недоступні",
+            bookingsBody: "Не вдалося завантажити записи. Інші доступні розділи кабінету продовжують працювати.",
             feedbackTitle: "Відгуки тимчасово недоступні",
+            feedbackBody: "Не вдалося завантажити відгуки. Інші доступні розділи кабінету продовжують працювати.",
           }
         : {
             offlineTitle: "You’re offline",
@@ -199,8 +205,11 @@
             restoredBody: "If any section looks stale, refresh the workspace.",
             retry: "Try again",
             servicesTitle: "Services are temporarily unavailable",
+            servicesBody: "Unable to load services right now. Other available workspace sections remain usable.",
             bookingsTitle: "Bookings are temporarily unavailable",
+            bookingsBody: "Unable to load bookings right now. Other available workspace sections remain usable.",
             feedbackTitle: "Feedback is temporarily unavailable",
+            feedbackBody: "Unable to load feedback right now. Other available workspace sections remain usable.",
           };
 
     if (!document.getElementById("hc-repair-resilience-style")) {
@@ -245,9 +254,9 @@
     };
 
     const sections = [
-      { key: "services", title: copy.servicesTitle, pattern: /load services|network error while (adding|deleting) service/i },
-      { key: "bookings", title: copy.bookingsTitle, pattern: /load booking inbox|network error while changing booking status/i },
-      { key: "feedback", title: copy.feedbackTitle, pattern: /load private feedback|network error while saving private feedback/i },
+      { key: "services", title: copy.servicesTitle, body: copy.servicesBody, pattern: /load services|network error while (adding|deleting) service/i },
+      { key: "bookings", title: copy.bookingsTitle, body: copy.bookingsBody, pattern: /load booking inbox|network error while changing booking status/i },
+      { key: "feedback", title: copy.feedbackTitle, body: copy.feedbackBody, pattern: /load private feedback|network error while saving private feedback/i },
     ];
 
     const recoveryCards = new Map();
@@ -262,6 +271,7 @@
       title.textContent = section.title;
       const detail = document.createElement("span");
       detail.dataset.hcRecoveryDetail = section.key;
+      detail.textContent = section.body;
       const retry = document.createElement("button");
       retry.type = "button";
       retry.className = "secondary-btn";
@@ -273,11 +283,18 @@
       recoveryCards.set(section.key, card);
 
       const successNodes = [document.getElementById(`${section.key}-empty`), document.getElementById(`${section.key}-list`)].filter((node) => node instanceof HTMLElement);
-      const successObserver = new MutationObserver(() => {
+      const syncSectionState = () => {
         const hasVisibleSuccess = successNodes.some((node) => node instanceof HTMLElement && !node.classList.contains("hidden"));
-        if (hasVisibleSuccess) card.classList.add("hidden");
-      });
-      successNodes.forEach((node) => successObserver.observe(node, { attributes: true, attributeFilter: ["class"] }));
+        if (hasVisibleSuccess) {
+          card.classList.add("hidden");
+          return;
+        }
+        if (loading.classList.contains("hidden")) card.classList.remove("hidden");
+      };
+      const stateObserver = new MutationObserver(syncSectionState);
+      stateObserver.observe(loading, { attributes: true, attributeFilter: ["class"] });
+      successNodes.forEach((node) => stateObserver.observe(node, { attributes: true, attributeFilter: ["class"] }));
+      queueMicrotask(syncSectionState);
     }
 
     const syncAlert = () => {
