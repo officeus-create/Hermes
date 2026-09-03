@@ -6,7 +6,7 @@ Last updated: 2026-09-03
 
 Hermes Connect is no longer in logo-selection or broad visual-exploration mode. **Design 4 is an audit/execution cycle over one canonical responsive Hermes runtime.** Finish near-complete work first, remove duplicates and stale implementations, preserve strong existing surfaces, and judge every change through UX, conversion, mobile/accessibility, backend truth, SEO and GEO before calling it done.
 
-The bounded Design 4 code-convergence queue is now exhausted. Remaining production/live proof is external to ordinary Design code promotion and is tracked separately under #961.
+The bounded Design 4 code-convergence queue is now exhausted. Remaining production/live proof is external to ordinary Design code promotion and is tracked separately under #961. Two approved non-blocking P4 extensions are also complete: public authenticated-account affordance (#1048) and dedicated Hermes Connect social/OG card (#1049).
 
 Product perception remains:
 
@@ -63,7 +63,7 @@ Current product truth:
 - HR — merged bounded candidate/reviewer foundation with backend-authorized reviewer capability and RU/UK candidate-shell parity; production D1/runtime/binding/live-pilot proof is **not** yet claimed;
 - Logistics / Marketing / Professional Services Hermes Connect configurations — reference/preview capability surfaces until separately proven live.
 
-Replay PRs #1004, #1005 and #1008 are historical duplicate Global Account attempts. Do not reopen them wholesale. Any public authenticated-account affordance must reuse the existing account API/switcher.
+Replay PRs #1004, #1005 and #1008 are historical duplicate Global Account attempts. Do not reopen them wholesale. The public authenticated-account affordance is now merged through #1048 and reuses the canonical account API/switcher with backend-confirmed portfolio visibility only.
 
 ## Design × SEO/GEO rule
 
@@ -201,6 +201,22 @@ Visual artifact `9896616746` was captured for the exact HR promotion head; diges
 
 Historical #1016 and conflict-only #1041 are closed/unmerged and superseded. Do not reopen either as a second HR implementation lane.
 
+### #1048 — public authenticated-account affordance — `DONE`
+
+Merged at `876fce524f309cf01a7c30a560d5d8dc2cfc3130`. The public Hermes Connect landing now reuses the canonical account switcher/API, stays hidden until a backend-confirmed authenticated portfolio exists, emits no privileged workspace anchors in public SSR, preserves locale, and does not recreate the historical Global Account implementations.
+
+### #1049 — dedicated Hermes Connect social/OG card — `DONE`
+
+Merged at `97e124ac85362737f5191e99d3a159ded64d1a1c` from exact validated head `6ed4ff95d7b0b020097312ed104aa829f12b4413`.
+
+- Root `/services/hermes-connect/` now has a deterministic 2200×1238 PNG social card.
+- All non-Connect routes preserve the canonical Astro hero fallback and explicit image overrides still win.
+- Option №02 remains unchanged.
+- Only the four owner-approved direction accents are used; no Beauty accent is invented.
+- Runtime metadata remains Node-free; PNG generation is prerender-only.
+- Website checks `33792173101` — SUCCESS.
+- Hermes Connect visual evidence `33792173072` — SUCCESS.
+
 ## External production gate — not a design-code regression
 
 **#961 `[HC-DEPLOY-PARITY]` remains the external owner/admin gate.**
@@ -223,11 +239,20 @@ When #961 is resolved, require exact-main production deploy, custom-domain read-
 
 The prior HR #1016 REWORK lane has been superseded by merged #1042. Temporary #1041 remains conflict evidence only. Do not manufacture another convergence branch simply to keep a Design queue open.
 
+Two P4 extensions are complete (#1048, #1049). Six approved P4 extensions remain optional/non-blocking:
+
+1. Explain-by-Interaction;
+2. Connected Thread storytelling;
+3. Hermes Intelligence Core / subtle living flow;
+4. contextual 3D / flow waves;
+5. adaptive onboarding by business type;
+6. richer empty/error/offline states.
+
 Next work is intentionally separated into:
 
 1. external production/live verification under #961 when authorized Cloudflare owner/admin access is available;
 2. owner decisions that must not be guessed (Beauty fifth canonical accent; any replacement of Option №02);
-3. approved non-blocking extensions only after re-auditing current product value and scope.
+3. the six approved non-blocking extensions, one at a time, only where current product value and duplicate-risk audit support them.
 
 ## Mobile and accessibility contract
 

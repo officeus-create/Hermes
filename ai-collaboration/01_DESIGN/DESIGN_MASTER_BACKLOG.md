@@ -88,14 +88,16 @@ Historical #1016 and conflict-only #1041 are closed/unmerged and **superseded im
 
 | Status | Item | Guardrail |
 | --- | --- | --- |
-| `EXTENSION` | Dedicated Hermes Connect social/OG card | Use Option №02 with proper provenance; not a release blocker. |
-| `EXTENSION` | Public authenticated-account affordance | Reuse existing switcher/account API; do not revive Global Account duplicates. |
+| `DONE` | Dedicated Hermes Connect social/OG card | #1049 merged at `97e124ac85362737f5191e99d3a159ded64d1a1c` from exact head `6ed4ff95d7b0b020097312ed104aa829f12b4413`; Website `33792173101` and visual evidence `33792173072` passed. Root Connect now owns a deterministic 2200×1238 PNG social card while all other routes preserve the canonical Astro hero fallback. Option №02 and the four approved direction colors remain unchanged; no Beauty accent was invented. |
+| `DONE` | Public authenticated-account affordance | #1048 merged at `876fce524f309cf01a7c30a560d5d8dc2cfc3130`; reuses the existing switcher/account API, remains hidden until backend-confirmed authenticated portfolio data exists, emits no privileged workspace anchors in public SSR, and does not revive Global Account duplicates. |
 | `EXTENSION` | Explain-by-Interaction | Guiding question → awareness → understanding → application; core meaning remains server-rendered and accessible. |
 | `EXTENSION` | Connected Thread storytelling | Use only where it clarifies person/request → Hermes → action → outcome. |
 | `EXTENSION` | Hermes Intelligence Core / subtle living flow | Calm and reduced-motion safe; one user-facing Hermes Intelligence, not a swarm-of-bots aesthetic. |
 | `EXTENSION` | Contextual 3D / flow waves | Restrained, performance-first, not cyberpunk. |
 | `EXTENSION` | Adaptive onboarding by business type | Progressive disclosure; configure relevant modules instead of showing everything. |
 | `EXTENSION` | Richer empty/error/offline states | Add within each workspace implementation phase as real product states. |
+
+Six approved P4 extensions remain. They are optional/non-blocking and must be evaluated one at a time; they are not evidence that the bounded Design OS is incomplete.
 
 ## Superseded / historical — do not reopen as current specs
 
@@ -135,10 +137,10 @@ Do not implement automatically:
 ## Current execution order
 
 1. Keep this source-of-truth synchronized with merged `main`; stale task numbers must never route work.
-2. The bounded Design OS code-convergence queue is closed through #1042; do not manufacture a new REWORK lane.
+2. The bounded Design OS code-convergence queue is closed; completed P4 extensions #1048 and #1049 do not reopen it.
 3. When authorized owner/admin access resolves #961, run exact-main production deploy + custom-domain/live proofs and promote only verified runtime items from `MERGED_VERIFY` to `DONE`.
 4. Keep Beauty accent and any replacement of Option №02 as `OWNER_DECISION`; do not guess them.
-5. Evaluate P4 extensions one at a time against current product value, existing evidence and duplicate risk. They are non-blocking and must not reopen already-closed Design OS foundations.
+5. Evaluate the six remaining P4 extensions one at a time against current product value, existing evidence and duplicate risk. They are non-blocking and must not reopen already-closed Design OS foundations.
 
 ## Promotion discipline
 
