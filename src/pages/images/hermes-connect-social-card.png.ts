@@ -1,4 +1,4 @@
-import { createHermesConnectSocialCardPng } from "../../lib/hermes-connect-social-card";
+import { createHermesConnectSocialCardPng } from "../../lib/hermes-connect-social-card-generator";
 
 export const prerender = true;
 
