@@ -81,13 +81,15 @@ for(const route of expectedRoutes){
   if(/our london office|visit our office in london|london office address/i.test(html)) errors.push(`${route}: unsupported London physical-office claim detected`);
   if(/data:image\//i.test(html)) errors.push(`${route}: embedded data-URI image detected`);
 
+  // London-specific media QA owns objective markup integrity only. Loading and
+  // decoding policy remain governed by the repository-wide performance budget
+  // so this closeout does not invent a second image-performance contract.
   for(const match of html.matchAll(/<img\b[^>]*>/gi)){
     const tag=match[0];
     if(!/\balt=["'][^"']*["']/i.test(tag)) errors.push(`${route}: image missing alt attribute`);
     const width=Number(tagAttr(tag,"width"));
     const height=Number(tagAttr(tag,"height"));
     if(!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0) errors.push(`${route}: image missing explicit positive width/height`);
-    if(!/\bdecoding=["']async["']/i.test(tag)) errors.push(`${route}: image missing async decoding`);
   }
 }
 
