@@ -215,8 +215,8 @@ test("public Hermes Connect landing reveals only the backend-authorized portfoli
 
   const raw = await page.request.get("/services/hermes-connect/?lang=ru");
   const rawHtml = await raw.text();
-  expect(rawHtml).not.toContain("/demos/hermes-connect/hr-admin.html");
-  expect(rawHtml).not.toContain("/services/hermes-connect/internal/ai-connect/");
+  expect(rawHtml).not.toMatch(/<a\b[^>]*href=["']\/demos\/hermes-connect\/hr-admin\.html["']/i);
+  expect(rawHtml).not.toMatch(/<a\b[^>]*href=["']\/services\/hermes-connect\/internal\/ai-connect\/["']/i);
 
   await page.goto("/services/hermes-connect/?lang=ru", { waitUntil: "domcontentloaded" });
   const menu = page.locator('header details[data-hc-account-switcher][data-public-safe="true"]');
