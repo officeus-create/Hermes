@@ -1,8 +1,23 @@
 import { REPAIR_SHOP_FREE_REGISTRATION_END_ISO } from "../../../src/data/hermes-connect-repair-shop-launch.ts";
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
+import {
+  deliverTelegramRegistrationAlert,
+  enqueueRegistrationAlert,
+} from "../_lib/registration-ops.mjs";
 
-type Env = { DB?: any };
+type Env = {
+  DB?: any;
+  HERMES_CONNECT_TELEGRAM_BOT_TOKEN?: string;
+  HERMES_CONNECT_TELEGRAM_OWNER_CHAT_ID?: string;
+  HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string;
+};
+
+type RequestContext = {
+  request: Request;
+  env: Env;
+  waitUntil?: (promise: Promise<unknown>) => void;
+};
 
 type ProfileInput = {
   name?: unknown;
@@ -58,6 +73,15 @@ async function getProfile(db: any, ownerId: string) {
     .first();
 }
 
+async function processProfileAlert(env: Env, specialistId: string, createdAt: string) {
+  try {
+    await enqueueRegistrationAlert({ db: env.DB, specialistId, kind: "profile", createdAt });
+    await deliverTelegramRegistrationAlert({ db: env.DB, env, specialistId, kind: "profile" });
+  } catch {
+    console.error("repair_shop_profile_alert_failed", { category: "background_processing" });
+  }
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
@@ -68,7 +92,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   return jsonResponse(200, { success: true, shop: shop ?? null });
 }
 
-export async function onRequestPut({ request, env }: { request: Request; env: Env }) {
+export async function onRequestPut({ request, env, waitUntil }: RequestContext) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
@@ -139,5 +163,11 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
   }
 
   const shop = await getProfile(env.DB, specialist.id);
+  const phoneBecameAvailable = Boolean(phone) && (!existing || !clean(existing.phone, 32));
+  if (phoneBecameAvailable) {
+    const alertPromise = processProfileAlert(env, specialist.id, now);
+    if (typeof waitUntil === "function") waitUntil(alertPromise);
+    else await alertPromise;
+  }
   return jsonResponse(200, { success: true, shop });
 }
