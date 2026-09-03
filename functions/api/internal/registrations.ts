@@ -2,6 +2,7 @@ import { requireInternalOwner } from "../_lib/internal-ai.mjs";
 import { jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopSalesAttributionSchema } from "../_lib/repair-shop-sales-attribution.mjs";
+import { ensureRepairShopAccessSchema } from "../_lib/repair-shop-access.mjs";
 import {
   deliverTelegramRegistrationAlert,
   ensureRegistrationOpsSchema,
@@ -28,6 +29,7 @@ async function ensureSchemas(db: any) {
   await ensureRegistrationOpsSchema(db);
   await ensureRepairShopProfileSchema(db);
   await ensureRepairShopSalesAttributionSchema(db);
+  await ensureRepairShopAccessSchema(db);
 }
 
 async function syncConfiguredSyntheticAccounts(db: any, env: Env) {
@@ -67,12 +69,25 @@ async function registrationRows(db: any) {
   const result = await db.prepare(`
     SELECT
       s.id, s.name, s.email, s.role, s.location, s.created_at,
-      rs.name AS shop_name, rs.phone, rs.city, rs.state, rs.updated_at AS shop_updated_at,
+      rs.id AS shop_id, rs.name AS shop_name, rs.phone, rs.city, rs.state, rs.updated_at AS shop_updated_at,
+      rsa.access_state, rsa.plan_id, rsa.current_period_end,
       a.salesperson_code, a.source,
       COALESCE(f.synthetic,0) AS synthetic, f.reviewed_at,
-      ra.status AS registration_alert_status, ra.sent_at AS registration_alert_sent_at, ra.last_error AS registration_alert_error
+      ra.status AS registration_alert_status, ra.sent_at AS registration_alert_sent_at, ra.last_error AS registration_alert_error,
+      (SELECT MAX(se.created_at) FROM sessions se WHERE se.specialist_id=s.id) AS last_session_at,
+      CASE
+        WHEN s.role='Shop Owner' THEN CASE
+          WHEN rs.id IS NOT NULL
+            AND LENGTH(TRIM(COALESCE(rs.name,'')))>=2
+            AND LENGTH(TRIM(COALESCE(rs.phone,'')))>=7
+            AND LENGTH(TRIM(COALESCE(rs.city,'')))>=2
+            AND LENGTH(TRIM(COALESCE(rs.state,'')))=2
+          THEN 1 ELSE 0 END
+        ELSE NULL
+      END AS profile_complete
     FROM specialists s
     LEFT JOIN repair_shops rs ON rs.owner_specialist_id=s.id
+    LEFT JOIN repair_shop_access rsa ON rsa.shop_id=rs.id
     LEFT JOIN repair_shop_sales_attribution a ON a.owner_specialist_id=s.id
     LEFT JOIN hermes_registration_flags f ON f.specialist_id=s.id
     LEFT JOIN hermes_registration_alerts ra ON ra.id=('registration:' || s.id)
