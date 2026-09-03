@@ -1,6 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
+// Website Factory is a private Hermes Connect workspace and must pass its source/backend
+// contract whenever the canonical Hermes Connect workspace gate runs in npm test.
+await import("./website-factory-contract.test.mjs");
+
 const root = new URL("../", import.meta.url).pathname;
 const distRoot = join(root, "dist", "demos", "hermes-connect");
 
@@ -116,4 +120,4 @@ for (const pattern of forbiddenNetworkPatterns) {
   assert(!pattern.test(workspace), `workspace.html: visual prototype must not submit to an external action: ${pattern}`);
 }
 
-console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy surfaces are Pearl-first with canonical Obsidian actions, Repair Shop Today remains derived/network-free, and CEO QA profile refresh stays inside the existing authenticated production APIs with bounded artifact recovery and no privilege bypasses.");
+console.log("Hermes Connect workspace contract passed: canonical preview stays isolated, private Repair Shop/Academy/Website Factory surfaces remain inside one shared Hermes Design OS/account boundary, Repair Shop Today remains derived/network-free, and CEO QA profile refresh stays inside the existing authenticated production APIs with bounded artifact recovery and no privilege bypasses.");
