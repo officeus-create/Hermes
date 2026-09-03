@@ -1,11 +1,12 @@
 {
-  "schema_version": 5,
-  "reviewed_at": "2026-09-01",
+  "schema_version": 6,
+  "reviewed_at": "2026-09-03",
   "repository": "officeus-create/Hermes",
-  "main_commit_at_review": "ed944f87fe20de00c895a8ed02c58b9984e37887",
+  "main_commit_at_review": "0b8532a410fac899e168333315b8204ac948c314",
   "freshness": {
-    "state_class": "current_governance_and_claude_acceptance_snapshot",
+    "state_class": "current_governance_integration_and_claude_acceptance_snapshot",
     "historical_handoff_is_not_current_state": true,
+    "refresh_reason": "Active PR queue contracted to two owner lanes and main advanced through HR and PWA/security convergence.",
     "refresh_policy": "Re-fetch current main, relevant PR heads/checks, owner routing and connected-source evidence before material decisions."
   },
   "governance": {
@@ -14,23 +15,102 @@
     "no_evidence_no_promotion": true,
     "agent_report_passport_required": true,
     "main_branch_enforcement_issue": 938,
+    "main_branch_protected_at_review": false,
     "drive_acl_issue": 431
   },
   "current_thread_scope": {
-    "classification": "ONE_BRAIN_GOVERNANCE_CLAUDE_MIGRATION_GITHUB_RECONCILIATION",
+    "classification": "ONE_BRAIN_GOVERNANCE_GITHUB_RECONCILIATION_NON_DESIGN_EXECUTION",
     "in_scope": [
       "one_brain_google_drive_governance_and_canonicalization",
       "drive_acl_access_risk_reconciliation",
       "claude_exit_migration_acceptance_and_decommission_gate",
       "github_governance_machine_state_freshness_and_pr_archaeology",
-      "cross_chat_routing_and_writer_lock_collision_prevention"
+      "cross_chat_routing_and_writer_lock_collision_prevention",
+      "backend_api_security_data_persistence_ci_release_truth_and_production_evidence"
     ],
     "route_only": {
-      "hermes_connect_design": "Design Hermes Connect",
+      "hermes_connect_design": "Design 5",
       "hermes_connect_ai": "AI Hermes Connect",
       "seo_geo": "dedicated SEO/GEO lane(s)",
+      "owner_mac_and_local_runtime": "Codex 2",
       "specialist_product_implementation": "active domain owner"
     }
+  },
+  "integration_snapshot": {
+    "main": {
+      "sha": "0b8532a410fac899e168333315b8204ac948c314",
+      "latest_merge_pr": 1043,
+      "latest_merge_scope": "non-design PWA/service-worker cache safety",
+      "production_live_parity": "BLOCKED_EXTERNAL_961"
+    },
+    "open_pull_requests": [
+      {
+        "number": 1045,
+        "title": "docs(design): close bounded Design 4 queue after HR convergence",
+        "owner_lane": "DESIGN_5",
+        "head": "2ada88bac4e7e18a0cafc34f9c7f522cf2e42a7e",
+        "ahead_by": 2,
+        "behind_by": 6,
+        "classification": "ACTIVE_OWNER_LANE_STALE_TO_CURRENT_MAIN",
+        "takeover_allowed": false,
+        "scope": [
+          "ai-collaboration/01_DESIGN/DESIGN_MASTER_BACKLOG.md",
+          "ai-collaboration/01_DESIGN/hermes-connect/CURRENT_STATE.md"
+        ]
+      },
+      {
+        "number": 1039,
+        "title": "feat(social): final FCC-main replay of LinkedIn attribution bridge",
+        "owner_lane": "MARKETING_SOCIAL_SPECIALIST",
+        "head": "781189ca87c0daee4d593c91d553c0482d6c4832",
+        "ahead_by": 1,
+        "behind_by": 48,
+        "classification": "ACTIVE_SPECIALIST_LANE_STALE_TO_CURRENT_MAIN",
+        "takeover_allowed": false,
+        "scope": [
+          "scripts/social-distribution.test.mjs",
+          "src/data/social-distribution-preview.ts",
+          "src/lib/social-distribution.ts",
+          "src/pages/demos/social-distribution/index.astro",
+          "tests/social-distribution.spec.ts"
+        ]
+      }
+    ],
+    "writer_collision_status": "NO_MACHINE_STATE_FILE_OVERLAP_OBSERVED"
+  },
+  "recent_promotions": {
+    "hr_pr_1042": {
+      "state": "MERGED_CODE_SIDE",
+      "merge_sha": "c5cfc9af32113505845f13a60ccfec6232729bc2",
+      "production_live_gate": 961
+    },
+    "pwa_cache_safety_pr_1043": {
+      "state": "MERGED_CODE_SIDE",
+      "merge_sha": "0b8532a410fac899e168333315b8204ac948c314",
+      "validated_head": "08df9948fcc2b8562a5f0fa538d34f00b87a12b4",
+      "exact_head_runs": {
+        "pwa_cache_safety": 33765056846,
+        "website": 33765057377,
+        "visual_regression": 33765056893,
+        "custom_domain": 33765057087,
+        "cloudflare_ownership": 33765057031
+      },
+      "production_live_gate": 961
+    },
+    "website_factory_pr_1033": {
+      "state": "MERGED_CODE_SIDE",
+      "merge_sha": "ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f",
+      "historical_source_pr": 955,
+      "production_live_gate": 961
+    }
+  },
+  "platform_and_owner_gates": {
+    "cloudflare_production_parity_961": "BLOCKED_OWNER_ADMIN_CREDENTIALS_BINDINGS_AND_LIVE_READBACK",
+    "password_reset_email_611": "BLOCKED_SCOPED_CLOUDFLARE_WORKER_DEPLOY_TOKEN_AND_REAL_EMAIL_RECEIPT",
+    "main_protection_938": "BLOCKED_OWNER_ADMIN_PLATFORM_ACTION",
+    "partnership_sender_876": "BLOCKED_PARTNERSHIP_SENDER_NOT_PROVEN",
+    "owner_mac_internal_ai": "ROUTE_CODEX_2",
+    "design_visual_work": "ROUTE_DESIGN_5"
   },
   "one_brain_security": {
     "protected_core_state": "ACL_REMEDIATED_AND_READBACK_VERIFIED",
@@ -90,20 +170,23 @@
     ],
     "destructive_action_authorized": false
   },
-  "governance_pr_941": {
+  "historical_governance_pr_941": {
+    "state": "MERGED_HISTORICAL_PROVENANCE",
     "branch": "governance/current-state-closeout-2026-09-01",
     "replay_base": "ed944f87fe20de00c895a8ed02c58b9984e37887",
-    "write_scope": [
+    "former_write_scope": [
       "ai-collaboration/00_READ_FIRST/CURRENT_STATE.md",
       "docs/ai-project-state.json"
     ],
-    "product_files_modified": false,
-    "promotion_rule": "Require fresh exact-head CI and re-check current main immediately before merge; non-conflicting main movement must be explicitly evidenced."
+    "product_files_modified": false
   },
   "execution_rules": [
-    "Do not implement Hermes Connect design, Hermes Connect AI or SEO/GEO from this thread.",
+    "Do not implement or rewrite Hermes Connect visual design from this thread; route visual work to Design 5.",
+    "Do not implement Hermes Connect AI or SEO/GEO from this thread.",
     "Do not take over specialist product implementation from an active owner lane.",
+    "Do not treat an open PR that is behind current main as promotion-ready from historical green evidence.",
     "Do not delete, uninstall or archive Claude before all decommission gates pass.",
-    "Do not rerun full Codex extraction merely because main moved; re-run only when new evidence overlaps the reconciled legacy candidate classes or contradicts accepted classifications."
+    "Do not rerun full Codex extraction merely because main moved; re-run only when new evidence overlaps reconciled legacy candidate classes or contradicts accepted classifications.",
+    "MERGED != DEPLOYED != LIVE_VERIFIED."
   ]
 }
