@@ -2,11 +2,12 @@
 import { ChevronDown } from "@lucide/astro";
 
 export interface Props {
-  current: "repair" | "academy" | "ai" | "beauty";
+  current: "repair" | "academy" | "ai" | "beauty" | "neutral";
   mode?: "panel" | "menu";
 }
 
 const { current, mode = "panel" } = Astro.props;
+const switcherCurrent = current === "neutral" ? undefined : current;
 const copy = {
   en: { account: "Hermes account", signedIn: "Signed in", workspaces: "Your workspaces", repair: "Repair Shop", academy: "Academy", ai: "AI Connect", beauty: "Beauty", owned: "Owned business", shared: "Shared Hermes workspace", internal: "Internal capability", setup: "Workspace setup", preparing: "Workspace preparing", current: "Current", open: "Open", loading: "Loading account…" },
   ru: { account: "Аккаунт Hermes", signedIn: "Вы вошли", workspaces: "Ваши пространства", repair: "СТО", academy: "Академия", ai: "AI Connect", beauty: "Beauty", owned: "Ваш бизнес", shared: "Общее пространство Hermes", internal: "Внутренний доступ", setup: "Настройка пространства", preparing: "Пространство готовится", current: "Сейчас", open: "Открыть", loading: "Загружаем аккаунт…" },
@@ -19,7 +20,7 @@ const t = copy.en;
 ---
 
 {mode === "panel" ? (
-  <section class="hc-account-switcher" data-hc-account-switcher data-current={current} data-locale="en" hidden>
+  <section class="hc-account-switcher" data-hc-account-switcher data-current={switcherCurrent} data-locale="en" hidden>
     <div class="hc-account-identity">
       <div class="hc-account-avatar" aria-hidden="true" data-account-avatar>H</div>
       <div class="hc-account-copy">
@@ -52,7 +53,7 @@ const t = copy.en;
     </div>
   </section>
 ) : (
-  <details class="hc-account-menu" data-hc-account-switcher data-current={current} data-locale="en" hidden>
+  <details class="hc-account-menu" data-hc-account-switcher data-current={switcherCurrent} data-locale="en" hidden>
     <summary aria-label={t.workspaces} data-hc-workspaces-label>
       <span class="hc-account-avatar hc-account-avatar-compact" aria-hidden="true" data-account-avatar>H</span>
       <span class="hc-account-menu-copy">
