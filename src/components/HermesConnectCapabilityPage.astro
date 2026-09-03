@@ -36,15 +36,26 @@ const {
   faqs,
 } = Astro.props;
 
+const productHubUrl = "https://hermeslogisticsus.com/services/hermes-connect/";
 const schema = [
   {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: `Hermes Connect ${name}`,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
+    "@type": "WebPage",
+    name: `${name} Reference Capability | Hermes Connect`,
     url: canonicalUrl,
     description: `${description} This page documents a Hermes Connect reference capability and is not a claim of current live availability.`,
+    isPartOf: {
+      "@type": "WebApplication",
+      name: "Hermes Connect",
+      url: productHubUrl,
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Modern web browser",
+    },
+    about: {
+      "@type": "Thing",
+      name: `Hermes Connect ${name} reference capability`,
+      description: lead,
+    },
   },
   {
     "@context": "https://schema.org",
@@ -60,7 +71,7 @@ const schema = [
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
-      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: "https://hermeslogisticsus.com/services/hermes-connect/" },
+      { "@type": "ListItem", position: 2, name: "Hermes Connect", item: productHubUrl },
       { "@type": "ListItem", position: 3, name, item: canonicalUrl },
     ],
   },
