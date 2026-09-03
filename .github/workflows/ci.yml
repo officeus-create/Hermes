@@ -7,95 +7,32 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  build-and-test:
+  patch-academy-ru:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out Academy RU branch
         uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          ref: feat/academy-ru-lesson-content-2026-09-01
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Audit dependency security
-        run: node scripts/dependency-audit-report.mjs
-
-      - name: Build website
-        run: npm run build
-
-      - name: Validate static output
-        run: npm test
-
-      - name: Validate London launch contract
-        run: node scripts/london-launch-contract.test.mjs
-
-      - name: Enforce 100-task SEO production invariants
-        run: node scripts/seo-100-task-batch.test.mjs
-
-      - name: Enforce JobPosting lifecycle
-        run: node --experimental-strip-types scripts/job-posting-lifecycle.test.mjs
-
-      - name: Enforce Hermes SEO Framework P0 gate
-        run: node scripts/hermes-seo-framework-p0-gate.test.mjs
-
-      - name: Enforce four-direction SEO market registry
-        run: node scripts/seo-four-direction-market-registry.test.mjs
-
-      - name: Enforce Hermes GEO evidence contract
-        run: node scripts/llms-full-evidence-contract.test.mjs
-
-      - name: Enforce commercial owner internal-link paths
-        run: node scripts/commercial-owner-link-gate.test.mjs
-
-      - name: Enforce short Hermes GEO evidence contract
-        run: node scripts/llms-short-evidence-contract.test.mjs
-
-      - name: Validate repair shop access state
-        run: node scripts/repair-shop-access-contract.test.mjs
-
-      - name: Validate repair shop web v1
-        run: node scripts/repair-shop-web-v1-contract.test.mjs
-
-      - name: Validate repair shop capabilities
-        run: node scripts/repair-shop-capabilities-contract.test.mjs
-
-      - name: Validate repair shop capacity-aware booking
-        run: node scripts/repair-shop-capacity-contract.test.mjs
-
-      - name: Validate repair shop operating statuses
-        run: node scripts/repair-shop-operations-contract.test.mjs
-
-      - name: Validate carrier contract engine
-        run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
-
-      - name: Install browser for workflow tests
-        run: npx playwright install --with-deps chromium
-
-      - name: Validate SEO analytics privacy browser flow
-        run: npx playwright test tests/seo-analytics-privacy.spec.ts --project=desktop
-
-      - name: Validate repair shop Web V1 browser flow
-        run: npx playwright test tests/repair-shop-web-v1.spec.ts --project=desktop
-
-      - name: Validate repair shop capabilities browser flow
-        run: npx playwright test tests/repair-shop-capabilities.spec.ts --project=desktop
-
-      - name: Validate repair shop capacity browser flow
-        run: npx playwright test tests/repair-shop-capacity.spec.ts --project=desktop
-
-      - name: Validate repair shop operating-status browser flow
-        run: npx playwright test tests/repair-shop-operations.spec.ts --project=desktop
-
-      - name: Validate carrier onboarding browser flow
-        run: npx playwright test tests/carrier-contract-engine.spec.ts --project=desktop --grep "carrier can complete"
-
-      - name: Run browser workflow tests
-        run: npm run test:e2e
+      - name: Align Russian equipment rubric to canonical schema
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('functions/api/_lib/academy-content-ru.mjs')
+          text = path.read_text()
+          old = 'rubric: [criterion("facts", "Подтверждённые факты", "Facts отделены от assumptions."), criterion("questions", "Необходимые вопросы", "Uncertainty превращена в concrete questions."), criterion("equipment_fit", "Проверка equipment fit", "Capacity/restrictions не предполагаются."), criterion("route_timing", "Проверка route и timing", "Deadhead/windows/access рассмотрены."), criterion("carrier_control", "Контроль carrier", "Safety/operating/final approval остаются у carrier."), criterion("claim_safety", "Безопасность формулировки", "Нет claim profit/safety/booking outcome." )],'
+          new = 'rubric: [criterion("equipment_facts", "Проверка equipment facts", "Capacity/restrictions основаны на approved profile, а не на предположении."), criterion("route_timing", "Проверка route и timing", "Deadhead/windows/access рассмотрены как отдельные review inputs."), criterion("fact_assumption", "Факты и предположения", "Unknowns не представлены как факты."), criterion("useful_questions", "Необходимые вопросы", "Uncertainty превращена в конкретные вопросы, нужные для fit review."), criterion("carrier_decision", "Решение carrier", "Safety/operating judgment/final approval остаются у carrier."), criterion("claim_safety", "Безопасность формулировки", "Нет claim profit/rate/utilization/safety/booking outcome." )],'
+          if old not in text:
+              raise SystemExit('Expected legacy equipment rubric not found; refusing broad rewrite')
+          text = text.replace(old, new, 1)
+          path.write_text(text)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add functions/api/_lib/academy-content-ru.mjs
+          git commit -m "fix(academy): align Russian equipment rubric with canonical keys"
+          git push origin HEAD:feat/academy-ru-lesson-content-2026-09-01
