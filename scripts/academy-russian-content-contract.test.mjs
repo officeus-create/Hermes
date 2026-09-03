@@ -82,34 +82,34 @@ test("Russian Academy content covers every current canonical lesson", () => {
       assert.ok(ru.boundaries.every(hasCyrillic), `${program}/${lessonId} boundaries must be Russian`);
 
       if (base.sections) {
-        assert.equal(ru.sections.length, base.sections.length);
-        for (const section of ru.sections) {
-          assert.ok(hasCyrillic(section.title));
-          assert.ok(hasCyrillic(section.summary));
-          assert.ok(section.actions.every(hasCyrillic));
+        assert.equal(ru.sections.length, base.sections.length, `${program}/${lessonId} section count must stay canonical`);
+        for (const [sectionIndex, section] of ru.sections.entries()) {
+          assert.ok(hasCyrillic(section.title), `${program}/${lessonId} section ${sectionIndex + 1} title must be Russian`);
+          assert.ok(hasCyrillic(section.summary), `${program}/${lessonId} section ${sectionIndex + 1} summary must be Russian`);
+          assert.ok(section.actions.every(hasCyrillic), `${program}/${lessonId} section ${sectionIndex + 1} actions must be Russian`);
         }
       }
 
       if (base.assignment) {
         assert.equal(ru.assignment.submission_type, base.assignment.submission_type);
         assert.equal(ru.assignment.max_words, base.assignment.max_words);
-        assert.ok(hasCyrillic(ru.assignment.prompt));
+        assert.ok(hasCyrillic(ru.assignment.prompt), `${program}/${lessonId} assignment prompt must be Russian`);
         assert.equal(ru.assignment.parts.length, base.assignment.parts.length);
-        assert.ok(ru.assignment.parts.every(hasCyrillic));
+        assert.ok(ru.assignment.parts.every(hasCyrillic), `${program}/${lessonId} assignment parts must be Russian`);
       }
 
       if (base.rubric) {
         assert.equal(ru.rubric.length, base.rubric.length);
         for (let index = 0; index < base.rubric.length; index += 1) {
           assert.equal(ru.rubric[index].key, base.rubric[index].key);
-          assert.ok(hasCyrillic(ru.rubric[index].label));
-          assert.ok(hasCyrillic(ru.rubric[index].pass));
+          assert.ok(hasCyrillic(ru.rubric[index].label), `${program}/${lessonId} rubric ${index + 1} label must be Russian`);
+          assert.ok(hasCyrillic(ru.rubric[index].pass), `${program}/${lessonId} rubric ${index + 1} pass text must be Russian`);
         }
       }
 
       if (base.next) {
         assert.equal(ru.next.lesson_id, base.next.lesson_id);
-        assert.ok(hasCyrillic(ru.next.label));
+        assert.ok(hasCyrillic(ru.next.label), `${program}/${lessonId} next label must be Russian`);
       }
     }
   }
