@@ -94,10 +94,10 @@ Historical #1016 and conflict-only #1041 are closed/unmerged and **superseded im
 | `EXTENSION` | Connected Thread storytelling | Use only where it clarifies person/request → Hermes → action → outcome. |
 | `EXTENSION` | Hermes Intelligence Core / subtle living flow | Calm and reduced-motion safe; one user-facing Hermes Intelligence, not a swarm-of-bots aesthetic. |
 | `EXTENSION` | Contextual 3D / flow waves | Restrained, performance-first, not cyberpunk. |
-| `EXTENSION` | Adaptive onboarding by business type | Progressive disclosure; configure relevant modules instead of showing everything. |
+| `DONE` | Adaptive onboarding by business type | Existing canonical workspace already implements first-visit accessible business-type selection, persisted `hermes_business_type`, controlled four-parameter deep-link bypass, mobile business selection, and business-specific vertical/module configuration. `tests/hermes-connect-onboarding.spec.ts` covers Auto Repair, Logistics, Agency and Fitness flows and is included in the full Playwright suite; exact-head Website `33792173101` completed successfully before #1049 merge. No duplicate runtime implementation was needed. |
 | `EXTENSION` | Richer empty/error/offline states | Add within each workspace implementation phase as real product states. |
 
-Six approved P4 extensions remain. They are optional/non-blocking and must be evaluated one at a time; they are not evidence that the bounded Design OS is incomplete.
+Five approved P4 extensions remain. They are optional/non-blocking and must be evaluated one at a time; they are not evidence that the bounded Design OS is incomplete.
 
 ## Superseded / historical — do not reopen as current specs
 
@@ -137,10 +137,10 @@ Do not implement automatically:
 ## Current execution order
 
 1. Keep this source-of-truth synchronized with merged `main`; stale task numbers must never route work.
-2. The bounded Design OS code-convergence queue is closed; completed P4 extensions #1048 and #1049 do not reopen it.
+2. The bounded Design OS code-convergence queue is closed; completed P4 extensions #1048, #1049 and the reconciled existing adaptive onboarding do not reopen it.
 3. When authorized owner/admin access resolves #961, run exact-main production deploy + custom-domain/live proofs and promote only verified runtime items from `MERGED_VERIFY` to `DONE`.
 4. Keep Beauty accent and any replacement of Option №02 as `OWNER_DECISION`; do not guess them.
-5. Evaluate the six remaining P4 extensions one at a time against current product value, existing evidence and duplicate risk. They are non-blocking and must not reopen already-closed Design OS foundations.
+5. Evaluate the five remaining P4 extensions one at a time against current product value, existing evidence and duplicate risk. They are non-blocking and must not reopen already-closed Design OS foundations.
 
 ## Promotion discipline
 
