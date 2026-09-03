@@ -6,7 +6,7 @@ Last updated: 2026-09-03
 
 Hermes Connect is no longer in logo-selection or broad visual-exploration mode. **Design 4 is an audit/execution cycle over one canonical responsive Hermes runtime.** Finish near-complete work first, remove duplicates and stale implementations, preserve strong existing surfaces, and judge every change through UX, conversion, mobile/accessibility, backend truth, SEO and GEO before calling it done.
 
-The bounded Design 4 code-convergence queue is now exhausted. Remaining production/live proof is external to ordinary Design code promotion and is tracked separately under #961. Two approved non-blocking P4 extensions are also complete: public authenticated-account affordance (#1048) and dedicated Hermes Connect social/OG card (#1049).
+The bounded Design 4 code-convergence queue is now exhausted. Remaining production/live proof is external to ordinary Design code promotion and is tracked separately under #961. Three approved non-blocking P4 extensions are complete: public authenticated-account affordance (#1048), dedicated Hermes Connect social/OG card (#1049), and adaptive onboarding by business type reconciled from existing current-main runtime/test evidence.
 
 Product perception remains:
 
@@ -217,6 +217,19 @@ Merged at `97e124ac85362737f5191e99d3a159ded64d1a1c` from exact validated head `
 - Website checks `33792173101` — SUCCESS.
 - Hermes Connect visual evidence `33792173072` — SUCCESS.
 
+### Adaptive onboarding by business type — `DONE` by evidence reconciliation
+
+No replacement runtime was created because the canonical workspace already implements the requirement:
+
+- first-visit accessible business-type selector;
+- persisted `hermes_business_type` choice;
+- controlled deep-link bypass only when `source_direction`, `business_type`, `business_subtype`, and `module` are all present;
+- business-specific vertical/module configuration;
+- desktop/keyboard and mobile selection coverage;
+- Auto Repair, Logistics, Agency and Fitness scenarios in `tests/hermes-connect-onboarding.spec.ts`.
+
+The onboarding spec is part of the full Playwright suite. Exact-head Website `33792173101` completed successfully before #1049 merge, so the stale P4 entry was reconciled to `DONE` instead of duplicating working product code.
+
 ## External production gate — not a design-code regression
 
 **#961 `[HC-DEPLOY-PARITY]` remains the external owner/admin gate.**
@@ -239,20 +252,19 @@ When #961 is resolved, require exact-main production deploy, custom-domain read-
 
 The prior HR #1016 REWORK lane has been superseded by merged #1042. Temporary #1041 remains conflict evidence only. Do not manufacture another convergence branch simply to keep a Design queue open.
 
-Two P4 extensions are complete (#1048, #1049). Six approved P4 extensions remain optional/non-blocking:
+Three P4 extensions are complete (#1048, #1049, adaptive onboarding). Five approved P4 extensions remain optional/non-blocking:
 
 1. Explain-by-Interaction;
 2. Connected Thread storytelling;
 3. Hermes Intelligence Core / subtle living flow;
 4. contextual 3D / flow waves;
-5. adaptive onboarding by business type;
-6. richer empty/error/offline states.
+5. richer empty/error/offline states.
 
 Next work is intentionally separated into:
 
 1. external production/live verification under #961 when authorized Cloudflare owner/admin access is available;
 2. owner decisions that must not be guessed (Beauty fifth canonical accent; any replacement of Option №02);
-3. the six approved non-blocking extensions, one at a time, only where current product value and duplicate-risk audit support them.
+3. the five approved non-blocking extensions, one at a time, only where current product value and duplicate-risk audit support them.
 
 ## Mobile and accessibility contract
 
