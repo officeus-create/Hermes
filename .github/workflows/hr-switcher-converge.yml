@@ -14,13 +14,13 @@ jobs:
 
       - name: Apply and validate bounded HR convergence
         run: |
-          python scripts/hr-switcher-converge.py
+          python scripts/hr-switcher-converge-v2.py
           node scripts/hermes-connect-hr-design4-replay.test.mjs
           git diff --check
 
       - name: Commit validated convergence
         run: |
-          rm .github/workflows/hr-switcher-converge.yml scripts/hr-switcher-converge.py
+          rm .github/workflows/hr-switcher-converge.yml scripts/hr-switcher-converge.py scripts/hr-switcher-converge-v2.py
           git add -A
           git diff --cached --check
           git config user.name "Hermes Design Bot"
