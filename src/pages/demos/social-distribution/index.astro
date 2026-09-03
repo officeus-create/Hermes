@@ -11,6 +11,7 @@ import {
 } from "../../../data/social-distribution-preview";
 
 const platformLabels = {
+  linkedin: "LinkedIn",
   facebook: "Facebook",
   threads: "Threads",
   instagram: "Instagram",
@@ -21,7 +22,7 @@ const platformLabels = {
 
 <BaseLayout
   title="Social Distribution Preview Queue | Hermes"
-  description="Preview-only queue for platform-specific drafts, UTM links, duplicate fingerprints, review states, rejection, approval, and manual export."
+  description="Preview-only queue for platform-specific drafts, attributed links, duplicate fingerprints, review states, rejection, approval, and manual export."
   robots="noindex,nofollow,noarchive"
 >
   <div class="logistics-resource-page social-distribution-workspace">
@@ -36,9 +37,9 @@ const platformLabels = {
           </nav>
           <div class="resource-hero-grid">
             <div>
-              <p class="eyebrow">Hermes Internal Preview · Issue #144</p>
+              <p class="eyebrow">Hermes Internal Preview · Issue #1018</p>
               <h1>Approved Website Asset → Platform Draft Review Queue</h1>
-              <p>One canonical website page produces five distinct drafts, privacy-safe tracked links, duplicate fingerprints, and an auditable human-review path. Release A stops at manual export.</p>
+              <p>One canonical website page produces {syntheticDistributionDrafts.length} distinct platform drafts, privacy-safe tracked links, non-PII market/placement/creative attribution, duplicate fingerprints, and an auditable human-review path. Release B still stops at manual export.</p>
               <div class="logistics-audience-actions">
                 <a class="button button-primary" href={syntheticApprovedWebsiteAsset.canonicalUrl}>Open canonical website asset <ArrowRight size={18} aria-hidden="true" /></a>
                 <a class="button" href="/demos/content-pipeline/">Review source pipeline</a>
@@ -62,8 +63,10 @@ const platformLabels = {
           <div class="capacity-boundary-grid">
             <article><strong>{syntheticApprovedWebsiteAsset.status}</strong><p>Distribution status.</p></article>
             <article><strong>{syntheticApprovedWebsiteAsset.campaign}</strong><p>Allowlisted campaign.</p></article>
+            <article><strong>{syntheticApprovedWebsiteAsset.objective}</strong><p>Downstream objective for reporting.</p></article>
+            <article><strong>{syntheticApprovedWebsiteAsset.market}</strong><p>Privacy-safe market attribution.</p></article>
             <article><strong>{syntheticApprovedWebsiteAsset.contentVersion}</strong><p>Content version used for deduplication.</p></article>
-            <article><strong>{syntheticChannelEligibility.filter((item) => item.eligibility.eligible).length}/5</strong><p>Synthetic preview channels eligible; zero live accounts verified.</p></article>
+            <article><strong>{syntheticChannelEligibility.filter((item) => item.eligibility.eligible).length}/{syntheticDistributionDrafts.length}</strong><p>Synthetic preview channels eligible; zero live accounts verified.</p></article>
           </div>
         </div>
       </section>
@@ -99,6 +102,8 @@ const platformLabels = {
                 <MessageSquareText size={23} aria-hidden="true" />
                 <h3>{platformLabels[draft.platform]}</h3>
                 <p><strong>Mode:</strong> {draft.channelMode}</p>
+                <p><strong>Objective:</strong> {draft.objective}</p>
+                <p><strong>Market:</strong> {draft.market ?? "global"}</p>
                 <p><strong>Initial state:</strong> <span data-distribution-state>{draft.state}</span></p>
                 <p><strong>Hook:</strong> {draft.hook}</p>
                 <label>
@@ -135,12 +140,12 @@ const platformLabels = {
 
       <section class="section capacity-review" aria-labelledby="distribution-boundaries-title">
         <div class="shell">
-          <div class="section-heading"><p class="eyebrow">Release A boundaries</p><h2 id="distribution-boundaries-title">Manual export is the final state.</h2></div>
+          <div class="section-heading"><p class="eyebrow">Release B boundaries</p><h2 id="distribution-boundaries-title">Manual export is still the final state.</h2></div>
           <div class="capacity-boundary-grid">
-            <article><strong>No provider call</strong><p>No Facebook, Threads, Instagram, X, Telegram, Meta, or other publishing endpoint is connected.</p></article>
+            <article><strong>No provider call</strong><p>No LinkedIn, Facebook, Threads, Instagram, X, Telegram, Meta, or other publishing endpoint is connected.</p></article>
             <article><strong>No credential storage</strong><p>No access token, bot token, chat ID, account identifier, app secret, callback, recovery data, or private export is present.</p></article>
             <article><strong>No automatic retry</strong><p>There is no live request and therefore no ambiguous provider timeout or duplicate-post retry.</p></article>
-            <article><strong>No SEO guarantee</strong><p>Distribution can support discovery and referrals but does not guarantee ranking, traffic, leads, sales, or revenue.</p></article>
+            <article><strong>No SEO guarantee</strong><p>Distribution can support discovery and referrals but does not guarantee ranking, traffic, leads, sales, hiring, enrollment, or revenue.</p></article>
           </div>
         </div>
       </section>
@@ -217,7 +222,7 @@ const platformLabels = {
     for (const button of buttons) {
       button.addEventListener("click", () => {
         const action = button.dataset.action;
-        if (action === "review") transition("reviewed", "Copy reviewed in the local Release A workspace.");
+        if (action === "review") transition("reviewed", "Copy reviewed in the local Release B workspace.");
         if (action === "approve") transition("approved", "Approved only for local manual export preparation.");
         if (action === "reject") transition("rejected", reason?.value.trim() ?? "");
         if (action === "export") {
