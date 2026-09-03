@@ -51,11 +51,11 @@ const draft = {
   submitted_at: null,
 };
 
-async function mockFactory(page: any) {
+async function mockFactory(page: any, initialDrafts: any[] = []) {
   await page.route("**/api/hermes-connect/account", (route: any) => route.fulfill(json(account)));
   await page.route("**/api/website-factory/drafts", async (route: any) => {
     if (route.request().method() === "POST") return route.fulfill(json({ success: true, draft }));
-    return route.fulfill(json({ success: true, drafts: [] }));
+    return route.fulfill(json({ success: true, drafts: initialDrafts }));
   });
   await page.route("**/api/website-factory/drafts/*", async (route: any) => {
     if (route.request().method() === "PUT") {
@@ -114,6 +114,36 @@ test("Website Factory stays private and uses one shared Hermes account across fi
     await expectMinHeight(page.locator("[data-next]"), "Website Factory continue action", width);
     await expectNoOverflow(page, width);
   }
+});
+
+test("Website Factory resumes the persisted current step after reload", async ({ page }) => {
+  const resumableDraft = {
+    ...draft,
+    title: "Persisted owner brief",
+    current_step: 4,
+    payload: {
+      ...draft.payload,
+      brief: {
+        ...draft.payload.brief,
+        text: "Preserve the real owner brief after reload and resume.",
+      },
+    },
+    updated_at: "2026-09-03T10:05:00.000Z",
+  };
+
+  await mockFactory(page, [resumableDraft]);
+  await page.goto("/services/hermes-connect/website-factory/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Persisted owner brief", { exact: true })).toBeVisible();
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Persisted owner brief", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Resume" }).click();
+
+  await expect(page.locator("[data-wizard-view]")).toBeVisible();
+  await expect(page.locator('[data-step="4"]')).toBeVisible();
+  await expect(page.locator('[data-step="1"]')).toBeHidden();
+  await expect(page.locator("[data-step-count]")).toHaveText("Step 4 of 9");
+  await expect(page.locator("[data-brief-text]")).toHaveValue("Preserve the real owner brief after reload and resume.");
 });
 
 test("Website Factory never treats browser state or role text as workspace authority", async ({ page }) => {
