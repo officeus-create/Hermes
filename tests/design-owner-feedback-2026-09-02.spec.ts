@@ -50,7 +50,11 @@ test.describe("owner-approved design polish 2026-09-02", () => {
     await page.goto("/services/hermes-connect/?lang=ru");
 
     const language = page.locator("[data-language-menu]");
-    await expect(language.locator("summary span")).toHaveText("RU");
+    const languageSummary = language.locator("summary");
+    const languageLabel = language.locator("summary span");
+    await expect(languageLabel).toContainText("Русский");
+    await expect(languageLabel).toHaveAttribute("data-hc-language-code", "RU");
+    await expect(languageSummary).toHaveAttribute("aria-label", /Русский/);
     await expect(language.locator('a[lang="ru"]')).toHaveAttribute("aria-current", "page");
     await expect(language.locator('a[lang="en"]')).not.toHaveAttribute("aria-current", "page");
 
