@@ -1,5 +1,10 @@
 const CANDIDATE_KEY = 'hermes-connect-hr-pilot-v1';
 const QUEUE_KEY = 'hermes-connect-hr-review-queue-v1';
+const PRODUCTION_HOSTS = new Set(['hermeslogisticsus.com', 'connect.hermeslogisticsus.com']);
+
+function isProductionHost() {
+  return typeof location !== 'undefined' && PRODUCTION_HOSTS.has(location.hostname);
+}
 
 function readJson(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback; }
@@ -31,6 +36,11 @@ function toQueueRecord(state) {
 }
 
 export function syncCompletedCandidateToReviewQueue() {
+  // The browser-local reviewer queue exists only to make isolated preview demos usable.
+  // Production candidate browsers keep the normal recovery copy but must not create
+  // a second reviewer-oriented copy of private interview evidence.
+  if (isProductionHost()) return false;
+
   const state = readJson(CANDIDATE_KEY, null);
   if (!state?.candidate_id || !state?.completed_at) return false;
 
@@ -45,7 +55,7 @@ export function syncCompletedCandidateToReviewQueue() {
 }
 
 const resultPanel = document.querySelector('[data-result-panel]');
-if (resultPanel) {
+if (resultPanel && !isProductionHost()) {
   const sync = () => {
     if (!resultPanel.hidden) syncCompletedCandidateToReviewQueue();
   };
