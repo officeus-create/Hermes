@@ -23,10 +23,14 @@ async function routeStableWorkspace(page: any, serviceResponder?: (route: any) =
 }
 
 test("Repair owner sees section-local recovery and can retry a failed services load", async ({ page }) => {
+  // The dashboard and the activation enhancer both legitimately read /api/services.
+  // Model a real endpoint outage until the owner retries instead of coupling the test
+  // to whichever consumer happens to issue the first request.
+  let servicesHealthy = false;
   let serviceAttempts = 0;
   await routeStableWorkspace(page, (route) => {
     serviceAttempts += 1;
-    if (serviceAttempts === 1) return route.fulfill(json({ success: false }, 503));
+    if (!servicesHealthy) return route.fulfill(json({ success: false }, 503));
     return route.fulfill(json({ success: true, services: [] }));
   });
 
@@ -39,6 +43,7 @@ test("Repair owner sees section-local recovery and can retry a failed services l
   await expect(page.locator("#bookings-empty")).toBeVisible();
   await expect(page.locator("#feedback-empty")).toBeVisible();
 
+  servicesHealthy = true;
   await recovery.getByRole("button", { name: "Try again" }).click();
   await expect(page.locator("#services-empty")).toBeVisible();
   await expect(page.locator("#hc-services-recovery")).toBeHidden();
