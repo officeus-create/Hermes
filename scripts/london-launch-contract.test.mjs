@@ -39,6 +39,16 @@ const parseSchemas = (html,route)=>{
   return result;
 };
 const requireTypes=(types,required,route)=>required.forEach((type)=>{if(!types.has(type)) errors.push(`${route}: missing ${type} schema`);});
+const alternateMap=(html)=>{
+  const map=new Map();
+  for(const match of html.matchAll(/<link\b[^>]*rel=["']alternate["'][^>]*>/gi)){
+    const tag=match[0];
+    const lang=tagAttr(tag,"hreflang");
+    const href=tagAttr(tag,"href");
+    if(lang&&href) map.set(lang,href);
+  }
+  return map;
+};
 
 const sitemap = await readFile(join(dist,"sitemap-london.xml"),"utf8");
 const robots = await readFile(join(dist,"robots.txt"),"utf8");
@@ -69,6 +79,32 @@ for(const route of expectedRoutes){
   } else if(localizedRoutes.includes(route)) requireTypes(types,["WebPage","BreadcrumbList"],route);
 
   if(/our london office|visit our office in london|london office address/i.test(html)) errors.push(`${route}: unsupported London physical-office claim detected`);
+  if(/data:image\//i.test(html)) errors.push(`${route}: embedded data-URI image detected`);
+
+  for(const match of html.matchAll(/<img\b[^>]*>/gi)){
+    const tag=match[0];
+    if(!/\balt=["'][^"']*["']/i.test(tag)) errors.push(`${route}: image missing alt attribute`);
+    const width=Number(tagAttr(tag,"width"));
+    const height=Number(tagAttr(tag,"height"));
+    if(!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0) errors.push(`${route}: image missing explicit positive width/height`);
+  }
+}
+
+for(const suffix of ["", "marketing/", "it-web-development/", "us-logistics-training/"]){
+  const expected={
+    en:`${origin}/gb/london/${suffix}`,
+    ru:`${origin}/ru/gb/london/${suffix}`,
+    uk:`${origin}/ua/gb/london/${suffix}`,
+    "x-default":`${origin}/gb/london/${suffix}`,
+  };
+  for(const route of [`/gb/london/${suffix}`,`/ru/gb/london/${suffix}`,`/ua/gb/london/${suffix}`]){
+    const html=await readFile(htmlPath(route),"utf8");
+    const alternates=alternateMap(html);
+    for(const [lang,href] of Object.entries(expected)){
+      if(alternates.get(lang)!==href) errors.push(`${route}: hreflang ${lang} must resolve to ${href}`);
+    }
+    if(html.includes("/uk/london/")) errors.push(`${route}: obsolete /uk/london/ locale navigation detected`);
+  }
 }
 
 const primaryLeadPages = ["/gb/london/","/gb/london/marketing/","/gb/london/it-web-development/","/gb/london/us-logistics-training/","/gb/london/academy/"];
@@ -86,11 +122,28 @@ for(const relative of londonSources){
   if(source.includes("?source=")) errors.push(`${relative}: legacy source= attribution detected; use UTM contract`);
 }
 
+const academyTrackSource=await readFile(join(root,"src/pages/gb/london/academy/[track].astro"),"utf8");
+for(const required of ["utm_source=london","utm_campaign=london-academy","utm_content=${page.track}","track=${page.track}"]){
+  if(!academyTrackSource.includes(required)) errors.push(`London Academy track handoff: missing ${required}`);
+}
+
 const analytics=await readFile(join(root,"src/components/LondonAnalytics.astro"),"utf8");
 for(const required of ["trackEvent","/gb/london/","/ru/gb/london/","/ua/gb/london/","london_page_view","london_cta_clicked"]){
   if(!analytics.includes(required)) errors.push(`LondonAnalytics: missing ${required}`);
 }
 if(/email|phone|message|name\s*:/i.test(analytics.replace(/london_contact_clicked/g,""))) errors.push("LondonAnalytics: possible PII field detected");
+
+const productionContact=await readFile(join(root,"src/components/ProductionContactMode.astro"),"utf8");
+for(const required of ["utm_source","london","hermes_attribution_","type = \"hidden\"","london_lead_submitted","london_academy_application_submitted","trackEvent"]){
+  if(!productionContact.includes(required)) errors.push(`ProductionContactMode London bridge: missing ${required}`);
+}
+if(!productionContact.includes("pendingConversion = false")) errors.push("ProductionContactMode London bridge: exact-once success guard missing");
+if(/London attribution:\\n|message\.value|queueMicrotask/.test(productionContact)) errors.push("ProductionContactMode London bridge: attribution must not mutate visitor message text");
+
+const contactLib=await readFile(join(root,"src/lib/contact.ts"),"utf8");
+for(const required of ["Academy qualification:","academy_program","academy_country_city","academy_languages_levels","academy_english_level","academy_recent_experience","academy_objective","academy_us_timezone_availability","academy_preferred_contact_route","hermes_attribution_","track","program"]){
+  if(!contactLib.includes(required)) errors.push(`Academy downstream intake context: missing ${required}`);
+}
 
 for(const relative of [
   "docs/london/LONDON_SPRINT2_OFFERS_ACADEMY_2026-08-31.md",
@@ -103,4 +156,4 @@ for(const relative of [
 
 if(expectedRoutes.length!==52) errors.push(`route inventory invariant changed unexpectedly: ${expectedRoutes.length}`);
 if(errors.length) throw new Error(`London launch contract failed with ${errors.length} error(s):\n${errors.map((e)=>`- ${e}`).join("\n")}`);
-console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/CTA/attribution/analytics/artifact checks green.`);
+console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/source-attribution/conversion/artifact checks green.`);

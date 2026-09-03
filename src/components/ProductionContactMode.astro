@@ -1,5 +1,68 @@
 <script>
+  import { trackEvent } from "../lib/analytics";
+
   const productionHosts = new Set(["hermeslogisticsus.com", "www.hermeslogisticsus.com"]);
+  const londonAttributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "service", "track", "program", "language"] as const;
+
+  const safeAttribution = () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("utm_source") !== "london") return null;
+
+    const values: Record<string, string> = {};
+    for (const key of londonAttributionKeys) {
+      const value = String(params.get(key) || "")
+        .replace(/[\u0000-\u001f\u007f<>]/g, "")
+        .trim()
+        .slice(0, 80);
+      if (value) values[key] = value;
+    }
+    return values;
+  };
+
+  const installLondonIntakeBridge = (form: HTMLFormElement) => {
+    const attribution = safeAttribution();
+    if (!attribution) return;
+
+    const status = form.querySelector<HTMLElement>("[data-form-status]");
+    if (!status) return;
+
+    for (const [key, value] of Object.entries(attribution)) {
+      const name = `hermes_attribution_${key}`;
+      const existing = form.elements.namedItem(name);
+      const input = existing instanceof HTMLInputElement ? existing : document.createElement("input");
+      if (!(existing instanceof HTMLInputElement)) {
+        input.type = "hidden";
+        input.name = name;
+        form.append(input);
+      }
+      input.value = value;
+    }
+
+    let pendingConversion = false;
+    form.addEventListener("submit", () => {
+      pendingConversion = true;
+    });
+
+    const observer = new MutationObserver(() => {
+      if (!pendingConversion || !status.textContent?.includes("sent successfully")) return;
+      pendingConversion = false;
+
+      const path = form.elements.namedItem("path");
+      const direction = path instanceof HTMLSelectElement ? path.value : "";
+      const academy = direction === "Hermes Business Academy";
+      trackEvent(academy ? "london_academy_application_submitted" : "london_lead_submitted", {
+        market: "london",
+        direction,
+        campaign: attribution.utm_campaign,
+        content: attribution.utm_content,
+        service: attribution.service,
+        track: attribution.track,
+        program: attribution.program,
+        language: attribution.language,
+      });
+    });
+    observer.observe(status, { childList: true, characterData: true, subtree: true });
+  };
 
   const activateProductionContact = () => {
     if (window.location.protocol !== "https:" || !productionHosts.has(window.location.hostname)) return;
@@ -10,6 +73,8 @@
 
       const label = form.querySelector<HTMLElement>("[data-submit-label]");
       if (label) label.textContent = "Send request";
+
+      installLondonIntakeBridge(form);
     });
   };
 
