@@ -151,6 +151,8 @@ const RUSSIAN_LEGACY_TEXT_FALLBACKS = new Map([
   ["LinkedIn: professional/process framing.", "LinkedIn: подавайте материал через профессиональный или процессный контекст."],
   ["X: concise finding after verification.", "X: публикуйте краткий вывод только после проверки."],
   ["Video/email only with rights/consent/destination approved.", "Видео или email используйте только при подтверждённых правах, согласии и approved destination."],
+  ["Derivative distributes source rather than replacing it.", "Derivative распространяет исходный материал, а не заменяет его."],
+  ["Draft separated from reviewed/approved/manual-export-ready.", "Черновик отделён от состояний reviewed, approved и готовности к manual export."],
   ["Relevant page, not generic homepage.", "Ведите на релевантную страницу, а не на общий homepage."],
   ["One CTA.", "Используйте один CTA."],
   ["Stable privacy-safe variant.", "Используйте стабильный privacy-safe идентификатор варианта."],
