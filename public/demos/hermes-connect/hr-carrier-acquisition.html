@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#F7F6F3">
+  <meta name="description" content="Hermes Logistics Carrier Acquisition remote role pilot application through Hermes Connect HR.">
+  <title>Carrier Acquisition · Hermes Connect HR</title>
+  <link rel="stylesheet" href="./vertical-modules.css">
+  <link rel="stylesheet" href="./hr.css">
+</head>
+<body>
+  <div class="shell hr-shell">
+    <header class="topbar">
+      <a class="brand" href="./workspace.html"><span class="brand-mark" aria-hidden="true"></span><span><strong>Hermes Connect</strong><small>HR · Carrier Acquisition Pilot</small></span></a>
+      <div class="top-actions"><span class="badge">Remote · U.S. logistics</span><a class="btn" href="./hr.html">All HR tracks</a></div>
+    </header>
+
+    <section class="hero hr-hero">
+      <article class="hero-copy">
+        <div class="eyebrow">HERMES LOGISTICS · CARRIER ACQUISITION</div>
+        <h1>Can you turn a cold conversation into a useful business relationship?</h1>
+        <p>Hermes is testing a new hiring and training path for people who want to work with U.S. carriers. We care less about a polished résumé and more about whether you can listen, understand a business situation, ask useful questions, learn from feedback and apply what you learn.</p>
+        <div class="hero-links"><a class="btn primary" data-apply-link href="./hr.html?track=logistics&vacancy=carrier-acquisition-pilot">Start the Hermes interview →</a><a class="btn" href="#role">See the role</a></div>
+      </article>
+      <aside class="hero-card">
+        <small>WHAT HAPPENS NEXT</small>
+        <h2>Interview first. Evidence before assumptions.</h2>
+        <div class="hr-track-mini"><b>1 · Interview</b><span>Context + real scenarios</span></div>
+        <div class="hr-track-mini"><b>2 · Human review</b><span>Job-relevant evidence</span></div>
+        <div class="hr-track-mini"><b>3 · Development</b><span>Academy or supervised test</span></div>
+        <p class="hr-muted">The automated pilot does not hire or reject candidates. An authorized reviewer decides the next controlled step.</p>
+      </aside>
+    </section>
+
+    <section class="grid equal hr-grid" id="role">
+      <article class="panel">
+        <div class="panel-head"><div><small>THE WORK</small><h3>What Carrier Acquisition means here</h3></div></div>
+        <div class="list">
+          <div class="row"><span class="row-icon">◎</span><div><b>Discover</b><small>Understand how a carrier currently finds loads, makes decisions and what creates friction.</small></div></div>
+          <div class="row"><span class="row-icon">↗</span><div><b>Communicate</b><small>Hold real business conversations in English instead of reading a script without listening.</small></div></div>
+          <div class="row"><span class="row-icon">✦</span><div><b>Create value</b><small>Connect a relevant Hermes capability to a real need instead of making generic promises.</small></div></div>
+          <div class="row"><span class="row-icon">▣</span><div><b>Follow through</b><small>Record the next step, follow up consistently and improve from call review.</small></div></div>
+        </div>
+      </article>
+      <article class="panel">
+        <div class="panel-head"><div><small>WHAT WE LOOK FOR</small><h3>Evidence that you can learn and execute</h3></div></div>
+        <div class="list">
+          <div class="row"><span class="row-icon">01</span><div><b>Listening before pitching</b><small>You ask enough to understand the situation before offering a solution.</small></div></div>
+          <div class="row"><span class="row-icon">02</span><div><b>Business English for real calls</b><small>You can understand and respond during a live conversation; perfection is not required.</small></div></div>
+          <div class="row"><span class="row-icon">03</span><div><b>Learning velocity</b><small>You can take feedback, review mistakes and improve the next attempt.</small></div></div>
+          <div class="row"><span class="row-icon">04</span><div><b>Evidence over claims</b><small>You can give concrete examples of what you did and what happened next.</small></div></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel" style="margin-bottom:16px">
+      <div class="panel-head"><div><small>IF YOU ARE NOT READY YET</small><h3>A weak résumé is not the end of the path.</h3><p>If a reviewer sees useful potential but not enough evidence for a supervised work test, you may be offered a Hermes Academy practice path. Academy participation does not guarantee employment; it gives you a structured way to build and demonstrate missing capabilities.</p></div></div>
+      <div class="pipeline">
+        <div class="pipe-step"><span>01</span><b>Understand</b><small>Learn the role and carrier context.</small></div>
+        <div class="pipe-step"><span>02</span><b>Practice</b><small>Scenarios, objections and call thinking.</small></div>
+        <div class="pipe-step"><span>03</span><b>Review</b><small>Feedback on observable evidence.</small></div>
+        <div class="pipe-step"><span>04</span><b>Re-test</b><small>Return to a readiness gate.</small></div>
+        <div class="pipe-step"><span>05</span><b>Human gate</b><small>Authorized reviewer decides live-work scope.</small></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><div><small>TERMS FOR THIS PILOT</small><h3>Know the process before you apply.</h3></div></div>
+      <div class="callout hr-safe"><b>Compensation:</b> final role scope, compensation structure and any performance terms are provided during human review and must be accepted before live work begins. This pilot makes no earnings guarantee.</div>
+      <div class="hr-actions"><a class="btn primary" data-apply-link href="./hr.html?track=logistics&vacancy=carrier-acquisition-pilot">Start structured interview →</a><a class="btn" href="./academy.html">Explore Hermes Academy</a></div>
+    </section>
+
+    <footer class="footer"><span>Hermes Connect HR · Carrier Acquisition Pilot · Human-reviewed process</span><span><a href="./hr.html">HR</a> · <a href="./academy.html">Academy</a></span></footer>
+  </div>
+  <script type="module">
+    const allowed = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','creative','market','placement','source','country','lang'];
+    const incoming = new URLSearchParams(location.search);
+    document.querySelectorAll('[data-apply-link]').forEach(link => {
+      const target = new URL(link.getAttribute('href'), location.href);
+      for (const key of allowed) {
+        const value = incoming.get(key);
+        if (value) target.searchParams.set(key, value.slice(0,240));
+      }
+      target.searchParams.set('track','logistics');
+      target.searchParams.set('vacancy','carrier-acquisition-pilot');
+      link.href = `${target.pathname}${target.search}${target.hash}`;
+    });
+  </script>
+</body>
+</html>
