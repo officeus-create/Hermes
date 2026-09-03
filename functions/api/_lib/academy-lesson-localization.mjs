@@ -3,6 +3,64 @@ const RUSSIAN_CANONICAL_FALLBACKS = new Map([
     "Self-tracked completion is not reviewer acceptance, Academy completion, employment, certification, income or permission to work with live operations.",
     "Самостоятельно отмеченное завершение урока не означает принятие reviewer, завершение Academy, трудоустройство, сертификацию, доход или разрешение работать с реальными операциями.",
   ],
+  [
+    "Create a synthetic operating plan and end-of-cycle review using the same control loop.",
+    "Создайте синтетический операционный план и итоговый разбор цикла, используя тот же контрольный контур.",
+  ],
+  [
+    "Priorities — choose three tasks and identify the prerequisite or decision owner for each.",
+    "Приоритеты — выберите три задачи и укажите prerequisite или владельца решения для каждой.",
+  ],
+  [
+    "Status format — show how completed, blocked and waiting states will be recorded.",
+    "Формат статуса — покажите, как будут фиксироваться состояния выполнено, заблокировано и ожидание.",
+  ],
+  [
+    "Handoff — write one role-based handoff with context, current state and next action.",
+    "Передача задачи — составьте один handoff по роли с контекстом, текущим состоянием и следующим действием.",
+  ],
+  [
+    "Evidence — name what can demonstrate that work occurred without exposing private records.",
+    "Доказательства — укажите, чем можно подтвердить выполненную работу без раскрытия приватных записей.",
+  ],
+  [
+    "Review — identify one friction point and one correction for the next cycle.",
+    "Разбор — определите одну точку трения и одно исправление для следующего цикла.",
+  ],
+  [
+    "Metric boundary — explain why activity volume alone does not prove quality, acceptance or business outcome.",
+    "Граница метрик — объясните, почему объём активности сам по себе не доказывает качество, принятие работы или бизнес-результат.",
+  ],
+  ["Priority clarity", "Ясность приоритетов"],
+  [
+    "Tasks are ordered by a defensible operating reason rather than arbitrary activity volume.",
+    "Задачи упорядочены по обоснованной операционной причине, а не по произвольному объёму активности.",
+  ],
+  ["State visibility", "Видимость состояний"],
+  [
+    "Completed, blocked and waiting work can be distinguished.",
+    "Выполненную, заблокированную и ожидающую работу можно однозначно различить.",
+  ],
+  ["Handoff quality", "Качество передачи задачи"],
+  [
+    "Responsible role, context, current state and next action are clear.",
+    "Ответственная роль, контекст, текущее состояние и следующее действие понятны.",
+  ],
+  ["Evidence boundary", "Граница доказательств"],
+  [
+    "Useful evidence is named without exposing live carrier, shipment or customer data.",
+    "Полезные доказательства указаны без раскрытия реальных данных перевозчика, груза или клиента.",
+  ],
+  ["Correction loop", "Контур исправления"],
+  [
+    "One friction point leads to a specific next-cycle correction.",
+    "Одна точка трения приводит к конкретному исправлению в следующем цикле.",
+  ],
+  ["Metric interpretation", "Интерпретация метрик"],
+  [
+    "Activity counts are treated as signals, not proof of quality, revenue or progression.",
+    "Количество действий рассматривается как сигнал, а не как доказательство качества, выручки или прогресса.",
+  ],
 ]);
 
 const RUSSIAN_LESSON_SOURCE_ALIASES = new Map([
@@ -55,8 +113,8 @@ export function normalizeLocalizedLessonIdentity(base, localized) {
 
 export function projectLocalizedLessonShape(base, localized) {
   if (Array.isArray(base)) {
-    if (!Array.isArray(localized)) return base;
-    return base.map((value, index) => projectLocalizedLessonShape(value, localized[index]));
+    const candidate = Array.isArray(localized) ? localized : [];
+    return base.map((value, index) => projectLocalizedLessonShape(value, candidate[index]));
   }
 
   if (base && typeof base === "object") {
