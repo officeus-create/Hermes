@@ -69,7 +69,7 @@ test("Website Factory identifies itself as a private workflow instead of a refer
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,nofollow/);
 });
 
-test("Russian Website Factory stays on the same noindex route and localizes the full wizard shell", async ({ page }) => {
+test("Russian Website Factory stays on the same noindex route and localizes the full wizard", async ({ page }) => {
   await mockFactory(page);
   await page.goto("/services/hermes-connect/website-factory/?lang=ru", { waitUntil: "domcontentloaded" });
 
@@ -85,7 +85,32 @@ test("Russian Website Factory stays on the same noindex route and localizes the 
   await page.getByRole("button", { name: "Начать новый сайт" }).click();
   await expect(page.locator("[data-wizard-view]")).toBeVisible();
   await expect(page.locator("[data-step-count]")).toHaveText("Шаг 1 из 9");
-  await expect(page.getByRole("heading", { name: "Где ваш бизнес уже представлен?" })).toBeVisible();
+  await expect(page.locator('[data-step="1"] h3')).toHaveText("Где ваш бизнес уже представлен?");
+  await expect(page.locator('[data-step="2"] h3')).toHaveText("Подтвердите данные, которые должен использовать сайт.");
+  await expect(page.locator('[data-step="3"] h3')).toHaveText("Что сайт должен делать для бизнеса?");
+  await expect(page.locator('[data-step="4"] h3')).toHaveText("Опишите своими словами, чего вы хотите.");
+  await expect(page.locator('[data-step="5"] h3')).toHaveText("Три референса — три разные задачи.");
+  await expect(page.locator('[data-step="6"] h3')).toHaveText("Выберите объем первого брифа на создание сайта.");
+  await expect(page.locator('[data-step="7"] h3')).toHaveText("Используйте то, что уже есть, или опишите направление.");
+  await expect(page.locator('[data-step="8"] h3')).toHaveText("Проверьте, как Hermes понял задачу.");
+  await expect(page.locator('[data-step="9"] h3')).toHaveText("Создайте бриф сайта.");
+  await expect(page.locator('[data-step="9"] > p:not(.factory-kicker)')).toContainText("Она не утверждает, что production-процесс создания сайта уже запущен.");
   await expect(page.getByRole("button", { name: "Сохранить и продолжить" })).toBeVisible();
   await expect(page.getByText("Главная", { exact: true })).toHaveCount(1);
+  await expect(page.getByText("Форма лида", { exact: true })).toHaveCount(1);
+
+  const factoryText = await page.locator(".factory-page").textContent();
+  for (const forbidden of [
+    "Where does your business already exist?",
+    "Confirm the facts the website should use.",
+    "What should the website do for the business?",
+    "Explain what you want naturally.",
+    "Three references, three different jobs.",
+    "Choose the first build brief scope.",
+    "Use what already exists — or describe the direction.",
+    "Review what Hermes understands.",
+    "Create the website brief.",
+  ]) {
+    expect(factoryText || "").not.toContain(forbidden);
+  }
 });
