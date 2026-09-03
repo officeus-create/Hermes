@@ -4,6 +4,10 @@ const RUSSIAN_CANONICAL_FALLBACKS = new Map([
     "Самостоятельно отмеченное завершение урока не означает принятие reviewer, завершение Academy, трудоустройство, сертификацию, доход или разрешение работать с реальными операциями.",
   ],
   [
+    "Packet areas — identify which of the eight core areas are relevant to the request.",
+    "Области пакета — определите, какие из восьми основных областей относятся к этому запросу.",
+  ],
+  [
     "Create a synthetic operating plan and end-of-cycle review using the same control loop.",
     "Создайте синтетический операционный план и итоговый разбор цикла, используя тот же контрольный контур.",
   ],
@@ -67,6 +71,8 @@ const RUSSIAN_LESSON_SOURCE_ALIASES = new Map([
   ["us-logistics-operations:documents-setup", "broker-setup-packet"],
 ]);
 
+const HAS_CYRILLIC = /[А-Яа-яЁё]/;
+
 // Localized sources may translate human-readable copy, but they must never own
 // canonical curriculum identity or progression mechanics. These values remain
 // sourced from the English Academy model even when an older localized source
@@ -127,9 +133,10 @@ export function projectLocalizedLessonShape(base, localized) {
     );
   }
 
-  if (typeof localized === typeof base) return localized;
   if (typeof base === "string" && RUSSIAN_CANONICAL_FALLBACKS.has(base)) {
-    return RUSSIAN_CANONICAL_FALLBACKS.get(base);
+    const translatedFallback = RUSSIAN_CANONICAL_FALLBACKS.get(base);
+    if (typeof localized !== "string" || !HAS_CYRILLIC.test(localized)) return translatedFallback;
   }
+  if (typeof localized === typeof base) return localized;
   return base;
 }
