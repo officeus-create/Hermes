@@ -3,7 +3,7 @@ import { site } from "../data/site.ts";
 export type ContactInterest = "Hermes Logistics" | "ProgressoPro" | "Hermes Business Academy" | "IT Development";
 
 export type LogisticsDirectionFields = {
-  phone?: string; // optional
+  phone?: string;
   mc_dot?: string;
   equipment_type?: string;
   fleet_size?: string;
@@ -12,8 +12,8 @@ export type LogisticsDirectionFields = {
 };
 
 export type MarketingDirectionFields = {
-  platforms?: string[]; // multiple
-  planning_horizon?: string; // e.g. "6 months"
+  platforms?: string[];
+  planning_horizon?: string;
   primary_goal?: string;
   target_audience?: string;
   current_channels_results?: string;
@@ -70,15 +70,24 @@ const handoffRouteLabels: Record<string, string> = {
   technology: "Email IT Development",
 };
 
+const attributionKeys = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "service",
+  "track",
+  "program",
+  "language",
+] as const;
+
 export const contactHandoffRoutes: ContactHandoffRoute[] = site.paths.map((path) => {
   const primary =
     path.directContacts?.find((contact) =>
       path.id === "logistics" ? contact.href.startsWith("tel:") : contact.href.startsWith("mailto:"),
     ) ?? path.directContacts?.[0];
 
-  if (!primary) {
-    throw new Error(`Missing direct contact for ${path.category}`);
-  }
+  if (!primary) throw new Error(`Missing direct contact for ${path.category}`);
 
   return {
     category: path.category,
@@ -91,8 +100,6 @@ export const contactHandoffRoutes: ContactHandoffRoute[] = site.paths.map((path)
 export function sanitizeContactField(value: string, maxLength = 2000): string {
   return value
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
-    // The handoff summary is copied as plain text. Strip angle brackets to
-    // keep it free of HTML-like sequences even if a visitor types them.
     .replace(/[<>]/g, "")
     .trim()
     .slice(0, maxLength);
@@ -102,6 +109,51 @@ function getOptionalField(form: FormData, name: string, maxLength: number): stri
   const raw = form.get(name);
   const value = typeof raw === "string" ? sanitizeContactField(raw, maxLength) : "";
   return value ? value : undefined;
+}
+
+/**
+ * Preserve only a small non-PII attribution allowlist in the private intake
+ * source path. Arbitrary query parameters never cross this boundary.
+ */
+export function buildAttributedSourcePath(pathname: string, search = ""): string {
+  const cleanPath = pathname.startsWith("/") ? pathname.split(/[?#]/, 1)[0] : "/contacts/";
+  const incoming = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  const retained = new URLSearchParams();
+
+  for (const key of attributionKeys) {
+    const value = sanitizeContactField(incoming.get(key) ?? "", 80).replace(/[\r\n]/g, "");
+    if (value) retained.set(key, value);
+  }
+
+  const query = retained.toString();
+  return query ? `${cleanPath}?${query}` : cleanPath;
+}
+
+function attributionSearchFromForm(form: FormData): string {
+  const retained = new URLSearchParams();
+  for (const key of attributionKeys) {
+    const value = getOptionalField(form, `hermes_attribution_${key}`, 80)?.replace(/[\r\n]/g, "");
+    if (value) retained.set(key, value);
+  }
+  return retained.toString();
+}
+
+function academyQualificationLines(form: FormData): string[] {
+  const fields = [
+    ["Program", "academy_program", 100],
+    ["Country and city", "academy_country_city", 160],
+    ["Languages and levels", "academy_languages_levels", 300],
+    ["Spoken English", "academy_english_level", 40],
+    ["Recent experience", "academy_recent_experience", 500],
+    ["Objective", "academy_objective", 100],
+    ["U.S. time-zone availability", "academy_us_timezone_availability", 160],
+    ["Preferred contact route", "academy_preferred_contact_route", 40],
+  ] as const;
+
+  return fields.flatMap(([label, name, max]) => {
+    const value = getOptionalField(form, name, max);
+    return value ? [`${label}: ${value}`] : [];
+  });
 }
 
 export function buildContactPayload(form: FormData, sourcePath: string, requestId = crypto.randomUUID()): ContactPayload {
@@ -163,14 +215,20 @@ export function buildContactPayload(form: FormData, sourcePath: string, requestI
     };
   }
 
+  const baseMessage = sanitizeContactField(String(form.get("message") ?? ""), 2000);
+  const qualification = interest === "Hermes Business Academy" ? academyQualificationLines(form) : [];
+  const message = qualification.length
+    ? sanitizeContactField(`${baseMessage}\n\nAcademy qualification:\n${qualification.join("\n")}`, 2000)
+    : baseMessage;
+
   return {
     request_id: requestId,
     submitted_at: new Date().toISOString(),
-    source_path: sourcePath,
+    source_path: buildAttributedSourcePath(sourcePath, attributionSearchFromForm(form)),
     name: sanitizeContactField(String(form.get("name") ?? ""), 100),
     email: sanitizeContactField(String(form.get("email") ?? ""), 160),
     interest,
-    message: sanitizeContactField(String(form.get("message") ?? ""), 2000),
+    message,
     consent: form.get("consent") === "on",
     direction_fields,
   };
@@ -227,7 +285,6 @@ export function buildRequestSummary(payload: ContactPayload): string {
   }
 
   if (directionDetails.length) {
-    // Insert after Message to keep the summary scannable.
     const insertAt = lines.indexOf("Submitted from: " + payload.source_path);
     if (insertAt >= 0) lines.splice(insertAt, 0, "", "Direction details:", ...directionDetails);
     else lines.push("", "Direction details:", ...directionDetails);
