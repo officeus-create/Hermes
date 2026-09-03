@@ -95,8 +95,9 @@ jobs:
           EOF
           cat > "$site/free_claude_code/api/model_catalog.py" <<'PY'
           def build(inventory_model, provider_model_ref):
-              allows_reasoning = inventory_model.supports_thinking is not False
-              return allows_reasoning
+              for _ in (0,):
+                  allows_reasoning = inventory_model.supports_thinking is not False
+                  return allows_reasoning
           PY
 
           PYTHONPATH="$site" python3 scripts/ai/patch-fcc-ollama-thinking.py --site-packages "$site"
