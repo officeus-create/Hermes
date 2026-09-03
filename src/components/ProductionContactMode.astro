@@ -28,9 +28,9 @@
 
     for (const [key, value] of Object.entries(attribution)) {
       const name = `hermes_attribution_${key}`;
-      let input = form.elements.namedItem(name);
-      if (!(input instanceof HTMLInputElement)) {
-        input = document.createElement("input");
+      const existing = form.elements.namedItem(name);
+      const input = existing instanceof HTMLInputElement ? existing : document.createElement("input");
+      if (!(existing instanceof HTMLInputElement)) {
         input.type = "hidden";
         input.name = name;
         form.append(input);
