@@ -105,10 +105,11 @@ jobs:
           grep -Fq 'provider_model_ref.startswith("ollama/")' "$site/free_claude_code/api/model_catalog.py"
           grep -Fq 'else inventory_model.supports_thinking is not False' "$site/free_claude_code/api/model_catalog.py"
 
-          PYTHONPATH="$site" python3 - <<'PY'
+          SITE="$site" PYTHONPATH="$site" python3 - <<'PY'
           import importlib.util
+          import os
           from pathlib import Path
-          path = Path("$site/free_claude_code/api/model_catalog.py")
+          path = Path(os.environ["SITE"]) / "free_claude_code/api/model_catalog.py"
           spec = importlib.util.spec_from_file_location("patched_catalog", path)
           mod = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(mod)
