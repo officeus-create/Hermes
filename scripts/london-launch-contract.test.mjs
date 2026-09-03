@@ -81,9 +81,6 @@ for(const route of expectedRoutes){
   if(/our london office|visit our office in london|london office address/i.test(html)) errors.push(`${route}: unsupported London physical-office claim detected`);
   if(/data:image\//i.test(html)) errors.push(`${route}: embedded data-URI image detected`);
 
-  // London-specific media QA owns objective markup integrity only. Loading and
-  // decoding policy remain governed by the repository-wide performance budget
-  // so this closeout does not invent a second image-performance contract.
   for(const match of html.matchAll(/<img\b[^>]*>/gi)){
     const tag=match[0];
     if(!/\balt=["'][^"']*["']/i.test(tag)) errors.push(`${route}: image missing alt attribute`);
@@ -93,8 +90,6 @@ for(const route of expectedRoutes){
   }
 }
 
-// Locale navigation/hreflang QA for the four London entry families. This is a
-// routing/SEO contract only; visual menu ownership stays with Design 5.
 for(const suffix of ["", "marketing/", "it-web-development/", "us-logistics-training/"]){
   const expected={
     en:`${origin}/gb/london/${suffix}`,
@@ -139,13 +134,14 @@ for(const required of ["trackEvent","/gb/london/","/ru/gb/london/","/ua/gb/londo
 if(/email|phone|message|name\s*:/i.test(analytics.replace(/london_contact_clicked/g,""))) errors.push("LondonAnalytics: possible PII field detected");
 
 const productionContact=await readFile(join(root,"src/components/ProductionContactMode.astro"),"utf8");
-for(const required of ["utm_source","london","London attribution:","london_lead_submitted","london_academy_application_submitted","trackEvent","{ capture: true }"]){
+for(const required of ["utm_source","london","hermes_attribution_","type = \"hidden\"","london_lead_submitted","london_academy_application_submitted","trackEvent"]){
   if(!productionContact.includes(required)) errors.push(`ProductionContactMode London bridge: missing ${required}`);
 }
 if(!productionContact.includes("pendingConversion = false")) errors.push("ProductionContactMode London bridge: exact-once success guard missing");
+if(/London attribution:\\n|message\.value|queueMicrotask/.test(productionContact)) errors.push("ProductionContactMode London bridge: attribution must not mutate visitor message text");
 
 const contactLib=await readFile(join(root,"src/lib/contact.ts"),"utf8");
-for(const required of ["Academy qualification:","academy_program","academy_country_city","academy_languages_levels","academy_english_level","academy_recent_experience","academy_objective","academy_us_timezone_availability","academy_preferred_contact_route"]){
+for(const required of ["Academy qualification:","academy_program","academy_country_city","academy_languages_levels","academy_english_level","academy_recent_experience","academy_objective","academy_us_timezone_availability","academy_preferred_contact_route","hermes_attribution_","track","program"]){
   if(!contactLib.includes(required)) errors.push(`Academy downstream intake context: missing ${required}`);
 }
 
@@ -160,4 +156,4 @@ for(const relative of [
 
 if(expectedRoutes.length!==52) errors.push(`route inventory invariant changed unexpectedly: ${expectedRoutes.length}`);
 if(errors.length) throw new Error(`London launch contract failed with ${errors.length} error(s):\n${errors.map((e)=>`- ${e}`).join("\n")}`);
-console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/attribution/conversion/artifact checks green.`);
+console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/source-attribution/conversion/artifact checks green.`);
