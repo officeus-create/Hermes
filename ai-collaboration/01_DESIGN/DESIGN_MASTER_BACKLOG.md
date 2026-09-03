@@ -4,6 +4,8 @@ Last updated: 2026-09-03
 
 This is the active Design 4 queue. It exists to prevent historical ideas, already-fixed defects, stale PRs and superseded implementation branches from repeatedly returning as current work.
 
+The bounded Design OS code-convergence queue is currently exhausted. External live verification, owner decisions and approved non-blocking extensions remain intentionally separate.
+
 ## Status vocabulary
 
 - `DONE` — completed at the strongest evidence level required for that artifact. For runtime/product work, production/live proof may still be required before 100%.
@@ -41,6 +43,7 @@ A branch, PR, merge, document or screenshot is not 100% by itself.
 | `DONE` | Design source-of-truth replay | #1009 merged at `33f42a46eec3e4571c94d86d8d625c5577605666`; docs-only current-state/backlog replay became canonical. |
 | `MERGED_VERIFY` | Authenticated private five-width responsive matrix | #1031 merged at `3b2c112c39335a8461857612d67e96e140ccdd72`; Repair / Academy / Beauty / Internal AI verified with auth/mock-backed coverage at 390 / 430 / 768 / 1024 / 1440. Beauty 42px root-cause fixed at the real `.beauty-b1-page` source without SEO/indexability changes. |
 | `MERGED_VERIFY` | Website Factory Design OS convergence | #1033 merged at `ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f`; exact head `09e2ac5787d06eca24122d963705ed4ec3da8add` passed Website, visual and Carrier gates. Factory is a private `noindex,nofollow` workflow, uses one Hermes identity, neutral shared switcher, same-route `?lang=ru` localization and adds zero indexable routes. |
+| `MERGED_VERIFY` | HR adaptive interview Design OS convergence | #1042 merged at `c5cfc9af32113505845f13a60ccfec6232729bc2` from exact head `60bcf86a042c1d6f958e22c04b5df4bca487f66f`; Website, visual, HR Design, backend-security, custom-domain, Cloudflare ownership and Carrier gates passed. Candidate remains private/noindex, RU/UK five-width verified, HR portfolio visibility is backend-authorized only, and the observed 31px mobile CTA was corrected to the HR-scoped 44px minimum. Production D1/runtime/live-pilot proof remains separate. |
 | `EXTERNAL_GATE` | Production deploy / live verification | #961 remains the owner/admin Cloudflare parity gate. Keep `MERGED != DEPLOYED != LIVE_VERIFIED`. |
 
 ## P1 — implemented foundations to preserve
@@ -50,24 +53,29 @@ A branch, PR, merge, document or screenshot is not 100% by itself.
 | `DONE` | Option №02 production mark | #929/#959; one approved continuous-loop geometry across production contexts. |
 | `DONE` | Pearl public / Obsidian operational Design OS | #930/#959 and follow-up refinements. |
 | `DONE` | Four canonical public direction colors | Logistics `#1E88FF`, Marketing `#00C853`, Academy `#7C5CFF`, Technology `#FF7A00`; already applied and accessibility-adjusted. |
-| `DONE` | Workspace semantic color cues | Repair blue, Academy violet, Internal AI orange, Beauty Connect cyan. Cues orient the user; they are not separate brands. |
-| `DONE` | One Hermes identity / private portfolio switcher | Server-authoritative `/api/hermes-connect/account`; do not grant from localStorage/email/name/role text. |
+| `DONE` | Workspace semantic color cues | Repair blue, Academy violet, Internal AI orange, Beauty Connect cyan, HR Review neutral/Obsidian. Cues orient the user; they are not separate brands. |
+| `DONE` | One Hermes identity / private portfolio switcher | Server-authoritative `/api/hermes-connect/account`; do not grant from localStorage/email/name/role text/current route. HR is shown only from backend reviewer authorization. |
 | `DONE` | Repair private responsive/accessibility foundation | Auth/mock-backed five-width evidence exists; 44px controls, containment and private identity are guarded. |
 | `DONE` | Academy learner foundation | Shared Hermes identity, private learner state, human progression gate, canonical program IDs. |
 | `DONE` | Beauty private owner foundation | Bounded private owner/workspace controls; no invented fifth brand color. |
 | `DONE` | Internal AI private foundation | Authenticated owner/internal capability and fail-closed access behavior. |
+| `MERGED_VERIFY` | HR candidate/reviewer foundation | #1042; human-only consequential decisions, candidate/reviewer separation, RU/UK same-route candidate shell, backend-authorized reviewer capability, private/noindex candidate boundary. Production D1/runtime/live proof remains separate. |
 | `DONE` | Public five-width visual evidence mechanism | Workflow captures/validates 1440 / 1024 / 768 / 430 / 390 on exact PR heads. |
 | `DONE` | Design × SEO/GEO non-interference gate | Canonical skill persisted in Hermes One Brain Skills Library. Design promotion requires responsive/product truth and search-system non-regression on the same exact HEAD. |
 
 ## P2 — current bounded Design OS work
 
-| Status | Item | Required execution |
-| --- | --- | --- |
-| `REWORK` | HR adaptive interview (#1016) | Preserve unique HR D1/API/candidate/reviewer safety, human gate and Academy identity bridge. Replay shared account/switcher/middleware/CI semantically onto current `main` after #1031/#1033 rather than blob-copying stale shared files. Candidate gets one dominant Start/Continue path. Reviewer/admin remains private. Finish full RU/UK candidate-shell localization; backend-authorized `hr` portfolio visibility only; no client bypass. Run exact-head Design + SEO/GEO gate before promotion. Production D1/runtime proof remains separate. |
+**No active bounded Design OS code-convergence item remains.**
+
+The historical HR #1016 lane was replayed and promoted through merged #1042. Do not create a replacement REWORK branch merely to preserve an artificial queue.
 
 ### Website Factory provenance
 
 Historical #955 is already closed/unmerged and is **superseded implementation provenance**, not active work. The preserved product requirement is now merged through #1033. Do not reopen the old Factory mini-accountbar or stale shell.
+
+### HR provenance
+
+Historical #1016 and conflict-only #1041 are closed/unmerged and **superseded implementation/convergence provenance**. The canonical HR implementation is the #1042 merge on `main`. Do not reopen #1016 wholesale and do not force the conflict path demonstrated by #1041.
 
 ## P3 — owner decisions, not bugs
 
@@ -96,6 +104,8 @@ Historical #955 is already closed/unmerged and is **superseded implementation pr
 - #926 — mixed London Design + Marketing attribution branch; valid Design QA merged as #1027.
 - #1029 — accidental duplicate of #1028.
 - #955 — old Website Factory implementation source; superseded by merged #1033.
+- #1016 — historical HR pilot branch; unique value replayed semantically and merged through #1042.
+- #1041 — conflict-only HR sync attempt; superseded by #1042 and must not be force-merged.
 - #1034 — closed/unmerged FCC/Ollama replay; AI Infrastructure provenance, **not** Repair Shops Design work.
 - #1035 — closed/unmerged social-distribution replay; Marketing/Social provenance, not Design P0.
 - Brand V1/V2/V3 parallel production proposals — historical only; Design 4 operates on one canonical responsive runtime.
@@ -125,11 +135,11 @@ Do not implement automatically:
 ## Current execution order
 
 1. Keep this source-of-truth synchronized with merged `main`; stale task numbers must never route work.
-2. Converge HR #1016 on the final #1031 + #1033 shared-account/Design OS baseline. Preserve unique backend/API logic; replay shared files semantically and finish bounded candidate RU/UK shell before reviewer/admin polish.
-3. Run exact-head Website + visual/Design + SEO/GEO gates on the HR replay; merge only a reconciled promotion head.
-4. When authorized owner/admin access resolves #961, run exact-main production deploy + custom-domain/live proofs and promote only verified runtime items from `MERGED_VERIFY` to `DONE`.
-5. Keep Beauty accent as `OWNER_DECISION`; execute non-blocking extensions only after the bounded release queue is exhausted.
+2. The bounded Design OS code-convergence queue is closed through #1042; do not manufacture a new REWORK lane.
+3. When authorized owner/admin access resolves #961, run exact-main production deploy + custom-domain/live proofs and promote only verified runtime items from `MERGED_VERIFY` to `DONE`.
+4. Keep Beauty accent and any replacement of Option №02 as `OWNER_DECISION`; do not guess them.
+5. Evaluate P4 extensions one at a time against current product value, existing evidence and duplicate risk. They are non-blocking and must not reopen already-closed Design OS foundations.
 
 ## Promotion discipline
 
-Use the One Brain `PROMOTION-CLOSE LOOP`: if exact HEAD is unchanged, diff is reconciled against current main, mandatory exact-head gates are green and no owner-only irreversible decision remains, complete ready → merge → verify merge → persist evidence in the same cycle. Do not stop at “99% / ready to merge.”
+Use the One Brain `PROMOTION-CLOSE LOOP`: if exact HEAD is unchanged, the diff is reconciled against current main, mandatory exact-head gates are green and no owner-only irreversible decision remains, complete ready → merge → verify merge → persist evidence in the same cycle. Do not stop at “99% / ready to merge.”
