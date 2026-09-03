@@ -190,17 +190,18 @@
 }
 
 /* Beauty B1 stays visually neutral until an owner-approved Beauty identity exists.
- * Keep the selectors more specific than the page-local B1 presentation layer so
- * the shared 44px private-workspace accessibility floor cannot be overridden later. */
-html.hc-experience body .beauty-b1-form input,
-html.hc-experience body .beauty-b1-service-form input,
-html.hc-experience body .beauty-b1-button {
+ * Scope the accessibility floor to the real Beauty page root. The page-local B1 CSS
+ * is loaded later, so these selectors intentionally carry one extra class of
+ * specificity without relying on a root class that the Beauty route does not own. */
+.beauty-b1-page .beauty-b1-form input,
+.beauty-b1-page .beauty-b1-service-form input,
+.beauty-b1-page .beauty-b1-button {
   min-height: 44px;
 }
 
-html.hc-experience body .beauty-b1-form input:focus-visible,
-html.hc-experience body .beauty-b1-service-form input:focus-visible,
-html.hc-experience body .beauty-b1-button:focus-visible {
+.beauty-b1-page .beauty-b1-form input:focus-visible,
+.beauty-b1-page .beauty-b1-service-form input:focus-visible,
+.beauty-b1-page .beauty-b1-button:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--hermes-violet) 24%, transparent);
   outline-offset: 2px;
 }
