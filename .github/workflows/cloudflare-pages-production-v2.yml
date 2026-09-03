@@ -38,9 +38,17 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Validate and mask Cloudflare deployment credentials
+      - name: Resolve and mask Cloudflare deployment credentials
         id: credentials
         run: |
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] && [ -f workers/lead-email/wrangler.production.jsonc ]; then
+            pinned_account_id="$(node -e 'const fs=require("node:fs"); const raw=fs.readFileSync("workers/lead-email/wrangler.production.jsonc", "utf8"); const match=raw.match(/"account_id"\s*:\s*"([^"]+)"/); if (match) process.stdout.write(match[1]);')"
+            if [ -n "$pinned_account_id" ]; then
+              CLOUDFLARE_ACCOUNT_ID="$pinned_account_id"
+              echo "CLOUDFLARE_ACCOUNT_ID=$CLOUDFLARE_ACCOUNT_ID" >> "$GITHUB_ENV"
+            fi
+          fi
+
           if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
             echo "::add-mask::$CLOUDFLARE_API_TOKEN"
           fi
