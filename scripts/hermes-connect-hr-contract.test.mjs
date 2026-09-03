@@ -30,8 +30,10 @@ assert.match(html, /Clearing this browser removes only the local recovery copy/i
 assert.match(html, /does not delete that server record/i);
 assert.match(html, /hr-server-sync\.mjs/);
 assert.match(html, /data-claim-hr/);
-assert.match(html, /\.\/academy\.html/);
-assert.match(html, /\.\/hr-admin\.html/);
+assert.match(html, /Your next consequential step stays with an authorized human reviewer/i);
+assert.doesNotMatch(html, /href="\.\/academy\.html"/);
+assert.doesNotMatch(html, /href="\.\/hr-admin\.html"/);
+assert.doesNotMatch(html, />← Command Center</);
 assert.match(html, /hr-review-queue-sync\.mjs/);
 
 assert.match(js, /candidate_id:\s*id/);
@@ -78,6 +80,11 @@ assert.match(queueSync, /syncCompletedCandidateToReviewQueue/);
 assert.match(queueSync, /candidate_id/);
 assert.match(queueSync, /learner_id/);
 assert.match(queueSync, /answers:/);
+assert.match(queueSync, /PRODUCTION_HOSTS/);
+assert.match(queueSync, /hermeslogisticsus\.com/);
+assert.match(queueSync, /connect\.hermeslogisticsus\.com/);
+assert.match(queueSync, /if \(isProductionHost\(\)\) return false/);
+assert.match(queueSync, /resultPanel && !isProductionHost\(\)/);
 
 assert.match(adminHtml, /HR · Human Review Command Center/);
 assert.match(adminHtml, /No opaque auto-hiring/);
@@ -179,4 +186,4 @@ assert.match(carrierLanding, /utm_source/);
 assert.match(carrierLanding, /creative/);
 assert.doesNotMatch(carrierLanding, /guaranteed income|guaranteed employment/i);
 
-console.log('Hermes Connect HR private persistence + human review + evidence lineage + account capability contract: PASS');
+console.log('Hermes Connect HR candidate/reviewer separation + private persistence + human review + evidence lineage contract: PASS');
