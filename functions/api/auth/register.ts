@@ -7,10 +7,24 @@ import {
   repairShopReferralCookieHeader,
   resolveRepairShopReferral,
 } from "../_lib/repair-shop-sales-attribution.mjs";
+import {
+  deliverTelegramRegistrationAlert,
+  enqueueRegistrationAlert,
+  syncSyntheticFlagForAccount,
+} from "../_lib/registration-ops.mjs";
 
 type Env = {
   DB?: any;
   REPAIR_SHOP_REFERRAL_MAP_JSON?: string;
+  HERMES_CONNECT_TELEGRAM_BOT_TOKEN?: string;
+  HERMES_CONNECT_TELEGRAM_OWNER_CHAT_ID?: string;
+  HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string;
+};
+
+type RequestContext = {
+  request: Request;
+  env: Env;
+  waitUntil?: (promise: Promise<unknown>) => void;
 };
 
 const CONTROL_CHARS = new RegExp(
@@ -28,7 +42,17 @@ function createdResponse(payload: Record<string, unknown>, sessionToken: string,
   return new Response(JSON.stringify(payload), { status: 201, headers });
 }
 
-export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
+async function processRegistrationOperations(env: Env, specialistId: string, email: string, createdAt: string) {
+  try {
+    await syncSyntheticFlagForAccount({ db: env.DB, env, specialistId, email, createdAt });
+    await enqueueRegistrationAlert({ db: env.DB, specialistId, kind: "registration", createdAt });
+    await deliverTelegramRegistrationAlert({ db: env.DB, env, specialistId, kind: "registration" });
+  } catch {
+    console.error("registration_ops_failed", { category: "background_processing" });
+  }
+}
+
+export async function onRequestPost({ request, env, waitUntil }: RequestContext) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
 
   let body: Record<string, unknown>;
@@ -102,6 +126,10 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   await env.DB.prepare("INSERT INTO sessions (token, specialist_id, created_at, expires_at) VALUES (?, ?, ?, ?)")
     .bind(token, id, createdAt, expiresAt)
     .run();
+
+  const opsPromise = processRegistrationOperations(env, id, email, createdAt);
+  if (typeof waitUntil === "function") waitUntil(opsPromise);
+  else await opsPromise;
 
   return createdResponse(
     {
