@@ -62,6 +62,8 @@ test("carrier agreement, Load Board, and legacy operating tools remain discovera
   const carrierEntry = await readFile(resolve(process.cwd(), "src/pages/carrier/index.astro"), "utf8");
 
   expect(nav).toContain('{ id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature }');
+  expect(nav).toContain('{ id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow }');
+  expect(nav).not.toContain('{ id: "operations", label: "Dispatch & Back Office", href: "/logistics/carrier/", icon: Workflow }');
   expect(audiences).toContain('secondary: { label: "Agreement & onboarding", href: "/carrier/" }');
   expect(audiences).toContain('demo: { label: "Open carrier Load Board", href: "/load-board/?role=carrier#available-loads" }');
   expect(carrierPage).toContain('<DirectionProductNav direction="logistics" theme="dark" />');
