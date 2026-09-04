@@ -39,6 +39,8 @@
     "/paths/logistics/": "logistics_hub_carrier_review",
   };
 
+  const repairShopRoot = "/services/hermes-connect/repair-shops/";
+
   refreshLoadBoardDemoLabels();
 
   document.addEventListener("click", (event) => {
@@ -68,6 +70,34 @@
       return;
     }
 
+    if (window.location.pathname === repairShopRoot) {
+      if (target.pathname === `${repairShopRoot}auth/`) {
+        pushEvent({
+          event: "commercial_cta_click",
+          cta_type: "repair_shop_registration",
+          audience_type: "repair_business",
+          page_group: "hermes_connect_repair",
+          service_group: "repair_shop_software",
+          page_path: window.location.pathname,
+          destination_path: target.pathname,
+        });
+        return;
+      }
+
+      if (target.pathname === `${repairShopRoot}plan/`) {
+        pushEvent({
+          event: "commercial_cta_click",
+          cta_type: "repair_shop_plan",
+          audience_type: "repair_business",
+          page_group: "hermes_connect_repair",
+          service_group: "repair_shop_software",
+          page_path: window.location.pathname,
+          destination_path: target.pathname,
+        });
+        return;
+      }
+    }
+
     if (
       target.pathname !== "/logistics/start-car-hauling-dispatch/" ||
       !link.hasAttribute("data-commercial-primary-cta")
@@ -84,6 +114,23 @@
       service_group: serviceGroup,
       page_path: window.location.pathname,
       destination_path: target.pathname,
+    });
+  });
+
+  document.addEventListener("submit", (event) => {
+    if (!event.isTrusted) return;
+    if (window.location.pathname !== `${repairShopRoot}auth/`) return;
+    const form = event.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.id !== "register-form") return;
+
+    pushEvent({
+      event: "repair_shop_registration_start",
+      audience_type: "repair_business",
+      page_group: "hermes_connect_repair",
+      service_group: "repair_shop_software",
+      page_path: window.location.pathname,
+      destination_path: `${repairShopRoot}dashboard/`,
     });
   });
 </script>
