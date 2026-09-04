@@ -52,11 +52,11 @@ function isCarHaulingEquipment(value: unknown) {
   return CAR_HAULING_EQUIPMENT.has(equipmentKey(value));
 }
 
-async function stableRecordId(sourceId: string, sourceMessageId: string, fingerprint: string) {
+async function stableId(prefix: string, sourceId: string, sourceMessageId: string, fingerprint: string) {
   const input = new TextEncoder().encode(`${sourceId}|${sourceMessageId}|${fingerprint}`);
   const digest = await crypto.subtle.digest("SHA-256", input);
   const hex = [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
-  return `hlr_${hex.slice(0, 40)}`;
+  return `${prefix}_${hex.slice(0, 40)}`;
 }
 
 export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
@@ -79,10 +79,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     ? String(payload.source.redistribution_permission)
     : "internal_only";
   const contactRevealPermission = text(payload?.source?.contact_reveal_permission || "hidden", 60) || "hidden";
+  const records = Array.isArray(payload?.records) ? payload.records : [];
+  const quarantine = Array.isArray(payload?.quarantine) ? payload.quarantine : [];
 
   if (!sourceId || !sourceName) return jsonResponse(400, { success: false, error: "source_required" });
-  if (!Array.isArray(payload?.records) || payload.records.length < 1 || payload.records.length > 250) {
-    return jsonResponse(400, { success: false, error: "records_required" });
+  if (records.length + quarantine.length < 1 || records.length + quarantine.length > 250) {
+    return jsonResponse(400, { success: false, error: "items_required" });
   }
 
   await ensureLoadBoardSchema(env.DB);
@@ -132,10 +134,53 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
   ).run();
 
   let accepted = 0;
-  const rejected: Array<{ index: number; reason: string }> = [];
+  let quarantined = 0;
+  const rejected: Array<{ kind: "record" | "quarantine"; index: number; reason: string }> = [];
 
-  for (let index = 0; index < payload.records.length; index += 1) {
-    const record = payload.records[index] || {};
+  for (let index = 0; index < quarantine.length; index += 1) {
+    const item = quarantine[index] || {};
+    const sourceMessageId = text(item.source_message_id, 220);
+    const fingerprint = text(item.fingerprint, 220);
+    const reason = text(item.reason, 120);
+    const receivedAt = validIso(item.received_at, now);
+    const observedAt = validIso(item.observed_at, receivedAt || now);
+    if (!sourceMessageId || !fingerprint || !reason || !receivedAt || !observedAt) {
+      rejected.push({ kind: "quarantine", index, reason: "invalid_quarantine" });
+      continue;
+    }
+    const id = await stableId("hlq", sourceId, sourceMessageId, fingerprint);
+    await env.DB.prepare(`
+      INSERT INTO hermes_load_quarantine (
+        id, source_id, source_message_id, fingerprint, source_name, reason,
+        subject, received_at, observed_at, raw_evidence_ref, status, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_review', ?, ?)
+      ON CONFLICT(source_id, source_message_id, fingerprint) DO UPDATE SET
+        source_name = excluded.source_name,
+        reason = excluded.reason,
+        subject = excluded.subject,
+        observed_at = excluded.observed_at,
+        raw_evidence_ref = excluded.raw_evidence_ref,
+        status = 'pending_review',
+        updated_at = excluded.updated_at
+    `).bind(
+      id,
+      sourceId,
+      sourceMessageId,
+      fingerprint,
+      sourceName,
+      reason,
+      optionalText(item.subject, 200),
+      receivedAt,
+      observedAt,
+      optionalText(item.raw_evidence_ref, 300),
+      now,
+      now,
+    ).run();
+    quarantined += 1;
+  }
+
+  for (let index = 0; index < records.length; index += 1) {
+    const record = records[index] || {};
     const sourceMessageId = text(record.source_message_id, 220);
     const fingerprint = text(record.fingerprint, 220);
     const recordType = text(record.record_type, 20) as RecordType;
@@ -147,12 +192,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const expiresAt = validIso(record.expires_at);
 
     if (isCarHaulingEquipment(equipment)) {
-      rejected.push({ index, reason: "car_hauling_hold" });
+      rejected.push({ kind: "record", index, reason: "car_hauling_hold" });
       continue;
     }
 
     if (!sourceMessageId || !fingerprint || !RECORD_TYPES.has(recordType) || !origin || !receivedAt || !observedAt || !expiresAt) {
-      rejected.push({ index, reason: "invalid_record" });
+      rejected.push({ kind: "record", index, reason: "invalid_record" });
       continue;
     }
 
@@ -162,7 +207,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       : "internal_only";
     const visibility = clampVisibility(requestedVisibility, redistributionPermission);
     const status = new Date(expiresAt).getTime() > Date.now() ? "active" : "expired";
-    const id = await stableRecordId(sourceId, sourceMessageId, fingerprint);
+    const id = await stableId("hlr", sourceId, sourceMessageId, fingerprint);
     const rawRate = record.rate_amount;
     const rateAmount = rawRate === null || rawRate === undefined || rawRate === ""
       ? null
@@ -226,6 +271,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     success: true,
     source_id: sourceId,
     accepted,
+    quarantined,
     rejected,
     outbound_enabled: false,
     car_hauling_ingest_allowed: false,
