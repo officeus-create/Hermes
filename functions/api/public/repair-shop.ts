@@ -6,6 +6,10 @@ import {
   ensureRepairShopCapabilitiesSchema,
   serializeRepairShopCapabilities,
 } from "../_lib/repair-shop-capabilities-schema.mjs";
+import {
+  ensureRepairShopDriverDiscountSchema,
+  serializeRepairShopDriverDiscount,
+} from "../_lib/repair-shop-driver-discount-schema.mjs";
 import { listServicesForContext } from "../_lib/service-context.mjs";
 import { resolveDefaultRepairShopServiceContext } from "../_lib/repair-shop-service-context.mjs";
 
@@ -81,6 +85,27 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     emergency_24_7: storedCapabilities.emergency_24_7,
   };
 
+  await ensureRepairShopDriverDiscountSchema(env.DB);
+  const discountRow = await env.DB
+    .prepare("SELECT * FROM repair_shop_driver_discounts WHERE shop_id = ? LIMIT 1")
+    .bind(shop.id)
+    .first();
+  const storedDiscount = discountRow ? serializeRepairShopDriverDiscount(discountRow, shop.id) : null;
+  const serviceNames = new Map(services.map((service: any) => [String(service.id), String(service.name)]));
+  const driverDiscount = storedDiscount?.enabled
+    ? {
+        enabled: true,
+        service_discount_percent: storedDiscount.service_discount_percent,
+        service_scope: storedDiscount.service_scope,
+        service_names: storedDiscount.service_scope === "selected"
+          ? storedDiscount.service_ids.map((id: string) => serviceNames.get(id)).filter(Boolean)
+          : [],
+        materials_discount_percent: storedDiscount.materials_discount_percent,
+        materials_scope: storedDiscount.materials_scope,
+        materials_items: storedDiscount.materials_items,
+      }
+    : { enabled: false };
+
   const { owner_specialist_id: _owner, ...publicShop } = shop;
   return jsonResponse(200, {
     success: true,
@@ -88,5 +113,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     services,
     availability,
     capabilities: publicCapabilities,
+    driver_discount: driverDiscount,
   });
 }
