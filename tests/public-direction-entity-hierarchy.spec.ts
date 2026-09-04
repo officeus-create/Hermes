@@ -65,7 +65,7 @@ test("carrier agreement, Load Board, and legacy operating tools remain discovera
   expect(nav).toContain('{ id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow }');
   expect(nav).not.toContain('{ id: "operations", label: "Dispatch & Back Office", href: "/logistics/carrier/", icon: Workflow }');
   expect(audiences).toContain('secondary: { label: "Agreement & onboarding", href: "/carrier/" }');
-  expect(audiences).toContain('demo: { label: "Open carrier Load Board", href: "/load-board/?role=carrier#available-loads" }');
+  expect(audiences).toContain('demo: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" }');
   expect(carrierPage).toContain('<DirectionProductNav direction="logistics" theme="dark" />');
   expect(carrierPage).toContain("Carrier operating tools");
   for (const href of [
