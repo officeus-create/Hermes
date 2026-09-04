@@ -76,7 +76,8 @@ export const logisticsAudiences: LogisticsAudience[] = [
       { question: "Can new authorities apply?", answer: "Yes, subject to a readiness review covering authority age, insurance, documents, equipment, and broker requirements." },
     ],
     primary: { label: "Start dispatch review", href: "/logistics/start-car-hauling-dispatch/" },
-    secondary: { label: "Open Load Board demo", href: "/load-board/?role=carrier#available-loads" },
+    secondary: { label: "Agreement & onboarding", href: "/carrier/" },
+    demo: { label: "Open carrier Load Board", href: "/load-board/?role=carrier#available-loads" },
   },
   {
     slug: "agency",
