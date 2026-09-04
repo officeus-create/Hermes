@@ -329,6 +329,22 @@ const languageLinks = siteLocales.map((language) => {
     .hc-experience .hc-product-context__inner,
     .hc-experience .hc-language-truth { width: min(calc(100% - 1rem),1180px); }
     .hc-experience .hc-product-context__summary strong { padding: .26rem .46rem; }
+    .hc-experience .site-header .mobile-nav {
+      position: fixed;
+      top: 64px;
+      right: .5rem;
+      left: .5rem;
+      max-height: calc(100dvh - 72px - env(safe-area-inset-bottom));
+      box-sizing: border-box;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    }
+    .hc-experience .site-header .mobile-language-switcher {
+      min-height: max-content;
+      padding-bottom: max(.35rem, env(safe-area-inset-bottom));
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .hc-experience .site-header,
