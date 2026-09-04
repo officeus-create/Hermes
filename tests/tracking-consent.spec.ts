@@ -18,15 +18,6 @@ const isGoogleAnalyticsRequest = (url: string) => {
   );
 };
 
-const isHermesGaCollectRequest = (url: string) => {
-  const parsed = new URL(url);
-  return (
-    (parsed.hostname === "google-analytics.com" || parsed.hostname.endsWith(".google-analytics.com")) &&
-    parsed.pathname.endsWith("/g/collect") &&
-    parsed.searchParams.get("tid") === "G-RY26321PVW"
-  );
-};
-
 const rectanglesOverlap = (a: DOMRect, b: DOMRect) =>
   a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
@@ -52,7 +43,7 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
   expect(analyticsRequests).toEqual([]);
 });
 
-test("analytics loads only after explicit allow and can be withdrawn", async ({ page }) => {
+test("analytics consent keeps non-production test runs local and can be withdrawn", async ({ page }) => {
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
     if (isGoogleAnalyticsRequest(request.url())) analyticsRequests.push(request.url());
@@ -63,10 +54,15 @@ test("analytics loads only after explicit allow and can be withdrawn", async ({ 
 
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
-  await expect.poll(() => analyticsRequests.some((url) => url.includes("googletagmanager.com/gtag/js?id=G-RY26321PVW"))).toBe(true);
-  await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(1);
-
-  await expect.poll(() => analyticsRequests.some(isHermesGaCollectRequest)).toBe(true);
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTransport)).toBe("disabled-non-production");
+  await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
+  const localInstrumentation = await page.evaluate(() => ({
+    hasDataLayer: Array.isArray(window.dataLayer),
+    hasGtag: typeof (window as Window & { gtag?: unknown }).gtag === "function",
+  }));
+  expect(localInstrumentation).toEqual({ hasDataLayer: true, hasGtag: true });
+  await page.waitForTimeout(400);
+  expect(analyticsRequests).toEqual([]);
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
