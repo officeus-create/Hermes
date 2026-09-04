@@ -1,8 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test("main navigation uses the four clear business labels", async ({ page }) => {
+test("main navigation uses the four clear business labels", async ({ page, isMobile }) => {
   await page.goto("/paths/technology/");
-  const nav = page.getByRole("navigation", { name: "Primary navigation" });
+
+  if (isMobile) {
+    await page.getByRole("button", { name: "Open navigation" }).click();
+  }
+
+  const nav = page.getByRole("navigation", { name: isMobile ? "Mobile navigation" : "Primary navigation" });
   await expect(nav.getByRole("link", { name: "Logistics", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Marketing", exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Academy", exact: true })).toBeVisible();
@@ -14,9 +19,10 @@ test("Logistics exposes Load Board first and keeps the audience hierarchy clear"
 
   const nav = page.getByRole("navigation", { name: "Hermes Logistics products and audiences" });
   await expect(nav).toBeVisible();
-  const links = nav.getByRole("link");
-  await expect(links.nth(1)).toHaveText("Load Board");
-  await expect(links.nth(1)).toHaveAttribute("href", "/load-board/live-pilot/");
+  const loadBoard = nav.getByRole("link", { name: "Load Board", exact: true });
+  await expect(loadBoard).toBeVisible();
+  await expect(loadBoard).toHaveAttribute("href", "/load-board/live-pilot/");
+  await expect(loadBoard).toHaveAttribute("data-logistics-product-link", "load-board");
   await expect(nav.getByRole("link", { name: "Carriers & Fleets" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Owner-Operators" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Brokers" })).toBeVisible();
