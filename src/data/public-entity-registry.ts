@@ -94,7 +94,7 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
         platform: "instagram",
         url: "https://www.instagram.com/progressopro/",
         status: "relationship_hold",
-        evidence: "Previously placed in the Hermes root sameAs array; this does not prove that ProgressoPro is the same Organization entity.",
+        evidence: "This profile was previously placed in the Hermes root identity array; that historical placement does not prove same-entity status.",
       },
     ],
     notes:
