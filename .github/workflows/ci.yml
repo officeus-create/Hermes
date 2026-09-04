@@ -82,6 +82,9 @@ jobs:
       - name: Validate carrier contract engine
         run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
 
+      - name: Validate Load Board mailbox intake contract
+        run: node scripts/load-board-intake-api-contract.test.mjs
+
       - name: Install browser for workflow tests
         run: npx playwright install --with-deps chromium
 
