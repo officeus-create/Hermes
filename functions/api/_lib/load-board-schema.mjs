@@ -12,7 +12,7 @@ export async function ensureLoadBoardSchema(db) {
       read_enabled INTEGER NOT NULL DEFAULT 1,
       send_enabled INTEGER NOT NULL DEFAULT 0,
       ingest_enabled INTEGER NOT NULL DEFAULT 1,
-      car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 1,
+      car_hauling_ingest_allowed INTEGER NOT NULL DEFAULT 0,
       car_hauling_outreach_hold INTEGER NOT NULL DEFAULT 1,
       redistribution_permission TEXT NOT NULL DEFAULT 'internal_only',
       contact_reveal_permission TEXT NOT NULL DEFAULT 'hidden',
