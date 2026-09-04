@@ -15,6 +15,19 @@ test("car hauling owner targets proven load-search demand without multiplying ow
   expect(source).toContain('/logistics/start-car-hauling-dispatch/');
 });
 
+test("repair shop owner targets verified US software demand on one canonical page", () => {
+  const source = read("src/pages/services/hermes-connect/repair-shops.astro");
+
+  expect(source).toContain("Auto Repair Shop Management Software & Online Booking");
+  expect(source).toContain("repair shop management software");
+  expect(source).toContain("auto repair shop management software");
+  expect(source).toContain("truck and diesel");
+  expect(source).toContain("mobile mechanic");
+  expect(source).toContain("tire service");
+  expect(source).toContain("body or collision shops");
+  expect(source).toContain('/services/hermes-connect/repair-shops/auth/?mode=register');
+});
+
 test("repair shop commercial funnel is attributable to the existing canonical owner", () => {
   const enhancer = read("src/components/Seo4ConversionEnhancer.astro");
 
