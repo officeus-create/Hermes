@@ -2,6 +2,28 @@ import { expect, test } from "@playwright/test";
 
 const repairRoot = "/services/hermes-connect/repair-shops/";
 
+test("Product Hub Russian locale translates the shared Hermes Connect module strip", async ({ page }) => {
+  await page.goto("/services/hermes-connect/?lang=ru");
+
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  const family = page.locator(".hc-family-nav");
+  await expect(family).toHaveAttribute("aria-label", "Модули Hermes Connect");
+  await expect(family).toContainText("Центр продуктов");
+  await expect(family).toContainText("СТО");
+  await expect(family).toContainText("ИИ-командный центр");
+  await expect(family).toContainText("Единый центр сообщений");
+  await expect(family).toContainText("Анализатор грузов");
+  await expect(family).toContainText("Переговорщик по ставкам");
+  await expect(family).toContainText("Конструктор предложений");
+  await expect(family).toContainText("Калькулятор ROI");
+  await expect(family).toContainText("Автоматизация бизнеса");
+  await expect(family).not.toContainText("Product Hub");
+  await expect(family).not.toContainText("AI Command Center");
+  await expect(family).not.toContainText("Unified Inbox");
+  await expect(family).not.toContainText("Load Analyzer");
+  await expect(family).not.toContainText("Rate Negotiator");
+});
+
 test("Repair Shops Russian locale translates the mobile landing surface", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${repairRoot}?lang=ru`);
@@ -16,9 +38,26 @@ test("Repair Shops Russian locale translates the mobile landing surface", async 
   await expect(page.locator(".repair-live-hero")).not.toContainText("Give customers one link to book your repair shop.");
 
   const family = page.locator(".hc-family-nav");
+  await expect(family).toContainText("Центр продуктов");
   await expect(family).toContainText("СТО");
-  await expect(family).toContainText("ИИ-командный центр");
   await expect(family).not.toContainText("Repair Shops");
+  await expect(family).not.toContainText("ИИ-командный центр");
+  await expect(family).not.toContainText("Анализатор грузов");
+  await expect(family).not.toContainText("Переговорщик по ставкам");
+  await expect(family.locator("a")).toHaveCount(2);
+});
+
+test("Repair Shop family navigation stays task-focused in English", async ({ page }) => {
+  await page.goto(repairRoot);
+
+  const family = page.locator(".hc-family-nav");
+  await expect(family).toContainText("Product Hub");
+  await expect(family).toContainText("Repair Shops");
+  await expect(family).not.toContainText("AI Command Center");
+  await expect(family).not.toContainText("Unified Inbox");
+  await expect(family).not.toContainText("Load Analyzer");
+  await expect(family).not.toContainText("Rate Negotiator");
+  await expect(family.locator("a")).toHaveCount(2);
 });
 
 test("Russian locale reaches the repair-shop authentication flow", async ({ page }) => {

@@ -77,8 +77,9 @@ test("Hermes Connect product family navigation presents Repair Shops as the curr
   const context = page.locator("[data-hc-product-context]");
   await expect(context).toContainText("CURRENT PRODUCT");
   await expect(context).not.toContainText("CURRENT LIVE PILOT");
+  await expect(context.getByRole("link", { name: "Product Hub" })).toHaveAttribute("href", "/services/hermes-connect/");
   await expect(context.getByRole("link", { name: "Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
-  await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveAttribute("href", "/services/hermes-connect/ai-command-center/");
+  await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveCount(0);
   await expect(page.locator(".repair-pilot-page .hero-header-nav")).toHaveCount(0);
 });
 
