@@ -110,12 +110,7 @@ import "../../styles/features/load.css";
     ? "ru"
     : document.documentElement.lang.toLowerCase().startsWith("uk") ? "uk" : "en";
 
-  const randomPart = () => {
-    if (globalThis.crypto?.randomUUID) return crypto.randomUUID().replaceAll("-", "");
-    const bytes = new Uint8Array(24);
-    globalThis.crypto?.getRandomValues?.(bytes);
-    return Array.from(bytes, (value) => value.toString(16).padStart(2, "0")).join("");
-  };
+  const randomPart = () => crypto.randomUUID().replaceAll("-", "");
   const newCandidateId = () => `hr_${randomPart()}`;
   const newCandidateToken = () => `hrtok_${randomPart()}_${randomPart()}`;
   const newEvidenceId = () => `evidence_${randomPart()}`;
@@ -167,8 +162,7 @@ import "../../styles/features/load.css";
 
   const responseJson = async (response: Response) => {
     try { return await response.json() as Record<string, unknown>; }
-    catch { return {};
-    }
+    catch { return {}; }
   };
 
   const setResult = (eyebrow: string, title: string, copyText: string, receipt: string) => {
