@@ -37,14 +37,6 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Validate Cloudflare credentials
-        run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "Cloudflare API token required for hermes-lead-email deployment." >&2
-            exit 1
-          fi
-          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
-
       - name: Install dependencies
         run: npm ci
 
@@ -53,6 +45,17 @@ jobs:
 
       - name: Validate Load Board inbound email bridge
         run: node scripts/load-board-intake-api-contract.test.mjs
+
+      - name: Dry-run hermes-lead-email package
+        run: npx --yes wrangler@4 deploy --dry-run --config workers/lead-email/wrangler.production.jsonc --outdir /tmp/hermes-lead-email-dry-run
+
+      - name: Validate Cloudflare credentials
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "Cloudflare API token required for hermes-lead-email deployment." >&2
+            exit 1
+          fi
+          echo "::add-mask::$CLOUDFLARE_API_TOKEN"
 
       - name: Deploy only hermes-lead-email
         uses: cloudflare/wrangler-action@v4
