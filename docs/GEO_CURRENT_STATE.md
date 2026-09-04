@@ -48,6 +48,7 @@ For GEO this means:
 - repository tests prove only the repository contract they exercise;
 - a merged entity change does not prove third-party AI recognition;
 - an AI-observation ledger does not count missing observations as negative mentions;
+- synthetic AI observations are forbidden; only real provider observations may count toward AI visibility evidence;
 - AI visibility requires actual governed provider observations/citations/entity/canonical/factual-error evidence;
 - ranking/index/traffic claims require the appropriate authenticated search evidence;
 - owner-controlled third-party profile corrections remain separate authenticated actions.
