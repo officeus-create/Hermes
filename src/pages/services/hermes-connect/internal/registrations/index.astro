@@ -1,0 +1,145 @@
+---
+import { RefreshCw, Search, ShieldCheck, UserCheck, Users } from "@lucide/astro";
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
+
+const isRu = Astro.url.searchParams.get("lang") === "ru";
+---
+<BaseLayout
+  title={isRu ? "Пользователи и регистрации | Hermes Connect" : "Users & Registrations | Hermes Connect"}
+  description="Private owner-only Hermes Connect registration operations ledger."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <HermesConnectExperience />
+  <main class="registrations-page">
+    <div class="shell">
+      <header class="hero">
+        <div>
+          <p class="kicker"><ShieldCheck size={15} /> Hermes Connect · {isRu ? "внутренний контроль" : "internal operations"}</p>
+          <h1>{isRu ? "Пользователи / Регистрации" : "Users / Registrations"}</h1>
+          <p>{isRu ? "Закрытый реестр реальных регистраций Hermes Connect. Тестовые аккаунты отделены от бизнес-метрик и уведомлений." : "Private registration ledger for Hermes Connect. Synthetic accounts stay separate from real-user KPIs and alerts."}</p>
+        </div>
+        <span class="owner-badge"><UserCheck size={16} /> {isRu ? "Только владелец" : "Owner only"}</span>
+      </header>
+
+      <section class="access" data-access role="status">
+        <strong>{isRu ? "Проверяем доступ…" : "Checking owner access…"}</strong>
+        <p>{isRu ? "Данные пользователей откроются только после серверной проверки HERMES_INTERNAL_OWNER." : "User data opens only after the server verifies HERMES_INTERNAL_OWNER."}</p>
+      </section>
+
+      <section class="content hidden" data-content>
+        <div class="summary" aria-label={isRu ? "Сводка регистраций" : "Registration summary"}>
+          <article><span>{isRu ? "Всего реальных" : "Total real"}</span><strong data-stat="total_real">0</strong></article>
+          <article><span>{isRu ? "Сегодня" : "Today"}</span><strong data-stat="today">0</strong></article>
+          <article><span>{isRu ? "7 дней" : "7 days"}</span><strong data-stat="last_7d">0</strong></article>
+          <article><span>{isRu ? "30 дней" : "30 days"}</span><strong data-stat="last_30d">0</strong></article>
+          <article><span>{isRu ? "Не просмотрено" : "Unreviewed"}</span><strong data-stat="unreviewed">0</strong></article>
+          <article><span>{isRu ? "Тестовые" : "Synthetic"}</span><strong data-stat="synthetic">0</strong></article>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-wrap">
+            <Search size={17} />
+            <span class="sr-only">{isRu ? "Поиск" : "Search"}</span>
+            <input data-search type="search" autocomplete="off" placeholder={isRu ? "Имя, email, телефон, компания, город, источник, access…" : "Name, email, phone, company, city, source, access…"} />
+          </label>
+          <select data-kind aria-label={isRu ? "Тип аккаунта" : "Account type"}>
+            <option value="real">{isRu ? "Реальные" : "Real users"}</option>
+            <option value="all">{isRu ? "Все" : "All"}</option>
+            <option value="synthetic">{isRu ? "Тестовые" : "Synthetic"}</option>
+          </select>
+          <button class="refresh" type="button" data-refresh><RefreshCw size={16}/>{isRu ? "Обновить" : "Refresh"}</button>
+        </div>
+
+        <div class="status-line" data-status aria-live="polite"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>{isRu ? "Пользователь" : "User"}</th>
+              <th>{isRu ? "Контакты" : "Contact"}</th>
+              <th>{isRu ? "Компания / локация" : "Company / location"}</th>
+              <th>{isRu ? "Роль / источник" : "Role / source"}</th>
+              <th>{isRu ? "Профиль / доступ" : "Profile / access"}</th>
+              <th>{isRu ? "Регистрация / активность" : "Registered / activity"}</th>
+              <th>Telegram</th>
+              <th>{isRu ? "Контроль" : "Review"}</th>
+            </tr></thead>
+            <tbody data-rows></tbody>
+          </table>
+        </div>
+        <div class="empty hidden" data-empty><Users size={28}/><strong>{isRu ? "Нет подходящих регистраций" : "No matching registrations"}</strong></div>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type Registration = {
+    id:string; name?:string; email?:string; role?:string; location?:string; created_at?:string;
+    shop_id?:string|null; shop_name?:string|null; phone?:string|null; city?:string|null; state?:string|null; shop_updated_at?:string|null;
+    access_state?:string|null; plan_id?:string|null; current_period_end?:string|null; last_session_at?:string|null; profile_complete?:number|boolean|null;
+    salesperson_code?:string|null; source?:string|null; synthetic?:number|boolean; reviewed_at?:string|null;
+    registration_alert_status?:string|null; registration_alert_sent_at?:string|null; registration_alert_error?:string|null;
+  };
+  type Payload = {success?:boolean; summary?:Record<string,number|string>; registrations?:Registration[]; error?:string};
+  const ru=new URLSearchParams(location.search).get("lang")==="ru";
+  const t=(en:string,ruText:string)=>ru?ruText:en;
+  const q=<T extends HTMLElement>(selector:string)=>document.querySelector<T>(selector);
+  const access=q<HTMLElement>("[data-access]"); const content=q<HTMLElement>("[data-content]"); const tbody=q<HTMLTableSectionElement>("[data-rows]");
+  const search=q<HTMLInputElement>("[data-search]"); const kind=q<HTMLSelectElement>("[data-kind]"); const status=q<HTMLElement>("[data-status]"); const empty=q<HTMLElement>("[data-empty]");
+  let rows:Registration[]=[];
+  const text=(value:unknown)=>String(value??"").trim();
+  const date=(value?:string|null)=>value?new Date(value).toLocaleString(ru?"ru-RU":"en-US",{dateStyle:"medium",timeStyle:"short"}):"—";
+  const isSynthetic=(row:Registration)=>Number(row.synthetic||0)===1;
+  const isShopOwner=(row:Registration)=>text(row.role)==="Shop Owner";
+  const isProfileComplete=(row:Registration)=>Number(row.profile_complete||0)===1;
+  const create=(tag:string,className?:string,value?:string)=>{const el=document.createElement(tag);if(className)el.className=className;if(value!==undefined)el.textContent=value;return el;};
+  const searchable=(row:Registration)=>[row.name,row.email,row.phone,row.shop_name,row.city,row.state,row.location,row.role,row.source,row.salesperson_code,row.access_state,row.plan_id].map(text).join(" ").toLowerCase();
+  async function mutate(row:Registration,action:string,extra:Record<string,unknown>={}){
+    if(status)status.textContent=t("Updating…","Обновляем…");
+    const response=await fetch("/api/internal/registrations",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({specialist_id:row.id,action,...extra})});
+    let payload:any={};try{payload=await response.json()}catch{}
+    if(!response.ok||!payload.success){if(status)status.textContent=t("Update failed.","Не удалось обновить.");return;}
+    await load();
+  }
+  function actionButton(label:string,onClick:()=>void,className="secondary") { const button=create("button",className,label) as HTMLButtonElement;button.type="button";button.addEventListener("click",onClick);return button; }
+  function render(){
+    if(!tbody)return;tbody.replaceChildren();const term=(search?.value||"").trim().toLowerCase();const mode=kind?.value||"real";
+    const filtered=rows.filter(row=>(!term||searchable(row).includes(term))&&(mode==="all"||(mode==="real"&&!isSynthetic(row))||(mode==="synthetic"&&isSynthetic(row))));
+    empty?.classList.toggle("hidden",filtered.length>0);
+    for(const row of filtered){
+      const tr=document.createElement("tr");if(!row.reviewed_at&&!isSynthetic(row))tr.classList.add("unreviewed");if(isSynthetic(row))tr.classList.add("synthetic");if(isShopOwner(row)&&!isProfileComplete(row))tr.classList.add("incomplete");
+      const user=document.createElement("td");user.append(create("strong","",text(row.name)||"—"),create("small","mono",text(row.id).slice(0,22)));
+      const contact=document.createElement("td");contact.append(create("span","",text(row.email)||"—"),create("small",text(row.phone)?"":"needs",text(row.phone)||t("No phone yet","Телефон пока не указан")));
+      const company=document.createElement("td");company.append(create("strong","",text(row.shop_name)||t("Profile not completed","Профиль не заполнен")),create("small","",[text(row.city),text(row.state)].filter(Boolean).join(", ")||text(row.location)||"—"));
+      const source=document.createElement("td");source.append(create("span","",text(row.role)||"—"),create("small","",[text(row.salesperson_code),text(row.source)].filter(Boolean).join(" · ")||t("Direct / unknown","Прямой / неизвестно")));
+      const profile=document.createElement("td");
+      if(isShopOwner(row)) profile.append(create("span",isProfileComplete(row)?"ok":"needs",isProfileComplete(row)?t("Profile complete","Профиль заполнен"):t("Needs profile / phone","Нужен профиль / телефон")),create("small","",text(row.access_state)?`${text(row.access_state)}${text(row.plan_id)?` · ${text(row.plan_id)}`:""}`:t("No access state yet","Access-state пока нет")));
+      else profile.append(create("span","",t("Hermes identity","Hermes identity")),create("small","",t("No business profile required","Бизнес-профиль не требуется")));
+      const registered=document.createElement("td");registered.append(create("span","",date(row.created_at)),create("small",isSynthetic(row)?"test":"",`${isSynthetic(row)?t("Synthetic / QA","Тестовый / QA"):(row.reviewed_at?t("Reviewed","Просмотрено"):t("New","Новый"))} · ${t("Last session","Последняя сессия")}: ${date(row.last_session_at)}`));
+      const telegram=document.createElement("td");telegram.append(create("span",`alert-${text(row.registration_alert_status)||"none"}`,text(row.registration_alert_status)||t("Not queued","Не ставилось")),create("small","",row.registration_alert_sent_at?date(row.registration_alert_sent_at):(text(row.registration_alert_error)||"—")));
+      const controls=document.createElement("td");controls.className="controls";
+      if(!row.reviewed_at&&!isSynthetic(row))controls.append(actionButton(t("Mark reviewed","Просмотрено"),()=>void mutate(row,"review")));
+      controls.append(actionButton(isSynthetic(row)?t("Mark real","Сделать реальным"):t("Mark test","Сделать тестовым"),()=>void mutate(row,"set_synthetic",{synthetic:!isSynthetic(row)}),"ghost"));
+      if(!isSynthetic(row)&&["failed","pending",null,undefined].includes(row.registration_alert_status as any))controls.append(actionButton(t("Retry Telegram","Повторить Telegram"),()=>void mutate(row,"retry_registration_alert"),"ghost"));
+      tr.append(user,contact,company,source,profile,registered,telegram,controls);tbody.append(tr);
+    }
+    if(status)status.textContent=t(`${filtered.length} shown · ${rows.length} loaded`,`Показано ${filtered.length} · загружено ${rows.length}`);
+  }
+  async function load(){
+    if(status)status.textContent=t("Loading registrations…","Загружаем регистрации…");
+    const response=await fetch("/api/internal/registrations",{credentials:"same-origin",headers:{Accept:"application/json"}});let payload:Payload={};try{payload=await response.json()}catch{}
+    if(!response.ok||!payload.success){if(access){access.querySelector("strong")!.textContent=response.status===401?t("Sign in required","Нужно войти"):t("Internal owner capability required","Нужен доступ владельца");access.querySelector("p")!.textContent=t("This ledger never exposes user data without the server-side owner capability.","Реестр не раскрывает данные пользователей без серверного права владельца.");}return;}
+    access?.classList.add("hidden");content?.classList.remove("hidden");rows=Array.isArray(payload.registrations)?payload.registrations:[];
+    for(const [key,value] of Object.entries(payload.summary||{})){const el=document.querySelector<HTMLElement>(`[data-stat="${key}"]`);if(el)el.textContent=String(value)}render();
+  }
+  search?.addEventListener("input",render);kind?.addEventListener("change",render);q<HTMLButtonElement>("[data-refresh]")?.addEventListener("click",()=>void load());void load();
+</script>
+
+<style>
+.registrations-page{min-height:78vh;background:#f7f6f3;color:#11161f}.shell{width:min(1320px,calc(100% - 2rem));margin:auto;padding:2.2rem 0 5rem}.hero{display:flex;justify-content:space-between;gap:2rem;align-items:flex-start;margin-bottom:1.2rem}.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);margin:.32rem 0 .6rem}.hero p{max-width:820px;color:#657083;line-height:1.6}.kicker{display:flex;align-items:center;gap:.4rem;color:#a75000!important;font-size:.72rem;font-weight:850;letter-spacing:.09em;text-transform:uppercase;margin:0}.owner-badge{display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(167,80,0,.18);border-radius:999px;padding:.5rem .7rem;background:#fff8f0;color:#8a4300;font-size:.75rem;font-weight:800;white-space:nowrap}.access,.summary article,.toolbar,.table-wrap,.empty{border:1px solid rgba(17,22,31,.1);background:rgba(255,255,255,.94);box-shadow:0 16px 38px rgba(24,32,48,.055)}.access{border-radius:1rem;padding:1.1rem}.access p{margin:.3rem 0 0;color:#657083}.hidden{display:none!important}.content{display:grid;gap:.85rem}.summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.7rem}.summary article{border-radius:1rem;padding:.95rem}.summary span{display:block;color:#768192;font-size:.7rem}.summary strong{display:block;margin-top:.2rem;font-size:1.35rem}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:.7rem;padding:.75rem;border-radius:1rem}.search-wrap{display:flex;align-items:center;gap:.55rem;min-height:44px;border:1px solid rgba(17,22,31,.11);border-radius:.75rem;padding:0 .75rem;background:#fff}.search-wrap input{width:100%;border:0;outline:0;background:transparent;color:#11161f;font:inherit}.toolbar select,.refresh{min-height:44px;border:1px solid rgba(17,22,31,.11);border-radius:.75rem;background:#fff;color:#11161f;padding:.55rem .75rem;font:inherit;font-weight:700}.refresh{display:inline-flex;align-items:center;gap:.4rem;cursor:pointer}.status-line{min-height:1.4rem;color:#657083;font-size:.78rem;padding:0 .15rem}.table-wrap{overflow:auto;border-radius:1rem}.table-wrap table{width:100%;border-collapse:collapse;min-width:1240px}.table-wrap th,.table-wrap td{text-align:left;padding:.8rem;border-bottom:1px solid rgba(17,22,31,.075);vertical-align:top}.table-wrap th{position:sticky;top:0;background:#fbfaf7;color:#657083;font-size:.69rem;text-transform:uppercase;letter-spacing:.04em;z-index:1}.table-wrap td{font-size:.82rem}.table-wrap td strong,.table-wrap td span,.table-wrap td small{display:block}.table-wrap td small{margin-top:.28rem;color:#7a8595;font-size:.7rem;max-width:300px;overflow-wrap:anywhere}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}.unreviewed{background:rgba(255,122,0,.035)}.incomplete{box-shadow:inset 3px 0 0 rgba(245,158,11,.45)}.synthetic{background:rgba(107,114,128,.045)}.test{color:#6b7280!important;font-weight:800}.ok{color:#087653;font-weight:800}.needs{color:#9a5600!important;font-weight:800}.alert-sent{color:#087653;font-weight:800}.alert-failed{color:#b42318;font-weight:800}.alert-pending{color:#8a4b00;font-weight:800}.alert-skipped{color:#6b7280;font-weight:800}.controls{display:flex;flex-wrap:wrap;gap:.38rem;min-width:170px}.controls button{min-height:36px;border:0;border-radius:.58rem;padding:.42rem .58rem;font:inherit;font-size:.72rem;font-weight:800;cursor:pointer;background:#11161f;color:#fff}.controls button.ghost{background:#f1efe9;color:#333b48}.empty{border-radius:1rem;padding:2rem;text-align:center;color:#657083;display:grid;place-items:center;gap:.55rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(max-width:960px){.summary{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){.shell{width:min(100% - 1rem,1320px)}.hero{flex-direction:column;gap:1rem}.owner-badge{white-space:normal}.summary{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr}.toolbar select,.refresh{width:100%}.table-wrap{margin-inline:0}.table-wrap table{min-width:1180px}}
+</style>
