@@ -23,11 +23,18 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
 <script is:inline define:vars={{ measurementId }}>
   (() => {
     const STORAGE_KEY = "hermes-analytics-consent";
+    const PRODUCTION_ANALYTICS_HOSTS = new Set([
+      "hermeslogisticsus.com",
+      "www.hermeslogisticsus.com",
+      "connect.hermeslogisticsus.com",
+    ]);
     const root = document.querySelector("[data-tracking-consent]");
     const banner = root?.querySelector("[data-consent-banner]");
     const accept = root?.querySelector("[data-consent-accept]");
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
+
+    const analyticsDeliveryAllowed = () => PRODUCTION_ANALYTICS_HOSTS.has(window.location.hostname);
 
     const readChoice = () => {
       try {
@@ -86,6 +93,13 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
         ad_personalization: 'denied'
       });
       window.gtag('set', 'ads_data_redaction', true);
+
+      if (!analyticsDeliveryAllowed()) {
+        document.documentElement.dataset.analyticsTransport = "disabled-non-production";
+        return;
+      }
+
+      document.documentElement.dataset.analyticsTransport = "ga4";
       window.gtag('js', new Date());
       window.gtag('config', measurementId, {
         allow_google_signals: false,

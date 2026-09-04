@@ -4,6 +4,11 @@ const SCRIPT_ID = "hermes-connect-google-tag";
 const STYLE_ID = "hermes-connect-analytics-consent-style";
 const PANEL_ID = "hermes-connect-analytics-consent";
 const MANAGE_ID = "hermes-connect-analytics-manage";
+const PRODUCTION_ANALYTICS_HOSTS = new Set([
+  "hermeslogisticsus.com",
+  "www.hermeslogisticsus.com",
+  "connect.hermeslogisticsus.com",
+]);
 const ALLOWED_EVENT_KEYS = new Set([
   "event",
   "page_group",
@@ -16,6 +21,10 @@ const EVENT_PATTERN = /^[a-z][a-z0-9_]{2,63}$/;
 const TOKEN_PATTERN = /^[a-z0-9][a-z0-9_-]{0,79}$/;
 
 let analyticsEnabled = false;
+
+function analyticsDeliveryAllowed() {
+  return PRODUCTION_ANALYTICS_HOSTS.has(window.location.hostname);
+}
 
 function readConsent() {
   try {
@@ -108,13 +117,21 @@ window.hermesConnectAnalytics = Object.freeze({ event: emitReviewedEvent, consen
 function enableAnalytics() {
   if (analyticsEnabled) return;
   analyticsEnabled = true;
-  window[`ga-disable-${MEASUREMENT_ID}`] = false;
+  const canDeliver = analyticsDeliveryAllowed();
+  window[`ga-disable-${MEASUREMENT_ID}`] = !canDeliver;
   installGrantedLayer();
   window.gtag("consent", "default", { analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", wait_for_update: 500 });
   window.gtag("set", "ads_data_redaction", true);
   window.gtag("set", "allow_google_signals", false);
   window.gtag("set", "allow_ad_personalization_signals", false);
   window.gtag("consent", "update", { analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied" });
+
+  if (!canDeliver) {
+    document.documentElement.dataset.analyticsTransport = "disabled-non-production";
+    return;
+  }
+
+  document.documentElement.dataset.analyticsTransport = "ga4";
   window.gtag("js", new Date());
   window.gtag("config", MEASUREMENT_ID, { send_page_view: false, page_location: analyticsPageLocation(), page_path: window.location.pathname, allow_google_signals: false, allow_ad_personalization_signals: false });
   window.gtag("event", "page_view", { page_location: analyticsPageLocation(), page_path: window.location.pathname, page_title: document.title.slice(0, 120), page_group: "hermes_connect_web_app" });
