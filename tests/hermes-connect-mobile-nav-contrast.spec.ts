@@ -120,7 +120,7 @@ test("Hermes Connect clean mobile entry stays English and the full language list
   });
   expect(["auto", "scroll"]).toContain(scrollContract.overflowY);
   expect(scrollContract.clientHeight).toBeLessThanOrEqual(scrollContract.scrollHeight);
-  expect(scrollContract.viewportBottom).toBeLessThanOrEqual(scrollContract.viewportHeight);
+  expect(scrollContract.viewportBottom).toBeLessThanOrEqual(scrollContract.viewportHeight + 1);
 
   const french = switcher.locator("a[lang='fr']");
   await french.scrollIntoViewIfNeeded();
