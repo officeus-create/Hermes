@@ -1,0 +1,103 @@
+---
+import { ArrowRight, BellRing, Gauge, Route, Search, ShieldCheck, Truck } from "@lucide/astro";
+
+interface Props {
+  context: "logistics" | "technology";
+}
+
+const { context } = Astro.props;
+const copy = context === "logistics"
+  ? {
+      eyebrow: "Hermes Logistics · Load Board",
+      title: "Find freight without getting lost in the freight market.",
+      body: "Search live freight by lane and equipment, watch fresh opportunities arrive, reduce deadhead, and unlock source/contact details only after carrier access is verified.",
+      secondary: "Built for carriers, owner-operators, fleets, brokers, shippers, and dealers.",
+    }
+  : {
+      eyebrow: "Hermes IT · Product",
+      title: "Load Board is one of the products we build and operate.",
+      body: "Hermes combines email/API intake, normalization, permissions, freshness controls, carrier identity, search, alerts, and a public-to-private marketplace experience in one product.",
+      secondary: "The same product architecture can be adapted for other vertical marketplaces and internal operating systems.",
+    };
+
+const preview = [
+  { equipment: "Dry Van", lane: "Chicago, IL → Nashville, TN", age: "fresh", tag: "Preview" },
+  { equipment: "Reefer", lane: "Dallas, TX → Atlanta, GA", age: "fresh", tag: "Preview" },
+  { equipment: "Flatbed", lane: "Pittsburgh, PA → Columbus, OH", age: "fresh", tag: "Preview" },
+  { equipment: "Step Deck", lane: "Tulsa, OK → Denver, CO", age: "fresh", tag: "Preview" },
+];
+---
+
+<section class={`load-board-spotlight load-board-spotlight--${context}`} aria-labelledby={`load-board-spotlight-${context}`}>
+  <div class="shell load-board-spotlight__grid">
+    <div class="load-board-spotlight__copy">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2 id={`load-board-spotlight-${context}`}>{copy.title}</h2>
+      <p>{copy.body}</p>
+      <p class="load-board-spotlight__secondary">{copy.secondary}</p>
+      <div class="load-board-spotlight__actions">
+        <a class="button button-primary" href="/load-board/live-pilot/">Open Hermes Load Board <ArrowRight size={18} aria-hidden="true" /></a>
+        {context === "technology" && <a class="button" href="/case/it-development/">See how Hermes builds products</a>}
+        {context === "logistics" && <a class="button" href="/paths/logistics/find-your-path/">Choose logistics path</a>}
+      </div>
+      <div class="load-board-spotlight__features" aria-label="Load Board capabilities">
+        <span><Search size={15} aria-hidden="true" /> Lane & equipment search</span>
+        <span><BellRing size={15} aria-hidden="true" /> Fresh-load alerts</span>
+        <span><Gauge size={15} aria-hidden="true" /> Rate & market context</span>
+        <span><Route size={15} aria-hidden="true" /> Deadhead / backhaul planning</span>
+        <span><ShieldCheck size={15} aria-hidden="true" /> Verified access boundary</span>
+      </div>
+    </div>
+
+    <div class="load-board-spotlight__board" aria-label="Hermes Load Board preview">
+      <div class="load-board-spotlight__board-head">
+        <div><strong>Freight activity</strong><span>Public preview · live feed connects when source permission allows</span></div>
+        <span class="load-board-spotlight__pulse"><i></i> Updating</span>
+      </div>
+      <div class="load-board-spotlight__filters" aria-hidden="true">
+        <span>Origin</span><span>Destination</span><span>Equipment</span><b>Search</b>
+      </div>
+      <div class="load-board-spotlight__rows">
+        {preview.map((item) => (
+          <div class="load-board-spotlight__row">
+            <Truck size={17} aria-hidden="true" />
+            <strong>{item.equipment}</strong>
+            <span>{item.lane}</span>
+            <small>{item.age}</small>
+            <em>{item.tag}</em>
+          </div>
+        ))}
+      </div>
+      <div class="load-board-spotlight__lock">
+        <ShieldCheck size={18} aria-hidden="true" />
+        <span><strong>Public sees the market moving.</strong> Verified users unlock operational details and actions.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .load-board-spotlight{padding:clamp(3rem,6vw,5.5rem) 0;background:#f5f7fc;color:#111324}
+  .load-board-spotlight--technology{background:#0a1021;color:#fff}
+  .load-board-spotlight__grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(520px,1.15fr);gap:clamp(2rem,5vw,5rem);align-items:center}
+  .load-board-spotlight h2{max-width:18ch;margin:.35rem 0 1rem;font-size:clamp(2rem,4vw,3.8rem);line-height:1.02}
+  .load-board-spotlight__copy>p:not(.eyebrow){max-width:66ch;line-height:1.7;color:#64708b}
+  .load-board-spotlight--technology .load-board-spotlight__copy>p:not(.eyebrow){color:#aeb9ce}
+  .load-board-spotlight__secondary{font-size:.9rem}
+  .load-board-spotlight__actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.4rem 0 1.1rem}
+  .load-board-spotlight__features{display:flex;flex-wrap:wrap;gap:.45rem}
+  .load-board-spotlight__features span{display:inline-flex;align-items:center;gap:.32rem;padding:.42rem .58rem;border:1px solid rgba(17,19,36,.12);border-radius:999px;font-size:.69rem;font-weight:700;color:#4c5872}
+  .load-board-spotlight--technology .load-board-spotlight__features span{border-color:rgba(255,255,255,.13);color:#c0c8d8}
+  .load-board-spotlight__board{overflow:hidden;border:1px solid rgba(17,19,36,.12);border-radius:24px;background:#fff;box-shadow:0 30px 80px rgba(18,31,73,.12)}
+  .load-board-spotlight--technology .load-board-spotlight__board{border-color:rgba(255,255,255,.12);background:#10192d;box-shadow:0 30px 80px rgba(0,0,0,.28)}
+  .load-board-spotlight__board-head{display:flex;justify-content:space-between;gap:1rem;padding:1.1rem 1.15rem;border-bottom:1px solid rgba(17,19,36,.08)}
+  .load-board-spotlight--technology .load-board-spotlight__board-head{border-bottom-color:rgba(255,255,255,.08)}
+  .load-board-spotlight__board-head div{display:grid;gap:.15rem}.load-board-spotlight__board-head strong{font-size:.9rem}.load-board-spotlight__board-head span{font-size:.67rem;color:#7a8499}
+  .load-board-spotlight__pulse{display:inline-flex!important;align-items:center;gap:.35rem!important;font-weight:800!important;color:#3357c8!important}.load-board-spotlight__pulse i{width:7px;height:7px;border-radius:50%;background:#36b37e;box-shadow:0 0 0 5px rgba(54,179,126,.12)}
+  .load-board-spotlight__filters{display:grid;grid-template-columns:1fr 1fr .8fr auto;gap:.45rem;padding:.8rem 1rem;background:#f7f9fd}.load-board-spotlight--technology .load-board-spotlight__filters{background:#0d1628}
+  .load-board-spotlight__filters span,.load-board-spotlight__filters b{padding:.48rem .55rem;border:1px solid rgba(17,19,36,.09);border-radius:8px;font-size:.66rem;color:#8a94a8;background:#fff}.load-board-spotlight__filters b{color:#fff;background:#5634c8;border-color:#5634c8;text-align:center}.load-board-spotlight--technology .load-board-spotlight__filters span{background:#111e34;border-color:rgba(255,255,255,.08);color:#8f9bb1}
+  .load-board-spotlight__rows{display:grid}.load-board-spotlight__row{display:grid;grid-template-columns:22px 90px minmax(0,1fr) 44px 58px;gap:.55rem;align-items:center;padding:.82rem 1rem;border-top:1px solid rgba(17,19,36,.075);font-size:.72rem}.load-board-spotlight--technology .load-board-spotlight__row{border-top-color:rgba(255,255,255,.07)}.load-board-spotlight__row strong{font-size:.72rem}.load-board-spotlight__row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#4f5a70}.load-board-spotlight--technology .load-board-spotlight__row span{color:#b1bdd0}.load-board-spotlight__row small{color:#36a373;font-weight:800}.load-board-spotlight__row em{font-style:normal;padding:.25rem .35rem;border-radius:999px;background:#f1efff;color:#5a40bf;font-size:.58rem;font-weight:850;text-align:center}
+  .load-board-spotlight__lock{display:flex;align-items:flex-start;gap:.55rem;padding:1rem 1.1rem;background:#101a44;color:#fff}.load-board-spotlight__lock span{font-size:.72rem;line-height:1.45;color:#cbd5ed}.load-board-spotlight__lock strong{color:#fff}
+  @media(max-width:980px){.load-board-spotlight__grid{grid-template-columns:1fr}.load-board-spotlight__board{max-width:760px}.load-board-spotlight__filters{grid-template-columns:1fr 1fr}.load-board-spotlight__row{grid-template-columns:20px 84px minmax(0,1fr) 50px}.load-board-spotlight__row em{display:none}}
+  @media(max-width:620px){.load-board-spotlight__filters{display:none}.load-board-spotlight__row{grid-template-columns:20px 74px minmax(0,1fr);padding:.75rem}.load-board-spotlight__row small{display:none}.load-board-spotlight__board-head{align-items:flex-start}.load-board-spotlight__pulse{font-size:.62rem!important}}
+</style>
