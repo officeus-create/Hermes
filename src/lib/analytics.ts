@@ -9,6 +9,7 @@ export type AnalyticsPayload = Record<string, string | number | boolean | undefi
 type GtagParameters = Record<string, string | number | boolean>;
 type AnalyticsWindow = Window & {
   gtag?: (command: "event", eventName: string, parameters?: GtagParameters) => void;
+  __hermesCarrierGa4Bridge?: boolean;
 };
 
 declare global {
@@ -18,6 +19,21 @@ declare global {
 }
 
 const ANALYTICS_CONSENT_KEY = "hermes-analytics-consent";
+const LOAD_BOARD_PATH = "/load-board/";
+const CARRIER_GA4_EVENTS = new Set([
+  "carrier_intake_start",
+  "carrier_intake_preview_ready",
+  "carrier_handoff_ready",
+]);
+const CARRIER_GA4_PARAMETER_KEYS = new Set([
+  "audience_type",
+  "page_group",
+  "service_group",
+  "page_path",
+  "preview_status",
+  "handoff_method",
+]);
+let pushingFromEmit = false;
 
 function analyticsConsentGranted(): boolean {
   if (typeof window === "undefined") return false;
@@ -34,6 +50,40 @@ function normalizePayload(payload: AnalyticsPayload): GtagParameters {
   ) as GtagParameters;
 }
 
+function carrierGa4Parameters(payload: Record<string, unknown>): GtagParameters {
+  return Object.fromEntries(
+    Object.entries(payload).filter(([key, value]) => (
+      CARRIER_GA4_PARAMETER_KEYS.has(key)
+      && (typeof value === "string" || typeof value === "number" || typeof value === "boolean")
+    )),
+  ) as GtagParameters;
+}
+
+function installCarrierDataLayerBridge(): void {
+  if (typeof window === "undefined" || window.location.pathname !== LOAD_BOARD_PATH) return;
+
+  const analyticsWindow = window as AnalyticsWindow;
+  if (analyticsWindow.__hermesCarrierGa4Bridge) return;
+
+  window.dataLayer = window.dataLayer || [];
+  const layer = window.dataLayer;
+  const nativePush = layer.push.bind(layer);
+
+  layer.push = (...items: Record<string, unknown>[]) => {
+    const result = nativePush(...items);
+    if (pushingFromEmit || !analyticsConsentGranted() || typeof analyticsWindow.gtag !== "function") return result;
+
+    for (const item of items) {
+      const eventName = typeof item?.event === "string" ? item.event : "";
+      if (!CARRIER_GA4_EVENTS.has(eventName)) continue;
+      analyticsWindow.gtag("event", eventName, carrierGa4Parameters(item));
+    }
+    return result;
+  };
+
+  analyticsWindow.__hermesCarrierGa4Bridge = true;
+}
+
 function emit(name: string, payload: AnalyticsPayload = {}): void {
   if (typeof window === "undefined") return;
 
@@ -43,9 +93,16 @@ function emit(name: string, payload: AnalyticsPayload = {}): void {
   if (analyticsConsentGranted() && Array.isArray(window.dataLayer)) {
     const parameters = normalizePayload(payload);
     (window as AnalyticsWindow).gtag?.("event", name, parameters);
-    window.dataLayer.push({ event: name, ...parameters });
+    try {
+      pushingFromEmit = true;
+      window.dataLayer.push({ event: name, ...parameters });
+    } finally {
+      pushingFromEmit = false;
+    }
   }
 }
+
+installCarrierDataLayerBridge();
 
 export function trackTrackSelected(track: string): void {
   emit("track_selected", { track });
