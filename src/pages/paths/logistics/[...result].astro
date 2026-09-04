@@ -1,6 +1,7 @@
 ---
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import LogisticsProductNav from "../../../components/LogisticsProductNav.astro";
 import PartnerReviewMatrix from "../../../components/PartnerReviewMatrix.astro";
 import SiteFooter from "../../../components/SiteFooter.astro";
 import SiteHeader from "../../../components/SiteHeader.astro";
@@ -43,6 +44,15 @@ const showCarHaulingCommercialPath = carHaulingCommercialAudienceIds.has(recomme
 const showPartnerReviewMatrix = recommendation.id === "agency-development";
 const isBrokerCapacityPath = recommendation.id === "broker-carrier-capacity";
 const isCarHaulingPath = recommendation.id === "carrier-car-hauling";
+const logisticsNavActive = recommendation.id === "broker-carrier-capacity"
+  ? "brokers"
+  : recommendation.id === "shipper-dealer" || recommendation.id.startsWith("customer-")
+    ? "shippers-dealers"
+    : recommendation.id === "carrier-owner-operators"
+      ? "owner-operators"
+      : recommendation.id.startsWith("carrier-")
+        ? "carriers"
+        : "path";
 const customerIntakeById: Record<string, {
   primary: { label: string; href: string };
   demo: { label: string; href: string };
@@ -104,6 +114,7 @@ import "../../../styles/features/case.css";
 >
   <div class="logistics-recommendation-page">
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <LogisticsProductNav theme="dark" active={logisticsNavActive as any} />
     <main id="main-content">
       <section class="logistics-audience-hero logistics-recommendation-hero">
         <div class="shell">
