@@ -32,19 +32,21 @@ const marketingProgramText = extractedText(marketingProgramHtml);
 const ukrainianLogisticsProgramText = extractedText(ukrainianLogisticsProgramHtml);
 
 // Home is deliberately an entrance: it must expose Academy as one of four direct
-// directions, while program structure and participation models live on Academy itself.
+// directions, while learning-track detail and participation models live on Academy itself.
 assert.ok(homepage.includes('href="/paths/academy/"'), "Homepage must link directly to the Academy direction");
 assert.ok(homepageText.includes("Hermes Academy"), "Homepage must visibly identify the Academy direction");
 
 const publicTabs = [...academy.matchAll(/\brole=["']tab["']/gi)];
-assert.equal(publicTabs.length, 2, "Academy must expose exactly two public program tabs");
+assert.equal(publicTabs.length, 5, "Academy must expose exactly five public learning-track tabs");
 
 for (const text of [
   "U.S. Logistics Operations",
   "Marketing",
+  "IT & AI",
+  "Sales",
+  "COO / Operations",
   "Paid cohort",
   "Free practice opportunity",
-  "not a third Academy program",
 ]) {
   assert.ok(academy.includes(text), `Academy public page is missing: ${text}`);
 }
@@ -61,7 +63,7 @@ for (const text of [
   assert.ok(application.includes(text), `Academy application page is missing review clarity: ${text}`);
 }
 
-// Program-specific eligibility must remain explicit and job-relevant.
+// Existing dedicated program pages keep their explicit job-relevant eligibility.
 assert.ok(logisticsProgramText.includes("B2 level or higher"), "U.S. Logistics program must state the B2+ English requirement for communication-heavy tracks");
 assert.ok(ukrainianLogisticsProgramText.includes("B2 або вище"), "Ukrainian Logistics program must state the B2+ English requirement");
 for (const text of ["Russian or Ukrainian", "Italian", "Spanish", "French", "German", "B2 level or higher"]) {
@@ -100,4 +102,4 @@ for (const blockedPrice of ["$999", "$400/month", "$600/month"]) {
   assert.ok(!application.includes(blockedPrice), `Unapproved Academy price is visible on the application page: ${blockedPrice}`);
 }
 
-console.log("Academy public contract checks passed: Home routes to Academy, Academy owns two-program detail and participation models, language/compliance eligibility remains explicit, application review clarity remains explicit, and no blocked prices are visible.");
+console.log("Academy public contract checks passed: Home routes to Academy, Academy exposes five learning tracks with separate participation models, existing detailed programs retain language/compliance eligibility, application review clarity remains explicit, and no blocked prices are visible.");
