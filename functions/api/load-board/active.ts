@@ -4,7 +4,18 @@ import { ensureLoadBoardSchema } from "../_lib/load-board-schema.mjs";
 type Env = { DB?: any };
 
 const ALLOWED_TYPES = new Set(["load", "capacity"]);
-const ALLOWED_EQUIPMENT = new Set(["dry_van", "reefer", "flatbed", "step_deck", "hotshot", "car_hauler", "other"]);
+const ALLOWED_EQUIPMENT = new Set([
+  "dry_van",
+  "reefer",
+  "flatbed",
+  "step_deck",
+  "power_only",
+  "hotshot",
+  "box_truck",
+  "sprinter_van",
+  "car_hauler",
+  "other",
+]);
 
 function looksLikeCarrierRole(role: unknown) {
   return /carrier|owner[- ]?operator|dispatcher/i.test(String(role ?? ""));
