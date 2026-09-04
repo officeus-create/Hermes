@@ -167,7 +167,8 @@ import "../../styles/features/load.css";
 
   const responseJson = async (response: Response) => {
     try { return await response.json() as Record<string, unknown>; }
-    catch { return {}; }
+    catch { return {};
+    }
   };
 
   const setResult = (eyebrow: string, title: string, copyText: string, receipt: string) => {
@@ -216,7 +217,7 @@ import "../../styles/features/load.css";
         `Languages: ${sanitize(data.get("languages"), 160)}`,
         `Experience/results: ${sanitize(data.get("experience"))}`,
         `Availability: ${sanitize(data.get("availability"), 800)}`,
-        "Delivery: preview only — no agency inquiry was sent or stored.",
+        "Delivery: preview only — no application was sent or stored.",
       ].join("\n");
       setResult("Agency inquiry preview", "Ready to copy", "This agency inquiry remains local to your browser and has not been submitted.", agencyPreview);
       return;
