@@ -57,7 +57,8 @@ const localizedLabels = {
 const navigation = activeLocale === "en"
   ? site.navigation.map((item) => {
       const url = `/${item.href}`;
-      return { ...item, url, active: (activePath ?? currentPath) === url };
+      const label = item.href === "paths/technology/" ? "IT" : item.label;
+      return { ...item, label, url, active: (activePath ?? currentPath) === url };
     })
   : site.paths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
