@@ -1,13 +1,13 @@
 {
   "schema_version": 6,
-  "reviewed_at": "2026-09-03",
+  "reviewed_at": "2026-09-04",
   "repository": "officeus-create/Hermes",
-  "main_commit_at_review": "0b8532a410fac899e168333315b8204ac948c314",
+  "main_commit_at_review": "49c4354e8de7547f8011d01bb31cbdc855157060",
   "freshness": {
-    "state_class": "current_governance_integration_and_claude_acceptance_snapshot",
+    "state_class": "current_governance_release_reconciliation_snapshot",
     "historical_handoff_is_not_current_state": true,
-    "refresh_reason": "Active PR queue contracted to two owner lanes and main advanced through HR and PWA/security convergence.",
-    "refresh_policy": "Re-fetch current main, relevant PR heads/checks, owner routing and connected-source evidence before material decisions."
+    "refresh_reason": "Main advanced through London conversion evidence, Connect verifier reconciliation, Cloudflare release wiring, owner registration operations, and Repair Shop auth source-truth convergence; open lanes and external blockers were re-read on exact current main.",
+    "refresh_policy": "Re-fetch current main and every moving specialist PR before any material decision. PR head values in this snapshot are observations at review time, not durable current-state assertions."
   },
   "governance": {
     "operating_stack": "HOS_HUEG_CANONICAL",
@@ -16,6 +16,7 @@
     "agent_report_passport_required": true,
     "main_branch_enforcement_issue": 938,
     "main_branch_protected_at_review": false,
+    "repository_rulesets_at_review": 0,
     "drive_acl_issue": 431
   },
   "current_thread_scope": {
@@ -38,35 +39,43 @@
   },
   "integration_snapshot": {
     "main": {
-      "sha": "0b8532a410fac899e168333315b8204ac948c314",
-      "latest_merge_pr": 1043,
-      "latest_merge_scope": "non-design PWA/service-worker cache safety",
-      "production_live_parity": "BLOCKED_EXTERNAL_961"
+      "sha": "49c4354e8de7547f8011d01bb31cbdc855157060",
+      "latest_merge_pr": 1064,
+      "latest_merge_scope": "Repair Shop owner auth server-source truth aligned with current live workflow wording",
+      "production_live_parity": "BLOCKED_EXTERNAL_961_API_TOKEN_ONLY",
+      "exact_main_evidence": {
+        "cloudflare_pages_deploy_run": 33847109145,
+        "cloudflare_pages_deploy_result": "FAILURE_PRE_DEPLOY_SCOPED_API_TOKEN_ONLY",
+        "london_production_verifier_run": 33847109141,
+        "london_production_verifier_result": "SUCCESS",
+        "website_run": 33847109195,
+        "website_result_at_review": "IN_PROGRESS_REFETCH_BEFORE_DECISION"
+      }
     },
+    "moving_pr_head_semantics": "OBSERVED_AT_REVIEW_ONLY_REFETCH_BEFORE_DECISION",
     "open_pull_requests": [
       {
-        "number": 1045,
-        "title": "docs(design): close bounded Design 4 queue after HR convergence",
-        "owner_lane": "DESIGN_5",
-        "head": "2ada88bac4e7e18a0cafc34f9c7f522cf2e42a7e",
-        "ahead_by": 2,
-        "behind_by": 6,
-        "classification": "ACTIVE_OWNER_LANE_STALE_TO_CURRENT_MAIN",
+        "number": 1059,
+        "title": "SEO/GEO: revenue-first 100-task execution gate",
+        "owner_lane": "SEO_GEO_SPECIALIST",
+        "observed_head_at_review": "66971e0cfa2e32aef990b91e452832d9d296b5d1",
+        "observed_ahead_by": 18,
+        "observed_behind_by": 0,
+        "classification": "ACTIVE_SPECIALIST_LANE_CURRENT_BASE_AT_REVIEW",
         "takeover_allowed": false,
-        "scope": [
-          "ai-collaboration/01_DESIGN/DESIGN_MASTER_BACKLOG.md",
-          "ai-collaboration/01_DESIGN/hermes-connect/CURRENT_STATE.md"
-        ]
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_AND_EXACT_HEAD_CI_BEFORE_PROMOTION",
+        "last_coordination_sync_pr": 1067
       },
       {
         "number": 1039,
         "title": "feat(social): final FCC-main replay of LinkedIn attribution bridge",
         "owner_lane": "MARKETING_SOCIAL_SPECIALIST",
-        "head": "781189ca87c0daee4d593c91d553c0482d6c4832",
-        "ahead_by": 1,
-        "behind_by": 48,
-        "classification": "ACTIVE_SPECIALIST_LANE_STALE_TO_CURRENT_MAIN",
+        "observed_head_at_review": "781189ca87c0daee4d593c91d553c0482d6c4832",
+        "observed_ahead_by": 1,
+        "observed_behind_by": 80,
+        "classification": "ACTIVE_SPECIALIST_LANE_STALE_TO_CURRENT_MAIN_AT_REVIEW",
         "takeover_allowed": false,
+        "decision_rule": "REFETCH_PR_HEAD_COMPARE_AND_EXACT_HEAD_CI_BEFORE_PROMOTION",
         "scope": [
           "scripts/social-distribution.test.mjs",
           "src/data/social-distribution-preview.ts",
@@ -76,9 +85,15 @@
         ]
       }
     ],
-    "writer_collision_status": "NO_MACHINE_STATE_FILE_OVERLAP_OBSERVED"
+    "writer_collision_status": "GOVERNANCE_REFRESH_ISOLATED_TO_DOCS_AI_PROJECT_STATE_JSON"
   },
   "recent_promotions": {
+    "website_factory_pr_1033": {
+      "state": "MERGED_CODE_SIDE",
+      "merge_sha": "ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f",
+      "historical_source_pr": 955,
+      "production_live_gate": 961
+    },
     "hr_pr_1042": {
       "state": "MERGED_CODE_SIDE",
       "merge_sha": "c5cfc9af32113505845f13a60ccfec6232729bc2",
@@ -88,33 +103,61 @@
       "state": "MERGED_CODE_SIDE",
       "merge_sha": "0b8532a410fac899e168333315b8204ac948c314",
       "validated_head": "08df9948fcc2b8562a5f0fa538d34f00b87a12b4",
-      "exact_head_runs": {
-        "pwa_cache_safety": 33765056846,
-        "website": 33765057377,
-        "visual_regression": 33765056893,
-        "custom_domain": 33765057087,
-        "cloudflare_ownership": 33765057031
-      },
       "production_live_gate": 961
     },
-    "website_factory_pr_1033": {
-      "state": "MERGED_CODE_SIDE",
-      "merge_sha": "ec7ecdaa7e9fd649cf33c31e280b350520cf8d2f",
-      "historical_source_pr": 955,
+    "london_attribution_pr_1055": {
+      "state": "MERGED_CODE_VERIFIED_NOT_LIVE_VERIFIED",
+      "merge_sha": "62b4c7a5f33cb6c8b81a90ad67caf49f882d8c1f",
+      "master_issue": 914,
+      "master_completion_after_reconciliation": "96/100",
+      "production_live_gate": 961
+    },
+    "connect_analytics_verifier_pr_1060": {
+      "state": "MERGED_VERIFIER_ONLY",
+      "merge_sha": "257143680674b635fc2fb98cb05c67011878a97e",
+      "validated_head": "838294db7276b654170a6db1a7a6f69f5b6f6c58",
+      "website_run": 33813158869,
+      "website_result": "SUCCESS_30_OF_30_GATES_1249_PLAYWRIGHT_PASSED_11_SKIPPED",
+      "runtime_changed": false
+    },
+    "cloudflare_release_wiring_pr_1063": {
+      "state": "MERGED_CODE_VERIFIED_DEPLOY_STILL_BLOCKED",
+      "merge_sha": "6cf41ffd23c6cd977e7a3ec52547fc775788d44f",
+      "resolved_blocker": "CLOUDFLARE_ACCOUNT_ID_DERIVED_FROM_CANONICAL_WRANGLER_CONFIG",
+      "remaining_blocker": "CLOUDFLARE_API_TOKEN_MISSING_FROM_AUTHORIZED_PRODUCTION_OR_REPOSITORY_SECRET_SCOPE"
+    },
+    "owner_registration_ops_pr_1062": {
+      "state": "MERGED_CODE_SIDE_NOT_LIVE_VERIFIED",
+      "merge_sha": "86c212b8f8e19c4dcaa155a9110982b9d2a5b1ea",
+      "validated_source_head": "0a73b9c14678151a748d4cab6732b517c8194716",
+      "superseded_source_pr": 1054,
+      "superseded_source_pr_state": "CLOSED_PROVENANCE_ONLY",
+      "production_live_gate": 961,
+      "post_deploy_proof_still_required": "D1_CUSTOM_DOMAIN_READBACK_PROTECTED_TELEGRAM_CONFIG_ONE_REAL_REGISTRATION_EXACTLY_ONE_OWNER_DM_AND_ONE_SYNTHETIC_ZERO_REAL_USER_ALERT"
+    },
+    "repair_auth_source_truth_pr_1064": {
+      "state": "MERGED_CODE_SIDE_NOT_LIVE_VERIFIED",
+      "merge_sha": "49c4354e8de7547f8011d01bb31cbdc855157060",
+      "validated_source_head": "4fcd6decee2081cb3740feed9215497ff0d0fc9d",
+      "runtime_behavior_changed": false,
+      "design_changed": false,
       "production_live_gate": 961
     }
   },
   "platform_and_owner_gates": {
-    "cloudflare_production_parity_961": "BLOCKED_OWNER_ADMIN_CREDENTIALS_BINDINGS_AND_LIVE_READBACK",
-    "password_reset_email_611": "BLOCKED_SCOPED_CLOUDFLARE_WORKER_DEPLOY_TOKEN_AND_REAL_EMAIL_RECEIPT",
-    "main_protection_938": "BLOCKED_OWNER_ADMIN_PLATFORM_ACTION",
-    "partnership_sender_876": "BLOCKED_PARTNERSHIP_SENDER_NOT_PROVEN",
+    "cloudflare_production_parity_961": "BLOCKED_ONLY_SCOPED_CLOUDFLARE_API_TOKEN_THEN_BUILD_DEPLOY_AND_PUBLIC_READBACK",
+    "password_reset_email_611": "BLOCKED_SCOPED_CLOUDFLARE_DEPLOY_TOKEN_PLUS_REAL_EMAIL_RESET_ONCE_SESSION_INVALIDATION_AND_CLEANUP_PROOF",
+    "main_protection_938": "BLOCKED_OWNER_ADMIN_PLATFORM_ACTION_NO_PROTECTION_NO_RULESETS",
+    "drive_acl_431": "FIX_REQUIRED_LEGACY_AI_COMMAND_CENTER_ANYONE_WRITER_FRESHLY_CONFIRMED_OWNER_PRESERVED",
+    "telegram_historical_credential_932": "BLOCKED_PROVIDER_SIDE_ROTATION_OR_REVOCATION_NOT_PROVEN",
+    "partnership_sender_876": "BLOCKED_PARTNERSHIP_SEND_AS_OR_DEDICATED_SENDER_NOT_PROVEN_DO_NOT_SPOOF",
+    "ceo_qa_671": "CREDENTIAL_HISTORY_SANITIZED_EXISTING_QA_IDENTITY_PRESERVED_BLOCKED_BY_961_DO_NOT_REPROVISION",
     "owner_mac_internal_ai": "ROUTE_CODEX_2",
     "design_visual_work": "ROUTE_DESIGN_5"
   },
   "one_brain_security": {
-    "protected_core_state": "ACL_REMEDIATED_AND_READBACK_VERIFIED",
-    "legacy_tree_state": "SOURCE_ONLY_OR_NEEDS_CLASSIFICATION",
+    "canonical_core_state": "CANONICAL_GLOBAL_CORE_NO_ANONYMOUS_GRANT_OBSERVED_IN_LAST_VERIFIED_READ",
+    "legacy_tree_state": "FRESH_LEGACY_ANONYMOUS_WRITER_RISK_REMAINS_ON_AI_COMMAND_CENTER",
     "bulk_destructive_cleanup_allowed": false,
     "access_codex": "RESTRICTED_SECRET_BEARING_SOURCE_OUTSIDE_ORDINARY_ONE_BRAIN",
     "secrets_rule": "No plaintext credentials, tokens, private keys or recovery values in ordinary One Brain knowledge, prompts or public Git."
@@ -180,13 +223,22 @@
     ],
     "product_files_modified": false
   },
+  "execution_priorities": [
+    "Unblock #961 only through a privately configured least-privilege CLOUDFLARE_API_TOKEN; do not create a second deployment stack.",
+    "After a successful exact-main deploy, require production readback before calling current code live.",
+    "After deployment, prove #1062 owner-registration operations with D1/custom-domain readback and privacy-safe real-vs-synthetic Telegram evidence.",
+    "Prefer Repair Shop First-5 and First-10 real-user and revenue-loop evidence over speculative new modules.",
+    "Keep current owner lanes isolated and replay stale PRs onto fresh main rather than stacking patches on old branches."
+  ],
   "execution_rules": [
     "Do not implement or rewrite Hermes Connect visual design from this thread; route visual work to Design 5.",
     "Do not implement Hermes Connect AI or SEO/GEO from this thread.",
     "Do not take over specialist product implementation from an active owner lane.",
+    "Treat moving specialist PR heads as observed-at-review snapshots only; always re-fetch current head, compare and exact-head CI before any decision.",
     "Do not treat an open PR that is behind current main as promotion-ready from historical green evidence.",
     "Do not delete, uninstall or archive Claude before all decommission gates pass.",
     "Do not rerun full Codex extraction merely because main moved; re-run only when new evidence overlaps reconciled legacy candidate classes or contradicts accepted classifications.",
+    "Do not spoof Partnership sender identity and do not bypass owner/admin security blockers with public or duplicate stacks.",
     "MERGED != DEPLOYED != LIVE_VERIFIED."
   ]
 }
