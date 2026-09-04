@@ -59,10 +59,12 @@ test("carrier agreement, Load Board, and legacy operating tools remain discovera
   const nav = await readFile(resolve(process.cwd(), "src/components/DirectionProductNav.astro"), "utf8");
   const audiences = await readFile(resolve(process.cwd(), "src/data/logistics-audiences.ts"), "utf8");
   const carrierPage = await readFile(resolve(process.cwd(), "src/pages/logistics/[audience].astro"), "utf8");
+  const carrierEntry = await readFile(resolve(process.cwd(), "src/pages/carrier/index.astro"), "utf8");
 
   expect(nav).toContain('{ id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature }');
   expect(audiences).toContain('secondary: { label: "Agreement & onboarding", href: "/carrier/" }');
   expect(audiences).toContain('demo: { label: "Open carrier Load Board", href: "/load-board/?role=carrier#available-loads" }');
+  expect(carrierPage).toContain('<DirectionProductNav direction="logistics" theme="dark" />');
   expect(carrierPage).toContain("Carrier operating tools");
   for (const href of [
     "/logistics/start-car-hauling-dispatch/",
@@ -74,6 +76,10 @@ test("carrier agreement, Load Board, and legacy operating tools remain discovera
   ]) {
     expect(carrierPage).toContain(`href: "${href}"`);
   }
+
+  expect(carrierEntry).toContain('<DirectionProductNav direction="logistics" theme="dark" />');
+  expect(carrierEntry).toContain("signed review copy");
+  expect(carrierEntry).not.toContain("downloadable execution copy");
 });
 
 test("public entity naming does not erase existing operating contact routes", async () => {
