@@ -126,7 +126,7 @@ test("Hermes Connect Hub presents one live product, private Academy and Beauty, 
   await expect(page.getByText("WORKSPACE PREVIEW · SAMPLE DATA", { exact: true })).toBeVisible();
 });
 
-test("Hermes Connect Hub renders real Russian content and keeps Academy private entry", async ({ page }) => {
+test("Hermes Connect Hub keeps explicit Russian content but returns clean entries to English", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/?lang=ru");
 
@@ -140,9 +140,10 @@ test("Hermes Connect Hub renders real Russian content and keeps Academy private 
   await expect(page.getByRole("link", { name: "Открыть Академию" })).toHaveAttribute("href", "/services/hermes-connect/academy/?lang=ru");
 
   await page.goto("/services/hermes-connect/");
-  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
-  await expect(page.getByRole("heading", { name: "Управляйте бизнесом с AI." })).toBeVisible();
-  await expect(page.locator(".hc-content-language")).toHaveText("Язык контента: русский");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("heading", { name: /Run your business with AI\./ })).toBeVisible();
+  await expect(page.locator(".hc-content-language")).toHaveText("Content language: English");
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
