@@ -1,0 +1,150 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import SiteFooter from "../../components/SiteFooter.astro";
+
+const observedAt = "2026-09-03T11:52:36Z";
+const recentCapacity = [
+  { origin: "Marshalltown, IA", destination: null, equipment: "53' Dry Van", availability: "ready 2PM", team: false },
+  { origin: "Norfolk, NE", destination: null, equipment: "53' Dry Van", availability: "ready now", team: false },
+  { origin: "Goshen, IN", destination: null, equipment: "53' Dry Van", availability: "ready 1PM", team: false },
+  { origin: "Nashville, TN", destination: null, equipment: "53' Dry Van", availability: "ready 1PM", team: false },
+  { origin: "Glenwillow, OH", destination: "Chicago, IL", equipment: "53' Dry Van", availability: "ready 12PM", team: false },
+  { origin: "State College, PA", destination: null, equipment: "53' Dry Van", availability: "ready 11AM", team: false },
+  { origin: "Dickson, TN", destination: null, equipment: "53' Dry Van", availability: "ready 1PM", team: false },
+  { origin: "Johnstown, PA", destination: null, equipment: "53' Dry Van", availability: "ready 12PM", team: false },
+  { origin: "Pittsburgh, PA", destination: null, equipment: "53' Dry Van", availability: "ready 10AM", team: false },
+  { origin: "Rogers, MN", destination: null, equipment: "53' Dry Van", availability: "ready 12PM", team: true },
+  { origin: "Mokena, IL", destination: null, equipment: "53' Dry Van", availability: "ready 1PM", team: false },
+  { origin: "Parkersburg, WV", destination: null, equipment: "53' Dry Van", availability: "ready 11AM", team: false },
+];
+---
+
+<BaseLayout
+  title="Hermes Load Board Live Pilot"
+  description="Internal noindex pilot showing the current Hermes email-to-Load-Board pipeline with separate load and carrier-capacity records."
+  robots="noindex,nofollow"
+>
+  <div class="pilot-page">
+    <SiteHeader theme="dark" activePath="/load-board/" />
+    <main>
+      <section class="hero">
+        <div class="shell">
+          <p class="eyebrow">Hermes Connect · Email Intake Pilot</p>
+          <h1>Live Load Board Pilot</h1>
+          <p class="lead">This page separates real freight loads from carrier capacity. It is a noindex pilot while realtime Gmail ingestion is being connected.</p>
+          <div class="kpis">
+            <div><strong>0</strong><span>fresh confirmed loads in Tina right now</span></div>
+            <div><strong>{recentCapacity.length}</strong><span>recent capacity records parsed from Tina</span></div>
+            <div><strong>HOLD</strong><span>all new partner/broker outbound</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Available Loads</p>
+              <h2>Waiting for the next current/future load email</h2>
+            </div>
+            <span class="badge badge-wait">LIVE PIPELINE CONNECTING</span>
+          </div>
+          <div class="empty-state">
+            <strong>No current/future load email was found in Tina for Sep 4–6.</strong>
+            <p>The system will keep LOAD records separate from CAPACITY records. We will not manufacture demo loads or relabel empty trucks as freight.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Recent Capacity · Tina source</p>
+              <h2>Last observed carrier availability</h2>
+              <p>Observed Sep 3, 2026. These records are shown for pipeline/UI verification and require fresh confirmation before any operating action.</p>
+            </div>
+            <span class="badge badge-stale">VERIFY AVAILABILITY</span>
+          </div>
+
+          <div class="capacity-grid">
+            {recentCapacity.map((record) => (
+              <article class="capacity-card">
+                <div class="card-top">
+                  <span class="equipment">{record.equipment}</span>
+                  {record.team && <span class="team">TEAM</span>}
+                </div>
+                <h3>{record.origin}{record.destination ? ` → ${record.destination}` : ""}</h3>
+                <p>{record.availability}</p>
+                <dl>
+                  <div><dt>Type</dt><dd>Carrier capacity</dd></div>
+                  <div><dt>Observed</dt><dd>Sep 3 · 11:52 UTC</dd></div>
+                  <div><dt>Source contact</dt><dd>Hidden in pilot</dd></div>
+                </dl>
+                <button type="button" disabled>Refresh / confirm required</button>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="shell truth-box">
+          <p class="eyebrow">Truth boundary</p>
+          <h2>What this pilot proves now</h2>
+          <ul>
+            <li>Tina is connected as a distinct Gmail source without manual account switching.</li>
+            <li>Email capacity can be normalized into structured location/equipment records.</li>
+            <li>Private personal contacts are not exposed on the page.</li>
+            <li>Stale capacity is visibly marked instead of being presented as current freight.</li>
+            <li>Next code slice is Gmail delta intake → D1 → active API → automatic refresh.</li>
+          </ul>
+          <p class="source-note">Source mailbox: Tina Bloom. Latest usable source message observed: Sep 3, 2026. Raw email text and dispatcher contacts remain private.</p>
+        </div>
+      </section>
+    </main>
+    <SiteFooter />
+  </div>
+</BaseLayout>
+
+<style>
+  .pilot-page { background: #f5f7fb; color: #111827; min-height: 100vh; }
+  .hero { background: linear-gradient(135deg, #07133f 0%, #142b72 70%, #2140a2 100%); color: white; padding: 76px 0 58px; }
+  .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .11em; font-size: .76rem; font-weight: 800; opacity: .78; margin: 0 0 10px; }
+  h1 { font-size: clamp(2.2rem, 5vw, 4.7rem); line-height: .98; margin: 0; max-width: 900px; }
+  .lead { max-width: 760px; font-size: 1.12rem; line-height: 1.7; opacity: .9; margin: 22px 0 0; }
+  .kpis { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-top: 34px; }
+  .kpis div { padding: 20px; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); border-radius: 18px; }
+  .kpis strong { display: block; font-size: 1.8rem; }
+  .kpis span { display: block; margin-top: 4px; opacity: .78; }
+  .section { padding: 56px 0; }
+  .section-alt { background: #eef2f9; }
+  .section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+  .section-head h2, .truth-box h2 { font-size: clamp(1.7rem, 3vw, 2.6rem); margin: 0 0 8px; }
+  .section-head p { max-width: 760px; line-height: 1.6; color: #4b5563; }
+  .badge { font-size: .72rem; font-weight: 900; letter-spacing: .06em; padding: 9px 12px; border-radius: 999px; white-space: nowrap; }
+  .badge-wait { background: #dbeafe; color: #1d4ed8; }
+  .badge-stale { background: #fef3c7; color: #92400e; }
+  .empty-state { border: 1px dashed #9ca3af; background: white; border-radius: 18px; padding: 28px; }
+  .empty-state strong { font-size: 1.08rem; }
+  .empty-state p { margin-bottom: 0; color: #4b5563; line-height: 1.6; }
+  .capacity-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; }
+  .capacity-card { background: white; border: 1px solid #dce3ef; border-radius: 18px; padding: 20px; box-shadow: 0 8px 28px rgba(15,23,42,.05); }
+  .card-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .equipment { color: #3b5ccc; font-weight: 800; font-size: .82rem; }
+  .team { background: #ede9fe; color: #6d28d9; border-radius: 999px; padding: 5px 8px; font-size: .68rem; font-weight: 900; }
+  .capacity-card h3 { margin: 15px 0 8px; font-size: 1.22rem; }
+  .capacity-card > p { color: #374151; margin: 0 0 16px; }
+  dl { display: grid; gap: 9px; margin: 0 0 17px; }
+  dl div { display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid #edf0f5; padding-top: 9px; }
+  dt { color: #6b7280; font-size: .8rem; }
+  dd { margin: 0; text-align: right; font-weight: 700; font-size: .82rem; }
+  button[disabled] { width: 100%; border: 0; padding: 11px 12px; border-radius: 10px; background: #e5e7eb; color: #6b7280; font-weight: 800; }
+  .truth-box { background: #0b173f; color: white; border-radius: 24px; padding: 34px; }
+  .truth-box ul { line-height: 1.8; padding-left: 22px; }
+  .source-note { margin-bottom: 0; color: #cbd5e1; }
+  @media (max-width: 900px) { .capacity-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .kpis { grid-template-columns: 1fr; } }
+  @media (max-width: 620px) { .capacity-grid { grid-template-columns: 1fr; } .section-head { display: block; } .badge { display: inline-block; margin-top: 10px; } .shell { width: min(100% - 24px, 1180px); } }
+</style>
