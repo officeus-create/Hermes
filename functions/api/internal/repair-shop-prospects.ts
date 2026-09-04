@@ -108,7 +108,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       INSERT INTO hermes_repair_shop_prospects
       (id,source_entry_id,source,salesperson_code,name,phone,email,website,social_url,address_line1,city,state,postal_code,services,website_observation,
        social_observation,source_url,claim_state,claimed_shop_id,created_by,created_at,updated_at)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'unclaimed',NULL,?,?,?,?)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'unclaimed',NULL,?,?,?)
     `).bind(id,sourceEntryId,source,salespersonCode||null,name,phone||null,email||null,website||null,socialUrl||null,addressLine1||null,city,state,postalCode||null,services||null,
       websiteObservation||null,socialObservation||null,sourceUrl||null,owner.specialist.id,now,now).run();
   }
