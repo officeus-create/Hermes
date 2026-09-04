@@ -121,21 +121,21 @@ export const contentEntityRegistry: ContentEntityRecord[] = [
   },
   {
     id: "hermes_academy",
-    publicName: "Hermes Business Academy",
+    publicName: "Hermes Academy",
     websiteOwner: "/paths/academy/",
     relationshipStatus: "approved_parent",
     socialProfiles: [],
     publishingStatus: "preview_only",
-    notes: "The website relationship to the Hermes ecosystem is explicit. Social/community URLs still require owner verification.",
+    notes: "Hermes Academy is the canonical public direction. Hermes Business Academy may remain a subordinate program or operating label; social/community URLs still require owner verification.",
   },
   {
     id: "hermes_it",
-    publicName: "Hermes IT / Technology",
+    publicName: "Hermes Technology",
     websiteOwner: "/paths/technology/",
     relationshipStatus: "owner_verification_required",
     socialProfiles: [],
     publishingStatus: "preview_only",
-    notes: "The website service direction exists; a separate social/account identity has not been approved.",
+    notes: "Hermes Technology is the canonical public direction. IT Development may remain a subordinate service or operating label; a separate social/account identity has not been approved.",
   },
 ];
 
