@@ -13,12 +13,20 @@ const [layout, header, runtime, dashboard, availability, customers] = await Prom
   read("src/pages/services/hermes-connect/repair-shops/customers.astro"),
 ]);
 
-test("Hermes Connect persists selected locale through private route navigation and redirects", () => {
-  assert.match(layout, /localStorage\.getItem\("hermes-connect-language"\)/);
+test("Hermes Connect defaults clean entries to English while preserving explicit locale navigation", () => {
+  assert.doesNotMatch(layout, /localStorage\.getItem\("hermes-connect-language"\)/);
+  assert.doesNotMatch(layout, /window\.location\.replace\(`\$\{window\.location\.pathname\}/);
+  assert.match(layout, /const active = requested && supported\.has\(requested\) \? requested : "en"/);
   assert.match(layout, /localStorage\.setItem\("hermes-connect-language", active\)/);
-  assert.match(layout, /window\.location\.replace\(`\$\{window\.location\.pathname\}/);
   assert.match(layout, /a\[href\^="\/services\/hermes-connect\/"\]:not\(\[lang\]\)/);
   assert.match(layout, /next\.searchParams\.set\("lang", active\)/);
+});
+
+test("Hermes Connect mobile language drawer is independently scrollable", () => {
+  assert.match(header, /position:\s*fixed;/);
+  assert.match(header, /max-height:\s*calc\(100dvh - 72px - env\(safe-area-inset-bottom\)\)/);
+  assert.match(header, /overflow-y:\s*auto;/);
+  assert.match(header, /-webkit-overflow-scrolling:\s*touch;/);
 });
 
 test("Repair private localization runtime is mounted once across Hermes Connect routes", () => {

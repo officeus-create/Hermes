@@ -79,3 +79,54 @@ test("Repair Shop mobile drawer keeps navigation and Russian language selection 
   expect(styles.russianHeight).toBeGreaterThanOrEqual(44);
   expect(overflow).toBe(false);
 });
+
+test("Hermes Connect clean mobile entry stays English and the full language list can be scrolled and selected", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 600 });
+  await page.addInitScript(() => {
+    window.localStorage.setItem("hermes-connect-language", "ru");
+  });
+  await page.route("**/api/auth/me", (route) => route.fulfill({
+    status: 401,
+    contentType: "application/json",
+    body: JSON.stringify({ success: false, error: "not_authenticated" }),
+  }));
+  await page.route("**/api/internal-ai/status", (route) => route.fulfill({
+    status: 403,
+    contentType: "application/json",
+    body: JSON.stringify({ success: false }),
+  }));
+
+  await page.goto("/services/hermes-connect/");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator("[data-language-menu] summary span")).toHaveText("English");
+
+  await page.locator("[data-menu-button]").click();
+  const menu = page.locator("[data-mobile-menu]");
+  const switcher = menu.locator(".mobile-language-switcher");
+  const languages = switcher.locator("a[lang]");
+  await expect(menu).toBeVisible();
+  await expect(languages).toHaveCount(6);
+
+  const scrollContract = await menu.evaluate((node) => {
+    const style = getComputedStyle(node);
+    return {
+      overflowY: style.overflowY,
+      clientHeight: node.clientHeight,
+      scrollHeight: node.scrollHeight,
+      viewportBottom: node.getBoundingClientRect().bottom,
+      viewportHeight: window.innerHeight,
+    };
+  });
+  expect(["auto", "scroll"]).toContain(scrollContract.overflowY);
+  expect(scrollContract.clientHeight).toBeLessThanOrEqual(scrollContract.scrollHeight);
+  expect(scrollContract.viewportBottom).toBeLessThanOrEqual(scrollContract.viewportHeight + 1);
+
+  const french = switcher.locator("a[lang='fr']");
+  await french.scrollIntoViewIfNeeded();
+  await expect(french).toBeInViewport();
+  await french.click();
+
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=fr$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+});

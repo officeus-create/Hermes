@@ -150,16 +150,6 @@ const safeSchema = schema
         const supported = new Set(["en", "uk", "ru", "es", "it", "fr"]);
         const params = new URLSearchParams(window.location.search);
         const requested = params.get("lang");
-        let stored = "";
-        try { stored = window.localStorage.getItem("hermes-connect-language") || ""; } catch {}
-
-        if (!requested && supported.has(stored) && stored !== "en") {
-          params.set("lang", stored);
-          const query = params.toString();
-          window.location.replace(`${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`);
-          return;
-        }
-
         const active = requested && supported.has(requested) ? requested : "en";
         document.documentElement.lang = active;
         try { window.localStorage.setItem("hermes-connect-language", active); } catch {}
