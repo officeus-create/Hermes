@@ -4,18 +4,25 @@ import { resolve } from "node:path";
 import { publicPaths } from "../src/data/public-paths";
 import { contactHandoffRoutes } from "../src/lib/contact";
 
-test("public Four Directions use canonical Hermes direction entities", () => {
+test("public Four Directions use canonical Hermes entities and revenue-first order", () => {
+  expect(publicPaths.map(({ id }) => id)).toEqual([
+    "logistics",
+    "marketing",
+    "technology",
+    "academy",
+  ]);
+  expect(publicPaths.map(({ number }) => number)).toEqual(["01", "02", "03", "04"]);
   expect(publicPaths.map(({ brandLabel }) => brandLabel)).toEqual([
     "Hermes Logistics",
     "Hermes Marketing",
-    "Hermes Academy",
     "Hermes Technology",
+    "Hermes Academy",
   ]);
   expect(publicPaths.map(({ category }) => category)).toEqual([
     "Hermes Logistics",
     "Hermes Marketing",
-    "Hermes Academy",
     "Hermes Technology",
+    "Hermes Academy",
   ]);
 });
 
@@ -23,6 +30,29 @@ test("direction breadcrumb is derived from the public entity rather than legacy 
   const source = await readFile(resolve(process.cwd(), "src/pages/paths/[slug].astro"), "utf8");
   expect(source).toContain("name: path.brandLabel");
   expect(source).not.toContain("site.navigation.find");
+});
+
+test("all four main directions share one product-header geometry", async () => {
+  const page = await readFile(resolve(process.cwd(), "src/pages/paths/[slug].astro"), "utf8");
+  const nav = await readFile(resolve(process.cwd(), "src/components/DirectionProductNav.astro"), "utf8");
+  const academy = await readFile(resolve(process.cwd(), "src/components/AcademyProgramMatrix.astro"), "utf8");
+  const legacyLogisticsNav = await readFile(resolve(process.cwd(), "src/components/LogisticsProductNav.astro"), "utf8");
+
+  expect(page).toContain("<DirectionProductNav direction={path.id");
+  expect(nav).toContain('logistics: {');
+  expect(nav).toContain('marketing: {');
+  expect(nav).toContain('technology: {');
+  expect(nav).toContain('academy: {');
+  expect(nav).toContain("top:84px");
+  expect(nav).toContain("top:72px");
+  expect(legacyLogisticsNav).toContain("top:84px");
+  expect(legacyLogisticsNav).toContain("top:72px");
+
+  expect(academy).toContain('id: "academy-logistics"');
+  expect(academy).toContain('id: "academy-marketing"');
+  expect(academy).toContain('id: "academy-it"');
+  expect(academy).toContain('id: "academy-sales"');
+  expect(academy).toContain('id: "academy-operations"');
 });
 
 test("public entity naming does not erase existing operating contact routes", async () => {
