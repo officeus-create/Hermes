@@ -29,7 +29,7 @@ export const academyPublicPathOverrides: Partial<PathDetail> = {
     { title: "COO / Operations path", items: ["Department design", "KPI and dashboards", "SOP and process control", "Execution rhythm", "Scaling and decision systems"] },
   ],
   faq: [
-    { question: "Which Academy tracks are publicly presented?", answer: "Five tracks: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations. Logistics and Marketing already have dedicated course pages; the other three currently live as Academy learning tracks while their detailed public course pages and exact cohort offers are prepared." },
+    { question: "Which Academy tracks are publicly presented?", answer: "Five tracks: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations. Logistics and Marketing already have dedicated detailed course pages; the other tracks currently live inside the Academy hub while their dedicated public course pages are prepared." },
     { question: "Are paid cohorts and free practice the same offer?", answer: "No. A paid cohort requires an approved public offer with scope, dates, price, payment, refund, capacity, and enrollment terms. Free practice is a separate application and eligibility process with its own participation rules." },
     { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment." },
     { question: "Is employment or income guaranteed?", answer: "No. Training and practice can build capability and evidence of readiness, but employment, income, clients, certification, promotion, access duration, and future paid work are not guaranteed." },
