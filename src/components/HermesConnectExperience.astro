@@ -42,7 +42,7 @@
       it: {
         live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", privateFoundation: "BASE PRIVATA PER IL TITOLARE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
         currentProduct: "Prodotto attuale: Officine", beautyProduct: "Spazio privato: Beauty & Wellness", content: "Lingua dei contenuti: inglese",
-        englishOnly: "Questa pagina è attualmente disponibile solo in inglese. La navigazione Hermes Connect è localizzata; il contenuto non viene tradotto parzialmente.",
+        englishOnly: "Questa pagina è attualmente disponibile solo in inglese. La navigazione di Hermes Connect è localizzata; il contenuto non viene tradotto parzialmente.",
       },
       fr: {
         live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", privateFoundation: "BASE PRIVÉE POUR PROPRIÉTAIRE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
@@ -129,7 +129,7 @@
     contentLanguage.textContent = isBeauty && locale === "ru" ? "Язык контента: русский" : chrome[locale].content;
     summary.append(dot, strong, product, contentLanguage);
 
-    const family = [
+    const productFamily = [
       ["Product Hub", "/services/hermes-connect/"],
       ["Repair Shops", "/services/hermes-connect/repair-shops/"],
       ["AI Command Center", "/services/hermes-connect/ai-command-center/"],
@@ -140,6 +140,8 @@
       ["ROI Calculator", "/services/hermes-connect/roi-calculator/"],
       ["Business Automation", "/services/hermes-connect/business-automation/"],
     ];
+    const repairFamily = productFamily.slice(0, 2);
+    const family = isRepair ? repairFamily : productFamily;
 
     const nav = document.createElement("nav");
     nav.className = "hc-family-nav";
@@ -178,8 +180,10 @@
     // The internal entry is deliberately capability-discovered server-side.
     // A customer, ordinary Hermes account, Academy account, or anonymous visitor
     // receives no link node at all; the internal endpoint returns no task data
-    // unless it has already verified HERMES_INTERNAL_OWNER.
-    void (async () => {
+    // unless it has already verified HERMES_INTERNAL_OWNER. Repair Shop routes stay
+    // task-focused even for the internal owner; account-level switching lives in
+    // the shared account control instead of leaking unrelated capabilities here.
+    if (!isRepair) void (async () => {
       try {
         const response = await fetch("/api/internal-ai/status", { credentials: "same-origin", headers: { Accept: "application/json" } });
         const payload = await response.json().catch(() => null);
