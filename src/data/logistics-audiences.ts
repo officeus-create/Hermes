@@ -77,7 +77,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
     ],
     primary: { label: "Start dispatch review", href: "/logistics/start-car-hauling-dispatch/" },
     secondary: { label: "Agreement & onboarding", href: "/carrier/" },
-    demo: { label: "Open carrier Load Board", href: "/load-board/?role=carrier#available-loads" },
+    demo: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" },
   },
   {
     slug: "agency",
