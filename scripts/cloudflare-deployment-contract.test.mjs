@@ -27,11 +27,22 @@ assert.equal(pagesExample.pages_build_output_dir, "dist");
 assert.equal("main" in pagesExample, false, "The root example must remain Pages-oriented, not a Worker entrypoint.");
 
 const emailWorkerExample = JSON.parse(read("workers/lead-email/wrangler.jsonc.example"));
+const emailWorkerProduction = JSON.parse(read("workers/lead-email/wrangler.production.jsonc"));
 assert.equal(emailWorkerExample.name, "hermes-lead-email");
-assert.equal(emailWorkerExample.main, "src/index.mjs");
+assert.equal(emailWorkerExample.main, "src/entry.mjs");
+assert.equal(emailWorkerProduction.name, "hermes-lead-email");
+assert.equal(emailWorkerProduction.main, "src/entry.mjs");
 assert.equal(emailWorkerExample.workers_dev, false);
 assert.equal(emailWorkerExample.preview_urls, false);
-assert.equal("routes" in emailWorkerExample, false, "The private email Worker must not gain a public route by default.");
+assert.equal("routes" in emailWorkerExample, false, "The private email Worker must not gain a public HTTP route by default.");
+assert.equal("routes" in emailWorkerProduction, false, "The private email Worker must not gain a public HTTP route by default.");
+
+const emailWorkerEntry = read("workers/lead-email/src/entry.mjs");
+assert.match(emailWorkerEntry, /import leadEmailWorker from "\.\/index\.mjs"/);
+assert.match(emailWorkerEntry, /import \{ handleLoadBoardInboundEmail \} from "\.\/load-board-inbound\.mjs"/);
+assert.match(emailWorkerEntry, /fetch\(request, env, ctx\)/);
+assert.match(emailWorkerEntry, /async email\(message, env, ctx\)/);
+assert.equal(exists("workers/lead-email/src/index.mjs"), true, "Existing outbound lead-email implementation must remain present.");
 
 const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v2.yml");
 assert.match(
@@ -43,6 +54,7 @@ assert.match(
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
 assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
+assert.match(leadEmailWorkflow, /node scripts\/load-board-intake-api-contract\.test\.mjs/);
 assert.match(
   leadEmailWorkflow,
   /^\s*command:\s*deploy --config workers\/lead-email\/wrangler\.production\.jsonc --keep-vars\s*$/im,
@@ -77,4 +89,4 @@ for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
   );
 }
 
-console.log("Cloudflare deployment ownership contract passed: Pages plus one pinned hermes-lead-email Worker owner.");
+console.log("Cloudflare deployment ownership contract passed: Pages plus one composed hermes-lead-email Worker owner.");

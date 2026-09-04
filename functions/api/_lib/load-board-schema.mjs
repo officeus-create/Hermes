@@ -53,9 +53,30 @@ export async function ensureLoadBoardSchema(db) {
     )
   `).run();
 
+  await db.prepare(`
+    CREATE TABLE IF NOT EXISTS hermes_load_quarantine (
+      id TEXT PRIMARY KEY,
+      source_id TEXT NOT NULL,
+      source_message_id TEXT NOT NULL,
+      fingerprint TEXT NOT NULL,
+      source_name TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      subject TEXT,
+      received_at TEXT NOT NULL,
+      observed_at TEXT NOT NULL,
+      raw_evidence_ref TEXT,
+      status TEXT NOT NULL DEFAULT 'pending_review',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(source_id, source_message_id, fingerprint)
+    )
+  `).run();
+
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_mailbox ON hermes_load_sources(mailbox_email)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_sources_status ON hermes_load_sources(status, ingest_enabled)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_active ON hermes_load_records(status, visibility, expires_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_source ON hermes_load_records(source_id, last_seen_at DESC)").run();
   await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_records_type_equipment ON hermes_load_records(record_type, equipment, expires_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_pending ON hermes_load_quarantine(status, observed_at DESC)").run();
+  await db.prepare("CREATE INDEX IF NOT EXISTS idx_load_quarantine_source ON hermes_load_quarantine(source_id, observed_at DESC)").run();
 }

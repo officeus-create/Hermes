@@ -2,7 +2,7 @@
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "hermes-lead-email",
   "account_id": "ec00de0c2f5ffd6fda4034ca98f992f9",
-  "main": "src/index.mjs",
+  "main": "src/entry.mjs",
   "compatibility_date": "2026-08-04",
   "workers_dev": false,
   "preview_urls": false,
@@ -14,7 +14,9 @@
   "vars": {
     "SALES_DESTINATION": "officeus@hermeslogisticsus.com",
     "SALES_SENDER": "website@hermeslogisticsus.com",
-    "CARRIER_CONTRACT_INTERNAL_RECIPIENTS": "officeus@hermeslogisticsus.com"
+    "CARRIER_CONTRACT_INTERNAL_RECIPIENTS": "officeus@hermeslogisticsus.com",
+    "LOADBOARD_EMAIL_RECIPIENT": "loads@hermeslogisticsus.com",
+    "LOADBOARD_INGEST_URL": "https://hermeslogisticsus.com/api/load-board/intake"
   },
   "send_email": [
     {
