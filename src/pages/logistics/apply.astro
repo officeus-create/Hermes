@@ -282,7 +282,7 @@ import "../../styles/features/load.css";
         body: JSON.stringify({
           candidate_id: candidateId,
           answers: [
-            { evidence_id: evidenceIds.languages, question_id: "application_languages", phase: "APPLICATION_INTAKE", answer: languages, answered_at: submittedAt },
+            { evidence_id: evidenceIds.languages, question_id: "application_languages", phase: "APPLICATION_INTAKE", answer: `Reported languages: ${languages}`, answered_at: submittedAt },
             { evidence_id: evidenceIds.experience, question_id: "application_experience", phase: "APPLICATION_INTAKE", answer: experience, answered_at: submittedAt },
             { evidence_id: evidenceIds.availability, question_id: "application_availability", phase: "APPLICATION_INTAKE", answer: availability, answered_at: submittedAt },
           ],
