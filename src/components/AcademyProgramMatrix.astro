@@ -1,0 +1,94 @@
+---
+import { ArrowRight, BriefcaseBusiness, Code2, Megaphone, Truck, Workflow } from "@lucide/astro";
+
+const programs = [
+  {
+    id: "academy-logistics",
+    title: "U.S. Logistics",
+    body: "Dispatch, broker and carrier communication, documents, equipment logic, load lifecycle, negotiation, and operating rhythm.",
+    href: "/academy/us-logistics-operations/",
+    cta: "Open logistics course",
+    icon: Truck,
+  },
+  {
+    id: "academy-marketing",
+    title: "Marketing",
+    body: "Positioning, websites, SEO/GEO, social media, content systems, lead generation, analytics, and sales follow-up.",
+    href: "/academy/marketing/",
+    cta: "Open marketing course",
+    icon: Megaphone,
+  },
+  {
+    id: "academy-it",
+    title: "IT & AI",
+    body: "Web products, internal systems, automation, AI-assisted workflows, integrations, data thinking, and product delivery.",
+    href: "/paths/technology/",
+    cta: "Explore IT learning path",
+    icon: Code2,
+  },
+  {
+    id: "academy-sales",
+    title: "Sales",
+    body: "Discovery, qualification, scripts, objections, follow-up, CRM discipline, offer presentation, and measurable sales execution.",
+    href: "/paths/marketing/#contact",
+    cta: "Explore sales path",
+    icon: BriefcaseBusiness,
+  },
+  {
+    id: "academy-operations",
+    title: "COO / Operations",
+    body: "Department design, KPI, SOP, execution control, dashboards, decision systems, leadership, and scaling operating teams.",
+    href: "/academy/how-training-works/",
+    cta: "Review operating path",
+    icon: Workflow,
+  },
+] as const;
+---
+
+<section class="section academy-program-matrix" aria-labelledby="academy-program-matrix-title">
+  <div class="shell">
+    <div class="academy-program-matrix__head">
+      <div>
+        <p class="eyebrow">Hermes Academy · Professional tracks</p>
+        <h2 id="academy-program-matrix-title">Learn the departments that run a real business.</h2>
+      </div>
+      <p>Academy is the education layer for the Hermes ecosystem: logistics, marketing, IT, sales, and operating leadership. Individual programs can grow into dedicated course pages without creating a second Academy system.</p>
+    </div>
+
+    <div class="academy-program-matrix__grid">
+      {programs.map((program, index) => {
+        const Icon = program.icon;
+        return (
+          <article id={program.id} class="academy-program-card">
+            <div class="academy-program-card__top">
+              <span>0{index + 1}</span>
+              <Icon size={22} aria-hidden="true" />
+            </div>
+            <h3>{program.title}</h3>
+            <p>{program.body}</p>
+            <a href={program.href}>{program.cta}<ArrowRight size={16} aria-hidden="true" /></a>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .academy-program-matrix{background:#f7f7f4}
+  .academy-program-matrix__head{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.72fr);gap:2rem;align-items:end;margin-bottom:2rem}
+  .academy-program-matrix__head h2{max-width:17ch;margin:.35rem 0 0}
+  .academy-program-matrix__head>p{margin:0;color:#697084;line-height:1.7}
+  .academy-program-matrix__grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.8rem}
+  .academy-program-card{display:flex;flex-direction:column;min-height:310px;padding:1.15rem;border:1px solid #deded6;border-radius:16px;background:#fff;box-shadow:0 18px 45px rgba(17,19,36,.055)}
+  .academy-program-card__top{display:flex;align-items:center;justify-content:space-between;gap:1rem;color:#a56b00}
+  .academy-program-card__top span{font:700 .67rem/1 var(--font-mono);letter-spacing:.08em;color:#8c8e98}
+  .academy-program-card h3{margin:1.15rem 0 .6rem;font-size:1.28rem}
+  .academy-program-card p{margin:0;color:#697084;line-height:1.58;font-size:.9rem}
+  .academy-program-card a{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1.2rem;color:#7d5200;font-size:.78rem;font-weight:800}
+  .academy-program-card a:hover svg,.academy-program-card a:focus-visible svg{transform:translateX(3px)}
+  .academy-program-card svg{transition:transform .2s ease}
+  @media(max-width:1100px){.academy-program-matrix__grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+  @media(max-width:760px){.academy-program-matrix__head{grid-template-columns:1fr}.academy-program-matrix__grid{grid-template-columns:1fr}.academy-program-card{min-height:0}.academy-program-card a{margin-top:1rem}}
+  @media(prefers-reduced-motion:reduce){.academy-program-card svg{transition:none}}
+</style>
