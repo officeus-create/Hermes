@@ -136,8 +136,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       continue;
     }
 
-    const requestedVisibility = VISIBILITY.has(String(record.visibility))
-      ? String(record.visibility) as Visibility
+    const rawVisibility = String(record.visibility ?? "");
+    const requestedVisibility: Visibility = VISIBILITY.has(rawVisibility as Visibility)
+      ? rawVisibility as Visibility
       : "internal_only";
     const visibility = clampVisibility(requestedVisibility, redistributionPermission);
     const status = new Date(expiresAt).getTime() > Date.now() ? "active" : "expired";
