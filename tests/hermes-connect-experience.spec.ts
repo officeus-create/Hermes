@@ -61,14 +61,14 @@ test("Repair Shop owner registration is localized without creating duplicate aut
   }
 });
 
-test("Repair Shop owner language is preserved into workspace links", async ({ page }) => {
+test("authenticated Repair Shop owner enters the CRM directly with locale preserved", async ({ page }) => {
   await page.route("**/api/auth/me", async (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
     body: JSON.stringify({ success: true, specialist: { name: "Pilot Owner", email: "owner@example.com", role: "Shop Owner" } }),
   }));
   await page.goto("/services/hermes-connect/repair-shops/auth/?lang=es");
-  await expect(page.getByRole("link", { name: "Ir al panel del taller" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/?lang=es");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/dashboard\/\?lang=es$/);
 });
 
 test("Hermes Connect product family navigation presents Repair Shops as the current product", async ({ page }) => {
