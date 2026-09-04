@@ -54,6 +54,7 @@ assert.match(
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
 assert.match(leadEmailWorkflow, /workers\/lead-email\/\*\*/);
+assert.match(leadEmailWorkflow, /node scripts\/load-board-intake-api-contract\.test\.mjs/);
 assert.match(
   leadEmailWorkflow,
   /^\s*command:\s*deploy --config workers\/lead-email\/wrangler\.production\.jsonc --keep-vars\s*$/im,
