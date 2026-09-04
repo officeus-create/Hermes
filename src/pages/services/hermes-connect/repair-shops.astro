@@ -15,8 +15,6 @@ const liveCapabilities = [
 
 const faqs = [
   { question: "What does Hermes Connect repair shop software include?", answer: "You can register an owner account, set up the shop profile and services, configure weekly availability, share a public online booking link, process bookings, review customer and vehicle context, and send private product feedback." },
-  { question: "Is Hermes Connect repair shop management software?", answer: "Hermes Connect combines the current shop profile, service catalog, availability, online booking, booking workflow, customer records, and vehicle context in one browser-based owner workspace. It is designed to reduce the coordination work that otherwise sits across calls, messages, calendars, and separate notes." },
-  { question: "What kinds of vehicle service businesses can use the current workflow?", answer: "The current public workflow is designed around independent auto repair, truck and diesel repair, mobile mechanic, tire service, and body or collision shops. Other appointment-based vehicle service businesses can register and describe their services for fit review rather than assuming unsupported capabilities." },
   { question: "Can customers book repair appointments online?", answer: "Yes. Your shop can publish services and weekly availability and share one booking link. Customers choose a service and request an available time while Hermes Connect keeps the booking attached to the shop workflow." },
   { question: "How much is the Founding Shop Plan?", answer: "The current launch offer is $99 per month for one repair shop location. The website does not collect a card on the activation request; Hermes confirms the shop, plan scope, billing details, and invoice before paid activation." },
   { question: "Can I try the workspace before requesting paid activation?", answer: "Yes. Start with owner registration, configure the shop, and see whether the workflow is useful. When you are ready to keep using it as a paid shop, open the Founding Shop Plan and request activation." },
@@ -28,11 +26,11 @@ const schema = [
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
-    name: "Hermes Connect Repair Shop Management Software",
+    name: "Hermes Connect Repair Shop Software",
     url: "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/",
     applicationCategory: "BusinessApplication",
     operatingSystem: "Modern web browser",
-    description: "Auto repair shop management software for online booking, scheduling, services, availability, booking operations, customers, and vehicle context for independent vehicle service businesses.",
+    description: "Auto repair shop software for online booking, scheduling, services, availability, booking operations, customers, and vehicle context.",
     featureList: [
       "Repair shop profile and services",
       "Online appointment booking",
@@ -60,8 +58,8 @@ const schema = [
 ---
 
 <BaseLayout
-  title="Auto Repair Shop Management Software & Online Booking | Hermes Connect"
-  description="Auto repair shop management software for booking, scheduling, services, customers and vehicle workflow. Built for independent auto, truck/diesel, mobile mechanic, tire and body/collision shops."
+  title="Auto Repair Shop Software & Online Booking | Hermes Connect"
+  description="Auto repair shop software for online booking, scheduling, services, availability, customers and vehicle context. Founding Shop Plan: $99/month."
   schema={schema}
 >
   <SiteHeader activePath="/paths/technology/" />
@@ -70,11 +68,11 @@ const schema = [
     <section class="repair-live-hero">
       <div class="repair-shell repair-live-grid">
         <div>
-          <p class="repair-kicker">Hermes Connect · Repair Shop Management Software</p>
-          <h1>Manage your repair shop, bookings, customers, and daily workflow in one place.</h1>
-          <p class="repair-lead">Hermes Connect is browser-based auto repair shop management software for independent vehicle service businesses. Publish services and hours, accept online appointment requests, process bookings, and keep customer and vehicle context together instead of coordinating everything across calls, messages, calendars, and separate notes.</p>
+          <p class="repair-kicker">Hermes Connect · Auto Repair Shop Software</p>
+          <h1>Give customers one link to book your repair shop.</h1>
+          <p class="repair-lead">Hermes Connect repair shop software helps independent shops publish services and hours, accept online appointment requests, process bookings, and keep customer and vehicle context together instead of coordinating everything across calls, messages, and separate notes.</p>
           <div class="repair-actions">
-            <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/?mode=register">Set up my shop <ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="repair-primary" href="/services/hermes-connect/repair-shops/auth/">Set up my shop <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="repair-secondary" href="/services/hermes-connect/repair-shops/plan/">View $99 Founding Plan</a>
           </div>
           <div class="repair-trust">
@@ -93,16 +91,6 @@ const schema = [
             <li><strong>5</strong><span>Manage bookings and customers</span></li>
           </ol>
         </aside>
-      </div>
-    </section>
-
-    <section class="repair-section" aria-labelledby="repair-markets-title">
-      <div class="repair-shell">
-        <div class="repair-heading">
-          <p class="repair-kicker">For independent vehicle service businesses</p>
-          <h2 id="repair-markets-title">Auto repair, truck and diesel, mobile mechanic, tire, and body or collision shops.</h2>
-          <p>The current Hermes Connect workflow is built around businesses that manage services, appointment availability, bookings, customers, and vehicle context. Other appointment-based vehicle service businesses can register and describe their service model for fit review instead of being forced into a separate SEO page or a capability Hermes has not verified.</p>
-        </div>
       </div>
     </section>
 
@@ -136,7 +124,7 @@ const schema = [
       <div class="repair-shell">
         <div class="repair-heading"><p class="repair-kicker">Owner access</p><h2 id="repair-workspace-title">Start publicly. Continue operations after sign-in.</h2><p>The public product page explains the workflow and launch offer. Shop dashboard, scheduling, customers, and other operational tools stay inside the authenticated Hermes workspace.</p></div>
         <div class="repair-link-grid">
-          <a href="/services/hermes-connect/repair-shops/auth/?mode=register"><UsersRound size={20} aria-hidden="true" /><strong>Register my shop</strong><span>Create your shop owner account and begin setup.</span></a>
+          <a href="/services/hermes-connect/repair-shops/auth/"><UsersRound size={20} aria-hidden="true" /><strong>Login / Register</strong><span>Create your shop or securely return to your owner workspace.</span></a>
           <a href="/services/hermes-connect/repair-shops/plan/"><DollarSign size={20} aria-hidden="true" /><strong>Founding Shop Plan</strong><span>Review the $99/month launch scope and request paid activation.</span></a>
           <a href="#repair-capabilities-title"><CalendarDays size={20} aria-hidden="true" /><strong>How online booking works</strong><span>Review the public booking, availability, customer, and vehicle workflow before signing in.</span></a>
         </div>
