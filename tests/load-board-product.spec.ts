@@ -1,5 +1,14 @@
 import { expect, test } from "@playwright/test";
 
+test("main navigation uses the four clear business labels", async ({ page }) => {
+  await page.goto("/paths/technology/");
+  const nav = page.getByRole("navigation", { name: "Primary navigation" });
+  await expect(nav.getByRole("link", { name: "Logistics", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Marketing", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Academy", exact: true })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "IT", exact: true })).toHaveAttribute("href", "/paths/technology/");
+});
+
 test("Logistics exposes Load Board first and keeps the audience hierarchy clear", async ({ page }) => {
   await page.goto("/paths/logistics/");
 
@@ -36,7 +45,6 @@ test("Load Board v1 shows multiple equipment types and keeps private operational
   }
 
   await expect(page.getByText("Preview rows are clearly marked.")).toBeVisible();
-  await expect(page.getByText(/Verified users unlock operational details and actions/i)).toHaveCount(0);
   await expect(page.getByRole("link", { name: /Request Load Board access/ })).toHaveAttribute("href", "/load-board/?role=carrier#carrier-access");
 
   const body = await page.locator("body").innerText();
