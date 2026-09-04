@@ -4,9 +4,10 @@ Date: 2026-09-04
 
 North star: **SEO/GEO → traffic → measurable lead handoff → qualified opportunity → money**.
 
-This ledger deliberately separates repository execution from external outcomes. `VERIFIED_IN_PR` means the current PR proves the implementation/invariant. `GATE_IMPLEMENTED` means the repository is ready to accept/validate real external evidence, but the external result itself is not claimed. `EXTERNAL_RESULT_PENDING` must never be rewritten as zero, failed, indexed, ranked, cited, qualified, won, or revenue without the corresponding real evidence.
+This ledger deliberately separates repository execution from external outcomes. `VERIFIED_IN_PR` means the current PR proves the implementation/invariant. `GATE_IMPLEMENTED` means the repository is ready to accept/validate real external evidence. `PLATFORM_VERIFIED` and `PRODUCTION_NETWORK_RECEIPT` refer only to the exact evidence already recorded in the canonical measurement source; they must not be promoted into qualification, revenue, or unrelated platform claims. `EXTERNAL_RESULT_PENDING` must never be rewritten as zero, failed, indexed, ranked, cited, qualified, won, or revenue without the corresponding real evidence.
 
-Canonical execution PR: #1059.
+Canonical execution PR: #1059.  
+Canonical pre-existing measurement checkpoint: `docs/SEO15_REVENUE_MEASUREMENT_BASELINE_2026-08-30.md`.
 
 | # | Task | Engineering state | External outcome |
 |---:|---|---|---|
@@ -70,15 +71,15 @@ Canonical execution PR: #1059.
 | 058 | Unobserved slots remain `unobserved` | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
 | 059 | Unobserved slots keep null observation timestamps | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
 | 060 | Unobserved slots keep null results | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
-| 061 | Exact U.S. GSC owner-export contract exists | GATE_IMPLEMENTED | EXTERNAL_RESULT_PENDING |
-| 062 | Google URL Inspection contract exists | GATE_IMPLEMENTED | EXTERNAL_RESULT_PENDING |
-| 063 | Bing exact-URL contract exists | GATE_IMPLEMENTED | EXTERNAL_RESULT_PENDING |
-| 064 | GA4 exact-once receipt contract exists | GATE_IMPLEMENTED | EXTERNAL_RESULT_PENDING |
-| 065 | Private funnel aggregate contract exists | GATE_IMPLEMENTED | EXTERNAL_RESULT_PENDING |
+| 061 | Exact U.S. GSC owner-export contract exists | GATE_IMPLEMENTED | PLATFORM_VERIFIED for comparable 7d/28d U.S.+Desktop aggregate windows; priority page×query U.S. owner intersection still pending |
+| 062 | Google URL Inspection contract exists | GATE_IMPLEMENTED | Authenticated Google checkpoint records four reviewed priority URLs indexed; exact per-owner inspection/enhancement refresh remains scoped pending |
+| 063 | Bing exact-URL contract exists | GATE_IMPLEMENTED | PLATFORM_VERIFIED: 2 priority URLs INDEXED / 2 DISCOVERED_NOT_CRAWLED; no site-side crawl exclusion found |
+| 064 | GA4 exact-once receipt contract exists | GATE_IMPLEMENTED | PRODUCTION_NETWORK_RECEIPT / EXACT_ONCE for the verified shared path; GA4 UI Key Event/report attribution remains pending |
+| 065 | Private funnel aggregate contract exists | GATE_IMPLEMENTED | Global received/reviewed/qualified/opportunity/won/revenue remains UNKNOWN; source-scoped private reconciliation is incomplete |
 | 066 | Manual AI provider review contract exists | GATE_IMPLEMENTED | EXTERNAL_RESULT_PENDING |
-| 067 | External acquisition queue remains `external_action_required` | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
-| 068 | GA4 exact-once proof requires observed count = 1 | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
-| 069 | IndexNow acceptance cannot impersonate Bing index proof | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
+| 067 | External acquisition queue remains `external_action_required` | VERIFIED_IN_PR | Only genuinely unresolved external actions remain queued |
+| 068 | GA4 exact-once proof requires observed count = 1 | VERIFIED_IN_PR | Shared production network path has one verified matching receipt; do not promote transport into business conversion |
+| 069 | IndexNow acceptance cannot impersonate Bing index proof | VERIFIED_IN_PR | Bing exact-URL states are separately PLATFORM_VERIFIED; IndexNow remains notification evidence only |
 | 070 | Raw AI responses/transcripts are forbidden from repository evidence | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
 | 071 | SEO commercial CTA click is instrumented | VERIFIED_IN_PR | traffic volume pending |
 | 072 | SEO intake start is instrumented | VERIFIED_IN_PR | lead volume pending |
@@ -102,7 +103,7 @@ Canonical execution PR: #1059.
 | 090 | Website Development keeps the approved direct-email fallback | VERIFIED_IN_PR | lead outcome pending |
 | 091 | GEO state forbids synthetic provider observations as business evidence | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
 | 092 | GEO state preserves the 48×5 denominator | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
-| 093 | GSC/Bing/GA4 evidence classes remain separate | VERIFIED_IN_PR | EXTERNAL_RESULT_PENDING |
+| 093 | GSC/Bing/GA4 evidence classes remain separate | VERIFIED_IN_PR | Current platform/network baseline is recorded separately; no cross-promotion into revenue evidence |
 | 094 | Canonical-owner governance remains explicit | VERIFIED_IN_PR | search outcome pending |
 | 095 | Private commercial outcomes remain separate from public evidence | VERIFIED_IN_PR | revenue aggregate pending |
 | 096 | Public entity registry remains the controlled entity source | VERIFIED_IN_PR | external entity cleanup pending |
@@ -118,6 +119,18 @@ Canonical execution PR: #1059.
 - Academy root identity: `Hermes Business Academy` → `Hermes Academy`; Hermes Business Academy may remain a subordinate program/operating label.
 - Technology root identity: `IT Development` / `Hermes IT Development` → `Hermes Technology`; IT Development remains a subordinate service/operating label.
 
+## Pre-existing external baseline preserved by this ledger
+
+This PR does not create these external results; it preserves the already-recorded evidence boundary from `docs/SEO15_REVENUE_MEASUREMENT_BASELINE_2026-08-30.md`:
+
+- GSC `7d · Web · United States · Desktop · 2026-08-20..2026-08-26`: **2 clicks / 294 impressions / 0.7% CTR / avg position 37.7**;
+- GSC `28d · Web · United States · Desktop · 2026-07-30..2026-08-26`: **5 clicks / 800 impressions / 0.6% CTR / avg position 45.6**;
+- the four priority URLs reviewed in that authenticated Google checkpoint were indexed;
+- Bing priority URL state: **2 INDEXED / 2 DISCOVERED_NOT_CRAWLED** with no repository-side crawl exclusion found;
+- shared GA4 production network transport: **one matching receipt / EXACT_ONCE**.
+
+These facts do not prove page-level U.S. query attribution, GA4 Key Event/report attribution, human qualification, opportunity creation, revenue, AI mentions/citations, or that the current repository head has reached production.
+
 ## Do not claim yet
 
-Until external evidence is genuinely acquired, this wave does **not** claim Google/Bing indexation, rankings, traffic growth, AI mentions/citations, delivered leads, qualified opportunities, won deals, or revenue. Those are the next evidence layer after the engineering gate is merged and production parity is verified.
+Until the remaining evidence is genuinely acquired, this wave does **not** claim a new ranking lift, a new traffic lift caused by this PR, AI mentions/citations, delivered real leads, qualified opportunities, won deals, revenue, or current-head production parity. Existing verified Google/Bing/GA4 evidence above remains historical/current baseline evidence only and must not be presented as a result caused by this code wave.
