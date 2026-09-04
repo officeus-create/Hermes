@@ -120,7 +120,7 @@ test.describe('Logistics career → private HR intake', () => {
 
     await page.locator('[data-application-submit]').click();
     await expect(page.locator('[data-application-result-title]')).toHaveText('Ready to copy');
-    await expect(page.locator('[data-application-preview]')).toContainText('Delivery: preview only — no agency inquiry was sent or stored.');
+    await expect(page.locator('[data-application-preview]')).toContainText('Delivery: preview only — no application was sent or stored.');
     expect(apiCalls).toBe(0);
   });
 });
