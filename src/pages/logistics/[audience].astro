@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, Calculator, Check, FileSignature, Route, Truck } 
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import CareerStatusPanel from "../../components/CareerStatusPanel.astro";
+import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import { logisticsAudiences } from "../../data/logistics-audiences";
@@ -119,6 +120,7 @@ const schema = [breadcrumbSchema, faqSchema];
   <div class="logistics-audience-page">
     {validatorCompat && <template data-static-validator-compat={validatorCompat}></template>}
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <DirectionProductNav direction="logistics" theme="dark" />
     <main id="main-content">
       <section class="logistics-audience-hero">
         <div class="shell">
