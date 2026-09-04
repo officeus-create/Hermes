@@ -94,7 +94,7 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
         platform: "instagram",
         url: "https://www.instagram.com/progressopro/",
         status: "relationship_hold",
-        evidence: "Previously placed in the Hermes root sameAs array; this does not prove that ProgressoPro is the same Organization entity.",
+        evidence: "This profile was previously placed in the Hermes root identity array; that historical placement does not prove same-entity status.",
       },
     ],
     notes:
@@ -102,14 +102,14 @@ export const publicEntityRegistry: Record<PublicEntityId, PublicEntityRecord> = 
   },
   hermes_academy: {
     id: "hermes_academy",
-    publicName: "Hermes Business Academy",
+    publicName: "Hermes Academy",
     schemaId: "https://hermeslogisticsus.com/#academy",
     websiteOwner: "/paths/academy/",
     relationshipStatus: "approved_direction",
     schemaPublication: "approved",
     socialProfiles: [],
     notes:
-      "The website relationship to the Hermes ecosystem is approved. Social and community profiles require exact owner-controlled URLs before sameAs publication.",
+      "Hermes Academy is the canonical public direction label. Hermes Business Academy may remain a subordinate program or operating label where a canonical page explicitly uses it. Social and community profiles require exact owner-controlled URLs before sameAs publication.",
   },
   hermes_it: {
     id: "hermes_it",

@@ -1,10 +1,10 @@
 # Hermes GEO — Current State
 
-Updated: 2026-09-02
+Updated: 2026-09-04
 
 This file is the single current repository handoff for GEO/public-AI visibility work. Historical GEO stacks remain provenance only and must not be replayed wholesale.
 
-Current engineering checkpoint on `main`: `5b511eb7e3cd7581bc4e1b68cddb9475a636dc13` (`#1006`).
+Current engineering checkpoint is the active revenue-first SEO/GEO release lane in #1059, reconciled to current main before exact-head promotion.
 
 ## Boundary
 
@@ -18,7 +18,7 @@ Until CEO/One Brain finishes selecting priority business directions, query famil
 
 - Root public entity: `Hermes`.
 - Public Four Directions: `Hermes Logistics`, `Hermes Marketing`, `Hermes Academy`, `Hermes Technology`.
-- Operating/program labels such as `ProgressoPro`, `Hermes Business Academy` and `IT Development` may remain where they describe a real program/service or stable contact-routing value; they must not silently become competing root entities.
+- `ProgressoPro`, `Hermes Business Academy` and `IT Development` are subordinate operating/program/service labels where they describe a real program, service or stable contact-routing value; they must not silently become competing root entities.
 - The Technology registry remains `owner_verification_required` with separate Organization/schema publication on `hold`; changing the public direction label does not authorize a new Organization node or `sameAs` relationship.
 - Breadcrumb/entity presentation is derived from the canonical public direction rather than legacy navigation labels.
 - Public entity naming must not break existing contact/intake behavior; stable operating contact routes are preserved independently from public taxonomy.
@@ -48,6 +48,7 @@ For GEO this means:
 - repository tests prove only the repository contract they exercise;
 - a merged entity change does not prove third-party AI recognition;
 - an AI-observation ledger does not count missing observations as negative mentions;
+- synthetic AI observations are forbidden; only real provider observations may count toward AI visibility evidence;
 - AI visibility requires actual governed provider observations/citations/entity/canonical/factual-error evidence;
 - ranking/index/traffic claims require the appropriate authenticated search evidence;
 - owner-controlled third-party profile corrections remain separate authenticated actions.
@@ -78,20 +79,41 @@ No clean-provider wave has been executed from repository engineering. Therefore:
 
 `0 completed observations` is a work-count only; it is never evidence of 0% visibility.
 
+## Fresh authenticated search/analytics checkpoint — 2026-09-04
+
+Connected Search Console evidence for `https://hermeslogisticsus.com/`, settled through 2026-09-01, now supersedes the older 18-day handoff as the current safe baseline:
+
+- latest 28 settled days: `28 clicks / 1,717 impressions / 1.63% CTR / 44.58 average position`;
+- preceding equal window: `5 clicks / 77 impressions`; discovery expanded sharply, but much of the new visibility is still at low positions;
+- United States: `8 clicks / 1,092 impressions / 0.73% CTR / 42.32 average position`;
+- U.S. + Desktop for `/services/seo-for-logistics-companies/`: `311 impressions / 0 clicks / 59.72 average position`;
+- the Logistics SEO query family is semantically aligned (including `seo for logistics`, `trucking seo company`, `logistics seo consultants`, `seo for logistics companies`), but current positions are generally too low for snippet CTR to be the primary diagnosis;
+- recruiting owners are currently the strongest search winners, including `/careers/car-hauling-dispatcher/` around position 4.60 and `/logistics/careers/` around position 4.71;
+- the Auction Vehicle Pickup and Car Hauler Capacity checklists are current near-page-one/page-two support assets and should be strengthened before broad new page generation.
+
+Connected GA4 evidence is usable for instrumentation checks but **not yet a clean human-traffic or revenue baseline**:
+
+- the 28-day property contains a very large direct/test/automation footprint, so total sessions must not be presented as audience growth;
+- `google / organic` and `chatgpt.com / ai-assistant` referral classifications are present, but internal/agent visits are also visible in those channels;
+- `commercial_cta_click` and `seo_intake_start` events are present, while no current `seo_intake_preview_ready` / `seo_handoff_ready` outcome receipt or configured key event proves a real qualified conversion;
+- therefore `SEARCH_OR_AI_TO_QUALIFIED_LEAD` remains `NOT_PROVEN`, not `0%`.
+
+This checkpoint authorizes ranking/authority/conversion-measurement work on existing owners. It does not authorize a broad Logistics copy rewrite, mass page expansion, or a claim that AI referrals produced customers.
+
 ## External evidence still required
 
-1. Authenticated comparable GSC 7-day and 28-day page/query evidence for priority owners.
-2. Exact U.S. + Desktop intersection where available; never manufacture it from separate aggregates.
+1. Continue comparable GSC 7-day and 28-day page/query evidence for priority owners; the 2026-09-04 checkpoint above is the current baseline, not a permanent completion state.
+2. Preserve exact U.S. + Desktop intersections for owner decisions; never manufacture them from separate aggregates.
 3. Exact Google URL Inspection / enhancement evidence for any genuine JobPosting owner being evaluated.
 4. Exact Bing URL/index/performance evidence; sitemap or IndexNow acceptance is not indexation proof.
-5. Existing GA4 property/stream ownership and exact-once priority-event receipts with privacy-safe parameters and synthetic-test exclusion.
+5. Clean GA4/internal-test exclusion plus exact-once priority-event receipts and a receiver/handoff outcome before any conversion claim.
 6. Governed clean-session provider observations across the fixed AI prompt/provider set, storing citation/entity/canonical/factual outcomes rather than full private conversations.
 7. Privacy-safe qualification/opportunity/win coverage before claiming an evidence-to-revenue chain.
 8. Owner-controlled external profile corrections where third-party entity information conflicts with the approved public contract.
 
 ## External entity correction queue
 
-As rechecked on 2026-09-02:
+As rechecked on 2026-09-04:
 
 - Work.ua remains `OWNER_PLATFORM_EDIT_REQUIRED`: public profile/search evidence still exposes historical employee-count, 2018, Hermes Logistics / ProgressoPro, scale and future-service claims.
 - Staff.am remains `OWNER_PLATFORM_EDIT_REQUIRED`: public profile/search evidence still exposes 2019, 50–200, Holding and broad full-service/worldwide claims.
@@ -100,24 +122,24 @@ Repository changes do not count as proof that those third-party profiles were co
 
 ## Current execution order
 
-1. Keep the merged #1006 entity/measurement contract intact on current main.
+1. Land #1059 only after exact-head build/static/browser checks are green on current main.
 2. Keep public entity-registry publication holds intact until owner/external evidence resolves them.
-3. Do not expand the semantic core until CEO/One Brain chooses the priority directions/query families.
-4. Consume fresh authenticated search/analytics/index evidence into the existing SEO/GEO evidence routes rather than creating replacement properties/accounts.
+3. Use the fresh Search Console baseline to improve existing canonical owners and supporting authority rather than expand page count.
+4. Clean analytics attribution so automated/internal traffic cannot masquerade as customer traffic or conversion.
 5. Execute the governed clean-session AI observation wave and classify citation/entity/canonical/factual outcomes.
 6. Import only privacy-safe aggregate receiver/qualification/outcome evidence.
 7. Choose subsequent content/schema/authority/internal-link actions only from the verified priority query set plus verified evidence.
 
 ## Engineering completion boundary
 
-For the current pre-Wave scope, repository engineering is complete when this current-state documentation lands on exact current main. The remaining open work is intentionally external/manual unless a new current-main regression appears:
+For the current revenue-first scope, repository engineering is complete only when the current entity/conversion/evidence contracts land on exact current main. The remaining open work includes both external/manual evidence and any newly proven regression:
 
-- authenticated GSC/Google/Bing/GA4 evidence;
-- real human qualification/outcome evidence;
+- ongoing authenticated GSC/Google/Bing/GA4 evidence;
+- clean analytics attribution and real human qualification/outcome evidence;
 - 240 clean-provider observations;
 - owner edits to Work.ua/Staff.am;
-- subsequent semantic/content growth chosen by CEO/One Brain.
+- subsequent semantic/content growth selected from measured demand and business value.
 
 ## Success condition
 
-Any capable agent can start here, distinguish public entity naming from operating program/contact labels, see which evidence is engineering vs external outcome evidence, and continue without reopening historical branch stacks, inventing live AI/search results, or expanding the semantic core before the business-priority decision.
+Any capable agent can start here, distinguish public entity naming from subordinate operating program/contact labels, see which evidence is engineering vs external outcome evidence, and continue without reopening historical branch stacks, inventing live AI/search results, or expanding the semantic core before the business-priority decision.

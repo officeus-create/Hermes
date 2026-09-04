@@ -70,6 +70,25 @@ const handoffRouteLabels: Record<string, string> = {
   technology: "Email IT Development",
 };
 
+const contactInterestByPathId: Record<string, ContactInterest> = {
+  logistics: "Hermes Logistics",
+  marketing: "ProgressoPro",
+  academy: "Hermes Business Academy",
+  technology: "IT Development",
+};
+
+export function getContactInterestForPathId(pathId: string): ContactInterest | undefined {
+  return contactInterestByPathId[pathId];
+}
+
+export function normalizeContactInterest(interest: string): ContactInterest | undefined {
+  const legacy = Object.values(contactInterestByPathId).find((value) => value === interest);
+  if (legacy) return legacy;
+
+  const canonicalPath = site.paths.find((path) => path.category === interest);
+  return canonicalPath ? getContactInterestForPathId(canonicalPath.id) : undefined;
+}
+
 const attributionKeys = [
   "utm_source",
   "utm_medium",
@@ -90,7 +109,7 @@ export const contactHandoffRoutes: ContactHandoffRoute[] = site.paths.map((path)
   if (!primary) throw new Error(`Missing direct contact for ${path.category}`);
 
   return {
-    category: path.category,
+    category: getContactInterestForPathId(path.id) ?? path.category,
     label: handoffRouteLabels[path.id] ?? primary.label,
     detail: primary.value,
     href: primary.href,
@@ -157,7 +176,8 @@ function academyQualificationLines(form: FormData): string[] {
 }
 
 export function buildContactPayload(form: FormData, sourcePath: string, requestId = crypto.randomUUID()): ContactPayload {
-  const interest = sanitizeContactField(String(form.get("path") ?? ""), 120);
+  const rawInterest = sanitizeContactField(String(form.get("path") ?? ""), 120);
+  const interest = normalizeContactInterest(rawInterest) ?? rawInterest;
 
   let direction_fields: ContactPreviewDirectionFields | undefined;
   if (interest === "Hermes Logistics") {
@@ -294,7 +314,8 @@ export function buildRequestSummary(payload: ContactPayload): string {
 }
 
 export function getContactHandoffRoute(interest: string): ContactHandoffRoute | undefined {
-  return contactHandoffRoutes.find((route) => route.category === interest);
+  const normalizedInterest = normalizeContactInterest(interest) ?? interest;
+  return contactHandoffRoutes.find((route) => route.category === normalizedInterest);
 }
 
 export function isEmailOnlyRoute(route: ContactHandoffRoute): boolean {

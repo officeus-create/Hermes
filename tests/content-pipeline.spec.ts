@@ -14,8 +14,8 @@ test("content pipeline workspace is noindex and reports the unfilled 30-asset pi
   await expect(page.getByText("0", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: "Hermes Logistics" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: "ProgressoPro" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 3, name: "Hermes Business Academy" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 3, name: "Hermes IT / Technology" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 3, name: "Hermes Academy" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 3, name: "Hermes Technology" })).toBeVisible();
   await expect(page.locator('[data-content-decision="publish_candidate"]')).toHaveCount(2);
   await expect(page.locator('[data-content-decision="merge_or_expand"]')).toHaveCount(1);
   await expect(page.locator('[data-content-decision="hold"]')).toHaveCount(2);

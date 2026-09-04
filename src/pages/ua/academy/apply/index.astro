@@ -6,7 +6,7 @@ import ContactCTA from "../../../../components/ContactCTA.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 
-const title = "Заявка до Hermes Business Academy | Перевірка програми";
+const title = "Заявка до Hermes Academy | Перевірка програми";
 const description = "Підготуйте вибір програми, країну та місто, мови, рівень англійської, актуальний досвід, мету, графік, доступність за часовими поясами США та бажаний канал зв’язку для перевірки людиною.";
 const canonicalUrl = new URL("/ua/academy/apply/", Astro.site).toString();
 const alternates = [
@@ -17,7 +17,7 @@ const alternates = [
 const academyEntity = {
   "@type": "Organization",
   "@id": "https://hermeslogisticsus.com/#academy",
-  name: "Hermes Business Academy",
+  name: "Hermes Academy",
   url: "https://hermeslogisticsus.com/paths/academy/",
   parentOrganization: { "@id": "https://hermeslogisticsus.com/#organization" },
 };
@@ -29,12 +29,12 @@ const faq = [
   { question: "Чи гарантується робота або дохід після вступу?", answer: "Ні. Вступ, навчання, практика, зворотний зв’язок і завершення програми не гарантують роботу, дохід, клієнтів, сертифікацію, підвищення, операційний доступ або майбутню оплачувану роботу." },
 ];
 const schema = [
-  { "@context": "https://schema.org", "@type": "WebPage", name: "Заявка до Hermes Business Academy", description, url: canonicalUrl, inLanguage: "uk", about: academyEntity },
-  { "@context": "https://schema.org", "@type": "Service", name: "Перевірка заявки Hermes Business Academy", description, url: canonicalUrl, provider: academyEntity, serviceType: "Education program qualification and application review", availableLanguage: ["English", "Russian", "Ukrainian"] },
+  { "@context": "https://schema.org", "@type": "WebPage", name: "Заявка до Hermes Academy", description, url: canonicalUrl, inLanguage: "uk", about: academyEntity },
+  { "@context": "https://schema.org", "@type": "Service", name: "Перевірка заявки Hermes Academy", description, url: canonicalUrl, provider: academyEntity, serviceType: "Education program qualification and application review", availableLanguage: ["English", "Russian", "Ukrainian"] },
   { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })) },
   { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
     { "@type": "ListItem", position: 1, name: "Головна", item: "https://hermeslogisticsus.com/ua/" },
-    { "@type": "ListItem", position: 2, name: "Hermes Business Academy", item: "https://hermeslogisticsus.com/ua/#academy" },
+    { "@type": "ListItem", position: 2, name: "Hermes Academy", item: "https://hermeslogisticsus.com/ua/#academy" },
     { "@type": "ListItem", position: 3, name: "Заявка", item: canonicalUrl },
   ] },
 ];
