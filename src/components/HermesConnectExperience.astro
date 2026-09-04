@@ -23,32 +23,47 @@
         live: "CURRENT LIVE PILOT", hub: "PRODUCT FAMILY · CURRENT", privateFoundation: "PRIVATE OWNER FOUNDATION", reference: "REFERENCE CAPABILITY · NOT CURRENT LIVE PILOT",
         currentProduct: "Current product: Repair Shops", beautyProduct: "Private workspace: Beauty & Wellness", content: "Content language: English",
         englishOnly: "This page is currently English-only. Hermes Connect navigation is localized; page content is not partially translated.",
+        familyNavigation: "Hermes Connect product family navigation", modulesNavigation: "Hermes Connect modules",
       },
       uk: {
         live: "ПОТОЧНИЙ ЖИВИЙ ПІЛОТ", hub: "СІМЕЙСТВО ПРОДУКТІВ · АКТУАЛЬНО", privateFoundation: "ПРИВАТНА ОСНОВА ДЛЯ ВЛАСНИКА", reference: "ДОВІДКОВИЙ МОДУЛЬ · НЕ ПОТОЧНИЙ ЖИВИЙ ПІЛОТ",
         currentProduct: "Поточний продукт: СТО", beautyProduct: "Приватний простір: Beauty & Wellness", content: "Мова контенту: англійська",
         englishOnly: "Ця сторінка поки доступна лише англійською. Навігація Hermes Connect локалізована; часткового перекладу контенту немає.",
+        familyNavigation: "Навігація сімейством продуктів Hermes Connect", modulesNavigation: "Модулі Hermes Connect",
       },
       ru: {
         live: "ТЕКУЩИЙ ЖИВОЙ ПИЛОТ", hub: "СЕМЕЙСТВО ПРОДУКТОВ · АКТУАЛЬНО", privateFoundation: "ПРИВАТНАЯ ОСНОВА ДЛЯ ВЛАДЕЛЬЦА", reference: "СПРАВОЧНЫЙ МОДУЛЬ · НЕ ТЕКУЩИЙ ЖИВОЙ ПИЛОТ",
         currentProduct: "Текущий продукт: СТО", beautyProduct: "Приватное пространство: Красота и wellness", content: "Язык контента: английский",
         englishOnly: "Эта страница пока доступна только на английском. Навигация Hermes Connect локализована; частичного перевода контента нет.",
+        familyNavigation: "Навигация по продуктам Hermes Connect", modulesNavigation: "Модули Hermes Connect",
       },
       es: {
         live: "PILOTO ACTUAL EN VIVO", hub: "FAMILIA DE PRODUCTOS · ACTUAL", privateFoundation: "BASE PRIVADA PARA PROPIETARIOS", reference: "CAPACIDAD DE REFERENCIA · NO ES EL PILOTO ACTUAL",
         currentProduct: "Producto actual: Talleres", beautyProduct: "Espacio privado: Beauty & Wellness", content: "Idioma del contenido: inglés",
         englishOnly: "Esta página está disponible actualmente solo en inglés. La navegación de Hermes Connect está localizada; el contenido no se traduce parcialmente.",
+        familyNavigation: "Navegación de productos Hermes Connect", modulesNavigation: "Módulos de Hermes Connect",
       },
       it: {
         live: "PILOTA LIVE ATTUALE", hub: "FAMIGLIA DI PRODOTTI · ATTUALE", privateFoundation: "BASE PRIVATA PER IL TITOLARE", reference: "FUNZIONE DI RIFERIMENTO · NON È IL PILOTA LIVE ATTUALE",
         currentProduct: "Prodotto attuale: Officine", beautyProduct: "Spazio privato: Beauty & Wellness", content: "Lingua dei contenuti: inglese",
         englishOnly: "Questa pagina è attualmente disponibile solo in inglese. La navigazione di Hermes Connect è localizzata; il contenuto non viene tradotto parzialmente.",
+        familyNavigation: "Navigazione prodotti Hermes Connect", modulesNavigation: "Moduli Hermes Connect",
       },
       fr: {
         live: "PILOTE ACTUEL EN DIRECT", hub: "FAMILLE DE PRODUITS · ACTUELLE", privateFoundation: "BASE PRIVÉE POUR PROPRIÉTAIRE", reference: "CAPACITÉ DE RÉFÉRENCE · PAS LE PILOTE ACTUEL",
         currentProduct: "Produit actuel : Ateliers", beautyProduct: "Espace privé : Beauty & Wellness", content: "Langue du contenu : anglais",
         englishOnly: "Cette page est actuellement disponible uniquement en anglais. La navigation de Hermes Connect est localisée ; le contenu n'est pas traduit partiellement.",
+        familyNavigation: "Navigation des produits Hermes Connect", modulesNavigation: "Modules Hermes Connect",
       },
+    };
+
+    const moduleLabels = {
+      en: { hub: "Product Hub", repair: "Repair Shops", aiCommand: "AI Command Center", inbox: "Unified Inbox", loadAnalyzer: "Load Analyzer", rateNegotiator: "Rate Negotiator", proposalBuilder: "Proposal Builder", roi: "ROI Calculator", automation: "Business Automation" },
+      uk: { hub: "Центр продуктів", repair: "СТО", aiCommand: "Центр керування ШІ", inbox: "Єдиний центр повідомлень", loadAnalyzer: "Аналізатор вантажів", rateNegotiator: "Переговорник ставок", proposalBuilder: "Конструктор пропозицій", roi: "Калькулятор ROI", automation: "Автоматизація бізнесу" },
+      ru: { hub: "Центр продуктов", repair: "СТО", aiCommand: "ИИ-командный центр", inbox: "Единый центр сообщений", loadAnalyzer: "Анализатор грузов", rateNegotiator: "Переговорщик по ставкам", proposalBuilder: "Конструктор предложений", roi: "Калькулятор ROI", automation: "Автоматизация бизнеса" },
+      es: { hub: "Centro de productos", repair: "Talleres", aiCommand: "Centro de mando de IA", inbox: "Bandeja unificada", loadAnalyzer: "Analizador de cargas", rateNegotiator: "Negociador de tarifas", proposalBuilder: "Generador de propuestas", roi: "Calculadora de ROI", automation: "Automatización empresarial" },
+      it: { hub: "Centro prodotti", repair: "Officine", aiCommand: "Centro di comando IA", inbox: "Posta unificata", loadAnalyzer: "Analizzatore carichi", rateNegotiator: "Negoziazione tariffe", proposalBuilder: "Generatore proposte", roi: "Calcolatore ROI", automation: "Automazione aziendale" },
+      fr: { hub: "Centre produits", repair: "Ateliers", aiCommand: "Centre de commande IA", inbox: "Boîte de réception unifiée", loadAnalyzer: "Analyseur de chargements", rateNegotiator: "Négociateur de tarifs", proposalBuilder: "Générateur de propositions", roi: "Calculateur ROI", automation: "Automatisation d’entreprise" },
     };
 
     const withLocale = (href) => {
@@ -110,7 +125,7 @@
     const context = document.createElement("section");
     context.className = `hc-product-context ${isRepair ? "is-live" : isHub ? "is-hub" : isBeauty ? "is-private" : "is-reference"}`;
     context.setAttribute("data-hc-product-context", "true");
-    context.setAttribute("aria-label", "Hermes Connect product family navigation");
+    context.setAttribute("aria-label", chrome[locale].familyNavigation);
 
     const inner = document.createElement("div");
     inner.className = "hc-product-context__inner";
@@ -130,25 +145,25 @@
     summary.append(dot, strong, product, contentLanguage);
 
     const productFamily = [
-      ["Product Hub", "/services/hermes-connect/"],
-      ["Repair Shops", "/services/hermes-connect/repair-shops/"],
-      ["AI Command Center", "/services/hermes-connect/ai-command-center/"],
-      ["Unified Inbox", "/services/hermes-connect/unified-inbox/"],
-      ["Load Analyzer", "/services/hermes-connect/load-analyzer/"],
-      ["Rate Negotiator", "/services/hermes-connect/rate-negotiator/"],
-      ["Proposal Builder", "/services/hermes-connect/proposal-builder/"],
-      ["ROI Calculator", "/services/hermes-connect/roi-calculator/"],
-      ["Business Automation", "/services/hermes-connect/business-automation/"],
+      ["hub", "/services/hermes-connect/"],
+      ["repair", "/services/hermes-connect/repair-shops/"],
+      ["aiCommand", "/services/hermes-connect/ai-command-center/"],
+      ["inbox", "/services/hermes-connect/unified-inbox/"],
+      ["loadAnalyzer", "/services/hermes-connect/load-analyzer/"],
+      ["rateNegotiator", "/services/hermes-connect/rate-negotiator/"],
+      ["proposalBuilder", "/services/hermes-connect/proposal-builder/"],
+      ["roi", "/services/hermes-connect/roi-calculator/"],
+      ["automation", "/services/hermes-connect/business-automation/"],
     ];
     const repairFamily = productFamily.slice(0, 2);
     const family = isRepair ? repairFamily : productFamily;
 
     const nav = document.createElement("nav");
     nav.className = "hc-family-nav";
-    nav.setAttribute("aria-label", "Hermes Connect modules");
-    family.forEach(([label, href]) => {
+    nav.setAttribute("aria-label", chrome[locale].modulesNavigation);
+    family.forEach(([key, href]) => {
       const link = document.createElement("a");
-      link.textContent = label;
+      link.textContent = moduleLabels[locale][key];
       link.href = withLocale(href);
       if (path.replace(/\/+$/, "/") === href) link.setAttribute("aria-current", "page");
       nav.append(link);
