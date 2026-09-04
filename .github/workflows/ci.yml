@@ -73,6 +73,9 @@ jobs:
       - name: Validate repair shop capabilities
         run: node scripts/repair-shop-capabilities-contract.test.mjs
 
+      - name: Validate Hermes driver discount
+        run: node scripts/repair-shop-driver-discount-contract.test.mjs
+
       - name: Validate repair shop capacity-aware booking
         run: node scripts/repair-shop-capacity-contract.test.mjs
 
