@@ -55,13 +55,25 @@ test("all four main directions share one product-header geometry", async () => {
   expect(academy).toContain('id: "academy-operations"');
 });
 
-test("carrier agreement and Load Board remain discoverable inside Logistics", async () => {
+test("carrier agreement, Load Board, and legacy operating tools remain discoverable inside Logistics", async () => {
   const nav = await readFile(resolve(process.cwd(), "src/components/DirectionProductNav.astro"), "utf8");
   const audiences = await readFile(resolve(process.cwd(), "src/data/logistics-audiences.ts"), "utf8");
+  const carrierPage = await readFile(resolve(process.cwd(), "src/pages/logistics/[audience].astro"), "utf8");
 
   expect(nav).toContain('{ id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature }');
   expect(audiences).toContain('secondary: { label: "Agreement & onboarding", href: "/carrier/" }');
   expect(audiences).toContain('demo: { label: "Open carrier Load Board", href: "/load-board/?role=carrier#available-loads" }');
+  expect(carrierPage).toContain("Carrier operating tools");
+  for (const href of [
+    "/logistics/start-car-hauling-dispatch/",
+    "/carrier/",
+    "/load-board/live-pilot/",
+    "/logistics/resources/",
+    "/logistics/resources/rpm-calculator/",
+    "/logistics/resources/factoring-vs-direct-payment-calculator/",
+  ]) {
+    expect(carrierPage).toContain(`href: "${href}"`);
+  }
 });
 
 test("public entity naming does not erase existing operating contact routes", async () => {
