@@ -12,7 +12,7 @@ import "../styles/features/load.css";
 
 <BaseLayout
   title="Car Hauling Loads & Load Board Preview | Hermes Logistics"
-  description="Car hauler load board preview: review fictional auto transport loads by lane, equipment, deadhead, timing, rate, paperwork, and authority readiness."
+  description="Review how owner-operators evaluate car hauling loads by lane, equipment, capacity, deadhead, timing, source, rate, paperwork, and authority readiness before requesting Load Board access."
 >
   <div class="load-board-page">
     <SiteHeader theme="dark" activePath="/load-board/" />
@@ -76,7 +76,6 @@ import "../styles/features/load.css";
             <li><span>04</span><strong>Source and paperwork</strong><small>Broker or dealer review, setup packet, insurance certificate, rate confirmation, BOL, and POD</small></li>
             <li><span>05</span><strong>Rate and carrier approval</strong><small>Offered rate, miles, operating cost, payment terms, risk, and the carrier's final decision</small></li>
           </ol>
-          <p><strong>Where can I find car hauling loads?</strong> Carriers commonly compare load boards, broker and dealer sources, auctions, repeat shippers, and direct customer opportunities. This Hermes car hauler load board preview shows how to review fictional examples against lane, equipment, deadhead, timing, paperwork, payment terms, and carrier approval before requesting access; it does not publish live or bookable freight.</p>
           <p><strong>New authority:</strong> load access may be limited by broker rules, authority age, insurance, safety profile, documentation, equipment, and payment requirements. A readiness review does not guarantee that a specific load, lane, rate, or broker will be available.</p>
           <p>Need ongoing search, broker communication, paperwork, and back-office support? Review the <a href="/logistics/car-hauling-dispatch/">car hauling dispatch service</a>, the <a href="/paths/logistics/carriers/new-authority/">new-authority carrier path</a>, and the <a href="/logistics/resources/car-hauler-capacity-checklist/">car hauler capacity checklist</a>.</p>
         </div>
@@ -280,134 +279,461 @@ import "../styles/features/load.css";
                 <ul data-vehicle-reasons></ul>
               </div>
               <div class="load-board-result-group">
-                <h4>Required actions</h4>
+                <h4>Next actions</h4>
                 <ul data-vehicle-actions></ul>
               </div>
               <div class="load-board-result-group">
-                <h4>Next step</h4>
-                <p data-vehicle-next-step></p>
+                <h4>Dry-run routing</h4>
+                <ul data-vehicle-routing></ul>
               </div>
-              <div class="load-board-result-group">
-                <h4>What this is not</h4>
-                <p data-vehicle-boundary></p>
+              <details>
+                <summary>Open complete sales lead</summary>
+                <pre data-vehicle-preview tabindex="0"></pre>
+              </details>
+              <div class="sales-lead-handoff">
+                <strong>Sales tag: LOAD BOARD ACCESS / CARRIER</strong>
+                <a class="button button-primary" href="#" data-vehicle-email>Open email to Logistics Sales</a>
+                <button class="button button-primary" type="button" data-send-vehicle-lead hidden>Send to Logistics Sales</button>
+                <p role="status" data-vehicle-delivery-status></p>
               </div>
-              <p class="load-board-result-delivery" data-vehicle-delivery></p>
+              <p class="load-board-preview-boundary" data-vehicle-boundary>No account, email, call, CRM write, or dispatcher assignment is created in preview mode.</p>
             </aside>
           </div>
         </div>
       </section>
+
+      <section class="section load-board-workspace" id="post-load">
+        <div class="shell load-board-grid">
+          <form class="load-board-form" data-load-board-form data-lead-mode={leadMode} data-lead-endpoint={leadEndpoint} novalidate>
+            <div class="form-alert" role="alert" data-load-alert hidden></div>
+            <p class="eyebrow">Customer / Shipper / Dealer / Broker</p>
+            <h2>Post a load request</h2>
+            <p class="load-board-form-note">Tell us what needs to move. Logistics Sales will call to confirm the route, vehicle, timing, and transport requirements before carrier search begins.</p>
+
+            <div class="field-row">
+              <label>Who is posting? *
+                <select name="submitter_type" required>
+                  <option value="">Choose one</option>
+                  <option value="private_party">Customer / private party</option>
+                  <option value="dealer">Dealer</option>
+                  <option value="shipper">Shipper</option>
+                  <option value="broker">Broker</option>
+                  <option value="other_business">Other business</option>
+                </select>
+              </label>
+              <label>Company name
+                <input name="company_name" maxlength="160" autocomplete="organization" />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>Contact name *
+                <input name="contact_name" maxlength="100" autocomplete="name" required />
+              </label>
+              <label>Email *
+                <input name="email" type="email" maxlength="160" autocomplete="email" required />
+              </label>
+            </div>
+            <label>Phone *
+              <input name="phone" type="tel" maxlength="40" autocomplete="tel" required />
+            </label>
+
+            <div class="field-row">
+              <label>Pickup city, state or ZIP *
+                <input name="pickup_location" maxlength="180" required />
+              </label>
+              <label>Delivery city, state or ZIP *
+                <input name="delivery_location" maxlength="180" required />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>Ready date *
+                <input name="ready_date" type="date" required />
+              </label>
+              <label>Commodity *
+                <select name="commodity_type" required>
+                  <option value="">Choose one</option>
+                  <option value="passenger_vehicle">Passenger vehicle</option>
+                  <option value="motorcycle">Motorcycle</option>
+                  <option value="pickup_suv">Pickup / SUV</option>
+                  <option value="light_truck">Light truck</option>
+                  <option value="tractor">Truck tractor</option>
+                  <option value="other">Other car-hauling commodity</option>
+                </select>
+              </label>
+            </div>
+
+            <label>Year, make and model *
+              <input name="year_make_model" maxlength="180" placeholder="Example: 2021 Toyota Camry" required />
+            </label>
+
+            <div class="field-row">
+              <label>Quantity *
+                <input name="quantity" type="number" min="1" max="20" value="1" required />
+              </label>
+              <label>Condition *
+                <select name="condition" required>
+                  <option value="">Choose one</option>
+                  <option value="operable">Operable</option>
+                  <option value="inoperable_rolls">Inoperable, rolls and steers</option>
+                  <option value="inoperable_non_rolling">Inoperable, does not roll or steer</option>
+                </select>
+              </label>
+            </div>
+
+            <label>Price offered (optional)
+              <input name="offered_price" maxlength="80" placeholder="Leave blank to collect carrier offers" />
+            </label>
+            <label>Notes
+              <textarea name="notes" rows="4" maxlength="1200" placeholder="Pickup access, auction hours, keys, dimensions, or other useful details"></textarea>
+            </label>
+            <label class="honeypot" aria-hidden="true">Website
+              <input name="website" tabindex="-1" autocomplete="off" />
+            </label>
+            <label class="consent-field">
+              <input type="checkbox" name="consent" required />
+              <span>I agree that Hermes may use these details to contact me about this transport request and search for a suitable carrier. <a href="/privacy/">Privacy notice</a>.</span>
+            </label>
+            <button class="button button-primary" type="submit">Review posted load <ArrowRight size={18} aria-hidden="true" /></button>
+          </form>
+
+          <aside class="load-board-result" data-load-result hidden aria-live="polite">
+            <p class="eyebrow">Automatic review</p>
+            <h2 data-load-decision></h2>
+            <p data-load-confidence></p>
+            <div class="load-board-result-group">
+              <h3>Why</h3>
+              <ul data-load-reasons></ul>
+            </div>
+            <div class="load-board-result-group">
+              <h3>Next actions</h3>
+              <ul data-load-actions></ul>
+            </div>
+            <div class="load-board-result-group">
+              <h3>Dry-run routing</h3>
+              <ul data-load-routing></ul>
+            </div>
+            <details>
+              <summary>Open complete preview package</summary>
+              <pre data-load-preview tabindex="0"></pre>
+            </details>
+            <button class="button" type="button" data-copy-load-preview>Copy preview package</button>
+            <p role="status" data-load-copy-status></p>
+            <div class="sales-lead-handoff">
+              <strong data-load-sales-tag>Sales tag: POSTED LOAD / CUSTOMER</strong>
+              <a class="button button-primary" href="#" data-load-email>Open email to Logistics Sales</a>
+              <button class="button button-primary" type="button" data-send-load-lead hidden>Send to Logistics Sales</button>
+              <p role="status" data-load-delivery-status></p>
+            </div>
+            <p class="load-board-preview-boundary" data-load-boundary>No email, CRM write, load publication, or carrier notification is created in preview mode.</p>
+          </aside>
+        </div>
+      </section>
+      <HermesConnectLauncher variant="banner" context="logistics" />
     </main>
     <SiteFooter />
   </div>
-  <HermesConnectLauncher variant="technology" />
 </BaseLayout>
 
 <script>
-  import { buildVehicleAvailabilityPreview, buildVehicleReview, qualifyCarrierLead, type VehicleAvailabilityPayload } from "../lib/load-board";
+  import {
+    buildLoadBoardPayload,
+    buildLoadBoardPreview,
+    buildCarrierSalesLead,
+    buildLogisticsSalesMailto,
+    buildPostedLoadSalesLead,
+    buildVehicleAvailabilityPayload,
+    buildVehicleAvailabilityPreview,
+    reviewLoadBoardPayload,
+    reviewVehicleAvailabilityPayload,
+  } from "../lib/load-board";
 
-  const parseOrigin = (value: string) => value.trim().toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const vehicleForm = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
+  const vehicleAlert = document.querySelector<HTMLElement>("[data-vehicle-alert]");
+  const vehicleResult = document.querySelector<HTMLElement>("[data-vehicle-result]");
+  const vehicleDecision = document.querySelector<HTMLElement>("[data-vehicle-decision]");
+  const vehicleState = document.querySelector<HTMLElement>("[data-vehicle-state]");
+  const vehiclePreview = document.querySelector<HTMLElement>("[data-vehicle-preview]");
+  const interestedLoad = document.querySelector<HTMLInputElement>("[data-interested-load]");
+  const vehicleEmail = document.querySelector<HTMLAnchorElement>("[data-vehicle-email]");
+  const vehicleSendButton = document.querySelector<HTMLButtonElement>("[data-send-vehicle-lead]");
+  const vehicleDeliveryStatus = document.querySelector<HTMLElement>("[data-vehicle-delivery-status]");
+  const vehicleBoundary = document.querySelector<HTMLElement>("[data-vehicle-boundary]");
+  let activeVehicleLead: ReturnType<typeof buildCarrierSalesLead> | null = null;
 
-  document.querySelectorAll<HTMLElement>("[data-demo-load]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = button.dataset.demoLoad ?? "";
-      const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
-      if (!form) return;
-      const input = form.elements.namedItem("interested_load") as HTMLInputElement | null;
-      if (input) input.value = id;
-      document.querySelector("#carrier-access")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+  const fillVehicleList = (selector: string, values: string[]) => {
+    const list = document.querySelector<HTMLElement>(selector);
+    if (!list) return;
+    list.replaceChildren(...values.map((value) => {
+      const item = document.createElement("li");
+      item.textContent = value;
+      return item;
+    }));
+  };
+
+  vehicleForm?.addEventListener("input", () => {
+    if (vehicleResult) vehicleResult.hidden = true;
+    if (vehicleAlert) vehicleAlert.hidden = true;
+    activeVehicleLead = null;
+    if (vehicleDeliveryStatus) vehicleDeliveryStatus.textContent = "";
   });
 
-  const searchButton = document.querySelector<HTMLButtonElement>("[data-demo-search]");
-  const originInput = document.querySelector<HTMLInputElement>("[data-demo-origin]");
-  const destinationInput = document.querySelector<HTMLInputElement>("[data-demo-destination]");
-  const searchStatus = document.querySelector<HTMLElement>("[data-demo-search-status]");
-  const loadCards = [...document.querySelectorAll<HTMLElement>("[data-demo-load-card]")];
-  const runDemoSearch = () => {
-    const origin = parseOrigin(originInput?.value ?? "");
-    const destination = parseOrigin(destinationInput?.value ?? "");
-    if (!origin && !destination) {
-      loadCards.forEach((card) => { card.hidden = false; });
-      if (searchStatus) searchStatus.textContent = "Enter a demo origin or destination to filter the fictional examples.";
+  vehicleForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!vehicleForm.checkValidity()) {
+      vehicleForm.reportValidity();
+      if (vehicleAlert) {
+        vehicleAlert.textContent = "Complete the required fields before preparing dispatcher review.";
+        vehicleAlert.hidden = false;
+      }
       return;
     }
-    let visible = 0;
-    loadCards.forEach((card) => {
-      const originMatch = !origin || (card.dataset.origin ?? "").includes(origin);
-      const destinationMatch = !destination || (card.dataset.destination ?? "").includes(destination);
-      card.hidden = !(originMatch && destinationMatch);
-      if (!card.hidden) visible += 1;
+
+    const payload = buildVehicleAvailabilityPayload(new FormData(vehicleForm));
+    const review = reviewVehicleAvailabilityPayload(payload);
+    activeVehicleLead = buildCarrierSalesLead(payload, review);
+    if (vehicleDecision) vehicleDecision.textContent = review.decision.replaceAll("_", " ");
+    if (vehicleState) vehicleState.textContent = `Vehicle state: ${review.vehicle_state.replaceAll("_", " ")}`;
+    fillVehicleList("[data-vehicle-reasons]", review.reasons);
+    fillVehicleList("[data-vehicle-actions]", review.required_actions);
+    fillVehicleList("[data-vehicle-routing]", review.routing.length ? review.routing : ["No routing — preview rejected."]);
+    if (vehiclePreview) vehiclePreview.textContent = buildVehicleAvailabilityPreview(payload, review);
+    if (vehicleEmail) vehicleEmail.href = buildLogisticsSalesMailto(activeVehicleLead);
+    const vehicleLive = vehicleForm.dataset.leadMode === "live";
+    if (vehicleEmail) vehicleEmail.hidden = vehicleLive;
+    if (vehicleSendButton) vehicleSendButton.hidden = !vehicleLive;
+    if (vehicleDeliveryStatus) {
+      vehicleDeliveryStatus.textContent = vehicleLive
+        ? "Review the lead, then send it securely to Logistics Sales."
+        : "Email is prepared with the sales tag. Review it and press Send in your email application.";
+    }
+    if (vehicleBoundary) {
+      vehicleBoundary.textContent = vehicleLive
+        ? "The request is not delivered until you press Send to Logistics Sales and receive confirmation."
+        : "Preview mode does not send or store the request automatically.";
+    }
+    if (vehicleResult) {
+      vehicleResult.dataset.decision = review.decision;
+      vehicleResult.hidden = false;
+      vehicleResult.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  const form = document.querySelector<HTMLFormElement>("[data-load-board-form]");
+  const alert = document.querySelector<HTMLElement>("[data-load-alert]");
+  const result = document.querySelector<HTMLElement>("[data-load-result]");
+  const decision = document.querySelector<HTMLElement>("[data-load-decision]");
+  const confidence = document.querySelector<HTMLElement>("[data-load-confidence]");
+  const preview = document.querySelector<HTMLElement>("[data-load-preview]");
+  const copyButton = document.querySelector<HTMLButtonElement>("[data-copy-load-preview]");
+  const copyStatus = document.querySelector<HTMLElement>("[data-load-copy-status]");
+  const loadEmail = document.querySelector<HTMLAnchorElement>("[data-load-email]");
+  const loadSendButton = document.querySelector<HTMLButtonElement>("[data-send-load-lead]");
+  const loadDeliveryStatus = document.querySelector<HTMLElement>("[data-load-delivery-status]");
+  const loadBoundary = document.querySelector<HTMLElement>("[data-load-boundary]");
+  const loadSalesTag = document.querySelector<HTMLElement>("[data-load-sales-tag]");
+  let activePreview = "";
+  let activeLoadLead: ReturnType<typeof buildPostedLoadSalesLead> | null = null;
+
+  const activeRole = new URLSearchParams(window.location.search).get("role");
+  const sourceOrigin = new URLSearchParams(window.location.search).get("origin");
+  const sourceArea = new URLSearchParams(window.location.search).get("area");
+  if (activeRole) {
+    document.querySelector(`[data-role-link="${activeRole}"]`)?.setAttribute("aria-current", "page");
+    const submitter = document.querySelector<HTMLSelectElement>('select[name="submitter_type"]');
+    if (submitter && activeRole === "broker") submitter.value = "broker";
+    if (submitter && activeRole === "shipper") submitter.value = "shipper";
+    if (submitter && activeRole === "dealer") submitter.value = "dealer";
+    if (submitter && activeRole === "private_party") submitter.value = "private_party";
+  }
+  const pickupLocation = document.querySelector<HTMLInputElement>('input[name="pickup_location"]');
+  const carrierOrigin = document.querySelector<HTMLInputElement>('input[name="origin_location"]');
+  if (pickupLocation && sourceOrigin) pickupLocation.value = sourceOrigin.slice(0, 180);
+  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);
+
+  const demoSearchButton = document.querySelector<HTMLButtonElement>("[data-demo-search]");
+  const demoSearchStatus = document.querySelector<HTMLElement>("[data-demo-search-status]");
+  const demoOrigin = document.querySelector<HTMLInputElement>("[data-demo-origin]");
+  const demoDestination = document.querySelector<HTMLInputElement>("[data-demo-destination]");
+  const demoCards = [...document.querySelectorAll<HTMLElement>("[data-demo-load-card]")];
+  const normalizeCity = (value: string) => value.toLowerCase().replace(/[^a-z]/g, " ").replace(/\s+/g, " ").trim();
+
+  const searchDemoLoads = () => {
+    const origin = normalizeCity(demoOrigin?.value || "");
+    const destination = normalizeCity(demoDestination?.value || "");
+    const matches = demoCards.filter((card) => {
+      const cardOrigin = card.dataset.origin || "";
+      const cardDestination = card.dataset.destination || "";
+      const originMatch = !origin || cardOrigin.includes(origin) || cardDestination.includes(origin);
+      const destinationMatch = !destination || cardDestination.includes(destination) || cardOrigin.includes(destination);
+      return originMatch && destinationMatch;
     });
-    if (searchStatus) {
-      searchStatus.textContent = visible
-        ? `${visible} fictional demo load${visible === 1 ? "" : "s"} match the selected demo filter. Nothing shown is live or bookable.`
-        : "No fictional demo loads match that filter. Try Chicago, Madison, Rockford, Green Bay, or leave destination blank.";
+
+    demoCards.forEach((card) => {
+      const visible = matches.includes(card);
+      card.hidden = !visible;
+      card.classList.toggle("is-demo-result", visible && matches.length === 1);
+    });
+
+    if (!demoSearchStatus) return;
+    if (!origin && !destination) {
+      demoSearchStatus.textContent = "Enter one of the demo cities shown above. No live load search is connected.";
+    } else if (matches.length === 1) {
+      demoSearchStatus.textContent = "1 fictional demonstration load found. It is not available to book or dispatch.";
+      matches[0]?.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else if (matches.length > 1) {
+      demoSearchStatus.textContent = `${matches.length} fictional demonstration loads found. No live search was performed.`;
+    } else {
+      demoSearchStatus.textContent = "No fictional demo load matches that city. Try Chicago, Madison, Rockford, or Green Bay.";
     }
   };
-  searchButton?.addEventListener("click", runDemoSearch);
+
+  demoSearchButton?.addEventListener("click", searchDemoLoads);
+  [demoOrigin, demoDestination].forEach((input) => input?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searchDemoLoads();
+    }
+  }));
   document.querySelectorAll<HTMLButtonElement>("[data-demo-city]").forEach((button) => {
     button.addEventListener("click", () => {
-      if (originInput) originInput.value = button.dataset.demoCity ?? "";
-      runDemoSearch();
+      if (demoOrigin) demoOrigin.value = button.dataset.demoCity || "";
+      if (demoDestination) demoDestination.value = "";
+      searchDemoLoads();
     });
   });
 
-  const form = document.querySelector<HTMLFormElement>("[data-vehicle-form]");
-  const result = document.querySelector<HTMLElement>("[data-vehicle-result]");
-  const alertBox = document.querySelector<HTMLElement>("[data-vehicle-alert]");
-  const setText = (selector: string, value: string) => {
-    const target = document.querySelector<HTMLElement>(selector);
-    if (target) target.textContent = value;
-  };
-  const fillList = (selector: string, items: string[]) => {
-    const list = document.querySelector<HTMLUListElement>(selector);
-    if (!list) return;
-    list.innerHTML = "";
-    items.forEach((item) => {
-      const li = document.createElement("li");
-      li.textContent = item;
-      list.append(li);
+  document.querySelectorAll<HTMLButtonElement>("[data-demo-load]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const reference = button.dataset.demoLoad;
+      const title = document.querySelector<HTMLElement>("[data-demo-load-title]");
+      const copy = document.querySelector<HTMLElement>("[data-demo-load-copy]");
+      if (interestedLoad) interestedLoad.value = reference || "";
+      if (title) title.textContent = `${button.textContent}: ${reference}`;
+      if (copy) copy.textContent = "The load reference is ready in the carrier access form. Submit the sales request so the team can verify your company, discuss the agreement, and call about next steps.";
     });
+  });
+
+  const fillList = (selector: string, values: string[]) => {
+    const list = document.querySelector<HTMLElement>(selector);
+    if (!list) return;
+    list.replaceChildren(...values.map((value) => {
+      const item = document.createElement("li");
+      item.textContent = value;
+      return item;
+    }));
   };
 
-  form?.addEventListener("submit", async (event) => {
+  form?.addEventListener("input", () => {
+    if (result) result.hidden = true;
+    if (alert) alert.hidden = true;
+    activePreview = "";
+    activeLoadLead = null;
+    if (copyStatus) copyStatus.textContent = "";
+    if (loadDeliveryStatus) loadDeliveryStatus.textContent = "";
+  });
+
+  form?.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (!form.reportValidity()) return;
-    const data = new FormData(form);
-    const payload: VehicleAvailabilityPayload = {
-      carrier_role: String(data.get("carrier_role") ?? "") as VehicleAvailabilityPayload["carrier_role"],
-      carrier_company_name: String(data.get("carrier_company_name") ?? "").trim(),
-      carrier_contact_name: String(data.get("carrier_contact_name") ?? "").trim(),
-      authority_number: String(data.get("authority_number") ?? "").trim(),
-      carrier_email: String(data.get("carrier_email") ?? "").trim(),
-      carrier_phone: String(data.get("carrier_phone") ?? "").trim(),
-      equipment_class: String(data.get("equipment_class") ?? "") as VehicleAvailabilityPayload["equipment_class"],
-      capacity_units: Number(data.get("capacity_units") ?? 1),
-      available_from: String(data.get("available_from") ?? ""),
-      origin_location: String(data.get("origin_location") ?? "").trim(),
-      origin_radius: Number(data.get("origin_radius") ?? 100),
-      destination_location: String(data.get("destination_location") ?? "").trim(),
-      anywhere: data.get("anywhere") === "on",
-      vehicle_name: String(data.get("vehicle_name") ?? "").trim(),
-      interested_load: String(data.get("interested_load") ?? "").trim(),
-    };
-    const consent = data.get("carrier_consent") === "on";
-    const review = buildVehicleReview(payload);
-    const preview = buildVehicleAvailabilityPreview(payload, review);
-    const lead = qualifyCarrierLead(payload);
-    result?.removeAttribute("hidden");
-    setText("[data-vehicle-decision]", lead.accepted ? "Qualified for Logistics Sales follow-up" : "Needs more information before Sales follow-up");
-    setText("[data-vehicle-state]", `Vehicle state: ${review.vehicle_state}`);
-    fillList("[data-vehicle-reasons]", review.reasons);
-    fillList("[data-vehicle-actions]", review.required_actions);
-    setText("[data-vehicle-next-step]", review.next_step);
-    setText("[data-vehicle-boundary]", review.what_this_is_not);
-    if (!consent) return;
-    const leadMode = form.dataset.leadMode ?? "preview";
-    const leadEndpoint = form.dataset.leadEndpoint ?? "";
-    const deliveryText = leadMode === "live" && leadEndpoint
-      ? "Secure lead delivery is enabled for this environment."
-      : "Preview mode: the qualified request is prepared locally and is not sent to an external endpoint.";
-    setText("[data-vehicle-delivery]", `${preview}\n\n${deliveryText}`);
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      if (alert) {
+        alert.textContent = "Complete the required fields before reviewing this load.";
+        alert.hidden = false;
+      }
+      return;
+    }
+
+    const payload = buildLoadBoardPayload(new FormData(form));
+    const review = reviewLoadBoardPayload(payload);
+    activePreview = buildLoadBoardPreview(payload, review);
+    activeLoadLead = buildPostedLoadSalesLead(payload, review);
+    if (decision) decision.textContent = review.decision.replaceAll("_", " ");
+    if (confidence) confidence.textContent = `Confidence: ${review.confidence}`;
+    fillList("[data-load-reasons]", review.reasons);
+    fillList("[data-load-actions]", review.required_actions);
+    fillList("[data-load-routing]", review.routing.length ? review.routing : ["No routing — submission rejected."]);
+    if (preview) preview.textContent = activePreview;
+    if (loadEmail) loadEmail.href = buildLogisticsSalesMailto(activeLoadLead);
+    const loadLive = form.dataset.leadMode === "live";
+    if (loadEmail) loadEmail.hidden = loadLive;
+    if (loadSendButton) loadSendButton.hidden = !loadLive;
+    if (loadSalesTag) loadSalesTag.textContent = `Sales tag: ${activeLoadLead.sales_tag}`;
+    if (loadDeliveryStatus) {
+      loadDeliveryStatus.textContent = loadLive
+        ? "Review the posted load, then send it securely to Logistics Sales."
+        : "Email is prepared with the posted-load sales tag. Review it and press Send in your email application.";
+    }
+    if (loadBoundary) {
+      loadBoundary.textContent = loadLive
+        ? "The load is not published and carrier search does not begin until Sales confirms the request."
+        : "Preview mode does not send, store, or publish this load automatically.";
+    }
+    if (result) {
+      result.dataset.decision = review.decision;
+      result.hidden = false;
+      result.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+
+  copyButton?.addEventListener("click", async () => {
+    if (!activePreview || !copyStatus) return;
+    try {
+      await navigator.clipboard.writeText(activePreview);
+      copyStatus.textContent = "Preview package copied.";
+    } catch {
+      copyStatus.textContent = "Copy did not work. Select the preview text and copy it manually.";
+    }
+  });
+
+  const sendLead = async (
+    leadForm: HTMLFormElement | null,
+    lead: ReturnType<typeof buildCarrierSalesLead> | ReturnType<typeof buildPostedLoadSalesLead> | null,
+    button: HTMLButtonElement | null,
+    deliveryStatus: HTMLElement | null,
+  ) => {
+    if (!leadForm || !lead || !button || !deliveryStatus) return;
+    const endpoint = leadForm.dataset.leadEndpoint || "";
+    try {
+      if (!endpoint || new URL(endpoint).protocol !== "https:") throw new Error("invalid_endpoint");
+    } catch {
+      deliveryStatus.textContent = "Secure delivery is not connected yet. Use the prepared email option or call Logistics Sales.";
+      return;
+    }
+
+    button.disabled = true;
+    deliveryStatus.textContent = "Sending the request securely…";
+    const requestId = typeof crypto.randomUUID === "function" ? crypto.randomUUID() : `hermes-${Date.now()}`;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
+        body: JSON.stringify({
+          request_id: requestId,
+          submitted_at: new Date().toISOString(),
+          page_path: window.location.pathname,
+          ...lead,
+        }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("delivery_failed");
+      deliveryStatus.textContent = "Request received by Logistics Sales. A representative can now review it and follow up.";
+      button.hidden = true;
+    } catch {
+      deliveryStatus.textContent = "Delivery was not confirmed. Your request may not have been received; please try again or use the prepared email option.";
+    } finally {
+      window.clearTimeout(timeout);
+      button.disabled = false;
+    }
+  };
+
+  vehicleSendButton?.addEventListener("click", () => {
+    void sendLead(vehicleForm, activeVehicleLead, vehicleSendButton, vehicleDeliveryStatus);
+  });
+  loadSendButton?.addEventListener("click", () => {
+    void sendLead(form, activeLoadLead, loadSendButton, loadDeliveryStatus);
   });
 </script>
