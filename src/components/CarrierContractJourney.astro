@@ -11,7 +11,10 @@ const journeyByPath: Record<string, JourneyConfig> = {
   "/logistics/carrier-agreement/": { stage: "Full terms reviewed", primaryLabel: "Confirm terms and continue", primaryHref: "/logistics/carrier-onboarding/" },
 };
 
-const journey = journeyByPath[Astro.url.pathname];
+const pathJourney = journeyByPath[Astro.url.pathname];
+const journey = Astro.url.pathname === "/load-board/" && Astro.url.searchParams.get("role") === "carrier"
+  ? { stage: "Load Board carrier access", primaryLabel: "Agreement & onboarding", primaryHref: "/carrier/" }
+  : pathJourney;
 const shortUrl = "https://hermeslogisticsus.com/sign/";
 const smsCopy = `Hermes Logistics: here is the private carrier link we discussed. Review the working model, see what stays under your control, and continue from your phone: ${shortUrl}`;
 ---
