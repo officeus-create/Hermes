@@ -49,6 +49,9 @@ jobs:
       - name: Enforce Hermes SEO Framework P0 gate
         run: node scripts/hermes-seo-framework-p0-gate.test.mjs
 
+      - name: Enforce automotive GEO P0 owner contract
+        run: node scripts/automotive-geo-p0-contract.test.mjs
+
       - name: Enforce four-direction SEO market registry
         run: node scripts/seo-four-direction-market-registry.test.mjs
 
