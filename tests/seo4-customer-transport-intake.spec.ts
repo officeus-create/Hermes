@@ -64,7 +64,7 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
     "href",
     "/logistics/start-car-hauling-dispatch/",
   );
-  await expect(page.getByRole("link", { name: /Open Load Board demo/i }).first()).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Open Load Board/i }).first()).toHaveAttribute(
     "href",
     "/load-board/?role=carrier#available-loads",
   );

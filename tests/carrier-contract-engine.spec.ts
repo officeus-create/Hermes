@@ -118,7 +118,7 @@ test("carrier can complete the three-step mobile agreement and finger-signature 
 
 test("public carrier links never propagate raw commercial or identity context", async ({ page }) => {
   await page.goto("/carrier/?plan=pro&rate=8&rep=Assistant%20107&offer=PRO-AUG&carrier_name=SHOULD_NOT_TRAVEL&mc=123456");
-  const primary = page.getByRole("link", { name: /Review and sign/i }).first();
+  const primary = page.getByRole("link", { name: /Review (?:&|and) sign/i }).first();
   await expect(primary).toHaveAttribute("href", "/logistics/carrier-onboarding/");
   const href = await primary.getAttribute("href");
   expect(href).not.toMatch(/plan=|rate=|rep=|offer=|carrier_name|mc=|123456/);

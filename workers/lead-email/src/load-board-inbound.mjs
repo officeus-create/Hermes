@@ -291,10 +291,6 @@ const parseFreightEmail = async ({ subject, body, receivedAt, observedAt, source
   const combined = `${clean(subject, 300)}\n${String(body || "").slice(0, 120_000)}`;
   const fingerprint = `sha256:${await sha256(combined.replace(/\s+/g, " ").trim().toLowerCase())}`;
 
-  if (containsCarHauling(combined)) {
-    return { quarantine: { source_message_id: sourceMessageId, fingerprint, reason: "car_hauling_hold", subject: clean(subject, 200), received_at: receivedAt, observed_at: observedAt, raw_evidence_ref: rawEvidenceRef } };
-  }
-
   const [laneOrigin, laneDestination] = extractLane(combined);
   const origin = extractLabeledLocation(combined, ["origin", "from", "pickup(?: location)?", "pu"]) || laneOrigin;
   const destination = extractLabeledLocation(combined, ["destination", "to", "delivery(?: location)?", "drop(?: off)?"]) || laneDestination;

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("Load Board starts with two plain-language entry choices and keeps demo maturity explicit", async ({ page }) => {
+test("Load Board starts with two plain-language entry choices and keeps the live/demo boundary explicit", async ({ page }) => {
   await page.goto("/load-board/");
 
   await expect(page.getByRole("heading", { level: 2, name: "What are you here to do?" })).toBeVisible();
@@ -19,7 +19,8 @@ test("Load Board starts with two plain-language entry choices and keeps demo mat
 
   await expect(page.locator("[data-primary-entry]")).toHaveCount(2);
   await expect(page.getByText("Customer → Hermes → Carrier", { exact: true })).toBeVisible();
-  await expect(page.getByText(/No load shown on this page is live or bookable/i)).toBeVisible();
+  await expect(page.getByText(/Live \+ demo split:/i)).toBeVisible();
+  await expect(page.getByText(/approved active records appear in the Live marketplace section/i)).toBeVisible();
 });
 
 test("broker path remains available without competing with the two primary choices", async ({ page }) => {
