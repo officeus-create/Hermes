@@ -51,3 +51,11 @@ jobs:
 
       - name: Validate Vehicles desktop and mobile UX
         run: npx playwright test tests/repair-shop-vehicles.spec.ts --project=desktop --project=mobile
+
+      - name: Upload Vehicles visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: repair-shop-vehicles-visual-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/repair-shop-vehicles
+          if-no-files-found: error
+          retention-days: 14
