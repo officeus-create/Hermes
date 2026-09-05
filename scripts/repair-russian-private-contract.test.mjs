@@ -4,13 +4,14 @@ import { readFile } from "node:fs/promises";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-const [layout, header, runtime, dashboard, availability, customers] = await Promise.all([
+const [layout, header, runtime, dashboard, availability, customers, appointments] = await Promise.all([
   read("src/layouts/BaseLayout.astro"),
   read("src/components/SiteHeader.astro"),
   read("src/components/HermesConnectDomReady.astro"),
   read("src/pages/services/hermes-connect/repair-shops/dashboard.astro"),
   read("src/pages/services/hermes-connect/repair-shops/availability.astro"),
   read("src/pages/services/hermes-connect/repair-shops/customers.astro"),
+  read("src/pages/services/hermes-connect/repair-shops/appointments.astro"),
 ]);
 
 test("Hermes Connect defaults clean entries to English while preserving explicit locale navigation", () => {
@@ -52,14 +53,16 @@ test("Russian Repair private copy covers dashboard, schedule, customers and dyna
   }
 });
 
-test("canonical private Repair destinations remain inside the shared locale-preserving route family", () => {
+test("canonical private Repair destinations remain inside the shared locale-preserving CRM route family", () => {
   assert.match(dashboard, /\/services\/hermes-connect\/repair-shops\/customers\//);
   assert.match(dashboard, /\/services\/hermes-connect\/repair-shops\/availability\//);
+  assert.match(dashboard, /\/services\/hermes-connect\/repair-shops\/appointments\//);
+  assert.match(customers, /\/services\/hermes-connect\/repair-shops\/appointments\//);
+  assert.match(appointments, /\/services\/hermes-connect\/repair-shops\/customers\//);
   assert.match(availability, /\/services\/hermes-connect\/repair-shops\/dashboard\//);
-  assert.match(customers, /\/services\/hermes-connect\/repair-shops\/dashboard\//);
 });
 
 test("private route UI remains noindex while localization changes presentation only", () => {
-  for (const source of [dashboard, availability, customers]) assert.match(source, /robots="noindex,nofollow"/);
+  for (const source of [dashboard, availability, customers, appointments]) assert.match(source, /robots="noindex,nofollow"/);
   assert.doesNotMatch(runtime, /fetch\("\/api\/repair-shop\//, "localization runtime must not create a second Repair data path");
 });
