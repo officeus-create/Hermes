@@ -1,0 +1,58 @@
+name: Repair Shop Settings contract
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/repair-shop/profile.ts"
+      - "src/pages/services/hermes-connect/repair-shops/settings.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/repair-shop-settings-contract.test.mjs"
+      - "tests/repair-shop-settings.spec.ts"
+      - "tests/repair-shop-crm-shell.spec.ts"
+      - ".github/workflows/repair-shop-settings-contract.yml"
+      - "docs/release-manifest-deltas/2026-09-06-hermes-connect-repair-settings.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/api/repair-shop/profile.ts"
+      - "src/pages/services/hermes-connect/repair-shops/settings.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/repair-shop-settings-contract.test.mjs"
+      - "tests/repair-shop-settings.spec.ts"
+      - "tests/repair-shop-crm-shell.spec.ts"
+      - ".github/workflows/repair-shop-settings-contract.yml"
+      - "docs/release-manifest-deltas/2026-09-06-hermes-connect-repair-settings.json"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Verify owner-only Settings workspace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate Settings API and privacy contract
+        run: node scripts/repair-shop-settings-contract.test.mjs
+      - name: Build website
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Validate Settings and CRM desktop/mobile UX
+        run: npx playwright test tests/repair-shop-settings.spec.ts tests/repair-shop-crm-shell.spec.ts --project=desktop --project=mobile
+      - name: Upload Settings visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: repair-shop-settings-visual-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/repair-shop-settings
+          if-no-files-found: error
+          retention-days: 14
