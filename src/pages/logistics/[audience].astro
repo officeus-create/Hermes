@@ -1,8 +1,9 @@
 ---
-import { ArrowRight, Check } from "@lucide/astro";
+import { ArrowRight, BookOpen, Calculator, Check, FileSignature, Route, Truck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import CareerStatusPanel from "../../components/CareerStatusPanel.astro";
+import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 import { logisticsAudiences } from "../../data/logistics-audiences";
@@ -18,6 +19,46 @@ const validatorCompat = audience.slug === "shipper-dealer"
   : audience.slug === "carrier"
     ? "Call Logistics Sales | tel:+12623023626"
     : "";
+const carrierTools = audience.slug === "carrier"
+  ? [
+      {
+        title: "Dispatch review",
+        body: "Start with authority, insurance, equipment, lanes, availability, and the operating support you need.",
+        href: "/logistics/start-car-hauling-dispatch/",
+        icon: Truck,
+      },
+      {
+        title: "Agreement & onboarding",
+        body: "Review the approved carrier relationship and onboarding packet before any production execution gate is opened.",
+        href: "/carrier/",
+        icon: FileSignature,
+      },
+      {
+        title: "Live Load Board",
+        body: "Review current load opportunities through the dedicated carrier-facing Load Board experience.",
+        href: "/load-board/live-pilot/",
+        icon: Route,
+      },
+      {
+        title: "Carrier Knowledge Hub",
+        body: "Use practical guides for dispatch models, readiness, broker setup, carrier control, and operating decisions.",
+        href: "/logistics/resources/",
+        icon: BookOpen,
+      },
+      {
+        title: "RPM & profitability",
+        body: "Compare revenue per mile and trip economics before deciding whether an opportunity fits your operation.",
+        href: "/logistics/resources/rpm-calculator/",
+        icon: Calculator,
+      },
+      {
+        title: "Factoring vs direct payment",
+        body: "Compare payment timing and factoring cost assumptions without hiding the tradeoffs behind one headline number.",
+        href: "/logistics/resources/factoring-vs-direct-payment-calculator/",
+        icon: Calculator,
+      },
+    ]
+  : [];
 const shipperServiceModes = audience.slug === "shipper-dealer"
   ? [
       {
@@ -79,6 +120,7 @@ const schema = [breadcrumbSchema, faqSchema];
   <div class="logistics-audience-page">
     {validatorCompat && <template data-static-validator-compat={validatorCompat}></template>}
     <SiteHeader theme="dark" activePath="/paths/logistics/" />
+    <DirectionProductNav direction="logistics" theme="dark" />
     <main id="main-content">
       <section class="logistics-audience-hero">
         <div class="shell">
@@ -121,6 +163,35 @@ const schema = [breadcrumbSchema, faqSchema];
           </ol>
         </div>
       </section>
+
+      {carrierTools.length > 0 && (
+        <section class="section carrier-operating-tools" aria-labelledby="carrier-operating-tools-title">
+          <div class="shell">
+            <div class="section-heading split-heading">
+              <div>
+                <p class="eyebrow">Carrier operating tools</p>
+                <h2 id="carrier-operating-tools-title">Everything a carrier needs, in one operating path.</h2>
+              </div>
+              <p>Dispatch, onboarding, live opportunities, knowledge, and economics stay inside Logistics instead of being scattered across unrelated product areas.</p>
+            </div>
+            <div class="carrier-operating-tools__grid">
+              {carrierTools.map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <a href={tool.href} class="carrier-operating-tool">
+                    <span class="carrier-operating-tool__icon"><Icon size={19} aria-hidden="true" /></span>
+                    <div>
+                      <h3>{tool.title}</h3>
+                      <p>{tool.body}</p>
+                    </div>
+                    <ArrowRight size={18} aria-hidden="true" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {shipperServiceModes.length > 0 && (
         <section class="section shipper-service-modes" aria-labelledby="shipper-service-modes-title">
@@ -186,6 +257,14 @@ const schema = [breadcrumbSchema, faqSchema];
 
 <style>
   .logistics-demo-action { border-style: dashed; }
+  .carrier-operating-tools { background: #f5f7fb; }
+  .carrier-operating-tools__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; }
+  .carrier-operating-tool { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .85rem; align-items: start; min-height: 100%; padding: 1.15rem; border: 1px solid #d6dce8; border-radius: 14px; background: #fff; color: var(--color-navy-900); text-decoration: none; transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease; }
+  .carrier-operating-tool:hover, .carrier-operating-tool:focus-visible { transform: translateY(-2px); border-color: #9aa8c4; box-shadow: 0 12px 28px rgba(7,16,56,.08); }
+  .carrier-operating-tool__icon { display: inline-grid; place-items: center; width: 2.15rem; height: 2.15rem; border-radius: 10px; background: #eef1ff; color: #5634c8; }
+  .carrier-operating-tool h3 { margin: 0 0 .35rem; font-size: 1rem; }
+  .carrier-operating-tool p { margin: 0; color: var(--color-muted); font-size: .9rem; line-height: 1.55; }
+  .carrier-operating-tool > svg { margin-top: .45rem; color: #5634c8; }
   .shipper-service-modes { background: #fff; }
   .shipper-service-mode-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
   .shipper-service-mode-grid article { display: flex; min-height: 100%; flex-direction: column; padding: 1.35rem; border: 1px solid #d6dce8; border-radius: 12px; background: #f8faff; }
@@ -205,12 +284,19 @@ const schema = [breadcrumbSchema, faqSchema];
   .logistics-audience-final-card p:not(.eyebrow) { max-width: 70ch; color: rgba(255,255,255,.72); line-height: 1.65; }
   .logistics-audience-final-actions { display: grid; gap: .7rem; min-width: min(100%, 270px); }
   .logistics-audience-final-actions .button:not(.button-primary) { border-color: rgba(255,255,255,.42); color: #fff; }
+  @media (max-width: 980px) {
+    .carrier-operating-tools__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   @media (max-width: 900px) {
     .shipper-service-mode-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 760px) {
+    .carrier-operating-tools__grid { grid-template-columns: 1fr; }
     .logistics-audience-final-card { grid-template-columns: 1fr; }
     .logistics-audience-final-actions { width: 100%; }
     .logistics-audience-final-actions .button { width: 100%; justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carrier-operating-tool { transition: none; }
   }
 </style>

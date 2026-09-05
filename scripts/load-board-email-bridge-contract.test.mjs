@@ -11,6 +11,7 @@ import {
 
 const stream = (value) => new Blob([value]).stream();
 const now = "2026-09-04T14:00:00.000Z";
+const bridgeDate = new Date().toUTCString();
 
 assert.equal(typeof bridgeEntry.fetch, "function");
 assert.equal(typeof bridgeEntry.email, "function");
@@ -63,7 +64,11 @@ const carHauling = await parseFreightEmail({
   sourceMessageId: "car-001@example.com",
   rawEvidenceRef: "email:src_broker_example:car-001@example.com",
 });
-assert.equal(carHauling.quarantine.reason, "car_hauling_hold");
+assert.equal(carHauling.record.origin, "Chicago, IL");
+assert.equal(carHauling.record.destination, "Miami, FL");
+assert.equal(carHauling.record.equipment, "car_hauler");
+assert.equal(carHauling.record.rate_amount, 3200);
+assert.equal(carHauling.quarantine, undefined);
 assert.equal(containsCarHauling("auto transport available"), true);
 
 const incomplete = await parseFreightEmail({
@@ -111,7 +116,7 @@ const rawEmail = [
   "To: loads@hermeslogisticsus.com",
   "Subject: Dry Van load Chicago to Atlanta",
   "Message-ID: <load-bridge-001@example.com>",
-  "Date: Fri, 04 Sep 2026 14:00:00 GMT",
+  `Date: ${bridgeDate}`,
   "Content-Type: text/plain; charset=utf-8",
   "",
   "LOAD OFFER",
@@ -138,7 +143,7 @@ await handleLoadBoardInboundEmail({
     From: "Broker Example <broker@example.com>",
     Subject: "Dry Van load Chicago to Atlanta",
     "Message-ID": "<load-bridge-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: bridgeDate,
   }),
   raw: stream(rawEmail),
 }, {
@@ -180,7 +185,7 @@ await handleLoadBoardInboundEmail({
     From: "Public Broker <publicbroker@example.com>",
     Subject: "Flatbed load",
     "Message-ID": "<public-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: bridgeDate,
   }),
   raw: stream(rawEmail.replace(/broker@example\.com/g, "publicbroker@example.com")),
 }, {
@@ -222,4 +227,4 @@ await handleLoadBoardInboundEmail({
 } });
 assert.equal(unknownSourceCalls, 0);
 
-console.log("load-board-email-bridge-contract: approved source, MIME parse, quarantine, auth gate, TTL and no-raw-body handoff verified");
+console.log("load-board-email-bridge-contract: approved source, MIME parse, Car Hauling ingestion, quarantine, auth gate, TTL and no-raw-body handoff verified");
