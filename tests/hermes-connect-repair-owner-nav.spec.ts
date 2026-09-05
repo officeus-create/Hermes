@@ -17,43 +17,47 @@ async function mockRepairOwner(page: import("@playwright/test").Page) {
   });
 }
 
-test("Repair Shop owner nav is one localized context across the private workspace", async ({ page }) => {
+test("Repair Shop CRM navigation is one localized context across the private workspace", async ({ page }) => {
   await mockRepairOwner(page);
   await page.goto("/services/hermes-connect/repair-shops/dashboard/?lang=ru", { waitUntil: "domcontentloaded" });
 
-  const nav = page.locator("[data-repair-owner-nav]");
-  await expect(nav).toBeVisible();
-  await expect(nav).toHaveAttribute("aria-label", "Навигация кабинета СТО");
-  await expect(nav.locator('[data-owner-nav-item="dashboard"]')).toHaveText("Главная");
-  await expect(nav.locator('[data-owner-nav-item="availability"]')).toHaveText("Доступность");
-  await expect(nav.locator('[data-owner-nav-item="customers"]')).toHaveText("Клиенты");
-  await expect(nav.locator('[data-owner-nav-item="repairShops"]')).toHaveText("СТО");
-  await expect(nav.locator('[data-owner-nav-item="dashboard"]')).toHaveAttribute("aria-current", "page");
-  await expect(nav.locator('[data-owner-nav-item="availability"]')).toHaveAttribute("href", /availability\/\?lang=ru$/);
-  await expect(nav.locator('[data-owner-nav-item="customers"]')).toHaveAttribute("href", /customers\/\?lang=ru$/);
-  await expect(nav.locator('[data-owner-nav-item="repairShops"]')).toHaveAttribute("href", /repair-shops\/\?lang=ru$/);
+  const shell = page.locator("[data-repair-crm-shell]");
+  const nav = shell.locator(".repair-crm-nav");
+  await expect(shell).toBeVisible();
+  await expect(shell.locator(".repair-crm-sidebar")).toHaveAttribute("aria-label", "СТО CRM");
+  await expect(nav.getByRole("link", { name: "Сегодня" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "График" })).toHaveAttribute("href", /availability\/\?lang=ru$/);
+  await expect(nav.getByRole("link", { name: "Клиенты" })).toHaveAttribute("href", /customers\/\?lang=ru$/);
+  await expect(shell.getByRole("link", { name: "Все продукты" })).toHaveAttribute("href", /services\/hermes-connect\/\?lang=ru$/);
 });
 
-test("Repair Shop owner nav marks the current section without inventing a second workspace", async ({ page }) => {
+test("Repair Shop CRM navigation marks the current section without inventing a second workspace", async ({ page }) => {
   await mockRepairOwner(page);
   await page.goto("/services/hermes-connect/repair-shops/customers/?lang=fr", { waitUntil: "domcontentloaded" });
 
-  const nav = page.locator("[data-repair-owner-nav]");
-  await expect(nav).toBeVisible();
-  await expect(nav.locator('[data-owner-nav-item="customers"]')).toHaveText("Clients");
-  await expect(nav.locator('[data-owner-nav-item="customers"]')).toHaveAttribute("aria-current", "page");
+  const shell = page.locator("[data-repair-crm-shell]");
+  const nav = shell.locator(".repair-crm-nav");
+  await expect(shell).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Clients" })).toHaveAttribute("aria-current", "page");
   await expect(nav.locator('[aria-current="page"]')).toHaveCount(1);
 });
 
-test("Repair Shop owner nav stays usable at 390px without page overflow", async ({ page }) => {
+test("Repair Shop CRM mobile navigation stays usable at 390px without page overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await mockRepairOwner(page);
   await page.goto("/services/hermes-connect/repair-shops/availability/?lang=uk", { waitUntil: "domcontentloaded" });
 
-  const nav = page.locator("[data-repair-owner-nav]");
-  await expect(nav).toBeVisible();
-  await expect(nav.locator('[data-owner-nav-item="availability"]')).toHaveText("Доступність");
-  const minHeight = await nav.locator("a").first().evaluate((node) => parseFloat(getComputedStyle(node).minHeight));
+  const shell = page.locator("[data-repair-crm-shell]");
+  const menu = shell.locator("[data-repair-crm-menu]");
+  await expect(shell).toBeVisible();
+  await expect(menu).toBeVisible();
+  await menu.click();
+  await expect(menu).toHaveAttribute("aria-expanded", "true");
+
+  const availability = shell.locator(".repair-crm-nav").getByRole("link", { name: "Графік" });
+  await expect(availability).toBeVisible();
+  await expect(availability).toHaveAttribute("aria-current", "page");
+  const minHeight = await availability.evaluate((node) => parseFloat(getComputedStyle(node).minHeight));
   expect(minHeight).toBeGreaterThanOrEqual(44);
   const pageOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(pageOverflow).toBe(false);
