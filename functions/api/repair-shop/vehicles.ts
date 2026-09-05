@@ -185,7 +185,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       last_completed_visit: record.last_completed_visit,
       next_appointment: record.next_appointment,
       current_customer: record.current_customer,
-      services: Array.from(record.services).sort((a: string, b: string) => a.localeCompare(b)),
+      services: Array.from(record.services as Set<string>).sort((a, b) => a.localeCompare(b)),
       customers: Array.from(record.customers.values())
         .map(({ last_seen_stamp, ...customer }: any) => customer)
         .sort((a: any, b: any) => String(b.last_seen_date).localeCompare(String(a.last_seen_date))),
