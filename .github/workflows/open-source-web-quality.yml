@@ -1,0 +1,89 @@
+name: Open-source web quality audit
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "public/**"
+      - "tests/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".pa11yci.cjs"
+      - ".github/workflows/open-source-web-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: open-source-web-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production site
+        run: npm run build
+
+      - name: Start local production preview
+        shell: bash
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/hermes-preview.log 2>&1 &
+          echo $! > /tmp/hermes-preview.pid
+          for attempt in {1..60}; do
+            if curl --fail --silent --show-error http://127.0.0.1:4321/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/hermes-preview.log
+          exit 1
+
+      - name: Prepare audit artifacts
+        run: mkdir -p artifacts/web-quality
+
+      - name: Enforce WCAG 2 AA on critical public routes
+        shell: bash
+        run: |
+          set -o pipefail
+          npx --yes pa11y-ci@4.1.1 --config .pa11yci.cjs 2>&1 | tee artifacts/web-quality/pa11y.txt
+
+      - name: Run OWASP ZAP baseline security audit
+        continue-on-error: true
+        shell: bash
+        run: |
+          docker run --rm --network=host \
+            -v "${PWD}/artifacts/web-quality:/zap/wrk/:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+            -t http://127.0.0.1:4321/ \
+            -J zap.json \
+            -w zap.md \
+            -r zap.html \
+            -I
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: open-source-web-quality
+          path: artifacts/web-quality/
+          if-no-files-found: warn
+          retention-days: 30
