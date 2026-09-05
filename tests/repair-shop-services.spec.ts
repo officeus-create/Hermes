@@ -50,6 +50,8 @@ async function captureEvidence(page: Page, testInfo: TestInfo, name: string) {
     window.scrollTo(0, 0);
   });
   await page.waitForTimeout(50);
+  await expect(page.locator(".skip-link")).toBeHidden();
+  await page.addStyleTag({ content: ".skip-link{display:none!important}" });
   await page.screenshot({ path: path.join(directory, `${name}-${testInfo.project.name}.png`), fullPage: true, animations: "disabled" });
 }
 
