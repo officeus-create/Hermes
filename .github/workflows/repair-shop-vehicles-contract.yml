@@ -1,0 +1,53 @@
+name: Repair Shop Vehicles contract
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/repair-shop/vehicles.ts"
+      - "src/pages/services/hermes-connect/repair-shops/vehicles.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/repair-shop-vehicles-contract.test.mjs"
+      - "tests/repair-shop-vehicles.spec.ts"
+      - ".github/workflows/repair-shop-vehicles-contract.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/api/repair-shop/vehicles.ts"
+      - "src/pages/services/hermes-connect/repair-shops/vehicles.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/repair-shop-vehicles-contract.test.mjs"
+      - "tests/repair-shop-vehicles.spec.ts"
+      - ".github/workflows/repair-shop-vehicles-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Verify owner-only Vehicles workspace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Vehicles storage and privacy contract
+        run: node scripts/repair-shop-vehicles-contract.test.mjs
+
+      - name: Build website
+        run: npm run build
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate Vehicles desktop and mobile UX
+        run: npx playwright test tests/repair-shop-vehicles.spec.ts --project=desktop --project=mobile
