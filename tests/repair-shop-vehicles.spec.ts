@@ -1,4 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { expect, test, type Page, type TestInfo } from "@playwright/test";
 
 const vehiclePayload = {
   success: true,
@@ -45,7 +47,17 @@ async function mockOwnerApis(page: Page) {
   });
 }
 
-test("Vehicles is a private owner workspace backed by the shared CRM shell", async ({ page }) => {
+async function captureEvidence(page: Page, testInfo: TestInfo, name: string) {
+  const directory = path.resolve("artifacts/repair-shop-vehicles");
+  await mkdir(directory, { recursive: true });
+  await page.screenshot({
+    path: path.join(directory, `${name}-${testInfo.project.name}.png`),
+    fullPage: true,
+    animations: "disabled",
+  });
+}
+
+test("Vehicles is a private owner workspace backed by the shared CRM shell", async ({ page }, testInfo) => {
   await mockOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/vehicles/", { waitUntil: "domcontentloaded" });
 
@@ -64,6 +76,7 @@ test("Vehicles is a private owner workspace backed by the shared CRM shell", asy
   await expect(page.locator("#detail-customers")).toContainText("Jordan Lee");
   await expect(page.locator("#detail-history")).toContainText("Oil change");
   await expect(page.locator("#detail-next")).toContainText("Brake inspection");
+  await captureEvidence(page, testInfo, "vehicles-en-detail");
 
   const customersHref = await page.locator("#detail-customers-link").getAttribute("href");
   const appointmentsHref = await page.locator("#detail-appointments-link").getAttribute("href");
@@ -73,7 +86,7 @@ test("Vehicles is a private owner workspace backed by the shared CRM shell", asy
   expect(appointmentsHref).not.toContain("1HGCM82633A004352");
 });
 
-test("Vehicles preserves Russian owner UX and mobile-safe navigation", async ({ page }) => {
+test("Vehicles preserves Russian owner UX and mobile-safe navigation", async ({ page }, testInfo) => {
   await mockOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/vehicles/?lang=ru", { waitUntil: "domcontentloaded" });
 
@@ -81,6 +94,7 @@ test("Vehicles preserves Russian owner UX and mobile-safe navigation", async ({ 
   await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Автомобили");
   await expect(page.locator("#vehicle-search")).toHaveAttribute("placeholder", "VIN, автомобиль, клиент или услуга");
   await expect(page.locator(".vehicle-card")).toContainText("Alex Morgan");
+  await captureEvidence(page, testInfo, "vehicles-ru-index");
 
   const viewport = page.viewportSize();
   if (viewport && viewport.width <= 760) {
@@ -88,5 +102,6 @@ test("Vehicles preserves Russian owner UX and mobile-safe navigation", async ({ 
     await expect(menu).toBeVisible();
     await menu.click();
     await expect(page.locator(".repair-crm-sidebar")).toBeVisible();
+    await captureEvidence(page, testInfo, "vehicles-ru-mobile-drawer");
   }
 });
