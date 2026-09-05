@@ -7,6 +7,7 @@ const ownerPaths = new Set([
   `${repairShopRoot}/availability`,
   `${repairShopRoot}/customers`,
   `${repairShopRoot}/vehicles`,
+  `${repairShopRoot}/services`,
 ]);
 const isOwnerWorkspace = ownerPaths.has(normalizedPath);
 
@@ -37,7 +38,7 @@ const items = [
   { label:copy.appointments, href:appointmentsHref, active:normalizedPath === `${repairShopRoot}/appointments`, icon:"calendar" },
   { label:copy.customers, href:withLocale(`${repairShopRoot}/customers/`), active:normalizedPath === `${repairShopRoot}/customers`, icon:"users" },
   { label:copy.vehicles, href:withLocale(`${repairShopRoot}/vehicles/`), active:normalizedPath === `${repairShopRoot}/vehicles`, icon:"car" },
-  { label:copy.services, href:withLocale(`${repairShopRoot}/dashboard/`, "#services-title"), active:false, icon:"wrench" },
+  { label:copy.services, href:withLocale(`${repairShopRoot}/services/`), active:normalizedPath === `${repairShopRoot}/services`, icon:"wrench" },
   { label:copy.availability, href:withLocale(`${repairShopRoot}/availability/`), active:normalizedPath === `${repairShopRoot}/availability`, icon:"clock" },
   { label:copy.feedback, href:withLocale(`${repairShopRoot}/dashboard/`, "#feedback-title"), active:false, icon:"message" },
   { label:copy.settings, href:withLocale(`${repairShopRoot}/dashboard/`, "#profile-title"), active:false, icon:"settings" },
@@ -48,9 +49,11 @@ const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
     ? copy.customers
     : normalizedPath === `${repairShopRoot}/vehicles`
       ? copy.vehicles
-      : normalizedPath === `${repairShopRoot}/availability`
-        ? copy.availability
-        : copy.today;
+      : normalizedPath === `${repairShopRoot}/services`
+        ? copy.services
+        : normalizedPath === `${repairShopRoot}/availability`
+          ? copy.availability
+          : copy.today;
 const productHubHref = withLocale("/services/hermes-connect/");
 const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 ---
@@ -130,9 +133,11 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
         ? "customers"
         : currentPath === `${ROOT}/vehicles`
           ? "vehicles"
-          : currentPath === `${ROOT}/availability`
-            ? "availability"
-            : "today";
+          : currentPath === `${ROOT}/services`
+            ? "services"
+            : currentPath === `${ROOT}/availability`
+              ? "availability"
+              : "today";
     const navKeys = ["today", "appointments", "customers", "vehicles", "services", "availability", "feedback", "settings"];
 
     const localizeHref = (href) => {
