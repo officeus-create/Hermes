@@ -44,15 +44,51 @@ test("all four main directions share one product-header geometry", async () => {
   expect(nav).toContain('technology: {');
   expect(nav).toContain('academy: {');
   expect(nav).toContain("top:84px");
-  expect(nav).toContain("top:72px");
+  expect(nav).toContain("margin-top:84px");
+  expect(nav).toContain("top:72px;margin-top:72px");
   expect(legacyLogisticsNav).toContain("top:84px");
-  expect(legacyLogisticsNav).toContain("top:72px");
+  expect(legacyLogisticsNav).toContain("margin-top:84px");
+  expect(legacyLogisticsNav).toContain("top:72px;margin-top:72px");
+  expect(nav).toContain('a[href="/paths/technology/"]){order:3}');
+  expect(nav).toContain('a[href="/paths/academy/"]){order:4}');
 
   expect(academy).toContain('id: "academy-logistics"');
   expect(academy).toContain('id: "academy-marketing"');
   expect(academy).toContain('id: "academy-it"');
   expect(academy).toContain('id: "academy-sales"');
   expect(academy).toContain('id: "academy-operations"');
+});
+
+test("floating corporate header clears the Logistics product nav at initial render", async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/load-board/live-pilot/");
+
+    const header = page.locator(".site-header");
+    const productNav = page.locator(".logistics-product-nav");
+    await expect(header).toBeVisible();
+    await expect(productNav).toBeVisible();
+
+    const headerBox = await header.boundingBox();
+    const productNavBox = await productNav.boundingBox();
+    expect(headerBox).not.toBeNull();
+    expect(productNavBox).not.toBeNull();
+    expect(productNavBox!.y).toBeGreaterThanOrEqual(headerBox!.y + headerBox!.height - 1);
+
+    if (viewport.width >= 981) {
+      const x = async (href: string) => (await page.locator(`.site-header .desktop-nav > a[href="${href}"]`).boundingBox())?.x ?? Number.NaN;
+      const logisticsX = await x("/paths/logistics/");
+      const marketingX = await x("/paths/marketing/");
+      const technologyX = await x("/paths/technology/");
+      const academyX = await x("/paths/academy/");
+      expect(logisticsX).toBeLessThan(marketingX);
+      expect(marketingX).toBeLessThan(technologyX);
+      expect(technologyX).toBeLessThan(academyX);
+    }
+  }
 });
 
 test("carrier agreement, Load Board, and legacy operating tools remain discoverable inside Logistics", async () => {
