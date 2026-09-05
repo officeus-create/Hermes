@@ -44,10 +44,28 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
     expect(carrierAudience).toContain(`href: "${href}"`);
   }
 
-  expect(journey).toContain('Astro.url.pathname === "/load-board/" && Astro.url.searchParams.get("role") === "carrier"');
+  expect(journey).toContain('const isLoadBoard = Astro.url.pathname === "/load-board/"');
+  expect(journey).toContain('data-carrier-role-gated={isLoadBoard ? "" : undefined}');
+  expect(journey).toContain('new URLSearchParams(window.location.search).get("role") === "carrier"');
   expect(journey).toContain('primaryLabel: "Agreement & onboarding", primaryHref: "/carrier/"');
+  expect(journey).not.toContain('Astro.url.searchParams.get("role")');
 
   expect(carrierEntry).toContain("signed review copy");
   expect(carrierEntry).not.toContain("downloadable execution copy");
   expect(carrierEntry).toContain("Final production execution is not activated");
+});
+
+test("carrier Load Board role reveals Agreement & onboarding at runtime", async ({ page }) => {
+  await page.goto("/load-board/?role=carrier#available-loads");
+  const journey = page.locator("[data-carrier-contract-journey]");
+  await expect(journey).toBeVisible();
+  await expect(journey).not.toHaveAttribute("data-carrier-role-gated", "");
+  await expect(journey.getByRole("link", { name: /Agreement & onboarding/i })).toHaveAttribute("href", "/carrier/");
+});
+
+test("plain Load Board keeps the carrier agreement journey hidden", async ({ page }) => {
+  await page.goto("/load-board/");
+  const journey = page.locator("[data-carrier-contract-journey]");
+  await expect(journey).toBeHidden();
+  await expect(journey).toHaveAttribute("data-carrier-role-gated", "");
 });
