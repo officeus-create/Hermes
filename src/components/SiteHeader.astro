@@ -22,8 +22,11 @@ const isHermesConnectRoute = currentPath.startsWith("/services/hermes-connect");
 const isHermesConnectLanding = currentPath === "/services/hermes-connect" || currentPath === "/services/hermes-connect/";
 const isRepairPrivateRoute = [
   "/services/hermes-connect/repair-shops/dashboard",
-  "/services/hermes-connect/repair-shops/availability",
+  "/services/hermes-connect/repair-shops/appointments",
   "/services/hermes-connect/repair-shops/customers",
+  "/services/hermes-connect/repair-shops/vehicles",
+  "/services/hermes-connect/repair-shops/services",
+  "/services/hermes-connect/repair-shops/availability",
 ].some((prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`));
 const isAcademyPrivateRoute = [
   "/services/hermes-connect/academy/dashboard",
