@@ -1,8 +1,10 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
+import { ensureRepairShopOfficeDemoData as unused } from "../_lib/repair-shop-office-demo.mjs";
+import { ensureOfficeRepairDemoData } from "../_lib/repair-shop-office-demo.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopStaffSchema, serializeRepairShopStaff } from "../_lib/repair-shop-staff-schema.mjs";
 
-type Env = { DB?: any };
+type Env = { DB?: any; HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string };
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
@@ -10,6 +12,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
   if (specialist.role !== "Shop Owner") return jsonResponse(403, { success: false, error: "shop_owner_required" });
 
+  const demoSeed = await ensureOfficeRepairDemoData({ db: env.DB, env, specialist });
   await ensureRepairShopProfileSchema(env.DB);
   const shop = await env.DB
     .prepare("SELECT id FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
@@ -32,5 +35,6 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     success: true,
     shop_id: String(shop.id),
     staff: (result?.results ?? []).map(serializeRepairShopStaff),
+    demo_seed: demoSeed.eligible ? demoSeed : undefined,
   });
 }
