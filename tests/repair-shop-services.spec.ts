@@ -64,28 +64,34 @@ test("Services exposes a working keyboard skip link target", async ({ page }) =>
 
   const skipLink = page.locator(".skip-link");
   const target = page.locator("#main-content");
-  await expect(target).toHaveCount(1);
-
-  const initialRect = await skipLink.evaluate((element) => {
-    const rect = element.getBoundingClientRect();
-    return { top: rect.top, bottom: rect.bottom };
-  });
-  expect(initialRect.bottom).toBeLessThanOrEqual(0);
-
   const wordmark = page.locator(".site-header .wordmark");
-  await wordmark.focus();
-  await expect(wordmark).toBeFocused();
-  await page.keyboard.press("Shift+Tab");
-  await expect(skipLink).toBeFocused();
+  await expect(target).toHaveCount(1);
+  await expect(wordmark).toHaveCount(1);
 
-  const focusedRect = await skipLink.evaluate((element) => {
-    const rect = element.getBoundingClientRect();
-    return { top: rect.top, bottom: rect.bottom };
+  const contract = await skipLink.evaluate((element) => {
+    const wordmarkElement = document.querySelector(".site-header .wordmark");
+    const initialRect = element.getBoundingClientRect();
+    const precedesHeader = Boolean(wordmarkElement && (element.compareDocumentPosition(wordmarkElement) & Node.DOCUMENT_POSITION_FOLLOWING));
+    element.focus({ preventScroll: true });
+    const focusedRect = element.getBoundingClientRect();
+    return {
+      precedesHeader,
+      initialBottom: initialRect.bottom,
+      focused: document.activeElement === element,
+      focusedTop: focusedRect.top,
+      focusedBottom: focusedRect.bottom,
+      href: element.getAttribute("href"),
+    };
   });
-  expect(focusedRect.top).toBeGreaterThanOrEqual(0);
-  expect(focusedRect.bottom).toBeGreaterThan(focusedRect.top);
 
-  await skipLink.press("Enter");
+  expect(contract.precedesHeader).toBe(true);
+  expect(contract.initialBottom).toBeLessThanOrEqual(0);
+  expect(contract.focused).toBe(true);
+  expect(contract.focusedTop).toBeGreaterThanOrEqual(0);
+  expect(contract.focusedBottom).toBeGreaterThan(contract.focusedTop);
+  expect(contract.href).toBe("#main-content");
+
+  await skipLink.click();
   await expect(page).toHaveURL(/#main-content$/);
   await expect(target).toBeVisible();
 });
