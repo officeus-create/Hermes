@@ -39,7 +39,7 @@ test("product priority labels follow the explicit Russian Connect locale", async
   await expect(nav.locator(":scope > a").nth(0)).toHaveText("Центр продуктов");
   await expect(nav.locator(":scope > a").nth(1)).toHaveText("СТО");
   await expect(nav.locator(":scope > a").nth(2)).toHaveText("Load Board");
-  await expect(nav.locator(":scope > a").nth(3)).toHaveText("AI Command Center");
+  await expect(nav.locator(":scope > a").nth(3)).toHaveText("ИИ-командный центр");
   await expect(nav.locator(":scope > a").nth(4)).toHaveText("Академия");
   await expect(nav.locator(":scope > a").nth(0)).toHaveAttribute("aria-current", "page");
 });
