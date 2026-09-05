@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test("social distribution workspace is noindex and creates five distinct preview drafts", async ({ page }) => {
+test("social distribution workspace is noindex and creates six distinct preview drafts", async ({ page }) => {
   const response = await page.goto("/demos/social-distribution/");
   expect(response?.ok()).toBeTruthy();
   await expect(page).toHaveTitle(/Social Distribution Preview Queue/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow,noarchive");
   await expect(page.getByRole("heading", { level: 1, name: /Approved Website Asset.*Platform Draft Review Queue/ })).toBeVisible();
-  await expect(page.locator("[data-distribution-card]")).toHaveCount(5);
+  await expect(page.locator("[data-distribution-card]")).toHaveCount(6);
+  await expect(page.locator('[data-platform="linkedin"]')).toHaveCount(1);
   await expect(page.locator('[data-platform="facebook"]')).toHaveCount(1);
   await expect(page.locator('[data-platform="threads"]')).toHaveCount(1);
   await expect(page.locator('[data-platform="instagram"]')).toHaveCount(1);
@@ -17,21 +18,29 @@ test("social distribution workspace is noindex and creates five distinct preview
   const copies = await page.locator("[data-distribution-copy]").evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLTextAreaElement).value),
   );
-  expect(new Set(copies).size).toBe(5);
+  expect(new Set(copies).size).toBe(6);
 
   const trackedUrls = await page.locator("[data-tracked-url]").allTextContents();
-  expect(trackedUrls).toHaveLength(5);
-  for (const platform of ["facebook", "threads", "instagram", "x", "telegram"]) {
+  expect(trackedUrls).toHaveLength(6);
+  for (const platform of ["linkedin", "facebook", "threads", "instagram", "x", "telegram"]) {
     expect(trackedUrls.some((url) => url.includes(`utm_source=${platform}`))).toBeTruthy();
   }
   expect(trackedUrls.every((url) => url.includes("utm_medium=organic_social"))).toBeTruthy();
   expect(trackedUrls.every((url) => url.includes("utm_campaign=logistics_insights"))).toBeTruthy();
+  expect(trackedUrls.every((url) => url.includes("market=us"))).toBeTruthy();
+  expect(trackedUrls.every((url) => url.includes("placement="))).toBeTruthy();
+  expect(trackedUrls.every((url) => url.includes("creative="))).toBeTruthy();
+
+  const linkedinCopy = await page.locator('[data-platform="linkedin"] [data-distribution-copy]').inputValue();
+  expect(linkedinCopy).toContain("Read the complete comparison");
+  await expect(page.locator('[data-platform="linkedin"]')).toContainText(/Professional B2B\/talent draft/);
 
   const xCopy = await page.locator('[data-platform="x"] [data-distribution-copy]').inputValue();
   expect(xCopy.length).toBeLessThanOrEqual(280);
   await expect(page.locator('[data-platform="instagram"]')).toContainText("Do not assume a clickable caption link");
   await expect(page.locator('[data-platform="telegram"]')).toContainText(/Telegram/i);
   await expect(page.getByText(/zero live accounts verified/i)).toBeVisible();
+  await expect(page.getByText(/Release B still stops at manual export/i)).toBeVisible();
 });
 
 test("reviewed draft can reach manual export only through human approval", async ({ page }) => {
@@ -56,6 +65,8 @@ test("reviewed draft can reach manual export only through human approval", async
   await expect(card.locator("[data-manual-export]")).toBeVisible();
   await expect(card.locator("[data-manual-export] pre")).toContainText("Mode: synthetic_preview");
   await expect(card.locator("[data-manual-export] pre")).toContainText("Platform: facebook");
+  await expect(card.locator("[data-manual-export] pre")).toContainText("Objective: authority");
+  await expect(card.locator("[data-manual-export] pre")).toContainText("Market: us");
   await expect(card.locator("[data-manual-export] pre")).toContainText("Edited Facebook preview copy");
   await expect(card.locator("[data-audit-log] li")).toHaveCount(3);
   await expect(card.locator("[data-distribution-status]")).toContainText("No external action");
