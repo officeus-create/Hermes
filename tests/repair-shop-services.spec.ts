@@ -91,7 +91,7 @@ test("Services exposes a working keyboard skip link target", async ({ page }) =>
   expect(contract.focusedBottom).toBeGreaterThan(contract.focusedTop);
   expect(contract.href).toBe("#main-content");
 
-  await skipLink.click();
+  await skipLink.press("Enter");
   await expect(page).toHaveURL(/#main-content$/);
   await expect(target).toBeVisible();
 });
