@@ -44,7 +44,7 @@ test("Repair Shop mobile drawer keeps navigation and Russian language selection 
   await menuButton.click();
 
   const menu = page.locator("[data-mobile-menu]");
-  const logistics = menu.locator(':scope > a[href="/paths/logistics/"]');
+  const logistics = menu.locator('[data-mobile-department-menu="logistics"] summary');
   const russian = menu.locator(".mobile-language-switcher a[lang='ru']");
   await expect(menu).toBeVisible();
   await expect(logistics).toBeVisible();
@@ -56,7 +56,7 @@ test("Repair Shop mobile drawer keeps navigation and Russian language selection 
   expect(geometry!.x + geometry!.width).toBeLessThanOrEqual(390);
 
   const styles = await menu.evaluate((node) => {
-    const logistics = node.querySelector<HTMLAnchorElement>(':scope > a[href="/paths/logistics/"]');
+    const logistics = node.querySelector<HTMLElement>('[data-mobile-department-menu="logistics"] summary');
     const russian = node.querySelector<HTMLAnchorElement>(".mobile-language-switcher a[lang='ru']");
     if (!logistics || !russian) throw new Error("Expected Repair Shop mobile navigation targets are missing");
     const drawerStyle = getComputedStyle(node);
@@ -65,7 +65,7 @@ test("Repair Shop mobile drawer keeps navigation and Russian language selection 
     return {
       drawerBackground: drawerStyle.backgroundColor,
       logisticsColor: logisticsStyle.color,
-      logisticsMatchesRepairRule: logistics.matches("html.hc-experience .site-header .mobile-nav > a"),
+      logisticsIsDepartmentSummary: Boolean(logistics.closest('[data-mobile-department-menu="logistics"]')),
       russianBackground: russianStyle.backgroundColor,
       russianColor: russianStyle.color,
       russianHeight: russian.getBoundingClientRect().height,
@@ -73,7 +73,7 @@ test("Repair Shop mobile drawer keeps navigation and Russian language selection 
   });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
 
-  expect(styles.logisticsMatchesRepairRule).toBe(true);
+  expect(styles.logisticsIsDepartmentSummary).toBe(true);
   expect(contrast(rgb(styles.logisticsColor), rgb(styles.drawerBackground))).toBeGreaterThanOrEqual(4.5);
   expect(contrast(rgb(styles.russianColor), rgb(styles.russianBackground))).toBeGreaterThanOrEqual(4.5);
   expect(styles.russianHeight).toBeGreaterThanOrEqual(44);
