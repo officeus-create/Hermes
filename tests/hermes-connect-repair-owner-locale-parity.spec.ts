@@ -90,7 +90,7 @@ test("customers renders static and dynamic owner copy in French", async ({ page 
   await expect(page.locator("#customer-count")).toContainText("1 client");
   await expect(page.locator(".customer-header .muted.small")).toContainText("2 rendez-vous · 1 terminés");
   await expect(page.locator(".customer-header .pill")).toHaveText("Prochain rendez-vous");
-  await expect(page.locator(".next-appointment")).toContainText("Prochain:");
+  await expect(page.locator("#customers-list .next-appointment")).toContainText("Prochain:");
   await expect(page.locator(".vehicle-card strong")).toContainText("Kilométrage non indiqué");
   await expect(page.locator(".vehicle-card span")).toContainText("Dernière visite");
 });
