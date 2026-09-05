@@ -18,6 +18,15 @@ const isGoogleAnalyticsRequest = (url: string) => {
   );
 };
 
+const isHermesGaCollectRequest = (url: string) => {
+  const parsed = new URL(url);
+  return (
+    (parsed.hostname === "google-analytics.com" || parsed.hostname.endsWith(".google-analytics.com")) &&
+    parsed.pathname.endsWith("/g/collect") &&
+    parsed.searchParams.get("tid") === "G-RY26321PVW"
+  );
+};
+
 const rectanglesOverlap = (a: DOMRect, b: DOMRect) =>
   a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
@@ -43,7 +52,7 @@ test("analytics stays off before choice and after decline", async ({ page }) => 
   expect(analyticsRequests).toEqual([]);
 });
 
-test("analytics consent keeps non-production test runs local and can be withdrawn", async ({ page }) => {
+test("analytics consent uses host-appropriate transport and can be withdrawn", async ({ page }) => {
   const analyticsRequests: string[] = [];
   page.on("request", (request) => {
     if (isGoogleAnalyticsRequest(request.url())) analyticsRequests.push(request.url());
@@ -52,38 +61,48 @@ test("analytics consent keeps non-production test runs local and can be withdraw
   await page.goto("/", { waitUntil: "domcontentloaded" });
   expect(analyticsRequests).toEqual([]);
 
+  const expectedTransport = await page.evaluate(() => {
+    const productionHosts = new Set([
+      "hermeslogisticsus.com",
+      "www.hermeslogisticsus.com",
+      "connect.hermeslogisticsus.com",
+    ]);
+    return productionHosts.has(window.location.hostname) ? "ga4" : "disabled-non-production";
+  });
+
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("granted");
-  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTransport)).toBe("disabled-non-production");
-  await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
-  const localInstrumentation = await page.evaluate(() => ({
-    hasDataLayer: Array.isArray(window.dataLayer),
-    hasGtag: typeof (window as Window & { gtag?: unknown }).gtag === "function",
-  }));
-  expect(localInstrumentation).toEqual({ hasDataLayer: true, hasGtag: true });
-  await page.waitForTimeout(400);
-  expect(analyticsRequests).toEqual([]);
+  await expect.poll(() => page.evaluate(() => document.documentElement.dataset.analyticsTransport)).toBe(expectedTransport);
+
+  if (expectedTransport === "ga4") {
+    await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(1);
+    await expect.poll(() => analyticsRequests.some((url) => url.includes("googletagmanager.com/gtag/js?id=G-RY26321PVW"))).toBe(true);
+    await expect.poll(() => analyticsRequests.some(isHermesGaCollectRequest)).toBe(true);
+  } else {
+    await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
+    const localInstrumentation = await page.evaluate(() => ({
+      hasDataLayer: Array.isArray(window.dataLayer),
+      hasGtag: typeof (window as Window & { gtag?: unknown }).gtag === "function",
+    }));
+    expect(localInstrumentation).toEqual({ hasDataLayer: true, hasGtag: true });
+    await page.waitForTimeout(400);
+    expect(analyticsRequests).toEqual([]);
+  }
 
   await page.getByRole("button", { name: "Privacy settings" }).click();
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeVisible();
-
-  const requestsAfterWithdrawal: string[] = [];
-  const withdrawalListener = (request: any) => {
-    if (isGoogleAnalyticsRequest(request.url())) requestsAfterWithdrawal.push(request.url());
-  };
+  const analyticsRequestCountBeforeWithdrawal = analyticsRequests.length;
 
   await Promise.all([
     page.waitForNavigation({ waitUntil: "domcontentloaded" }),
     page.getByRole("button", { name: "Continue without analytics" }).click(),
   ]);
 
-  page.on("request", withdrawalListener);
-
   await expect.poll(() => page.evaluate(() => localStorage.getItem("hermes-analytics-consent"))).toBe("denied");
   await expect(page.locator('script[data-hermes-ga4="true"]')).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Choose whether to allow website analytics." })).toBeHidden();
   await page.waitForTimeout(400);
-  expect(requestsAfterWithdrawal).toEqual([]);
+  expect(analyticsRequests).toHaveLength(analyticsRequestCountBeforeWithdrawal);
 });
 
 test("mobile consent stays compact, below the header and clear of every primary hero CTA", async ({ page }) => {
