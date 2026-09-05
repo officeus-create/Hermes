@@ -19,7 +19,6 @@ interface Props {
 const { theme = "dark", activePath, locale = "en" } = Astro.props;
 const currentPath = Astro.url.pathname;
 const isHermesConnectRoute = currentPath.startsWith("/services/hermes-connect");
-const isHermesConnectLanding = currentPath === "/services/hermes-connect" || currentPath === "/services/hermes-connect/";
 const isRepairPrivateRoute = [
   "/services/hermes-connect/repair-shops/dashboard",
   "/services/hermes-connect/repair-shops/availability",
@@ -42,6 +41,13 @@ const privateWorkspace: "repair" | "academy" | "beauty" | null = isRepairPrivate
     : isBeautyPrivateRoute
       ? "beauty"
       : null;
+const publicWorkspace: "repair" | "academy" | "beauty" | "neutral" = currentPath.startsWith("/services/hermes-connect/repair-shops")
+  ? "repair"
+  : currentPath.startsWith("/services/hermes-connect/academy")
+    ? "academy"
+    : currentPath.startsWith("/services/hermes-connect/beauty")
+      ? "beauty"
+      : "neutral";
 const requestedLocale = Astro.url.searchParams.get("lang");
 const activeLocale = isHermesConnectRoute && requestedLocale && siteLocales.includes(requestedLocale as SiteLocale)
   ? requestedLocale as SiteLocale
@@ -103,7 +109,7 @@ const languageLinks = siteLocales.map((language) => {
       sublabel="Repair Shops · current live pilot"
     />
     {privateWorkspace && <HermesConnectAccountSwitcher current={privateWorkspace} mode="menu" />}
-    {!privateWorkspace && isHermesConnectLanding && <HermesConnectAccountSwitcher current="neutral" mode="menu" publicSafe />}
+    {!privateWorkspace && isHermesConnectRoute && <HermesConnectAccountSwitcher current={publicWorkspace} mode="menu" publicSafe />}
     <details class="language-menu" data-language-menu>
       <summary aria-label={`Language: ${localeConfig[activeLocale].name}`}>
         <Languages size={16} aria-hidden="true" />
@@ -130,7 +136,7 @@ const languageLinks = siteLocales.map((language) => {
 
   <nav class="mobile-nav" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu hidden>
     {privateWorkspace && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={privateWorkspace} /></div>}
-    {!privateWorkspace && isHermesConnectLanding && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current="neutral" publicSafe /></div>}
+    {!privateWorkspace && isHermesConnectRoute && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current={publicWorkspace} publicSafe /></div>}
     <HermesConnectLauncher
       variant="mobile"
       href="/services/hermes-connect/repair-shops/"
