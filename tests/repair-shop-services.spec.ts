@@ -47,7 +47,7 @@ async function captureEvidence(page: Page, testInfo: TestInfo, name: string) {
   await mkdir(directory, { recursive: true });
   await page.evaluate(() => {
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    window.scrollTo(0, 0);
   });
   await page.waitForTimeout(50);
   await page.screenshot({ path: path.join(directory, `${name}-${testInfo.project.name}.png`), fullPage: true, animations: "disabled" });
