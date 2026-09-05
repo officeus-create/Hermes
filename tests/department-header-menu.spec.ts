@@ -38,6 +38,9 @@ test("desktop header exposes ordered department dropdowns without overlapping th
     for (const label of requiredLinks[id]) {
       await expect(panel.getByRole("link", { name: label, exact: true })).toBeVisible();
     }
+    if (id === "logistics" || id === "technology") {
+      await expect(panel.getByRole("link", { name: "Load Board", exact: true })).toHaveAttribute("href", "/load-board/");
+    }
   }
 
   expect(xPositions[0]).toBeLessThan(xPositions[1]);
@@ -65,6 +68,9 @@ test("mobile hamburger exposes the same departments as ordered accordions", asyn
     await details.locator("summary").click();
     for (const label of requiredLinks[id]) {
       await expect(details.getByRole("link", { name: label, exact: true })).toBeVisible();
+    }
+    if (id === "logistics" || id === "technology") {
+      await expect(details.getByRole("link", { name: "Load Board", exact: true })).toHaveAttribute("href", "/load-board/");
     }
     await details.locator("summary").click();
   }
