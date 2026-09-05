@@ -55,12 +55,10 @@ test("Russian Repair private copy covers dashboard, schedule, customers and dyna
 });
 
 test("canonical private Repair destinations are owned by the shared locale-preserving CRM navigation", () => {
-  for (const route of ["dashboard", "appointments", "customers", "availability"]) {
-    assert.match(nav, new RegExp(`/services/hermes-connect/repair-shops/\\$\\{route\\}|${route}`), `shared CRM nav must own ${route}`);
-  }
-  assert.match(nav, /repairShopRoot.*appointments/s);
-  assert.match(nav, /repairShopRoot.*customers/s);
-  assert.match(nav, /repairShopRoot.*availability/s);
+  assert.match(nav, /\$\{repairShopRoot\}\/dashboard/);
+  assert.match(nav, /\$\{repairShopRoot\}\/appointments/);
+  assert.match(nav, /\$\{repairShopRoot\}\/customers/);
+  assert.match(nav, /\$\{repairShopRoot\}\/availability/);
   assert.match(customers, /\/services\/hermes-connect\/repair-shops\/appointments\//);
   assert.match(appointments, /\/services\/hermes-connect\/repair-shops\/customers\//);
   assert.match(availability, /\/services\/hermes-connect\/repair-shops\/dashboard\//);
