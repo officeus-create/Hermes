@@ -97,6 +97,7 @@ test("Services is a private owner workspace using the existing service API", asy
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,nofollow/);
   await expect(page.locator('[data-i18n="servicesTitle"]')).toHaveText("Services");
   await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Services");
+  await expect(page.locator(".repair-crm-account-slot details[data-hc-account-switcher]")).toHaveCount(1);
   await expect(page.locator(".service-card")).toHaveCount(2);
   await expect(page.locator(".service-card").first()).toContainText("Brake inspection");
   await expectLayout(page);
