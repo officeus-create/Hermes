@@ -21,7 +21,7 @@ test("Logistics exposes Load Board first and keeps the audience hierarchy clear"
   await expect(nav).toBeVisible();
   const loadBoard = nav.getByRole("link", { name: "Load Board", exact: true });
   await expect(loadBoard).toBeVisible();
-  await expect(loadBoard).toHaveAttribute("href", "/load-board/live-pilot/");
+  await expect(loadBoard).toHaveAttribute("href", "/load-board/");
   await expect(loadBoard).toHaveAttribute("data-logistics-product-link", "load-board");
   await expect(nav.getByRole("link", { name: "Carriers & Fleets" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Owner-Operators" })).toBeVisible();
