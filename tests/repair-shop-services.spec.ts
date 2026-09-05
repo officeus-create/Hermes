@@ -58,6 +58,34 @@ async function expectLayout(page: Page) {
   expect(heroHeight).toBeLessThan(240);
 }
 
+test("Services exposes a working keyboard skip link target", async ({ page }) => {
+  await mockOwnerApis(page);
+  await page.goto("/services/hermes-connect/repair-shops/services/", { waitUntil: "domcontentloaded" });
+
+  const skipLink = page.locator(".skip-link");
+  const target = page.locator("#main-content");
+  await expect(target).toHaveCount(1);
+
+  const initialRect = await skipLink.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { top: rect.top, bottom: rect.bottom };
+  });
+  expect(initialRect.bottom).toBeLessThanOrEqual(0);
+
+  await page.keyboard.press("Tab");
+  await expect(skipLink).toBeFocused();
+  const focusedRect = await skipLink.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { top: rect.top, bottom: rect.bottom };
+  });
+  expect(focusedRect.top).toBeGreaterThanOrEqual(0);
+  expect(focusedRect.bottom).toBeGreaterThan(focusedRect.top);
+
+  await skipLink.press("Enter");
+  await expect(page).toHaveURL(/#main-content$/);
+  await expect(target).toBeVisible();
+});
+
 test("Services is a private owner workspace using the existing service API", async ({ page }, testInfo) => {
   await mockOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/services/", { waitUntil: "domcontentloaded" });
