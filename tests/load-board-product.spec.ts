@@ -14,16 +14,17 @@ test("main navigation uses the four clear business labels", async ({ page, isMob
   await expect(nav.getByRole("link", { name: "IT", exact: true })).toHaveAttribute("href", "/paths/technology/");
 });
 
-test("Logistics exposes Load Board first and keeps the audience hierarchy clear", async ({ page }) => {
+test("Logistics exposes canonical Load Board first and keeps the audience hierarchy clear", async ({ page }) => {
   await page.goto("/paths/logistics/");
 
-  const nav = page.getByRole("navigation", { name: "Hermes Logistics products and audiences" });
+  const nav = page.getByRole("navigation", { name: "Hermes Logistics products and paths" });
   await expect(nav).toBeVisible();
   const loadBoard = nav.getByRole("link", { name: "Load Board", exact: true });
   await expect(loadBoard).toBeVisible();
   await expect(loadBoard).toHaveAttribute("href", "/load-board/");
-  await expect(loadBoard).toHaveAttribute("data-logistics-product-link", "load-board");
+  await expect(loadBoard).toHaveAttribute("data-direction-product-link", "load-board");
   await expect(nav.getByRole("link", { name: "Carriers & Fleets" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Agreement", exact: true })).toHaveAttribute("href", "/carrier/");
   await expect(nav.getByRole("link", { name: "Owner-Operators" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Brokers" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Shippers & Dealers" })).toBeVisible();
