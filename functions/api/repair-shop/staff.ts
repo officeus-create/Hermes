@@ -1,5 +1,4 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
-import { ensureRepairShopOfficeDemoData as unused } from "../_lib/repair-shop-office-demo.mjs";
 import { ensureOfficeRepairDemoData } from "../_lib/repair-shop-office-demo.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopStaffSchema, serializeRepairShopStaff } from "../_lib/repair-shop-staff-schema.mjs";
