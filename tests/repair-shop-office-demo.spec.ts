@@ -2,13 +2,15 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const demo = readFileSync("functions/api/_lib/repair-shop-office-demo.mjs", "utf8");
+const registrationOps = readFileSync("functions/api/_lib/registration-ops.mjs", "utf8");
 const staffSchema = readFileSync("functions/api/_lib/repair-shop-staff-schema.mjs", "utf8");
 const bookingSchema = readFileSync("functions/api/_lib/repair-shop-bookings-schema.mjs", "utf8");
 const bookingsApi = readFileSync("functions/api/repair-shop/bookings.ts", "utf8");
 const customersApi = readFileSync("functions/api/repair-shop/customers.ts", "utf8");
 
 test("Office Repair demo is synthetic-only, additive and seeded through year end", async () => {
-  expect(demo).toContain("HERMES_SYNTHETIC_ACCOUNT_EMAILS");
+  expect(registrationOps).toContain("HERMES_SYNTHETIC_ACCOUNT_EMAILS");
+  expect(demo).toContain("syncSyntheticFlagForAccount");
   expect(demo).toContain("hermes_registration_flags");
   expect(demo).toContain("Shop Owner");
   expect(demo).toContain("office");
