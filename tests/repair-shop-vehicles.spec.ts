@@ -57,6 +57,13 @@ async function captureEvidence(page: Page, testInfo: TestInfo, name: string) {
   });
 }
 
+async function expectIndexLayout(page: Page) {
+  await expect(page.locator(".vehicle-card")).toHaveCSS("display", "grid");
+  await expect(page.locator(".vehicle-card-meta")).toHaveCSS("display", "grid");
+  const heroHeight = await page.locator("#vehicles-index .hero").evaluate((element) => element.getBoundingClientRect().height);
+  expect(heroHeight).toBeLessThan(240);
+}
+
 test("Vehicles is a private owner workspace backed by the shared CRM shell", async ({ page }, testInfo) => {
   await mockOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/vehicles/", { waitUntil: "domcontentloaded" });
@@ -67,6 +74,7 @@ test("Vehicles is a private owner workspace backed by the shared CRM shell", asy
   await expect(page.locator(".vehicle-card")).toContainText("2022 Ford F-150");
   await expect(page.locator(".vehicle-card")).toContainText("Alex Morgan");
   await expect(page.locator(".vehicle-card")).toContainText("48210");
+  await expectIndexLayout(page);
 
   await page.locator(".vehicle-card").click();
   await expect(page.locator("#vehicle-detail")).toBeVisible();
@@ -76,6 +84,8 @@ test("Vehicles is a private owner workspace backed by the shared CRM shell", asy
   await expect(page.locator("#detail-customers")).toContainText("Jordan Lee");
   await expect(page.locator("#detail-history")).toContainText("Oil change");
   await expect(page.locator("#detail-next")).toContainText("Brake inspection");
+  await expect(page.locator("#detail-stats > div").first()).toHaveCSS("display", "grid");
+  await expect(page.locator("#detail-history .history-row").first()).toHaveCSS("display", "grid");
   await captureEvidence(page, testInfo, "vehicles-en-detail");
 
   const customersHref = await page.locator("#detail-customers-link").getAttribute("href");
@@ -94,6 +104,7 @@ test("Vehicles preserves Russian owner UX and mobile-safe navigation", async ({ 
   await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Автомобили");
   await expect(page.locator("#vehicle-search")).toHaveAttribute("placeholder", "VIN, автомобиль, клиент или услуга");
   await expect(page.locator(".vehicle-card")).toContainText("Alex Morgan");
+  await expectIndexLayout(page);
   await captureEvidence(page, testInfo, "vehicles-ru-index");
 
   const viewport = page.viewportSize();
