@@ -1,0 +1,290 @@
+---
+const departments = [
+  {
+    id: "logistics",
+    label: "Logistics",
+    href: "/paths/logistics/",
+    accent: "#5634c8",
+    items: [
+      ["Load Board", "/load-board/live-pilot/"],
+      ["Carriers & Fleets", "/paths/logistics/carriers/fleet-owners/"],
+      ["Agreement & onboarding", "/carrier/"],
+      ["Owner-Operators", "/paths/logistics/carriers/owner-operators/"],
+      ["Brokers", "/paths/logistics/brokers/carrier-capacity/"],
+      ["Shippers & Dealers", "/paths/logistics/customers/vehicle-transport/"],
+      ["Dispatch & Back Office", "/logistics/car-hauling-dispatch/"],
+      ["Carrier Resources", "/logistics/resources/"],
+    ],
+  },
+  {
+    id: "marketing",
+    label: "Marketing",
+    href: "/paths/marketing/",
+    accent: "#c51b72",
+    items: [
+      ["Growth System", "/business-growth/"],
+      ["Websites", "/gb/london/website-development/"],
+      ["SEO & GEO", "/gb/london/seo-services/"],
+      ["Social Media", "/gb/london/social-media-management/"],
+      ["Meta Ads", "/gb/london/meta-ads/"],
+      ["London", "/gb/london/"],
+      ["Learn Marketing", "/academy/marketing/"],
+    ],
+  },
+  {
+    id: "technology",
+    label: "IT",
+    href: "/paths/technology/",
+    accent: "#087f82",
+    items: [
+      ["Hermes Connect", "/services/hermes-connect/"],
+      ["Load Board", "/load-board/live-pilot/"],
+      ["Web Development", "/gb/london/website-development/"],
+      ["Capabilities", "/paths/technology/#service-groups-title"],
+      ["Project Brief", "/paths/technology/#project-brief"],
+      ["IT Development", "/case/it-development/"],
+      ["Learn IT & AI", "/paths/academy/#academy-it"],
+    ],
+  },
+  {
+    id: "academy",
+    label: "Academy",
+    href: "/paths/academy/",
+    accent: "#a56b00",
+    items: [
+      ["Logistics", "/academy/us-logistics-operations/"],
+      ["Marketing", "/academy/marketing/"],
+      ["IT & AI", "/paths/academy/#academy-it"],
+      ["Sales", "/paths/academy/#academy-sales"],
+      ["COO / Operations", "/paths/academy/#academy-operations"],
+      ["How Training Works", "/academy/how-training-works/"],
+      ["Apply", "/academy/apply/"],
+    ],
+  },
+] as const;
+---
+
+<div class="department-menu-source" data-department-menu-source hidden>
+  {departments.map((department) => (
+    <template data-department-template={department.id} data-label={department.label} data-href={department.href} data-accent={department.accent}>
+      <div class="department-menu-panel__heading">
+        <span>{department.label}</span>
+        <a href={department.href}>Open department</a>
+      </div>
+      <div class="department-menu-panel__grid">
+        {department.items.map(([label, href]) => <a href={href}>{label}</a>)}
+      </div>
+    </template>
+  ))}
+</div>
+
+<script>
+  const departmentOrder = ["logistics", "marketing", "technology", "academy"];
+  const departmentHref = {
+    logistics: "/paths/logistics/",
+    marketing: "/paths/marketing/",
+    technology: "/paths/technology/",
+    academy: "/paths/academy/",
+  };
+
+  const identifyDepartment = (href) => {
+    if (!href) return null;
+    for (const id of departmentOrder) {
+      if (href === departmentHref[id] || href.endsWith(`#${id}`)) return id;
+    }
+    return null;
+  };
+
+  const templateFor = (id) => document.querySelector(`[data-department-template="${id}"]`);
+
+  const closeDesktopMenus = (except = null) => {
+    document.querySelectorAll("[data-department-menu]").forEach((menu) => {
+      if (menu === except) return;
+      menu.removeAttribute("data-open");
+      menu.querySelector("[data-department-toggle]")?.setAttribute("aria-expanded", "false");
+    });
+  };
+
+  const enhanceDesktop = (header) => {
+    const nav = header.querySelector(".desktop-nav");
+    if (!(nav instanceof HTMLElement) || nav.dataset.departmentEnhanced === "true") return;
+
+    const anchors = [...nav.querySelectorAll(":scope > a")];
+    const byId = new Map();
+    anchors.forEach((anchor) => {
+      const id = identifyDepartment(anchor.getAttribute("href"));
+      if (id) byId.set(id, anchor);
+    });
+
+    for (const id of departmentOrder) {
+      const anchor = byId.get(id);
+      const template = templateFor(id);
+      if (!(anchor instanceof HTMLAnchorElement) || !(template instanceof HTMLTemplateElement)) continue;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "department-menu";
+      wrapper.dataset.departmentMenu = id;
+      wrapper.style.setProperty("--department-accent", template.dataset.accent || "#5634c8");
+
+      const primary = anchor.cloneNode(true);
+      if (primary instanceof HTMLAnchorElement) primary.classList.add("department-menu__primary");
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "department-menu__toggle";
+      toggle.dataset.departmentToggle = id;
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", `Open ${template.dataset.label || id} menu`);
+      toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
+
+      const panel = document.createElement("div");
+      panel.className = "department-menu-panel";
+      panel.dataset.departmentPanel = id;
+      panel.append(template.content.cloneNode(true));
+
+      toggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const willOpen = wrapper.getAttribute("data-open") !== "true";
+        closeDesktopMenus(willOpen ? wrapper : null);
+        if (willOpen) wrapper.setAttribute("data-open", "true");
+        else wrapper.removeAttribute("data-open");
+        toggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      });
+
+      wrapper.addEventListener("mouseenter", () => {
+        closeDesktopMenus(wrapper);
+        wrapper.setAttribute("data-open", "true");
+        toggle.setAttribute("aria-expanded", "true");
+      });
+      wrapper.addEventListener("mouseleave", () => {
+        wrapper.removeAttribute("data-open");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+      wrapper.addEventListener("focusin", () => {
+        closeDesktopMenus(wrapper);
+        wrapper.setAttribute("data-open", "true");
+        toggle.setAttribute("aria-expanded", "true");
+      });
+      wrapper.addEventListener("focusout", (event) => {
+        if (event.relatedTarget instanceof Node && wrapper.contains(event.relatedTarget)) return;
+        wrapper.removeAttribute("data-open");
+        toggle.setAttribute("aria-expanded", "false");
+      });
+
+      wrapper.append(primary, toggle, panel);
+      nav.append(wrapper);
+      anchor.remove();
+    }
+
+    nav.dataset.departmentEnhanced = "true";
+  };
+
+  const enhanceMobile = (header) => {
+    const nav = header.querySelector(".mobile-nav");
+    if (!(nav instanceof HTMLElement) || nav.dataset.departmentEnhanced === "true") return;
+
+    const anchors = [...nav.querySelectorAll(":scope > a")];
+    const byId = new Map();
+    anchors.forEach((anchor) => {
+      const id = identifyDepartment(anchor.getAttribute("href"));
+      if (id) byId.set(id, anchor);
+    });
+
+    for (const id of departmentOrder) {
+      const anchor = byId.get(id);
+      const template = templateFor(id);
+      if (!(anchor instanceof HTMLAnchorElement) || !(template instanceof HTMLTemplateElement)) continue;
+
+      const details = document.createElement("details");
+      details.className = "mobile-department-menu";
+      details.dataset.mobileDepartmentMenu = id;
+      details.style.setProperty("--department-accent", template.dataset.accent || "#5634c8");
+
+      const summary = document.createElement("summary");
+      summary.textContent = template.dataset.label || anchor.textContent?.trim() || id;
+
+      const body = document.createElement("div");
+      body.className = "mobile-department-menu__body";
+      const overview = document.createElement("a");
+      overview.href = template.dataset.href || anchor.href;
+      overview.textContent = `${template.dataset.label || id} overview`;
+      overview.className = "mobile-department-menu__overview";
+      body.append(overview);
+
+      const fragment = template.content.cloneNode(true);
+      const grid = fragment.querySelector?.(".department-menu-panel__grid");
+      if (grid) [...grid.children].forEach((link) => body.append(link.cloneNode(true)));
+
+      details.append(summary, body);
+      nav.insertBefore(details, anchor);
+      anchor.remove();
+    }
+
+    nav.querySelectorAll(".mobile-department-menu a").forEach((link) => {
+      link.addEventListener("click", () => {
+        nav.hidden = true;
+        const button = header.querySelector("[data-menu-button]");
+        button?.setAttribute("aria-expanded", "false");
+        button?.setAttribute("aria-label", "Open navigation");
+      });
+    });
+
+    nav.dataset.departmentEnhanced = "true";
+  };
+
+  const enhanceDepartmentMenus = () => {
+    document.querySelectorAll(".site-header").forEach((header) => {
+      if (!(header instanceof HTMLElement)) return;
+      enhanceDesktop(header);
+      enhanceMobile(header);
+    });
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", enhanceDepartmentMenus, { once: true });
+  else enhanceDepartmentMenus();
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target instanceof Node && !target.parentElement?.closest("[data-department-menu]")) closeDesktopMenus();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDesktopMenus();
+  });
+</script>
+
+<style is:global>
+  .site-header{overflow:visible;z-index:80}
+  .site-header .desktop-nav{align-items:center}
+  .site-header .department-menu{position:relative;display:inline-flex;align-items:center;gap:.12rem;order:var(--department-order,0)}
+  .site-header .department-menu[data-department-menu="logistics"]{--department-order:1}
+  .site-header .department-menu[data-department-menu="marketing"]{--department-order:2}
+  .site-header .department-menu[data-department-menu="technology"]{--department-order:3}
+  .site-header .department-menu[data-department-menu="academy"]{--department-order:4}
+  .site-header .department-menu__primary{display:inline-flex;align-items:center;min-height:44px}
+  .site-header .department-menu__toggle{display:inline-grid;place-items:center;width:28px;height:34px;padding:0;border:0;border-radius:999px;background:transparent;color:inherit;cursor:pointer;opacity:.58;transition:background .18s ease,opacity .18s ease,transform .18s ease}
+  .site-header .department-menu__toggle:hover,.site-header .department-menu__toggle:focus-visible,.site-header .department-menu[data-open="true"] .department-menu__toggle{background:color-mix(in srgb,var(--department-accent) 10%,transparent);opacity:1}
+  .site-header .department-menu[data-open="true"] .department-menu__toggle{transform:rotate(180deg)}
+  .site-header .department-menu-panel{position:absolute;top:calc(100% + 10px);left:50%;width:min(360px,calc(100vw - 2rem));padding:.8rem;border:1px solid rgba(17,19,36,.12);border-radius:16px;background:rgba(255,255,255,.98);box-shadow:0 24px 64px rgba(7,16,56,.18);color:#111324;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,-6px);transition:opacity .16s ease,transform .16s ease,visibility .16s ease;backdrop-filter:blur(18px)}
+  .site-header .department-menu[data-open="true"] .department-menu-panel,.site-header .department-menu:hover .department-menu-panel,.site-header .department-menu:focus-within .department-menu-panel{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
+  .site-header .department-menu-panel__heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.35rem .4rem .7rem;border-bottom:1px solid #e7e8ed}
+  .site-header .department-menu-panel__heading span{font-size:.82rem;font-weight:850}
+  .site-header .department-menu-panel__heading a{font-size:.7rem;font-weight:800;color:var(--department-accent);text-decoration:none}
+  .site-header .department-menu-panel__grid{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;padding-top:.55rem}
+  .site-header .department-menu-panel__grid a{display:flex;align-items:center;min-height:42px;padding:.58rem .65rem;border-radius:10px;color:#283149;text-decoration:none;font-size:.76rem;font-weight:700;line-height:1.3}
+  .site-header .department-menu-panel__grid a:hover,.site-header .department-menu-panel__grid a:focus-visible{background:color-mix(in srgb,var(--department-accent) 8%,#fff);color:#111324}
+  .site-header-dark .department-menu-panel{background:rgba(12,20,54,.98);border-color:rgba(255,255,255,.13);color:#fff}
+  .site-header-dark .department-menu-panel__heading{border-bottom-color:rgba(255,255,255,.12)}
+  .site-header-dark .department-menu-panel__grid a{color:#dce4ff}
+  .site-header-dark .department-menu-panel__grid a:hover,.site-header-dark .department-menu-panel__grid a:focus-visible{background:color-mix(in srgb,var(--department-accent) 18%,transparent);color:#fff}
+  .mobile-department-menu{border-top:1px solid rgba(255,255,255,.08)}
+  .mobile-department-menu summary{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:.7rem .2rem;cursor:pointer;font-weight:800;list-style:none}
+  .mobile-department-menu summary::-webkit-details-marker{display:none}
+  .mobile-department-menu summary::after{content:"⌄";opacity:.62;transition:transform .18s ease}
+  .mobile-department-menu[open] summary::after{transform:rotate(180deg)}
+  .mobile-department-menu__body{display:grid;gap:.22rem;padding:0 0 .65rem .65rem}
+  .mobile-department-menu__body a{display:flex;align-items:center;min-height:44px;padding:.55rem .65rem;border-left:2px solid color-mix(in srgb,var(--department-accent) 55%,transparent);color:inherit;text-decoration:none;font-size:.82rem}
+  .mobile-department-menu__overview{font-weight:850}
+  @media(max-width:980px){.site-header .desktop-nav .department-menu{display:none}.site-header .mobile-nav{max-height:calc(100dvh - 84px);overflow:auto;overscroll-behavior:contain}}
+  @media(min-width:981px){.site-header .mobile-department-menu{display:none}}
+  @media(prefers-reduced-motion:reduce){.site-header .department-menu__toggle,.site-header .department-menu-panel,.mobile-department-menu summary::after{transition:none}}
+</style>
