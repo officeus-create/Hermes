@@ -1,0 +1,56 @@
+name: Repair Shop Services contract
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/services/**"
+      - "src/pages/services/hermes-connect/repair-shops/services.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/repair-shop-services-contract.test.mjs"
+      - "tests/repair-shop-services.spec.ts"
+      - ".github/workflows/repair-shop-services-contract.yml"
+      - "docs/release-manifest-deltas/2026-09-05-hermes-connect-repair-services.json"
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/api/services/**"
+      - "src/pages/services/hermes-connect/repair-shops/services.astro"
+      - "src/components/RepairShopOwnerNavEnhancer.astro"
+      - "scripts/repair-shop-services-contract.test.mjs"
+      - "tests/repair-shop-services.spec.ts"
+      - ".github/workflows/repair-shop-services-contract.yml"
+      - "docs/release-manifest-deltas/2026-09-05-hermes-connect-repair-services.json"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Verify owner-only Services workspace
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate Services API and privacy contract
+        run: node scripts/repair-shop-services-contract.test.mjs
+      - name: Build website
+        run: npm run build
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Validate Services desktop and mobile UX
+        run: npx playwright test tests/repair-shop-services.spec.ts --project=desktop --project=mobile
+      - name: Upload Services visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: repair-shop-services-visual-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/repair-shop-services
+          if-no-files-found: error
+          retention-days: 14
