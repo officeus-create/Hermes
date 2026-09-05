@@ -72,8 +72,12 @@ test("Services exposes a working keyboard skip link target", async ({ page }) =>
   });
   expect(initialRect.bottom).toBeLessThanOrEqual(0);
 
-  await page.keyboard.press("Tab");
+  const wordmark = page.locator(".site-header .wordmark");
+  await wordmark.focus();
+  await expect(wordmark).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
   await expect(skipLink).toBeFocused();
+
   const focusedRect = await skipLink.evaluate((element) => {
     const rect = element.getBoundingClientRect();
     return { top: rect.top, bottom: rect.bottom };
