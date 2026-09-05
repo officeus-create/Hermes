@@ -1,8 +1,9 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
 import { ensureRepairShopBookingVehicleSchema } from "../_lib/repair-shop-booking-vehicle-schema.mjs";
+import { ensureOfficeRepairDemoData } from "../_lib/repair-shop-office-demo.mjs";
 
-type Env = { DB?: any };
+type Env = { DB?: any; HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string };
 
 type VehicleRow = {
   booking_id: string;
@@ -22,6 +23,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
 
+  const demoSeed = await ensureOfficeRepairDemoData({ db: env.DB, env, specialist });
   await ensureRepairShopBookingsSchema(env.DB);
   await ensureRepairShopBookingVehicleSchema(env.DB);
 
@@ -81,9 +83,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     const appointmentDate = String(booking.appointment_date ?? "");
     if (status === "completed") {
       customer.completed_visits += 1;
-      if (!customer.last_service_date || appointmentDate > customer.last_service_date) {
-        customer.last_service_date = appointmentDate;
-      }
+      if (!customer.last_service_date || appointmentDate > customer.last_service_date) customer.last_service_date = appointmentDate;
     }
     if (status === "cancelled" || status === "canceled") customer.cancelled_bookings += 1;
 
@@ -98,9 +98,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       if (
         !customer.next_appointment ||
         `${candidate.appointment_date}T${candidate.start_time}` < `${customer.next_appointment.appointment_date}T${customer.next_appointment.start_time}`
-      ) {
-        customer.next_appointment = candidate;
-      }
+      ) customer.next_appointment = candidate;
     }
 
     const serviceName = String(booking.service_name ?? "").trim();
@@ -140,5 +138,5 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
     }))
     .sort((a, b) => String(b.last_activity_at).localeCompare(String(a.last_activity_at)));
 
-  return jsonResponse(200, { success: true, customers: list });
+  return jsonResponse(200, { success: true, customers: list, demo_seed: demoSeed.eligible ? demoSeed : undefined });
 }

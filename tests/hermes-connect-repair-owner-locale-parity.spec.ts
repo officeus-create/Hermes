@@ -85,12 +85,12 @@ test("customers renders static and dynamic owner copy in French", async ({ page 
   await mockSecondaryOwnerApis(page);
   await page.goto("/services/hermes-connect/repair-shops/customers/?lang=fr", { waitUntil: "domcontentloaded" });
 
-  await expect(page.locator(".customers-page h1")).toHaveText("Clients");
+  await expect(page.locator('[data-i18n="customersTitle"]')).toHaveText("Clients");
   await expect(page.locator("#customer-search")).toHaveAttribute("placeholder", /Rechercher par nom/);
   await expect(page.locator("#customer-count")).toContainText("1 client");
-  await expect(page.locator(".customer-header .muted.small")).toContainText("2 réservations · 1 terminées");
+  await expect(page.locator(".customer-header .muted.small")).toContainText("2 rendez-vous · 1 terminés");
   await expect(page.locator(".customer-header .pill")).toHaveText("Prochain rendez-vous");
-  await expect(page.locator(".next-appointment")).toContainText("Prochain:");
+  await expect(page.locator("#customers-list .next-appointment")).toContainText("Prochain:");
   await expect(page.locator(".vehicle-card strong")).toContainText("Kilométrage non indiqué");
   await expect(page.locator(".vehicle-card span")).toContainText("Dernière visite");
 });

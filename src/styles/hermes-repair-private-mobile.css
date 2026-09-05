@@ -23,6 +23,311 @@ html.hc-experience body .workspace-page .feedback-row > div {
   flex-wrap:wrap;
 }
 
+/*
+ * Vehicles renders its operational cards from authenticated API data at runtime.
+ * Astro-scoped page styles do not decorate nodes created through innerHTML, so
+ * the dynamic pieces intentionally live in this global, route-prefixed repair
+ * presentation layer. The rules below own presentation only; data/auth stay in
+ * the Vehicles page and owner-scoped API.
+ */
+html.hc-repair-crm body .vehicles-page .hero {
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:24px !important;
+  width:auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  margin:0 0 18px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  color:#172033 !important;
+}
+
+html.hc-repair-crm body .vehicles-page .hero::before,
+html.hc-repair-crm body .vehicles-page .hero::after {
+  content:none !important;
+  display:none !important;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card {
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(260px,1.3fr) minmax(190px,.9fr) minmax(310px,1.4fr);
+  align-items:center;
+  gap:18px;
+  width:100%;
+  padding:17px 18px;
+  border:1px solid #e1e6ed;
+  border-radius:15px;
+  background:#fff;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:0 7px 24px rgba(23,32,51,.035);
+  transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card:hover,
+html.hc-repair-crm body .vehicles-page .vehicle-card:focus-visible {
+  transform:translateY(-1px);
+  border-color:#bfd6f2;
+  box-shadow:0 12px 30px rgba(23,32,51,.075);
+  outline:none;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-main {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-badge {
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  flex:0 0 38px;
+  border-radius:11px;
+  background:#edf5ff;
+  color:#1268c4;
+  font-weight:900;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-main > div,
+html.hc-repair-crm body .vehicles-page .vehicle-card-customer {
+  display:grid;
+  gap:3px;
+  min-width:0;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-main strong,
+html.hc-repair-crm body .vehicles-page .vehicle-card-customer strong {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:14px;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-main span:last-child,
+html.hc-repair-crm body .vehicles-page .vehicle-card-customer small {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#818c9a;
+  font-size:11px;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-meta {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-meta span {
+  display:grid;
+  gap:2px;
+  min-width:0;
+  color:#8792a1;
+  font-size:9px;
+  font-weight:750;
+  text-transform:uppercase;
+}
+
+html.hc-repair-crm body .vehicles-page .vehicle-card-meta b {
+  overflow:hidden;
+  color:#344054;
+  font-size:12px;
+  text-overflow:ellipsis;
+  text-transform:none;
+}
+
+html.hc-repair-crm body .vehicles-page .next-chip {
+  position:absolute;
+  right:14px;
+  top:-8px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#e9f7ef;
+  color:#267348;
+  font-size:9px;
+  font-weight:850;
+}
+
+html.hc-repair-crm body .vehicles-page .detail-stats > div {
+  display:grid;
+  gap:3px;
+  min-width:0;
+  padding:11px;
+  border-radius:11px;
+  background:#f7f9fb;
+}
+
+html.hc-repair-crm body .vehicles-page .detail-stats span {
+  color:#85909e;
+  font-size:9px;
+  font-weight:780;
+  text-transform:uppercase;
+}
+
+html.hc-repair-crm body .vehicles-page .detail-stats strong {
+  overflow-wrap:anywhere;
+  font-size:13px;
+}
+
+html.hc-repair-crm body .vehicles-page .next-appointment strong {
+  font-size:11px;
+}
+
+html.hc-repair-crm body .vehicles-page .next-appointment span {
+  font-size:12px;
+}
+
+html.hc-repair-crm body .vehicles-page .service-chips > span {
+  display:inline-flex;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#f0f4f8;
+  color:#516075;
+  font-size:10px;
+  font-weight:760;
+}
+
+html.hc-repair-crm body .vehicles-page .customer-history-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 0;
+  border-bottom:1px solid #edf0f4;
+}
+
+html.hc-repair-crm body .vehicles-page .customer-history-row:last-child {
+  border-bottom:0;
+}
+
+html.hc-repair-crm body .vehicles-page .customer-history-row > div {
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+
+html.hc-repair-crm body .vehicles-page .customer-history-row strong,
+html.hc-repair-crm body .vehicles-page .customer-history-row span {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+html.hc-repair-crm body .vehicles-page .customer-history-row strong {
+  font-size:12px;
+}
+
+html.hc-repair-crm body .vehicles-page .customer-history-row span,
+html.hc-repair-crm body .vehicles-page .customer-history-row small {
+  color:#8a95a3;
+  font-size:10px;
+}
+
+html.hc-repair-crm body .vehicles-page .history-row {
+  display:grid;
+  grid-template-columns:140px minmax(220px,1fr) 160px;
+  align-items:center;
+  gap:14px;
+  padding:12px 0;
+  border-top:1px solid #edf0f4;
+}
+
+html.hc-repair-crm body .vehicles-page :is(.history-date,.history-service,.history-status) {
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+
+html.hc-repair-crm body .vehicles-page :is(.history-date strong,.history-service strong) {
+  font-size:12px;
+}
+
+html.hc-repair-crm body .vehicles-page :is(.history-date span,.history-service span,.history-status small) {
+  overflow:hidden;
+  color:#8994a2;
+  font-size:10px;
+  text-overflow:ellipsis;
+}
+
+html.hc-repair-crm body .vehicles-page .status-chip {
+  justify-self:start;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eef3f8;
+  color:#506075;
+  font-size:9px;
+  font-weight:850;
+  text-transform:uppercase;
+}
+
+html.hc-repair-crm body .vehicles-page .empty-inline {
+  color:#8a95a3;
+  font-size:12px;
+}
+
+@media (max-width:980px) {
+  html.hc-repair-crm body .vehicles-page .vehicle-card {
+    grid-template-columns:1.15fr .85fr;
+  }
+
+  html.hc-repair-crm body .vehicles-page .vehicle-card-meta {
+    grid-column:1/-1;
+  }
+}
+
+@media (max-width:760px) {
+  html.hc-repair-crm body .vehicles-page .hero {
+    display:grid !important;
+    gap:10px !important;
+  }
+
+  html.hc-repair-crm body .vehicles-page .hero .pill {
+    justify-self:start;
+    margin:0 !important;
+  }
+
+  html.hc-repair-crm body .vehicles-page .vehicle-card {
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  html.hc-repair-crm body .vehicles-page .vehicle-card-meta {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  html.hc-repair-crm body .vehicles-page .vehicle-card-customer {
+    padding-left:50px;
+  }
+
+  html.hc-repair-crm body .vehicles-page .history-row {
+    grid-template-columns:minmax(0,1fr) auto;
+  }
+
+  html.hc-repair-crm body .vehicles-page .history-status {
+    grid-column:2;
+    grid-row:1/3;
+    text-align:right;
+  }
+
+  html.hc-repair-crm body .vehicles-page .history-service {
+    grid-column:1;
+  }
+
+  html.hc-repair-crm body .vehicles-page .next-chip {
+    right:10px;
+  }
+}
+
 @media (max-width:520px) {
   html.hc-experience body .workspace-page .row {
     flex-wrap:wrap;
@@ -39,6 +344,12 @@ html.hc-experience body .workspace-page .feedback-row > div {
 
   html.hc-experience body .availability-page .time-wrap {
     grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  html.hc-repair-crm body .vehicles-page .vehicle-card {
+    transition:none;
   }
 }
 
