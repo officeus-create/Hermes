@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const vehiclePayload = {
   success: true,
@@ -36,7 +36,7 @@ const vehiclePayload = {
   ],
 };
 
-async function mockOwnerApis(page: Parameters<typeof test>[0]["page"]) {
+async function mockOwnerApis(page: Page) {
   await page.route("**/api/auth/me", async (route) => {
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ authenticated: true, account: { role: "Shop Owner" } }) });
   });
@@ -80,7 +80,6 @@ test("Vehicles preserves Russian owner UX and mobile-safe navigation", async ({ 
   await expect(page.locator('[data-i18n="vehiclesTitle"]')).toHaveText("Автомобили");
   await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Автомобили");
   await expect(page.locator("#vehicle-search")).toHaveAttribute("placeholder", "VIN, автомобиль, клиент или услуга");
-  await expect(page.locator(".vehicle-card")).toContainText("Алекс", { timeout: 1000 }).catch(() => undefined);
   await expect(page.locator(".vehicle-card")).toContainText("Alex Morgan");
 
   const viewport = page.viewportSize();
