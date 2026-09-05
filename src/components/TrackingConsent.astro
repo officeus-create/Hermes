@@ -34,6 +34,10 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
     const decline = root?.querySelector("[data-consent-decline]");
     const settings = root?.querySelector("[data-consent-settings]");
 
+    if (root && document.querySelector("[data-direction-product-nav]")) {
+      root.classList.add("tracking-consent-department");
+    }
+
     const analyticsDeliveryAllowed = () => PRODUCTION_ANALYTICS_HOSTS.has(window.location.hostname);
 
     const readChoice = () => {
@@ -301,6 +305,9 @@ const isHermesConnectRoute = Astro.url.pathname.startsWith("/services/hermes-con
       max-height: none;
       overflow: visible;
       box-shadow: 0 12px 32px rgba(11,13,18,.16);
+    }
+    .tracking-consent-department .tracking-consent-banner {
+      top: calc(env(safe-area-inset-top, 0px) + 8.75rem);
     }
     .tracking-consent-eyebrow,
     .tracking-consent-detail {
