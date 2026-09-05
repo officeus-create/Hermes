@@ -106,12 +106,15 @@ const authenticatedHeaders = new Headers({
 assert.equal(sourceAuthenticationPassed(authenticatedHeaders), true);
 assert.equal(sourceAuthenticationPassed(new Headers()), false);
 
+// Keep the bridge integration fixture fresh relative to the test run. TTL behavior
+// itself is already covered above with fixed receivedAt/observedAt timestamps.
+const bridgeDate = new Date().toUTCString();
 const rawEmail = [
   "From: Broker Example <broker@example.com>",
   "To: loads@hermeslogisticsus.com",
   "Subject: Dry Van load Chicago to Atlanta",
   "Message-ID: <load-bridge-001@example.com>",
-  "Date: Fri, 04 Sep 2026 14:00:00 GMT",
+  `Date: ${bridgeDate}`,
   "Content-Type: text/plain; charset=utf-8",
   "",
   "LOAD OFFER",
@@ -138,7 +141,7 @@ await handleLoadBoardInboundEmail({
     From: "Broker Example <broker@example.com>",
     Subject: "Dry Van load Chicago to Atlanta",
     "Message-ID": "<load-bridge-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: bridgeDate,
   }),
   raw: stream(rawEmail),
 }, {
@@ -180,7 +183,7 @@ await handleLoadBoardInboundEmail({
     From: "Public Broker <publicbroker@example.com>",
     Subject: "Flatbed load",
     "Message-ID": "<public-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: bridgeDate,
   }),
   raw: stream(rawEmail.replace(/broker@example\.com/g, "publicbroker@example.com")),
 }, {
