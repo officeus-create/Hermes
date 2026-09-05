@@ -42,8 +42,13 @@ async function mockOwnerApis(page: Page) {
 async function captureEvidence(page: Page, testInfo: TestInfo, name: string, fullPage = true) {
   const directory = path.resolve("artifacts/repair-shop-settings");
   await mkdir(directory, { recursive: true });
-  await page.evaluate(() => { window.scrollTo(0, 0); if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
-  await page.waitForTimeout(50);
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  });
+  await page.waitForFunction(() => window.scrollY === 0);
   await page.addStyleTag({ content: ".skip-link{display:none!important}" });
   await page.screenshot({ path: path.join(directory, `${name}-${testInfo.project.name}.png`), fullPage, animations: "disabled" });
 }
