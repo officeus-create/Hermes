@@ -64,7 +64,11 @@ const carHauling = await parseFreightEmail({
   sourceMessageId: "car-001@example.com",
   rawEvidenceRef: "email:src_broker_example:car-001@example.com",
 });
-assert.equal(carHauling.quarantine.reason, "car_hauling_hold");
+assert.equal(carHauling.record.origin, "Chicago, IL");
+assert.equal(carHauling.record.destination, "Miami, FL");
+assert.equal(carHauling.record.equipment, "car_hauler");
+assert.equal(carHauling.record.rate_amount, 3200);
+assert.equal(carHauling.quarantine, undefined);
 assert.equal(containsCarHauling("auto transport available"), true);
 
 const incomplete = await parseFreightEmail({
@@ -223,4 +227,4 @@ await handleLoadBoardInboundEmail({
 } });
 assert.equal(unknownSourceCalls, 0);
 
-console.log("load-board-email-bridge-contract: approved source, MIME parse, quarantine, auth gate, TTL and no-raw-body handoff verified");
+console.log("load-board-email-bridge-contract: approved source, MIME parse, Car Hauling ingestion, quarantine, auth gate, TTL and no-raw-body handoff verified");
