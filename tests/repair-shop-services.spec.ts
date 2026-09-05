@@ -45,6 +45,11 @@ async function mockOwnerApis(page: Page) {
 async function captureEvidence(page: Page, testInfo: TestInfo, name: string) {
   const directory = path.resolve("artifacts/repair-shop-services");
   await mkdir(directory, { recursive: true });
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  });
+  await page.waitForTimeout(50);
   await page.screenshot({ path: path.join(directory, `${name}-${testInfo.project.name}.png`), fullPage: true, animations: "disabled" });
 }
 
