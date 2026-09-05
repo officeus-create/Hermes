@@ -9,11 +9,11 @@
 
   const LABELS = {
     en: { hub: "Product Hub", repair: "Repair Shops", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Academy" },
-    ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Академия" },
-    uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Академія" },
-    es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Academia" },
-    it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Academy" },
-    fr: { hub: "Centre produits", repair: "Ateliers", loadBoard: "Load Board", aiCommand: "AI Command Center", academy: "Académie" },
+    ru: { hub: "Центр продуктов", repair: "СТО", loadBoard: "Load Board", aiCommand: "ИИ-командный центр", academy: "Академия" },
+    uk: { hub: "Центр продуктів", repair: "СТО", loadBoard: "Load Board", aiCommand: "AI-командний центр", academy: "Академія" },
+    es: { hub: "Centro de productos", repair: "Talleres", loadBoard: "Load Board", aiCommand: "Centro de mando de IA", academy: "Academia" },
+    it: { hub: "Centro prodotti", repair: "Officine", loadBoard: "Load Board", aiCommand: "Centro di comando AI", academy: "Accademia" },
+    fr: { hub: "Centre produits", repair: "Ateliers", loadBoard: "Load Board", aiCommand: "Centre de commande IA", academy: "Académie" },
   };
 
   const normalize = (value) => {
