@@ -96,12 +96,84 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 )}
 
 {isOwnerWorkspace && (
-<script is:inline define:vars={{ logoutRedirect, menuLabel: copy.menu, closeLabel: copy.close }}>
+<script is:inline define:vars={{ logoutRedirect }}>
   (() => {
     const root = document.querySelector("[data-repair-crm-shell]");
     if (!(root instanceof HTMLElement)) return;
+
+    const ROOT = "/services/hermes-connect/repair-shops";
+    const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+    const params = new URLSearchParams(window.location.search);
+    const requested = (params.get("lang") || "en").toLowerCase();
+    const locale = supported.has(requested) ? requested : "en";
+    const strings = {
+      en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+      ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+      uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+      es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+      it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+      fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+    };
+    const copy = strings[locale] || strings.en;
+    const currentPath = window.location.pathname.replace(/\/+$/, "");
+    const pageKey = currentPath === `${ROOT}/customers` ? "customers" : currentPath === `${ROOT}/availability` ? "availability" : "today";
+    const navKeys = ["today", "appointments", "customers", "services", "availability", "feedback", "settings"];
+
+    const localizeHref = (href) => {
+      const url = new URL(href, window.location.origin);
+      if (locale === "en") url.searchParams.delete("lang");
+      else url.searchParams.set("lang", locale);
+      return `${url.pathname}${url.search}${url.hash}`;
+    };
+
+    document.documentElement.lang = locale;
     document.documentElement.classList.add("hc-repair-crm");
     document.body.prepend(root);
+
+    const sidebar = root.querySelector(".repair-crm-sidebar");
+    sidebar?.setAttribute("aria-label", `${copy.workspace} CRM`);
+    root.querySelector(".repair-crm-nav")?.setAttribute("aria-label", `${copy.workspace} navigation`);
+    const brand = root.querySelector(".repair-crm-brand");
+    if (brand instanceof HTMLAnchorElement) brand.href = localizeHref(`${ROOT}/dashboard/`);
+    const brandWorkspace = root.querySelector(".repair-crm-brand small");
+    if (brandWorkspace) brandWorkspace.textContent = copy.workspace;
+
+    root.querySelectorAll(".repair-crm-nav-item").forEach((link, index) => {
+      const key = navKeys[index];
+      if (!key) return;
+      const label = link.querySelector("span:last-child");
+      if (label) label.textContent = copy[key];
+      if (link instanceof HTMLAnchorElement) link.href = localizeHref(link.getAttribute("href") || "");
+    });
+
+    const productHub = root.querySelector(".repair-crm-product-hub");
+    if (productHub instanceof HTMLAnchorElement) {
+      productHub.href = localizeHref("/services/hermes-connect/");
+      const label = productHub.querySelector("span:last-child");
+      if (label) label.textContent = copy.products;
+    }
+
+    root.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { button.textContent = copy.logout; });
+    const contextSmall = root.querySelector(".repair-crm-context small");
+    const contextTitle = root.querySelector(".repair-crm-context strong");
+    if (contextSmall) contextSmall.textContent = `Hermes Connect · ${copy.workspace}`;
+    if (contextTitle) contextTitle.textContent = copy[pageKey];
+
+    const languageSummary = root.querySelector(".repair-crm-language summary");
+    if (languageSummary) {
+      languageSummary.textContent = locale.toUpperCase();
+      languageSummary.setAttribute("aria-label", `Language: ${locale.toUpperCase()}`);
+    }
+    root.querySelectorAll(".repair-crm-language a[lang]").forEach((link) => {
+      if (!(link instanceof HTMLAnchorElement)) return;
+      const target = (link.getAttribute("lang") || "en").toLowerCase();
+      const next = new URL(window.location.href);
+      if (target === "en") next.searchParams.delete("lang");
+      else next.searchParams.set("lang", target);
+      link.href = `${next.pathname}${next.search}${next.hash}`;
+      if (target === locale) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
 
     const accountSlot = root.querySelector("[data-repair-crm-account-slot]");
     const accountMenu = document.querySelector(".site-header details[data-hc-account-switcher]");
@@ -112,13 +184,15 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     const setOpen = (open) => {
       root.dataset.open = open ? "true" : "false";
       menuButton?.setAttribute("aria-expanded", open ? "true" : "false");
-      menuButton?.setAttribute("aria-label", open ? closeLabel : menuLabel);
+      menuButton?.setAttribute("aria-label", open ? copy.close : copy.menu);
     };
+    setOpen(false);
     menuButton?.addEventListener("click", () => setOpen(root.dataset.open !== "true"));
     overlay?.addEventListener("click", () => setOpen(false));
     root.querySelectorAll("[data-repair-crm-link]").forEach((link) => link.addEventListener("click", () => setOpen(false)));
     document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOpen(false); });
 
+    const activeLogoutRedirect = localizeHref(`${ROOT}/auth/`) || logoutRedirect;
     const logoutButtons = Array.from(root.querySelectorAll("[data-repair-crm-logout]")).filter((button) => button instanceof HTMLButtonElement);
     const setLogoutDisabled = (disabled) => logoutButtons.forEach((button) => { button.disabled = disabled; });
     logoutButtons.forEach((button) => button.addEventListener("click", async () => {
@@ -126,7 +200,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
       try {
         const response = await fetch("/api/auth/logout", { method:"POST", credentials:"same-origin" });
         if (!response.ok) throw new Error("logout_failed");
-        window.location.assign(logoutRedirect);
+        window.location.assign(activeLogoutRedirect);
       } catch {
         setLogoutDisabled(false);
       }
