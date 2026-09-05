@@ -10,7 +10,9 @@ import {
 } from "../workers/lead-email/src/load-board-inbound.mjs";
 
 const stream = (value) => new Blob([value]).stream();
-const now = "2026-09-04T14:00:00.000Z";
+const now = new Date().toISOString();
+const nowHeader = new Date(now).toUTCString();
+const expectedExpiry = new Date(new Date(now).getTime() + 12 * 60 * 60 * 1000).toISOString();
 
 assert.equal(typeof bridgeEntry.fetch, "function");
 assert.equal(typeof bridgeEntry.email, "function");
@@ -51,7 +53,7 @@ assert.equal(parsed.record.destination, "Atlanta, GA");
 assert.equal(parsed.record.equipment, "dry_van");
 assert.equal(parsed.record.rate_amount, 2100);
 assert.equal(parsed.record.visibility, "internal_only");
-assert.equal(parsed.record.expires_at, "2026-09-05T02:00:00.000Z");
+assert.equal(parsed.record.expires_at, expectedExpiry);
 assert.match(parsed.record.fingerprint, /^sha256:[a-f0-9]{64}$/);
 
 const carHauling = await parseFreightEmail({
@@ -111,7 +113,7 @@ const rawEmail = [
   "To: loads@hermeslogisticsus.com",
   "Subject: Dry Van load Chicago to Atlanta",
   "Message-ID: <load-bridge-001@example.com>",
-  "Date: Fri, 04 Sep 2026 14:00:00 GMT",
+  `Date: ${nowHeader}`,
   "Content-Type: text/plain; charset=utf-8",
   "",
   "LOAD OFFER",
@@ -138,7 +140,7 @@ await handleLoadBoardInboundEmail({
     From: "Broker Example <broker@example.com>",
     Subject: "Dry Van load Chicago to Atlanta",
     "Message-ID": "<load-bridge-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: nowHeader,
   }),
   raw: stream(rawEmail),
 }, {
@@ -180,7 +182,7 @@ await handleLoadBoardInboundEmail({
     From: "Public Broker <publicbroker@example.com>",
     Subject: "Flatbed load",
     "Message-ID": "<public-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: nowHeader,
   }),
   raw: stream(rawEmail.replace(/broker@example\.com/g, "publicbroker@example.com")),
 }, {
