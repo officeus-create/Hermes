@@ -1,0 +1,225 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import SiteFooter from "../../../../components/SiteFooter.astro";
+import SiteHeader from "../../../../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Repair Shop Vehicles | Hermes Connect"
+  description="Owner-only vehicle master profiles built from existing Hermes Connect repair bookings and service history."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <main class="customers-page vehicles-page">
+    <div class="shell">
+      <section id="vehicles-index">
+        <header class="hero">
+          <div>
+            <p class="eyebrow" data-i18n="eyebrow">Repair Shop CRM</p>
+            <h1 data-i18n="vehiclesTitle">Vehicles</h1>
+            <p class="muted" data-i18n="vehiclesSubtitle">One operational profile per vehicle, connected to customers, service history, mileage, and appointments.</p>
+          </div>
+          <span id="vehicle-count" class="pill">0 vehicles</span>
+        </header>
+
+        <div id="page-alert" class="alert hidden" role="status"></div>
+
+        <section class="panel search-panel" aria-label="Vehicle search">
+          <span class="search-icon" aria-hidden="true"></span>
+          <input id="vehicle-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search VIN, vehicle, customer, or service" autocomplete="off" />
+        </section>
+
+        <div id="vehicles-loading" class="state-card" data-i18n="loadingVehicles">Loading vehicle history…</div>
+        <div id="vehicles-empty" class="state-card hidden"><strong data-i18n="emptyVehicles">No vehicles yet</strong><span data-i18n="emptyVehiclesCopy">Vehicles appear automatically when a booking captures vehicle details.</span></div>
+        <div id="vehicles-list" class="vehicle-list hidden"></div>
+      </section>
+
+      <section id="vehicle-detail" class="vehicle-detail hidden" aria-live="polite">
+        <button id="vehicle-back" class="back-button" type="button" data-i18n="backVehicles">← Vehicles</button>
+        <header class="detail-header">
+          <div>
+            <p class="eyebrow" data-i18n="vehicleRecord">Vehicle record</p>
+            <h1 id="detail-vehicle">Vehicle</h1>
+            <p id="detail-vin" class="muted"></p>
+          </div>
+          <div class="detail-actions">
+            <a id="detail-customers-link" class="action-button" href="/services/hermes-connect/repair-shops/customers/" data-i18n="customers">Customers</a>
+            <a id="detail-appointments-link" class="action-button primary" href="/services/hermes-connect/repair-shops/appointments/" data-i18n="appointments">Appointments</a>
+          </div>
+        </header>
+
+        <div class="detail-grid">
+          <article class="detail-panel">
+            <p class="eyebrow" data-i18n="summary">Summary</p>
+            <h2 data-i18n="vehicleSummary">Vehicle summary</h2>
+            <div id="detail-stats" class="detail-stats"></div>
+            <div id="detail-next" class="next-appointment hidden"></div>
+          </article>
+
+          <article class="detail-panel">
+            <p class="eyebrow" data-i18n="currentCustomer">Current customer</p>
+            <h2 id="detail-customer-name">—</h2>
+            <div id="detail-customer" class="customer-contact"></div>
+          </article>
+        </div>
+
+        <div class="detail-grid lower-grid">
+          <article class="detail-panel">
+            <p class="eyebrow" data-i18n="services">Services</p>
+            <h2 data-i18n="serviceRelationship">Service relationship</h2>
+            <div id="detail-services" class="service-chips"></div>
+          </article>
+
+          <article class="detail-panel">
+            <p class="eyebrow" data-i18n="ownershipHistory">Customer history</p>
+            <h2 data-i18n="customersSeen">Customers linked to this vehicle</h2>
+            <div id="detail-customers" class="customer-history"></div>
+          </article>
+        </div>
+
+        <article class="detail-panel history-panel">
+          <div class="panel-title-row"><div><p class="eyebrow" data-i18n="history">History</p><h2 data-i18n="serviceHistory">Service & appointment history</h2></div><span id="detail-history-count" class="pill"></span></div>
+          <div id="detail-history" class="detail-history"></div>
+        </article>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type Customer = { name:string; email:string; phone:string; last_seen_date?:string };
+  type NextAppointment = { booking_id:string; appointment_date:string; start_time:string; service_name:string; status:string };
+  type VehicleHistory = { booking_id:string; appointment_date:string; start_time:string; service_name:string; status:string; mileage:number|null; customer:Customer };
+  type Vehicle = {
+    id:string; year:number|null; make:string; model:string; vin:string|null; mileage:number|null;
+    total_bookings:number; completed_visits:number; cancelled_bookings:number;
+    last_seen_date:string|null; last_completed_visit:string|null; next_appointment:NextAppointment|null;
+    current_customer:Customer; services:string[]; customers:Customer[]; history:VehicleHistory[];
+  };
+
+  const supported = new Set(["en","ru","uk","es","it","fr"]);
+  const params = new URLSearchParams(window.location.search);
+  const requested = (params.get("lang") || "en").toLowerCase();
+  const locale = supported.has(requested) ? requested : "en";
+  const copy: Record<string,Record<string,string>> = {
+    en:{eyebrow:"Repair Shop CRM",vehiclesTitle:"Vehicles",vehiclesSubtitle:"One operational profile per vehicle, connected to customers, service history, mileage, and appointments.",searchPlaceholder:"Search VIN, vehicle, customer, or service",loadingVehicles:"Loading vehicle history…",emptyVehicles:"No vehicles yet",emptyVehiclesCopy:"Vehicles appear automatically when a booking captures vehicle details.",backVehicles:"← Vehicles",vehicleRecord:"Vehicle record",customers:"Customers",appointments:"Appointments",summary:"Summary",vehicleSummary:"Vehicle summary",currentCustomer:"Current customer",services:"Services",serviceRelationship:"Service relationship",ownershipHistory:"Customer history",customersSeen:"Customers linked to this vehicle",history:"History",serviceHistory:"Service & appointment history",vehicle:"vehicle",vehicles:"vehicles",bookings:"Bookings",completed:"Completed visits",cancelled:"Cancelled",mileage:"Latest mileage",lastVisit:"Last completed visit",lastSeen:"Last activity",next:"Next appointment",vin:"VIN",vinMissing:"VIN not captured",mileageMissing:"Mileage not captured",servicesMissing:"No services yet",customersMissing:"No customer history yet",historyMissing:"No service history yet",loadFailed:"Unable to load vehicles.",sessionFailed:"Unable to verify your secure session.",openVehicle:"Open vehicle",status:"Status"},
+    ru:{eyebrow:"CRM СТО",vehiclesTitle:"Автомобили",vehiclesSubtitle:"Единая карточка автомобиля: клиент, история обслуживания, пробег и записи.",searchPlaceholder:"VIN, автомобиль, клиент или услуга",loadingVehicles:"Загружаем историю автомобилей…",emptyVehicles:"Автомобилей пока нет",emptyVehiclesCopy:"Автомобили появятся автоматически, когда в записи сохранены данные машины.",backVehicles:"← Автомобили",vehicleRecord:"Карточка автомобиля",customers:"Клиенты",appointments:"Записи",summary:"Сводка",vehicleSummary:"Сводка по автомобилю",currentCustomer:"Текущий клиент",services:"Услуги",serviceRelationship:"История услуг",ownershipHistory:"История клиентов",customersSeen:"Клиенты, связанные с автомобилем",history:"История",serviceHistory:"История обслуживания и записей",vehicle:"автомобиль",vehicles:"автомобилей",bookings:"Записи",completed:"Завершённые визиты",cancelled:"Отменено",mileage:"Последний пробег",lastVisit:"Последний завершённый визит",lastSeen:"Последняя активность",next:"Следующая запись",vin:"VIN",vinMissing:"VIN не сохранён",mileageMissing:"Пробег не сохранён",servicesMissing:"Услуг пока нет",customersMissing:"Истории клиентов пока нет",historyMissing:"Истории обслуживания пока нет",loadFailed:"Не удалось загрузить автомобили.",sessionFailed:"Не удалось проверить защищённую сессию.",openVehicle:"Открыть автомобиль",status:"Статус"},
+    uk:{eyebrow:"CRM СТО",vehiclesTitle:"Автомобілі",vehiclesSubtitle:"Єдина картка автомобіля: клієнт, історія обслуговування, пробіг і записи.",searchPlaceholder:"VIN, автомобіль, клієнт або послуга",loadingVehicles:"Завантажуємо історію автомобілів…",emptyVehicles:"Автомобілів поки немає",emptyVehiclesCopy:"Автомобілі з’являться автоматично, коли в записі збережені дані машини.",backVehicles:"← Автомобілі",vehicleRecord:"Картка автомобіля",customers:"Клієнти",appointments:"Записи",summary:"Зведення",vehicleSummary:"Зведення про автомобіль",currentCustomer:"Поточний клієнт",services:"Послуги",serviceRelationship:"Історія послуг",ownershipHistory:"Історія клієнтів",customersSeen:"Клієнти, пов’язані з автомобілем",history:"Історія",serviceHistory:"Історія обслуговування та записів",vehicle:"автомобіль",vehicles:"автомобілів",bookings:"Записи",completed:"Завершені візити",cancelled:"Скасовано",mileage:"Останній пробіг",lastVisit:"Останній завершений візит",lastSeen:"Остання активність",next:"Наступний запис",vin:"VIN",vinMissing:"VIN не збережено",mileageMissing:"Пробіг не збережено",servicesMissing:"Послуг поки немає",customersMissing:"Історії клієнтів поки немає",historyMissing:"Історії обслуговування поки немає",loadFailed:"Не вдалося завантажити автомобілі.",sessionFailed:"Не вдалося перевірити захищену сесію.",openVehicle:"Відкрити автомобіль",status:"Статус"},
+    es:{eyebrow:"CRM del taller",vehiclesTitle:"Vehículos",vehiclesSubtitle:"Un perfil operativo por vehículo conectado con clientes, historial, kilometraje y citas.",searchPlaceholder:"VIN, vehículo, cliente o servicio",loadingVehicles:"Cargando historial de vehículos…",emptyVehicles:"Aún no hay vehículos",emptyVehiclesCopy:"Los vehículos aparecen automáticamente cuando una cita guarda sus datos.",backVehicles:"← Vehículos",vehicleRecord:"Ficha del vehículo",customers:"Clientes",appointments:"Citas",summary:"Resumen",vehicleSummary:"Resumen del vehículo",currentCustomer:"Cliente actual",services:"Servicios",serviceRelationship:"Relación de servicios",ownershipHistory:"Historial de clientes",customersSeen:"Clientes vinculados a este vehículo",history:"Historial",serviceHistory:"Historial de servicios y citas",vehicle:"vehículo",vehicles:"vehículos",bookings:"Citas",completed:"Visitas completadas",cancelled:"Canceladas",mileage:"Último kilometraje",lastVisit:"Última visita completada",lastSeen:"Última actividad",next:"Próxima cita",vin:"VIN",vinMissing:"VIN no guardado",mileageMissing:"Kilometraje no guardado",servicesMissing:"Sin servicios",customersMissing:"Sin historial de clientes",historyMissing:"Sin historial de servicio",loadFailed:"No se pudieron cargar los vehículos.",sessionFailed:"No se pudo verificar tu sesión segura.",openVehicle:"Abrir vehículo",status:"Estado"},
+    it:{eyebrow:"CRM officina",vehiclesTitle:"Veicoli",vehiclesSubtitle:"Un profilo operativo per veicolo collegato a clienti, storico, chilometraggio e appuntamenti.",searchPlaceholder:"VIN, veicolo, cliente o servizio",loadingVehicles:"Caricamento storico veicoli…",emptyVehicles:"Nessun veicolo per ora",emptyVehiclesCopy:"I veicoli appaiono automaticamente quando un appuntamento salva i dati del mezzo.",backVehicles:"← Veicoli",vehicleRecord:"Scheda veicolo",customers:"Clienti",appointments:"Appuntamenti",summary:"Riepilogo",vehicleSummary:"Riepilogo veicolo",currentCustomer:"Cliente attuale",services:"Servizi",serviceRelationship:"Storico servizi",ownershipHistory:"Storico clienti",customersSeen:"Clienti collegati a questo veicolo",history:"Storico",serviceHistory:"Storico servizi e appuntamenti",vehicle:"veicolo",vehicles:"veicoli",bookings:"Appuntamenti",completed:"Visite completate",cancelled:"Annullati",mileage:"Ultimo chilometraggio",lastVisit:"Ultima visita completata",lastSeen:"Ultima attività",next:"Prossimo appuntamento",vin:"VIN",vinMissing:"VIN non acquisito",mileageMissing:"Chilometraggio non acquisito",servicesMissing:"Nessun servizio",customersMissing:"Nessuno storico clienti",historyMissing:"Nessuno storico servizi",loadFailed:"Impossibile caricare i veicoli.",sessionFailed:"Impossibile verificare la sessione sicura.",openVehicle:"Apri veicolo",status:"Stato"},
+    fr:{eyebrow:"CRM atelier",vehiclesTitle:"Véhicules",vehiclesSubtitle:"Un profil opérationnel par véhicule relié aux clients, à l’historique, au kilométrage et aux rendez-vous.",searchPlaceholder:"VIN, véhicule, client ou service",loadingVehicles:"Chargement de l’historique des véhicules…",emptyVehicles:"Aucun véhicule pour le moment",emptyVehiclesCopy:"Les véhicules apparaissent automatiquement lorsqu’un rendez-vous enregistre leurs informations.",backVehicles:"← Véhicules",vehicleRecord:"Fiche véhicule",customers:"Clients",appointments:"Rendez-vous",summary:"Résumé",vehicleSummary:"Résumé du véhicule",currentCustomer:"Client actuel",services:"Services",serviceRelationship:"Historique des services",ownershipHistory:"Historique clients",customersSeen:"Clients liés à ce véhicule",history:"Historique",serviceHistory:"Historique services et rendez-vous",vehicle:"véhicule",vehicles:"véhicules",bookings:"Rendez-vous",completed:"Visites terminées",cancelled:"Annulés",mileage:"Dernier kilométrage",lastVisit:"Dernière visite terminée",lastSeen:"Dernière activité",next:"Prochain rendez-vous",vin:"VIN",vinMissing:"VIN non enregistré",mileageMissing:"Kilométrage non enregistré",servicesMissing:"Aucun service",customersMissing:"Aucun historique client",historyMissing:"Aucun historique de service",loadFailed:"Impossible de charger les véhicules.",sessionFailed:"Impossible de vérifier votre session sécurisée.",openVehicle:"Ouvrir le véhicule",status:"Statut"}
+  };
+  const t = copy[locale] || copy.en;
+  let vehicles: Vehicle[] = [];
+
+  const $ = <T extends HTMLElement>(selector:string) => document.querySelector(selector) as T | null;
+  const index = $("#vehicles-index");
+  const detail = $("#vehicle-detail");
+  const list = $("#vehicles-list");
+  const loading = $("#vehicles-loading");
+  const empty = $("#vehicles-empty");
+  const count = $("#vehicle-count");
+  const search = $("#vehicle-search") as HTMLInputElement | null;
+  const alert = $("#page-alert");
+
+  const escapeHtml = (value:unknown) => String(value ?? "").replace(/[&<>'"]/g,(char) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char] || char));
+  const formatDate = (value:string|null|undefined) => value ? new Intl.DateTimeFormat(locale === "en" ? "en-US" : locale,{year:"numeric",month:"short",day:"numeric"}).format(new Date(`${value}T12:00:00`)) : "—";
+  const vehicleName = (vehicle:Vehicle) => [vehicle.year,vehicle.make,vehicle.model].filter(Boolean).join(" ") || "Vehicle";
+  const withLocale = (path:string) => {
+    const url = new URL(path,window.location.origin);
+    if (locale !== "en") url.searchParams.set("lang",locale);
+    return `${url.pathname}${url.search}${url.hash}`;
+  };
+  const readJson = async (response:Response) => { try { return await response.json(); } catch { return {}; } };
+  const redirectToAuth = () => window.location.assign(withLocale("/services/hermes-connect/repair-shops/auth/"));
+  const showAlert = (message:string) => { if (!alert) return; alert.textContent = message; alert.classList.remove("hidden"); };
+
+  function applyStaticLocale() {
+    document.documentElement.lang = locale;
+    document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node) => { const key = node.dataset.i18n || ""; if (t[key]) node.textContent = t[key]; });
+    document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]").forEach((node) => { const key = node.dataset.i18nPlaceholder || ""; if (t[key]) node.placeholder = t[key]; });
+    const customersLink = $("#detail-customers-link") as HTMLAnchorElement | null;
+    const appointmentsLink = $("#detail-appointments-link") as HTMLAnchorElement | null;
+    if (customersLink) customersLink.href = withLocale("/services/hermes-connect/repair-shops/customers/");
+    if (appointmentsLink) appointmentsLink.href = withLocale("/services/hermes-connect/repair-shops/appointments/");
+  }
+
+  function searchable(vehicle:Vehicle) {
+    return [vehicleName(vehicle),vehicle.vin,vehicle.current_customer?.name,vehicle.current_customer?.email,vehicle.current_customer?.phone,...vehicle.services,...vehicle.customers.flatMap((customer) => [customer.name,customer.email,customer.phone])].join(" ").toLowerCase();
+  }
+
+  function renderList() {
+    if (!list || !empty || !count) return;
+    const query = (search?.value || "").trim().toLowerCase();
+    const filtered = vehicles.filter((vehicle) => !query || searchable(vehicle).includes(query));
+    count.textContent = `${vehicles.length} ${t.vehicles}`;
+    empty.classList.toggle("hidden", filtered.length > 0);
+    list.classList.toggle("hidden", filtered.length === 0);
+    list.innerHTML = filtered.map((vehicle) => {
+      const actualIndex = vehicles.indexOf(vehicle);
+      const next = vehicle.next_appointment ? `<span class="next-chip">${escapeHtml(t.next)} · ${escapeHtml(formatDate(vehicle.next_appointment.appointment_date))}</span>` : "";
+      return `<button class="vehicle-card" type="button" data-vehicle-index="${actualIndex}" aria-label="${escapeHtml(t.openVehicle)}: ${escapeHtml(vehicleName(vehicle))}">
+        <div class="vehicle-card-main"><span class="vehicle-badge" aria-hidden="true">V</span><div><strong>${escapeHtml(vehicleName(vehicle))}</strong><span>${escapeHtml(vehicle.vin ? `${t.vin} ${vehicle.vin}` : t.vinMissing)}</span></div></div>
+        <div class="vehicle-card-customer"><small>${escapeHtml(t.currentCustomer)}</small><strong>${escapeHtml(vehicle.current_customer?.name || vehicle.current_customer?.email || "—")}</strong></div>
+        <div class="vehicle-card-meta"><span><b>${escapeHtml(vehicle.total_bookings)}</b>${escapeHtml(t.bookings)}</span><span><b>${escapeHtml(vehicle.mileage ?? "—")}</b>${escapeHtml(t.mileage)}</span><span><b>${escapeHtml(formatDate(vehicle.last_completed_visit))}</b>${escapeHtml(t.lastVisit)}</span></div>
+        ${next}
+      </button>`;
+    }).join("");
+    list.querySelectorAll<HTMLButtonElement>("[data-vehicle-index]").forEach((button) => button.addEventListener("click",() => openVehicle(Number(button.dataset.vehicleIndex))));
+  }
+
+  function openVehicle(vehicleIndex:number) {
+    const vehicle = vehicles[vehicleIndex];
+    if (!vehicle || !index || !detail) return;
+    index.classList.add("hidden");
+    detail.classList.remove("hidden");
+    $("#detail-vehicle")!.textContent = vehicleName(vehicle);
+    $("#detail-vin")!.textContent = vehicle.vin ? `${t.vin}: ${vehicle.vin}` : t.vinMissing;
+    $("#detail-customer-name")!.textContent = vehicle.current_customer?.name || vehicle.current_customer?.email || "—";
+    $("#detail-customer")!.innerHTML = `<span>${escapeHtml(vehicle.current_customer?.email || "—")}</span><span>${escapeHtml(vehicle.current_customer?.phone || "—")}</span>`;
+    $("#detail-stats")!.innerHTML = [
+      [t.bookings,vehicle.total_bookings],[t.completed,vehicle.completed_visits],[t.cancelled,vehicle.cancelled_bookings],[t.mileage,vehicle.mileage ?? t.mileageMissing],[t.lastVisit,formatDate(vehicle.last_completed_visit)],[t.lastSeen,formatDate(vehicle.last_seen_date)]
+    ].map(([label,value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+
+    const next = $("#detail-next");
+    if (next) {
+      if (vehicle.next_appointment) {
+        next.innerHTML = `<strong>${escapeHtml(t.next)}</strong><span>${escapeHtml(formatDate(vehicle.next_appointment.appointment_date))} · ${escapeHtml(vehicle.next_appointment.start_time)} · ${escapeHtml(vehicle.next_appointment.service_name)}</span>`;
+        next.classList.remove("hidden");
+      } else next.classList.add("hidden");
+    }
+
+    $("#detail-services")!.innerHTML = vehicle.services.length ? vehicle.services.map((service) => `<span>${escapeHtml(service)}</span>`).join("") : `<span class="empty-inline">${escapeHtml(t.servicesMissing)}</span>`;
+    $("#detail-customers")!.innerHTML = vehicle.customers.length ? vehicle.customers.map((customer) => `<div class="customer-history-row"><div><strong>${escapeHtml(customer.name || customer.email || "—")}</strong><span>${escapeHtml(customer.email || "")}</span></div><small>${escapeHtml(formatDate(customer.last_seen_date))}</small></div>`).join("") : `<div class="empty-inline">${escapeHtml(t.customersMissing)}</div>`;
+    $("#detail-history-count")!.textContent = `${vehicle.history.length} ${t.bookings}`;
+    $("#detail-history")!.innerHTML = vehicle.history.length ? vehicle.history.map((item) => `<div class="history-row"><div class="history-date"><strong>${escapeHtml(formatDate(item.appointment_date))}</strong><span>${escapeHtml(item.start_time)}</span></div><div class="history-service"><strong>${escapeHtml(item.service_name || "—")}</strong><span>${escapeHtml(item.customer?.name || item.customer?.email || "—")}</span></div><div class="history-status"><span class="status-chip">${escapeHtml(item.status)}</span><small>${escapeHtml(item.mileage == null ? t.mileageMissing : `${item.mileage}`)}</small></div></div>`).join("") : `<div class="empty-inline">${escapeHtml(t.historyMissing)}</div>`;
+    window.scrollTo({top:0,behavior:"instant"});
+  }
+
+  $("#vehicle-back")?.addEventListener("click",() => { detail?.classList.add("hidden"); index?.classList.remove("hidden"); window.scrollTo({top:0,behavior:"instant"}); });
+  search?.addEventListener("input",renderList);
+
+  async function load() {
+    applyStaticLocale();
+    const session = await fetch("/api/auth/me",{credentials:"same-origin"});
+    if (session.status === 401) return redirectToAuth();
+    if (!session.ok) return showAlert(t.sessionFailed);
+    const response = await fetch("/api/repair-shop/vehicles",{credentials:"same-origin"});
+    if (response.status === 401) return redirectToAuth();
+    const data = await readJson(response);
+    loading?.classList.add("hidden");
+    if (!response.ok || !data.success) return showAlert(data.error || t.loadFailed);
+    vehicles = Array.isArray(data.vehicles) ? data.vehicles : [];
+    renderList();
+  }
+
+  load().catch(() => { loading?.classList.add("hidden"); showAlert(t.loadFailed); });
+</script>
+
+<style>
+  .vehicles-page{background:#f4f6f8;min-height:100vh;color:#172033}.shell{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:28px 0 56px}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:18px}.hero h1{margin:2px 0 6px;font-size:clamp(30px,4vw,44px);letter-spacing:-.04em}.eyebrow{margin:0;color:#6c7787;font-size:11px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.muted{max-width:720px;margin:0;color:#6d7888;line-height:1.55}.pill{display:inline-flex;align-items:center;min-height:32px;padding:0 11px;border:1px solid #dfe5ec;border-radius:999px;background:#fff;color:#5c6878;font-size:11px;font-weight:800;white-space:nowrap}.panel,.detail-panel{border:1px solid #e1e6ed;border-radius:16px;background:#fff;box-shadow:0 8px 28px rgba(23,32,51,.04)}.search-panel{display:flex;align-items:center;gap:10px;padding:0 14px;margin-bottom:16px}.search-icon{width:15px;height:15px;border:2px solid #8a95a5;border-radius:50%;position:relative}.search-icon::after{content:"";position:absolute;width:7px;border-top:2px solid #8a95a5;right:-5px;bottom:-3px;transform:rotate(45deg)}.search-panel input{width:100%;height:48px;border:0;outline:0;background:transparent;color:#172033;font:inherit;font-size:14px}.state-card,.alert{padding:22px;border:1px solid #e1e6ed;border-radius:14px;background:#fff;color:#6d7888}.state-card{display:grid;gap:4px}.state-card strong{color:#263247}.alert{margin-bottom:14px;border-color:#f0ccd3;background:#fff5f7;color:#8b2f43}.hidden{display:none!important}.vehicle-list{display:grid;gap:10px}.vehicle-card{position:relative;display:grid;grid-template-columns:minmax(260px,1.3fr) minmax(190px,.9fr) minmax(310px,1.4fr);align-items:center;gap:18px;width:100%;padding:17px 18px;border:1px solid #e1e6ed;border-radius:15px;background:#fff;color:inherit;text-align:left;cursor:pointer;box-shadow:0 7px 24px rgba(23,32,51,.035);transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease}.vehicle-card:hover,.vehicle-card:focus-visible{transform:translateY(-1px);border-color:#bfd6f2;box-shadow:0 12px 30px rgba(23,32,51,.075);outline:none}.vehicle-card-main{display:flex;align-items:center;gap:12px;min-width:0}.vehicle-badge{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:11px;background:#edf5ff;color:#1268c4;font-weight:900}.vehicle-card-main>div,.vehicle-card-customer{display:grid;gap:3px;min-width:0}.vehicle-card-main strong,.vehicle-card-customer strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}.vehicle-card-main span:last-child,.vehicle-card-customer small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#818c9a;font-size:11px}.vehicle-card-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.vehicle-card-meta span{display:grid;gap:2px;color:#8792a1;font-size:9px;font-weight:750;text-transform:uppercase}.vehicle-card-meta b{color:#344054;font-size:12px;text-transform:none}.next-chip{position:absolute;right:14px;top:-8px;padding:4px 8px;border-radius:999px;background:#e9f7ef;color:#267348;font-size:9px;font-weight:850}.back-button{margin:0 0 14px;padding:0;border:0;background:transparent;color:#1268c4;font-weight:800;cursor:pointer}.detail-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}.detail-header h1{margin:3px 0 5px;font-size:clamp(28px,4vw,42px);letter-spacing:-.04em}.detail-actions{display:flex;gap:8px}.action-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 13px;border:1px solid #dfe5ec;border-radius:10px;background:#fff;color:#354154;text-decoration:none;font-size:12px;font-weight:800}.action-button.primary{border-color:#172033;background:#172033;color:#fff}.detail-grid{display:grid;grid-template-columns:1.35fr .85fr;gap:14px;margin-bottom:14px}.lower-grid{grid-template-columns:1fr 1fr}.detail-panel{padding:18px}.detail-panel h2{margin:4px 0 14px;font-size:17px}.detail-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.detail-stats>div{display:grid;gap:3px;padding:11px;border-radius:11px;background:#f7f9fb}.detail-stats span{color:#85909e;font-size:9px;font-weight:780;text-transform:uppercase}.detail-stats strong{font-size:13px}.next-appointment{display:grid;gap:3px;margin-top:12px;padding:12px 13px;border-radius:11px;background:#edf8f1;color:#256d45}.next-appointment strong{font-size:11px}.next-appointment span{font-size:12px}.customer-contact{display:grid;gap:6px;color:#6d7888;font-size:12px}.service-chips{display:flex;flex-wrap:wrap;gap:6px}.service-chips>span{padding:6px 9px;border-radius:999px;background:#f0f4f8;color:#516075;font-size:10px;font-weight:760}.customer-history{display:grid;gap:8px}.customer-history-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf0f4}.customer-history-row:last-child{border-bottom:0}.customer-history-row>div{display:grid;gap:2px;min-width:0}.customer-history-row strong,.customer-history-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.customer-history-row strong{font-size:12px}.customer-history-row span,.customer-history-row small{color:#8a95a3;font-size:10px}.history-panel{margin-top:14px}.panel-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.detail-history{display:grid}.history-row{display:grid;grid-template-columns:140px minmax(220px,1fr) 160px;align-items:center;gap:14px;padding:12px 0;border-top:1px solid #edf0f4}.history-date,.history-service,.history-status{display:grid;gap:2px}.history-date strong,.history-service strong{font-size:12px}.history-date span,.history-service span,.history-status small{color:#8994a2;font-size:10px}.status-chip{justify-self:start;padding:4px 7px;border-radius:999px;background:#eef3f8;color:#506075;font-size:9px;font-weight:850;text-transform:uppercase}.empty-inline{color:#8a95a3;font-size:12px}
+  @media(max-width:980px){.vehicle-card{grid-template-columns:1.15fr .85fr}.vehicle-card-meta{grid-column:1/-1}.detail-stats{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){.shell{width:min(100% - 24px,1180px);padding-top:16px}.hero,.detail-header{display:grid}.hero .pill{justify-self:start}.vehicle-card{grid-template-columns:1fr;gap:12px}.vehicle-card-meta{grid-template-columns:repeat(2,1fr)}.vehicle-card-customer{padding-left:50px}.detail-actions{flex-wrap:wrap}.detail-grid,.lower-grid{grid-template-columns:1fr}.detail-stats{grid-template-columns:1fr 1fr}.history-row{grid-template-columns:1fr auto}.history-status{grid-column:2;grid-row:1/3;text-align:right}.history-service{grid-column:1}.next-chip{right:10px}.detail-header h1{font-size:30px}}
+  @media(prefers-reduced-motion:reduce){.vehicle-card{transition:none}}
+</style>

@@ -6,16 +6,17 @@ const ownerPaths = new Set([
   `${repairShopRoot}/appointments`,
   `${repairShopRoot}/availability`,
   `${repairShopRoot}/customers`,
+  `${repairShopRoot}/vehicles`,
 ]);
 const isOwnerWorkspace = ownerPaths.has(normalizedPath);
 
 const strings = {
-  en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
-  ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
-  uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
-  es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
-  it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
-  fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+  en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+  ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+  uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+  es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+  it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+  fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
 } as const;
 type Locale = keyof typeof strings;
 const requested = (Astro.url.searchParams.get("lang") || "en").toLowerCase();
@@ -35,6 +36,7 @@ const items = [
   { label:copy.today, href:dashboardHref, active:normalizedPath === `${repairShopRoot}/dashboard`, icon:"home" },
   { label:copy.appointments, href:appointmentsHref, active:normalizedPath === `${repairShopRoot}/appointments`, icon:"calendar" },
   { label:copy.customers, href:withLocale(`${repairShopRoot}/customers/`), active:normalizedPath === `${repairShopRoot}/customers`, icon:"users" },
+  { label:copy.vehicles, href:withLocale(`${repairShopRoot}/vehicles/`), active:normalizedPath === `${repairShopRoot}/vehicles`, icon:"car" },
   { label:copy.services, href:withLocale(`${repairShopRoot}/dashboard/`, "#services-title"), active:false, icon:"wrench" },
   { label:copy.availability, href:withLocale(`${repairShopRoot}/availability/`), active:normalizedPath === `${repairShopRoot}/availability`, icon:"clock" },
   { label:copy.feedback, href:withLocale(`${repairShopRoot}/dashboard/`, "#feedback-title"), active:false, icon:"message" },
@@ -44,9 +46,11 @@ const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
   ? copy.appointments
   : normalizedPath === `${repairShopRoot}/customers`
     ? copy.customers
-    : normalizedPath === `${repairShopRoot}/availability`
-      ? copy.availability
-      : copy.today;
+    : normalizedPath === `${repairShopRoot}/vehicles`
+      ? copy.vehicles
+      : normalizedPath === `${repairShopRoot}/availability`
+        ? copy.availability
+        : copy.today;
 const productHubHref = withLocale("/services/hermes-connect/");
 const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 ---
@@ -111,12 +115,12 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     const requested = (params.get("lang") || "en").toLowerCase();
     const locale = supported.has(requested) ? requested : "en";
     const strings = {
-      en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
-      ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
-      uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
-      es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
-      it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
-      fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+      en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+      ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+      uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+      es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+      it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+      fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
     };
     const copy = strings[locale] || strings.en;
     const currentPath = window.location.pathname.replace(/\/+$/, "");
@@ -124,10 +128,12 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
       ? "appointments"
       : currentPath === `${ROOT}/customers`
         ? "customers"
-        : currentPath === `${ROOT}/availability`
-          ? "availability"
-          : "today";
-    const navKeys = ["today", "appointments", "customers", "services", "availability", "feedback", "settings"];
+        : currentPath === `${ROOT}/vehicles`
+          ? "vehicles"
+          : currentPath === `${ROOT}/availability`
+            ? "availability"
+            : "today";
+    const navKeys = ["today", "appointments", "customers", "vehicles", "services", "availability", "feedback", "settings"];
 
     const localizeHref = (href) => {
       const url = new URL(href, window.location.origin);
@@ -236,6 +242,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
   .repair-crm-icon-home::before{inset:4px 3px 2px;border:2px solid currentColor;border-top:0;border-radius:2px}.repair-crm-icon-home::after{left:4px;top:2px;width:10px;height:10px;border-left:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg);border-radius:2px}
   .repair-crm-icon-calendar::before{inset:3px 2px 2px;border:2px solid currentColor;border-radius:3px}.repair-crm-icon-calendar::after{left:5px;right:5px;top:7px;border-top:2px solid currentColor;box-shadow:-2px 4px 0 -1px currentColor,3px 4px 0 -1px currentColor}
   .repair-crm-icon-users::before{width:7px;height:7px;left:1px;top:2px;border:2px solid currentColor;border-radius:50%;box-shadow:8px 1px 0 -1px #fff,8px 1px 0 1px currentColor}.repair-crm-icon-users::after{left:0;bottom:2px;width:11px;height:6px;border:2px solid currentColor;border-radius:8px;box-shadow:7px 0 0 -1px #fff,7px 0 0 1px currentColor}
+  .repair-crm-icon-car::before{left:1px;right:1px;top:6px;height:8px;border:2px solid currentColor;border-radius:4px 4px 3px 3px}.repair-crm-icon-car::after{left:4px;right:4px;top:2px;height:7px;border:2px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0;box-shadow:-2px 11px 0 -1px currentColor,8px 11px 0 -1px currentColor}
   .repair-crm-icon-wrench::before{left:2px;top:8px;width:14px;height:4px;border:2px solid currentColor;border-radius:3px;transform:rotate(-42deg)}.repair-crm-icon-wrench::after{right:1px;top:1px;width:7px;height:7px;border:2px solid currentColor;border-left-color:transparent;border-bottom-color:transparent;border-radius:50%}
   .repair-crm-icon-clock::before{inset:2px;border:2px solid currentColor;border-radius:50%}.repair-crm-icon-clock::after{left:8px;top:5px;width:4px;height:5px;border-left:2px solid currentColor;border-bottom:2px solid currentColor}
   .repair-crm-icon-message::before{inset:3px 2px 4px;border:2px solid currentColor;border-radius:4px}.repair-crm-icon-message::after{left:5px;bottom:1px;width:5px;height:5px;border-left:2px solid currentColor;transform:skew(-25deg)}
