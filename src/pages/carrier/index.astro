@@ -1,6 +1,7 @@
 ---
 import { ArrowRight, Check, Clipboard, FileSignature, MessageSquareText, Phone, ShieldCheck } from "@lucide/astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import SiteFooter from "../../components/SiteFooter.astro";
 
@@ -25,6 +26,7 @@ const schema = {
   schema={schema}
 >
   <SiteHeader activePath="/paths/logistics/" />
+  <DirectionProductNav direction="logistics" theme="dark" />
   <main id="main-content" class="carrier-signing-entry" data-carrier-entry data-carrier-short-url={pageUrl}>
     <section class="carrier-entry-hero">
       <div class="carrier-rails" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -33,7 +35,7 @@ const schema = {
           <p class="eyebrow">Hermes Logistics · Carrier support</p>
           <h1>Keep control. Add a dispatch team.</h1>
           <p class="carrier-entry-lead">
-            Review the working model in plain English, choose the support level, confirm the company and exact Appendix A percentage, and sign the approved packet from your phone. The carrier keeps every final operating decision.
+            Review the working model in plain English, choose the support level, confirm the company and exact Appendix A percentage, and create the signed review/onboarding packet from your phone. The carrier keeps every final operating decision.
           </p>
           <div class="carrier-trust-strip" aria-label="Carrier agreement commitments">
             <span><Check size={17} aria-hidden="true" />You approve every load</span>
@@ -43,7 +45,7 @@ const schema = {
           </div>
           <div class="carrier-entry-actions">
             <a class="button carrier-primary" href="/logistics/carrier-onboarding/" data-commercial-primary-cta data-service-group="carrier_contract">
-              Review and sign <FileSignature size={18} aria-hidden="true" />
+              Review & sign packet <FileSignature size={18} aria-hidden="true" />
             </a>
             <a class="button carrier-secondary" href="/logistics/carrier-offer/">See what Hermes handles</a>
             <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call Logistics Sales</a>
@@ -58,7 +60,7 @@ const schema = {
           <ol>
             <li><span>1</span><div><b>Review the working model</b><small>Control, scope, payment flow, termination, and the no-guarantee boundary.</small></div></li>
             <li><span>2</span><div><b>Confirm company and percentage</b><small>Legal company, MC or USDOT, authorized signer, website, and the exact Appendix A percentage.</small></div></li>
-            <li><span>3</span><div><b>Sign and keep the PDF</b><small>Electronic consent, drawn signature, document identifiers, and an immediate downloadable execution copy.</small></div></li>
+            <li><span>3</span><div><b>Sign and keep the review packet</b><small>Electronic consent, drawn signature, document identifiers, and an immediate downloadable signed review copy.</small></div></li>
           </ol>
           <a href="/logistics/carrier-agreement/">Read the attorney-review agreement <ArrowRight size={16} aria-hidden="true" /></a>
         </aside>
@@ -101,11 +103,11 @@ const schema = {
       <div class="shell carrier-final-card">
         <div>
           <p class="eyebrow">Ready to continue</p>
-          <h2>Confirm the proposed terms and complete the review/onboarding packet from your phone.</h2>
+          <h2>Confirm the proposed terms and complete the signed review/onboarding packet from your phone.</h2>
           <p>Questions can be resolved with Logistics Sales before signature. No false deadline, promise of loads, or hidden condition is used to pressure the carrier.</p>
         </div>
         <div class="carrier-final-actions">
-          <a class="button carrier-primary" href="/logistics/carrier-onboarding/">Review and sign <ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button carrier-primary" href="/logistics/carrier-onboarding/">Review & sign packet <ArrowRight size={18} aria-hidden="true" /></a>
           <a class="button carrier-call" href={`tel:${salesPhone}`}><Phone size={18} aria-hidden="true" />Call +1 (262) 302-3626</a>
         </div>
       </div>

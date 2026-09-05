@@ -1,0 +1,175 @@
+---
+const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
+---
+
+{isCanonicalLoadBoard && (
+  <section class="hlb-live-marketplace" id="live-marketplace" aria-labelledby="hlb-live-title" data-hlb-live-marketplace>
+    <div class="hlb-live-shell">
+      <div class="hlb-live-head">
+        <div>
+          <p class="hlb-live-eyebrow">Hermes Load Board · Live marketplace</p>
+          <h2 id="hlb-live-title">Approved freight and truck capacity, refreshed automatically.</h2>
+          <p>Live records come from approved source feeds and the Hermes intake pipeline. Demo cards remain separate below and are never counted as live freight.</p>
+        </div>
+        <div class="hlb-live-actions">
+          <a href="/carrier/">Agreement &amp; onboarding</a>
+          <a href="/logistics/carrier/">Carrier access</a>
+        </div>
+      </div>
+
+      <div class="hlb-live-stats" aria-label="Live Load Board status">
+        <div><strong data-live-load-count>—</strong><span>approved live loads</span><small data-live-load-status>Loading live feed…</small></div>
+        <div><strong data-live-capacity-count>—</strong><span>available trucks</span><small data-live-capacity-status>Loading capacity…</small></div>
+        <div><strong>30s</strong><span>refresh cycle</span><small>Expired records disappear automatically</small></div>
+      </div>
+
+      <div class="hlb-live-grid">
+        <section class="hlb-live-panel" aria-labelledby="hlb-live-loads-title">
+          <div class="hlb-live-panel-head">
+            <div><p class="hlb-live-eyebrow">Live freight</p><h3 id="hlb-live-loads-title">Available loads</h3></div>
+            <span class="hlb-live-badge">SOURCE-GATED</span>
+          </div>
+          <div class="hlb-live-rows" data-live-load-rows aria-live="polite">
+            <div class="hlb-live-empty">Connecting to the approved live-load feed…</div>
+          </div>
+        </section>
+
+        <section class="hlb-live-panel" aria-labelledby="hlb-live-capacity-title">
+          <div class="hlb-live-panel-head">
+            <div><p class="hlb-live-eyebrow">Carrier capacity</p><h3 id="hlb-live-capacity-title">Available trucks</h3></div>
+            <span class="hlb-live-badge hlb-live-badge--capacity">SEPARATE FROM LOADS</span>
+          </div>
+          <div class="hlb-live-rows" data-live-capacity-rows aria-live="polite">
+            <div class="hlb-live-empty">Connecting to the approved truck-capacity feed…</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="hlb-live-truth">
+        <strong>Truth boundary:</strong>
+        <span>A truck is capacity, not a freight load. A demo is not live. Only active, unexpired, permission-safe D1 records appear in the counters above.</span>
+      </div>
+    </div>
+  </section>
+)}
+
+{isCanonicalLoadBoard && (
+  <script is:inline>
+    (() => {
+      const root = document.querySelector("[data-hlb-live-marketplace]");
+      if (!(root instanceof HTMLElement)) return;
+
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+      const equipmentLabel = (value) => ({
+        dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck",
+        power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck",
+        sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other",
+      }[String(value || "")] || String(value || "Other").replaceAll("_", " "));
+      const age = (value) => {
+        const time = new Date(value || 0).getTime();
+        if (!Number.isFinite(time) || time <= 0) return "recent";
+        const minutes = Math.max(0, Math.round((Date.now() - time) / 60000));
+        if (minutes < 2) return "now";
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.round(minutes / 60);
+        return hours < 48 ? `${hours}h ago` : `${Math.round(hours / 24)}d ago`;
+      };
+      const money = (record) => {
+        const amount = Number(record?.rateAmount);
+        if (!Number.isFinite(amount) || amount <= 0) return "Rate on request";
+        return new Intl.NumberFormat("en-US", { style: "currency", currency: record?.rateCurrency || "USD", maximumFractionDigits: 0 }).format(amount);
+      };
+
+      const moveIntoCanonicalPosition = () => {
+        const demo = document.querySelector(".available-loads-preview");
+        if (demo?.parentElement) demo.parentElement.insertBefore(root, demo);
+
+        const heroEyebrow = document.querySelector(".load-board-hero .eyebrow");
+        if (heroEyebrow) heroEyebrow.textContent = "Hermes Logistics · Live Load Board + Demo Preview";
+        const safetyStrong = document.querySelector(".load-board-safety strong");
+        const safetyCopy = document.querySelector(".load-board-safety span");
+        if (safetyStrong) safetyStrong.textContent = "Live data is source-gated";
+        if (safetyCopy) safetyCopy.textContent = "Approved active records are shown live; fictional examples stay clearly separated below.";
+
+        document.querySelectorAll(".load-board-role-router .load-board-section-heading p").forEach((node) => {
+          if ((node.textContent || "").includes("No load shown on this page is live")) {
+            node.innerHTML = "<strong>Live + demo split:</strong> approved active records appear in the Live marketplace section; the example cards below remain fictional and non-bookable.";
+          }
+        });
+      };
+
+      const renderLoads = (records) => {
+        const rows = root.querySelector("[data-live-load-rows]");
+        const count = root.querySelector("[data-live-load-count]");
+        const status = root.querySelector("[data-live-load-status]");
+        if (!(rows instanceof HTMLElement)) return;
+        const active = Array.isArray(records) ? records : [];
+        if (count) count.textContent = String(active.length);
+        if (status) status.textContent = active.length ? `Updated ${age(active[0]?.observedAt)}` : "No approved active freight in D1 yet";
+        if (!active.length) {
+          rows.innerHTML = '<div class="hlb-live-empty"><strong>0 approved live loads in D1 right now.</strong><span>The feed is connected; the next approved, fresh load record will appear here automatically.</span></div>';
+          return;
+        }
+        rows.innerHTML = active.map((record) => `<article class="hlb-live-row">
+          <div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div>
+          <div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || "Pickup window pending")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div>
+          <div class="hlb-live-rate"><strong>${escapeHtml(money(record))}</strong><small>${escapeHtml(age(record.observedAt))}</small></div>
+        </article>`).join("");
+      };
+
+      const renderCapacity = (records) => {
+        const rows = root.querySelector("[data-live-capacity-rows]");
+        const count = root.querySelector("[data-live-capacity-count]");
+        const status = root.querySelector("[data-live-capacity-status]");
+        if (!(rows instanceof HTMLElement)) return;
+        const active = Array.isArray(records) ? records : [];
+        if (count) count.textContent = String(active.length);
+        if (status) status.textContent = active.length ? `Updated ${age(active[0]?.observedAt)}` : "No approved active trucks in D1 yet";
+        if (!active.length) {
+          rows.innerHTML = '<div class="hlb-live-empty"><strong>0 active capacity records in D1.</strong><span>Truck lists are counted separately and never inflate the live-load total.</span></div>';
+          return;
+        }
+        rows.innerHTML = active.map((record) => `<article class="hlb-live-row hlb-live-row--capacity">
+          <div class="hlb-live-route"><span>${escapeHtml(record.origin)}</span><b>→</b><span>${escapeHtml(record.destination || "Open destination")}</span></div>
+          <div class="hlb-live-meta"><span>${escapeHtml(equipmentLabel(record.equipment))}</span><span>${escapeHtml(record.pickupWindow || record.availability || "Available")}</span><span>${escapeHtml(record.source || "Approved source")}</span></div>
+          <div class="hlb-live-rate"><strong>Truck available</strong><small>${escapeHtml(age(record.observedAt))}</small></div>
+        </article>`).join("");
+      };
+
+      const fetchRecords = async (type) => {
+        const response = await fetch(`/api/load-board/active?type=${type}`, { headers: { Accept: "application/json" }, cache: "no-store" });
+        if (!response.ok) throw new Error(`load_board_${type}_${response.status}`);
+        const payload = await response.json();
+        return Array.isArray(payload.records) ? payload.records : [];
+      };
+
+      const refresh = async () => {
+        const results = await Promise.allSettled([fetchRecords("load"), fetchRecords("capacity")]);
+        if (results[0].status === "fulfilled") renderLoads(results[0].value);
+        else {
+          const status = root.querySelector("[data-live-load-status]");
+          if (status) status.textContent = "Live-load API unavailable";
+          renderLoads([]);
+        }
+        if (results[1].status === "fulfilled") renderCapacity(results[1].value);
+        else {
+          const status = root.querySelector("[data-live-capacity-status]");
+          if (status) status.textContent = "Capacity API unavailable";
+          renderCapacity([]);
+        }
+      };
+
+      moveIntoCanonicalPosition();
+      void refresh();
+      window.setInterval(() => {
+        if (document.visibilityState === "visible") void refresh();
+      }, 30_000);
+    })();
+  </script>
+)}
+
+{isCanonicalLoadBoard && (
+  <style>
+    .hlb-live-marketplace{background:linear-gradient(180deg,#081232 0%,#0d1942 100%);color:#fff;padding:68px 0}.hlb-live-shell{width:min(1220px,calc(100% - 40px));margin:0 auto}.hlb-live-head{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1.4rem}.hlb-live-head h2{max-width:21ch;margin:.35rem 0 .7rem;font-size:clamp(2rem,4vw,3.7rem);line-height:1}.hlb-live-head>div>p:last-child{max-width:780px;margin:0;color:#b4bfd8;line-height:1.65}.hlb-live-eyebrow{margin:0;text-transform:uppercase;letter-spacing:.11em;font-size:.69rem;font-weight:900;color:#8ea5df}.hlb-live-actions{display:flex;gap:.55rem;flex-wrap:wrap}.hlb-live-actions a{padding:.75rem .92rem;border:1px solid rgba(255,255,255,.18);border-radius:10px;color:#fff;text-decoration:none;font-size:.72rem;font-weight:850;background:rgba(255,255,255,.055)}.hlb-live-actions a:first-child{background:#fff;color:#0b173c}.hlb-live-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.25rem 0}.hlb-live-stats>div{padding:1rem 1.05rem;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.045);display:grid}.hlb-live-stats strong{font-size:2rem;line-height:1}.hlb-live-stats span{margin-top:.35rem;font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.hlb-live-stats small{margin-top:.38rem;color:#8f9dbc;font-size:.66rem}.hlb-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.hlb-live-panel{min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:#111d47;overflow:hidden}.hlb-live-panel-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.09)}.hlb-live-panel-head h3{margin:.2rem 0 0;font-size:1.35rem}.hlb-live-badge{padding:.35rem .52rem;border-radius:999px;background:rgba(79,209,155,.12);color:#79dfb5;font-size:.58rem;font-weight:900;letter-spacing:.06em}.hlb-live-badge--capacity{background:rgba(147,121,255,.12);color:#b3a1ff}.hlb-live-rows{display:grid}.hlb-live-row{display:grid;grid-template-columns:1.4fr 1fr auto;gap:1rem;align-items:center;padding:.9rem 1.1rem;border-top:1px solid rgba(255,255,255,.065)}.hlb-live-row:first-child{border-top:0}.hlb-live-route{display:flex;align-items:center;gap:.42rem;min-width:0;font-size:.78rem;font-weight:850}.hlb-live-route span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hlb-live-route b{color:#6479b3}.hlb-live-meta{display:grid;gap:.16rem;color:#aeb9d2;font-size:.66rem}.hlb-live-rate{text-align:right;display:grid}.hlb-live-rate strong{font-size:.78rem}.hlb-live-rate small{margin-top:.18rem;color:#8492b2;font-size:.62rem}.hlb-live-empty{padding:1.2rem;display:grid;gap:.35rem;color:#9ba9c8;font-size:.74rem;line-height:1.5}.hlb-live-empty strong{color:#fff}.hlb-live-truth{display:flex;gap:.45rem;margin-top:1rem;padding:.85rem 1rem;border:1px solid rgba(79,209,155,.18);border-radius:12px;background:rgba(79,209,155,.055);color:#b6c2db;font-size:.7rem;line-height:1.5}.hlb-live-truth strong{flex:none;color:#79dfb5}@media(max-width:900px){.hlb-live-head{align-items:start;flex-direction:column}.hlb-live-stats{grid-template-columns:1fr}.hlb-live-grid{grid-template-columns:1fr}.hlb-live-row{grid-template-columns:1fr auto}.hlb-live-meta{grid-column:1/-1;grid-row:2}.hlb-live-rate{grid-column:2;grid-row:1}}@media(max-width:560px){.hlb-live-marketplace{padding:52px 0}.hlb-live-shell{width:min(100% - 24px,1220px)}.hlb-live-head h2{font-size:2.15rem}.hlb-live-actions{width:100%}.hlb-live-actions a{flex:1;text-align:center}.hlb-live-row{grid-template-columns:1fr}.hlb-live-rate{text-align:left;grid-column:1;grid-row:auto}.hlb-live-meta{grid-column:1;grid-row:auto}.hlb-live-truth{display:grid}}
+  </style>
+)}

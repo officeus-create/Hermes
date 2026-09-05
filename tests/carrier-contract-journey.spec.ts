@@ -6,7 +6,7 @@ test("detailed carrier page remains private and routes to the minimized packet",
   await expect(page).toHaveTitle("Carrier Support & Agreement | Hermes Logistics");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
   await expect(page.getByRole("heading", { name: "Keep control. Add a dispatch team." })).toBeVisible();
-  await expect(page.getByRole("link", { name: /Review and sign/i }).first()).toHaveAttribute("href", /\/logistics\/carrier-onboarding\//);
+  await expect(page.getByRole("link", { name: /Review (?:&|and) sign/i }).first()).toHaveAttribute("href", /\/logistics\/carrier-onboarding\//);
   await expect(page.getByRole("link", { name: "See what Hermes handles" })).toHaveAttribute("href", /\/logistics\/carrier-offer\//);
   await expect(page.getByRole("link", { name: /Call Logistics Sales/i }).first()).toHaveAttribute("href", "tel:+12623023626");
   await expect(page.getByText("You approve every load", { exact: true }).first()).toBeVisible();

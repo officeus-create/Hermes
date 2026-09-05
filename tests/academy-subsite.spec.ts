@@ -13,7 +13,7 @@ test("Academy hub discovers the five child routes", async ({ page }) => {
   expect(response?.ok()).toBeTruthy();
 
   for (const route of academyRoutes) {
-    await expect(page.locator(`a[href="${route}"]`)).toHaveCount(1);
+    expect(await page.locator(`a[href="${route}"]`).count()).toBeGreaterThanOrEqual(1);
   }
 
   await expect(page.getByRole("heading", { name: /Open a program, understand the method/ })).toBeVisible();

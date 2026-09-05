@@ -9,13 +9,6 @@ type RecordType = "load" | "capacity";
 const VISIBILITY = new Set<Visibility>(["internal_only", "carrier_only", "public"]);
 const RECORD_TYPES = new Set<RecordType>(["load", "capacity"]);
 const REDISTRIBUTION = new Set(["internal_only", "carrier_only", "public"]);
-const CAR_HAULING_EQUIPMENT = new Set([
-  "car_hauler",
-  "car_hauling",
-  "auto_transport",
-  "auto_hauling",
-  "vehicle_transport",
-]);
 
 function text(value: unknown, max = 240) {
   return String(value ?? "").trim().replace(/[\u0000-\u001f\u007f]/g, " ").slice(0, max);
@@ -42,14 +35,6 @@ function clampVisibility(requested: Visibility, permission: string): Visibility 
   if (permission === "public") return requested;
   if (permission === "carrier_only") return requested === "public" ? "carrier_only" : requested;
   return "internal_only";
-}
-
-function equipmentKey(value: unknown) {
-  return text(value || "other", 80).toLowerCase().replace(/[\s-]+/g, "_");
-}
-
-function isCarHaulingEquipment(value: unknown) {
-  return CAR_HAULING_EQUIPMENT.has(equipmentKey(value));
 }
 
 async function stableId(prefix: string, sourceId: string, sourceMessageId: string, fingerprint: string) {
@@ -97,7 +82,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       car_hauling_ingest_allowed, car_hauling_outreach_hold,
       redistribution_permission, contact_reveal_permission,
       last_successful_sync, last_error, status, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, 'email', ?, ?, ?, ?, 0, ?, 0, 1, ?, ?, ?, NULL, 'active', ?, ?)
+    ) VALUES (?, ?, ?, ?, 'email', ?, ?, ?, ?, 0, ?, 1, 1, ?, ?, ?, NULL, 'active', ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       provider = excluded.provider,
       mailbox_email = excluded.mailbox_email,
@@ -108,7 +93,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       read_enabled = excluded.read_enabled,
       send_enabled = 0,
       ingest_enabled = excluded.ingest_enabled,
-      car_hauling_ingest_allowed = 0,
+      car_hauling_ingest_allowed = 1,
       car_hauling_outreach_hold = 1,
       redistribution_permission = excluded.redistribution_permission,
       contact_reveal_permission = excluded.contact_reveal_permission,
@@ -191,11 +176,6 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const observedAt = validIso(record.observed_at, receivedAt || now);
     const expiresAt = validIso(record.expires_at);
 
-    if (isCarHaulingEquipment(equipment)) {
-      rejected.push({ kind: "record", index, reason: "car_hauling_hold" });
-      continue;
-    }
-
     if (!sourceMessageId || !fingerprint || !RECORD_TYPES.has(recordType) || !origin || !receivedAt || !observedAt || !expiresAt) {
       rejected.push({ kind: "record", index, reason: "invalid_record" });
       continue;
@@ -274,7 +254,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     quarantined,
     rejected,
     outbound_enabled: false,
-    car_hauling_ingest_allowed: false,
+    car_hauling_ingest_allowed: true,
     car_hauling_broker_outreach_hold: true,
   });
 }
