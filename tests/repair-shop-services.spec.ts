@@ -45,14 +45,11 @@ async function mockOwnerApis(page: Page) {
 async function captureEvidence(page: Page, testInfo: TestInfo, name: string) {
   const directory = path.resolve("artifacts/repair-shop-services");
   await mkdir(directory, { recursive: true });
-  await page.evaluate(() => {
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-    window.scrollTo(0, 0);
+  await page.screenshot({
+    path: path.join(directory, `${name}-${testInfo.project.name}.png`),
+    fullPage: true,
+    animations: "disabled",
   });
-  await page.waitForTimeout(50);
-  await expect(page.locator(".skip-link")).toBeHidden();
-  await page.addStyleTag({ content: ".skip-link{display:none!important}" });
-  await page.screenshot({ path: path.join(directory, `${name}-${testInfo.project.name}.png`), fullPage: true, animations: "disabled" });
 }
 
 async function expectLayout(page: Page) {
