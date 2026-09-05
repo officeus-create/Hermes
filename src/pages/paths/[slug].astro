@@ -1,11 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import AcademySubsiteNav from "../../components/AcademySubsiteNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
+import DirectionProductNav from "../../components/DirectionProductNav.astro";
 import HermesConnectLauncher from "../../components/HermesConnectLauncher.astro";
 import LoadBoardProductSpotlight from "../../components/LoadBoardProductSpotlight.astro";
 import LogisticsCommercialLinks from "../../components/LogisticsCommercialLinks.astro";
-import LogisticsProductNav from "../../components/LogisticsProductNav.astro";
 import MarketingEngagementModel from "../../components/MarketingEngagementModel.astro";
 import PathDetailPage from "../../components/PathDetailPage.astro";
 import PathVerifiedAdvantages from "../../components/PathVerifiedAdvantages.astro";
@@ -69,7 +68,7 @@ const schema = faqSchema
 
 <BaseLayout title={path.seoTitle} description={path.seoDescription} image={path.image} schema={schema}>
   <SiteHeader theme="light" />
-  {path.id === "logistics" && <LogisticsProductNav theme="light" />}
+  <DirectionProductNav direction={path.id as "logistics" | "marketing" | "technology" | "academy"} theme="light" />
   <PathDetailPage path={path} />
   {path.id === "logistics" && <LoadBoardProductSpotlight context="logistics" />}
   {path.id === "technology" && <LoadBoardProductSpotlight context="technology" />}
@@ -82,7 +81,6 @@ const schema = faqSchema
   )}
   {path.id === "academy" && (
     <>
-      <AcademySubsiteNav />
       <section class="section london-market-entry" aria-labelledby="london-academy-entry-title"><div class="shell london-market-entry-card"><div><p class="eyebrow">United Kingdom · London</p><h2 id="london-academy-entry-title">US logistics training has a dedicated London entry path.</h2><p>Review London and UK training routes for US logistics foundations, dispatch, load planning, sales and English readiness. Training does not guarantee employment or income.</p></div><a class="button button-primary" href="/gb/london/academy/">Explore London Academy</a></div></section>
       <template
         data-static-validator-compat
