@@ -8,7 +8,7 @@ async function mockOwner(page: import("@playwright/test").Page) {
   }));
 }
 
-test("Repair Shop private workspace reads as a simple CRM instead of the public website", async ({ page }) => {
+test("Repair Shop private workspace reads as a full CRM app instead of the public website", async ({ page }) => {
   await mockOwner(page);
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/services/hermes-connect/repair-shops/dashboard/");
@@ -18,6 +18,12 @@ test("Repair Shop private workspace reads as a simple CRM instead of the public 
   await expect(page.locator("html")).toHaveClass(/hc-repair-crm/);
   await expect(page.locator(".site-header")).toBeHidden();
   await expect(page.locator(".hc-product-context")).toBeHidden();
+  await expect(page.locator(".site-footer")).toBeHidden();
+
+  const frame = await crm.boundingBox();
+  expect(frame).not.toBeNull();
+  expect(frame!.width).toBeGreaterThanOrEqual(1270);
+  expect(frame!.height).toBeGreaterThanOrEqual(890);
 
   const nav = crm.locator(".repair-crm-nav");
   await expect(nav.getByRole("link", { name: "Today" })).toHaveAttribute("aria-current", "page");
@@ -34,12 +40,18 @@ test("Repair Shop private workspace reads as a simple CRM instead of the public 
   await expect(crm.getByText("Team", { exact: true })).toHaveCount(0);
 });
 
-test("Repair Shop CRM keeps the same simple navigation and logout on a 390px phone", async ({ page }) => {
+test("Repair Shop CRM keeps the same app navigation and logout on a 390px phone", async ({ page }) => {
   await mockOwner(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/services/hermes-connect/repair-shops/customers/?lang=ru");
 
   const crm = page.locator("[data-repair-crm-shell]");
+  await expect(crm).toBeVisible();
+  const frame = await crm.boundingBox();
+  expect(frame).not.toBeNull();
+  expect(frame!.width).toBeGreaterThanOrEqual(385);
+  expect(frame!.height).toBeGreaterThanOrEqual(839);
+
   const menu = crm.locator("[data-repair-crm-menu]");
   await expect(menu).toBeVisible();
   await expect(crm.locator(".repair-crm-sidebar")).not.toBeInViewport();
