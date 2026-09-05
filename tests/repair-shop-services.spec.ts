@@ -77,7 +77,7 @@ test("Services is a private owner workspace using the existing service API", asy
 
   await page.getByRole("button", { name: "Delete: Brake inspection" }).click();
   await expect(page.locator("#page-alert")).toContainText("already has bookings");
-  await expect(page.locator(".service-card")).toContainText("Brake inspection");
+  await expect(page.locator(".service-card").filter({ hasText: "Brake inspection" })).toHaveCount(1);
   await captureEvidence(page, testInfo, "services-en-catalog");
 });
 
