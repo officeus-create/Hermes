@@ -20,6 +20,7 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
   const audiences = await source("src/data/logistics-audiences.ts");
   const carrierAudience = await source("src/pages/logistics/[audience].astro");
   const carrierEntry = await source("src/pages/carrier/index.astro");
+  const journey = await source("src/components/CarrierContractJourney.astro");
 
   expect(nav).toContain('{ id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature }');
   expect(nav).toContain('{ id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow }');
@@ -42,6 +43,9 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
   ]) {
     expect(carrierAudience).toContain(`href: "${href}"`);
   }
+
+  expect(journey).toContain('Astro.url.pathname === "/load-board/" && Astro.url.searchParams.get("role") === "carrier"');
+  expect(journey).toContain('primaryLabel: "Agreement & onboarding", primaryHref: "/carrier/"');
 
   expect(carrierEntry).toContain("signed review copy");
   expect(carrierEntry).not.toContain("downloadable execution copy");
