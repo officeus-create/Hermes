@@ -1,5 +1,5 @@
 ---
-import { ArrowLeft, Search } from "@lucide/astro";
+import { Search } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
@@ -7,33 +7,78 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
 <BaseLayout
   title="Repair Shop Customers | Hermes Connect"
-  description="Owner-only customer and vehicle history for Hermes Connect Repair Shops."
+  description="Owner-only customer, vehicle, and appointment history for Hermes Connect Repair Shops."
   robots="noindex,nofollow"
 >
   <SiteHeader activePath="/paths/technology/" />
   <main class="customers-page">
     <div class="shell">
-      <a class="back-link" href="/services/hermes-connect/repair-shops/dashboard/"><ArrowLeft size={16} /> Shop Owner Workspace</a>
+      <section id="customers-index">
+        <header class="hero">
+          <div>
+            <p class="eyebrow" data-i18n="eyebrow">Repair Shop CRM</p>
+            <h1 data-i18n="customersTitle">Customers</h1>
+            <p class="muted" data-i18n="customersSubtitle">Real customers created from your Hermes Connect bookings, vehicles, and service history.</p>
+          </div>
+          <span id="customer-count" class="pill">0 customers</span>
+        </header>
 
-      <header class="hero">
-        <div>
-          <p class="eyebrow">Hermes Connect · Repair Shops</p>
-          <h1>Customers</h1>
-          <p class="muted">A private customer view built from your shop’s real Hermes Connect bookings and saved vehicle details.</p>
-        </div>
-        <span id="customer-count" class="pill">0 customers</span>
-      </header>
+        <div id="page-alert" class="alert hidden" role="status"></div>
 
-      <div id="page-alert" class="alert hidden" role="status"></div>
+        <section class="panel search-panel" aria-label="Customer search">
+          <Search size={18} />
+          <input id="customer-search" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search name, email, phone, vehicle, VIN, or service" autocomplete="off" />
+        </section>
 
-      <section class="panel search-panel" aria-label="Customer search">
-        <Search size={18} />
-        <input id="customer-search" type="search" placeholder="Search name, email, phone, vehicle, VIN, or service" autocomplete="off" />
+        <div id="customers-loading" class="state-card" data-i18n="loadingCustomers">Loading customer history…</div>
+        <div id="customers-empty" class="state-card hidden"><strong data-i18n="emptyCustomers">No customers yet</strong><span data-i18n="emptyCustomersCopy">Customers appear automatically after real bookings are created through your public booking link.</span></div>
+        <div id="customers-list" class="customer-list hidden"></div>
       </section>
 
-      <div id="customers-loading" class="state-card">Loading customer history…</div>
-      <div id="customers-empty" class="state-card hidden"><strong>No customers yet</strong><span>Customers appear automatically after real bookings are created through your public booking link.</span></div>
-      <div id="customers-list" class="customer-list hidden"></div>
+      <section id="customer-detail" class="customer-detail hidden" aria-live="polite">
+        <button id="customer-back" class="back-button" type="button" data-i18n="backCustomers">← Customers</button>
+        <header class="detail-header">
+          <div>
+            <p class="eyebrow" data-i18n="customerRecord">Customer record</p>
+            <h1 id="detail-name">Customer</h1>
+            <p id="detail-contact" class="muted"></p>
+          </div>
+          <div class="detail-actions">
+            <a id="detail-email" class="action-button" href="#">Email</a>
+            <a id="detail-phone" class="action-button" href="#">Call</a>
+            <a id="detail-appointments" class="action-button primary" href="/services/hermes-connect/repair-shops/appointments/" data-i18n="appointments">Appointments</a>
+          </div>
+        </header>
+
+        <div id="detail-alert" class="alert hidden" role="status"></div>
+
+        <section class="detail-grid">
+          <article class="detail-panel">
+            <div class="panel-title-row"><div><p class="eyebrow" data-i18n="relationship">Relationship</p><h2 data-i18n="customerSummary">Customer summary</h2></div><span id="detail-stage" class="pill"></span></div>
+            <div id="detail-stats" class="detail-stats"></div>
+            <div id="detail-next" class="next-appointment hidden"></div>
+          </article>
+
+          <article class="detail-panel">
+            <p class="eyebrow" data-i18n="vehicles">Vehicles</p>
+            <h2 data-i18n="garage">Customer garage</h2>
+            <div id="detail-vehicles" class="detail-vehicles"></div>
+          </article>
+        </section>
+
+        <article class="detail-panel detail-services-panel">
+          <p class="eyebrow" data-i18n="services">Services</p>
+          <h2 data-i18n="serviceHistory">Service relationship</h2>
+          <div id="detail-services" class="service-chips"></div>
+        </article>
+
+        <article class="detail-panel">
+          <div class="panel-title-row"><div><p class="eyebrow" data-i18n="history">History</p><h2 data-i18n="appointmentHistory">Appointment history</h2></div><span id="detail-booking-count" class="pill"></span></div>
+          <div id="detail-history-loading" class="state-card" data-i18n="loadingAppointments">Loading appointments…</div>
+          <div id="detail-history-empty" class="state-card hidden" data-i18n="noAppointments">No appointment history found.</div>
+          <div id="detail-history" class="detail-history hidden"></div>
+        </article>
+      </section>
     </div>
   </main>
   <SiteFooter />
@@ -56,126 +101,103 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
     services: string[];
     vehicles: Vehicle[];
   };
+  type BookingHistory = { id: string; from_status: string | null; to_status: string; changed_at: string };
+  type BookingVehicle = { year: number | null; make: string; model: string; mileage: number | null; vin: string | null };
+  type Booking = { id:string; service_name:string; duration_minutes:number; appointment_date:string; start_time:string; end_time:string; status:string; client_name:string; client_email:string; client_phone:string; vehicle?:BookingVehicle|null; history?:BookingHistory[] };
+
+  const supported = new Set(["en","ru","uk","es","it","fr"]);
+  const params = new URLSearchParams(window.location.search);
+  const requested = (params.get("lang") || "en").toLowerCase();
+  const locale = supported.has(requested) ? requested : "en";
+  const requestedCustomer = (params.get("customer") || "").trim().toLowerCase();
+  const copy: Record<string, Record<string,string>> = {
+    en:{eyebrow:"Repair Shop CRM",customersTitle:"Customers",customersSubtitle:"Real customers created from your Hermes Connect bookings, vehicles, and service history.",searchPlaceholder:"Search name, email, phone, vehicle, VIN, or service",loadingCustomers:"Loading customer history…",emptyCustomers:"No customers yet",emptyCustomersCopy:"Customers appear automatically after real bookings are created through your public booking link.",backCustomers:"← Customers",customerRecord:"Customer record",appointments:"Appointments",relationship:"Relationship",customerSummary:"Customer summary",vehicles:"Vehicles",garage:"Customer garage",services:"Services",serviceHistory:"Service relationship",history:"History",appointmentHistory:"Appointment history",loadingAppointments:"Loading appointments…",noAppointments:"No appointment history found.",customer:"customer",customers:"customers",booking:"booking",bookings:"bookings",completed:"completed",cancelled:"cancelled",lastService:"Last completed service",next:"Next",lastSeen:"Last seen",mileageMissing:"Mileage not provided",vehicleMissing:"No vehicle details were captured for earlier bookings.",servicesMissing:"No services yet",upcoming:"Upcoming",past:"Past customer",lead:"Lead",openCustomer:"Open customer",totalBookings:"Bookings",completedVisits:"Completed visits",cancelledBookings:"Cancelled",statusHistory:"Status history",noStatusHistory:"No status changes yet",notFound:"Customer not found.",loadFailed:"Unable to load customers.",sessionFailed:"Unable to verify your secure session."},
+    ru:{eyebrow:"CRM СТО",customersTitle:"Клиенты",customersSubtitle:"Реальные клиенты из записей Hermes Connect, автомобилей и истории обслуживания.",searchPlaceholder:"Имя, email, телефон, автомобиль, VIN или услуга",loadingCustomers:"Загружаем историю клиентов…",emptyCustomers:"Клиентов пока нет",emptyCustomersCopy:"Клиенты появятся автоматически после реальных записей через публичную страницу СТО.",backCustomers:"← Клиенты",customerRecord:"Карточка клиента",appointments:"Записи",relationship:"Отношения",customerSummary:"Сводка по клиенту",vehicles:"Автомобили",garage:"Гараж клиента",services:"Услуги",serviceHistory:"История услуг",history:"История",appointmentHistory:"История записей",loadingAppointments:"Загружаем записи…",noAppointments:"История записей не найдена.",customer:"клиент",customers:"клиентов",booking:"запись",bookings:"записей",completed:"завершено",cancelled:"отменено",lastService:"Последнее завершённое обслуживание",next:"Следующая запись",lastSeen:"Последний визит",mileageMissing:"Пробег не указан",vehicleMissing:"Данные автомобиля для предыдущих записей не сохранены.",servicesMissing:"Услуг пока нет",upcoming:"Предстоящая запись",past:"Постоянный клиент",lead:"Новый клиент",openCustomer:"Открыть клиента",totalBookings:"Записи",completedVisits:"Завершённые визиты",cancelledBookings:"Отменено",statusHistory:"История статусов",noStatusHistory:"Изменений статуса пока нет",notFound:"Клиент не найден.",loadFailed:"Не удалось загрузить клиентов.",sessionFailed:"Не удалось проверить защищённую сессию."},
+    uk:{eyebrow:"CRM СТО",customersTitle:"Клієнти",customersSubtitle:"Реальні клієнти із записів Hermes Connect, автомобілів та історії обслуговування.",searchPlaceholder:"Ім’я, email, телефон, автомобіль, VIN або послуга",loadingCustomers:"Завантажуємо історію клієнтів…",emptyCustomers:"Клієнтів поки немає",emptyCustomersCopy:"Клієнти з’являться автоматично після реальних записів через публічну сторінку СТО.",backCustomers:"← Клієнти",customerRecord:"Картка клієнта",appointments:"Записи",relationship:"Відносини",customerSummary:"Зведення про клієнта",vehicles:"Автомобілі",garage:"Гараж клієнта",services:"Послуги",serviceHistory:"Історія послуг",history:"Історія",appointmentHistory:"Історія записів",loadingAppointments:"Завантажуємо записи…",noAppointments:"Історію записів не знайдено.",customer:"клієнт",customers:"клієнтів",booking:"запис",bookings:"записів",completed:"завершено",cancelled:"скасовано",lastService:"Останнє завершене обслуговування",next:"Наступний запис",lastSeen:"Останній візит",mileageMissing:"Пробіг не вказано",vehicleMissing:"Дані автомобіля для попередніх записів не збережено.",servicesMissing:"Послуг поки немає",upcoming:"Майбутній запис",past:"Постійний клієнт",lead:"Новий клієнт",openCustomer:"Відкрити клієнта",totalBookings:"Записи",completedVisits:"Завершені візити",cancelledBookings:"Скасовано",statusHistory:"Історія статусів",noStatusHistory:"Змін статусу поки немає",notFound:"Клієнта не знайдено.",loadFailed:"Не вдалося завантажити клієнтів.",sessionFailed:"Не вдалося перевірити захищену сесію."},
+    es:{eyebrow:"CRM del taller",customersTitle:"Clientes",customersSubtitle:"Clientes reales creados desde reservas Hermes Connect, vehículos e historial de servicio.",searchPlaceholder:"Nombre, email, teléfono, vehículo, VIN o servicio",loadingCustomers:"Cargando historial de clientes…",emptyCustomers:"Aún no hay clientes",emptyCustomersCopy:"Los clientes aparecerán automáticamente después de reservas reales.",backCustomers:"← Clientes",customerRecord:"Ficha del cliente",appointments:"Citas",relationship:"Relación",customerSummary:"Resumen del cliente",vehicles:"Vehículos",garage:"Garaje del cliente",services:"Servicios",serviceHistory:"Relación de servicios",history:"Historial",appointmentHistory:"Historial de citas",loadingAppointments:"Cargando citas…",noAppointments:"No se encontró historial de citas.",customer:"cliente",customers:"clientes",booking:"reserva",bookings:"reservas",completed:"completadas",cancelled:"canceladas",lastService:"Último servicio completado",next:"Próxima",lastSeen:"Última visita",mileageMissing:"Kilometraje no indicado",vehicleMissing:"No hay datos de vehículo de reservas anteriores.",servicesMissing:"Aún no hay servicios",upcoming:"Próxima cita",past:"Cliente anterior",lead:"Cliente nuevo",openCustomer:"Abrir cliente",totalBookings:"Reservas",completedVisits:"Visitas completadas",cancelledBookings:"Canceladas",statusHistory:"Historial de estados",noStatusHistory:"Aún no hay cambios de estado",notFound:"Cliente no encontrado.",loadFailed:"No se pudieron cargar los clientes.",sessionFailed:"No se pudo verificar tu sesión segura."},
+    it:{eyebrow:"CRM officina",customersTitle:"Clienti",customersSubtitle:"Clienti reali creati da prenotazioni Hermes Connect, veicoli e storico servizi.",searchPlaceholder:"Nome, email, telefono, veicolo, VIN o servizio",loadingCustomers:"Caricamento storico clienti…",emptyCustomers:"Nessun cliente per ora",emptyCustomersCopy:"I clienti appariranno automaticamente dopo prenotazioni reali.",backCustomers:"← Clienti",customerRecord:"Scheda cliente",appointments:"Appuntamenti",relationship:"Relazione",customerSummary:"Riepilogo cliente",vehicles:"Veicoli",garage:"Garage cliente",services:"Servizi",serviceHistory:"Storico servizi",history:"Storico",appointmentHistory:"Storico appuntamenti",loadingAppointments:"Caricamento appuntamenti…",noAppointments:"Nessuno storico appuntamenti trovato.",customer:"cliente",customers:"clienti",booking:"prenotazione",bookings:"prenotazioni",completed:"completate",cancelled:"annullate",lastService:"Ultimo servizio completato",next:"Prossimo",lastSeen:"Ultima visita",mileageMissing:"Chilometraggio non indicato",vehicleMissing:"Nessun dato veicolo per prenotazioni precedenti.",servicesMissing:"Nessun servizio",upcoming:"Prossimo appuntamento",past:"Cliente precedente",lead:"Nuovo cliente",openCustomer:"Apri cliente",totalBookings:"Prenotazioni",completedVisits:"Visite completate",cancelledBookings:"Annullate",statusHistory:"Cronologia stati",noStatusHistory:"Nessun cambio di stato",notFound:"Cliente non trovato.",loadFailed:"Impossibile caricare i clienti.",sessionFailed:"Impossibile verificare la sessione."},
+    fr:{eyebrow:"CRM atelier",customersTitle:"Clients",customersSubtitle:"Clients réels issus des réservations Hermes Connect, véhicules et historique d’entretien.",searchPlaceholder:"Nom, email, téléphone, véhicule, VIN ou service",loadingCustomers:"Chargement de l’historique clients…",emptyCustomers:"Aucun client pour le moment",emptyCustomersCopy:"Les clients apparaîtront automatiquement après de vraies réservations.",backCustomers:"← Clients",customerRecord:"Fiche client",appointments:"Rendez-vous",relationship:"Relation",customerSummary:"Résumé client",vehicles:"Véhicules",garage:"Garage du client",services:"Services",serviceHistory:"Historique des services",history:"Historique",appointmentHistory:"Historique des rendez-vous",loadingAppointments:"Chargement des rendez-vous…",noAppointments:"Aucun historique de rendez-vous trouvé.",customer:"client",customers:"clients",booking:"rendez-vous",bookings:"rendez-vous",completed:"terminés",cancelled:"annulés",lastService:"Dernier service terminé",next:"Prochain",lastSeen:"Dernière visite",mileageMissing:"Kilométrage non indiqué",vehicleMissing:"Aucune donnée véhicule pour les anciennes réservations.",servicesMissing:"Aucun service",upcoming:"Prochain rendez-vous",past:"Client existant",lead:"Nouveau client",openCustomer:"Ouvrir le client",totalBookings:"Rendez-vous",completedVisits:"Visites terminées",cancelledBookings:"Annulés",statusHistory:"Historique des statuts",noStatusHistory:"Aucun changement de statut",notFound:"Client introuvable.",loadFailed:"Impossible de charger les clients.",sessionFailed:"Impossible de vérifier votre session sécurisée."}
+  };
+  const t = copy[locale] || copy.en;
+  document.documentElement.lang = locale;
+  document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((node)=>{const key=node.dataset.i18n||"";if(t[key])node.textContent=t[key];});
+  document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]").forEach((node)=>{const key=node.dataset.i18nPlaceholder||"";if(t[key])node.placeholder=t[key];});
 
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
   const alertBox = $("page-alert");
   const searchInput = $<HTMLInputElement>("customer-search");
   let customers: Customer[] = [];
+  let bookings: Booking[] = [];
 
-  function showAlert(message: string) { if (!alertBox) return; alertBox.textContent = message; alertBox.className = "alert"; }
-  async function readJson(response: Response) { try { return await response.json(); } catch { return { success: false, error: "invalid_server_response" }; } }
-  function redirectToAuth() { window.location.replace("/services/hermes-connect/repair-shops/auth/"); }
-  function formatDate(value: string | null) {
-    if (!value) return "None yet";
-    const date = new Date(`${value}T12:00:00Z`);
-    return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-US", { month:"short", day:"numeric", year:"numeric", timeZone:"UTC" }).format(date);
-  }
-  function formatTime(value: string) { const [h,m] = value.split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2,"0")} ${h >= 12 ? "PM" : "AM"}`; }
+  function showAlert(message:string, target=alertBox){ if(!target)return; target.textContent=message; target.className="alert"; }
+  async function readJson(response:Response){try{return await response.json();}catch{return{success:false,error:"invalid_server_response"};}}
+  function withLocale(path:string){const url=new URL(path,window.location.origin);if(locale!=="en")url.searchParams.set("lang",locale);return`${url.pathname}${url.search}${url.hash}`;}
+  function redirectToAuth(){window.location.replace(withLocale("/services/hermes-connect/repair-shops/auth/"));}
+  function formatDate(value:string|null){if(!value)return"None yet";const date=new Date(`${value}T12:00:00Z`);return Number.isNaN(date.getTime())?value:new Intl.DateTimeFormat(locale==="en"?"en-US":locale,{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(date);}
+  function formatTime(value:string){const[h,m]=value.split(":").map(Number);return new Intl.DateTimeFormat(locale==="en"?"en-US":locale,{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(new Date(Date.UTC(2026,0,1,h||0,m||0)));}
+  function formatHistoryTime(value:string){const date=new Date(value);return Number.isNaN(date.getTime())?value:new Intl.DateTimeFormat(locale==="en"?"en-US":locale,{dateStyle:"medium",timeStyle:"short"}).format(date);}
+  function vehicleText(vehicle:Vehicle|BookingVehicle){const name=`${vehicle.year??""} ${vehicle.make} ${vehicle.model}`.trim();const mileage=vehicle.mileage==null?t.mileageMissing:`${Number(vehicle.mileage).toLocaleString()} mi`;return`${name} · ${mileage}`;}
+  function matchesSearch(customer:Customer,query:string){if(!query)return true;const vehicleBlob=customer.vehicles.map((v)=>`${v.year??""} ${v.make} ${v.model} ${v.vin??""}`).join(" ");return`${customer.name} ${customer.email} ${customer.phone} ${customer.services.join(" ")} ${vehicleBlob}`.toLowerCase().includes(query.toLowerCase());}
+  function appendStat(container:HTMLElement,labelText:string,valueText:string){const stat=document.createElement("div");const label=document.createElement("span");label.textContent=labelText;const value=document.createElement("strong");value.textContent=valueText;stat.append(label,value);container.append(stat);}
 
-  function vehicleText(vehicle: Vehicle) {
-    const name = `${vehicle.year ?? ""} ${vehicle.make} ${vehicle.model}`.trim();
-    const mileage = vehicle.mileage == null ? "Mileage not provided" : `${vehicle.mileage.toLocaleString()} mi`;
-    return `${name} · ${mileage}`;
-  }
+  function customerStage(customer:Customer){return customer.next_appointment?t.upcoming:customer.completed_visits?t.past:t.lead;}
 
-  function matchesSearch(customer: Customer, query: string) {
-    if (!query) return true;
-    const vehicleTextBlob = customer.vehicles.map((vehicle) => `${vehicle.year ?? ""} ${vehicle.make} ${vehicle.model} ${vehicle.vin ?? ""}`).join(" ");
-    const haystack = `${customer.name} ${customer.email} ${customer.phone} ${customer.services.join(" ")} ${vehicleTextBlob}`.toLowerCase();
-    return haystack.includes(query.toLowerCase());
-  }
+  function openCustomer(customer:Customer){
+    const url=new URL(window.location.href);url.searchParams.set("customer",customer.email.toLowerCase());if(locale==="en")url.searchParams.delete("lang");else url.searchParams.set("lang",locale);window.history.pushState({},"",`${url.pathname}${url.search}`);renderCustomerDetail(customer);}
 
-  function appendStat(container: HTMLElement, labelText: string, valueText: string) {
-    const stat = document.createElement("div");
-    const label = document.createElement("span");
-    label.textContent = labelText;
-    const value = document.createElement("strong");
-    value.textContent = valueText;
-    stat.append(label, value);
-    container.append(stat);
-  }
-
-  function render(filtered: Customer[]) {
-    const list = $("customers-list")!;
-    const empty = $("customers-empty")!;
-    $("customers-loading")?.classList.add("hidden");
-    $("customer-count")!.textContent = `${filtered.length} ${filtered.length === 1 ? "customer" : "customers"}`;
-    list.replaceChildren();
-
-    if (!filtered.length) {
-      list.classList.add("hidden");
-      empty.classList.remove("hidden");
-      return;
-    }
-    empty.classList.add("hidden");
-    list.classList.remove("hidden");
-
-    for (const customer of filtered) {
-      const card = document.createElement("article");
-      card.className = "customer-card";
-
-      const header = document.createElement("div");
-      header.className = "customer-header";
-      const heading = document.createElement("div");
-      const name = document.createElement("strong"); name.textContent = customer.name || customer.email;
-      const meta = document.createElement("span"); meta.className = "muted small"; meta.textContent = `${customer.total_bookings} ${customer.total_bookings === 1 ? "booking" : "bookings"} · ${customer.completed_visits} completed`;
-      heading.append(name, meta);
-      const badge = document.createElement("span"); badge.className = "pill"; badge.textContent = customer.next_appointment ? "Upcoming" : customer.completed_visits ? "Past customer" : "Lead";
-      header.append(heading, badge);
-
-      const contact = document.createElement("div"); contact.className = "contact-grid";
-      const email = document.createElement("a"); email.href = `mailto:${customer.email}`; email.textContent = customer.email; email.className = "contact-link";
-      const phone = document.createElement("a"); phone.href = `tel:${customer.phone}`; phone.textContent = customer.phone; phone.className = "contact-link";
-      contact.append(email, phone);
-
-      const stats = document.createElement("div"); stats.className = "stats";
-      appendStat(stats, "Last completed service", formatDate(customer.last_service_date));
-      appendStat(stats, "Services", customer.services.length ? customer.services.join(", ") : "None yet");
-
-      if (customer.next_appointment) {
-        const next = document.createElement("div"); next.className = "next-appointment";
-        next.textContent = `Next: ${formatDate(customer.next_appointment.appointment_date)} at ${formatTime(customer.next_appointment.start_time)} · ${customer.next_appointment.service_name}`;
-        card.append(header, contact, next, stats);
-      } else {
-        card.append(header, contact, stats);
-      }
-
-      const vehicleSection = document.createElement("div"); vehicleSection.className = "vehicle-section";
-      const vehicleTitle = document.createElement("span"); vehicleTitle.className = "mini-label"; vehicleTitle.textContent = "Vehicles"; vehicleSection.append(vehicleTitle);
-      if (!customer.vehicles.length) {
-        const none = document.createElement("p"); none.className = "muted small"; none.textContent = "No vehicle details were captured for earlier bookings."; vehicleSection.append(none);
-      } else {
-        const grid = document.createElement("div"); grid.className = "vehicle-grid";
-        for (const vehicle of customer.vehicles) {
-          const item = document.createElement("div"); item.className = "vehicle-card";
-          const title = document.createElement("strong"); title.textContent = vehicleText(vehicle);
-          const sub = document.createElement("span"); sub.textContent = `${vehicle.vin ? `VIN ${vehicle.vin} · ` : ""}Last seen ${formatDate(vehicle.last_seen_date)}`;
-          item.append(title, sub); grid.append(item);
-        }
-        vehicleSection.append(grid);
-      }
-      card.append(vehicleSection);
-      list.append(card);
+  function renderList(filtered:Customer[]){
+    const list=$("customers-list")!;const empty=$("customers-empty")!;$("customers-loading")?.classList.add("hidden");$("customer-count")!.textContent=`${filtered.length} ${filtered.length===1?t.customer:t.customers}`;list.replaceChildren();
+    if(!filtered.length){list.classList.add("hidden");empty.classList.remove("hidden");return;}empty.classList.add("hidden");list.classList.remove("hidden");
+    for(const customer of filtered){
+      const card=document.createElement("article");card.className="customer-card";
+      const header=document.createElement("div");header.className="customer-header";const heading=document.createElement("div");const name=document.createElement("strong");name.textContent=customer.name||customer.email;const meta=document.createElement("span");meta.className="muted small";meta.textContent=`${customer.total_bookings} ${customer.total_bookings===1?t.booking:t.bookings} · ${customer.completed_visits} ${t.completed}`;heading.append(name,meta);const badge=document.createElement("span");badge.className="pill";badge.textContent=customerStage(customer);header.append(heading,badge);
+      const contact=document.createElement("div");contact.className="contact-grid";const email=document.createElement("a");email.href=`mailto:${customer.email}`;email.textContent=customer.email;email.className="contact-link";const phone=document.createElement("a");phone.href=`tel:${customer.phone}`;phone.textContent=customer.phone;phone.className="contact-link";contact.append(email,phone);
+      const stats=document.createElement("div");stats.className="stats";appendStat(stats,t.lastService,formatDate(customer.last_service_date));appendStat(stats,t.services,customer.services.length?customer.services.join(", "):t.servicesMissing);
+      card.append(header,contact);
+      if(customer.next_appointment){const next=document.createElement("div");next.className="next-appointment";next.textContent=`${t.next}: ${formatDate(customer.next_appointment.appointment_date)} · ${formatTime(customer.next_appointment.start_time)} · ${customer.next_appointment.service_name}`;card.append(next);}
+      card.append(stats);
+      const vehicleSection=document.createElement("div");vehicleSection.className="vehicle-section";const vehicleTitle=document.createElement("span");vehicleTitle.className="mini-label";vehicleTitle.textContent=t.vehicles;vehicleSection.append(vehicleTitle);
+      if(!customer.vehicles.length){const none=document.createElement("p");none.className="muted small";none.textContent=t.vehicleMissing;vehicleSection.append(none);}else{const grid=document.createElement("div");grid.className="vehicle-grid";for(const vehicle of customer.vehicles){const item=document.createElement("div");item.className="vehicle-card";const title=document.createElement("strong");title.textContent=vehicleText(vehicle);const sub=document.createElement("span");sub.textContent=`${vehicle.vin?`VIN ${vehicle.vin} · `:""}${t.lastSeen} ${formatDate(vehicle.last_seen_date)}`;item.append(title,sub);grid.append(item);}vehicleSection.append(grid);}card.append(vehicleSection);
+      const open=document.createElement("button");open.className="open-customer";open.type="button";open.textContent=t.openCustomer;open.addEventListener("click",()=>openCustomer(customer));card.append(open);list.append(card);
     }
   }
 
-  async function initialize() {
-    const session = await fetch("/api/auth/me", { credentials:"same-origin" });
-    if (session.status === 401) return redirectToAuth();
-    if (!session.ok) return showAlert("Unable to verify your secure session.");
-
-    const response = await fetch("/api/repair-shop/customers", { credentials:"same-origin" });
-    if (response.status === 401) return redirectToAuth();
-    const data = await readJson(response);
-    if (!response.ok || !data.success) return showAlert(data.error || "Unable to load customers.");
-    customers = Array.isArray(data.customers) ? data.customers : [];
-    render(customers);
+  function renderCustomerDetail(customer:Customer){
+    $("customers-index")?.classList.add("hidden");$("customer-detail")?.classList.remove("hidden");
+    $("detail-name")!.textContent=customer.name||customer.email;$("detail-contact")!.textContent=`${customer.email}${customer.phone?` · ${customer.phone}`:""}`;$("detail-stage")!.textContent=customerStage(customer);
+    const email=$<HTMLAnchorElement>("detail-email")!;email.href=`mailto:${customer.email}`;email.textContent=customer.email;
+    const phone=$<HTMLAnchorElement>("detail-phone")!;phone.href=`tel:${customer.phone}`;phone.textContent=customer.phone||"Call";
+    $<HTMLAnchorElement>("detail-appointments")!.href=withLocale("/services/hermes-connect/repair-shops/appointments/");
+    const stats=$("detail-stats")!;stats.replaceChildren();appendStat(stats,t.totalBookings,String(customer.total_bookings));appendStat(stats,t.completedVisits,String(customer.completed_visits));appendStat(stats,t.cancelledBookings,String(customer.cancelled_bookings));appendStat(stats,t.lastService,formatDate(customer.last_service_date));
+    const next=$("detail-next")!;if(customer.next_appointment){next.textContent=`${t.next}: ${formatDate(customer.next_appointment.appointment_date)} · ${formatTime(customer.next_appointment.start_time)} · ${customer.next_appointment.service_name}`;next.classList.remove("hidden");}else next.classList.add("hidden");
+    const vehicles=$("detail-vehicles")!;vehicles.replaceChildren();if(!customer.vehicles.length){const p=document.createElement("p");p.className="muted";p.textContent=t.vehicleMissing;vehicles.append(p);}else for(const vehicle of customer.vehicles){const item=document.createElement("div");item.className="detail-vehicle";const strong=document.createElement("strong");strong.textContent=vehicleText(vehicle);const span=document.createElement("span");span.textContent=`${vehicle.vin?`VIN ${vehicle.vin} · `:""}${t.lastSeen} ${formatDate(vehicle.last_seen_date)}`;item.append(strong,span);vehicles.append(item);}
+    const services=$("detail-services")!;services.replaceChildren();if(!customer.services.length){const p=document.createElement("p");p.className="muted";p.textContent=t.servicesMissing;services.append(p);}else for(const service of customer.services){const chip=document.createElement("span");chip.textContent=service;services.append(chip);}
+    renderBookingHistory(customer);
   }
 
-  searchInput?.addEventListener("input", () => render(customers.filter((customer) => matchesSearch(customer, searchInput.value.trim()))));
-  initialize().catch(() => showAlert("Unable to initialize customer history."));
+  function renderBookingHistory(customer:Customer){
+    $("detail-history-loading")?.classList.add("hidden");const list=$("detail-history")!;const empty=$("detail-history-empty")!;const matches=bookings.filter((booking)=>String(booking.client_email||"").trim().toLowerCase()===customer.email.toLowerCase()).sort((a,b)=>`${b.appointment_date}T${b.start_time}`.localeCompare(`${a.appointment_date}T${a.start_time}`));$("detail-booking-count")!.textContent=`${matches.length} ${matches.length===1?t.booking:t.bookings}`;list.replaceChildren();
+    if(!matches.length){list.classList.add("hidden");empty.classList.remove("hidden");return;}empty.classList.add("hidden");list.classList.remove("hidden");
+    for(const booking of matches){const row=document.createElement("article");row.className="history-card";const head=document.createElement("div");head.className="history-head";const title=document.createElement("div");const service=document.createElement("strong");service.textContent=booking.service_name;const date=document.createElement("span");date.textContent=`${formatDate(booking.appointment_date)} · ${formatTime(booking.start_time)}`;title.append(service,date);const status=document.createElement("span");status.className=`status-pill status-${booking.status}`;status.textContent=booking.status.replace("_"," ");head.append(title,status);row.append(head);
+      if(booking.vehicle){const vehicle=document.createElement("div");vehicle.className="history-vehicle";vehicle.textContent=vehicleText(booking.vehicle)+(booking.vehicle.vin?` · VIN ${booking.vehicle.vin}`:"");row.append(vehicle);}
+      const histories=Array.isArray(booking.history)?booking.history:[];const details=document.createElement("details");details.className="status-history";const summary=document.createElement("summary");summary.textContent=t.statusHistory;details.append(summary);if(!histories.length){const p=document.createElement("p");p.textContent=t.noStatusHistory;details.append(p);}else{const ol=document.createElement("ol");for(const event of histories){const li=document.createElement("li");li.textContent=`${event.to_status.replace("_"," ")} · ${formatHistoryTime(event.changed_at)}`;ol.append(li);}details.append(ol);}row.append(details);list.append(row);}
+  }
+
+  function closeDetail(){const url=new URL(window.location.href);url.searchParams.delete("customer");window.history.pushState({},"",`${url.pathname}${url.search}`);$("customer-detail")?.classList.add("hidden");$("customers-index")?.classList.remove("hidden");}
+  $("customer-back")?.addEventListener("click",closeDetail);
+  window.addEventListener("popstate",()=>{const email=(new URLSearchParams(window.location.search).get("customer")||"").toLowerCase();if(!email)return closeDetail();const customer=customers.find((item)=>item.email.toLowerCase()===email||item.id.toLowerCase()===email);if(customer)renderCustomerDetail(customer);});
+
+  async function initialize(){
+    const session=await fetch("/api/auth/me",{credentials:"same-origin"});if(session.status===401)return redirectToAuth();if(!session.ok)return showAlert(t.sessionFailed);
+    const [customerResponse,bookingResponse]=await Promise.all([fetch("/api/repair-shop/customers",{credentials:"same-origin"}),fetch("/api/repair-shop/bookings",{credentials:"same-origin"})]);if(customerResponse.status===401||bookingResponse.status===401)return redirectToAuth();const customerData=await readJson(customerResponse);const bookingData=await readJson(bookingResponse);if(!customerResponse.ok||!customerData.success)return showAlert(customerData.error||t.loadFailed);customers=Array.isArray(customerData.customers)?customerData.customers:[];bookings=bookingResponse.ok&&bookingData.success&&Array.isArray(bookingData.bookings)?bookingData.bookings:[];renderList(customers);
+    if(requestedCustomer){const customer=customers.find((item)=>item.email.toLowerCase()===requestedCustomer||item.id.toLowerCase()===requestedCustomer);if(customer)renderCustomerDetail(customer);else showAlert(t.notFound,$("detail-alert"));}
+  }
+
+  searchInput?.addEventListener("input",()=>renderList(customers.filter((customer)=>matchesSearch(customer,searchInput.value.trim()))));
+  initialize().catch(()=>showAlert(t.loadFailed));
 </script>
 
 <style>
-.customers-page{min-height:100vh;padding:116px 24px 80px;color:#f6f7fb;background:radial-gradient(circle at 12% 8%,rgba(124,92,255,.16),transparent 32%),radial-gradient(circle at 86% 18%,rgba(78,185,250,.1),transparent 30%),#090a0f}.shell{width:min(1000px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a5aab7;text-decoration:none;font-weight:750;margin-bottom:26px}.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:22px}.eyebrow,.mini-label{margin:0 0 8px;color:#9d88ff;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:850}h1{margin:0 0 8px;font-size:clamp(34px,5vw,52px)}.muted{margin:0;color:#a6acb9;line-height:1.55}.small{font-size:12px}.pill{display:inline-flex;padding:7px 10px;border-radius:999px;background:rgba(124,92,255,.13);border:1px solid rgba(157,136,255,.24);color:#d6cfff;font-size:12px;font-weight:800}.panel,.customer-card,.state-card{border:1px solid rgba(255,255,255,.09);background:rgba(17,18,26,.88);border-radius:18px;box-shadow:0 18px 60px rgba(0,0,0,.2)}.search-panel{display:flex;align-items:center;gap:10px;padding:14px 16px;margin-bottom:18px}.search-panel svg{color:#9180ec;flex:none}.search-panel input{width:100%;border:0;outline:0;background:transparent;color:#fff;font:inherit}.search-panel input::placeholder{color:#757c8d}.state-card{padding:20px;color:#a8aebb;display:flex;flex-direction:column;gap:5px}.customer-list{display:grid;gap:14px}.customer-card{padding:20px;min-width:0}.customer-header{display:flex;justify-content:space-between;gap:16px}.customer-header>div{display:flex;min-width:0;flex-direction:column;gap:4px}.contact-grid{display:grid;min-width:0;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:13px 0}.contact-link{display:block;min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word;color:#bfc8ff;text-decoration:none;font-size:13px}.contact-link:hover{text-decoration:underline}.next-appointment{padding:11px 13px;border:1px solid rgba(95,231,164,.17);background:rgba(45,145,100,.09);border-radius:11px;color:#bff3d6;font-size:13px;font-weight:700;margin:10px 0;overflow-wrap:anywhere}.stats{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin:12px 0}.stats>div{min-width:0;padding:12px;border-radius:11px;background:rgba(255,255,255,.025);display:flex;flex-direction:column;gap:5px}.stats span{font-size:11px;color:#868d9d;text-transform:uppercase;letter-spacing:.07em}.stats strong{font-size:13px;color:#e9ebf1;overflow-wrap:anywhere}.vehicle-section{margin-top:15px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07)}.vehicle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.vehicle-card{display:flex;min-width:0;flex-direction:column;gap:5px;padding:12px;border-radius:11px;background:rgba(124,92,255,.06);border:1px solid rgba(124,92,255,.12)}.vehicle-card strong,.vehicle-card span{overflow-wrap:anywhere;word-break:break-word}.vehicle-card strong{font-size:13px}.vehicle-card span{color:#8f96a7;font-size:11px}.alert{padding:13px 15px;border-radius:12px;margin-bottom:18px;background:rgba(177,47,47,.15);border:1px solid rgba(255,100,100,.2);color:#ffc2c2}.hidden{display:none!important}@media(max-width:720px){.customers-page{padding:100px 15px 60px}.hero{display:block}.hero .pill{margin-top:12px}.contact-grid,.stats,.vehicle-grid{grid-template-columns:minmax(0,1fr)}.customer-header{display:block}.customer-header .pill{margin-top:10px}}
+.customers-page{min-height:100vh;padding:24px;color:#172033;background:#f4f6f8}.shell{width:min(1120px,100%);margin:auto}.hero,.detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:20px}.eyebrow,.mini-label{margin:0 0 7px;color:#6b7280;text-transform:uppercase;letter-spacing:.1em;font-size:11px;font-weight:850}.hero h1,.detail-header h1{margin:0 0 7px;font-size:32px;letter-spacing:-.03em}.muted{margin:0;color:#697586;line-height:1.55}.small{font-size:12px}.pill{display:inline-flex;align-items:center;min-height:30px;padding:0 9px;border:1px solid #dfe5ec;border-radius:999px;background:#fff;color:#4d5a6c;font-size:11px;font-weight:800}.panel,.customer-card,.state-card,.detail-panel{border:1px solid #e1e6ed;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(23,32,51,.04)}.search-panel{display:flex;align-items:center;gap:10px;padding:12px 14px;margin-bottom:16px}.search-panel svg{color:#718096;flex:none}.search-panel input{width:100%;min-height:40px;border:0;outline:0;background:transparent;color:#172033;font:inherit}.search-panel input::placeholder{color:#98a1af}.state-card{padding:18px;color:#697586;display:flex;flex-direction:column;gap:5px}.customer-list{display:grid;gap:10px}.customer-card{padding:16px;min-width:0}.customer-header{display:flex;justify-content:space-between;gap:16px}.customer-header>div{display:flex;min-width:0;flex-direction:column;gap:4px}.contact-grid{display:grid;min-width:0;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}.contact-link{display:block;min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:break-word;color:#1d6fc4;text-decoration:none;font-size:13px}.contact-link:hover{text-decoration:underline}.next-appointment{padding:10px 12px;border:1px solid #cbe8d7;background:#eff9f3;border-radius:10px;color:#2f7550;font-size:12px;font-weight:750;margin:9px 0;overflow-wrap:anywhere}.stats,.detail-stats{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin:12px 0}.stats>div,.detail-stats>div{min-width:0;padding:11px;border-radius:10px;background:#f7f9fb;display:flex;flex-direction:column;gap:5px}.stats span,.detail-stats span{font-size:10px;color:#8792a1;text-transform:uppercase;letter-spacing:.07em}.stats strong,.detail-stats strong{font-size:13px;color:#263345;overflow-wrap:anywhere}.vehicle-section{margin-top:14px;padding-top:13px;border-top:1px solid #edf0f4}.vehicle-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.vehicle-card,.detail-vehicle{display:flex;min-width:0;flex-direction:column;gap:5px;padding:11px;border-radius:10px;background:#f6f8fb;border:1px solid #e6ebf1}.vehicle-card strong,.vehicle-card span,.detail-vehicle strong,.detail-vehicle span{overflow-wrap:anywhere;word-break:break-word}.vehicle-card strong,.detail-vehicle strong{font-size:13px}.vehicle-card span,.detail-vehicle span{color:#7c8796;font-size:11px}.open-customer,.back-button,.action-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 12px;border:1px solid #dfe5ec;border-radius:10px;background:#fff;color:#3f4f63;text-decoration:none;font-size:12px;font-weight:800;cursor:pointer}.open-customer{margin-top:13px}.open-customer:hover,.back-button:hover,.action-button:hover{background:#f4f7fa}.back-button{margin-bottom:16px}.detail-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.action-button.primary{border-color:#1e88ff;background:#1e88ff;color:#fff}.detail-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;margin-bottom:12px}.detail-panel{padding:17px;min-width:0}.detail-panel h2{margin:0 0 12px;font-size:18px}.panel-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.detail-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.detail-vehicles{display:grid;gap:8px}.detail-services-panel{margin-bottom:12px}.service-chips{display:flex;gap:7px;flex-wrap:wrap}.service-chips>span{padding:7px 9px;border-radius:999px;background:#edf5ff;color:#245f9b;font-size:11px;font-weight:750}.detail-history{display:grid;gap:8px}.history-card{padding:13px;border:1px solid #e5eaf0;border-radius:11px;background:#fbfcfd}.history-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.history-head>div{display:grid;gap:4px}.history-head strong{font-size:13px}.history-head span{color:#7a8798;font-size:11px}.history-vehicle{margin-top:8px;color:#657386;font-size:12px;overflow-wrap:anywhere}.status-pill{display:inline-flex;align-items:center;min-height:26px;padding:0 8px;border-radius:999px;background:#eef3f8;color:#536174;font-size:10px;font-weight:850}.status-confirmed{background:#eaf3ff;color:#1b66b0}.status-in_progress{background:#fff5d9;color:#8a6100}.status-completed{background:#e9f8ef;color:#267a48}.status-cancelled,.status-canceled{background:#fcebed;color:#9a3c4b}.status-history{margin-top:9px;color:#687587;font-size:11px}.status-history summary{cursor:pointer;font-weight:800}.status-history ol{margin:7px 0 0;padding-left:18px}.alert{padding:12px 14px;border-radius:11px;margin-bottom:16px;background:#fff1f3;border:1px solid #f3c9ce;color:#94384a;font-size:13px}.hidden{display:none!important}
+@media(max-width:760px){.customers-page{padding:16px 12px 48px}.hero,.detail-header{display:block}.hero .pill{margin-top:12px}.contact-grid,.stats,.vehicle-grid,.detail-grid,.detail-stats{grid-template-columns:minmax(0,1fr)}.customer-header{display:block}.customer-header .pill{margin-top:9px}.detail-actions{justify-content:flex-start;margin-top:12px}.action-button{max-width:100%;overflow:hidden;text-overflow:ellipsis}.history-head{display:block}.history-head .status-pill{margin-top:8px}}
 </style>

@@ -29,7 +29,7 @@ test("Repair Shop private workspace reads as a full CRM app instead of the publi
 
   const nav = crm.locator(".repair-crm-nav");
   await expect(nav.getByRole("link", { name: "Today" })).toHaveAttribute("aria-current", "page");
-  await expect(nav.getByRole("link", { name: "Appointments" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/#bookings-title");
+  await expect(nav.getByRole("link", { name: "Appointments" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/appointments/");
   await expect(nav.getByRole("link", { name: "Customers" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/customers/");
   await expect(nav.getByRole("link", { name: "Services" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/#services-title");
   await expect(nav.getByRole("link", { name: "Availability" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/availability/");

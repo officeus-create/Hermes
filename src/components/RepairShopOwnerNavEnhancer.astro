@@ -3,6 +3,7 @@ const repairShopRoot = "/services/hermes-connect/repair-shops";
 const normalizedPath = Astro.url.pathname.replace(/\/+$/, "");
 const ownerPaths = new Set([
   `${repairShopRoot}/dashboard`,
+  `${repairShopRoot}/appointments`,
   `${repairShopRoot}/availability`,
   `${repairShopRoot}/customers`,
 ]);
@@ -29,20 +30,23 @@ const withLocale = (path: string, hash = "") => {
 };
 
 const dashboardHref = withLocale(`${repairShopRoot}/dashboard/`);
+const appointmentsHref = withLocale(`${repairShopRoot}/appointments/`);
 const items = [
   { label:copy.today, href:dashboardHref, active:normalizedPath === `${repairShopRoot}/dashboard`, icon:"home" },
-  { label:copy.appointments, href:withLocale(`${repairShopRoot}/dashboard/`, "#bookings-title"), active:false, icon:"calendar" },
+  { label:copy.appointments, href:appointmentsHref, active:normalizedPath === `${repairShopRoot}/appointments`, icon:"calendar" },
   { label:copy.customers, href:withLocale(`${repairShopRoot}/customers/`), active:normalizedPath === `${repairShopRoot}/customers`, icon:"users" },
   { label:copy.services, href:withLocale(`${repairShopRoot}/dashboard/`, "#services-title"), active:false, icon:"wrench" },
   { label:copy.availability, href:withLocale(`${repairShopRoot}/availability/`), active:normalizedPath === `${repairShopRoot}/availability`, icon:"clock" },
   { label:copy.feedback, href:withLocale(`${repairShopRoot}/dashboard/`, "#feedback-title"), active:false, icon:"message" },
   { label:copy.settings, href:withLocale(`${repairShopRoot}/dashboard/`, "#profile-title"), active:false, icon:"settings" },
 ];
-const pageTitle = normalizedPath === `${repairShopRoot}/customers`
-  ? copy.customers
-  : normalizedPath === `${repairShopRoot}/availability`
-    ? copy.availability
-    : copy.today;
+const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
+  ? copy.appointments
+  : normalizedPath === `${repairShopRoot}/customers`
+    ? copy.customers
+    : normalizedPath === `${repairShopRoot}/availability`
+      ? copy.availability
+      : copy.today;
 const productHubHref = withLocale("/services/hermes-connect/");
 const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 ---
@@ -116,7 +120,13 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     };
     const copy = strings[locale] || strings.en;
     const currentPath = window.location.pathname.replace(/\/+$/, "");
-    const pageKey = currentPath === `${ROOT}/customers` ? "customers" : currentPath === `${ROOT}/availability` ? "availability" : "today";
+    const pageKey = currentPath === `${ROOT}/appointments`
+      ? "appointments"
+      : currentPath === `${ROOT}/customers`
+        ? "customers"
+        : currentPath === `${ROOT}/availability`
+          ? "availability"
+          : "today";
     const navKeys = ["today", "appointments", "customers", "services", "availability", "feedback", "settings"];
 
     const localizeHref = (href) => {
@@ -130,8 +140,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     document.documentElement.classList.add("hc-repair-crm");
     document.body.prepend(root);
 
-    const sidebar = root.querySelector(".repair-crm-sidebar");
-    sidebar?.setAttribute("aria-label", `${copy.workspace} CRM`);
+    root.querySelector(".repair-crm-sidebar")?.setAttribute("aria-label", `${copy.workspace} CRM`);
     root.querySelector(".repair-crm-nav")?.setAttribute("aria-label", `${copy.workspace} navigation`);
     const brand = root.querySelector(".repair-crm-brand");
     if (brand instanceof HTMLAnchorElement) brand.href = localizeHref(`${ROOT}/dashboard/`);
@@ -212,8 +221,8 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 <style is:global>
   html.hc-repair-crm,html.hc-repair-crm body{background:#f4f6f8!important}
   html.hc-repair-crm .site-header,html.hc-repair-crm .hc-product-context,html.hc-repair-crm .hc-language-truth,html.hc-repair-crm .hc-intelligence-core,html.hc-repair-crm .site-footer{display:none!important}
-  html.hc-repair-crm .workspace-page,html.hc-repair-crm .availability-page,html.hc-repair-crm .customers-page{box-sizing:border-box;min-height:100vh;margin-left:248px!important;padding-top:86px!important;background:#f4f6f8!important}
-  html.hc-repair-crm .workspace-page>.shell>.back-link,html.hc-repair-crm .availability-page>.shell>.back-link,html.hc-repair-crm .customers-page>.shell>.back-link{display:none!important}
+  html.hc-repair-crm .workspace-page,html.hc-repair-crm .availability-page,html.hc-repair-crm .customers-page,html.hc-repair-crm .appointments-page{box-sizing:border-box;min-height:100vh;margin-left:248px!important;padding-top:86px!important;background:#f4f6f8!important}
+  html.hc-repair-crm .workspace-page>.shell>.back-link,html.hc-repair-crm .availability-page>.shell>.back-link,html.hc-repair-crm .customers-page>.shell>.back-link,html.hc-repair-crm .appointments-page>.shell>.back-link{display:none!important}
   html.hc-repair-crm .workspace-header .workspace-actions,html.hc-repair-crm .availability-page .page-header>#logout-btn{display:none!important}
 
   .repair-crm-shell{--crm-sidebar:248px;--crm-topbar:70px;position:fixed;inset:0;z-index:1200;pointer-events:none}
@@ -239,7 +248,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
   .repair-crm-account-slot{min-width:0}.repair-crm-account-slot .hc-account-menu{margin:0}.repair-crm-logout{min-height:38px;padding:0 12px;border:1px solid #e3e8ef;border-radius:10px;background:#fff;color:#4f5d70;font-size:12px;font-weight:800;cursor:pointer}.repair-crm-logout:disabled{opacity:.55;cursor:wait}.repair-crm-overlay{display:none}
   .repair-crm-mobile-logout{display:none;width:100%;min-height:44px;margin-top:6px;padding:0 11px;border:0;border-radius:10px;background:transparent;color:#7a3441;text-align:left;font:inherit;font-size:13px;font-weight:780;cursor:pointer}.repair-crm-mobile-logout:hover,.repair-crm-mobile-logout:focus-visible{background:#fff1f3;color:#9f2740}.repair-crm-mobile-logout:disabled{opacity:.55;cursor:wait}
 
-  @media(max-width:980px){.repair-crm-shell{--crm-sidebar:220px}.repair-crm-topbar{padding:0 16px}html.hc-repair-crm .workspace-page,html.hc-repair-crm .availability-page,html.hc-repair-crm .customers-page{margin-left:220px!important}}
-  @media(max-width:760px){.repair-crm-shell{--crm-sidebar:min(84vw,292px);--crm-topbar:64px}.repair-crm-sidebar{transform:translateX(-105%);transition:transform .18s ease;box-shadow:16px 0 50px rgba(22,32,51,.16)}.repair-crm-shell[data-open="true"] .repair-crm-sidebar{transform:translateX(0)}.repair-crm-overlay{position:fixed;inset:0;z-index:1201;display:block;background:rgba(17,24,39,.32);opacity:0;pointer-events:none;transition:opacity .18s ease}.repair-crm-shell[data-open="true"] .repair-crm-overlay{opacity:1;pointer-events:auto}.repair-crm-topbar{left:0;padding:0 10px 0 8px}.repair-crm-menu{display:block}.repair-crm-context small{display:none}.repair-crm-context strong{max-width:120px;overflow:hidden;text-overflow:ellipsis}.repair-crm-topbar-actions{gap:6px}.repair-crm-logout{display:none}.repair-crm-mobile-logout{display:block}.repair-crm-language summary{min-width:38px;padding:0 7px}.repair-crm-account-slot .hc-account-menu summary{max-width:130px}html.hc-repair-crm .workspace-page,html.hc-repair-crm .availability-page,html.hc-repair-crm .customers-page{margin-left:0!important;padding-top:76px!important}}
+  @media(max-width:980px){.repair-crm-shell{--crm-sidebar:220px}.repair-crm-topbar{padding:0 16px}html.hc-repair-crm .workspace-page,html.hc-repair-crm .availability-page,html.hc-repair-crm .customers-page,html.hc-repair-crm .appointments-page{margin-left:220px!important}}
+  @media(max-width:760px){.repair-crm-shell{--crm-sidebar:min(84vw,292px);--crm-topbar:64px}.repair-crm-sidebar{transform:translateX(-105%);transition:transform .18s ease;box-shadow:16px 0 50px rgba(22,32,51,.16)}.repair-crm-shell[data-open="true"] .repair-crm-sidebar{transform:translateX(0)}.repair-crm-overlay{position:fixed;inset:0;z-index:1201;display:block;background:rgba(17,24,39,.32);opacity:0;pointer-events:none;transition:opacity .18s ease}.repair-crm-shell[data-open="true"] .repair-crm-overlay{opacity:1;pointer-events:auto}.repair-crm-topbar{left:0;padding:0 10px 0 8px}.repair-crm-menu{display:block}.repair-crm-context small{display:none}.repair-crm-context strong{max-width:120px;overflow:hidden;text-overflow:ellipsis}.repair-crm-topbar-actions{gap:6px}.repair-crm-logout{display:none}.repair-crm-mobile-logout{display:block}.repair-crm-language summary{min-width:38px;padding:0 7px}.repair-crm-account-slot .hc-account-menu summary{max-width:130px}html.hc-repair-crm .workspace-page,html.hc-repair-crm .availability-page,html.hc-repair-crm .customers-page,html.hc-repair-crm .appointments-page{margin-left:0!important;padding-top:76px!important}}
   @media(prefers-reduced-motion:reduce){.repair-crm-sidebar,.repair-crm-overlay{transition:none}}
 </style>
