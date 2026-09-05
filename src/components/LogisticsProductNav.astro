@@ -1,5 +1,6 @@
 ---
-import { ArrowUpRight, BriefcaseBusiness, Building2, FileSignature, Route, Truck, UsersRound } from "@lucide/astro";
+import { ArrowUpRight, BriefcaseBusiness, Building2, FileSignature, Route, Truck, UsersRound, Workflow } from "@lucide/astro";
+import "../data/public-paths";
 
 interface Props {
   theme?: "light" | "dark";
@@ -9,13 +10,13 @@ interface Props {
 const { theme = "light", active } = Astro.props;
 
 const items = [
-  { id: "load-board", label: "Load Board", href: "/load-board/live-pilot/", icon: Route },
+  { id: "load-board", label: "Load Board", href: "/load-board/", icon: Route },
   { id: "carriers", label: "Carriers & Fleets", href: "/paths/logistics/carriers/fleet-owners/", icon: Truck },
   { id: "agreement", label: "Agreement", href: "/carrier/", icon: FileSignature },
   { id: "owner-operators", label: "Owner-Operators", href: "/paths/logistics/carriers/owner-operators/", icon: UsersRound },
   { id: "brokers", label: "Brokers", href: "/paths/logistics/brokers/carrier-capacity/", icon: BriefcaseBusiness },
   { id: "shippers-dealers", label: "Shippers & Dealers", href: "/paths/logistics/customers/vehicle-transport/", icon: Building2 },
-  { id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Truck },
+  { id: "operations", label: "Dispatch & Back Office", href: "/logistics/car-hauling-dispatch/", icon: Workflow },
   { id: "path", label: "Find Your Path", href: "/paths/logistics/find-your-path/", icon: ArrowUpRight },
 ] as const;
 ---
