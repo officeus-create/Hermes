@@ -11,6 +11,7 @@ import {
 
 const stream = (value) => new Blob([value]).stream();
 const now = "2026-09-04T14:00:00.000Z";
+const bridgeDate = new Date().toUTCString();
 
 assert.equal(typeof bridgeEntry.fetch, "function");
 assert.equal(typeof bridgeEntry.email, "function");
@@ -111,7 +112,7 @@ const rawEmail = [
   "To: loads@hermeslogisticsus.com",
   "Subject: Dry Van load Chicago to Atlanta",
   "Message-ID: <load-bridge-001@example.com>",
-  "Date: Fri, 04 Sep 2026 14:00:00 GMT",
+  `Date: ${bridgeDate}`,
   "Content-Type: text/plain; charset=utf-8",
   "",
   "LOAD OFFER",
@@ -138,7 +139,7 @@ await handleLoadBoardInboundEmail({
     From: "Broker Example <broker@example.com>",
     Subject: "Dry Van load Chicago to Atlanta",
     "Message-ID": "<load-bridge-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: bridgeDate,
   }),
   raw: stream(rawEmail),
 }, {
@@ -180,7 +181,7 @@ await handleLoadBoardInboundEmail({
     From: "Public Broker <publicbroker@example.com>",
     Subject: "Flatbed load",
     "Message-ID": "<public-001@example.com>",
-    Date: "Fri, 04 Sep 2026 14:00:00 GMT",
+    Date: bridgeDate,
   }),
   raw: stream(rawEmail.replace(/broker@example\.com/g, "publicbroker@example.com")),
 }, {
