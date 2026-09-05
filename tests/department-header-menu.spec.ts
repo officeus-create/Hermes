@@ -80,3 +80,21 @@ test("mobile hamburger exposes the same departments as ordered accordions", asyn
   expect(yPositions[2]).toBeLessThan(yPositions[3]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
+
+test("mobile first-visit consent starts below the department subnav", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => window.localStorage.removeItem("hermes-analytics-consent"));
+  await page.goto("/paths/logistics/");
+
+  const subnav = page.locator('[data-direction-product-nav="logistics"]');
+  const consent = page.locator("[data-consent-banner]");
+  await expect(subnav).toBeVisible();
+  await expect(consent).toBeVisible();
+
+  const subnavBox = await subnav.boundingBox();
+  const consentBox = await consent.boundingBox();
+  expect(subnavBox).not.toBeNull();
+  expect(consentBox).not.toBeNull();
+  expect(consentBox!.y).toBeGreaterThanOrEqual(subnavBox!.y + subnavBox!.height - 1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
