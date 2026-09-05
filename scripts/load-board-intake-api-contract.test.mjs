@@ -17,12 +17,11 @@ assert.doesNotMatch(schema, /password_hash|password_salt|refresh_token|access_to
 assert.match(intake, /HERMES_LOADBOARD_INGEST_TOKEN/);
 assert.match(intake, /Authorization/);
 assert.match(intake, /send_enabled = 0/);
-assert.match(intake, /car_hauling_ingest_allowed = 0/);
+assert.match(intake, /car_hauling_ingest_allowed = 1/);
 assert.match(intake, /car_hauling_outreach_hold = 1/);
-assert.match(intake, /CAR_HAULING_EQUIPMENT/);
-assert.match(intake, /isCarHaulingEquipment\(equipment\)/);
-assert.match(intake, /reason: "car_hauling_hold"/);
-assert.match(intake, /car_hauling_ingest_allowed: false/);
+assert.doesNotMatch(intake, /reason: "car_hauling_hold"/);
+assert.match(intake, /car_hauling_ingest_allowed: true/);
+assert.match(intake, /car_hauling_broker_outreach_hold: true/);
 assert.match(intake, /ON CONFLICT\(source_id, source_message_id, fingerprint\)/);
 assert.match(intake, /INSERT INTO hermes_load_quarantine/);
 assert.match(intake, /quarantined/);
@@ -43,6 +42,7 @@ for (const equipment of [
   "hotshot",
   "box_truck",
   "sprinter_van",
+  "car_hauler",
 ]) {
   assert.match(active, new RegExp(`"${equipment}"`));
 }
@@ -51,5 +51,5 @@ assert.match(active, /X-Robots-Tag/);
 assert.doesNotMatch(active, /source_message_id|raw_evidence_ref|mailbox_email|credential_ref/);
 assert.doesNotMatch(active, /hermes_load_quarantine/);
 
-console.log("load-board-intake-api-contract: general-freight intake, quarantine, complete equipment projection, Car Hauling HOLD, visibility and safe projection verified");
+console.log("load-board-intake-api-contract: general-freight intake, quarantine, complete equipment projection, Car Hauling ingestion allowed with broker outreach HOLD, visibility and safe projection verified");
 await import("./load-board-email-bridge-contract.test.mjs");

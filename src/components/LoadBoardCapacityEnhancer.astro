@@ -1,0 +1,216 @@
+---
+const isLoadBoardPilot = Astro.url.pathname === "/load-board/live-pilot/";
+
+const approvedSeedCapacity = [
+  {
+    id: "hegelmann-2026-09-04-reefer-farr-west-chicago",
+    equipment: "Reefer",
+    equipmentKey: "reefer",
+    origin: "Farr West, UT",
+    destination: "Chicago, IL",
+    ready: "Ready 12 PM",
+    source: "Hegelmann USA",
+    contact: "Esarkauskas@hegelmann.us · 217-893-5294",
+    observedAt: "2026-09-04T14:09:00Z",
+    expiresAt: "2026-09-05T04:59:59Z",
+  },
+  {
+    id: "hegelmann-2026-09-04-dry-van-williamsburg",
+    equipment: "Dry Van",
+    equipmentKey: "dry_van",
+    origin: "Williamsburg, VA",
+    destination: "Open destination",
+    ready: "Sunday · ready 4 PM",
+    source: "Hegelmann USA",
+    contact: "Felix@hegelmann.us · 217-636-3678",
+    observedAt: "2026-09-04T14:09:00Z",
+    expiresAt: "2026-09-07T04:59:59Z",
+  },
+  {
+    id: "hegelmann-2026-09-04-dry-van-langhorne",
+    equipment: "Dry Van",
+    equipmentKey: "dry_van",
+    origin: "Langhorne, PA",
+    destination: "Open destination",
+    ready: "Ready 12 PM",
+    source: "Hegelmann USA",
+    contact: "Eddy@hegelmann.us · 331-258-2655",
+    observedAt: "2026-09-04T14:09:00Z",
+    expiresAt: "2026-09-05T04:59:59Z",
+  },
+  {
+    id: "hegelmann-2026-09-04-dry-van-dundalk",
+    equipment: "Dry Van",
+    equipmentKey: "dry_van",
+    origin: "Dundalk, MD",
+    destination: "Open destination",
+    ready: "Ready 12 PM",
+    source: "Hegelmann USA",
+    contact: "Eddy@hegelmann.us · 331-258-2655",
+    observedAt: "2026-09-04T14:09:00Z",
+    expiresAt: "2026-09-05T04:59:59Z",
+  },
+];
+---
+
+{isLoadBoardPilot && (
+  <section class="hlb-capacity-enhancer" id="available-trucks" aria-labelledby="available-trucks-title" data-hlb-capacity-enhancer>
+    <div class="shell">
+      <div class="hlb-capacity-head">
+        <div>
+          <p class="eyebrow">Approved live capacity</p>
+          <h2 id="available-trucks-title">Available trucks from email feeds.</h2>
+          <p>Fresh carrier capacity is separated from freight loads so the marketplace stays truthful. Expired availability disappears automatically.</p>
+        </div>
+        <div class="hlb-capacity-stat" aria-label="Available truck count">
+          <strong data-capacity-count>{approvedSeedCapacity.length}</strong>
+          <span>available trucks</span>
+          <small>Hegelmann USA · approved pilot source</small>
+        </div>
+      </div>
+
+      <div class="hlb-capacity-table" role="table" aria-label="Available carrier capacity">
+        <div class="hlb-capacity-table__header" role="row">
+          <span>Equipment</span><span>Current location</span><span>Preferred lane</span><span>Ready</span><span>Source</span><span>Contact</span>
+        </div>
+        <div data-capacity-rows>
+          {approvedSeedCapacity.map((record) => (
+            <article
+              class="hlb-capacity-row"
+              role="row"
+              data-capacity-row
+              data-record-id={record.id}
+              data-expires-at={record.expiresAt}
+              data-equipment={record.equipmentKey}
+              data-origin={record.origin.toLowerCase()}
+            >
+              <strong>{record.equipment}</strong>
+              <strong>{record.origin}</strong>
+              <span>{record.destination}</span>
+              <span>{record.ready}</span>
+              <span><strong>{record.source}</strong><small>Updated Sep 4</small></span>
+              <span class="hlb-capacity-contact">{record.contact}</span>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div class="hlb-capacity-note">
+        <strong>Source boundary:</strong>
+        <span>This section shows capacity, not broker freight. Hegelmann confirmed the same daily email format can be used for the pilot and that dispatcher contact information may be public. Other source contacts remain hidden unless that source grants permission.</span>
+      </div>
+    </div>
+
+    <script type="application/json" data-capacity-seed set:html={JSON.stringify(approvedSeedCapacity)}></script>
+  </section>
+)}
+
+{isLoadBoardPilot && (
+  <script is:inline>
+    (() => {
+      const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+      const root = document.querySelector("[data-hlb-capacity-enhancer]");
+      if (!(root instanceof HTMLElement)) return;
+
+      const moveIntoMarketplace = () => {
+        const equipmentSection = document.querySelector(".hlb-equipment-section");
+        if (equipmentSection?.parentElement && root.parentElement !== equipmentSection.parentElement) {
+          equipmentSection.parentElement.insertBefore(root, equipmentSection);
+        } else if (equipmentSection?.parentElement) {
+          equipmentSection.parentElement.insertBefore(root, equipmentSection);
+        }
+
+        const controls = document.querySelector(".hlb-view-controls");
+        if (controls && !controls.querySelector("[data-capacity-jump]")) {
+          const link = document.createElement("a");
+          link.href = "#available-trucks";
+          link.dataset.capacityJump = "true";
+          link.textContent = "Available trucks";
+          controls.append(link);
+        }
+
+        const toolRow = document.querySelector(".hlb-tool-row");
+        if (toolRow && !toolRow.querySelector("[data-capacity-status-link]")) {
+          const link = document.createElement("a");
+          link.href = "#available-trucks";
+          link.dataset.capacityStatusLink = "true";
+          link.textContent = "Live truck capacity";
+          toolRow.insertBefore(link, toolRow.lastElementChild);
+        }
+      };
+
+      const relativeAge = (iso) => {
+        const minutes = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+        if (minutes < 2) return "now";
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.round(minutes / 60);
+        if (hours < 48) return `${hours}h ago`;
+        return `${Math.round(hours / 24)}d ago`;
+      };
+
+      const normalizeApiRecord = (record) => ({
+        id: record.id,
+        equipment: ({ dry_van: "Dry Van", reefer: "Reefer", flatbed: "Flatbed", step_deck: "Step Deck", power_only: "Power Only", hotshot: "Hotshot", box_truck: "Box Truck", sprinter_van: "Sprinter Van", car_hauler: "Car Hauler", other: "Other" }[record.equipment] || String(record.equipment || "Other").replaceAll("_", " ")),
+        equipmentKey: record.equipment || "other",
+        origin: record.origin,
+        destination: record.destination || "Open destination",
+        ready: record.pickupWindow || record.availability || "Current",
+        source: record.source || "Approved source",
+        contact: "Hermes verified access",
+        observedAt: record.observedAt,
+        expiresAt: record.expiresAt,
+      });
+
+      const seedElement = root.querySelector("[data-capacity-seed]");
+      let seed = [];
+      try { seed = JSON.parse(seedElement?.textContent || "[]"); } catch {}
+
+      const render = (records) => {
+        const now = Date.now();
+        const active = records
+          .filter((record) => record?.id && record?.origin && record?.expiresAt && new Date(record.expiresAt).getTime() > now)
+          .sort((a, b) => new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime());
+        const rows = root.querySelector("[data-capacity-rows]");
+        if (!(rows instanceof HTMLElement)) return;
+        rows.innerHTML = active.map((record) => `<article class="hlb-capacity-row" role="row" data-capacity-row data-record-id="${escapeHtml(record.id)}" data-expires-at="${escapeHtml(record.expiresAt)}" data-equipment="${escapeHtml(record.equipmentKey)}" data-origin="${escapeHtml(String(record.origin).toLowerCase())}">
+          <strong>${escapeHtml(record.equipment)}</strong>
+          <strong>${escapeHtml(record.origin)}</strong>
+          <span>${escapeHtml(record.destination || "Open destination")}</span>
+          <span>${escapeHtml(record.ready || "Current")}</span>
+          <span><strong>${escapeHtml(record.source)}</strong><small>${escapeHtml(relativeAge(record.observedAt))}</small></span>
+          <span class="hlb-capacity-contact">${escapeHtml(record.contact || "Hermes verified access")}</span>
+        </article>`).join("");
+        const count = root.querySelector("[data-capacity-count]");
+        if (count) count.textContent = String(active.length);
+        root.toggleAttribute("data-empty", active.length === 0);
+      };
+
+      const refreshCapacity = async () => {
+        let records = [...seed];
+        try {
+          const response = await fetch("/api/load-board/active?type=capacity", { headers: { Accept: "application/json" }, cache: "no-store" });
+          if (response.ok) {
+            const payload = await response.json();
+            const apiRecords = Array.isArray(payload.records) ? payload.records.map(normalizeApiRecord) : [];
+            const merged = new Map(records.map((record) => [record.id, record]));
+            apiRecords.forEach((record) => merged.set(record.id, record));
+            records = [...merged.values()];
+          }
+        } catch {}
+        render(records);
+      };
+
+      moveIntoMarketplace();
+      void refreshCapacity();
+      window.setInterval(() => {
+        if (document.visibilityState === "visible") void refreshCapacity();
+      }, 30_000);
+    })();
+  </script>
+)}
+
+{isLoadBoardPilot && (
+  <style>
+    .hlb-capacity-enhancer{padding:68px 0;background:#0c1537;color:#fff}.hlb-capacity-enhancer .shell{width:min(1220px,calc(100% - 40px));margin:0 auto}.hlb-capacity-head{display:flex;align-items:end;justify-content:space-between;gap:2rem;margin-bottom:1.4rem}.hlb-capacity-head h2{max-width:19ch;margin:.35rem 0 .65rem;font-size:clamp(2rem,4vw,3.65rem);line-height:1}.hlb-capacity-head p:not(.eyebrow){max-width:720px;margin:0;color:#aeb9d4;line-height:1.65}.hlb-capacity-stat{min-width:190px;padding:1rem 1.1rem;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.05);display:grid}.hlb-capacity-stat strong{font-size:2rem}.hlb-capacity-stat span{font-size:.72rem;font-weight:850;text-transform:uppercase;letter-spacing:.06em}.hlb-capacity-stat small{margin-top:.35rem;color:#9da9c7;font-size:.65rem}.hlb-capacity-table{overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:#121d45}.hlb-capacity-table__header,.hlb-capacity-row{display:grid;grid-template-columns:105px 1fr 1fr .9fr .95fr 1.25fr;gap:.7rem;align-items:center}.hlb-capacity-table__header{padding:.7rem 1rem;background:rgba(255,255,255,.055);color:#8fa0c6;font-size:.6rem;font-weight:850;text-transform:uppercase;letter-spacing:.06em}.hlb-capacity-row{min-height:70px;padding:.85rem 1rem;border-top:1px solid rgba(255,255,255,.075);font-size:.72rem}.hlb-capacity-row>strong:first-child{color:#a996ff}.hlb-capacity-row span{color:#d2d9ec}.hlb-capacity-row span>strong{display:block;color:#fff}.hlb-capacity-row small{display:block;margin-top:.16rem;color:#8290b2}.hlb-capacity-contact{font-size:.68rem;overflow-wrap:anywhere}.hlb-capacity-note{display:flex;gap:.45rem;margin-top:1rem;padding:.9rem 1rem;border:1px solid rgba(89,213,157,.2);border-radius:12px;background:rgba(89,213,157,.06);color:#bac6df;font-size:.72rem;line-height:1.5}.hlb-capacity-note strong{flex:none;color:#71ddb1}.hlb-view-controls a{display:flex;align-items:center;padding:.52rem .68rem;border-radius:8px;color:#65708a;text-decoration:none;font-size:.72rem;font-weight:800}.hlb-capacity-enhancer[data-empty] .hlb-capacity-table::after{content:"No approved capacity is active right now. The next source update will appear here automatically.";display:block;padding:1.2rem;color:#9da9c7;font-size:.75rem}@media(max-width:900px){.hlb-capacity-head{align-items:start;flex-direction:column}.hlb-capacity-stat{width:100%}.hlb-capacity-table{overflow-x:auto}.hlb-capacity-table__header,.hlb-capacity-row{min-width:860px}}@media(max-width:560px){.hlb-capacity-enhancer{padding:52px 0}.hlb-capacity-enhancer .shell{width:min(100% - 24px,1220px)}.hlb-capacity-note{display:grid}}
+  </style>
+)}
