@@ -1,109 +1,75 @@
----
-const departments = [
-  {
-    id: "logistics",
-    label: "Logistics",
-    href: "/paths/logistics/",
-    accent: "#5634c8",
-    items: [
-      ["Load Board", "/load-board/"],
-      ["Carriers & Fleets", "/paths/logistics/carriers/fleet-owners/"],
-      ["Agreement & onboarding", "/carrier/"],
-      ["Owner-Operators", "/paths/logistics/carriers/owner-operators/"],
-      ["Brokers", "/paths/logistics/brokers/carrier-capacity/"],
-      ["Shippers & Dealers", "/paths/logistics/customers/vehicle-transport/"],
-      ["Dispatch & Back Office", "/logistics/car-hauling-dispatch/"],
-      ["Carrier Resources", "/logistics/resources/"],
-    ],
-  },
-  {
-    id: "marketing",
-    label: "Marketing",
-    href: "/paths/marketing/",
-    accent: "#c51b72",
-    items: [
-      ["Growth System", "/business-growth/"],
-      ["Websites", "/gb/london/website-development/"],
-      ["SEO & GEO", "/gb/london/seo-services/"],
-      ["Social Media", "/gb/london/social-media-management/"],
-      ["Meta Ads", "/gb/london/meta-ads/"],
-      ["London", "/gb/london/"],
-      ["Learn Marketing", "/academy/marketing/"],
-    ],
-  },
-  {
-    id: "technology",
-    label: "IT",
-    href: "/paths/technology/",
-    accent: "#087f82",
-    items: [
-      ["Hermes Connect", "/services/hermes-connect/"],
-      ["Load Board", "/load-board/"],
-      ["Web Development", "/gb/london/website-development/"],
-      ["Capabilities", "/paths/technology/#service-groups-title"],
-      ["Project Brief", "/paths/technology/#project-brief"],
-      ["IT Development", "/case/it-development/"],
-      ["Learn IT & AI", "/paths/academy/#academy-it"],
-    ],
-  },
-  {
-    id: "academy",
-    label: "Academy",
-    href: "/paths/academy/",
-    accent: "#a56b00",
-    items: [
-      ["Logistics", "/academy/us-logistics-operations/"],
-      ["Marketing", "/academy/marketing/"],
-      ["IT & AI", "/paths/academy/#academy-it"],
-      ["Sales", "/paths/academy/#academy-sales"],
-      ["COO / Operations", "/paths/academy/#academy-operations"],
-      ["How Training Works", "/academy/how-training-works/"],
-      ["Apply", "/academy/apply/"],
-    ],
-  },
-] as const;
----
-
-<div data-department-menu-source hidden>
-  {departments.map((department) => (
-    <template
-      data-department-template={department.id}
-      data-label={department.label}
-      data-href={department.href}
-      data-accent={department.accent}
-    >
-      <div class="department-menu-panel__heading">
-        <strong>{department.label}</strong>
-        <a href={department.href}>Open department</a>
-      </div>
-      <div class="department-menu-panel__grid">
-        {department.items.map(([label, href]) => <a href={href}>{label}</a>)}
-      </div>
-    </template>
-  ))}
-</div>
-
 <script>
   const departmentOrder = ["logistics", "marketing", "technology", "academy"] as const;
   type DepartmentId = (typeof departmentOrder)[number];
 
-  const departmentPath: Record<DepartmentId, string> = {
-    logistics: "/paths/logistics/",
-    marketing: "/paths/marketing/",
-    technology: "/paths/technology/",
-    academy: "/paths/academy/",
-  };
+  const departments = {
+    logistics: {
+      label: "Logistics",
+      href: "/paths/logistics/",
+      accent: "#5634c8",
+      items: [
+        ["Load Board", "/load-board/"],
+        ["Carriers & Fleets", "/paths/logistics/carriers/fleet-owners/"],
+        ["Agreement & onboarding", "/carrier/"],
+        ["Owner-Operators", "/paths/logistics/carriers/owner-operators/"],
+        ["Brokers", "/paths/logistics/brokers/carrier-capacity/"],
+        ["Shippers & Dealers", "/paths/logistics/customers/vehicle-transport/"],
+        ["Dispatch & Back Office", "/logistics/car-hauling-dispatch/"],
+        ["Carrier Resources", "/logistics/resources/"],
+      ],
+    },
+    marketing: {
+      label: "Marketing",
+      href: "/paths/marketing/",
+      accent: "#c51b72",
+      items: [
+        ["Growth System", "/business-growth/"],
+        ["Websites", "/gb/london/website-development/"],
+        ["SEO & GEO", "/gb/london/seo-services/"],
+        ["Social Media", "/gb/london/social-media-management/"],
+        ["Meta Ads", "/gb/london/meta-ads/"],
+        ["London", "/gb/london/"],
+        ["Learn Marketing", "/academy/marketing/"],
+      ],
+    },
+    technology: {
+      label: "IT",
+      href: "/paths/technology/",
+      accent: "#087f82",
+      items: [
+        ["Hermes Connect", "/services/hermes-connect/"],
+        ["Load Board", "/load-board/"],
+        ["Web Development", "/gb/london/website-development/"],
+        ["Capabilities", "/paths/technology/#service-groups-title"],
+        ["Project Brief", "/paths/technology/#project-brief"],
+        ["IT Development", "/case/it-development/"],
+        ["Learn IT & AI", "/paths/academy/#academy-it"],
+      ],
+    },
+    academy: {
+      label: "Academy",
+      href: "/paths/academy/",
+      accent: "#a56b00",
+      items: [
+        ["Logistics", "/academy/us-logistics-operations/"],
+        ["Marketing", "/academy/marketing/"],
+        ["IT & AI", "/paths/academy/#academy-it"],
+        ["Sales", "/paths/academy/#academy-sales"],
+        ["COO / Operations", "/paths/academy/#academy-operations"],
+        ["How Training Works", "/academy/how-training-works/"],
+        ["Apply", "/academy/apply/"],
+      ],
+    },
+  } as const;
 
   const identifyDepartment = (href: string | null): DepartmentId | null => {
     if (!href) return null;
     for (const id of departmentOrder) {
-      if (href === departmentPath[id] || href.endsWith(`#${id}`)) return id;
+      const config = departments[id];
+      if (href === config.href || href.endsWith(`#${id}`)) return id;
     }
     return null;
   };
-
-  const getTemplate = (id: DepartmentId) =>
-    document.querySelector<HTMLTemplateElement>(`[data-department-template="${id}"]`);
 
   const closeDesktopMenus = (except?: HTMLElement) => {
     document.querySelectorAll<HTMLElement>("[data-department-menu]").forEach((menu) => {
@@ -111,6 +77,33 @@ const departments = [
       menu.removeAttribute("data-open");
       menu.querySelector<HTMLElement>("[data-department-toggle]")?.setAttribute("aria-expanded", "false");
     });
+  };
+
+  const makeLink = (label: string, href: string) => {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = label;
+    return link;
+  };
+
+  const makeDesktopPanel = (id: DepartmentId) => {
+    const config = departments[id];
+    const panel = document.createElement("div");
+    panel.className = "department-menu-panel";
+    panel.dataset.departmentPanel = id;
+
+    const heading = document.createElement("div");
+    heading.className = "department-menu-panel__heading";
+    const strong = document.createElement("strong");
+    strong.textContent = config.label;
+    const overview = makeLink("Open department", config.href);
+    heading.append(strong, overview);
+
+    const grid = document.createElement("div");
+    grid.className = "department-menu-panel__grid";
+    config.items.forEach(([label, href]) => grid.append(makeLink(label, href)));
+    panel.append(heading, grid);
+    return panel;
   };
 
   const enhanceDesktop = (header: HTMLElement) => {
@@ -131,13 +124,13 @@ const departments = [
 
     for (const id of departmentOrder) {
       const anchor = anchorsById.get(id);
-      const template = getTemplate(id);
-      if (!anchor || !template) continue;
+      if (!anchor) continue;
+      const config = departments[id];
 
       const wrapper = document.createElement("div");
       wrapper.className = "department-menu";
       wrapper.dataset.departmentMenu = id;
-      wrapper.style.setProperty("--department-accent", template.dataset.accent || "#5634c8");
+      wrapper.style.setProperty("--department-accent", config.accent);
 
       const primary = anchor.cloneNode(true) as HTMLAnchorElement;
       primary.classList.add("department-menu__primary");
@@ -147,14 +140,10 @@ const departments = [
       toggle.className = "department-menu__toggle";
       toggle.dataset.departmentToggle = id;
       toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-label", `Open ${template.dataset.label || id} menu`);
+      toggle.setAttribute("aria-label", `Open ${config.label} menu`);
       toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
 
-      const panel = document.createElement("div");
-      panel.className = "department-menu-panel";
-      panel.dataset.departmentPanel = id;
-      panel.append(template.content.cloneNode(true));
-
+      const panel = makeDesktopPanel(id);
       const setOpen = (open: boolean) => {
         if (open) {
           closeDesktopMenus(wrapper);
@@ -204,30 +193,23 @@ const departments = [
 
     for (const id of departmentOrder) {
       const anchor = anchorsById.get(id);
-      const template = getTemplate(id);
-      if (!anchor || !template) continue;
+      if (!anchor) continue;
+      const config = departments[id];
 
       const details = document.createElement("details");
       details.className = "mobile-department-menu";
       details.dataset.mobileDepartmentMenu = id;
-      details.style.setProperty("--department-accent", template.dataset.accent || "#5634c8");
+      details.style.setProperty("--department-accent", config.accent);
 
       const summary = document.createElement("summary");
-      summary.textContent = anchor.textContent?.trim() || template.dataset.label || id;
+      summary.textContent = anchor.textContent?.trim() || config.label;
 
       const body = document.createElement("div");
       body.className = "mobile-department-menu__body";
-
-      const overview = document.createElement("a");
-      overview.href = template.dataset.href || anchor.href;
-      overview.textContent = `${anchor.textContent?.trim() || template.dataset.label || id} overview`;
+      const overview = makeLink(`${anchor.textContent?.trim() || config.label} overview`, config.href);
       overview.className = "mobile-department-menu__overview";
       body.append(overview);
-
-      const fragment = template.content.cloneNode(true) as DocumentFragment;
-      fragment.querySelectorAll<HTMLAnchorElement>(".department-menu-panel__grid a").forEach((link) => {
-        body.append(link.cloneNode(true));
-      });
+      config.items.forEach(([label, href]) => body.append(makeLink(label, href)));
 
       details.append(summary, body);
       nav.insertBefore(details, marker);
