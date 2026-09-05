@@ -53,7 +53,7 @@ test.describe("Hermes Connect Repair Shop customer CRM browser contract", () => 
 
     await page.goto(customersUrl);
 
-    await expect(page.locator("h1")).toHaveText("Customers");
+    await expect(page.getByRole("heading", { name: "Customers", exact: true })).toBeVisible();
     await expect(page.locator("#customer-count")).toHaveText("1 customer");
     await expect(page.getByText("Jane Driver")).toBeVisible();
     await expect(page.getByText("jane@example.com")).toBeVisible();
