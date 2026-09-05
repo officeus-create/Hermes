@@ -71,15 +71,22 @@ test("authenticated Repair Shop owner enters the CRM directly with locale preser
   await expect(page).toHaveURL(/\/services\/hermes-connect\/repair-shops\/dashboard\/\?lang=es$/);
 });
 
-test("Hermes Connect product family navigation presents Repair Shops as the current product", async ({ page }) => {
+test("Hermes Connect product family navigation presents current products first and Repair Shops as active", async ({ page }) => {
   await page.goto("/services/hermes-connect/repair-shops/");
 
   const context = page.locator("[data-hc-product-context]");
   await expect(context).toContainText("CURRENT PRODUCT");
   await expect(context).not.toContainText("CURRENT LIVE PILOT");
-  await expect(context.getByRole("link", { name: "Product Hub" })).toHaveAttribute("href", "/services/hermes-connect/");
-  await expect(context.getByRole("link", { name: "Repair Shops" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
-  await expect(context.getByRole("link", { name: "AI Command Center" })).toHaveCount(0);
+  const links = context.locator(".hc-family-nav > a");
+  await expect(links).toHaveCount(5);
+  await expect(links.nth(0)).toHaveText("Product Hub");
+  await expect(links.nth(0)).toHaveAttribute("href", "/services/hermes-connect/");
+  await expect(links.nth(1)).toHaveText("Repair Shops");
+  await expect(links.nth(1)).toHaveAttribute("href", "/services/hermes-connect/repair-shops/");
+  await expect(links.nth(1)).toHaveAttribute("aria-current", "page");
+  await expect(links.nth(2)).toHaveText("Load Board");
+  await expect(links.nth(3)).toHaveText("AI Command Center");
+  await expect(links.nth(4)).toHaveText("Academy");
   await expect(page.locator(".repair-pilot-page .hero-header-nav")).toHaveCount(0);
 });
 
