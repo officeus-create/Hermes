@@ -4,14 +4,19 @@ import { resolve } from "node:path";
 
 const source = async (path: string) => readFile(resolve(process.cwd(), path), "utf8");
 
-test("Load Board stays visible from Logistics and Technology direction entries", async () => {
+test("canonical Load Board stays visible from Logistics and Technology direction entries", async () => {
   const page = await source("src/pages/paths/[slug].astro");
   const nav = await source("src/components/DirectionProductNav.astro");
+  const legacyNav = await source("src/components/LogisticsProductNav.astro");
+  const spotlight = await source("src/components/LoadBoardProductSpotlight.astro");
 
   expect(page).toContain('<DirectionProductNav direction={path.id as "logistics" | "marketing" | "technology" | "academy"} theme="light" />');
   expect(nav).toContain('logistics: {');
   expect(nav).toContain('technology: {');
-  expect(nav.match(/label: "Load Board", href: "\/load-board\/live-pilot\/"/g)?.length).toBeGreaterThanOrEqual(2);
+  expect(nav.match(/label: "Load Board", href: "\/load-board\/"/g)?.length).toBeGreaterThanOrEqual(2);
+  expect(nav).not.toContain('label: "Load Board", href: "/load-board/live-pilot/"');
+  expect(legacyNav).toContain('{ id: "load-board", label: "Load Board", href: "/load-board/", icon: Route }');
+  expect(spotlight).toContain('href="/load-board/">Open Hermes Load Board');
 });
 
 test("carrier agreement and legacy operating tools are discoverable inside Logistics", async () => {
@@ -53,6 +58,27 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
   expect(carrierEntry).toContain("signed review copy");
   expect(carrierEntry).not.toContain("downloadable execution copy");
   expect(carrierEntry).toContain("Final production execution is not activated");
+});
+
+test("canonical Load Board source is wired to separate live load and capacity APIs", async () => {
+  const layout = await source("src/layouts/BaseLayout.astro");
+  const live = await source("src/components/LoadBoardCapacityEnhancer.astro");
+  const parser = await source("workers/lead-email/src/load-board-inbound.mjs");
+  const intake = await source("functions/api/load-board/intake.ts");
+
+  expect(layout).toContain('import LoadBoardCapacityEnhancer from "../components/LoadBoardCapacityEnhancer.astro"');
+  expect(layout).toContain("<LoadBoardCapacityEnhancer />");
+  expect(live).toContain('Astro.url.pathname === "/load-board/"');
+  expect(live).toContain('fetchRecords("load")');
+  expect(live).toContain('fetchRecords("capacity")');
+  expect(live).toContain("approved live loads");
+  expect(live).toContain("available trucks");
+  expect(live).toContain('href="/carrier/"');
+  expect(parser).not.toContain('reason: "car_hauling_hold"');
+  expect(parser).toContain('return "car_hauler"');
+  expect(intake).toContain("car_hauling_ingest_allowed = 1");
+  expect(intake).toContain("car_hauling_outreach_hold = 1");
+  expect(intake).toContain("outbound_enabled: false");
 });
 
 test("carrier Load Board role reveals Agreement & onboarding at runtime", async ({ page }) => {
