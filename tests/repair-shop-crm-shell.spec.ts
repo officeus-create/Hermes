@@ -15,6 +15,8 @@ test("Repair Shop private workspace reads as a full CRM app instead of the publi
 
   const crm = page.locator("[data-repair-crm-shell]");
   await expect(crm).toBeVisible();
+  await expect(crm.locator(".repair-crm-topbar")).toBeVisible();
+  await expect(crm.locator(".repair-crm-sidebar")).toBeVisible();
   await expect(page.locator("html")).toHaveClass(/hc-repair-crm/);
   await expect(page.locator(".site-header")).toBeHidden();
   await expect(page.locator(".hc-product-context")).toBeHidden();
@@ -47,6 +49,7 @@ test("Repair Shop CRM keeps the same app navigation and logout on a 390px phone"
 
   const crm = page.locator("[data-repair-crm-shell]");
   await expect(crm).toBeVisible();
+  await expect(crm.locator(".repair-crm-topbar")).toBeVisible();
   const frame = await crm.boundingBox();
   expect(frame).not.toBeNull();
   expect(frame!.width).toBeGreaterThanOrEqual(385);
