@@ -47,6 +47,18 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
         };
         const locale = Object.prototype.hasOwnProperty.call(copy, requested) ? requested : "en";
         const t = copy[locale];
+        const dashboardUrl = new URL(`${root}/dashboard/`, window.location.origin);
+        if (locale !== "en") dashboardUrl.searchParams.set("lang", locale);
+        const dashboardHref = `${dashboardUrl.pathname}${dashboardUrl.search}`;
+        let redirectingToCrm = false;
+
+        const enterCrmIfAuthenticated = () => {
+          if (redirectingToCrm) return;
+          const authenticated = document.getElementById("auth-authenticated");
+          if (!authenticated?.classList.contains("active")) return;
+          redirectingToCrm = true;
+          window.location.replace(dashboardHref);
+        };
 
         const apply = () => {
           const title = document.querySelector("#auth-forms .auth-header h1");
@@ -64,10 +76,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
           if (createButton) createButton.textContent = t.create;
           if (dashboardLink) {
             dashboardLink.textContent = t.dashboard;
-            const url = new URL(dashboardLink.getAttribute("href") || `${root}/dashboard/`, window.location.origin);
-            if (locale === "en") url.searchParams.delete("lang");
-            else url.searchParams.set("lang", locale);
-            dashboardLink.setAttribute("href", `${url.pathname}${url.search}${url.hash}`);
+            dashboardLink.setAttribute("href", dashboardHref);
           }
 
           if (loginForm) {
@@ -89,8 +98,13 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
           if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) {
             registerTab.click();
           }
+          enterCrmIfAuthenticated();
         };
 
+        const authenticated = document.getElementById("auth-authenticated");
+        if (authenticated) {
+          new MutationObserver(enterCrmIfAuthenticated).observe(authenticated, { attributes:true, attributeFilter:["class"] });
+        }
         apply();
         window.setTimeout(apply, 80);
       })();
@@ -120,6 +134,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
   .repair-activation-secondary{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:#eef2f7}
   .repair-activation-next{margin:0;color:#8e99ab;font-size:12px;line-height:1.5}
   .hc-capability-option{min-height:44px;box-sizing:border-box}
+  .repair-crm-nav-item,.repair-crm-product-hub,.repair-crm-mobile-logout{min-height:44px}
   #public-link-wrap,#public-link-wrap>div,#public-link-text,#public-link-wrap .link-actions{min-width:0;max-width:100%}
   #public-link-text{display:block;overflow-wrap:anywhere;word-break:break-word}
   #public-link-wrap .link-actions{flex-wrap:wrap}
