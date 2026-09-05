@@ -10,12 +10,12 @@ const publicDirectionOverrides: Partial<Record<PathDetail["id"], Partial<PathDet
 
 const publicDirectionOrder: PathDetail["id"][] = ["logistics", "marketing", "technology", "academy"];
 
-export const publicPaths: PathDetail[] = publicDirectionOrder
-  .map((id) => site.paths.find((path) => path.id === id))
-  .filter((path): path is PathDetail => Boolean(path))
-  .map((path) => {
-    const academyOverride = path.id === "academy" ? academyPublicPathOverrides : {};
-    return { ...path, ...publicDirectionOverrides[path.id], ...academyOverride };
-  });
+export const publicPaths: PathDetail[] = publicDirectionOrder.flatMap((id) => {
+  const path = site.paths.find((candidate) => candidate.id === id) as PathDetail | undefined;
+  if (!path) return [];
+
+  const academyOverride: Partial<PathDetail> = id === "academy" ? academyPublicPathOverrides : {};
+  return [{ ...path, ...publicDirectionOverrides[id], ...academyOverride }];
+});
 
 export const publicPathById = (id: string) => publicPaths.find((path) => path.id === id);
