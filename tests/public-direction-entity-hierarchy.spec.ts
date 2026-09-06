@@ -8,14 +8,14 @@ test("public Four Directions use canonical Hermes direction entities", () => {
   expect(publicPaths.map(({ brandLabel }) => brandLabel)).toEqual([
     "Hermes Logistics",
     "Hermes Marketing",
-    "Hermes Academy",
     "Hermes Technology",
+    "Hermes Academy",
   ]);
   expect(publicPaths.map(({ category }) => category)).toEqual([
     "Hermes Logistics",
     "Hermes Marketing",
-    "Hermes Academy",
     "Hermes Technology",
+    "Hermes Academy",
   ]);
 });
 
