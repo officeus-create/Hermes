@@ -1,0 +1,27 @@
+<script>
+  const routeRussianDirectionLinks = () => {
+    if (document.documentElement.lang?.toLowerCase() !== "ru") return;
+
+    const hubs: Record<string, string> = {
+      logistics: "/ru/paths/logistics/",
+      marketing: "/ru/paths/marketing/",
+      technology: "/ru/paths/technology/",
+      academy: "/ru/paths/academy/",
+    };
+
+    document.querySelectorAll<HTMLElement>(".localized-direction[id]").forEach((section) => {
+      const href = hubs[section.id];
+      if (!href) return;
+      const link = section.querySelector<HTMLAnchorElement>(".localized-direction-copy > a");
+      if (!link) return;
+      link.href = href;
+      link.firstChild && (link.firstChild.textContent = "Открыть раздел ");
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", routeRussianDirectionLinks, { once: true });
+  } else {
+    routeRussianDirectionLinks();
+  }
+</script>
