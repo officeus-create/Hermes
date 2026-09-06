@@ -51,6 +51,12 @@ jobs:
         run: npm run prepare:vendor
       - name: Ensure HyperFrames browser
         run: npx hyperframes browser ensure
+      - name: Install FFmpeg and FFprobe
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
       - name: HyperFrames final check
         run: npm run check
       - name: Render draft visual evidence
