@@ -257,11 +257,7 @@ jobs:
             deployment_path="Cloudflare Git integration exact-SHA deploy"
             deployment_evidence="${NATIVE_DEPLOYMENT_DETAILS:-check verified}"
           fi
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back
-
-Approved \`main\` was built and tested. Production was released through the ${deployment_path}, then the five-track Academy contract, Hermes Connect, Repair Shop commercial markers, main-domain product truth, and the Connect custom domain were read back successfully.
-
-Deployment evidence: ${deployment_evidence}."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back\n\nApproved \`main\` was built and tested. Production was released through the ${deployment_path}, then the five-track Academy contract, Hermes Connect, Repair Shop commercial markers, main-domain product truth, and the Connect custom domain were read back successfully.\n\nDeployment evidence: ${deployment_evidence}."
 
       - name: Report deployment or verification failure
         if: failure()
@@ -269,9 +265,7 @@ Deployment evidence: ${deployment_evidence}."
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MISSING: ${{ steps.credentials.outputs.missing }}
         run: |
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete
-
-The release workflow could not prove an exact-SHA Pages deployment or one of the build, static-contract, production read-back, Academy WEB10, or Connect-subdomain checks failed. Wrangler credential status: ${MISSING:-available or not required}. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nThe release workflow could not prove an exact-SHA Pages deployment or one of the build, static-contract, production read-back, Academy WEB10, or Connect-subdomain checks failed. Wrangler credential status: ${MISSING:-available or not required}. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
 
       - name: Publish sanitized summary
         if: always()
