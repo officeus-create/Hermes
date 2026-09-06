@@ -16,9 +16,10 @@ test("WEB 10 keeps one canonical department order across header and localized su
   }
 });
 
-test("WEB 10 exposes Russian product hubs without duplicating product backends", async () => {
+test("WEB 10 exposes Russian product hubs without duplicating operational backends", async () => {
   const route = await source("src/pages/ru/paths/[slug].astro");
   const data = await source("src/data/russian-direction-hubs.ts");
+  const hub = await source("src/components/RussianDirectionHub.astro");
   const menu = await source("src/components/DepartmentMenuLocalization.astro");
   const router = await source("src/components/RussianDirectionLinkRouter.astro");
 
@@ -34,6 +35,22 @@ test("WEB 10 exposes Russian product hubs without duplicating product backends",
   expect(data).toContain('href: "/services/hermes-connect/?lang=ru"');
   expect(data).not.toContain('href: "/ru/load-board/"');
   expect(data).not.toContain('href: "/ru/carrier/"');
+
+  for (const localizedPath of [
+    "/ru/business-growth/",
+    "/ru/business-growth/website/",
+    "/ru/business-growth/seo/",
+    "/ru/business-growth/social-media/",
+    "/ru/business-growth/advertising/",
+  ]) {
+    expect(hub).toContain(localizedPath);
+    expect(menu).toContain(localizedPath);
+  }
+
+  expect(menu).toContain('/services/hermes-connect/?lang=ru');
+  expect(menu).toContain('/ru/gb/london/it-web-development/');
+  expect(menu).not.toContain('/ru/load-board/');
+  expect(menu).not.toContain('/ru/carrier/');
 });
 
 test("WEB 10 keeps five Academy tracks public but commercial activation gated", async () => {
@@ -43,6 +60,7 @@ test("WEB 10 keeps five Academy tracks public but commercial activation gated", 
     expect(academy).toContain(track);
   }
 
+  expect(academy).toContain("A visible learning track does not by itself mean a paid cohort or enrollment window is open.");
   expect(academy).toContain("No fixed price");
   expect(academy).toContain("do not guarantee employment");
 });
