@@ -22,11 +22,21 @@ const showLogisticsPhone =
   currentPath.startsWith("/logistics/") ||
   currentPath.startsWith("/paths/logistics/");
 const showTransportRequestActions = currentPath === "/logistics/request-vehicle-transport/";
+const directionOrder = { logistics: 0, marketing: 1, technology: 2, academy: 3 } as const;
+const directionRank = (href: string) => {
+  const pathMatch = href.match(/\/paths\/(logistics|marketing|technology|academy)\/?$/);
+  const hashMatch = href.match(/#(logistics|marketing|technology|academy)$/);
+  const id = (pathMatch?.[1] || hashMatch?.[1]) as keyof typeof directionOrder | undefined;
+  return id ? directionOrder[id] : 99;
+};
+const orderedSiteNavigation = [...site.navigation].sort(
+  (a, b) => directionRank(`/${a.href}`) - directionRank(`/${b.href}`),
+);
 const localized = {
   en: {
     statement: "Logistics, growth, education, and technology working with one practical standard.",
     nav: [
-      ...site.navigation.map((item) => ({ label: item.label, href: `/${item.href}` })),
+      ...orderedSiteNavigation.map((item) => ({ label: item.label, href: `/${item.href}` })),
       { label: "Case Studies", href: "/case/" },
       { label: "Website Development", href: "/services/website-development/" },
       { label: "SEO Services", href: "/services/seo/" },
@@ -46,7 +56,7 @@ const localized = {
     statement: "Логістика, розвиток, освіта й технології за одним практичним стандартом.",
     nav: [
       { label: "Логістика", href: "/ua/#logistics" }, { label: "Маркетинг", href: "/ua/#marketing" },
-      { label: "Академія", href: "/ua/#academy" }, { label: "IT-розробка", href: "/ua/#technology" },
+      { label: "IT-розробка", href: "/ua/#technology" }, { label: "Академія", href: "/ua/#academy" },
     ],
     privacy: "Конфіденційність",
     contact: "Контакт",
@@ -60,7 +70,7 @@ const localized = {
     statement: "Логистика, развитие, образование и технологии по единому практическому стандарту.",
     nav: [
       { label: "Логистика", href: "/ru/#logistics" }, { label: "Маркетинг", href: "/ru/#marketing" },
-      { label: "Академия", href: "/ru/#academy" }, { label: "IT-разработка", href: "/ru/#technology" },
+      { label: "IT-разработка", href: "/ru/#technology" }, { label: "Академия", href: "/ru/#academy" },
     ],
     privacy: "Конфиденциальность",
     contact: "Контакт",
@@ -74,7 +84,7 @@ const localized = {
     statement: "Logística, crecimiento, formación y tecnología con un mismo estándar práctico.",
     nav: [
       { label: "Logística", href: "/es/#logistics" }, { label: "Marketing", href: "/es/#marketing" },
-      { label: "Academia", href: "/es/#academy" }, { label: "Desarrollo IT", href: "/es/#technology" },
+      { label: "Desarrollo IT", href: "/es/#technology" }, { label: "Academia", href: "/es/#academy" },
     ],
     privacy: "Privacidad", contact: "Contacto", route: "Elegir el canal de contacto", phone: "Ventas de logística en EE. UU.",
     designed: "Diseñado y desarrollado por", method: "Dirigido por personas, asistido por AI", status: "Las consultas se envían por email",
@@ -83,7 +93,7 @@ const localized = {
     statement: "Logistica, crescita, formazione e tecnologia con un unico standard pratico.",
     nav: [
       { label: "Logistica", href: "/it/#logistics" }, { label: "Marketing", href: "/it/#marketing" },
-      { label: "Academy", href: "/it/#academy" }, { label: "Sviluppo IT", href: "/it/#technology" },
+      { label: "Sviluppo IT", href: "/it/#technology" }, { label: "Academy", href: "/it/#academy" },
     ],
     privacy: "Privacy", contact: "Contatti", route: "Scegli il canale di contatto", phone: "Vendite logistica USA",
     designed: "Design e sviluppo di", method: "Guidato da persone, assistito da AI", status: "Le richieste vengono inviate via email",
@@ -92,12 +102,13 @@ const localized = {
     statement: "Logistique, croissance, formation et technologie selon un même standard pratique.",
     nav: [
       { label: "Logistique", href: "/fr/#logistics" }, { label: "Marketing", href: "/fr/#marketing" },
-      { label: "Académie", href: "/fr/#academy" }, { label: "Développement IT", href: "/fr/#technology" },
+      { label: "Développement IT", href: "/fr/#technology" }, { label: "Académie", href: "/fr/#academy" },
     ],
     privacy: "Confidentialité", contact: "Contact", route: "Choisir le canal de contact", phone: "Ventes logistiques aux États-Unis",
     designed: "Conçu et développé par", method: "Dirigé par l'humain, assisté par AI", status: "Les demandes sont envoyées par email",
   },
 }[locale];
+const localizedNav = [...localized.nav].sort((a, b) => directionRank(a.href) - directionRank(b.href));
 const localePath = localeConfig[locale].path;
 const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
 ---
@@ -159,7 +170,7 @@ const privacyHref = locale === "ru" ? "/ru/privacy/" : "/privacy/";
       <HermesConnectLauncher variant="footer" />
     </div>
     <nav class="footer-primary-nav" aria-label="Footer navigation">
-      {localized.nav.map((item) => <a href={item.href}>{item.label}</a>)}
+      {localizedNav.map((item) => <a href={item.href}>{item.label}</a>)}
       <a href={privacyHref}>{localized.privacy}</a>
       {locale === "en" && (
         <>
