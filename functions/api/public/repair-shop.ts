@@ -35,7 +35,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   await ensureRepairShopProfileSchema(env.DB);
   const shop = await env.DB
     .prepare(
-      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,postal_code,timezone FROM repair_shops WHERE slug = ? LIMIT 1",
+      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone FROM repair_shops WHERE slug = ? LIMIT 1",
     )
     .bind(slug)
     .first();
