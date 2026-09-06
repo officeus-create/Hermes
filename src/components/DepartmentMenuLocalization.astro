@@ -40,6 +40,26 @@
     "/academy/apply/": "Подать заявку",
   };
 
+  const marketingRussianRoutes: Record<string, string> = {
+    "/business-growth/": "/ru/business-growth/",
+    "/gb/london/website-development/": "/ru/business-growth/website/",
+    "/gb/london/seo-services/": "/ru/business-growth/seo/",
+    "/gb/london/social-media-management/": "/ru/business-growth/social-media/",
+    "/gb/london/meta-ads/": "/ru/business-growth/advertising/",
+    "/gb/london/": "/ru/gb/london/",
+  };
+
+  const technologyRussianRoutes: Record<string, string> = {
+    "/services/hermes-connect/": "/services/hermes-connect/?lang=ru",
+    "/gb/london/website-development/": "/ru/gb/london/it-web-development/",
+  };
+
+  const russianProductRoute = (department: string, href: string) => {
+    if (department === "marketing") return marketingRussianRoutes[href] || href;
+    if (department === "technology") return technologyRussianRoutes[href] || href;
+    return href;
+  };
+
   const localizeRussianDepartmentMenus = () => {
     if (locale !== "ru") return;
 
@@ -48,18 +68,21 @@
       const hubHref = russianHubByDepartment[department];
       const title = menu.querySelector<HTMLElement>(".department-menu-panel__heading strong");
       const primary = menu.querySelector<HTMLAnchorElement>(".department-menu__primary");
-      if (primary && hubHref) primary.href = hubHref;
+      if (primary && hubHref) primary.setAttribute("href", hubHref);
       if (title && primary) title.textContent = primary.textContent?.trim() || title.textContent;
 
       const overview = menu.querySelector<HTMLAnchorElement>(".department-menu-panel__heading a");
       if (overview) {
         overview.textContent = "Открыть раздел";
-        if (hubHref) overview.href = hubHref;
+        if (hubHref) overview.setAttribute("href", hubHref);
       }
 
       menu.querySelectorAll<HTMLAnchorElement>(".department-menu-panel__grid a").forEach((link) => {
-        const label = russianByHref[link.getAttribute("href") || ""];
+        const originalHref = link.getAttribute("href") || "";
+        const label = russianByHref[originalHref];
         if (label) link.textContent = label;
+        const localizedHref = russianProductRoute(department, originalHref);
+        if (localizedHref !== originalHref) link.setAttribute("href", localizedHref);
       });
 
       const toggle = menu.querySelector<HTMLElement>("[data-department-toggle]");
@@ -70,15 +93,17 @@
       const department = menu.dataset.mobileDepartmentMenu || "";
       const hubHref = russianHubByDepartment[department];
       menu.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
-        const href = link.getAttribute("href") || "";
+        const originalHref = link.getAttribute("href") || "";
         if (link.classList.contains("mobile-department-menu__overview")) {
           const summary = menu.querySelector<HTMLElement>("summary")?.textContent?.trim();
           link.textContent = summary ? `Открыть раздел «${summary}»` : "Открыть раздел";
-          if (hubHref) link.href = hubHref;
+          if (hubHref) link.setAttribute("href", hubHref);
           return;
         }
-        const label = russianByHref[href];
+        const label = russianByHref[originalHref];
         if (label) link.textContent = label;
+        const localizedHref = russianProductRoute(department, originalHref);
+        if (localizedHref !== originalHref) link.setAttribute("href", localizedHref);
       });
     });
   };
