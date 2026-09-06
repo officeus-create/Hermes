@@ -1,0 +1,14 @@
+{
+  "name": "hermes-hyperframes-reel-v1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare:vendor": "node scripts/prepare-vendor.mjs",
+    "check": "hyperframes check . --strict --samples 12 --at-transitions",
+    "render:draft": "hyperframes render --quality draft --fps 30 --output renders/hermes-reel-v1.mp4 --strict --variables-file sample.variables.json --strict-variables"
+  },
+  "dependencies": {
+    "gsap": "3.14.2",
+    "hyperframes": "0.8.30"
+  }
+}
