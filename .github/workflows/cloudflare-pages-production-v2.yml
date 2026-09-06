@@ -1,4 +1,4 @@
-# Approved-main production parity — 2026-09-01
+# Approved-main production parity — 2026-09-06
 name: Deploy approved main to Cloudflare Pages v2
 
 on:
@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
   deployments: write
   issues: write
 
@@ -38,7 +39,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Resolve and mask Cloudflare deployment credentials
+      - name: Resolve and mask optional Wrangler deployment credentials
         id: credentials
         run: |
           if [ -z "$CLOUDFLARE_ACCOUNT_ID" ] && [ -f workers/lead-email/wrangler.production.jsonc ]; then
@@ -64,21 +65,14 @@ jobs:
             if [ -n "$missing" ]; then missing="$missing, "; fi
             missing="${missing}Cloudflare account identifier"
           fi
+
           if [ -n "$missing" ]; then
             echo "available=false" >> "$GITHUB_OUTPUT"
             echo "missing=$missing" >> "$GITHUB_OUTPUT"
-            echo "Missing required deployment credentials: $missing" >&2
-            exit 1
+            echo "Wrangler credentials unavailable ($missing); exact-SHA Cloudflare Git deployment will be used as the production release owner."
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
           fi
-          echo "available=true" >> "$GITHUB_OUTPUT"
-
-      - name: Report credential blocker
-        if: failure() && steps.credentials.outputs.available != 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MISSING: ${{ steps.credentials.outputs.missing }}
-        run: |
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Pages production deploy blocked\n\nThe controlled release could not access the required scoped Cloudflare deployment credentials: \`${MISSING:-Cloudflare credentials}\`. No secret value was printed. Production parity remains unverified until the workflow completes."
 
       - name: Install dependencies
         run: npm ci
@@ -90,6 +84,7 @@ jobs:
         run: npm test
 
       - name: Deploy dist to Cloudflare Pages project hermes
+        if: steps.credentials.outputs.available == 'true'
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
@@ -99,10 +94,90 @@ jobs:
           command: pages deploy dist --project-name=hermes --branch=main --commit-hash=${{ github.sha }} --commit-message="Approved main ${{ github.sha }}"
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Verify exact-SHA Cloudflare Git deployment
+        if: steps.credentials.outputs.available != 'true'
+        id: native_pages
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+
+          const repo = process.env.GITHUB_REPOSITORY;
+          const sha = process.env.GITHUB_SHA;
+          const api = process.env.GITHUB_API_URL || "https://api.github.com";
+          const token = process.env.GITHUB_TOKEN;
+          const output = process.env.GITHUB_OUTPUT;
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+          if (!repo || !sha || !token || !output) {
+            console.error("GitHub runtime context is incomplete; cannot verify native Cloudflare deployment.");
+            process.exit(1);
+          }
+
+          for (let attempt = 1; attempt <= 60; attempt += 1) {
+            const response = await fetch(`${api}/repos/${repo}/commits/${sha}/check-runs?per_page=100`, {
+              headers: {
+                accept: "application/vnd.github+json",
+                authorization: `Bearer ${token}`,
+                "x-github-api-version": "2022-11-28",
+                "user-agent": "HermesPagesReleaseVerifier/4.0",
+              },
+              signal: AbortSignal.timeout(20_000),
+            });
+
+            if (!response.ok) {
+              console.error(`Cloudflare check lookup failed with HTTP ${response.status}.`);
+              process.exit(1);
+            }
+
+            const payload = await response.json();
+            const candidates = (payload.check_runs || [])
+              .filter((run) => run.name === "Cloudflare Pages" && run.app?.slug === "cloudflare-workers-and-pages")
+              .sort((a, b) => Date.parse(a.started_at || 0) - Date.parse(b.started_at || 0));
+            const run = candidates.at(-1);
+
+            console.log(`Native Cloudflare attempt ${attempt}: ${run?.status || "missing"} / ${run?.conclusion || "pending"}`);
+
+            if (run?.status === "completed") {
+              if (run.conclusion !== "success") {
+                console.error(`Native Cloudflare Pages deployment failed for ${sha}: ${run.conclusion || "unknown"}.`);
+                process.exit(1);
+              }
+
+              fs.appendFileSync(output, "available=true\n");
+              fs.appendFileSync(output, `details_url=${run.details_url || run.html_url || ""}\n`);
+              console.log(`Verified native Cloudflare Pages deployment for exact SHA ${sha}.`);
+              process.exit(0);
+            }
+
+            if (attempt < 60) await sleep(10_000);
+          }
+
+          console.error(`Timed out waiting for native Cloudflare Pages deployment for exact SHA ${sha}.`);
+          process.exit(1);
+          NODE
+
       - name: Verify current main-domain product truth
         run: |
           node <<'NODE'
           const targets = [
+            {
+              url: "https://hermeslogisticsus.com/paths/academy/",
+              markers: [
+                "Build practical skills across five Hermes Academy tracks.",
+                "U.S. Logistics Operations",
+                "Marketing",
+                "IT & AI",
+                "Sales",
+                "COO / Operations",
+              ],
+              forbiddenMarkers: [
+                "2 public programs",
+                "Two public programs",
+                "currently presents two public program paths",
+              ],
+            },
             {
               url: "https://hermeslogisticsus.com/services/hermes-connect/",
               markers: ["Run your business with AI.", "Repair Shops"],
@@ -121,6 +196,7 @@ jobs:
               markers: ["Hermes Connect", "Open Hermes Connect Product Hub"],
             },
           ];
+
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
           for (const target of targets) {
             let ok = false;
@@ -132,7 +208,7 @@ jobs:
                   headers: {
                     "cache-control": "no-cache",
                     pragma: "no-cache",
-                    "user-agent": "HermesPagesReleaseVerifier/3.0",
+                    "user-agent": "HermesPagesReleaseVerifier/4.0",
                   },
                   signal: AbortSignal.timeout(20_000),
                 });
@@ -149,6 +225,7 @@ jobs:
               }
               if (attempt < 18) await sleep(10_000);
             }
+
             if (!ok) {
               console.error(`Main-domain verification failed for ${target.url}: ${JSON.stringify(last)}`);
               process.exitCode = 1;
@@ -169,22 +246,40 @@ jobs:
         if: success()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          WRANGLER_DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          NATIVE_DEPLOYMENT_DETAILS: ${{ steps.native_pages.outputs.details_url }}
+          WRANGLER_AVAILABLE: ${{ steps.credentials.outputs.available }}
         run: |
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back\n\nApproved \`main\` was built, tested, deployed, and current Hermes Connect + Repair Shop commercial markers were read back from production. The auth surface no longer exposes the superseded 14-day launch policy. The existing Connect custom-domain verifier also passed.\n\nDeployment URL returned by Wrangler: ${DEPLOYMENT_URL:-not returned}."
+          if [ "$WRANGLER_AVAILABLE" = "true" ]; then
+            deployment_path="controlled Wrangler Pages deploy"
+            deployment_evidence="${WRANGLER_DEPLOYMENT_URL:-not returned}"
+          else
+            deployment_path="Cloudflare Git integration exact-SHA deploy"
+            deployment_evidence="${NATIVE_DEPLOYMENT_DETAILS:-check verified}"
+          fi
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved main is live and read back
+
+Approved \`main\` was built and tested. Production was released through the ${deployment_path}, then the five-track Academy contract, Hermes Connect, Repair Shop commercial markers, main-domain product truth, and the Connect custom domain were read back successfully.
+
+Deployment evidence: ${deployment_evidence}."
 
       - name: Report deployment or verification failure
-        if: failure() && steps.credentials.outputs.available == 'true'
+        if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MISSING: ${{ steps.credentials.outputs.missing }}
         run: |
-          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete\n\nCredentials were available, but build, tests, upload, current-product read-back, or Connect-subdomain verification failed. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
+          gh issue comment 961 --repo "$GITHUB_REPOSITORY" --body "## Approved-main production parity did not complete
+
+The release workflow could not prove an exact-SHA Pages deployment or one of the build, static-contract, production read-back, Academy WEB10, or Connect-subdomain checks failed. Wrangler credential status: ${MISSING:-available or not required}. Review the sanitized Actions run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID."
 
       - name: Publish sanitized summary
         if: always()
         env:
-          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
-          DEPLOYMENT_ALIAS: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+          WRANGLER_DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          WRANGLER_DEPLOYMENT_ALIAS: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+          NATIVE_DEPLOYMENT_DETAILS: ${{ steps.native_pages.outputs.details_url }}
+          WRANGLER_AVAILABLE: ${{ steps.credentials.outputs.available }}
         run: |
           {
             echo "# Cloudflare Pages approved-main production parity"
@@ -194,8 +289,15 @@ jobs:
             echo "- Project: \`hermes\`"
             echo "- Branch: \`main\`"
             echo "- Build output: \`dist\`"
-            echo "- Deployment URL: ${DEPLOYMENT_URL:-not returned}"
-            echo "- Alias URL: ${DEPLOYMENT_ALIAS:-not returned}"
+            if [ "$WRANGLER_AVAILABLE" = "true" ]; then
+              echo "- Release owner: controlled Wrangler Pages deploy"
+              echo "- Deployment URL: ${WRANGLER_DEPLOYMENT_URL:-not returned}"
+              echo "- Alias URL: ${WRANGLER_DEPLOYMENT_ALIAS:-not returned}"
+            else
+              echo "- Release owner: Cloudflare Git integration exact-SHA deploy"
+              echo "- Deployment evidence: ${NATIVE_DEPLOYMENT_DETAILS:-not returned}"
+            fi
+            echo "- WEB10 Academy production contract: five public learning tracks required; retired two-program copy forbidden"
             echo
             echo "> No token, account ID, binding ID, recipient, or secret value is written to this summary."
           } >> "$GITHUB_STEP_SUMMARY"
