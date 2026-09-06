@@ -89,7 +89,10 @@ import "../styles/features/load.css";
               <p class="eyebrow">Available Loads · Demo data</p>
               <h2 id="available-loads-title">See the lane before you spend time on it.</h2>
             </div>
-            <p>Fictional examples demonstrate the proposed carrier view. No load below is available to book.</p>
+            <div class="available-loads-heading__aside">
+              <p>Fictional examples of car-hauling loads rotate automatically to demonstrate the proposed carrier view. No load below is available to book.</p>
+              <button class="demo-feed-toggle" type="button" data-demo-feed-toggle aria-pressed="false">Pause demo rotation</button>
+            </div>
           </div>
 
           <div class="load-search-bar" aria-label="Demo load filters">
@@ -114,7 +117,7 @@ import "../styles/features/load.css";
           <p class="demo-search-status" role="status" data-demo-search-status>Enter a demo city and search. Results are fictional and cannot be booked.</p>
 
           <div class="available-loads-layout">
-            <div class="available-load-list" aria-label="Fictional available loads">
+            <div class="available-load-list" aria-label="Fictional available loads" data-demo-feed>
               <article class="available-load-card" data-demo-load-card data-origin="chicago il" data-destination="milwaukee wi">
                 <div class="load-card-route"><span>Chicago, IL</span><ArrowRight size={18} aria-hidden="true" /><span>Milwaukee, WI</span></div>
                 <div class="load-card-price"><strong>$620</strong><span>$6.74 / mi</span></div>
@@ -153,7 +156,7 @@ import "../styles/features/load.css";
                 <li>Offers and counteroffers require a confirmed carrier account.</li>
                 <li>Contact details stay hidden until the operating team approves access.</li>
               </ul>
-              <a class="button button-primary" href="#carrier-access">Add your vehicle first</a>
+              <a class="button button-primary" href="#carrier-access">Request free Load Board access</a>
             </aside>
           </div>
         </div>
@@ -558,6 +561,25 @@ import "../styles/features/load.css";
   const demoOrigin = document.querySelector<HTMLInputElement>("[data-demo-origin]");
   const demoDestination = document.querySelector<HTMLInputElement>("[data-demo-destination]");
   const demoCards = [...document.querySelectorAll<HTMLElement>("[data-demo-load-card]")];
+  const demoFeed = document.querySelector<HTMLElement>("[data-demo-feed]");
+  const demoFeedToggle = document.querySelector<HTMLButtonElement>("[data-demo-feed-toggle]");
+  let demoFeedPaused = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const updateDemoFeedToggle = () => {
+    if (!demoFeedToggle) return;
+    demoFeedToggle.setAttribute("aria-pressed", String(demoFeedPaused));
+    demoFeedToggle.textContent = demoFeedPaused ? "Resume demo rotation" : "Pause demo rotation";
+  };
+  const demoRotation = window.setInterval(() => {
+    if (!demoFeed || demoFeedPaused || demoCards.some((card) => card.hidden)) return;
+    const last = demoFeed.lastElementChild;
+    if (last) demoFeed.prepend(last);
+  }, 7000);
+  demoFeedToggle?.addEventListener("click", () => {
+    demoFeedPaused = !demoFeedPaused;
+    updateDemoFeedToggle();
+  });
+  updateDemoFeedToggle();
+  window.addEventListener("pagehide", () => window.clearInterval(demoRotation), { once: true });
   const normalizeCity = (value: string) => value.toLowerCase().replace(/[^a-z]/g, " ").replace(/\s+/g, " ").trim();
 
   const searchDemoLoads = () => {
