@@ -1,0 +1,260 @@
+<script>
+  const departmentOrder = ["logistics", "marketing", "technology", "academy"] as const;
+  type DepartmentId = (typeof departmentOrder)[number];
+
+  const departments = {
+    logistics: {
+      label: "Logistics",
+      href: "/paths/logistics/",
+      accent: "#5634c8",
+      items: [
+        ["Load Board", "/load-board/"],
+        ["Carriers & Fleets", "/paths/logistics/carriers/fleet-owners/"],
+        ["Agreement", "/carrier/"],
+        ["Owner-Operators", "/paths/logistics/carriers/owner-operators/"],
+        ["Brokers", "/paths/logistics/brokers/carrier-capacity/"],
+        ["Shippers & Dealers", "/paths/logistics/customers/vehicle-transport/"],
+        ["Dispatch & Back Office", "/logistics/car-hauling-dispatch/"],
+        ["Find Your Path", "/paths/logistics/find-your-path/"],
+      ],
+    },
+    marketing: {
+      label: "Marketing",
+      href: "/paths/marketing/",
+      accent: "#c51b72",
+      items: [
+        ["Growth System", "/business-growth/"],
+        ["Websites", "/gb/london/website-development/"],
+        ["SEO & GEO", "/gb/london/seo-services/"],
+        ["Social Media", "/gb/london/social-media-management/"],
+        ["Meta Ads", "/gb/london/meta-ads/"],
+        ["London", "/gb/london/"],
+        ["Learn Marketing", "/academy/marketing/"],
+      ],
+    },
+    technology: {
+      label: "IT",
+      href: "/paths/technology/",
+      accent: "#087f82",
+      items: [
+        ["Hermes Connect", "/services/hermes-connect/"],
+        ["Load Board", "/load-board/"],
+        ["Web Development", "/gb/london/website-development/"],
+        ["Capabilities", "/paths/technology/#service-groups-title"],
+        ["Project Brief", "/paths/technology/#project-brief"],
+        ["IT Development", "/case/it-development/"],
+      ],
+    },
+    academy: {
+      label: "Academy",
+      href: "/paths/academy/",
+      accent: "#a56b00",
+      items: [
+        ["Logistics", "/academy/us-logistics-operations/"],
+        ["Marketing", "/academy/marketing/"],
+        ["How Training Works", "/academy/how-training-works/"],
+        ["Resources", "/academy/resources/"],
+        ["Apply", "/academy/apply/"],
+      ],
+    },
+  } as const;
+
+  const identifyDepartment = (href: string | null): DepartmentId | null => {
+    if (!href) return null;
+    for (const id of departmentOrder) {
+      if (href === departments[id].href) return id;
+    }
+    return null;
+  };
+
+  const closeDesktopMenus = (except?: HTMLElement) => {
+    document.querySelectorAll<HTMLElement>("[data-department-menu]").forEach((menu) => {
+      if (menu === except) return;
+      menu.removeAttribute("data-open");
+      menu.querySelector<HTMLElement>("[data-department-toggle]")?.setAttribute("aria-expanded", "false");
+    });
+  };
+
+  const makeLink = (label: string, href: string) => {
+    const link = document.createElement("a");
+    link.href = href;
+    link.textContent = label;
+    return link;
+  };
+
+  const makeDesktopPanel = (id: DepartmentId) => {
+    const config = departments[id];
+    const panel = document.createElement("div");
+    panel.className = "department-menu-panel";
+    panel.dataset.departmentPanel = id;
+
+    const heading = document.createElement("div");
+    heading.className = "department-menu-panel__heading";
+    const strong = document.createElement("strong");
+    strong.textContent = config.label;
+    const overview = makeLink("Open department", config.href);
+    heading.append(strong, overview);
+
+    const grid = document.createElement("div");
+    grid.className = "department-menu-panel__grid";
+    config.items.forEach(([label, href]) => grid.append(makeLink(label, href)));
+    panel.append(heading, grid);
+    return panel;
+  };
+
+  const enhanceDesktop = (header: HTMLElement) => {
+    const nav = header.querySelector<HTMLElement>(".desktop-nav");
+    if (!nav || nav.dataset.departmentEnhanced === "true") return;
+    const anchors = [...nav.querySelectorAll<HTMLAnchorElement>(":scope > a")];
+    const anchorsById = new Map<DepartmentId, HTMLAnchorElement>();
+    anchors.forEach((anchor) => {
+      const id = identifyDepartment(anchor.getAttribute("href"));
+      if (id) anchorsById.set(id, anchor);
+    });
+    const first = departmentOrder.map((id) => anchorsById.get(id)).find(Boolean);
+    if (!first) return;
+    const marker = document.createComment("department-menu-anchor");
+    nav.insertBefore(marker, first);
+
+    for (const id of departmentOrder) {
+      const anchor = anchorsById.get(id);
+      if (!anchor) continue;
+      const config = departments[id];
+      const wrapper = document.createElement("div");
+      wrapper.className = "department-menu";
+      wrapper.dataset.departmentMenu = id;
+      wrapper.style.setProperty("--department-accent", config.accent);
+      const primary = anchor.cloneNode(true) as HTMLAnchorElement;
+      primary.classList.add("department-menu__primary");
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "department-menu__toggle";
+      toggle.dataset.departmentToggle = id;
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", `Open ${config.label} menu`);
+      toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
+      const panel = makeDesktopPanel(id);
+      const setOpen = (open: boolean) => {
+        if (open) {
+          closeDesktopMenus(wrapper);
+          wrapper.setAttribute("data-open", "true");
+        } else wrapper.removeAttribute("data-open");
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      toggle.addEventListener("click", (event) => {
+        event.stopPropagation();
+        setOpen(wrapper.getAttribute("data-open") !== "true");
+      });
+      wrapper.addEventListener("mouseenter", () => setOpen(true));
+      wrapper.addEventListener("mouseleave", () => setOpen(false));
+      wrapper.addEventListener("focusin", () => setOpen(true));
+      wrapper.addEventListener("focusout", (event) => {
+        if (event.relatedTarget instanceof Node && wrapper.contains(event.relatedTarget)) return;
+        setOpen(false);
+      });
+      wrapper.append(primary, toggle, panel);
+      nav.insertBefore(wrapper, marker);
+      anchor.remove();
+    }
+    marker.remove();
+    nav.dataset.departmentEnhanced = "true";
+  };
+
+  const enhanceMobile = (header: HTMLElement) => {
+    const nav = header.querySelector<HTMLElement>(".mobile-nav");
+    if (!nav || nav.dataset.departmentEnhanced === "true") return;
+    const anchors = [...nav.querySelectorAll<HTMLAnchorElement>(":scope > a")];
+    const anchorsById = new Map<DepartmentId, HTMLAnchorElement>();
+    anchors.forEach((anchor) => {
+      const id = identifyDepartment(anchor.getAttribute("href"));
+      if (id) anchorsById.set(id, anchor);
+    });
+    const first = departmentOrder.map((id) => anchorsById.get(id)).find(Boolean);
+    if (!first) return;
+    const marker = document.createComment("mobile-department-menu-anchor");
+    nav.insertBefore(marker, first);
+
+    for (const id of departmentOrder) {
+      const anchor = anchorsById.get(id);
+      if (!anchor) continue;
+      const config = departments[id];
+      const details = document.createElement("details");
+      details.className = "mobile-department-menu";
+      details.dataset.mobileDepartmentMenu = id;
+      details.style.setProperty("--department-accent", config.accent);
+      const summary = document.createElement("summary");
+      summary.textContent = anchor.textContent?.trim() || config.label;
+      const body = document.createElement("div");
+      body.className = "mobile-department-menu__body";
+      const overview = makeLink(`${anchor.textContent?.trim() || config.label} overview`, config.href);
+      overview.className = "mobile-department-menu__overview";
+      body.append(overview);
+      config.items.forEach(([label, href]) => body.append(makeLink(label, href)));
+      details.append(summary, body);
+      nav.insertBefore(details, marker);
+      anchor.remove();
+    }
+    marker.remove();
+    nav.querySelectorAll<HTMLAnchorElement>(".mobile-department-menu a").forEach((link) => {
+      link.addEventListener("click", () => {
+        nav.hidden = true;
+        const button = header.querySelector<HTMLElement>("[data-menu-button]");
+        button?.setAttribute("aria-expanded", "false");
+        button?.setAttribute("aria-label", "Open navigation");
+      });
+    });
+    nav.dataset.departmentEnhanced = "true";
+  };
+
+  const enhanceDepartmentMenus = () => {
+    if (document.documentElement.lang && document.documentElement.lang !== "en") return;
+    document.querySelectorAll<HTMLElement>(".site-header").forEach((header) => {
+      enhanceDesktop(header);
+      enhanceMobile(header);
+    });
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", enhanceDepartmentMenus, { once: true });
+  else enhanceDepartmentMenus();
+
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (target instanceof Node && !target.parentElement?.closest("[data-department-menu]")) closeDesktopMenus();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeDesktopMenus();
+  });
+</script>
+
+<style is:global>
+  .site-header{overflow:visible;z-index:80}
+  .site-header .desktop-nav{align-items:center}
+  .site-header .department-menu{position:relative;display:inline-flex;align-items:center;gap:.08rem}
+  .site-header .department-menu__primary{display:inline-flex;align-items:center;min-height:44px}
+  .site-header .department-menu__toggle{display:inline-grid;place-items:center;width:27px;height:34px;padding:0;border:0;border-radius:999px;background:transparent;color:inherit;cursor:pointer;opacity:.58;transition:background .18s ease,opacity .18s ease,transform .18s ease}
+  .site-header .department-menu__toggle:hover,.site-header .department-menu__toggle:focus-visible,.site-header .department-menu[data-open="true"] .department-menu__toggle{background:color-mix(in srgb,var(--department-accent) 10%,transparent);opacity:1}
+  .site-header .department-menu[data-open="true"] .department-menu__toggle{transform:rotate(180deg)}
+  .site-header .department-menu-panel{position:absolute;top:calc(100% + 10px);left:50%;width:min(380px,calc(100vw - 2rem));padding:.8rem;border:1px solid rgba(17,19,36,.12);border-radius:16px;background:rgba(255,255,255,.98);box-shadow:0 24px 64px rgba(7,16,56,.18);color:#111324;opacity:0;visibility:hidden;pointer-events:none;transform:translate(-50%,-6px);transition:opacity .16s ease,transform .16s ease,visibility .16s ease;backdrop-filter:blur(18px)}
+  .site-header .department-menu[data-open="true"] .department-menu-panel,.site-header .department-menu:hover .department-menu-panel,.site-header .department-menu:focus-within .department-menu-panel{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
+  .site-header .department-menu-panel__heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.35rem .4rem .7rem;border-bottom:1px solid #e7e8ed}
+  .site-header .department-menu-panel__heading strong{font-size:.82rem}
+  .site-header .department-menu-panel__heading a{font-size:.7rem;font-weight:800;color:var(--department-accent);text-decoration:none}
+  .site-header .department-menu-panel__grid{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;padding-top:.55rem}
+  .site-header .department-menu-panel__grid a{display:flex;align-items:center;min-height:42px;padding:.58rem .65rem;border-radius:10px;color:#283149;text-decoration:none;font-size:.76rem;font-weight:700;line-height:1.3}
+  .site-header .department-menu-panel__grid a:hover,.site-header .department-menu-panel__grid a:focus-visible{background:color-mix(in srgb,var(--department-accent) 8%,#fff);color:#111324}
+  .site-header-dark .department-menu-panel{background:rgba(12,20,54,.98);border-color:rgba(255,255,255,.13);color:#fff}
+  .site-header-dark .department-menu-panel__heading{border-bottom-color:rgba(255,255,255,.12)}
+  .site-header-dark .department-menu-panel__grid a{color:#dce4ff}
+  .site-header-dark .department-menu-panel__grid a:hover,.site-header-dark .department-menu-panel__grid a:focus-visible{background:color-mix(in srgb,var(--department-accent) 18%,transparent);color:#fff}
+  .mobile-department-menu{border-top:1px solid rgba(255,255,255,.08)}
+  .mobile-department-menu summary{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:.7rem .2rem;cursor:pointer;font-weight:800;list-style:none}
+  .mobile-department-menu summary::-webkit-details-marker{display:none}
+  .mobile-department-menu summary::after{content:"⌄";opacity:.62;transition:transform .18s ease}
+  .mobile-department-menu[open] summary::after{transform:rotate(180deg)}
+  .mobile-department-menu__body{display:grid;gap:.22rem;padding:0 0 .65rem .65rem}
+  .mobile-department-menu__body a{display:flex;align-items:center;min-height:44px;padding:.55rem .65rem;border-left:2px solid color-mix(in srgb,var(--department-accent) 55%,transparent);color:inherit;text-decoration:none;font-size:.82rem}
+  .mobile-department-menu__overview{font-weight:850}
+  @media(max-width:980px){.site-header .desktop-nav .department-menu{display:none}.site-header .mobile-nav{max-height:calc(100dvh - 84px);overflow:auto;overscroll-behavior:contain}}
+  @media(min-width:981px){.site-header .mobile-department-menu{display:none}}
+  @media(prefers-reduced-motion:reduce){.site-header .department-menu__toggle,.site-header .department-menu-panel,.mobile-department-menu summary::after{transition:none}}
+</style>
