@@ -48,8 +48,45 @@ const productionWorkflow = read(".github/workflows/cloudflare-pages-production-v
 assert.match(
   productionWorkflow,
   /pages deploy dist --project-name=hermes --branch=main/,
-  "The controlled production workflow must deploy the reviewed dist output to Pages project hermes.",
+  "The controlled production workflow must preserve the reviewed Wrangler Pages deploy path when scoped credentials are available.",
 );
+assert.match(
+  productionWorkflow,
+  /checks:\s*read/,
+  "The release verifier needs read-only check access to validate the native Cloudflare exact-SHA deployment fallback.",
+);
+assert.match(
+  productionWorkflow,
+  /run\.name === "Cloudflare Pages" && run\.app\?\.slug === "cloudflare-workers-and-pages"/,
+  "The fallback must accept only the official Cloudflare Pages Git integration check.",
+);
+assert.match(
+  productionWorkflow,
+  /commits\/\$\{sha\}\/check-runs\?per_page=100/,
+  "The native Pages fallback must be bound to the exact approved commit SHA.",
+);
+assert.match(
+  productionWorkflow,
+  /if: steps\.credentials\.outputs\.available != 'true'/,
+  "The native Cloudflare path must activate only when the optional Wrangler credential path is unavailable.",
+);
+assert.match(
+  productionWorkflow,
+  /https:\/\/hermeslogisticsus\.com\/paths\/academy\//,
+  "Production parity must read the public Academy owner back from the real domain.",
+);
+for (const marker of [
+  "Build practical skills across five Hermes Academy tracks.",
+  "U.S. Logistics Operations",
+  "IT & AI",
+  "Sales",
+  "COO / Operations",
+]) {
+  assert.ok(productionWorkflow.includes(marker), `WEB10 Academy production marker is missing from release verification: ${marker}`);
+}
+for (const retiredMarker of ["2 public programs", "Two public programs", "currently presents two public program paths"]) {
+  assert.ok(productionWorkflow.includes(retiredMarker), `Retired Academy marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
+}
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
@@ -89,4 +126,4 @@ for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
   );
 }
 
-console.log("Cloudflare deployment ownership contract passed: Pages plus one composed hermes-lead-email Worker owner.");
+console.log("Cloudflare deployment ownership contract passed: Pages has exact-SHA Wrangler/native-Git release verification plus one composed hermes-lead-email Worker owner.");
