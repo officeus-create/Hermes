@@ -13,20 +13,39 @@
   const ruMarketing = { "/business-growth/": "/ru/business-growth/", "/gb/london/website-development/": "/ru/business-growth/website/", "/gb/london/seo-services/": "/ru/business-growth/seo/", "/gb/london/social-media-management/": "/ru/business-growth/social-media/", "/gb/london/meta-ads/": "/ru/business-growth/advertising/", "/gb/london/": "/ru/gb/london/" };
   const ruTechnology = { "/services/hermes-connect/": "/services/hermes-connect/?lang=ru", "/gb/london/website-development/": "/ru/gb/london/it-web-development/" };
 
+  const isRu = () => (document.documentElement.lang || "").toLowerCase() === "ru";
   const departmentId = (href) => order.find((id) => href === departments[id].href || href.endsWith(`#${id}`)) || null;
   const makeLink = (label, href, className) => { const link = document.createElement("a"); link.href = href; link.textContent = label; if (className) link.className = className; return link; };
+  const localizedProduct = (id, label, href) => {
+    if (!isRu()) return { label, href };
+    const localizedLabel = ruLabels[href] || label;
+    const localizedHref = id === "marketing" ? (ruMarketing[href] || href) : id === "technology" ? (ruTechnology[href] || href) : href;
+    return { label: localizedLabel, href: localizedHref };
+  };
+  const localizedOverview = (id) => isRu() ? ruOverview[id] : departments[id].href;
   const closeDesktop = (except) => document.querySelectorAll("[data-department-menu]").forEach((menu) => { if (menu === except) return; menu.removeAttribute("data-open"); menu.querySelector("[data-department-toggle]")?.setAttribute("aria-expanded", "false"); });
-  const setOpen = (wrapper, toggle, open) => { if (open) { closeDesktop(wrapper); wrapper.setAttribute("data-open", "true"); } else wrapper.removeAttribute("data-open"); toggle.setAttribute("aria-expanded", open ? "true" : "false"); };
 
-  const desktopPanel = (id) => {
+  const desktopPanel = (id, primaryLabel) => {
     const config = departments[id];
     const panel = document.createElement("div"); panel.className = "department-menu-panel"; panel.dataset.departmentPanel = id;
     const heading = document.createElement("div"); heading.className = "department-menu-panel__heading";
-    const strong = document.createElement("strong"); strong.textContent = config.label;
-    heading.append(strong, makeLink("Open department", config.href));
+    const strong = document.createElement("strong"); strong.textContent = primaryLabel || config.label;
+    heading.append(strong, makeLink(isRu() ? "Открыть раздел" : "Open department", localizedOverview(id)));
     const grid = document.createElement("div"); grid.className = "department-menu-panel__grid";
-    config.items.forEach(([label, href]) => grid.append(makeLink(label, href)));
+    config.items.forEach(([label, href]) => { const item = localizedProduct(id, label, href); grid.append(makeLink(item.label, item.href)); });
     panel.append(heading, grid); return panel;
+  };
+
+  const ensureDesktopPanel = (wrapper, id, primary) => {
+    let panel = wrapper.querySelector("[data-department-panel]");
+    if (!panel) { panel = desktopPanel(id, primary.textContent?.trim() || departments[id].label); wrapper.append(panel); }
+    return panel;
+  };
+
+  const setDesktopOpen = (wrapper, toggle, id, primary, open) => {
+    if (open) { ensureDesktopPanel(wrapper, id, primary); closeDesktop(wrapper); wrapper.setAttribute("data-open", "true"); }
+    else wrapper.removeAttribute("data-open");
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
   };
 
   const enhanceDesktop = (header) => {
@@ -38,46 +57,46 @@
       const anchor = byId.get(id); if (!anchor) return; const config = departments[id];
       const wrapper = document.createElement("div"); wrapper.className = "department-menu"; wrapper.dataset.departmentMenu = id; wrapper.style.setProperty("--department-accent", config.accent);
       const primary = anchor.cloneNode(true); primary.classList.add("department-menu__primary");
-      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "department-menu__toggle"; toggle.dataset.departmentToggle = id; toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `Open ${config.label} menu`); toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
-      toggle.addEventListener("click", (event) => { event.stopPropagation(); setOpen(wrapper, toggle, wrapper.getAttribute("data-open") !== "true"); });
-      wrapper.addEventListener("mouseenter", () => setOpen(wrapper, toggle, true)); wrapper.addEventListener("mouseleave", () => setOpen(wrapper, toggle, false)); wrapper.addEventListener("focusin", () => setOpen(wrapper, toggle, true)); wrapper.addEventListener("focusout", (event) => { if (event.relatedTarget instanceof Node && wrapper.contains(event.relatedTarget)) return; setOpen(wrapper, toggle, false); });
-      wrapper.append(primary, toggle, desktopPanel(id)); nav.insertBefore(wrapper, marker); anchor.remove();
+      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "department-menu__toggle"; toggle.dataset.departmentToggle = id; toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `${isRu() ? "Открыть меню" : "Open"} ${primary.textContent?.trim() || config.label}${isRu() ? "" : " menu"}`); toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
+      toggle.addEventListener("click", (event) => { event.stopPropagation(); setDesktopOpen(wrapper, toggle, id, primary, wrapper.getAttribute("data-open") !== "true"); });
+      wrapper.addEventListener("mouseenter", () => setDesktopOpen(wrapper, toggle, id, primary, true));
+      wrapper.addEventListener("mouseleave", () => setDesktopOpen(wrapper, toggle, id, primary, false));
+      wrapper.addEventListener("focusin", () => setDesktopOpen(wrapper, toggle, id, primary, true));
+      wrapper.addEventListener("focusout", (event) => { if (event.relatedTarget instanceof Node && wrapper.contains(event.relatedTarget)) return; setDesktopOpen(wrapper, toggle, id, primary, false); });
+      wrapper.append(primary, toggle); nav.insertBefore(wrapper, marker); anchor.remove();
     });
     marker.remove(); nav.dataset.departmentEnhanced = "true";
   };
 
+  const ensureMobileBody = (nav, header, anchor, toggle, id) => {
+    let body = toggle.nextElementSibling;
+    if (!(body instanceof HTMLElement) || !body.matches(`[data-mobile-department-body="${id}"]`)) {
+      body = document.createElement("div"); body.className = "mobile-department-menu__body"; body.dataset.mobileDepartmentBody = id; body.hidden = true;
+      const overviewLabel = isRu() ? `Открыть раздел «${anchor.textContent?.trim() || departments[id].label}»` : `${anchor.textContent?.trim() || departments[id].label} overview`;
+      body.append(makeLink(overviewLabel, localizedOverview(id), "mobile-department-menu__overview"));
+      departments[id].items.forEach(([label, href]) => { const item = localizedProduct(id, label, href); body.append(makeLink(item.label, item.href)); });
+      toggle.insertAdjacentElement("afterend", body);
+      body.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => { nav.hidden = true; const button = header.querySelector("[data-menu-button]"); button?.setAttribute("aria-expanded", "false"); button?.setAttribute("aria-label", "Open navigation"); }));
+    }
+    return body;
+  };
+
   const enhanceMobile = (header) => {
     const nav = header.querySelector(".mobile-nav"); if (!nav || nav.dataset.departmentEnhanced === "true") return;
-    const byId = new Map(); [...nav.querySelectorAll(":scope > a")].forEach((anchor) => { const id = departmentId(anchor.getAttribute("href") || ""); if (id) byId.set(id, anchor); });
-    const first = order.map((id) => byId.get(id)).find(Boolean); if (!first) return;
-    const marker = document.createComment("mobile-department-menu-anchor"); nav.insertBefore(marker, first);
-    order.forEach((id) => {
-      const anchor = byId.get(id); if (!anchor) return; const config = departments[id];
-      const details = document.createElement("details"); details.className = "mobile-department-menu"; details.dataset.mobileDepartmentMenu = id; details.style.setProperty("--department-accent", config.accent);
-      const summary = document.createElement("summary"); summary.textContent = anchor.textContent?.trim() || config.label;
-      const body = document.createElement("div"); body.className = "mobile-department-menu__body"; body.append(makeLink(`${summary.textContent} overview`, config.href, "mobile-department-menu__overview")); config.items.forEach(([label, href]) => body.append(makeLink(label, href)));
-      details.append(summary, body); nav.insertBefore(details, marker); anchor.remove();
+    [...nav.querySelectorAll(":scope > a")].forEach((anchor) => {
+      const id = departmentId(anchor.getAttribute("href") || ""); if (!id) return;
+      const config = departments[id]; anchor.classList.add("mobile-department-primary"); anchor.dataset.mobileDepartment = id; anchor.style.setProperty("--department-accent", config.accent);
+      const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "mobile-department-toggle"; toggle.dataset.mobileDepartmentToggle = id; toggle.style.setProperty("--department-accent", config.accent); toggle.setAttribute("aria-expanded", "false"); toggle.setAttribute("aria-label", `${isRu() ? "Открыть меню" : "Open"} ${anchor.textContent?.trim() || config.label}${isRu() ? "" : " menu"}`); toggle.innerHTML = '<span aria-hidden="true">⌄</span>';
+      anchor.insertAdjacentElement("afterend", toggle);
+      toggle.addEventListener("click", () => {
+        const body = ensureMobileBody(nav, header, anchor, toggle, id); const open = toggle.getAttribute("aria-expanded") !== "true";
+        toggle.setAttribute("aria-expanded", open ? "true" : "false"); toggle.toggleAttribute("data-open", open); body.hidden = !open;
+      });
     });
-    marker.remove(); nav.querySelectorAll(".mobile-department-menu a").forEach((link) => link.addEventListener("click", () => { nav.hidden = true; const button = header.querySelector("[data-menu-button]"); button?.setAttribute("aria-expanded", "false"); button?.setAttribute("aria-label", "Open navigation"); })); nav.dataset.departmentEnhanced = "true";
+    nav.dataset.departmentEnhanced = "true";
   };
 
-  const localizeRu = () => {
-    if ((document.documentElement.lang || "").toLowerCase() !== "ru") return;
-    const productRoute = (department, href) => department === "marketing" ? (ruMarketing[href] || href) : department === "technology" ? (ruTechnology[href] || href) : href;
-    document.querySelectorAll("[data-department-menu]").forEach((menu) => {
-      const department = menu.dataset.departmentMenu || ""; const overviewHref = ruOverview[department]; const primary = menu.querySelector(".department-menu__primary"); const title = menu.querySelector(".department-menu-panel__heading strong");
-      if (primary && overviewHref) primary.setAttribute("href", overviewHref); if (title && primary) title.textContent = primary.textContent?.trim() || title.textContent;
-      const overview = menu.querySelector(".department-menu-panel__heading a"); if (overview) { overview.textContent = "Открыть раздел"; if (overviewHref) overview.setAttribute("href", overviewHref); }
-      menu.querySelectorAll(".department-menu-panel__grid a").forEach((link) => { const href = link.getAttribute("href") || ""; if (ruLabels[href]) link.textContent = ruLabels[href]; const localized = productRoute(department, href); if (localized !== href) link.setAttribute("href", localized); });
-      const toggle = menu.querySelector("[data-department-toggle]"); if (toggle && primary) toggle.setAttribute("aria-label", `Открыть меню «${primary.textContent?.trim() || "раздел"}»`);
-    });
-    document.querySelectorAll("[data-mobile-department-menu]").forEach((menu) => {
-      const department = menu.dataset.mobileDepartmentMenu || ""; const overviewHref = ruOverview[department];
-      menu.querySelectorAll("a").forEach((link) => { const href = link.getAttribute("href") || ""; if (link.classList.contains("mobile-department-menu__overview")) { const summary = menu.querySelector("summary")?.textContent?.trim(); link.textContent = summary ? `Открыть раздел «${summary}»` : "Открыть раздел"; if (overviewHref) link.setAttribute("href", overviewHref); return; } if (ruLabels[href]) link.textContent = ruLabels[href]; const localized = productRoute(department, href); if (localized !== href) link.setAttribute("href", localized); });
-    });
-  };
-
-  const init = () => { document.querySelectorAll(".site-header").forEach((header) => { enhanceDesktop(header); enhanceMobile(header); }); localizeRu(); };
+  const init = () => { document.querySelectorAll(".site-header").forEach((header) => { enhanceDesktop(header); enhanceMobile(header); }); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
   document.addEventListener("click", (event) => { const target = event.target; if (target instanceof Element && !target.closest("[data-department-menu]")) closeDesktop(); });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDesktop(); });
