@@ -1,31 +1,37 @@
 import type { PathDetail } from "./site";
 
 export const academyPublicPathOverrides: Partial<PathDetail> = {
-  title: "Learn practical U.S. logistics and marketing skills.",
-  body: "Two applied programs connect professional concepts to real U.S. logistics and marketing workflows.",
+  title: "Build practical skills across five Hermes Academy tracks.",
+  body: "Explore Logistics, Marketing, IT & AI, Sales, and COO / Operations as public learning tracks connected to real business workflows.",
   points: [
     "U.S. Logistics Operations",
-    "Marketing for U.S. and international service businesses",
-    "Separate paid cohort and free practice models",
+    "Marketing · IT & AI · Sales",
+    "COO / Operations",
   ],
-  audience: "For learners and working professionals building practical capability for U.S. logistics or marketing work.",
-  overview: "Hermes Business Academy currently presents two public program paths: U.S. Logistics Operations and Marketing. Leadership, systems thinking, and technology may support exercises inside those paths, but they are not separate public programs. Paid cohorts and free practice opportunities use different eligibility, scope, and participation rules. Program dates, scope, and prices are published only after the exact offer is approved. Training and practice do not guarantee employment, income, clients, certification, promotion, or future paid work.",
-  seoTitle: "U.S. Logistics and Marketing Training | Hermes Academy",
-  seoDescription: "Practical U.S. logistics and marketing education with separate paid cohort and free practice models, email coordination, and no employment or income guarantee.",
-  seoServiceName: "Practical U.S. logistics and marketing education",
-  localFocus: "U.S.-market programs · International learners · Email coordination only",
+  audience: "For learners and working professionals building practical capability across logistics, marketing, technology, sales, and operations.",
+  overview: "Hermes Business Academy publicly presents five learning tracks: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations. These tracks describe learning direction and practical scope; they do not imply that a paid cohort, seat, price, schedule, certificate, employment path, or enrollment checkout is currently open. Paid cohorts and free practice opportunities use separate eligibility, scope, and participation rules. Exact dates, scope, capacity, and prices are published only after the specific offer is approved. Training and practice do not guarantee employment, income, clients, certification, promotion, or future paid work.",
+  seoTitle: "Logistics, Marketing, IT, Sales & Operations Training | Hermes Academy",
+  seoDescription: "Practical Hermes Academy learning tracks in U.S. logistics, marketing, IT & AI, sales, and operations with approval-gated cohort terms.",
+  seoServiceName: "Practical logistics, marketing, IT, sales, and operations education",
+  localFocus: "U.S.-market and international learning tracks · Email coordination only",
   offerings: [
     { title: "U.S. Logistics Operations", body: "Dispatch foundations, carrier and broker communication, documents, equipment logic, load lifecycle, negotiation practice, and operating routines for the U.S. market." },
     { title: "Marketing", body: "Positioning, content, campaigns, customer journeys, sales follow-up, analytics, and practical growth execution for U.S. and international service businesses." },
+    { title: "IT & AI", body: "Product thinking, web systems, automation, AI workflows, data boundaries, testing, and practical implementation around real business processes." },
+    { title: "Sales", body: "Prospecting, discovery, objection handling, follow-up, CRM discipline, negotiation, and practical customer communication." },
+    { title: "COO / Operations", body: "Department design, KPI, SOPs, execution rhythm, cross-functional coordination, analytics, decision systems, and scaling operations." },
   ],
   serviceGroups: [
     { title: "U.S. Logistics path", items: ["Dispatch foundations", "Carrier and broker communication", "Documents and load lifecycle", "Equipment and lane logic", "Operational problem solving"] },
     { title: "Marketing path", items: ["Positioning and offer", "Content and campaigns", "Lead journey", "Sales follow-up", "Analytics and improvement"] },
+    { title: "IT & AI path", items: ["Product and system thinking", "Web and data workflows", "Automation", "AI-assisted operations", "Testing and safe implementation"] },
+    { title: "Sales path", items: ["Prospecting", "Discovery", "Objection handling", "Follow-up", "CRM and negotiation discipline"] },
+    { title: "COO / Operations path", items: ["Department design", "KPI and dashboards", "SOP and process control", "Execution rhythm", "Scaling and decision systems"] },
   ],
   faq: [
-    { question: "Which programs are publicly presented?", answer: "Two programs: U.S. Logistics Operations and Marketing. Leadership and technology topics may support exercises, but they are not separate public Academy programs on this page." },
+    { question: "Which learning tracks are publicly presented?", answer: "Five learning tracks are visible: U.S. Logistics Operations, Marketing, IT & AI, Sales, and COO / Operations. A visible learning track does not by itself mean a paid cohort or enrollment window is open." },
     { question: "Are paid cohorts and free practice the same offer?", answer: "No. A paid cohort requires an approved public offer with scope, dates, price, payment, refund, capacity, and enrollment terms. Free practice is a separate application and eligibility process with its own participation rules." },
-    { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment." },
+    { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment unless that exact offer is separately activated." },
     { question: "Is employment or income guaranteed?", answer: "No. Training and practice can build capability and evidence of readiness, but employment, income, clients, certification, promotion, access duration, and future paid work are not guaranteed." },
   ],
 };
@@ -47,6 +53,30 @@ export const academyPublicTracks = [
     body: academyPublicPathOverrides.offerings?.[1].body ?? "",
     practice: ["Offer and audience diagnosis", "Content and campaign briefs", "Lead journey exercises", "Reporting and improvement reviews"],
   },
+  {
+    id: "it",
+    label: "IT & AI",
+    problem: "Tools and AI experiments stay fragmented when product goals, data, automation, testing, and business ownership are not connected.",
+    title: "Turn business workflows into reliable digital systems and AI-assisted operations.",
+    body: academyPublicPathOverrides.offerings?.[2].body ?? "",
+    practice: ["Product and workflow mapping", "Automation briefs", "AI use-case review", "Testing and implementation exercises"],
+  },
+  {
+    id: "sales",
+    label: "Sales",
+    problem: "Outreach underperforms when prospecting, discovery, objections, follow-up, and CRM discipline are treated as separate activities.",
+    title: "Practice the full sales conversation from first contact through disciplined follow-up.",
+    body: academyPublicPathOverrides.offerings?.[3].body ?? "",
+    practice: ["Prospecting scenarios", "Discovery questions", "Objection handling", "Follow-up and CRM review"],
+  },
+  {
+    id: "operations",
+    label: "COO / Operations",
+    problem: "Teams lose speed when departments, KPI, ownership, SOPs, meetings, and decisions are not connected into one operating system.",
+    title: "Learn to design, measure, and improve an operating system across departments.",
+    body: academyPublicPathOverrides.offerings?.[4].body ?? "",
+    practice: ["Department maps", "KPI and dashboard exercises", "SOP review", "Execution and decision scenarios"],
+  },
 ] as const;
 
 export const academyEnrollmentModels = [
@@ -55,7 +85,7 @@ export const academyEnrollmentModels = [
     label: "Paid cohort",
     status: "owner_approval_required",
     description: "Published only after the exact program, scope, dates, price, payment terms, refund terms, capacity, and contact workflow are approved.",
-    boundary: "No fixed price, enrollment, payment, seat, certificate, employment, income, or result is represented on the current website.",
+    boundary: "No fixed price, enrollment, payment, seat, certificate, employment, income, or result is represented unless that exact cohort is separately activated.",
   },
   {
     id: "free_practice",

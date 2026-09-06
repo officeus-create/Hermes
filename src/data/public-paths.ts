@@ -8,9 +8,18 @@ const publicDirectionOverrides: Partial<Record<PathDetail["id"], Partial<PathDet
   technology: { category: "Hermes Technology", brandLabel: "Hermes Technology" },
 };
 
-export const publicPaths: PathDetail[] = site.paths.map((path) => {
-  const academyOverride = path.id === "academy" ? academyPublicPathOverrides : {};
-  return { ...path, ...publicDirectionOverrides[path.id], ...academyOverride };
-});
+const directionOrder: Record<PathDetail["id"], number> = {
+  logistics: 0,
+  marketing: 1,
+  technology: 2,
+  academy: 3,
+};
+
+export const publicPaths: PathDetail[] = site.paths
+  .map((path) => {
+    const academyOverride = path.id === "academy" ? academyPublicPathOverrides : {};
+    return { ...path, ...publicDirectionOverrides[path.id], ...academyOverride };
+  })
+  .sort((a, b) => directionOrder[a.id] - directionOrder[b.id]);
 
 export const publicPathById = (id: string) => publicPaths.find((path) => path.id === id);
