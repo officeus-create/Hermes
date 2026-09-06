@@ -68,16 +68,17 @@ const schema: any[] = [];
             <button class="tab-btn" data-tab="register">Register New Shop</button>
           </div>
 
-          <div id="alert-box" class="alert-box hidden"></div>
+          <div id="alert-box" class="alert-box hidden" role="alert" aria-live="assertive" aria-atomic="true" tabindex="-1"></div>
 
           <form id="login-form" class="auth-form active">
             <div class="form-group">
               <label for="login-email">Email Address</label>
-              <input type="email" id="login-email" required placeholder="owner@shop.com" />
+              <input type="email" id="login-email" required autocomplete="username" placeholder="owner@shop.com" aria-describedby="login-email-help" />
+              <small id="login-email-help" class="field-help">Use the email attached to your Hermes owner account.</small>
             </div>
             <div class="form-group">
               <label for="login-password">Password</label>
-              <input type="password" id="login-password" required placeholder="••••••••" />
+              <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••" />
             </div>
             <button type="submit" class="btn primary-btn full-width mt-6">Secure Login</button>
           </form>
@@ -85,15 +86,20 @@ const schema: any[] = [];
           <form id="register-form" class="auth-form">
             <div class="form-group">
               <label for="reg-name">Your Full Name</label>
-              <input type="text" id="reg-name" required placeholder="Jane Doe" minlength="2" />
+              <input type="text" id="reg-name" required autocomplete="name" placeholder="Jane Doe" minlength="2" />
             </div>
             <div class="form-group">
               <label for="reg-email">Business Email</label>
-              <input type="email" id="reg-email" required placeholder="owner@shop.com" />
+              <input type="email" id="reg-email" required autocomplete="email" placeholder="owner@shop.com" />
             </div>
             <div class="form-group">
               <label for="reg-password">Password</label>
-              <input type="password" id="reg-password" required placeholder="Min. 8 characters" minlength="8" />
+              <input type="password" id="reg-password" required autocomplete="new-password" placeholder="Min. 8 characters" minlength="8" aria-describedby="reg-password-help" />
+            </div>
+            <div class="form-group">
+              <label for="reg-password-confirm">Confirm Password</label>
+              <input type="password" id="reg-password-confirm" required autocomplete="new-password" placeholder="Re-enter your password" minlength="8" aria-describedby="reg-password-help" />
+              <small id="reg-password-help" class="field-help">Use at least 8 characters and enter the same password twice.</small>
             </div>
             <input type="hidden" id="reg-role" value="Shop Owner" />
             <input type="hidden" id="reg-location" value="United States" />
@@ -118,15 +124,33 @@ const schema: any[] = [];
 
   const alertBox = document.getElementById("alert-box");
 
-  function showAlert(msg: string, isError = true) {
+  function showAlert(msg: string, isError = true, focus = true) {
     if (!alertBox) return;
     alertBox.textContent = msg;
     alertBox.className = `alert-box ${isError ? 'error' : 'success'}`;
+    if (focus) alertBox.focus();
   }
 
   function hideAlert() {
     if (!alertBox) return;
     alertBox.className = "alert-box hidden";
+    alertBox.textContent = "";
+  }
+
+  function safeError(data: any, fallback: string, status = 0) {
+    const message = typeof data?.error === "string" ? data.error.trim() : "";
+    if (message && !/^[a-z0-9]+(?:[_-][a-z0-9]+)+$/i.test(message) && !/internal|database|stack|exception|undefined|null/i.test(message)) return message;
+    if (status === 409) return "An account with this email already exists. Try signing in instead.";
+    return fallback;
+  }
+
+  function setSubmitting(form: HTMLFormElement, submitting: boolean, label: string) {
+    const btn = form.querySelector("button[type='submit']");
+    if (!(btn instanceof HTMLButtonElement)) return;
+    btn.disabled = submitting;
+    btn.setAttribute("aria-busy", String(submitting));
+    if (!btn.dataset.defaultLabel) btn.dataset.defaultLabel = btn.textContent?.trim() || "";
+    btn.textContent = submitting ? label : btn.dataset.defaultLabel;
   }
 
   function showSection(name: keyof typeof sections) {
@@ -191,8 +215,8 @@ const schema: any[] = [];
     const email = (document.getElementById("login-email") as HTMLInputElement).value;
     const password = (document.getElementById("login-password") as HTMLInputElement).value;
 
-    const btn = (e.target as HTMLFormElement).querySelector("button");
-    if (btn) btn.disabled = true;
+    const form = e.target as HTMLFormElement;
+    setSubmitting(form, true, "Signing in…");
 
     try {
       const res = await fetch("/api/auth/login", {
@@ -204,12 +228,12 @@ const schema: any[] = [];
       if (res.ok && data.success) {
         await checkSession();
       } else {
-        showAlert(data.error || "Login failed");
+        showAlert(safeError(data, "We could not sign you in. Check your details and try again.", res.status));
       }
     } catch (err) {
-      showAlert("Network error during login");
+      showAlert("We could not reach Hermes. Check your connection and try again.");
     } finally {
-      if (btn) btn.disabled = false;
+      setSubmitting(form, false, "");
     }
   });
 
@@ -219,13 +243,20 @@ const schema: any[] = [];
     
     const email = (document.getElementById("reg-email") as HTMLInputElement).value;
     const password = (document.getElementById("reg-password") as HTMLInputElement).value;
+    const passwordConfirm = (document.getElementById("reg-password-confirm") as HTMLInputElement).value;
     const name = (document.getElementById("reg-name") as HTMLInputElement).value;
     const role = (document.getElementById("reg-role") as HTMLInputElement).value;
     const location = (document.getElementById("reg-location") as HTMLInputElement).value;
     const bio = (document.getElementById("reg-bio") as HTMLInputElement).value;
 
-    const btn = (e.target as HTMLFormElement).querySelector("button");
-    if (btn) btn.disabled = true;
+    const form = e.target as HTMLFormElement;
+    if (password !== passwordConfirm) {
+      showAlert("Passwords do not match. Re-enter them and try again.");
+      (document.getElementById("reg-password-confirm") as HTMLInputElement)?.focus();
+      return;
+    }
+
+    setSubmitting(form, true, "Creating account…");
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -237,12 +268,12 @@ const schema: any[] = [];
       if (res.ok && data.success) {
         await checkSession();
       } else {
-        showAlert(data.error || data.errors?.join(", ") || "Registration failed");
+        showAlert(safeError(data, data.errors?.join(", ") || "We could not create your account. Check your details and try again.", res.status));
       }
     } catch (err) {
-      showAlert("Network error during registration");
+      showAlert("We could not reach Hermes. Check your connection and try again.");
     } finally {
-      if (btn) btn.disabled = false;
+      setSubmitting(form, false, "");
     }
   });
 </script>
@@ -369,6 +400,12 @@ const schema: any[] = [];
 
   .form-group input:focus {
     border-color: #7c5cff;
+  }
+
+  .field-help {
+    color: #8f98aa;
+    font-size: 12px;
+    line-height: 1.45;
   }
 
   .btn {
