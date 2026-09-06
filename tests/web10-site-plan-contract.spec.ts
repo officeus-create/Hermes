@@ -18,10 +18,13 @@ test("WEB 10 keeps one canonical department order across header and localized su
 
 test("WEB 10 keeps Russian direction discovery on the existing localized overview and reuses canonical product backends", async () => {
   const header = await source("src/components/SiteHeader.astro");
-  const menu = await source("src/components/DepartmentMenuLocalization.astro");
+  const loader = await source("src/components/DepartmentMenuEnhancer.astro");
+  const menu = await source("public/department-menu.js");
   const integrity = await source("src/components/RussianLocaleIntegrity.astro");
 
   expect(header).toContain('url: `${localeBase}#${path.id}`');
+  expect(loader).toContain('/department-menu.js');
+  expect(loader).toContain('/department-menu.css');
   for (const [id, href] of [
     ["logistics", "/ru/#logistics"],
     ["marketing", "/ru/#marketing"],
