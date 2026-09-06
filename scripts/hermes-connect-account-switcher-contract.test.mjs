@@ -73,7 +73,7 @@ test('account switcher remains fail-closed until a valid account payload is load
 });
 
 
-test('public Hermes Connect account affordance is auth-hydrated without SSR private workspace anchors', async () => {
+test('public Hermes Connect account affordance persists across public routes without SSR private workspace anchors', async () => {
   const source = await loadSwitcher();
   const header = await loadHeader();
 
@@ -86,7 +86,9 @@ test('public Hermes Connect account affordance is auth-hydrated without SSR priv
   assert.match(source, /document\.createElement\("a"\)/);
   assert.match(source, /if \(!dynamicWorkspaces \|\| entries\.length === 0\)/);
 
-  assert.match(header, /const isHermesConnectLanding = currentPath === "\/services\/hermes-connect" \|\| currentPath === "\/services\/hermes-connect\/"/);
-  assert.match(header, /HermesConnectAccountSwitcher current="neutral" mode="menu" publicSafe/);
-  assert.match(header, /HermesConnectAccountSwitcher current="neutral" publicSafe/);
+  assert.match(header, /const publicWorkspace: "repair" \| "academy" \| "beauty" \| "neutral"/);
+  assert.match(header, /currentPath\.startsWith\("\/services\/hermes-connect\/repair-shops"\)/);
+  assert.match(header, /!privateWorkspace && isHermesConnectRoute && <HermesConnectAccountSwitcher current=\{publicWorkspace\} mode="menu" publicSafe/);
+  assert.match(header, /!privateWorkspace && isHermesConnectRoute && <div class="hc-mobile-account-panel"><HermesConnectAccountSwitcher current=\{publicWorkspace\} publicSafe/);
+  assert.doesNotMatch(header, /isHermesConnectLanding/);
 });
