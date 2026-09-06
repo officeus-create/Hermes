@@ -1,0 +1,75 @@
+<script>
+  const locale = document.documentElement.lang?.toLowerCase();
+
+  const russianByHref: Record<string, string> = {
+    "/paths/logistics/": "Логистика",
+    "/load-board/": "Load Board",
+    "/paths/logistics/carriers/fleet-owners/": "Перевозчики и автопарки",
+    "/carrier/": "Договор и онбординг",
+    "/paths/logistics/carriers/owner-operators/": "Owner-operators",
+    "/paths/logistics/brokers/carrier-capacity/": "Брокеры",
+    "/paths/logistics/customers/vehicle-transport/": "Отправители и дилеры",
+    "/logistics/car-hauling-dispatch/": "Диспетчеризация и back office",
+    "/logistics/resources/": "Ресурсы для перевозчиков",
+    "/paths/marketing/": "Маркетинг",
+    "/business-growth/": "Система роста",
+    "/gb/london/website-development/": "Сайты",
+    "/gb/london/seo-services/": "SEO и GEO",
+    "/gb/london/social-media-management/": "Социальные сети",
+    "/gb/london/meta-ads/": "Meta Ads",
+    "/gb/london/": "Лондон",
+    "/academy/marketing/": "Изучать маркетинг",
+    "/paths/technology/": "IT",
+    "/services/hermes-connect/": "Hermes Connect",
+    "/paths/technology/#service-groups-title": "Возможности",
+    "/paths/technology/#project-brief": "Бриф проекта",
+    "/case/it-development/": "IT-разработка",
+    "/paths/academy/#academy-it": "Изучать IT и AI",
+    "/paths/academy/": "Академия",
+    "/academy/us-logistics-operations/": "Логистика",
+    "/paths/academy/#academy-sales": "Продажи",
+    "/paths/academy/#academy-operations": "COO / Операции",
+    "/academy/how-training-works/": "Как проходит обучение",
+    "/academy/apply/": "Подать заявку",
+  };
+
+  const localizeRussianDepartmentMenus = () => {
+    if (locale !== "ru") return;
+
+    document.querySelectorAll<HTMLElement>("[data-department-menu]").forEach((menu) => {
+      const title = menu.querySelector<HTMLElement>(".department-menu-panel__heading strong");
+      const primary = menu.querySelector<HTMLAnchorElement>(".department-menu__primary");
+      if (title && primary) title.textContent = primary.textContent?.trim() || title.textContent;
+
+      const overview = menu.querySelector<HTMLAnchorElement>(".department-menu-panel__heading a");
+      if (overview) overview.textContent = "Открыть раздел";
+
+      menu.querySelectorAll<HTMLAnchorElement>(".department-menu-panel__grid a").forEach((link) => {
+        const label = russianByHref[link.getAttribute("href") || ""];
+        if (label) link.textContent = label;
+      });
+
+      const toggle = menu.querySelector<HTMLElement>("[data-department-toggle]");
+      if (toggle && primary) toggle.setAttribute("aria-label", `Открыть меню «${primary.textContent?.trim() || "раздел"}»`);
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-mobile-department-menu]").forEach((menu) => {
+      menu.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
+        const href = link.getAttribute("href") || "";
+        if (link.classList.contains("mobile-department-menu__overview")) {
+          const summary = menu.querySelector<HTMLElement>("summary")?.textContent?.trim();
+          link.textContent = summary ? `Открыть раздел «${summary}»` : "Открыть раздел";
+          return;
+        }
+        const label = russianByHref[href];
+        if (label) link.textContent = label;
+      });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", localizeRussianDepartmentMenus, { once: true });
+  } else {
+    localizeRussianDepartmentMenus();
+  }
+</script>
