@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en"
+  data-composition-variables='[
+    {"id":"job_id","type":"string","label":"Job ID","default":"demo_job"},
+    {"id":"brand_id","type":"string","label":"Brand ID","default":"hermes"},
+    {"id":"purpose","type":"string","label":"Purpose","default":"social_reel"},
+    {"id":"template_version","type":"string","label":"Template version","default":"1.0.0"},
+    {"id":"brand_label","type":"string","label":"Brand label","default":"HERMES"},
+    {"id":"eyebrow","type":"string","label":"Eyebrow","default":"AI VIDEO FACTORY"},
+    {"id":"hook","type":"string","label":"Hook","default":"One system. Clear execution.","maxLength":90},
+    {"id":"body","type":"string","label":"Body","default":"Turn repeatable work into a measurable content pipeline.","maxLength":180},
+    {"id":"metric_value","type":"string","label":"Metric value","default":"PROOF","maxLength":20},
+    {"id":"metric_label","type":"string","label":"Metric label","default":"Evidence-backed by design","maxLength":70},
+    {"id":"cta","type":"string","label":"CTA","default":"See how Hermes works","maxLength":64},
+    {"id":"footer","type":"string","label":"Footer","default":"hermeslogisticsus.com","maxLength":64},
+    {"id":"accent","type":"color","label":"Accent","default":"#7C5CFF"}
+  ]'>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <title>Hermes Vertical Reel v1</title>
+  <script src="./vendor/gsap.min.js"></script>
+  <style>
+    @font-face {
+      font-family: "Manrope";
+      src: url("./vendor/fonts/manrope-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 500 800;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "Source Sans 3";
+      src: url("./vendor/fonts/source-sans-3-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400 700;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "IBM Plex Mono";
+      src: url("./vendor/fonts/ibm-plex-mono-500-latin.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 500;
+      font-display: block;
+    }
+
+    :root {
+      --pearl: #F7F6F3;
+      --paper: #FFFFFF;
+      --obsidian: #0B0D12;
+      --graphite: #20232C;
+      --raised: #151922;
+      --muted-light: #666C79;
+      --muted-dark: #AEB7C7;
+      --violet: #7C5CFF;
+      --ocean: #5AC8FA;
+      --success: #28B487;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: var(--pearl); }
+    body { font-family: "Source Sans 3", sans-serif; font-weight: 400; }
+
+    [data-composition-id="hermes-vertical-reel-v1"] {
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+      overflow: hidden;
+      background: var(--pearl);
+      color: var(--obsidian);
+      isolation: isolate;
+    }
+
+    .scene {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .scene-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 36px;
+      padding: 164px 92px 148px;
+    }
+
+    .scene--pearl { background: var(--pearl); color: var(--obsidian); }
+    .scene--dark { background: var(--obsidian); color: var(--paper); }
+
+    .eyebrow {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      max-width: 860px;
+      will-change: transform, opacity;
+    }
+    .scene--dark .eyebrow { color: var(--muted-dark); }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 36px;
+      will-change: transform, opacity;
+    }
+
+    .brand-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent, var(--violet));
+      box-shadow: 24px 0 0 color-mix(in srgb, var(--accent, var(--violet)) 52%, var(--ocean));
+      flex: 0 0 auto;
+    }
+
+    .brand-label {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 28px;
+      letter-spacing: 0.18em;
+      font-weight: 500;
+    }
+
+    .headline {
+      margin: 0;
+      max-width: 900px;
+      font-family: Manrope, sans-serif;
+      font-size: 112px;
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      font-weight: 800;
+      text-wrap: balance;
+      will-change: transform, opacity;
+    }
+
+    .body-copy {
+      margin: 0;
+      max-width: 800px;
+      font-size: 44px;
+      line-height: 1.18;
+      letter-spacing: -0.018em;
+      color: var(--muted-light);
+      will-change: transform, opacity;
+    }
+    .scene--dark .body-copy { color: var(--muted-dark); }
+
+    .accent-rule {
+      width: 150px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent, var(--violet));
+      transform-origin: left center;
+      will-change: transform, opacity;
+    }
+
+    .proof-card {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 896px;
+      min-height: 570px;
+      border-radius: 30px;
+      background: var(--raised);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 72px 66px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 28px 70px rgba(0,0,0,0.25);
+      will-change: transform, opacity;
+    }
+
+    .proof-kicker {
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--muted-dark);
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.3;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .proof-value {
+      font-family: Manrope, sans-serif;
+      font-size: 148px;
+      line-height: 0.92;
+      letter-spacing: -0.065em;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--paper);
+      max-width: 760px;
+      overflow-wrap: anywhere;
+    }
+
+    .proof-label {
+      max-width: 740px;
+      font-size: 36px;
+      line-height: 1.2;
+      color: var(--muted-dark);
+    }
+
+    .cta-shell {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      min-height: 98px;
+      max-width: 820px;
+      padding: 24px 44px;
+      border-radius: 999px;
+      background: var(--obsidian);
+      color: var(--paper);
+      font-family: Manrope, sans-serif;
+      font-size: 34px;
+      line-height: 1.12;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      will-change: transform, opacity;
+    }
+
+    .footer {
+      margin-top: auto;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.25;
+      color: var(--muted-light);
+      letter-spacing: 0.04em;
+      will-change: transform, opacity;
+    }
+
+    .ambient-orb {
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      right: -240px;
+      top: 210px;
+      background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--accent, var(--violet)) 44%, transparent), transparent 67%);
+      filter: blur(8px);
+      opacity: 0.45;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    #scene-1 { z-index: 1; }
+    #scene-2 { z-index: 2; clip-path: inset(0 0 0 0); }
+    #scene-3 { z-index: 3; clip-path: inset(0 0 0 0); }
+  </style>
+</head>
+<body>
+  <div id="root"
+    data-composition-id="hermes-vertical-reel-v1"
+    data-start="0"
+    data-duration="15"
+    data-width="1080"
+    data-height="1920"
+    data-fps="30">
+
+    <section id="scene-1" class="clip scene scene--pearl"
+      data-start="0" data-duration="5.42" data-track-index="0"
+      data-layout-allow-occlusion data-layout-allow-overlap>
+      <div class="ambient-orb" id="s1-orb" data-layout-ignore></div>
+      <div class="scene-content">
+        <div class="brand-row">
+          <span class="brand-mark" id="s1-mark" aria-hidden="true"></span>
+          <span class="brand-label" id="s1-label" data-var-text="brand_label">HERMES</span>
+        </div>
+        <div class="eyebrow" id="s1-eyebrow" data-var-text="eyebrow">AI VIDEO FACTORY</div>
+        <h1 class="headline" id="s1-hook" data-var-text="hook">One system. Clear execution.</h1>
+        <div class="accent-rule" id="s1-rule" aria-hidden="true"></div>
+        <p class="body-copy" id="s1-body" data-var-text="body">Turn repeatable work into a measurable content pipeline.</p>
+      </div>
+    </section>
+
+    <section id="scene-2" class="clip scene scene--dark"
+      data-start="4.6" data-duration="5.67" data-track-index="1"
+      data-layout-allow-occlusion data-layout-allow-overlap>
+      <div class="scene-content">
+        <div class="eyebrow" id="s2-eyebrow">PROOF, NOT DECORATION</div>
+        <div class="proof-card" id="s2-card">
+          <div class="proof-kicker" id="s2-kicker">EVIDENCE LAYER</div>
+          <div class="proof-value" id="s2-value" data-var-text="metric_value">PROOF</div>
+          <div class="proof-label" id="s2-label" data-var-text="metric_label">Evidence-backed by design</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scene-3" class="clip scene scene--pearl"
+      data-start="9.45" data-duration="5.55" data-track-index="2">
+      <div class="ambient-orb" id="s3-orb" data-layout-ignore></div>
+      <div class="scene-content">
+        <div class="eyebrow" id="s3-eyebrow">NEXT ACTION</div>
+        <h2 class="headline" id="s3-headline">Build once. Render many.</h2>
+        <p class="body-copy" id="s3-body">One approved template can serve Logistics, Marketing, Academy, Sales, Recruiting, SEO/GEO, IT and CEO operations.</p>
+        <div class="cta-shell" id="s3-cta" data-var-text="cta">See how Hermes works</div>
+        <div class="footer" id="s3-footer" data-var-text="footer">hermeslogisticsus.com</div>
+      </div>
+    </section>
+
+    <script>
+      (() => {
+        "use strict";
+        const root = document.getElementById("root");
+        const vars = window.__hyperframes?.getVariables ? window.__hyperframes.getVariables() : {};
+        if (vars.accent) root.style.setProperty("--accent", vars.accent);
+
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+
+        tl.from("#s1-orb", { scale: 0.92, opacity: 0, duration: 0.8, ease: "sine.out" }, 0.12)
+          .from("#s1-mark", { scale: 0.55, opacity: 0, duration: 0.38, ease: "back.out(1.5)" }, 0.2)
+          .from("#s1-label", { x: -24, opacity: 0, duration: 0.4, ease: "power2.out" }, 0.28)
+          .from("#s1-eyebrow", { x: -34, opacity: 0, duration: 0.46, ease: "expo.out" }, 0.4)
+          .from("#s1-hook", { y: 68, opacity: 0, scale: 0.985, duration: 0.72, ease: "power4.out" }, 0.56)
+          .from("#s1-rule", { scaleX: 0, opacity: 0, duration: 0.5, ease: "circ.out" }, 0.98)
+          .from("#s1-body", { y: 42, opacity: 0, duration: 0.58, ease: "power3.out" }, 1.1)
+          .from("#scene-2", { clipPath: "inset(100% 0 0 0)", duration: 0.82, ease: "power3.inOut" }, 4.6)
+          .from("#s2-eyebrow", { x: -36, opacity: 0, duration: 0.44, ease: "expo.out" }, 5.12)
+          .from("#s2-card", { y: 58, opacity: 0, scale: 0.975, duration: 0.66, ease: "power4.out" }, 5.24)
+          .from("#s2-kicker", { x: -28, opacity: 0, duration: 0.4, ease: "power2.out" }, 5.46)
+          .from("#s2-value", { y: 36, opacity: 0, duration: 0.52, ease: "back.out(1.25)" }, 5.62)
+          .from("#s2-label", { y: 26, opacity: 0, duration: 0.44, ease: "power2.out" }, 5.78)
+          .from("#scene-3", { clipPath: "inset(0 100% 0 0)", duration: 0.82, ease: "power3.inOut" }, 9.45)
+          .from("#s3-orb", { scale: 0.9, opacity: 0, duration: 0.76, ease: "sine.out" }, 9.76)
+          .from("#s3-eyebrow", { x: -34, opacity: 0, duration: 0.44, ease: "expo.out" }, 9.98)
+          .from("#s3-headline", { y: 58, opacity: 0, duration: 0.66, ease: "power4.out" }, 10.08)
+          .from("#s3-body", { y: 38, opacity: 0, duration: 0.52, ease: "power3.out" }, 10.32)
+          .from("#s3-cta", { y: 30, opacity: 0, scale: 0.96, duration: 0.5, ease: "back.out(1.3)" }, 10.62)
+          .from("#s3-footer", { y: 22, opacity: 0, duration: 0.4, ease: "power2.out" }, 10.82);
+
+        window.__timelines[root.dataset.compositionId] = tl;
+      })();
+    </script>
+  </div>
+</body>
+</html>

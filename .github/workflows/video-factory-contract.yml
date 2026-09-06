@@ -28,3 +28,47 @@ jobs:
           node-version: "22"
       - name: Validate VideoJob provider and governance contract
         run: node video-factory/tests/video-factory-contract.test.mjs
+      - name: Validate HyperFrames template/provider contract
+        run: node video-factory/tests/hyperframes-template-contract.test.mjs
+
+  hyperframes-template:
+    needs: contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: video-factory/templates/hyperframes/hermes-reel-v1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned HyperFrames and GSAP
+        run: npm install --no-audit --no-fund
+      - name: Prepare local deterministic runtime asset
+        run: npm run prepare:vendor
+      - name: Ensure HyperFrames browser
+        run: npx hyperframes browser ensure
+      - name: Install FFmpeg and FFprobe
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+      - name: HyperFrames final check
+        run: npm run check
+      - name: Render draft visual evidence
+        run: npm run render:draft
+      - name: Verify encoded output
+        run: |
+          test -s renders/hermes-reel-v1.mp4
+          ffprobe -v error -show_streams -show_format renders/hermes-reel-v1.mp4
+      - name: Upload visual evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: hermes-hyperframes-reel-v1
+          path: video-factory/templates/hyperframes/hermes-reel-v1/renders/hermes-reel-v1.mp4
+          if-no-files-found: error
+          retention-days: 7

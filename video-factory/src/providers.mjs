@@ -22,6 +22,47 @@ const parseJsonResponse = async (response, provider) => {
   return body;
 };
 
+const isTemplateScalar = (value) => ["string", "number", "boolean"].includes(typeof value);
+const HYPERFRAMES_RESERVED_VARIABLES = new Set(["job_id", "brand_id", "purpose", "hook", "body", "cta", "template_version"]);
+
+export const buildHyperFramesTemplateVariables = ({ job }) => {
+  const body = Array.isArray(job?.script?.body)
+    ? job.script.body.filter((line) => typeof line === "string" && line.trim() !== "").join(" ")
+    : typeof job?.script?.body === "string"
+      ? job.script.body
+      : "";
+
+  const variables = {
+    job_id: job?.jobId ?? "",
+    brand_id: job?.brandId ?? "",
+    purpose: job?.purpose ?? "",
+    hook: job?.script?.hook ?? "",
+    body,
+    cta: job?.script?.cta ?? "",
+    template_version: job?.templateVersion ?? "",
+  };
+
+  const overrides = job?.templateVariables ?? {};
+  if (!overrides || typeof overrides !== "object" || Array.isArray(overrides)) {
+    throw new Error("VideoJob templateVariables must be an object when provided.");
+  }
+
+  for (const [key, value] of Object.entries(overrides)) {
+    if (!/^[a-z][a-z0-9_]*$/.test(key)) {
+      throw new Error(`VideoJob templateVariables key ${key} must use lower_snake_case.`);
+    }
+    if (HYPERFRAMES_RESERVED_VARIABLES.has(key)) {
+      throw new Error(`VideoJob templateVariables.${key} cannot override a reserved render variable.`);
+    }
+    if (!isTemplateScalar(value)) {
+      throw new Error(`VideoJob templateVariables.${key} must be a scalar string, number, or boolean.`);
+    }
+    variables[key] = value;
+  }
+
+  return variables;
+};
+
 export const buildHeyGenAvatarPayload = ({ job, scene, avatarId, voiceId, callbackUrl }) => {
   requireValue(avatarId, "avatarId");
   if (!scene || scene.type !== "avatar") throw new Error("HeyGen avatar adapter requires an avatar scene.");
@@ -87,16 +128,7 @@ export const buildHyperFramesRenderPayload = ({ job, templateAssetId, callbackUr
     resolution: "1080p",
     aspect_ratio: "9:16",
     composition: "index.html",
-    variables: {
-      job_id: job.jobId,
-      brand_id: job.brandId,
-      purpose: job.purpose,
-      hook: job.script?.hook ?? "",
-      body: job.script?.body ?? [],
-      cta: job.script?.cta ?? "",
-      scenes: job.scenes,
-      template_version: job.templateVersion,
-    },
+    variables: buildHyperFramesTemplateVariables({ job }),
     title: `${job.jobId}:${job.templateId}@${job.templateVersion}`,
     callback_id: job.jobId,
     ...(callbackUrl ? { callback_url: callbackUrl } : {}),
