@@ -60,12 +60,14 @@ export const createHeyGenAvatarVideo = async ({
 }) => {
   requireValue(apiKey, "HeyGen apiKey");
   const payload = buildHeyGenAvatarPayload({ job, scene, avatarId, voiceId, callbackUrl });
+  // HeyGen mutation dedupe is owned by our queue/job store unless provider-level
+  // idempotency is explicitly supported for this endpoint. callback_id carries
+  // our deterministic job/scene identity for reconciliation.
   const response = await fetchImpl(`${baseUrl}/v3/videos`, {
     method: "POST",
     headers: {
       "x-api-key": apiKey,
       "content-type": "application/json",
-      "Idempotency-Key": createVideoIdempotencyKey(job, `heygen:${scene.id}`),
     },
     body: JSON.stringify(payload),
   });
