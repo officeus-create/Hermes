@@ -40,7 +40,14 @@ const childSitemapFiles = [
   "sitemap-trust.xml",
   "sitemap-london.xml",
 ];
-const expectedCurrentPageUrlCount = 168;
+const intentionalRussianDirectionOwners = [
+  `https://${sitemapHost}/ru/paths/logistics/`,
+  `https://${sitemapHost}/ru/paths/marketing/`,
+  `https://${sitemapHost}/ru/paths/technology/`,
+  `https://${sitemapHost}/ru/paths/academy/`,
+];
+const controlledInventoryBaseline = 168;
+const expectedCurrentPageUrlCount = controlledInventoryBaseline + intentionalRussianDirectionOwners.length;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
 
 const sitemapIndex = await readFile(new URL("../public/sitemapindex.xml", import.meta.url), "utf8");
@@ -54,19 +61,30 @@ assert.deepEqual(
 assert.equal(sitemapIndexLocs.length, expectedChildUrls.length, "sitemapindex.xml must not duplicate child sitemap references");
 
 const sitemapPageUrls = [];
+const sitemapPagesByFile = new Map();
 for (const file of childSitemapFiles) {
   const xml = await readFile(new URL(`../public/${file}`, import.meta.url), "utf8");
   const locs = extractLocs(xml);
   assert.ok(locs.length > 0, `${file} must contain at least one page URL`);
+  sitemapPagesByFile.set(file, locs);
   sitemapPageUrls.push(...locs);
 }
 
 assert.equal(
   sitemapPageUrls.length,
   expectedCurrentPageUrlCount,
-  `controlled sitemap inventory changed from ${expectedCurrentPageUrlCount}; reconcile the intentional delta before merging`,
+  `controlled sitemap inventory must equal baseline ${controlledInventoryBaseline} plus ${intentionalRussianDirectionOwners.length} approved Russian direction owners; reconcile any other delta before merging`,
 );
 assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled child sitemaps must not contain duplicate page URLs");
+
+const primarySitemapUrls = sitemapPagesByFile.get("sitemap.xml") ?? [];
+for (const ownerUrl of intentionalRussianDirectionOwners) {
+  assert.equal(
+    primarySitemapUrls.filter((value) => value === ownerUrl).length,
+    1,
+    `approved Russian direction owner must appear exactly once in sitemap.xml: ${ownerUrl}`,
+  );
+}
 
 for (const value of sitemapPageUrls) {
   const url = new URL(value);
