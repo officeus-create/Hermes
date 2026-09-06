@@ -1,0 +1,106 @@
+---
+import { ArrowLeft, ArrowRight, CheckCircle2 } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+import type { RussianDirectionHub } from "../data/russian-direction-hubs";
+
+interface Props {
+  hub: RussianDirectionHub;
+}
+
+const { hub } = Astro.props;
+const canonicalUrl = new URL(`/ru/paths/${hub.id}/`, Astro.site).toString();
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${canonicalUrl}#webpage`,
+  url: canonicalUrl,
+  name: hub.seoTitle,
+  description: hub.seoDescription,
+  inLanguage: "ru",
+  isPartOf: { "@id": "https://hermeslogisticsus.com/#website" },
+  about: { "@id": "https://hermeslogisticsus.com/#organization" },
+  publisher: { "@id": "https://hermeslogisticsus.com/#organization" },
+};
+---
+
+<BaseLayout title={hub.seoTitle} description={hub.seoDescription} locale="ru" schema={schema}>
+  <SiteHeader locale="ru" />
+  <main id="main-content" class={`ru-direction-hub ru-direction-hub--${hub.id}`}>
+    <section class="ru-direction-hero" id="top">
+      <div class="shell ru-direction-hero__inner">
+        <a class="ru-direction-back" href="/ru/#paths"><ArrowLeft size={17} aria-hidden="true" />Все направления Hermes</a>
+        <p class="eyebrow">{hub.eyebrow}</p>
+        <h1>{hub.title}</h1>
+        <p class="ru-direction-summary">{hub.summary}</p>
+        <div class="ru-direction-actions">
+          <a class="button button-primary" href={hub.primary.href}>{hub.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-ghost" href="#products">Посмотреть все маршруты</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section ru-direction-primary" aria-labelledby="ru-direction-primary-title">
+      <div class="shell ru-direction-primary__card">
+        <div>
+          <p class="eyebrow">Главный вход</p>
+          <h2 id="ru-direction-primary-title">{hub.primary.title}</h2>
+          <p>{hub.primary.body}</p>
+          {hub.primary.status && <span class="ru-direction-status"><CheckCircle2 size={16} aria-hidden="true" />{hub.primary.status}</span>}
+        </div>
+        <a class="button button-primary" href={hub.primary.href}>{hub.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+      </div>
+    </section>
+
+    <section class="section ru-direction-products" id="products" aria-labelledby="ru-direction-products-title">
+      <div class="shell">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Продукты и рабочие маршруты</p>
+            <h2 id="ru-direction-products-title">Выберите конкретную задачу.</h2>
+          </div>
+          <p>Русская страница объясняет маршрут. Рабочая функция открывается по единому каноническому адресу, чтобы не создавать вторую копию продукта и не разводить данные.</p>
+        </div>
+        <div class="ru-direction-grid">
+          {hub.products.map((product) => (
+            <a class="ru-direction-card" href={product.href}>
+              <span>{product.label}</span>
+              <h3>{product.title}</h3>
+              <p>{product.body}</p>
+              {product.status && <small>{product.status}</small>}
+              <strong>Открыть <ArrowRight size={16} aria-hidden="true" /></strong>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="section ru-direction-boundary" aria-label="Условия и границы">
+      <div class="shell ru-direction-boundary__card">
+        <CheckCircle2 size={22} aria-hidden="true" />
+        <div><strong>Прозрачные условия</strong><p>{hub.boundary}</p></div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter locale="ru" />
+</BaseLayout>
+
+<style>
+  .ru-direction-hub{--hub-accent:#5634c8;background:#f7f8fc;color:#111324}
+  .ru-direction-hub--marketing{--hub-accent:#c51b72}.ru-direction-hub--technology{--hub-accent:#087f82}.ru-direction-hub--academy{--hub-accent:#a56b00}
+  .ru-direction-hero{padding:clamp(8rem,15vw,11rem) 0 5rem;background:linear-gradient(145deg,#071038,#11184c 62%,color-mix(in srgb,var(--hub-accent) 32%,#11184c));color:#fff}
+  .ru-direction-hero__inner{display:grid;gap:1rem}.ru-direction-back{display:inline-flex;align-items:center;gap:.4rem;width:max-content;color:rgba(255,255,255,.72);font-size:.82rem;font-weight:700;text-decoration:none}
+  .ru-direction-hero h1{max-width:19ch;margin:.2rem 0;font-size:clamp(2.5rem,6vw,5.2rem);line-height:.96}.ru-direction-summary{max-width:70ch;margin:0;color:rgba(255,255,255,.76);font-size:clamp(1rem,2vw,1.18rem);line-height:1.7}
+  .ru-direction-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:.65rem}.ru-direction-actions .button-ghost{border:1px solid rgba(255,255,255,.32);color:#fff}
+  .ru-direction-primary{background:#fff}.ru-direction-primary__card{display:flex;align-items:center;justify-content:space-between;gap:2rem;padding:1.4rem;border:1px solid #dce3f3;border-radius:18px;background:#fff;box-shadow:0 16px 40px rgba(7,16,56,.06)}
+  .ru-direction-primary__card h2{margin:.3rem 0 .55rem}.ru-direction-primary__card p{max-width:68ch;margin:0;color:#64718f;line-height:1.65}.ru-direction-status{display:inline-flex;align-items:center;gap:.35rem;margin-top:.8rem;color:var(--hub-accent);font-size:.78rem;font-weight:800}
+  .ru-direction-products{background:#f7f8fc}.ru-direction-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.85rem;margin-top:1.4rem}
+  .ru-direction-card{display:flex;min-height:260px;flex-direction:column;padding:1.2rem;border:1px solid #dce3f3;border-radius:16px;background:#fff;color:#111324;text-decoration:none;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+  .ru-direction-card:hover,.ru-direction-card:focus-visible{transform:translateY(-2px);border-color:color-mix(in srgb,var(--hub-accent) 45%,#dce3f3);box-shadow:0 16px 38px rgba(7,16,56,.08)}
+  .ru-direction-card>span{color:var(--hub-accent);font-size:.72rem;font-weight:850;text-transform:uppercase;letter-spacing:.05em}.ru-direction-card h3{margin:.6rem 0 .5rem}.ru-direction-card p{margin:0;color:#64718f;line-height:1.6}.ru-direction-card small{margin-top:.7rem;color:var(--hub-accent);font-weight:800}.ru-direction-card strong{display:inline-flex;align-items:center;gap:.35rem;margin-top:auto;padding-top:1rem;font-size:.82rem}
+  .ru-direction-boundary{background:#fff}.ru-direction-boundary__card{display:grid;grid-template-columns:auto 1fr;gap:.75rem;padding:1.15rem 1.25rem;border-left:4px solid var(--hub-accent);background:#f7f8fc}.ru-direction-boundary__card>svg{color:var(--hub-accent)}.ru-direction-boundary__card p{margin:.25rem 0 0;color:#64718f;line-height:1.6}
+  @media(max-width:980px){.ru-direction-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:700px){.ru-direction-hero{padding-top:7rem}.ru-direction-primary__card{display:grid}.ru-direction-primary__card .button{width:100%;justify-content:center}.ru-direction-grid{grid-template-columns:1fr}.ru-direction-card{min-height:220px}}
+  @media(prefers-reduced-motion:reduce){.ru-direction-card{transition:none}}
+</style>
