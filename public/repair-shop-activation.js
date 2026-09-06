@@ -188,6 +188,7 @@
   }
 
   function cleanAvailability() {
+    setText(".availability-page .page-header .eyebrow", t.schedule);
     setText(".panel-heading .eyebrow", t.schedule);
     setText(".panel-heading .muted", t.scheduleCopy);
     setText(".note-panel .muted", t.scheduleNote);
@@ -203,7 +204,7 @@
   }
 
   function cleanCustomers() {
-    setText(".customers-page .hero .muted", t.customersCopy);
+    setText(".customers-page .customers-hero .muted", t.customersCopy);
   }
 
   async function readJson(url) {

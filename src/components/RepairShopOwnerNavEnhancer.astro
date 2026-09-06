@@ -13,18 +13,29 @@ const ownerPaths = new Set([
 const isOwnerWorkspace = ownerPaths.has(normalizedPath);
 
 const strings = {
-  en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
-  ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
-  uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
-  es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
-  it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
-  fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+  en: { workspace:"Repair Shop", context:"Owner workspace", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+  ru: { workspace:"СТО", context:"Кабинет владельца", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+  uk: { workspace:"СТО", context:"Кабінет власника", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+  es: { workspace:"Taller", context:"Espacio del propietario", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+  it: { workspace:"Officina", context:"Spazio proprietario", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+  fr: { workspace:"Atelier", context:"Espace propriétaire", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
 } as const;
 type Locale = keyof typeof strings;
 const requested = (Astro.url.searchParams.get("lang") || "en").toLowerCase();
 const locale: Locale = requested in strings ? requested as Locale : "en";
 const copy = strings[locale];
 const locales = Object.keys(strings) as Locale[];
+const icons: Record<string, string> = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  car: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 11 1.5-4.5h11L19 11"/><path d="M5 11h14a2 2 0 0 1 2 2v5H3v-5a2 2 0 0 1 2-2Z"/><path d="M7 18v2M17 18v2M7 14h.01M17 14h.01"/></svg>',
+  wrench: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0-1.4-1.4l-10 10a1 1 0 0 0 1.4 1.4l10-10Z"/><path d="M16 3a5 5 0 0 1 5 5l-3 1-2-2 1-4Z"/><path d="M6 17a3 3 0 1 0 4 4l5-5"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.1 2.1-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56v.1h-3v-.1A1.7 1.7 0 0 0 10.7 18.6a1.7 1.7 0 0 0-1.88.34l-.06.06-2.1-2.1.06-.06A1.7 1.7 0 0 0 7.06 15a1.7 1.7 0 0 0-1.56-1.03H5.4v-3h.1A1.7 1.7 0 0 0 7.06 9.94a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.1-2.1.06.06a1.7 1.7 0 0 0 1.88.34A1.7 1.7 0 0 0 11.73 4.74v-.1h3v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.1 2.1-.06.06a1.7 1.7 0 0 0-.34 1.88 1.7 1.7 0 0 0 1.56 1.03h.1v3h-.1A1.7 1.7 0 0 0 19.4 15Z"/></svg>',
+  grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+};
 
 const withLocale = (path: string, hash = "") => {
   const url = new URL(path, Astro.url.origin);
@@ -72,14 +83,14 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
       <nav class="repair-crm-nav" aria-label={`${copy.workspace} navigation`}>
         {items.map((item) => (
           <a href={item.href} class:list={["repair-crm-nav-item", item.active && "is-active"]} aria-current={item.active ? "page" : undefined} data-repair-crm-link>
-            <span class={`repair-crm-icon repair-crm-icon-${item.icon}`} aria-hidden="true"></span>
+            <span class="repair-crm-icon" aria-hidden="true" set:html={icons[item.icon]}></span>
             <span>{item.label}</span>
           </a>
         ))}
       </nav>
       <div class="repair-crm-sidebar-footer">
         <a href={productHubHref} class="repair-crm-product-hub" data-repair-crm-link>
-          <span class="repair-crm-icon repair-crm-icon-grid" aria-hidden="true"></span>
+          <span class="repair-crm-icon" aria-hidden="true" set:html={icons.grid}></span>
           <span>{copy.products}</span>
         </a>
         <button class="repair-crm-mobile-logout" type="button" data-repair-crm-logout>{copy.logout}</button>
@@ -91,7 +102,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
         <button class="repair-crm-menu" type="button" aria-label={copy.menu} aria-expanded="false" data-repair-crm-menu>
           <span></span><span></span><span></span>
         </button>
-        <div class="repair-crm-context"><small>Hermes Connect · {copy.workspace}</small><strong>{pageTitle}</strong></div>
+        <div class="repair-crm-context"><small>{copy.context}</small><strong>{pageTitle}</strong></div>
       </div>
       <div class="repair-crm-topbar-actions">
         <details class="repair-crm-language">
@@ -121,12 +132,12 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     const requested = (params.get("lang") || "en").toLowerCase();
     const locale = supported.has(requested) ? requested : "en";
     const strings = {
-      en: { workspace:"Repair Shop", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
-      ru: { workspace:"СТО", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
-      uk: { workspace:"СТО", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
-      es: { workspace:"Taller", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
-      it: { workspace:"Officina", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
-      fr: { workspace:"Atelier", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
+      en: { workspace:"Repair Shop", context:"Owner workspace", today:"Today", appointments:"Appointments", customers:"Customers", vehicles:"Vehicles", services:"Services", availability:"Availability", feedback:"Feedback", settings:"Settings", products:"Product Hub", logout:"Logout", menu:"Open navigation", close:"Close navigation" },
+      ru: { workspace:"СТО", context:"Кабинет владельца", today:"Сегодня", appointments:"Записи", customers:"Клиенты", vehicles:"Автомобили", services:"Услуги", availability:"График", feedback:"Отзывы", settings:"Настройки", products:"Все продукты", logout:"Выйти", menu:"Открыть меню", close:"Закрыть меню" },
+      uk: { workspace:"СТО", context:"Кабінет власника", today:"Сьогодні", appointments:"Записи", customers:"Клієнти", vehicles:"Автомобілі", services:"Послуги", availability:"Графік", feedback:"Відгуки", settings:"Налаштування", products:"Усі продукти", logout:"Вийти", menu:"Відкрити меню", close:"Закрити меню" },
+      es: { workspace:"Taller", context:"Espacio del propietario", today:"Hoy", appointments:"Citas", customers:"Clientes", vehicles:"Vehículos", services:"Servicios", availability:"Horario", feedback:"Comentarios", settings:"Ajustes", products:"Productos", logout:"Salir", menu:"Abrir navegación", close:"Cerrar navegación" },
+      it: { workspace:"Officina", context:"Spazio proprietario", today:"Oggi", appointments:"Appuntamenti", customers:"Clienti", vehicles:"Veicoli", services:"Servizi", availability:"Orari", feedback:"Feedback", settings:"Impostazioni", products:"Prodotti", logout:"Esci", menu:"Apri navigazione", close:"Chiudi navigazione" },
+      fr: { workspace:"Atelier", context:"Espace propriétaire", today:"Aujourd’hui", appointments:"Rendez-vous", customers:"Clients", vehicles:"Véhicules", services:"Services", availability:"Horaires", feedback:"Avis", settings:"Paramètres", products:"Produits", logout:"Déconnexion", menu:"Ouvrir la navigation", close:"Fermer la navigation" },
     };
     const copy = strings[locale] || strings.en;
     const currentPath = window.location.pathname.replace(/\/+$/, "");
@@ -149,6 +160,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
       const url = new URL(href, window.location.origin);
       if (locale === "en") url.searchParams.delete("lang");
       else url.searchParams.set("lang", locale);
+      if ((window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost") && params.get("demo") === "1" && url.pathname.startsWith(ROOT)) url.searchParams.set("demo", "1");
       return `${url.pathname}${url.search}${url.hash}`;
     };
 
@@ -181,7 +193,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
     root.querySelectorAll("[data-repair-crm-logout]").forEach((button) => { button.textContent = copy.logout; });
     const contextSmall = root.querySelector(".repair-crm-context small");
     const contextTitle = root.querySelector(".repair-crm-context strong");
-    if (contextSmall) contextSmall.textContent = `Hermes Connect · ${copy.workspace}`;
+    if (contextSmall) contextSmall.textContent = copy.context;
     if (contextTitle) contextTitle.textContent = copy[pageKey];
 
     const languageSummary = root.querySelector(".repair-crm-language summary");
@@ -248,15 +260,7 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
   .repair-crm-brand>span:last-child{display:grid;gap:1px}.repair-crm-brand strong{font-size:14px}.repair-crm-brand small{color:#7b8797;font-size:11px;font-weight:700}
   .repair-crm-nav{display:grid;gap:4px;padding:16px 0;overflow-y:auto}.repair-crm-nav-item,.repair-crm-product-hub{display:flex;align-items:center;gap:11px;min-height:44px;padding:0 11px;border-radius:10px;color:#566274;text-decoration:none;font-size:13px;font-weight:780}
   .repair-crm-nav-item:hover,.repair-crm-nav-item:focus-visible,.repair-crm-product-hub:hover,.repair-crm-product-hub:focus-visible{background:#f3f6fa;color:#172033}.repair-crm-nav-item.is-active{background:#edf5ff;color:#1268c4;box-shadow:inset 3px 0 0 #1e88ff}
-  .repair-crm-icon{position:relative;width:18px;height:18px;flex:0 0 18px;opacity:.86}.repair-crm-icon::before,.repair-crm-icon::after{content:"";position:absolute;box-sizing:border-box}
-  .repair-crm-icon-home::before{inset:4px 3px 2px;border:2px solid currentColor;border-top:0;border-radius:2px}.repair-crm-icon-home::after{left:4px;top:2px;width:10px;height:10px;border-left:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg);border-radius:2px}
-  .repair-crm-icon-calendar::before{inset:3px 2px 2px;border:2px solid currentColor;border-radius:3px}.repair-crm-icon-calendar::after{left:5px;right:5px;top:7px;border-top:2px solid currentColor;box-shadow:-2px 4px 0 -1px currentColor,3px 4px 0 -1px currentColor}
-  .repair-crm-icon-users::before{width:7px;height:7px;left:1px;top:2px;border:2px solid currentColor;border-radius:50%;box-shadow:8px 1px 0 -1px #fff,8px 1px 0 1px currentColor}.repair-crm-icon-users::after{left:0;bottom:2px;width:11px;height:6px;border:2px solid currentColor;border-radius:8px;box-shadow:7px 0 0 -1px #fff,7px 0 0 1px currentColor}
-  .repair-crm-icon-car::before{left:1px;right:1px;top:6px;height:8px;border:2px solid currentColor;border-radius:4px 4px 3px 3px}.repair-crm-icon-car::after{left:4px;right:4px;top:2px;height:7px;border:2px solid currentColor;border-bottom:0;border-radius:5px 5px 0 0;box-shadow:-2px 11px 0 -1px currentColor,8px 11px 0 -1px currentColor}
-  .repair-crm-icon-wrench::before{left:2px;top:8px;width:14px;height:4px;border:2px solid currentColor;border-radius:3px;transform:rotate(-42deg)}.repair-crm-icon-wrench::after{right:1px;top:1px;width:7px;height:7px;border:2px solid currentColor;border-left-color:transparent;border-bottom-color:transparent;border-radius:50%}
-  .repair-crm-icon-clock::before{inset:2px;border:2px solid currentColor;border-radius:50%}.repair-crm-icon-clock::after{left:8px;top:5px;width:4px;height:5px;border-left:2px solid currentColor;border-bottom:2px solid currentColor}
-  .repair-crm-icon-message::before{inset:3px 2px 4px;border:2px solid currentColor;border-radius:4px}.repair-crm-icon-message::after{left:5px;bottom:1px;width:5px;height:5px;border-left:2px solid currentColor;transform:skew(-25deg)}
-  .repair-crm-icon-settings::before{inset:4px;border:2px solid currentColor;border-radius:50%;box-shadow:0 -5px 0 -3px currentColor,0 5px 0 -3px currentColor,5px 0 0 -3px currentColor,-5px 0 0 -3px currentColor}.repair-crm-icon-settings::after{inset:7px;border:1.5px solid currentColor;border-radius:50%}.repair-crm-icon-grid::before{inset:2px;width:5px;height:5px;border-radius:1px;background:currentColor;box-shadow:8px 0 currentColor,0 8px currentColor,8px 8px currentColor}
+  .repair-crm-icon{display:grid;place-items:center;width:18px;height:18px;flex:0 0 18px;opacity:.9}.repair-crm-icon svg{width:18px;height:18px;display:block}
   .repair-crm-sidebar-footer{margin-top:auto;padding-top:12px;border-top:1px solid #edf0f4}
   .repair-crm-topbar{position:fixed;top:0;right:0;left:var(--crm-sidebar);z-index:1201;display:flex;align-items:center;justify-content:space-between;gap:20px;height:var(--crm-topbar);box-sizing:border-box;padding:0 24px;border-bottom:1px solid #e4e8ee;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);pointer-events:auto}
   .repair-crm-topbar-left,.repair-crm-topbar-actions{display:flex;align-items:center;gap:10px;min-width:0}.repair-crm-context{display:grid;gap:1px}.repair-crm-context small{color:#8893a3;font-size:10px;font-weight:760}.repair-crm-context strong{color:#172033;font-size:15px;white-space:nowrap}
