@@ -47,6 +47,7 @@ for (const text of [
   "COO / Operations",
   "Paid cohort",
   "Free practice opportunity",
+  "Five learning tracks stay clearly separated.",
 ]) {
   assert.ok(academyText.includes(text), `Academy public page is missing: ${text}`);
 }
@@ -83,6 +84,9 @@ for (const retiredText of [
   "3 tracks",
   "3 × 6",
   "former COO",
+  "2 public programs",
+  "Two public programs",
+  "currently presents two public program paths",
 ]) {
   assert.ok(!homepageText.includes(retiredText), `Retired Academy wording remains extractable on the homepage: ${retiredText}`);
   assert.ok(!academyText.includes(retiredText), `Retired Academy wording remains extractable on the Academy page: ${retiredText}`);
@@ -104,4 +108,4 @@ for (const blockedPrice of ["$999", "$400/month", "$600/month"]) {
 assert.ok(academyText.includes("A visible learning track does not by itself mean a paid cohort or enrollment window is open."), "Academy must distinguish visible learning tracks from active paid enrollment");
 assert.ok(academyText.includes("No fixed price"), "Academy must keep price activation explicitly gated");
 
-console.log("Academy public contract checks passed: Home routes to Academy, Academy owns five learning-track tabs and gated participation models, detailed program eligibility remains explicit, application review clarity remains explicit, and no blocked prices are visible.");
+console.log("Academy public contract checks passed: Home routes to Academy, Academy owns five learning-track tabs and gated participation models, retired two-program copy is absent, detailed program eligibility remains explicit, application review clarity remains explicit, and no blocked prices are visible.");
