@@ -25,19 +25,11 @@ type ProfileInput = {
   address_line1?: unknown;
   city?: unknown;
   state?: unknown;
+  region?: unknown;
+  country_code?: unknown;
   postal_code?: unknown;
   timezone?: unknown;
 };
-
-const US_TIMEZONES = new Set([
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Phoenix",
-  "America/Los_Angeles",
-  "America/Anchorage",
-  "Pacific/Honolulu",
-]);
 
 const clean = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
 const REPAIR_SHOP_FREE_REGISTRATION_END_MS = Date.parse(REPAIR_SHOP_FREE_REGISTRATION_END_ISO);
@@ -64,10 +56,20 @@ async function makeUniqueSlug(db: any, name: string) {
   throw new Error("unable_to_allocate_shop_slug");
 }
 
+function isValidTimezone(value: string) {
+  if (!value || value.length > 64) return false;
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function getProfile(db: any, ownerId: string) {
   return db
     .prepare(
-      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,postal_code,timezone,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
+      "SELECT id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,created_at,updated_at FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1",
     )
     .bind(ownerId)
     .first();
@@ -97,6 +99,9 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
 
+  await ensureRepairShopProfileSchema(env.DB);
+  const existing = await getProfile(env.DB, specialist.id);
+
   let body: ProfileInput;
   try {
     body = (await request.json()) as ProfileInput;
@@ -107,27 +112,44 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
   const name = clean(body.name, 120);
   const phone = clean(body.phone, 32);
   const addressLine1 = clean(body.address_line1, 160);
-  const city = clean(body.city, 80);
-  const state = clean(body.state, 2).toUpperCase();
-  const postalCode = clean(body.postal_code, 16);
+  const city = clean(body.city, 100);
+  const regionSource = body.region !== undefined
+    ? body.region
+    : body.state !== undefined
+      ? body.state
+      : existing?.region ?? existing?.state ?? "";
+  const region = clean(regionSource, 100);
+  const countryCode = clean(body.country_code ?? existing?.country_code ?? "US", 2).toUpperCase();
+  const legacyState = region || countryCode;
+  const postalCode = clean(body.postal_code, 24);
   const timezone = clean(body.timezone, 64);
 
   if (name.length < 2) return jsonResponse(400, { success: false, error: "invalid_shop_name" });
   if (city.length < 2) return jsonResponse(400, { success: false, error: "invalid_city" });
-  if (!/^[A-Z]{2}$/.test(state)) return jsonResponse(400, { success: false, error: "invalid_state" });
-  if (!US_TIMEZONES.has(timezone)) return jsonResponse(400, { success: false, error: "invalid_timezone" });
+  if (!/^[A-Z]{2}$/.test(countryCode)) return jsonResponse(400, { success: false, error: "invalid_country_code" });
+  if (!isValidTimezone(timezone)) return jsonResponse(400, { success: false, error: "invalid_timezone" });
   if (phone && phone.length < 7) return jsonResponse(400, { success: false, error: "invalid_phone" });
 
-  await ensureRepairShopProfileSchema(env.DB);
-  const existing = await getProfile(env.DB, specialist.id);
   const now = new Date().toISOString();
 
   if (existing) {
     await env.DB
       .prepare(
-        "UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,postal_code=?,timezone=?,updated_at=? WHERE owner_specialist_id=?",
+        "UPDATE repair_shops SET name=?,phone=?,address_line1=?,city=?,state=?,region=?,country_code=?,postal_code=?,timezone=?,updated_at=? WHERE owner_specialist_id=?",
       )
-      .bind(name, phone || null, addressLine1 || null, city, state, postalCode || null, timezone, now, specialist.id)
+      .bind(
+        name,
+        phone || null,
+        addressLine1 || null,
+        city,
+        legacyState,
+        region || null,
+        countryCode,
+        postalCode || null,
+        timezone,
+        now,
+        specialist.id,
+      )
       .run();
   } else {
     if (Date.now() >= REPAIR_SHOP_FREE_REGISTRATION_END_MS) {
@@ -143,7 +165,7 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
     const slug = await makeUniqueSlug(env.DB, name);
     await env.DB
       .prepare(
-        "INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,postal_code,timezone,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO repair_shops (id,owner_specialist_id,name,slug,phone,address_line1,city,state,region,country_code,postal_code,timezone,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
       )
       .bind(
         id,
@@ -153,7 +175,9 @@ export async function onRequestPut({ request, env, waitUntil }: RequestContext) 
         phone || null,
         addressLine1 || null,
         city,
-        state,
+        legacyState,
+        region || null,
+        countryCode,
         postalCode || null,
         timezone,
         now,
