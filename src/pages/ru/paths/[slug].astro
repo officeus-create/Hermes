@@ -1,0 +1,15 @@
+---
+import RussianDirectionHub from "../../../components/RussianDirectionHub.astro";
+import { russianDirectionHubs, russianDirectionHubOrder } from "../../../data/russian-direction-hubs";
+
+export function getStaticPaths() {
+  return russianDirectionHubOrder.map((slug) => ({
+    params: { slug },
+    props: { hub: russianDirectionHubs[slug] },
+  }));
+}
+
+const { hub } = Astro.props;
+---
+
+<RussianDirectionHub hub={hub} />
