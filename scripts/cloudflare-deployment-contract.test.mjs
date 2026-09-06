@@ -72,6 +72,16 @@ assert.match(
 );
 assert.match(
   productionWorkflow,
+  /node <<'NODE'\n\s*import fs from "node:fs";/,
+  "The native exact-SHA verifier must run as unambiguous ESM because it uses top-level await on Node 22.",
+);
+assert.doesNotMatch(
+  productionWorkflow,
+  /node <<'NODE'\n\s*const fs = require\("node:fs"\);/,
+  "The native verifier must not mix CommonJS require() with top-level await; Node 22 rejects that module format as ambiguous.",
+);
+assert.match(
+  productionWorkflow,
   /https:\/\/hermeslogisticsus\.com\/paths\/academy\//,
   "Production parity must read the public Academy owner back from the real domain.",
 );
