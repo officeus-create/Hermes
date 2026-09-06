@@ -2,6 +2,7 @@ const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "::1"]);
 
 export const DEFAULT_SCREENSHOT_ROUTES = Object.freeze([
   { id: "homepage", path: "/" },
+  { id: "ru-overview", path: "/ru/" },
   { id: "path-logistics", path: "/paths/logistics/" },
   { id: "path-marketing", path: "/paths/marketing/" },
   { id: "path-academy", path: "/paths/academy/" },
