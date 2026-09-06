@@ -38,10 +38,12 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
             <label class="span-2"><span data-i18n="shopName">Shop name</span><input id="shop-name" maxlength="120" required autocomplete="organization" placeholder="Apex Auto Care" data-i18n-placeholder="shopNamePlaceholder" /></label>
             <label><span data-i18n="phone">Phone</span><input id="shop-phone" maxlength="32" inputmode="tel" autocomplete="tel" placeholder="+1 414 555 0100" /></label>
             <label><span data-i18n="address">Address</span><input id="shop-address" maxlength="160" autocomplete="street-address" placeholder="123 Main St" /></label>
-            <label><span data-i18n="city">City</span><input id="shop-city" maxlength="80" required autocomplete="address-level2" placeholder="Milwaukee" /></label>
-            <label><span data-i18n="state">State</span><input id="shop-state" maxlength="2" required autocomplete="address-level1" placeholder="WI" /></label>
-            <label><span data-i18n="zip">ZIP</span><input id="shop-zip" maxlength="16" autocomplete="postal-code" placeholder="53202" /></label>
-            <label><span data-i18n="timezone">Timezone</span><select id="shop-timezone" required><option value="America/New_York">Eastern</option><option value="America/Chicago" selected>Central</option><option value="America/Denver">Mountain</option><option value="America/Phoenix">Arizona</option><option value="America/Los_Angeles">Pacific</option><option value="America/Anchorage">Alaska</option><option value="Pacific/Honolulu">Hawaii</option></select></label>
+            <label><span data-i18n="city">City</span><input id="shop-city" maxlength="100" required autocomplete="address-level2" placeholder="Milwaukee" /></label>
+            <label><span data-i18n="region">Region / state</span><input id="shop-region" maxlength="100" autocomplete="address-level1" placeholder="Wisconsin" /></label>
+            <label><span data-i18n="country">Country code</span><input id="shop-country" maxlength="2" minlength="2" required autocomplete="country" placeholder="US" pattern="[A-Za-z]{2}" /></label>
+            <label><span data-i18n="postal">Postal code</span><input id="shop-postal" maxlength="24" autocomplete="postal-code" placeholder="53202" /></label>
+            <label class="span-2"><span data-i18n="timezone">Timezone</span><div class="timezone-row"><input id="shop-timezone" maxlength="64" required list="timezone-suggestions" placeholder="America/Chicago" /><button id="detect-timezone" class="secondary-action" type="button" data-i18n="detectTimezone">Use browser timezone</button></div></label>
+            <datalist id="timezone-suggestions"><option value="America/New_York"></option><option value="America/Chicago"></option><option value="America/Denver"></option><option value="America/Los_Angeles"></option><option value="America/Toronto"></option><option value="Europe/London"></option><option value="Europe/Paris"></option><option value="Europe/Berlin"></option><option value="Europe/Kyiv"></option><option value="Asia/Dubai"></option><option value="Asia/Tokyo"></option><option value="Australia/Sydney"></option></datalist>
             <button id="save-profile" class="primary-action span-2" type="submit" data-i18n="save">Save shop profile</button>
           </form>
         </section>
@@ -68,18 +70,30 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
 </BaseLayout>
 
 <script>
-  type Shop = { id:string; name:string; slug:string; phone?:string|null; address_line1?:string|null; city:string; state:string; postal_code?:string|null; timezone:string };
+  type Shop = {
+    id:string;
+    name:string;
+    slug:string;
+    phone?:string|null;
+    address_line1?:string|null;
+    city:string;
+    state:string;
+    region?:string|null;
+    country_code?:string|null;
+    postal_code?:string|null;
+    timezone:string;
+  };
   const supported = new Set(["en","ru","uk","es","it","fr"]);
   const params = new URLSearchParams(window.location.search);
   const requested = (params.get("lang") || "en").toLowerCase();
   const locale = supported.has(requested) ? requested : "en";
   const copy: Record<string, Record<string,string>> = {
-    en:{eyebrow:"Repair Shop CRM",title:"Settings",subtitle:"Manage the saved shop profile used by your public booking link and operating timezone.",notConfigured:"Not configured",saved:"Saved",profileEyebrow:"Business profile",profileTitle:"Shop profile",profileCopy:"These are the same saved business details Hermes Connect uses for public booking.",shopName:"Shop name",shopNamePlaceholder:"Apex Auto Care",phone:"Phone",address:"Address",city:"City",state:"State",zip:"ZIP",timezone:"Timezone",save:"Save shop profile",bookingEyebrow:"Customer access",bookingTitle:"Public booking link",bookingCopy:"Share this stable link after your services and availability are ready.",copy:"Copy",open:"Open",loadFailed:"Unable to load shop settings.",saveFailed:"Unable to save shop settings.",sessionFailed:"Unable to verify your secure session.",savedMessage:"Shop settings saved.",copied:"Public booking link copied.",copyFailed:"Could not copy the booking link."},
-    ru:{eyebrow:"CRM СТО",title:"Настройки",subtitle:"Управляйте сохранённым профилем СТО, публичной ссылкой записи и рабочим часовым поясом.",notConfigured:"Не настроено",saved:"Сохранено",profileEyebrow:"Профиль бизнеса",profileTitle:"Профиль СТО",profileCopy:"Эти же сохранённые данные Hermes Connect использует для публичной записи клиентов.",shopName:"Название СТО",shopNamePlaceholder:"Apex Auto Care",phone:"Телефон",address:"Адрес",city:"Город",state:"Штат",zip:"ZIP",timezone:"Часовой пояс",save:"Сохранить профиль СТО",bookingEyebrow:"Доступ клиентов",bookingTitle:"Публичная ссылка записи",bookingCopy:"Делитесь этой постоянной ссылкой после настройки услуг и графика.",copy:"Копировать",open:"Открыть",loadFailed:"Не удалось загрузить настройки СТО.",saveFailed:"Не удалось сохранить настройки СТО.",sessionFailed:"Не удалось проверить защищённую сессию.",savedMessage:"Настройки СТО сохранены.",copied:"Ссылка записи скопирована.",copyFailed:"Не удалось скопировать ссылку записи."},
-    uk:{eyebrow:"CRM СТО",title:"Налаштування",subtitle:"Керуйте збереженим профілем СТО, публічним посиланням запису та робочим часовим поясом.",notConfigured:"Не налаштовано",saved:"Збережено",profileEyebrow:"Профіль бізнесу",profileTitle:"Профіль СТО",profileCopy:"Ці самі збережені дані Hermes Connect використовує для публічного запису клієнтів.",shopName:"Назва СТО",shopNamePlaceholder:"Apex Auto Care",phone:"Телефон",address:"Адреса",city:"Місто",state:"Штат",zip:"ZIP",timezone:"Часовий пояс",save:"Зберегти профіль СТО",bookingEyebrow:"Доступ клієнтів",bookingTitle:"Публічне посилання запису",bookingCopy:"Діліться цим постійним посиланням після налаштування послуг і графіка.",copy:"Копіювати",open:"Відкрити",loadFailed:"Не вдалося завантажити налаштування СТО.",saveFailed:"Не вдалося зберегти налаштування СТО.",sessionFailed:"Не вдалося перевірити захищену сесію.",savedMessage:"Налаштування СТО збережено.",copied:"Посилання запису скопійовано.",copyFailed:"Не вдалося скопіювати посилання запису."},
-    es:{eyebrow:"CRM del taller",title:"Ajustes",subtitle:"Gestiona el perfil guardado del taller, el enlace público de reservas y la zona horaria operativa.",notConfigured:"Sin configurar",saved:"Guardado",profileEyebrow:"Perfil del negocio",profileTitle:"Perfil del taller",profileCopy:"Son los mismos datos guardados que Hermes Connect utiliza en la reserva pública.",shopName:"Nombre del taller",shopNamePlaceholder:"Apex Auto Care",phone:"Teléfono",address:"Dirección",city:"Ciudad",state:"Estado",zip:"Código postal",timezone:"Zona horaria",save:"Guardar perfil",bookingEyebrow:"Acceso de clientes",bookingTitle:"Enlace público de reservas",bookingCopy:"Comparte este enlace estable cuando tus servicios y horarios estén listos.",copy:"Copiar",open:"Abrir",loadFailed:"No se pudieron cargar los ajustes.",saveFailed:"No se pudieron guardar los ajustes.",sessionFailed:"No se pudo verificar la sesión segura.",savedMessage:"Ajustes del taller guardados.",copied:"Enlace de reservas copiado.",copyFailed:"No se pudo copiar el enlace."},
-    it:{eyebrow:"CRM officina",title:"Impostazioni",subtitle:"Gestisci il profilo salvato dell’officina, il link pubblico di prenotazione e il fuso orario operativo.",notConfigured:"Non configurato",saved:"Salvato",profileEyebrow:"Profilo attività",profileTitle:"Profilo officina",profileCopy:"Sono gli stessi dati salvati che Hermes Connect usa per la prenotazione pubblica.",shopName:"Nome officina",shopNamePlaceholder:"Apex Auto Care",phone:"Telefono",address:"Indirizzo",city:"Città",state:"Stato",zip:"CAP",timezone:"Fuso orario",save:"Salva profilo",bookingEyebrow:"Accesso clienti",bookingTitle:"Link pubblico di prenotazione",bookingCopy:"Condividi questo link stabile quando servizi e orari sono pronti.",copy:"Copia",open:"Apri",loadFailed:"Impossibile caricare le impostazioni.",saveFailed:"Impossibile salvare le impostazioni.",sessionFailed:"Impossibile verificare la sessione sicura.",savedMessage:"Impostazioni officina salvate.",copied:"Link di prenotazione copiato.",copyFailed:"Impossibile copiare il link."},
-    fr:{eyebrow:"CRM atelier",title:"Paramètres",subtitle:"Gérez le profil enregistré de l’atelier, le lien public de réservation et le fuseau horaire opérationnel.",notConfigured:"Non configuré",saved:"Enregistré",profileEyebrow:"Profil de l’entreprise",profileTitle:"Profil de l’atelier",profileCopy:"Ce sont les mêmes informations enregistrées que Hermes Connect utilise pour la réservation publique.",shopName:"Nom de l’atelier",shopNamePlaceholder:"Apex Auto Care",phone:"Téléphone",address:"Adresse",city:"Ville",state:"État",zip:"Code postal",timezone:"Fuseau horaire",save:"Enregistrer le profil",bookingEyebrow:"Accès clients",bookingTitle:"Lien public de réservation",bookingCopy:"Partagez ce lien stable une fois les services et horaires prêts.",copy:"Copier",open:"Ouvrir",loadFailed:"Impossible de charger les paramètres.",saveFailed:"Impossible d’enregistrer les paramètres.",sessionFailed:"Impossible de vérifier la session sécurisée.",savedMessage:"Paramètres de l’atelier enregistrés.",copied:"Lien de réservation copié.",copyFailed:"Impossible de copier le lien."},
+    en:{eyebrow:"Repair Shop CRM",title:"Settings",subtitle:"Manage the saved shop profile used by your public booking link and operating timezone.",notConfigured:"Not configured",saved:"Saved",profileEyebrow:"Business profile",profileTitle:"Shop profile",profileCopy:"These are the same saved business details Hermes Connect uses for public booking.",shopName:"Shop name",shopNamePlaceholder:"Apex Auto Care",phone:"Phone",address:"Address",city:"City",region:"Region / state",country:"Country code",postal:"Postal code",timezone:"Timezone",detectTimezone:"Use browser timezone",save:"Save shop profile",bookingEyebrow:"Customer access",bookingTitle:"Public booking link",bookingCopy:"Share this stable link after your services and availability are ready.",copy:"Copy",open:"Open",loadFailed:"Unable to load shop settings.",saveFailed:"Unable to save shop settings.",sessionFailed:"Unable to verify your secure session.",savedMessage:"Shop settings saved.",copied:"Public booking link copied.",copyFailed:"Could not copy the booking link."},
+    ru:{eyebrow:"CRM СТО",title:"Настройки",subtitle:"Управляйте сохранённым профилем СТО, публичной ссылкой записи и рабочим часовым поясом.",notConfigured:"Не настроено",saved:"Сохранено",profileEyebrow:"Профиль бизнеса",profileTitle:"Профиль СТО",profileCopy:"Эти же сохранённые данные Hermes Connect использует для публичной записи клиентов.",shopName:"Название СТО",shopNamePlaceholder:"Apex Auto Care",phone:"Телефон",address:"Адрес",city:"Город",region:"Регион / штат",country:"Код страны",postal:"Почтовый индекс",timezone:"Часовой пояс",detectTimezone:"Определить по браузеру",save:"Сохранить профиль СТО",bookingEyebrow:"Доступ клиентов",bookingTitle:"Публичная ссылка записи",bookingCopy:"Делитесь этой постоянной ссылкой после настройки услуг и графика.",copy:"Копировать",open:"Открыть",loadFailed:"Не удалось загрузить настройки СТО.",saveFailed:"Не удалось сохранить настройки СТО.",sessionFailed:"Не удалось проверить защищённую сессию.",savedMessage:"Настройки СТО сохранены.",copied:"Ссылка записи скопирована.",copyFailed:"Не удалось скопировать ссылку записи."},
+    uk:{eyebrow:"CRM СТО",title:"Налаштування",subtitle:"Керуйте збереженим профілем СТО, публічним посиланням запису та робочим часовим поясом.",notConfigured:"Не налаштовано",saved:"Збережено",profileEyebrow:"Профіль бізнесу",profileTitle:"Профіль СТО",profileCopy:"Ці самі збережені дані Hermes Connect використовує для публічного запису клієнтів.",shopName:"Назва СТО",shopNamePlaceholder:"Apex Auto Care",phone:"Телефон",address:"Адреса",city:"Місто",region:"Регіон / штат",country:"Код країни",postal:"Поштовий індекс",timezone:"Часовий пояс",detectTimezone:"Визначити за браузером",save:"Зберегти профіль СТО",bookingEyebrow:"Доступ клієнтів",bookingTitle:"Публічне посилання запису",bookingCopy:"Діліться цим постійним посиланням після налаштування послуг і графіка.",copy:"Копіювати",open:"Відкрити",loadFailed:"Не вдалося завантажити налаштування СТО.",saveFailed:"Не вдалося зберегти налаштування СТО.",sessionFailed:"Не вдалося перевірити захищену сесію.",savedMessage:"Налаштування СТО збережено.",copied:"Посилання запису скопійовано.",copyFailed:"Не вдалося скопіювати посилання запису."},
+    es:{eyebrow:"CRM del taller",title:"Ajustes",subtitle:"Gestiona el perfil guardado del taller, el enlace público de reservas y la zona horaria operativa.",notConfigured:"Sin configurar",saved:"Guardado",profileEyebrow:"Perfil del negocio",profileTitle:"Perfil del taller",profileCopy:"Son los mismos datos guardados que Hermes Connect utiliza en la reserva pública.",shopName:"Nombre del taller",shopNamePlaceholder:"Apex Auto Care",phone:"Teléfono",address:"Dirección",city:"Ciudad",region:"Región / estado",country:"Código de país",postal:"Código postal",timezone:"Zona horaria",detectTimezone:"Usar zona del navegador",save:"Guardar perfil",bookingEyebrow:"Acceso de clientes",bookingTitle:"Enlace público de reservas",bookingCopy:"Comparte este enlace estable cuando tus servicios y horarios estén listos.",copy:"Copiar",open:"Abrir",loadFailed:"No se pudieron cargar los ajustes.",saveFailed:"No se pudieron guardar los ajustes.",sessionFailed:"No se pudo verificar la sesión segura.",savedMessage:"Ajustes del taller guardados.",copied:"Enlace de reservas copiado.",copyFailed:"No se pudo copiar el enlace."},
+    it:{eyebrow:"CRM officina",title:"Impostazioni",subtitle:"Gestisci il profilo salvato dell’officina, il link pubblico di prenotazione e il fuso orario operativo.",notConfigured:"Non configurato",saved:"Salvato",profileEyebrow:"Profilo attività",profileTitle:"Profilo officina",profileCopy:"Sono gli stessi dati salvati che Hermes Connect usa per la prenotazione pubblica.",shopName:"Nome officina",shopNamePlaceholder:"Apex Auto Care",phone:"Telefono",address:"Indirizzo",city:"Città",region:"Regione / stato",country:"Codice paese",postal:"Codice postale",timezone:"Fuso orario",detectTimezone:"Usa fuso del browser",save:"Salva profilo",bookingEyebrow:"Accesso clienti",bookingTitle:"Link pubblico di prenotazione",bookingCopy:"Condividi questo link stabile quando servizi e orari sono pronti.",copy:"Copia",open:"Apri",loadFailed:"Impossibile caricare le impostazioni.",saveFailed:"Impossibile salvare le impostazioni.",sessionFailed:"Impossibile verificare la sessione sicura.",savedMessage:"Impostazioni officina salvate.",copied:"Link di prenotazione copiato.",copyFailed:"Impossibile copiare il link."},
+    fr:{eyebrow:"CRM atelier",title:"Paramètres",subtitle:"Gérez le profil enregistré de l’atelier, le lien public de réservation et le fuseau horaire opérationnel.",notConfigured:"Non configuré",saved:"Enregistré",profileEyebrow:"Profil de l’entreprise",profileTitle:"Profil de l’atelier",profileCopy:"Ce sont les mêmes informations enregistrées que Hermes Connect utilise pour la réservation publique.",shopName:"Nom de l’atelier",shopNamePlaceholder:"Apex Auto Care",phone:"Téléphone",address:"Adresse",city:"Ville",region:"Région / état",country:"Code pays",postal:"Code postal",timezone:"Fuseau horaire",detectTimezone:"Utiliser le fuseau du navigateur",save:"Enregistrer le profil",bookingEyebrow:"Accès clients",bookingTitle:"Lien public de réservation",bookingCopy:"Partagez ce lien stable une fois les services et horaires prêts.",copy:"Copier",open:"Ouvrir",loadFailed:"Impossible de charger les paramètres.",saveFailed:"Impossible d’enregistrer les paramètres.",sessionFailed:"Impossible de vérifier la session sécurisée.",savedMessage:"Paramètres de l’atelier enregistrés.",copied:"Lien de réservation copié.",copyFailed:"Impossible de copier le lien."},
   };
   const t = copy[locale] || copy.en;
   const $ = <T extends HTMLElement>(selector:string) => document.querySelector(selector) as T | null;
@@ -107,9 +121,10 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
     ($("#shop-phone") as HTMLInputElement | null)!.value=shop.phone || "";
     ($("#shop-address") as HTMLInputElement | null)!.value=shop.address_line1 || "";
     ($("#shop-city") as HTMLInputElement | null)!.value=shop.city || "";
-    ($("#shop-state") as HTMLInputElement | null)!.value=shop.state || "";
-    ($("#shop-zip") as HTMLInputElement | null)!.value=shop.postal_code || "";
-    ($("#shop-timezone") as HTMLSelectElement | null)!.value=shop.timezone || "America/Chicago";
+    ($("#shop-region") as HTMLInputElement | null)!.value=shop.region || shop.state || "";
+    ($("#shop-country") as HTMLInputElement | null)!.value=(shop.country_code || "US").toUpperCase();
+    ($("#shop-postal") as HTMLInputElement | null)!.value=shop.postal_code || "";
+    ($("#shop-timezone") as HTMLInputElement | null)!.value=shop.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
     publicBookingUrl=`${window.location.origin}/services/hermes-connect/repair-shops/booking/?shop=${encodeURIComponent(shop.slug)}`;
     const code=$("#public-booking-link"); if(code)code.textContent=publicBookingUrl;
     const open=$("#open-booking-link") as HTMLAnchorElement | null; if(open)open.href=publicBookingUrl;
@@ -125,20 +140,39 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
       if(result.response.status===401)return authRedirect();
       if(!result.response.ok || !result.data.success)return setAlert(t.loadFailed);
       fillProfile(result.data.shop || null);
+      if(!result.data.shop){
+        const browserTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const timezoneInput=$("#shop-timezone") as HTMLInputElement | null;
+        if(timezoneInput && browserTimezone) timezoneInput.value=browserTimezone;
+      }
     } catch { setAlert(t.loadFailed); }
   };
+
+  $("#detect-timezone")?.addEventListener("click", () => {
+    const browserTimezone=Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezoneInput=$("#shop-timezone") as HTMLInputElement | null;
+    if(timezoneInput && browserTimezone) timezoneInput.value=browserTimezone;
+  });
+
+  $("#shop-country")?.addEventListener("input", (event) => {
+    const input=event.currentTarget as HTMLInputElement;
+    input.value=input.value.replace(/[^A-Za-z]/g,"").slice(0,2).toUpperCase();
+  });
 
   form?.addEventListener("submit", async (event) => {
     event.preventDefault(); clearAlert(); if(saveButton)saveButton.disabled=true;
     try {
+      const region=($("#shop-region") as HTMLInputElement | null)?.value || "";
       const body={
         name:($("#shop-name") as HTMLInputElement | null)?.value,
         phone:($("#shop-phone") as HTMLInputElement | null)?.value,
         address_line1:($("#shop-address") as HTMLInputElement | null)?.value,
         city:($("#shop-city") as HTMLInputElement | null)?.value,
-        state:($("#shop-state") as HTMLInputElement | null)?.value,
-        postal_code:($("#shop-zip") as HTMLInputElement | null)?.value,
-        timezone:($("#shop-timezone") as HTMLSelectElement | null)?.value,
+        region,
+        state:region,
+        country_code:($("#shop-country") as HTMLInputElement | null)?.value,
+        postal_code:($("#shop-postal") as HTMLInputElement | null)?.value,
+        timezone:($("#shop-timezone") as HTMLInputElement | null)?.value,
       };
       const result=await requestJson("/api/repair-shop/profile",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
       if(result.response.status===401)return authRedirect();
@@ -164,9 +198,10 @@ import HermesConnectAccountSwitcher from "../../../../components/HermesConnectAc
   .settings-card{margin-top:16px;padding:24px;border:1px solid #e0e5eb;border-radius:20px;background:#fff;box-shadow:0 14px 38px rgba(22,32,51,.06)}
   .settings-card-head{display:flex;justify-content:space-between;gap:18px;margin-bottom:18px}.settings-card h2{margin:4px 0 6px;font-size:22px}
   .settings-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.settings-form label{display:grid;gap:7px;color:#344054;font-size:12px;font-weight:800}.settings-form .span-2{grid-column:1/-1}
-  .settings-form input,.settings-form select{width:100%;min-height:46px;box-sizing:border-box;padding:0 13px;border:1px solid #d8dee7;border-radius:11px;background:#fff;color:#172033;font:inherit;font-weight:650;outline:none}.settings-form input:focus,.settings-form select:focus{border-color:#6aa8e8;box-shadow:0 0 0 3px rgba(30,136,255,.12)}
+  .settings-form input{width:100%;min-height:46px;box-sizing:border-box;padding:0 13px;border:1px solid #d8dee7;border-radius:11px;background:#fff;color:#172033;font:inherit;font-weight:650;outline:none}.settings-form input:focus{border-color:#6aa8e8;box-shadow:0 0 0 3px rgba(30,136,255,.12)}
+  .timezone-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px}
   .primary-action,.secondary-action{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:11px;font:inherit;font-size:13px;font-weight:850;text-decoration:none;cursor:pointer}.primary-action{border:1px solid #172033;background:#172033;color:#fff}.primary-action:disabled{opacity:.55;cursor:wait}.secondary-action{border:1px solid #d8dee7;background:#fff;color:#344054}
   .booking-link-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid #e1e6ec;border-radius:13px;background:#f8fafc}.booking-link-row code{min-width:0;overflow-wrap:anywhere;color:#344054;font-size:12px}.booking-link-actions{display:flex;gap:8px;flex:0 0 auto}
   .alert{margin:0 0 16px;padding:12px 14px;border:1px solid #efc8ce;border-radius:12px;background:#fff3f5;color:#9a2f42;font-size:13px;font-weight:700}.alert.success{border-color:#bfe4d0;background:#effaf4;color:#28704a}.hidden{display:none!important}
-  @media(max-width:760px){.settings-page .shell{width:min(100% - 24px,1040px);padding:18px 0 40px}.settings-hero{display:grid;gap:12px}.settings-form{grid-template-columns:1fr}.settings-form .span-2{grid-column:auto}.settings-card{padding:18px;border-radius:16px}.booking-link-row{align-items:stretch;flex-direction:column}.booking-link-actions{display:grid;grid-template-columns:1fr 1fr}.secondary-action{width:100%}}
+  @media(max-width:760px){.settings-page .shell{width:min(100% - 24px,1040px);padding:18px 0 40px}.settings-hero{display:grid;gap:12px}.settings-form{grid-template-columns:1fr}.settings-form .span-2{grid-column:auto}.settings-card{padding:18px;border-radius:16px}.timezone-row{grid-template-columns:1fr}.booking-link-row{align-items:stretch;flex-direction:column}.booking-link-actions{display:grid;grid-template-columns:1fr 1fr}.secondary-action{width:100%}}
 </style>
