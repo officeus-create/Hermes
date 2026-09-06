@@ -69,7 +69,7 @@ const routes = [
   { path: "logistics/carrier/index.html", required: ["Carrier or owner-operator", "Open Load Board", "Call Logistics Sales", "tel:+12623023626"] },
   { path: "logistics/agency/index.html", required: ["Open an agency", "Start agency application", "remote logistics agency"] },
   { path: "logistics/careers/index.html", required: ["Work with us", "Start job application", "Explore training first"] },
-  { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "Your information was not sent or stored"] },
+  { path: "logistics/apply/index.html", required: ["Logistics Application", "Application type", "data-logistics-application", "data-application-result-copy"] },
   {
     path: "logistics/appleton-wi-vehicle-transport/index.html",
     required: [
