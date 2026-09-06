@@ -12,12 +12,22 @@ let shop = {
   address_line1: "123 Main St",
   city: "Milwaukee",
   state: "WI",
+  region: "Wisconsin",
+  country_code: "US",
   postal_code: "53202",
   timezone: "America/Chicago",
 };
 
 async function mockOwnerApis(page: Page) {
-  shop = { ...shop, name: "Hermes Test Garage", city: "Milwaukee", state: "WI", timezone: "America/Chicago" };
+  shop = {
+    ...shop,
+    name: "Hermes Test Garage",
+    city: "Milwaukee",
+    state: "WI",
+    region: "Wisconsin",
+    country_code: "US",
+    timezone: "America/Chicago",
+  };
   await page.route("**/api/auth/me", (route) => route.fulfill(json({
     success: true,
     specialist: { id: "owner-settings-1", name: "Pilot Owner", email: "owner@example.com", role: "Shop Owner" },
@@ -32,7 +42,9 @@ async function mockOwnerApis(page: Page) {
   await page.route("**/api/repair-shop/profile", async (route) => {
     if (route.request().method() === "PUT") {
       const body = JSON.parse(route.request().postData() || "{}");
-      shop = { ...shop, ...body, state: String(body.state || shop.state).toUpperCase() };
+      const region = String(body.region || body.state || shop.region || "");
+      const countryCode = String(body.country_code || shop.country_code || "US").toUpperCase();
+      shop = { ...shop, ...body, region, country_code: countryCode, state: region || countryCode };
       return route.fulfill(json({ success: true, shop }));
     }
     return route.fulfill(json({ success: true, shop }));
@@ -63,21 +75,44 @@ test("Settings is a private owner workspace backed by the existing profile API",
   await expect(page.locator(".repair-crm-account-slot details[data-hc-account-switcher]")).toHaveCount(1);
   await expect(page.locator("#shop-name")).toHaveValue("Hermes Test Garage");
   await expect(page.locator("#shop-city")).toHaveValue("Milwaukee");
+  await expect(page.locator("#shop-region")).toHaveValue("Wisconsin");
+  await expect(page.locator("#shop-country")).toHaveValue("US");
+  await expect(page.locator("#shop-timezone")).toHaveValue("America/Chicago");
   await expect(page.locator("#profile-state")).toHaveText("Saved");
   await expect(page.locator("#public-booking-card")).toBeVisible();
   await expect(page.locator("#public-booking-link")).toContainText("/services/hermes-connect/repair-shops/booking/?shop=hermes-test-garage");
 
   await page.locator("#shop-name").fill("Hermes Test Garage Updated");
   await page.locator("#shop-city").fill("Little Rock");
-  await page.locator("#shop-state").fill("ar");
-  await page.locator("#shop-timezone").selectOption("America/Chicago");
+  await page.locator("#shop-region").fill("Arkansas");
+  await page.locator("#shop-country").fill("us");
+  await page.locator("#shop-timezone").fill("America/Chicago");
   await page.locator("#save-profile").click();
 
   await expect(page.locator("#page-alert")).toContainText("Shop settings saved.");
   await expect(page.locator("#shop-name")).toHaveValue("Hermes Test Garage Updated");
   await expect(page.locator("#shop-city")).toHaveValue("Little Rock");
-  await expect(page.locator("#shop-state")).toHaveValue("AR");
+  await expect(page.locator("#shop-region")).toHaveValue("Arkansas");
+  await expect(page.locator("#shop-country")).toHaveValue("US");
   await captureEvidence(page, testInfo, "settings-en-profile");
+});
+
+test("Settings accepts non-US region, country and IANA timezone", async ({ page }) => {
+  await mockOwnerApis(page);
+  await page.goto("/services/hermes-connect/repair-shops/settings/", { waitUntil: "domcontentloaded" });
+
+  await page.locator("#shop-city").fill("Kyiv");
+  await page.locator("#shop-region").fill("Kyiv");
+  await page.locator("#shop-country").fill("ua");
+  await page.locator("#shop-postal").fill("01001");
+  await page.locator("#shop-timezone").fill("Europe/Kyiv");
+  await page.locator("#save-profile").click();
+
+  await expect(page.locator("#page-alert")).toContainText("Shop settings saved.");
+  await expect(page.locator("#shop-city")).toHaveValue("Kyiv");
+  await expect(page.locator("#shop-region")).toHaveValue("Kyiv");
+  await expect(page.locator("#shop-country")).toHaveValue("UA");
+  await expect(page.locator("#shop-timezone")).toHaveValue("Europe/Kyiv");
 });
 
 test("Settings preserves Russian UX and mobile CRM navigation", async ({ page }, testInfo) => {
@@ -87,6 +122,8 @@ test("Settings preserves Russian UX and mobile CRM navigation", async ({ page },
   await expect(page.locator('[data-i18n="title"]')).toHaveText("Настройки");
   await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Настройки");
   await expect(page.locator('[data-i18n="profileTitle"]')).toHaveText("Профиль СТО");
+  await expect(page.locator('[data-i18n="region"]')).toHaveText("Регион / штат");
+  await expect(page.locator('[data-i18n="country"]')).toHaveText("Код страны");
   await expect(page.locator("#save-profile")).toHaveText("Сохранить профиль СТО");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
 
