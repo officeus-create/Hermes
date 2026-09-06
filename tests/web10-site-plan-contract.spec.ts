@@ -16,25 +16,21 @@ test("WEB 10 keeps one canonical department order across header and localized su
   }
 });
 
-test("WEB 10 exposes Russian product hubs without duplicating operational backends", async () => {
-  const route = await source("src/pages/ru/paths/[slug].astro");
-  const data = await source("src/data/russian-direction-hubs.ts");
-  const hub = await source("src/components/RussianDirectionHub.astro");
+test("WEB 10 keeps Russian direction discovery on the existing localized overview and reuses canonical product backends", async () => {
+  const header = await source("src/components/SiteHeader.astro");
   const menu = await source("src/components/DepartmentMenuLocalization.astro");
-  const router = await source("src/components/RussianDirectionLinkRouter.astro");
+  const integrity = await source("src/components/RussianLocaleIntegrity.astro");
 
-  for (const id of ["logistics", "marketing", "technology", "academy"]) {
-    expect(data).toContain(`${id}: {`);
-    expect(menu).toContain(`/ru/paths/${id}/`);
-    expect(router).toContain(`/ru/paths/${id}/`);
+  expect(header).toContain('url: `${localeBase}#${path.id}`');
+  for (const [id, href] of [
+    ["logistics", "/ru/#logistics"],
+    ["marketing", "/ru/#marketing"],
+    ["technology", "/ru/#technology"],
+    ["academy", "/ru/#academy"],
+  ]) {
+    expect(menu).toContain(`${id}: "${href}"`);
+    expect(integrity).toContain(href);
   }
-
-  expect(route).toContain("russianDirectionHubOrder.map");
-  expect(data).toContain('href: "/load-board/?role=carrier#available-loads"');
-  expect(data).toContain('href: "/carrier/"');
-  expect(data).toContain('href: "/services/hermes-connect/?lang=ru"');
-  expect(data).not.toContain('href: "/ru/load-board/"');
-  expect(data).not.toContain('href: "/ru/carrier/"');
 
   for (const localizedPath of [
     "/ru/business-growth/",
@@ -43,7 +39,6 @@ test("WEB 10 exposes Russian product hubs without duplicating operational backen
     "/ru/business-growth/social-media/",
     "/ru/business-growth/advertising/",
   ]) {
-    expect(hub).toContain(localizedPath);
     expect(menu).toContain(localizedPath);
   }
 
@@ -51,6 +46,7 @@ test("WEB 10 exposes Russian product hubs without duplicating operational backen
   expect(menu).toContain('/ru/gb/london/it-web-development/');
   expect(menu).not.toContain('/ru/load-board/');
   expect(menu).not.toContain('/ru/carrier/');
+  expect(menu).not.toContain('/ru/paths/');
 });
 
 test("WEB 10 keeps five Academy tracks public but commercial activation gated", async () => {
