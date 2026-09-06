@@ -8,6 +8,7 @@ const ownerPaths = new Set([
   `${repairShopRoot}/customers`,
   `${repairShopRoot}/vehicles`,
   `${repairShopRoot}/services`,
+  `${repairShopRoot}/settings`,
 ]);
 const isOwnerWorkspace = ownerPaths.has(normalizedPath);
 
@@ -41,7 +42,7 @@ const items = [
   { label:copy.services, href:withLocale(`${repairShopRoot}/services/`), active:normalizedPath === `${repairShopRoot}/services`, icon:"wrench" },
   { label:copy.availability, href:withLocale(`${repairShopRoot}/availability/`), active:normalizedPath === `${repairShopRoot}/availability`, icon:"clock" },
   { label:copy.feedback, href:withLocale(`${repairShopRoot}/dashboard/`, "#feedback-title"), active:false, icon:"message" },
-  { label:copy.settings, href:withLocale(`${repairShopRoot}/dashboard/`, "#profile-title"), active:false, icon:"settings" },
+  { label:copy.settings, href:withLocale(`${repairShopRoot}/settings/`), active:normalizedPath === `${repairShopRoot}/settings`, icon:"settings" },
 ];
 const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
   ? copy.appointments
@@ -51,9 +52,11 @@ const pageTitle = normalizedPath === `${repairShopRoot}/appointments`
       ? copy.vehicles
       : normalizedPath === `${repairShopRoot}/services`
         ? copy.services
-        : normalizedPath === `${repairShopRoot}/availability`
-          ? copy.availability
-          : copy.today;
+        : normalizedPath === `${repairShopRoot}/settings`
+          ? copy.settings
+          : normalizedPath === `${repairShopRoot}/availability`
+            ? copy.availability
+            : copy.today;
 const productHubHref = withLocale("/services/hermes-connect/");
 const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
 ---
@@ -135,9 +138,11 @@ const logoutRedirect = withLocale(`${repairShopRoot}/auth/`);
           ? "vehicles"
           : currentPath === `${ROOT}/services`
             ? "services"
-            : currentPath === `${ROOT}/availability`
-              ? "availability"
-              : "today";
+            : currentPath === `${ROOT}/settings`
+              ? "settings"
+              : currentPath === `${ROOT}/availability`
+                ? "availability"
+                : "today";
     const navKeys = ["today", "appointments", "customers", "vehicles", "services", "availability", "feedback", "settings"];
 
     const localizeHref = (href) => {
