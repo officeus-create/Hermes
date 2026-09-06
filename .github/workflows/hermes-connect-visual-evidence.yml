@@ -6,6 +6,8 @@ on:
       - 'public/demos/hermes-connect/**'
       - 'public/design-owner-polish.css'
       - 'public/design-owner-polish.js'
+      - 'public/department-menu.css'
+      - 'public/department-menu.js'
       - 'src/components/HermesConnectLauncher.astro'
       - 'src/components/AcademyScreenFlow.astro'
       - 'src/components/DepartmentMenuEnhancer.astro'
