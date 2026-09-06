@@ -71,7 +71,7 @@
   const ensureMobileBody = (nav, header, anchor, toggle, id) => {
     let body = toggle.nextElementSibling;
     if (!(body instanceof HTMLElement) || !body.matches(`[data-mobile-department-body="${id}"]`)) {
-      body = document.createElement("div"); body.className = "mobile-department-menu__body"; body.dataset.mobileDepartmentBody = id; body.hidden = true;
+      body = document.createElement("div"); body.className = "mobile-department-menu__body"; body.dataset.mobileDepartmentBody = id; body.hidden = true; body.style.setProperty("--department-accent", departments[id].accent);
       const overviewLabel = isRu() ? `Открыть раздел «${anchor.textContent?.trim() || departments[id].label}»` : `${anchor.textContent?.trim() || departments[id].label} overview`;
       body.append(makeLink(overviewLabel, localizedOverview(id), "mobile-department-menu__overview"));
       departments[id].items.forEach(([label, href]) => { const item = localizedProduct(id, label, href); body.append(makeLink(item.label, item.href)); });
