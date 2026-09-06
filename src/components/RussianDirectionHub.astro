@@ -34,7 +34,7 @@ const schema = {
 };
 ---
 
-<BaseLayout title={hub.seoTitle} description={hub.seoDescription} locale="ru" schema={schema}>
+<BaseLayout title={hub.seoTitle} description={hub.seoDescription} locale="ru" schema={schema} routeEnhancers={false}>
   <SiteHeader locale="ru" />
   <main id="main-content" class={`ru-direction-hub ru-direction-hub--${hub.id}`}>
     <section class="ru-direction-hero" id="top">
