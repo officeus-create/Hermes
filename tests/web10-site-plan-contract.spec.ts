@@ -51,6 +51,7 @@ test("WEB 10 keeps Russian direction discovery on the existing localized overvie
 
 test("WEB 10 keeps five Academy tracks public but commercial activation gated", async () => {
   const academy = await source("src/data/academy-public.ts");
+  const trustBadge = await source("src/components/TrustBadge.astro");
 
   for (const track of ["U.S. Logistics Operations", "Marketing", "IT & AI", "Sales", "COO / Operations"]) {
     expect(academy).toContain(track);
@@ -59,4 +60,6 @@ test("WEB 10 keeps five Academy tracks public but commercial activation gated", 
   expect(academy).toContain("A visible learning track does not by itself mean a paid cohort or enrollment window is open.");
   expect(academy).toContain("No fixed price");
   expect(academy).toContain("do not guarantee employment");
+  expect(trustBadge).toContain('value: "5 learning tracks"');
+  expect(trustBadge).not.toContain('value: "2 programs"');
 });
