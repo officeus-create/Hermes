@@ -8,12 +8,9 @@ test("WEB 10 keeps one canonical department order across header and localized su
   const header = await source("src/components/SiteHeader.astro");
   const localized = await source("src/components/LocalizedOverviewPage.astro");
   const footer = await source("src/components/SiteFooter.astro");
+  const canonicalOrder = /logistics:\s*0[\s\S]*marketing:\s*1[\s\S]*technology:\s*2[\s\S]*academy:\s*3/;
 
-  for (const file of [header, localized, footer]) {
-    expect(file.indexOf("logistics")).toBeLessThan(file.indexOf("marketing"));
-    expect(file.indexOf("marketing")).toBeLessThan(file.indexOf("technology"));
-    expect(file.indexOf("technology")).toBeLessThan(file.indexOf("academy"));
-  }
+  for (const file of [header, localized, footer]) expect(file).toMatch(canonicalOrder);
 });
 
 test("WEB 10 keeps Russian direction discovery on the existing localized overview and reuses canonical product backends", async () => {
