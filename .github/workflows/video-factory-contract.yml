@@ -1,0 +1,30 @@
+name: Video Factory contract
+
+on:
+  pull_request:
+    paths:
+      - "video-factory/**"
+      - ".github/workflows/video-factory-contract.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "video-factory/**"
+      - ".github/workflows/video-factory-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate VideoJob provider and governance contract
+        run: node video-factory/tests/video-factory-contract.test.mjs
