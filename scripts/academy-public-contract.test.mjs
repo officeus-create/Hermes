@@ -48,7 +48,7 @@ for (const text of [
   "Paid cohort",
   "Free practice opportunity",
 ]) {
-  assert.ok(academy.includes(text), `Academy public page is missing: ${text}`);
+  assert.ok(academyText.includes(text), `Academy public page is missing: ${text}`);
 }
 
 for (const text of [
