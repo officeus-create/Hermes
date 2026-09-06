@@ -6,7 +6,7 @@ import {
 } from "../lib/social-distribution.ts";
 
 export const syntheticDistributionNotice =
-  "SYNTHETIC RELEASE A PREVIEW. No real account, provider connection, publication, approval history, credential, audience, or external action is represented.";
+  "SYNTHETIC RELEASE B PREVIEW. No real account, provider connection, publication, approval history, credential, audience, or external action is represented.";
 
 export const syntheticApprovedWebsiteAsset: ApprovedWebsiteAsset = {
   id: "dispatch-service-vs-self-dispatch",
@@ -26,8 +26,10 @@ export const syntheticApprovedWebsiteAsset: ApprovedWebsiteAsset = {
   ],
   direction: "hermes_logistics",
   campaign: "logistics_insights",
+  objective: "authority",
   audience: "Car-hauling owner-operators and small fleets",
   language: "en",
+  market: "us",
   ctaLabel: "Read the complete comparison",
   visualReference: null,
   evidenceNumber: null,
@@ -37,6 +39,17 @@ export const syntheticApprovedWebsiteAsset: ApprovedWebsiteAsset = {
 };
 
 export const syntheticPreviewChannels: DistributionChannel[] = [
+  {
+    alias: "synthetic-hermes-linkedin-preview",
+    platform: "linkedin",
+    direction: "hermes_logistics",
+    mode: "synthetic_preview",
+    readiness: "preview_only",
+    entityApproved: false,
+    ownerVerified: false,
+    accountLabel: "Synthetic LinkedIn organization preview",
+    note: syntheticDistributionNotice,
+  },
   {
     alias: "synthetic-hermes-facebook-preview",
     platform: "facebook",
@@ -103,6 +116,6 @@ export const syntheticDistributionDrafts = syntheticPreviewChannels.map((channel
   generatePlatformDraft(
     syntheticApprovedWebsiteAsset,
     channel,
-    "2026-08-03T13:00:00Z",
+    "2026-09-02T09:55:00Z",
   ),
 );

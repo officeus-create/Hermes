@@ -1,11 +1,14 @@
 import { normalizeSourceUrl, type ContentDirection } from "./content-pipeline.ts";
 
-export type DistributionPlatform = "facebook" | "threads" | "instagram" | "x" | "telegram";
+export type DistributionPlatform = "linkedin" | "facebook" | "threads" | "instagram" | "x" | "telegram";
 export type DistributionCampaign =
   | "logistics_insights"
   | "marketing_insights"
   | "academy"
-  | "it_insights";
+  | "it_insights"
+  | "recruiting"
+  | "investors";
+export type DistributionObjective = "authority" | "recruit" | "academy" | "lead" | "partner" | "investor";
 export type DistributionState =
   | "generated"
   | "reviewed"
@@ -14,6 +17,13 @@ export type DistributionState =
   | "manual_export_ready";
 export type ChannelReadiness = "blocked" | "preview_only" | "live_gate_required";
 export type ChannelMode = "synthetic_preview" | "owner_verified";
+
+export interface DistributionAttribution {
+  market?: string | null;
+  vacancy?: string | null;
+  placement?: string | null;
+  creative?: string | null;
+}
 
 export interface ApprovedWebsiteAsset {
   id: string;
@@ -27,8 +37,13 @@ export interface ApprovedWebsiteAsset {
   practicalPoints: string[];
   direction: ContentDirection;
   campaign: DistributionCampaign;
+  objective?: DistributionObjective;
   audience: string;
   language: string;
+  market?: string | null;
+  vacancyId?: string | null;
+  programId?: string | null;
+  offerId?: string | null;
   ctaLabel: string;
   visualReference: string | null;
   evidenceNumber: string | null;
@@ -57,8 +72,13 @@ export interface DistributionDraft {
   channelAlias: string;
   channelMode: ChannelMode;
   campaign: DistributionCampaign;
+  objective: DistributionObjective;
   audience: string;
   language: string;
+  market: string | null;
+  vacancyId: string | null;
+  programId: string | null;
+  offerId: string | null;
   hook: string;
   copy: string;
   ctaLabel: string;
@@ -89,13 +109,16 @@ export interface DistributionAuditEntry {
   reason: string;
 }
 
-const allowedSources = new Set<DistributionPlatform>(["facebook", "threads", "instagram", "x", "telegram"]);
+const allowedSources = new Set<DistributionPlatform>(["linkedin", "facebook", "threads", "instagram", "x", "telegram"]);
 const allowedCampaigns = new Set<DistributionCampaign>([
   "logistics_insights",
   "marketing_insights",
   "academy",
   "it_insights",
+  "recruiting",
+  "investors",
 ]);
+const blockedActiveMarkets = new Set(["ru", "by", "russia", "belarus", "russian-federation", "republic-of-belarus"]);
 const safeVariantPattern = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const privateValuePattern = /(?:@|\+?\d[\d\s().-]{7,}|\b(?:mc|dot|usdot)[\s#:_-]*\d+\b)/i;
 
@@ -110,6 +133,27 @@ const hashString = (value: string): string => {
 
 const truncate = (value: string, max: number): string =>
   value.length <= max ? value : `${value.slice(0, Math.max(0, max - 1)).trimEnd()}…`;
+
+const inferObjective = (asset: ApprovedWebsiteAsset): DistributionObjective => {
+  if (asset.objective) return asset.objective;
+  if (asset.campaign === "academy") return "academy";
+  if (asset.campaign === "recruiting") return "recruit";
+  if (asset.campaign === "investors") return "investor";
+  return "authority";
+};
+
+const normalizeTrackingId = (value: string): string =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 64);
+
+const assertSafeTrackingValue = (name: string, value: string): void => {
+  if (!safeVariantPattern.test(value) || privateValuePattern.test(value)) {
+    throw new Error(`${name} must be a stable privacy-safe identifier.`);
+  }
+};
 
 export const validateDistributionEligibility = (
   asset: ApprovedWebsiteAsset,
@@ -126,6 +170,9 @@ export const validateDistributionEligibility = (
   if (channel.direction !== asset.direction) blockers.push("Channel direction does not match the website asset.");
   if (!allowedSources.has(channel.platform)) blockers.push("Unsupported platform.");
   if (channel.readiness === "blocked") blockers.push("Channel is blocked.");
+  if (asset.market && blockedActiveMarkets.has(asset.market.trim().toLowerCase())) {
+    blockers.push("Owner-excluded active acquisition market.");
+  }
 
   if (channel.mode === "synthetic_preview") {
     if (channel.readiness !== "preview_only") blockers.push("Synthetic channels must remain preview-only.");
@@ -145,23 +192,39 @@ export const buildTrackedUrl = (
   platform: DistributionPlatform,
   campaign: DistributionCampaign,
   variantId: string,
+  attribution: DistributionAttribution = {},
 ): string => {
   if (!allowedSources.has(platform)) throw new Error(`Unsupported UTM source: ${platform}`);
   if (!allowedCampaigns.has(campaign)) throw new Error(`Unsupported UTM campaign: ${campaign}`);
-  if (!safeVariantPattern.test(variantId) || privateValuePattern.test(variantId)) {
-    throw new Error("UTM content variant must be a stable privacy-safe identifier.");
-  }
+  assertSafeTrackingValue("UTM content variant", variantId);
 
   const normalized = normalizeSourceUrl(canonicalUrl);
   const url = new URL(normalized);
   if (url.hostname !== "hermeslogisticsus.com") throw new Error("Tracked URLs must stay on the approved Hermes domain.");
   for (const key of [...url.searchParams.keys()]) {
-    if (key.startsWith("utm_") || key === "fbclid" || key === "igshid") url.searchParams.delete(key);
+    if (
+      key.startsWith("utm_")
+      || key === "fbclid"
+      || key === "igshid"
+      || key === "vacancy"
+      || key === "market"
+      || key === "placement"
+      || key === "creative"
+    ) {
+      url.searchParams.delete(key);
+    }
   }
   url.searchParams.set("utm_source", platform);
   url.searchParams.set("utm_medium", "organic_social");
   url.searchParams.set("utm_campaign", campaign);
   url.searchParams.set("utm_content", variantId);
+
+  for (const [key, rawValue] of Object.entries(attribution)) {
+    if (!rawValue) continue;
+    const value = rawValue.toLowerCase();
+    assertSafeTrackingValue(`Attribution ${key}`, value);
+    url.searchParams.set(key, value);
+  }
   return url.toString();
 };
 
@@ -170,7 +233,32 @@ export const createDistributionFingerprint = (
   channel: DistributionChannel,
 ): string => {
   const canonical = normalizeSourceUrl(asset.canonicalUrl);
-  return `${channel.platform}:${channel.alias}:${hashString(`${canonical}|${asset.campaign}|${asset.contentVersion}`)}`;
+  const objective = inferObjective(asset);
+  return `${channel.platform}:${channel.alias}:${hashString([
+    canonical,
+    asset.campaign,
+    objective,
+    asset.market ?? "global",
+    asset.vacancyId ?? "",
+    asset.programId ?? "",
+    asset.offerId ?? "",
+    asset.contentVersion,
+  ].join("|"))}`;
+};
+
+const linkedinDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
+  const points = asset.practicalPoints.slice(0, 3).map((point) => `• ${point}`).join("\n");
+  const objective = inferObjective(asset);
+  const lead = objective === "recruit"
+    ? "We are opening a real role and want candidates to understand the work before they apply."
+    : objective === "investor"
+      ? "We are preparing a structured strategic-partner intake and will publish only approved terms and eligibility."
+      : asset.conciseValue;
+  return {
+    hook: asset.title,
+    copy: `${lead}\n\n${points}\n\n${asset.ctaLabel}: ${trackedUrl}`,
+    destinationStrategy: "Professional B2B/talent draft for an owner-verified LinkedIn organization after human review; no live API call in preview mode.",
+  };
 };
 
 const facebookDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
@@ -204,6 +292,9 @@ const xDraft = (asset: ApprovedWebsiteAsset, trackedUrl: string) => {
   const evidence = asset.evidenceNumber ? `${asset.evidenceNumber} ` : "";
   const suffix = ` ${trackedUrl}`;
   const body = `${evidence}${asset.practicalPoints[0] ?? asset.conciseValue} ${asset.ctaLabel}.`;
+  if (suffix.length >= 280) {
+    throw new Error("Tracked X URL is too long for a compliant preview post.");
+  }
   return {
     hook: truncate(asset.title, 90),
     copy: `${truncate(body, 280 - suffix.length)}${suffix}`,
@@ -228,21 +319,26 @@ export const generatePlatformDraft = (
   const eligibility = validateDistributionEligibility(asset, channel);
   if (!eligibility.eligible) throw new Error(`Distribution blocked: ${eligibility.blockers.join(" ")}`);
 
-  const variantId = `${asset.id}-${asset.contentVersion}-${channel.platform}`
-    .toLowerCase()
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 64);
-  const trackedUrl = buildTrackedUrl(asset.canonicalUrl, channel.platform, asset.campaign, variantId);
-  const adapted = channel.platform === "facebook"
-    ? facebookDraft(asset, trackedUrl)
-    : channel.platform === "threads"
-      ? threadsDraft(asset, trackedUrl)
-      : channel.platform === "instagram"
-        ? instagramDraft(asset, trackedUrl)
-        : channel.platform === "x"
-          ? xDraft(asset, trackedUrl)
-          : telegramDraft(asset, trackedUrl);
+  const variantId = normalizeTrackingId(`c-${hashString(`${asset.id}|${asset.contentVersion}|${channel.platform}`)}`);
+  const placementId = normalizeTrackingId(`p-${hashString(channel.alias)}`);
+  if (!variantId || !placementId) throw new Error("Distribution identifiers cannot normalize to an empty value.");
+  const trackedUrl = buildTrackedUrl(asset.canonicalUrl, channel.platform, asset.campaign, variantId, {
+    market: asset.market ?? null,
+    vacancy: asset.vacancyId ?? null,
+    placement: placementId,
+    creative: variantId,
+  });
+  const adapted = channel.platform === "linkedin"
+    ? linkedinDraft(asset, trackedUrl)
+    : channel.platform === "facebook"
+      ? facebookDraft(asset, trackedUrl)
+      : channel.platform === "threads"
+        ? threadsDraft(asset, trackedUrl)
+        : channel.platform === "instagram"
+          ? instagramDraft(asset, trackedUrl)
+          : channel.platform === "x"
+            ? xDraft(asset, trackedUrl)
+            : telegramDraft(asset, trackedUrl);
   const fingerprint = createDistributionFingerprint(asset, channel);
 
   return {
@@ -253,8 +349,13 @@ export const generatePlatformDraft = (
     channelAlias: channel.alias,
     channelMode: channel.mode,
     campaign: asset.campaign,
+    objective: inferObjective(asset),
     audience: asset.audience,
     language: asset.language,
+    market: asset.market ?? null,
+    vacancyId: asset.vacancyId ?? null,
+    programId: asset.programId ?? null,
+    offerId: asset.offerId ?? null,
     hook: adapted.hook,
     copy: adapted.copy,
     ctaLabel: asset.ctaLabel,
@@ -330,8 +431,11 @@ export const createManualExport = (draft: DistributionDraft): string => {
   return [
     `Mode: ${draft.channelMode}`,
     `Platform: ${draft.platform}`,
-    `Channel alias: ${draft.channelAlias}`,
     `Campaign: ${draft.campaign}`,
+    `Objective: ${draft.objective}`,
+    `Market: ${draft.market ?? "global"}`,
+    `Vacancy: ${draft.vacancyId ?? "none"}`,
+    `Channel alias: ${draft.channelAlias}`,
     `Fingerprint: ${draft.fingerprint}`,
     "",
     draft.copy,
