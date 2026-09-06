@@ -1,12 +1,12 @@
 ---
 import { BookOpen, Bot, Check, ChevronRight, GraduationCap, ShieldCheck } from "@lucide/astro";
-import { academyEnrollmentModels, academyPublicTracks } from "../data/academy-public";
+import { academyEnrollmentModels, academyPublicPathOverrides, academyPublicTracks } from "../data/academy-public";
 
 const progression = [
   { level: "Student", focus: "Language and context", responsibility: "Understand the role, terminology, public boundaries, and how work moves through the selected U.S.-market workflow." },
-  { level: "Trainee", focus: "Guided execution", responsibility: "Complete defined logistics or marketing exercises with examples, review, and correction." },
+  { level: "Trainee", focus: "Guided execution", responsibility: "Complete defined exercises for the selected learning track with examples, review, and correction." },
   { level: "Specialist", focus: "Reliable ownership", responsibility: "Perform a repeatable area of work, document decisions, and communicate status clearly." },
-  { level: "Manager", focus: "Team coordination", responsibility: "Control priorities, quality, handoffs, and performance inside a defined logistics or marketing workflow." },
+  { level: "Manager", focus: "Team coordination", responsibility: "Control priorities, quality, handoffs, and performance inside a defined professional workflow." },
   { level: "Director", focus: "Operating system", responsibility: "Connect process, KPI, resources, quality controls, and execution rhythm for the selected professional path." },
   { level: "Executive", focus: "Business decisions", responsibility: "Use systems thinking and reviewed evidence to guide the wider operating or growth direction." },
 ];
@@ -17,19 +17,14 @@ const method = [
   { title: "Application", body: "Practice defined tasks, receive correction, and build evidence of readiness without assuming employment, income, clients, certification, or promotion." },
 ];
 
-const academyFaq = [
-  { question: "Which programs are publicly presented?", answer: "Two programs: U.S. Logistics Operations and Marketing. Leadership and technology topics may support exercises, but they are not separate public Academy programs on this page." },
-  { question: "Are paid cohorts and free practice the same offer?", answer: "No. A paid cohort requires an approved public offer with scope, dates, price, payment, refund, capacity, and enrollment terms. Free practice is a separate application and eligibility process with its own participation rules." },
-  { question: "Are current prices published?", answer: "No fixed price is published until a specific program and cohort are approved. The current website does not accept Academy enrollment or payment." },
-  { question: "Is employment or income guaranteed?", answer: "No. Training and practice can build capability and evidence of readiness, but employment, income, clients, certification, promotion, access duration, and future paid work are not guaranteed." },
-];
+const academyFaq = academyPublicPathOverrides.faq ?? [];
 import "../styles/features/academy.css";
 ---
 
 <section class="academy-flow" data-academy-flow data-active-screen="0" aria-labelledby="academy-flow-title">
   <div class="shell academy-flow-shell">
     <div class="academy-flow-progress" aria-label="Academy pathway progress">
-      {["Start", "Programs", "Program", "Growth", "Method"].map((label, index) => (
+      {["Start", "Tracks", "Track", "Growth", "Method"].map((label, index) => (
         <div class="academy-progress-step" data-academy-progress={index} data-active={index === 0 ? "true" : "false"}>
           <span>0{index + 1}</span><p>{label}</p>
         </div>
@@ -38,15 +33,15 @@ import "../styles/features/academy.css";
 
     <div class="academy-screen" data-academy-screen="0" data-active="true">
       <div class="academy-opening">
-        <p class="eyebrow">Hermes Academy · U.S.-market programs</p>
+        <p class="eyebrow">Hermes Academy · five public learning tracks</p>
         <h2 id="academy-flow-title">Choose one practical professional path.</h2>
-        <p>Start with U.S. Logistics Operations or Marketing. Paid cohorts and free practice opportunities are separate models, and neither implies employment or income.</p>
+        <p>{academyPublicPathOverrides.overview}</p>
         <div class="academy-opening-actions">
           <button class="button button-primary" type="button" data-academy-next="1">Choose a track <ChevronRight size={18} aria-hidden="true" /></button>
           <a class="button button-ghost" href="#contact">Ask a question</a>
         </div>
         <div class="academy-trust-facts" aria-label="Academy facts">
-          <div><strong>2</strong><span>public programs</span></div>
+          <div><strong>5</strong><span>public learning tracks</span></div>
           <div><strong>3</strong><span>learning stages</span></div>
           <div><strong>6</strong><span>capability layers</span></div>
         </div>
@@ -55,11 +50,11 @@ import "../styles/features/academy.css";
 
     <div class="academy-screen" data-academy-screen="1" data-active="false" hidden>
       <div class="academy-screen-heading">
-        <p class="eyebrow">Two public programs</p>
+        <p class="eyebrow">Five public learning tracks</p>
         <h2>Choose the work you want to understand and practice.</h2>
-        <p>Each path uses its own terminology, exercises, review criteria, and public boundaries.</p>
+        <p>Each track uses its own terminology, exercises, review criteria, and public boundaries.</p>
       </div>
-      <div class="academy-track-selector" role="tablist" aria-label="Academy programs">
+      <div class="academy-track-selector" role="tablist" aria-label="Academy learning tracks">
         {academyPublicTracks.map((track, index) => (
           <button type="button" role="tab" aria-selected={index === 0 ? "true" : "false"} data-academy-track={track.id} data-active={index === 0 ? "true" : "false"}>
             <span>0{index + 1}</span>
@@ -90,7 +85,7 @@ import "../styles/features/academy.css";
         </div>
       </div>
       <div class="academy-screen-actions">
-        <button class="academy-text-button" type="button" data-academy-back="1">Change program</button>
+        <button class="academy-text-button" type="button" data-academy-back="1">Change track</button>
         <button class="button button-primary" type="button" data-academy-next="3">See the 6 layers <ChevronRight size={18} aria-hidden="true" /></button>
       </div>
     </div>
@@ -110,7 +105,7 @@ import "../styles/features/academy.css";
         ))}
       </div>
       <div class="academy-screen-actions">
-        <button class="academy-text-button" type="button" data-academy-back="2">Back to program</button>
+        <button class="academy-text-button" type="button" data-academy-back="2">Back to track</button>
         <button class="button button-primary" type="button" data-academy-next="4">Method & FAQ <ChevronRight size={18} aria-hidden="true" /></button>
       </div>
     </div>
@@ -121,7 +116,7 @@ import "../styles/features/academy.css";
           <p class="eyebrow">How learning works</p>
           <h2>Awareness. Understanding. Application.</h2>
         </div>
-        <p>Each program moves from language and context into reviewed exercises. The exact cohort or practice scope is confirmed before participation.</p>
+        <p>Each learning track moves from language and context into reviewed exercises. The exact cohort or practice scope is confirmed before participation.</p>
       </div>
       <div class="academy-method-grid">
         {method.map((item, index) => (
@@ -133,7 +128,7 @@ import "../styles/features/academy.css";
         <div class="academy-ai-lab-copy">
           <p class="eyebrow">Optional marketing workflow lab · Concept preview</p>
           <h2 id="academy-ai-lab-title">Learn AI automation by building one useful assistant.</h2>
-          <p>This is an optional exercise inside the Marketing program, not a third Academy program or separate enrollment offer. The example shows how a learner could define a simple intake and draft-response workflow with explicit review boundaries.</p>
+          <p>This is an optional exercise inside the Marketing learning track, not a separate learning track or enrollment offer. The example shows how a learner could define a simple intake and draft-response workflow with explicit review boundaries.</p>
           <ul>
             <li><Bot size={17} aria-hidden="true" />Map the user question and approved response scope</li>
             <li><ShieldCheck size={17} aria-hidden="true" />Keep every action in preview until a person confirms it</li>
