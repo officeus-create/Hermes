@@ -87,6 +87,14 @@ for (const marker of [
 for (const retiredMarker of ["2 public programs", "Two public programs", "currently presents two public program paths"]) {
   assert.ok(productionWorkflow.includes(retiredMarker), `Retired Academy marker must remain explicitly forbidden in production verification: ${retiredMarker}`);
 }
+assert.ok(
+  productionWorkflow.includes('## Approved main is live and read back\\n\\nApproved'),
+  "Successful release comments must keep newlines escaped inside the YAML run block.",
+);
+assert.ok(
+  productionWorkflow.includes('## Approved-main production parity did not complete\\n\\nThe release workflow'),
+  "Failure release comments must keep newlines escaped inside the YAML run block.",
+);
 
 const leadEmailWorkflow = read(LEAD_EMAIL_DEPLOY_WORKFLOW);
 assert.match(leadEmailWorkflow, /branches:\s*\n\s*- main/);
