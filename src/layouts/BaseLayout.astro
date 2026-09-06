@@ -35,7 +35,6 @@ interface Props {
   alternates?: { lang: string; href: string }[];
   robots?: string;
   preloadImage?: string;
-  routeEnhancers?: boolean;
 }
 
 const {
@@ -47,7 +46,6 @@ const {
   alternates = [],
   robots = "index,follow,max-image-preview:large",
   preloadImage,
-  routeEnhancers = true,
 } = Astro.props;
 
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
@@ -237,28 +235,24 @@ const safeSchema = schema
     <!--email_off-->
     <a class="skip-link" href="#main-content">Skip to content</a>
     <slot />
-    {routeEnhancers && (
-      <>
-        <LoadBoardCapacityEnhancer />
-        {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
-        <MoneyPageActionBar />
-        <CarrierContractJourney />
-        <CarrierContractSafetyEnhancer />
-        <RepairBookingGrowthEnhancer />
-        <RepairPartnerOfferEnhancer />
-        <RepairShopActivationEnhancer />
-        <SeoIntakeEnhancer />
-        <SeoSupportingIntakeEnhancer />
-        <WebsiteProjectScopeEnhancer />
-        <CarrierQualificationEnhancer />
-        <Seo4ConversionEnhancer />
-        <VehicleTransportCtaEnhancer />
-        <RouteEstimateEnhancer />
-      </>
-    )}
+    <LoadBoardCapacityEnhancer />
+    {isRepairShopLaunchRoute && <RepairShopFreeLaunchOffer />}
     <TrackingConsent />
+    <MoneyPageActionBar />
+    <CarrierContractJourney />
+    <CarrierContractSafetyEnhancer />
     <ProductionContactMode />
+    <RepairBookingGrowthEnhancer />
+    <RepairPartnerOfferEnhancer />
+    <RepairShopActivationEnhancer />
     <ContactLinkEnhancer />
+    <SeoIntakeEnhancer />
+    <SeoSupportingIntakeEnhancer />
+    <WebsiteProjectScopeEnhancer />
+    <CarrierQualificationEnhancer />
+    <Seo4ConversionEnhancer />
+    <VehicleTransportCtaEnhancer />
+    <RouteEstimateEnhancer />
     <MotionLayer />
     <!--/email_off-->
   </body>
