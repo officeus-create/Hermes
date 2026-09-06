@@ -3,7 +3,9 @@ name: Repair Shop Settings contract
 on:
   pull_request:
     paths:
+      - "functions/api/_lib/repair-shop-schema.mjs"
       - "functions/api/repair-shop/profile.ts"
+      - "functions/api/public/repair-shop.ts"
       - "src/pages/services/hermes-connect/repair-shops/settings.astro"
       - "src/components/RepairShopOwnerNavEnhancer.astro"
       - "scripts/repair-shop-settings-contract.test.mjs"
@@ -15,7 +17,9 @@ on:
     branches:
       - main
     paths:
+      - "functions/api/_lib/repair-shop-schema.mjs"
       - "functions/api/repair-shop/profile.ts"
+      - "functions/api/public/repair-shop.ts"
       - "src/pages/services/hermes-connect/repair-shops/settings.astro"
       - "src/components/RepairShopOwnerNavEnhancer.astro"
       - "scripts/repair-shop-settings-contract.test.mjs"
