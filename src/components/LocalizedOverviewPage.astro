@@ -36,6 +36,13 @@ const directionHref = (id: LocalizedOverview["directions"][number]["id"], brand:
   content.locale === "uk" && id === "academy"
     ? "/ua/academy/us-logistics-operations/"
     : directionMailto(brand);
+const directionOrder: Record<LocalizedOverview["directions"][number]["id"], number> = {
+  logistics: 0,
+  marketing: 1,
+  technology: 2,
+  academy: 3,
+};
+const orderedDirections = [...content.directions].sort((a, b) => directionOrder[a.id] - directionOrder[b.id]);
 const canonicalUrl = `https://hermeslogisticsus.com${content.path}`;
 const schema = {
   "@context": "https://schema.org",
@@ -86,12 +93,12 @@ import "../styles/features/localized.css";
     </section>
 
     <div class="localized-direction-list">
-      {content.directions.map((direction, index) => (
+      {orderedDirections.map((direction, index) => (
         <section class:list={["section localized-direction", `localized-direction-${direction.id}`]} id={direction.id}>
           <div class:list={["shell localized-direction-layout", { "is-reversed": index % 2 === 1 }]}>
             <div class="localized-direction-media" data-reveal>
               <img src={direction.image} alt={direction.imageAlt} width="1400" height="1050" loading="lazy" decoding="async" />
-              <span>{direction.number}</span>
+              <span>{String(index + 1).padStart(2, "0")}</span>
             </div>
             <div class="localized-direction-copy" data-reveal>
               <p class="eyebrow">{direction.brand}</p>

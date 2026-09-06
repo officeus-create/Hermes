@@ -1,17 +1,17 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Academy and careers governance", () => {
-  test("Academy presents two programs and separates paid cohort from free practice", async ({ page }) => {
+  test("Academy presents five learning tracks and separates paid cohort from free practice", async ({ page }) => {
     const response = await page.goto("/paths/academy/");
     expect(response?.ok()).toBeTruthy();
     await expect(page.locator("h1")).toHaveCount(1);
-    await expect(page.locator("h1")).toContainText("Learn practical U.S. logistics and marketing skills");
+    await expect(page.locator("h1")).toContainText("Build practical skills across five Hermes Academy tracks");
 
     await page.getByRole("button", { name: /Choose a track/ }).click();
-    await expect(page.getByRole("tab")).toHaveCount(2);
-    await expect(page.getByRole("tab", { name: /U.S. Logistics Operations/ })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Marketing/ })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /COO|Multi-business leadership/ })).toHaveCount(0);
+    await expect(page.getByRole("tab")).toHaveCount(5);
+    for (const name of ["U.S. Logistics Operations", "Marketing", "IT & AI", "Sales", "COO / Operations"]) {
+      await expect(page.getByRole("tab", { name: new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")) })).toBeVisible();
+    }
 
     await page.getByRole("button", { name: /Next:/ }).click();
     await page.getByRole("button", { name: /See the 6 layers/ }).click();
@@ -20,7 +20,7 @@ test.describe("Academy and careers governance", () => {
     const methodScreen = page.locator('[data-academy-screen="4"]');
     await expect(methodScreen.getByText("Paid cohort", { exact: true })).toBeVisible();
     await expect(methodScreen.getByText("Free practice opportunity", { exact: true })).toBeVisible();
-    await expect(methodScreen.getByText("not a third Academy program", { exact: false })).toBeVisible();
+    await expect(methodScreen.getByText("not a separate learning track", { exact: false })).toBeVisible();
 
     const pricingFaq = methodScreen.locator("details").filter({ hasText: "Are current prices published?" });
     await pricingFaq.locator("summary").click();

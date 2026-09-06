@@ -23,6 +23,7 @@ assert.equal(viewportMap.get("mobile"), 390);
 assert.equal(SCREENSHOT_VIEWPORTS.length, 5, "visual evidence must keep the five-width regression matrix");
 
 const routeMap = new Map(DEFAULT_SCREENSHOT_ROUTES.map((route) => [route.id, route.path]));
+assert.equal(routeMap.get("ru-overview"), "/ru/");
 assert.equal(routeMap.get("path-logistics"), "/paths/logistics/");
 assert.equal(routeMap.get("path-marketing"), "/paths/marketing/");
 assert.equal(routeMap.get("path-academy"), "/paths/academy/");
@@ -35,6 +36,8 @@ assert.equal(routeMap.get("repair-shop-plan"), "/services/hermes-connect/repair-
 assert.equal(routeMap.get("beauty-workspace"), "/services/hermes-connect/beauty/workspace/");
 assert.equal(routeMap.get("hermes-connect-workspace"), "/demos/hermes-connect/workspace.html");
 assert.equal(routeMap.get("hermes-connect-mark-preview"), "/demos/hermes-connect/mark-preview.html");
+assert.equal(screenshotFileName("ru-overview", "desktop"), "ru-overview--desktop.png");
+assert.equal(screenshotFileName("ru-overview", "mobile"), "ru-overview--mobile.png");
 assert.equal(screenshotFileName("path-logistics", "desktop"), "path-logistics--desktop.png");
 assert.equal(screenshotFileName("path-marketing", "mobile"), "path-marketing--mobile.png");
 assert.equal(screenshotFileName("path-academy", "desktop"), "path-academy--desktop.png");
@@ -54,4 +57,4 @@ assert.throws(() => parseScreenshotBaseUrl("https://user:pass@localhost:4321/"),
 assert.throws(() => validateScreenshotRoutes([{ id: "duplicate", path: "/a/" }, { id: "duplicate", path: "/b/" }]), /Duplicate screenshot route/);
 assert.throws(() => validateScreenshotRoutes([{ id: "unsafe", path: "/a/?token=x" }]), /clean absolute path/);
 
-console.log("Route screenshot safety contract passed, including all four Hermes public directions, Repair Shops, Beauty private workspace, Option 02 QA stand, and the 390/430/768/1024/1440 visual evidence matrix.");
+console.log("Route screenshot safety contract passed, including all four Hermes public directions, the Russian overview, Repair Shops, Beauty private workspace, Option 02 QA stand, and the 390/430/768/1024/1440 visual evidence matrix.");

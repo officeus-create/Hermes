@@ -57,15 +57,23 @@ const localizedLabels = {
   it: { logistics: "Logistica", marketing: "Marketing", academy: "Academy", technology: "Sviluppo IT", contact: "Inizia una conversazione", home: "Home" },
   fr: { logistics: "Logistique", marketing: "Marketing", academy: "Académie", technology: "Développement IT", contact: "Démarrer une conversation", home: "Accueil" },
 };
+const directionOrder: Record<string, number> = { logistics: 0, marketing: 1, technology: 2, academy: 3 };
+const navDirectionId = (href: string) => href.match(/^paths\/([^/]+)\//)?.[1] ?? "";
+const orderedNavigation = [...site.navigation].sort(
+  (a, b) => (directionOrder[navDirectionId(a.href)] ?? 99) - (directionOrder[navDirectionId(b.href)] ?? 99),
+);
+const orderedPaths = [...site.paths].sort(
+  (a, b) => (directionOrder[a.id] ?? 99) - (directionOrder[b.id] ?? 99),
+);
 const navigation = activeLocale === "en"
-  ? site.navigation.map((item) => {
+  ? orderedNavigation.map((item) => {
       const url = `/${item.href}`;
       const label = item.href === "paths/technology/" ? "IT" : item.label;
       return { ...item, label, url, active: (activePath ?? currentPath) === url };
     })
-  : site.paths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
+  : orderedPaths.map((path) => ({ label: localizedLabels[activeLocale][path.id as keyof typeof localizedLabels.uk], url: `${localeBase}#${path.id}`, active: false }));
 const contactLabel = activeLocale === "en" ? "Start a conversation" : localizedLabels[activeLocale].contact;
-const section = ["logistics", "marketing", "academy", "technology"].find((slug) => currentPath.includes(`/paths/${slug}`));
+const section = ["logistics", "marketing", "technology", "academy"].find((slug) => currentPath.includes(`/paths/${slug}`));
 const localizedHash = section ? `#${section}` : currentPath.includes("/case/") ? "#technology" : currentPath.includes("/contacts") ? "#contact" : "";
 const languageLinks = siteLocales.map((language) => {
   if (isHermesConnectRoute) {
