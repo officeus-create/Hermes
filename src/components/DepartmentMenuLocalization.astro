@@ -1,6 +1,13 @@
 <script>
   const locale = document.documentElement.lang?.toLowerCase();
 
+  const russianHubByDepartment: Record<string, string> = {
+    logistics: "/ru/paths/logistics/",
+    marketing: "/ru/paths/marketing/",
+    technology: "/ru/paths/technology/",
+    academy: "/ru/paths/academy/",
+  };
+
   const russianByHref: Record<string, string> = {
     "/paths/logistics/": "Логистика",
     "/load-board/": "Load Board",
@@ -37,12 +44,18 @@
     if (locale !== "ru") return;
 
     document.querySelectorAll<HTMLElement>("[data-department-menu]").forEach((menu) => {
+      const department = menu.dataset.departmentMenu || "";
+      const hubHref = russianHubByDepartment[department];
       const title = menu.querySelector<HTMLElement>(".department-menu-panel__heading strong");
       const primary = menu.querySelector<HTMLAnchorElement>(".department-menu__primary");
+      if (primary && hubHref) primary.href = hubHref;
       if (title && primary) title.textContent = primary.textContent?.trim() || title.textContent;
 
       const overview = menu.querySelector<HTMLAnchorElement>(".department-menu-panel__heading a");
-      if (overview) overview.textContent = "Открыть раздел";
+      if (overview) {
+        overview.textContent = "Открыть раздел";
+        if (hubHref) overview.href = hubHref;
+      }
 
       menu.querySelectorAll<HTMLAnchorElement>(".department-menu-panel__grid a").forEach((link) => {
         const label = russianByHref[link.getAttribute("href") || ""];
@@ -54,11 +67,14 @@
     });
 
     document.querySelectorAll<HTMLElement>("[data-mobile-department-menu]").forEach((menu) => {
+      const department = menu.dataset.mobileDepartmentMenu || "";
+      const hubHref = russianHubByDepartment[department];
       menu.querySelectorAll<HTMLAnchorElement>("a").forEach((link) => {
         const href = link.getAttribute("href") || "";
         if (link.classList.contains("mobile-department-menu__overview")) {
           const summary = menu.querySelector<HTMLElement>("summary")?.textContent?.trim();
           link.textContent = summary ? `Открыть раздел «${summary}»` : "Открыть раздел";
+          if (hubHref) link.href = hubHref;
           return;
         }
         const label = russianByHref[href];
