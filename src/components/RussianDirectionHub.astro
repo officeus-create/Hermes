@@ -10,6 +10,15 @@ interface Props {
 }
 
 const { hub } = Astro.props;
+const russianEquivalent: Record<string, string> = {
+  "/business-growth/": "/ru/business-growth/",
+  "/gb/london/website-development/": "/ru/business-growth/website/",
+  "/gb/london/seo-services/": "/ru/business-growth/seo/",
+  "/gb/london/social-media-management/": "/ru/business-growth/social-media/",
+  "/gb/london/meta-ads/": "/ru/business-growth/advertising/",
+  "/gb/london/it-web-development/": "/ru/gb/london/it-web-development/",
+};
+const routeForRussianUser = (href: string) => russianEquivalent[href] ?? href;
 const canonicalUrl = new URL(`/ru/paths/${hub.id}/`, Astro.site).toString();
 const schema = {
   "@context": "https://schema.org",
@@ -35,7 +44,7 @@ const schema = {
         <h1>{hub.title}</h1>
         <p class="ru-direction-summary">{hub.summary}</p>
         <div class="ru-direction-actions">
-          <a class="button button-primary" href={hub.primary.href}>{hub.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button button-primary" href={routeForRussianUser(hub.primary.href)}>{hub.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
           <a class="button button-ghost" href="#products">Посмотреть все маршруты</a>
         </div>
       </div>
@@ -49,7 +58,7 @@ const schema = {
           <p>{hub.primary.body}</p>
           {hub.primary.status && <span class="ru-direction-status"><CheckCircle2 size={16} aria-hidden="true" />{hub.primary.status}</span>}
         </div>
-        <a class="button button-primary" href={hub.primary.href}>{hub.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
+        <a class="button button-primary" href={routeForRussianUser(hub.primary.href)}>{hub.primary.label}<ArrowRight size={18} aria-hidden="true" /></a>
       </div>
     </section>
 
@@ -60,11 +69,11 @@ const schema = {
             <p class="eyebrow">Продукты и рабочие маршруты</p>
             <h2 id="ru-direction-products-title">Выберите конкретную задачу.</h2>
           </div>
-          <p>Русская страница объясняет маршрут. Рабочая функция открывается по единому каноническому адресу, чтобы не создавать вторую копию продукта и не разводить данные.</p>
+          <p>Если для продукта уже есть русская публичная страница, маршрут остаётся на русском. Операционные функции без отдельной русской копии открываются по единому каноническому адресу, чтобы не дублировать backend и данные.</p>
         </div>
         <div class="ru-direction-grid">
           {hub.products.map((product) => (
-            <a class="ru-direction-card" href={product.href}>
+            <a class="ru-direction-card" href={routeForRussianUser(product.href)}>
               <span>{product.label}</span>
               <h3>{product.title}</h3>
               <p>{product.body}</p>
