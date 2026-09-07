@@ -133,8 +133,36 @@ for (const page of pages) {
   }
 }
 
+// Repair Shop is a query-localized private product surface rather than a parallel
+// locale route tree. Keep the six canonical locales and their owner-flow parity in
+// the already-loaded launch bootstrap so future UI polish cannot silently fall back
+// to English on auth, Preview, or internal navigation.
+const repairShopBootstrap = await readFile(join(root, "public/repair-shop-local-demo.js"), "utf8");
+const repairShopLocales = ["en", "ru", "uk", "es", "it", "fr"];
+for (const locale of repairShopLocales) {
+  if (!repairShopBootstrap.includes(`${locale}: {`) && !repairShopBootstrap.includes(`${locale}:{`)) {
+    errors.push(`Repair Shop bootstrap: canonical locale is missing: ${locale}`);
+  }
+}
+const repairShopParityMarkers = [
+  'url.searchParams.set("lang", locale)',
+  'url.searchParams.set("demo", "1")',
+  'url.searchParams.set("preview", "1")',
+  'Доступ владельца СТО',
+  'Повторите пароль',
+  'ПРЕДПРОСМОТР · синтетические данные',
+  'Доступ власника СТО',
+  'Acceso del propietario del taller',
+  'Accesso proprietario officina',
+  'Accès propriétaire d’atelier',
+  'data-local-demo-badge',
+];
+for (const marker of repairShopParityMarkers) {
+  if (!repairShopBootstrap.includes(marker)) errors.push(`Repair Shop bootstrap: localization parity marker is missing: ${marker}`);
+}
+
 if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Localization content audit passed: ${pages.length} localized pages have unique metadata, localized labels, natural CTAs, locale-safe links, and no known English UI leakage.`);
+console.log(`Localization content audit passed: ${pages.length} localized pages plus Repair Shop EN/RU/UK/ES/IT/FR query-localized auth/Preview parity have locale-safe content and links.`);
