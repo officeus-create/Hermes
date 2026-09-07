@@ -60,7 +60,7 @@ test("repair shop owner can publish a scoped Hermes Connect driver discount", as
 
   const panel = page.locator("[data-driver-discount-owner]");
   await expect(panel).toBeVisible();
-  await expect(panel).toContainText("Скидка для водителей Hermes Connect");
+  await expect(panel).toContainText("Скидка для водителей");
   await expect(panel.locator(".hc-driver-discount-dollar")).toHaveText("$");
 
   await panel.locator("[data-discount-enabled]").check();

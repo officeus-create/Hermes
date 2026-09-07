@@ -9,9 +9,9 @@
   const strings = {
     en: {
       ownerEyebrow: "Driver benefit",
-      ownerTitle: "Hermes Connect driver discount",
-      ownerBody: "Offer a clearly visible discount to eligible Hermes Connect drivers and partner fleet vehicles. You control what is discounted.",
-      enable: "Show this Hermes Connect driver discount publicly",
+      ownerTitle: "Driver discount",
+      ownerBody: "Set a clear benefit for eligible drivers and partner fleet vehicles. You choose the services and terms.",
+      enable: "Show this driver discount publicly",
       services: "Services discount",
       materials: "Parts & materials discount",
       percent: "Discount %",
@@ -41,9 +41,9 @@
     },
     ru: {
       ownerEyebrow: "Выгода для водителей",
-      ownerTitle: "Скидка для водителей Hermes Connect",
-      ownerBody: "Предложите заметную скидку водителям Hermes Connect и партнёрскому автопарку. Вы сами выбираете, на что действует скидка.",
-      enable: "Показывать эту скидку Hermes Connect публично",
+      ownerTitle: "Скидка для водителей",
+      ownerBody: "Настройте понятную выгоду для водителей и партнёрского автопарка. Вы выбираете услуги и условия.",
+      enable: "Показывать скидку публично",
       services: "Скидка на услуги",
       materials: "Скидка на запчасти и материалы",
       percent: "Скидка, %",
@@ -73,9 +73,9 @@
     },
     uk: {
       ownerEyebrow: "Вигода для водіїв",
-      ownerTitle: "Знижка для водіїв Hermes Connect",
-      ownerBody: "Запропонуйте помітну знижку водіям Hermes Connect і партнерському автопарку. Ви самі обираєте, на що діє знижка.",
-      enable: "Показувати цю знижку Hermes Connect публічно",
+      ownerTitle: "Знижка для водіїв",
+      ownerBody: "Налаштуйте зрозумілу вигоду для водіїв і партнерського автопарку. Ви обираєте послуги та умови.",
+      enable: "Показувати знижку публічно",
       services: "Знижка на послуги",
       materials: "Знижка на запчастини та матеріали",
       percent: "Знижка, %",
@@ -105,9 +105,9 @@
     },
     es: {
       ownerEyebrow: "Beneficio para conductores",
-      ownerTitle: "Descuento para conductores de Hermes Connect",
-      ownerBody: "Ofrece un descuento visible a conductores elegibles de Hermes Connect y flotas asociadas. Tú decides qué incluye.",
-      enable: "Mostrar públicamente este descuento de Hermes Connect",
+      ownerTitle: "Descuento para conductores",
+      ownerBody: "Define un beneficio claro para conductores elegibles y flotas asociadas. Tú eliges los servicios y condiciones.",
+      enable: "Mostrar públicamente este descuento",
       services: "Descuento en servicios",
       materials: "Descuento en repuestos y materiales",
       percent: "Descuento, %",
@@ -137,9 +137,9 @@
     },
     it: {
       ownerEyebrow: "Vantaggio autisti",
-      ownerTitle: "Sconto per autisti Hermes Connect",
-      ownerBody: "Offri uno sconto ben visibile agli autisti Hermes Connect idonei e alle flotte partner. Decidi tu cosa includere.",
-      enable: "Mostra pubblicamente questo sconto Hermes Connect",
+      ownerTitle: "Sconto per autisti",
+      ownerBody: "Imposta un vantaggio chiaro per gli autisti idonei e le flotte partner. Scegli servizi e condizioni.",
+      enable: "Mostra pubblicamente questo sconto",
       services: "Sconto sui servizi",
       materials: "Sconto su ricambi e materiali",
       percent: "Sconto, %",
@@ -169,9 +169,9 @@
     },
     fr: {
       ownerEyebrow: "Avantage conducteurs",
-      ownerTitle: "Remise pour conducteurs Hermes Connect",
-      ownerBody: "Proposez une remise bien visible aux conducteurs Hermes Connect éligibles et aux flottes partenaires. Vous choisissez ce qui est inclus.",
-      enable: "Afficher publiquement cette remise Hermes Connect",
+      ownerTitle: "Remise conducteurs",
+      ownerBody: "Définissez un avantage clair pour les conducteurs éligibles et les flottes partenaires. Vous choisissez les services et conditions.",
+      enable: "Afficher publiquement cette remise",
       services: "Remise sur les services",
       materials: "Remise sur les pièces et matériaux",
       percent: "Remise, %",
@@ -212,6 +212,13 @@
       .hc-driver-discount-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.hc-driver-discount-card{display:grid;gap:11px;padding:14px;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:rgba(255,255,255,.025)}.hc-driver-discount-card h3{margin:0;font-size:14px}.hc-driver-discount-percent{display:grid;gap:6px;font-size:12px;font-weight:800}.hc-driver-discount-percent input{width:110px;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 11px;background:#0e1118;color:#fff;font:inherit}.hc-driver-discount-scopes{display:grid;gap:8px}.hc-driver-discount-scopes label{display:flex;align-items:center;gap:8px;color:#cbd5e1;font-size:12px}.hc-driver-discount-scopes input{accent-color:#22c55e}.hc-driver-discount-selected{display:grid;gap:8px;padding-top:4px}.hc-driver-discount-selected[hidden]{display:none}.hc-driver-discount-selected-title{margin:0;color:#aab4c4;font-size:11px;font-weight:800}.hc-driver-discount-services{display:grid;grid-template-columns:1fr 1fr;gap:7px}.hc-driver-discount-service{display:flex;align-items:flex-start;gap:7px;padding:9px;border:1px solid rgba(255,255,255,.07);border-radius:10px;color:#d5dce7;font-size:11px}.hc-driver-discount-service input{margin-top:2px;accent-color:#22c55e}.hc-driver-discount-textarea{min-height:88px;resize:vertical;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 11px;background:#0e1118;color:#fff;font:inherit}.hc-driver-discount-help{margin:0;color:#8f99a8;font-size:10px;line-height:1.45}.hc-driver-discount-status{min-height:19px;margin:0;color:#9aa6b8;font-size:12px}.hc-driver-discount-status[data-state="success"]{color:#86efac}.hc-driver-discount-status[data-state="error"]{color:#fca5a5}.hc-driver-discount-form .primary-btn{justify-self:start}
       .hc-driver-discount-banner{position:relative;overflow:hidden;margin:18px 0;padding:18px 18px 17px;border:1px solid rgba(34,197,94,.48);border-radius:18px;background:linear-gradient(135deg,#062d1e 0%,#0b3b27 54%,#102c22 100%);box-shadow:0 14px 40px rgba(2,44,28,.2);color:#ecfdf5}.hc-driver-discount-banner::after{content:"$";position:absolute;right:-10px;top:-36px;font-size:138px;font-weight:950;line-height:1;color:rgba(134,239,172,.07);pointer-events:none}.hc-driver-discount-top{display:flex;align-items:center;gap:11px;position:relative;z-index:1}.hc-driver-discount-dollar{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border:1px solid rgba(187,247,208,.38);border-radius:999px;background:rgba(34,197,94,.17);color:#bbf7d0;font-size:23px;font-weight:950}.hc-driver-discount-badge{margin:0;color:#86efac;font-size:10px;font-weight:950;letter-spacing:.12em}.hc-driver-discount-banner h2{margin:3px 0 0;color:#f0fdf4;font-size:19px;line-height:1.15}.hc-driver-discount-benefits{display:grid;gap:8px;position:relative;z-index:1;margin:14px 0 0;padding:0;list-style:none}.hc-driver-discount-benefits li{display:flex;gap:8px;align-items:flex-start;color:#dcfce7;font-size:13px;font-weight:760;line-height:1.45}.hc-driver-discount-benefits li::before{content:"✓";color:#86efac;font-weight:950}.hc-driver-discount-note{position:relative;z-index:1;margin:12px 0 0;color:#a7f3d0;font-size:10.5px;line-height:1.5}
       @media(max-width:720px){.hc-driver-discount-grid,.hc-driver-discount-services{grid-template-columns:1fr}.hc-driver-discount-form .primary-btn{width:100%}.hc-driver-discount-banner{margin:14px 0;padding:16px}.hc-driver-discount-banner h2{font-size:17px}}
+      html.hc-repair-crm .hc-driver-discount-owner{border-color:#d7e8dc!important;background:linear-gradient(135deg,#f4fbf6,#fff)!important;box-shadow:0 12px 30px rgba(23,32,51,.05)!important;color:#172033}
+      html.hc-repair-crm .hc-driver-discount-owner .muted,html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-help,html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-selected-title{color:#667588!important}
+      html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-enable{border-color:#cfe8d7;background:#eff9f2;color:#215c38}
+      html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-card{border-color:#e1e7ed;background:#fff}
+      html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-card h3,html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-percent,html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-scopes label,html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-service{color:#263345}
+      html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-percent input,html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-textarea{border-color:#dce4eb;background:#fff;color:#172033}
+      html.hc-repair-crm .hc-driver-discount-owner .hc-driver-discount-service{border-color:#e3e9ef;background:#f8fafc}
     `;
     document.head.append(style);
   }

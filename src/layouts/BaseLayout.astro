@@ -229,6 +229,7 @@ const safeSchema = schema
       }, { once: true });
     </script>
     {safeSchema && <script is:inline type="application/ld+json" set:html={JSON.stringify(safeSchema)} />}
+    {isRepairShopLaunchRoute && <script is:inline src="/repair-shop-local-demo.js"></script>}
     <title>{title}</title>
   </head>
   <body>

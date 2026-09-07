@@ -22,6 +22,19 @@ entries — append only.
 
 ## Log
 
+## 2026-09-06 — Codex — Repair Shop CRM local demo and visual repair
+
+- Agent: Codex
+- Branch: `codex/repair-shop-crm-demo-polish-2026-09-06`
+- Commit(s): pending review commit
+- PR: pending review
+- What was done: repaired the Customers-page header collision with the public-site hero style; isolated the repair-shop cabinet visual system; replaced improvised CSS navigation glyphs with accessible SVG icons; removed redundant product naming from the owner context; made customer, vehicle, service and availability cards readable at the dashboard density.
+- Local demo: `?demo=1` on `127.0.0.1` or `localhost` only creates 12 fictional customers, 40 appointments (history plus 30 days ahead), services, vehicles, weekly availability and driver-discount data. It intercepts requests only on that local hostname and keeps edits in runtime memory; it never reads or writes production data.
+- Files changed: Repair Shop owner navigation, Customers and Availability pages, local demo adapter, driver-discount owner panel, focused browser contracts, and this handoff/error register.
+- Tests run (and result): `npm run build` passed (236 pages); `npm test` passed; targeted desktop/mobile Repair Shop and agency-preview coverage passed 14/14. A prior full browser pass reached 1,358/1,376 before identifying the mobile navigation and stale agency-label checks, both of which are now covered by the successful targeted rerun. The full exact-head browser suite must run again in GitHub CI before merge.
+- Remaining / open items: owner review, merge and the normal production deployment process. A local demo does not establish that production customer data or booking integrations are live.
+- Next step / what's needed from a human or the other agent: review the PR, then merge/deploy through the established release owner once the exact-head CI is green.
+
 ## 2026-08-14 — Antigravity — Onboarding Flow Restoration, Bypass Elimination & Dedicated E2E Suite
 
 - Agent: Antigravity

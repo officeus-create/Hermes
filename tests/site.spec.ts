@@ -528,7 +528,7 @@ test("agency and career applications create local previews without sending", asy
   await page.locator('textarea[name="experience"]').fill("Five years in logistics operations with documented team leadership results.");
   await page.locator('textarea[name="availability"]').fill("Available full time in Central Time.");
   await page.locator('input[name="consent"]').check();
-  await page.getByRole("button", { name: "Preview application" }).click();
+  await page.getByRole("button", { name: "Preview agency inquiry" }).click();
   await expect(page.locator("[data-application-result]")).toBeVisible();
   await expect(page.locator("[data-application-preview]")).toContainText("Application type: agency");
   await expect(page.locator("[data-application-preview]")).toContainText("no application was sent or stored");

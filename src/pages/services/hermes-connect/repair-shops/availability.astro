@@ -17,7 +17,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
       <header class="page-header">
         <div>
-          <p class="eyebrow">Hermes Connect · Repair Shops</p>
+          <p class="eyebrow">Booking schedule</p>
           <h1>Weekly availability</h1>
           <p id="owner-summary" class="muted">Loading your secure schedule...</p>
         </div>
@@ -29,9 +29,9 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       <section class="panel">
         <div class="panel-heading">
           <div>
-            <p class="eyebrow">Production D1 schedule</p>
+            <p class="eyebrow">Weekly hours</p>
             <h2>Shop hours</h2>
-            <p class="muted">One continuous booking window per day for this beta. Times are interpreted in your saved shop timezone.</p>
+            <p class="muted">Set the booking hours customers see. Times use the shop timezone.</p>
           </div>
           <span id="timezone-pill" class="timezone-pill"><Clock3 size={14} /> Timezone</span>
         </div>
@@ -44,7 +44,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
 
       <section class="note-panel">
         <strong>What this controls</strong>
-        <p class="muted">This schedule is stored for your shop only and is also exposed through your public shop profile. Customer bookable time slots will be generated from these hours and each service duration in the next production slice.</p>
+        <p class="muted">These hours control the booking windows shown for this shop. Service duration is applied to each available slot.</p>
       </section>
     </div>
   </main>
@@ -205,7 +205,7 @@ import SiteHeader from "../../../../components/SiteHeader.astro";
       }
       days = data.days;
       renderDays();
-      showAlert("Weekly availability saved to production.", "success");
+      showAlert("Weekly availability saved.", "success");
     } catch {
       showAlert("Network error while saving weekly availability.");
     } finally {
