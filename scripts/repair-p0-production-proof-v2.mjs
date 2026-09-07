@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { chromium } from "@playwright/test";
 
 const BASE = "https://hermeslogisticsus.com";
@@ -8,11 +9,9 @@ const BOOKING = `${REPAIR_ROOT}booking/`;
 const EMAIL = "repair-booking-production-smoke@hermesconnect.app";
 const CLIENT_EMAIL = "repair-p0-production-client@hermesconnect.app";
 const RUN_ID = process.env.GITHUB_RUN_ID || `manual-${Date.now()}`;
-const PASSWORD = `HermesP0-${RUN_ID}-${Date.now()}-A9!`;
+const AUTH_SECRET = `${randomUUID()}Aa9!`;
 const FEEDBACK = `Synthetic Repair Shop P0 current-main proof ${RUN_ID}; safe to delete after verification.`;
 const SERVICE_NAMES = ["P0 Brake Inspection", "P0 Oil Service", "P0 Diagnostic Scan"];
-
-console.log(`::add-mask::${PASSWORD}`);
 
 function fail(message) {
   throw new Error(message);
@@ -154,8 +153,8 @@ async function registerDesktop(page) {
   await page.locator('[data-tab="register"]').click();
   await page.locator("#reg-name").fill("Hermes P0 Proof Owner");
   await page.locator("#reg-email").fill(EMAIL);
-  await page.locator("#reg-password").fill(PASSWORD);
-  await page.locator("#reg-password-confirm").fill(PASSWORD);
+  await page.locator("#reg-password").fill(AUTH_SECRET);
+  await page.locator("#reg-password-confirm").fill(AUTH_SECRET);
   const registerResponse = page.waitForResponse((response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST");
   await page.locator("#register-form button[type='submit']").click();
   const registered = await registerResponse;
@@ -172,7 +171,7 @@ async function loginMobile(page) {
   await page.waitForSelector("#auth-forms.active", { state: "visible", timeout: 15_000 });
   await assertNoHorizontalOverflow(page, "mobile-390 auth");
   await page.locator("#login-email").fill(EMAIL);
-  await page.locator("#login-password").fill(PASSWORD);
+  await page.locator("#login-password").fill(AUTH_SECRET);
   const loginResponse = page.waitForResponse((response) => response.url().endsWith("/api/auth/login") && response.request().method() === "POST");
   await page.locator("#login-form button[type='submit']").click();
   const loggedIn = await loginResponse;
@@ -230,9 +229,12 @@ try {
 
   await gotoOk(desktopPage, `${BOOKING}?shop=${encodeURIComponent(slug)}`);
   await desktopPage.waitForFunction(() => document.querySelectorAll("#service-select option").length >= 4, null, { timeout: 20_000 });
-  const bookingServiceNames = await desktopPage.locator("#service-select option").allTextContents();
-  for (const name of SERVICE_NAMES) {
-    if (!bookingServiceNames.includes(name)) fail(`Public booking UI is missing service: ${name}`);
+  const bookingServiceOptions = await desktopPage.locator("#service-select option").evaluateAll((options) =>
+    options.map((option) => ({ value: option.value, label: option.textContent?.trim() || "" })),
+  );
+  for (const service of services) {
+    const option = bookingServiceOptions.find((item) => item.value === service.id);
+    if (!option || !option.label.includes(service.name)) fail(`Public booking UI is missing service: ${service.name}`);
   }
 
   const date1 = chicagoDatePlus(1);
