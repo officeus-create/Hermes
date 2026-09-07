@@ -133,21 +133,20 @@ for (const page of pages) {
   }
 }
 
-// Repair Shop is a query-localized private product surface rather than a parallel
-// locale route tree. Keep the six canonical locales and their owner-flow parity in
-// the already-loaded launch bootstrap so future UI polish cannot silently fall back
-// to English on auth, Preview, or internal navigation.
-const repairShopBootstrap = await readFile(join(root, "public/repair-shop-local-demo.js"), "utf8");
+// Repair Shop is query-localized inside one private product route tree. Translation
+// ownership lives in the shared secondary i18n runtime; the demo bootstrap owns only
+// synthetic-data isolation and demo/preview query propagation. Audit both owners so
+// future polish cannot silently move translations back into the demo data layer.
+const repairShopI18n = await readFile(join(root, "public/hermes-connect-repair-owner-secondary-i18n.js"), "utf8");
+const repairShopDemo = await readFile(join(root, "public/repair-shop-local-demo.js"), "utf8");
 const repairShopLocales = ["en", "ru", "uk", "es", "it", "fr"];
 for (const locale of repairShopLocales) {
-  if (!repairShopBootstrap.includes(`${locale}: {`) && !repairShopBootstrap.includes(`${locale}:{`)) {
-    errors.push(`Repair Shop bootstrap: canonical locale is missing: ${locale}`);
+  if (!repairShopI18n.includes(`${locale}: {`) && !repairShopI18n.includes(`${locale}:{`) && !repairShopI18n.includes(`${locale}:[`)) {
+    errors.push(`Repair Shop i18n runtime: canonical locale is missing: ${locale}`);
   }
 }
-const repairShopParityMarkers = [
-  'url.searchParams.set("lang", locale)',
-  'url.searchParams.set("demo", "1")',
-  'url.searchParams.set("preview", "1")',
+const repairShopI18nMarkers = [
+  'url.searchParams.set("lang",locale)',
   'Доступ владельца СТО',
   'Повторите пароль',
   'ПРЕДПРОСМОТР · синтетические данные',
@@ -157,8 +156,17 @@ const repairShopParityMarkers = [
   'Accès propriétaire d’atelier',
   'data-local-demo-badge',
 ];
-for (const marker of repairShopParityMarkers) {
-  if (!repairShopBootstrap.includes(marker)) errors.push(`Repair Shop bootstrap: localization parity marker is missing: ${marker}`);
+for (const marker of repairShopI18nMarkers) {
+  if (!repairShopI18n.includes(marker)) errors.push(`Repair Shop i18n runtime: localization parity marker is missing: ${marker}`);
+}
+const repairShopDemoMarkers = [
+  'url.searchParams.set("demo", "1")',
+  'url.searchParams.set("preview", "1")',
+  'data-local-demo-badge',
+  'publicPreview',
+];
+for (const marker of repairShopDemoMarkers) {
+  if (!repairShopDemo.includes(marker)) errors.push(`Repair Shop demo bootstrap: safety/query marker is missing: ${marker}`);
 }
 
 if (errors.length) {
