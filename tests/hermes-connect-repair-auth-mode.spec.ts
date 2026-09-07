@@ -37,9 +37,12 @@ test("repair shop owner auth has visible parity across all six canonical locales
     await expect(page.locator('label[for="reg-password-confirm"]')).toHaveText(locale.confirm);
     await expect(page.locator('#register-form button[type="submit"]')).toHaveText(locale.create);
     await expect(page.locator("html")).toHaveAttribute("lang", locale.lang);
-    const backHref = await page.locator(".back-link").getAttribute("href");
-    if (locale.lang === "en") expect(backHref).not.toContain("lang=");
-    else expect(backHref).toContain(`lang=${locale.lang}`);
+    await expect(page.locator(".auth-page > .auth-container > .back-link")).toHaveCount(0);
+    const repairLink = page.locator('[data-hc-product-context] .hc-family-nav a[href*="/repair-shops/"]');
+    await expect(repairLink).toHaveCount(1);
+    const repairHref = await repairLink.getAttribute("href");
+    if (locale.lang === "en") expect(repairHref).not.toContain("lang=");
+    else expect(repairHref).toContain(`lang=${locale.lang}`);
   }
 });
 
