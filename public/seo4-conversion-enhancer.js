@@ -51,10 +51,15 @@
 
   const armRepairRegistrationComplete = () => {
     const authenticated = document.getElementById("auth-authenticated");
-    if (!(authenticated instanceof HTMLElement)) return;
+    const alertBox = document.getElementById("alert-box");
+    if (!(authenticated instanceof HTMLElement) || !(alertBox instanceof HTMLElement)) return;
     stopRepairRegistrationWatch();
     let sent = false;
-    const emitWhenAuthenticated = () => {
+    const settleRegistrationAttempt = () => {
+      if (!alertBox.classList.contains("hidden") && alertBox.classList.contains("error")) {
+        stopRepairRegistrationWatch();
+        return;
+      }
       if (sent || !authenticated.classList.contains("active")) return;
       sent = true;
       stopRepairRegistrationWatch();
@@ -67,10 +72,11 @@
         destination_path: `${repairShopRoot}dashboard/`,
       });
     };
-    repairRegistrationObserver = new MutationObserver(emitWhenAuthenticated);
+    repairRegistrationObserver = new MutationObserver(settleRegistrationAttempt);
     repairRegistrationObserver.observe(authenticated, { attributes: true, attributeFilter: ["class"] });
+    repairRegistrationObserver.observe(alertBox, { attributes: true, attributeFilter: ["class"], childList: true });
     repairRegistrationTimeout = window.setTimeout(stopRepairRegistrationWatch, 15_000);
-    emitWhenAuthenticated();
+    settleRegistrationAttempt();
   };
 
   refreshLoadBoardDemoLabels();
