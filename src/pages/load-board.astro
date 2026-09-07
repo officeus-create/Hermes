@@ -11,8 +11,8 @@ import "../styles/features/load.css";
 ---
 
 <BaseLayout
-  title="Car Hauling Loads & Load Board Preview | Hermes Logistics"
-  description="Car hauler load board preview: review fictional auto transport loads by lane, equipment, deadhead, timing, rate, paperwork, and authority readiness."
+  title="Car Hauling Load Board | Live Feed + Demo Review | Hermes Logistics"
+  description="Car hauler load board with a source-gated live marketplace for approved active records plus clearly labeled fictional demo loads for lane, equipment, deadhead, rate, paperwork, and carrier-fit review."
 >
   <div class="load-board-page">
     <SiteHeader theme="dark" activePath="/load-board/" />
@@ -20,14 +20,14 @@ import "../styles/features/load.css";
       <section class="load-board-hero">
         <div class="shell load-board-hero-grid">
           <div>
-            <p class="eyebrow">Hermes Logistics · Car Hauling Loads Preview</p>
+            <p class="eyebrow">Hermes Logistics · Car Hauling Load Board</p>
             <h1>Review Car Hauling Loads Before You Commit</h1>
-            <p>Owner-operators and small fleets can review fictional load examples, evaluate equipment and lane fit, and prepare a carrier-access request. Customers, shippers, and dealers who need real vehicle transportation can go directly to the production transport-request path. This local Load Board preview does not publish a load, register an account, book freight, or contact a carrier.</p>
+            <p>Owner-operators and small fleets can review approved active freight when source-gated public records are available, then use separate fictional demo loads to evaluate lane, equipment, deadhead, timing, rate, paperwork, and carrier fit. The live marketplace may show zero records. Customers, shippers, and dealers who need real vehicle transportation can go directly to the production transport-request path. A carrier-access or load request is reviewed separately; submission itself is not a booking.</p>
           </div>
           <div class="load-board-safety">
             <ShieldCheck size={28} aria-hidden="true" />
-            <strong>Dry-run only</strong>
-            <span>Automatic review with explainable reasons and zero external delivery.</span>
+            <strong>Source-gated live + demo</strong>
+            <span>Approved active records may appear in the live section; fictional examples remain clearly labeled and non-bookable.</span>
           </div>
         </div>
       </section>
@@ -46,17 +46,17 @@ import "../styles/features/load.css";
               <strong>I need to move a vehicle</strong>
               <small>Use the real transportation-request path for route, vehicle, timing, condition, and contact review.</small>
             </a>
-            <a href="?role=carrier#available-loads" aria-label="Carrier or owner-operator — I have a truck — fictional demo freight" data-primary-entry="carrier" data-role-link="carrier">
+            <a href="?role=carrier#available-loads" aria-label="Carrier or owner-operator — I have a truck — source-gated live records and fictional demo freight" data-primary-entry="carrier" data-role-link="carrier">
               <Truck size={25} aria-hidden="true" />
               <span>Carrier / owner-operator</span>
               <strong>I have a truck</strong>
-              <small>Review fictional demo freight, lane fit, equipment, rates, and the proposed carrier-access workflow before requesting support.</small>
+              <small>Check source-gated active records when available, then use the separate fictional demo cards to review lane fit, equipment, rates, and the carrier-access workflow.</small>
             </a>
           </div>
           <div class="load-board-section-heading">
             <p><strong>Customer → Hermes → Carrier</strong></p>
             <p>Hermes reviews a transportation request first, then checks authority, insurance, equipment, geography, timing, and actual carrier availability before representing an option as suitable. Submission itself is not a booking.</p>
-            <p><strong>No load shown on this page is live or bookable.</strong> The load examples and carrier search below remain a product preview.</p>
+            <p><strong>Live + demo split:</strong> the Live marketplace shows only approved, active, unexpired public records returned by the Hermes feed and may show zero. Demo cards below are fictional and non-bookable.</p>
             <p><a href="/paths/logistics/brokers/carrier-capacity/"><Search size={17} aria-hidden="true" /> Broker? Request verified carrier capacity.</a></p>
           </div>
         </div>
@@ -76,7 +76,7 @@ import "../styles/features/load.css";
             <li><span>04</span><strong>Source and paperwork</strong><small>Broker or dealer review, setup packet, insurance certificate, rate confirmation, BOL, and POD</small></li>
             <li><span>05</span><strong>Rate and carrier approval</strong><small>Offered rate, miles, operating cost, payment terms, risk, and the carrier's final decision</small></li>
           </ol>
-          <p><strong>Where can I find car hauling loads?</strong> Carriers commonly compare load boards, broker and dealer sources, auctions, repeat shippers, and direct customer opportunities. This Hermes car hauler load board preview shows how to review fictional examples against lane, equipment, deadhead, timing, paperwork, payment terms, and carrier approval before requesting access; it does not publish live or bookable freight.</p>
+          <p><strong>Where can I find car hauling loads?</strong> Carriers commonly compare load boards, broker and dealer sources, auctions, repeat shippers, and direct customer opportunities. The Hermes Live marketplace can display approved active records when the source, permission, freshness, and public-visibility gates pass; it may show zero. The fictional examples below remain a separate practice layer for reviewing lane, equipment, deadhead, timing, paperwork, payment terms, and carrier approval.</p>
           <p><strong>New authority:</strong> load access may be limited by broker rules, authority age, insurance, safety profile, documentation, equipment, and payment requirements. A readiness review does not guarantee that a specific load, lane, rate, or broker will be available.</p>
           <p>Need ongoing search, broker communication, paperwork, and back-office support? Review the <a href="/logistics/car-hauling-dispatch/">car hauling dispatch service</a>, the <a href="/paths/logistics/carriers/new-authority/">new-authority carrier path</a>, and the <a href="/logistics/resources/car-hauler-capacity-checklist/">car hauler capacity checklist</a>.</p>
         </div>
@@ -579,12 +579,12 @@ import "../styles/features/load.css";
 
     if (!demoSearchStatus) return;
     if (!origin && !destination) {
-      demoSearchStatus.textContent = "Enter one of the demo cities shown above. No live load search is connected.";
+      demoSearchStatus.textContent = "Enter one of the demo cities shown above. This filter searches fictional demo cards only.";
     } else if (matches.length === 1) {
       demoSearchStatus.textContent = "1 fictional demonstration load found. It is not available to book or dispatch.";
       matches[0]?.scrollIntoView({ behavior: "smooth", block: "center" });
     } else if (matches.length > 1) {
-      demoSearchStatus.textContent = `${matches.length} fictional demonstration loads found. No live search was performed.`;
+      demoSearchStatus.textContent = `${matches.length} fictional demonstration loads found. The source-gated live marketplace above is separate.`;
     } else {
       demoSearchStatus.textContent = "No fictional demo load matches that city. Try Chicago, Madison, Rockford, or Green Bay.";
     }

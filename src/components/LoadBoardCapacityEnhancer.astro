@@ -83,19 +83,6 @@ const isCanonicalLoadBoard = Astro.url.pathname === "/load-board/";
       const moveIntoCanonicalPosition = () => {
         const demo = document.querySelector(".available-loads-preview");
         if (demo?.parentElement) demo.parentElement.insertBefore(root, demo);
-
-        const heroEyebrow = document.querySelector(".load-board-hero .eyebrow");
-        if (heroEyebrow) heroEyebrow.textContent = "Hermes Logistics · Live Load Board + Demo Preview";
-        const safetyStrong = document.querySelector(".load-board-safety strong");
-        const safetyCopy = document.querySelector(".load-board-safety span");
-        if (safetyStrong) safetyStrong.textContent = "Live data is source-gated";
-        if (safetyCopy) safetyCopy.textContent = "Approved active records are shown live; fictional examples stay clearly separated below.";
-
-        document.querySelectorAll(".load-board-role-router .load-board-section-heading p").forEach((node) => {
-          if ((node.textContent || "").includes("No load shown on this page is live")) {
-            node.innerHTML = "<strong>Live + demo split:</strong> approved active records appear in the Live marketplace section; the example cards below remain fictional and non-bookable.";
-          }
-        });
       };
 
       const renderLoads = (records) => {
