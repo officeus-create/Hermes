@@ -1,0 +1,139 @@
+---
+import { Building2, ExternalLink, ShieldCheck, UserRoundCheck } from "@lucide/astro";
+import BaseLayout from "../../../../../layouts/BaseLayout.astro";
+import SiteHeader from "../../../../../components/SiteHeader.astro";
+import SiteFooter from "../../../../../components/SiteFooter.astro";
+import HermesConnectExperience from "../../../../../components/HermesConnectExperience.astro";
+
+const isRu = Astro.url.searchParams.get("lang") === "ru";
+---
+<BaseLayout
+  title={isRu ? "Предзаполненные СТО | Hermes Connect" : "Prefilled Repair Shops | Hermes Connect"}
+  description="Private owner-only review of prefilled repair-shop prospects before verified owner claim."
+  robots="noindex,nofollow"
+>
+  <SiteHeader activePath="/paths/technology/" />
+  <HermesConnectExperience />
+  <main class="prospects-page">
+    <div class="shell">
+      <header class="hero">
+        <div>
+          <p class="kicker"><ShieldCheck size={15} /> {isRu ? "Только владелец · не публично" : "Owner only · private"}</p>
+          <h1>{isRu ? "Предзаполненные профили СТО" : "Prefilled repair-shop profiles"}</h1>
+          <p>{isRu
+            ? "Пять небольших СТО из листа VADYM. Данные собраны из рабочей таблицы и проверяемых публичных источников. Пока владелец бизнеса не подтвердил профиль, здесь нет публичной страницы, booking и регистрации пользователя."
+            : "Five small shops from the VADYM calling sheet. Data comes from the working CRM and verifiable public sources. Until a real business owner claims a profile, it has no public page, booking, or user registration."}</p>
+        </div>
+        <span class="private-badge"><UserRoundCheck size={16} /> {isRu ? "Prefill → Claim" : "Prefill → Claim"}</span>
+      </header>
+
+      <section class="guard" data-access role="status">
+        <strong>{isRu ? "Проверяем owner-доступ…" : "Checking owner access…"}</strong>
+        <p>{isRu ? "Профили загрузятся только после серверной проверки HERMES_INTERNAL_OWNER." : "Profiles load only after the server verifies HERMES_INTERNAL_OWNER."}</p>
+      </section>
+
+      <section class="content hidden" data-content>
+        <div class="truth-bar">
+          <span><strong data-count>0</strong> {isRu ? "профилей" : "profiles"}</span>
+          <span>{isRu ? "Не считаются регистрациями" : "Not counted as registrations"}</span>
+          <span>{isRu ? "Booking выключен до claim" : "Booking off until claim"}</span>
+        </div>
+        <div class="status" data-status aria-live="polite"></div>
+        <div class="grid" data-grid></div>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  type Prospect = {
+    id:string; source_ref:string; business_name:string; shop_type?:string; state?:string; city?:string;
+    address_line1?:string; phone?:string; email?:string; website?:string; social_url?:string;
+    contact_name?:string; contact_role?:string; services_summary?:string; website_observation?:string;
+    social_observation?:string; crm_stage?:string; crm_call_result?:string; crm_decision_maker_reached?:string;
+    crm_interest_level?:string; crm_budget_range?:string; profile_state?:string; claim_state?:string;
+    public_profile_enabled?:boolean; missing_fields?:string[];
+  };
+  type Payload = {success?:boolean; prospects?:Prospect[]; error?:string};
+  const ru = new URLSearchParams(location.search).get("lang") === "ru";
+  const t = (en:string, ruText:string) => ru ? ruText : en;
+  const q = <T extends HTMLElement>(selector:string) => document.querySelector<T>(selector);
+  const text = (value:unknown) => String(value ?? "").trim();
+  const access = q<HTMLElement>("[data-access]");
+  const content = q<HTMLElement>("[data-content]");
+  const grid = q<HTMLElement>("[data-grid]");
+  const status = q<HTMLElement>("[data-status]");
+  const count = q<HTMLElement>("[data-count]");
+
+  const line = (label:string, value:unknown, className="") => {
+    const wrapper = document.createElement("div");
+    wrapper.className = `line ${className}`.trim();
+    const key = document.createElement("span"); key.textContent = label;
+    const val = document.createElement("strong"); val.textContent = text(value) || "—";
+    wrapper.append(key, val); return wrapper;
+  };
+
+  function externalLink(label:string, href:string) {
+    const link = document.createElement("a");
+    link.href = href; link.target = "_blank"; link.rel = "noreferrer noopener"; link.textContent = label;
+    return link;
+  }
+
+  function render(rows:Prospect[]) {
+    if (!grid) return;
+    grid.replaceChildren();
+    if (count) count.textContent = String(rows.length);
+    for (const row of rows) {
+      const card = document.createElement("article"); card.className = "card";
+      const head = document.createElement("div"); head.className = "card-head";
+      const title = document.createElement("div");
+      const source = document.createElement("small"); source.textContent = `${row.source_ref} · ${text(row.profile_state) || "prefilled"}`;
+      const h2 = document.createElement("h2"); h2.textContent = row.business_name;
+      const loc = document.createElement("p"); loc.textContent = [text(row.city), text(row.state)].filter(Boolean).join(", ");
+      title.append(source, h2, loc);
+      const claim = document.createElement("span"); claim.className = "claim"; claim.textContent = t("Unclaimed", "Не подтверждён");
+      head.append(title, claim); card.append(head);
+      card.append(
+        line(t("Address", "Адрес"), row.address_line1),
+        line(t("Phone", "Телефон"), row.phone),
+        line(t("Contact", "Контакт"), [text(row.contact_name), text(row.contact_role)].filter(Boolean).join(" · ") || "—"),
+        line(t("Services", "Услуги"), row.services_summary, "wide"),
+        line(t("CRM stage", "CRM этап"), [text(row.crm_stage), text(row.crm_call_result), text(row.crm_interest_level)].filter(Boolean).join(" · ") || "—"),
+        line(t("Web verification", "Проверка web"), row.website_observation, "wide"),
+        line(t("Social verification", "Проверка social"), row.social_observation, "wide"),
+      );
+      const links = document.createElement("div"); links.className = "links";
+      if (text(row.website)) links.append(externalLink(t("Website ↗", "Сайт ↗"), text(row.website)));
+      if (text(row.social_url)) links.append(externalLink(t("Social ↗", "Соцсеть ↗"), text(row.social_url)));
+      if (!links.childNodes.length) { const none=document.createElement("span"); none.textContent=t("No verified owned link", "Нет подтверждённой собственной ссылки"); links.append(none); }
+      card.append(links);
+      const missing = document.createElement("p"); missing.className = "missing";
+      missing.textContent = row.missing_fields?.length ? `${t("Still missing", "Ещё не заполнено")}: ${row.missing_fields.join(", ")}` : t("Public profile data complete enough for owner verification.", "Публичных данных достаточно для проверки владельцем.");
+      card.append(missing); grid.append(card);
+    }
+  }
+
+  async function load() {
+    if (status) status.textContent = t("Loading prefilled profiles…", "Загружаем предзаполненные профили…");
+    const response = await fetch("/api/internal/repair-shop-prospects", { credentials:"same-origin", headers:{Accept:"application/json"} });
+    let payload:Payload = {}; try { payload = await response.json(); } catch {}
+    if (!response.ok || !payload.success) {
+      if (access) {
+        access.querySelector("strong")!.textContent = response.status === 401 ? t("Sign in required", "Нужно войти") : t("Owner access required", "Нужен owner-доступ");
+        access.querySelector("p")!.textContent = t("Prospect data stays private until server-side owner authorization succeeds.", "Данные prospects остаются закрытыми до серверной авторизации владельца.");
+      }
+      if (status) status.textContent = "";
+      return;
+    }
+    access?.classList.add("hidden"); content?.classList.remove("hidden");
+    const rows = Array.isArray(payload.prospects) ? payload.prospects : [];
+    render(rows);
+    if (status) status.textContent = t(`${rows.length} safe prefilled profiles loaded.`, `Загружено ${rows.length} безопасных prefilled-профилей.`);
+  }
+  void load();
+</script>
+
+<style>
+.prospects-page{min-height:78vh;background:#f7f6f3;color:#11161f}.shell{width:min(1180px,calc(100% - 2rem));margin:auto;padding:2.2rem 0 5rem}.hero{display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;margin-bottom:1.1rem}.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);margin:.32rem 0 .55rem}.hero>div>p:last-child{max-width:850px;color:#657083;line-height:1.65}.kicker{display:flex;align-items:center;gap:.4rem;color:#8a4300!important;font-size:.72rem;font-weight:850;letter-spacing:.09em;text-transform:uppercase;margin:0}.private-badge{display:inline-flex;align-items:center;gap:.4rem;border:1px solid rgba(138,67,0,.2);border-radius:999px;padding:.55rem .75rem;background:#fff8f0;color:#713700;font-size:.76rem;font-weight:800;white-space:nowrap}.guard,.truth-bar,.card{border:1px solid rgba(17,22,31,.1);background:rgba(255,255,255,.96);box-shadow:0 16px 38px rgba(24,32,48,.05)}.guard{border-radius:1rem;padding:1.1rem}.guard p{color:#657083;margin:.3rem 0 0}.hidden{display:none!important}.content{display:grid;gap:.9rem}.truth-bar{display:flex;flex-wrap:wrap;gap:.55rem 1.1rem;border-radius:1rem;padding:.85rem 1rem;color:#536071;font-size:.82rem}.truth-bar span+span{padding-left:1rem;border-left:1px solid rgba(17,22,31,.1)}.status{min-height:1.2rem;color:#657083;font-size:.8rem}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}.card{border-radius:1.15rem;padding:1rem;display:grid;gap:.68rem}.card-head{display:flex;justify-content:space-between;gap:1rem}.card-head small{color:#8a4300;font-weight:800;letter-spacing:.04em}.card h2{font-size:1.2rem;margin:.2rem 0}.card-head p{margin:0;color:#657083}.claim{align-self:flex-start;border:1px solid #ead4ad;border-radius:999px;padding:.34rem .55rem;background:#fff8e8;color:#745110;font-size:.68rem;font-weight:850}.line{display:grid;grid-template-columns:110px 1fr;gap:.7rem;border-top:1px solid rgba(17,22,31,.07);padding-top:.62rem}.line span{color:#7a8492;font-size:.7rem}.line strong{font-size:.8rem;font-weight:650;line-height:1.48;overflow-wrap:anywhere}.links{display:flex;gap:.55rem;flex-wrap:wrap}.links a,.links span{font-size:.74rem}.links a{color:#8a4300;font-weight:800}.missing{margin:0;border-radius:.7rem;background:#f5f3ef;padding:.6rem .7rem;color:#687381;font-size:.72rem;line-height:1.45}@media(max-width:760px){.hero{display:grid}.private-badge{justify-self:start}.grid{grid-template-columns:1fr}.truth-bar{display:grid}.truth-bar span+span{border-left:0;padding-left:0}.line{grid-template-columns:1fr;gap:.18rem}}
+</style>
