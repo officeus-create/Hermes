@@ -1,10 +1,27 @@
-/* Local-only CRM demonstration data. It never runs on a public hostname and never
-   forwards demo mutations to the real API. It exists so a complete workflow can
-   be reviewed before an owner chooses to enter real operational data. */
+/* Repair Shop synthetic demonstration data.
+ * Local demo mode remains available on localhost with ?demo=1.
+ * A production-safe preview is allowed only with the explicit ?demo=1&preview=1 pair.
+ * All intercepted mutations stay in memory and never reach the real API or D1.
+ */
 (() => {
+  const params = new URLSearchParams(window.location.search);
   const local = ["127.0.0.1", "localhost"].includes(window.location.hostname);
-  const demo = new URLSearchParams(window.location.search).get("demo") === "1";
-  if (!local || !demo) return;
+  const demo = params.get("demo") === "1";
+  const preview = params.get("preview") === "1";
+  const repairRoute = window.location.pathname.startsWith("/services/hermes-connect/repair-shops/");
+  const publicPreview = !local && demo && preview && repairRoute;
+
+  const ensureDesignPolish = () => {
+    if (document.querySelector('link[data-repair-shop-design-polish]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/repair-shop-design-polish.css";
+    link.dataset.repairShopDesignPolish = "true";
+    document.head.append(link);
+  };
+  ensureDesignPolish();
+
+  if (!demo || (!local && !publicPreview)) return;
 
   const now = new Date();
   const iso = (offset) => { const day = new Date(now); day.setDate(day.getDate() + offset); return day.toISOString().slice(0, 10); };
@@ -17,7 +34,7 @@
   ].map(([id, name, duration_minutes]) => ({ id, name, duration_minutes, owner_specialist_id: "demo-owner" }));
   const names = ["Alex Morgan", "Jordan Lee", "Taylor Rivera", "Casey Bennett", "Morgan Patel", "Riley Chen", "Jamie Brooks", "Avery Stone", "Cameron Diaz", "Drew Parker", "Quinn Harper", "Skyler Reed"];
   const makes = [["Ford", "Transit"], ["Chevrolet", "Express"], ["Ram", "ProMaster"], ["Freightliner", "M2"], ["Toyota", "Tacoma"], ["Honda", "Civic"]];
-  // Fictional records give the local demo a small history and a complete month ahead.
+  // Fictional records give the demo a small history and a complete month ahead.
   const bookings = Array.from({ length: 40 }, (_, index) => {
     const [make, model] = makes[index % makes.length]; const customer = names[index % names.length];
     const service = services[index % services.length]; const offset = index - 9;
@@ -50,10 +67,10 @@
   const originalFetch = window.fetch.bind(window);
   const demoBadge = () => {
     if (document.querySelector("[data-local-demo-badge]")) return;
-    const badge = document.createElement("div"); badge.dataset.localDemoBadge = "true"; badge.textContent = "LOCAL DEMO · synthetic data"; document.body.append(badge);
-    const style = document.createElement("style"); style.textContent = "[data-local-demo-badge]{position:fixed;right:18px;bottom:18px;z-index:9999;padding:8px 11px;border-radius:999px;background:#172033;color:#fff;font:800 11px/1 system-ui;letter-spacing:.08em;box-shadow:0 8px 24px rgba(15,23,42,.22)}"; document.head.append(style);
+    const badge = document.createElement("div"); badge.dataset.localDemoBadge = "true"; badge.textContent = publicPreview ? "LIVE PREVIEW · synthetic data" : "LOCAL DEMO · synthetic data"; document.body.append(badge);
+    const style = document.createElement("style"); style.textContent = "[data-local-demo-badge]{position:fixed;right:18px;bottom:18px;z-index:9999;padding:8px 11px;border-radius:999px;background:rgba(11,13,18,.92);color:#fff;font:800 11px/1 system-ui;letter-spacing:.08em;box-shadow:0 10px 28px rgba(15,23,42,.20),0 0 0 1px rgba(124,92,255,.14);backdrop-filter:blur(14px)}"; document.head.append(style);
   };
-  const appendDemoToLinks = () => document.querySelectorAll('a[href^="/services/hermes-connect/repair-shops/"]').forEach((node) => { const url = new URL(node.getAttribute("href"), window.location.origin); url.searchParams.set("demo", "1"); node.setAttribute("href", `${url.pathname}${url.search}${url.hash}`); });
+  const appendDemoToLinks = () => document.querySelectorAll('a[href^="/services/hermes-connect/repair-shops/"]').forEach((node) => { const url = new URL(node.getAttribute("href"), window.location.origin); url.searchParams.set("demo", "1"); if (publicPreview) url.searchParams.set("preview", "1"); node.setAttribute("href", `${url.pathname}${url.search}${url.hash}`); });
   document.addEventListener("DOMContentLoaded", () => { demoBadge(); appendDemoToLinks(); new MutationObserver(appendDemoToLinks).observe(document.body, { childList:true, subtree:true }); }, { once:true });
   window.fetch = async (input, init = {}) => {
     const requestUrl = new URL(typeof input === "string" ? input : input.url, window.location.origin); const path = requestUrl.pathname; const method = String(init.method || "GET").toUpperCase();
