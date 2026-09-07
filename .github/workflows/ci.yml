@@ -37,6 +37,9 @@ jobs:
       - name: Validate Hermes Connect registration operations
         run: node scripts/hermes-connect-registration-ops-contract.test.mjs
 
+      - name: Validate Hermes Connect cabinet audit safety
+        run: node scripts/hc-cabinet-audit-contract.test.mjs
+
       - name: Validate London launch contract
         run: node scripts/london-launch-contract.test.mjs
 
