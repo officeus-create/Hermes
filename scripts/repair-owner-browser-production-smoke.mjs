@@ -60,6 +60,15 @@ async function verifyLanding(page, label) {
   await assertNoHorizontalOverflow(page, `${label} landing`);
 }
 
+async function allowAnalyticsForSyntheticProof(page) {
+  const accept = page.locator("[data-consent-accept]");
+  await accept.waitFor({ state: "visible", timeout: 15_000 });
+  await accept.click();
+  await page.waitForFunction(() => document.documentElement.dataset.analyticsConsent === "granted", null, { timeout: 10_000 });
+  await page.waitForFunction(() => document.documentElement.dataset.analyticsTransport === "ga4", null, { timeout: 10_000 });
+  await page.waitForSelector("script[data-hermes-ga4]", { state: "attached", timeout: 10_000 });
+}
+
 async function verifyDashboard(page, label) {
   await page.waitForURL((url) => url.pathname === DASHBOARD, { timeout: 20_000 });
   await page.waitForFunction(
@@ -81,6 +90,7 @@ try {
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const desktopPage = await desktop.newPage();
   await verifyLanding(desktopPage, "desktop");
+  await allowAnalyticsForSyntheticProof(desktopPage);
   await gotoOk(desktopPage, AUTH);
   await desktopPage.waitForSelector("#auth-forms.active", { state: "visible", timeout: 15_000 });
   await desktopPage.locator('[data-tab="register"]').click();
@@ -88,10 +98,22 @@ try {
   await desktopPage.locator("#reg-email").fill(EMAIL);
   await desktopPage.locator("#reg-password").fill(PASSWORD);
   await desktopPage.locator("#reg-password-confirm").fill(PASSWORD);
+  const ga4CompletionDelivery = desktopPage.waitForRequest((request) => {
+    try {
+      const url = new URL(request.url());
+      return url.hostname.endsWith("google-analytics.com")
+        && url.pathname.endsWith("/g/collect")
+        && url.searchParams.get("en") === "repair_shop_registration_complete";
+    } catch {
+      return false;
+    }
+  }, { timeout: 15_000 });
   const registerResponse = desktopPage.waitForResponse((response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST");
   await desktopPage.locator("#register-form button[type='submit']").click();
   const registered = await registerResponse;
   if (registered.status() !== 201) throw new Error(`Desktop UI registration failed (${registered.status()})`);
+  await ga4CompletionDelivery;
+  console.log("REPAIR_REGISTRATION_COMPLETE_GA4_DELIVERY_PASS=YES");
   await desktopPage.waitForSelector("#auth-authenticated.active", { state: "visible", timeout: 15_000 });
   if ((await desktopPage.locator("#user-email").textContent())?.trim() !== EMAIL) throw new Error("Desktop authenticated-session readback mismatch");
   await desktopPage.locator(`#auth-authenticated a[href="${DASHBOARD}"]`).click();
