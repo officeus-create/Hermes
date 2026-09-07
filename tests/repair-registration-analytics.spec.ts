@@ -14,6 +14,9 @@ const fillRegistration = async (page: any) => {
   await page.locator("#reg-password-confirm").fill(owner.password);
 };
 
+const completionCount = (page: any) => page.evaluate(() => ((window as any).dataLayer || [])
+  .filter((entry: any) => entry?.event === "repair_shop_registration_complete").length);
+
 test("successful Repair registration emits one privacy-safe completion event", async ({ page }) => {
   let registered = false;
   await page.route("**/api/auth/me", (route) => route.fulfill({
@@ -81,4 +84,41 @@ test("failed Repair registration never emits completion", async ({ page }) => {
   });
   expect(counts.start).toBe(1);
   expect(counts.complete).toBe(0);
+});
+
+test("failed registration followed by login is not misclassified as registration completion", async ({ page }) => {
+  let authenticated = false;
+  await page.route("**/api/auth/me", (route) => route.fulfill({
+    status: authenticated ? 200 : 401,
+    contentType: "application/json",
+    body: JSON.stringify(authenticated
+      ? { success: true, specialist: { name: owner.name, email: owner.email, role: "Shop Owner" } }
+      : { success: false, error: "not_authenticated" }),
+  }));
+  await page.route("**/api/auth/register", (route) => route.fulfill({
+    status: 409,
+    contentType: "application/json",
+    body: JSON.stringify({ success: false, error: "account_exists" }),
+  }));
+  await page.route("**/api/auth/login", (route) => {
+    authenticated = true;
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true }),
+    });
+  });
+
+  await page.goto(authPath);
+  await fillRegistration(page);
+  await page.locator("#register-form button[type='submit']").click();
+  await expect(page.locator("#alert-box")).toContainText("already exists");
+  expect(await completionCount(page)).toBe(0);
+
+  await page.locator('[data-tab="login"]').click();
+  await page.locator("#login-email").fill(owner.email);
+  await page.locator("#login-password").fill(owner.password);
+  await page.locator("#login-form button[type='submit']").click();
+  await expect(page.locator("#auth-authenticated")).toHaveClass(/active/);
+  expect(await completionCount(page)).toBe(0);
 });
