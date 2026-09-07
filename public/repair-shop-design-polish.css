@@ -1,0 +1,167 @@
+/* Hermes Connect Repair Shops — light Pearl refinement.
+ * Presentation only. No auth, API, D1, routing, pricing, or analytics behavior.
+ * Extends the existing Repair Shop shell without introducing a second design system.
+ */
+
+:root {
+  --hc-pearl: #f7f6f3;
+  --hc-paper: #ffffff;
+  --hc-ink: #172033;
+  --hc-muted: #667285;
+  --hc-line: #dfe5ec;
+  --hc-obsidian: #0b0d12;
+  --hc-iris: #7c5cff;
+  --hc-ocean: #5ac8fa;
+  --hc-repair: #1e88ff;
+}
+
+/* Keep the approved Connect mark; only the surrounding light/refraction changes. */
+html.hc-experience .repair-crm-mark {
+  position: relative;
+  overflow: hidden;
+  color: transparent !important;
+  text-indent: -9999px;
+  background-color: rgba(255,255,255,.96) !important;
+  background-image:
+    url('/demos/hermes-connect/icon.svg'),
+    linear-gradient(135deg, rgba(124,92,255,.12), rgba(90,200,250,.14)) !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat !important;
+  background-size: 23px 23px, 100% 100% !important;
+  border: 1px solid rgba(124,92,255,.16);
+  box-shadow: 0 8px 22px rgba(72,91,180,.12), inset 0 1px 0 rgba(255,255,255,.92);
+}
+
+html.hc-experience .repair-crm-brand {
+  border-bottom-color: rgba(23,32,51,.07) !important;
+}
+
+html.hc-experience .repair-crm-sidebar {
+  background:
+    radial-gradient(circle at 18% 2%, rgba(124,92,255,.075), transparent 11rem),
+    radial-gradient(circle at 92% 7%, rgba(90,200,250,.08), transparent 10rem),
+    rgba(255,255,255,.98) !important;
+}
+
+html.hc-experience .repair-crm-topbar {
+  background: rgba(255,255,255,.86) !important;
+  backdrop-filter: blur(22px) saturate(1.18) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.18) !important;
+  box-shadow: 0 10px 34px rgba(23,32,51,.045);
+}
+
+html.hc-experience .repair-crm-nav-item.is-active {
+  color: #125fb7 !important;
+  background: linear-gradient(90deg, rgba(30,136,255,.11), rgba(124,92,255,.055)) !important;
+  box-shadow: inset 3px 0 0 var(--hc-repair) !important;
+}
+
+html.hc-experience .repair-crm-language summary,
+html.hc-experience .repair-crm-logout,
+html.hc-experience .repair-crm-menu {
+  background: rgba(255,255,255,.80) !important;
+  border-color: rgba(23,32,51,.10) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.88);
+}
+
+/* The remaining legacy owner/customer entry routes use the same light world as CRM. */
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) {
+  color: var(--hc-ink) !important;
+  background-color: var(--hc-pearl) !important;
+  background-image:
+    radial-gradient(circle at 14% 7%, rgba(124,92,255,.10), transparent 28rem),
+    radial-gradient(circle at 88% 14%, rgba(90,200,250,.11), transparent 24rem) !important;
+  color-scheme: light;
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(h1,h2,h3,strong,label) {
+  color: var(--hc-ink) !important;
+  text-shadow: none !important;
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(.auth-subtitle,.field-help,.muted,.microcopy,.recovery-copy,.booking-copy) {
+  color: var(--hc-muted) !important;
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(.glass-panel,.recovery-card,.booking-card,.panel,.state-card) {
+  color: var(--hc-ink) !important;
+  border-color: rgba(23,32,51,.09) !important;
+  background: rgba(255,255,255,.84) !important;
+  box-shadow: 0 24px 65px rgba(23,32,51,.09) !important;
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+}
+
+html.hc-experience body .auth-page .back-link,
+html.hc-experience body .recovery-page .back-link,
+html.hc-experience body .booking-page .back-link {
+  color: #536176 !important;
+}
+
+html.hc-experience body .auth-page .auth-tabs {
+  background: rgba(23,32,51,.045) !important;
+  border: 1px solid rgba(23,32,51,.06);
+}
+
+html.hc-experience body .auth-page .tab-btn {
+  color: #6c7788 !important;
+}
+
+html.hc-experience body .auth-page .tab-btn.active {
+  color: var(--hc-ink) !important;
+  background: linear-gradient(135deg, rgba(30,136,255,.10), rgba(124,92,255,.075)) !important;
+  box-shadow: inset 0 0 0 1px rgba(30,136,255,.10);
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(input,select,textarea) {
+  color: var(--hc-ink) !important;
+  border-color: rgba(23,32,51,.13) !important;
+  background: rgba(255,255,255,.95) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92);
+  color-scheme: light;
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(input,select,textarea):focus {
+  border-color: var(--hc-repair) !important;
+  box-shadow: 0 0 0 3px rgba(30,136,255,.12) !important;
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(.primary-btn,.btn.primary-btn) {
+  color: #fff !important;
+  border-color: var(--hc-obsidian) !important;
+  background: var(--hc-obsidian) !important;
+  box-shadow: 0 12px 28px rgba(30,136,255,.13) !important;
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(.ghost-btn,.secondary-btn) {
+  color: var(--hc-ink) !important;
+  border-color: rgba(23,32,51,.12) !important;
+  background: rgba(255,255,255,.82) !important;
+}
+
+html.hc-experience body .auth-page .text-iris {
+  color: var(--hc-iris) !important;
+  filter: drop-shadow(0 6px 14px rgba(124,92,255,.14));
+}
+
+html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :focus-visible {
+  outline: 3px solid rgba(30,136,255,.24);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) {
+    background-image:
+      radial-gradient(circle at 8% 3%, rgba(124,92,255,.075), transparent 18rem),
+      radial-gradient(circle at 94% 9%, rgba(90,200,250,.085), transparent 17rem) !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html.hc-experience .repair-crm-topbar,
+  html.hc-experience body :is(.auth-page,.recovery-page,.booking-page) :is(.glass-panel,.recovery-card,.booking-card,.panel,.state-card) {
+    background: var(--hc-paper) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
