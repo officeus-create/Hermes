@@ -1,300 +1,63 @@
 ---
-import { ArrowLeft, CalendarDays, CheckCircle2, Clock3, MapPin, Wrench } from "@lucide/astro";
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 ---
-
-<BaseLayout
-  title="Repair Shop Booking | Hermes Connect"
-  description="Book a real appointment with a repair shop using Hermes Connect public beta scheduling."
-  robots="noindex,nofollow"
->
-  <SiteHeader activePath="/paths/technology/" />
-  <main class="booking-page">
-    <div class="shell">
-      <a class="back-link" href="/services/hermes-connect/repair-shops/"><ArrowLeft size={16} /> Repair Shop Beta</a>
-
-      <header class="hero">
-        <p class="eyebrow">Hermes Connect · Public Booking</p>
-        <h1 id="shop-title">Loading repair shop…</h1>
-        <p id="shop-meta" class="muted">Loading shop profile, services, and hours from production.</p>
-      </header>
-
-      <div id="page-alert" class="alert hidden" role="status"></div>
-
-      <section id="booking-panel" class="panel hidden" aria-labelledby="booking-title">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">Real appointment intake</p>
-            <h2 id="booking-title">Book a service</h2>
-            <p class="muted">Hermes Connect software is in free public beta. Repair services themselves are not advertised as free.</p>
-          </div>
-          <span id="timezone-pill" class="pill"></span>
-        </div>
-
-        <form id="booking-form" class="booking-form">
-          <label class="field span-2">Service
-            <select id="service-select" required>
-              <option value="">Select a service</option>
-            </select>
-          </label>
-
-          <label class="field">Date
-            <select id="date-select" required disabled>
-              <option value="">Select a date</option>
-            </select>
-          </label>
-
-          <label class="field">Time
-            <select id="time-select" required disabled>
-              <option value="">Select a time</option>
-            </select>
-          </label>
-
-          <div id="slot-state" class="slot-state span-2">Choose a service and date to load current availability.</div>
-
-          <div class="divider span-2"></div>
-          <div class="section-label span-2"><strong>Vehicle</strong><span>Saved with this appointment so the shop can prepare before you arrive.</span></div>
-          <label class="field">Year<input id="vehicle-year" type="number" min="1900" max="2100" inputmode="numeric" required placeholder="2021" /></label>
-          <label class="field">Make<input id="vehicle-make" minlength="1" maxlength="80" required placeholder="Ford" /></label>
-          <label class="field">Model<input id="vehicle-model" minlength="1" maxlength="80" required placeholder="F-150" /></label>
-          <label class="field">Mileage<input id="vehicle-mileage" type="number" min="0" max="2000000" inputmode="numeric" placeholder="84500" /></label>
-          <label class="field span-2">VIN <span class="optional">optional</span><input id="vehicle-vin" minlength="11" maxlength="17" autocomplete="off" placeholder="Optional vehicle identification number" /></label>
-
-          <div class="divider span-2"></div>
-          <div class="section-label span-2"><strong>Contact</strong><span>The repair shop uses this information for your appointment.</span></div>
-          <label class="field">Full name<input id="client-name" minlength="2" maxlength="120" autocomplete="name" required /></label>
-          <label class="field">Phone<input id="client-phone" minlength="7" maxlength="40" autocomplete="tel" inputmode="tel" required /></label>
-          <label class="field span-2">Email<input id="client-email" type="email" maxlength="200" autocomplete="email" required /></label>
-
-          <button id="submit-btn" class="primary-btn span-2" type="submit">Confirm appointment</button>
-        </form>
-      </section>
-
-      <section id="success-panel" class="panel success-panel hidden" aria-live="polite">
-        <CheckCircle2 class="success-icon" size={54} />
-        <p class="eyebrow">Production booking created</p>
-        <h2>Appointment confirmed</h2>
-        <p id="success-summary" class="muted"></p>
-        <dl class="receipt">
-          <div><dt>Booking ID</dt><dd id="receipt-id"></dd></div>
-          <div><dt>Shop</dt><dd id="receipt-shop"></dd></div>
-          <div><dt>Service</dt><dd id="receipt-service"></dd></div>
-          <div><dt>Vehicle</dt><dd id="receipt-vehicle"></dd></div>
-          <div><dt>Date</dt><dd id="receipt-date"></dd></div>
-          <div><dt>Time</dt><dd id="receipt-time"></dd></div>
-          <div><dt>Status</dt><dd id="receipt-status"></dd></div>
-        </dl>
-        <button id="calendar-btn" class="secondary-btn" type="button"><CalendarDays size={17} /> Add to calendar (.ics)</button>
-      </section>
-
-      <aside class="trust-panel">
-        <div><Wrench size={18} /><span>Services come from this shop’s owner workspace.</span></div>
-        <div><Clock3 size={18} /><span>Times are checked against the shop’s saved weekly hours and existing bookings.</span></div>
-        <div><MapPin size={18} /><span id="location-note">Shop location loads from the saved public profile.</span></div>
-      </aside>
-    </div>
-  </main>
-  <SiteFooter />
+<BaseLayout title="Repair Shop Booking | Hermes Connect" description="Book a real appointment with a repair shop using Hermes Connect scheduling." robots="noindex,nofollow">
+<SiteHeader activePath="/paths/technology/" />
+<main class="booking-page"><div class="shell">
+<a class="back-link" href="/services/hermes-connect/repair-shops/">← <span data-b="0">Repair Shops</span></a>
+<header class="hero"><p class="eyebrow" data-b="1">Hermes Connect · Public Booking</p><h1 id="shop-title" data-b="2">Loading repair shop…</h1><p id="shop-meta" class="muted" data-b="3">Loading shop profile, services, and hours.</p></header>
+<div id="page-alert" class="alert hidden" role="status"></div>
+<section id="booking-panel" class="panel hidden" aria-labelledby="booking-title"><div class="panel-heading"><div><p class="eyebrow" data-b="4">Real appointment intake</p><h2 id="booking-title" data-b="5">Book a service</h2><p class="muted" data-b="6">Live pilot. Service prices are set by the shop.</p></div><span id="timezone-pill" class="pill"></span></div>
+<form id="booking-form" class="booking-form">
+<label class="field span-2"><span data-b="7">Service</span><select id="service-select" required><option value="" data-b="8">Select a service</option></select></label>
+<label class="field"><span data-b="9">Date</span><select id="date-select" required disabled><option value="" data-b="10">Select a date</option></select></label>
+<label class="field"><span data-b="11">Time</span><select id="time-select" required disabled><option value="" data-b="12">Select a time</option></select></label>
+<div id="slot-state" class="slot-state span-2" data-b="13">Choose a service and date to see availability.</div><div class="divider span-2"></div>
+<div class="section-label span-2"><strong data-b="14">Vehicle</strong><span data-b="15">Helps the shop prepare for your visit.</span></div>
+<label class="field"><span data-b="16">Year</span><input id="vehicle-year" type="number" min="1900" max="2100" inputmode="numeric" required placeholder="2021" /></label>
+<label class="field"><span data-b="17">Make</span><input id="vehicle-make" maxlength="80" required placeholder="Ford" /></label>
+<label class="field"><span data-b="18">Model</span><input id="vehicle-model" maxlength="80" required placeholder="F-150" /></label>
+<label class="field"><span data-b="19">Mileage</span><input id="vehicle-mileage" type="number" min="0" max="2000000" inputmode="numeric" placeholder="84500" /></label>
+<label class="field span-2"><span>VIN</span> <span class="optional" data-b="20">optional</span><input id="vehicle-vin" minlength="11" maxlength="17" autocomplete="off" placeholder="Optional VIN" data-bp /></label>
+<div class="divider span-2"></div><div class="section-label span-2"><strong data-b="21">Contact</strong><span data-b="22">Used by the shop for this appointment.</span></div>
+<label class="field"><span data-b="23">Full name</span><input id="client-name" minlength="2" maxlength="120" autocomplete="name" required /></label>
+<label class="field"><span data-b="24">Phone</span><input id="client-phone" minlength="7" maxlength="40" autocomplete="tel" inputmode="tel" required /></label>
+<label class="field span-2"><span>Email</span><input id="client-email" type="email" maxlength="200" autocomplete="email" required /></label>
+<button id="submit-btn" class="primary-btn span-2" type="submit" data-b="25">Confirm appointment</button></form></section>
+<section id="success-panel" class="panel success-panel hidden" aria-live="polite"><div class="success-icon">✓</div><p class="eyebrow" data-b="26">Booking created</p><h2 data-b="27">Appointment confirmed</h2><p id="success-summary" class="muted"></p><dl class="receipt"><div><dt data-b="28">Booking ID</dt><dd id="receipt-id"></dd></div><div><dt data-b="29">Shop</dt><dd id="receipt-shop"></dd></div><div><dt data-b="7">Service</dt><dd id="receipt-service"></dd></div><div><dt data-b="14">Vehicle</dt><dd id="receipt-vehicle"></dd></div><div><dt data-b="9">Date</dt><dd id="receipt-date"></dd></div><div><dt data-b="11">Time</dt><dd id="receipt-time"></dd></div><div><dt data-b="30">Status</dt><dd id="receipt-status"></dd></div></dl><button id="calendar-btn" class="secondary-btn" type="button"><span data-b="31">Add to calendar (.ics)</span></button></section>
+<aside class="trust-panel"><div data-b="32">Services come from the shop workspace.</div><div data-b="33">Times reflect shop hours and bookings.</div><div id="location-note" data-b="34">Location comes from the public shop profile.</div></aside>
+</div></main><SiteFooter />
 </BaseLayout>
-
 <script>
-  type Service = { id: string; name: string; duration_minutes: number };
-  type AvailabilityDay = { day_of_week: number; is_open: boolean; start_time: string | null; end_time: string | null };
-  type Shop = { id: string; name: string; slug: string; phone?: string | null; address_line1?: string | null; city: string; state: string; postal_code?: string | null; timezone: string };
-  type BusyInterval = { start_time: string; end_time: string; status: string };
-  type PublicPayload = { success: boolean; shop?: Shop; services?: Service[]; availability?: AvailabilityDay[]; error?: string };
-
-  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T | null;
-  const alertBox = $("page-alert");
-  const form = $<HTMLFormElement>("booking-form");
-  const serviceSelect = $<HTMLSelectElement>("service-select");
-  const dateSelect = $<HTMLSelectElement>("date-select");
-  const timeSelect = $<HTMLSelectElement>("time-select");
-  const submitButton = $<HTMLButtonElement>("submit-btn");
-  let shop: Shop | null = null;
-  let services: Service[] = [];
-  let availability: AvailabilityDay[] = [];
-  let lastBooking: any = null;
-
-  const toMinutes = (value: string) => { const [h, m] = value.split(":").map(Number); return h * 60 + m; };
-  const fromMinutes = (value: number) => `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(value % 60).padStart(2, "0")}`;
-  const formatTime = (value: string) => {
-    const [h, m] = value.split(":").map(Number);
-    const suffix = h >= 12 ? "PM" : "AM";
-    const hour = h % 12 || 12;
-    return `${hour}:${String(m).padStart(2, "0")} ${suffix}`;
-  };
-  const readJson = async (response: Response) => { try { return await response.json(); } catch { return { success: false, error: "invalid_server_response" }; } };
-
-  function showAlert(message: string) {
-    if (!alertBox) return;
-    alertBox.textContent = message;
-    alertBox.className = "alert";
-  }
-  function clearAlert() { if (alertBox) { alertBox.textContent = ""; alertBox.className = "alert hidden"; } }
-
-  function localDateParts(timezone: string, date = new Date()) {
-    const parts = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
-    const pick = (type: string) => parts.find((part) => part.type === type)?.value || "";
-    return `${pick("year")}-${pick("month")}-${pick("day")}`;
-  }
-
-  function weekdayForDate(value: string) { return new Date(`${value}T12:00:00Z`).getUTCDay(); }
-
-  function buildDates() {
-    if (!shop || !dateSelect) return;
-    const today = localDateParts(shop.timezone);
-    const base = new Date(`${today}T12:00:00Z`);
-    dateSelect.innerHTML = '<option value="">Select a date</option>';
-    let count = 0;
-    for (let offset = 0; offset <= 21; offset++) {
-      const candidate = new Date(base.getTime() + offset * 86400000);
-      const date = candidate.toISOString().slice(0, 10);
-      const day = availability.find((item) => Number(item.day_of_week) === candidate.getUTCDay());
-      if (!day?.is_open || !day.start_time || !day.end_time) continue;
-      const option = document.createElement("option");
-      option.value = date;
-      option.textContent = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(candidate);
-      dateSelect.append(option);
-      count++;
-    }
-    dateSelect.disabled = count === 0;
-    if (count === 0) showAlert("This shop has not opened any booking days yet.");
-  }
-
-  function selectedService() { return services.find((item) => item.id === serviceSelect?.value) || null; }
-
-  async function refreshSlots() {
-    if (!shop || !dateSelect || !timeSelect) return;
-    const service = selectedService();
-    const date = dateSelect.value;
-    timeSelect.innerHTML = '<option value="">Select a time</option>';
-    timeSelect.disabled = true;
-    if (!service || !date) { $("slot-state")!.textContent = "Choose a service and date to load current availability."; return; }
-
-    const day = availability.find((item) => Number(item.day_of_week) === weekdayForDate(date));
-    if (!day?.is_open || !day.start_time || !day.end_time) { $("slot-state")!.textContent = "The shop is closed on this date."; return; }
-
-    $("slot-state")!.textContent = "Checking current production bookings…";
-    const response = await fetch(`/api/public/repair-booking?shop=${encodeURIComponent(shop.slug)}&date=${encodeURIComponent(date)}`);
-    const data = await readJson(response);
-    if (!response.ok || !data.success) { $("slot-state")!.textContent = data.error || "Unable to load live availability."; return; }
-    const busy = Array.isArray(data.busy) ? data.busy as BusyInterval[] : [];
-
-    const openStart = toMinutes(day.start_time);
-    const openEnd = toMinutes(day.end_time);
-    const duration = Number(service.duration_minutes);
-    let availableCount = 0;
-    for (let start = openStart; start + duration <= openEnd; start += 30) {
-      const end = start + duration;
-      const overlaps = busy.some((row) => start < toMinutes(row.end_time) && end > toMinutes(row.start_time));
-      if (overlaps) continue;
-      const value = fromMinutes(start);
-      const option = document.createElement("option");
-      option.value = value;
-      option.textContent = `${formatTime(value)} · ${duration} min`;
-      timeSelect.append(option);
-      availableCount++;
-    }
-    timeSelect.disabled = availableCount === 0;
-    $("slot-state")!.textContent = availableCount ? `${availableCount} live ${availableCount === 1 ? "time" : "times"} available.` : "No open times remain for this service on that date.";
-  }
-
-  async function loadShop() {
-    const slug = new URLSearchParams(window.location.search).get("shop")?.trim() || "";
-    if (!slug) { showAlert("This booking link is missing its shop identifier. Ask the repair shop for its current Hermes Connect booking link."); return; }
-    const response = await fetch(`/api/public/repair-shop?slug=${encodeURIComponent(slug)}`);
-    const data = await readJson(response) as PublicPayload;
-    if (!response.ok || !data.success || !data.shop) { showAlert(data.error === "shop_not_found" ? "This repair shop booking link is not active." : data.error || "Unable to load this repair shop."); return; }
-
-    shop = data.shop;
-    services = Array.isArray(data.services) ? data.services : [];
-    availability = Array.isArray(data.availability) ? data.availability : [];
-    $("shop-title")!.textContent = shop.name;
-    $("shop-meta")!.textContent = `${shop.city}, ${shop.state} · ${shop.phone || "Contact details available from the shop"}`;
-    $("timezone-pill")!.textContent = shop.timezone;
-    $("location-note")!.textContent = `${shop.address_line1 ? `${shop.address_line1}, ` : ""}${shop.city}, ${shop.state}${shop.postal_code ? ` ${shop.postal_code}` : ""}`;
-
-    if (serviceSelect) {
-      for (const service of services) {
-        const option = document.createElement("option"); option.value = service.id; option.textContent = `${service.name} · ${service.duration_minutes} min`; serviceSelect.append(option);
-      }
-      serviceSelect.disabled = services.length === 0;
-    }
-    buildDates();
-    $("booking-panel")?.classList.remove("hidden");
-    if (!services.length) showAlert("This shop has not published any services yet.");
-  }
-
-  serviceSelect?.addEventListener("change", () => { if (dateSelect) dateSelect.value = ""; if (timeSelect) { timeSelect.value = ""; timeSelect.disabled = true; } clearAlert(); });
-  dateSelect?.addEventListener("change", () => { clearAlert(); refreshSlots().catch(() => showAlert("Unable to refresh live time slots.")); });
-
-  form?.addEventListener("submit", async (event) => {
-    event.preventDefault(); clearAlert();
-    if (!shop || !serviceSelect || !dateSelect || !timeSelect) return;
-    const service = selectedService();
-    if (!service) return showAlert("Select a service.");
-    submitButton!.disabled = true;
-    try {
-      const response = await fetch("/api/public/repair-booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shop_slug: shop.slug,
-          service_id: service.id,
-          appointment_date: dateSelect.value,
-          start_time: timeSelect.value,
-          client_name: $<HTMLInputElement>("client-name")?.value,
-          client_email: $<HTMLInputElement>("client-email")?.value,
-          client_phone: $<HTMLInputElement>("client-phone")?.value,
-          vehicle_year: Number($<HTMLInputElement>("vehicle-year")?.value),
-          vehicle_make: $<HTMLInputElement>("vehicle-make")?.value,
-          vehicle_model: $<HTMLInputElement>("vehicle-model")?.value,
-          mileage: $<HTMLInputElement>("vehicle-mileage")?.value || null,
-          vin: $<HTMLInputElement>("vehicle-vin")?.value || null,
-        }),
-      });
-      const data = await readJson(response);
-      if (!response.ok || !data.success || !data.booking) {
-        if (data.error === "slot_unavailable") { showAlert("That time was just booked. Please choose another available time."); await refreshSlots(); return; }
-        return showAlert(data.error || "Unable to create the appointment.");
-      }
-      lastBooking = data.booking;
-      $("receipt-id")!.textContent = data.booking.id;
-      $("receipt-shop")!.textContent = data.booking.shop_name;
-      $("receipt-service")!.textContent = data.booking.service_name;
-      $("receipt-vehicle")!.textContent = `${data.booking.vehicle.year} ${data.booking.vehicle.make} ${data.booking.vehicle.model}${data.booking.vehicle.mileage == null ? "" : ` · ${Number(data.booking.vehicle.mileage).toLocaleString()} mi`}`;
-      $("receipt-date")!.textContent = data.booking.appointment_date;
-      $("receipt-time")!.textContent = `${formatTime(data.booking.start_time)} – ${formatTime(data.booking.end_time)} (${data.booking.timezone})`;
-      $("receipt-status")!.textContent = data.booking.status;
-      $("success-summary")!.textContent = `${data.booking.client_name}, your appointment and vehicle details were written to the shop’s Hermes Connect booking inbox.`;
-      $("booking-panel")?.classList.add("hidden");
-      $("success-panel")?.classList.remove("hidden");
-    } catch { showAlert("Network error while creating the appointment."); }
-    finally { submitButton!.disabled = false; }
-  });
-
-  $("calendar-btn")?.addEventListener("click", () => {
-    if (!lastBooking) return;
-    const compact = (date: string, time: string) => `${date.replaceAll("-", "")}T${time.replace(":", "")}00`;
-    const lines = [
-      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Hermes Connect//Repair Booking//EN", "BEGIN:VEVENT",
-      `UID:${lastBooking.id}@hermeslogisticsus.com`,
-      `DTSTART;TZID=${lastBooking.timezone}:${compact(lastBooking.appointment_date, lastBooking.start_time)}`,
-      `DTEND;TZID=${lastBooking.timezone}:${compact(lastBooking.appointment_date, lastBooking.end_time)}`,
-      `SUMMARY:${lastBooking.service_name} - ${lastBooking.shop_name}`,
-      `DESCRIPTION:Hermes Connect booking ${lastBooking.id}`,
-      "END:VEVENT", "END:VCALENDAR",
-    ];
-    const blob = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
-    const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = `${lastBooking.id}.ics`; anchor.click(); URL.revokeObjectURL(url);
-  });
-
-  loadShop().catch(() => showAlert("Unable to initialize this booking link."));
+type Service={id:string;name:string;duration_minutes:number};type Day={day_of_week:number;is_open:boolean;start_time:string|null;end_time:string|null};type Shop={id:string;name:string;slug:string;phone?:string|null;address_line1?:string|null;city:string;state:string;postal_code?:string|null;timezone:string};type Busy={start_time:string;end_time:string};type Locale="en"|"ru"|"uk"|"es"|"it"|"fr";
+const S:Record<Exclude<Locale,"en">,string[]>={
+ru:["СТО","Hermes Connect · публичная запись","Загружаем СТО…","Загружаем профиль и график.","Запись на визит","Записаться на услугу","Действующий пилот. Цены устанавливает СТО.","Услуга","Выберите услугу","Дата","Выберите дату","Время","Выберите время","Выберите услугу и дату, чтобы увидеть свободное время.","Автомобиль","Поможет СТО подготовиться к визиту.","Год","Марка","Модель","Пробег","необязательно","Контакты","СТО использует их для этой записи.","Имя и фамилия","Телефон","Подтвердить запись","Запись создана","Запись подтверждена","ID записи","СТО","Статус","Добавить в календарь (.ics)","Услуги загружаются из кабинета СТО.","Время учитывает график и записи СТО.","Адрес загружается из профиля СТО.","VIN, необязательно"],
+uk:["СТО","Hermes Connect · Онлайн-запис","Завантажуємо СТО…","Завантажуємо профіль і графік.","Запис на візит","Записатися на послугу","Діючий пілот. Ціни встановлює СТО.","Послуга","Оберіть послугу","Дата","Оберіть дату","Час","Оберіть час","Оберіть послугу й дату, щоб побачити вільний час.","Автомобіль","Допоможе СТО підготуватися до візиту.","Рік","Марка","Модель","Пробіг","необов’язково","Контакти","СТО використовує їх для цього запису.","Ім’я та прізвище","Телефон","Підтвердити запис","Запис створено","Запис підтверджено","ID запису","СТО","Статус","Додати до календаря (.ics)","Послуги завантажуються з кабінету СТО.","Час враховує графік і записи СТО.","Адреса завантажується з профілю СТО.","VIN, необов’язково"],
+es:["Talleres","Hermes Connect · Reserva pública","Cargando taller…","Cargando perfil y horario.","Solicitud de cita","Reservar un servicio","Piloto activo. El taller fija sus precios.","Servicio","Selecciona un servicio","Fecha","Selecciona una fecha","Hora","Selecciona una hora","Selecciona servicio y fecha para ver disponibilidad.","Vehículo","Ayuda al taller a preparar tu visita.","Año","Marca","Modelo","Kilometraje","opcional","Contacto","El taller los usa para esta cita.","Nombre completo","Teléfono","Confirmar cita","Reserva creada","Cita confirmada","ID de reserva","Taller","Estado","Añadir al calendario (.ics)","Los servicios vienen del espacio del taller.","Los horarios reflejan agenda y reservas.","La ubicación viene del perfil público.","VIN opcional"],
+it:["Officine","Hermes Connect · Prenotazione pubblica","Caricamento officina…","Caricamento profilo e orari.","Richiesta appuntamento","Prenota un servizio","Pilota attivo. L’officina stabilisce i prezzi.","Servizio","Seleziona un servizio","Data","Seleziona una data","Ora","Seleziona un orario","Seleziona servizio e data per vedere la disponibilità.","Veicolo","Aiuta l’officina a preparare la visita.","Anno","Marca","Modello","Chilometraggio","facoltativo","Contatti","L’officina li usa per questo appuntamento.","Nome e cognome","Telefono","Conferma appuntamento","Prenotazione creata","Appuntamento confermato","ID prenotazione","Officina","Stato","Aggiungi al calendario (.ics)","I servizi vengono dall’area dell’officina.","Gli orari riflettono agenda e prenotazioni.","La posizione viene dal profilo pubblico.","VIN facoltativo"],
+fr:["Garages","Hermes Connect · Réservation publique","Chargement du garage…","Chargement du profil et des horaires.","Demande de rendez-vous","Réserver un service","Pilote actif. Le garage fixe ses prix.","Service","Sélectionnez un service","Date","Sélectionnez une date","Heure","Sélectionnez une heure","Choisissez service et date pour voir les disponibilités.","Véhicule","Aide le garage à préparer votre visite.","Année","Marque","Modèle","Kilométrage","facultatif","Contact","Le garage les utilise pour ce rendez-vous.","Nom complet","Téléphone","Confirmer le rendez-vous","Réservation créée","Rendez-vous confirmé","ID de réservation","Garage","Statut","Ajouter au calendrier (.ics)","Les services viennent de l’espace du garage.","Les horaires reflètent l’agenda et les réservations.","L’adresse vient du profil public.","VIN facultatif"]};
+const D:Record<Locale,string[]>={
+en:["This shop has no booking days yet.","The shop is closed on this date.","Checking bookings…","Unable to load live availability.","No open times remain on this date.","This booking link is missing its shop identifier.","This repair shop booking link is not active.","Unable to load this repair shop.","Contact details available from the shop","This shop has not published services yet.","Unable to refresh live time slots.","Select a service.","That time was just booked. Choose another time.","Unable to create the appointment.","Network error while creating the appointment.","Unable to initialize this booking link.","min","1 live time available.","{count} live times available.","{name}, your appointment and vehicle were saved to the shop booking inbox.","Hermes Connect booking {id}","Confirmed","Pending","In progress","Completed","Cancelled"],
+ru:["СТО пока не открыло дни для записи.","В эту дату СТО закрыто.","Проверяем записи…","Не удалось загрузить актуальное свободное время.","На эту дату свободного времени нет.","В ссылке отсутствует идентификатор СТО. Попросите актуальную ссылку Hermes Connect.","Эта ссылка на запись сейчас неактивна.","Не удалось загрузить СТО.","Контакты доступны у СТО","СТО пока не опубликовало услуги.","Не удалось обновить свободное время.","Выберите услугу.","Это время только что заняли. Выберите другое.","Не удалось создать запись.","Ошибка сети при создании записи.","Не удалось открыть ссылку записи.","мин","Доступно 1 время.","Доступно вариантов: {count}.","{name}, запись и автомобиль сохранены в Hermes Connect СТО.","Запись Hermes Connect {id}","Подтверждено","Ожидает","В работе","Завершено","Отменено"],
+uk:["СТО ще не відкрило дні для запису.","У цю дату СТО зачинене.","Перевіряємо записи…","Не вдалося завантажити вільний час.","На цю дату вільного часу немає.","У посиланні немає ідентифікатора СТО.","Це посилання на запис зараз неактивне.","Не вдалося завантажити СТО.","Контакти доступні у СТО","СТО ще не опублікувало послуги.","Не вдалося оновити вільний час.","Оберіть послугу.","Цей час щойно зайняли. Оберіть інший.","Не вдалося створити запис.","Помилка мережі під час створення запису.","Не вдалося відкрити посилання запису.","хв","Доступний 1 час.","Доступно варіантів: {count}.","{name}, запис і автомобіль збережено в Hermes Connect СТО.","Запис Hermes Connect {id}","Підтверджено","Очікує","У роботі","Завершено","Скасовано"],
+es:["El taller aún no abrió días de reserva.","El taller está cerrado en esta fecha.","Comprobando reservas…","No se pudo cargar la disponibilidad.","No quedan horas disponibles en esa fecha.","Falta el identificador del taller en este enlace.","Este enlace de reserva no está activo.","No se pudo cargar el taller.","Contacto disponible en el taller","El taller aún no publicó servicios.","No se pudieron actualizar las horas.","Selecciona un servicio.","Esa hora acaba de reservarse. Elige otra.","No se pudo crear la cita.","Error de red al crear la cita.","No se pudo abrir este enlace.","min","Hay 1 hora disponible.","Hay {count} horas disponibles.","{name}, tu cita y vehículo se guardaron en Hermes Connect.","Reserva Hermes Connect {id}","Confirmada","Pendiente","En curso","Completada","Cancelada"],
+it:["L’officina non ha ancora aperto giorni di prenotazione.","L’officina è chiusa in questa data.","Verifica prenotazioni…","Impossibile caricare la disponibilità.","Non restano orari disponibili in quella data.","Manca l’identificativo dell’officina nel link.","Questo link di prenotazione non è attivo.","Impossibile caricare l’officina.","Contatti disponibili presso l’officina","L’officina non ha ancora pubblicato servizi.","Impossibile aggiornare gli orari.","Seleziona un servizio.","Questo orario è appena stato prenotato. Scegline un altro.","Impossibile creare l’appuntamento.","Errore di rete durante la prenotazione.","Impossibile aprire questo link.","min","È disponibile 1 orario.","Sono disponibili {count} orari.","{name}, appuntamento e veicolo sono salvati in Hermes Connect.","Prenotazione Hermes Connect {id}","Confermato","In attesa","In corso","Completato","Annullato"],
+fr:["Le garage n’a pas encore ouvert de jours de réservation.","Le garage est fermé à cette date.","Vérification des réservations…","Impossible de charger les disponibilités.","Aucun créneau ne reste à cette date.","L’identifiant du garage manque dans ce lien.","Ce lien de réservation n’est pas actif.","Impossible de charger le garage.","Coordonnées disponibles auprès du garage","Le garage n’a pas encore publié de services.","Impossible d’actualiser les créneaux.","Sélectionnez un service.","Ce créneau vient d’être réservé. Choisissez-en un autre.","Impossible de créer le rendez-vous.","Erreur réseau pendant la réservation.","Impossible d’ouvrir ce lien.","min","1 créneau est disponible.","{count} créneaux sont disponibles.","{name}, votre rendez-vous et véhicule sont enregistrés dans Hermes Connect.","Réservation Hermes Connect {id}","Confirmé","En attente","En cours","Terminé","Annulé"]};
+const p=new URLSearchParams(location.search),q=(p.get("lang")||"en").toLowerCase(),locale:Locale=(["en","ru","uk","es","it","fr"].includes(q)?q:"en") as Locale,L:Record<Locale,string>={en:"en-US",ru:"ru-RU",uk:"uk-UA",es:"es-ES",it:"it-IT",fr:"fr-FR"};
+const f=(s:string,v:Record<string,string|number>={})=>Object.entries(v).reduce((a,[k,x])=>a.replaceAll(`{${k}}`,String(x)),s),d=(i:number,v:Record<string,string|number>={})=>f(D[locale][i],v),$=<T extends HTMLElement=HTMLElement>(id:string)=>document.getElementById(id) as T|null;
+if(locale!=="en"){const c=S[locale as Exclude<Locale,"en">];document.querySelectorAll<HTMLElement>("[data-b]").forEach(n=>n.textContent=c[Number(n.dataset.b)]);const vin=document.querySelector<HTMLInputElement>("[data-bp]");if(vin)vin.placeholder=c[35]}
+const alertBox=$("page-alert"),form=$<HTMLFormElement>("booking-form"),serviceSelect=$<HTMLSelectElement>("service-select"),dateSelect=$<HTMLSelectElement>("date-select"),timeSelect=$<HTMLSelectElement>("time-select"),submit=$<HTMLButtonElement>("submit-btn");let shop:Shop|null=null,services:Service[]=[],days:Day[]=[],last:any=null;
+const show=(m:string)=>{if(alertBox){alertBox.textContent=m;alertBox.className="alert"}},clear=()=>{if(alertBox){alertBox.textContent="";alertBox.className="alert hidden"}},json=async(r:Response)=>{try{return await r.json()}catch{return{success:false}}},friendly=(e:unknown,i:number)=>e==="shop_not_found"?d(6):e==="slot_unavailable"?d(12):d(i),mins=(v:string)=>{const[h,m]=v.split(":").map(Number);return h*60+m},clock=(v:number)=>`${String(Math.floor(v/60)).padStart(2,"0")}:${String(v%60).padStart(2,"0")}`,ftime=(v:string)=>{const[h,m]=v.split(":").map(Number);return new Intl.DateTimeFormat(L[locale],{hour:"numeric",minute:"2-digit",timeZone:"UTC"}).format(new Date(Date.UTC(2026,0,1,h,m)))},localDate=(tz:string)=>{const x=new Intl.DateTimeFormat("en-US",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()),g=(t:string)=>x.find(a=>a.type===t)?.value||"";return`${g("year")}-${g("month")}-${g("day")}`},staticText=(i:number,en:string)=>locale==="en"?en:S[locale as Exclude<Locale,"en">][i];
+function buildDates(){if(!shop||!dateSelect)return;const base=new Date(`${localDate(shop.timezone)}T12:00:00Z`);dateSelect.innerHTML=`<option value="">${staticText(10,"Select a date")}</option>`;let n=0;for(let o=0;o<=21;o++){const x=new Date(base.getTime()+o*86400000),day=days.find(a=>a.day_of_week===x.getUTCDay());if(!day?.is_open||!day.start_time||!day.end_time)continue;const opt=document.createElement("option");opt.value=x.toISOString().slice(0,10);opt.textContent=new Intl.DateTimeFormat(L[locale],{weekday:"short",month:"short",day:"numeric",timeZone:"UTC"}).format(x);dateSelect.append(opt);n++}dateSelect.disabled=!n;if(!n)show(d(0))}
+const selected=()=>services.find(a=>a.id===serviceSelect?.value)||null;
+async function slots(){if(!shop||!dateSelect||!timeSelect)return;const svc=selected(),date=dateSelect.value;timeSelect.innerHTML=`<option value="">${staticText(12,"Select a time")}</option>`;timeSelect.disabled=true;if(!svc||!date){$("slot-state")!.textContent=staticText(13,"Choose a service and date to see availability.");return}const day=days.find(a=>a.day_of_week===new Date(`${date}T12:00:00Z`).getUTCDay());if(!day?.is_open||!day.start_time||!day.end_time){$("slot-state")!.textContent=d(1);return}$("slot-state")!.textContent=d(2);const res=await fetch(`/api/public/repair-booking?shop=${encodeURIComponent(shop.slug)}&date=${encodeURIComponent(date)}`),data=await json(res);if(!res.ok||!data.success){$("slot-state")!.textContent=friendly(data.error,3);return}const busy=Array.isArray(data.busy)?data.busy as Busy[]:[];let n=0;for(let start=mins(day.start_time);start+svc.duration_minutes<=mins(day.end_time);start+=30){const end=start+svc.duration_minutes;if(busy.some(a=>start<mins(a.end_time)&&end>mins(a.start_time)))continue;const value=clock(start),opt=document.createElement("option");opt.value=value;opt.textContent=`${ftime(value)} · ${svc.duration_minutes} ${d(16)}`;timeSelect.append(opt);n++}timeSelect.disabled=!n;$("slot-state")!.textContent=!n?d(4):n===1?d(17):d(18,{count:n})}
+async function load(){const slug=p.get("shop")?.trim()||"";if(!slug){show(d(5));return}const res=await fetch(`/api/public/repair-shop?slug=${encodeURIComponent(slug)}`),data=await json(res);if(!res.ok||!data.success||!data.shop){show(friendly(data.error,7));return}const s=data.shop as Shop;shop=s;services=Array.isArray(data.services)?data.services:[];days=Array.isArray(data.availability)?data.availability:[];$("shop-title")!.textContent=s.name;$("shop-meta")!.textContent=`${s.city}, ${s.state} · ${s.phone||d(8)}`;$("timezone-pill")!.textContent=s.timezone;$("location-note")!.textContent=`${s.address_line1?`${s.address_line1}, `:""}${s.city}, ${s.state}${s.postal_code?` ${s.postal_code}`:""}`;if(serviceSelect){serviceSelect.innerHTML=`<option value="">${staticText(8,"Select a service")}</option>`;for(const x of services){const o=document.createElement("option");o.value=x.id;o.textContent=`${x.name} · ${x.duration_minutes} ${d(16)}`;serviceSelect.append(o)}serviceSelect.disabled=!services.length}buildDates();$("booking-panel")?.classList.remove("hidden");if(!services.length)show(d(9))}
+serviceSelect?.addEventListener("change",()=>{if(dateSelect)dateSelect.value="";if(timeSelect){timeSelect.value="";timeSelect.disabled=true}clear();$("slot-state")!.textContent=staticText(13,"Choose a service and date to see availability.")});dateSelect?.addEventListener("change",()=>{clear();slots().catch(()=>show(d(10)))});
+form?.addEventListener("submit",async e=>{e.preventDefault();clear();if(!shop||!serviceSelect||!dateSelect||!timeSelect)return;const svc=selected();if(!svc)return show(d(11));submit!.disabled=true;try{const res=await fetch("/api/public/repair-booking",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({shop_slug:shop.slug,service_id:svc.id,appointment_date:dateSelect.value,start_time:timeSelect.value,client_name:$<HTMLInputElement>("client-name")?.value,client_email:$<HTMLInputElement>("client-email")?.value,client_phone:$<HTMLInputElement>("client-phone")?.value,vehicle_year:Number($<HTMLInputElement>("vehicle-year")?.value),vehicle_make:$<HTMLInputElement>("vehicle-make")?.value,vehicle_model:$<HTMLInputElement>("vehicle-model")?.value,mileage:$<HTMLInputElement>("vehicle-mileage")?.value||null,vin:$<HTMLInputElement>("vehicle-vin")?.value||null})}),x=await json(res);if(!res.ok||!x.success||!x.booking){if(x.error==="slot_unavailable"){show(d(12));await slots();return}show(friendly(x.error,13));return}last=x.booking;$("receipt-id")!.textContent=last.id;$("receipt-shop")!.textContent=last.shop_name;$("receipt-service")!.textContent=last.service_name;$("receipt-vehicle")!.textContent=`${last.vehicle.year} ${last.vehicle.make} ${last.vehicle.model}${last.vehicle.mileage==null?"":` · ${Number(last.vehicle.mileage).toLocaleString(L[locale])} mi`}`;$("receipt-date")!.textContent=locale==="en"?last.appointment_date:new Intl.DateTimeFormat(L[locale],{year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(`${last.appointment_date}T12:00:00Z`));$("receipt-time")!.textContent=`${ftime(last.start_time)} – ${ftime(last.end_time)} (${last.timezone})`;const si:{[k:string]:number}={confirmed:21,pending:22,in_progress:23,completed:24,cancelled:25,canceled:25};$("receipt-status")!.textContent=locale==="en"?String(last.status||"pending"):d(si[String(last.status).toLowerCase()]??22);$("success-summary")!.textContent=d(19,{name:last.client_name});$("booking-panel")?.classList.add("hidden");$("success-panel")?.classList.remove("hidden")}catch{show(d(14))}finally{submit!.disabled=false}});
+$("calendar-btn")?.addEventListener("click",()=>{if(!last)return;const c=(a:string,b:string)=>`${a.replaceAll("-","")}T${b.replace(":","")}00`,lines=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Hermes Connect//Repair Booking//EN","BEGIN:VEVENT",`UID:${last.id}@hermeslogisticsus.com`,`DTSTART;TZID=${last.timezone}:${c(last.appointment_date,last.start_time)}`,`DTEND;TZID=${last.timezone}:${c(last.appointment_date,last.end_time)}`,`SUMMARY:${last.service_name} - ${last.shop_name}`,`DESCRIPTION:${d(20,{id:last.id})}`,"END:VEVENT","END:VCALENDAR"],blob=new Blob([lines.join("\r\n")],{type:"text/calendar;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`${last.id}.ics`;a.click();URL.revokeObjectURL(url)});load().catch(()=>show(d(15)));
 </script>
-
 <style>
-  .booking-page{min-height:100vh;padding:116px 24px 80px;color:#f7f8fb;background:radial-gradient(circle at 12% 8%,rgba(124,92,255,.16),transparent 34%),radial-gradient(circle at 88% 16%,rgba(63,185,255,.1),transparent 28%),#090a0f}.shell{width:min(920px,100%);margin:auto}.back-link{display:inline-flex;align-items:center;gap:8px;color:#a7adba;text-decoration:none;font-weight:700;margin-bottom:28px}.hero{margin-bottom:26px}.eyebrow{margin:0 0 8px;color:#9e8cff;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:850}h1{margin:0 0 10px;font-size:clamp(34px,6vw,58px);line-height:1.02}h2{margin:0 0 8px;font-size:28px}.muted{margin:0;color:#a8adba;line-height:1.65}.panel,.trust-panel{border:1px solid rgba(255,255,255,.1);background:rgba(18,19,27,.88);box-shadow:0 22px 70px rgba(0,0,0,.28);backdrop-filter:blur(18px);border-radius:22px}.panel{padding:28px}.panel-heading{display:flex;justify-content:space-between;gap:22px;align-items:flex-start;margin-bottom:24px}.pill{padding:8px 11px;border-radius:999px;background:rgba(124,92,255,.14);border:1px solid rgba(157,136,255,.28);font-size:12px;font-weight:800;color:#d8d0ff}.booking-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{display:flex;flex-direction:column;gap:8px;color:#dfe2ea;font-size:13px;font-weight:750}.field input,.field select{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.11);border-radius:12px;padding:13px 14px;background:#10121a;color:#fff;font:inherit;outline:none}.field input:focus,.field select:focus{border-color:#8f78ff;box-shadow:0 0 0 3px rgba(143,120,255,.12)}.span-2{grid-column:1/-1}.divider{height:1px;background:rgba(255,255,255,.08);margin:2px 0}.section-label{display:flex;align-items:baseline;gap:10px;color:#f1f2f7}.section-label span{font-size:12px;color:#8f95a5;font-weight:500}.optional{color:#858b9a;font-size:11px;font-weight:600}.slot-state{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.035);color:#aab0bd;font-size:13px}.primary-btn,.secondary-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border-radius:12px;padding:13px 17px;font-weight:850;cursor:pointer}.primary-btn{border:0;background:linear-gradient(135deg,#8068ff,#5baef7);color:white}.primary-btn:disabled{opacity:.55;cursor:not-allowed}.secondary-btn{border:1px solid rgba(255,255,255,.12);background:#151722;color:#fff}.alert{padding:14px 16px;border:1px solid rgba(255,114,114,.25);background:rgba(180,42,42,.14);border-radius:14px;color:#ffc4c4;margin-bottom:20px}.hidden{display:none!important}.success-panel{text-align:center}.success-icon{color:#79e7b1;margin-bottom:12px}.receipt{margin:24px auto;max-width:680px;text-align:left;border-top:1px solid rgba(255,255,255,.08)}.receipt div{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08)}.receipt dt{color:#9096a6}.receipt dd{margin:0;color:#f7f8fb;font-weight:720;overflow-wrap:anywhere}.trust-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:20px;overflow:hidden}.trust-panel>div{display:flex;gap:10px;align-items:flex-start;padding:18px;background:rgba(255,255,255,.018);color:#adb3c0;font-size:13px;line-height:1.5}.trust-panel svg{flex:none;color:#9e8cff}@media(max-width:720px){.booking-page{padding:100px 16px 60px}.panel{padding:20px}.panel-heading{display:block}.pill{display:inline-block;margin-top:12px}.booking-form{grid-template-columns:1fr}.span-2{grid-column:auto}.section-label{display:block}.section-label span{display:block;margin-top:4px}.trust-panel{grid-template-columns:1fr}.receipt div{grid-template-columns:1fr;gap:4px}}
+.booking-page{min-height:100vh;padding:116px 24px 80px;color:#f7f8fb;background:radial-gradient(circle at 12% 8%,#7c5cff29,transparent 34%),radial-gradient(circle at 88% 16%,#3fb9ff1a,transparent 28%),#090a0f}.shell{width:min(920px,100%);margin:auto}.back-link{display:inline-flex;gap:8px;color:#a7adba;text-decoration:none;font-weight:700;margin-bottom:28px}.hero{margin-bottom:26px}.eyebrow{margin:0 0 8px;color:#9e8cff;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:850}h1{margin:0 0 10px;font-size:clamp(34px,6vw,58px);line-height:1.02}h2{margin:0 0 8px;font-size:28px}.muted{margin:0;color:#a8adba;line-height:1.65}.panel,.trust-panel{border:1px solid #ffffff1a;background:#12131be0;border-radius:22px}.panel{padding:28px}.panel-heading{display:flex;justify-content:space-between;gap:22px;align-items:flex-start;margin-bottom:24px}.pill{padding:8px 11px;border-radius:999px;background:#7c5cff24;border:1px solid #9d88ff47;font-size:12px;font-weight:800;color:#d8d0ff}.booking-form{display:grid;grid-template-columns:1fr 1fr;gap:18px}.field{display:flex;flex-direction:column;gap:8px;color:#dfe2ea;font-size:13px;font-weight:750}.field input,.field select{box-sizing:border-box;width:100%;border:1px solid #ffffff1c;border-radius:12px;padding:13px 14px;background:#10121a;color:#fff;font:inherit}.field input:focus,.field select:focus{border-color:#8f78ff;outline:3px solid #8f78ff1f}.span-2{grid-column:1/-1}.divider{height:1px;background:#ffffff14}.section-label{display:flex;align-items:baseline;gap:10px}.section-label span,.optional{font-size:12px;color:#8f95a5;font-weight:500}.slot-state{padding:12px 14px;border-radius:12px;background:#ffffff09;color:#aab0bd;font-size:13px}.primary-btn,.secondary-btn{display:inline-flex;justify-content:center;border-radius:12px;padding:13px 17px;font-weight:850;cursor:pointer}.primary-btn{border:0;background:linear-gradient(135deg,#8068ff,#5baef7);color:white}.primary-btn:disabled{opacity:.55}.secondary-btn{border:1px solid #ffffff1f;background:#151722;color:#fff}.alert{padding:14px 16px;border:1px solid #ff727240;background:#b42a2a24;border-radius:14px;color:#ffc4c4;margin-bottom:20px}.hidden{display:none!important}.success-panel{text-align:center}.success-icon{font-size:44px;color:#79e7b1}.receipt{margin:24px auto;max-width:680px;text-align:left;border-top:1px solid #ffffff14}.receipt div{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:13px 0;border-bottom:1px solid #ffffff14}.receipt dt{color:#9096a6}.receipt dd{margin:0;font-weight:720;overflow-wrap:anywhere}.trust-panel{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:20px;overflow:hidden}.trust-panel>div{padding:18px;background:#ffffff05;color:#adb3c0;font-size:13px;line-height:1.5}@media(max-width:720px){.booking-page{padding:100px 16px 60px}.panel{padding:20px}.panel-heading{display:block}.pill{display:inline-block;margin-top:12px}.booking-form,.trust-panel{grid-template-columns:1fr}.span-2{grid-column:auto}.section-label{display:block}.receipt div{grid-template-columns:1fr;gap:4px}}
 </style>
