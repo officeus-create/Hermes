@@ -6,9 +6,11 @@ on:
 
 permissions:
   contents: read
+  actions: read
+  checks: read
 
 concurrency:
-  group: repair-p0-production-proof-v2
+  group: repair-p0-production-proof
   cancel-in-progress: false
 
 jobs:
@@ -31,6 +33,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Wait for shared Repair Shop synthetic state
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/wait-repair-booking-synthetic-state.mjs
 
       - name: Install production proof dependencies
         run: npm ci
