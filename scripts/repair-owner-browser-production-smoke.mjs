@@ -107,8 +107,11 @@ async function verifyDashboard(page, label) {
     EMAIL,
     { timeout: 20_000 },
   );
-  const heading = await page.locator(".workspace-header h1").textContent();
-  if (heading?.trim() !== "Shop Owner Workspace") throw new Error(`${label} dashboard heading mismatch`);
+  await page.waitForFunction(
+    () => document.querySelector(".workspace-header h1")?.textContent?.trim() === "Repair Shop workspace",
+    null,
+    { timeout: 10_000 },
+  );
   await assertNoHorizontalOverflow(page, `${label} dashboard`);
 }
 
@@ -136,9 +139,6 @@ try {
   if (registered.status() !== 201) throw new Error(`Desktop UI registration failed (${registered.status()})`);
   await ga4CompletionDelivery;
   console.log("REPAIR_REGISTRATION_COMPLETE_GA4_DELIVERY_PASS=YES");
-  await desktopPage.waitForSelector("#auth-authenticated.active", { state: "visible", timeout: 15_000 });
-  if ((await desktopPage.locator("#user-email").textContent())?.trim() !== EMAIL) throw new Error("Desktop authenticated-session readback mismatch");
-  await desktopPage.locator(`#auth-authenticated a[href="${DASHBOARD}"]`).click();
   await verifyDashboard(desktopPage, "desktop");
   await desktop.close();
 
@@ -154,8 +154,6 @@ try {
   await mobilePage.locator("#login-form button[type='submit']").click();
   const loggedIn = await loginResponse;
   if (loggedIn.status() !== 200) throw new Error(`Mobile UI login failed (${loggedIn.status()})`);
-  await mobilePage.waitForSelector("#auth-authenticated.active", { state: "visible", timeout: 15_000 });
-  await mobilePage.locator(`#auth-authenticated a[href="${DASHBOARD}"]`).click();
   await verifyDashboard(mobilePage, "mobile-390");
 
   await mobilePage.locator("#feedback-category").selectOption("mobile");
