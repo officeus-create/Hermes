@@ -4,6 +4,7 @@ const BASE = "https://hermeslogisticsus.com";
 const REPAIR_ROOT = "/services/hermes-connect/repair-shops/";
 const AUTH = `${REPAIR_ROOT}auth/`;
 const DASHBOARD = `${REPAIR_ROOT}dashboard/`;
+const MEASUREMENT_ID = "G-RY26321PVW";
 const EMAIL = "repair-booking-production-smoke@hermesconnect.app";
 const runId = process.env.GITHUB_RUN_ID || `manual-${Date.now()}`;
 const PASSWORD = `HermesBrowser-${runId}-${Date.now()}-A9!`;
@@ -60,13 +61,43 @@ async function verifyLanding(page, label) {
   await assertNoHorizontalOverflow(page, `${label} landing`);
 }
 
+function ga4CollectPayload(request) {
+  try {
+    const url = new URL(request.url());
+    if (!url.hostname.endsWith("google-analytics.com") || !url.pathname.endsWith("/g/collect")) return null;
+    const payloads = [url.searchParams];
+    const body = request.postData();
+    if (body) {
+      for (const line of body.split(/\r?\n/).filter(Boolean)) payloads.push(new URLSearchParams(line));
+    }
+    return payloads;
+  } catch {
+    return null;
+  }
+}
+
+function isGa4CollectForStream(request) {
+  const payloads = ga4CollectPayload(request);
+  return Boolean(payloads?.some((params) => params.get("tid") === MEASUREMENT_ID));
+}
+
+function isGa4CompletionCollect(request) {
+  const payloads = ga4CollectPayload(request);
+  if (!payloads) return false;
+  const streamMatches = payloads.some((params) => params.get("tid") === MEASUREMENT_ID);
+  const eventMatches = payloads.some((params) => params.get("en") === "repair_shop_registration_complete");
+  return streamMatches && eventMatches;
+}
+
 async function allowAnalyticsForSyntheticProof(page) {
   const accept = page.locator("[data-consent-accept]");
   await accept.waitFor({ state: "visible", timeout: 15_000 });
+  const initialDelivery = page.waitForRequest(isGa4CollectForStream, { timeout: 15_000 });
   await accept.click();
   await page.waitForFunction(() => document.documentElement.dataset.analyticsConsent === "granted", null, { timeout: 10_000 });
   await page.waitForFunction(() => document.documentElement.dataset.analyticsTransport === "ga4", null, { timeout: 10_000 });
   await page.waitForSelector("script[data-hermes-ga4]", { state: "attached", timeout: 10_000 });
+  await initialDelivery;
 }
 
 async function verifyDashboard(page, label) {
@@ -98,16 +129,7 @@ try {
   await desktopPage.locator("#reg-email").fill(EMAIL);
   await desktopPage.locator("#reg-password").fill(PASSWORD);
   await desktopPage.locator("#reg-password-confirm").fill(PASSWORD);
-  const ga4CompletionDelivery = desktopPage.waitForRequest((request) => {
-    try {
-      const url = new URL(request.url());
-      return url.hostname.endsWith("google-analytics.com")
-        && url.pathname.endsWith("/g/collect")
-        && url.searchParams.get("en") === "repair_shop_registration_complete";
-    } catch {
-      return false;
-    }
-  }, { timeout: 15_000 });
+  const ga4CompletionDelivery = desktopPage.waitForRequest(isGa4CompletionCollect, { timeout: 15_000 });
   const registerResponse = desktopPage.waitForResponse((response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST");
   await desktopPage.locator("#register-form button[type='submit']").click();
   const registered = await registerResponse;
