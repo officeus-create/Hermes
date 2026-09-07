@@ -43,7 +43,7 @@ jobs:
               '' \
               "- ${1}" \
               '- Read-only audit only: no profile, account, access, registration, booking, customer, password, or session data was mutated.' \
-              '- No Cloudflare token, D1 database ID, raw account ID, unmasked email, password, or session value is published.' \
+              '- No Cloudflare token, D1 database ID, raw account ID, unmasked email, password, session value, or full owner name is published.' \
               > "$RESULT"
             exit 1
           }
@@ -140,8 +140,7 @@ jobs:
           jq '[.[] | select((.email//""|ascii_downcase|test("^(office|officeus)(\\+[^@]+)?@")) or (.name//""|ascii_downcase|test("volkogon")))]' "$TMP/rows.json" > "$TMP/office.json"
           jq --slurpfile names "$TMP/vadym-names.json" '
             def norm: ascii_downcase|gsub("[^a-z0-9]+";" ")|gsub("^ +| +$";"");
-            [.[] | . as $r
-              | ((.shop_name//"")|norm) as $shop
+            [.[] | ((.shop_name//"")|norm) as $shop
               | (([.name,.email,.salesperson_code,.source]|map(.//"")|join(" "))|ascii_downcase) as $attrib
               | select(($shop!="" and ($names[0]|index($shop))!=null) or ($attrib|test("vadim|vadym")))]
           ' "$TMP/rows.json" > "$TMP/vadym.json"
@@ -163,12 +162,12 @@ jobs:
               echo '- No matching production account/shop record found.'
               return
             fi
-            while IFS=$'\t' read -r name shop email role city state profile access plan source salesperson synthetic created updated last_session; do
+            while IFS=$'\t' read -r shop email role city state profile access source salesperson synthetic created updated last_session; do
               [ -n "$shop" ] || shop='(no shop profile)'
               email="$(mask_email "$email")"
-              printf -- '- **%s** · owner `%s` · %s · role `%s` · %s, %s · profile `%s` · access `%s` · plan `%s` · source `%s` · salesperson `%s` · synthetic `%s` · created `%s` · shop updated `%s` · last session `%s`\n' \
-                "$shop" "${name:-—}" "$email" "${role:-—}" "${city:-—}" "${state:-—}" "${profile:-0}" "${access:-—}" "${plan:-—}" "${source:-—}" "${salesperson:-—}" "${synthetic:-0}" "${created:-—}" "${updated:-—}" "${last_session:-—}"
-            done < <(jq -r '.[] | [(.name//""),(.shop_name//""),(.email//""),(.role//""),(.city//""),(.state//""),((.profile_complete//0)|tostring),(.access_state//""),(.plan_id//""),(.source//""),(.salesperson_code//""),((.synthetic//0)|tostring),(.created_at//""),(.shop_updated_at//""),(.last_session_at//"")] | @tsv' "$file")
+              printf -- '- **%s** · %s · role `%s` · %s, %s · profile `%s` · access `%s` · source `%s` · salesperson `%s` · synthetic `%s` · created `%s` · shop updated `%s` · last session `%s`\n' \
+                "$shop" "$email" "${role:-—}" "${city:-—}" "${state:-—}" "${profile:-0}" "${access:-—}" "${source:-—}" "${salesperson:-—}" "${synthetic:-0}" "${created:-—}" "${updated:-—}" "${last_session:-—}"
+            done < <(jq -r '.[] | [(.shop_name//""),(.email//""),(.role//""),(.city//""),(.state//""),((.profile_complete//0)|tostring),(.access_state//""),(.source//""),(.salesperson_code//""),((.synthetic//0)|tostring),(.created_at//""),(.shop_updated_at//""),(.last_session_at//"")] | @tsv' "$file")
           }
 
           {
@@ -184,7 +183,7 @@ jobs:
             echo '### Vadym-sheet / Vadim-attribution candidates'
             render_rows "$TMP/vadym.json"
             echo
-            echo '> Sanitized owner audit only. Raw D1 response is kept only in the ephemeral runner and is not uploaded as an artifact.'
+            echo '> Sanitized audit only. Raw D1 response stays in the ephemeral runner; no full owner name, raw account ID, unmasked email, or credential is published.'
           } > "$RESULT"
 
           rm -f "$TMP/rows.json" "$TMP/office.json" "$TMP/vadym.json" "$TMP/vadym-names.json" "$TMP/vadym-shops.txt"
@@ -198,4 +197,3 @@ jobs:
             gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
           else
             gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body $'## Hermes Connect cabinet audit — FAILED\n\nThe read-only audit stopped before a sanitized result was produced. No runtime records were changed.'
-          fi
