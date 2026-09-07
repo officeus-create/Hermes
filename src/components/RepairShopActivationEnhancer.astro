@@ -36,20 +36,16 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
         if (path !== `${root}/auth`) return;
 
         const params = new URLSearchParams(window.location.search);
-        const requested = params.get("lang") || document.documentElement.lang || "en";
-        const copy = {
-          en: { title:"Repair Shop access", subtitle:"Sign in or create your repair shop account to manage services, booking hours, appointments, and customers.", login:"Login", register:"Register New Shop", create:"Create Shop Account", dashboard:"Go to Shop Dashboard", forgot:"Forgot password?" },
-          ru: { title:"Доступ владельца СТО", subtitle:"Войдите или создайте аккаунт СТО, чтобы управлять услугами, часами записи, заявками и клиентами.", login:"Войти", register:"Зарегистрировать СТО", create:"Создать аккаунт СТО", dashboard:"Перейти в кабинет СТО", forgot:"Забыли пароль?" },
-          uk: { title:"Доступ власника СТО", subtitle:"Увійдіть або створіть акаунт СТО, щоб керувати послугами, годинами запису, заявками та клієнтами.", login:"Увійти", register:"Зареєструвати СТО", create:"Створити акаунт СТО", dashboard:"Перейти до кабінету СТО", forgot:"Забули пароль?" },
-          es: { title:"Acceso del propietario del taller", subtitle:"Inicia sesión o crea la cuenta del taller para gestionar servicios, horarios, citas y clientes.", login:"Iniciar sesión", register:"Registrar taller", create:"Crear cuenta del taller", dashboard:"Ir al panel del taller", forgot:"¿Olvidaste tu contraseña?" },
-          it: { title:"Accesso proprietario officina", subtitle:"Accedi o crea l’account dell’officina per gestire servizi, orari, appuntamenti e clienti.", login:"Accedi", register:"Registra officina", create:"Crea account officina", dashboard:"Vai al pannello officina", forgot:"Password dimenticata?" },
-          fr: { title:"Accès propriétaire d’atelier", subtitle:"Connectez-vous ou créez le compte de l’atelier pour gérer services, horaires, rendez-vous et clients.", login:"Connexion", register:"Inscrire un atelier", create:"Créer le compte de l’atelier", dashboard:"Accéder au tableau de bord", forgot:"Mot de passe oublié ?" },
+        const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+        const requested = (params.get("lang") || document.documentElement.lang || "en").toLowerCase();
+        const locale = supported.has(requested) ? requested : "en";
+        const withLocale = (href) => {
+          const url = new URL(href, window.location.origin);
+          if (locale === "en") url.searchParams.delete("lang");
+          else url.searchParams.set("lang", locale);
+          return `${url.pathname}${url.search}${url.hash}`;
         };
-        const locale = Object.prototype.hasOwnProperty.call(copy, requested) ? requested : "en";
-        const t = copy[locale];
-        const dashboardUrl = new URL(`${root}/dashboard/`, window.location.origin);
-        if (locale !== "en") dashboardUrl.searchParams.set("lang", locale);
-        const dashboardHref = `${dashboardUrl.pathname}${dashboardUrl.search}`;
+        const dashboardHref = withLocale(`${root}/dashboard/`);
         let redirectingToCrm = false;
 
         const enterCrmIfAuthenticated = () => {
@@ -61,24 +57,8 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
         };
 
         const apply = () => {
-          const title = document.querySelector("#auth-forms .auth-header h1");
-          const subtitle = document.querySelector("#auth-forms .auth-header .auth-subtitle");
-          const loginTab = document.querySelector('[data-tab="login"]');
           const registerTab = document.querySelector('[data-tab="register"]');
-          const createButton = document.querySelector("#register-form button[type='submit']");
-          const dashboardLink = document.querySelector("#auth-authenticated .auth-actions a[href*='/dashboard/']");
           const loginForm = document.querySelector("#login-form");
-
-          if (title) title.textContent = t.title;
-          if (subtitle) subtitle.textContent = t.subtitle;
-          if (loginTab) loginTab.textContent = t.login;
-          if (registerTab) registerTab.textContent = t.register;
-          if (createButton) createButton.textContent = t.create;
-          if (dashboardLink) {
-            dashboardLink.textContent = t.dashboard;
-            dashboardLink.setAttribute("href", dashboardHref);
-          }
-
           if (loginForm) {
             let forgotLink = loginForm.querySelector("[data-repair-forgot-password]");
             if (!(forgotLink instanceof HTMLAnchorElement)) {
@@ -89,22 +69,14 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
               if (submitButton) loginForm.insertBefore(forgotLink, submitButton);
               else loginForm.appendChild(forgotLink);
             }
-            forgotLink.textContent = t.forgot;
-            const forgotUrl = new URL(`${root}/forgot-password/`, window.location.origin);
-            if (locale !== "en") forgotUrl.searchParams.set("lang", locale);
-            forgotLink.href = `${forgotUrl.pathname}${forgotUrl.search}`;
+            forgotLink.href = withLocale(`${root}/forgot-password/`);
           }
-
-          if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) {
-            registerTab.click();
-          }
+          if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) registerTab.click();
           enterCrmIfAuthenticated();
         };
 
         const authenticated = document.getElementById("auth-authenticated");
-        if (authenticated) {
-          new MutationObserver(enterCrmIfAuthenticated).observe(authenticated, { attributes:true, attributeFilter:["class"] });
-        }
+        if (authenticated) new MutationObserver(enterCrmIfAuthenticated).observe(authenticated, { attributes:true, attributeFilter:["class"] });
         apply();
         window.setTimeout(apply, 80);
       })();
@@ -140,9 +112,6 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
   #public-link-wrap .link-actions{flex-wrap:wrap}
   #public-link-wrap .link-actions>*{min-width:0;max-width:100%;white-space:normal}
 
-  /* Repair Shop mobile drawer follows the Pearl Connect header. This late cascade
-     belongs to the canonical Repair Shop loader so legacy/global header rules cannot
-     leave white navigation text on the light drawer. */
   html.hc-experience .site-header .menu-button{color:#111827!important}
   html.hc-experience .site-header .mobile-nav{color:#111827!important;border-color:rgba(17,24,39,.10)!important;background:rgba(247,246,243,.985)!important;box-shadow:0 22px 70px rgba(17,24,39,.18)}
   html.hc-experience .site-header .mobile-nav>a{color:#111827!important;border-bottom-color:rgba(17,24,39,.08);transition:none!important}
