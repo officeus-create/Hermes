@@ -133,8 +133,44 @@ for (const page of pages) {
   }
 }
 
+// Repair Shop is query-localized inside one private product route tree. Translation
+// ownership lives in the shared secondary i18n runtime; the demo bootstrap owns only
+// synthetic-data isolation and demo/preview query propagation. Audit both owners so
+// future polish cannot silently move translations back into the demo data layer.
+const repairShopI18n = await readFile(join(root, "public/hermes-connect-repair-owner-secondary-i18n.js"), "utf8");
+const repairShopDemo = await readFile(join(root, "public/repair-shop-local-demo.js"), "utf8");
+const repairShopLocales = ["en", "ru", "uk", "es", "it", "fr"];
+for (const locale of repairShopLocales) {
+  if (!repairShopI18n.includes(`${locale}: {`) && !repairShopI18n.includes(`${locale}:{`) && !repairShopI18n.includes(`${locale}:[`)) {
+    errors.push(`Repair Shop i18n runtime: canonical locale is missing: ${locale}`);
+  }
+}
+const repairShopI18nMarkers = [
+  'url.searchParams.set("lang",locale)',
+  'Доступ владельца СТО',
+  'Повторите пароль',
+  'ПРЕДПРОСМОТР · синтетические данные',
+  'Доступ власника СТО',
+  'Acceso del propietario del taller',
+  'Accesso proprietario officina',
+  'Accès propriétaire d’atelier',
+  'data-local-demo-badge',
+];
+for (const marker of repairShopI18nMarkers) {
+  if (!repairShopI18n.includes(marker)) errors.push(`Repair Shop i18n runtime: localization parity marker is missing: ${marker}`);
+}
+const repairShopDemoMarkers = [
+  'url.searchParams.set("demo", "1")',
+  'url.searchParams.set("preview", "1")',
+  'data-local-demo-badge',
+  'publicPreview',
+];
+for (const marker of repairShopDemoMarkers) {
+  if (!repairShopDemo.includes(marker)) errors.push(`Repair Shop demo bootstrap: safety/query marker is missing: ${marker}`);
+}
+
 if (errors.length) {
   throw new Error(`Localization content audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Localization content audit passed: ${pages.length} localized pages have unique metadata, localized labels, natural CTAs, locale-safe links, and no known English UI leakage.`);
+console.log(`Localization content audit passed: ${pages.length} localized pages plus Repair Shop EN/RU/UK/ES/IT/FR query-localized auth/Preview parity have locale-safe content and links.`);

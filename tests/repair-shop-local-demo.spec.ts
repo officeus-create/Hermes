@@ -6,7 +6,9 @@ test.describe("Repair Shop synthetic demonstration mode", () => {
   test("renders a complete synthetic Russian workspace without a real session", async ({ page }) => {
     await page.goto(demo, { waitUntil: "domcontentloaded" });
 
-    await expect(page.getByText("LOCAL DEMO · synthetic data")).toBeVisible();
+    const demoBadge = page.locator("[data-local-demo-badge]");
+    await expect(demoBadge).toBeVisible();
+    await expect(demoBadge).toHaveText("ЛОКАЛЬНОЕ ДЕМО · синтетические данные");
     await expect(page.locator('link[data-repair-shop-design-polish]')).toHaveAttribute("href", "/repair-shop-design-polish.css");
     await expect(page.locator("#customer-count")).toHaveText("12 клиентов");
     await expect(page.getByRole("button", { name: "Открыть клиента" }).first()).toBeVisible();
