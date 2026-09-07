@@ -59,8 +59,10 @@ test("carrier handoff is counted once only after a reviewed preview and explicit
       capture: true,
     });
   });
+  // The first normal click proves the CTA is genuinely actionable. The second trusted click only verifies
+  // analytics deduplication, so bypass repeated actionability geometry after the first click auto-scrolls.
   await emailLink.click();
-  await emailLink.click();
+  await emailLink.click({ force: true });
 
   await expect.poll(async () => (await analyticsEvents(page, "carrier_handoff_ready")).length).toBe(1);
   const handoff = (await analyticsEvents(page, "carrier_handoff_ready"))[0];
