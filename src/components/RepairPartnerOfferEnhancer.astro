@@ -6,10 +6,11 @@ const isRepairShopSurface = isRepairShopPage || normalizedPath.startsWith(`${rep
 const isRepairShopDashboard = normalizedPath === `${repairShopPath}/dashboard`;
 
 const repairGeoMarkets = [
-  { name: "South Florida / Miami", tier: "P0", note: "First-wave automotive acquisition market" },
-  { name: "Atlanta", tier: "P0", note: "First-wave automotive acquisition market" },
-  { name: "Orlando / Central Florida", tier: "P0", note: "First-wave automotive acquisition market" },
-  { name: "Chicago", tier: "P0", note: "First-wave automotive acquisition market" },
+  { name: "Little Rock", tier: "Pilot", note: "Arkansas Phase-1 operating zone" },
+  { name: "Fayetteville", tier: "Pilot", note: "Arkansas Phase-1 operating zone" },
+  { name: "Fort Smith", tier: "Pilot", note: "Arkansas Phase-1 operating zone" },
+  { name: "Jonesboro", tier: "Pilot", note: "Arkansas Phase-1 operating zone" },
+  { name: "Conway", tier: "Pilot", note: "Arkansas Phase-1 operating zone" },
 ];
 ---
 
@@ -48,11 +49,11 @@ const repairGeoMarkets = [
 
     <section class="repair-geo-growth" aria-labelledby="repair-geo-growth-title">
       <div class="repair-geo-growth-shell">
-        <p class="repair-geo-kicker">Hermes Connect · Automotive growth markets</p>
-        <h2 id="repair-geo-growth-title">Set up the shop workflow where Hermes is concentrating automotive demand.</h2>
-        <p class="repair-geo-intro">Hermes is using the same first-wave U.S. markets for car-hauling carrier acquisition, dealer transportation demand, and automotive-service growth. Repair businesses can register for Hermes Connect first, then separately review Local SEO, broader SEO, or website development when they need more customers to find the business online.</p>
+        <p class="repair-geo-kicker">Hermes Connect · Arkansas First-5 pilot</p>
+        <h2 id="repair-geo-growth-title">Prove the Repair Shop workflow with real Arkansas businesses first.</h2>
+        <p class="repair-geo-intro">The current Hermes Connect Repair Shops operating pilot is Arkansas. The Phase-1 zones below are for real-shop acquisition, product-use evidence, and measurement. They are intentionally separate from the car-hauling automotive GEO markets. Repair businesses can register for Hermes Connect first, then separately review Local SEO, broader SEO, or website development when they need more customers to find the business online.</p>
 
-        <div class="repair-geo-market-grid" aria-label="Current P0 automotive markets">
+        <div class="repair-geo-market-grid" aria-label="Current Arkansas Phase-1 operating zones">
           {repairGeoMarkets.map((market) => (
             <article>
               <span>{market.tier}</span>
@@ -62,7 +63,7 @@ const repairGeoMarkets = [
           ))}
         </div>
 
-        <p class="repair-geo-next"><strong>Next validation group:</strong> Phoenix, Houston, Los Angeles / Orange County, and Inland Empire.</p>
+        <p class="repair-geo-next"><strong>Expansion rule:</strong> prove one state deeply, then clone the operating machine. A non-Arkansas market is not part of the current First-5 cohort unless a new owner decision explicitly changes the pilot.</p>
         <p class="repair-geo-fit"><strong>Current product-fit boundary:</strong> the Repair Shops workflow is represented for independent auto repair, truck / diesel repair, mobile mechanics, tire service, and body / collision businesses. Other automotive-service categories are not represented as supported until their workflow is reviewed against the product.</p>
 
         <div class="repair-geo-actions" aria-label="Repair shop growth actions">
@@ -72,7 +73,7 @@ const repairGeoMarkets = [
           <a href="/services/seo/">SEO services</a>
         </div>
 
-        <small class="repair-geo-boundary">A priority market is an acquisition and measurement focus. It does not mean Hermes has a local office there and does not guarantee rankings, map visibility, bookings, customers, transportation volume, or revenue.</small>
+        <small class="repair-geo-boundary">A pilot operating zone is an acquisition and measurement focus. It does not mean Hermes has a local office there and does not guarantee rankings, map visibility, bookings, customers, transportation volume, or revenue.</small>
       </div>
     </section>
   </>
