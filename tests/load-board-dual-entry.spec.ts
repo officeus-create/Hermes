@@ -20,7 +20,9 @@ test("Load Board starts with two plain-language entry choices and keeps the live
   await expect(page.locator("[data-primary-entry]")).toHaveCount(2);
   await expect(page.getByText("Customer → Hermes → Carrier", { exact: true })).toBeVisible();
   await expect(page.getByText(/Live \+ demo split:/i)).toBeVisible();
-  await expect(page.getByText(/approved active records appear in the Live marketplace section/i)).toBeVisible();
+  await expect(page.getByText(/Live marketplace shows only approved, active, unexpired public records/i)).toBeVisible();
+  await expect(page.getByText(/may show zero/i).first()).toBeVisible();
+  await expect(page.getByText(/Demo cards below are fictional and non-bookable/i)).toBeVisible();
 });
 
 test("broker path remains available without competing with the two primary choices", async ({ page }) => {
