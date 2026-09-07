@@ -16,6 +16,10 @@ const technologyExpectationReplacements = new Map([
   ["Defined prototype scope · Simulated data and test booking only", "Current live scope · Repair Shops Web V1 · authenticated owner workspace and persisted operating data"],
   ["No public Hermes Connect app, account, booking, payment, calendar, or integration is live yet", "Repair Shops is the current live pilot. Other verticals and modules are not presented as live until separately verified."],
 ]);
+const loadBoardExpectationReplacements = new Map([
+  ["Car Hauling Loads &amp; Load Board Preview", "Car Hauling Load Board | Live Feed + Demo Review"],
+  ["Dry-run only", "Source-gated live + demo"],
+]);
 
 const legacySource = await readFile(legacyValidatorUrl, "utf8");
 const retiredExpectationCount = legacySource.split(retiredEmail).length - 1;
@@ -46,6 +50,16 @@ for (const [legacyExpectation, currentExpectation] of technologyExpectationRepla
     count,
     1,
     `Expected exactly one historical Technology expectation for ${legacyExpectation}, found ${count}. Update the compatibility runner intentionally if the legacy validator changes.`,
+  );
+  currentSource = currentSource.replace(legacyExpectation, currentExpectation);
+}
+
+for (const [legacyExpectation, currentExpectation] of loadBoardExpectationReplacements) {
+  const count = currentSource.split(legacyExpectation).length - 1;
+  assert.equal(
+    count,
+    1,
+    `Expected exactly one historical Load Board expectation for ${legacyExpectation}, found ${count}. Update the compatibility runner intentionally if the legacy validator changes.`,
   );
   currentSource = currentSource.replace(legacyExpectation, currentExpectation);
 }
