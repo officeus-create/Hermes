@@ -1,0 +1,181 @@
+name: Audit Hermes Connect cabinets
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    if: >-
+      github.event.issue.number == 671 &&
+      github.event.comment.body == '/audit-hc-cabinets' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CEO_QA_EMAIL: officeus+hc-owner-qa-v3-20260818@hermeslogisticsus.com
+      BASE_URL: https://hermeslogisticsus.com
+
+    steps:
+      - name: Read exact production cabinet state through owner-only API
+        shell: bash
+        run: |
+          set -euo pipefail
+          TMP="${RUNNER_TEMP}/hc-cabinet-audit"
+          COOKIE="${TMP}/session.cookies"
+          RESULT="${TMP}/result.md"
+          mkdir -p "$TMP"
+          chmod 700 "$TMP"
+
+          fail() {
+            printf '%s\n' \
+              '## Hermes Connect cabinet audit — FAILED' \
+              '' \
+              "- ${1}" \
+              '- No profile, account, access, registration, booking, or customer data was mutated.' \
+              '- No password, token, session cookie, or private customer identifier is published.' \
+              > "$RESULT"
+            exit 1
+          }
+
+          github_get() {
+            local url="$1" output="$2"
+            curl -fsSL --retry 3 --retry-all-errors --retry-delay 2 --connect-timeout 10 --max-time 25 \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H 'Accept: application/vnd.github+json' \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "$url" -o "$output"
+          }
+
+          ARTIFACTS_JSON="${TMP}/artifacts.json"
+          github_get "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts?name=hermes-connect-ceo-owner-qa&per_page=100" "$ARTIFACTS_JSON" \
+            || fail 'CEO QA credential artifact inventory could not be read.'
+          mapfile -t ARTIFACT_IDS < <(jq -r '.artifacts | sort_by(.created_at) | reverse | .[] | select(.expired == false) | .id' "$ARTIFACTS_JSON")
+          [ "${#ARTIFACT_IDS[@]}" -gt 0 ] || fail 'No unexpired CEO QA credential artifact remains.'
+
+          CREDENTIAL_FILE=''
+          for ARTIFACT_ID in "${ARTIFACT_IDS[@]}"; do
+            CANDIDATE_DIR="${TMP}/artifact-${ARTIFACT_ID}"
+            ZIP="${TMP}/artifact-${ARTIFACT_ID}.zip"
+            mkdir -p "$CANDIDATE_DIR"
+            github_get "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" "$ZIP" || continue
+            unzip -qq -o "$ZIP" -d "$CANDIDATE_DIR" || continue
+            CANDIDATE="$(find "$CANDIDATE_DIR" -type f -name credentials.txt -print -quit)"
+            if [ -n "$CANDIDATE" ] && grep -Fqx "Email: ${CEO_QA_EMAIL}" "$CANDIDATE"; then
+              CREDENTIAL_FILE="$CANDIDATE"
+              break
+            fi
+          done
+          [ -n "$CREDENTIAL_FILE" ] || fail 'Exact CEO QA credential artifact was not found.'
+          PASSWORD="$(sed -n 's/^Password: //p' "$CREDENTIAL_FILE" | head -n 1)"
+          [ -n "$PASSWORD" ] || fail 'Matched CEO QA credential artifact is incomplete.'
+          echo "::add-mask::$PASSWORD"
+
+          LOGIN_PAYLOAD="$(jq -nc --arg email "$CEO_QA_EMAIL" --arg password "$PASSWORD" '{email:$email,password:$password}')"
+          LOGIN_HTTP="$(curl -fsS --retry 2 --retry-all-errors --retry-delay 1 --connect-timeout 10 --max-time 30 \
+            -o "$TMP/login.json" -w '%{http_code}' -c "$COOKIE" -H 'Content-Type: application/json' \
+            --data-binary "$LOGIN_PAYLOAD" "$BASE_URL/api/auth/login" || printf 000)"
+          [ "$LOGIN_HTTP" = 200 ] && [ "$(jq -r '.success // false' "$TMP/login.json" 2>/dev/null)" = true ] \
+            || fail 'CEO QA production login did not succeed.'
+
+          LEDGER_HTTP="$(curl -fsS --connect-timeout 10 --max-time 30 -o "$TMP/ledger.json" -w '%{http_code}' \
+            -b "$COOKIE" -H 'Accept: application/json' "$BASE_URL/api/internal/registrations" || printf 000)"
+          if [ "$LEDGER_HTTP" = 403 ]; then
+            fail 'CEO QA identity is authenticated but does not currently hold HERMES_INTERNAL_OWNER capability.'
+          fi
+          [ "$LEDGER_HTTP" = 200 ] && [ "$(jq -r '.success // false' "$TMP/ledger.json" 2>/dev/null)" = true ] \
+            || fail "Owner registration ledger returned HTTP ${LEDGER_HTTP}."
+
+          cat > "$TMP/vadym-shops.txt" <<'EOF'
+          Joe's Auto Repair
+          Arkansas Automotive
+          Arkansas Auto Repair
+          HCS Auto Repair
+          The KAR Shop
+          First Call mobile Mechanic Automotive Service
+          George Barton's Auto Shop
+          Bear mountain Automotive LLC
+          Weber Automotive Repairs
+          Garage Thirty
+          Titan Auto Shop
+          Bill's Automotive Repair Shop
+          Advanced Automotive Shop
+          Conway Collision Center
+          KK Performance Colony West Conoco Automotive
+          Pinnacle Automotive
+          Freyaldenhoven Automotive
+          Skyline Automotive
+          Parkway Automotive
+          Cantrell Service Center
+          Joes Garage
+          Coleman & Son Automotive
+          Fosters Garage
+          Halter's Body Shop
+          Reverse Collision
+          EOF
+          sed -i 's/^          //' "$TMP/vadym-shops.txt"
+
+          normalize='def norm: ascii_downcase | gsub("[^a-z0-9]+"; " ") | gsub("^ +| +$"; "");'
+          jq "$normalize [.registrations[] | select((.email // "" | ascii_downcase) == "officeus@hermeslogisticsus.com" or (.email // "" | ascii_downcase | startswith("office@")))]" "$TMP/ledger.json" > "$TMP/office.json"
+
+          jq -Rn '[inputs | select(length>0) | ascii_downcase | gsub("[^a-z0-9]+"; " ") | gsub("^ +| +$"; "")]' < "$TMP/vadym-shops.txt" > "$TMP/vadym-names.json"
+          jq --slurpfile names "$TMP/vadym-names.json" "$normalize [.registrations[] | . as $r | ((.shop_name // "") | norm) as $shop | (([.salesperson_code,.source,.email] | map(. // "") | join(" ")) | ascii_downcase) as $attrib | select(($shop != "" and ($names[0] | index($shop)) != null) or ($attrib | test("vadim|vadym")))]" "$TMP/ledger.json" > "$TMP/vadym.json"
+
+          mask_email() {
+            local email="$1"
+            if [[ "$email" == *@* ]]; then
+              local localpart="${email%@*}" domain="${email#*@}"
+              printf '%s***@%s' "${localpart:0:1}" "$domain"
+            else
+              printf '—'
+            fi
+          }
+
+          render_rows() {
+            local file="$1"
+            local count
+            count="$(jq 'length' "$file")"
+            if [ "$count" = 0 ]; then
+              echo '- No matching runtime registration found.'
+              return
+            fi
+            while IFS=$'\t' read -r shop email role profile access source salesperson synthetic last_session; do
+              [ -n "$shop" ] || shop='(no shop profile)'
+              email="$(mask_email "$email")"
+              printf -- '- **%s** · %s · role `%s` · profile `%s` · access `%s` · source `%s` · salesperson `%s` · synthetic `%s` · last session `%s`\n' \
+                "$shop" "$email" "${role:-—}" "${profile:-0}" "${access:-—}" "${source:-—}" "${salesperson:-—}" "${synthetic:-0}" "${last_session:-—}"
+            done < <(jq -r '.[] | [(.shop_name//""),(.email//""),(.role//""),((.profile_complete//0)|tostring),(.access_state//""),(.source//""),(.salesperson_code//""),((.synthetic//0)|tostring),(.last_session_at//"")] | @tsv' "$file")
+          }
+
+          {
+            echo '## Hermes Connect cabinet audit — PASS'
+            echo
+            echo '- Production auth: PASS.'
+            echo '- HERMES_INTERNAL_OWNER ledger access: PASS.'
+            echo "- Registration ledger rows loaded: **$(jq '.registrations | length' "$TMP/ledger.json")**."
+            echo
+            echo '### Office identity match'
+            render_rows "$TMP/office.json"
+            echo
+            echo '### Vadym-sheet / Vadim-attribution matches'
+            render_rows "$TMP/vadym.json"
+            echo
+            echo '> Read-only audit only. No runtime records were changed and no unmasked private email or credential was published.'
+          } > "$RESULT"
+
+      - name: Publish sanitized audit result
+        if: always()
+        shell: bash
+        run: |
+          RESULT="${RUNNER_TEMP}/hc-cabinet-audit/result.md"
+          if [ -f "$RESULT" ]; then
+            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body-file "$RESULT"
+          else
+            gh issue comment 671 --repo "$GITHUB_REPOSITORY" --body $'## Hermes Connect cabinet audit — FAILED\n\nThe audit stopped before a sanitized result was produced. No runtime records were changed.'
+          fi
