@@ -1,0 +1,30 @@
+name: Repair Shop P0 proof v2 contract
+
+on:
+  pull_request:
+    paths:
+      - scripts/repair-p0-production-proof-v2.mjs
+      - scripts/repair-p0-production-proof-v2-contract.test.mjs
+      - .github/workflows/repair-p0-production-proof-v2-command.yml
+      - .github/workflows/repair-p0-production-proof-v2-contract.yml
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out proposed revision
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Validate verifier syntax
+        run: node --check scripts/repair-p0-production-proof-v2.mjs
+
+      - name: Validate verifier safety and scope contract
+        run: node scripts/repair-p0-production-proof-v2-contract.test.mjs
