@@ -82,6 +82,25 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
         window.setTimeout(apply, 80);
       })();
     </script>
+    <script is:inline>
+      (() => {
+        const supported = new Set(["en", "ru", "uk", "es", "it", "fr"]);
+        const repairLanguageTargets = () => {
+          const current = new URL(window.location.href);
+          document.querySelectorAll("[data-language-menu] a[lang], .mobile-language-switcher a[lang]").forEach((node) => {
+            if (!(node instanceof HTMLAnchorElement)) return;
+            const target = (node.getAttribute("lang") || "en").toLowerCase();
+            if (!supported.has(target)) return;
+            const next = new URL(current.href);
+            if (target === "en") next.searchParams.delete("lang");
+            else next.searchParams.set("lang", target);
+            node.setAttribute("href", `${next.pathname}${next.search}${next.hash}`);
+          });
+        };
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", repairLanguageTargets, { once:true });
+        else repairLanguageTargets();
+      })();
+    </script>
   </>
 )}
 
