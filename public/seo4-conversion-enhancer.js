@@ -39,45 +39,17 @@
     "/paths/logistics/": "logistics_hub_carrier_review",
   };
   const repairShopRoot = "/services/hermes-connect/repair-shops/";
-  let repairRegistrationObserver = null;
-  let repairRegistrationTimeout = 0;
 
-  const stopRepairRegistrationWatch = () => {
-    repairRegistrationObserver?.disconnect();
-    repairRegistrationObserver = null;
-    if (repairRegistrationTimeout) window.clearTimeout(repairRegistrationTimeout);
-    repairRegistrationTimeout = 0;
-  };
-
-  const armRepairRegistrationComplete = () => {
-    const authenticated = document.getElementById("auth-authenticated");
-    const alertBox = document.getElementById("alert-box");
-    if (!(authenticated instanceof HTMLElement) || !(alertBox instanceof HTMLElement)) return;
-    stopRepairRegistrationWatch();
-    let sent = false;
-    const settleRegistrationAttempt = () => {
-      if (!alertBox.classList.contains("hidden") && alertBox.classList.contains("error")) {
-        stopRepairRegistrationWatch();
-        return;
-      }
-      if (sent || !authenticated.classList.contains("active")) return;
-      sent = true;
-      stopRepairRegistrationWatch();
-      pushEvent({
-        event: "repair_shop_registration_complete",
-        audience_type: "repair_business",
-        page_group: "hermes_connect_repair",
-        service_group: "repair_shop_software",
-        page_path: window.location.pathname,
-        destination_path: `${repairShopRoot}dashboard/`,
-      });
-    };
-    repairRegistrationObserver = new MutationObserver(settleRegistrationAttempt);
-    repairRegistrationObserver.observe(authenticated, { attributes: true, attributeFilter: ["class"] });
-    repairRegistrationObserver.observe(alertBox, { attributes: true, attributeFilter: ["class"], childList: true });
-    repairRegistrationTimeout = window.setTimeout(stopRepairRegistrationWatch, 15_000);
-    settleRegistrationAttempt();
-  };
+  window.addEventListener("hermes:repair-registration-complete", () => {
+    pushEvent({
+      event: "repair_shop_registration_complete",
+      audience_type: "repair_business",
+      page_group: "hermes_connect_repair",
+      service_group: "repair_shop_software",
+      page_path: `${repairShopRoot}auth/`,
+      destination_path: `${repairShopRoot}dashboard/`,
+    });
+  }, { once: true });
 
   refreshLoadBoardDemoLabels();
 
@@ -164,6 +136,5 @@
       page_path: window.location.pathname,
       destination_path: `${repairShopRoot}dashboard/`,
     });
-    armRepairRegistrationComplete();
   });
 })();
