@@ -1,0 +1,42 @@
+name: Repair Shop P0 production proof v2
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repair-p0-production-proof-v2
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: >-
+      github.event.issue.number == 510 &&
+      github.event.comment.body == '/verify-repair-p0-production-v2' &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    name: Verify current-main Repair Shop P0 end to end
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact current main revision
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install production proof dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify bounded current-main Repair Shop P0 loop
+        run: node scripts/repair-p0-production-proof-v2.mjs
