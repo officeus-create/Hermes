@@ -17,11 +17,14 @@ test("direct demand network is a canonical public page with real customer and ca
   await expect(page.locator('a[href="/logistics/start-car-hauling-dispatch/"]').first()).toBeVisible();
 });
 
-test("direct demand network separates real request flow from the fictional Load Board and avoids guarantees", async ({ page }) => {
+test("direct demand network separates real request flow from the mixed-mode Load Board and avoids guarantees", async ({ page }) => {
   await page.goto(route);
 
   const body = (await page.locator("main").textContent()) ?? "";
-  expect(body).toMatch(/The public Load Board is a fictional product preview/i);
+  expect(body).toMatch(/The public Hermes Load Board is a separate mixed-mode product surface/i);
+  expect(body).toMatch(/source-gated Live marketplace can display approved active public records/i);
+  expect(body).toMatch(/may show zero/i);
+  expect(body).toMatch(/demo cards remain fictional and non-bookable/i);
   expect(body).toMatch(/does not guarantee direct loads, customer demand, a route page, ranking, rate, mileage, utilization, or revenue/i);
   expect(body).toMatch(/Private carrier lanes and shipment records are not automatically published/i);
   expect(body).not.toMatch(/guaranteed direct loads|guaranteed rankings|rank in 2.?3 months|get direct loads in 2.?3 months/i);
