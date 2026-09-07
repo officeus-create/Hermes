@@ -39,6 +39,39 @@
     "/paths/logistics/": "logistics_hub_carrier_review",
   };
   const repairShopRoot = "/services/hermes-connect/repair-shops/";
+  let repairRegistrationObserver = null;
+  let repairRegistrationTimeout = 0;
+
+  const stopRepairRegistrationWatch = () => {
+    repairRegistrationObserver?.disconnect();
+    repairRegistrationObserver = null;
+    if (repairRegistrationTimeout) window.clearTimeout(repairRegistrationTimeout);
+    repairRegistrationTimeout = 0;
+  };
+
+  const armRepairRegistrationComplete = () => {
+    const authenticated = document.getElementById("auth-authenticated");
+    if (!(authenticated instanceof HTMLElement)) return;
+    stopRepairRegistrationWatch();
+    let sent = false;
+    const emitWhenAuthenticated = () => {
+      if (sent || !authenticated.classList.contains("active")) return;
+      sent = true;
+      stopRepairRegistrationWatch();
+      pushEvent({
+        event: "repair_shop_registration_complete",
+        audience_type: "repair_business",
+        page_group: "hermes_connect_repair",
+        service_group: "repair_shop_software",
+        page_path: window.location.pathname,
+        destination_path: `${repairShopRoot}dashboard/`,
+      });
+    };
+    repairRegistrationObserver = new MutationObserver(emitWhenAuthenticated);
+    repairRegistrationObserver.observe(authenticated, { attributes: true, attributeFilter: ["class"] });
+    repairRegistrationTimeout = window.setTimeout(stopRepairRegistrationWatch, 15_000);
+    emitWhenAuthenticated();
+  };
 
   refreshLoadBoardDemoLabels();
 
@@ -125,5 +158,6 @@
       page_path: window.location.pathname,
       destination_path: `${repairShopRoot}dashboard/`,
     });
+    armRepairRegistrationComplete();
   });
 })();
