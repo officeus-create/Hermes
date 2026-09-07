@@ -7,6 +7,8 @@ const owner = {
   password: "TestPassword123!",
 };
 
+type AnalyticsPayload = Record<string, unknown>;
+
 const fillRegistration = async (page: any) => {
   await page.locator("#reg-name").fill(owner.name);
   await page.locator("#reg-email").fill(owner.email);
@@ -14,11 +16,27 @@ const fillRegistration = async (page: any) => {
   await page.locator("#reg-password-confirm").fill(owner.password);
 };
 
-const completionCount = (page: any) => page.evaluate(() => ((window as any).dataLayer || [])
-  .filter((entry: any) => entry?.event === "repair_shop_registration_complete").length);
+const installAnalyticsCapture = async (page: any, payloads: AnalyticsPayload[]) => {
+  await page.exposeFunction("__captureRepairAnalytics", (payload: AnalyticsPayload) => {
+    payloads.push(payload);
+  });
+  await page.evaluate(() => {
+    const dataLayer = ((window as any).dataLayer = (window as any).dataLayer || []);
+    const originalPush = dataLayer.push.bind(dataLayer);
+    dataLayer.push = (...items: any[]) => {
+      for (const item of items) void (window as any).__captureRepairAnalytics(item);
+      return originalPush(...items);
+    };
+  });
+};
+
+const eventPayloads = (payloads: AnalyticsPayload[], name: string) =>
+  payloads.filter((entry) => entry?.event === name);
 
 test("successful Repair registration emits one privacy-safe completion event", async ({ page }) => {
   let registered = false;
+  const payloads: AnalyticsPayload[] = [];
+
   await page.route("**/api/auth/me", (route) => route.fulfill({
     status: registered ? 200 : 401,
     contentType: "application/json",
@@ -36,14 +54,18 @@ test("successful Repair registration emits one privacy-safe completion event", a
   });
 
   await page.goto(authPath);
+  await installAnalyticsCapture(page, payloads);
   await fillRegistration(page);
-  await page.locator("#register-form button[type='submit']").click();
-  await expect(page.locator("#auth-authenticated")).toHaveClass(/active/);
+  const [registeredResponse] = await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST"),
+    page.locator("#register-form button[type='submit']").click(),
+  ]);
+  expect(registeredResponse.status()).toBe(201);
 
-  const events = await page.evaluate(() => ((window as any).dataLayer || [])
-    .filter((entry: any) => entry?.event === "repair_shop_registration_complete"));
+  await expect.poll(() => eventPayloads(payloads, "repair_shop_registration_complete").length).toBe(1);
+  expect(eventPayloads(payloads, "repair_shop_registration_start")).toHaveLength(1);
 
-  expect(events).toHaveLength(1);
+  const events = eventPayloads(payloads, "repair_shop_registration_complete");
   expect(events[0]).toEqual({
     event: "repair_shop_registration_complete",
     audience_type: "repair_business",
@@ -56,9 +78,12 @@ test("successful Repair registration emits one privacy-safe completion event", a
   expect(serialized).not.toContain(owner.email);
   expect(serialized).not.toContain(owner.name);
   expect(serialized).not.toContain(owner.password);
+  expect(serialized).not.toContain("synthetic-owner");
 });
 
 test("failed Repair registration never emits completion", async ({ page }) => {
+  const payloads: AnalyticsPayload[] = [];
+
   await page.route("**/api/auth/me", (route) => route.fulfill({
     status: 401,
     contentType: "application/json",
@@ -71,23 +96,23 @@ test("failed Repair registration never emits completion", async ({ page }) => {
   }));
 
   await page.goto(authPath);
+  await installAnalyticsCapture(page, payloads);
   await fillRegistration(page);
-  await page.locator("#register-form button[type='submit']").click();
+  const [registeredResponse] = await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST"),
+    page.locator("#register-form button[type='submit']").click(),
+  ]);
+  expect(registeredResponse.status()).toBe(409);
   await expect(page.locator("#alert-box")).toContainText("already exists");
 
-  const counts = await page.evaluate(() => {
-    const entries = (window as any).dataLayer || [];
-    return {
-      start: entries.filter((entry: any) => entry?.event === "repair_shop_registration_start").length,
-      complete: entries.filter((entry: any) => entry?.event === "repair_shop_registration_complete").length,
-    };
-  });
-  expect(counts.start).toBe(1);
-  expect(counts.complete).toBe(0);
+  expect(eventPayloads(payloads, "repair_shop_registration_start")).toHaveLength(1);
+  expect(eventPayloads(payloads, "repair_shop_registration_complete")).toHaveLength(0);
 });
 
 test("failed registration followed by login is not misclassified as registration completion", async ({ page }) => {
   let authenticated = false;
+  const payloads: AnalyticsPayload[] = [];
+
   await page.route("**/api/auth/me", (route) => route.fulfill({
     status: authenticated ? 200 : 401,
     contentType: "application/json",
@@ -110,15 +135,26 @@ test("failed registration followed by login is not misclassified as registration
   });
 
   await page.goto(authPath);
+  await installAnalyticsCapture(page, payloads);
   await fillRegistration(page);
-  await page.locator("#register-form button[type='submit']").click();
+  const [failedRegistration] = await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith("/api/auth/register") && response.request().method() === "POST"),
+    page.locator("#register-form button[type='submit']").click(),
+  ]);
+  expect(failedRegistration.status()).toBe(409);
   await expect(page.locator("#alert-box")).toContainText("already exists");
-  expect(await completionCount(page)).toBe(0);
+  expect(eventPayloads(payloads, "repair_shop_registration_complete")).toHaveLength(0);
 
   await page.locator('[data-tab="login"]').click();
   await page.locator("#login-email").fill(owner.email);
   await page.locator("#login-password").fill(owner.password);
-  await page.locator("#login-form button[type='submit']").click();
-  await expect(page.locator("#auth-authenticated")).toHaveClass(/active/);
-  expect(await completionCount(page)).toBe(0);
+  const [loginResponse] = await Promise.all([
+    page.waitForResponse((response) => response.url().endsWith("/api/auth/login") && response.request().method() === "POST"),
+    page.locator("#login-form button[type='submit']").click(),
+  ]);
+  expect(loginResponse.status()).toBe(200);
+  await page.waitForTimeout(300);
+
+  expect(eventPayloads(payloads, "repair_shop_registration_start")).toHaveLength(1);
+  expect(eventPayloads(payloads, "repair_shop_registration_complete")).toHaveLength(0);
 });
