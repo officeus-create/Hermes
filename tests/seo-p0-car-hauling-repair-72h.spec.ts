@@ -23,7 +23,13 @@ test("repair shop commercial funnel is attributable to the existing canonical ow
   expect(enhancer).toContain('cta_type: "repair_shop_plan"');
   expect(enhancer).toContain('service_group: "repair_shop_software"');
   expect(enhancer).toContain('event: "repair_shop_registration_start"');
+  expect(enhancer).toContain('event: "repair_shop_registration_complete"');
   expect(enhancer).toContain('form.id !== "register-form"');
+  expect(enhancer).toContain('authenticated.classList.contains("active")');
+  expect(enhancer).toContain("armRepairRegistrationComplete();");
+  expect(enhancer).not.toContain("repair_shop_registration_complete\",\n        email:");
+  expect(enhancer).not.toContain("repair_shop_registration_complete\",\n        name:");
+  expect(enhancer).not.toContain("repair_shop_registration_complete\",\n        password:");
 });
 
 test("commercial SEO events use the consent-created gtag transport", () => {
