@@ -23,3 +23,16 @@ test("repair shop commercial funnel is attributable to the existing canonical ow
   expect(enhancer).toContain('event: "repair_shop_registration_start"');
   expect(enhancer).toContain('form.id !== "register-form"');
 });
+
+test("repair GEO follows the canonical Arkansas First-5 pilot instead of car-hauling markets", () => {
+  const repair = read("src/components/RepairPartnerOfferEnhancer.astro");
+
+  for (const city of ["Little Rock", "Fayetteville", "Fort Smith", "Jonesboro", "Conway"]) {
+    expect(repair).toContain(city);
+  }
+  expect(repair).toContain("Arkansas First-5 pilot");
+  expect(repair).toContain("intentionally separate from the car-hauling automotive GEO markets");
+  expect(repair).not.toContain("South Florida / Miami");
+  expect(repair).not.toContain("Orlando / Central Florida");
+  expect(repair).not.toContain("Next validation group:</strong> Phoenix");
+});
