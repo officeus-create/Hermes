@@ -1,0 +1,41 @@
+name: Repair Shop prospect prefill contract
+
+on:
+  pull_request:
+    paths:
+      - "functions/api/_lib/repair-shop-prospects.mjs"
+      - "functions/api/internal/repair-shop-prospects.ts"
+      - "src/pages/services/hermes-connect/internal/prospects/index.astro"
+      - "scripts/repair-shop-prospects-contract.test.mjs"
+      - ".github/workflows/repair-shop-prospects-contract.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "functions/api/_lib/repair-shop-prospects.mjs"
+      - "functions/api/internal/repair-shop-prospects.ts"
+      - "src/pages/services/hermes-connect/internal/prospects/index.astro"
+      - "scripts/repair-shop-prospects-contract.test.mjs"
+      - ".github/workflows/repair-shop-prospects-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Verify private prefill → verified claim boundary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate five-prospect privacy and ownership contract
+        run: node scripts/repair-shop-prospects-contract.test.mjs
+      - name: Build website
+        run: npm run build
