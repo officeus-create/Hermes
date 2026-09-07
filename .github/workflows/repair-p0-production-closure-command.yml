@@ -6,11 +6,12 @@ on:
 
 permissions:
   contents: read
+  actions: read
   checks: read
   issues: write
 
 concurrency:
-  group: repair-p0-production-closure-proof
+  group: repair-p0-production-proof
   cancel-in-progress: false
 
 jobs:
@@ -33,6 +34,11 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Wait for shared Repair Shop synthetic state
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/wait-repair-booking-synthetic-state.mjs
 
       - name: Install production proof dependencies
         run: npm ci
@@ -66,7 +72,7 @@ jobs:
             echo "- Job status: **${JOB_STATUS}**"
             if [ "${JOB_STATUS}" = "success" ]; then
               echo "- ✅ Repeat-customer CRM aggregation, completed/next-appointment history, and vehicle/service context passed against production."
-              echo "- ✅ Real Chromium owner journey passed on desktop and 390px: landing → registration/login → authenticated dashboard."
+              echo "- ✅ Real Chromium owner journey passed on desktop and 390px: landing → registration/login → authenticated state → dashboard."
               echo "- ✅ Private feedback submit/readback passed from the authenticated 390px dashboard."
               echo "- ✅ Temporary synthetic owner/customer/feedback rows were cleaned by the bounded cleanup paths."
             else
