@@ -19,7 +19,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const forgotEndpoint = read("functions/api/auth/forgot-password.ts");
 const resetEndpoint = read("functions/api/auth/reset-password.ts");
 const helper = read("functions/api/_lib/password-reset.mjs");
-const authPage = read("src/pages/services/hermes-connect/repair-shops/auth.astro");
+const activationEnhancer = read("src/components/RepairShopActivationEnhancer.astro");
 const secondaryI18n = read("public/hermes-connect-repair-owner-secondary-i18n.js");
 const forgotPage = read("src/pages/services/hermes-connect/repair-shops/forgot-password.astro");
 const resetPage = read("src/pages/services/hermes-connect/repair-shops/reset-password.astro");
@@ -134,7 +134,7 @@ assert.equal(unknownResponse.status, eligibleResponse.status);
 assert.equal(unknownBackground.length, 1, "unknown valid email must use the same scheduled response path");
 await unknownBackground[0];
 
-assert.ok(authPage.includes("Forgot password?"), "English auth source must keep the password recovery entry");
+assert.ok(activationEnhancer.includes("Forgot password?"), "English auth source must keep the password recovery entry");
 for (const marker of ["Забыли пароль?", "Забули пароль?", "¿Olvidaste tu contraseña?", "Password dimenticata?", "Mot de passe oublié ?"]) {
   assert.ok(secondaryI18n.includes(marker), `missing localized auth recovery entry in canonical i18n runtime: ${marker}`);
 }
