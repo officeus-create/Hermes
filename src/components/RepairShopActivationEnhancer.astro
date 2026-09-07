@@ -70,6 +70,7 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
               else loginForm.appendChild(forgotLink);
             }
             forgotLink.href = withLocale(`${root}/forgot-password/`);
+            forgotLink.textContent = "Forgot password?";
           }
           if (params.get("mode") === "register" && registerTab instanceof HTMLElement && !registerTab.classList.contains("active")) registerTab.click();
           enterCrmIfAuthenticated();
