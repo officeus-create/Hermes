@@ -7,17 +7,21 @@ const [carrierPage, dealerPage, repairEnhancer] = await Promise.all([
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
 ]);
 
-const p0Markets = [
+const automotiveP0Markets = [
   "South Florida / Miami",
   "Atlanta",
   "Orlando / Central Florida",
   "Chicago",
 ];
 
-for (const market of p0Markets) {
+for (const market of automotiveP0Markets) {
   assert.match(carrierPage, new RegExp(market.replaceAll("/", "\\/")), `carrier owner must include ${market}`);
   assert.match(dealerPage, new RegExp(market.replaceAll("/", "\\/")), `dealer owner must include ${market}`);
-  assert.match(repairEnhancer, new RegExp(market.replaceAll("/", "\\/")), `repair owner must include ${market}`);
+}
+
+const repairPilotMarkets = ["Little Rock", "Fayetteville", "Fort Smith", "Jonesboro", "Conway"];
+for (const market of repairPilotMarkets) {
+  assert.match(repairEnhancer, new RegExp(market), `Repair First-5 owner must include ${market}`);
 }
 
 assert.match(carrierPage, /\/logistics\/start-car-hauling-dispatch\//);
@@ -30,6 +34,8 @@ assert.match(dealerPage, /\/services\/local-seo\//);
 assert.match(dealerPage, /\/services\/website-development\//);
 assert.match(dealerPage, /not claims of local Hermes offices/);
 
+assert.match(repairEnhancer, /Arkansas First-5 pilot/);
+assert.match(repairEnhancer, /intentionally separate from the car-hauling automotive GEO markets/);
 assert.match(repairEnhancer, /\/services\/hermes-connect\/repair-shops\/auth\//);
 assert.match(repairEnhancer, /\/services\/local-seo\//);
 assert.match(repairEnhancer, /\/services\/website-development\//);
@@ -39,8 +45,11 @@ assert.match(repairEnhancer, /truck \/ diesel repair/);
 assert.match(repairEnhancer, /mobile mechanics/);
 assert.match(repairEnhancer, /tire service/);
 assert.match(repairEnhancer, /body \/ collision/);
+for (const market of automotiveP0Markets) {
+  assert.doesNotMatch(repairEnhancer, new RegExp(market.replaceAll("/", "\\/")), `Repair First-5 must not inherit ${market}`);
+}
 
 const combined = `${carrierPage}\n${dealerPage}\n${repairEnhancer}`;
-assert.doesNotMatch(combined, /href="\/(miami|atlanta|orlando|chicago)-/i, "P0 must not create doorway-style city URLs");
+assert.doesNotMatch(combined, /href="\/(miami|atlanta|orlando|chicago|little-rock|fayetteville|fort-smith|jonesboro|conway)-/i, "GEO evidence must not create doorway-style city URLs");
 
-console.log("automotive GEO P0 owner contract: OK");
+console.log("automotive + Repair pilot GEO owner contract: OK");
