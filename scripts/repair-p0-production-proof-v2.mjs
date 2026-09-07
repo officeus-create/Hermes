@@ -137,8 +137,11 @@ async function verifyDashboard(page, label) {
     EMAIL,
     { timeout: 20_000 },
   );
-  const heading = (await page.locator(".workspace-header h1").textContent())?.trim();
-  if (heading !== "Shop Owner Workspace") fail(`${label} dashboard heading mismatch`);
+  await page.waitForFunction(
+    () => document.querySelector(".workspace-header h1")?.textContent?.trim() === "Repair Shop workspace",
+    null,
+    { timeout: 10_000 },
+  );
   await assertNoHorizontalOverflow(page, `${label} dashboard`);
 }
 
