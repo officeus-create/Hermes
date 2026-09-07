@@ -86,7 +86,7 @@
     if (path === "/api/repair-shop/customers") return json({ success:true, customers:clone(customers()) });
     if (path === "/api/repair-shop/vehicles") return json({ success:true, vehicles:clone(vehicles()) });
     if (path === "/api/repair-shop/feedback") { if (method === "POST") { const body = await readBody(init); feedback.unshift({ id:`feedback-${Date.now()}`, category:body.category || "other", rating:Number(body.rating || 5), message:String(body.message || "Demo feedback"), created_at:new Date().toISOString(), retention_until:iso(180) }); } return json({success:true,feedback:clone(feedback)}); }
-    if (path === "/api/repair-shop/driver-discount") { if (method === "PUT") driverDiscount = { ...driverDiscount, ...(await readBody(init)) }; return json({ success:true, discount:clone(driverDiscount) });
+    if (path === "/api/repair-shop/driver-discount") { if (method === "PUT") driverDiscount = { ...driverDiscount, ...(await readBody(init)) }; return json({ success:true, discount:clone(driverDiscount) }); }
     if (path === "/api/repair-shop/capabilities") return json({ success:true, capabilities:{ accepts_walk_ins:true, accepts_fleet:true, accepts_heavy_duty:true, after_hours_dropoff:true, waiting_area:true } });
     if (path === "/api/repair-shop/capacity") return json({ success:true, capacity:{ bays:6, technicians:3, daily_booking_limit:12 } });
     if (path === "/api/repair-shop/access") return json({ success:true, access:{ can_manage_shop:true } });
