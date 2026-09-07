@@ -97,8 +97,20 @@ const isRepairShopSurface = normalizedPath === repairShopRoot || normalizedPath.
             node.setAttribute("href", `${next.pathname}${next.search}${next.hash}`);
           });
         };
+        let repairLanguageTargetScheduled = false;
+        const scheduleRepairLanguageTargets = () => {
+          if (repairLanguageTargetScheduled) return;
+          repairLanguageTargetScheduled = true;
+          queueMicrotask(() => {
+            repairLanguageTargetScheduled = false;
+            repairLanguageTargets();
+          });
+        };
         if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", repairLanguageTargets, { once:true });
         else repairLanguageTargets();
+        // Canonical language links own a[lang]. Re-assert them after dynamic Repair Shop
+        // mutations so generic locale-preservation runtimes cannot overwrite target locales.
+        new MutationObserver(scheduleRepairLanguageTargets).observe(document.body, { childList:true, subtree:true });
       })();
     </script>
   </>
