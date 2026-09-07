@@ -100,6 +100,22 @@ async function allowAnalyticsForSyntheticProof(page) {
   await initialDelivery;
 }
 
+async function openDashboardFromAuthenticated(page, label) {
+  await page.waitForSelector("#auth-authenticated.active", { state: "visible", timeout: 20_000 });
+  await page.waitForFunction(
+    (email) => document.querySelector("#user-email")?.textContent?.includes(email),
+    EMAIL,
+    { timeout: 20_000 },
+  );
+  await assertNoHorizontalOverflow(page, `${label} authenticated`);
+  const dashboardLink = page.locator(`#auth-authenticated a[href="${DASHBOARD}"]`);
+  await dashboardLink.waitFor({ state: "visible", timeout: 10_000 });
+  await Promise.all([
+    page.waitForURL((url) => url.pathname === DASHBOARD, { timeout: 20_000 }),
+    dashboardLink.click(),
+  ]);
+}
+
 async function verifyDashboard(page, label) {
   await page.waitForURL((url) => url.pathname === DASHBOARD, { timeout: 20_000 });
   await page.waitForFunction(
@@ -108,7 +124,7 @@ async function verifyDashboard(page, label) {
     { timeout: 20_000 },
   );
   await page.waitForFunction(
-    () => document.querySelector(".workspace-header h1")?.textContent?.trim() === "Repair Shop workspace",
+    () => document.querySelector(".workspace-header h1")?.textContent?.trim() === "Shop Owner Workspace",
     null,
     { timeout: 10_000 },
   );
@@ -139,6 +155,7 @@ try {
   if (registered.status() !== 201) throw new Error(`Desktop UI registration failed (${registered.status()})`);
   await ga4CompletionDelivery;
   console.log("REPAIR_REGISTRATION_COMPLETE_GA4_DELIVERY_PASS=YES");
+  await openDashboardFromAuthenticated(desktopPage, "desktop");
   await verifyDashboard(desktopPage, "desktop");
   await desktop.close();
 
@@ -154,6 +171,7 @@ try {
   await mobilePage.locator("#login-form button[type='submit']").click();
   const loggedIn = await loginResponse;
   if (loggedIn.status() !== 200) throw new Error(`Mobile UI login failed (${loggedIn.status()})`);
+  await openDashboardFromAuthenticated(mobilePage, "mobile-390");
   await verifyDashboard(mobilePage, "mobile-390");
 
   await mobilePage.locator("#feedback-category").selectOption("mobile");
