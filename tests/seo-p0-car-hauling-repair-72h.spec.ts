@@ -17,13 +17,21 @@ test("car hauling dispatch owner stays separate from load-board search intent", 
 test("repair shop commercial funnel is attributable to the existing canonical owner", () => {
   const component = read("src/components/Seo4ConversionEnhancer.astro");
   const enhancer = read("public/seo4-conversion-enhancer.js");
+  const auth = read("src/pages/services/hermes-connect/repair-shops/auth.astro");
 
   expect(component).toContain('src="/seo4-conversion-enhancer.js"');
   expect(enhancer).toContain('cta_type: "repair_shop_registration"');
   expect(enhancer).toContain('cta_type: "repair_shop_plan"');
   expect(enhancer).toContain('service_group: "repair_shop_software"');
   expect(enhancer).toContain('event: "repair_shop_registration_start"');
+  expect(enhancer).toContain('event: "repair_shop_registration_complete"');
   expect(enhancer).toContain('form.id !== "register-form"');
+  expect(enhancer).toContain('window.addEventListener("hermes:repair-registration-complete"');
+  expect(auth).toContain('if (res.ok && data.success) {\n        window.dispatchEvent(new Event("hermes:repair-registration-complete"));\n        await checkSession();');
+  expect(enhancer).not.toContain("MutationObserver");
+  expect(enhancer).not.toContain("repair_shop_registration_complete\",\n      email:");
+  expect(enhancer).not.toContain("repair_shop_registration_complete\",\n      name:");
+  expect(enhancer).not.toContain("repair_shop_registration_complete\",\n      password:");
 });
 
 test("commercial SEO events use the consent-created gtag transport", () => {

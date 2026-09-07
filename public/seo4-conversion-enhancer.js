@@ -40,6 +40,17 @@
   };
   const repairShopRoot = "/services/hermes-connect/repair-shops/";
 
+  window.addEventListener("hermes:repair-registration-complete", () => {
+    pushEvent({
+      event: "repair_shop_registration_complete",
+      audience_type: "repair_business",
+      page_group: "hermes_connect_repair",
+      service_group: "repair_shop_software",
+      page_path: `${repairShopRoot}auth/`,
+      destination_path: `${repairShopRoot}dashboard/`,
+    });
+  }, { once: true });
+
   refreshLoadBoardDemoLabels();
 
   document.addEventListener("click", (event) => {

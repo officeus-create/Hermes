@@ -266,6 +266,7 @@ const schema: any[] = [];
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        window.dispatchEvent(new Event("hermes:repair-registration-complete"));
         await checkSession();
       } else {
         showAlert(safeError(data, data.errors?.join(", ") || "We could not create your account. Check your details and try again.", res.status));
