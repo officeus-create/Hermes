@@ -40,6 +40,22 @@
   };
   const repairShopRoot = "/services/hermes-connect/repair-shops/";
 
+  const applyRepairAuthMode = () => {
+    if (window.location.pathname !== `${repairShopRoot}auth/`) return;
+    const requestedMode = new URLSearchParams(window.location.search).get("mode");
+    if (requestedMode !== "register") return;
+
+    const registerTab = document.querySelector('[data-tab="register"]');
+    if (!(registerTab instanceof HTMLButtonElement)) return;
+    registerTab.click();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyRepairAuthMode, { once: true });
+  } else {
+    applyRepairAuthMode();
+  }
+
   window.addEventListener("hermes:repair-registration-complete", () => {
     pushEvent({
       event: "repair_shop_registration_complete",
