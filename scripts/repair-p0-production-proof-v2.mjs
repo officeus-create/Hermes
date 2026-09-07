@@ -138,7 +138,7 @@ async function verifyDashboard(page, label) {
     { timeout: 20_000 },
   );
   const heading = (await page.locator(".workspace-header h1").textContent())?.trim();
-  if (heading !== "Shop Owner Workspace") fail(`${label} dashboard heading mismatch`);
+  if (heading !== "Repair Shop workspace") fail(`${label} dashboard heading mismatch: ${JSON.stringify(heading)}`);
   await assertNoHorizontalOverflow(page, `${label} dashboard`);
 }
 
