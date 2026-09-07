@@ -10,6 +10,9 @@ assert.match(proof, /connect\.hermeslogisticsus\.com/, "proof must verify the Co
 assert.match(proof, /SERVICE_NAMES = \["P0 Brake Inspection", "P0 Oil Service", "P0 Diagnostic Scan"\]/, "proof must create exactly three named synthetic services");
 assert.match(proof, /services\.length !== 3/, "proof must assert the three-service count");
 assert.match(proof, /#service-select option/, "proof must read all three services back through the public booking UI");
+assert.match(proof, /item\.value === service\.id/, "proof must match each Booking option to the persisted service id");
+assert.match(proof, /option\.label\.includes\(service\.name\)/, "proof must accept the current Booking label while preserving the service name");
+assert.doesNotMatch(proof, /bookingServiceNames\.includes\(name\)/, "proof must not require an exact Booking option label");
 assert.match(proof, /status: "in_progress"/, "proof must exercise owner processing");
 assert.match(proof, /status: "completed"/, "proof must persist a completed visit");
 assert.match(proof, /\/api\/repair-shop\/customers/, "proof must verify customer and vehicle CRM aggregation");
