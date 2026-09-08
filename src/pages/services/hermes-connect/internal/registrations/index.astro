@@ -85,7 +85,7 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
     salesperson_code?:string|null; source?:string|null; synthetic?:number|boolean; reviewed_at?:string|null;
     registration_alert_status?:string|null; registration_alert_sent_at?:string|null; registration_alert_error?:string|null;
   };
-  type Payload = {success?:boolean; summary?:Record<string,number|string>; registrations?:Registration[]; error?:string};
+  type Payload = {success?:boolean; summary?:Record<string,number|string>; registrations?:Registration[]; error?:string; hydration?:Record<string,unknown>};
   const ru=new URLSearchParams(location.search).get("lang")==="ru";
   const t=(en:string,ruText:string)=>ru?ruText:en;
   const q=<T extends HTMLElement>(selector:string)=>document.querySelector<T>(selector);
@@ -97,14 +97,17 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
   const isSynthetic=(row:Registration)=>Number(row.synthetic||0)===1;
   const isShopOwner=(row:Registration)=>text(row.role)==="Shop Owner";
   const isProfileComplete=(row:Registration)=>Number(row.profile_complete||0)===1;
+  const syntheticDemoKind=(row:Registration)=>{const local=text(row.email).toLowerCase().split("@")[0]||"";const name=text(row.name);if(/(^|[._+-])office($|[._+-])/i.test(local)||/^office\b/i.test(name))return"office";if(/(^|[._+-])volkogon($|[._+-])/i.test(local)||/^volkogon\b/i.test(name))return"volkogon";return"";};
   const create=(tag:string,className?:string,value?:string)=>{const el=document.createElement(tag);if(className)el.className=className;if(value!==undefined)el.textContent=value;return el;};
   const searchable=(row:Registration)=>[row.name,row.email,row.phone,row.shop_name,row.city,row.state,row.location,row.role,row.source,row.salesperson_code,row.access_state,row.plan_id].map(text).join(" ").toLowerCase();
   async function mutate(row:Registration,action:string,extra:Record<string,unknown>={}){
-    if(status)status.textContent=t("Updating…","Обновляем…");
+    if(status)status.textContent=action==="hydrate_synthetic_repair_demo"?t("Hydrating synthetic Repair Shop CRM…","Заполняем тестовую CRM СТО…"):t("Updating…","Обновляем…");
     const response=await fetch("/api/internal/registrations",{method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({specialist_id:row.id,action,...extra})});
     let payload:any={};try{payload=await response.json()}catch{}
-    if(!response.ok||!payload.success){if(status)status.textContent=t("Update failed.","Не удалось обновить.");return;}
+    if(!response.ok||!payload.success){if(status)status.textContent=action==="hydrate_synthetic_repair_demo"?t(`Hydration failed: ${text(payload.error)||response.status}`,`Не удалось заполнить CRM: ${text(payload.error)||response.status}`):t("Update failed.","Не удалось обновить.");return;}
+    const hydration=payload.hydration;
     await load();
+    if(action==="hydrate_synthetic_repair_demo"&&hydration&&status){status.textContent=t(`Synthetic CRM ready · ${Number(hydration.appointment_count||0)} appointments · ${Number(hydration.staff_count||0)} staff · ${Number(hydration.service_count||0)+Number(hydration.benchmark_service_count||0)} services · through ${text(hydration.seeded_through)||"—"}`,`Тестовая CRM готова · ${Number(hydration.appointment_count||0)} записей · ${Number(hydration.staff_count||0)} сотрудников · ${Number(hydration.service_count||0)+Number(hydration.benchmark_service_count||0)} услуг · до ${text(hydration.seeded_through)||"—"}`);}
   }
   function actionButton(label:string,onClick:()=>void,className="secondary") { const button=create("button",className,label) as HTMLButtonElement;button.type="button";button.addEventListener("click",onClick);return button; }
   function render(){
@@ -125,6 +128,7 @@ const isRu = Astro.url.searchParams.get("lang") === "ru";
       const controls=document.createElement("td");controls.className="controls";
       if(!row.reviewed_at&&!isSynthetic(row))controls.append(actionButton(t("Mark reviewed","Просмотрено"),()=>void mutate(row,"review")));
       controls.append(actionButton(isSynthetic(row)?t("Mark real","Сделать реальным"):t("Mark test","Сделать тестовым"),()=>void mutate(row,"set_synthetic",{synthetic:!isSynthetic(row)}),"ghost"));
+      if(isSynthetic(row)&&isShopOwner(row)&&syntheticDemoKind(row))controls.append(actionButton(t("Hydrate test CRM","Заполнить тестовую CRM"),()=>void mutate(row,"hydrate_synthetic_repair_demo")));
       if(!isSynthetic(row)&&["failed","pending",null,undefined].includes(row.registration_alert_status as any))controls.append(actionButton(t("Retry Telegram","Повторить Telegram"),()=>void mutate(row,"retry_registration_alert"),"ghost"));
       tr.append(user,contact,company,source,profile,registered,telegram,controls);tbody.append(tr);
     }
