@@ -20,6 +20,18 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
+      - name: Repair temporary patch-script syntax
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/repair-hc-locale-persistence-patch.mjs")
+          text = path.read_text()
+          old = 'window.history.replaceState(window.history.state, "", `${normalized.pathname}${normalized.search}${normalized.hash}`);'
+          new = 'window.history.replaceState(window.history.state, "", normalized.pathname + normalized.search + normalized.hash);'
+          assert text.count(old) == 1, f"expected one syntax target, got {text.count(old)}"
+          path.write_text(text.replace(old, new))
+          PY
       - name: Apply bounded Hermes Connect RU persistence patch
         run: node scripts/repair-hc-locale-persistence-patch.mjs
       - name: Remove one-shot implementation helpers
