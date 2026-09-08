@@ -68,11 +68,12 @@ for(const route of expectedRoutes){
   const h1Count=(html.match(/<h1\b/gi)??[]).length;
   if(h1Count!==1) errors.push(`${route}: expected one H1, found ${h1Count}`);
 
-  const types=collectTypes(parseSchemas(html,route));
+  const schemas=parseSchemas(html,route);
+  const types=collectTypes(schemas);
   if(route==="/gb/london/" || route==="/gb/london/academy/" || route==="/ru/gb/london/" || route==="/ua/gb/london/") requireTypes(types,["CollectionPage","BreadcrumbList"],route);
   else if(route==="/gb/london/marketing/" || route==="/gb/london/it-web-development/" || commercialRoutes.includes(route)) requireTypes(types,["Service","BreadcrumbList","FAQPage"],route);
   else if(route==="/gb/london/us-logistics-training/") requireTypes(types,["Course","BreadcrumbList"],route);
-  else if(guideRoutes.includes(route)) requireTypes(types,["Article","BreadcrumbList"],route);
+  else if(guideRoutes.includes(route)) requireTypes(types,["WebPage","BreadcrumbList"],route);
   else if(academyRoutes.includes(route)){
     const track=route.split("/").filter(Boolean).at(-1);
     requireTypes(types,[courseTracks.has(track)?"Course":"WebPage","BreadcrumbList"],route);
@@ -115,16 +116,40 @@ for(const route of primaryLeadPages){
 }
 
 const londonSources = [
-  "src/pages/gb/london/index.astro","src/pages/gb/london/marketing/index.astro","src/pages/gb/london/it-web-development/index.astro","src/pages/gb/london/us-logistics-training/index.astro","src/pages/gb/london/[slug].astro","src/pages/gb/london/academy/index.astro","src/pages/gb/london/academy/[track].astro",
+  "src/pages/gb/london/index.astro","src/pages/gb/london/marketing/index.astro","src/pages/gb/london/it-web-development/index.astro","src/pages/gb/london/us-logistics-training/index.astro","src/pages/gb/london/[slug].astro","src/pages/gb/london/academy/index.astro","src/pages/gb/london/academy/[track].astro","src/pages/gb/london/guides/[slug].astro","src/pages/ru/gb/london/[section].astro","src/pages/ua/gb/london/[section].astro",
 ];
 for(const relative of londonSources){
   const source=await readFile(join(root,relative),"utf8");
   if(source.includes("?source=")) errors.push(`${relative}: legacy source= attribution detected; use UTM contract`);
 }
 
+const commercialSource=await readFile(join(root,"src/pages/gb/london/[slug].astro"),"utf8");
+const commercialData=await readFile(join(root,"src/data/london-commercial-pages.ts"),"utf8");
+if(commercialSource.includes("Scope is selected from the business need, existing assets, budget and measurable next step rather than a fixed bundle.")) errors.push("London commercial indexing recovery: repeated legacy body copy returned");
+for(const required of ["page.fit","point.body","page.measurement","page.faq","provider:{\"@id\":organizationId}"]){
+  if(!commercialSource.includes(required)) errors.push(`London commercial indexing recovery: missing ${required}`);
+}
+for(const required of ["fit:","measurement:","faq:","body:"]){
+  if(!commercialData.includes(required)) errors.push(`London commercial indexing recovery data: missing ${required}`);
+}
+
 const academyTrackSource=await readFile(join(root,"src/pages/gb/london/academy/[track].astro"),"utf8");
-for(const required of ["utm_source=london","utm_campaign=london-academy","utm_content=${page.track}","track=${page.track}"]){
-  if(!academyTrackSource.includes(required)) errors.push(`London Academy track handoff: missing ${required}`);
+if(academyTrackSource.includes("Training scope and progression are reviewed against the selected track, readiness and approved program format.")) errors.push("London Academy indexing recovery: repeated legacy body copy returned");
+for(const required of ["page.fit","point.body","page.practice","page.readiness","provider:{\"@id\":academyId}","utm_source=london","utm_campaign=london-academy","utm_content=${page.track}","track=${page.track}"]){
+  if(!academyTrackSource.includes(required)) errors.push(`London Academy track handoff/indexing: missing ${required}`);
+}
+
+const guideSource=await readFile(join(root,"src/pages/gb/london/guides/[slug].astro"),"utf8");
+if(guideSource.includes('\"@type\":\"Article\"')) errors.push("London guide indexing recovery: incomplete Article schema returned");
+for(const required of ['\"@type\":\"WebPage\"','about:{\"@id\":organizationId}','author:{\"@id\":organizationId}','datePublished:"2026-08-31"']){
+  if(!guideSource.includes(required)) errors.push(`London guide indexing recovery: missing ${required}`);
+}
+
+for(const relative of ["src/pages/ru/gb/london/[section].astro","src/pages/ua/gb/london/[section].astro"]){
+  const source=await readFile(join(root,relative),"utf8");
+  for(const required of ["page.related","isPartOf:{\"@id\":\"https://hermeslogisticsus.com/#website\"}","about:{\"@id\":\"https://hermeslogisticsus.com/#organization\"}"]){
+    if(!source.includes(required)) errors.push(`${relative}: indexing graph missing ${required}`);
+  }
 }
 
 const analytics=await readFile(join(root,"src/components/LondonAnalytics.astro"),"utf8");
@@ -156,4 +181,4 @@ for(const relative of [
 
 if(expectedRoutes.length!==52) errors.push(`route inventory invariant changed unexpectedly: ${expectedRoutes.length}`);
 if(errors.length) throw new Error(`London launch contract failed with ${errors.length} error(s):\n${errors.map((e)=>`- ${e}`).join("\n")}`);
-console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/source-attribution/conversion/artifact checks green.`);
+console.log(`London launch contract passed: ${expectedRoutes.length} routes, sitemap/canonical/schema/locale/media/CTA/source-attribution/indexing-recovery/conversion/artifact checks green.`);
