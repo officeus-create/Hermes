@@ -1,0 +1,30 @@
+name: Hermes Connect Russian Hub recovery one-shot
+
+on:
+  push:
+    branches:
+      - fix/hc-locale-persistence-ru-20260908
+    paths:
+      - .github/workflows/hc-recover-russian-hub-one-shot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/hc-locale-persistence-ru-20260908
+          fetch-depth: 0
+      - name: Recover only the two reviewed Russian Product Hub commits
+        run: |
+          git config user.name "officeus-create"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git cherry-pick --no-commit 91538cf019c71637d31a937807d5030493fe57ff
+          git cherry-pick --no-commit 482bf091429167a1ae4d24c8254192b28bca05ba
+          rm .github/workflows/hc-recover-russian-hub-one-shot.yml
+          git add public/hermes-connect-product-priority.js tests/hermes-connect-hub-russian-runtime.spec.ts .github/workflows/hc-recover-russian-hub-one-shot.yml
+          git commit -m "fix(hc): recover stable Russian Product Hub runtime"
+          git push origin HEAD:fix/hc-locale-persistence-ru-20260908
