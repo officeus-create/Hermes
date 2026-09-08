@@ -1,0 +1,185 @@
+from pathlib import Path
+import re
+
+ALLOWED = {".astro", ".ts", ".tsx", ".js", ".mjs", ".md"}
+CHANGED: set[str] = set()
+
+
+def migrate_url(match: re.Match[str]) -> str:
+    tail = match.group(1).replace("&amp;", "&")
+    query, separator, target = tail.partition("#")
+    fragment = query + ((("&" if query else "") + "target=" + target) if separator and target else "")
+    return "/load-board/#" + fragment
+
+
+load_board_link = re.compile(r'''/load-board/\?([^"'`\s<>()]+)''')
+
+for root in ("src", "tests", "scripts"):
+    for file in Path(root).rglob("*"):
+        if not file.is_file() or file.suffix not in ALLOWED:
+            continue
+        before = file.read_text()
+        after = load_board_link.sub(migrate_url, before)
+        after = after.replace(
+            'href="?role=carrier#available-loads"',
+            'href="/load-board/#role=carrier&target=available-loads"',
+        )
+        if after != before:
+            file.write_text(after)
+            CHANGED.add(str(file))
+
+load_board_path = Path("src/pages/load-board.astro")
+load_board = load_board_path.read_text()
+state_pattern = re.compile(
+    r'''(?m)^\s*const activeRole = new URLSearchParams\(window\.location\.search\)\.get\("role"\);\n'''
+    r'''^\s*const sourceOrigin = new URLSearchParams\(window\.location\.search\)\.get\("origin"\);\n'''
+    r'''^\s*const sourceArea = new URLSearchParams\(window\.location\.search\)\.get\("area"\);'''
+)
+new_state = "\n".join(
+    [
+        '  const legacyParams = new URLSearchParams(window.location.search);',
+        '  const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";',
+        '  const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();',
+        '  const legacyAnchor = rawHash && !rawHash.includes("=") ? rawHash : "";',
+        '  const loadBoardParam = (key: string) => fragmentParams.get(key) || legacyParams.get(key);',
+        '  const approvedRoles = new Set(["carrier", "broker", "shipper", "dealer", "private_party"]);',
+        '  const requestedRole = loadBoardParam("role");',
+        '  const activeRole = requestedRole && approvedRoles.has(requestedRole) ? requestedRole : null;',
+        '  const sourceOrigin = loadBoardParam("origin");',
+        '  const sourceArea = loadBoardParam("area");',
+        '  const requestedTarget = fragmentParams.get("target") || legacyAnchor;',
+        '  const legacyStateKeys = ["role", "equipment", "origin", "area"];',
+        '  const hasLegacyState = legacyStateKeys.some((key) => legacyParams.has(key));',
+        '  if (hasLegacyState) {',
+        '    const nextSearch = new URLSearchParams(legacyParams);',
+        '    const nextFragment = new URLSearchParams(fragmentParams);',
+        '    for (const key of legacyStateKeys) {',
+        '      const value = legacyParams.get(key);',
+        '      if (value && !nextFragment.has(key)) nextFragment.set(key, value);',
+        '      nextSearch.delete(key);',
+        '    }',
+        '    if (legacyAnchor && !nextFragment.has("target")) nextFragment.set("target", legacyAnchor);',
+        '    const search = nextSearch.toString();',
+        '    const fragment = nextFragment.toString();',
+        '    window.history.replaceState(null, "", `${window.location.pathname}${search ? `?${search}` : ""}${fragment ? `#${fragment}` : ""}`);',
+        '  }',
+    ]
+)
+load_board, count = state_pattern.subn(new_state, load_board, count=1)
+if count != 1:
+    raise SystemExit(f"Load Board state replacement count: {count}")
+
+prefill_anchor = '  if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);'
+target_logic = "\n".join(
+    [
+        prefill_anchor,
+        '  if (requestedTarget) {',
+        '    window.requestAnimationFrame(() => document.getElementById(requestedTarget)?.scrollIntoView({ block: "start" }));',
+        '  }',
+    ]
+)
+if prefill_anchor not in load_board:
+    raise SystemExit("Load Board prefill anchor not found")
+load_board = load_board.replace(prefill_anchor, target_logic, 1)
+load_board_path.write_text(load_board)
+CHANGED.add(str(load_board_path))
+
+contact_path = Path("src/components/ContactLinkEnhancer.astro")
+contact = contact_path.read_text()
+old_equipment = '    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");'
+new_equipment = "\n".join(
+    [
+        '    const currentUrl = new URL(window.location.href);',
+        '    const rawHash = currentUrl.hash.startsWith("#") ? currentUrl.hash.slice(1) : "";',
+        '    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();',
+        '    const requestedEquipment = fragmentParams.get("equipment") || currentUrl.searchParams.get("equipment");',
+    ]
+)
+if old_equipment not in contact:
+    raise SystemExit("Equipment prefill block not found")
+contact = contact.replace(old_equipment, new_equipment, 1)
+
+old_role = '    const role = target.searchParams.get("role") || "unspecified";'
+new_role = "\n".join(
+    [
+        '    const rawHash = target.hash.startsWith("#") ? target.hash.slice(1) : "";',
+        '    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();',
+        '    const role = fragmentParams.get("role") || target.searchParams.get("role") || "unspecified";',
+    ]
+)
+if old_role not in contact:
+    raise SystemExit("CTA role block not found")
+contact = contact.replace(old_role, new_role, 1)
+contact_path.write_text(contact)
+CHANGED.add(str(contact_path))
+
+journey_path = Path("src/components/CarrierContractJourney.astro")
+journey = journey_path.read_text()
+old_gate = '      if (bar.hasAttribute("data-carrier-role-gated") && new URLSearchParams(window.location.search).get("role") === "carrier") {'
+new_gate = "\n".join(
+    [
+        '      const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";',
+        '      const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;',
+        '      const queryRole = new URLSearchParams(window.location.search).get("role");',
+        '      if (bar.hasAttribute("data-carrier-role-gated") && (fragmentRole || queryRole) === "carrier") {',
+    ]
+)
+if old_gate not in journey:
+    raise SystemExit("Carrier journey gate not found")
+journey = journey.replace(old_gate, new_gate, 1)
+journey_path.write_text(journey)
+CHANGED.add(str(journey_path))
+
+test_path = Path("tests/load-board-carrier-operating-path.spec.ts")
+test = test_path.read_text()
+old_assert = '  expect(journey).toContain(\'new URLSearchParams(window.location.search).get("role") === "carrier"\');'
+new_assert = "\n".join(
+    [
+        '  expect(journey).toContain(\'const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;\');',
+        '  expect(journey).toContain(\'(fragmentRole || queryRole) === "carrier"\');',
+    ]
+)
+if old_assert in test:
+    test = test.replace(old_assert, new_assert, 1)
+
+if "legacy Load Board role query normalizes to canonical fragment state" not in test:
+    test += r'''
+
+test("legacy Load Board role query normalizes to canonical fragment state", async ({ page }) => {
+  await page.goto("/load-board/?role=carrier&equipment=car_hauler#available-loads");
+  await expect(page).toHaveURL(/\/load-board\/#role=carrier&equipment=car_hauler&target=available-loads$/);
+  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");
+  await expect(page.locator("[data-carrier-contract-journey]")).not.toHaveAttribute("data-carrier-role-gated", "");
+});
+
+test("source graph does not publish query-state Load Board links", async () => {
+  const pending = [resolve(process.cwd(), "src")];
+  const offenders: string[] = [];
+  while (pending.length) {
+    const current = pending.pop();
+    if (!current) continue;
+    const entries = await import("node:fs/promises").then(({ readdir }) => readdir(current, { withFileTypes: true }));
+    for (const entry of entries) {
+      const full = resolve(current, entry.name);
+      if (entry.isDirectory()) pending.push(full);
+      else if (/\.(astro|ts|tsx|js|mjs)$/.test(entry.name) && (await source(full)).includes("/load-board/?")) offenders.push(full);
+    }
+  }
+  expect(offenders).toEqual([]);
+});
+'''
+
+test_path.write_text(test)
+CHANGED.add(str(test_path))
+
+offenders = [
+    str(file)
+    for file in Path("src").rglob("*")
+    if file.is_file() and file.suffix in ALLOWED and "/load-board/?" in file.read_text()
+]
+if offenders:
+    raise SystemExit("Query-state Load Board links remain in src: " + ", ".join(offenders))
+
+print(f"Changed files: {len(CHANGED)}")
+for file in sorted(CHANGED):
+    print(f"- {file}")
