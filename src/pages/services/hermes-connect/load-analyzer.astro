@@ -10,12 +10,22 @@ const faqs = [
     question: "What is the intended use of Load Analyzer?",
     answer: "The capability is designed to help freight operators model RPM, fuel cost, deadhead, driver pay, and estimated margin before accepting or negotiating a load.",
   },
+  {
+    question: "What should be verified before an estimate is used?",
+    answer: "Distance, deadhead, fuel assumptions, equipment fit, driver or operating cost inputs, service fees, pickup and delivery timing, and the carrier's own acceptance rules should be reviewed before relying on an estimate.",
+  },
 ];
 
 const capabilities = [
   { title: "RPM verification", body: "Model gross rate per mile against trip distance and estimated deadhead before a dispatch decision." },
   { title: "Cost inputs", body: "Combine fuel, driver-pay, and operating assumptions without presenting external fuel or load-board data as automatically live." },
   { title: "Margin threshold", body: "Use the resulting estimate as a decision aid for human review and negotiation, not as a guaranteed financial outcome." },
+];
+
+const evaluationPoints = [
+  { title: "Trip geometry", body: "Separate loaded miles from expected empty repositioning and confirm whether pickup and delivery timing changes the practical route." },
+  { title: "Operating assumptions", body: "Keep fuel, driver pay, maintenance reserve, tolls, service fees and other user-entered costs visible so an estimate can be challenged or updated." },
+  { title: "Decision ownership", body: "Treat the output as one input to carrier review. Equipment fit, safety, compliance, appointment risk and the carrier's final approval remain outside a simple profitability formula." },
 ];
 ---
 
@@ -26,6 +36,9 @@ const capabilities = [
   canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/load-analyzer/"
   lead="A freight decision-support concept for estimating RPM, fuel, deadhead, driver pay, and margin before accepting or negotiating a load."
   capabilities={capabilities}
+  decisionTitle="What a useful load analysis must keep visible"
+  decisionBody="A profitability estimate is only as useful as its inputs and boundaries. The intended workflow keeps trip geometry, operating assumptions and carrier decision ownership explicit instead of turning one calculated number into an automatic booking recommendation."
+  evaluationPoints={evaluationPoints}
   boundary="Live DAT, Truckstop, fuel-price, or broker integrations are not claimed on this page. The current live Hermes Connect pilot is Repair Shops; Load Analyzer remains a product-family reference capability until its production data sources and access model are verified."
   faqs={faqs}
 />
