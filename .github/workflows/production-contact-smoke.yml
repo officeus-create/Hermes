@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - .github/workflows/production-contact-smoke.yml
+      - src/components/HomeRecoveryFinish.astro
+      - src/components/SiteFooter.astro
   workflow_dispatch:
 
 permissions:
@@ -20,6 +22,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      - name: Check out the monitor contract
+        uses: actions/checkout@v4
+
+      - name: Verify production smoke markers stay current
+        run: node scripts/production-contact-smoke-contract.test.mjs
+
       - name: Wait for current production HTML
         id: production_html
         continue-on-error: true
@@ -27,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           expected_footer='Website inquiries are delivered securely by email'
-          expected_contact='Send your request securely to the Hermes team.'
+          expected_contact='Keep the next step simple.'
           live=0
 
           for attempt in $(seq 1 18); do
