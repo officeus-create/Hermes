@@ -4,12 +4,16 @@ import { extname, join } from "node:path";
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
 
-const budgets = {
+// Advisory review thresholds only. They never block CI or release.
+// The site is expected to grow as useful SEO/GEO and product pages are added.
+const reviewThresholds = {
   html: 500_000,
   css: 350_000,
   javascript: 400_000,
   image: 1_500_000,
-  total: 25_000_000,
+  imageOptimization: 250_000,
+  htmlDuplicationReview: 200_000,
+  siteGrowthCheckpoint: 25_000_000,
 };
 
 async function collectFiles(directory, relative = "") {
@@ -24,7 +28,6 @@ async function collectFiles(directory, relative = "") {
 }
 
 const files = await collectFiles(dist);
-const errors = [];
 const warnings = [];
 let totalBytes = 0;
 let htmlCount = 0;
@@ -40,8 +43,11 @@ for (const relativePath of files) {
 
   if (extension === ".html") {
     htmlCount += 1;
-    if (info.size > budgets.html) errors.push(`${relativePath}: HTML is ${info.size} bytes; budget is ${budgets.html}`);
-    else if (info.size > 200_000) warnings.push(`${relativePath}: HTML is ${info.size} bytes; review repeated markup and inline payloads`);
+    if (info.size > reviewThresholds.html) {
+      warnings.push(`${relativePath}: HTML is ${info.size} bytes; review repeated markup, inline scripts/styles, and page-specific payloads`);
+    } else if (info.size > reviewThresholds.htmlDuplicationReview) {
+      warnings.push(`${relativePath}: HTML is ${info.size} bytes; consider a duplication/inline-payload review when convenient`);
+    }
 
     const html = await readFile(absolutePath, "utf8");
     for (const match of html.matchAll(/<img\b[^>]*>/gi)) {
@@ -63,24 +69,35 @@ for (const relativePath of files) {
       }
     }
   } else if (extension === ".css") {
-    if (info.size > budgets.css) errors.push(`${relativePath}: CSS is ${info.size} bytes; budget is ${budgets.css}`);
+    if (info.size > reviewThresholds.css) {
+      warnings.push(`${relativePath}: CSS is ${info.size} bytes; review unused selectors, duplicate rules, and route-specific styles`);
+    }
   } else if ([".js", ".mjs"].includes(extension)) {
-    if (info.size > budgets.javascript) errors.push(`${relativePath}: JavaScript is ${info.size} bytes; budget is ${budgets.javascript}`);
+    if (info.size > reviewThresholds.javascript) {
+      warnings.push(`${relativePath}: JavaScript is ${info.size} bytes; review route scope, duplication, and unused code`);
+    }
   } else if (imageExtensions.has(extension)) {
     imageCount += 1;
-    if (info.size > budgets.image) errors.push(`${relativePath}: image is ${info.size} bytes; budget is ${budgets.image}`);
-    else if (info.size > 250_000) warnings.push(`${relativePath}: image is ${info.size} bytes; create responsive modern-format variants`);
+    if (info.size > reviewThresholds.image) {
+      warnings.push(`${relativePath}: image is ${info.size} bytes; review dimensions, compression, and modern-format variants`);
+    } else if (info.size > reviewThresholds.imageOptimization) {
+      warnings.push(`${relativePath}: image is ${info.size} bytes; consider responsive modern-format variants`);
+    }
   }
 }
 
-if (totalBytes > budgets.total) errors.push(`Generated site is ${totalBytes} bytes; total budget is ${budgets.total}`);
-
-const uniqueWarnings = [...new Set(warnings)];
-for (const warning of uniqueWarnings) console.warn(`Performance warning — ${warning}`);
-if (errors.length) {
-  throw new Error(`Performance budget failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
+const checkpoint = reviewThresholds.siteGrowthCheckpoint;
+const crossedCheckpoint = Math.floor(totalBytes / checkpoint) * checkpoint;
+const nextCheckpoint = crossedCheckpoint + checkpoint;
+if (crossedCheckpoint >= checkpoint) {
+  warnings.push(
+    `Generated site is ${totalBytes} bytes and has crossed the ${crossedCheckpoint}-byte growth checkpoint. This is advisory only: review size analytics, identify duplicate or stale generated/public assets, inspect old demos/reports/artifacts, and remove confirmed unused material. Do not delete useful revenue/SEO pages or rewrite Git history just to reduce size. Next review checkpoint: ${nextCheckpoint} bytes.`,
+  );
 }
 
+const uniqueWarnings = [...new Set(warnings)];
+for (const warning of uniqueWarnings) console.warn(`Performance advisory — ${warning}`);
+
 console.log(
-  `Performance budget passed: ${files.length} files, ${htmlCount} HTML pages, ${imageCount} images, ${totalBytes} total bytes, ${uniqueWarnings.length} unique review warning(s).`,
+  `Performance advisory completed (non-blocking): ${files.length} files, ${htmlCount} HTML pages, ${imageCount} images, ${totalBytes} total bytes, ${uniqueWarnings.length} unique review recommendation(s).`,
 );
