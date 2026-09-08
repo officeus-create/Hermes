@@ -15,6 +15,15 @@ const cluster = [
 ];
 const expectedAlternates = new Map(cluster.map((item) => [item.lang, `${origin}${item.route}`]));
 expectedAlternates.set("x-default", `${origin}/`);
+const academyApplyCluster = [
+  { lang: "en", route: "/academy/apply/", htmlPath: "academy/apply/index.html" },
+  { lang: "uk", route: "/ua/academy/apply/", htmlPath: "ua/academy/apply/index.html" },
+];
+const academyApplyAlternates = new Map([
+  ["en", `${origin}/academy/apply/`],
+  ["uk", `${origin}/ua/academy/apply/`],
+  ["x-default", `${origin}/academy/apply/`],
+]);
 const errors = [];
 
 const decode = (value = "") => value.replaceAll("&amp;", "&").trim();
@@ -24,7 +33,7 @@ const getAttr = (tag, name) => {
 };
 const linkTags = (html) => [...html.matchAll(/<link\b[^>]*>/gi)].map((match) => match[0]);
 
-for (const page of cluster) {
+const validatePageAlternates = async (page, expected) => {
   const html = await readFile(join(dist, page.htmlPath), "utf8");
   const langMatch = html.match(/<html\b[^>]*\blang=["']([^"']+)["']/i);
   if (langMatch?.[1] !== page.lang) errors.push(`${page.route}: expected html lang=${page.lang}, received ${langMatch?.[1] || "missing"}`);
@@ -35,7 +44,7 @@ for (const page of cluster) {
       .map((tag) => [getAttr(tag, "hreflang").toLowerCase(), getAttr(tag, "href")]),
   );
 
-  for (const [lang, expectedUrl] of expectedAlternates) {
+  for (const [lang, expectedUrl] of expected) {
     const actual = alternates.get(lang);
     if (actual !== expectedUrl) errors.push(`${page.route}: hreflang ${lang} expected ${expectedUrl}, received ${actual || "missing"}`);
   }
@@ -47,7 +56,10 @@ for (const page of cluster) {
   if (canonical.length !== 1 || canonical[0] !== expectedCanonical) {
     errors.push(`${page.route}: same-language canonical expected ${expectedCanonical}, received ${canonical.join(", ") || "missing"}`);
   }
-}
+};
+
+for (const page of cluster) await validatePageAlternates(page, expectedAlternates);
+for (const page of academyApplyCluster) await validatePageAlternates(page, academyApplyAlternates);
 
 const sitemap = await readFile(join(dist, "sitemap.xml"), "utf8");
 for (const page of cluster) {
@@ -83,4 +95,4 @@ if (errors.length) {
   throw new Error(`Hreflang audit failed with ${errors.length} error(s):\n${errors.map((error) => `- ${error}`).join("\n")}`);
 }
 
-console.log(`Hreflang audit passed: ${cluster.length} reciprocal language pages plus x-default, with matching sitemap annotations.`);
+console.log(`Hreflang audit passed: ${cluster.length} homepage language pages plus reciprocal Academy Apply EN/UK and x-default.`);

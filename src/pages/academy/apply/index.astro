@@ -11,6 +11,11 @@ const title = "Apply to Hermes Academy | Program Review";
 const description =
   "Prepare your program choice, country and city, languages, English level, recent experience, objective, schedule, U.S. time-zone availability, and preferred contact route for human review.";
 const canonicalUrl = new URL("/academy/apply/", Astro.site).toString();
+const alternates = [
+  { lang: "en", href: "/academy/apply/" },
+  { lang: "uk", href: "/ua/academy/apply/" },
+  { lang: "x-default", href: "/academy/apply/" },
+];
 const academyEntity = {
   "@type": "Organization",
   "@id": "https://hermeslogisticsus.com/#academy",
@@ -80,7 +85,7 @@ const schema = [
 ];
 ---
 
-<BaseLayout title={title} description={description} schema={schema}>
+<BaseLayout title={title} description={description} schema={schema} alternates={alternates}>
   <div class="logistics-resource-page academy-apply-page">
     <SiteHeader theme="dark" activePath="/paths/academy/" />
     <main id="main-content">
