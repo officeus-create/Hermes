@@ -36,6 +36,13 @@ const htmlPathFromUrl = (url) => {
   return `${pathname.slice(1)}/index.html`;
 };
 
+const googleVerificationFilenamePattern = /^google[a-z0-9]+\.html$/i;
+const isGoogleVerificationFile = (path, html) => (
+  !path.includes("/")
+  && googleVerificationFilenamePattern.test(path)
+  && html.trim() === `google-site-verification: ${path}`
+);
+
 const decode = (value = "") => value
   .replaceAll("&amp;", "&")
   .replaceAll("&quot;", '"')
@@ -140,6 +147,8 @@ const indexableRoutes = [];
 
 for (const [path, html] of htmlByPath) {
   const route = routeFromHtmlPath(path);
+  if (isGoogleVerificationFile(path, html)) continue;
+
   const visibleText = stripTags(html).toLowerCase();
   const robotsTags = metaByName(html, "robots");
   const robotsContent = robotsTags.map((tag) => getAttr(tag, "content").toLowerCase()).join(",");
