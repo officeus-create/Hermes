@@ -12,6 +12,17 @@ Acquire qualified car-hauling owner-operators and fleets from search around mark
 
 The public pages do not publish private shipment history, customer identities, private routes, rates, MC/USDOT values, or internal load counts. Private operating history is used only to prioritize markets internally.
 
+## Measurement sources
+
+Keep evidence classes separate and do not substitute one source for another:
+
+- **Production/live** — custom-domain HTTP/rendered-page verification proves deployment, response status, canonical/indexability, and visible public content.
+- **Google Search Console / GSC Wizard** — content group `Car Hauler GEO 25 Markets`, tracked URLs, URL Inspection verdict/coverage/crawl state, and settled search performance. If tracker summary counters conflict with URL Inspection details, use the URL-level `verdict` + `coverage_state` + crawl evidence for index truth.
+- **GA4 / HYPD** — current authoritative Hermes property `properties/547903956`; use privacy-safe eventName × pagePath reporting for consenting traffic only.
+- **SE Ranking** — project `Hermes Logistics US — SEO/GEO`, keyword group `Car Hauler GEO 25 Markets`; one strict-target `car hauler loads <market>` probe per city page. Treat modelled search volume independently from rank position; zero/unknown modelled volume is not proof of zero real demand.
+- **IndexNow** — notification evidence only. The 2026-09-08 production submission of 194 canonical sitemap-backed URLs was accepted with HTTP 200; this is not Bing crawl/index/ranking proof.
+- **Private operations / agreement flow** — human qualification, receiver delivery, opportunity, agreement and revenue evidence stay separate from public analytics.
+
 ## 25 launch markets
 
 1. Colorado Springs, CO
@@ -60,8 +71,10 @@ The hub owns the multi-market discovery intent; each city page adds unique marke
 
 ## New privacy-safe analytics events
 
+Carrier GEO analytics are **consent-gated**. Do not emit or infer `carrier_geo_*` events before explicit analytics consent. When a first-time visitor grants analytics consent after page load, GEO measurement initializes exactly once from that point forward. No pre-consent events are retroactively replayed. Therefore a zero GA4 carrier-event count is not equivalent to zero total page visits; compare it with consent-independent search/index evidence before diagnosing traffic.
+
 ### `carrier_geo_page_view`
-Meaning: a launch hub or city page rendered and the GEO measurement enhancer initialized.
+Meaning: a launch hub or city page has explicit analytics consent and the GEO measurement layer initialized exactly once for that page view.
 
 Controlled parameters only:
 - `audience_type=carrier`
@@ -70,7 +83,7 @@ Controlled parameters only:
 - `page_path`
 
 ### `carrier_geo_section_view`
-Meaning: the visitor reached a measurable section of the page.
+Meaning: after analytics consent, the visitor reached a measurable section of the page.
 
 Controlled parameters only:
 - the base values above
@@ -93,7 +106,7 @@ Hub section IDs:
 - `conversion`
 
 ### `carrier_geo_cta_click`
-Meaning: visitor selected a controlled next action from the GEO cluster.
+Meaning: after analytics consent, the visitor selected a controlled next action from the GEO cluster.
 
 Controlled CTA types include:
 - `start_review`
@@ -104,7 +117,7 @@ Controlled CTA types include:
 - `dispatch_details`
 - `all_markets`
 
-The existing `commercial_cta_click` remains the canonical commercial-entry event when a GEO page sends a carrier to `/logistics/start-car-hauling-dispatch/`.
+The existing `commercial_cta_click` remains the canonical commercial-entry event when a consenting GEO visitor goes to `/logistics/start-car-hauling-dispatch/`.
 
 No submitted form values, names, email addresses, phone numbers, company names, MC/USDOT, exact routes, rates, budgets, or contract details may enter analytics.
 
@@ -112,7 +125,7 @@ No submitted form values, names, email addresses, phone numbers, company names, 
 
 Use the existing carrier funnel after the GEO CTA:
 
-1. `commercial_cta_click` — GEO visitor chose direct carrier intake.
+1. `commercial_cta_click` — consenting GEO visitor chose direct carrier intake.
 2. `carrier_intake_start` — carrier interacted with intake.
 3. `carrier_intake_preview_ready` — local qualified review was prepared.
 4. `carrier_handoff_ready` — handoff route was selected.
@@ -123,21 +136,23 @@ Use the existing carrier funnel after the GEO CTA:
 
 For each of the 25 city pages and the hub, record when available:
 
-- organic/search landing users or sessions;
-- total page views;
-- `carrier_geo_page_view` count;
-- section reach by section ID;
-- CTA clicks by CTA type;
-- CTA click-through rate from GEO page to direct carrier intake;
+- production HTTP/canonical/indexability status;
+- Google URL Inspection verdict, coverage state, crawl time and page fetch state;
+- organic/search impressions, clicks, CTR, average position, query and landing page when settled GSC data exists;
+- SE Ranking first/current position for the strict target query and whether the intended city URL ranks rather than another Hermes URL;
+- total landing/page-view evidence where available;
+- `carrier_geo_page_view` count for consenting traffic;
+- section reach by section ID for consenting traffic;
+- CTA clicks by CTA type for consenting traffic;
+- CTA click-through rate from GEO page to direct carrier intake when denominator and consent scope are comparable;
 - `carrier_intake_start`;
 - `carrier_intake_preview_ready`;
 - `carrier_handoff_ready`;
 - `carrier_delivery_confirmed`, reconciled against receiver evidence before calling it a lead;
 - carrier contract/proposal/onboarding progression when applicable;
-- Search Console impressions, clicks, CTR, average position, query, and landing page when settled data is available;
-- Bing/IndexNow discovery evidence when available.
+- Bing platform evidence only when authenticated Bing Webmaster evidence exists; IndexNow acceptance alone remains notification evidence.
 
-Search Console data can lag and should be labelled provisional at the 72-hour checkpoint rather than treated as complete.
+Search Console data can lag and should be labelled provisional at the 72-hour checkpoint rather than treated as complete. GA4 is consent-scoped; do not equate analytics-event absence with total-visit absence.
 
 ## Diagnosis rules
 
@@ -148,12 +163,21 @@ Do not redesign the page first. Check:
 - production deployment and canonical readback;
 - sitemap ownership;
 - robots/indexability;
-- IndexNow submission state;
+- IndexNow notification state;
 - Search Console URL/query evidence;
+- SE Ranking strict-target position and wrong-page ranking;
 - internal links;
 - whether the query has enough actual local demand.
 
-### 2. Landing traffic but weak reach beyond `hero`
+### 2. Search/landing evidence exists but no GA4 carrier events
+Do not immediately call this a broken funnel. Separate:
+- visitors who did not grant analytics consent;
+- analytics instrumentation failure;
+- low sample size.
+
+Verify the consent-safe telemetry contract and compare with GSC/SE Ranking evidence before changing the page.
+
+### 3. Consenting landing traffic but weak reach beyond `hero`
 Likely problem class: hero/message mismatch, slow/awkward first screen, wrong search intent, weak trust, or immediate UX problem.
 
 Review:
@@ -163,7 +187,7 @@ Review:
 - whether “loads now” is visible quickly enough;
 - CTA wording and visual hierarchy.
 
-### 3. Reaches `three_workstreams` / `load_sources`, then exits
+### 4. Reaches `three_workstreams` / `load_sources`, then exits
 Likely problem class: explanation is too complex, source coverage does not feel credible, or the carrier still cannot see the immediate value.
 
 Review:
@@ -171,7 +195,7 @@ Review:
 - move carrier-control/trust proof closer to source coverage;
 - make “what Hermes does today” visually dominant over long-term features.
 
-### 4. Reaches `support_20` / `ecosystem`, but no CTA
+### 5. Reaches `support_20` / `ecosystem`, but no CTA
 Likely problem class: high curiosity, weak commercial offer or insufficient trust/price/scope clarity.
 
 Review:
@@ -180,7 +204,7 @@ Review:
 - proof and objections;
 - whether Load Board / Hermes Connect distract from the primary dispatch conversion.
 
-### 5. `carrier_geo_cta_click=start_review`, but no `carrier_intake_start`
+### 6. `carrier_geo_cta_click=start_review`, but no `carrier_intake_start`
 Likely problem class: destination-page friction.
 
 Review:
@@ -189,12 +213,12 @@ Review:
 - trust/disclosure overload;
 - whether the carrier understands what happens after submission.
 
-### 6. `carrier_intake_start`, but no `carrier_intake_preview_ready`
+### 7. `carrier_intake_start`, but no `carrier_intake_preview_ready`
 Likely problem class: form friction or qualification fields.
 
 Review field-level UX privately without sending submitted values to analytics. Measure only controlled step/status signals.
 
-### 7. Intake/handoff succeeds, but carrier does not progress to commercial agreement
+### 8. Intake/handoff succeeds, but carrier does not progress to commercial agreement
 Likely problem class: sales qualification, commercial scope, fee, trust, or follow-up — not SEO.
 
 Review the human sales handoff and agreement journey separately from page design.
@@ -203,7 +227,7 @@ Review the human sales handoff and agreement journey separately from page design
 
 Do not make a broad site redesign from aggregate impressions alone. Change the smallest proven weak point in the funnel:
 
-`discovery → hero → value depth → CTA → intake → handoff → agreement`
+`discovery → correct ranking owner → hero → value depth → CTA → intake → handoff → agreement`
 
 Keep a city page unchanged when the sample is too small to support a design conclusion. Scale or rewrite only with evidence.
 
