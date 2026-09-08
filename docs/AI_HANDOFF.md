@@ -980,3 +980,14 @@ entries — append only.
 - Confirmed repository defect and repair: the Hermes review correctly identified that `classifyEvidenceScope()` did not recognize Linux `/home/...` paths. The classifier now conservatively covers macOS/Linux home and system roots, and regression coverage requires `/home/runner/.codex/...` to be review-gated.
 - Fallback boundary: no fallback exercise was attempted. A direct `401` and absent external-auth helper are configuration/transport failures, not valid evidence of a controlled authenticated-provider fallback.
 - Verification: focused benchmark contract passed; `npm run build`, `npm test`, and `npm run test:e2e` passed on the repaired current head (`1061 passed`, `11 skipped`). Exact-head remote CI remains required before merge. The owner-authorized provider call was bounded to this single quarantined pair.
+
+## 2026-09-08 — Codex — Production contact smoke freshness recovery
+
+- Agent/task owner: Codex; bounded production-observability closeout under issues #167 and #206.
+- Defect: fresh workflow run `34223703026` on exact production main `0b04a573da860e853eee8bb12bb202e4ef0d266e` never attempted the synthetic inquiry because the monitor required retired homepage copy. Cloudflare readback independently confirmed the existing production lead-delivery bindings are present and production mode is `live`; preview remains `off`. No secret value or private infrastructure identifier was read or recorded.
+- Change: the monitor now uses the current canonical homepage contact marker, reruns when either monitored source component changes, and has a static contract tying both workflow markers and trigger paths to their source files.
+- Existing adjacent evidence: Repair Shop customer-to-booking-to-owner-CRM production smoke run `34216789850` passed on 2026-09-08 and cleaned its synthetic records. This change does not create a second CRM or delivery architecture.
+- Data/privacy: the existing fixed synthetic payload, idempotency key and sanitized issue report are unchanged. No customer data, credential, CRM record, analytics configuration, search account, public copy, SEO owner, or URL family changed.
+- Rollback: revert this branch commit; the previous workflow behavior returns. Do not remove or rotate production bindings as rollback.
+- Verification required before promotion: focused contract, `git diff --check`, `npm run build`, `npm test`, `npm run test:e2e`, exact-head GitHub CI, then one workflow-dispatch PASS and approved inbox reconciliation.
+- Ecosystem compounding scorecard: primary outcome and conversion observability improve; SEO/public content/internal linking remain unchanged; reusable architecture improves through source-linked monitoring; data/privacy remains synthetic and sanitized; no adjacent expansion was taken.

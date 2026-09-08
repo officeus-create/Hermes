@@ -145,3 +145,5 @@ for (const [scriptName, command] of Object.entries(packageJson.scripts ?? {})) {
 }
 
 console.log("Cloudflare deployment ownership contract passed: Pages has exact-SHA Wrangler/native-Git release verification plus one composed hermes-lead-email Worker owner.");
+
+await import("./production-contact-smoke-contract.test.mjs");
