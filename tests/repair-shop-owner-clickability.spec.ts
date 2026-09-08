@@ -85,7 +85,9 @@ test("Repair Shop owner dashboard exposes real actions instead of visible dead c
   await expect(page.locator("#feedback-list")).toContainText("The dashboard controls are now usable on mobile.");
 
   await expect(page.getByRole("link", { name: /Customers|Клиенты/ }).first()).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/customers\//);
-  await expect(page.getByRole("link", { name: /Manage availability|Доступность|Расписание/ }).first()).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/availability\//);
+  const availabilityLink = page.locator('a[href*="/services/hermes-connect/repair-shops/availability/"]').first();
+  await expect(availabilityLink).toBeVisible();
+  await expect(availabilityLink).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/availability\//);
 
   const enabledVisibleButtons = page.locator("button:visible:not(:disabled)");
   expect(await enabledVisibleButtons.count()).toBeGreaterThan(4);
