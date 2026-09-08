@@ -51,7 +51,8 @@ for (const market of repairPilotMarkets) {
 }
 
 assert.match(carrierPage, /\/logistics\/start-car-hauling-dispatch\//);
-assert.match(carrierPage, /\/load-board\/\?role=carrier/);
+assert.match(carrierPage, /\/load-board\/#role=carrier/);
+assert.doesNotMatch(carrierPage, /\/load-board\/\?role=/, "carrier owner must not publish query-state Load Board links");
 assert.match(carrierPage, /not Hermes office locations/);
 
 assert.match(dealerPage, /role=dealer&request=dealer_inventory/);
