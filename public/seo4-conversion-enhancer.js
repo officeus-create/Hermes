@@ -50,10 +50,41 @@
     registerTab.click();
   };
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", applyRepairAuthMode, { once: true });
-  } else {
+  const applyAccessibilityRoles = () => {
+    const selectors = [".footer-contacts"];
+    if (window.location.pathname === "/load-board/") {
+      selectors.push(
+        ".hlb-live-stats",
+        ".load-search-bar",
+        ".demo-city-choices",
+        ".available-load-list",
+      );
+    }
+    if (window.location.pathname === repairShopRoot) {
+      selectors.push(
+        ".repair-lifecycle",
+        ".repair-geo-market-grid",
+        ".repair-geo-actions",
+      );
+    }
+
+    selectors.forEach((selector) => {
+      document.querySelectorAll(selector).forEach((node) => {
+        if (!(node instanceof HTMLElement) || !node.hasAttribute("aria-label") || node.hasAttribute("role")) return;
+        node.setAttribute("role", "group");
+      });
+    });
+  };
+
+  const applyDomReadyEnhancements = () => {
     applyRepairAuthMode();
+    applyAccessibilityRoles();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyDomReadyEnhancements, { once: true });
+  } else {
+    applyDomReadyEnhancements();
   }
 
   window.addEventListener("hermes:repair-registration-complete", () => {
