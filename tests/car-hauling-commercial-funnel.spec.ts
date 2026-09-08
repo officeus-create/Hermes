@@ -18,9 +18,9 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   await expect(actions.getByRole("link", { name: "+1 (262) 302-3626" })).toHaveAttribute("href", "tel:+12623023626");
 
   const publicCopy = await page.locator("main").innerText();
-  expect(publicCopy).toContain("You do not get just a dispatcher.");
-  expect(publicCopy).toContain("Team 1 · Keep today moving");
-  expect(publicCopy).toContain("Team 2 · Build tomorrow's demand");
+  expect(publicCopy).toContain("Workstream 1 · Find the next candidate load");
+  expect(publicCopy).toContain("Workstream 2 · Expand search + back office");
+  expect(publicCopy).toContain("Workstream 3 · Develop direct demand");
   expect(publicCopy).toContain("Scope before percentage");
   expect(publicCopy).toContain("Why can the Full Partnership option be 8%?");
   expect(publicCopy).toContain("Can I reject a load?");
