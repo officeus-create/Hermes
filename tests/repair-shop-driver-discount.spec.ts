@@ -20,8 +20,9 @@ const services = [
   { id: "svc-brakes", name: "Тормозная система", duration_minutes: 60 },
 ];
 
-test("repair shop owner can publish a scoped Hermes Connect driver discount", async ({ page }) => {
+test("repair shop owner can use the polished driver discount on mobile and publish a scoped benefit", async ({ page }) => {
   let savedBody: any = null;
+  await page.setViewportSize({ width: 390, height: 844 });
 
   await page.route("**/api/hermes-connect/account", (route) => route.fulfill(json({
     success: true,
@@ -62,6 +63,22 @@ test("repair shop owner can publish a scoped Hermes Connect driver discount", as
   await expect(panel).toBeVisible();
   await expect(panel).toContainText("Скидка для водителей");
   await expect(panel.locator(".hc-driver-discount-dollar")).toHaveText("$");
+  await expect(panel).toHaveAttribute("data-driver-discount-clickable-ready", "true");
+
+  const preview = panel.locator("[data-driver-discount-preview]");
+  await expect(preview).toBeVisible();
+  await expect(preview).toContainText("Предпросмотр");
+  await expect(preview).toContainText("Скидка не настроена");
+  await expect(preview).toContainText("Скрыто от клиентов");
+
+  const saveButton = panel.getByRole("button", { name: "Сохранить скидку" });
+  const serviceScopeSelected = panel.locator('input[name="hc-service-scope"][value="selected"]').locator("..");
+  const tapHeights = await Promise.all([
+    saveButton.evaluate((node) => node.getBoundingClientRect().height),
+    serviceScopeSelected.evaluate((node) => node.getBoundingClientRect().height),
+    panel.locator(".hc-driver-discount-enable").evaluate((node) => node.getBoundingClientRect().height),
+  ]);
+  for (const height of tapHeights) expect(height).toBeGreaterThanOrEqual(44);
 
   await panel.locator("[data-discount-enabled]").check();
   await panel.locator("[data-service-percent]").fill("15");
@@ -70,8 +87,12 @@ test("repair shop owner can publish a scoped Hermes Connect driver discount", as
   await panel.locator("[data-materials-percent]").fill("10");
   await panel.locator('input[name="hc-materials-scope"][value="selected"]').check();
   await panel.locator("[data-materials-list]").fill("Фильтры, Тормозные колодки");
-  await panel.getByRole("button", { name: "Сохранить скидку" }).click();
 
+  await expect(preview).toContainText("15% услуги");
+  await expect(preview).toContainText("10% запчасти и материалы");
+  await expect(preview).toContainText("Будет видно клиентам после сохранения");
+
+  await saveButton.click();
   await expect(panel.locator("[data-discount-status]")).toContainText("сохранена");
   expect(savedBody).toEqual({
     enabled: true,
@@ -82,6 +103,9 @@ test("repair shop owner can publish a scoped Hermes Connect driver discount", as
     materials_scope: "selected",
     materials_items: ["Фильтры", "Тормозные колодки"],
   });
+
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+  expect(overflow).toBe(false);
 });
 
 test("public mobile booking shows the green Hermes Connect driver benefit before booking", async ({ page }) => {
