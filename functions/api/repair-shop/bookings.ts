@@ -2,7 +2,7 @@ import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
 import { ensureRepairShopBookingsSchema } from "../_lib/repair-shop-bookings-schema.mjs";
 import { ensureRepairShopBookingHistorySchema } from "../_lib/repair-shop-booking-history-schema.mjs";
 import { ensureRepairShopBookingVehicleSchema } from "../_lib/repair-shop-booking-vehicle-schema.mjs";
-import { ensureOfficeRepairDemoData } from "../_lib/repair-shop-office-demo.mjs";
+import { ensureRepairShopSyntheticDemoData } from "../_lib/repair-shop-synthetic-demo.mjs";
 
 type Env = { DB?: any; HERMES_SYNTHETIC_ACCOUNT_EMAILS?: string };
 
@@ -11,7 +11,7 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return jsonResponse(401, { success: false, error: "not_authenticated" });
 
-  const demoSeed = await ensureOfficeRepairDemoData({ db: env.DB, env, specialist });
+  const demoSeed = await ensureRepairShopSyntheticDemoData({ db: env.DB, env, specialist });
   await ensureRepairShopBookingsSchema(env.DB);
   await ensureRepairShopBookingHistorySchema(env.DB);
   await ensureRepairShopBookingVehicleSchema(env.DB);
