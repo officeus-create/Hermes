@@ -26,3 +26,14 @@ test("Hermes Connect Product Hub keeps explicit Russian locale after shared runt
   expect(localizedLinks.length).toBeGreaterThan(0);
   for (const href of localizedLinks) expect(new URL(href).searchParams.get("lang")).toBe("ru");
 });
+
+test("Hermes Connect Product Hub restores a previously selected Russian locale on a clean URL", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("hermes-connect-language", "ru"));
+  await page.goto("/services/hermes-connect/", { waitUntil: "domcontentloaded" });
+
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator(".hc-brand-page")).toHaveAttribute("data-hc-hub-locale", "ru");
+  await expect(page.locator(".hc-hero h1")).toContainText("Управляйте бизнесом");
+  await expect(page.locator(".hc-truth")).toContainText("СТО уже работает");
+});
