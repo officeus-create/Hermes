@@ -1,0 +1,34 @@
+name: Hermes Connect locale persistence one-shot
+
+on:
+  push:
+    branches:
+      - fix/hc-locale-persistence-ru-20260908
+    paths:
+      - .github/workflows/hc-locale-persistence-one-shot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/hc-locale-persistence-ru-20260908
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Apply bounded Hermes Connect RU persistence patch
+        run: node scripts/repair-hc-locale-persistence-patch.mjs
+      - name: Remove one-shot implementation helpers
+        run: rm .github/workflows/hc-locale-persistence-one-shot.yml scripts/repair-hc-locale-persistence-patch.mjs
+      - name: Commit product changes
+        run: |
+          git config user.name "officeus-create"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add src/layouts/BaseLayout.astro src/components/RepairShopOwnerNavEnhancer.astro src/pages/services/hermes-connect/repair-shops/settings.astro tests/repair-shop-settings.spec.ts tests/hermes-connect-mobile-nav-contrast.spec.ts .github/workflows/hc-locale-persistence-one-shot.yml scripts/repair-hc-locale-persistence-patch.mjs
+          git diff --cached --exit-code && { echo "No locale patch changes produced"; exit 1; } || true
+          git commit -m "fix(hc): persist selected locale across Connect CRM"
+          git push origin HEAD:fix/hc-locale-persistence-ru-20260908
