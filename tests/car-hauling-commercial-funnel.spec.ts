@@ -26,13 +26,14 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
   expect(publicCopy).toContain("Can I reject a load?");
   expect(publicCopy).toContain("MC or USDOT number");
   expect(publicCopy).toContain("Does Hermes guarantee loads, rates, or revenue?");
-  expect(publicCopy).toContain("No guaranteed lanes or revenue claims.");
+  expect(publicCopy).toContain("Timing, responses, direct customers, lanes, rates, volume, and revenue are not guaranteed.");
   expect(publicCopy).toMatch(/carrier.*final decision/i);
-  expect(publicCopy).toContain("fictional product preview");
-  expect(publicCopy).toContain("First 24–48 hours after approval");
-  expect(publicCopy).toContain("What happens during the first 24–48 hours after approval?");
+  expect(publicCopy).toContain("The public Load Board remains an illustrative product preview and is not the commercial intake path.");
+  expect(publicCopy).toContain("Initial setup and candidate-load workflow");
   expect(publicCopy).toContain("not a guarantee of dispatcher assignment, response time, load availability, booking, rate, mileage, lane consistency, or revenue");
-  expect(publicCopy).toContain("Missing documents, market conditions, broker requirements, or carrier changes can extend the sequence.");
+  expect(publicCopy).toContain("What happens after I complete the carrier intake?");
+  expect(publicCopy).toContain("The carrier makes the final decision before booking.");
+  expect(publicCopy).toContain("carrier remains responsible for safe and lawful transportation");
   expect(publicCopy).not.toMatch(/guaranteed direct loads|guaranteed rankings|guaranteed customers/i);
 
   await page.evaluate(() => {
