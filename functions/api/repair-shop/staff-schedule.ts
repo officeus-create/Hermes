@@ -19,6 +19,15 @@ type ScheduleInput = { staff_id?: unknown; days?: DayInput[] };
 type OwnerContext =
   | { response: Response; specialist?: never; shop?: never }
   | { response?: undefined; specialist: any; shop: any };
+type NormalizedBreak = { start_time: string; end_time: string };
+type NormalizedDay = {
+  day_of_week: number;
+  is_working: boolean;
+  start_time: string | null;
+  end_time: string | null;
+  breaks: NormalizedBreak[];
+};
+type ValidationError = { error: string };
 
 const TIME_RE = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const clean = (value: unknown, max = 96) => String(value ?? "").trim().slice(0, max);
@@ -60,53 +69,47 @@ async function readSchedule(db: any, ownerId: string, shopId: string, staffId?: 
   return (result?.results ?? []).map(serializeRepairShopStaffSchedule);
 }
 
-function normalizeBreaks(value: unknown, shiftStart: string, shiftEnd: string) {
-  if (value == null) return { breaks: [] as { start_time: string; end_time: string }[] };
-  if (!Array.isArray(value)) return { error: "invalid_breaks" } as const;
-  const breaks: { start_time: string; end_time: string }[] = [];
+function normalizeBreaks(value: unknown, shiftStart: string, shiftEnd: string): { breaks: NormalizedBreak[] } | ValidationError {
+  if (value == null) return { breaks: [] };
+  if (!Array.isArray(value)) return { error: "invalid_breaks" };
+  const breaks: NormalizedBreak[] = [];
   for (const raw of value.slice(0, 3) as BreakInput[]) {
     const start = clean(raw?.start_time, 5);
     const end = clean(raw?.end_time, 5);
-    if (!TIME_RE.test(start) || !TIME_RE.test(end) || start >= end) return { error: "invalid_break_time" } as const;
-    if (start < shiftStart || end > shiftEnd) return { error: "break_outside_shift" } as const;
+    if (!TIME_RE.test(start) || !TIME_RE.test(end) || start >= end) return { error: "invalid_break_time" };
+    if (start < shiftStart || end > shiftEnd) return { error: "break_outside_shift" };
     breaks.push({ start_time: start, end_time: end });
   }
   breaks.sort((a, b) => a.start_time.localeCompare(b.start_time));
   for (let index = 1; index < breaks.length; index += 1) {
-    if (breaks[index].start_time < breaks[index - 1].end_time) return { error: "overlapping_breaks" } as const;
+    if (breaks[index].start_time < breaks[index - 1].end_time) return { error: "overlapping_breaks" };
   }
-  return { breaks } as const;
+  return { breaks };
 }
 
-function normalizeDays(days: DayInput[] | undefined) {
-  if (!Array.isArray(days) || days.length !== 7) return { error: "seven_days_required" } as const;
+function normalizeDays(days: DayInput[] | undefined): { days: NormalizedDay[] } | ValidationError {
+  if (!Array.isArray(days) || days.length !== 7) return { error: "seven_days_required" };
   const seen = new Set<number>();
-  const normalized: {
-    day_of_week: number;
-    is_working: boolean;
-    start_time: string | null;
-    end_time: string | null;
-    breaks: { start_time: string; end_time: string }[];
-  }[] = [];
+  const normalized: NormalizedDay[] = [];
 
   for (const raw of days) {
     const day = Number(raw.day_of_week);
-    if (!Number.isInteger(day) || day < 0 || day > 6 || seen.has(day)) return { error: "invalid_day_of_week" } as const;
+    if (!Number.isInteger(day) || day < 0 || day > 6 || seen.has(day)) return { error: "invalid_day_of_week" };
     seen.add(day);
-    if (typeof raw.is_working !== "boolean") return { error: "invalid_working_state" } as const;
+    if (typeof raw.is_working !== "boolean") return { error: "invalid_working_state" };
     if (!raw.is_working) {
       normalized.push({ day_of_week: day, is_working: false, start_time: null, end_time: null, breaks: [] });
       continue;
     }
     const start = clean(raw.start_time, 5);
     const end = clean(raw.end_time, 5);
-    if (!TIME_RE.test(start) || !TIME_RE.test(end)) return { error: "invalid_shift_time" } as const;
-    if (start >= end) return { error: "invalid_shift_range" } as const;
+    if (!TIME_RE.test(start) || !TIME_RE.test(end)) return { error: "invalid_shift_time" };
+    if (start >= end) return { error: "invalid_shift_range" };
     const breaksResult = normalizeBreaks(raw.breaks, start, end);
     if ("error" in breaksResult) return breaksResult;
     normalized.push({ day_of_week: day, is_working: true, start_time: start, end_time: end, breaks: breaksResult.breaks });
   }
-  return { days: normalized.sort((a, b) => a.day_of_week - b.day_of_week) } as const;
+  return { days: normalized.sort((a, b) => a.day_of_week - b.day_of_week) };
 }
 
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
