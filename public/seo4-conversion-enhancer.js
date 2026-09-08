@@ -60,6 +60,13 @@
         ".available-load-list",
       );
     }
+    if (window.location.pathname === repairShopRoot) {
+      selectors.push(
+        ".repair-lifecycle",
+        ".repair-geo-market-grid",
+        ".repair-geo-actions",
+      );
+    }
 
     selectors.forEach((selector) => {
       document.querySelectorAll(selector).forEach((node) => {
