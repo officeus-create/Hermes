@@ -1,0 +1,214 @@
+/* Money-page WCAG contrast hardening — loaded only on the canonical Load Board and Repair Shops owner pages.
+   Presentation only: no copy, routing, canonical, schema, analytics, auth, or product-state changes. */
+
+/* Shared overlays rendered outside each page root. */
+body.money-page-contrast .tracking-consent-card,
+body.money-page-contrast [data-tracking-consent] {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+body.money-page-contrast .tracking-consent-card h2,
+body.money-page-contrast #tracking-consent-title,
+body.money-page-contrast .tracking-consent-detail,
+body.money-page-contrast .tracking-consent-policy-link {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+body.money-page-contrast .tracking-consent-policy-link {
+  text-decoration: underline !important;
+}
+
+/* Load Board: keep the existing navy / white direction but remove low-contrast accent text. */
+body.money-page-load-board .site-header-dark {
+  color: #ffffff !important;
+  background: rgba(5, 12, 42, .96) !important;
+  border-color: rgba(255,255,255,.30) !important;
+}
+body.money-page-load-board .site-header-dark :is(.wordmark, .wordmark-mark, .desktop-nav a, .department-menu__primary, .department-menu button, .header-cta, .header-actions a, .header-actions span) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .site-header-dark .wordmark-mark,
+body.money-page-load-board .site-header-dark .header-cta {
+  border-color: rgba(255,255,255,.48) !important;
+  background: #17255f !important;
+}
+body.money-page-load-board .site-header-dark .department-menu__primary,
+body.money-page-load-board .site-header-dark .department-menu button {
+  background: transparent !important;
+}
+
+body.money-page-load-board .load-board-hero,
+body.money-page-load-board .load-board-role-router,
+body.money-page-load-board .load-board-demo-panel,
+body.money-page-load-board .hlb-live-marketplace {
+  color: #ffffff !important;
+}
+body.money-page-load-board .load-board-hero :is(h1, h2, h3, strong, .eyebrow),
+body.money-page-load-board .load-board-role-router :is(h1, h2, h3, strong, .eyebrow, a),
+body.money-page-load-board .load-board-demo-panel :is(h1, h2, h3, strong, .eyebrow, a) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .load-board-hero :is(p, span, small),
+body.money-page-load-board .load-board-role-router :is(p, span, small),
+body.money-page-load-board .load-board-demo-panel :is(p, span, small, li) {
+  color: #e8edff !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .load-board-role-grid a {
+  background: #13215a !important;
+  border-color: #7787c9 !important;
+}
+body.money-page-load-board .load-board-role-grid a > svg {
+  color: #ff8fd1 !important;
+}
+
+body.money-page-load-board .load-board-page .section .eyebrow,
+body.money-page-load-board .available-loads-preview .eyebrow,
+body.money-page-load-board .carrier-workspace-preview .eyebrow,
+body.money-page-load-board #post-load .eyebrow,
+body.money-page-load-board .load-board-form .eyebrow {
+  color: #68134c !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .load-board-page :is(.load-board-section-heading > p:last-child, .load-board-form-note, .load-board-preview-boundary) {
+  color: #40485a !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .load-board-page .button-primary {
+  color: #ffffff !important;
+  background: #68134c !important;
+  border-color: #68134c !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .load-board-page :is(input, select, textarea) {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+body.money-page-load-board .load-board-page :is(input::placeholder, textarea::placeholder) {
+  color: #515a6d !important;
+  opacity: 1 !important;
+}
+
+body.money-page-load-board .hlb-live-marketplace :is(h2, h3, strong) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .hlb-live-marketplace :is(.hlb-live-eyebrow, p, span, small, .hlb-live-empty, .hlb-live-meta, .hlb-live-rate small) {
+  color: #dce5ff !important;
+  opacity: 1 !important;
+}
+body.money-page-load-board .hlb-live-marketplace .hlb-live-actions a {
+  color: #ffffff !important;
+  background: #17265e !important;
+  border-color: #7587c8 !important;
+}
+body.money-page-load-board .hlb-live-marketplace .hlb-live-actions a:first-child {
+  color: #07113c !important;
+  background: #ffffff !important;
+}
+body.money-page-load-board .hlb-live-marketplace :is(.hlb-live-badge, .hlb-live-truth strong) {
+  color: #a8f2d2 !important;
+}
+body.money-page-load-board .hlb-live-marketplace .hlb-live-badge--capacity {
+  color: #d4caff !important;
+}
+body.money-page-load-board .hlb-live-route b {
+  color: #b8c8ff !important;
+}
+
+body.money-page-load-board .load-board-page footer,
+body.money-page-load-board .load-board-page footer :is(p, span, small, strong, a, .footer-contacts-label) {
+  color: #f2f5ff !important;
+  opacity: 1 !important;
+}
+
+/* Repair Shops: Pearl surfaces get dark text, the Obsidian partner block keeps light text. */
+body.money-page-repair .site-header {
+  color: #0b0d12 !important;
+  background: rgba(247,246,243,.99) !important;
+  border-color: rgba(11,13,18,.22) !important;
+}
+body.money-page-repair .site-header :is(.wordmark, .wordmark-mark, .desktop-nav a, .department-menu__primary, .department-menu button, .header-actions span, .header-cta) {
+  color: #111827 !important;
+  opacity: 1 !important;
+}
+body.money-page-repair .site-header :is(.wordmark-mark, .header-cta) {
+  border-color: #717887 !important;
+  background: #ffffff !important;
+}
+body.money-page-repair .site-header .hermes-connect-header-launcher,
+body.money-page-repair .site-header .hc-launcher-header {
+  color: #ffffff !important;
+  background: #111827 !important;
+  border-color: #111827 !important;
+}
+
+body.money-page-repair .repair-pilot-page {
+  --hc-muted: #454c59 !important;
+  color: #111827 !important;
+}
+body.money-page-repair .repair-pilot-page :is(.repair-kicker, .repair-owner-quick-login__eyebrow) {
+  color: #5036b6 !important;
+  opacity: 1 !important;
+}
+body.money-page-repair .repair-pilot-page :is(.repair-lead, .repair-heading > p, .repair-capability-grid p, .repair-link-grid span, .repair-faq-grid p, .repair-trust span, .repair-plan-actions small) {
+  color: #454c59 !important;
+  opacity: 1 !important;
+}
+body.money-page-repair .repair-pilot-page :is(.repair-primary, .repair-owner-quick-login__register) {
+  color: #ffffff !important;
+  background: #111827 !important;
+  border-color: #111827 !important;
+}
+body.money-page-repair .repair-pilot-page :is(.repair-secondary, .repair-owner-quick-login__full-login) {
+  color: #111827 !important;
+  background: #ffffff !important;
+  border-color: #737b89 !important;
+}
+
+body.money-page-repair .repair-pilot-page .repair-offer-grid,
+body.money-page-repair .repair-pilot-page #partner-beta-form,
+body.money-page-repair .repair-pilot-page .repair-live-card {
+  color: #f8fafc !important;
+}
+body.money-page-repair .repair-pilot-page .repair-offer-grid :is(h2, h3, strong, label, legend),
+body.money-page-repair .repair-pilot-page #partner-beta-form :is(h2, h3, strong, label, legend),
+body.money-page-repair .repair-pilot-page .repair-live-card :is(h2, h3, strong) {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+body.money-page-repair .repair-pilot-page .repair-offer-grid :is(p, span, small, li, .repair-offer-field-help, .repair-partner-privacy, .repair-status),
+body.money-page-repair .repair-pilot-page #partner-beta-form :is(p, span, small, li, .repair-offer-field-help, .repair-partner-privacy),
+body.money-page-repair .repair-pilot-page .repair-live-card :is(p, span, small, li) {
+  color: #dce3ef !important;
+  opacity: 1 !important;
+}
+body.money-page-repair .repair-pilot-page .repair-offer-grid .repair-kicker {
+  color: #d5caff !important;
+}
+body.money-page-repair .repair-pilot-page #partner-beta-form :is(input, select, textarea) {
+  color: #ffffff !important;
+  background: #18202e !important;
+  border-color: #8d98aa !important;
+}
+body.money-page-repair .repair-pilot-page #partner-beta-form :is(input::placeholder, textarea::placeholder) {
+  color: #d3dae5 !important;
+  opacity: 1 !important;
+}
+body.money-page-repair .repair-pilot-page #partner-beta-form button,
+body.money-page-repair .repair-pilot-page #submit-btn {
+  color: #111827 !important;
+  background: #dbeafe !important;
+  border-color: #dbeafe !important;
+}
+
+body.money-page-repair :is(.launch-kicker, .launch-policy, .repair-partner-privacy, .repair-offer-field-help) {
+  opacity: 1 !important;
+}
+body.money-page-repair .repair-pilot-page footer,
+body.money-page-repair .repair-pilot-page footer :is(p, span, small, strong, a, .footer-contacts-label) {
+  color: #f2f5ff !important;
+  opacity: 1 !important;
+}
