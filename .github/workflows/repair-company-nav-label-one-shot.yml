@@ -1,0 +1,55 @@
+name: Repair Company nav label one-shot
+
+on:
+  push:
+    branches:
+      - fix/repair-company-nav-label-20260908
+    paths:
+      - .github/workflows/repair-company-nav-label-one-shot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/repair-company-nav-label-20260908
+      - name: Patch Company navigation label and regression expectations
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const navPath = 'src/components/RepairShopOwnerNavEnhancer.astro';
+          const testPath = 'tests/repair-shop-settings.spec.ts';
+          let nav = fs.readFileSync(navPath, 'utf8');
+          const replacements = [
+            ['settings:"Settings"', 'settings:"Company"'],
+            ['settings:"Настройки"', 'settings:"Компания"'],
+            ['settings:"Налаштування"', 'settings:"Компанія"'],
+            ['settings:"Ajustes"', 'settings:"Empresa"'],
+            ['settings:"Impostazioni"', 'settings:"Azienda"'],
+            ['settings:"Paramètres"', 'settings:"Entreprise"'],
+          ];
+          for (const [from, to] of replacements) {
+            if (!nav.includes(from)) throw new Error(`Missing nav marker: ${from}`);
+            nav = nav.split(from).join(to);
+          }
+          fs.writeFileSync(navPath, nav);
+
+          let test = fs.readFileSync(testPath, 'utf8');
+          const beforeCount = (test.match(/Настройки/g) || []).length;
+          if (beforeCount < 2) throw new Error(`Expected at least two Russian Settings assertions, found ${beforeCount}`);
+          test = test.split('Настройки').join('Компания');
+          fs.writeFileSync(testPath, test);
+          NODE
+      - name: Remove one-shot workflow from resulting diff
+        run: git rm .github/workflows/repair-company-nav-label-one-shot.yml
+      - name: Commit patch
+        run: |
+          git config user.name "officeus-create"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add src/components/RepairShopOwnerNavEnhancer.astro tests/repair-shop-settings.spec.ts
+          git commit -m "fix(repair): label company workspace consistently"
+          git push origin HEAD:fix/repair-company-nav-label-20260908
