@@ -33,6 +33,12 @@ function demoAccountKind(specialist) {
 async function isSyntheticAccount(db, env, specialist) {
   if (!specialist?.id || specialist.role !== "Shop Owner") return false;
   await ensureRegistrationOpsSchema(db);
+  const existing = await db
+    .prepare("SELECT synthetic FROM hermes_registration_flags WHERE specialist_id = ? LIMIT 1")
+    .bind(specialist.id)
+    .first();
+  if (Number(existing?.synthetic) === 1) return true;
+
   await syncSyntheticFlagForAccount({
     db,
     env,
@@ -193,7 +199,13 @@ export async function ensureRepairShopSyntheticDemoData({ db, env, specialist })
   const seedSpecialist = kind === "volkogon"
     ? { ...specialist, name: `Office ${String(specialist.name || "Volkogon").trim()}` }
     : specialist;
-  const seeded = await ensureOfficeRepairDemoData({ db, env, specialist: seedSpecialist });
+  const seedEnv = {
+    ...env,
+    HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
+      .filter(Boolean)
+      .join(","),
+  };
+  const seeded = await ensureOfficeRepairDemoData({ db, env: seedEnv, specialist: seedSpecialist });
   if (!seeded?.eligible || !seeded?.seeded) return { ...seeded, demo_account: kind };
 
   await fillSyntheticShopProfile(db, specialist, kind);
