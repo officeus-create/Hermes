@@ -7,7 +7,7 @@ test("Hermes Connect Product Hub keeps explicit Russian locale after shared runt
   await expect(hub).toHaveAttribute("data-hc-hub-locale", "ru");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await expect(page.locator(".hc-hero h1")).toContainText("Управляйте бизнесом");
-  await expect(page.locator(".hc-language-menu strong")).toContainText("Русский");
+  await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
   await expect(page.locator(".hc-content-language")).toContainText("Язык контента: русский");
 
   // The regression only appeared after the shared Hermes Connect shell finished mutating the DOM.
