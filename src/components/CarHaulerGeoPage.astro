@@ -1,0 +1,246 @@
+---
+import { ArrowRight, Check, FileSignature, MapPin, Search, ShieldCheck, Wrench } from "@lucide/astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import {
+  carHaulerPlatformExamples,
+  carHaulerSupportCategories,
+  type CarHaulerGeoMarket,
+} from "../data/car-hauler-geo-markets";
+
+interface Props { market: CarHaulerGeoMarket; }
+const { market } = Astro.props;
+const path = `/logistics/car-hauler-loads/${market.slug}/`;
+const absoluteUrl = new URL(path, Astro.site).toString();
+const title = `Car Hauler Loads in ${market.city}, ${market.state} | Load Search & Dispatch`;
+const description = `Looking for car hauler loads around ${market.city}, ${market.state}? Hermes provides carrier-controlled load search, dispatch, back-office support, and long-term direct-freight development.`;
+const intakePath = "/logistics/start-car-hauling-dispatch/";
+const carrierPath = "/carrier/";
+const loadBoardPath = "/load-board/?role=carrier&equipment=car_hauler#available-loads";
+const connectPath = "/services/hermes-connect/repair-shops/";
+const dispatchPath = "/logistics/car-hauling-dispatch/";
+const geoHubPath = "/logistics/car-hauler-loads/";
+const platformText = carHaulerPlatformExamples.join(", ");
+const nearbyText = market.nearby.join(", ");
+
+const faq = [
+  {
+    question: `Can Hermes help me search for car hauler loads in ${market.city}?`,
+    answer: `Hermes can provide load-search, route, equipment-fit, broker-communication, document, and back-office support within an approved carrier scope. Availability changes continuously, and this page is not a live load listing or a promise that a load will be available in ${market.city}.`,
+  },
+  {
+    question: "Does Hermes search more than one car-hauling platform?",
+    answer: `Depending on carrier eligibility, account access, source rules, and the signed support scope, research can include major auto-transport marketplaces and carrier networks such as ${platformText}, together with broker, dealer, auction, shipper, and direct-customer sources. Mention of a platform does not imply a partnership, guaranteed access, or guaranteed freight.`,
+  },
+  {
+    question: "Who decides whether a load is booked?",
+    answer: "The motor carrier does. Hermes can research, communicate, discuss rates within approved instructions, organize information, and prepare the next step, but the carrier reviews and approves each load before booking and remains responsible for the truck, driver, safety, compliance, route, and operating commitment.",
+  },
+  {
+    question: "Can Hermes help build direct dealer or shipper freight?",
+    answer: "Direct-freight development is a separate long-term research and relationship-development process. After the operating profile is understood, an approved scope can include researching dealers, auctions, brokers, shippers, and repeat customers around the carrier's real operating needs. Timing, replies, direct customers, lanes, rates, volume, and revenue are not guaranteed.",
+  },
+  {
+    question: "What kinds of vehicle moves can be reviewed?",
+    answer: "Candidate-load research can be filtered around the carrier's actual equipment and restrictions, including passenger vehicles, SUVs, pickups, vans, EVs or hybrids, luxury or classic vehicles, inoperable units, and multi-unit dealer or auction moves when the source, equipment, insurance, timing, and carrier requirements fit.",
+  },
+  {
+    question: `Which nearby areas should a ${market.city} car hauler consider?`,
+    answer: `${market.marketContext} Nearby search areas in this market plan include ${nearbyText}. A wider radius is only useful when the carrier decides the deadhead, timing, equipment fit, and destination direction make business sense.`,
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${absoluteUrl}#service`,
+    name: `Car hauler load-search and dispatch support in ${market.city}, ${market.state}`,
+    description,
+    provider: { "@id": "https://hermeslogisticsus.com/#organization" },
+    areaServed: [
+      { "@type": "City", name: market.city },
+      { "@type": "AdministrativeArea", name: market.stateName },
+    ],
+    serviceType: "Car hauling dispatch and load-search support",
+    url: absoluteUrl,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://hermeslogisticsus.com/" },
+      { "@type": "ListItem", position: 2, name: "Logistics", item: "https://hermeslogisticsus.com/paths/logistics/" },
+      { "@type": "ListItem", position: 3, name: "Car Hauler Load Search", item: new URL(geoHubPath, Astro.site).toString() },
+      { "@type": "ListItem", position: 4, name: `${market.city}, ${market.state}`, item: absoluteUrl },
+    ],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout title={title} description={description} image="/images/path-logistics-system.jpg" schema={schema}>
+  <SiteHeader />
+  <main id="main-content" class="carrier-geo-page" data-carrier-geo-page>
+    <section class="carrier-geo-hero" data-carrier-geo-section="hero">
+      <div class="shell carrier-geo-hero-grid">
+        <div>
+          <nav class="carrier-geo-breadcrumbs" aria-label="Breadcrumb">
+            <a href="/paths/logistics/">Logistics</a><span aria-hidden="true">/</span>
+            <a href={geoHubPath}>Car Hauler Load Search</a><span aria-hidden="true">/</span>
+            <span aria-current="page">{market.city}, {market.state}</span>
+          </nav>
+          <p class="eyebrow">Hermes Logistics · {market.region}</p>
+          <h1>Looking for Car Hauler Loads in {market.city}, {market.state}?</h1>
+          <p class="carrier-geo-lead">Hermes helps qualified owner-operators and fleets search current freight sources, compare route and equipment fit, handle approved dispatch and back-office work, and develop direct demand over time — while the carrier keeps final control of every load.</p>
+          <div class="carrier-geo-actions">
+            <a class="button button-primary" href={intakePath} data-commercial-primary-cta data-service-group="car_hauler_geo" data-carrier-geo-cta="start_review">Start carrier load-search review<ArrowRight size={18} aria-hidden="true" /></a>
+            <a class="button carrier-geo-secondary" href={carrierPath} data-carrier-geo-cta="carrier_agreement"><FileSignature size={18} aria-hidden="true" />Plans & carrier agreement</a>
+          </div>
+          <div class="carrier-geo-proofline" aria-label="Carrier control and scope">
+            <span><ShieldCheck size={17} aria-hidden="true" />Carrier approves every load</span>
+            <span><Search size={17} aria-hidden="true" />Multi-source search</span>
+            <span><MapPin size={17} aria-hidden="true" />Local + route-aware review</span>
+          </div>
+          <p class="carrier-geo-disclosure">This is a carrier acquisition and dispatch-support page, not a live public load listing and not a Hermes office-location claim. Freight, rates, lanes, direct customers, timing, and revenue are not guaranteed.</p>
+        </div>
+        <aside class="carrier-geo-market-card" aria-label={`${market.city} market context`}>
+          <p class="eyebrow">How we search this market</p>
+          <h2>{market.city} is an anchor, not a boundary.</h2>
+          <p>{market.marketContext}</p>
+          <strong>Nearby search areas</strong>
+          <ul>{market.nearby.map((area) => <li>{area}</li>)}</ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" data-carrier-geo-section="three_workstreams">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">One carrier · three coordinated workstreams</p>
+          <h2>First keep the truck moving. Then improve the sourcing system around it.</h2>
+          <p>The exact people, percentage, and responsibilities depend on the approved carrier scope and agreement. Hermes does not promise three dedicated employees to every carrier.</p>
+        </div>
+        <div class="carrier-geo-grid three">
+          <article>
+            <span>01</span><h3>Here-and-now load search</h3>
+            <p>Start with where the truck is, open capacity, equipment, timing, destination preference, deadhead tolerance, and carrier instructions. Research candidate loads and present the operating facts for carrier approval.</p>
+          </article>
+          <article>
+            <span>02</span><h3>Multi-source search + back office</h3>
+            <p>Expand the search beyond one board when approved access exists, support broker communication and rate discussion, and coordinate setup packets, certificates, rate confirmations, documents, invoicing, and follow-up.</p>
+          </article>
+          <article>
+            <span>03</span><h3>Direct demand development</h3>
+            <p>Once the operating profile is understood, an approved long-term workstream can research dealers, auctions, brokers, shippers, and repeat customers that fit the carrier's real equipment and operating needs. Results and timing are not guaranteed.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section carrier-geo-soft" data-carrier-geo-section="load_sources">
+      <div class="shell carrier-geo-two-col">
+        <div>
+          <p class="eyebrow">Search beyond one source</p>
+          <h2>Car hauling loads can live in different marketplaces and networks.</h2>
+          <p>Depending on carrier eligibility, account access, source rules, and the signed scope, Hermes can research major auto-transport marketplaces and carrier networks together with broker, dealer, auction, shipper, and direct-customer sources.</p>
+          <p class="carrier-geo-fineprint">Platform names below are industry source examples. Hermes does not claim a partnership, automatic access, exclusive freight, or guaranteed availability on any third-party platform.</p>
+        </div>
+        <div class="carrier-geo-source-list" aria-label="Car hauling platform examples">
+          {carHaulerPlatformExamples.map((platform) => <span>{platform}</span>)}
+          <span>Broker & dealer portals</span>
+          <span>Auction transport networks</span>
+          <span>Direct shipper / dealer research</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-carrier-geo-section="vehicle_fit">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">Equipment and commodity fit</p>
+          <h2>Search the load that fits the equipment — not just the city.</h2>
+          <p>Candidate searches can be narrowed by equipment, capacity, vehicle condition, pickup/delivery requirements, and the carrier's approved operating rules.</p>
+        </div>
+        <div class="carrier-geo-chip-grid" aria-label="Vehicle move types">
+          {["Passenger cars", "SUVs & crossovers", "Pickup trucks", "Vans & cargo vans", "EVs & hybrids", "Luxury & classic vehicles", "INOP / non-running units", "Multi-unit dealer & auction moves"].map((item) => <span>{item}</span>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="section carrier-geo-dark" data-carrier-geo-section="support_20">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">20 carrier support categories</p>
+          <h2>Load search is the entry point. The operating support can go much further.</h2>
+        </div>
+        <ol class="carrier-geo-support-list">
+          {carHaulerSupportCategories.map((item, index) => <li><span>{String(index + 1).padStart(2, "0")}</span><p>{item}</p></li>)}
+        </ol>
+        <p class="carrier-geo-fineprint light">These are support categories, not a promise that every category is included in every engagement. The signed scope and Appendix A control the carrier-specific service.</p>
+      </div>
+    </section>
+
+    <section class="section" data-carrier-geo-section="ecosystem">
+      <div class="shell">
+        <div class="section-heading">
+          <p class="eyebrow">The Hermes carrier ecosystem</p>
+          <h2>Dispatch is the first value. The surrounding system is the retention layer.</h2>
+        </div>
+        <div class="carrier-geo-grid three">
+          <article>
+            <Search size={24} aria-hidden="true" /><h3>Hermes Load Board</h3>
+            <p>Preview the current Load Board product experience and carrier workflow. The public board remains an illustrative/demo surface unless a specific live load or access state is separately verified.</p>
+            <a href={loadBoardPath} data-carrier-geo-cta="load_board">Preview Load Board<ArrowRight size={16} aria-hidden="true" /></a>
+          </article>
+          <article>
+            <Wrench size={24} aria-hidden="true" /><h3>Hermes Connect repair layer</h3>
+            <p>Hermes Connect is building the repair-shop network and booking layer. Carrier discounts, parts offers, or partner benefits are shown only when a participating business has actually approved them.</p>
+            <a href={connectPath} data-carrier-geo-cta="hermes_connect">See Hermes Connect<ArrowRight size={16} aria-hidden="true" /></a>
+          </article>
+          <article>
+            <FileSignature size={24} aria-hidden="true" /><h3>Carrier plans & agreement</h3>
+            <p>After the fit review, compare the current carrier support model, what stays under carrier control, and the private onboarding path before making a commercial commitment.</p>
+            <a href={carrierPath} data-carrier-geo-cta="carrier_agreement">Review carrier path<ArrowRight size={16} aria-hidden="true" /></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section carrier-geo-soft" data-carrier-geo-section="faq">
+      <div class="shell carrier-geo-narrow">
+        <div class="section-heading"><p class="eyebrow">Carrier questions</p><h2>What to know before starting in {market.city}.</h2></div>
+        <div class="carrier-geo-faq">{faq.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
+      </div>
+    </section>
+
+    <section class="section" data-carrier-geo-section="final_cta">
+      <div class="shell carrier-geo-final">
+        <div>
+          <p class="eyebrow">Truck in or around {market.city}?</p>
+          <h2>Show us the operating picture. Hermes will review the fit.</h2>
+          <p>Start with authority/readiness, equipment, capacity, current availability, home market, and preferred operating area. Do not put sensitive shipment or customer data in a public URL.</p>
+        </div>
+        <div class="carrier-geo-final-actions">
+          <a class="button button-primary" href={intakePath} data-commercial-primary-cta data-service-group="car_hauler_geo" data-carrier-geo-cta="start_review">Start carrier review<ArrowRight size={18} aria-hidden="true" /></a>
+          <a class="button" href={dispatchPath} data-carrier-geo-cta="dispatch_details">See full dispatch scope</a>
+          <a class="button" href={geoHubPath} data-carrier-geo-cta="all_markets">See all 25 markets</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<style>
+  .carrier-geo-page{background:#fff;color:#071038}.carrier-geo-hero{padding:8rem 0 4.5rem;background:linear-gradient(135deg,#071038 0%,#101d5b 58%,#3a1765 100%);color:#fff}.carrier-geo-hero-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:clamp(2rem,5vw,5rem);align-items:center}.carrier-geo-breadcrumbs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem;color:rgba(255,255,255,.68);font-size:.82rem}.carrier-geo-breadcrumbs a{color:inherit}.carrier-geo-hero h1{max-width:15ch;font-size:clamp(2.7rem,6vw,5.3rem);line-height:.96}.carrier-geo-lead{max-width:67ch;color:rgba(255,255,255,.8);font-size:1.15rem;line-height:1.7}.carrier-geo-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.7rem}.carrier-geo-secondary{display:inline-flex;align-items:center;gap:.45rem;border:1px solid rgba(255,255,255,.45);color:#fff}.carrier-geo-proofline{display:flex;flex-wrap:wrap;gap:.75rem 1.1rem;margin-top:1.5rem;color:#dfe7ff;font-size:.86rem;font-weight:750}.carrier-geo-proofline span{display:inline-flex;align-items:center;gap:.35rem}.carrier-geo-disclosure{max-width:72ch;margin-top:1rem;color:rgba(255,255,255,.58);font-size:.78rem;line-height:1.55}.carrier-geo-market-card{padding:clamp(1.4rem,3vw,2rem);border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(255,255,255,.09);box-shadow:0 1.5rem 4rem rgba(0,0,0,.16);backdrop-filter:blur(12px)}.carrier-geo-market-card h2{font-size:1.8rem}.carrier-geo-market-card p:not(.eyebrow){color:rgba(255,255,255,.76);line-height:1.65}.carrier-geo-market-card ul{display:flex;flex-wrap:wrap;gap:.45rem;padding:0;list-style:none}.carrier-geo-market-card li{padding:.45rem .65rem;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(255,255,255,.07);font-size:.78rem}.carrier-geo-grid{display:grid;gap:1rem}.carrier-geo-grid.three{grid-template-columns:repeat(3,1fr)}.carrier-geo-grid article{padding:1.45rem;border:1px solid #dce3f8;border-radius:14px;background:#fff;box-shadow:0 .8rem 2rem rgba(7,16,56,.05)}.carrier-geo-grid article>span:first-child{font-family:var(--font-mono);color:#6a20d9;font-weight:850}.carrier-geo-grid article p{color:#45506d;line-height:1.65}.carrier-geo-grid article a{display:inline-flex;align-items:center;gap:.35rem;margin-top:.4rem;font-weight:850}.carrier-geo-soft{background:#f6f7fd}.carrier-geo-two-col{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,5vw,5rem);align-items:start}.carrier-geo-source-list,.carrier-geo-chip-grid{display:flex;flex-wrap:wrap;gap:.65rem}.carrier-geo-source-list span,.carrier-geo-chip-grid span{padding:.75rem .9rem;border:1px solid #d6dcf0;border-radius:12px;background:#fff;font-size:.9rem;font-weight:800}.carrier-geo-fineprint{color:#68738f;font-size:.8rem;line-height:1.55}.carrier-geo-dark{background:#071038;color:#fff}.carrier-geo-dark .section-heading p:not(.eyebrow){color:rgba(255,255,255,.68)}.carrier-geo-support-list{display:grid;grid-template-columns:repeat(2,1fr);gap:.65rem;padding:0;list-style:none}.carrier-geo-support-list li{display:grid;grid-template-columns:38px 1fr;gap:.65rem;align-items:start;padding:.85rem 1rem;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(255,255,255,.05)}.carrier-geo-support-list li span{color:#ffd88a;font-family:var(--font-mono);font-size:.78rem}.carrier-geo-support-list li p{margin:0;color:rgba(255,255,255,.86);font-size:.9rem}.carrier-geo-fineprint.light{color:rgba(255,255,255,.58)}.carrier-geo-narrow{max-width:900px}.carrier-geo-faq details{padding:1rem 0;border-bottom:1px solid #d7dced}.carrier-geo-faq summary{cursor:pointer;font-weight:850}.carrier-geo-faq p{color:#4c5875;line-height:1.7}.carrier-geo-final{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2rem;align-items:center;padding:clamp(1.5rem,4vw,3rem);border:1px solid #dce3f8;border-radius:18px;background:#fff;box-shadow:0 1rem 3rem rgba(7,16,56,.06)}.carrier-geo-final h2{max-width:18ch}.carrier-geo-final p:not(.eyebrow){max-width:65ch;color:#52607e}.carrier-geo-final-actions{display:grid;gap:.65rem;min-width:min(100%,290px)}.carrier-geo-final-actions .button{justify-content:center}@media(max-width:900px){.carrier-geo-hero-grid,.carrier-geo-two-col,.carrier-geo-grid.three,.carrier-geo-support-list,.carrier-geo-final{grid-template-columns:1fr}.carrier-geo-hero{padding-top:7rem}.carrier-geo-hero h1{font-size:clamp(2.5rem,12vw,4.1rem)}.carrier-geo-market-card{order:2}.carrier-geo-actions .button{width:100%;justify-content:center}.carrier-geo-final-actions{width:100%}}@media(prefers-reduced-transparency:reduce){.carrier-geo-market-card{background:#101d5b;backdrop-filter:none}}
+</style>
