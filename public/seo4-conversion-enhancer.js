@@ -6,6 +6,15 @@
     window.gtag?.("event", event, parameters);
   };
 
+  const carrierGeoRoot = "/logistics/car-hauler-loads/";
+  const isCarrierGeoPath = () => window.location.pathname === carrierGeoRoot || window.location.pathname.startsWith(carrierGeoRoot);
+  const carrierGeoEventBase = () => ({
+    audience_type: "carrier",
+    page_group: "car_hauler_geo",
+    service_group: "car_hauler_geo",
+    page_path: window.location.pathname,
+  });
+
   const refreshLoadBoardDemoLabels = () => {
     if (window.location.pathname !== "/load-board/") return;
     const pickupLabels = [
@@ -76,9 +85,44 @@
     });
   };
 
+  const setupCarrierGeoMeasurement = () => {
+    if (!isCarrierGeoPath() || !document.querySelector("[data-carrier-geo-page]")) return;
+
+    pushEvent({ event: "carrier_geo_page_view", ...carrierGeoEventBase() });
+
+    const reachedSections = new Set();
+    const recordSection = (section) => {
+      if (!(section instanceof HTMLElement)) return;
+      const sectionId = section.dataset.carrierGeoSection?.trim();
+      if (!sectionId || reachedSections.has(sectionId)) return;
+      reachedSections.add(sectionId);
+      pushEvent({
+        event: "carrier_geo_section_view",
+        section_id: sectionId,
+        ...carrierGeoEventBase(),
+      });
+    };
+
+    const observer = "IntersectionObserver" in window
+      ? new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting || entry.intersectionRatio < 0.2) return;
+            recordSection(entry.target);
+            observer.unobserve(entry.target);
+          });
+        }, { threshold: [0.2] })
+      : null;
+
+    document.querySelectorAll("[data-carrier-geo-section]").forEach((section) => {
+      if (observer) observer.observe(section);
+      else recordSection(section);
+    });
+  };
+
   const applyDomReadyEnhancements = () => {
     applyRepairAuthMode();
     applyAccessibilityRoles();
+    setupCarrierGeoMeasurement();
   };
 
   if (document.readyState === "loading") {
@@ -114,6 +158,15 @@
       return;
     }
     if (target.origin !== window.location.origin) return;
+
+    if (isCarrierGeoPath() && link.dataset.carrierGeoCta) {
+      pushEvent({
+        event: "carrier_geo_cta_click",
+        cta_type: link.dataset.carrierGeoCta,
+        destination_path: target.pathname,
+        ...carrierGeoEventBase(),
+      });
+    }
 
     if (link.hasAttribute("data-home-role-link") && window.location.pathname === "/") {
       pushEvent({
@@ -158,13 +211,16 @@
       !link.hasAttribute("data-commercial-primary-cta")
     ) return;
 
-    const serviceGroup = link.dataset.serviceGroup?.trim() || carrierServiceGroups[window.location.pathname];
+    const serviceGroup = link.dataset.serviceGroup?.trim()
+      || (isCarrierGeoPath() ? "car_hauler_geo" : carrierServiceGroups[window.location.pathname]);
     if (!serviceGroup) return;
     pushEvent({
       event: "commercial_cta_click",
       cta_type: "carrier_intake",
       audience_type: "carrier",
-      page_group: window.location.pathname.startsWith("/paths/logistics/") ? "logistics_path" : "logistics_service",
+      page_group: isCarrierGeoPath()
+        ? "car_hauler_geo"
+        : window.location.pathname.startsWith("/paths/logistics/") ? "logistics_path" : "logistics_service",
       service_group: serviceGroup,
       page_path: window.location.pathname,
       destination_path: target.pathname,
