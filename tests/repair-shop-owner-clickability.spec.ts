@@ -68,6 +68,14 @@ test("Repair Shop owner dashboard exposes real actions instead of visible dead c
   await expect(openBooking).toHaveAttribute("href", /\/services\/hermes-connect\/repair-shops\/booking\/\?shop=officea-baka-test/);
   await expect(page.locator('a[href="#"]:visible')).toHaveCount(0);
 
+  const mobileQuickNav = page.locator(".repair-crm-mobile-quick");
+  await expect(mobileQuickNav).toBeVisible();
+  await expect(mobileQuickNav.locator('a[href*="/services/hermes-connect/repair-shops/settings/"]')).toBeVisible();
+  const quickDiscount = mobileQuickNav.locator('a[href*="#driver-discount"]');
+  await expect(quickDiscount).toBeVisible();
+  await quickDiscount.click();
+  await expect(page.locator("#driver-discount")).toBeVisible();
+
   await page.locator("#shop-name").fill("Officea Baka Test Center");
   await page.locator("#save-profile-btn").click();
   await expect.poll(() => profileWrites).toBe(1);
