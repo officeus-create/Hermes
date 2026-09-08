@@ -1,5 +1,5 @@
 import { getAuthenticatedSpecialist, jsonResponse } from "../_lib/session.mjs";
-import { ensureOfficeRepairDemoData } from "../_lib/repair-shop-office-demo.mjs";
+import { ensureRepairShopSyntheticDemoData } from "../_lib/repair-shop-synthetic-demo.mjs";
 import { ensureRepairShopProfileSchema } from "../_lib/repair-shop-schema.mjs";
 import { ensureRepairShopStaffSchema, serializeRepairShopStaff } from "../_lib/repair-shop-staff-schema.mjs";
 
@@ -87,7 +87,7 @@ async function parseBody(request: Request) {
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const context = await requireOwnerShop(request, env);
   if (context.response) return context.response;
-  const demoSeed = await ensureOfficeRepairDemoData({ db: env.DB, env, specialist: context.specialist });
+  const demoSeed = await ensureRepairShopSyntheticDemoData({ db: env.DB, env, specialist: context.specialist });
   return jsonResponse(200, {
     success: true,
     shop_id: String(context.shop.id),
