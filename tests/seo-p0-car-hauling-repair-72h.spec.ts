@@ -10,7 +10,7 @@ test("car hauling dispatch owner stays separate from load-board search intent", 
 
   expect(source).toContain("Car Hauling Dispatch Services for Owner-Operators");
   expect(source).toContain('/logistics/start-car-hauling-dispatch/');
-  expect(source).toContain('/load-board/?role=carrier&equipment=car_hauler#available-loads');
+  expect(source).toContain('/load-board/#role=carrier&equipment=car_hauler&target=available-loads');
   expect(source).not.toContain("Where can I find car hauling loads?");
 });
 

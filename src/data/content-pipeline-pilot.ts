@@ -115,7 +115,7 @@ export const syntheticContentAssets: ContentAssetInput[] = [
     proposedTopic: "Current car-hauling lane conditions",
     proposedQuery: "best car hauling lanes this week",
     canonicalOwner: "/paths/logistics/",
-    intendedCta: "/load-board/?role=carrier#carrier-access",
+    intendedCta: "/load-board/#role=carrier&target=carrier-access",
     audience: "Car-hauling carriers",
     permissionStatus: "owner_confirmed",
     evidenceStatus: "owner_claim",

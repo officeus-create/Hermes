@@ -35,7 +35,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
     ],
     primary: { label: "Prepare transport request", href: "/logistics/request-vehicle-transport/?role=shipper#transport-intake" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
-    demo: { label: "Post a load in the Load Board demo", href: "/load-board/?role=shipper#post-load" },
+    demo: { label: "Post a load in the Load Board demo", href: "/load-board/#role=shipper&target=post-load" },
   },
   {
     slug: "broker",
@@ -56,7 +56,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
     ],
     primary: { label: "Prepare broker opportunity", href: "/logistics/request-vehicle-transport/?role=broker#transport-intake" },
     secondary: { label: "Call Logistics Sales", href: "tel:+12623023626" },
-    demo: { label: "Open broker Load Board demo", href: "/load-board/?role=broker#post-load" },
+    demo: { label: "Open broker Load Board demo", href: "/load-board/#role=broker&target=post-load" },
   },
   {
     slug: "carrier",
@@ -77,7 +77,7 @@ export const logisticsAudiences: LogisticsAudience[] = [
     ],
     primary: { label: "Start dispatch review", href: "/logistics/start-car-hauling-dispatch/" },
     secondary: { label: "Agreement & onboarding", href: "/carrier/" },
-    demo: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" },
+    demo: { label: "Open Load Board", href: "/load-board/#role=carrier&target=available-loads" },
   },
   {
     slug: "agency",

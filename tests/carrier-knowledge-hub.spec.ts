@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const hubPath = "/logistics/resources/";
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
-const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const legacyDemoIntakeHref = "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access";
 const coreGuides = [
   "/logistics/resources/rpm-calculator/",
   "/logistics/resources/factoring-vs-direct-payment-calculator/",

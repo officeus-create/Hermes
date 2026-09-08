@@ -60,22 +60,22 @@ const customerIntakeById: Record<string, {
 }> = {
   "customer-vehicle-transport": {
     primary: { label: "Prepare vehicle transport request", href: "/logistics/request-vehicle-transport/?request=customer_delivery#transport-intake" },
-    demo: { label: "Preview customer Load Board demo", href: "/load-board/?role=private_party#post-load" },
+    demo: { label: "Preview customer Load Board demo", href: "/load-board/#role=private_party&target=post-load" },
     context: "vehicle, route, timing, condition, equipment preference, access, and contact",
   },
   "customer-port-pickup": {
     primary: { label: "Prepare port pickup request", href: "/logistics/request-vehicle-transport/?request=other#transport-intake" },
-    demo: { label: "Preview customer Load Board demo", href: "/load-board/?role=private_party#post-load" },
+    demo: { label: "Preview customer Load Board demo", href: "/load-board/#role=private_party&target=post-load" },
     context: "vehicle, route, release status, facility access, timing, storage risk, handling, and contact",
   },
   "customer-luxury-classic": {
     primary: { label: "Prepare specialty vehicle request", href: "/logistics/request-vehicle-transport/?request=customer_delivery#transport-intake" },
-    demo: { label: "Preview customer Load Board demo", href: "/load-board/?role=private_party#post-load" },
+    demo: { label: "Preview customer Load Board demo", href: "/load-board/#role=private_party&target=post-load" },
     context: "vehicle, route, timing, operability, handling, open or enclosed preference, access, and contact",
   },
   "shipper-dealer": {
     primary: { label: "Prepare dealer or shipper request", href: "/logistics/request-vehicle-transport/?request=dealer_inventory#transport-intake" },
-    demo: { label: "Preview dealer Load Board demo", href: "/load-board/?role=dealer#post-load" },
+    demo: { label: "Preview dealer Load Board demo", href: "/load-board/#role=dealer&target=post-load" },
     context: "route, timing, vehicle count, condition, auction or dealer context, equipment preference, access, and contact",
   },
 };
@@ -86,9 +86,9 @@ const primaryCta = isBrokerCapacityPath
     ? { label: "Start car-hauling dispatch review", href: "/logistics/start-car-hauling-dispatch/" }
     : customerIntake?.primary ?? recommendation.primaryCta;
 const demoCta = isBrokerCapacityPath
-  ? { label: "Preview broker Load Board demo", href: "/load-board/?role=broker#post-load" }
+  ? { label: "Preview broker Load Board demo", href: "/load-board/#role=broker&target=post-load" }
   : isCarHaulingPath
-    ? { label: "Preview carrier Load Board demo", href: "/load-board/?role=carrier&equipment=car_hauler#available-loads" }
+    ? { label: "Preview carrier Load Board demo", href: "/load-board/#role=carrier&equipment=car_hauler&target=available-loads" }
     : customerIntake?.demo ?? null;
 const schema = {
   "@context": "https://schema.org",

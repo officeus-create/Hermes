@@ -8,7 +8,7 @@ const cases = [
     route: "/logistics/eau-claire-wi-vehicle-transport/",
     directSelector: "[data-eau-claire-direct-intake]",
     demoSelector: "[data-eau-claire-demo]",
-    demo: "/load-board/?role=private_party&origin=Eau%20Claire%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=Eau%20Claire%2C%20WI&target=post-load",
     title: "Eau Claire Vehicle Transport | Hermes Logistics",
   },
   {
@@ -16,7 +16,7 @@ const cases = [
     route: "/logistics/la-crosse-wi-vehicle-transport/",
     directSelector: "[data-la-crosse-direct-intake]",
     demoSelector: "[data-la-crosse-demo]",
-    demo: "/load-board/?role=private_party&origin=La%20Crosse%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=La%20Crosse%2C%20WI&target=post-load",
     title: "La Crosse Vehicle Transport | Hermes Logistics",
   },
 ] as const;

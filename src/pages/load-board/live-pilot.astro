@@ -33,7 +33,7 @@ const previewRows = [
             <p class="hlb-lead">Search freight by lane and equipment, watch approved opportunities arrive, save the searches that matter, and move from public market discovery into verified Hermes Connect access without exposing private source or contact data.</p>
             <div class="hlb-hero__actions">
               <a class="button button-primary" href="#market">Search the board <Search size={18} aria-hidden="true" /></a>
-              <a class="button hlb-button-ghost" href="/load-board/?role=carrier#carrier-access">Request carrier access <ArrowRight size={18} aria-hidden="true" /></a>
+              <a class="button hlb-button-ghost" href="/load-board/#role=carrier&target=carrier-access">Request carrier access <ArrowRight size={18} aria-hidden="true" /></a>
             </div>
           </div>
 
@@ -88,7 +88,7 @@ const previewRows = [
           <div class="hlb-tool-row">
             <button type="button" data-hlb-refresh><RefreshCw size={15} aria-hidden="true" /> Refresh</button>
             <button type="button" data-hlb-clear><Filter size={15} aria-hidden="true" /> Clear filters</button>
-            <a href="/load-board/?role=carrier#carrier-access"><BellRing size={15} aria-hidden="true" /> Create load alert</a>
+            <a href="/load-board/#role=carrier&target=carrier-access"><BellRing size={15} aria-hidden="true" /> Create load alert</a>
             <span data-result-status>Loading approved public records…</span>
           </div>
 
@@ -107,7 +107,7 @@ const previewRows = [
                     <span class="hlb-rate"><strong>{row.rate}</strong><small>{row.rpm}</small></span>
                     <span class="hlb-signal">{row.signal}</span>
                     <span class="hlb-age hlb-age--preview">{row.age}</span>
-                    <a href="/load-board/?role=carrier#carrier-access" aria-label={`Unlock ${row.equipment} load preview`}>Unlock <LockKeyhole size={14} aria-hidden="true" /></a>
+                    <a href="/load-board/#role=carrier&target=carrier-access" aria-label={`Unlock ${row.equipment} load preview`}>Unlock <LockKeyhole size={14} aria-hidden="true" /></a>
                   </article>
                 ))}
               </div>
@@ -124,7 +124,7 @@ const previewRows = [
                 <li><Route size={16} aria-hidden="true" /><span><strong>Backhaul & multi-trip</strong><small>Reduce empty miles across the whole trip</small></span></li>
                 <li><CheckCircle2 size={16} aria-hidden="true" /><span><strong>Compare loads</strong><small>Side-by-side economics before action</small></span></li>
               </ul>
-              <a class="button button-primary" href="/load-board/?role=carrier#carrier-access">Create free access</a>
+              <a class="button button-primary" href="/load-board/#role=carrier&target=carrier-access">Create free access</a>
             </aside>
           </div>
 
@@ -164,7 +164,7 @@ const previewRows = [
             <li><span>04</span><div><strong>Act</strong><small>Unlock approved load details, alerts and operating workflows.</small></div></li>
           </ol>
           <div class="hlb-access__actions">
-            <a class="button button-primary" href="/load-board/?role=carrier#carrier-access">Request Load Board access</a>
+            <a class="button button-primary" href="/load-board/#role=carrier&target=carrier-access">Request Load Board access</a>
             <a class="button" href="/services/hermes-connect/">Open Hermes Connect</a>
           </div>
         </div>
@@ -235,7 +235,7 @@ const previewRows = [
         <span class="hlb-rate"><strong>${rate}</strong><small>${record.team ? "Team" : ""}</small></span>
         <span class="hlb-signal">Approved public record</span>
         <span class="hlb-age">${relativeAge(record.observedAt)}</span>
-        <a href="/load-board/?role=carrier#carrier-access">Unlock <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></a>
+        <a href="/load-board/#role=carrier&target=carrier-access">Unlock <svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></a>
       </article>`;
     }).join("");
   };

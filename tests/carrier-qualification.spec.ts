@@ -8,7 +8,7 @@ function futureDate(daysFromNow: number): string {
 }
 
 test("new authority carrier is routed to readiness review with a complete Sales preview", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=car_hauler&target=carrier-access");
   const form = page.locator("[data-vehicle-form]");
 
   await expect(form.locator("[data-carrier-qualification]")).toBeVisible();
@@ -43,7 +43,7 @@ test("new authority carrier is routed to readiness review with a complete Sales 
 });
 
 test("inactive insurance blocks normal carrier onboarding", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=car_hauler&target=carrier-access");
   const form = page.locator("[data-vehicle-form]");
 
   await form.locator('select[name="carrier_role"]').selectOption("carrier");

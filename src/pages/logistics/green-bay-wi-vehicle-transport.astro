@@ -9,7 +9,7 @@ const description =
   "Request vehicle transport to or from Green Bay, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, timing, equipment, and vehicle condition.";
 const canonicalUrl = new URL("/logistics/green-bay-wi-vehicle-transport/", Astro.site).toString();
 const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
-const loadBoardDemo = "/load-board/?role=private_party&origin=Green%20Bay%2C%20WI#post-load";
+const loadBoardDemo = "/load-board/#role=private_party&origin=Green%20Bay%2C%20WI&target=post-load";
 
 const faq = [
   {
@@ -91,7 +91,7 @@ const schema = [
           <div class="actions">
             <a class="button button-primary" href={directTransportIntake} data-green-bay-direct-intake>Prepare a transport request <ArrowRight size={18} aria-hidden="true" /></a>
             <a class="button" href={loadBoardDemo} data-green-bay-demo>Preview the Green Bay Load Board demo</a>
-            <a class="button" href="/load-board/?role=carrier&amp;area=Green%20Bay%2C%20WI#carrier-access">Carrier: share capacity in demo</a>
+            <a class="button" href="/load-board/#role=carrier&area=Green%20Bay%2C%20WI&target=carrier-access">Carrier: share capacity in demo</a>
           </div>
           <p class="boundary">The direct intake starts a Logistics Sales review. It does not publish a request, notify a carrier, confirm capacity, create a booking, or guarantee price, timing, equipment, or carrier availability.</p>
         </div>

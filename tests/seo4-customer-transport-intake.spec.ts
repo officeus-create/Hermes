@@ -45,7 +45,7 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
   );
   await expect(page.getByRole("link", { name: /Post a load in the Load Board demo/i }).first()).toHaveAttribute(
     "href",
-    "/load-board/?role=shipper#post-load",
+    "/load-board/#role=shipper&target=post-load",
   );
   await expect(page.locator(".logistics-audience-final")).toContainText("Prepare transport request");
 
@@ -56,7 +56,7 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
   );
   await expect(page.getByRole("link", { name: /Open broker Load Board demo/i }).first()).toHaveAttribute(
     "href",
-    "/load-board/?role=broker#post-load",
+    "/load-board/#role=broker&target=post-load",
   );
 
   await page.goto("/logistics/carrier/");
@@ -66,7 +66,7 @@ test("shipper, broker, and carrier audience pages use direct role-specific comme
   );
   await expect(page.getByRole("link", { name: /Open Load Board/i }).first()).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier#available-loads",
+    "/load-board/#role=carrier&target=available-loads",
   );
 });
 

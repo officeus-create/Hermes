@@ -19,7 +19,7 @@ const description =
   "Request vehicle transport to or from Appleton, Wisconsin for dealer, auction, business, or private moves. Hermes reviews route, timing, and equipment.";
 const canonicalUrl = new URL("/logistics/appleton-wi-vehicle-transport/", Astro.site).toString();
 const directTransportIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
-const loadBoardDemo = "/load-board/?role=private_party&origin=Appleton%2C%20WI#post-load";
+const loadBoardDemo = "/load-board/#role=private_party&origin=Appleton%2C%20WI&target=post-load";
 
 const faq = [
   {
@@ -120,7 +120,7 @@ import "../../styles/features/appleton.css";
                   Prepare a transport request <ArrowRight size={18} aria-hidden="true" />
                 </a>
                 <a class="button" href={loadBoardDemo} data-appleton-demo>Preview the Appleton Load Board demo</a>
-                <a class="button" href="/load-board/?role=carrier&amp;area=Appleton%2C%20WI#carrier-access">
+                <a class="button" href="/load-board/#role=carrier&area=Appleton%2C%20WI&target=carrier-access">
                   Carrier: share capacity in demo
                 </a>
               </div>
@@ -158,25 +158,25 @@ import "../../styles/features/appleton.css";
               <Building2 size={25} aria-hidden="true" />
               <h3>Auto dealers</h3>
               <p>Purchased, sold, traded, or transferred vehicles, including multi-unit inventory moves.</p>
-              <a href="/load-board/?role=dealer&amp;origin=Appleton%2C%20WI#post-load">Dealer request <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/load-board/#role=dealer&origin=Appleton%2C%20WI&target=post-load">Dealer request <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
             <article>
               <ClipboardCheck size={25} aria-hidden="true" />
               <h3>Auction buyers and sellers</h3>
               <p>Pickup planning with release status, facility requirements, vehicle condition, and storage deadlines.</p>
-              <a href="/load-board/?role=shipper&amp;origin=Appleton%2C%20WI#post-load">Prepare auction pickup <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/load-board/#role=shipper&origin=Appleton%2C%20WI&target=post-load">Prepare auction pickup <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
             <article>
               <Car size={25} aria-hidden="true" />
               <h3>Private customers</h3>
               <p>Relocation, purchase, sale, or a vehicle move for a family member or another known recipient.</p>
-              <a href="/load-board/?role=private_party&amp;origin=Appleton%2C%20WI#post-load">Private vehicle request <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/load-board/#role=private_party&origin=Appleton%2C%20WI&target=post-load">Private vehicle request <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
             <article>
               <Truck size={25} aria-hidden="true" />
               <h3>Carriers and car haulers</h3>
               <p>Share Appleton-area equipment, authority, operating area, capacity, and availability for review.</p>
-              <a href="/load-board/?role=carrier&amp;area=Appleton%2C%20WI#carrier-access">Share capacity <ArrowRight size={16} aria-hidden="true" /></a>
+              <a href="/load-board/#role=carrier&area=Appleton%2C%20WI&target=carrier-access">Share capacity <ArrowRight size={16} aria-hidden="true" /></a>
             </article>
           </div>
         </div>
@@ -304,7 +304,7 @@ import "../../styles/features/appleton.css";
               Review the Car Hauler Capacity Checklist <ArrowRight size={16} aria-hidden="true" />
             </a>
           </div>
-          <a class="button button-primary" href="/load-board/?role=carrier&amp;area=Appleton%2C%20WI#carrier-access">
+          <a class="button button-primary" href="/load-board/#role=carrier&area=Appleton%2C%20WI&target=carrier-access">
             Open carrier intake <ArrowRight size={18} aria-hidden="true" />
           </a>
         </div>

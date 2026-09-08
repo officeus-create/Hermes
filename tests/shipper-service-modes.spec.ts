@@ -31,7 +31,7 @@ test("shipper and dealer page distinguishes three service modes without guarante
   );
   await expect(page.getByRole("link", { name: "Post a load in the Load Board demo" })).toHaveAttribute(
     "href",
-    "/load-board/?role=shipper#post-load",
+    "/load-board/#role=shipper&target=post-load",
   );
 });
 

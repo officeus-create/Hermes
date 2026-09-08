@@ -23,7 +23,7 @@ async function fillQualification(form: Locator) {
 }
 
 test("carrier handoff is counted once only after a reviewed preview and explicit email click", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=car_hauler&target=carrier-access");
   await page.evaluate(() => {
     window.dataLayer = [];
   });

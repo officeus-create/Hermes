@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 const openLoadForm = async (page: Page) => {
-  const response = await page.goto("/load-board/?role=dealer#post-load");
+  const response = await page.goto("/load-board/#role=dealer&target=post-load");
   expect(response?.ok()).toBeTruthy();
   const panel = page.locator("[data-route-estimate-panel]");
   await expect(panel).toBeVisible();

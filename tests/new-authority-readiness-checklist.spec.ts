@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const route = "/logistics/resources/new-authority-car-hauler-readiness-checklist/";
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
-const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const legacyDemoIntakeHref = "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access";
 
 test("new authority readiness checklist is useful, indexable, and connected to direct carrier intake", async ({ page }) => {
   await page.goto(route);

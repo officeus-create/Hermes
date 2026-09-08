@@ -3,8 +3,8 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 const route = "/logistics/resources/car-hauler-capacity-checklist/";
 const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
 const legacyCarrierDemoIntakes = [
-  "/load-board/?role=carrier#carrier-access",
-  "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+  "/load-board/#role=carrier&target=carrier-access",
+  "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access",
 ];
 
 async function preventNavigation(locator: Locator) {

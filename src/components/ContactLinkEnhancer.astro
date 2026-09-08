@@ -66,7 +66,10 @@
 
   const applyApprovedLoadBoardPrefill = () => {
     if (window.location.pathname !== "/load-board/") return;
-    const requestedEquipment = new URLSearchParams(window.location.search).get("equipment");
+    const currentUrl = new URL(window.location.href);
+    const rawHash = currentUrl.hash.startsWith("#") ? currentUrl.hash.slice(1) : "";
+    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();
+    const requestedEquipment = fragmentParams.get("equipment") || currentUrl.searchParams.get("equipment");
     const approvedEquipmentPrefills = new Set(["car_hauler"]);
     if (!requestedEquipment || !approvedEquipmentPrefills.has(requestedEquipment)) return;
 
@@ -236,7 +239,9 @@
     }
     if (target.origin !== window.location.origin || target.pathname !== "/load-board/") return;
 
-    const role = target.searchParams.get("role") || "unspecified";
+    const rawHash = target.hash.startsWith("#") ? target.hash.slice(1) : "";
+    const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();
+    const role = fragmentParams.get("role") || target.searchParams.get("role") || "unspecified";
     const legacyCtaType = role === "carrier"
       ? "carrier_capacity"
       : role === "dealer"

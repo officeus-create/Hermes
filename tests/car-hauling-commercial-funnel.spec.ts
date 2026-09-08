@@ -79,6 +79,6 @@ test("car hauling dispatch page routes carriers into direct commercial intake wi
 });
 
 test("Load Board ignores unsupported equipment query values", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier&equipment=unknown_equipment#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=unknown_equipment&target=carrier-access");
   await expect(page.locator('select[name="equipment_class"]')).toHaveValue("");
 });

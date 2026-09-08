@@ -4,25 +4,25 @@ const cases = [
   {
     route: "/paths/logistics/customers/vehicle-transport/",
     primary: "/logistics/request-vehicle-transport/?request=customer_delivery#transport-intake",
-    demo: "/load-board/?role=private_party#post-load",
+    demo: "/load-board/#role=private_party&target=post-load",
     requestType: "customer_delivery",
   },
   {
     route: "/paths/logistics/customers/port-pickup/",
     primary: "/logistics/request-vehicle-transport/?request=other#transport-intake",
-    demo: "/load-board/?role=private_party#post-load",
+    demo: "/load-board/#role=private_party&target=post-load",
     requestType: "other",
   },
   {
     route: "/paths/logistics/customers/luxury-classic-vehicle/",
     primary: "/logistics/request-vehicle-transport/?request=customer_delivery#transport-intake",
-    demo: "/load-board/?role=private_party#post-load",
+    demo: "/load-board/#role=private_party&target=post-load",
     requestType: "customer_delivery",
   },
   {
     route: "/paths/logistics/shippers-dealers/",
     primary: "/logistics/request-vehicle-transport/?request=dealer_inventory#transport-intake",
-    demo: "/load-board/?role=dealer#post-load",
+    demo: "/load-board/#role=dealer&target=post-load",
     requestType: "dealer_inventory",
   },
 ] as const;

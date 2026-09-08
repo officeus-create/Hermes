@@ -85,8 +85,8 @@ const routes = [
       "How much does vehicle transport to or from Appleton cost?",
       "Does submitting a request guarantee a carrier?",
       "application/ld+json",
-      "/load-board/?role=dealer",
-      "/load-board/?role=carrier",
+      "/load-board/#role=dealer",
+      "/load-board/#role=carrier",
     ],
   },
   {
@@ -101,7 +101,7 @@ const routes = [
       "does not guarantee a price, pickup date",
       "/logistics/appleton-wi-vehicle-transport/",
       "/logistics/shipper-dealer/",
-      "/load-board/?role=shipper",
+      "/load-board/#role=shipper",
     ],
   },
   {

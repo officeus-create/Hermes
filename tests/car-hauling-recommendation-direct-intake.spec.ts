@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const route = "/paths/logistics/carriers/car-hauling/";
 const directIntake = "/logistics/start-car-hauling-dispatch/";
-const demo = "/load-board/?role=carrier&equipment=car_hauler#available-loads";
+const demo = "/load-board/#role=carrier&equipment=car_hauler&target=available-loads";
 
 test("car-hauling recommendation uses the direct dispatch intake and keeps demo secondary", async ({ page }) => {
   await page.goto(route);

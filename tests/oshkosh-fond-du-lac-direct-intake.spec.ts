@@ -8,7 +8,7 @@ const cases = [
     route: "/logistics/oshkosh-wi-vehicle-transport/",
     directSelector: "[data-oshkosh-direct-intake]",
     demoSelector: "[data-oshkosh-demo]",
-    demo: "/load-board/?role=private_party&origin=Oshkosh%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=Oshkosh%2C%20WI&target=post-load",
     title: "Oshkosh Vehicle Transport | Hermes Logistics",
   },
   {
@@ -16,7 +16,7 @@ const cases = [
     route: "/logistics/fond-du-lac-wi-vehicle-transport/",
     directSelector: "[data-fond-du-lac-direct-intake]",
     demoSelector: "[data-fond-du-lac-demo]",
-    demo: "/load-board/?role=private_party&origin=Fond%20du%20Lac%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=Fond%20du%20Lac%2C%20WI&target=post-load",
     title: "Fond du Lac Vehicle Transport | Hermes Logistics",
   },
 ] as const;

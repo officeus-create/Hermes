@@ -12,8 +12,8 @@ import { reviewContentForPublication } from "../src/lib/content-publication-gate
 
 const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
 const legacyCarrierDemoCtas = [
-  "/load-board/?role=carrier#carrier-access",
-  "/load-board/?role=carrier&equipment=car_hauler#carrier-access",
+  "/load-board/#role=carrier&target=carrier-access",
+  "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access",
 ];
 
 const slots = buildPilotAssetSlots();

@@ -19,7 +19,7 @@ test("car hauling dispatch answers comparison, scope and readiness intent", asyn
   await expect(directIntakeLinks).toHaveCount(2);
   await expect(page.getByRole("link", { name: "Preview the Load Board Demo" })).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier&equipment=car_hauler#available-loads",
+    "/load-board/#role=carrier&equipment=car_hauler&target=available-loads",
   );
 });
 

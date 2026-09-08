@@ -187,9 +187,9 @@ test("Appleton guide routes customers, dealers, and carriers into the existing L
   const carrierIntakeLink = page.getByRole("link", { name: "Carrier: share capacity" });
   await expect(carrierIntakeLink).toHaveAttribute(
     "href",
-    "/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access",
+    "/load-board/#role=carrier&area=Appleton%2C%20WI&target=carrier-access",
   );
-  await page.goto("/load-board/?role=carrier&area=Appleton%2C%20WI#carrier-access");
+  await page.goto("/load-board/#role=carrier&area=Appleton%2C%20WI&target=carrier-access");
   await expect(page).toHaveURL(/\/load-board\/\?role=carrier&area=Appleton%2C%20WI#carrier-access$/);
   await expect(page.locator('input[name="origin_location"]')).toHaveValue("Appleton, WI");
 });
@@ -416,7 +416,7 @@ test("Load Board routes each role to the right workspace and keeps demo loads no
     }
   });
 
-  await page.goto("/load-board/?role=carrier#available-loads");
+  await page.goto("/load-board/#role=carrier&target=available-loads");
   await expect(page.getByRole("link", { name: /Carrier or owner-operator/ })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("heading", { name: "See the lane before you spend time on it." })).toBeVisible();
   await expect(page.locator(".available-load-card")).toHaveCount(4);
@@ -426,7 +426,7 @@ test("Load Board routes each role to the right workspace and keeps demo loads no
   await expect(page.locator("[data-demo-load-copy]")).toContainText("sales request");
   await expect(page.locator('input[name="interested_load"]')).toHaveValue("HLB-1042");
 
-  await page.goto("/load-board/?role=broker#post-load");
+  await page.goto("/load-board/#role=broker&target=post-load");
   await expect(page.locator('select[name="submitter_type"]')).toHaveValue("broker");
   await expect(page.locator("#post-load")).toBeVisible();
   expect(writes).toEqual([]);
@@ -497,18 +497,18 @@ test("logistics page routes each visitor type to a dedicated path", async ({ pag
   await expect(hub.getByRole("link", { name: /Open an agency/ })).toHaveAttribute("href", "/logistics/agency/");
   await expect(hub.getByRole("link", { name: /Work with us/ })).toHaveAttribute("href", "/logistics/careers/");
   await expect(hub.getByRole("link", { name: /Training/ })).toHaveAttribute("href", "/paths/academy/");
-  await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
+  await expect(hub.getByRole("link", { name: /Post a load/ })).toHaveAttribute("href", "/load-board/#role=shipper&target=post-load");
 });
 
 test("logistics audience pages open role-specific Load Board workspaces", async ({ page }) => {
   await page.goto("/logistics/shipper-dealer/");
-  await expect(page.getByRole("link", { name: "Post a load" })).toHaveAttribute("href", "/load-board/?role=shipper#post-load");
+  await expect(page.getByRole("link", { name: "Post a load" })).toHaveAttribute("href", "/load-board/#role=shipper&target=post-load");
 
   await page.goto("/logistics/broker/");
-  await expect(page.getByRole("link", { name: "Open broker Load Board" })).toHaveAttribute("href", "/load-board/?role=broker#post-load");
+  await expect(page.getByRole("link", { name: "Open broker Load Board" })).toHaveAttribute("href", "/load-board/#role=broker&target=post-load");
 
   await page.goto("/logistics/carrier/");
-  await expect(page.getByRole("link", { name: "Open Load Board" })).toHaveAttribute("href", "/load-board/?role=carrier#available-loads");
+  await expect(page.getByRole("link", { name: "Open Load Board" })).toHaveAttribute("href", "/load-board/#role=carrier&target=available-loads");
 });
 
 test("agency and career applications create local previews without sending", async ({ page }) => {

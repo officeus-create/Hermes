@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const route = "/logistics/milwaukee-wi-vehicle-transport/";
 const directIntake = "/logistics/request-vehicle-transport/?role=customer&request=customer_delivery#transport-intake";
-const demo = "/load-board/?role=private_party&origin=Milwaukee%2C%20WI#post-load";
+const demo = "/load-board/#role=private_party&origin=Milwaukee%2C%20WI&target=post-load";
 
 test("Milwaukee customer CTA uses direct intake and keeps demos secondary", async ({ page }) => {
   await page.goto(route);

@@ -8,7 +8,7 @@ const cases = [
     route: "/logistics/madison-wi-vehicle-transport/",
     directSelector: "[data-madison-direct-intake]",
     demoSelector: "[data-madison-demo]",
-    demo: "/load-board/?role=private_party&origin=Madison%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=Madison%2C%20WI&target=post-load",
     title: "Madison Vehicle Transport | Hermes Logistics",
   },
   {
@@ -16,7 +16,7 @@ const cases = [
     route: "/logistics/green-bay-wi-vehicle-transport/",
     directSelector: "[data-green-bay-direct-intake], [data-green-bay-direct-intake-bottom]",
     demoSelector: "[data-green-bay-demo]",
-    demo: "/load-board/?role=private_party&origin=Green%20Bay%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=Green%20Bay%2C%20WI&target=post-load",
     title: "Green Bay Vehicle Transport | Hermes Logistics",
   },
 ] as const;

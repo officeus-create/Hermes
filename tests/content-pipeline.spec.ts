@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 const directCarrierIntake = "/logistics/start-car-hauling-dispatch/";
-const legacyCarrierDemoIntake = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const legacyCarrierDemoIntake = "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access";
 
 test("content pipeline workspace is noindex and reports the unfilled 30-asset pilot honestly", async ({ page }) => {
   const response = await page.goto("/demos/content-pipeline/");

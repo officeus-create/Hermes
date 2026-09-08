@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const route = "/logistics/resources/auction-vehicle-pickup-checklist/";
 const directIntake = "/logistics/request-vehicle-transport/?request=auction_pickup#transport-intake";
-const demo = "/load-board/?role=shipper#post-load";
+const demo = "/load-board/#role=shipper&target=post-load";
 
 test("auction checklist makes direct intake primary and demo secondary", async ({ page }) => {
   await page.goto(route);

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const resourcePath = "/logistics/resources/broker-setup-packet-checklist/";
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
-const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const legacyDemoIntakeHref = "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access";
 
 test("broker setup checklist prepares carrier documents without exposing credentials", async ({ page }) => {
   await page.goto(resourcePath);

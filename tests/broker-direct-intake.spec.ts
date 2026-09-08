@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const route = "/paths/logistics/brokers/carrier-capacity/";
 const directIntake = "/logistics/request-vehicle-transport/?role=broker#transport-intake";
-const demo = "/load-board/?role=broker#post-load";
+const demo = "/load-board/#role=broker&target=post-load";
 
 test("broker recommendation uses the direct commercial intake and labels the demo separately", async ({ page }) => {
   await page.goto(route);

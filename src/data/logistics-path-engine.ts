@@ -38,8 +38,8 @@ export type LogisticsRecommendation = {
   caseStudy?: { label: string; title: string; body: string; checks: string[] };
 };
 
-const carrierCta = { label: "Start carrier onboarding", href: "/load-board/?role=carrier#carrier-access" };
-const customerCta = { label: "Request transportation", href: "/load-board/?role=shipper#post-load" };
+const carrierCta = { label: "Start carrier onboarding", href: "/load-board/#role=carrier&target=carrier-access" };
+const customerCta = { label: "Request transportation", href: "/load-board/#role=shipper&target=post-load" };
 const callCta = { label: "Call Logistics Sales", href: "tel:+12623023626" };
 
 const equipmentOptions: PathOption[] = [
@@ -396,7 +396,7 @@ export const logisticsRecommendations: LogisticsRecommendation[] = [
     reasons: ["You identified as a broker.", "Capacity is not available until carrier and load fit are verified.", "Structured intake reduces repeated questions."],
     included: ["Load and broker identity review", "Origin, destination, timing, commodity, and equipment fit", "Rate, weight, dimensions, and special requirements", "Authority, insurance, and tracking expectations", "Handoff after verification"],
     nextSteps: ["Open the broker request and provide operational details.", "Hermes reviews compatibility and current capacity.", "The team confirms the action; no carrier is committed automatically."],
-    primaryCta: { label: "Request verified carrier capacity", href: "/load-board/?role=broker#post-load" },
+    primaryCta: { label: "Request verified carrier capacity", href: "/load-board/#role=broker&target=post-load" },
     secondaryCta: callCta,
   }),
   simple({

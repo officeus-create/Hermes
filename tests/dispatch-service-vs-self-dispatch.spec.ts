@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 const resourcePath = "/logistics/resources/dispatch-service-vs-self-dispatch/";
 const intakeHref = "/logistics/start-car-hauling-dispatch/";
-const legacyDemoIntakeHref = "/load-board/?role=carrier&equipment=car_hauler#carrier-access";
+const legacyDemoIntakeHref = "/load-board/#role=carrier&equipment=car_hauler&target=carrier-access";
 
 test("dispatch comparison explains both operating models and routes carriers to direct review", async ({ page }) => {
   await page.goto(resourcePath);

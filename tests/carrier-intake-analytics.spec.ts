@@ -53,7 +53,7 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
     }
   });
 
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=car_hauler&target=carrier-access");
   await page.evaluate(() => {
     window.dataLayer = [];
   });
@@ -97,7 +97,7 @@ test("carrier intake emits one start and one privacy-safe preview event", async 
 });
 
 test("consented load-board carrier events are forwarded once to gtag without PII", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=car_hauler&target=carrier-access");
   await page.evaluate(() => localStorage.setItem("hermes-analytics-consent", "granted"));
   await page.reload();
 
@@ -161,7 +161,7 @@ test("consented load-board carrier events are forwarded once to gtag without PII
 });
 
 test("invalid carrier intake does not emit a preview-ready event", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier&equipment=car_hauler#carrier-access");
+  await page.goto("/load-board/#role=carrier&equipment=car_hauler&target=carrier-access");
   await page.evaluate(() => {
     window.dataLayer = [];
   });

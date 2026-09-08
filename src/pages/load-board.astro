@@ -46,7 +46,7 @@ import "../styles/features/load.css";
               <strong>I need to move a vehicle</strong>
               <small>Use the real transportation-request path for route, vehicle, timing, condition, and contact review.</small>
             </a>
-            <a href="?role=carrier#available-loads" aria-label="Carrier or owner-operator — I have a truck — source-gated live records and fictional demo freight" data-primary-entry="carrier" data-role-link="carrier">
+            <a href="/load-board/#role=carrier&target=available-loads" aria-label="Carrier or owner-operator — I have a truck — source-gated live records and fictional demo freight" data-primary-entry="carrier" data-role-link="carrier">
               <Truck size={25} aria-hidden="true" />
               <span>Carrier / owner-operator</span>
               <strong>I have a truck</strong>
@@ -536,10 +536,32 @@ import "../styles/features/load.css";
   const loadSalesTag = document.querySelector<HTMLElement>("[data-load-sales-tag]");
   let activePreview = "";
   let activeLoadLead: ReturnType<typeof buildPostedLoadSalesLead> | null = null;
-
-  const activeRole = new URLSearchParams(window.location.search).get("role");
-  const sourceOrigin = new URLSearchParams(window.location.search).get("origin");
-  const sourceArea = new URLSearchParams(window.location.search).get("area");
+  const legacyParams = new URLSearchParams(window.location.search);
+  const rawHash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+  const fragmentParams = rawHash.includes("=") ? new URLSearchParams(rawHash) : new URLSearchParams();
+  const legacyAnchor = rawHash && !rawHash.includes("=") ? rawHash : "";
+  const loadBoardParam = (key: string) => fragmentParams.get(key) || legacyParams.get(key);
+  const approvedRoles = new Set(["carrier", "broker", "shipper", "dealer", "private_party"]);
+  const requestedRole = loadBoardParam("role");
+  const activeRole = requestedRole && approvedRoles.has(requestedRole) ? requestedRole : null;
+  const sourceOrigin = loadBoardParam("origin");
+  const sourceArea = loadBoardParam("area");
+  const requestedTarget = fragmentParams.get("target") || legacyAnchor;
+  const legacyStateKeys = ["role", "equipment", "origin", "area"];
+  const hasLegacyState = legacyStateKeys.some((key) => legacyParams.has(key));
+  if (hasLegacyState) {
+    const nextSearch = new URLSearchParams(legacyParams);
+    const nextFragment = new URLSearchParams(fragmentParams);
+    for (const key of legacyStateKeys) {
+      const value = legacyParams.get(key);
+      if (value && !nextFragment.has(key)) nextFragment.set(key, value);
+      nextSearch.delete(key);
+    }
+    if (legacyAnchor && !nextFragment.has("target")) nextFragment.set("target", legacyAnchor);
+    const search = nextSearch.toString();
+    const fragment = nextFragment.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${search ? `?${search}` : ""}${fragment ? `#${fragment}` : ""}`);
+  }
   if (activeRole) {
     document.querySelector(`[data-role-link="${activeRole}"]`)?.setAttribute("aria-current", "page");
     const submitter = document.querySelector<HTMLSelectElement>('select[name="submitter_type"]');
@@ -552,6 +574,9 @@ import "../styles/features/load.css";
   const carrierOrigin = document.querySelector<HTMLInputElement>('input[name="origin_location"]');
   if (pickupLocation && sourceOrigin) pickupLocation.value = sourceOrigin.slice(0, 180);
   if (carrierOrigin && sourceArea) carrierOrigin.value = sourceArea.slice(0, 180);
+  if (requestedTarget) {
+    window.requestAnimationFrame(() => document.getElementById(requestedTarget)?.scrollIntoView({ block: "start" }));
+  }
 
   const demoSearchButton = document.querySelector<HTMLButtonElement>("[data-demo-search]");
   const demoSearchStatus = document.querySelector<HTMLElement>("[data-demo-search-status]");

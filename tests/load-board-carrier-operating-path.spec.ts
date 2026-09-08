@@ -36,7 +36,7 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
   expect(legacyNav).toContain("top:72px");
 
   expect(audiences).toContain('secondary: { label: "Agreement & onboarding", href: "/carrier/" }');
-  expect(audiences).toContain('demo: { label: "Open Load Board", href: "/load-board/?role=carrier#available-loads" }');
+  expect(audiences).toContain('demo: { label: "Open Load Board", href: "/load-board/#role=carrier&target=available-loads" }');
   expect(carrierAudience).toContain("Carrier operating tools");
   for (const href of [
     "/logistics/start-car-hauling-dispatch/",
@@ -51,7 +51,8 @@ test("carrier agreement and legacy operating tools are discoverable inside Logis
 
   expect(journey).toContain('const isLoadBoard = Astro.url.pathname === "/load-board/"');
   expect(journey).toContain('data-carrier-role-gated={isLoadBoard ? "" : undefined}');
-  expect(journey).toContain('new URLSearchParams(window.location.search).get("role") === "carrier"');
+  expect(journey).toContain('const fragmentRole = rawHash.includes("=") ? new URLSearchParams(rawHash).get("role") : null;');
+  expect(journey).toContain('(fragmentRole || queryRole) === "carrier"');
   expect(journey).toContain('primaryLabel: "Agreement & onboarding", primaryHref: "/carrier/"');
   expect(journey).not.toContain('Astro.url.searchParams.get("role")');
 
@@ -82,7 +83,7 @@ test("canonical Load Board source is wired to separate live load and capacity AP
 });
 
 test("carrier Load Board role reveals Agreement & onboarding at runtime", async ({ page }) => {
-  await page.goto("/load-board/?role=carrier#available-loads");
+  await page.goto("/load-board/#role=carrier&target=available-loads");
   const journey = page.locator("[data-carrier-contract-journey]");
   await expect(journey).toBeVisible();
   await expect(journey).not.toHaveAttribute("data-carrier-role-gated", "");
@@ -94,4 +95,27 @@ test("plain Load Board keeps the carrier agreement journey hidden", async ({ pag
   const journey = page.locator("[data-carrier-contract-journey]");
   await expect(journey).toBeHidden();
   await expect(journey).toHaveAttribute("data-carrier-role-gated", "");
+});
+
+test("legacy Load Board role query normalizes to canonical fragment state", async ({ page }) => {
+  await page.goto("/load-board/?role=carrier&equipment=car_hauler#available-loads");
+  await expect(page).toHaveURL(/\/load-board\/#role=carrier&equipment=car_hauler&target=available-loads$/);
+  await expect(page.locator('select[name="equipment_class"]')).toHaveValue("car_hauler");
+  await expect(page.locator("[data-carrier-contract-journey]")).not.toHaveAttribute("data-carrier-role-gated", "");
+});
+
+test("source graph does not publish query-state Load Board links", async () => {
+  const pending = [resolve(process.cwd(), "src")];
+  const offenders: string[] = [];
+  while (pending.length) {
+    const current = pending.pop();
+    if (!current) continue;
+    const entries = await import("node:fs/promises").then(({ readdir }) => readdir(current, { withFileTypes: true }));
+    for (const entry of entries) {
+      const full = resolve(current, entry.name);
+      if (entry.isDirectory()) pending.push(full);
+      else if (/\.(astro|ts|tsx|js|mjs)$/.test(entry.name) && (await source(full)).includes("/load-board/?")) offenders.push(full);
+    }
+  }
+  expect(offenders).toEqual([]);
 });

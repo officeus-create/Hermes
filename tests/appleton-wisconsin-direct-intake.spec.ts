@@ -8,7 +8,7 @@ const cases = [
     route: "/logistics/appleton-wi-vehicle-transport/",
     directSelector: "[data-appleton-direct-intake], [data-appleton-direct-intake-bottom]",
     demoSelector: "[data-appleton-demo]",
-    demo: "/load-board/?role=private_party&origin=Appleton%2C%20WI#post-load",
+    demo: "/load-board/#role=private_party&origin=Appleton%2C%20WI&target=post-load",
     title: "Appleton Vehicle Transport | Hermes Logistics",
   },
   {
@@ -16,7 +16,7 @@ const cases = [
     route: "/logistics/wisconsin-vehicle-transport/",
     directSelector: "[data-wisconsin-direct-intake]",
     demoSelector: "[data-wisconsin-demo]",
-    demo: "/load-board/?role=private_party&origin=Wisconsin#post-load",
+    demo: "/load-board/#role=private_party&origin=Wisconsin&target=post-load",
     title: "Wisconsin Vehicle Transport | Hermes Logistics",
   },
 ] as const;

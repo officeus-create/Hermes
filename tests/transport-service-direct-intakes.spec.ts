@@ -63,7 +63,7 @@ for (const serviceCase of cases) {
       await expect(primaryActions.nth(index)).toHaveAttribute("href", expectedHref(serviceCase.equipment));
     }
     await expect(page.locator(`main a[href="${expectedHref(serviceCase.equipment)}"]`)).toHaveCount(3);
-    await expect(page.locator('main a[href^="/load-board/?role=shipper"]')).toHaveCount(0);
+    await expect(page.locator('main a[href^="/load-board/#role=shipper"]')).toHaveCount(0);
 
     await preventNavigation(primaryActions.first());
     await primaryActions.first().click();

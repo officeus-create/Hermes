@@ -106,7 +106,7 @@ test("Load Board v1 pilot still shows multiple equipment types and keeps private
   }
 
   await expect(page.getByText("Preview rows are clearly marked.")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Request Load Board access/ })).toHaveAttribute("href", "/load-board/?role=carrier#carrier-access");
+  await expect(page.getByRole("link", { name: /Request Load Board access/ })).toHaveAttribute("href", "/load-board/#role=carrier&target=carrier-access");
 
   const body = await page.locator("body").innerText();
   expect(body).not.toContain("Tina Bloom");
