@@ -1,0 +1,32 @@
+name: IndexNow one-time public URL release submit 2026-09-09
+
+on:
+  push:
+    branches:
+      - ops/indexnow-all-public-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+      - name: Verify public ownership key
+        shell: bash
+        run: |
+          test "$(tr -d '\r\n' < public/8e3c1f6a9d4b72c5e0a8f31d67b2c94e.txt)" = "8e3c1f6a9d4b72c5e0a8f31d67b2c94e"
+      - name: Validate all canonical public URLs
+        env:
+          INDEXNOW_DRY_RUN: "1"
+          INDEXNOW_USE_SITEMAPS: "1"
+        run: node scripts/indexnow-submit.mjs
+      - name: Submit all canonical public URLs
+        env:
+          INDEXNOW_USE_SITEMAPS: "1"
+        run: node scripts/indexnow-submit.mjs
