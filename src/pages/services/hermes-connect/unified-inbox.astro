@@ -10,12 +10,22 @@ const faqs = [
     question: "What is Unified Inbox intended to do?",
     answer: "It is designed to bring approved inbound business requests into one operator view with clear lifecycle states, notes, and human-reviewed next actions.",
   },
+  {
+    question: "Would Unified Inbox replace every email, CRM, or messaging system?",
+    answer: "No. The intended design is an operational intake layer that references approved sources and keeps lifecycle ownership clear. It should not create a second conflicting customer database or claim unsupported two-way messaging integrations.",
+  },
 ];
 
 const capabilities = [
   { title: "Consolidated intake", body: "Bring approved website and business-request sources into one operational queue instead of scattered tabs." },
   { title: "Lifecycle states", body: "Track requests through explicit states without implying that external delivery, SMS, or email automation is active when it is not." },
   { title: "Human-reviewed responses", body: "Keep suggested next actions separate from outbound execution so operators remain in control of customer communication." },
+];
+
+const evaluationPoints = [
+  { title: "Source identity", body: "Preserve where a request came from and which authoritative customer or business record it belongs to so the inbox does not create duplicate identities." },
+  { title: "Lifecycle ownership", body: "Use explicit states such as new, reviewed, waiting, resolved or routed only when the existing operational process defines what each state means and who owns the next step." },
+  { title: "Outbound boundary", body: "Reading and organizing inbound work is separate from sending messages. Any future email, SMS or external-channel action needs verified delivery, permission, audit and retry behavior before it can be called live." },
 ];
 ---
 
@@ -26,6 +36,9 @@ const capabilities = [
   canonicalUrl="https://hermeslogisticsus.com/services/hermes-connect/unified-inbox/"
   lead="A shared intake and lifecycle concept for organizing business requests across the Hermes Connect product family without presenting unconnected messaging gateways as live."
   capabilities={capabilities}
+  decisionTitle="What belongs in one operational inbox — and what should stay in its source system"
+  decisionBody="The value of consolidation comes from shared triage and lifecycle context, not from copying every message and customer record into another database. The reference model keeps source identity, owner state and outbound permissions explicit."
+  evaluationPoints={evaluationPoints}
   boundary="This page does not claim a live multi-channel inbox, encrypted local lead store, SMS gateway, or email gateway for the current product. Those integrations require separate verified production evidence before they can be described as live."
   faqs={faqs}
 />
