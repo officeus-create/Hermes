@@ -1,21 +1,47 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
-const [carrierPage, dealerPage, repairEnhancer] = await Promise.all([
+const [carrierPage, carrierMarkets, dealerPage, repairEnhancer] = await Promise.all([
   readFile(new URL("../src/pages/logistics/car-hauling-dispatch/index.astro", import.meta.url), "utf8"),
+  readFile(new URL("../src/data/car-hauler-geo-markets.ts", import.meta.url), "utf8"),
   readFile(new URL("../src/pages/logistics/dealer-vehicle-transportation/index.astro", import.meta.url), "utf8"),
   readFile(new URL("../src/components/RepairPartnerOfferEnhancer.astro", import.meta.url), "utf8"),
 ]);
 
-const automotiveP0Markets = [
+// Carrier GEO is now owned by the owner-approved 2026 operating-history batch:
+// one hub plus exactly 25 carrier-acquisition/search markets. Do not reintroduce
+// the superseded Miami/Atlanta/Orlando carrier hypothesis as a hard requirement.
+const carrierMarketSlugs = [...carrierMarkets.matchAll(/\bslug:\s*"([^"]+)"/g)].map((match) => match[1]);
+assert.equal(carrierMarketSlugs.length, 25, "carrier GEO registry must contain exactly 25 markets");
+assert.equal(new Set(carrierMarketSlugs).size, 25, "carrier GEO registry slugs must be unique");
+for (const requiredSlug of [
+  "colorado-springs-co",
+  "puyallup-wa",
+  "denver-co",
+  "springfield-mo",
+  "kansas-city-mo-ks",
+  "chicago-il",
+  "fremont-ca",
+]) {
+  assert.ok(carrierMarketSlugs.includes(requiredSlug), `carrier GEO registry must include ${requiredSlug}`);
+}
+assert.match(carrierPage, /25-market carrier GEO launch/);
+assert.match(carrierPage, /Colorado Front Range/);
+assert.match(carrierPage, /Puget Sound/);
+assert.match(carrierPage, /Missouri\/Kansas/);
+assert.match(carrierPage, /Chicago-area markets/);
+assert.match(carrierPage, /Fremont \/ the Bay Area/);
+assert.match(carrierPage, /\/logistics\/car-hauler-loads\//);
+
+// Dealer/shipper acquisition remains a separate owner until that funnel is
+// intentionally migrated. This carrier launch must not silently rewrite it.
+const dealerP0Markets = [
   "South Florida / Miami",
   "Atlanta",
   "Orlando / Central Florida",
   "Chicago",
 ];
-
-for (const market of automotiveP0Markets) {
-  assert.match(carrierPage, new RegExp(market.replaceAll("/", "\\/")), `carrier owner must include ${market}`);
+for (const market of dealerP0Markets) {
   assert.match(dealerPage, new RegExp(market.replaceAll("/", "\\/")), `dealer owner must include ${market}`);
 }
 
@@ -45,11 +71,11 @@ assert.match(repairEnhancer, /truck \/ diesel repair/);
 assert.match(repairEnhancer, /mobile mechanics/);
 assert.match(repairEnhancer, /tire service/);
 assert.match(repairEnhancer, /body \/ collision/);
-for (const market of automotiveP0Markets) {
+for (const market of dealerP0Markets) {
   assert.doesNotMatch(repairEnhancer, new RegExp(market.replaceAll("/", "\\/")), `Repair First-5 must not inherit ${market}`);
 }
 
 const combined = `${carrierPage}\n${dealerPage}\n${repairEnhancer}`;
-assert.doesNotMatch(combined, /href="\/(miami|atlanta|orlando|chicago|little-rock|fayetteville|fort-smith|jonesboro|conway)-/i, "GEO evidence must not create doorway-style city URLs");
+assert.doesNotMatch(combined, /href="\/(miami|atlanta|orlando|chicago|little-rock|fayetteville|fort-smith|jonesboro|conway)-/i, "legacy GEO evidence must not create old doorway-style city URLs");
 
 console.log("automotive + Repair pilot GEO owner contract: OK");
