@@ -40,6 +40,23 @@
   };
   const repairShopRoot = "/services/hermes-connect/repair-shops/";
 
+  const applyMoneyPageContrastLayer = () => {
+    const pageClass = window.location.pathname === "/load-board/"
+      ? "money-page-load-board"
+      : window.location.pathname === repairShopRoot
+        ? "money-page-repair"
+        : "";
+    if (!pageClass) return;
+
+    document.body.classList.add("money-page-contrast", pageClass);
+    if (document.querySelector('link[data-money-page-contrast="true"]')) return;
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = "/money-page-contrast.css";
+    stylesheet.dataset.moneyPageContrast = "true";
+    document.head.append(stylesheet);
+  };
+
   const applyRepairAuthMode = () => {
     if (window.location.pathname !== `${repairShopRoot}auth/`) return;
     const requestedMode = new URLSearchParams(window.location.search).get("mode");
@@ -77,6 +94,7 @@
   };
 
   const applyDomReadyEnhancements = () => {
+    applyMoneyPageContrastLayer();
     applyRepairAuthMode();
     applyAccessibilityRoles();
   };
