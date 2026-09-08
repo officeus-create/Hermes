@@ -1,8 +1,26 @@
 import { ensureRegistrationOpsSchema, syncSyntheticFlagForAccount } from "./registration-ops.mjs";
 import { ensureOfficeRepairDemoData } from "./repair-shop-office-demo.mjs";
+import { resolveDefaultRepairShopServiceContext } from "./repair-shop-service-context.mjs";
 import { ensureRepairShopStaffScheduleSchema } from "./repair-shop-staff-schedule-schema.mjs";
 
+const BENCHMARK_SERVICES = [
+  ["Tire Rotation", 30],
+  ["Flat Tire Repair", 45],
+  ["TPMS Inspection & Sensor Service", 45],
+  ["Brake Fluid Exchange", 60],
+  ["Complete Vehicle Inspection", 75],
+  ["Coolant & Radiator Fluid Exchange", 90],
+  ["Engine Tune-Up & Spark Plug Service", 120],
+  ["Fuel System Cleaning", 75],
+  ["Wiper Blade Replacement", 20],
+  ["Exterior & Interior Light Service", 30],
+  ["ABS Diagnostic & Service", 90],
+  ["High-Mileage Oil Change", 40],
+];
+
 const cleanEmail = (value) => String(value || "").trim().toLowerCase();
+const safeIdPart = (value) => String(value || "").replace(/[^a-z0-9]/gi, "").slice(0, 24) || "synthetic";
+const slug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 54);
 
 function demoAccountKind(specialist) {
   const local = cleanEmail(specialist?.email).split("@")[0] || "";
@@ -27,6 +45,13 @@ async function isSyntheticAccount(db, env, specialist) {
     .bind(specialist.id)
     .first();
   return Number(flag?.synthetic) === 1;
+}
+
+async function readSyntheticShop(db, specialist) {
+  return db
+    .prepare("SELECT id,owner_specialist_id,name,slug,timezone FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
+    .bind(specialist.id)
+    .first();
 }
 
 async function fillSyntheticShopProfile(db, specialist, kind) {
@@ -75,11 +100,45 @@ async function fillSyntheticShopProfile(db, specialist, kind) {
   ).run();
 }
 
+async function fillBenchmarkServices(db, specialist) {
+  const shop = await readSyntheticShop(db, specialist);
+  if (!shop?.id) return 0;
+  const resolved = await resolveDefaultRepairShopServiceContext(db, specialist.id, shop);
+  const now = new Date().toISOString();
+  const ownerPart = safeIdPart(specialist.id);
+
+  for (const [name, duration] of BENCHMARK_SERVICES) {
+    let service = await db
+      .prepare("SELECT id FROM services WHERE owner_specialist_id = ? AND lower(name) = lower(?) LIMIT 1")
+      .bind(specialist.id, name)
+      .first();
+    if (!service?.id) {
+      const id = `demo-benchmark-${ownerPart}-${slug(name)}`;
+      await db
+        .prepare("INSERT OR IGNORE INTO services (id,name,duration_minutes,owner_specialist_id) VALUES (?,?,?,?)")
+        .bind(id, name, duration, specialist.id)
+        .run();
+      service = { id };
+    }
+    await db
+      .prepare("INSERT OR IGNORE INTO hermes_service_contexts (service_id,context_id,created_at) VALUES (?,?,?)")
+      .bind(service.id, resolved.context.id, now)
+      .run();
+  }
+
+  let count = 0;
+  for (const [name] of BENCHMARK_SERVICES) {
+    const row = await db
+      .prepare("SELECT COUNT(*) AS total FROM services WHERE owner_specialist_id = ? AND lower(name) = lower(?)")
+      .bind(specialist.id, name)
+      .first();
+    count += Number(row?.total || 0) > 0 ? 1 : 0;
+  }
+  return count;
+}
+
 async function fillSyntheticStaffSchedules(db, specialist) {
-  const shop = await db
-    .prepare("SELECT id FROM repair_shops WHERE owner_specialist_id = ? LIMIT 1")
-    .bind(specialist.id)
-    .first();
+  const shop = await readSyntheticShop(db, specialist);
   if (!shop?.id) return 0;
 
   await ensureRepairShopStaffScheduleSchema(db);
@@ -138,10 +197,12 @@ export async function ensureRepairShopSyntheticDemoData({ db, env, specialist })
   if (!seeded?.eligible || !seeded?.seeded) return { ...seeded, demo_account: kind };
 
   await fillSyntheticShopProfile(db, specialist, kind);
+  const benchmarkServiceCount = await fillBenchmarkServices(db, specialist);
   const scheduleCount = await fillSyntheticStaffSchedules(db, specialist);
   return {
     ...seeded,
     demo_account: kind,
+    benchmark_service_count: benchmarkServiceCount,
     schedule_rows: scheduleCount,
     synthetic: true,
   };
