@@ -18,7 +18,9 @@ const BENCHMARK_SERVICES = [
   ["High-Mileage Oil Change", 40],
 ];
 
+const EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES = new Set(["officea baka"]);
 const cleanEmail = (value) => String(value || "").trim().toLowerCase();
+const cleanName = (value) => String(value || "").trim().replace(/\s+/g, " ").toLowerCase();
 const safeIdPart = (value) => String(value || "").replace(/[^a-z0-9]/gi, "").slice(0, 24) || "synthetic";
 const slug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 54);
 
@@ -35,14 +37,22 @@ function demoAccountKind(specialist) {
   return null;
 }
 
+function isExplicitSyntheticTestOwner(specialist) {
+  return specialist?.role === "Shop Owner" && EXPLICIT_SYNTHETIC_TEST_OWNER_NAMES.has(cleanName(specialist?.name));
+}
+
+async function readSyntheticFlag(db, specialistId) {
+  const row = await db
+    .prepare("SELECT synthetic FROM hermes_registration_flags WHERE specialist_id = ? LIMIT 1")
+    .bind(specialistId)
+    .first();
+  return Number(row?.synthetic) === 1;
+}
+
 async function isSyntheticAccount(db, env, specialist) {
   if (!specialist?.id || specialist.role !== "Shop Owner") return false;
   await ensureRegistrationOpsSchema(db);
-  const existing = await db
-    .prepare("SELECT synthetic FROM hermes_registration_flags WHERE specialist_id = ? LIMIT 1")
-    .bind(specialist.id)
-    .first();
-  if (Number(existing?.synthetic) === 1) return true;
+  if (await readSyntheticFlag(db, specialist.id)) return true;
 
   await syncSyntheticFlagForAccount({
     db,
@@ -51,11 +61,23 @@ async function isSyntheticAccount(db, env, specialist) {
     email: specialist.email,
     createdAt: new Date().toISOString(),
   });
-  const flag = await db
-    .prepare("SELECT synthetic FROM hermes_registration_flags WHERE specialist_id = ? LIMIT 1")
-    .bind(specialist.id)
-    .first();
-  return Number(flag?.synthetic) === 1;
+  if (await readSyntheticFlag(db, specialist.id)) return true;
+
+  if (!isExplicitSyntheticTestOwner(specialist)) return false;
+  const explicitTestEnv = {
+    ...env,
+    HERMES_SYNTHETIC_ACCOUNT_EMAILS: [String(env?.HERMES_SYNTHETIC_ACCOUNT_EMAILS || ""), cleanEmail(specialist.email)]
+      .filter(Boolean)
+      .join(","),
+  };
+  await syncSyntheticFlagForAccount({
+    db,
+    env: explicitTestEnv,
+    specialistId: specialist.id,
+    email: specialist.email,
+    createdAt: new Date().toISOString(),
+  });
+  return readSyntheticFlag(db, specialist.id);
 }
 
 async function readSyntheticShop(db, specialist) {
