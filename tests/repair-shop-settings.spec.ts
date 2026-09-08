@@ -117,7 +117,7 @@ test("Company is a private owner workspace backed by profile, team and schedule 
 
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex,nofollow/);
   await expect(page.locator('[data-i18n="title"]')).toHaveText("Company");
-  await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Settings");
+  await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Company");
   await expect(page.locator(".repair-crm-account-slot details[data-hc-account-switcher]")).toHaveCount(1);
   await expect(page.locator("#shop-name")).toHaveValue("Hermes Test Garage");
   await expect(page.locator("#shop-city")).toHaveValue("Milwaukee");
@@ -192,11 +192,14 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   await page.goto("/services/hermes-connect/repair-shops/settings/?lang=ru", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator('[data-i18n="title"]')).toHaveText("Компания");
-  await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Настройки");
+  await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Компания");
   await expect(page.locator('[data-i18n="teamTitle"]')).toHaveText("Команда");
   await expect(page.locator('[data-i18n="scheduleTitle"]')).toHaveText("Смены и перерывы");
   await expect(page.locator('[data-i18n="connectionsTitle"]')).toHaveText("Приложения и каналы");
   await expect(page.locator('[data-i18n="needsAuth"]')).toHaveText("Нужна авторизация");
+  await expect(page.locator('[data-i18n="profileTitle"]')).toHaveText("Данные компании");
+  await expect(page.locator('[data-i18n="bookingTitle"]')).toHaveText("Публичная ссылка для записи");
+  await expect(page.locator('[data-i18n="connectionsCopy"]')).toContainText("Статусы показывают реальное состояние");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
 
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
@@ -207,7 +210,7 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   if (viewport && viewport.width <= 760) {
     await page.locator("[data-repair-crm-menu]").click();
     await expect(page.locator(".repair-crm-sidebar")).toBeInViewport();
-    await expect(page.getByRole("link", { name: "Настройки" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: "Компания" })).toHaveAttribute("aria-current", "page");
     await captureEvidence(page, testInfo, "company-ru-mobile-drawer", false);
   }
 });

@@ -15,11 +15,13 @@ const [layout, header, runtime, nav, dashboard, availability, customers, appoint
   read("src/pages/services/hermes-connect/repair-shops/appointments.astro"),
 ]);
 
-test("Hermes Connect defaults clean entries to English while preserving explicit locale navigation", () => {
-  assert.doesNotMatch(layout, /localStorage\.getItem\("hermes-connect-language"\)/);
-  assert.doesNotMatch(layout, /window\.location\.replace\(`\$\{window\.location\.pathname\}/);
-  assert.match(layout, /const active = requested && supported\.has\(requested\) \? requested : "en"/);
+test("Hermes Connect restores an explicitly selected saved locale while a fresh entry can still default to English", () => {
+  assert.match(layout, /localStorage\.getItem\("hermes-connect-language"\)/);
+  assert.match(layout, /const hasExplicitLocale = requested !== null/);
+  assert.match(layout, /stored && supported\.has\(stored\) \? stored : "en"/);
   assert.match(layout, /localStorage\.setItem\("hermes-connect-language", active\)/);
+  assert.match(layout, /normalized\.searchParams\.set\("lang", active\)/);
+  assert.match(layout, /window\.history\.replaceState\(window\.history\.state, "", normalized\.pathname \+ normalized\.search \+ normalized\.hash\)/);
   assert.match(layout, /a\[href\^="\/services\/hermes-connect\/"\]:not\(\[lang\]\)/);
   assert.match(layout, /next\.searchParams\.set\("lang", active\)/);
 });
@@ -59,6 +61,7 @@ test("canonical private Repair destinations are owned by the shared locale-prese
   assert.match(nav, /\$\{repairShopRoot\}\/appointments/);
   assert.match(nav, /\$\{repairShopRoot\}\/customers/);
   assert.match(nav, /\$\{repairShopRoot\}\/availability/);
+  assert.match(nav, /settings:"Компания"/);
   assert.match(customers, /\/services\/hermes-connect\/repair-shops\/appointments\//);
   assert.match(appointments, /\/services\/hermes-connect\/repair-shops\/customers\//);
   assert.match(availability, /\/services\/hermes-connect\/repair-shops\/dashboard\//);
