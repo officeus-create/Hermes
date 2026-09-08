@@ -1,0 +1,40 @@
+name: IndexNow money pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/pages/load-board.astro"
+      - "src/pages/logistics/car-hauling-dispatch/**"
+      - "src/pages/services/hermes-connect/repair-shops.astro"
+      - "src/pages/services/hermes-connect/repair-shops/**"
+      - "public/ba5691c6d81930f628368f298384f48c.txt"
+      - ".github/workflows/indexnow-money-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Submit canonical money pages to IndexNow
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            --request POST \
+            --header 'Content-Type: application/json; charset=utf-8' \
+            --data '{
+              "host": "hermeslogisticsus.com",
+              "key": "ba5691c6d81930f628368f298384f48c",
+              "keyLocation": "https://hermeslogisticsus.com/ba5691c6d81930f628368f298384f48c.txt",
+              "urlList": [
+                "https://hermeslogisticsus.com/load-board/",
+                "https://hermeslogisticsus.com/logistics/car-hauling-dispatch/",
+                "https://hermeslogisticsus.com/services/hermes-connect/repair-shops/"
+              ]
+            }' \
+            https://api.indexnow.org/indexnow
