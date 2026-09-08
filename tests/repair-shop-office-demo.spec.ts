@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFileSync } from "node:fs";
 
 const demo = readFileSync("functions/api/_lib/repair-shop-office-demo.mjs", "utf8");
+const syntheticDemo = readFileSync("functions/api/_lib/repair-shop-synthetic-demo.mjs", "utf8");
 const registrationOps = readFileSync("functions/api/_lib/registration-ops.mjs", "utf8");
 const staffSchema = readFileSync("functions/api/_lib/repair-shop-staff-schema.mjs", "utf8");
 const bookingSchema = readFileSync("functions/api/_lib/repair-shop-bookings-schema.mjs", "utf8");
@@ -27,6 +28,14 @@ test("Office Repair demo is synthetic-only, additive and seeded through year end
   expect(demo).not.toMatch(/DELETE\s+FROM\s+repair_shop_staff/i);
   expect(demo).toContain("@example.com");
   expect(demo).toContain("202-555-");
+});
+
+test("verified synthetic Officea owner aliases hydrate through the existing Office seed", async () => {
+  expect(syntheticDemo).toContain("officea");
+  expect(syntheticDemo).toContain("^officea\\b");
+  expect(syntheticDemo).toContain("hermes_registration_flags");
+  expect(syntheticDemo).toContain("Shop Owner");
+  expect(syntheticDemo).toContain("ensureOfficeRepairDemoData");
 });
 
 test("demo coverage spans motorcycles through heavy and oversized equipment", async () => {

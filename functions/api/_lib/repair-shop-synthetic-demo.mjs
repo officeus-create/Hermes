@@ -25,7 +25,12 @@ const slug = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]+/g,
 function demoAccountKind(specialist) {
   const local = cleanEmail(specialist?.email).split("@")[0] || "";
   const name = String(specialist?.name || "").trim();
-  if (/(^|[._+-])office($|[._+-])/i.test(local) || /^office\b/i.test(name)) return "office";
+  const officeIdentity =
+    /(^|[._+-])office($|[._+-])/i.test(local) ||
+    /(^|[._+-])officea($|[._+-])/i.test(local) ||
+    /^office\b/i.test(name) ||
+    /^officea\b/i.test(name);
+  if (officeIdentity) return "office";
   if (/(^|[._+-])volkogon($|[._+-])/i.test(local) || /^volkogon\b/i.test(name)) return "volkogon";
   return null;
 }
