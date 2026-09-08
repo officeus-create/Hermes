@@ -8,6 +8,7 @@
 
   const carrierGeoRoot = "/logistics/car-hauler-loads/";
   const isCarrierGeoPath = () => window.location.pathname === carrierGeoRoot || window.location.pathname.startsWith(carrierGeoRoot);
+  const analyticsConsentGranted = () => document.documentElement.dataset.analyticsConsent === "granted";
   const carrierGeoEventBase = () => ({
     audience_type: "carrier",
     page_group: "car_hauler_geo",
@@ -36,6 +37,8 @@
     dispatch_details: "carrier_geo_click_dispatch",
     all_markets: "carrier_geo_click_all_markets",
   };
+  let carrierGeoMeasurementStarted = false;
+  let carrierGeoConsentObserver = null;
 
   const refreshLoadBoardDemoLabels = () => {
     if (window.location.pathname !== "/load-board/") return;
@@ -108,7 +111,16 @@
   };
 
   const setupCarrierGeoMeasurement = () => {
-    if (!isCarrierGeoPath() || !document.querySelector("[data-carrier-geo-page]")) return;
+    if (
+      carrierGeoMeasurementStarted ||
+      !analyticsConsentGranted() ||
+      !isCarrierGeoPath() ||
+      !document.querySelector("[data-carrier-geo-page]")
+    ) return;
+
+    carrierGeoMeasurementStarted = true;
+    carrierGeoConsentObserver?.disconnect();
+    carrierGeoConsentObserver = null;
 
     pushEvent({ event: "carrier_geo_page_view", ...carrierGeoEventBase() });
 
@@ -143,10 +155,27 @@
     });
   };
 
+  const setupCarrierGeoMeasurementWhenAllowed = () => {
+    if (!isCarrierGeoPath() || !document.querySelector("[data-carrier-geo-page]")) return;
+    if (analyticsConsentGranted()) {
+      setupCarrierGeoMeasurement();
+      return;
+    }
+    if (!("MutationObserver" in window) || carrierGeoConsentObserver) return;
+
+    carrierGeoConsentObserver = new MutationObserver(() => {
+      if (analyticsConsentGranted()) setupCarrierGeoMeasurement();
+    });
+    carrierGeoConsentObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-analytics-consent"],
+    });
+  };
+
   const applyDomReadyEnhancements = () => {
     applyRepairAuthMode();
     applyAccessibilityRoles();
-    setupCarrierGeoMeasurement();
+    setupCarrierGeoMeasurementWhenAllowed();
   };
 
   if (document.readyState === "loading") {
@@ -183,7 +212,7 @@
     }
     if (target.origin !== window.location.origin) return;
 
-    if (isCarrierGeoPath() && link.dataset.carrierGeoCta) {
+    if (isCarrierGeoPath() && analyticsConsentGranted() && link.dataset.carrierGeoCta) {
       const ctaType = link.dataset.carrierGeoCta;
       const payload = {
         cta_type: ctaType,
@@ -241,6 +270,8 @@
     const serviceGroup = link.dataset.serviceGroup?.trim()
       || (isCarrierGeoPath() ? "car_hauler_geo" : carrierServiceGroups[window.location.pathname]);
     if (!serviceGroup) return;
+    if (isCarrierGeoPath() && !analyticsConsentGranted()) return;
+
     pushEvent({
       event: "commercial_cta_click",
       cta_type: "carrier_intake",
