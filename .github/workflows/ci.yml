@@ -85,6 +85,9 @@ jobs:
       - name: Validate repair shop operating statuses
         run: node scripts/repair-shop-operations-contract.test.mjs
 
+      - name: Validate repair shop synthetic load-test tenants
+        run: node scripts/repair-shop-synthetic-loadtest-contract.test.mjs
+
       - name: Validate carrier contract engine
         run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
 
