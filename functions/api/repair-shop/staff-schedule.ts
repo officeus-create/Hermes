@@ -16,11 +16,14 @@ type DayInput = {
   breaks?: unknown;
 };
 type ScheduleInput = { staff_id?: unknown; days?: DayInput[] };
+type OwnerContext =
+  | { response: Response; specialist?: never; shop?: never }
+  | { response?: undefined; specialist: any; shop: any };
 
 const TIME_RE = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const clean = (value: unknown, max = 96) => String(value ?? "").trim().slice(0, max);
 
-async function requireOwnerShop(request: Request, env: Env) {
+async function requireOwnerShop(request: Request, env: Env): Promise<OwnerContext> {
   if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
@@ -157,17 +160,7 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
            breaks=excluded.breaks,
            updated_at=excluded.updated_at`,
       )
-      .bind(
-        staffId,
-        context.shop.id,
-        context.specialist.id,
-        day.day_of_week,
-        day.is_working ? 1 : 0,
-        day.start_time,
-        day.end_time,
-        JSON.stringify(day.breaks),
-        now,
-      )
+      .bind(staffId, context.shop.id, context.specialist.id, day.day_of_week, day.is_working ? 1 : 0, day.start_time, day.end_time, JSON.stringify(day.breaks), now)
       .run();
   }
 
