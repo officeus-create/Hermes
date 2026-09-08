@@ -40,7 +40,9 @@ const childSitemapFiles = [
   "sitemap-trust.xml",
   "sitemap-london.xml",
 ];
-const expectedCurrentPageUrlCount = 168;
+const expectedCurrentPageUrlCount = 194;
+const carrierGeoRoot = `https://${sitemapHost}/logistics/car-hauler-loads/`;
+const expectedCarrierGeoCityCount = 25;
 const extractLocs = (xml) => [...xml.matchAll(/<loc>\s*([^<]+)\s*<\/loc>/gi)].map((match) => match[1].trim());
 
 const sitemapIndex = await readFile(new URL("../public/sitemapindex.xml", import.meta.url), "utf8");
@@ -67,6 +69,21 @@ assert.equal(
   `controlled sitemap inventory changed from ${expectedCurrentPageUrlCount}; reconcile the intentional delta before merging`,
 );
 assert.equal(new Set(sitemapPageUrls).size, sitemapPageUrls.length, "controlled child sitemaps must not contain duplicate page URLs");
+
+const serviceSitemap = await readFile(new URL("../public/sitemap-services.xml", import.meta.url), "utf8");
+const carrierGeoUrls = extractLocs(serviceSitemap).filter((url) => url.startsWith(carrierGeoRoot));
+const carrierGeoCityUrls = carrierGeoUrls.filter((url) => url !== carrierGeoRoot);
+assert.ok(carrierGeoUrls.includes(carrierGeoRoot), "carrier GEO sitemap inventory must include the market hub");
+assert.equal(
+  carrierGeoCityUrls.length,
+  expectedCarrierGeoCityCount,
+  `carrier GEO launch must stay bounded to exactly ${expectedCarrierGeoCityCount} city pages`,
+);
+assert.equal(
+  carrierGeoUrls.length,
+  expectedCarrierGeoCityCount + 1,
+  "carrier GEO sitemap inventory must contain exactly one hub plus 25 city pages",
+);
 
 for (const value of sitemapPageUrls) {
   const url = new URL(value);
