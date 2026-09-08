@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const root = new URL("../", import.meta.url);
-const [helper, api, register, profile, page] = await Promise.all([
+const [helper, api, register, profile, page, syntheticDemo] = await Promise.all([
   readFile(new URL("functions/api/_lib/registration-ops.mjs", root), "utf8"),
   readFile(new URL("functions/api/internal/registrations.ts", root), "utf8"),
   readFile(new URL("functions/api/auth/register.ts", root), "utf8"),
   readFile(new URL("functions/api/repair-shop/profile.ts", root), "utf8"),
   readFile(new URL("src/pages/services/hermes-connect/internal/registrations/index.astro", root), "utf8"),
+  readFile(new URL("functions/api/_lib/repair-shop-synthetic-demo.mjs", root), "utf8"),
 ]);
 
 assert.match(helper, /CREATE TABLE IF NOT EXISTS hermes_registration_flags/);
@@ -35,6 +36,24 @@ assert.match(api, /AS profile_complete/);
 assert.doesNotMatch(api, /password_hash|password_salt/i, "Owner ledger must not expose password material");
 assert.doesNotMatch(api, /SELECT\s+(?:se\.)?token\b/i, "Owner ledger may use session timestamps but must never select session tokens");
 
+assert.match(api, /ensureRepairShopSyntheticDemoData/);
+assert.match(api, /hydrate_synthetic_repair_demo/);
+assert.match(api, /synthetic_shop_owner_required/);
+assert.match(api, /synthetic_verification_required/);
+assert.match(api, /synthetic_demo_identity_required/);
+assert.match(api, /SELECT synthetic FROM hermes_registration_flags WHERE specialist_id=\?/);
+assert.match(api, /const hydrationRecord = hydrated as Record<string, unknown>/);
+assert.match(api, /appointment_count:\s*Number\(hydrationRecord\.appointment_count/);
+assert.match(api, /schedule_rows:\s*Number\(hydrationRecord\.schedule_rows/);
+const roleGate = api.indexOf('String(specialist.role || "") !== "Shop Owner"');
+const syntheticGate = api.indexOf("Number(flag?.synthetic) !== 1");
+const hydrationCall = api.indexOf("ensureRepairShopSyntheticDemoData({ db: env.DB, env, specialist })");
+assert.ok(roleGate >= 0 && syntheticGate > roleGate && hydrationCall > syntheticGate, "Owner hydration must enforce role and verified synthetic state before seeding");
+assert.match(syntheticDemo, /function demoAccountKind/);
+assert.match(syntheticDemo, /return "office"/);
+assert.match(syntheticDemo, /return "volkogon"/);
+assert.match(syntheticDemo, /if \(!kind\) return \{ eligible: false, seeded: false \}/);
+
 const specialistInsert = register.indexOf("INSERT INTO specialists");
 const alertEnqueue = register.indexOf("enqueueRegistrationAlert");
 assert.ok(specialistInsert >= 0 && alertEnqueue >= 0, "registration persistence and alert pipeline must both exist");
@@ -53,5 +72,9 @@ assert.match(page, /data-stat="unreviewed"/);
 assert.match(page, /Profile \/ access/);
 assert.match(page, /Last session/);
 assert.match(page, /No phone yet/);
+assert.match(page, /hydrate_synthetic_repair_demo/);
+assert.match(page, /Hydrate test CRM/);
+assert.match(page, /isSynthetic\(row\)&&isShopOwner\(row\)&&syntheticDemoKind\(row\)/);
+assert.match(page, /Synthetic CRM ready/);
 
 console.log("Hermes Connect registration operations contract: PASS");
