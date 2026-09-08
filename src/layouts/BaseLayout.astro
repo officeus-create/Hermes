@@ -48,6 +48,14 @@ const {
   preloadImage,
 } = Astro.props;
 
+const effectiveAlternates = Astro.url.pathname === "/academy/apply/" && alternates.length === 0
+  ? [
+      { lang: "en", href: "/academy/apply/" },
+      { lang: "uk", href: "/ua/academy/apply/" },
+      { lang: "x-default", href: "/academy/apply/" },
+    ]
+  : alternates;
+
 const isRepairShopLaunchRoute = Astro.url.pathname.startsWith("/services/hermes-connect/repair-shops");
 const isHermesConnectProductHub = Astro.url.pathname === "/services/hermes-connect/";
 const useHermesConnectSocialCard = isHermesConnectProductHub && !image;
@@ -78,6 +86,31 @@ const replaceRetiredPublicText = (value: unknown): unknown => {
   return value;
 };
 
+const ensureHermesOrganizationLogo = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(ensureHermesOrganizationLogo);
+  if (!value || typeof value !== "object") return value;
+
+  const next = Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, ensureHermesOrganizationLogo(item)]),
+  );
+  const type = next["@type"];
+  const name = next.name;
+  const url = next.url;
+  const isHermesRootOrganization = type === "Organization"
+    && (name === "Hermes" || name === "Hermes Logistics" || url === "https://hermeslogisticsus.com/");
+
+  if (isHermesRootOrganization && !next.logo) {
+    next.logo = {
+      "@type": "ImageObject",
+      "@id": "https://hermeslogisticsus.com/#logo",
+      url: "https://hermeslogisticsus.com/favicon.svg",
+      contentUrl: "https://hermeslogisticsus.com/favicon.svg",
+    };
+  }
+
+  return next;
+};
+
 const conciseDescription = (value: string, maxLength = 170) => {
   const normalized = value.replace(/\s+/g, " ").trim();
   if (normalized.length <= maxLength) return normalized;
@@ -100,12 +133,12 @@ const metaDescription = conciseDescription(String(replaceRetiredPublicText(descr
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(socialImagePath, Astro.site);
 const ogLocale = localeConfig[locale].ogLocale;
-const alternateOgLocales = alternates
+const alternateOgLocales = effectiveAlternates
   .filter((alternate) => alternate.lang !== locale && alternate.lang !== "x-default")
   .map((alternate) => localeConfig[alternate.lang as SiteLocale]?.ogLocale)
   .filter((value, index, all): value is string => Boolean(value) && all.indexOf(value) === index);
 const safeSchema = schema
-  ? replaceRetiredPublicText(schema) as Record<string, unknown> | Record<string, unknown>[]
+  ? ensureHermesOrganizationLogo(replaceRetiredPublicText(schema)) as Record<string, unknown> | Record<string, unknown>[]
   : undefined;
 ---
 
@@ -119,7 +152,7 @@ const safeSchema = schema
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="msvalidate.01" content="6C08FCA62443E761BAB1CCF747A4A7A7" />
     <link rel="canonical" href={canonical} />
-    {alternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
+    {effectiveAlternates.map((alternate) => <link rel="alternate" hreflang={alternate.lang} href={new URL(alternate.href, Astro.site)} />)}
     {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
