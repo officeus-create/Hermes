@@ -11,6 +11,9 @@ type StaffInput = {
   specialties?: unknown;
   active?: unknown;
 };
+type OwnerContext =
+  | { response: Response; specialist?: never; shop?: never }
+  | { response?: undefined; specialist: any; shop: any };
 
 const clean = (value: unknown, max: number) => String(value ?? "").trim().slice(0, max);
 
@@ -34,7 +37,7 @@ function normalizeSpecialties(value: unknown) {
   return result;
 }
 
-async function requireOwnerShop(request: Request, env: Env) {
+async function requireOwnerShop(request: Request, env: Env): Promise<OwnerContext> {
   if (!env.DB) return { response: jsonResponse(503, { success: false, error: "database_not_configured" }) };
   const specialist = await getAuthenticatedSpecialist(request, env.DB);
   if (!specialist) return { response: jsonResponse(401, { success: false, error: "not_authenticated" }) };
@@ -84,12 +87,11 @@ async function parseBody(request: Request) {
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   const context = await requireOwnerShop(request, env);
   if (context.response) return context.response;
-  const { specialist, shop } = context;
-  const demoSeed = await ensureOfficeRepairDemoData({ db: env.DB, env, specialist });
+  const demoSeed = await ensureOfficeRepairDemoData({ db: env.DB, env, specialist: context.specialist });
   return jsonResponse(200, {
     success: true,
-    shop_id: String(shop.id),
-    staff: await readStaff(env.DB, specialist.id, String(shop.id)),
+    shop_id: String(context.shop.id),
+    staff: await readStaff(env.DB, context.specialist.id, String(context.shop.id)),
     demo_seed: demoSeed.eligible ? demoSeed : undefined,
   });
 }
@@ -115,17 +117,7 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       `INSERT INTO repair_shop_staff (id,shop_id,owner_specialist_id,name,role,specialties,active,created_at,updated_at)
        VALUES (?,?,?,?,?,?,?,?,?)`,
     )
-    .bind(
-      id,
-      context.shop.id,
-      context.specialist.id,
-      normalized.name,
-      normalized.role,
-      JSON.stringify(normalized.specialties),
-      normalized.active ? 1 : 0,
-      now,
-      now,
-    )
+    .bind(id, context.shop.id, context.specialist.id, normalized.name, normalized.role, JSON.stringify(normalized.specialties), normalized.active ? 1 : 0, now, now)
     .run();
 
   return jsonResponse(201, {
@@ -144,9 +136,7 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
   if (!id) return jsonResponse(400, { success: false, error: "staff_id_required" });
 
   const current = await env.DB
-    .prepare(
-      "SELECT id,name,role,specialties,active FROM repair_shop_staff WHERE id = ? AND owner_specialist_id = ? AND shop_id = ? LIMIT 1",
-    )
+    .prepare("SELECT id,name,role,specialties,active FROM repair_shop_staff WHERE id = ? AND owner_specialist_id = ? AND shop_id = ? LIMIT 1")
     .bind(id, context.specialist.id, context.shop.id)
     .first();
   if (!current) return jsonResponse(404, { success: false, error: "staff_not_found" });
@@ -166,16 +156,7 @@ export async function onRequestPut({ request, env }: { request: Request; env: En
        SET name=?,role=?,specialties=?,active=?,updated_at=?
        WHERE id=? AND owner_specialist_id=? AND shop_id=?`,
     )
-    .bind(
-      normalized.name,
-      normalized.role,
-      JSON.stringify(normalized.specialties),
-      normalized.active ? 1 : 0,
-      new Date().toISOString(),
-      id,
-      context.specialist.id,
-      context.shop.id,
-    )
+    .bind(normalized.name, normalized.role, JSON.stringify(normalized.specialties), normalized.active ? 1 : 0, new Date().toISOString(), id, context.specialist.id, context.shop.id)
     .run();
 
   return jsonResponse(200, {
