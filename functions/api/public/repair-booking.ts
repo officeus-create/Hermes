@@ -185,6 +185,41 @@ function capacityIsBusy(intervals: BusyInterval[], capacity: number, startTime: 
   return intervals.filter((item) => overlaps(startTime, endTime, item.start_time, item.end_time)).length >= capacity;
 }
 
+function teamUnavailableIntervals(staff: ScheduledStaff[], intervals: BusyInterval[]) {
+  const points = new Set<number>([0, 1440]);
+  for (const member of staff) {
+    if (member.start_time) points.add(toMinutes(member.start_time));
+    if (member.end_time) points.add(toMinutes(member.end_time));
+    for (const item of member.breaks) {
+      points.add(toMinutes(item.start_time));
+      points.add(toMinutes(item.end_time));
+    }
+  }
+  for (const item of intervals) {
+    if (!item.technician_id) continue;
+    points.add(toMinutes(item.start_time));
+    points.add(toMinutes(item.end_time));
+  }
+
+  const ordered = [...points].filter((value) => Number.isFinite(value) && value >= 0 && value <= 1440).sort((a, b) => a - b);
+  const unavailable: { start_time: string; end_time: string }[] = [];
+  for (let index = 0; index < ordered.length - 1; index += 1) {
+    const start = ordered[index];
+    const end = ordered[index + 1];
+    if (start >= end) continue;
+    const startTime = fromMinutes(start);
+    const endTime = fromMinutes(end);
+    const hasAvailableStaff = staff.some(
+      (member) => staffCoversWindow(member, startTime, endTime) && !technicianIsBusy(intervals, member.id, startTime, endTime),
+    );
+    if (hasAvailableStaff) continue;
+    const previous = unavailable[unavailable.length - 1];
+    if (previous && previous.end_time === startTime) previous.end_time = endTime;
+    else unavailable.push({ start_time: startTime, end_time: endTime });
+  }
+  return unavailable;
+}
+
 export async function onRequestGet({ request, env }: { request: Request; env: Env }) {
   if (!env.DB) return jsonResponse(503, { success: false, error: "database_not_configured" });
   const url = new URL(request.url);
@@ -201,17 +236,19 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
 
   const capacity = await readBookingCapacity(env.DB, shop.id);
   const activeIntervals = await readBusyIntervals(env.DB, shop.id, date);
+  const capacityBusy = saturatedRepairShopIntervals(activeIntervals, capacity);
+  const team = await readTeamSchedule(env.DB, String(shop.id), String(shop.owner_specialist_id), date);
   const response: Record<string, unknown> = {
     success: true,
     shop: { slug: shop.slug, timezone: shop.timezone },
     date,
     capacity,
-    busy: saturatedRepairShopIntervals(activeIntervals, capacity),
-    staff_scheduling: "legacy_shop_capacity",
+    busy: team.configured ? [...capacityBusy, ...teamUnavailableIntervals(team.staff, activeIntervals)] : capacityBusy,
+    staff_scheduling: team.configured ? "staff_schedule" : "legacy_shop_capacity",
     available_starts: null,
   };
 
-  if (serviceId) {
+  if (serviceId && team.configured) {
     const service = await getPublicService(env.DB, shop, serviceId);
     if (!service) return jsonResponse(404, { success: false, error: "service_not_found" });
     const durationMinutes = Number(service.duration_minutes);
@@ -224,25 +261,21 @@ export async function onRequestGet({ request, env }: { request: Request; env: En
       .prepare("SELECT is_open,start_time,end_time FROM repair_shop_availability WHERE shop_id = ? AND day_of_week = ? LIMIT 1")
       .bind(shop.id, dayOfWeek(date))
       .first();
-    const team = await readTeamSchedule(env.DB, String(shop.id), String(shop.owner_specialist_id), date);
-    if (team.configured) {
-      response.staff_scheduling = "staff_schedule";
-      const starts: string[] = [];
-      if (availability && Number(availability.is_open) === 1 && availability.start_time && availability.end_time) {
-        const openStart = toMinutes(String(availability.start_time));
-        const openEnd = toMinutes(String(availability.end_time));
-        for (let start = openStart; start + durationMinutes <= openEnd; start += 30) {
-          const startTime = fromMinutes(start);
-          const endTime = fromMinutes(start + durationMinutes);
-          if (capacityIsBusy(activeIntervals, capacity, startTime, endTime)) continue;
-          const hasStaff = team.staff.some(
-            (member) => staffCoversWindow(member, startTime, endTime) && !technicianIsBusy(activeIntervals, member.id, startTime, endTime),
-          );
-          if (hasStaff) starts.push(startTime);
-        }
+    const starts: string[] = [];
+    if (availability && Number(availability.is_open) === 1 && availability.start_time && availability.end_time) {
+      const openStart = toMinutes(String(availability.start_time));
+      const openEnd = toMinutes(String(availability.end_time));
+      for (let start = openStart; start + durationMinutes <= openEnd; start += 30) {
+        const startTime = fromMinutes(start);
+        const endTime = fromMinutes(start + durationMinutes);
+        if (capacityIsBusy(activeIntervals, capacity, startTime, endTime)) continue;
+        const hasStaff = team.staff.some(
+          (member) => staffCoversWindow(member, startTime, endTime) && !technicianIsBusy(activeIntervals, member.id, startTime, endTime),
+        );
+        if (hasStaff) starts.push(startTime);
       }
-      response.available_starts = starts;
     }
+    response.available_starts = starts;
   }
 
   return jsonResponse(200, response);
