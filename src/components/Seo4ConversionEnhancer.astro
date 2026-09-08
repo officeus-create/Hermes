@@ -1,2 +1,114 @@
 <link rel="stylesheet" href="/seo-geo-closeout.css" />
 <script is:inline src="/seo4-conversion-enhancer.js" defer></script>
+
+<style is:inline>
+  /* Final cascade: these rules intentionally render after component-scoped styles.
+     Scope is limited to the two current SEO/GEO money-page roots. */
+  body:has(.load-board-page) :is(.load-board-page, .load-board-page main, .load-board-page section, .load-board-page article, .load-board-page aside, #live-marketplace, #carrier-access),
+  body:has(.repair-pilot-page) :is(.repair-pilot-page, .repair-pilot-page main, .repair-pilot-page section, .repair-pilot-page article, .repair-pilot-page aside) {
+    color: #f8fafc !important;
+    background-color: #0b173c !important;
+  }
+
+  body:has(.load-board-page) :is(.load-board-page, #live-marketplace, #carrier-access) :is(h1,h2,h3,h4,p,span,strong,small,li,dt,dd,label,legend),
+  body:has(.repair-pilot-page) .repair-pilot-page :is(h1,h2,h3,h4,p,span,strong,small,li,dt,dd,label,legend) {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+  }
+
+  body:has(.load-board-page) :is(.load-board-page, #live-marketplace, #carrier-access) :is(article,aside,li),
+  body:has(.repair-pilot-page) .repair-pilot-page :is(article,aside,li) {
+    background-color: #111d47 !important;
+    border-color: #64748b !important;
+  }
+
+  body:has(.load-board-page) :is(.load-board-page, #live-marketplace, #carrier-access) a,
+  body:has(.repair-pilot-page) .repair-pilot-page a {
+    color: #f8fafc !important;
+    background-color: #172554 !important;
+    border-color: #94a3b8 !important;
+    opacity: 1 !important;
+  }
+
+  body:has(.load-board-page) :is(.button-primary, button[type="submit"]),
+  body:has(.repair-pilot-page) :is(.repair-primary,.repair-submit,button[type="submit"]) {
+    color: #06111f !important;
+    background: #67e8f9 !important;
+    border-color: #67e8f9 !important;
+    opacity: 1 !important;
+  }
+
+  body:has(.load-board-page) #live-marketplace .hlb-live-actions a:first-child {
+    color: #0b173c !important;
+    background: #fff !important;
+    border-color: #fff !important;
+  }
+
+  body:has(.load-board-page) :is(.load-board-page, #live-marketplace, #carrier-access) :is(input,select,textarea),
+  body:has(.repair-pilot-page) .repair-pilot-page :is(input,select,textarea) {
+    color: #111827 !important;
+    background: #fff !important;
+    border-color: #64748b !important;
+    opacity: 1 !important;
+  }
+
+  /* Shared header is outside the Repair root; make it deterministic on both money pages. */
+  body:has(.load-board-page) .site-header,
+  body:has(.repair-pilot-page) .site-header {
+    color: #f8fafc !important;
+    background: #07113c !important;
+    border-color: #64748b !important;
+    opacity: 1 !important;
+  }
+  body:has(.load-board-page) .site-header :is(a,button,span,strong,summary),
+  body:has(.repair-pilot-page) .site-header :is(a,button,span,strong,summary) {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+  }
+  body:has(.load-board-page) .site-header .header-cta,
+  body:has(.repair-pilot-page) .site-header .header-cta {
+    color: #06111f !important;
+    background: #67e8f9 !important;
+    border-color: #67e8f9 !important;
+  }
+
+  /* Hermes Connect product context is outside the Repair page root. */
+  body:has(.repair-pilot-page) :is(.hc-product-context, .hc-product-context__inner, .hc-family-nav, body > section) {
+    color: #f8fafc !important;
+    background-color: #0b173c !important;
+  }
+  body:has(.repair-pilot-page) :is(.hc-product-context, .hc-family-nav, body > section) :is(h1,h2,h3,h4,p,span,strong,small,li,a,button) {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+  }
+  body:has(.repair-pilot-page) .hc-family-nav a {
+    color: #f8fafc !important;
+    background: #172554 !important;
+    border-color: #64748b !important;
+  }
+
+  /* Injected consent/launcher surfaces stay light with dark text. */
+  body:has(.load-board-page) :is(.hc-launcher-banner,[data-tracking-consent]),
+  body:has(.repair-pilot-page) :is(.hc-launcher-banner,[data-tracking-consent]) {
+    color: #111827 !important;
+    background: #fff !important;
+    border-color: #64748b !important;
+    opacity: 1 !important;
+  }
+  body:has(.load-board-page) :is(.hc-launcher-banner,[data-tracking-consent]) :is(h1,h2,h3,h4,p,span,strong,small,a,button),
+  body:has(.repair-pilot-page) :is(.hc-launcher-banner,[data-tracking-consent]) :is(h1,h2,h3,h4,p,span,strong,small,a,button) {
+    color: #111827 !important;
+    opacity: 1 !important;
+  }
+
+  body:has(.load-board-page) footer,
+  body:has(.repair-pilot-page) footer {
+    color: #f8fafc !important;
+    background: #07113c !important;
+  }
+  body:has(.load-board-page) footer :is(p,span,small,strong,a),
+  body:has(.repair-pilot-page) footer :is(p,span,small,strong,a) {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+  }
+</style>
