@@ -31,33 +31,6 @@ jobs:
       - name: Build website
         run: npm run build
 
-      # Keep the first static contracts isolated while the 25-market carrier GEO
-      # launch is being reconciled. Named steps make the exact release guard
-      # visible in GitHub even when the full npm test output is unavailable.
-      - name: Validate Cloudflare deployment contract
-        run: node scripts/cloudflare-deployment-contract.test.mjs
-
-      - name: Validate production SEO hygiene contract
-        run: node scripts/production-seo-hygiene-contract.test.mjs
-
-      - name: Validate Bing hygiene contract
-        run: node scripts/bing-webmaster-hygiene.test.mjs
-
-      - name: Validate production Lighthouse contract
-        run: node scripts/production-lighthouse-contract.test.mjs
-
-      - name: Validate IndexNow command contract
-        run: node scripts/indexnow-command-contract.test.mjs
-
-      - name: Validate homepage deferred CSS contract
-        run: node scripts/homepage-deferred-feature-css.test.mjs
-
-      - name: Validate retired raw HTML contract
-        run: node scripts/retired-public-raw-html.test.mjs
-
-      - name: Validate analytics tag contract
-        run: node scripts/analytics-tag-contract.test.mjs
-
       - name: Validate static output
         run: npm test
 
@@ -111,6 +84,9 @@ jobs:
 
       - name: Validate repair shop operating statuses
         run: node scripts/repair-shop-operations-contract.test.mjs
+
+      - name: Validate repair shop synthetic load-test tenants
+        run: node scripts/repair-shop-synthetic-loadtest-contract.test.mjs
 
       - name: Validate carrier contract engine
         run: node --experimental-strip-types scripts/carrier-contract-engine.test.mjs
