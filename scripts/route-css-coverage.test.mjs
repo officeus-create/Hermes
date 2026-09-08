@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { join, relative, sep } from "node:path";
+import { basename, join, relative, sep } from "node:path";
 
 const root = new URL("../", import.meta.url).pathname;
 const dist = join(root, "dist");
@@ -48,6 +48,14 @@ function routeFromHtmlPath(absolutePath) {
   return `/${outputPath}`;
 }
 
+const googleVerificationFilenamePattern = /^google[a-z0-9]+\.html$/i;
+async function isGoogleVerificationArtifact(absolutePath) {
+  const outputPath = relative(dist, absolutePath).split(sep).join("/");
+  if (outputPath.includes("/") || !googleVerificationFilenamePattern.test(basename(outputPath))) return false;
+  const html = await readFile(absolutePath, "utf8");
+  return html.trim() === `google-site-verification: ${basename(outputPath)}`;
+}
+
 function percentile(sorted, value) {
   if (!sorted.length) return 0;
   const index = Math.max(0, Math.ceil(sorted.length * value) - 1);
@@ -88,7 +96,16 @@ function containsClass(css, className) {
 }
 
 const allFiles = await collectFiles(dist);
-const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
+const generatedHtmlFiles = allFiles.filter((file) => file.endsWith(".html"));
+const htmlFiles = [];
+const verificationArtifacts = [];
+for (const htmlFile of generatedHtmlFiles) {
+  if (await isGoogleVerificationArtifact(htmlFile)) verificationArtifacts.push(htmlFile);
+  else htmlFiles.push(htmlFile);
+}
+if (verificationArtifacts.length > 1) {
+  throw new Error(`Route CSS coverage found ${verificationArtifacts.length} Google ownership artifacts; expected at most one.`);
+}
 const cssFiles = allFiles.filter((file) => file.endsWith(".css"));
 const cssAssets = new Map();
 const cssHashes = new Map();
@@ -160,6 +177,7 @@ for (const route of representativeRoutes) {
 const report = {
   htmlRoutes: routeRows.length,
   indexableRoutes: indexableRows.length,
+  ownershipArtifacts: verificationArtifacts.length,
   generatedStylesheets: cssFiles.length,
   generatedCssBytes: [...cssAssets.values()].reduce((sum, asset) => sum + asset.bytes, 0),
   sharedRenderBlockingCssBytes: sharedCssBytes,
