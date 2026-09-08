@@ -94,12 +94,12 @@ test("Hermes Connect Russian selection persists across product-family navigation
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
 });
 
-test("Hermes Connect clean entry ignores a saved Russian locale unless language is explicit", async ({ page }) => {
+test("Hermes Connect clean entry restores a previously selected Russian locale", async ({ page }) => {
   await page.goto("/services/hermes-connect/?lang=ru");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
 
   await page.goto("/services/hermes-connect/");
-  await expect(page).toHaveURL(/\/services\/hermes-connect\/$/);
-  await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect(page.locator("[data-language-menu] summary span")).toHaveText("English");
+  await expect(page).toHaveURL(/\/services\/hermes-connect\/\?lang=ru$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator("[data-language-menu] summary span")).toHaveText("Русский");
 });
