@@ -34,7 +34,7 @@ test("Repair Shop private workspace reads as a full CRM app instead of the publi
   await expect(nav.getByRole("link", { name: "Services" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/services/");
   await expect(nav.getByRole("link", { name: "Availability" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/availability/");
   await expect(nav.getByRole("link", { name: "Feedback" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/dashboard/#feedback-title");
-  await expect(nav.getByRole("link", { name: "Settings" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/settings/");
+  await expect(nav.getByRole("link", { name: "Company" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/settings/");
   await expect(crm.locator(".repair-crm-topbar .repair-crm-logout")).toBeVisible();
 
   await expect(crm.getByText("Work Orders", { exact: true })).toHaveCount(0);
@@ -64,6 +64,7 @@ test("Repair Shop CRM keeps the same app navigation and logout on a 390px phone"
   await expect(menu).toHaveAttribute("aria-expanded", "true");
   await expect(crm.locator(".repair-crm-sidebar")).toBeInViewport();
   await expect(crm.getByRole("link", { name: "Клиенты" })).toHaveAttribute("aria-current", "page");
+  await expect(crm.getByRole("link", { name: "Компания" })).toHaveAttribute("href", "/services/hermes-connect/repair-shops/settings/?lang=ru");
   await expect(crm.getByRole("link", { name: "Все продукты" })).toHaveAttribute("href", "/services/hermes-connect/?lang=ru");
   await expect(crm.locator(".repair-crm-mobile-logout")).toBeVisible();
   await expect(crm.locator(".repair-crm-mobile-logout")).toHaveText("Выйти");
