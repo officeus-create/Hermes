@@ -14,6 +14,28 @@
     service_group: "car_hauler_geo",
     page_path: window.location.pathname,
   });
+  const carrierGeoSectionEvents = {
+    hero: "carrier_geo_reach_hero",
+    three_workstreams: "carrier_geo_reach_workstreams",
+    load_sources: "carrier_geo_reach_sources",
+    vehicle_fit: "carrier_geo_reach_vehicle_fit",
+    support_20: "carrier_geo_reach_support",
+    ecosystem: "carrier_geo_reach_ecosystem",
+    faq: "carrier_geo_reach_faq",
+    final_cta: "carrier_geo_reach_final_cta",
+    markets: "carrier_geo_reach_markets",
+    search_model: "carrier_geo_reach_search_model",
+    conversion: "carrier_geo_reach_conversion",
+  };
+  const carrierGeoCtaEvents = {
+    start_review: "carrier_geo_click_start_review",
+    carrier_agreement: "carrier_geo_click_agreement",
+    market_select: "carrier_geo_click_market",
+    load_board: "carrier_geo_click_load_board",
+    hermes_connect: "carrier_geo_click_connect",
+    dispatch_details: "carrier_geo_click_dispatch",
+    all_markets: "carrier_geo_click_all_markets",
+  };
 
   const refreshLoadBoardDemoLabels = () => {
     if (window.location.pathname !== "/load-board/") return;
@@ -96,11 +118,13 @@
       const sectionId = section.dataset.carrierGeoSection?.trim();
       if (!sectionId || reachedSections.has(sectionId)) return;
       reachedSections.add(sectionId);
-      pushEvent({
-        event: "carrier_geo_section_view",
+      const payload = {
         section_id: sectionId,
         ...carrierGeoEventBase(),
-      });
+      };
+      pushEvent({ event: "carrier_geo_section_view", ...payload });
+      const reportableEvent = carrierGeoSectionEvents[sectionId];
+      if (reportableEvent) pushEvent({ event: reportableEvent, ...payload });
     };
 
     const observer = "IntersectionObserver" in window
@@ -160,12 +184,15 @@
     if (target.origin !== window.location.origin) return;
 
     if (isCarrierGeoPath() && link.dataset.carrierGeoCta) {
-      pushEvent({
-        event: "carrier_geo_cta_click",
-        cta_type: link.dataset.carrierGeoCta,
+      const ctaType = link.dataset.carrierGeoCta;
+      const payload = {
+        cta_type: ctaType,
         destination_path: target.pathname,
         ...carrierGeoEventBase(),
-      });
+      };
+      pushEvent({ event: "carrier_geo_cta_click", ...payload });
+      const reportableEvent = carrierGeoCtaEvents[ctaType];
+      if (reportableEvent) pushEvent({ event: reportableEvent, ...payload });
     }
 
     if (link.hasAttribute("data-home-role-link") && window.location.pathname === "/") {
