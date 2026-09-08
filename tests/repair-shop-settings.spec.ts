@@ -194,6 +194,9 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   await expect(page.locator('[data-i18n="title"]')).toHaveText("Компания");
   await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Компания");
   await expect(page.locator('[data-i18n="teamTitle"]')).toHaveText("Команда");
+  await expect(page.locator('[data-i18n="profileTitle"]')).toHaveText("Данные компании");
+  await expect(page.locator('[data-i18n="shopName"]')).toHaveText("Название СТО");
+  await expect(page.locator('[data-i18n="calendarCopy"]')).toContainText("минимальные данные free/busy");
   await expect(page.locator('[data-i18n="scheduleTitle"]')).toHaveText("Смены и перерывы");
   await expect(page.locator('[data-i18n="connectionsTitle"]')).toHaveText("Приложения и каналы");
   await expect(page.locator('[data-i18n="needsAuth"]')).toHaveText("Нужна авторизация");
