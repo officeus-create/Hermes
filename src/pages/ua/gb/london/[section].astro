@@ -3,19 +3,35 @@ import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import SiteHeader from "../../../../components/SiteHeader.astro";
 import SiteFooter from "../../../../components/SiteFooter.astro";
 import LondonAnalytics from "../../../../components/LondonAnalytics.astro";
-export function getStaticPaths(){
- const pages=[
-  {section:"marketing",title:"Маркетинг у Лондоні: SMM, Meta Ads і SEO | Hermes",h1:"Маркетинг для бізнесу в Лондоні: від контенту до вимірюваних заявок.",description:"SMM, Instagram, Facebook, Threads, Meta Ads, сайти, SEO та аналітика для бізнесу в Лондоні.",en:"/gb/london/marketing/",body:"Поєднуємо контент, рекламу, сайт, SEO та аналітику в єдиний шлях залучення клієнтів без обіцянок гарантованих лідів або продажів.",detail:"Починаємо не з кількості публікацій, а з бізнес-завдання: кого потрібно залучити, яка послуга пріоритетна, куди має перейти людина після контенту чи реклами і хто відповідає за заявку. Після цього можна визначити, чи потрібні нові посадкові сторінки, локальне SEO, Meta Ads, сценарії коротких відео або покращення процесу відповідей.",next:"Для невеликого бізнесу перший етап може обмежитися аудитом і кількома конкретними виправленнями. Ширший щомісячний план має сенс лише тоді, коли є повторювана робота, зрозуміла відповідальність і показники, які справді можна відстежувати."},
-  {section:"it-web-development",title:"Сайти, SEO та IT у Лондоні | Hermes",h1:"Сайти й IT-системи як частина продажів та операцій бізнесу.",description:"Розробка сайтів, landing pages, technical SEO, аналітика, CRM та автоматизація для бізнесу в Лондоні.",en:"/gb/london/it-web-development/",body:"Починаємо з конкретного вузького місця бізнесу та додаємо сайт, SEO, CRM і автоматизацію лише там, де вони вирішують вимірюване завдання.",detail:"Новий сайт не завжди потрібен повністю. Іноді достатньо виправити мобільний шлях до заявки, структуру послуг, технічне SEO, аналітику або передачу ліда до CRM. Якщо наявна система справді обмежує зростання, проєкт можна розширити до нового сайту, кількох посадкових сторінок, інтеграцій і автоматизованого follow-up.",next:"Кожен етап повинен мати зрозумілу мету й межу. Сторонні сервіси, рекламний бюджет і складні інтеграції оцінюються окремо. Ми не обіцяємо позиції в Google або певну кількість заявок: рішення ухвалюється за якістю реалізації та фактичними даними після запуску."},
-  {section:"us-logistics-training",title:"Навчання логістиці США в Лондоні | Hermes Academy",h1:"Практичне навчання операціям і продажам у логістиці США.",description:"Навчання логістиці США для україномовних мешканців Лондона та Великої Британії: операції, планування, продажі й переговори.",en:"/gb/london/us-logistics-training/",body:"Треки з живими дзвінками та переговорами на ринку США потребують розмовної англійської B2+. Навчання не гарантує працевлаштування чи дохід.",detail:"Програма пояснює, як пов’язані шипери та дилери, брокери, load boards, перевізники й водії, а потім розділяє навчання за ролями: основи операцій, диспетчерська робота, планування завантажень, carrier sales, продажі шиперам і дилерам, переговори та професійна комунікація.",next:"Спочатку оцінюються обраний напрям, розклад, англійська, досвід і готовність регулярно практикуватися. Далі учасник проходить матеріал, вправи, записану практику та зворотний зв’язок. Перехід до складніших завдань залежить від готовності й вимог програми, а не від факту реєстрації на курс."}
- ];
- return pages.map(page=>({params:{section:page.section},props:{page}}));
-}
-const {page}=Astro.props; const localPath=`/ua/gb/london/${page.section}/`; const url=`https://hermeslogisticsus.com${localPath}`;
-const alternates=[{lang:"en",href:page.en},{lang:"ru",href:`/ru/gb/london/${page.section}/`},{lang:"uk",href:localPath},{lang:"x-default",href:page.en}];
+const alternates=[{lang:"en",href:"/gb/london/"},{lang:"ru",href:"/ru/gb/london/"},{lang:"uk",href:"/ua/gb/london/"},{lang:"x-default",href:"/gb/london/"}];
+const url="https://hermeslogisticsus.com/ua/gb/london/";
 const schema=[
- {"@context":"https://schema.org","@type":"WebPage",name:page.h1,description:page.description,url,inLanguage:"uk"},
- {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Лондон",item:"https://hermeslogisticsus.com/ua/gb/london/"},{"@type":"ListItem",position:2,name:page.h1,item:url}]}
+ {"@context":"https://schema.org","@type":"CollectionPage",name:"Hermes London — українською",description:"Україномовний вхід до London-напряму Hermes: маркетинг, IT та навчання логістиці США.",url,inLanguage:"uk",isPartOf:{"@id":"https://hermeslogisticsus.com/#website"},about:{"@id":"https://hermeslogisticsus.com/#organization"}},
+ {"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Hermes",item:"https://hermeslogisticsus.com/ua/"},{"@type":"ListItem",position:2,name:"Лондон",item:url}]}
+];
+const directions=[
+ ["Маркетинг у Лондоні","/ua/gb/london/marketing/","SMM, Meta Ads, SEO, контент та аналітика як один вимірюваний шлях до заявки."],
+ ["IT і сайти","/ua/gb/london/it-web-development/","Сайти, landing pages, technical SEO, CRM та автоматизація навколо конкретного бізнес-процесу."],
+ ["Навчання логістиці США","/ua/gb/london/us-logistics-training/","Операції, диспетчеризація, планування, продажі та комунікація з readiness-гейтами."],
+];
+const nextPages=[
+ ["SEO Services London","/gb/london/seo-services/"],["Website Development London","/gb/london/website-development/"],["Local SEO London","/gb/london/local-seo/"],["Marketing Audit London","/gb/london/marketing-audit/"],["London Academy","/gb/london/academy/"],["B2 English for US Logistics","/gb/london/academy/english-readiness/"]
 ];
 ---
-<BaseLayout title={page.title} description={page.description} locale="uk" alternates={alternates} schema={schema}><SiteHeader theme="dark" locale="uk"/><main id="main-content"><section class="section detail-overview"><div class="shell detail-intro"><p class="eyebrow">Лондон · Hermes</p><h1>{page.h1}</h1><p>{page.body}</p><p>{page.detail}</p><p>{page.next}</p><p><a class="button button-primary" href="/ua/gb/london/">Повернутися до London hub</a></p></div></section></main><LondonAnalytics/><SiteFooter/></BaseLayout>
+<BaseLayout title="Лондон: маркетинг, IT та навчання логістиці США | Hermes" description="Послуги Hermes у Лондоні: SMM, Meta Ads, сайти, SEO, IT і практичне навчання логістиці США для мешканців Великої Британії." locale="uk" alternates={alternates} schema={schema}>
+  <SiteHeader theme="dark" locale="uk"/>
+  <main id="main-content">
+    <section class="section detail-overview"><div class="shell detail-intro">
+      <p class="eyebrow">Лондон · Велика Британія</p><h1>Маркетинг, IT та навчання логістиці США в одному London-напрямі.</h1>
+      <p>Для місцевого бізнесу — сайти, SEO, SMM, Meta Ads та автоматизація. Для україномовних і російськомовних мешканців Великої Британії — практичне навчання операціям і продажам в американській логістиці.</p>
+      <p>Бізнес починає з конкретного завдання: покращити сайт, локальну видимість, готовність до реклами, контент або передачу заявок у CRM. Спочатку визначається вузьке місце та мінімальний корисний етап; результати пошуку, реклами, лідів і виручки не гарантуються.</p>
+      <p>У навчанні спочатку обирається роль і оцінюються розклад, досвід, англійська та готовність до регулярної практики. Живі дзвінки й переговори з ринком США потребують достатньої розмовної англійської. Навчання не є обіцянкою роботи, зарплати чи доходу.</p>
+      <p><a class="button button-primary" href="/ua/business-growth/?utm_source=london&utm_medium=organic&utm_campaign=london-hub&utm_content=ua-hub">Обговорити розвиток бізнесу</a> <a class="button" href="/gb/london/academy/">Hermes Academy London</a></p>
+    </div></section>
+    <section class="section direction-section" aria-labelledby="directions-title"><div class="shell"><p class="eyebrow">Оберіть напрям</p><h2 id="directions-title">Три різні завдання — три окремі маршрути.</h2><div class="direction-grid">{directions.map(([title,href,body])=><a href={href}><strong>{title}</strong><span>{body}</span></a>)}</div></div></section>
+    <section class="section link-section" aria-labelledby="next-title"><div class="shell"><p class="eyebrow">Далі за темою</p><h2 id="next-title">Відкрийте конкретну послугу або навчальний трек.</h2><div class="link-grid">{nextPages.map(([title,href])=><a href={href}>{title}</a>)}</div><p class="language-links">English: <a href="/gb/london/">London hub</a> · Русский: <a href="/ru/gb/london/">London по-русски</a></p></div></section>
+  </main>
+  <LondonAnalytics/>
+  <SiteFooter/>
+</BaseLayout>
+<style>.direction-section,.link-section{border-top:1px solid #e6eaf3}.direction-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.direction-grid a{display:flex;flex-direction:column;gap:.45rem;padding:1.2rem;border:1px solid #dce3f3;border-radius:12px;text-decoration:none}.direction-grid span{color:#64718f;line-height:1.55}.link-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}.link-grid a{padding:.8rem 1rem;border:1px solid #dce3f3;border-radius:10px;text-decoration:none;font-weight:700}.language-links{margin-top:1.2rem}@media(max-width:800px){.direction-grid,.link-grid{grid-template-columns:1fr}}</style>
