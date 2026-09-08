@@ -19,6 +19,15 @@ assert.match(syntheticSource, /\[1, 1, "07:30", "18:30"/);
 assert.match(syntheticSource, /\[6, 1, "08:30", "15:30"/);
 assert.match(syntheticSource, /Office Complete Auto & Fleet Test Center/);
 assert.match(syntheticSource, /Volkogon Complete Auto & Fleet Test Center/);
+assert.match(syntheticSource, /Tire Rotation/);
+assert.match(syntheticSource, /Flat Tire Repair/);
+assert.match(syntheticSource, /TPMS Inspection & Sensor Service/);
+assert.match(syntheticSource, /Brake Fluid Exchange/);
+assert.match(syntheticSource, /Complete Vehicle Inspection/);
+assert.match(syntheticSource, /Engine Tune-Up & Spark Plug Service/);
+assert.match(syntheticSource, /Wiper Blade Replacement/);
+assert.match(syntheticSource, /ABS Diagnostic & Service/);
+assert.match(syntheticSource, /benchmark_service_count: benchmarkServiceCount/);
 assert.match(syntheticSource, /schedule_rows: scheduleCount/);
 assert.match(syntheticSource, /synthetic: true/);
 
