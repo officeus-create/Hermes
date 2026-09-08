@@ -1,0 +1,42 @@
+name: Dependency audit refresh one-shot
+
+on:
+  push:
+    branches:
+      - fix/dependency-audit-astro-20260909
+    paths:
+      - .github/workflows/dependency-audit-refresh-one-shot.yml
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: fix/dependency-audit-astro-20260909
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install current lockfile
+        run: npm ci
+      - name: Apply patched dependency updates within declared ranges
+        run: npm audit fix --package-lock-only
+      - name: Reinstall patched lockfile
+        run: npm ci
+      - name: Require dependency audit to pass
+        run: node scripts/dependency-audit-report.mjs
+      - name: Build patched dependency set
+        run: npm run build
+      - name: Remove one-shot workflow
+        run: git rm .github/workflows/dependency-audit-refresh-one-shot.yml
+      - name: Commit patched lockfile only
+        run: |
+          git config user.name "officeus-create"
+          git config user.email "officeus@hermeslogisticsus.com"
+          git add package-lock.json package.json
+          git commit -m "fix(deps): refresh patched dependency lockfile"
+          git push origin HEAD:fix/dependency-audit-astro-20260909
