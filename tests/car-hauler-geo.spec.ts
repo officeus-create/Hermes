@@ -74,7 +74,7 @@ test("Colorado Springs GEO page answers carrier load-search intent without publi
   expect(body).not.toMatch(/259|260\+|OFFICE 374|Autobidmaster|Carvana|customer ID/i);
 });
 
-test("carrier GEO pages have distinct local value and emit privacy-safe GA4-reportable depth and CTA events", async ({ page }) => {
+test("carrier GEO pages wait for explicit analytics consent, then emit privacy-safe GA4-reportable depth and CTA events once", async ({ page }) => {
   await page.goto("/logistics/car-hauler-loads/puyallup-wa/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Looking for Car Hauler Loads in Puyallup, WA?");
   const marketContext = page.locator(".carrier-geo-market-card");
@@ -82,9 +82,21 @@ test("carrier GEO pages have distinct local value and emit privacy-safe GA4-repo
   await expect(marketContext.getByText("Tacoma, WA")).toBeVisible();
   await expect(marketContext.getByText("Auburn, WA")).toBeVisible();
 
+  expect(await analyticsEvents(page, "carrier_geo_page_view")).toHaveLength(0);
+  expect(await analyticsEvents(page, "carrier_geo_section_view")).toHaveLength(0);
+  expect(await analyticsEvents(page, "carrier_geo_reach_hero")).toHaveLength(0);
+
+  await page.locator("[data-consent-accept]").click();
+  await expect(page.locator("html")).toHaveAttribute("data-analytics-consent", "granted");
+
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_section_view")).length).toBeGreaterThan(0);
   await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_reach_hero")).length).toBe(1);
+
+  await page.evaluate(() => {
+    document.documentElement.dataset.analyticsConsent = "granted";
+  });
+  await expect.poll(async () => (await analyticsEvents(page, "carrier_geo_page_view")).length).toBe(1);
 
   await page.evaluate(() => {
     document.addEventListener("click", (event) => {
