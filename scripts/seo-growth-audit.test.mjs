@@ -11,6 +11,16 @@ const warnings = [];
 const addError = (route, message) => errors.push(`${route}: ${message}`);
 const addWarning = (route, message) => warnings.push(`${route}: ${message}`);
 
+const isSearchEngineVerificationArtifact = (path) => !path.includes("/") && /^google[a-z0-9]+\.html$/i.test(path);
+
+if (
+  !isSearchEngineVerificationArtifact("google4764b070a1b650fe.html") ||
+  isSearchEngineVerificationArtifact("nested/google4764b070a1b650fe.html") ||
+  isSearchEngineVerificationArtifact("ordinary.html")
+) {
+  throw new Error("Search-engine verification artifact classifier regression");
+}
+
 async function collectHtmlFiles(directory, relative = "") {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
@@ -84,7 +94,9 @@ const walkSchema = (value, visit, path = "schema") => {
 };
 
 const allHtmlFiles = await collectHtmlFiles(dist);
-const htmlByPath = new Map(await Promise.all(allHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")])));
+const verificationArtifacts = allHtmlFiles.filter(isSearchEngineVerificationArtifact);
+const seoHtmlFiles = allHtmlFiles.filter((path) => !isSearchEngineVerificationArtifact(path));
+const htmlByPath = new Map(await Promise.all(seoHtmlFiles.map(async (path) => [path, await readFile(join(dist, path), "utf8")])));
 const robotsTxt = await readFile(join(dist, "robots.txt"), "utf8");
 const distEntries = await readdir(dist, { withFileTypes: true });
 const sitemapFiles = distEntries
@@ -253,4 +265,4 @@ if (errors.length) {
   throw new Error(`SEO growth audit failed with ${errors.length} error(s):\n${errors.map((item) => `- ${item}`).join("\n")}`);
 }
 
-console.log(`SEO growth audit passed: ${indexableRoutes.length} indexable pages, ${sitemapUrls.length} URLs across ${sitemapFiles.length} declared sitemap file(s), ${warnings.length} review warning(s).`);
+console.log(`SEO growth audit passed: ${indexableRoutes.length} indexable pages, ${sitemapUrls.length} URLs across ${sitemapFiles.length} declared sitemap file(s), ${verificationArtifacts.length} root search-verification artifact(s) skipped, ${warnings.length} review warning(s).`);
