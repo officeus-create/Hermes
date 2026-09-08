@@ -192,7 +192,7 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   await page.goto("/services/hermes-connect/repair-shops/settings/?lang=ru", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator('[data-i18n="title"]')).toHaveText("Компания");
-  await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Настройки");
+  await expect(page.locator(".repair-crm-nav-item.is-active")).toContainText("Компания");
   await expect(page.locator('[data-i18n="teamTitle"]')).toHaveText("Команда");
   await expect(page.locator('[data-i18n="scheduleTitle"]')).toHaveText("Смены и перерывы");
   await expect(page.locator('[data-i18n="connectionsTitle"]')).toHaveText("Приложения и каналы");
@@ -207,7 +207,7 @@ test("Company preserves Russian core UX and mobile CRM navigation", async ({ pag
   if (viewport && viewport.width <= 760) {
     await page.locator("[data-repair-crm-menu]").click();
     await expect(page.locator(".repair-crm-sidebar")).toBeInViewport();
-    await expect(page.getByRole("link", { name: "Настройки" })).toHaveAttribute("aria-current", "page");
+    await expect(page.getByRole("link", { name: "Компания" })).toHaveAttribute("aria-current", "page");
     await captureEvidence(page, testInfo, "company-ru-mobile-drawer", false);
   }
 });
